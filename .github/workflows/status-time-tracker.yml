@@ -5,6 +5,10 @@ on:
     - cron: "*/15 * * * *"   # cada 15 minutos
   workflow_dispatch:          # permite correrlo a mano desde la pestaña Actions
 
+concurrency:
+  group: status-time-tracker
+  cancel-in-progress: false
+
 permissions:
   contents: write
 
@@ -34,5 +38,10 @@ jobs:
           if [ -f .github/project_status_log.csv ]; then
             git add .github/project_status_log.csv
           fi
-          git diff --staged --quiet || git commit -m "chore: actualizar registro de tiempos por estado [skip ci]"
+          if git diff --staged --quiet; then
+            echo "Sin cambios para commitear."
+            exit 0
+          fi
+          git commit -m "chore: actualizar registro de tiempos por estado [skip ci]"
+          git pull --rebase origin develop
           git push
