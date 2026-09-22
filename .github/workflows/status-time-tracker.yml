@@ -1,0 +1,35 @@
+name: Track US status time
+
+on:
+  schedule:
+    - cron: "*/15 * * * *"   # cada 15 minutos
+  workflow_dispatch:          # permite correrlo a mano desde la pestaña Actions
+
+permissions:
+  contents: write
+
+jobs:
+  track:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Instalar dependencias
+        run: pip install requests
+
+      - name: Chequear cambios de estado y loguear en el CSV
+        env:
+          PROJECT_PAT: ${{ secrets.PROJECT_PAT }}
+        run: python .github/scripts/track_status_time.py
+
+      - name: Commitear snapshot y CSV actualizados
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add .github/project_status_snapshot.json .github/project_status_log.csv
+          git diff --staged --quiet || git commit -m "chore: actualizar registro de tiempos por estado [skip ci]"
+          git push
