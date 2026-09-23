@@ -18,6 +18,24 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      # develop y main estan protegidas (solo PR), asi que el CSV y el snapshot viven en la
+      # rama tracker-data. La primera vez la crea a partir de los datos que hay en develop.
+      - name: Preparar la rama de datos (tracker-data)
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          if git ls-remote --exit-code --heads origin tracker-data > /dev/null; then
+            git fetch --depth 1 origin tracker-data
+            git worktree add -B tracker-data tracker-data FETCH_HEAD
+          else
+            git worktree add --detach tracker-data
+            cd tracker-data
+            git checkout --orphan tracker-data
+            git rm -rf --quiet .
+            mkdir -p .github
+            cp ../.github/project_status_log.csv ../.github/project_status_snapshot.json .github/ 2>/dev/null || true
+          fi
+
       - uses: actions/setup-python@v5
         with:
           python-version: "3.11"
@@ -26,14 +44,14 @@ jobs:
         run: pip install requests
 
       - name: Chequear cambios de estado y loguear en el CSV
+        working-directory: tracker-data
         env:
           PROJECT_PAT: ${{ secrets.PROJECT_PAT }}
-        run: python .github/scripts/track_status_time.py
+        run: python ../.github/scripts/track_status_time.py
 
-      - name: Commitear snapshot y CSV actualizados
+      - name: Commitear snapshot y CSV en tracker-data
+        working-directory: tracker-data
         run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
           git add .github/project_status_snapshot.json
           if [ -f .github/project_status_log.csv ]; then
             git add .github/project_status_log.csv
@@ -43,5 +61,4 @@ jobs:
             exit 0
           fi
           git commit -m "chore: actualizar registro de tiempos por estado [skip ci]"
-          git pull --rebase origin develop
-          git push
+          git push origin tracker-data
