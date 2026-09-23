@@ -167,6 +167,7 @@ GameObject:
   - component: {fileID: 8220979561083747010}
   - component: {fileID: 4693873943294972466}
   - component: {fileID: 3897681997550327690}
+  - component: {fileID: 138027801115587550}
   m_Layer: 0
   m_Name: Player
   m_TagString: Untagged
@@ -312,6 +313,7 @@ MonoBehaviour:
   sprintSpeed: 8
   gravity: -9.8
   jumpForce: 5
+  speedMultiplier: 1
 --- !u!114 &3897681997550327690
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -326,6 +328,20 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::HealthSystem
   maxHealth: 200
   currentHealth: 0
+--- !u!114 &138027801115587550
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1009967349104221202}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dce43c325f7216343a3b5b57e2f84e05, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MeleeWeaponHolder
+  defaultWeapon: {fileID: 11400000, guid: e03e3077a5b2a104a890a79233e1e77f, type: 2}
+  viewModelParent: {fileID: 851363783184461142}
 --- !u!1 &7060233788922424758
 GameObject:
   m_ObjectHideFlags: 0
