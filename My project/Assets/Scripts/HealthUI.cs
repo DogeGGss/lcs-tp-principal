@@ -5,6 +5,7 @@ public class HealthUI : MonoBehaviour
 {
     public HealthSystem playerHealth;
     public TextMeshProUGUI healthText;
+    public TextMeshProUGUI shieldText;
 
     void Update()
     {
@@ -16,7 +17,13 @@ public class HealthUI : MonoBehaviour
         }
         else
         {
-            healthText.color = Color.white;
+            healthText.color = Color.green;
+        }
+
+        if (shieldText != null)
+        {
+            shieldText.text = "Escudo: " + playerHealth.currentShield;
+            shieldText.color = new Color(0.2f, 0.8f, 1f);
         }
     }
 }
