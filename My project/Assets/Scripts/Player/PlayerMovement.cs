@@ -6,6 +6,7 @@ public class PlayerMovement : MonoBehaviour
      private CharacterController controller;
 
     public float speed = 5f;
+    public float sprintSpeed = 8f;
     public float gravity = -9.8f;
     public float jumpForce = 5f;
 
@@ -31,7 +32,8 @@ public class PlayerMovement : MonoBehaviour
 
         verticalVelocity += gravity * Time.deltaTime;
 
-        Vector3 velocity = move * speed;
+        float currentSpeed = Input.GetKey(KeyCode.LeftShift) ? sprintSpeed : speed;
+        Vector3 velocity = move * currentSpeed;
         velocity.y = verticalVelocity;
 
         controller.Move(velocity * Time.deltaTime);
