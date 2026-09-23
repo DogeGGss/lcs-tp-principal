@@ -100,3 +100,11 @@ fecha_utc,us_numero,us_titulo,estado_anterior,estado_nuevo,tiempo_en_estado_ante
 2026-09-23T23:37:18.736664+00:00,119,US 062. ARMA Melee,LPR,In Progress,6h 5m,21959,https://github.com/DogeGGss/lcs-tp-principal/issues/119
 2026-09-23T23:37:18.736664+00:00,156,US 098. Agregar sonido - Salto,Blocked,Todo,6h 5m,21959,https://github.com/DogeGGss/lcs-tp-principal/issues/156
 2026-09-23T23:37:18.736664+00:00,138,US 104. Agregar sonido - Daño y muerte,Blocked,Todo,6h 5m,21959,https://github.com/DogeGGss/lcs-tp-principal/issues/138
+2026-09-23T23:59:45.485296+00:00,33,US 001. Caminar,R2D,Done,2h 16m,8187,https://github.com/DogeGGss/lcs-tp-principal/issues/33
+2026-09-23T23:59:45.485296+00:00,40,US 005. Cámara,R2D,Done,2h 16m,8187,https://github.com/DogeGGss/lcs-tp-principal/issues/40
+2026-09-23T23:59:45.485296+00:00,57,US 053. Mostrar vida,In Progress,Done,22m,1346,https://github.com/DogeGGss/lcs-tp-principal/issues/57
+2026-09-23T23:59:45.485296+00:00,73,US 023. Gestionar vida,In Progress,Done,22m,1346,https://github.com/DogeGGss/lcs-tp-principal/issues/73
+2026-09-23T23:59:45.485296+00:00,39,US 009. Apuntar,Blocked,Todo,1d 35m,88524,https://github.com/DogeGGss/lcs-tp-principal/issues/39
+2026-09-23T23:59:45.485296+00:00,74,US 024.  Gestionar escudo,In Progress,LPR,22m,1346,https://github.com/DogeGGss/lcs-tp-principal/issues/74
+2026-09-23T23:59:45.485296+00:00,119,US 062. ARMA Melee,In Progress,LPR,22m,1346,https://github.com/DogeGGss/lcs-tp-principal/issues/119
+2026-09-23T23:59:45.485296+00:00,161,US 097. Agregar sonido - Pasos,Blocked,Todo,6h 28m,23306,https://github.com/DogeGGss/lcs-tp-principal/issues/161
