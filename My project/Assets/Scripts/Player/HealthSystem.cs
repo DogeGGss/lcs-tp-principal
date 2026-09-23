@@ -27,6 +27,12 @@ public class HealthSystem : MonoBehaviour
     private void Die()
     {
         Debug.Log("El personaje ha muerto (0 HP).");
-        gameObject.SetActive(false);
+
+        // Cuando el personaje muere, temporalmente inventé que se queda sin movimiento
+        PlayerMovement movement = GetComponent<PlayerMovement>();
+        if (movement != null)
+        {
+            movement.enabled = false;
+        }
     }
 }
