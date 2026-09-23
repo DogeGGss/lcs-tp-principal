@@ -1,2 +1,4 @@
 fecha_utc,us_numero,us_titulo,estado_anterior,estado_nuevo,tiempo_en_estado_anterior,tiempo_en_estado_anterior_segundos,url
 2026-09-22T23:55:23.296300+00:00,29,US 084. Mapa 3,Todo,In Progress,31m,1862,https://github.com/DogeGGss/lcs-tp-principal/issues/29
+2026-09-23T04:42:52.196987+00:00,57,US 053. Mostrar vida,Blocked,In Progress,5h 18m,19111,https://github.com/DogeGGss/lcs-tp-principal/issues/57
+2026-09-23T04:42:52.196987+00:00,73,US 023. Gestionar vida,Todo,LPR,5h 18m,19111,https://github.com/DogeGGss/lcs-tp-principal/issues/73
