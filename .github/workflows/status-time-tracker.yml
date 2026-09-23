@@ -2,7 +2,7 @@ name: Track US status time
 
 on:
   schedule:
-    - cron: "*/15 * * * *"   # cada 15 minutos
+    - cron: "*/5 * * * *"    # cada 5 minutos
   workflow_dispatch:          # permite correrlo a mano desde la pestaña Actions
 
 concurrency:
