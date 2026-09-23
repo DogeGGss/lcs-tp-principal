@@ -5,3 +5,74 @@ fecha_utc,us_numero,us_titulo,estado_anterior,estado_nuevo,tiempo_en_estado_ante
 2026-09-23T09:34:31.397388+00:00,35,US 002. Correr,Blocked,LPR,10h 10m,36610,https://github.com/DogeGGss/lcs-tp-principal/issues/35
 2026-09-23T09:34:31.397388+00:00,57,US 053. Mostrar vida,In Progress,LPR,4h 51m,17499,https://github.com/DogeGGss/lcs-tp-principal/issues/57
 2026-09-23T14:24:48.958700+00:00,38,US 004. Agacharse,Blocked,Todo,15h,54027,https://github.com/DogeGGss/lcs-tp-principal/issues/38
+2026-09-23T17:31:19.317741+00:00,33,US 001. Caminar,LPR,TESTING,18h 6m,65218,https://github.com/DogeGGss/lcs-tp-principal/issues/33
+2026-09-23T17:31:19.317741+00:00,38,US 004. Agacharse,Todo,Blocked,3h 6m,11190,https://github.com/DogeGGss/lcs-tp-principal/issues/38
+2026-09-23T17:31:19.317741+00:00,45,US 064. Cambio entre equipamientos,Todo,Blocked,18h 6m,65218,https://github.com/DogeGGss/lcs-tp-principal/issues/45
+2026-09-23T17:31:19.317741+00:00,52,US 077. Comprar arma primaria,Todo,Blocked,18h 6m,65218,https://github.com/DogeGGss/lcs-tp-principal/issues/52
+2026-09-23T17:31:19.317741+00:00,53,US 078. Comprar arma secundaria,Todo,Blocked,18h 6m,65218,https://github.com/DogeGGss/lcs-tp-principal/issues/53
+2026-09-23T17:31:19.317741+00:00,54,US 079. Comprar arrojable,Todo,Blocked,18h 6m,65218,https://github.com/DogeGGss/lcs-tp-principal/issues/54
+2026-09-23T17:31:19.317741+00:00,55,US 080. Comprar escudo/blindaje,Todo,Blocked,18h 6m,65218,https://github.com/DogeGGss/lcs-tp-principal/issues/55
+2026-09-23T17:31:19.317741+00:00,58,US 054. Mostrar escudo,Todo,Blocked,18h 6m,65218,https://github.com/DogeGGss/lcs-tp-principal/issues/58
+2026-09-23T17:31:19.317741+00:00,61,US 055. Mostrar inventario,Todo,Blocked,18h 6m,65218,https://github.com/DogeGGss/lcs-tp-principal/issues/61
+2026-09-23T17:31:19.317741+00:00,63,US 065. Asignación de equipamientos,Todo,Blocked,18h 6m,65218,https://github.com/DogeGGss/lcs-tp-principal/issues/63
+2026-09-23T17:31:19.317741+00:00,64,US 066. Visualización del inventario,Todo,Blocked,18h 6m,65218,https://github.com/DogeGGss/lcs-tp-principal/issues/64
+2026-09-23T17:31:19.317741+00:00,67,US 017. Recarga de habilidad,Todo,Blocked,18h 6m,65218,https://github.com/DogeGGss/lcs-tp-principal/issues/67
+2026-09-23T17:31:19.317741+00:00,68,US 018.  Aplicar efecto de habilidad,Todo,Blocked,18h 6m,65218,https://github.com/DogeGGss/lcs-tp-principal/issues/68
+2026-09-23T17:31:19.317741+00:00,69,US 019. Habilidad 1,Todo,Blocked,18h 6m,65218,https://github.com/DogeGGss/lcs-tp-principal/issues/69
+2026-09-23T17:31:19.317741+00:00,70,US 020. Habilidad 2,Todo,Blocked,18h 6m,65218,https://github.com/DogeGGss/lcs-tp-principal/issues/70
+2026-09-23T17:31:19.317741+00:00,71,US 021. Habilidad 3,Todo,Blocked,18h 6m,65218,https://github.com/DogeGGss/lcs-tp-principal/issues/71
+2026-09-23T17:31:19.317741+00:00,72,US 022. Habilidad 4,Todo,Blocked,18h 6m,65218,https://github.com/DogeGGss/lcs-tp-principal/issues/72
+2026-09-23T17:31:19.317741+00:00,74,US 024.  Gestionar escudo,Todo,Blocked,18h 6m,65218,https://github.com/DogeGGss/lcs-tp-principal/issues/74
+2026-09-23T17:31:19.317741+00:00,80,US 032. Iniciar partida táctica,Todo,Blocked,18h 6m,65218,https://github.com/DogeGGss/lcs-tp-principal/issues/80
+2026-09-23T17:31:19.317741+00:00,81,US 033. Gestionar objetivo y resultado de la partida,Todo,Blocked,18h 6m,65218,https://github.com/DogeGGss/lcs-tp-principal/issues/81
+2026-09-23T17:31:19.317741+00:00,83,US 034. Finalizar partida,Todo,Blocked,18h 6m,65218,https://github.com/DogeGGss/lcs-tp-principal/issues/83
+2026-09-23T17:31:19.317741+00:00,86,US 037. Atacar jugador,Todo,Blocked,18h 6m,65218,https://github.com/DogeGGss/lcs-tp-principal/issues/86
+2026-09-23T17:31:19.317741+00:00,87,US 038. Recibir daño,Todo,Blocked,18h 6m,65218,https://github.com/DogeGGss/lcs-tp-principal/issues/87
+2026-09-23T17:31:19.317741+00:00,88,US 039. Morir NPC,Todo,Blocked,18h 6m,65218,https://github.com/DogeGGss/lcs-tp-principal/issues/88
+2026-09-23T17:31:19.317741+00:00,90,US 067. ARMA Principal 2 - Subfusil,Todo,Blocked,18h 6m,65218,https://github.com/DogeGGss/lcs-tp-principal/issues/90
+2026-09-23T17:31:19.317741+00:00,91,US 068. ARMA Principal 3 - Francotirador,Todo,Blocked,18h 6m,65218,https://github.com/DogeGGss/lcs-tp-principal/issues/91
+2026-09-23T17:31:19.317741+00:00,92,US 069. ARMA Principal 4 - Fusil de rafaga,Todo,Blocked,18h 6m,65218,https://github.com/DogeGGss/lcs-tp-principal/issues/92
+2026-09-23T17:31:19.317741+00:00,95,US 041. Detectar cumplimiento de logros,Todo,Blocked,18h 6m,65218,https://github.com/DogeGGss/lcs-tp-principal/issues/95
+2026-09-23T17:31:19.317741+00:00,96,US 042. Desbloquear logro,Todo,Blocked,18h 6m,65218,https://github.com/DogeGGss/lcs-tp-principal/issues/96
+2026-09-23T17:31:19.317741+00:00,97,US 043. Notificar logro desbloqueado,Todo,Blocked,18h 6m,65218,https://github.com/DogeGGss/lcs-tp-principal/issues/97
+2026-09-23T17:31:19.317741+00:00,98,US 044.  Consultar logros,Todo,Blocked,18h 6m,65218,https://github.com/DogeGGss/lcs-tp-principal/issues/98
+2026-09-23T17:31:19.317741+00:00,99,US 045. Guardar progreso de logros,Todo,Blocked,18h 6m,65218,https://github.com/DogeGGss/lcs-tp-principal/issues/99
+2026-09-23T17:31:19.317741+00:00,105,US 051. Menu de pausa,Todo,Blocked,18h 6m,65218,https://github.com/DogeGGss/lcs-tp-principal/issues/105
+2026-09-23T17:31:19.317741+00:00,101,US 047.  Seleccionar modo de juego,Todo,Blocked,18h 6m,65218,https://github.com/DogeGGss/lcs-tp-principal/issues/101
+2026-09-23T17:31:19.317741+00:00,102,US 048.  Configurar opciones,Todo,Blocked,18h 6m,65218,https://github.com/DogeGGss/lcs-tp-principal/issues/102
+2026-09-23T17:31:19.317741+00:00,111,US 060. Recoger objeto de curación,Todo,Blocked,18h 6m,65218,https://github.com/DogeGGss/lcs-tp-principal/issues/111
+2026-09-23T17:31:19.317741+00:00,112,US 061. Utilizar objeto de curación,Todo,Blocked,18h 6m,65218,https://github.com/DogeGGss/lcs-tp-principal/issues/112
+2026-09-23T17:31:19.317741+00:00,113,US 012. Ataque cuerpo a cuerpo,Todo,Blocked,18h 6m,65218,https://github.com/DogeGGss/lcs-tp-principal/issues/113
+2026-09-23T17:31:19.317741+00:00,114,US 071. ARMA Secundaria 1 - Pistola,Todo,Blocked,18h 6m,65218,https://github.com/DogeGGss/lcs-tp-principal/issues/114
+2026-09-23T17:31:19.317741+00:00,115,US 072. ARMA Secundaria 2 - Pistola pesada,Todo,Blocked,18h 6m,65218,https://github.com/DogeGGss/lcs-tp-principal/issues/115
+2026-09-23T17:31:19.317741+00:00,119,US 062. ARMA Melee,Todo,LPR,18h 6m,65218,https://github.com/DogeGGss/lcs-tp-principal/issues/119
+2026-09-23T17:31:19.317741+00:00,120,US 085. Créditos,Todo,Blocked,18h 6m,65218,https://github.com/DogeGGss/lcs-tp-principal/issues/120
+2026-09-23T17:31:19.317741+00:00,155,US 099. Agregar sonido - Reaparición,Todo,Blocked,3h 6m,11190,https://github.com/DogeGGss/lcs-tp-principal/issues/155
+2026-09-23T17:31:19.317741+00:00,156,US 098. Agregar sonido - Salto,Todo,Blocked,3h 6m,11190,https://github.com/DogeGGss/lcs-tp-principal/issues/156
+2026-09-23T17:31:19.317741+00:00,161,US 097. Agregar sonido - Pasos,Todo,Blocked,3h 6m,11190,https://github.com/DogeGGss/lcs-tp-principal/issues/161
+2026-09-23T17:31:19.317741+00:00,140,US 114. Agregar sonido - Cambio de equipamiento,Todo,Blocked,3h 6m,11190,https://github.com/DogeGGss/lcs-tp-principal/issues/140
+2026-09-23T17:31:19.317741+00:00,135,US 103. Agregar sonido - Habilidad 4,Todo,Blocked,3h 6m,11190,https://github.com/DogeGGss/lcs-tp-principal/issues/135
+2026-09-23T17:31:19.317741+00:00,157,US 101. Agregar sonido - Habilidad 2,Todo,Blocked,3h 6m,11190,https://github.com/DogeGGss/lcs-tp-principal/issues/157
+2026-09-23T17:31:19.317741+00:00,158,US 100. Agregar sonido - Habilidad 1,Todo,Blocked,3h 6m,11190,https://github.com/DogeGGss/lcs-tp-principal/issues/158
+2026-09-23T17:31:19.317741+00:00,137,US 105. Agregar sonido - Escudo dañado,Todo,Blocked,3h 6m,11190,https://github.com/DogeGGss/lcs-tp-principal/issues/137
+2026-09-23T17:31:19.317741+00:00,138,US 104. Agregar sonido - Daño y muerte,Todo,Blocked,3h 6m,11190,https://github.com/DogeGGss/lcs-tp-principal/issues/138
+2026-09-23T17:31:19.317741+00:00,132,US 106. Agregar sonido - Modo Táctico,Todo,Blocked,3h 6m,11190,https://github.com/DogeGGss/lcs-tp-principal/issues/132
+2026-09-23T17:31:19.317741+00:00,141,US 117. Agregar sonido - Tienda,Todo,Blocked,3h 6m,11190,https://github.com/DogeGGss/lcs-tp-principal/issues/141
+2026-09-23T17:31:19.317741+00:00,142,US 116. Agregar sonido - Objeto de curación,Todo,Blocked,3h 6m,11190,https://github.com/DogeGGss/lcs-tp-principal/issues/142
+2026-09-23T17:31:19.317741+00:00,145,US 113. Agregar sonido - Menú de pausa,Todo,Blocked,3h 6m,11190,https://github.com/DogeGGss/lcs-tp-principal/issues/145
+2026-09-23T17:31:19.317741+00:00,146,US 112. Agregar sonido - Menú principal,Todo,Blocked,3h 6m,11190,https://github.com/DogeGGss/lcs-tp-principal/issues/146
+2026-09-23T17:31:19.317741+00:00,139,US 115. Agregar sonido - Logro desbloqueado,Todo,Blocked,3h 6m,11190,https://github.com/DogeGGss/lcs-tp-principal/issues/139
+2026-09-23T17:31:19.317741+00:00,147,US 091. Agregar sonido - Pistola,Todo,Blocked,3h 6m,11190,https://github.com/DogeGGss/lcs-tp-principal/issues/147
+2026-09-23T17:31:19.317741+00:00,148,US 090. Agregar sonido - Escopeta,Todo,Blocked,3h 6m,11190,https://github.com/DogeGGss/lcs-tp-principal/issues/148
+2026-09-23T17:31:19.317741+00:00,149,US 093. Agregar sonido - Granada metralla,Todo,Blocked,3h 6m,11190,https://github.com/DogeGGss/lcs-tp-principal/issues/149
+2026-09-23T17:31:19.317741+00:00,150,US 092. Agregar sonido - Pistola pesada,Todo,Blocked,3h 6m,11190,https://github.com/DogeGGss/lcs-tp-principal/issues/150
+2026-09-23T17:31:19.317741+00:00,151,US 087. Agregar sonido - Subfusil,Todo,Blocked,3h 6m,11190,https://github.com/DogeGGss/lcs-tp-principal/issues/151
+2026-09-23T17:31:19.317741+00:00,152,US 086. Agregar sonido - Fusil,Todo,Blocked,3h 6m,11190,https://github.com/DogeGGss/lcs-tp-principal/issues/152
+2026-09-23T17:31:19.317741+00:00,153,US 089. Agregar sonido - Fusil de ráfaga,Todo,Blocked,3h 6m,11190,https://github.com/DogeGGss/lcs-tp-principal/issues/153
+2026-09-23T17:31:19.317741+00:00,154,US 088. Agregar sonido - Francotirador,Todo,Blocked,3h 6m,11190,https://github.com/DogeGGss/lcs-tp-principal/issues/154
+2026-09-23T17:31:19.317741+00:00,159,US 095. Agregar sonido - Granada flash,Todo,Blocked,3h 6m,11190,https://github.com/DogeGGss/lcs-tp-principal/issues/159
+2026-09-23T17:31:19.317741+00:00,160,US 094. Agregar sonido - Granada de humo,Todo,Blocked,3h 6m,11190,https://github.com/DogeGGss/lcs-tp-principal/issues/160
+2026-09-23T17:31:19.317741+00:00,162,US 096. Agregar sonido - Ataque cuerpo a cuerpo,Todo,Blocked,3h 6m,11190,https://github.com/DogeGGss/lcs-tp-principal/issues/162
+2026-09-23T17:31:19.317741+00:00,133,US 109. Agregar sonido - Mapa 1,Todo,Blocked,3h 6m,11190,https://github.com/DogeGGss/lcs-tp-principal/issues/133
+2026-09-23T17:31:19.317741+00:00,143,US 111. Agregar sonido - Mapa 3,Todo,Blocked,3h 6m,11190,https://github.com/DogeGGss/lcs-tp-principal/issues/143
+2026-09-23T17:31:19.317741+00:00,144,US 110. Agregar sonido - Mapa 2,Todo,Blocked,3h 6m,11190,https://github.com/DogeGGss/lcs-tp-principal/issues/144
