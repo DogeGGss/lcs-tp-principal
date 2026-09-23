@@ -58,3 +58,6 @@ sysinfo.txt
 
 # Crashlytics generated file
 crashlytics-build.properties
+
+# Pack de texturas completo (512MB) - solo versionamos las texturas puntuales que usamos
+/Assets/Cartoon_Texture_Pack/
