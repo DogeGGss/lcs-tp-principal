@@ -26,6 +26,7 @@ public class PlayerMovement : MonoBehaviour
 
         Vector3 move = transform.right * x
                      + transform.forward * z;
+        move = Vector3.ClampMagnitude(move, 1f);
 
         if (controller.isGrounded && verticalVelocity < 0)
         {
@@ -38,7 +39,12 @@ public class PlayerMovement : MonoBehaviour
         Vector3 velocity = move * currentSpeed;
         velocity.y = verticalVelocity;
 
-        controller.Move(velocity * Time.deltaTime);
+        CollisionFlags collisions = controller.Move(velocity * Time.deltaTime);
+
+        if ((collisions & CollisionFlags.Above) != 0 && verticalVelocity > 0)
+        {
+            verticalVelocity = 0f;
+        }
 
         if (Input.GetButtonDown("Jump") && controller.isGrounded)
         {
