@@ -29,7 +29,7 @@ Transform:
   m_GameObject: {fileID: 149820169301200241}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0.022000015, y: 1.173, z: -0.15100002}
+  m_LocalPosition: {x: 0, y: 0.65, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -106,7 +106,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 110499c224038914aa0954d0ef99d18d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CameraLook
-  mouseSensivility: 80
+  mouseSensivility: 1.5
   playerBody: {fileID: 2033858932480782955}
 --- !u!114 &4212182863644879538
 MonoBehaviour:
@@ -168,6 +168,7 @@ GameObject:
   - component: {fileID: 4693873943294972466}
   - component: {fileID: 3897681997550327690}
   - component: {fileID: 138027801115587550}
+  - component: {fileID: 5978433496340832004}
   m_Layer: 0
   m_Name: Player
   m_TagString: Untagged
@@ -328,6 +329,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::HealthSystem
   maxHealth: 200
   currentHealth: 0
+  maxShield: 100
+  currentShield: 0
 --- !u!114 &138027801115587550
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -342,6 +345,19 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::MeleeWeaponHolder
   defaultWeapon: {fileID: 11400000, guid: e03e3077a5b2a104a890a79233e1e77f, type: 2}
   viewModelParent: {fileID: 851363783184461142}
+--- !u!114 &5978433496340832004
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1009967349104221202}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 29f3d84786c06424d81eca064f2b4c8d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::HideOwnBody
+  ownCamera: {fileID: 4595636921063272802}
 --- !u!1 &7060233788922424758
 GameObject:
   m_ObjectHideFlags: 0

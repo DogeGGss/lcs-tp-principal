@@ -3,7 +3,7 @@ using UnityEngine;
 public class CameraLook : MonoBehaviour
 {
 
-    public float mouseSensivility = 80f;
+    public float mouseSensivility = 1.5f;
 
     public Transform playerBody;
 
@@ -18,9 +18,10 @@ public class CameraLook : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        float mouseX = Input.GetAxis("Mouse X")*mouseSensivility * Time.deltaTime;
+        // El delta del mouse ya es por frame: multiplicarlo por Time.deltaTime haria que la sensibilidad dependa de los FPS.
+        float mouseX = Input.GetAxis("Mouse X") * mouseSensivility;
 
-        float mouseY = Input.GetAxis("Mouse Y")*mouseSensivility * Time.deltaTime;
+        float mouseY = Input.GetAxis("Mouse Y") * mouseSensivility;
 
         xRotation -= mouseY;
 
