@@ -110,3 +110,5 @@ fecha_utc,us_numero,us_titulo,estado_anterior,estado_nuevo,tiempo_en_estado_ante
 2026-09-23T23:59:45.485296+00:00,161,US 097. Agregar sonido - Pasos,Blocked,Todo,6h 28m,23306,https://github.com/DogeGGss/lcs-tp-principal/issues/161
 2026-09-24T04:34:06.147452+00:00,38,US 004. Agacharse,In Progress,Done,4h 56m,17807,https://github.com/DogeGGss/lcs-tp-principal/issues/38
 2026-09-24T04:34:06.147452+00:00,114,US 071. ARMA Secundaria 1 - Pistola,Blocked,In Progress,11h 2m,39766,https://github.com/DogeGGss/lcs-tp-principal/issues/114
+2026-09-24T09:30:11.676561+00:00,41,US 010. Disparar,Blocked,LPR,1d 10h 5m,122750,https://github.com/DogeGGss/lcs-tp-principal/issues/41
+2026-09-24T09:30:11.676561+00:00,114,US 071. ARMA Secundaria 1 - Pistola,In Progress,LPR,4h 56m,17765,https://github.com/DogeGGss/lcs-tp-principal/issues/114
