@@ -49,11 +49,13 @@ public class PlayerMovement : MonoBehaviour
         {
             controller.height = crounchHeight;
             controller.center = crounchCenter;
+            transform.localScale = new Vector3(1f, 0.5f, 1f);
         }
         else
         {
             controller.height = standingHeight;
             controller.center = standingCenter;
+            transform.localScale = new Vector3(1f, 1f, 1f);
         }
 
         //verifica velocidad actual
