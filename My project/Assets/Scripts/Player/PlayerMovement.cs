@@ -17,6 +17,8 @@ public class PlayerMovement : MonoBehaviour
     private Vector3 standingCenter = new Vector3(0, 0, 0);
     private Vector3 crounchCenter = new Vector3(0, -0.5f, 0);
 
+    [HideInInspector] public float speedMultiplier = 1f;
+
     private float verticalVelocity;
 
     private void Start()
@@ -33,6 +35,7 @@ public class PlayerMovement : MonoBehaviour
 
         Vector3 move = transform.right * x
                      + transform.forward * z;
+        move = Vector3.ClampMagnitude(move, 1f);
 
         if (controller.isGrounded && verticalVelocity < 0)
         {
@@ -50,7 +53,7 @@ public class PlayerMovement : MonoBehaviour
         else
         {
             controller.height = standingHeight;
-            controller.center = crounchCenter;
+            controller.center = standingCenter;
         }
 
         //verifica velocidad actual
@@ -66,10 +69,16 @@ public class PlayerMovement : MonoBehaviour
 
         verticalVelocity += gravity * Time.deltaTime;
 
+
         Vector3 velocity = move * currentSpeed;
         velocity.y = verticalVelocity;
 
-        controller.Move(velocity * Time.deltaTime);
+        CollisionFlags collisions = controller.Move(velocity * Time.deltaTime);
+
+        if ((collisions & CollisionFlags.Above) != 0 && verticalVelocity > 0)
+        {
+            verticalVelocity = 0f;
+        }
 
         if (Input.GetButtonDown("Jump") && controller.isGrounded)
         {
