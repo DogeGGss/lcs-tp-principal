@@ -5,12 +5,20 @@ public class Pistola : MonoBehaviour
     public int damage = 25;
     public int maxAmmo = 20;
     public int currentAmmo;
-
     public Camera playerCamera;
+
+    public AudioClip shootSound;
+    private AudioSource audioSource;
 
     void Start()
     {
         currentAmmo = maxAmmo;
+
+        audioSource = GetComponent<AudioSource>();
+        if (audioSource == null)
+        {
+            audioSource = gameObject.AddComponent<AudioSource>();
+        }
     }
 
     void Update()
@@ -32,15 +40,15 @@ public class Pistola : MonoBehaviour
         currentAmmo--;
         Debug.Log("¡PUM! Balas restantes: " + currentAmmo);
 
-        // Esto dibuja un láser rojo en la pestaña "Scene" que dura 2 segundos
-        Debug.DrawRay(playerCamera.transform.position, playerCamera.transform.forward * 100f, Color.red, 2f);
+        if (shootSound != null)
+        {
+            audioSource.PlayOneShot(shootSound);
+        }
 
         RaycastHit hit;
-        // Le pasamos un 100f al final para garantizar que el rayo viaje 100 metros
         if (Physics.Raycast(playerCamera.transform.position, playerCamera.transform.forward, out hit, 100f))
         {
-            Debug.Log("Impacto en: " + hit.transform.name);
-
+            // CA4: Impacto
             HealthSystem targetHealth = hit.transform.GetComponent<HealthSystem>();
             if (targetHealth != null)
             {

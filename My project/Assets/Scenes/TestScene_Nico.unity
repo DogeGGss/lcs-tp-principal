@@ -1278,6 +1278,7 @@ MonoBehaviour:
   maxAmmo: 20
   currentAmmo: 0
   playerCamera: {fileID: 785197087}
+  shootSound: {fileID: 8300000, guid: 000e8fc4d47011c44bc72c8defaa0ef4, type: 3}
 --- !u!4 &1176230644 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: b6850ddfbb71bac42adc4da0872aaad2, type: 3}
