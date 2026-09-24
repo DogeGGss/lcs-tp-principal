@@ -115,3 +115,11 @@ fecha_utc,us_numero,us_titulo,estado_anterior,estado_nuevo,tiempo_en_estado_ante
 2026-09-24T18:30:55.317716+00:00,113,US 012. Ataque cuerpo a cuerpo,Blocked,LPR,1d 59m,89975,https://github.com/DogeGGss/lcs-tp-principal/issues/113
 2026-09-24T18:30:55.317716+00:00,174,US 124. Integrar animación - Caminar,In Progress,LPR,13h 56m,50209,https://github.com/DogeGGss/lcs-tp-principal/issues/174
 2026-09-24T18:30:55.317716+00:00,173,US 123. Integrar animación - Reposo,In Progress,LPR,13h 56m,50209,https://github.com/DogeGGss/lcs-tp-principal/issues/173
+2026-09-24T21:44:39.095878+00:00,104,US 050. Salir del juego,Blocked,TESTING,1d 22h 20m,166817,https://github.com/DogeGGss/lcs-tp-principal/issues/104
+2026-09-24T21:44:39.095878+00:00,113,US 012. Ataque cuerpo a cuerpo,LPR,TESTING,3h 13m,11623,https://github.com/DogeGGss/lcs-tp-principal/issues/113
+2026-09-24T21:44:39.095878+00:00,41,US 010. Disparar,LPR,TESTING,12h 14m,44067,https://github.com/DogeGGss/lcs-tp-principal/issues/41
+2026-09-24T21:44:39.095878+00:00,114,US 071. ARMA Secundaria 1 - Pistola,LPR,TESTING,12h 14m,44067,https://github.com/DogeGGss/lcs-tp-principal/issues/114
+2026-09-24T21:44:39.095878+00:00,74,US 024.  Gestionar escudo,LPR,TESTING,21h 44m,78293,https://github.com/DogeGGss/lcs-tp-principal/issues/74
+2026-09-24T21:44:39.095878+00:00,100,US 046. Menú principal,In Progress,Done,22h 7m,79640,https://github.com/DogeGGss/lcs-tp-principal/issues/100
+2026-09-24T21:44:39.095878+00:00,119,US 062. ARMA Melee,LPR,Done,21h 44m,78293,https://github.com/DogeGGss/lcs-tp-principal/issues/119
+2026-09-24T21:44:39.095878+00:00,101,US 047.  Seleccionar modo de juego,In Progress,LPR,22h 7m,79640,https://github.com/DogeGGss/lcs-tp-principal/issues/101
