@@ -18,7 +18,7 @@ public class WeaponSwitcher : MonoBehaviour
                 pistolObj.SetActive(true);
             }
 
-            setupInicialListo = true; 
+            setupInicialListo = true;
         }
 
         if (Input.GetKeyDown(KeyCode.Alpha1))
