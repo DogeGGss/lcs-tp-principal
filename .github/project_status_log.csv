@@ -112,3 +112,6 @@ fecha_utc,us_numero,us_titulo,estado_anterior,estado_nuevo,tiempo_en_estado_ante
 2026-09-24T04:34:06.147452+00:00,114,US 071. ARMA Secundaria 1 - Pistola,Blocked,In Progress,11h 2m,39766,https://github.com/DogeGGss/lcs-tp-principal/issues/114
 2026-09-24T09:30:11.676561+00:00,41,US 010. Disparar,Blocked,LPR,1d 10h 5m,122750,https://github.com/DogeGGss/lcs-tp-principal/issues/41
 2026-09-24T09:30:11.676561+00:00,114,US 071. ARMA Secundaria 1 - Pistola,In Progress,LPR,4h 56m,17765,https://github.com/DogeGGss/lcs-tp-principal/issues/114
+2026-09-24T18:30:55.317716+00:00,113,US 012. Ataque cuerpo a cuerpo,Blocked,LPR,1d 59m,89975,https://github.com/DogeGGss/lcs-tp-principal/issues/113
+2026-09-24T18:30:55.317716+00:00,174,US 124. Integrar animación - Caminar,In Progress,LPR,13h 56m,50209,https://github.com/DogeGGss/lcs-tp-principal/issues/174
+2026-09-24T18:30:55.317716+00:00,173,US 123. Integrar animación - Reposo,In Progress,LPR,13h 56m,50209,https://github.com/DogeGGss/lcs-tp-principal/issues/173
