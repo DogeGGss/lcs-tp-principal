@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 
 public class MenuUIController : MonoBehaviour
@@ -10,70 +11,156 @@ public class MenuUIController : MonoBehaviour
     [SerializeField] private GameObject panelDificultad;
     [SerializeField] private GameObject panelLogros;
     [SerializeField] private GameObject panelOpciones;
-    private void Start()
-    {
-        MostrarMenuPrincipal();
-    }
+    [SerializeField] private GameObject panelDeseaSalir;
 
-    public void MostrarMenuPrincipal()
+    [Header("Transición")]
+    [SerializeField] private CanvasGroup overlayTransicion;
+    [SerializeField] private float duracionTransicion = 0.4f;
+[SerializeField] private float duracionEntradaPanel = 0.3f;
+
+    private void Start()
     {
         OcultarTodosLosPaneles();
 
         panelMenuPrincipal.SetActive(true);
+
+        overlayTransicion.alpha = 0f;
+        overlayTransicion.blocksRaycasts = false;
+    }
+
+    public void MostrarMenuPrincipal()
+    {
+        CambiarPanel(panelMenuPrincipal);
     }
 
     public void MostrarSeleccionModo()
     {
-        OcultarTodosLosPaneles();
-
-        panelSeleccionModo.SetActive(true);
+        CambiarPanel(panelSeleccionModo);
     }
 
     public void MostrarSala()
     {
-        OcultarTodosLosPaneles();
-
-        panelSala.SetActive(true);
+        CambiarPanel(panelSala);
     }
 
     public void MostrarZombie()
     {
-        OcultarTodosLosPaneles();
-
-        panelZombie.SetActive(true);
-    }
-
-     public void MostrarDificultad()
-    {
-        OcultarTodosLosPaneles();
-        panelDificultad.SetActive(true);
+        CambiarPanel(panelZombie);
     }
 
     public void MostrarLogros()
-{
-    OcultarTodosLosPaneles();
-    panelLogros.SetActive(true);
-}
-
-public void MostrarOpciones()
-{
-    OcultarTodosLosPaneles();
-    panelOpciones.SetActive(true);
-}
-
-    public void SalirJuego()
     {
-        Application.Quit();
+        CambiarPanel(panelLogros);
     }
 
-    private void OcultarTodosLosPaneles()
+    public void MostrarOpciones()
+    {
+        CambiarPanel(panelOpciones);
+    }
+
+    public void MostrarDificultad()
+    {
+        CambiarPanel(panelDificultad);
+    }
+
+   public void SalirJuego()
 {
-    panelMenuPrincipal.SetActive(false);
-    panelSeleccionModo.SetActive(false);
-    panelSala.SetActive(false);
-    panelZombie.SetActive(false);
-    panelLogros.SetActive(false);
-    panelOpciones.SetActive(false);
-    panelDificultad.SetActive(false);
+    panelDeseaSalir.SetActive(true);
 }
+
+public void CancelarSalida()
+{
+    panelDeseaSalir.SetActive(false);
+}
+
+public void ConfirmarSalida()
+{
+    Application.Quit();
+}
+
+    private void CambiarPanel(GameObject nuevoPanel)
+    {
+        StopAllCoroutines();
+        StartCoroutine(Transicionar(nuevoPanel));
+    }
+
+   private IEnumerator Transicionar(GameObject nuevoPanel)
+{
+    overlayTransicion.blocksRaycasts = true;
+
+    // Oscurecer la pantalla
+    yield return StartCoroutine(Fade(0f, 1f));
+
+    // Cambiar panel
+    OcultarTodosLosPaneles();
+    nuevoPanel.SetActive(true);
+
+    // Buscar el Canvas Group del nuevo panel
+    CanvasGroup canvasGroup = nuevoPanel.GetComponent<CanvasGroup>();
+
+    if (canvasGroup != null)
+    {
+        canvasGroup.alpha = 0f;
+    }
+
+    // Sacar el fade negro
+    yield return StartCoroutine(Fade(1f, 0f));
+
+    // Mostrar suavemente el contenido del panel
+    if (canvasGroup != null)
+    {
+        yield return StartCoroutine(FadePanel(canvasGroup, 0f, 1f));
+    }
+
+    overlayTransicion.blocksRaycasts = false;
+}
+
+    private IEnumerator Fade(float inicio, float fin)
+    {
+        float tiempo = 0f;
+
+        while (tiempo < duracionTransicion)
+        {
+            tiempo += Time.unscaledDeltaTime;
+
+            float porcentaje = tiempo / duracionTransicion;
+
+            overlayTransicion.alpha =
+                Mathf.Lerp(inicio, fin, porcentaje);
+
+            yield return null;
+        }
+
+        overlayTransicion.alpha = fin;
+    }
+
+    private IEnumerator FadePanel(CanvasGroup canvasGroup, float inicio, float fin)
+{
+    float tiempo = 0f;
+
+    while (tiempo < duracionEntradaPanel)
+    {
+        tiempo += Time.unscaledDeltaTime;
+
+        float porcentaje = tiempo / duracionEntradaPanel;
+
+        canvasGroup.alpha =
+            Mathf.Lerp(inicio, fin, porcentaje);
+
+        yield return null;
+    }
+
+    canvasGroup.alpha = fin;
+}
+
+    private void OcultarTodosLosPaneles()
+    {
+        panelMenuPrincipal.SetActive(false);
+        panelSeleccionModo.SetActive(false);
+        panelSala.SetActive(false);
+        panelZombie.SetActive(false);
+        panelDificultad.SetActive(false);
+        panelLogros.SetActive(false);
+        panelOpciones.SetActive(false);
+    }
 }
