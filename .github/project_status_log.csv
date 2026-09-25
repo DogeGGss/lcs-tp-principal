@@ -123,3 +123,8 @@ fecha_utc,us_numero,us_titulo,estado_anterior,estado_nuevo,tiempo_en_estado_ante
 2026-09-24T21:44:39.095878+00:00,100,US 046. Menú principal,In Progress,Done,22h 7m,79640,https://github.com/DogeGGss/lcs-tp-principal/issues/100
 2026-09-24T21:44:39.095878+00:00,119,US 062. ARMA Melee,LPR,Done,21h 44m,78293,https://github.com/DogeGGss/lcs-tp-principal/issues/119
 2026-09-24T21:44:39.095878+00:00,101,US 047.  Seleccionar modo de juego,In Progress,LPR,22h 7m,79640,https://github.com/DogeGGss/lcs-tp-principal/issues/101
+2026-09-25T09:52:07.357148+00:00,51,US 076. Acceder a la tienda,Todo,LPR,2d 10h 27m,210466,https://github.com/DogeGGss/lcs-tp-principal/issues/51
+2026-09-25T09:52:07.357148+00:00,52,US 077. Comprar arma primaria,Blocked,LPR,1d 16h 20m,145248,https://github.com/DogeGGss/lcs-tp-principal/issues/52
+2026-09-25T09:52:07.357148+00:00,53,US 078. Comprar arma secundaria,Blocked,LPR,1d 16h 20m,145248,https://github.com/DogeGGss/lcs-tp-principal/issues/53
+2026-09-25T09:52:07.357148+00:00,54,US 079. Comprar arrojable,Blocked,LPR,1d 16h 20m,145248,https://github.com/DogeGGss/lcs-tp-principal/issues/54
+2026-09-25T09:52:07.357148+00:00,55,US 080. Comprar escudo/blindaje,Blocked,LPR,1d 16h 20m,145248,https://github.com/DogeGGss/lcs-tp-principal/issues/55
