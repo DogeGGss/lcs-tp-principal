@@ -1,0 +1,45 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 69420c1af70e7d147836d2030074e59c, type: 3}
+  m_Name: GranadaFlash
+  m_EditorClassIdentifier: Assembly-CSharp::ShopItem
+  displayName: Granada flash
+  alias: Flash
+  category: 6
+  kind: 2
+  price: 200
+  icon: {fileID: 21300000, guid: e412140b2dc0ec44fa653f18662eeff5, type: 3}
+  tint: {r: 1, g: 0.8901961, b: 0.43137255, a: 1}
+  description: "Mir\xE1ndola de frente a menos de 15 m: 2,5 s de ceguera total + 1 s para recuperar la vista. De costado, la mitad. De espaldas, 0,5 s."
+  fireMode: 
+  fireRate: 0
+  burstCount: 1
+  magazine: 0
+  reserve: 0
+  reloadTime: 0
+  reloadPerShell: 0
+  mobility: 1
+  zoom: 0
+  zoom2: 0
+  pellets: 1
+  penetration: 
+  spread: {x: 0, y: 0}
+  recoil: 
+  bands: []
+  shieldPoints: 0
+  grenadeType: 2
+  maxCarry: 2
+  fuse: 1.5
+  effectRadius: 0
+  effectDuration: 2.5
+  recovery: 1
+  shortEffect: Hasta 2,5 s
