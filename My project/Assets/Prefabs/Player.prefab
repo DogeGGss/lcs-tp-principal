@@ -169,6 +169,8 @@ GameObject:
   - component: {fileID: 3897681997550327690}
   - component: {fileID: 138027801115587550}
   - component: {fileID: 5978433496340832004}
+  - component: {fileID: 5641304745003078278}
+  - component: {fileID: 1784318915484600018}
   m_Layer: 0
   m_Name: Player
   m_TagString: Untagged
@@ -312,8 +314,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::PlayerMovement
   speed: 5
   sprintSpeed: 8
+  crounchSpeed: 2.5
   gravity: -9.8
   jumpForce: 5
+  standingHeight: 2
+  crounchHeight: 1
   speedMultiplier: 1
 --- !u!114 &3897681997550327690
 MonoBehaviour:
@@ -358,6 +363,33 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::HideOwnBody
   ownCamera: {fileID: 4595636921063272802}
+--- !u!114 &5641304745003078278
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1009967349104221202}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2b260a9e6bc694f48918ac5a378e2455, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerWallet
+  startingMoney: 800
+  maxMoney: 9000
+--- !u!114 &1784318915484600018
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1009967349104221202}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b97e99d7b33f3cf41b43e4fe81324a80, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerLoadout
+  catalog: {fileID: 11400000, guid: cb205f39486de804189eec107093d1f8, type: 2}
 --- !u!1 &7060233788922424758
 GameObject:
   m_ObjectHideFlags: 0

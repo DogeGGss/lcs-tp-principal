@@ -1,0 +1,53 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 69420c1af70e7d147836d2030074e59c, type: 3}
+  m_Name: Pistola
+  m_EditorClassIdentifier: Assembly-CSharp::ShopItem
+  displayName: Pistola
+  alias: "L\xEDnea A"
+  category: 0
+  kind: 1
+  price: 0
+  icon: {fileID: 21300000, guid: dfc79cbcede13d7449b3535492aa621e, type: 3}
+  tint: {r: 1, g: 1, b: 1, a: 1}
+  description: "La que ten\xE9s siempre. Gana duelos a la cabeza; al cuerpo no alcanza."
+  fireMode: "Semiautom\xE1tica"
+  fireRate: 6.75
+  burstCount: 1
+  magazine: 20
+  reserve: 60
+  reloadTime: 1.75
+  reloadPerShell: 0
+  mobility: 1
+  zoom: 1.15
+  zoom2: 0
+  pellets: 1
+  penetration: Baja
+  spread: {x: 0.4, y: 2.5}
+  recoil: "Leve y vuelve r\xE1pido: premia tirar de a un tiro."
+  bands:
+  - upTo: 30
+    head: 75
+    body: 25
+    legs: 21
+  - upTo: 0
+    head: 63
+    body: 21
+    legs: 18
+  shieldPoints: 0
+  grenadeType: 0
+  maxCarry: 1
+  fuse: 0
+  effectRadius: 0
+  effectDuration: 0
+  recovery: 0
+  shortEffect: 
