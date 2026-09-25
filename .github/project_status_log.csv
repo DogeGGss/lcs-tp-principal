@@ -128,3 +128,11 @@ fecha_utc,us_numero,us_titulo,estado_anterior,estado_nuevo,tiempo_en_estado_ante
 2026-09-25T09:52:07.357148+00:00,53,US 078. Comprar arma secundaria,Blocked,LPR,1d 16h 20m,145248,https://github.com/DogeGGss/lcs-tp-principal/issues/53
 2026-09-25T09:52:07.357148+00:00,54,US 079. Comprar arrojable,Blocked,LPR,1d 16h 20m,145248,https://github.com/DogeGGss/lcs-tp-principal/issues/54
 2026-09-25T09:52:07.357148+00:00,55,US 080. Comprar escudo/blindaje,Blocked,LPR,1d 16h 20m,145248,https://github.com/DogeGGss/lcs-tp-principal/issues/55
+2026-09-25T19:06:11.563776+00:00,31,US 082. Mapa 1,Todo,In Progress,2d 19h 41m,243710,https://github.com/DogeGGss/lcs-tp-principal/issues/31
+2026-09-25T19:06:11.563776+00:00,47,US 014. Activar habilidad,Todo,LPR,2d 19h 41m,243710,https://github.com/DogeGGss/lcs-tp-principal/issues/47
+2026-09-25T19:06:11.563776+00:00,58,US 054. Mostrar escudo,Blocked,LPR,2d 1h 34m,178492,https://github.com/DogeGGss/lcs-tp-principal/issues/58
+2026-09-25T19:06:11.563776+00:00,67,US 017. Recarga de habilidad,Blocked,LPR,2d 1h 34m,178492,https://github.com/DogeGGss/lcs-tp-principal/issues/67
+2026-09-25T19:06:11.563776+00:00,107,US 056. Mostrar arma equipada y munición,Blocked,LPR,2d 19h 41m,243710,https://github.com/DogeGGss/lcs-tp-principal/issues/107
+2026-09-25T19:06:11.563776+00:00,109,US 058. Actualizar información del HUD,Todo,LPR,2d 19h 41m,243710,https://github.com/DogeGGss/lcs-tp-principal/issues/109
+2026-09-25T19:06:11.563776+00:00,175,US 125. Integrar animación - Saltar,Todo,In Progress,1d 14h 32m,138725,https://github.com/DogeGGss/lcs-tp-principal/issues/175
+2026-09-25T19:06:11.563776+00:00,178,US 127. Integrar animacón - Correr,Todo,In Progress,1d 14h 32m,138725,https://github.com/DogeGGss/lcs-tp-principal/issues/178
