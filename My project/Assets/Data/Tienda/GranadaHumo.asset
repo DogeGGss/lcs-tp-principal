@@ -1,0 +1,45 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 69420c1af70e7d147836d2030074e59c, type: 3}
+  m_Name: GranadaHumo
+  m_EditorClassIdentifier: Assembly-CSharp::ShopItem
+  displayName: Granada de humo
+  alias: Humo
+  category: 6
+  kind: 2
+  price: 200
+  icon: {fileID: 21300000, guid: e412140b2dc0ec44fa653f18662eeff5, type: 3}
+  tint: {r: 0.72156864, g: 0.7529412, b: 0.8, a: 1}
+  description: "Nube de 4 m de radio durante 15 s. Bloquea la visi\xF3n desde adentro y desde afuera."
+  fireMode: 
+  fireRate: 0
+  burstCount: 1
+  magazine: 0
+  reserve: 0
+  reloadTime: 0
+  reloadPerShell: 0
+  mobility: 1
+  zoom: 0
+  zoom2: 0
+  pellets: 1
+  penetration: 
+  spread: {x: 0, y: 0}
+  recoil: 
+  bands: []
+  shieldPoints: 0
+  grenadeType: 1
+  maxCarry: 1
+  fuse: 1
+  effectRadius: 4
+  effectDuration: 15
+  recovery: 0
+  shortEffect: "15 s \xB7 4 m"

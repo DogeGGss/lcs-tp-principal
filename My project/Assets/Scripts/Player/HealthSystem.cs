@@ -8,6 +8,8 @@ public class HealthSystem : MonoBehaviour
     public int maxShield = 100;
     public int currentShield;
 
+    public event System.Action Died;
+
     void Start()
     {
         currentHealth = maxHealth;
@@ -31,6 +33,12 @@ public class HealthSystem : MonoBehaviour
             currentShield = maxShield;
         }
         Debug.Log("Escudo adquirido. Escudo actual: " + currentShield);
+    }
+
+    // Deja el escudo en un valor exacto (la tienda lo usa al comprar, vender o deshacer).
+    public void SetShield(int value)
+    {
+        currentShield = Mathf.Clamp(value, 0, maxShield);
     }
 
     public void TakeDamage(int damageAmount)
@@ -68,6 +76,7 @@ public class HealthSystem : MonoBehaviour
     private void Die()
     {
         Debug.Log("El personaje ha muerto (0 HP).");
+        Died?.Invoke();
         PlayerMovement movement = GetComponent<PlayerMovement>();
         if (movement != null)
         {
