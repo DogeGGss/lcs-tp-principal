@@ -1,0 +1,28 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9f7379ccf0d7f504fbe210a810c62265, type: 3}
+  m_Name: CatalogoTactico
+  m_EditorClassIdentifier: Assembly-CSharp::ShopCatalog
+  starterSecondary: {fileID: 11400000, guid: 95861088920ab274195c1326c186151b, type: 2}
+  items:
+  - {fileID: 11400000, guid: 95861088920ab274195c1326c186151b, type: 2}
+  - {fileID: 11400000, guid: 1e067a3ef288a4845b41782c9d23297a, type: 2}
+  - {fileID: 11400000, guid: 8cffe2100fe0a76428f3e010e4fcbef2, type: 2}
+  - {fileID: 11400000, guid: 5a54fb3f33144914396aeeac348c654c, type: 2}
+  - {fileID: 11400000, guid: 661bd23f363e7eb42982d0f9f5eb0e03, type: 2}
+  - {fileID: 11400000, guid: d63f89b537d3fb34585906ec5837827f, type: 2}
+  - {fileID: 11400000, guid: ece4f00f9e2e1b64085266631f262fd1, type: 2}
+  - {fileID: 11400000, guid: 6722a646ae283b64698f37c20112ed2a, type: 2}
+  - {fileID: 11400000, guid: f940b8d306ca1df47b27b0c3684284e9, type: 2}
+  - {fileID: 11400000, guid: 1b75a379bdb4c5e4b8f359da5b1be358, type: 2}
+  - {fileID: 11400000, guid: bdd10738588563143a08ad17f9ca252f, type: 2}
+  - {fileID: 11400000, guid: fe78be20377399f4489bf05b7ea937c9, type: 2}
