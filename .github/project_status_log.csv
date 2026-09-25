@@ -77,3 +77,12 @@ fecha_utc,us_numero,us_titulo,estado_anterior,estado_nuevo,tiempo_en_estado_ante
 2026-09-23T17:31:19.317741+00:00,143,US 111. Agregar sonido - Mapa 3,Todo,Blocked,3h 6m,11190,https://github.com/DogeGGss/lcs-tp-principal/issues/143
 2026-09-23T17:31:19.317741+00:00,144,US 110. Agregar sonido - Mapa 2,Todo,Blocked,3h 6m,11190,https://github.com/DogeGGss/lcs-tp-principal/issues/144
 2026-09-23T18:30:59.355703+00:00,74,US 024.  Gestionar escudo,Blocked,In Progress,59m,3580,https://github.com/DogeGGss/lcs-tp-principal/issues/74
+2026-09-23T21:43:18.249968+00:00,33,US 001. Caminar,TESTING,R2D,4h 11m,15118,https://github.com/DogeGGss/lcs-tp-principal/issues/33
+2026-09-23T21:43:18.249968+00:00,35,US 002. Correr,LPR,R2D,12h 8m,43726,https://github.com/DogeGGss/lcs-tp-principal/issues/35
+2026-09-23T21:43:18.249968+00:00,40,US 005. Cámara,LPR,R2D,22h 18m,80337,https://github.com/DogeGGss/lcs-tp-principal/issues/40
+2026-09-23T21:43:18.249968+00:00,36,US 003. Saltar,LPR,R2D,22h 18m,80337,https://github.com/DogeGGss/lcs-tp-principal/issues/36
+2026-09-23T21:43:18.249968+00:00,59,US 007. Gravedad,LPR,R2D,22h 18m,80337,https://github.com/DogeGGss/lcs-tp-principal/issues/59
+2026-09-23T21:43:18.249968+00:00,57,US 053. Mostrar vida,LPR,R2D,12h 8m,43726,https://github.com/DogeGGss/lcs-tp-principal/issues/57
+2026-09-23T21:43:18.249968+00:00,73,US 023. Gestionar vida,LPR,R2D,17h,61226,https://github.com/DogeGGss/lcs-tp-principal/issues/73
+2026-09-23T21:43:18.249968+00:00,60,US 008. Colisiones con el escenario,LPR,R2D,22h 18m,80337,https://github.com/DogeGGss/lcs-tp-principal/issues/60
+2026-09-23T21:43:18.249968+00:00,74,US 024.  Gestionar escudo,In Progress,LPR,3h 12m,11538,https://github.com/DogeGGss/lcs-tp-principal/issues/74

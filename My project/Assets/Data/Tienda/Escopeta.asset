@@ -1,0 +1,57 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 69420c1af70e7d147836d2030074e59c, type: 3}
+  m_Name: Escopeta
+  m_EditorClassIdentifier: Assembly-CSharp::ShopItem
+  displayName: Escopeta
+  alias: Roca
+  category: 2
+  kind: 0
+  price: 900
+  icon: {fileID: 21300000, guid: d610cd8312cf46a47a2095143c71ae48, type: 3}
+  tint: {r: 1, g: 1, b: 1, a: 1}
+  description: A menos de 8 m mata de un tiro si el rival no tiene escudo o tiene el liviano.
+  fireMode: Bombeo (12 perdigones)
+  fireRate: 1
+  burstCount: 1
+  magazine: 7
+  reserve: 21
+  reloadTime: 0.5
+  reloadPerShell: 1
+  mobility: 0.95
+  zoom: 0
+  zoom2: 0
+  pellets: 12
+  penetration: Baja
+  spread: {x: 4.5, y: 4.5}
+  recoil: "Un golpe por disparo; el cono de 4,5\xB0 no cambia al moverse."
+  bands:
+  - upTo: 8
+    head: 24
+    body: 12
+    legs: 10
+  - upTo: 15
+    head: 14
+    body: 7
+    legs: 6
+  - upTo: 0
+    head: 8
+    body: 4
+    legs: 3
+  shieldPoints: 0
+  grenadeType: 0
+  maxCarry: 1
+  fuse: 0
+  effectRadius: 0
+  effectDuration: 0
+  recovery: 0
+  shortEffect: 
