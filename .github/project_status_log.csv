@@ -136,3 +136,6 @@ fecha_utc,us_numero,us_titulo,estado_anterior,estado_nuevo,tiempo_en_estado_ante
 2026-09-25T19:06:11.563776+00:00,109,US 058. Actualizar información del HUD,Todo,LPR,2d 19h 41m,243710,https://github.com/DogeGGss/lcs-tp-principal/issues/109
 2026-09-25T19:06:11.563776+00:00,175,US 125. Integrar animación - Saltar,Todo,In Progress,1d 14h 32m,138725,https://github.com/DogeGGss/lcs-tp-principal/issues/175
 2026-09-25T19:06:11.563776+00:00,178,US 127. Integrar animacón - Correr,Todo,In Progress,1d 14h 32m,138725,https://github.com/DogeGGss/lcs-tp-principal/issues/178
+2026-09-25T22:16:28.548200+00:00,79,US 031. Formar equipos,Todo,Blocked,2d 22h 52m,255127,https://github.com/DogeGGss/lcs-tp-principal/issues/79
+2026-09-25T22:16:28.548200+00:00,175,US 125. Integrar animación - Saltar,In Progress,LPR,3h 10m,11416,https://github.com/DogeGGss/lcs-tp-principal/issues/175
+2026-09-25T22:16:28.548200+00:00,178,US 127. Integrar animacón - Correr,In Progress,LPR,3h 10m,11416,https://github.com/DogeGGss/lcs-tp-principal/issues/178
