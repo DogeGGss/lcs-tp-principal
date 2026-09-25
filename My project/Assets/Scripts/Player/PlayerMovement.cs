@@ -66,6 +66,8 @@ public class PlayerMovement : MonoBehaviour
         {
             currentSpeed = sprintSpeed;
         }
+        //el arma equipada modifica la velocidad (cuchillo x1,15, US 062)
+        currentSpeed *= speedMultiplier;
 
         verticalVelocity += gravity * Time.deltaTime;
 
