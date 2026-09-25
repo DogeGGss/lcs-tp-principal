@@ -334,7 +334,7 @@ public class ShopUI : MonoBehaviour
         ShopResult result = loadout.Buy(item);
         if (result == ShopResult.Ok)
         {
-            ShowToast(item.price > 0 ? $"{item.displayName} <color=#F29A38>−{Money(item.price)}</color>" : $"Elegiste {item.displayName}");
+            ShowToast(item.price > 0 ? $"{ItemName(item)} <color=#F29A38>−{Money(item.price)}</color>" : $"Elegiste {ItemName(item)}");
             return;
         }
         ShowToast($"<color=#FF5C5C>{ErrorText(result, item)}</color>");
@@ -347,7 +347,7 @@ public class ShopUI : MonoBehaviour
         ShopResult result = loadout.Sell(item);
         if (result == ShopResult.Ok)
         {
-            ShowToast($"Vendiste {item.displayName} <color=#3DDC97>+{Money(item.price)}</color>");
+            ShowToast($"Vendiste {ItemName(item)} <color=#3DDC97>+{Money(item.price)}</color>");
             return;
         }
         ShowToast($"<color=#FF5C5C>{ErrorText(result, item)}</color>");
@@ -359,7 +359,7 @@ public class ShopUI : MonoBehaviour
         switch (result)
         {
             case ShopResult.NotEnoughMoney: return $"Te faltan {Money(loadout.CostOf(item) - loadout.Wallet.Money)}";
-            case ShopResult.AlreadyEquipped: return $"Ya tenés {item.displayName}";
+            case ShopResult.AlreadyEquipped: return $"Ya tenés {ItemName(item)}";
             case ShopResult.MaxReached: return $"Máximo de {item.displayName.ToLowerInvariant()}";
             case ShopResult.ShieldFull: return "Tu escudo ya está lleno";
             case ShopResult.BuyPhaseOver: return "Terminó la fase de compra";
@@ -568,16 +568,17 @@ public class ShopUI : MonoBehaviour
 
         ShopItem item = selected;
         bool cant = IsCant(item);
-        float nameSize = item.displayName.Length > 15 ? 36f : 46f;
+        string title = ItemName(item);
+        float nameSize = title.Length > 15 ? 36f : 46f;
 
         detailPrice.text = item.price <= 0 ? "Gratis" : Money(item.price);
         detailPrice.color = cant ? Bad : Ink;
         float priceWidth = Width(detailPrice, detailPrice.text);
-        detailName.text = item.displayName;
+        detailName.text = title;
         detailName.fontSize = nameSize;
         Place(detailName.rectTransform, Pad, 20f, ContentW - priceWidth - 12f, nameSize);
         detailAlias.gameObject.SetActive(item.IsWeapon);
-        detailAlias.text = item.alias;
+        detailAlias.text = item.displayName;
         detailMeta.text = MetaText(item);
         float headBottom = 20f + nameSize + (item.IsWeapon ? 21f : 0f) + 4f + 19.5f;
         Place(detailMeta.rectTransform, Pad, headBottom - 19.5f, 380f, 19.5f);
@@ -780,8 +781,8 @@ public class ShopUI : MonoBehaviour
         }
         Line(table, 0f, 22f, ContentW);
         List<(string label, int damage)> rows = new List<(string label, int damage)>();
-        if (rifle != null) rows.Add(($"{rifle.displayName} al cuerpo", rifle.ShotDamage(rifle.bands[0], BodyZone.Body)));
-        if (smg != null) rows.Add(($"{smg.displayName} al cuerpo", smg.ShotDamage(smg.bands[0], BodyZone.Body)));
+        if (rifle != null) rows.Add(($"{ItemName(rifle)} al cuerpo", rifle.ShotDamage(rifle.bands[0], BodyZone.Body)));
+        if (smg != null) rows.Add(($"{ItemName(smg)} al cuerpo", smg.ShotDamage(smg.bands[0], BodyZone.Body)));
         if (frag != null && frag.bands != null && frag.bands.Length > 0) rows.Add(("Metralla (centro)", frag.bands[0].body));
         for (int r = 0; r < rows.Count; r++)
         {
@@ -1062,7 +1063,7 @@ public class ShopUI : MonoBehaviour
             icon.preserveAspect = true;
             width += 10f;
         }
-        SlotLabel(cell, 18f + width, item.displayName, Ink);
+        SlotLabel(cell, 18f + width, ItemName(item), Ink);
     }
 
     private void SlotLabel(int cell, float x, string label, Color color)
@@ -1151,11 +1152,14 @@ public class ShopUI : MonoBehaviour
         return low == high ? Money(low, false) : $"{Money(low, false)}+";
     }
 
-    private static string ListName(ShopItem item) => item.IsWeapon || string.IsNullOrEmpty(item.alias) ? item.displayName : item.alias;
+    private static string ListName(ShopItem item) => string.IsNullOrEmpty(item.alias) ? item.displayName : item.alias;
+
+    // Las armas se llaman por su nombre (Mitre, Urquiza), como en Valorant; el tipo (Fusil, Subfusil) queda de dato.
+    private static string ItemName(ShopItem item) => item.IsWeapon && !string.IsNullOrEmpty(item.alias) ? item.alias : item.displayName;
 
     private string ListSubtitle(ShopItem item)
     {
-        if (item.IsWeapon) return $"{item.alias} · {item.fireMode}";
+        if (item.IsWeapon) return $"{item.displayName} · {item.fireMode}";
         if (item.kind == ShopItemKind.Shield) return item.shortEffect;
         return $"{loadout.Count(item)}/{item.maxCarry} · {item.shortEffect}";
     }
