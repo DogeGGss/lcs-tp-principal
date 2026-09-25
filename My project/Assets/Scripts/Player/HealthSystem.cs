@@ -2,10 +2,10 @@ using UnityEngine;
 
 public class HealthSystem : MonoBehaviour
 {
-    public int maxHealth = 200;
+    public int maxHealth = 100;
     public int currentHealth;
 
-    public int maxShield = 100;
+    public int maxShield = 50;
     public int currentShield;
 
     public event System.Action Died;

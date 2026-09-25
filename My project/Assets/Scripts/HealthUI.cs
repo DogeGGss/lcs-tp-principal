@@ -11,7 +11,7 @@ public class HealthUI : MonoBehaviour
     {
         healthText.text = "Vida: " + playerHealth.currentHealth;
 
-        if (playerHealth.currentHealth <= 50)
+        if (playerHealth.currentHealth <= playerHealth.maxHealth / 4)
         {
             healthText.color = Color.red;
         }

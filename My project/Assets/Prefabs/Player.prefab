@@ -171,6 +171,7 @@ GameObject:
   - component: {fileID: 5978433496340832004}
   - component: {fileID: 5641304745003078278}
   - component: {fileID: 1784318915484600018}
+  - component: {fileID: 3037350212329763804}
   m_Layer: 0
   m_Name: Player
   m_TagString: Untagged
@@ -334,9 +335,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7c4d055938a5f794eb99b3ed935d3ff8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::HealthSystem
-  maxHealth: 200
+  maxHealth: 100
   currentHealth: 0
-  maxShield: 100
+  maxShield: 50
   currentShield: 0
 --- !u!114 &138027801115587550
 MonoBehaviour:
@@ -392,6 +393,19 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerLoadout
   catalog: {fileID: 11400000, guid: cb205f39486de804189eec107093d1f8, type: 2}
+--- !u!114 &3037350212329763804
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1009967349104221202}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2f8cdd2b32c1f6642a2f02aade1cd9ee, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerAbility
+  ability: {fileID: 11400000, guid: c4bdc8ecaf38a3c499e064d472fb97a3, type: 2}
 --- !u!1 &7060233788922424758
 GameObject:
   m_ObjectHideFlags: 0
