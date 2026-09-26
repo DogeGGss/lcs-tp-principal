@@ -12,6 +12,7 @@ public class MenuUIController : MonoBehaviour
     [SerializeField] private GameObject panelLogros;
     [SerializeField] private GameObject panelOpciones;
     [SerializeField] private GameObject panelDeseaSalir;
+    [SerializeField] private GameObject panelCreditos;
 
     [Header("Transición")]
     [SerializeField] private CanvasGroup overlayTransicion;
@@ -61,6 +62,11 @@ public class MenuUIController : MonoBehaviour
     public void MostrarDificultad()
     {
         CambiarPanel(panelDificultad);
+    }
+
+    public void MostrarCreditos()
+    {
+        CambiarPanel(panelCreditos);
     }
 
    public void SalirJuego()
@@ -162,5 +168,6 @@ public void ConfirmarSalida()
         panelDificultad.SetActive(false);
         panelLogros.SetActive(false);
         panelOpciones.SetActive(false);
+        if (panelCreditos != null) panelCreditos.SetActive(false);
     }
 }
