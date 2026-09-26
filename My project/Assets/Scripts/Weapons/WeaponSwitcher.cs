@@ -9,17 +9,83 @@ public class WeaponSwitcher : MonoBehaviour
 
     private bool setupInicialListo = false;
 
+    // Tienda (US 077): con tienda en la escena el Mitre se saca solo si se compró.
+    private enum Pendiente { Nada, Mitre, Pistola }
+    private PlayerLoadout loadout;
+    private Mitre mitre;
+    private bool hayTienda;
+    private bool teniaMitre;
+    private Pendiente pendiente = Pendiente.Nada;
+
+    void Awake()
+    {
+        loadout = GetComponentInParent<PlayerLoadout>();
+        mitre = mitreObj != null ? mitreObj.GetComponent<Mitre>() : null;
+    }
+
+    void Start()
+    {
+        hayTienda = FindAnyObjectByType<ShopUI>() != null;
+        teniaMitre = TieneMitre();
+        if (loadout != null) loadout.Changed += OnLoadoutChanged;
+    }
+
+    void OnDestroy()
+    {
+        if (loadout != null) loadout.Changed -= OnLoadoutChanged;
+    }
+
+    void OnEnable()
+    {
+        // La tienda apaga este script mientras está abierta: el cambio de arma se hace al cerrarla.
+        if (!setupInicialListo || pendiente == Pendiente.Nada) return;
+        if (pendiente == Pendiente.Mitre) EquipMitre(); else EquipPistol();
+        pendiente = Pendiente.Nada;
+    }
+
+    // Sin tienda en la escena (escenas de prueba de armas) el Mitre está siempre disponible.
+    bool TieneMitre()
+    {
+        if (mitreObj == null) return false;
+        if (!hayTienda || loadout == null) return true;
+        return mitre != null && mitre.shopItem != null && loadout.Primary == mitre.shopItem;
+    }
+
+    void OnLoadoutChanged()
+    {
+        bool tieneMitre = TieneMitre();
+        if (tieneMitre && !teniaMitre)
+        {
+            // Recién comprado: cargador lleno y reserva completa, y se saca al cerrar la tienda (US 077, CA1).
+            if (mitre != null) mitre.Refill();
+            CambiarA(Pendiente.Mitre);
+        }
+        else if (!tieneMitre && teniaMitre)
+        {
+            // Vendido, deshecho o perdido al morir: si estaba en la mano, se vuelve a la pistola.
+            if (pendiente == Pendiente.Mitre) pendiente = Pendiente.Nada;
+            if (mitreObj.activeSelf) CambiarA(Pendiente.Pistola);
+        }
+        teniaMitre = tieneMitre;
+    }
+
+    void CambiarA(Pendiente arma)
+    {
+        if (!enabled) { pendiente = arma; return; }
+        if (arma == Pendiente.Mitre) EquipMitre(); else EquipPistol();
+    }
+
     void Update()
     {
-        // Configuración inicial al arrancar: arranca con el Mitre equipado (o pistola si no está asignado)
+        // Configuración inicial al arrancar: con el Mitre si lo tiene; si no, con la pistola
         if (!setupInicialListo && meleeScript != null && meleeScript.CurrentViewModel != null)
         {
-            EquipMitre();
+            if (TieneMitre()) EquipMitre(); else EquipPistol();
             setupInicialListo = true;
         }
 
-        // Tecla 1: Mitre (Arma principal)
-        if (Input.GetKeyDown(KeyCode.Alpha1))
+        // Tecla 1: Mitre (Arma principal), solo si lo tiene
+        if (Input.GetKeyDown(KeyCode.Alpha1) && TieneMitre())
         {
             EquipMitre();
         }
@@ -47,7 +113,7 @@ public class WeaponSwitcher : MonoBehaviour
         }
 
         // El fusil Mitre reduce la velocidad al 92% (0.92f)
-        ApplySpeedMultiplier(0.92f);
+        ApplySpeedMultiplier(mitre != null ? mitre.speedMultiplier : 0.92f);
     }
 
     void EquipPistol()

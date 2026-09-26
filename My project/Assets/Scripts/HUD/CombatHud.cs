@@ -212,26 +212,24 @@ public class CombatHud : MonoBehaviour
         if (empty) hintText.text = reserve >= 0 ? "R · Recargar" : "Sin balas";
     }
 
-    // El arma en la mano: primero cualquiera que implemente IHudWeapon; si no, la Pistola o el cuchillo de hoy.
+    // El arma en la mano: el arma principal o la secundaria (las dos implementan IHudWeapon); si no, el cuchillo.
     private void ReadWeapon(out string name, out int ammo, out int size, out int reserve, out float reload)
     {
         name = ""; ammo = 0; size = 0; reserve = -1; reload = -1f;
 
-        GameObject pistolObj = switcher != null ? switcher.pistolObj : null;
-        if (pistolObj != null && pistolObj.activeInHierarchy)
+        GameObject held = null;
+        if (switcher != null)
         {
-            IHudWeapon weapon = pistolObj.GetComponentInChildren<IHudWeapon>();
-            if (weapon != null)
-            {
-                name = weapon.HudName; ammo = weapon.Ammo; size = weapon.MagazineSize; reserve = weapon.Reserve; reload = weapon.ReloadProgress;
-                return;
-            }
-            Pistola pistol = pistolObj.GetComponentInChildren<Pistola>();
-            if (pistol != null)
-            {
-                name = SecondaryName(); ammo = pistol.currentAmmo; size = pistol.maxAmmo;
-                return;
-            }
+            if (switcher.mitreObj != null && switcher.mitreObj.activeInHierarchy) held = switcher.mitreObj;
+            else if (switcher.pistolObj != null && switcher.pistolObj.activeInHierarchy) held = switcher.pistolObj;
+        }
+        IHudWeapon weapon = held != null ? held.GetComponentInChildren<IHudWeapon>() : null;
+        if (weapon != null)
+        {
+            // La secundaria se muestra con su nombre de la tienda (Línea A o Línea H).
+            name = held == switcher.pistolObj ? SecondaryName() : weapon.HudName;
+            ammo = weapon.Ammo; size = weapon.MagazineSize; reserve = weapon.Reserve; reload = weapon.ReloadProgress;
+            return;
         }
         if (melee != null && melee.CurrentViewModel != null && melee.CurrentViewModel.activeInHierarchy)
             name = melee.CurrentWeapon != null ? melee.CurrentWeapon.weaponName : "Cuchillo";
