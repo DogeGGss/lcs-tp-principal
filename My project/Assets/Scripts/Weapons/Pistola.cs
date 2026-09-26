@@ -4,7 +4,7 @@ using UnityEngine.Audio;
 
 public class Pistola : MonoBehaviour
 {
-    [Header("Estadísticas de Arma")]
+    [Header("EstadÃ­sticas de Arma")]
     public int damage = 25;
     public int maxAmmo = 20;
     public int currentAmmo;
@@ -21,6 +21,7 @@ public class Pistola : MonoBehaviour
     public AudioMixerGroup sfxGroup;
 
     private AudioSource audioSource;
+    private HealthSystem ownHealth;
     private bool isReloading = false;
 
     void Start()
@@ -31,6 +32,9 @@ public class Pistola : MonoBehaviour
         {
             playerCamera = Camera.main;
         }
+
+        // Vida de quien dispara, para no pegarse a sí mismo
+        ownHealth = GetComponentInParent<HealthSystem>();
 
         audioSource = GetComponent<AudioSource>();
 
@@ -55,7 +59,7 @@ public class Pistola : MonoBehaviour
 
     void Update()
     {
-        // Si está recargando, no procesa disparo ni nueva recarga.
+        // Si estÃ¡ recargando, no procesa disparo ni nueva recarga.
         if (isReloading) return;
 
         // Disparo con clic izquierdo.
@@ -78,14 +82,14 @@ public class Pistola : MonoBehaviour
     {
         if (currentAmmo <= 0)
         {
-            Debug.Log("Cargador vacío (clic). Presiona R para recargar.");
+            Debug.Log("Cargador vacÃ­o (clic). Presiona R para recargar.");
             return;
         }
 
         currentAmmo--;
 
         Debug.Log(
-            "¡PUM! Balas en cargador: " +
+            "Â¡PUM! Balas en cargador: " +
             currentAmmo +
             " | Reserva: " +
             reserveAmmo
@@ -98,17 +102,12 @@ public class Pistola : MonoBehaviour
         }
 
         RaycastHit hit;
-
-        if (Physics.Raycast(
-            playerCamera.transform.position,
-            playerCamera.transform.forward,
-            out hit,
-            100f))
+        // Ignora las zonas invisibles (triggers) como la zona de compra, que frenaban la bala.
+        if (Physics.Raycast(playerCamera.transform.position, playerCamera.transform.forward, out hit, 100f, Physics.DefaultRaycastLayers, QueryTriggerInteraction.Ignore))
         {
-            HealthSystem targetHealth =
-                hit.transform.GetComponent<HealthSystem>();
-
-            if (targetHealth != null)
+            // La vida puede estar en el padre del collider que se tocó (por ejemplo, cabeza o torso).
+            HealthSystem targetHealth = hit.collider.GetComponentInParent<HealthSystem>();
+            if (targetHealth != null && targetHealth != ownHealth)
             {
                 targetHealth.TakeDamage(damage);
             }
@@ -129,7 +128,7 @@ public class Pistola : MonoBehaviour
 
         yield return new WaitForSeconds(reloadTime);
 
-        // Cuántas balas faltan para llenar el cargador.
+        // CuÃ¡ntas balas faltan para llenar el cargador.
         int neededAmmo = maxAmmo - currentAmmo;
 
         // Solo tomamos lo que realmente tenemos en reserva.
