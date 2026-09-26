@@ -161,3 +161,18 @@ fecha_utc,us_numero,us_titulo,estado_anterior,estado_nuevo,tiempo_en_estado_ante
 2026-09-26T00:41:03.244447+00:00,220,US 158. Mostrar puntaje al acertar un pájaro,Todo,Blocked,2h 24m,8674,https://github.com/DogeGGss/lcs-tp-principal/issues/220
 2026-09-26T00:41:03.244447+00:00,221,US 159. Estadísticas del minijuego,Todo,Blocked,2h 24m,8674,https://github.com/DogeGGss/lcs-tp-principal/issues/221
 2026-09-26T00:41:03.244447+00:00,222,US 160. Logros del minijuego,Todo,Blocked,2h 24m,8674,https://github.com/DogeGGss/lcs-tp-principal/issues/222
+2026-09-26T05:31:58.882582+00:00,56,US 006. Reaparición al caer del mapa,In Progress,Done,4h 50m,17455,https://github.com/DogeGGss/lcs-tp-principal/issues/56
+2026-09-26T05:31:58.882582+00:00,42,US 011. Recargar,Blocked,LPR,3d 6h 7m,281257,https://github.com/DogeGGss/lcs-tp-principal/issues/42
+2026-09-26T05:31:58.882582+00:00,188,US 129 - Transiciones entre pantallas,TESTING,R2D,4h 50m,17455,https://github.com/DogeGGss/lcs-tp-principal/issues/188
+2026-09-26T05:31:58.882582+00:00,55,US 080. Comprar escudo/blindaje,TESTING,R2D,4h 50m,17455,https://github.com/DogeGGss/lcs-tp-principal/issues/55
+2026-09-26T05:31:58.882582+00:00,58,US 054. Mostrar escudo,TESTING,R2D,4h 50m,17455,https://github.com/DogeGGss/lcs-tp-principal/issues/58
+2026-09-26T05:31:58.882582+00:00,104,US 050. Salir del juego,TESTING,R2D,1d 7h 47m,114439,https://github.com/DogeGGss/lcs-tp-principal/issues/104
+2026-09-26T05:31:58.882582+00:00,41,US 010. Disparar,TESTING,R2D,1d 7h 47m,114439,https://github.com/DogeGGss/lcs-tp-principal/issues/41
+2026-09-26T05:31:58.882582+00:00,109,US 058. Actualizar información del HUD,TESTING,R2D,4h 50m,17455,https://github.com/DogeGGss/lcs-tp-principal/issues/109
+2026-09-26T05:31:58.882582+00:00,53,US 078. Comprar arma secundaria,TESTING,R2D,4h 50m,17455,https://github.com/DogeGGss/lcs-tp-principal/issues/53
+2026-09-26T05:31:58.882582+00:00,52,US 077. Comprar arma primaria,TESTING,R2D,4h 50m,17455,https://github.com/DogeGGss/lcs-tp-principal/issues/52
+2026-09-26T05:31:58.882582+00:00,54,US 079. Comprar arrojable,TESTING,R2D,4h 50m,17455,https://github.com/DogeGGss/lcs-tp-principal/issues/54
+2026-09-26T05:31:58.882582+00:00,74,US 024.  Gestionar escudo,TESTING,R2D,1d 7h 47m,114439,https://github.com/DogeGGss/lcs-tp-principal/issues/74
+2026-09-26T05:31:58.882582+00:00,51,US 076. Acceder a la tienda,TESTING,R2D,4h 50m,17455,https://github.com/DogeGGss/lcs-tp-principal/issues/51
+2026-09-26T05:31:58.882582+00:00,120,US 085. Créditos,Blocked,LPR,2d 12h,216039,https://github.com/DogeGGss/lcs-tp-principal/issues/120
+2026-09-26T05:31:58.882582+00:00,225,US 161. Seleccionar dificultad (Zombie),Todo,Blocked,4h 50m,17455,https://github.com/DogeGGss/lcs-tp-principal/issues/225
