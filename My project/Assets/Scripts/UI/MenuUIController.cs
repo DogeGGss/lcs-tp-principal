@@ -15,6 +15,7 @@ public class MenuUIController : MonoBehaviour
     [SerializeField] private GameObject panelGraficos;
 [SerializeField] private GameObject panelControles;
 [SerializeField] private GameObject panelSonido;
+    [SerializeField] private GameObject panelCreditos;
 
     [Header("Transición")]
     [SerializeField] private CanvasGroup overlayTransicion;
@@ -88,6 +89,11 @@ public void MostrarSonido()
     panelControles.SetActive(false);
     panelSonido.SetActive(true);
 }
+
+    public void MostrarCreditos()
+    {
+        CambiarPanel(panelCreditos);
+    }
 
    public void SalirJuego()
 {
@@ -190,5 +196,6 @@ public void ConfirmarSalida()
          panelGraficos.SetActive(false);
     panelControles.SetActive(false);
     panelSonido.SetActive(false);
+        if (panelCreditos != null) panelCreditos.SetActive(false);
     }
 }
