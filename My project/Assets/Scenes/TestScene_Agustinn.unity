@@ -548,6 +548,49 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 576767494}
   m_CullTransparentMesh: 1
+--- !u!1 &621259413 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 919132149155446097, guid: 4c49d86a5fb668643bcfee4d23606c30, type: 3}
+  m_PrefabInstance: {fileID: 1554826794}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &621259414
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 621259413}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 03c853fb2f3c6ad44ab2b0a35367ebd4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Mitre
+  weaponName: Mitre
+  debugVisualRecoil: 1
+  headDamage: 160
+  bodyDamage: 40
+  legsDamage: 34
+  maxRange: 300
+  maxAmmo: 30
+  currentAmmo: 0
+  reserveAmmo: 60
+  reloadTime: 2.5
+  fireRate: 9.75
+  equipTime: 1
+  speedMultiplier: 0.92
+  cameraTransform: {fileID: 0}
+  verticalRecoil: 1.2
+  horizontalRecoil: 0.8
+  recoilRecoverySpeed: 6
+  zoomFactor: 1.25
+  playerCamera: {fileID: 0}
+  shootSound: {fileID: 0}
+  reloadSound: {fileID: 0}
+--- !u!4 &621259417 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 4c49d86a5fb668643bcfee4d23606c30, type: 3}
+  m_PrefabInstance: {fileID: 1554826794}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &701351785
 GameObject:
   m_ObjectHideFlags: 0
@@ -696,6 +739,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6f0558217c2e39643ba7430723a5fe69, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::WeaponSwitcher
+  mitreObj: {fileID: 621259413}
   pistolObj: {fileID: 1176230642}
   meleeScript: {fileID: 1279581409}
 --- !u!1 &880219570
@@ -1640,6 +1684,78 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1507335677}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!1001 &1554826794
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 785197091}
+    m_Modifications:
+    - target: {fileID: -8679921383154817045, guid: 4c49d86a5fb668643bcfee4d23606c30, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 60
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 4c49d86a5fb668643bcfee4d23606c30, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 60
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 4c49d86a5fb668643bcfee4d23606c30, type: 3}
+      propertyPath: m_LocalScale.z
+      value: 60
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 4c49d86a5fb668643bcfee4d23606c30, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0.3
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 4c49d86a5fb668643bcfee4d23606c30, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: -0.2
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 4c49d86a5fb668643bcfee4d23606c30, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 4c49d86a5fb668643bcfee4d23606c30, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 0.43833002
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 4c49d86a5fb668643bcfee4d23606c30, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0.43833014
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 4c49d86a5fb668643bcfee4d23606c30, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0.55485743
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 4c49d86a5fb668643bcfee4d23606c30, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0.55485743
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 4c49d86a5fb668643bcfee4d23606c30, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: -90
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 4c49d86a5fb668643bcfee4d23606c30, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 4c49d86a5fb668643bcfee4d23606c30, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 103.383
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 4c49d86a5fb668643bcfee4d23606c30, type: 3}
+      propertyPath: m_Name
+      value: Mitre1
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 4c49d86a5fb668643bcfee4d23606c30, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 621259414}
+  m_SourcePrefab: {fileID: 100100000, guid: 4c49d86a5fb668643bcfee4d23606c30, type: 3}
 --- !u!1 &1591288472
 GameObject:
   m_ObjectHideFlags: 0
@@ -2024,6 +2140,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 851363783184461142, guid: 53d168d46ca1f5842bc362b89b8bd65e, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1176230644}
+    - targetCorrespondingSourceObject: {fileID: 851363783184461142, guid: 53d168d46ca1f5842bc362b89b8bd65e, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 621259417}
     m_AddedComponents:
     - targetCorrespondingSourceObject: {fileID: 1009967349104221202, guid: 53d168d46ca1f5842bc362b89b8bd65e, type: 3}
       insertIndex: -1
