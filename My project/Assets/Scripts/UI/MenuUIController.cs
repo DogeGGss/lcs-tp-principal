@@ -1,3 +1,4 @@
+using UnityEngine.SceneManagement;
 using System.Collections;
 using UnityEngine;
 
@@ -8,10 +9,12 @@ public class MenuUIController : MonoBehaviour
     [SerializeField] private GameObject panelSeleccionModo;
     [SerializeField] private GameObject panelSala;
     [SerializeField] private GameObject panelZombie;
-    [SerializeField] private GameObject panelDificultad;
     [SerializeField] private GameObject panelLogros;
     [SerializeField] private GameObject panelOpciones;
     [SerializeField] private GameObject panelDeseaSalir;
+    [SerializeField] private GameObject panelGraficos;
+[SerializeField] private GameObject panelControles;
+[SerializeField] private GameObject panelSonido;
     [SerializeField] private GameObject panelCreditos;
 
     [Header("Transición")]
@@ -28,6 +31,11 @@ public class MenuUIController : MonoBehaviour
         overlayTransicion.alpha = 0f;
         overlayTransicion.blocksRaycasts = false;
     }
+
+public void IrAlEscenario()
+{
+    SceneManager.LoadScene("TestScene_Agustinn");
+}
 
     public void MostrarMenuPrincipal()
     {
@@ -59,10 +67,28 @@ public class MenuUIController : MonoBehaviour
         CambiarPanel(panelOpciones);
     }
 
-    public void MostrarDificultad()
-    {
-        CambiarPanel(panelDificultad);
-    }
+   
+
+    public void MostrarGraficos()
+{
+    panelGraficos.SetActive(true);
+    panelControles.SetActive(false);
+    panelSonido.SetActive(false);
+}
+
+public void MostrarControles()
+{
+    panelGraficos.SetActive(false);
+    panelControles.SetActive(true);
+    panelSonido.SetActive(false);
+}
+
+public void MostrarSonido()
+{
+    panelGraficos.SetActive(false);
+    panelControles.SetActive(false);
+    panelSonido.SetActive(true);
+}
 
     public void MostrarCreditos()
     {
@@ -165,9 +191,11 @@ public void ConfirmarSalida()
         panelSeleccionModo.SetActive(false);
         panelSala.SetActive(false);
         panelZombie.SetActive(false);
-        panelDificultad.SetActive(false);
         panelLogros.SetActive(false);
         panelOpciones.SetActive(false);
+         panelGraficos.SetActive(false);
+    panelControles.SetActive(false);
+    panelSonido.SetActive(false);
         if (panelCreditos != null) panelCreditos.SetActive(false);
     }
 }
