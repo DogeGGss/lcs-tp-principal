@@ -16,15 +16,6 @@ public class HealthSystem : MonoBehaviour
         currentShield = 0;
     }
 
-    void Update()
-    {
-        // Botón temporal de prueba para sumar escudo en el editor (ELIMINAR MAS ADELANTE ESTA FUNCION)
-        if (Input.GetKeyDown(KeyCode.E))
-        {
-            AddShield(50);
-        }
-    }
-
     public void AddShield(int shieldAmount)
     {
         currentShield += shieldAmount;
