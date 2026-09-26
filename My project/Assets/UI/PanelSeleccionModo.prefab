@@ -69,7 +69,7 @@ MonoBehaviour:
   - {fileID: 8287584468867082849, guid: 010c6e2e78b666e4fb765b37179a1087, type: 3}
   - {fileID: 8287584468867082849, guid: 010c6e2e78b666e4fb765b37179a1087, type: 3}
   - {fileID: 8287584468867082849, guid: 010c6e2e78b666e4fb765b37179a1087, type: 3}
-  zombieScene: 
+  zombieScene: universidadMAPA
   onCreateRoom:
     m_PersistentCalls:
       m_Calls: []
