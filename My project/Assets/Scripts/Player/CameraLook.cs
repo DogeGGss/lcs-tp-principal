@@ -11,16 +11,40 @@ public class CameraLook : MonoBehaviour
     private const string CLAVE_SENSIBILIDAD = "Sensibilidad";
     private const float SENSIBILIDAD_POR_DEFECTO = 1.5f;
 
+    private const string CLAVE_FOV = "FOV";
+    private const float FOV_POR_DEFECTO = 80f;
+
     void Start()
     {
         Cursor.lockState = CursorLockMode.Locked;
+
+        // =========================
+        // SENSIBILIDAD
+        // =========================
 
         mouseSensivility = PlayerPrefs.GetFloat(
             CLAVE_SENSIBILIDAD,
             SENSIBILIDAD_POR_DEFECTO
         );
 
+        // =========================
+        // CAMPO DE VISIÓN
+        // =========================
+
+        float fovGuardado = PlayerPrefs.GetFloat(
+            CLAVE_FOV,
+            FOV_POR_DEFECTO
+        );
+
+        Camera camara = GetComponent<Camera>();
+
+        if (camara != null)
+        {
+            camara.fieldOfView = fovGuardado;
+        }
+
         Debug.Log("Sensibilidad cargada: " + mouseSensivility);
+        Debug.Log("FOV cargado: " + fovGuardado);
     }
 
     void Update()
