@@ -579,7 +579,7 @@ public class ModeSelectScreen : MonoBehaviour
         RectTransform titleRect = Place(Node("Titulo", top), 64f, 50f, 700f, 90f);
         titleGroup = titleRect.gameObject.AddComponent<CanvasGroup>();
         titleGroup.blocksRaycasts = false;
-        Text(Place(Node("Juego", titleRect), 0f, 0f, 700f, 22f), labelFont, 20f, White(0.6f), TextAlignmentOptions.MidlineLeft, 30f, true).text = "Último Tren a Retiro";
+        Text(Place(Node("Juego", titleRect), 0f, 0f, 700f, 22f), labelFont, 20f, White(0.6f), TextAlignmentOptions.MidlineLeft, 30f, true).text = "Shooter Legends";
         Text(Place(Node("Pantalla", titleRect), 0f, 26f, 700f, 60f), displayFont, 54f, Ink, TextAlignmentOptions.MidlineLeft, 2f, true).text = "Elegí el modo";
 
         // Esc: vuelve a los modos o al menú principal.

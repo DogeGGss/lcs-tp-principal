@@ -1,0 +1,108 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &3510006640910348605
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 8513593654248233541}
+  - component: {fileID: 5992322838441161310}
+  - component: {fileID: 3476484619042369127}
+  m_Layer: 5
+  m_Name: PanelCreditos
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 0
+--- !u!224 &8513593654248233541
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3510006640910348605}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 1, y: 1}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!225 &5992322838441161310
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3510006640910348605}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 0
+--- !u!114 &3476484619042369127
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3510006640910348605}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ed153a319f79e8d46905c4b4f00851b0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CreditsScreen
+  displayFont: {fileID: 11400000, guid: b9f1e6144e6ac6e4cac04c8f1f10c124, type: 2}
+  labelFont: {fileID: 11400000, guid: 9b9a6f40fbb77d9438231718ca552cff, type: 2}
+  bodyFont: {fileID: 11400000, guid: da80f3450d2b26647ad3adaa8d40e4d8, type: 2}
+  monoFont: {fileID: 11400000, guid: 555ba6ce9e109034db7a07f4c499191d, type: 2}
+  rounded: {fileID: 21300000, guid: 36fbc4a86e80cfb4e9b19d894b1e5197, type: 3}
+  gameTitle: Shooter Legends
+  prologue: "Hace no tanto tiempo, en una universidad\nmuy, muy cercana\u2026"
+  lede: "Un shooter t\xE1ctico, un deathmatch y una horda de zombis en la universidad. Hecho por siete estudiantes en diez semanas, con m\xE1s caf\xE9 que horas de sue\xF1o."
+  team:
+  - role: Scrum Master
+    names: Ulises Fonseca
+  - role: "Desarrollo y mec\xE1nicas"
+    names: "Nicol\xE1s Gauna\nFranco Barreto\nNahuel Vel\xE1zquez\nUlises Fonseca"
+  - role: "Arte 2D/3D y dise\xF1o de niveles"
+    names: "Ulises Fonseca\nNahuel Vel\xE1zquez"
+  - role: Interfaz (UI/UX)
+    names: "Lucas Huber\nNicol\xE1s Gauna\nLuka G\xF3mez"
+  - role: "Sonido y m\xFAsica"
+    names: David Ramos
+  - role: Testing y QA
+    names: 'Lucas Huber
+
+      David Ramos'
+  - role: "Documentaci\xF3n y backlog"
+    names: "Luka G\xF3mez\nFranco Barreto"
+  - role: Repositorio y Git
+    names: Ulises Fonseca
+  tools: "Unity 6 \xB7 Universal Render Pipeline\nProBuilder \xB7 TextMesh Pro \xB7 Input System \xB7 AI Navigation\nPhoton PUN 2 (multijugador)\nGitHub y GitHub Projects"
+  assets:
+  - item: Personaje y animaciones
+    source: Mixamo, de Adobe
+  - item: Escenario sci-fi
+    source: 3D Scifi Kit Starter Kit, de Creepy Cat (Unity Asset Store)
+  - item: Cuchillo
+    source: Sci-fi Weapon - Game Ready Knife - FREE SAMPLE, de AF Creations (Unity Asset Store)
+  - item: Texturas
+    source: Cartoon Texture Pack
+  fonts:
+  - item: Barlow
+    source: "Jeremy Tribby \xB7 SIL Open Font License 1.1"
+  - item: JetBrains Mono
+    source: "JetBrains \xB7 SIL Open Font License 1.1"
+  assignment: "Trabajo pr\xE1ctico \"\xDAltimo Tren a Retiro\"\nLaboratorio de Construcci\xF3n de Software\nTecnicatura Universitaria en Inform\xE1tica"
+  thanks: "A la c\xE1tedra, a los que probaron las builds rotas\ny a vos, por jugar."
+  ending: Gracias por jugar
