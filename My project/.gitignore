@@ -61,3 +61,7 @@ crashlytics-build.properties
 
 # Pack de texturas completo (512MB) - solo versionamos las texturas puntuales que usamos
 /Assets/Cartoon_Texture_Pack/
+
+# Backups automaticos que Unity crea cuando el editor se cuelga
+/[Aa]ssets/_Recovery/
+/[Aa]ssets/_Recovery.meta
