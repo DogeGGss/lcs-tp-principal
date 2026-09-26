@@ -107,7 +107,12 @@ public void CancelarSalida()
 
 public void ConfirmarSalida()
 {
+#if UNITY_EDITOR
+    // En el editor Application.Quit no hace nada: se corta el Play para que se note que salió.
+    UnityEditor.EditorApplication.isPlaying = false;
+#else
     Application.Quit();
+#endif
 }
 
     private void CambiarPanel(GameObject nuevoPanel)

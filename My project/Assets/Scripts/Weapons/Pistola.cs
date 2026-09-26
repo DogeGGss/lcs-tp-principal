@@ -16,6 +16,7 @@ public class Pistola : MonoBehaviour
     public AudioClip reloadSound;
 
     private AudioSource audioSource;
+    private HealthSystem ownHealth;
     private bool isReloading = false;
 
     void Start()
@@ -26,6 +27,9 @@ public class Pistola : MonoBehaviour
         {
             playerCamera = Camera.main;
         }
+
+        // Vida de quien dispara, para no pegarse a sí mismo
+        ownHealth = GetComponentInParent<HealthSystem>();
 
         audioSource = GetComponent<AudioSource>();
         if (audioSource == null)
@@ -78,10 +82,12 @@ public class Pistola : MonoBehaviour
         }
 
         RaycastHit hit;
-        if (Physics.Raycast(playerCamera.transform.position, playerCamera.transform.forward, out hit, 100f))
+        // Ignora las zonas invisibles (triggers) como la zona de compra, que frenaban la bala.
+        if (Physics.Raycast(playerCamera.transform.position, playerCamera.transform.forward, out hit, 100f, Physics.DefaultRaycastLayers, QueryTriggerInteraction.Ignore))
         {
-            HealthSystem targetHealth = hit.transform.GetComponent<HealthSystem>();
-            if (targetHealth != null)
+            // La vida puede estar en el padre del collider que se tocó (por ejemplo, cabeza o torso).
+            HealthSystem targetHealth = hit.collider.GetComponentInParent<HealthSystem>();
+            if (targetHealth != null && targetHealth != ownHealth)
             {
                 targetHealth.TakeDamage(damage);
             }
