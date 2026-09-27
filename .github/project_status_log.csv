@@ -228,3 +228,25 @@ fecha_utc,us_numero,us_titulo,estado_anterior,estado_nuevo,tiempo_en_estado_ante
 2026-09-27T20:24:56.107216+00:00,140,US 114. Agregar sonido - Cambio de equipamiento,In Progress,LPR,2h 44m,9869,https://github.com/DogeGGss/lcs-tp-principal/issues/140
 2026-09-27T20:24:56.107216+00:00,147,US 091. Agregar sonido - Pistola,In Progress,LPR,2h 44m,9869,https://github.com/DogeGGss/lcs-tp-principal/issues/147
 2026-09-27T20:24:56.107216+00:00,152,US 086. Agregar sonido - Fusil,In Progress,LPR,2h 44m,9869,https://github.com/DogeGGss/lcs-tp-principal/issues/152
+2026-09-27T23:16:28.402230+00:00,178,US 127. Integrar animacón - Correr,LPR,TESTING,21h 32m,77569,https://github.com/DogeGGss/lcs-tp-principal/issues/178
+2026-09-27T23:16:28.402230+00:00,106,US 052. Reiniciar partida,LPR,TESTING,16h 8m,58101,https://github.com/DogeGGss/lcs-tp-principal/issues/106
+2026-09-27T23:16:28.402230+00:00,101,US 047. Seleccionar modo de juego,LPR,Done,1d 2h 16m,94591,https://github.com/DogeGGss/lcs-tp-principal/issues/101
+2026-09-27T23:16:28.402230+00:00,107,US 056. Mostrar arma equipada y munición,TESTING,Done,1d 22h 35m,167725,https://github.com/DogeGGss/lcs-tp-principal/issues/107
+2026-09-27T23:16:28.402230+00:00,231,US 165. Zonas de impacto y marcador de impacto,TESTING,Done,16h 8m,58101,https://github.com/DogeGGss/lcs-tp-principal/issues/231
+2026-09-27T23:16:28.402230+00:00,120,US 085. Créditos,R2D,Done,5h 36m,20161,https://github.com/DogeGGss/lcs-tp-principal/issues/120
+2026-09-27T23:16:28.402230+00:00,244,US 167. Dispersión de las armas,TESTING,Done,5h 36m,20161,https://github.com/DogeGGss/lcs-tp-principal/issues/244
+2026-09-27T23:16:28.402230+00:00,245,US 168. Retroceso visible,TESTING,Done,16h 8m,58101,https://github.com/DogeGGss/lcs-tp-principal/issues/245
+2026-09-27T23:16:28.402230+00:00,146,US 112. Agregar sonido - Menú principal,R2D,Done,5h 36m,20161,https://github.com/DogeGGss/lcs-tp-principal/issues/146
+2026-09-27T23:16:28.402230+00:00,252,US 171. Mira del arma,TESTING,Done,5h 36m,20161,https://github.com/DogeGGss/lcs-tp-principal/issues/252
+2026-09-27T23:16:28.402230+00:00,141,US 117. Agregar sonido - Tienda,R2D,Done,2h 51m,10292,https://github.com/DogeGGss/lcs-tp-principal/issues/141
+2026-09-27T23:16:28.402230+00:00,103,US 049. Salir de partida,R2D,Done,2h 51m,10292,https://github.com/DogeGGss/lcs-tp-principal/issues/103
+2026-09-27T23:16:28.402230+00:00,174,US 124. Integrar animación - Caminar,R2D,Done,16h 8m,58101,https://github.com/DogeGGss/lcs-tp-principal/issues/174
+2026-09-27T23:16:28.402230+00:00,173,US 123. Integrar animación - Reposo,R2D,Done,16h 8m,58101,https://github.com/DogeGGss/lcs-tp-principal/issues/173
+2026-09-27T23:16:28.402230+00:00,105,US 051. Menu de pausa,LPR,Done,21h 32m,77569,https://github.com/DogeGGss/lcs-tp-principal/issues/105
+2026-09-27T23:16:28.402230+00:00,42,US 011. Recargar,TESTING,Done,21h 32m,77569,https://github.com/DogeGGss/lcs-tp-principal/issues/42
+2026-09-27T23:16:28.402230+00:00,102,US 048. Configurar opciones,LPR,R2D,23h 45m,85532,https://github.com/DogeGGss/lcs-tp-principal/issues/102
+2026-09-27T23:16:28.402230+00:00,43,US 063. Espacios del inventario,Todo,LPR,4d 23h 52m,431527,https://github.com/DogeGGss/lcs-tp-principal/issues/43
+2026-09-27T23:16:28.402230+00:00,63,US 065. Asignación de equipamientos,Blocked,LPR,4d 5h 45m,366309,https://github.com/DogeGGss/lcs-tp-principal/issues/63
+2026-09-27T23:16:28.402230+00:00,45,US 064. Cambio entre equipamientos,Blocked,LPR,4d 5h 45m,366309,https://github.com/DogeGGss/lcs-tp-principal/issues/45
+2026-09-27T23:16:28.402230+00:00,230,US 164. Elegir nombre de jugador,LPR,R2D,21h 32m,77569,https://github.com/DogeGGss/lcs-tp-principal/issues/230
+2026-09-27T23:16:28.402230+00:00,247,US 170. Marcas de impacto en el escenario,TESTING,R2D,16h 8m,58101,https://github.com/DogeGGss/lcs-tp-principal/issues/247
