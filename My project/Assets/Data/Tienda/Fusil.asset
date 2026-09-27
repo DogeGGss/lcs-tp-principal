@@ -33,6 +33,8 @@ MonoBehaviour:
   pellets: 1
   penetration: Media
   spread: {x: 0.25, y: 5}
+  spamSpread: 0
+  spamSpreadMax: 0
   recoil: "Primer tiro perfecto; sube fuerte desde la tercera bala y despu\xE9s zigzaguea."
   bands:
   - upTo: 0
@@ -45,6 +47,7 @@ MonoBehaviour:
   recoilSway: 1.5
   recoilSwayShots: 4
   recoilRecovery: 0.3
+  recoilPunch: 0.4
   shieldPoints: 0
   grenadeType: 0
   maxCarry: 1

@@ -47,6 +47,10 @@ public class ShopItem : ScriptableObject
     public string penetration;
     [Tooltip("Dispersión en grados: x = quieto, y = en movimiento.")]
     public Vector2 spread;
+    [Tooltip("Dispersión extra por cada tiro seguido, en grados (0 = no cambia). El primer tiro sale sin extra y se va al dejar de disparar, con la recuperación del retroceso.")]
+    public float spamSpread;
+    [Tooltip("Tope de la dispersión extra por tirar seguido, en grados (0 = sin tope).")]
+    public float spamSpreadMax;
     [TextArea] public string recoil;
     public DamageBand[] bands;
 
@@ -63,6 +67,8 @@ public class ShopItem : ScriptableObject
     public int recoilSwayShots = 4;
     [Tooltip("Segundos que tarda la mira en volver al punto de partida al dejar de disparar.")]
     public float recoilRecovery = 0.3f;
+    [Tooltip("Sacudón de la mira en cada tiro, en grados: sube y vuelve enseguida, además del patrón (0 = sin sacudón).")]
+    public float recoilPunch;
 
     [Header("Escudo")]
     public int shieldPoints;
