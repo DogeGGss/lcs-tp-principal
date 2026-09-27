@@ -360,8 +360,8 @@
     "since": "2026-09-26T20:59:56.607883+00:00"
   },
   "PVTI_lAHOCikQ8M4Bj9Nyzg7sPUE": {
-    "status": "In Progress",
-    "since": "2026-09-27T01:43:38.922248+00:00"
+    "status": "LPR",
+    "since": "2026-09-27T07:08:06.943047+00:00"
   },
   "PVTI_lAHOCikQ8M4Bj9Nyzg7sQlY": {
     "status": "TESTING",
@@ -472,8 +472,8 @@
     "since": "2026-09-23T17:31:19.317741+00:00"
   },
   "PVTI_lAHOCikQ8M4Bj9Nyzg8WFVA": {
-    "status": "Blocked",
-    "since": "2026-09-23T17:31:19.317741+00:00"
+    "status": "LPR",
+    "since": "2026-09-27T07:08:06.943047+00:00"
   },
   "PVTI_lAHOCikQ8M4Bj9Nyzg8WFaM": {
     "status": "Blocked",
@@ -568,16 +568,16 @@
     "since": "2026-09-23T17:31:19.317741+00:00"
   },
   "PVTI_lAHOCikQ8M4Bj9Nyzg8c24o": {
-    "status": "TESTING",
-    "since": "2026-09-26T00:41:03.244447+00:00"
+    "status": "R2D",
+    "since": "2026-09-27T07:08:06.943047+00:00"
   },
   "PVTI_lAHOCikQ8M4Bj9Nyzg8c9V0": {
-    "status": "TESTING",
-    "since": "2026-09-26T00:41:03.244447+00:00"
+    "status": "R2D",
+    "since": "2026-09-27T07:08:06.943047+00:00"
   },
   "PVTI_lAHOCikQ8M4Bj9Nyzg8dGqU": {
-    "status": "LPR",
-    "since": "2026-09-27T01:43:38.922248+00:00"
+    "status": "TESTING",
+    "since": "2026-09-27T07:08:06.943047+00:00"
   },
   "PVTI_lAHOCikQ8M4Bj9Nyzg8d-PM": {
     "status": "Done",
@@ -740,8 +740,8 @@
     "since": "2026-09-27T01:43:38.922248+00:00"
   },
   "PVTI_lAHOCikQ8M4Bj9Nyzg82z8Q": {
-    "status": "LPR",
-    "since": "2026-09-27T01:43:38.922248+00:00"
+    "status": "TESTING",
+    "since": "2026-09-27T07:08:06.943047+00:00"
   },
   "PVTI_lAHOCikQ8M4Bj9Nyzg82z_A": {
     "status": "Blocked",
@@ -752,16 +752,16 @@
     "since": "2026-09-27T01:43:38.922248+00:00"
   },
   "PVTI_lAHOCikQ8M4Bj9Nyzg8-MmU": {
-    "status": "LPR",
-    "since": "2026-09-27T01:43:38.922248+00:00"
+    "status": "TESTING",
+    "since": "2026-09-27T07:08:06.943047+00:00"
   },
   "PVTI_lAHOCikQ8M4Bj9Nyzg8-Mmk": {
     "status": "Todo",
     "since": "2026-09-27T01:43:38.922248+00:00"
   },
   "PVTI_lAHOCikQ8M4Bj9Nyzg8-MnM": {
-    "status": "LPR",
-    "since": "2026-09-27T01:43:38.922248+00:00"
+    "status": "TESTING",
+    "since": "2026-09-27T07:08:06.943047+00:00"
   },
   "PVTI_lAHOCikQ8M4Bj9Nyzg8-b9A": {
     "status": "LPR",

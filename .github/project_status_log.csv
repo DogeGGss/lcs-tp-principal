@@ -205,3 +205,11 @@ fecha_utc,us_numero,us_titulo,estado_anterior,estado_nuevo,tiempo_en_estado_ante
 2026-09-27T01:43:38.922248+00:00,178,US 127. Integrar animacón - Correr,Done,LPR,1d 1h 2m,90155,https://github.com/DogeGGss/lcs-tp-principal/issues/178
 2026-09-27T01:43:38.922248+00:00,230,US 164. Elegir nombre de jugador,Blocked,LPR,20h 11m,72700,https://github.com/DogeGGss/lcs-tp-principal/issues/230
 2026-09-27T01:43:38.922248+00:00,231,US 165. Zonas de impacto y marcador de impacto,Blocked,LPR,20h 11m,72700,https://github.com/DogeGGss/lcs-tp-principal/issues/231
+2026-09-27T07:08:06.943047+00:00,173,US 123. Integrar animación - Reposo,TESTING,R2D,1d 6h 27m,109623,https://github.com/DogeGGss/lcs-tp-principal/issues/173
+2026-09-27T07:08:06.943047+00:00,174,US 124. Integrar animación - Caminar,TESTING,R2D,1d 6h 27m,109623,https://github.com/DogeGGss/lcs-tp-principal/issues/174
+2026-09-27T07:08:06.943047+00:00,106,US 052. Reiniciar partida,In Progress,LPR,5h 24m,19468,https://github.com/DogeGGss/lcs-tp-principal/issues/106
+2026-09-27T07:08:06.943047+00:00,146,US 112. Agregar sonido - Menú principal,Blocked,LPR,3d 13h 36m,308207,https://github.com/DogeGGss/lcs-tp-principal/issues/146
+2026-09-27T07:08:06.943047+00:00,175,US 125. Integrar animación - Saltar,LPR,TESTING,5h 24m,19468,https://github.com/DogeGGss/lcs-tp-principal/issues/175
+2026-09-27T07:08:06.943047+00:00,231,US 165. Zonas de impacto y marcador de impacto,LPR,TESTING,5h 24m,19468,https://github.com/DogeGGss/lcs-tp-principal/issues/231
+2026-09-27T07:08:06.943047+00:00,245,US 168. Retroceso visible,LPR,TESTING,5h 24m,19468,https://github.com/DogeGGss/lcs-tp-principal/issues/245
+2026-09-27T07:08:06.943047+00:00,247,US 170. Marcas de impacto en el escenario,LPR,TESTING,5h 24m,19468,https://github.com/DogeGGss/lcs-tp-principal/issues/247
