@@ -223,3 +223,8 @@ fecha_utc,us_numero,us_titulo,estado_anterior,estado_nuevo,tiempo_en_estado_ante
 2026-09-27T17:40:26.533838+00:00,216,US 155. Opciones de controles,In Progress,LPR,23h 42m,85336,https://github.com/DogeGGss/lcs-tp-principal/issues/216
 2026-09-27T17:40:26.533838+00:00,244,US 167. Dispersión de las armas,LPR,TESTING,15h 56m,57407,https://github.com/DogeGGss/lcs-tp-principal/issues/244
 2026-09-27T17:40:26.533838+00:00,252,US 171. Mira del arma,LPR,TESTING,15h 56m,57407,https://github.com/DogeGGss/lcs-tp-principal/issues/252
+2026-09-27T20:24:56.107216+00:00,103,US 049. Salir de partida,LPR,R2D,18h 41m,67277,https://github.com/DogeGGss/lcs-tp-principal/issues/103
+2026-09-27T20:24:56.107216+00:00,141,US 117. Agregar sonido - Tienda,TESTING,R2D,2h 44m,9869,https://github.com/DogeGGss/lcs-tp-principal/issues/141
+2026-09-27T20:24:56.107216+00:00,140,US 114. Agregar sonido - Cambio de equipamiento,In Progress,LPR,2h 44m,9869,https://github.com/DogeGGss/lcs-tp-principal/issues/140
+2026-09-27T20:24:56.107216+00:00,147,US 091. Agregar sonido - Pistola,In Progress,LPR,2h 44m,9869,https://github.com/DogeGGss/lcs-tp-principal/issues/147
+2026-09-27T20:24:56.107216+00:00,152,US 086. Agregar sonido - Fusil,In Progress,LPR,2h 44m,9869,https://github.com/DogeGGss/lcs-tp-principal/issues/152
