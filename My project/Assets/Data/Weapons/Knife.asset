@@ -19,3 +19,4 @@ MonoBehaviour:
   range: 2
   attackAngle: 60
   moveSpeedMultiplier: 1.15
+  drawSound: {fileID: 8300000, guid: 47f740a95c23e224fb3032a7b8c44bf6, type: 3}

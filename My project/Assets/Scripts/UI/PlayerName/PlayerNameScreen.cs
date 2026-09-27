@@ -107,7 +107,7 @@ public class PlayerNameScreen : MonoBehaviour
         attempted = false;
         IsOpen = true;
 
-        eyebrow.text = firstTime ? "Shooter Legends · Jugador" : "Cambiar nombre";
+        eyebrow.text = firstTime ? "Project Riftwalker · Jugador" : "Cambiar nombre";
         cancelRect.gameObject.SetActive(!firstTime);
         keysText.text = firstTime ? "<color=#F3F4F6>Enter</color>  Aceptar" : "<color=#F3F4F6>Enter</color>  Aceptar     <color=#F3F4F6>Esc</color>  Cancelar";
 

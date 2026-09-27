@@ -66,7 +66,7 @@ MonoBehaviour:
   bodyFont: {fileID: 11400000, guid: da80f3450d2b26647ad3adaa8d40e4d8, type: 2}
   monoFont: {fileID: 11400000, guid: 555ba6ce9e109034db7a07f4c499191d, type: 2}
   rounded: {fileID: 21300000, guid: 36fbc4a86e80cfb4e9b19d894b1e5197, type: 3}
-  gameTitle: Shooter Legends
+  gameTitle: Project Riftwalker
   prologue: "Hace no tanto tiempo, en una universidad\nmuy, muy cercana\u2026"
   lede: "Un shooter t\xE1ctico, un deathmatch y una horda de zombis en la universidad. Hecho por siete estudiantes en diez semanas, con m\xE1s caf\xE9 que horas de sue\xF1o."
   team:

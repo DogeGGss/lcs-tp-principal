@@ -135,7 +135,10 @@ public class WeaponSwitcher : MonoBehaviour
         if (pistolObj != null) pistolObj.SetActive(false);
         if (meleeScript != null && meleeScript.CurrentViewModel != null)
         {
+            // Suena solo si se cambia al cuchillo, no al volver a apretar el 3 con el cuchillo en la mano (US 114).
+            bool yaEnMano = meleeScript.CurrentViewModel.activeSelf;
             meleeScript.CurrentViewModel.SetActive(true);
+            if (!yaEnMano) meleeScript.PlayDrawSound();
         }
 
         // Aplica el multiplicador definido en el cuchillo

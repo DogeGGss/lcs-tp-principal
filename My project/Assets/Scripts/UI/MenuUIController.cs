@@ -17,6 +17,12 @@ public class MenuUIController : MonoBehaviour
 [SerializeField] private GameObject panelSonido;
     [SerializeField] private GameObject panelCreditos;
 
+    [Header("Pruebas")]
+    [Tooltip("Escena que abre el botón PRUEBAS (tiene que estar en Build Settings).")]
+    [SerializeField] private string escenaPruebas = "MapaPruebasV1";
+    [Tooltip("Escena que abre el botón PRUEBAS 2 (tiene que estar en Build Settings).")]
+    [SerializeField] private string escenaPruebas2 = "Example_01 1";
+
     [Header("Transición")]
     [SerializeField] private CanvasGroup overlayTransicion;
     [SerializeField] private float duracionTransicion = 0.4f;
@@ -34,7 +40,12 @@ public class MenuUIController : MonoBehaviour
 
 public void IrAlEscenario()
 {
-    SceneManager.LoadScene("TestScene_Agustinn");
+    SceneManager.LoadScene(escenaPruebas);
+}
+
+public void IrAlEscenario2()
+{
+    SceneManager.LoadScene(escenaPruebas2);
 }
 
     public void MostrarMenuPrincipal()
