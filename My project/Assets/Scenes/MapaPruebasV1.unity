@@ -176,6 +176,37 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: ae01dab2187e4714280d3a96ff8bab32, type: 3}
+--- !u!1 &548176121
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 548176122}
+  m_Layer: 0
+  m_Name: PuntoDeReaparicion
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &548176122
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 548176121}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -0.17, y: 1.42, z: -7.86}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &558447718
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1199,8 +1230,8 @@ MonoBehaviour:
   playerCamera: {fileID: 785197087}
   shopItem: {fileID: 0}
   shootSound: {fileID: 8300000, guid: 000e8fc4d47011c44bc72c8defaa0ef4, type: 3}
-  reloadSound: {fileID: 0}
-  sfxGroup: {fileID: 0}
+  reloadSound: {fileID: 8300000, guid: bf08fc09eb13397498157272c41dfade, type: 3}
+  sfxGroup: {fileID: -490443676671801125, guid: ddda7e32a2420c4489fcc2a1c31e1976, type: 2}
 --- !u!4 &1176230644 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: b6850ddfbb71bac42adc4da0872aaad2, type: 3}
@@ -1829,7 +1860,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 735886c8a59293f4a90009526bb08f6d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerRespawn
-  spawnPoint: {fileID: 0}
+  spawnPoint: {fileID: 548176122}
 --- !u!65 &1989144808
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -2016,3 +2047,4 @@ SceneRoots:
   - {fileID: 1989144811}
   - {fileID: 1114763391}
   - {fileID: 1399521274}
+  - {fileID: 548176122}
