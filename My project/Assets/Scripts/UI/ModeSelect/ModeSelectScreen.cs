@@ -54,7 +54,7 @@ public class ModeSelectScreen : MonoBehaviour
     private static readonly string[] Blurbs =
     {
         "Plantá o desactivá el dispositivo. Sin reaparición.",
-        "Todos contra todos. Reaparecés a los 3 s.",
+        "Todos contra todos. Reaparecés a los 3 s.",
         "Sobreviví a la horda en la universidad."
     };
     private static readonly string[][] Chips =
@@ -955,7 +955,8 @@ public class ModeSelectScreen : MonoBehaviour
     {
         Vector2 size = ((RectTransform)transform).rect.size;
         if (size.x <= 0f || size.y <= 0f) return;
-        root.localScale = Vector3.one * Mathf.Max(size.x / W, size.y / H);
+        // Entra completa en cualquier pantalla: en las que no son 16:9 quedan bandas negras en vez de cortarse los bordes.
+        root.localScale = Vector3.one * Mathf.Min(size.x / W, size.y / H);
     }
 
     private void ComputeTargets()
