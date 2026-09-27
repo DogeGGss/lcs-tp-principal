@@ -14,6 +14,7 @@ using GraphicRaycaster = UnityEngine.UI.GraphicRaycaster;
 using static ShopUIKit;
 
 // Menú de pausa (US 051). Se abre con Esc durante la partida y tiene Reanudar, Configuración y Salir.
+// En las partidas locales (Zombie) también tiene Reiniciar partida, con confirmación (US 052).
 // La interfaz se arma por código, igual que la tienda, con medidas de una pantalla de 1920 x 1080.
 //
 // Mientras no haya multijugador, la pausa congela el juego (Time.timeScale = 0). Cuando exista el online,
@@ -27,7 +28,7 @@ using static ShopUIKit;
 [DefaultExecutionOrder(-50)]
 public class PauseMenu : MonoBehaviour
 {
-    public enum Panel { None, Main, Settings, Exit }
+    public enum Panel { None, Main, Settings, Exit, Restart }
 
     [Header("Partida")]
     [SerializeField] private string mainMenuScene = "MenuPrincipal";
@@ -74,9 +75,14 @@ public class PauseMenu : MonoBehaviour
     private Color col2Color, badSelected;
     private static readonly Color Clear = new Color(0f, 0f, 0f, 0f);
 
+    // Opciones del menú. Reiniciar solo aparece en partidas locales (US 052).
+    private const int OptResume = 0, OptRestart = 1, OptSettings = 2, OptExit = 3;
+    private readonly List<int> visibleOptions = new List<int>();
+
     private class Option
     {
         public UIImage bg, chip;
+        public RectTransform rect;
         public TextMeshProUGUI key, label;
         public bool danger;
     }
@@ -97,8 +103,8 @@ public class PauseMenu : MonoBehaviour
     private TextMeshProUGUI metaText, statusText, noteText, exitWarning, savedText;
     private readonly List<Option> options = new List<Option>();
     private readonly List<SettingRow> settingRows = new List<SettingRow>();
-    private UIImage exitButton, cancelButton;
-    private TextMeshProUGUI exitLabel, cancelLabel;
+    private UIImage exitButton, cancelButton, confirmLine;
+    private TextMeshProUGUI exitLabel, cancelLabel, confirmTitle;
 
     private int selected, settingSelected, exitSelected = 1, screenMode;
     private float savedTimeScale = 1f;
@@ -169,17 +175,19 @@ public class PauseMenu : MonoBehaviour
         {
             case Panel.Main: MainKeys(); break;
             case Panel.Settings: SettingsKeys(); break;
-            case Panel.Exit: ExitKeys(); break;
+            case Panel.Exit:
+            case Panel.Restart: ExitKeys(); break;
         }
     }
 
     private void MainKeys()
     {
-        for (int i = 0; i < 3; i++)
+        int count = visibleOptions.Count;
+        for (int i = 0; i < count; i++)
             if (Input.GetKeyDown(KeyCode.Alpha1 + i) || Input.GetKeyDown(KeyCode.Keypad1 + i)) { Activate(i); return; }
 
-        if (Input.GetKeyDown(KeyCode.DownArrow)) { selected = (selected + 1) % 3; Render(); }
-        else if (Input.GetKeyDown(KeyCode.UpArrow)) { selected = (selected + 2) % 3; Render(); }
+        if (Input.GetKeyDown(KeyCode.DownArrow)) { selected = (selected + 1) % count; Render(); }
+        else if (Input.GetKeyDown(KeyCode.UpArrow)) { selected = (selected + count - 1) % count; Render(); }
         else if (Input.GetKeyDown(KeyCode.Return) || Input.GetKeyDown(KeyCode.KeypadEnter) || Input.GetKeyDown(KeyCode.RightArrow))
             Activate(selected);
     }
@@ -203,7 +211,7 @@ public class PauseMenu : MonoBehaviour
         }
         else if (Input.GetKeyDown(KeyCode.Return) || Input.GetKeyDown(KeyCode.KeypadEnter))
         {
-            if (exitSelected == 0) LeaveMatch(); else Back();
+            if (exitSelected == 0) Confirm(); else Back();
         }
     }
 
@@ -226,6 +234,7 @@ public class PauseMenu : MonoBehaviour
 
         BlockPlayerControls();
         selected = 0;
+        LayoutOptions();
         RefreshTexts();
         root.gameObject.SetActive(true);
         Show(Panel.Main);
@@ -274,6 +283,55 @@ public class PauseMenu : MonoBehaviour
         SceneManager.LoadScene(mainMenuScene);
     }
 
+    // CA3 (US 052): vuelve a cargar la escena desde cero, así se descarta todo el progreso
+    // (vida, plata, balas, oleada) sin que cada sistema tenga que saber reiniciarse.
+    public void RestartMatch()
+    {
+        IsPaused = false;
+        Time.timeScale = 1f;
+        AudioListener.pause = false;
+        PlayerPrefs.Save();
+
+        Scene scene = SceneManager.GetActiveScene();
+        if (scene.buildIndex >= 0)
+        {
+            SceneManager.LoadScene(scene.buildIndex);
+            return;
+        }
+#if UNITY_EDITOR
+        // Las escenas de prueba no están en la lista del build: en el editor se cargan por su ruta.
+        UnityEditor.SceneManagement.EditorSceneManager.LoadSceneInPlayMode(scene.path, new LoadSceneParameters(LoadSceneMode.Single));
+#else
+        Debug.LogError($"PauseMenu: la escena \"{scene.name}\" no está en File > Build Profiles (Scene List).");
+#endif
+    }
+
+    // Botón de la confirmación: salir o reiniciar, según qué se eligió.
+    private void Confirm()
+    {
+        if (Current == Panel.Restart) RestartMatch();
+        else LeaveMatch();
+    }
+
+    // Reiniciar solo tiene sentido si la partida es local (Zombie). En online se oculta.
+    private void LayoutOptions()
+    {
+        visibleOptions.Clear();
+        visibleOptions.Add(OptResume);
+        if (!isMultiplayer) visibleOptions.Add(OptRestart);
+        visibleOptions.Add(OptSettings);
+        visibleOptions.Add(OptExit);
+
+        for (int i = 0; i < options.Count; i++) options[i].rect.gameObject.SetActive(false);
+        for (int i = 0; i < visibleOptions.Count; i++)
+        {
+            Option option = options[visibleOptions[i]];
+            option.rect.gameObject.SetActive(true);
+            option.rect.anchoredPosition = new Vector2(option.rect.anchoredPosition.x, -(390f + i * (OptionH + OptionGap)));
+            option.key.text = (i + 1).ToString();
+        }
+    }
+
     // Para cuando exista el online: true en Táctico y Deathmatch.
     public void SetMultiplayer(bool value)
     {
@@ -281,11 +339,17 @@ public class PauseMenu : MonoBehaviour
         isMultiplayer = value;
     }
 
+    // index: posición en el menú (1, 2, 3...), que depende de si se ve Reiniciar.
     private void Activate(int index)
     {
-        if (index == 0) Resume();
-        else if (index == 1) { settingSelected = 0; Show(Panel.Settings); }
-        else { exitSelected = 1; Show(Panel.Exit); }
+        if (index < 0 || index >= visibleOptions.Count) return;
+        switch (visibleOptions[index])
+        {
+            case OptResume: Resume(); break;
+            case OptRestart: exitSelected = 1; Show(Panel.Restart); break;
+            case OptSettings: settingSelected = 0; Show(Panel.Settings); break;
+            case OptExit: exitSelected = 1; Show(Panel.Exit); break;
+        }
     }
 
     // Igual que la tienda: con el menú abierto no se mira, no se mueve, no se dispara ni se cambia de arma.
@@ -425,11 +489,12 @@ public class PauseMenu : MonoBehaviour
         Current = panel;
 
         colSettings.gameObject.SetActive(panel == Panel.Settings);
-        colExit.gameObject.SetActive(panel == Panel.Exit);
+        colExit.gameObject.SetActive(panel == Panel.Exit || panel == Panel.Restart);
 
         if (panel == Panel.Settings) LoadSettingsIntoUI();
+        if (panel == Panel.Exit || panel == Panel.Restart) SetConfirmTexts(panel == Panel.Restart);
         if (panel == Panel.Settings && previous != Panel.Settings) Reveal(settingsGroup);
-        if (panel == Panel.Exit && previous != Panel.Exit) Reveal(exitGroup);
+        if ((panel == Panel.Exit || panel == Panel.Restart) && previous != panel) Reveal(exitGroup);
         if (panel == Panel.Main && previous == Panel.None) Reveal(col1.GetComponent<CanvasGroup>());
 
         Render();
@@ -458,13 +523,36 @@ public class PauseMenu : MonoBehaviour
         shade.color = new Color(0f, 0f, 0f, DarkAlpha(isMultiplayer ? 0.45f : 0.6f));
     }
 
+    // La misma columna sirve para confirmar Salir (rojo) y Reiniciar (naranja, US 052 CA2).
+    private void SetConfirmTexts(bool restart)
+    {
+        if (restart)
+        {
+            confirmTitle.text = "¿Reiniciar la partida?";
+            exitLabel.text = "Reiniciar";
+            confirmLine.color = Accent;
+            exitWarning.text = MatchSettings.Mode == GameMode.Zombie
+                ? "Volvés a la primera oleada y se pierde <color=#F29A38>el progreso actual</color>."
+                : "Volvés al inicio de la partida y se pierde <color=#F29A38>el progreso actual</color>.";
+        }
+        else
+        {
+            confirmTitle.text = "¿Salir de la partida?";
+            exitLabel.text = "Salir";
+            confirmLine.color = Bad;
+            RefreshTexts();
+        }
+    }
+
     private void Render()
     {
-        for (int i = 0; i < options.Count; i++)
+        for (int i = 0; i < visibleOptions.Count; i++)
         {
-            Option o = options[i];
+            int id = visibleOptions[i];
+            Option o = options[id];
             bool isSelected = Current == Panel.Main && i == selected;
-            bool isOpen = (i == 1 && Current == Panel.Settings) || (i == 2 && Current == Panel.Exit);
+            bool isOpen = (id == OptRestart && Current == Panel.Restart) || (id == OptSettings && Current == Panel.Settings)
+                       || (id == OptExit && Current == Panel.Exit);
             o.bg.color = isSelected ? (o.danger ? badSelected : SelectedColor) : isOpen ? HoverColor : Clear;
             o.chip.color = isSelected ? (o.danger ? Bad : Accent) : ChipDim;
             o.key.color = isSelected ? KeyInk : Ink;
@@ -482,7 +570,7 @@ public class PauseMenu : MonoBehaviour
             }
         }
 
-        exitButton.color = Bad;
+        exitButton.color = Current == Panel.Restart ? Accent : Bad;
         exitLabel.color = KeyInk;
         cancelButton.color = exitSelected == 1 ? ChipDim : ChipColor;
         exitButton.transform.localScale = cancelButton.transform.localScale = Vector3.one;
@@ -586,13 +674,13 @@ public class PauseMenu : MonoBehaviour
 
         BuildRails(col1, PadX, 346f, w);
 
-        string[] labels = { "Reanudar", "Configuración", "Salir de la partida" };
+        string[] labels = { "Reanudar", "Reiniciar partida", "Configuración", "Salir de la partida" };
         for (int i = 0; i < labels.Length; i++)
         {
-            int index = i;
+            int id = i;
             float y = 390f + i * (OptionH + OptionGap);
             RectTransform row = Place(Node("Opcion" + (i + 1), col1), PadX - 16f, y, w + 32f, OptionH);
-            Option option = new Option { danger = i == 2 };
+            Option option = new Option { danger = i == OptExit, rect = row };
             option.bg = Image(row, rounded, Clear, 6f, true);
             option.chip = Image(Place(Node("Tecla", row), 20f, (OptionH - 39f) / 2f, 39f, 39f), rounded, ChipDim, 4f);
             option.key = Text(Stretch(Node("Numero", option.chip.rectTransform)), displayFont, 20f, Ink, TextAlignmentOptions.Center);
@@ -602,11 +690,11 @@ public class PauseMenu : MonoBehaviour
             options.Add(option);
 
             ShopPointerTarget pointer = row.gameObject.AddComponent<ShopPointerTarget>();
-            pointer.Hovered = () => { if (Current == Panel.Main) { selected = index; Render(); } };
-            pointer.Clicked = () => Activate(index);
+            pointer.Hovered = () => { if (Current == Panel.Main) { selected = visibleOptions.IndexOf(id); Render(); } };
+            pointer.Clicked = () => Activate(visibleOptions.IndexOf(id));
         }
 
-        BuildShortcuts(col1, new[] { ("Esc", "Reanudar"), ("1 2 3", "Elegir"), ("Enter", "Aceptar"), ("Retroceso", "Volver") });
+        BuildShortcuts(col1, new[] { ("Esc", "Reanudar"), ("Números", "Elegir"), ("Enter", "Aceptar"), ("Retroceso", "Volver") });
     }
 
     private void BuildSettingsColumn()
@@ -740,8 +828,9 @@ public class PauseMenu : MonoBehaviour
         exitGroup = colExit.GetComponent<CanvasGroup>();
         float w = Col2W - PadX * 2f;
 
-        Text(Place(Node("Titulo", colExit), PadX, PadTop, w, 56f), displayFont, 46f, Ink, TextAlignmentOptions.MidlineLeft, 2f, true).text = "¿Salir de la partida?";
-        Image(Place(Node("LineaAnden", colExit), PadX, 130f, 150f, 3f), null, Bad);
+        confirmTitle = Text(Place(Node("Titulo", colExit), PadX, PadTop, w, 56f), displayFont, 46f, Ink, TextAlignmentOptions.MidlineLeft, 2f, true);
+        confirmTitle.text = "¿Salir de la partida?";
+        confirmLine = Image(Place(Node("LineaAnden", colExit), PadX, 130f, 150f, 3f), null, Bad);
 
         exitWarning = Text(Place(Node("Aviso", colExit), PadX, 160f, w, 70f), bodyFont, 23f, Ink, TextAlignmentOptions.TopLeft);
         exitWarning.textWrappingMode = TextWrappingModes.Normal;
@@ -752,7 +841,7 @@ public class PauseMenu : MonoBehaviour
         exitLabel.text = "Salir";
         ShopPointerTarget exitPointer = exitRect.gameObject.AddComponent<ShopPointerTarget>();
         exitPointer.Hovered = () => { exitSelected = 0; Render(); };
-        exitPointer.Clicked = LeaveMatch;
+        exitPointer.Clicked = Confirm;
 
         RectTransform cancelRect = Place(Node("BotonCancelar", colExit), PadX + 166f, 250f, 180f, 56f);
         cancelButton = Image(cancelRect, rounded, ChipDim, 4f, true);
