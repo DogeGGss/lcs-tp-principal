@@ -195,3 +195,13 @@ fecha_utc,us_numero,us_titulo,estado_anterior,estado_nuevo,tiempo_en_estado_ante
 2026-09-26T23:30:56.332169+00:00,177,US 126. Integrar Animación - Agacharse,Todo,In Progress,2d 18h 56m,241010,https://github.com/DogeGGss/lcs-tp-principal/issues/177
 2026-09-26T23:30:56.332169+00:00,102,US 048. Configurar opciones,In Progress,LPR,22h 49m,82193,https://github.com/DogeGGss/lcs-tp-principal/issues/102
 2026-09-26T23:30:56.332169+00:00,215,US 154. Opciones de sonido,In Progress,LPR,5h 32m,19966,https://github.com/DogeGGss/lcs-tp-principal/issues/215
+2026-09-27T01:43:38.922248+00:00,42,US 011. Recargar,LPR,TESTING,20h 11m,72700,https://github.com/DogeGGss/lcs-tp-principal/issues/42
+2026-09-27T01:43:38.922248+00:00,89,US 013. ARMA Principal 1 - Mitre (Fusil),In Progress,LPR,4h 43m,17022,https://github.com/DogeGGss/lcs-tp-principal/issues/89
+2026-09-27T01:43:38.922248+00:00,105,US 051. Menu de pausa,Blocked,LPR,3d 8h 12m,288739,https://github.com/DogeGGss/lcs-tp-principal/issues/105
+2026-09-27T01:43:38.922248+00:00,103,US 049. Finalizar partida,Blocked,LPR,4d 2h 19m,353957,https://github.com/DogeGGss/lcs-tp-principal/issues/103
+2026-09-27T01:43:38.922248+00:00,106,US 052. Reiniciar partida,Todo,In Progress,4d 2h 19m,353957,https://github.com/DogeGGss/lcs-tp-principal/issues/106
+2026-09-27T01:43:38.922248+00:00,175,US 125. Integrar animación - Saltar,Done,LPR,1d 1h 2m,90155,https://github.com/DogeGGss/lcs-tp-principal/issues/175
+2026-09-27T01:43:38.922248+00:00,177,US 126. Integrar Animación - Agacharse,In Progress,Done,2h 12m,7962,https://github.com/DogeGGss/lcs-tp-principal/issues/177
+2026-09-27T01:43:38.922248+00:00,178,US 127. Integrar animacón - Correr,Done,LPR,1d 1h 2m,90155,https://github.com/DogeGGss/lcs-tp-principal/issues/178
+2026-09-27T01:43:38.922248+00:00,230,US 164. Elegir nombre de jugador,Blocked,LPR,20h 11m,72700,https://github.com/DogeGGss/lcs-tp-principal/issues/230
+2026-09-27T01:43:38.922248+00:00,231,US 165. Zonas de impacto y marcador de impacto,Blocked,LPR,20h 11m,72700,https://github.com/DogeGGss/lcs-tp-principal/issues/231
