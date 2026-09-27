@@ -39,6 +39,10 @@ public class CombatHud : MonoBehaviour
     [Tooltip("Canal del mixer para el sonido del marcador (SFX), así respeta el volumen de efectos.")]
     [SerializeField] private UnityEngine.Audio.AudioMixerGroup sfxGroup;
 
+    // Mira fija (US 171): cuatro rayitas blancas con borde oscuro y un hueco en el centro (px en 1920 x 1080).
+    private const float CrosshairLength = 8f, CrosshairThickness = 2f, CrosshairGap = 5f;
+    private RectTransform crosshair;
+
     // Cuatro rayitas en la mira durante 0,15 s: blancas al acertar, amarillas a la cabeza, rojas y más grandes si mata.
     private const float HitMarkerTime = 0.15f;
     private static Color HitHeadColor => new Color(1f, 0.824f, 0.247f); // #FFD23F
@@ -118,6 +122,38 @@ public class CombatHud : MonoBehaviour
         UpdateSkill();
         UpdateAmmo();
         UpdateHitMarker();
+
+        // La mira se ve con cualquier arma; con la pausa abierta se oculta (con la tienda ya se oculta todo el HUD).
+        crosshair.gameObject.SetActive(!PauseMenu.IsPaused);
+    }
+
+    // ---------- Mira ----------
+
+    private void BuildCrosshair(RectTransform root)
+    {
+        crosshair = Node("Mira", root);
+        crosshair.anchorMin = crosshair.anchorMax = crosshair.pivot = new Vector2(0.5f, 0.5f);
+        crosshair.anchoredPosition = Vector2.zero;
+        crosshair.sizeDelta = Vector2.one * 2f * (CrosshairGap + CrosshairLength);
+
+        float offset = CrosshairGap + CrosshairLength * 0.5f;
+        CrosshairLine("Arriba", new Vector2(0f, offset), new Vector2(CrosshairThickness, CrosshairLength));
+        CrosshairLine("Abajo", new Vector2(0f, -offset), new Vector2(CrosshairThickness, CrosshairLength));
+        CrosshairLine("Izquierda", new Vector2(-offset, 0f), new Vector2(CrosshairLength, CrosshairThickness));
+        CrosshairLine("Derecha", new Vector2(offset, 0f), new Vector2(CrosshairLength, CrosshairThickness));
+    }
+
+    private void CrosshairLine(string name, Vector2 position, Vector2 size)
+    {
+        RectTransform line = Node(name, crosshair);
+        line.anchorMin = line.anchorMax = line.pivot = new Vector2(0.5f, 0.5f);
+        line.anchoredPosition = position;
+        line.sizeDelta = size;
+        Image(line, null, Color.white);
+        // Borde oscuro de 1 px para que se lea sobre el cielo y sobre paredes oscuras.
+        UnityEngine.UI.Outline border = line.gameObject.AddComponent<UnityEngine.UI.Outline>();
+        border.effectColor = new Color(0f, 0f, 0f, 0.85f);
+        border.effectDistance = new Vector2(1f, 1f);
     }
 
     // ---------- Marcador de impacto ----------
@@ -396,6 +432,7 @@ public class CombatHud : MonoBehaviour
         BuildSkill(bar);
         Image(Place(Node("Rieles", bar), RailRightX, 160f, 120f, 12f), rails, Color.white);
         BuildAmmo(bar);
+        BuildCrosshair(root);
         BuildHitMarker(root);
     }
 
