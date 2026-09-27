@@ -106,6 +106,7 @@ public class CombatHud : MonoBehaviour
     private void OnDestroy()
     {
         if (ability != null) ability.Used -= OnAbilityUsed;
+        KeyBindings.Changed -= RefreshSkillKey;
     }
 
     private void Update()
@@ -250,6 +251,15 @@ public class CombatHud : MonoBehaviour
         bool hasAbility = ability != null && ability.Ability != null;
         skill.SetActive(hasAbility);
         if (hasAbility) SetupSkill(ability.Ability);
+
+        // Si se cambia la tecla desde la pausa (US 155), el chip de la habilidad muestra la nueva.
+        KeyBindings.Changed -= RefreshSkillKey;
+        KeyBindings.Changed += RefreshSkillKey;
+    }
+
+    private void RefreshSkillKey()
+    {
+        if (ability != null && ability.Ability != null) SetupSkill(ability.Ability);
     }
 
     private void OnAbilityUsed()

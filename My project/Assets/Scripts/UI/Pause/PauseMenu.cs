@@ -28,7 +28,7 @@ using static ShopUIKit;
 [DefaultExecutionOrder(-50)]
 public class PauseMenu : MonoBehaviour
 {
-    public enum Panel { None, Main, Settings, Exit, Restart }
+    public enum Panel { None, Main, Settings, Exit, Restart, Controls }
 
     [Header("Partida")]
     [SerializeField] private string mainMenuScene = "MenuPrincipal";
@@ -95,10 +95,12 @@ public class PauseMenu : MonoBehaviour
         public float step;
         public UIImage[] segs;
         public TextMeshProUGUI[] segLabels;
+        public System.Action activate; // filas que abren otra pantalla (Controles)
     }
 
-    private RectTransform canvasRoot, root, col1, colSettings, colExit;
-    private CanvasGroup settingsGroup, exitGroup;
+    private RectTransform canvasRoot, root, col1, colSettings, colExit, colControls;
+    private CanvasGroup settingsGroup, exitGroup, controlsGroup;
+    private const float ColControlsW = 640f;
     private UIImage shade, statusChip, statusDot;
     private TextMeshProUGUI metaText, statusText, noteText, exitWarning, savedText;
     private readonly List<Option> options = new List<Option>();
@@ -164,6 +166,7 @@ public class PauseMenu : MonoBehaviour
                 // La tienda corre después y se cierra sola con este mismo Esc.
                 if (!ShopUI.IsOpen && AllowPause) Pause();
             }
+            else if (Current == Panel.Controls && ControlsPanel.IsBusy) { } // Esc cancela el cambio de tecla
             else if (Current == Panel.Main) Resume();
             else Back();
             return;
@@ -175,6 +178,9 @@ public class PauseMenu : MonoBehaviour
         {
             case Panel.Main: MainKeys(); break;
             case Panel.Settings: SettingsKeys(); break;
+            case Panel.Controls:
+                if (!ControlsPanel.IsBusy && Input.GetKeyDown(KeyCode.Backspace)) Back();
+                break;
             case Panel.Exit:
             case Panel.Restart: ExitKeys(); break;
         }
@@ -199,6 +205,8 @@ public class PauseMenu : MonoBehaviour
         else if (Input.GetKeyDown(KeyCode.UpArrow)) { settingSelected = Mathf.Max(0, settingSelected - 1); Render(); }
         else if (Input.GetKeyDown(KeyCode.RightArrow)) Adjust(settingRows[settingSelected], 1);
         else if (Input.GetKeyDown(KeyCode.LeftArrow)) Adjust(settingRows[settingSelected], -1);
+        else if ((Input.GetKeyDown(KeyCode.Return) || Input.GetKeyDown(KeyCode.KeypadEnter)) && settingRows[settingSelected].activate != null)
+            settingRows[settingSelected].activate();
     }
 
     private void ExitKeys()
@@ -262,6 +270,7 @@ public class PauseMenu : MonoBehaviour
 
     public void Back()
     {
+        if (Current == Panel.Controls) { KeyBindings.Save(); Show(Panel.Settings); return; }
         if (Current == Panel.Settings) PlayerPrefs.Save();
         Show(Panel.Main);
     }
@@ -395,6 +404,7 @@ public class PauseMenu : MonoBehaviour
 
     private void Adjust(SettingRow row, int direction)
     {
+        if (row.activate != null) { if (direction > 0) row.activate(); return; }
         if (row.slider != null) row.slider.value += direction * row.step;
         else SetScreenMode(Mathf.Clamp(screenMode + direction, 0, 2));
     }
@@ -489,11 +499,13 @@ public class PauseMenu : MonoBehaviour
         Current = panel;
 
         colSettings.gameObject.SetActive(panel == Panel.Settings);
+        colControls.gameObject.SetActive(panel == Panel.Controls);
         colExit.gameObject.SetActive(panel == Panel.Exit || panel == Panel.Restart);
 
         if (panel == Panel.Settings) LoadSettingsIntoUI();
         if (panel == Panel.Exit || panel == Panel.Restart) SetConfirmTexts(panel == Panel.Restart);
-        if (panel == Panel.Settings && previous != Panel.Settings) Reveal(settingsGroup);
+        if (panel == Panel.Settings && previous != Panel.Settings && previous != Panel.Controls) Reveal(settingsGroup);
+        if (panel == Panel.Controls && previous != Panel.Controls) Reveal(controlsGroup);
         if ((panel == Panel.Exit || panel == Panel.Restart) && previous != panel) Reveal(exitGroup);
         if (panel == Panel.Main && previous == Panel.None) Reveal(col1.GetComponent<CanvasGroup>());
 
@@ -551,7 +563,7 @@ public class PauseMenu : MonoBehaviour
             int id = visibleOptions[i];
             Option o = options[id];
             bool isSelected = Current == Panel.Main && i == selected;
-            bool isOpen = (id == OptRestart && Current == Panel.Restart) || (id == OptSettings && Current == Panel.Settings)
+            bool isOpen = (id == OptRestart && Current == Panel.Restart) || (id == OptSettings && (Current == Panel.Settings || Current == Panel.Controls))
                        || (id == OptExit && Current == Panel.Exit);
             o.bg.color = isSelected ? (o.danger ? badSelected : SelectedColor) : isOpen ? HoverColor : Clear;
             o.chip.color = isSelected ? (o.danger ? Bad : Accent) : ChipDim;
@@ -622,6 +634,7 @@ public class PauseMenu : MonoBehaviour
 
         BuildMainColumn();
         BuildSettingsColumn();
+        BuildControlsColumn();
         BuildExitColumn();
     }
 
@@ -716,6 +729,8 @@ public class PauseMenu : MonoBehaviour
         Group("Video", ref y);
         SliderRow("Campo de visión", ref y, 60f, 100f, 1f, SetFov, true);        // mismo rango que el menú
         ScreenModeRow(ref y);
+        Group("Teclas", ref y);
+        OpenRow("Controles", "Cambiar teclas", ref y, () => Show(Panel.Controls));
 
         RectTransform back = Bottom(Node("Volver", colSettings), PadX, 90f, 150f, 52f);
         ButtonBox(back, "Volver", () => Back());
@@ -727,6 +742,42 @@ public class PauseMenu : MonoBehaviour
 
         BuildShortcuts(colSettings, new[] { ("Flechas", "Elegir y cambiar"), ("Retroceso", "Volver") });
         colSettings.gameObject.SetActive(false);
+    }
+
+    // Fila que abre otra pantalla: Configuración > Controles (teclas, sensibilidad al apuntar, eje Y).
+    private void OpenRow(string title, string action, ref float y, System.Action open)
+    {
+        int index = settingRows.Count;
+        RectTransform row = Place(Node(title, colSettings), PadX - 12f, y, Col2W - PadX * 2f + 24f, SetRowH);
+        SettingRow setting = new SettingRow { activate = open };
+        setting.bg = Image(row, rounded, Clear, 4f, true);
+        Text(Place(Node("Nombre", row), 12f, 0f, 190f, SetRowH), labelFont, 23f, Ink, TextAlignmentOptions.MidlineLeft, 5f, true).text = title;
+        UIImage chip = Image(Place(Node("Boton", row), 210f, (SetRowH - 34f) / 2f, 200f, 34f), rounded, ChipColor, 3f, true);
+        Text(Stretch(Node("Texto", chip.rectTransform)), labelFont, 17f, Ink, TextAlignmentOptions.Center, 8f, true).text = action + "  ›";
+        settingRows.Add(setting);
+
+        ShopPointerTarget pointer = row.gameObject.AddComponent<ShopPointerTarget>();
+        pointer.Hovered = () => { settingSelected = index; Render(); };
+        pointer.Clicked = open;
+        y += SetRowH;
+    }
+
+    // La misma pestaña Controles del menú principal (US 155), dentro de la pausa.
+    private void BuildControlsColumn()
+    {
+        colControls = Column("Controles", Col1W, ColControlsW, col2Color);
+        controlsGroup = colControls.GetComponent<CanvasGroup>();
+
+        GameObject panelObject = new GameObject("PanelControles", typeof(RectTransform));
+        panelObject.layer = 5;
+        panelObject.SetActive(false); // se configura antes de que arranque
+        panelObject.transform.SetParent(colControls, false);
+        Stretch((RectTransform)panelObject.transform);
+        ControlsPanel panel = panelObject.AddComponent<ControlsPanel>();
+        panel.Setup(displayFont, labelFont, bodyFont, rounded, () => Back());
+        panelObject.SetActive(true);
+
+        colControls.gameObject.SetActive(false);
     }
 
     private void Group(string title, ref float y)
