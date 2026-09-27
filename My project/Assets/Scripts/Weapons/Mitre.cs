@@ -1,14 +1,18 @@
 using System.Collections;
 using UnityEngine;
 
-public class Mitre : MonoBehaviour
+public class Mitre : MonoBehaviour, IHudWeapon
 {
     [Header("Identificación")]
     public string weaponName = "Mitre";
 
+    [Header("Tienda")]
+    [Tooltip("Ficha de la tienda de esta arma. Con tienda en la escena, sin comprarla no se puede sacar (US 077).")]
+    public ShopItem shopItem;
+
     [Header("Debug Visual")]
     [Tooltip("Activa o desactiva los marcadores de impacto para visualizar el patrón de retroceso")]
-    public bool debugVisualRecoil = true;
+    public bool debugVisualRecoil = false;
 
     [Header("Estadísticas de Daño")]
     public int headDamage = 160;
@@ -51,11 +55,24 @@ public class Mitre : MonoBehaviour
 
     private AudioSource audioSource;
     private bool isReloading = false;
+    private float reloadStartTime;
+    private int fullReserve = -1;
     private PlayerMovement playerMovement;
+    private HealthSystem ownHealth;
+
+    // Datos para el HUD (US 056): nombre de la tienda, cargador, reserva y recarga.
+    public string HudName => shopItem != null && !string.IsNullOrEmpty(shopItem.alias) ? shopItem.alias : weaponName;
+    public int Ammo => currentAmmo;
+    public int MagazineSize => maxAmmo;
+    public int Reserve => reserveAmmo;
+    public float ReloadProgress => isReloading ? Mathf.Clamp01((Time.time - reloadStartTime) / reloadTime) : -1f;
 
     void Awake()
     {
         currentAmmo = maxAmmo;
+        if (fullReserve < 0) fullReserve = reserveAmmo;
+        // Vida de quien dispara, para no pegarse a sí mismo
+        ownHealth = GetComponentInParent<HealthSystem>();
 
         if (playerCamera == null)
         {
@@ -108,6 +125,14 @@ public class Mitre : MonoBehaviour
         {
             camComponent.fieldOfView = defaultFOV;
         }
+    }
+
+    // Al comprarla en la tienda queda con el cargador lleno y la reserva completa (US 077, CA1).
+    public void Refill()
+    {
+        if (fullReserve < 0) fullReserve = reserveAmmo;
+        currentAmmo = maxAmmo;
+        reserveAmmo = fullReserve;
     }
 
     void Update()
@@ -165,8 +190,9 @@ public class Mitre : MonoBehaviour
         Vector3 shootDirection = CalculateRecoilDirection();
 
         // CA1: Raycast y cálculo de impacto
+        // Ignora las zonas invisibles (triggers) como la zona de compra, que frenaban la bala.
         RaycastHit hit;
-        if (Physics.Raycast(playerCamera.transform.position, shootDirection, out hit, maxRange))
+        if (Physics.Raycast(playerCamera.transform.position, shootDirection, out hit, maxRange, Physics.DefaultRaycastLayers, QueryTriggerInteraction.Ignore))
         {
             // Debug visual opcional: dibuja trayectoria y crea marca esférica
             if (debugVisualRecoil)
@@ -257,8 +283,8 @@ public class Mitre : MonoBehaviour
 
     void ApplyDamageByZone(RaycastHit hit)
     {
-        HealthSystem targetHealth = hit.transform.GetComponentInParent<HealthSystem>();
-        if (targetHealth == null) return;
+        HealthSystem targetHealth = hit.collider.GetComponentInParent<HealthSystem>();
+        if (targetHealth == null || targetHealth == ownHealth) return;
 
         int finalDamage = bodyDamage; // Base 40
 
@@ -308,6 +334,7 @@ public class Mitre : MonoBehaviour
     private IEnumerator ReloadRoutine()
     {
         isReloading = true;
+        reloadStartTime = Time.time;
         consecutiveShots = 0;
 
         if (reloadSound != null)

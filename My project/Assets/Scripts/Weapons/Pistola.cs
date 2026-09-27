@@ -2,7 +2,7 @@ using System.Collections;
 using UnityEngine;
 using UnityEngine.Audio;
 
-public class Pistola : MonoBehaviour
+public class Pistola : MonoBehaviour, IHudWeapon
 {
     [Header("EstadÃ­sticas de Arma")]
     public int damage = 25;
@@ -23,6 +23,14 @@ public class Pistola : MonoBehaviour
     private AudioSource audioSource;
     private HealthSystem ownHealth;
     private bool isReloading = false;
+    private float reloadStartTime;
+
+    // Datos para el HUD (US 056): el HUD le pone el nombre de la tienda (Línea A o Línea H).
+    public string HudName => "Pistola";
+    public int Ammo => currentAmmo;
+    public int MagazineSize => maxAmmo;
+    public int Reserve => reserveAmmo;
+    public float ReloadProgress => isReloading ? Mathf.Clamp01((Time.time - reloadStartTime) / reloadTime) : -1f;
 
     void Start()
     {
@@ -117,6 +125,7 @@ public class Pistola : MonoBehaviour
     private IEnumerator ReloadRoutine()
     {
         isReloading = true;
+        reloadStartTime = Time.time;
 
         Debug.Log("Recargando...");
 
