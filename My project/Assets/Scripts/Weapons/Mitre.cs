@@ -207,6 +207,7 @@ public class Mitre : MonoBehaviour, IHudWeapon
             }
 
             ApplyDamageByZone(hit);
+            ImpactMarks.Spawn(hit);
         }
         else if (debugVisualRecoil)
         {
