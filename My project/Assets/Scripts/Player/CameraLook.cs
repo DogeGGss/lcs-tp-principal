@@ -17,7 +17,18 @@ public class CameraLook : MonoBehaviour
     void Start()
     {
         Cursor.lockState = CursorLockMode.Locked;
+        CargarAjustes();
+    }
 
+    // Se vuelve a leer cada vez que el componente se activa: al volver del menú de pausa (US 051)
+    // o al cerrar la tienda, se aplica la sensibilidad y el FOV que se hayan cambiado.
+    void OnEnable()
+    {
+        CargarAjustes();
+    }
+
+    private void CargarAjustes()
+    {
         // =========================
         // SENSIBILIDAD
         // =========================
@@ -42,9 +53,6 @@ public class CameraLook : MonoBehaviour
         {
             camara.fieldOfView = fovGuardado;
         }
-
-        Debug.Log("Sensibilidad cargada: " + mouseSensivility);
-        Debug.Log("FOV cargado: " + fovGuardado);
     }
 
     void Update()
