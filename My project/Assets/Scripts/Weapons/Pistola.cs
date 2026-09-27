@@ -25,7 +25,7 @@ public class Pistola : MonoBehaviour, IHudWeapon
     private bool isReloading = false;
     private float reloadStartTime;
 
-    // Datos para el HUD (US 056): el HUD le pone el nombre de la tienda (Línea A o Línea H).
+    // Datos para el HUD (US 056): el HUD le pone el nombre de la tienda (LÃ­nea A o LÃ­nea H).
     public string HudName => "Pistola";
     public int Ammo => currentAmmo;
     public int MagazineSize => maxAmmo;
