@@ -241,7 +241,8 @@ public class CreditsScreen : MonoBehaviour
         float dt = Mathf.Min(0.05f, Time.unscaledDeltaTime);
         if (leaving) return; // ya pidió volver al menú: la transición del menú necesita unos cuadros para terminar
         Vector2 size = ((RectTransform)transform).rect.size;
-        if (size.x > 0f && size.y > 0f) root.localScale = Vector3.one * Mathf.Max(size.x / W, size.y / H);
+        // Entra completa en cualquier pantalla: en las que no son 16:9 quedan bandas negras en vez de cortarse los bordes.
+        if (size.x > 0f && size.y > 0f) root.localScale = Vector3.one * Mathf.Min(size.x / W, size.y / H);
 
         Keyboard kb = Keyboard.current;
         Mouse mouse = Mouse.current;
