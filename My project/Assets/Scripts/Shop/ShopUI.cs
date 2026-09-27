@@ -36,6 +36,22 @@ public class ShopUI : MonoBehaviour
     [Tooltip("Escala de grises para los íconos de lo que no alcanza a pagarse.")]
     [SerializeField] private Material grayscale;
 
+    // Sonidos de andén (US 117): puertas y campana al abrir, el "pip" de la SUBE al comprar,
+    // el "bip-bip" de saldo insuficiente al fallar y el "clac" del cartel de salidas al cambiar de categoría.
+    [Header("Sonidos")]
+    [Tooltip("Canal del mixer (SFX), así respeta el volumen de efectos de Opciones.")]
+    [SerializeField] private UnityEngine.Audio.AudioMixerGroup sfxGroup;
+    [SerializeField] private AudioClip openSound;
+    [SerializeField] private AudioClip closeSound;
+    [SerializeField] private AudioClip buySound;
+    [Tooltip("Vender o deshacer compras.")]
+    [SerializeField] private AudioClip sellSound;
+    [Tooltip("Compra o venta que no se puede hacer (por ejemplo, plata insuficiente).")]
+    [SerializeField] private AudioClip errorSound;
+    [SerializeField] private AudioClip categorySound;
+    [SerializeField, Range(0f, 1f)] private float soundVolume = 0.8f;
+    private AudioSource sounds;
+
     public static bool IsOpen { get; private set; }
 
     private static readonly int[] BorderRadii = { 4, 5, 6, 8, 10, 24 };
@@ -109,6 +125,16 @@ public class ShopUI : MonoBehaviour
     private void Awake()
     {
         BuildCanvas();
+        sounds = gameObject.AddComponent<AudioSource>();
+        sounds.playOnAwake = false;
+        sounds.spatialBlend = 0f;
+        sounds.volume = soundVolume;
+        sounds.outputAudioMixerGroup = sfxGroup;
+    }
+
+    private void Play(AudioClip clip)
+    {
+        if (clip != null && sounds != null) sounds.PlayOneShot(clip);
     }
 
     private void Start()
@@ -191,11 +217,13 @@ public class ShopUI : MonoBehaviour
             if (openRoutine != null) StopCoroutine(openRoutine);
             openRoutine = StartCoroutine(OpenAnimation());
             Reveal(ref catsRoutine, catsMask, true, 0.16f);
+            Play(openSound);
         }
         else
         {
             RestorePlayerControls();
             shopRoot.gameObject.SetActive(false);
+            Play(closeSound);
             Render();
         }
     }
@@ -293,6 +321,7 @@ public class ShopUI : MonoBehaviour
         selected = listItems.Count > 0 ? listItems[0] : null;
         BuildItemRows();
         Render();
+        Play(categorySound);
         if (wasHidden) Reveal(ref listRoutine, listMask, false, 0.13f);
         if (selected != null) Reveal(ref detailRoutine, detailMask, true, 0.13f, detailGroup);
     }
@@ -336,10 +365,12 @@ public class ShopUI : MonoBehaviour
         if (result == ShopResult.Ok)
         {
             ShowToast(item.price > 0 ? $"{ItemName(item)} <color=#F29A38>−{Money(item.price)}</color>" : $"Elegiste {ItemName(item)}");
+            Play(buySound);
             return;
         }
         ShowToast($"<color=#FF5C5C>{ErrorText(result, item)}</color>");
         Shake();
+        Play(errorSound);
     }
 
     private void TrySell(ShopItem item)
@@ -349,10 +380,12 @@ public class ShopUI : MonoBehaviour
         if (result == ShopResult.Ok)
         {
             ShowToast($"Vendiste {ItemName(item)} <color=#3DDC97>+{Money(item.price)}</color>");
+            Play(sellSound);
             return;
         }
         ShowToast($"<color=#FF5C5C>{ErrorText(result, item)}</color>");
         Shake();
+        Play(errorSound);
     }
 
     private string ErrorText(ShopResult result, ShopItem item)
@@ -377,6 +410,7 @@ public class ShopUI : MonoBehaviour
         if (!loadout.HasPurchases) return;
         loadout.UndoPurchases();
         ShowToast("Compras deshechas");
+        Play(sellSound);
     }
 
     // ---------- Actualización por cuadro (tiempo, zona) ----------
