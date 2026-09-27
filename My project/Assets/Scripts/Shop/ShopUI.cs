@@ -36,8 +36,10 @@ public class ShopUI : MonoBehaviour
     [Tooltip("Escala de grises para los íconos de lo que no alcanza a pagarse.")]
     [SerializeField] private Material grayscale;
 
-    // Sonidos de andén (US 117): puertas y campana al abrir, el "pip" de la SUBE al comprar,
-    // el "bip-bip" de saldo insuficiente al fallar y el "clac" del cartel de salidas al cambiar de categoría.
+    // Sonidos de la tienda (US 117): al cerrar suena el de abrir con las notas bajando, al comprar
+    // monedas y una traba metálica, al vender o deshacer monedas, al fallar un "bip-bip" grave de saldo
+    // insuficiente y al cambiar de categoría el "clac" de un cartel de salidas.
+    // Monedas y traba: Kenney RPG Audio (CC0).
     [Header("Sonidos")]
     [Tooltip("Canal del mixer (SFX), así respeta el volumen de efectos de Opciones.")]
     [SerializeField] private UnityEngine.Audio.AudioMixerGroup sfxGroup;
