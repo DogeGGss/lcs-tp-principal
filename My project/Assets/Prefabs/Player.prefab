@@ -29,7 +29,7 @@ Transform:
   m_GameObject: {fileID: 149820169301200241}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0.65, z: 0}
+  m_LocalPosition: {x: -0.02, y: 0.65, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -326,6 +326,10 @@ MonoBehaviour:
   standingHeight: 2
   crounchHeight: 1
   speedMultiplier: 1
+  cameraTransform: {fileID: 851363783184461142}
+  standingCameraHeight: 0.8
+  crouchCameraHeight: 0.3
+  cameraCrouchSpeed: 8
 --- !u!114 &3897681997550327690
 MonoBehaviour:
   m_ObjectHideFlags: 0

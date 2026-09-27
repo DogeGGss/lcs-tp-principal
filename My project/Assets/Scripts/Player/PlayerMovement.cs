@@ -27,6 +27,12 @@ public class PlayerMovement : MonoBehaviour
     // Se utiliza para detectar correctamente el aterrizaje
     private bool wasInAir;
 
+    //manejo de camara al agacharse
+    public Transform cameraTransform;
+    public float standingCameraHeight = 0.8f;
+    public float crouchCameraHeight = 0.3f;
+    public float cameraCrouchSpeed = 8f;
+
 
     private void Start()
     {
@@ -60,19 +66,29 @@ public class PlayerMovement : MonoBehaviour
         // =====================================================
 
         bool isCrounching = Input.GetKey(KeyCode.LeftControl);
+        animator.SetBool("isCrouching", isCrounching);
 
         if (isCrounching)
         {
             controller.height = crounchHeight;
             controller.center = crounchCenter;
-            transform.localScale = new Vector3(1f, 0.5f, 1f);
         }
         else
         {
             controller.height = standingHeight;
             controller.center = standingCenter;
-            transform.localScale = new Vector3(1f, 1f, 1f);
         }
+
+
+        // =====================================================
+        // CÁMARA
+        // =====================================================
+
+        float targetCameraHeight = isCrounching ? crouchCameraHeight : standingCameraHeight;
+        Vector3 cameraPosition = cameraTransform.localPosition;
+
+        cameraPosition.y = Mathf.Lerp(cameraPosition.y, targetCameraHeight, cameraCrouchSpeed * Time.deltaTime);
+        cameraTransform.localPosition = cameraPosition;
 
 
         // =====================================================
