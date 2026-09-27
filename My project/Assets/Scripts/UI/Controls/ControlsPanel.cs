@@ -54,6 +54,25 @@ public class ControlsPanel : MonoBehaviour
 
     public static bool IsCapturing { get; private set; }
 
+    /// <summary>Esperando una tecla o preguntando si se intercambian: Esc y Retroceso son de este panel.</summary>
+    public static bool IsBusy => IsCapturing || conflictShown;
+    private static bool conflictShown;
+
+    private System.Action onBack;
+
+    /// <summary>
+    /// Para usarlo fuera del menú principal (la pausa): se llama con el objeto apagado, antes de que arranque.
+    /// onBack agrega un botón Volver al pie.
+    /// </summary>
+    public void Setup(TMP_FontAsset display, TMP_FontAsset label, TMP_FontAsset body, Sprite roundedSprite, System.Action back)
+    {
+        displayFont = display;
+        labelFont = label;
+        bodyFont = body;
+        rounded = roundedSprite;
+        onBack = back;
+    }
+
     // =====================================================================
     // Ciclo de vida
     // =====================================================================
@@ -154,6 +173,7 @@ public class ControlsPanel : MonoBehaviour
                                 $"<color=#F3F4F6>{KeyBindings.Name(other.Value)}</color>. ¿Querés intercambiarlas? " +
                                 $"{KeyBindings.Name(other.Value)} pasaría a {KeyBindings.Label(action)}.";
             conflictOpen = true;
+            conflictShown = true;
             conflictBar.gameObject.SetActive(true);
             RefreshRows();
             return;
@@ -173,6 +193,7 @@ public class ControlsPanel : MonoBehaviour
     private void CloseConflict()
     {
         conflictOpen = false;
+        conflictShown = false;
         if (conflictBar != null) conflictBar.gameObject.SetActive(false);
         if (root != null) RefreshRows();
     }
@@ -286,8 +307,14 @@ public class ControlsPanel : MonoBehaviour
         y += 108f;
 
         // ---- Pie ----
-        Button(root, Pad, y, 170f, 40f, "Restablecer", false, ResetAll);
-        savedText = Text(Place(Node("Guardado", root), Pad + 186f, y, 140f, 40f), labelFont, 16f, Ok, TextAlignmentOptions.MidlineLeft, 12f, true);
+        float footX = Pad;
+        if (onBack != null)
+        {
+            Button(root, footX, y, 130f, 40f, "Volver", false, onBack);
+            footX += 146f;
+        }
+        Button(root, footX, y, 170f, 40f, "Restablecer", false, ResetAll);
+        savedText = Text(Place(Node("Guardado", root), footX + 186f, y, 140f, 40f), labelFont, 16f, Ok, TextAlignmentOptions.MidlineLeft, 12f, true);
         savedText.text = "Guardado";
         savedText.alpha = 0f;
 
