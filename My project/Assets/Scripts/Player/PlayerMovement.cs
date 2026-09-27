@@ -34,6 +34,16 @@ public class PlayerMovement : MonoBehaviour
     public float cameraCrouchSpeed = 8f;
 
 
+    private float moveX, moveZ;
+
+    // Como el Input Manager (sensibilidad y gravedad 3, con snap): llega al valor en un tercio de segundo
+    // y al cambiar de dirección pasa por cero de golpe.
+    private static float SmoothAxis(float current, float target)
+    {
+        if (target != 0f && current != 0f && Mathf.Sign(target) != Mathf.Sign(current)) current = 0f;
+        return Mathf.MoveTowards(current, target, 3f * Time.deltaTime);
+    }
+
     private void Start()
     {
         controller = GetComponent<CharacterController>();
@@ -49,8 +59,11 @@ public class PlayerMovement : MonoBehaviour
         // MOVIMIENTO
         // =====================================================
 
-        float x = Input.GetAxis("Horizontal");
-        float z = Input.GetAxis("Vertical");
+        // Teclas reasignables (US 155), suavizadas como Input.GetAxis.
+        moveX = SmoothAxis(moveX, KeyBindings.Axis(GameAction.Izquierda, GameAction.Derecha));
+        moveZ = SmoothAxis(moveZ, KeyBindings.Axis(GameAction.Atras, GameAction.Adelante));
+        float x = moveX;
+        float z = moveZ;
 
         animator.SetFloat("VelX", x);
         animator.SetFloat("VelZ", z);
@@ -65,7 +78,7 @@ public class PlayerMovement : MonoBehaviour
         // AGACHARSE
         // =====================================================
 
-        bool isCrounching = Input.GetKey(KeyCode.LeftControl);
+        bool isCrounching = KeyBindings.Held(GameAction.Agacharse);
         animator.SetBool("isCrouching", isCrounching);
 
         if (isCrounching)
@@ -103,7 +116,7 @@ public class PlayerMovement : MonoBehaviour
         {
             currentSpeed = crounchSpeed;
         }
-        else if (Input.GetKey(KeyCode.LeftShift))
+        else if (KeyBindings.Held(GameAction.Correr))
         {
             currentSpeed = sprintSpeed;
             isSprinting = true;
@@ -130,7 +143,7 @@ public class PlayerMovement : MonoBehaviour
         // SALTO
         // =====================================================
 
-        if (Input.GetButtonDown("Jump") && controller.isGrounded)
+        if (KeyBindings.Down(GameAction.Saltar) && controller.isGrounded)
         {
             verticalVelocity = jumpForce;
 

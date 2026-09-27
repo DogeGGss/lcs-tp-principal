@@ -76,13 +76,13 @@ public class Pistola : MonoBehaviour, IHudWeapon
         if (isReloading) return;
 
         // Disparo con clic izquierdo.
-        if (Input.GetMouseButtonDown(0))
+        if (KeyBindings.Down(GameAction.Disparar))
         {
             Shoot();
         }
 
         // Recarga con la tecla R.
-        if (Input.GetKeyDown(KeyCode.R))
+        if (KeyBindings.Down(GameAction.Recargar))
         {
             if (currentAmmo < maxAmmo && reserveAmmo > 0)
             {

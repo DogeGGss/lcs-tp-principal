@@ -31,6 +31,9 @@ public class Mitre : MonoBehaviour, IHudWeapon
 
     [Header("Zoom al apuntar (1.25x)")]
     public float zoomFactor = 1.25f;
+
+    /// <summary>Verdadero mientras se apunta con la mira del Mitre.</summary>
+    public static bool Aiming { get; private set; }
     private float defaultFOV;
     private Camera camComponent;
 
@@ -108,6 +111,7 @@ public class Mitre : MonoBehaviour, IHudWeapon
 
     void OnDisable()
     {
+        Aiming = false;
         isReloading = false;
         isEquipping = false;
 
@@ -141,14 +145,14 @@ public class Mitre : MonoBehaviour, IHudWeapon
         if (isReloading || isEquipping) return;
 
         // CA2: Disparo automático manteniendo presionado el clic izquierdo
-        if (Input.GetMouseButton(0) && Time.time >= nextTimeToFire)
+        if (KeyBindings.Held(GameAction.Disparar) && Time.time >= nextTimeToFire)
         {
             nextTimeToFire = Time.time + (1f / fireRate);
             Shoot();
         }
 
         // CA4: Recarga con R
-        if (Input.GetKeyDown(KeyCode.R))
+        if (KeyBindings.Down(GameAction.Recargar))
         {
             if (currentAmmo < maxAmmo && reserveAmmo > 0)
             {
@@ -174,7 +178,7 @@ public class Mitre : MonoBehaviour, IHudWeapon
 
         // Retroceso, dispersión, zonas, daño por distancia, marcas y marcador de impacto (núcleo de disparo).
         // Apuntar con el zoom (clic derecho) reduce la dispersión (US 167, CA5).
-        bool aiming = Input.GetMouseButton(1) && zoomFactor > 1f;
+        bool aiming = KeyBindings.Held(GameAction.Apuntar) && zoomFactor > 1f;
         WeaponFire.Fire(Data, playerCamera, shooter, aiming, maxRange);
     }
 
@@ -182,7 +186,10 @@ public class Mitre : MonoBehaviour, IHudWeapon
     {
         if (camComponent == null) return;
 
-        if (Input.GetMouseButton(1)) // Clic derecho mantenido
+        // Apuntando con la mira: CameraLook usa la sensibilidad al apuntar (US 155).
+        Aiming = KeyBindings.Held(GameAction.Apuntar) && zoomFactor > 1f;
+
+        if (KeyBindings.Held(GameAction.Apuntar)) // Clic derecho mantenido (tecla reasignable)
         {
             camComponent.fieldOfView = Mathf.Lerp(camComponent.fieldOfView, defaultFOV / zoomFactor, Time.deltaTime * 10f);
         }

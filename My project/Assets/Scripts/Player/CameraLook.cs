@@ -8,6 +8,9 @@ public class CameraLook : MonoBehaviour
 
     float xRotation = 0;
 
+    private float sensibilidadApuntando = 1f;
+    private bool invertirY;
+
     private const string CLAVE_SENSIBILIDAD = "Sensibilidad";
     private const float SENSIBILIDAD_POR_DEFECTO = 1.5f;
 
@@ -38,6 +41,10 @@ public class CameraLook : MonoBehaviour
             SENSIBILIDAD_POR_DEFECTO
         );
 
+        // Opciones de controles (US 155): sensibilidad al apuntar con mira y eje Y invertido.
+        sensibilidadApuntando = KeyBindings.AimSensitivity;
+        invertirY = KeyBindings.InvertY;
+
         // =========================
         // CAMPO DE VISIÓN
         // =========================
@@ -57,11 +64,13 @@ public class CameraLook : MonoBehaviour
 
     void Update()
     {
+        float sensibilidad = Mitre.Aiming ? mouseSensivility * sensibilidadApuntando : mouseSensivility;
+
         float mouseX =
-            Input.GetAxis("Mouse X") * mouseSensivility;
+            Input.GetAxis("Mouse X") * sensibilidad;
 
         float mouseY =
-            Input.GetAxis("Mouse Y") * mouseSensivility;
+            Input.GetAxis("Mouse Y") * sensibilidad * (invertirY ? -1f : 1f);
 
         xRotation -= mouseY;
 

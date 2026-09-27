@@ -18,7 +18,7 @@ public class PlayerAbility : MonoBehaviour
     private void Update()
     {
         if (CooldownLeft > 0f) CooldownLeft = Mathf.Max(0f, CooldownLeft - Time.deltaTime);
-        if (ability != null && !ShopUI.IsOpen && Input.GetKeyDown(ability.key)) TryUse();
+        if (ability != null && !ShopUI.IsOpen && KeyBindings.Down(GameAction.Habilidad)) TryUse();
     }
 
     public bool TryUse()

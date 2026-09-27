@@ -288,7 +288,7 @@ public class CombatHud : MonoBehaviour
     {
         icon.sprite = data.icon;
         icon.enabled = data.icon != null;
-        keyText.text = data.key.ToString();
+        keyText.text = KeyBindings.Label(GameAction.Habilidad);
         nameText.text = data.displayName;
         float nameW = Width(nameText, data.displayName.ToUpperInvariant());
         float x = (SkillW - (24f + 8f + nameW)) / 2f;
@@ -348,7 +348,7 @@ public class CombatHud : MonoBehaviour
 
         bool empty = hasAmmo && ammo == 0 && !reloading;
         hint.SetActive(empty);
-        if (empty) hintText.text = reserve >= 0 ? "R · Recargar" : "Sin balas";
+        if (empty) hintText.text = reserve >= 0 ? KeyBindings.Label(GameAction.Recargar) + " · Recargar" : "Sin balas";
     }
 
     // El arma en la mano: el arma principal o la secundaria (las dos implementan IHudWeapon); si no, el cuchillo.

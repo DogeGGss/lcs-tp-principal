@@ -85,19 +85,19 @@ public class WeaponSwitcher : MonoBehaviour
         }
 
         // Tecla 1: Mitre (Arma principal), solo si lo tiene
-        if (Input.GetKeyDown(KeyCode.Alpha1) && TieneMitre())
+        if (KeyBindings.Down(GameAction.ArmaPrincipal) && TieneMitre())
         {
             EquipMitre();
         }
 
         // Tecla 2: Pistola (Arma secundaria)
-        if (Input.GetKeyDown(KeyCode.Alpha2))
+        if (KeyBindings.Down(GameAction.ArmaSecundaria))
         {
             EquipPistol();
         }
 
         // Tecla 3: Cuchillo (Melee)
-        if (Input.GetKeyDown(KeyCode.Alpha3))
+        if (KeyBindings.Down(GameAction.Cuchillo))
         {
             EquipKnife();
         }

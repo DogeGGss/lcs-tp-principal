@@ -11,7 +11,7 @@ using static ShopUIKit;
 // equipamiento del jugador (PlayerLoadout), que es el que aplica las reglas de compra.
 public class ShopUI : MonoBehaviour
 {
-    [SerializeField] private KeyCode openKey = KeyCode.B;
+    // La tecla para abrir la tienda se elige en Opciones > Controles (KeyBindings, US 155).
     [Tooltip("Lo mínimo que se cobra la próxima ronda (una derrota), para decidir si conviene ahorrar.")]
     [SerializeField] private int minimumNextRound = 1900;
 
@@ -176,7 +176,7 @@ public class ShopUI : MonoBehaviour
             if (loadout == null) return;
         }
 
-        if (Input.GetKeyDown(openKey)) SetOpen(!open);
+        if (KeyBindings.Down(GameAction.Tienda)) SetOpen(!open);
         else if (open) HandleKeys();
         UpdateLive();
     }
@@ -1022,14 +1022,14 @@ public class ShopUI : MonoBehaviour
     {
         for (int i = 0; i < loadoutCells.Length; i++) Clear(loadoutCells[i]);
 
-        SlotHeader(0, "1", "Principal");
+        SlotHeader(0, KeyBindings.Label(GameAction.ArmaPrincipal), "Principal");
         SlotWeapon(0, loadout.Primary);
-        SlotHeader(1, "2", "Secundaria");
+        SlotHeader(1, KeyBindings.Label(GameAction.ArmaSecundaria), "Secundaria");
         SlotWeapon(1, loadout.Secondary);
-        SlotHeader(2, "3", "Cuchillo");
+        SlotHeader(2, KeyBindings.Label(GameAction.Cuchillo), "Cuchillo");
         SlotLabel(2, 18f, "Cuchillo", Ink);
 
-        SlotHeader(3, "4", "Granadas");
+        SlotHeader(3, KeyBindings.Label(GameAction.Granadas), "Granadas");
         float x = 18f;
         foreach (ShopItem grenade in catalog.ItemsIn(ShopCategory.Grenades))
         {
@@ -1400,7 +1400,7 @@ public class ShopUI : MonoBehaviour
         RectTransform hint = Place(Node("AvisoTienda", hud), 0f, 150f, 10f, 48f);
         Image(hint, rounded, HudColor, 24f);
         Border(hint, 24f, Over(Rgb(242, 154, 56, 0.6f), HudBase));
-        Key(hint, 19f, 9f, "B", true, false);
+        Key(hint, 19f, 9f, KeyBindings.Label(GameAction.Tienda), true, false);
         TextMeshProUGUI hintText = Text(Place(Node("Texto", hint), 59f, 0f, 200f, 48f), labelFont, 20f, Ink, TextAlignmentOptions.MidlineLeft, 10f, true);
         hintText.text = "Tienda";
         float hintWidth = 59f + Width(hintText, "TIENDA") + 19f;
@@ -1439,7 +1439,7 @@ public class ShopUI : MonoBehaviour
         content.anchoredPosition = Vector2.zero;
         content.sizeDelta = new Vector2(1920f, 92f);
 
-        Key(content, 56f, 31f, "B", true, false);
+        Key(content, 56f, 31f, KeyBindings.Label(GameAction.Tienda), true, false);
         TextMeshProUGUI title = Text(Place(Node("Titulo", content), 102f, 18f, 500f, 40f), displayFont, 40f, Ink, TextAlignmentOptions.MidlineLeft, 10f, true);
         title.text = "Tienda";
         barSub = Text(Place(Node("Modo", content), 102f, 58f, 500f, 16f), labelFont, 16f, Mute, TextAlignmentOptions.MidlineLeft, 14f, true);
@@ -1488,7 +1488,7 @@ public class ShopUI : MonoBehaviour
         Border(catsPanel, 10f, LineColor);
 
         // Atajos en renglones que se acomodan solos, como el ".legend" de la maqueta.
-        (string key, string label)[] shortcuts = { ("B", "Cerrar"), ("1–9", "Elegir"), ("↵", "Comprar"), ("⌫", "Volver"), (null, "Clic der. vender") };
+        (string key, string label)[] shortcuts = { (KeyBindings.Label(GameAction.Tienda), "Cerrar"), ("1–9", "Elegir"), ("↵", "Comprar"), ("⌫", "Volver"), (null, "Clic der. vender") };
         float x = 19f, y = 15f;
         foreach ((string key, string label) in shortcuts)
         {
