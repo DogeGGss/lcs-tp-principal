@@ -95,10 +95,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Mitre
   weaponName: Mitre
   shopItem: {fileID: 11400000, guid: d63f89b537d3fb34585906ec5837827f, type: 2}
-  debugVisualRecoil: 0
-  headDamage: 160
-  bodyDamage: 40
-  legsDamage: 34
   maxRange: 300
   maxAmmo: 30
   currentAmmo: 0
@@ -107,11 +103,8 @@ MonoBehaviour:
   fireRate: 9.75
   equipTime: 1
   speedMultiplier: 0.92
-  cameraTransform: {fileID: 0}
-  verticalRecoil: 1.2
-  horizontalRecoil: 0.8
-  recoilRecoverySpeed: 6
   zoomFactor: 1.25
   playerCamera: {fileID: 0}
-  shootSound: {fileID: 0}
-  reloadSound: {fileID: 0}
+  shootSound: {fileID: 8300000, guid: 62a21bf6aa0ec7a4d8c7062933357202, type: 3}
+  reloadSound: {fileID: 8300000, guid: 41f5815d5de3df142a84669da2b869e0, type: 3}
+  sfxGroup: {fileID: -490443676671801125, guid: ddda7e32a2420c4489fcc2a1c31e1976, type: 2}

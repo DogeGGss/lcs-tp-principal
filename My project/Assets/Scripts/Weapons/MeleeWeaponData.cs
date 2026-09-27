@@ -15,4 +15,6 @@ public class MeleeWeaponData : ScriptableObject
     [Range(0f, 180f)] public float attackAngle = 60f;
     [Tooltip("Multiplicador de velocidad mientras esta equipada (1 = sin bonus)")]
     public float moveSpeedMultiplier = 1.15f;
+    [Tooltip("Sonido al sacar el arma con su tecla (US 114)")]
+    public AudioClip drawSound;
 }

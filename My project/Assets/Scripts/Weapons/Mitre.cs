@@ -41,6 +41,8 @@ public class Mitre : MonoBehaviour, IHudWeapon
     public Camera playerCamera;
     public AudioClip shootSound;
     public AudioClip reloadSound;
+    [Tooltip("Canal del mixer (SFX), así respeta el volumen de efectos de Opciones (US 086, CA4).")]
+    public UnityEngine.Audio.AudioMixerGroup sfxGroup;
 
     private AudioSource audioSource;
     private bool isReloading = false;
@@ -92,6 +94,7 @@ public class Mitre : MonoBehaviour, IHudWeapon
         {
             audioSource = gameObject.AddComponent<AudioSource>();
         }
+        if (sfxGroup != null) audioSource.outputAudioMixerGroup = sfxGroup;
 
         // Buscar el controlador de movimiento del jugador
         playerMovement = GetComponentInParent<PlayerMovement>();

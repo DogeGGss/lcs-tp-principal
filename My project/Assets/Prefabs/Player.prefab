@@ -360,6 +360,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::MeleeWeaponHolder
   defaultWeapon: {fileID: 11400000, guid: e03e3077a5b2a104a890a79233e1e77f, type: 2}
   viewModelParent: {fileID: 851363783184461142}
+  sfxGroup: {fileID: -490443676671801125, guid: ddda7e32a2420c4489fcc2a1c31e1976, type: 2}
 --- !u!114 &5978433496340832004
 MonoBehaviour:
   m_ObjectHideFlags: 0
