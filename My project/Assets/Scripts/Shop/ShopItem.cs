@@ -50,6 +50,20 @@ public class ShopItem : ScriptableObject
     [TextArea] public string recoil;
     public DamageBand[] bands;
 
+    [Header("Retroceso (US 168)")]
+    [Tooltip("Balas seguidas que salen exactas antes de que la mira empiece a subir.")]
+    public int recoilExactShots;
+    [Tooltip("Grados que sube la mira por bala.")]
+    public float recoilKick;
+    [Tooltip("Grados máximos que sube la mira.")]
+    public float recoilMaxClimb;
+    [Tooltip("Ancho del zigzag a cada lado, en grados, una vez que llegó arriba (0 = sin zigzag).")]
+    public float recoilSway;
+    [Tooltip("Balas que tarda el zigzag en cruzar de un lado al otro.")]
+    public int recoilSwayShots = 4;
+    [Tooltip("Segundos que tarda la mira en volver al punto de partida al dejar de disparar.")]
+    public float recoilRecovery = 0.3f;
+
     [Header("Escudo")]
     public int shieldPoints;
 
@@ -73,6 +87,23 @@ public class ShopItem : ScriptableObject
     {
         int perHit = zone == BodyZone.Head ? band.head : zone == BodyZone.Legs ? band.legs : band.body;
         return perHit * Mathf.Max(1, pellets);
+    }
+
+    // Tramo de distancia que corresponde a un impacto (US 165). Sin tramos, null.
+    public DamageBand BandAt(float distance)
+    {
+        if (bands == null || bands.Length == 0) return null;
+        foreach (DamageBand band in bands)
+            if (band.upTo <= 0f || distance <= band.upTo) return band;
+        return bands[bands.Length - 1];
+    }
+
+    // Daño de una bala (o de un perdigón) a una zona y a una distancia (US 165).
+    public int HitDamage(BodyZone zone, float distance)
+    {
+        DamageBand band = BandAt(distance);
+        if (band == null) return 0;
+        return zone == BodyZone.Head ? band.head : zone == BodyZone.Legs ? band.legs : band.body;
     }
 
     public string BandLabel(int index)

@@ -35,6 +35,20 @@ public class CombatHud : MonoBehaviour
     [Tooltip("Con la vida por debajo de esta parte del máximo, se ve en rojo y se tiñen los bordes de la pantalla.")]
     [SerializeField, Range(0f, 1f)] private float criticalHealth = 0.25f;
 
+    [Header("Marcador de impacto (US 165)")]
+    [Tooltip("Canal del mixer para el sonido del marcador (SFX), así respeta el volumen de efectos.")]
+    [SerializeField] private UnityEngine.Audio.AudioMixerGroup sfxGroup;
+
+    // Cuatro rayitas en la mira durante 0,15 s: blancas al acertar, amarillas a la cabeza, rojas y más grandes si mata.
+    private const float HitMarkerTime = 0.15f;
+    private static Color HitHeadColor => new Color(1f, 0.824f, 0.247f); // #FFD23F
+    private RectTransform hitMarker;
+    private readonly UnityEngine.UI.Image[] hitLines = new UnityEngine.UI.Image[4];
+    private float hitAt = -10f;
+    private HitMarkerKind hitKind;
+    private AudioSource hitAudio;
+    private AudioClip hitBodyClip, hitHeadClip, hitKillClip;
+
     // Medidas de la maqueta (px en 1920 x 1080).
     private const float BarW = 934f, BarH = 170f, BlockW = 240f, SkillW = 150f;
     private const float RailLeftX = 256f, SkillX = 392f, RailRightX = 558f, AmmoX = 694f;
@@ -67,11 +81,22 @@ public class CombatHud : MonoBehaviour
     private void Awake()
     {
         Build();
+        BuildHitSounds();
     }
 
     private void Start()
     {
         FindPlayer();
+    }
+
+    private void OnEnable()
+    {
+        WeaponFire.Hit += OnHit;
+    }
+
+    private void OnDisable()
+    {
+        WeaponFire.Hit -= OnHit;
     }
 
     private void OnDestroy()
@@ -92,6 +117,84 @@ public class CombatHud : MonoBehaviour
         UpdateHealth();
         UpdateSkill();
         UpdateAmmo();
+        UpdateHitMarker();
+    }
+
+    // ---------- Marcador de impacto ----------
+
+    private void OnHit(HitMarkerKind kind)
+    {
+        hitKind = kind;
+        hitAt = Time.unscaledTime;
+        AudioClip clip = kind == HitMarkerKind.Kill ? hitKillClip : kind == HitMarkerKind.Head ? hitHeadClip : hitBodyClip;
+        if (hitAudio != null && clip != null) hitAudio.PlayOneShot(clip);
+    }
+
+    private void UpdateHitMarker()
+    {
+        float t = (Time.unscaledTime - hitAt) / HitMarkerTime;
+        bool visible = t >= 0f && t < 1f;
+        hitMarker.gameObject.SetActive(visible);
+        if (!visible) return;
+
+        Color color = hitKind == HitMarkerKind.Kill ? Bad : hitKind == HitMarkerKind.Head ? HitHeadColor : Color.white;
+        color.a = t < 0.6f ? 1f : 1f - (t - 0.6f) / 0.4f;
+        foreach (UnityEngine.UI.Image line in hitLines) line.color = color;
+        hitMarker.localScale = Vector3.one * (hitKind == HitMarkerKind.Kill ? 1.35f : 1f);
+    }
+
+    private void BuildHitMarker(RectTransform root)
+    {
+        hitMarker = Node("MarcadorImpacto", root);
+        hitMarker.anchorMin = hitMarker.anchorMax = hitMarker.pivot = new Vector2(0.5f, 0.5f);
+        hitMarker.anchoredPosition = Vector2.zero;
+        hitMarker.sizeDelta = new Vector2(40f, 40f);
+        for (int i = 0; i < 4; i++)
+        {
+            // Una rayita en cada diagonal, a 10 px del centro, apuntando hacia afuera.
+            float angle = 45f + 90f * i;
+            Vector2 dir = new Vector2(Mathf.Cos(angle * Mathf.Deg2Rad), Mathf.Sin(angle * Mathf.Deg2Rad));
+            RectTransform line = Node("Raya", hitMarker);
+            line.anchorMin = line.anchorMax = line.pivot = new Vector2(0.5f, 0.5f);
+            line.anchoredPosition = dir * 13f;
+            line.sizeDelta = new Vector2(3f, 11f);
+            line.localRotation = Quaternion.Euler(0f, 0f, angle - 90f);
+            hitLines[i] = Image(line, null, Color.white);
+            line.gameObject.AddComponent<UnityEngine.UI.Shadow>().effectColor = new Color(0f, 0f, 0f, 0.6f);
+        }
+        hitMarker.gameObject.SetActive(false);
+    }
+
+    // Sonidos cortos generados, para no depender de archivos: un clic al cuerpo, un "ding" a la cabeza
+    // y un golpe más grave con "ding" al matar.
+    private void BuildHitSounds()
+    {
+        hitAudio = gameObject.AddComponent<AudioSource>();
+        hitAudio.playOnAwake = false;
+        hitAudio.spatialBlend = 0f;
+        hitAudio.volume = 0.35f;
+        hitAudio.outputAudioMixerGroup = sfxGroup;
+        hitBodyClip = Tone("ImpactoCuerpo", 0.05f, 1900f, 0f, 60f);
+        hitHeadClip = Tone("ImpactoCabeza", 0.10f, 2600f, 3900f, 28f);
+        hitKillClip = Tone("ImpactoBaja", 0.16f, 900f, 2600f, 18f);
+    }
+
+    private static AudioClip Tone(string name, float seconds, float freqA, float freqB, float decay)
+    {
+        const int rate = 44100;
+        int samples = Mathf.CeilToInt(seconds * rate);
+        float[] data = new float[samples];
+        for (int i = 0; i < samples; i++)
+        {
+            float time = i / (float)rate;
+            float envelope = Mathf.Exp(-decay * time) * Mathf.Clamp01(time * 400f);
+            float wave = Mathf.Sin(2f * Mathf.PI * freqA * time);
+            if (freqB > 0f) wave = wave * 0.6f + Mathf.Sin(2f * Mathf.PI * freqB * time) * 0.4f;
+            data[i] = wave * envelope * 0.8f;
+        }
+        AudioClip clip = AudioClip.Create(name, samples, 1, rate, false);
+        clip.SetData(data, 0);
+        return clip;
     }
 
     // ---------- Jugador ----------
@@ -293,6 +396,7 @@ public class CombatHud : MonoBehaviour
         BuildSkill(bar);
         Image(Place(Node("Rieles", bar), RailRightX, 160f, 120f, 12f), rails, Color.white);
         BuildAmmo(bar);
+        BuildHitMarker(root);
     }
 
     private void BuildHealth(RectTransform bar)

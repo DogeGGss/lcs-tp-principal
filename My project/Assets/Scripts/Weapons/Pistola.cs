@@ -4,7 +4,7 @@ using UnityEngine.Audio;
 
 public class Pistola : MonoBehaviour, IHudWeapon
 {
-    [Header("EstadÃ­sticas de Arma")]
+    [Header("Estadísticas de Arma")]
     public int damage = 25;
     public int maxAmmo = 20;
     public int currentAmmo;
@@ -14,6 +14,9 @@ public class Pistola : MonoBehaviour, IHudWeapon
     [Header("Referencias")]
     public Camera playerCamera;
 
+    [Tooltip("Ficha de la tienda de esta arma. Si falta, usa la pistola inicial del catálogo (Línea A).")]
+    public ShopItem shopItem;
+
     public AudioClip shootSound;
     public AudioClip reloadSound;
 
@@ -21,7 +24,8 @@ public class Pistola : MonoBehaviour, IHudWeapon
     public AudioMixerGroup sfxGroup;
 
     private AudioSource audioSource;
-    private HealthSystem ownHealth;
+    private Transform shooter;
+    private ShopItem data;
     private bool isReloading = false;
     private float reloadStartTime;
 
@@ -41,8 +45,9 @@ public class Pistola : MonoBehaviour, IHudWeapon
             playerCamera = Camera.main;
         }
 
-        // Vida de quien dispara, para no pegarse a sí mismo
-        ownHealth = GetComponentInParent<HealthSystem>();
+        // Quien dispara: sus balas nunca le pegan a él mismo (US 165)
+        PlayerMovement owner = GetComponentInParent<PlayerMovement>();
+        shooter = owner != null ? owner.transform : transform.root;
 
         audioSource = GetComponent<AudioSource>();
 
@@ -67,7 +72,7 @@ public class Pistola : MonoBehaviour, IHudWeapon
 
     void Update()
     {
-        // Si estÃ¡ recargando, no procesa disparo ni nueva recarga.
+        // Si está recargando, no procesa disparo ni nueva recarga.
         if (isReloading) return;
 
         // Disparo con clic izquierdo.
@@ -90,14 +95,14 @@ public class Pistola : MonoBehaviour, IHudWeapon
     {
         if (currentAmmo <= 0)
         {
-            Debug.Log("Cargador vacÃ­o (clic). Presiona R para recargar.");
+            Debug.Log("Cargador vacío (clic). Presiona R para recargar.");
             return;
         }
 
         currentAmmo--;
 
         Debug.Log(
-            "Â¡PUM! Balas en cargador: " +
+            "¡PUM! Balas en cargador: " +
             currentAmmo +
             " | Reserva: " +
             reserveAmmo
@@ -109,18 +114,33 @@ public class Pistola : MonoBehaviour, IHudWeapon
             audioSource.PlayOneShot(shootSound);
         }
 
-        RaycastHit hit;
-        // Ignora las zonas invisibles (triggers) como la zona de compra, que frenaban la bala.
-        if (Physics.Raycast(playerCamera.transform.position, playerCamera.transform.forward, out hit, 100f, Physics.DefaultRaycastLayers, QueryTriggerInteraction.Ignore))
+        // Retroceso, dispersión, zonas, daño por distancia, marcas y marcador de impacto (núcleo de disparo).
+        WeaponFire.Fire(Data, playerCamera, shooter, false, 100f);
+    }
+
+    // Ficha del arma: la asignada o, si falta, la pistola inicial del catálogo de la tienda.
+    private ShopItem Data
+    {
+        get
         {
-            // La vida puede estar en el padre del collider que se tocó (por ejemplo, cabeza o torso).
-            HealthSystem targetHealth = hit.collider.GetComponentInParent<HealthSystem>();
-            if (targetHealth != null && targetHealth != ownHealth)
+            if (shopItem != null) return shopItem;
+            if (data == null)
             {
-                targetHealth.TakeDamage(damage);
+                PlayerLoadout loadout = GetComponentInParent<PlayerLoadout>();
+                if (loadout != null && loadout.Catalog != null) data = loadout.Catalog.starterSecondary;
+                if (data == null) data = FallbackData();
             }
-            ImpactMarks.Spawn(hit);
+            return data;
         }
+    }
+
+    // Sin tienda ni ficha: el daño de siempre a cualquier zona, sin dispersión ni retroceso.
+    private ShopItem FallbackData()
+    {
+        ShopItem item = ScriptableObject.CreateInstance<ShopItem>();
+        item.alias = "Pistola";
+        item.bands = new[] { new DamageBand { upTo = 0f, head = damage, body = damage, legs = damage } };
+        return item;
     }
 
     private IEnumerator ReloadRoutine()
@@ -138,7 +158,7 @@ public class Pistola : MonoBehaviour, IHudWeapon
 
         yield return new WaitForSeconds(reloadTime);
 
-        // CuÃ¡ntas balas faltan para llenar el cargador.
+        // Cuántas balas faltan para llenar el cargador.
         int neededAmmo = maxAmmo - currentAmmo;
 
         // Solo tomamos lo que realmente tenemos en reserva.

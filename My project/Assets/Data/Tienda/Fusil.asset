@@ -39,6 +39,12 @@ MonoBehaviour:
     head: 160
     body: 40
     legs: 34
+  recoilExactShots: 2
+  recoilKick: 0.9
+  recoilMaxClimb: 7
+  recoilSway: 1.5
+  recoilSwayShots: 4
+  recoilRecovery: 0.3
   shieldPoints: 0
   grenadeType: 0
   maxCarry: 1
