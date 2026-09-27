@@ -35,7 +35,7 @@ public class MeleeAttack : MonoBehaviour
     private void Update()
     {
         // CA1: Clic izquierdo para atacar
-        if (Input.GetMouseButtonDown(0))
+        if (KeyBindings.Down(GameAction.Disparar))
         {
             TryAttack();
         }

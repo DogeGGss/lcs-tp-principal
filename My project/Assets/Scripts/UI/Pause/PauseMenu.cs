@@ -712,7 +712,7 @@ public class PauseMenu : MonoBehaviour
         SliderRow("Música", ref y, 0.0001f, 1f, 0.05f, (v, label) => SetVolume(KeyMusic, v, label));
         SliderRow("Efectos", ref y, 0.0001f, 1f, 0.05f, (v, label) => SetVolume(KeyEffects, v, label));
         Group("Mouse", ref y);
-        SliderRow("Sensibilidad", ref y, 0.5f, 3f, 0.1f, SetSensitivity);        // mismo rango que el menú
+        SliderRow("Sensibilidad", ref y, KeyBindings.MinSensitivity, KeyBindings.MaxSensitivity, 0.1f, SetSensitivity); // mismo rango que Controles (US 155)
         Group("Video", ref y);
         SliderRow("Campo de visión", ref y, 60f, 100f, 1f, SetFov, true);        // mismo rango que el menú
         ScreenModeRow(ref y);
