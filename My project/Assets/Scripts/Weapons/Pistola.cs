@@ -119,6 +119,7 @@ public class Pistola : MonoBehaviour, IHudWeapon
             {
                 targetHealth.TakeDamage(damage);
             }
+            ImpactMarks.Spawn(hit);
         }
     }
 
