@@ -122,8 +122,8 @@ public class MeleeAttack : MonoBehaviour
 
             if (angleToTarget <= data.attackAngle / 2f)
             {
-                // Verificar que no haya una pared en el medio
-                if (Physics.Raycast(playerCamera.transform.position, directionToTarget, out RaycastHit hit, data.range))
+                // Verificar que no haya una pared en el medio (sin contar triggers, como las zonas de impacto de US 165)
+                if (Physics.Raycast(playerCamera.transform.position, directionToTarget, out RaycastHit hit, data.range, Physics.DefaultRaycastLayers, QueryTriggerInteraction.Ignore))
                 {
                     if (hit.collider == col)
                     {

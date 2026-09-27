@@ -297,6 +297,7 @@ public class PauseMenu : MonoBehaviour
         Block(FindObjectsByType<PlayerMovement>());
         Block(FindObjectsByType<MeleeAttack>());
         Block(FindObjectsByType<Pistola>());
+        Block(FindObjectsByType<Mitre>());
         Block(FindObjectsByType<WeaponSwitcher>());
         Block(FindObjectsByType<PlayerAbility>());
         Block(FindObjectsByType<ShopUI>());
