@@ -214,3 +214,12 @@ fecha_utc,us_numero,us_titulo,estado_anterior,estado_nuevo,tiempo_en_estado_ante
 2026-09-27T07:08:06.943047+00:00,245,US 168. Retroceso visible,LPR,TESTING,5h 24m,19468,https://github.com/DogeGGss/lcs-tp-principal/issues/245
 2026-09-27T07:08:06.943047+00:00,247,US 170. Marcas de impacto en el escenario,LPR,TESTING,5h 24m,19468,https://github.com/DogeGGss/lcs-tp-principal/issues/247
 2026-09-27T13:00:13.122772+00:00,141,US 117. Agregar sonido - Tienda,Blocked,LPR,3d 19h 28m,329333,https://github.com/DogeGGss/lcs-tp-principal/issues/141
+2026-09-27T17:40:26.533838+00:00,141,US 117. Agregar sonido - Tienda,LPR,TESTING,4h 40m,16813,https://github.com/DogeGGss/lcs-tp-principal/issues/141
+2026-09-27T17:40:26.533838+00:00,146,US 112. Agregar sonido - Menú principal,LPR,R2D,10h 32m,37939,https://github.com/DogeGGss/lcs-tp-principal/issues/146
+2026-09-27T17:40:26.533838+00:00,120,US 085. Créditos,LPR,R2D,1d 12h 8m,130107,https://github.com/DogeGGss/lcs-tp-principal/issues/120
+2026-09-27T17:40:26.533838+00:00,140,US 114. Agregar sonido - Cambio de equipamiento,Blocked,In Progress,4d 9m,346147,https://github.com/DogeGGss/lcs-tp-principal/issues/140
+2026-09-27T17:40:26.533838+00:00,147,US 091. Agregar sonido - Pistola,Blocked,In Progress,4d 9m,346147,https://github.com/DogeGGss/lcs-tp-principal/issues/147
+2026-09-27T17:40:26.533838+00:00,152,US 086. Agregar sonido - Fusil,Blocked,In Progress,4d 9m,346147,https://github.com/DogeGGss/lcs-tp-principal/issues/152
+2026-09-27T17:40:26.533838+00:00,216,US 155. Opciones de controles,In Progress,LPR,23h 42m,85336,https://github.com/DogeGGss/lcs-tp-principal/issues/216
+2026-09-27T17:40:26.533838+00:00,244,US 167. Dispersión de las armas,LPR,TESTING,15h 56m,57407,https://github.com/DogeGGss/lcs-tp-principal/issues/244
+2026-09-27T17:40:26.533838+00:00,252,US 171. Mira del arma,LPR,TESTING,15h 56m,57407,https://github.com/DogeGGss/lcs-tp-principal/issues/252
