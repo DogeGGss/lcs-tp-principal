@@ -375,6 +375,63 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::DamageZone
   damageToGive: 50
+--- !u!1001 &419434295
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 1832621792407355875, guid: ae01dab2187e4714280d3a96ff8bab32, type: 3}
+      propertyPath: m_Name
+      value: HUDCombate
+      objectReference: {fileID: 0}
+    - target: {fileID: 6446340463217018225, guid: ae01dab2187e4714280d3a96ff8bab32, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6446340463217018225, guid: ae01dab2187e4714280d3a96ff8bab32, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6446340463217018225, guid: ae01dab2187e4714280d3a96ff8bab32, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6446340463217018225, guid: ae01dab2187e4714280d3a96ff8bab32, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6446340463217018225, guid: ae01dab2187e4714280d3a96ff8bab32, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6446340463217018225, guid: ae01dab2187e4714280d3a96ff8bab32, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6446340463217018225, guid: ae01dab2187e4714280d3a96ff8bab32, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6446340463217018225, guid: ae01dab2187e4714280d3a96ff8bab32, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6446340463217018225, guid: ae01dab2187e4714280d3a96ff8bab32, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6446340463217018225, guid: ae01dab2187e4714280d3a96ff8bab32, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: ae01dab2187e4714280d3a96ff8bab32, type: 3}
 --- !u!1 &568727618
 GameObject:
   m_ObjectHideFlags: 0
@@ -566,10 +623,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Mitre
   weaponName: Mitre
-  debugVisualRecoil: 1
-  headDamage: 160
-  bodyDamage: 40
-  legsDamage: 34
+  shopItem: {fileID: 0}
   maxRange: 300
   maxAmmo: 30
   currentAmmo: 0
@@ -578,10 +632,6 @@ MonoBehaviour:
   fireRate: 9.75
   equipTime: 1
   speedMultiplier: 0.92
-  cameraTransform: {fileID: 0}
-  verticalRecoil: 1.2
-  horizontalRecoil: 0.8
-  recoilRecoverySpeed: 6
   zoomFactor: 1.25
   playerCamera: {fileID: 0}
   shootSound: {fileID: 0}
@@ -689,7 +739,6 @@ RectTransform:
   m_Children:
   - {fileID: 963562714}
   - {fileID: 1163230745}
-  - {fileID: 1442595884}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
@@ -1333,6 +1382,7 @@ MonoBehaviour:
   reserveAmmo: 60
   reloadTime: 1.5
   playerCamera: {fileID: 785197087}
+  shopItem: {fileID: 0}
   shootSound: {fileID: 8300000, guid: 000e8fc4d47011c44bc72c8defaa0ef4, type: 3}
   reloadSound: {fileID: 0}
   sfxGroup: {fileID: -490443676671801125, guid: ddda7e32a2420c4489fcc2a1c31e1976, type: 2}
@@ -1497,81 +1547,6 @@ MonoBehaviour:
   playerHealth: {fileID: 136093470}
   healthText: {fileID: 576767496}
   shieldText: {fileID: 0}
---- !u!1 &1442595883
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1442595884}
-  - component: {fileID: 1442595886}
-  - component: {fileID: 1442595885}
-  m_Layer: 5
-  m_Name: Mira
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!224 &1442595884
-RectTransform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1442595883}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 701351789}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0.5}
-  m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 20, y: 20}
-  m_Pivot: {x: 0.5, y: 0.5}
---- !u!114 &1442595885
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1442595883}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
-  m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 0, b: 0, a: 1}
-  m_RaycastTarget: 1
-  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
-  m_Maskable: 1
-  m_OnCullStateChanged:
-    m_PersistentCalls:
-      m_Calls: []
-  m_Sprite: {fileID: 0}
-  m_Type: 0
-  m_PreserveAspect: 0
-  m_FillCenter: 1
-  m_FillMethod: 4
-  m_FillAmount: 1
-  m_FillClockwise: 1
-  m_FillOrigin: 0
-  m_UseSpriteMesh: 0
-  m_PixelsPerUnitMultiplier: 1
---- !u!222 &1442595886
-CanvasRenderer:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1442595883}
-  m_CullTransparentMesh: 1
 --- !u!1 &1507335677
 GameObject:
   m_ObjectHideFlags: 0
@@ -2161,3 +2136,4 @@ SceneRoots:
   - {fileID: 701351789}
   - {fileID: 1591288475}
   - {fileID: 136093466}
+  - {fileID: 419434295}
