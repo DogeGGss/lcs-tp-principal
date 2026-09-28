@@ -261,3 +261,10 @@ fecha_utc,us_numero,us_titulo,estado_anterior,estado_nuevo,tiempo_en_estado_ante
 2026-09-28T01:45:15.766845+00:00,43,US 063. Espacios del inventario,LPR,TESTING,2h 28m,8927,https://github.com/DogeGGss/lcs-tp-principal/issues/43
 2026-09-28T01:45:15.766845+00:00,63,US 065. Asignación de equipamientos,LPR,TESTING,2h 28m,8927,https://github.com/DogeGGss/lcs-tp-principal/issues/63
 2026-09-28T01:45:15.766845+00:00,45,US 064. Cambio entre equipamientos,LPR,TESTING,2h 28m,8927,https://github.com/DogeGGss/lcs-tp-principal/issues/45
+2026-09-28T07:44:34.368150+00:00,89,US 013. ARMA Principal 1 - Mitre (Fusil),LPR,TESTING,1d 6h,108055,https://github.com/DogeGGss/lcs-tp-principal/issues/89
+2026-09-28T07:44:34.368150+00:00,216,US 155. Opciones de controles,TESTING,R2D,5h 59m,21558,https://github.com/DogeGGss/lcs-tp-principal/issues/216
+2026-09-28T07:44:34.368150+00:00,113,US 012. Ataque cuerpo a cuerpo,TESTING,R2D,3d 9h 59m,295195,https://github.com/DogeGGss/lcs-tp-principal/issues/113
+2026-09-28T07:44:34.368150+00:00,140,US 114. Agregar sonido - Cambio de equipamiento,TESTING,R2D,5h 59m,21558,https://github.com/DogeGGss/lcs-tp-principal/issues/140
+2026-09-28T07:44:34.368150+00:00,43,US 063. Espacios del inventario,TESTING,R2D,5h 59m,21558,https://github.com/DogeGGss/lcs-tp-principal/issues/43
+2026-09-28T07:44:34.368150+00:00,63,US 065. Asignación de equipamientos,TESTING,R2D,5h 59m,21558,https://github.com/DogeGGss/lcs-tp-principal/issues/63
+2026-09-28T07:44:34.368150+00:00,45,US 064. Cambio entre equipamientos,TESTING,R2D,5h 59m,21558,https://github.com/DogeGGss/lcs-tp-principal/issues/45
