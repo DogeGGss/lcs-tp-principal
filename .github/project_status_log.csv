@@ -250,3 +250,14 @@ fecha_utc,us_numero,us_titulo,estado_anterior,estado_nuevo,tiempo_en_estado_ante
 2026-09-27T23:16:28.402230+00:00,45,US 064. Cambio entre equipamientos,Blocked,LPR,4d 5h 45m,366309,https://github.com/DogeGGss/lcs-tp-principal/issues/45
 2026-09-27T23:16:28.402230+00:00,230,US 164. Elegir nombre de jugador,LPR,R2D,21h 32m,77569,https://github.com/DogeGGss/lcs-tp-principal/issues/230
 2026-09-27T23:16:28.402230+00:00,247,US 170. Marcas de impacto en el escenario,TESTING,R2D,16h 8m,58101,https://github.com/DogeGGss/lcs-tp-principal/issues/247
+2026-09-28T01:45:15.766845+00:00,178,US 127. Integrar animacón - Correr,TESTING,R2D,2h 28m,8927,https://github.com/DogeGGss/lcs-tp-principal/issues/178
+2026-09-28T01:45:15.766845+00:00,106,US 052. Reiniciar partida,TESTING,R2D,2h 28m,8927,https://github.com/DogeGGss/lcs-tp-principal/issues/106
+2026-09-28T01:45:15.766845+00:00,140,US 114. Agregar sonido - Cambio de equipamiento,LPR,TESTING,5h 20m,19219,https://github.com/DogeGGss/lcs-tp-principal/issues/140
+2026-09-28T01:45:15.766845+00:00,175,US 125. Integrar animación - Saltar,TESTING,R2D,18h 37m,67028,https://github.com/DogeGGss/lcs-tp-principal/issues/175
+2026-09-28T01:45:15.766845+00:00,187,US 128 - Estados visuales de los botones,LPR,TESTING,2d 6h 39m,196744,https://github.com/DogeGGss/lcs-tp-principal/issues/187
+2026-09-28T01:45:15.766845+00:00,214,US 153. Opciones de video,LPR,TESTING,1d 7h 47m,114426,https://github.com/DogeGGss/lcs-tp-principal/issues/214
+2026-09-28T01:45:15.766845+00:00,215,US 154. Opciones de sonido,LPR,TESTING,1d 2h 14m,94459,https://github.com/DogeGGss/lcs-tp-principal/issues/215
+2026-09-28T01:45:15.766845+00:00,216,US 155. Opciones de controles,LPR,TESTING,8h 4m,29089,https://github.com/DogeGGss/lcs-tp-principal/issues/216
+2026-09-28T01:45:15.766845+00:00,43,US 063. Espacios del inventario,LPR,TESTING,2h 28m,8927,https://github.com/DogeGGss/lcs-tp-principal/issues/43
+2026-09-28T01:45:15.766845+00:00,63,US 065. Asignación de equipamientos,LPR,TESTING,2h 28m,8927,https://github.com/DogeGGss/lcs-tp-principal/issues/63
+2026-09-28T01:45:15.766845+00:00,45,US 064. Cambio entre equipamientos,LPR,TESTING,2h 28m,8927,https://github.com/DogeGGss/lcs-tp-principal/issues/45
