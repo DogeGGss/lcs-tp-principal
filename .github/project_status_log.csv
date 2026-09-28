@@ -268,3 +268,16 @@ fecha_utc,us_numero,us_titulo,estado_anterior,estado_nuevo,tiempo_en_estado_ante
 2026-09-28T07:44:34.368150+00:00,43,US 063. Espacios del inventario,TESTING,R2D,5h 59m,21558,https://github.com/DogeGGss/lcs-tp-principal/issues/43
 2026-09-28T07:44:34.368150+00:00,63,US 065. Asignación de equipamientos,TESTING,R2D,5h 59m,21558,https://github.com/DogeGGss/lcs-tp-principal/issues/63
 2026-09-28T07:44:34.368150+00:00,45,US 064. Cambio entre equipamientos,TESTING,R2D,5h 59m,21558,https://github.com/DogeGGss/lcs-tp-principal/issues/45
+2026-09-28T16:03:38.920840+00:00,89,US 013. ARMA Principal 1 - Mitre (Fusil),TESTING,Done,8h 19m,29944,https://github.com/DogeGGss/lcs-tp-principal/issues/89
+2026-09-28T16:03:38.920840+00:00,114,US 071. ARMA Secundaria 1 - Pistola,TESTING,Done,3d 18h 18m,325139,https://github.com/DogeGGss/lcs-tp-principal/issues/114
+2026-09-28T16:03:38.920840+00:00,216,US 155. Opciones de controles,R2D,Done,8h 19m,29944,https://github.com/DogeGGss/lcs-tp-principal/issues/216
+2026-09-28T16:03:38.920840+00:00,178,US 127. Integrar animacón - Correr,R2D,Done,14h 18m,51503,https://github.com/DogeGGss/lcs-tp-principal/issues/178
+2026-09-28T16:03:38.920840+00:00,106,US 052. Reiniciar partida,R2D,Done,14h 18m,51503,https://github.com/DogeGGss/lcs-tp-principal/issues/106
+2026-09-28T16:03:38.920840+00:00,187,US 128 - Estados visuales de los botones,TESTING,Done,14h 18m,51503,https://github.com/DogeGGss/lcs-tp-principal/issues/187
+2026-09-28T16:03:38.920840+00:00,113,US 012. Ataque cuerpo a cuerpo,R2D,Done,8h 19m,29944,https://github.com/DogeGGss/lcs-tp-principal/issues/113
+2026-09-28T16:03:38.920840+00:00,155,US 099. Agregar sonido - Reaparición,Blocked,Todo,4d 22h 32m,426739,https://github.com/DogeGGss/lcs-tp-principal/issues/155
+2026-09-28T16:03:38.920840+00:00,175,US 125. Integrar animación - Saltar,R2D,Done,14h 18m,51503,https://github.com/DogeGGss/lcs-tp-principal/issues/175
+2026-09-28T16:03:38.920840+00:00,215,US 154. Opciones de sonido,TESTING,R2D,14h 18m,51503,https://github.com/DogeGGss/lcs-tp-principal/issues/215
+2026-09-28T16:03:38.920840+00:00,43,US 063. Espacios del inventario,R2D,Done,8h 19m,29944,https://github.com/DogeGGss/lcs-tp-principal/issues/43
+2026-09-28T16:03:38.920840+00:00,230,US 164. Elegir nombre de jugador,R2D,Done,16h 47m,60430,https://github.com/DogeGGss/lcs-tp-principal/issues/230
+2026-09-28T16:03:38.920840+00:00,247,US 170. Marcas de impacto en el escenario,R2D,Done,16h 47m,60430,https://github.com/DogeGGss/lcs-tp-principal/issues/247
