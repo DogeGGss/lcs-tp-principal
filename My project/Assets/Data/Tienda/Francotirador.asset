@@ -1,0 +1,49 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 69420c1af70e7d147836d2030074e59c, type: 3}
+  m_Name: Francotirador
+  m_EditorClassIdentifier: Assembly-CSharp::ShopItem
+  displayName: Francotirador
+  alias: "\xDAltimo Tren"
+  category: 4
+  kind: 0
+  price: 4700
+  icon: {fileID: 21300000, guid: e26eb36efa07eba43b82d8357e850e2c, type: 3}
+  tint: {r: 1, g: 1, b: 1, a: 1}
+  description: "Un tiro al cuerpo o a la cabeza mata a cualquiera, con escudo o sin \xE9l. Es la \xFAnica arma que lo hace."
+  fireMode: Cerrojo
+  fireRate: 0.75
+  burstCount: 1
+  magazine: 5
+  reserve: 10
+  reloadTime: 3.7
+  reloadPerShell: 0
+  mobility: 0.85
+  zoom: 2.5
+  zoom2: 5
+  pellets: 1
+  penetration: Alta
+  spread: {x: 0, y: 6}
+  recoil: "Sin mira dispara donde quiere; con mira, al centro. Despu\xE9s de cada tiro se recarga el cerrojo (1,33 s)."
+  bands:
+  - upTo: 0
+    head: 255
+    body: 150
+    legs: 127
+  shieldPoints: 0
+  grenadeType: 0
+  maxCarry: 1
+  fuse: 0
+  effectRadius: 0
+  effectDuration: 0
+  recovery: 0
+  shortEffect: 

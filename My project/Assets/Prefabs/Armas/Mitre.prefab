@@ -1,0 +1,110 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1001 &5126828523545987264
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: -8679921383154817045, guid: 4c49d86a5fb668643bcfee4d23606c30, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 60
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 4c49d86a5fb668643bcfee4d23606c30, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 60
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 4c49d86a5fb668643bcfee4d23606c30, type: 3}
+      propertyPath: m_LocalScale.z
+      value: 60
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 4c49d86a5fb668643bcfee4d23606c30, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0.1993
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 4c49d86a5fb668643bcfee4d23606c30, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: -0.2601
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 4c49d86a5fb668643bcfee4d23606c30, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0.3633
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 4c49d86a5fb668643bcfee4d23606c30, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 0.44228995
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 4c49d86a5fb668643bcfee4d23606c30, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0.56951994
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 4c49d86a5fb668643bcfee4d23606c30, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0.44384995
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 4c49d86a5fb668643bcfee4d23606c30, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0.53199995
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 4c49d86a5fb668643bcfee4d23606c30, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: -90
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 4c49d86a5fb668643bcfee4d23606c30, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 4c49d86a5fb668643bcfee4d23606c30, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 103.383
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 4c49d86a5fb668643bcfee4d23606c30, type: 3}
+      propertyPath: m_Name
+      value: Mitre
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 4c49d86a5fb668643bcfee4d23606c30, type: 3}
+      propertyPath: m_Layer
+      value: 8
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 4c49d86a5fb668643bcfee4d23606c30, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 7743515738307286102}
+  m_SourcePrefab: {fileID: 100100000, guid: 4c49d86a5fb668643bcfee4d23606c30, type: 3}
+--- !u!1 &5469426794283251089 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 919132149155446097, guid: 4c49d86a5fb668643bcfee4d23606c30, type: 3}
+  m_PrefabInstance: {fileID: 5126828523545987264}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &7743515738307286102
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5469426794283251089}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 03c853fb2f3c6ad44ab2b0a35367ebd4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Mitre
+  weaponName: Mitre
+  shopItem: {fileID: 11400000, guid: d63f89b537d3fb34585906ec5837827f, type: 2}
+  maxRange: 300
+  maxAmmo: 30
+  currentAmmo: 0
+  reserveAmmo: 60
+  reloadTime: 2.5
+  fireRate: 9.75
+  equipTime: 1
+  speedMultiplier: 0.92
+  zoomFactor: 1.25
+  playerCamera: {fileID: 0}
+  shootSound: {fileID: 8300000, guid: 62a21bf6aa0ec7a4d8c7062933357202, type: 3}
+  reloadSound: {fileID: 8300000, guid: 41f5815d5de3df142a84669da2b869e0, type: 3}
+  sfxGroup: {fileID: -490443676671801125, guid: ddda7e32a2420c4489fcc2a1c31e1976, type: 2}

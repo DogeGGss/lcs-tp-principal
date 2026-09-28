@@ -1,0 +1,53 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 69420c1af70e7d147836d2030074e59c, type: 3}
+  m_Name: PistolaPesada
+  m_EditorClassIdentifier: Assembly-CSharp::ShopItem
+  displayName: Pistola pesada
+  alias: "L\xEDnea H"
+  category: 0
+  kind: 1
+  price: 800
+  icon: {fileID: 21300000, guid: 7bc02a8c741b2e04a9f74dbbfaad41da, type: 3}
+  tint: {r: 1, g: 1, b: 1, a: 1}
+  description: 'El arma de las rondas de ahorro: un tiro a la cabeza mata a cualquiera a menos de 30 m.'
+  fireMode: "Semiautom\xE1tica"
+  fireRate: 4
+  burstCount: 1
+  magazine: 6
+  reserve: 24
+  reloadTime: 2.25
+  reloadPerShell: 0
+  mobility: 1
+  zoom: 1.25
+  zoom2: 0
+  pellets: 1
+  penetration: Media
+  spread: {x: 0.25, y: 3}
+  recoil: 'Patada fuerte hacia arriba: para acertar, un tiro cada 0,4 s.'
+  bands:
+  - upTo: 30
+    head: 159
+    body: 55
+    legs: 46
+  - upTo: 0
+    head: 145
+    body: 50
+    legs: 42
+  shieldPoints: 0
+  grenadeType: 0
+  maxCarry: 1
+  fuse: 0
+  effectRadius: 0
+  effectDuration: 0
+  recovery: 0
+  shortEffect: 
