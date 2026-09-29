@@ -21,8 +21,11 @@ MonoBehaviour:
   tint: {r: 1, g: 1, b: 1, a: 1}
   description: A menos de 8 m mata de un tiro si el rival no tiene escudo o tiene el liviano.
   fireMode: Bombeo (12 perdigones)
+  automatic: 0
   fireRate: 1
   burstCount: 1
+  burstRate: 0
+  equipTime: 1
   magazine: 7
   reserve: 21
   reloadTime: 0.5
@@ -33,6 +36,8 @@ MonoBehaviour:
   pellets: 12
   penetration: Baja
   spread: {x: 4.5, y: 4.5}
+  spamSpread: 0
+  spamSpreadMax: 0
   recoil: "Un golpe por disparo; el cono de 4,5\xB0 no cambia al moverse."
   bands:
   - upTo: 8
@@ -47,6 +52,13 @@ MonoBehaviour:
     head: 8
     body: 4
     legs: 3
+  recoilExactShots: 0
+  recoilKick: 0
+  recoilMaxClimb: 0
+  recoilSway: 0
+  recoilSwayShots: 4
+  recoilRecovery: 0.3
+  recoilPunch: 3
   shieldPoints: 0
   grenadeType: 0
   maxCarry: 1

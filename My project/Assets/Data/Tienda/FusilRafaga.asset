@@ -21,8 +21,11 @@ MonoBehaviour:
   tint: {r: 1, g: 1, b: 1, a: 1}
   description: "El fusil de las rondas forzadas: una r\xE1faga entera al cuerpo mata a quien no tiene escudo."
   fireMode: "R\xE1faga de 3"
+  automatic: 0
   fireRate: 2.5
   burstCount: 3
+  burstRate: 15
+  equipTime: 1
   magazine: 30
   reserve: 90
   reloadTime: 2.5
@@ -33,6 +36,8 @@ MonoBehaviour:
   pellets: 1
   penetration: Media
   spread: {x: 0.3, y: 3.5}
+  spamSpread: 0
+  spamSpreadMax: 0
   recoil: "Cada r\xE1faga sube un poco y vuelve antes de la siguiente."
   bands:
   - upTo: 40
@@ -43,6 +48,13 @@ MonoBehaviour:
     head: 100
     body: 31
     legs: 26
+  recoilExactShots: 1
+  recoilKick: 0.7
+  recoilMaxClimb: 3
+  recoilSway: 0
+  recoilSwayShots: 4
+  recoilRecovery: 0.12
+  recoilPunch: 0.5
   shieldPoints: 0
   grenadeType: 0
   maxCarry: 1

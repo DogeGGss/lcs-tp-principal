@@ -21,8 +21,11 @@ MonoBehaviour:
   tint: {r: 1, g: 1, b: 1, a: 1}
   description: "Corta distancia y movimiento. Barato, pero pierde contra un fusil a m\xE1s de 20 m."
   fireMode: "Autom\xE1tica"
+  automatic: 1
   fireRate: 11
   burstCount: 1
+  burstRate: 0
+  equipTime: 0.75
   magazine: 30
   reserve: 90
   reloadTime: 2.25
@@ -33,6 +36,8 @@ MonoBehaviour:
   pellets: 1
   penetration: Baja
   spread: {x: 0.4, y: 0.9}
+  spamSpread: 0
+  spamSpreadMax: 0
   recoil: "Suave y parejo; es el arma m\xE1s precisa en movimiento."
   bands:
   - upTo: 20
@@ -43,6 +48,19 @@ MonoBehaviour:
     head: 63
     body: 21
     legs: 18
+  recoilExactShots: 2
+  recoilKick: 0.3
+  recoilMaxClimb: 2.4
+  recoilSway: 0.7
+  recoilSwayShots: 4
+  recoilRecovery: 0.25
+  recoilPunch: 0.25
+  recoilLateClimb: 0.25
+  recoilDrift: 0.12
+  recoilSwayBlocks: 0
+  recoilSwayGrowth: 0.04
+  recoilSwayBias: 0
+  recoilVariation: 0.2
   shieldPoints: 0
   grenadeType: 0
   maxCarry: 1

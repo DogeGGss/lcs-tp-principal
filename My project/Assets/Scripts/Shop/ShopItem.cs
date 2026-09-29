@@ -33,9 +33,15 @@ public class ShopItem : ScriptableObject
 
     [Header("Arma")]
     public string fireMode;
+    [Tooltip("Dispara mientras se mantiene apretado el botón. Si no, un disparo (o una ráfaga) por clic.")]
+    public bool automatic;
     [Tooltip("Disparos por segundo; en armas de ráfaga, ráfagas por segundo.")]
     public float fireRate;
     public int burstCount = 1;
+    [Tooltip("Armas de ráfaga: balas por segundo dentro de la ráfaga.")]
+    public float burstRate;
+    [Tooltip("Segundos que tarda en estar lista al sacarla.")]
+    public float equipTime = 1f;
     public int magazine;
     public int reserve;
     public float reloadTime;
@@ -69,6 +75,22 @@ public class ShopItem : ScriptableObject
     public float recoilRecovery = 0.3f;
     [Tooltip("Sacudón de la mira en cada tiro, en grados: sube y vuelve enseguida, además del patrón (0 = sin sacudón).")]
     public float recoilPunch;
+
+    [Header("Forma del retroceso")]
+    [Tooltip("Patrón bala por bala, como en CS: dónde sale cada bala respecto de la mira, en grados (x = derecha, y = arriba). Si tiene puntos, reemplaza la forma calculada con los campos de abajo; recoilKick sigue marcando si el arma tiene retroceso.")]
+    public Vector2[] recoilPoints = new Vector2[0];
+    [Tooltip("Arriba de todo la mira sigue subiendo, cada vez menos: grados por la raíz de las balas pasado el tope (0 = se queda a la misma altura).")]
+    public float recoilLateClimb;
+    [Tooltip("Grados por bala que la mira se corre hacia un costado mientras sube (0 = sube recto).")]
+    public float recoilDrift;
+    [Tooltip("Arriba, el costado va en bloques: esa cantidad de balas de un lado y después salta al otro. Si no, cruza de a poco.")]
+    public bool recoilSwayBlocks;
+    [Tooltip("Cuánto se abre el zigzag por cada bala arriba (0,08 = 8 % más ancho por bala).")]
+    public float recoilSwayGrowth;
+    [Tooltip("Asimetría del zigzag: positivo va más a la derecha que a la izquierda (0,25 = 125 % y 75 %).")]
+    [Range(-1f, 1f)] public float recoilSwayBias;
+    [Tooltip("Variación de cada ráfaga: se sortea hacia qué lado arranca y el ancho cambia hasta este porcentaje (0,15 = ±15 %). 0 = todas las ráfagas iguales.")]
+    [Range(0f, 0.5f)] public float recoilVariation;
 
     [Header("Escudo")]
     public int shieldPoints;
