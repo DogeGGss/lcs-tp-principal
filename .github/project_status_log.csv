@@ -313,3 +313,10 @@ fecha_utc,us_numero,us_titulo,estado_anterior,estado_nuevo,tiempo_en_estado_ante
 2026-09-29T07:23:10.051957+00:00,116,US 073. ARROJABLE 1 - Granada de metralla,Todo,In Progress,6d 7h 58m,547128,https://github.com/DogeGGss/lcs-tp-principal/issues/116
 2026-09-29T07:23:10.051957+00:00,117,US 074. ARROJABLE 2 - Granada de humo,Todo,In Progress,6d 7h 58m,547128,https://github.com/DogeGGss/lcs-tp-principal/issues/117
 2026-09-29T07:23:10.051957+00:00,213,SPK 01. Prueba de concepto con Photon PUN 2,In Progress,LPR,5h 56m,21365,https://github.com/DogeGGss/lcs-tp-principal/issues/213
+2026-09-29T19:26:23.096472+00:00,146,US 112. Agregar sonido - Menú principal,Done,In Progress,1d 20h 9m,158994,https://github.com/DogeGGss/lcs-tp-principal/issues/146
+2026-09-29T19:26:23.096472+00:00,41,US 010. Disparar,Done,In Progress,2d 22h 26m,253586,https://github.com/DogeGGss/lcs-tp-principal/issues/41
+2026-09-29T19:26:23.096472+00:00,61,US 055. Mostrar inventario,Todo,LPR,17h 59m,64758,https://github.com/DogeGGss/lcs-tp-principal/issues/61
+2026-09-29T19:26:23.096472+00:00,90,US 067. ARMA Principal 2 - Urquiza (Subfusil),Todo,LPR,17h 59m,64758,https://github.com/DogeGGss/lcs-tp-principal/issues/90
+2026-09-29T19:26:23.096472+00:00,92,US 069. ARMA Principal 4 - Belgrano Sur (Fusil de ráfaga),Todo,LPR,17h 59m,64758,https://github.com/DogeGGss/lcs-tp-principal/issues/92
+2026-09-29T19:26:23.096472+00:00,93,US 070. ARMA Principal 5 - Roca (Escopeta),Todo,LPR,17h 59m,64758,https://github.com/DogeGGss/lcs-tp-principal/issues/93
+2026-09-29T19:26:23.096472+00:00,247,US 170. Marcas de impacto en el escenario,Done,In Progress,1d 3h 22m,98564,https://github.com/DogeGGss/lcs-tp-principal/issues/247
