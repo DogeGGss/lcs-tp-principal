@@ -320,3 +320,8 @@ fecha_utc,us_numero,us_titulo,estado_anterior,estado_nuevo,tiempo_en_estado_ante
 2026-09-29T19:26:23.096472+00:00,92,US 069. ARMA Principal 4 - Belgrano Sur (Fusil de ráfaga),Todo,LPR,17h 59m,64758,https://github.com/DogeGGss/lcs-tp-principal/issues/92
 2026-09-29T19:26:23.096472+00:00,93,US 070. ARMA Principal 5 - Roca (Escopeta),Todo,LPR,17h 59m,64758,https://github.com/DogeGGss/lcs-tp-principal/issues/93
 2026-09-29T19:26:23.096472+00:00,247,US 170. Marcas de impacto en el escenario,Done,In Progress,1d 3h 22m,98564,https://github.com/DogeGGss/lcs-tp-principal/issues/247
+2026-09-29T23:07:04.737421+00:00,146,US 112. Agregar sonido - Menú principal,In Progress,Done,3h 40m,13241,https://github.com/DogeGGss/lcs-tp-principal/issues/146
+2026-09-29T23:07:04.737421+00:00,41,US 010. Disparar,In Progress,Done,3h 40m,13241,https://github.com/DogeGGss/lcs-tp-principal/issues/41
+2026-09-29T23:07:04.737421+00:00,7,F06. Multijugador,In Progress,Todo,21h 39m,77999,https://github.com/DogeGGss/lcs-tp-principal/issues/7
+2026-09-29T23:07:04.737421+00:00,79,US 031. Formar equipos,Blocked,In Progress,4d 50m,348636,https://github.com/DogeGGss/lcs-tp-principal/issues/79
+2026-09-29T23:07:04.737421+00:00,247,US 170. Marcas de impacto en el escenario,In Progress,Done,3h 40m,13241,https://github.com/DogeGGss/lcs-tp-principal/issues/247
