@@ -22,6 +22,9 @@ public class PlayerMovement : MonoBehaviour
 
     [HideInInspector] public float speedMultiplier = 1f;
 
+    // Para el multijugador (US 025): los demás repiten el salto y el aterrizaje en su copia de este jugador.
+    public event System.Action Jumped, Landed;
+
     private float verticalVelocity;
 
     // Se utiliza para detectar correctamente el aterrizaje
@@ -155,6 +158,8 @@ public class PlayerMovement : MonoBehaviour
 
             // Marcamos que estamos en el aire
             wasInAir = true;
+
+            Jumped?.Invoke();
         }
 
 
@@ -203,6 +208,8 @@ public class PlayerMovement : MonoBehaviour
 
             // Activa JumpDown
             animator.SetTrigger("Land");
+
+            Landed?.Invoke();
         }
 
 

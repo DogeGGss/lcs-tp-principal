@@ -13,6 +13,10 @@ public static class WeaponFire
     // Un disparo que pegó: el HUD muestra el marcador de impacto (US 165).
     public static event System.Action<HitMarkerKind> Hit;
 
+    // Cada disparo, con quién tiró, desde dónde y la dirección de cada perdigón. El multijugador lo repite
+    // en las demás computadoras (US 028).
+    public static event System.Action<Transform, Vector3, Vector3[]> Fired;
+
     private static readonly RaycastHit[] hits = new RaycastHit[32];
     private static readonly Dictionary<HealthSystem, bool> zoned = new Dictionary<HealthSystem, bool>();
     private static readonly IComparer<RaycastHit> byDistance =
@@ -28,9 +32,11 @@ public static class WeaponFire
 
         bool anyHit = false, head = false, kill = false;
         int pellets = Mathf.Max(1, weapon.pellets);
+        Vector3[] directions = new Vector3[pellets];
         for (int i = 0; i < pellets; i++)
         {
             Vector3 direction = view * Deviation(spread) * Vector3.forward;
+            directions[i] = direction;
             if (!Trace(camera.transform.position, direction, range, shooter, out RaycastHit hit, out HealthSystem target, out BodyZone zone))
                 continue;
 
@@ -40,15 +46,28 @@ public static class WeaponFire
                 continue;
             }
 
-            bool wasAlive = target.currentHealth > 0;
-            target.TakeDamage(weapon.HitDamage(zone, hit.distance));
+            // Se mira antes de aplicar el daño: a un jugador de otra computadora el daño le llega después (US 029).
+            int damage = weapon.HitDamage(zone, hit.distance);
+            bool lethal = target.WouldDie(damage);
+            target.TakeDamage(damage);
             anyHit = true;
             if (zone == BodyZone.Head) head = true;
-            if (wasAlive && target.currentHealth <= 0) kill = true;
+            if (lethal) kill = true;
         }
 
         aim.Kick(weapon);
+        Fired?.Invoke(shooter, camera.transform.position, directions);
         if (anyHit) Hit?.Invoke(kill ? HitMarkerKind.Kill : head ? HitMarkerKind.Head : HitMarkerKind.Body);
+    }
+
+    // El disparo de otro jugador que llega por la red (US 028): se busca dónde pega para dibujar la trazadora y
+    // la marca en el escenario, sin hacer daño (el daño lo calcula quien disparó). Devuelve el punto final.
+    public static Vector3 Replay(Vector3 origin, Vector3 direction, float range, Transform shooter)
+    {
+        if (!Trace(origin, direction, range, shooter, out RaycastHit hit, out HealthSystem target, out BodyZone _))
+            return origin + direction * range;
+        if (target == null) ImpactMarks.Spawn(hit);
+        return hit.point;
     }
 
     // Ficha del arma para un jugador: la del catálogo de su tienda con ese alias (por ejemplo, "Mitre").
