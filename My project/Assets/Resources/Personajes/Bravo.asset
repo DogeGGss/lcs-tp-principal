@@ -1,0 +1,22 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 699f666d175c404e8a36fda27f847ff5, type: 3}
+  m_Name: Bravo
+  m_EditorClassIdentifier: Assembly-CSharp::CharacterData
+  order: 1
+  displayName: Bravo
+  role: Centinela
+  portrait: {fileID: 0}
+  color: {r: 0.2980, g: 0.7647, b: 1.0000, a: 1}
+  description: 
+  ability: {fileID: 11400000, guid: 7653c73771644ebb90dbd7f221131c57, type: 2}
+  provisional: 1

@@ -980,7 +980,15 @@ public class ModeSelectScreen : MonoBehaviour
             : $"Récord en {name}: <color={ModeHex[2]}>todavía no jugaste</color>";
     }
 
+    // US 015, CA1: en el Zombie, el personaje se elige después de la dificultad y antes de entrar al mapa.
     private void PlayZombie()
+    {
+        if (CharacterSelectScreen.IsOpen) return;
+        CharacterSelectScreen.Show(displayFont, labelFont, bodyFont, rounded,
+            "Modo Zombie · " + DifficultyName[(int)MatchSettings.Difficulty], 0f, StartZombie, () => { });
+    }
+
+    private void StartZombie()
     {
         MatchSettings.Mode = GameMode.Zombie;
         onPlayZombie.Invoke(MatchSettings.Difficulty);
@@ -1333,6 +1341,9 @@ public class ModeSelectScreen : MonoBehaviour
 
     private void HandleInput()
     {
+        // Mientras se elige el personaje (US 015), el teclado es de esa pantalla; tampoco se usa el Esc que la cerró.
+        if (CharacterSelectScreen.IsOpen || CharacterSelectScreen.ClosedFrame == Time.frameCount) return;
+
         GameObject selected = EventSystem.current != null ? EventSystem.current.currentSelectedGameObject : null;
         TMP_InputField typing = selected != null ? selected.GetComponent<TMP_InputField>() : null;
         bool isTyping = typing != null && typing.isFocused;
