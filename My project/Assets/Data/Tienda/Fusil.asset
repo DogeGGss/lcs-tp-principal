@@ -21,8 +21,11 @@ MonoBehaviour:
   tint: {r: 1, g: 1, b: 1, a: 1}
   description: 'El caro de siempre: un tiro a la cabeza mata a cualquiera a cualquier distancia. Al cuerpo necesita cuatro.'
   fireMode: "Autom\xE1tica"
+  automatic: 1
   fireRate: 9.75
   burstCount: 1
+  burstRate: 0
+  equipTime: 1
   magazine: 30
   reserve: 60
   reloadTime: 2.5

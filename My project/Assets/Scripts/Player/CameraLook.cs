@@ -64,7 +64,8 @@ public class CameraLook : MonoBehaviour
 
     void Update()
     {
-        float sensibilidad = Mitre.Aiming ? mouseSensivility * sensibilidadApuntando : mouseSensivility;
+        bool apuntando = Mitre.Aiming || ArmaDeFuego.Aiming;
+        float sensibilidad = apuntando ? mouseSensivility * sensibilidadApuntando : mouseSensivility;
 
         float mouseX =
             Input.GetAxis("Mouse X") * sensibilidad;

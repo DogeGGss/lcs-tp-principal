@@ -173,8 +173,11 @@ public class WeaponAim : MonoBehaviour
         return new Vector2(pitch, yaw);
     }
 
+    // En las de ráfaga cuenta el tiempo entre balas de la ráfaga: la mira vuelve entre una ráfaga y la
+    // siguiente (US 069, CA5).
     private static float ShotInterval(ShopItem weapon)
     {
-        return (weapon.fireRate > 0f ? 1f / weapon.fireRate : 0.2f) + 0.05f;
+        float rate = weapon.burstCount > 1 && weapon.burstRate > 0f ? weapon.burstRate : weapon.fireRate;
+        return (rate > 0f ? 1f / rate : 0.2f) + 0.05f;
     }
 }

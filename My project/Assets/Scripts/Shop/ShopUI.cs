@@ -239,6 +239,7 @@ public class ShopUI : MonoBehaviour
         Block(FindObjectsByType<MeleeAttack>());
         Block(FindObjectsByType<Pistola>());
         Block(FindObjectsByType<Mitre>());
+        Block(FindObjectsByType<ArmaDeFuego>());
         Block(FindObjectsByType<WeaponSwitcher>());
         Cursor.lockState = CursorLockMode.None;
         Cursor.visible = true;

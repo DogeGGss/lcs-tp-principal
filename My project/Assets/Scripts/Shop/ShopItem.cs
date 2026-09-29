@@ -33,9 +33,15 @@ public class ShopItem : ScriptableObject
 
     [Header("Arma")]
     public string fireMode;
+    [Tooltip("Dispara mientras se mantiene apretado el botón. Si no, un disparo (o una ráfaga) por clic.")]
+    public bool automatic;
     [Tooltip("Disparos por segundo; en armas de ráfaga, ráfagas por segundo.")]
     public float fireRate;
     public int burstCount = 1;
+    [Tooltip("Armas de ráfaga: balas por segundo dentro de la ráfaga.")]
+    public float burstRate;
+    [Tooltip("Segundos que tarda en estar lista al sacarla.")]
+    public float equipTime = 1f;
     public int magazine;
     public int reserve;
     public float reloadTime;

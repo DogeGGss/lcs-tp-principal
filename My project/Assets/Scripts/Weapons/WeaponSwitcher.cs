@@ -1,32 +1,33 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 public class WeaponSwitcher : MonoBehaviour
 {
     [Header("Referencias de Armas")]
     public GameObject mitreObj;        // Slot 1: Fusil Mitre
+    [Tooltip("Las demás armas principales (Urquiza, Belgrano Sur, Roca...), cada una con su ArmaDeFuego. Con tienda, en el espacio 1 va la que se compró.")]
+    public GameObject[] otrasPrincipales = new GameObject[0];
     public GameObject pistolObj;       // Slot 2: Pistola
     public MeleeWeaponHolder meleeScript; // Slot 3: Cuchillo
 
     private bool setupInicialListo = false;
 
-    // Tienda (US 077): con tienda en la escena el Mitre se saca solo si se compró.
-    private enum Pendiente { Nada, Mitre, Pistola }
+    // Tienda (US 077): con tienda en la escena el arma principal se saca solo si se compró.
+    private enum Pendiente { Nada, Principal, Pistola }
     private PlayerLoadout loadout;
-    private Mitre mitre;
     private bool hayTienda;
-    private bool teniaMitre;
+    private GameObject teniaPrincipal;
     private Pendiente pendiente = Pendiente.Nada;
 
     void Awake()
     {
         loadout = GetComponentInParent<PlayerLoadout>();
-        mitre = mitreObj != null ? mitreObj.GetComponent<Mitre>() : null;
     }
 
     void Start()
     {
         hayTienda = FindAnyObjectByType<ShopUI>() != null;
-        teniaMitre = TieneMitre();
+        teniaPrincipal = PrimaryObj;
         if (loadout != null) loadout.Changed += OnLoadoutChanged;
     }
 
@@ -39,55 +40,101 @@ public class WeaponSwitcher : MonoBehaviour
     {
         // La tienda apaga este script mientras está abierta: el cambio de arma se hace al cerrarla.
         if (!setupInicialListo || pendiente == Pendiente.Nada) return;
-        if (pendiente == Pendiente.Mitre) EquipMitre(); else EquipPistol();
+        if (pendiente == Pendiente.Principal) EquipPrimary(); else EquipPistol();
         pendiente = Pendiente.Nada;
     }
 
-    // Sin tienda en la escena (escenas de prueba de armas) el Mitre está siempre disponible.
-    bool TieneMitre()
+    // Todas las armas principales que tiene el jugador en la mano, empezando por el Mitre.
+    public List<GameObject> Principales()
     {
-        if (mitreObj == null) return false;
-        if (!hayTienda || loadout == null) return true;
-        return mitre != null && mitre.shopItem != null && loadout.Primary == mitre.shopItem;
+        var lista = new List<GameObject>();
+        if (mitreObj != null) lista.Add(mitreObj);
+        if (otrasPrincipales != null)
+            foreach (GameObject arma in otrasPrincipales)
+                if (arma != null) lista.Add(arma);
+        return lista;
+    }
+
+    // El arma principal que tiene: la que compró en la tienda. Sin tienda en la escena (escenas de prueba de
+    // armas), el Mitre está siempre disponible.
+    public GameObject PrimaryObj
+    {
+        get
+        {
+            if (!hayTienda || loadout == null) return mitreObj;
+            if (loadout.Primary == null) return null;
+            foreach (GameObject arma in Principales())
+                if (FichaDe(arma) == loadout.Primary) return arma;
+            return null;
+        }
+    }
+
+    // El arma principal que está en la mano, o null.
+    public GameObject HeldPrimary
+    {
+        get
+        {
+            foreach (GameObject arma in Principales())
+                if (arma.activeInHierarchy) return arma;
+            return null;
+        }
+    }
+
+    // Ficha de la tienda de un arma principal (Mitre o ArmaDeFuego).
+    public static ShopItem FichaDe(GameObject arma)
+    {
+        if (arma == null) return null;
+        ArmaDeFuego fuego = arma.GetComponent<ArmaDeFuego>();
+        if (fuego != null) return fuego.shopItem;
+        Mitre mitre = arma.GetComponent<Mitre>();
+        return mitre != null ? mitre.shopItem : null;
     }
 
     void OnLoadoutChanged()
     {
-        bool tieneMitre = TieneMitre();
-        if (tieneMitre && !teniaMitre)
+        GameObject principal = PrimaryObj;
+        if (principal != null && principal != teniaPrincipal)
         {
-            // Recién comprado: cargador lleno y reserva completa, y se saca al cerrar la tienda (US 077, CA1).
-            if (mitre != null) mitre.Refill();
-            CambiarA(Pendiente.Mitre);
+            // Recién comprada: cargador lleno y reserva completa, y se saca al cerrar la tienda (US 077, CA1).
+            Rellenar(principal);
+            CambiarA(Pendiente.Principal);
         }
-        else if (!tieneMitre && teniaMitre)
+        else if (principal == null && teniaPrincipal != null)
         {
-            // Vendido, deshecho o perdido al morir: si estaba en la mano, se vuelve a la pistola.
-            if (pendiente == Pendiente.Mitre) pendiente = Pendiente.Nada;
-            if (mitreObj.activeSelf) CambiarA(Pendiente.Pistola);
+            // Vendida, deshecha o perdida al morir: si estaba en la mano, se vuelve a la pistola.
+            if (pendiente == Pendiente.Principal) pendiente = Pendiente.Nada;
+            if (teniaPrincipal.activeSelf) CambiarA(Pendiente.Pistola);
         }
-        teniaMitre = tieneMitre;
+        teniaPrincipal = principal;
+    }
+
+    static void Rellenar(GameObject arma)
+    {
+        ArmaDeFuego fuego = arma.GetComponent<ArmaDeFuego>();
+        if (fuego != null) fuego.Refill();
+        Mitre mitre = arma.GetComponent<Mitre>();
+        if (mitre != null) mitre.Refill();
     }
 
     void CambiarA(Pendiente arma)
     {
         if (!enabled) { pendiente = arma; return; }
-        if (arma == Pendiente.Mitre) EquipMitre(); else EquipPistol();
+        if (arma == Pendiente.Principal) EquipPrimary(); else EquipPistol();
     }
 
     void Update()
     {
-        // Configuración inicial al arrancar: con el Mitre si lo tiene; si no, con la pistola
+        // Configuración inicial al arrancar: con el arma principal si la tiene; si no, con la pistola
         if (!setupInicialListo && meleeScript != null && meleeScript.CurrentViewModel != null)
         {
-            if (TieneMitre()) EquipMitre(); else EquipPistol();
+            if (PrimaryObj != null) EquipPrimary(); else EquipPistol();
             setupInicialListo = true;
         }
 
-        // Tecla 1: Mitre (Arma principal), solo si lo tiene
-        if (KeyBindings.Down(GameAction.ArmaPrincipal) && TieneMitre())
+        // Tecla 1: arma principal, solo si tiene una
+        if (KeyBindings.Down(GameAction.ArmaPrincipal) && PrimaryObj != null)
         {
-            EquipMitre();
+            EquipPrimary();
         }
 
         // Tecla 2: Pistola (Arma secundaria)
@@ -103,22 +150,24 @@ public class WeaponSwitcher : MonoBehaviour
         }
     }
 
-    void EquipMitre()
+    void EquipPrimary()
     {
-        if (mitreObj != null) mitreObj.SetActive(true);
+        GameObject principal = PrimaryObj;
+        GuardarPrincipales(principal);
+        if (principal != null) principal.SetActive(true);
         if (pistolObj != null) pistolObj.SetActive(false);
         if (meleeScript != null && meleeScript.CurrentViewModel != null)
         {
             meleeScript.CurrentViewModel.SetActive(false);
         }
 
-        // El fusil Mitre reduce la velocidad al 92% (0.92f)
-        ApplySpeedMultiplier(mitre != null ? mitre.speedMultiplier : 0.92f);
+        // Cada arma tiene su velocidad: el Mitre al 92 %, el Urquiza al 97 %...
+        ApplySpeedMultiplier(VelocidadCon(principal));
     }
 
     void EquipPistol()
     {
-        if (mitreObj != null) mitreObj.SetActive(false);
+        GuardarPrincipales(null);
         if (pistolObj != null) pistolObj.SetActive(true);
         if (meleeScript != null && meleeScript.CurrentViewModel != null)
         {
@@ -131,7 +180,7 @@ public class WeaponSwitcher : MonoBehaviour
 
     void EquipKnife()
     {
-        if (mitreObj != null) mitreObj.SetActive(false);
+        GuardarPrincipales(null);
         if (pistolObj != null) pistolObj.SetActive(false);
         if (meleeScript != null && meleeScript.CurrentViewModel != null)
         {
@@ -147,6 +196,22 @@ public class WeaponSwitcher : MonoBehaviour
             : 1.0f;
 
         ApplySpeedMultiplier(knifeSpeed);
+    }
+
+    // Guarda todas las armas principales menos la que se va a sacar.
+    void GuardarPrincipales(GameObject salvo)
+    {
+        foreach (GameObject arma in Principales())
+            if (arma != salvo) arma.SetActive(false);
+    }
+
+    static float VelocidadCon(GameObject arma)
+    {
+        if (arma == null) return 1f;
+        ArmaDeFuego fuego = arma.GetComponent<ArmaDeFuego>();
+        if (fuego != null) return fuego.SpeedMultiplier;
+        Mitre mitre = arma.GetComponent<Mitre>();
+        return mitre != null ? mitre.speedMultiplier : 0.92f;
     }
 
     private void ApplySpeedMultiplier(float multiplier)

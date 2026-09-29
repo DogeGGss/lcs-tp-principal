@@ -72,7 +72,6 @@ public class CombatHud : MonoBehaviour
     private readonly InvSlot[] invSlots = new InvSlot[4];
     private readonly string[] invState = new string[4];
     private bool sceneHasShop;
-    private Mitre mitre;
 
     private HealthSystem health;
     private PlayerAbility ability;
@@ -263,7 +262,6 @@ public class CombatHud : MonoBehaviour
         switcher = player.GetComponentInChildren<WeaponSwitcher>(true);
         melee = player.GetComponent<MeleeWeaponHolder>();
         loadout = player.GetComponent<PlayerLoadout>();
-        mitre = switcher != null && switcher.mitreObj != null ? switcher.mitreObj.GetComponent<Mitre>() : null;
         sceneHasShop = FindAnyObjectByType<ShopUI>() != null;
         for (int i = 0; i < invState.Length; i++) invState[i] = null;
         ability = player.GetComponent<PlayerAbility>();
@@ -390,8 +388,8 @@ public class CombatHud : MonoBehaviour
         GameObject held = null;
         if (switcher != null)
         {
-            if (switcher.mitreObj != null && switcher.mitreObj.activeInHierarchy) held = switcher.mitreObj;
-            else if (switcher.pistolObj != null && switcher.pistolObj.activeInHierarchy) held = switcher.pistolObj;
+            held = switcher.HeldPrimary;
+            if (held == null && switcher.pistolObj != null && switcher.pistolObj.activeInHierarchy) held = switcher.pistolObj;
         }
         IHudWeapon weapon = held != null ? held.GetComponentInChildren<IHudWeapon>() : null;
         if (weapon != null)
@@ -568,15 +566,18 @@ public class CombatHud : MonoBehaviour
     {
         // Qué tiene en la mano (CA4): 0 principal, 1 secundaria, 2 cuchillo; -1 si nada.
         int held = -1;
-        if (switcher != null && switcher.mitreObj != null && switcher.mitreObj.activeInHierarchy) held = 0;
+        if (switcher != null && switcher.HeldPrimary != null) held = 0;
         else if (switcher != null && switcher.pistolObj != null && switcher.pistolObj.activeInHierarchy) held = 1;
         else if (melee != null && melee.CurrentViewModel != null && melee.CurrentViewModel.activeInHierarchy) held = 2;
 
         // Principal (CA2, CA3): lo que compró; en escenas sin tienda el Mitre está siempre.
         ShopItem primary = loadout != null ? loadout.Primary : null;
-        bool hasPrimary = primary != null || (!sceneHasShop && mitre != null);
-        string primaryName = primary != null ? ItemName(primary) : hasPrimary ? mitre.HudName : "Vacío";
-        Sprite primaryIcon = primary != null ? primary.icon : hasPrimary && mitre.shopItem != null ? mitre.shopItem.icon : null;
+        GameObject always = !sceneHasShop && switcher != null ? switcher.PrimaryObj : null;
+        IHudWeapon alwaysHud = always != null ? always.GetComponent<IHudWeapon>() : null;
+        ShopItem alwaysItem = WeaponSwitcher.FichaDe(always);
+        bool hasPrimary = primary != null || alwaysHud != null;
+        string primaryName = primary != null ? ItemName(primary) : hasPrimary ? alwaysHud.HudName : "Vacío";
+        Sprite primaryIcon = primary != null ? primary.icon : alwaysItem != null ? alwaysItem.icon : null;
 
         ShopItem secondary = loadout != null ? loadout.Secondary : null;
         bool hasSecondary = secondary != null || (switcher != null && switcher.pistolObj != null);

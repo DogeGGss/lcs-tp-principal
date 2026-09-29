@@ -15,12 +15,14 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
 {
     private const float AlcanceTrazadora = 300f;
     private const byte Agachado = 1, Corriendo = 2, Cayendo = 4, Invulnerable = 8;
-    private const byte SinArma = 0, ArmaMitre = 1, ArmaPistola = 2, ArmaCuchillo = 3;
+    // Arma en la mano: las principales van desde PrimeraPrincipal, en el orden de WeaponSwitcher.Principales().
+    private const byte SinArma = 0, ArmaPistola = 2, ArmaCuchillo = 3, PrimeraPrincipal = 10;
 
     private HealthSystem vida;
     private Animator animador;
     private Transform camara;     // "Main Camera": su giro vertical es hacia dónde mira
-    private GameObject mitre, pistola;
+    private List<GameObject> principales = new List<GameObject>();
+    private GameObject pistola;
     private MeleeWeaponHolder cuchillo;
     private PartidaEnRed partida;
     private bool muerto;
@@ -44,7 +46,8 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
     private Transform modelo;
     private Collider[] colisiones;
     private AudioSource sonido;
-    private AudioClip sonidoPistola, sonidoMitre, sonidoCuchillo;
+    private AudioClip sonidoPistola, sonidoCuchillo;
+    private readonly List<AudioClip> sonidosPrincipales = new List<AudioClip>();
     private TextMeshPro cartel;
     private Coroutine caida;
 
@@ -64,7 +67,7 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
         cuchillo = GetComponent<MeleeWeaponHolder>();
         WeaponSwitcher cambio = GetComponentInChildren<WeaponSwitcher>(true);
         camara = cambio != null ? cambio.transform : transform.Find("Main Camera");
-        if (cambio != null) { mitre = cambio.mitreObj; pistola = cambio.pistolObj; }
+        if (cambio != null) { principales = cambio.Principales(); pistola = cambio.pistolObj; }
 
         if (movimiento != null)
         {
@@ -146,6 +149,7 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
         vida.Revive();
         foreach (Pistola arma in GetComponentsInChildren<Pistola>(true)) arma.currentAmmo = arma.maxAmmo;
         foreach (Mitre arma in GetComponentsInChildren<Mitre>(true)) arma.Refill();
+        foreach (ArmaDeFuego arma in GetComponentsInChildren<ArmaDeFuego>(true)) arma.Refill();
         muerto = false;
         ultimoAtacante = 0;
         Bloquear(false);
@@ -170,7 +174,7 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
         bloqueados.Clear();
         foreach (Behaviour componente in GetComponentsInChildren<Behaviour>(true))
             if (componente.enabled && (componente is PlayerMovement || componente is Pistola || componente is Mitre ||
-                componente is MeleeAttack || componente is WeaponSwitcher || componente is PlayerAbility))
+                componente is ArmaDeFuego || componente is MeleeAttack || componente is WeaponSwitcher || componente is PlayerAbility))
             {
                 componente.enabled = false;
                 bloqueados.Add(componente);
@@ -199,7 +203,8 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
 
     private byte ArmaEnMano()
     {
-        if (mitre != null && mitre.activeSelf) return ArmaMitre;
+        for (int i = 0; i < principales.Count; i++)
+            if (principales[i] != null && principales[i].activeSelf) return (byte)(PrimeraPrincipal + i);
         if (pistola != null && pistola.activeSelf) return ArmaPistola;
         if (cuchillo != null && cuchillo.CurrentViewModel != null && cuchillo.CurrentViewModel.activeSelf) return ArmaCuchillo;
         return SinArma;
@@ -221,17 +226,21 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
 
         WeaponSwitcher cambio = go.GetComponentInChildren<WeaponSwitcher>(true);
         Pistola pistola = go.GetComponentInChildren<Pistola>(true);
-        Mitre mitre = go.GetComponentInChildren<Mitre>(true);
         MeleeAttack ataque = go.GetComponent<MeleeAttack>();
         PlayerMovement movimiento = go.GetComponent<PlayerMovement>();
 
         var jugador = go.AddComponent<JugadorEnRed>();
         jugador.partida = partida;
         jugador.camara = cambio != null ? cambio.transform : go.transform.Find("Main Camera");
-        jugador.mitre = cambio != null ? cambio.mitreObj : mitre != null ? mitre.gameObject : null;
+        if (cambio != null) jugador.principales = cambio.Principales();
+        foreach (GameObject arma in jugador.principales)
+        {
+            ArmaDeFuego fuego = arma.GetComponent<ArmaDeFuego>();
+            Mitre mitre = arma.GetComponent<Mitre>();
+            jugador.sonidosPrincipales.Add(fuego != null ? fuego.shootSound : mitre != null ? mitre.shootSound : null);
+        }
         jugador.pistola = cambio != null ? cambio.pistolObj : pistola != null ? pistola.gameObject : null;
         jugador.sonidoPistola = pistola != null ? pistola.shootSound : null;
-        jugador.sonidoMitre = mitre != null ? mitre.shootSound : null;
         jugador.sonidoCuchillo = ataque != null ? ataque.SwingSound : null;
         if (movimiento != null) { jugador.alturaParado = movimiento.standingCameraHeight; jugador.alturaAgachado = movimiento.crouchCameraHeight; }
         AudioMixerGroup efectos = pistola != null ? pistola.sfxGroup : null;
@@ -241,6 +250,7 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
         Quitar<WeaponSwitcher>(go);
         Quitar<Pistola>(go);
         Quitar<Mitre>(go);
+        Quitar<ArmaDeFuego>(go);
         Quitar<MeleeAttack>(go);
         Quitar<PlayerAbility>(go);
         Quitar<PlayerLoadout>(go); // antes que la billetera, que la necesita
@@ -255,7 +265,7 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
             c.gameObject.tag = "Untagged";
         }
         // Las armas en la mano se dibujan con una cámara aparte (capa ArmaEnMano): en la copia van con el resto del mundo.
-        PonerCapa(jugador.mitre, 0);
+        foreach (GameObject arma in jugador.principales) PonerCapa(arma, 0);
         PonerCapa(jugador.pistola, 0);
 
         jugador.animador = go.GetComponentInChildren<Animator>(true);
@@ -370,7 +380,8 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
         }
         if (arma == armaVista) return;
         armaVista = arma;
-        if (mitre != null) mitre.SetActive(arma == ArmaMitre);
+        for (int i = 0; i < principales.Count; i++)
+            if (principales[i] != null) principales[i].SetActive(arma == PrimeraPrincipal + i);
         if (pistola != null) pistola.SetActive(arma == ArmaPistola);
         if (modeloCuchillo != null) modeloCuchillo.SetActive(arma == ArmaCuchillo);
     }
@@ -383,10 +394,12 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
         if (photonView.IsMine) return;
         armaRed = arma;
         MostrarArma(arma);
-        AudioClip clip = arma == ArmaMitre ? sonidoMitre : sonidoPistola;
+        int principal = arma - PrimeraPrincipal;
+        bool esPrincipal = principal >= 0 && principal < principales.Count;
+        AudioClip clip = esPrincipal ? sonidosPrincipales[principal] : sonidoPistola;
         if (clip != null && sonido != null) sonido.PlayOneShot(clip);
 
-        GameObject enMano = arma == ArmaMitre ? mitre : pistola;
+        GameObject enMano = esPrincipal ? principales[principal] : pistola;
         Vector3 boca = enMano != null ? enMano.transform.position : origen;
         for (int i = 0; i + 2 < direcciones.Length; i += 3)
         {
