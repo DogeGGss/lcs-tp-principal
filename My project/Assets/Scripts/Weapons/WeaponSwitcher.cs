@@ -6,6 +6,7 @@ public class WeaponSwitcher : MonoBehaviour
     public GameObject mitreObj;        // Slot 1: Fusil Mitre
     public GameObject pistolObj;       // Slot 2: Pistola
     public MeleeWeaponHolder meleeScript; // Slot 3: Cuchillo
+    public GameObject grenadeObj;       // Slot 4: Granada
 
     private bool setupInicialListo = false;
 
@@ -16,6 +17,9 @@ public class WeaponSwitcher : MonoBehaviour
     private bool hayTienda;
     private bool teniaMitre;
     private Pendiente pendiente = Pendiente.Nada;
+
+    // Indica si actualmente está equipada la granada
+    public bool GrenadeEquipped { get; private set; }
 
     void Awake()
     {
@@ -101,10 +105,18 @@ public class WeaponSwitcher : MonoBehaviour
         {
             EquipKnife();
         }
+
+        // Tecla 4: Granada
+        if (KeyBindings.Down(GameAction.Granadas))
+        {
+            EquipGrenade();
+        }
     }
 
     void EquipMitre()
     {
+        GrenadeEquipped = false;
+
         if (mitreObj != null) mitreObj.SetActive(true);
         if (pistolObj != null) pistolObj.SetActive(false);
         if (meleeScript != null && meleeScript.CurrentViewModel != null)
@@ -118,6 +130,8 @@ public class WeaponSwitcher : MonoBehaviour
 
     void EquipPistol()
     {
+        GrenadeEquipped = false;
+
         if (mitreObj != null) mitreObj.SetActive(false);
         if (pistolObj != null) pistolObj.SetActive(true);
         if (meleeScript != null && meleeScript.CurrentViewModel != null)
@@ -131,6 +145,8 @@ public class WeaponSwitcher : MonoBehaviour
 
     void EquipKnife()
     {
+        GrenadeEquipped = false;
+        
         if (mitreObj != null) mitreObj.SetActive(false);
         if (pistolObj != null) pistolObj.SetActive(false);
         if (meleeScript != null && meleeScript.CurrentViewModel != null)
@@ -147,6 +163,28 @@ public class WeaponSwitcher : MonoBehaviour
             : 1.0f;
 
         ApplySpeedMultiplier(knifeSpeed);
+    }
+
+    void EquipGrenade()
+    {
+        if (mitreObj != null) mitreObj.SetActive(false);
+        if (pistolObj != null) pistolObj.SetActive(false);
+
+        if (meleeScript != null && meleeScript.CurrentViewModel != null)
+        {
+            meleeScript.CurrentViewModel.SetActive(false);
+        }
+
+        if (grenadeObj != null)
+        {
+            grenadeObj.SetActive(true);
+        }
+
+        // Indica que la granada está equipada
+        GrenadeEquipped = true;
+
+        // Velocidad normal mientras se sostiene la granada
+        ApplySpeedMultiplier(1.0f);
     }
 
     private void ApplySpeedMultiplier(float multiplier)
