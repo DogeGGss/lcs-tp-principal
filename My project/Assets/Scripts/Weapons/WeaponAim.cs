@@ -33,6 +33,8 @@ public class WeaponAim : MonoBehaviour
     private Vector2 shown;         // retroceso del patrón que se ve (x = sube, y = hacia la derecha)
     private Vector2 punch;         // sacudón actual
     private Vector2 punchTarget;   // hacia dónde va el sacudón; vuelve a cero solo
+    private float spraySide = 1f;  // lado para el que arranca esta ráfaga (se sortea en cada una)
+    private float sprayScale = 1f; // ancho de esta ráfaga respecto del de la ficha
     private Quaternion applied = Quaternion.identity;
 
     public float MoveFactor => moveFactor;
@@ -49,7 +51,7 @@ public class WeaponAim : MonoBehaviour
     // Hacia dónde tiene que ir la mira según el patrón y las balas seguidas.
     private Vector2 TargetOffset => pattern == null
         ? Vector2.zero
-        : PatternOffset(pattern, heat) * (Crouching ? CrouchMultiplier : 1f);
+        : PatternOffset(pattern, heat, spraySide, sprayScale) * (Crouching ? CrouchMultiplier : 1f);
 
     public static WeaponAim For(Camera camera)
     {
@@ -109,6 +111,13 @@ public class WeaponAim : MonoBehaviour
             pattern = weapon;
             heat = 0f;
         }
+        // Ráfaga nueva (la mira ya había vuelto): se sortea hacia qué lado arranca y cuánto se abre.
+        if (heat <= 0.01f)
+        {
+            float variation = weapon.recoilVariation;
+            spraySide = variation > 0f && Random.value < 0.5f ? -1f : 1f;
+            sprayScale = 1f + Random.Range(-variation, variation);
+        }
         heat += 1f;
         lastShotTime = Time.time;
         recoverRate = heat / Mathf.Max(0.01f, weapon.recoilRecovery);
@@ -150,25 +159,52 @@ public class WeaponAim : MonoBehaviour
     }
 
     // Retroceso del patrón (x = sube, y = hacia la derecha), en grados, después de "shots" balas seguidas.
-    // La primera bala siempre sale exacta; con recoilExactShots = 2, también la segunda.
-    public static Vector2 PatternOffset(ShopItem weapon, float shots)
+    // La primera bala siempre sale exacta; con recoilExactShots = 2, también la segunda. La forma sale de la ficha:
+    // - sube recoilKick por bala hasta recoilMaxClimb y después sigue subiendo cada vez menos (recoilLateClimb);
+    // - mientras sube puede correrse hacia un costado (recoilDrift);
+    // - arriba zigzaguea (US 168, CA4): cruzando de a poco o en bloques de balas, abriéndose (recoilSwayGrowth) y
+    //   más hacia un lado que al otro (recoilSwayBias).
+    // side (±1) y scale son el sorteo de cada ráfaga: hacia qué lado arranca y cuánto se abre.
+    public static Vector2 PatternOffset(ShopItem weapon, float shots, float side = 1f, float scale = 1f)
     {
         if (weapon.recoilKick <= 0f) return Vector2.zero;
+
+        // Patrón bala por bala (por ejemplo, el Mitre como el AK de CS). "shots" es la bala que sale menos 1, así que
+        // el punto 0 es la primera. Entre dos balas (mientras se recupera) va de uno al otro; pasado el último se queda
+        // ahí. El sorteo de la ráfaga solo cambia el ancho, para que la forma se siga reconociendo.
+        Vector2[] points = weapon.recoilPoints;
+        if (points != null && points.Length > 0)
+        {
+            float t = Mathf.Clamp(shots, 0f, points.Length - 1);
+            int i = Mathf.FloorToInt(t);
+            Vector2 p = Vector2.Lerp(points[i], points[Mathf.Min(i + 1, points.Length - 1)], t - i);
+            return new Vector2(p.y, p.x * scale);
+        }
+
         float exact = Mathf.Max(1, weapon.recoilExactShots);
         float climbShots = Mathf.Max(0f, shots - exact + 1f);
-        float max = weapon.recoilMaxClimb > 0f ? weapon.recoilMaxClimb : float.MaxValue;
-        float pitch = Mathf.Min(climbShots * weapon.recoilKick, max);
+        float linearShots = weapon.recoilMaxClimb > 0f ? weapon.recoilMaxClimb / weapon.recoilKick : float.MaxValue;
+        float past = climbShots - linearShots; // balas desde que llegó arriba
 
-        // Arriba de todo, zigzag de un lado al otro como una víbora (US 168, CA4).
-        float yaw = 0f;
-        if (weapon.recoilSway > 0f && weapon.recoilMaxClimb > 0f)
+        float pitch = past <= 0f
+            ? climbShots * weapon.recoilKick
+            : weapon.recoilMaxClimb + weapon.recoilLateClimb * Mathf.Sqrt(past);
+
+        float yaw = weapon.recoilDrift * Mathf.Min(climbShots, linearShots) * side * scale;
+        if (weapon.recoilSway > 0f && past > 0f)
         {
-            float past = climbShots - weapon.recoilMaxClimb / weapon.recoilKick;
-            if (past > 0f)
+            float width = weapon.recoilSway * (1f + weapon.recoilSwayGrowth * past) * scale;
+            float lado; // de -1 (izquierda) a 1 (derecha)
+            if (weapon.recoilSwayBlocks)
             {
-                float perShot = 2f * weapon.recoilSway / Mathf.Max(1, weapon.recoilSwayShots);
-                yaw = Mathf.PingPong(past * perShot + weapon.recoilSway, 2f * weapon.recoilSway) - weapon.recoilSway;
+                int block = Mathf.FloorToInt(Mathf.Max(0f, past - 1f) / Mathf.Max(1, weapon.recoilSwayShots));
+                lado = (block % 2 == 0 ? -1f : 1f) * side;
             }
+            else
+            {
+                lado = (Mathf.PingPong(past * 2f / Mathf.Max(1, weapon.recoilSwayShots) + 1f, 2f) - 1f) * side;
+            }
+            yaw += width * lado * (1f + weapon.recoilSwayBias * Mathf.Sign(lado));
         }
         return new Vector2(pitch, yaw);
     }

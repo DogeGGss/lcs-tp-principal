@@ -49,12 +49,18 @@ MonoBehaviour:
     body: 21
     legs: 18
   recoilExactShots: 2
-  recoilKick: 0.35
-  recoilMaxClimb: 3.5
-  recoilSway: 1
+  recoilKick: 0.3
+  recoilMaxClimb: 2.4
+  recoilSway: 0.7
   recoilSwayShots: 4
   recoilRecovery: 0.25
   recoilPunch: 0.25
+  recoilLateClimb: 0.25
+  recoilDrift: 0.12
+  recoilSwayBlocks: 0
+  recoilSwayGrowth: 0.04
+  recoilSwayBias: 0
+  recoilVariation: 0.2
   shieldPoints: 0
   grenadeType: 0
   maxCarry: 1
