@@ -304,3 +304,12 @@ fecha_utc,us_numero,us_titulo,estado_anterior,estado_nuevo,tiempo_en_estado_ante
 2026-09-29T01:27:04.920729+00:00,143,US 111. Agregar sonido - Mapa 3,Blocked,Todo,5d 7h 55m,460545,https://github.com/DogeGGss/lcs-tp-principal/issues/143
 2026-09-29T01:27:04.920729+00:00,203,US 143. Iniciar partida Zombie,Blocked,Todo,3d 3h 10m,270636,https://github.com/DogeGGss/lcs-tp-principal/issues/203
 2026-09-29T01:27:04.920729+00:00,213,SPK 01. Prueba de concepto con Photon PUN 2,Todo,In Progress,3d 3h 10m,270636,https://github.com/DogeGGss/lcs-tp-principal/issues/213
+2026-09-29T07:23:10.051957+00:00,44,US 025. Sincronizar movimiento,In Progress,LPR,5h 56m,21365,https://github.com/DogeGGss/lcs-tp-principal/issues/44
+2026-09-29T07:23:10.051957+00:00,46,US 026. Unirse a sala,In Progress,LPR,5h 56m,21365,https://github.com/DogeGGss/lcs-tp-principal/issues/46
+2026-09-29T07:23:10.051957+00:00,75,US 027. Crear sala,In Progress,LPR,5h 56m,21365,https://github.com/DogeGGss/lcs-tp-principal/issues/75
+2026-09-29T07:23:10.051957+00:00,76,US 028. Sincronizar disparos,In Progress,LPR,5h 56m,21365,https://github.com/DogeGGss/lcs-tp-principal/issues/76
+2026-09-29T07:23:10.051957+00:00,77,US 029. Sincronizar daño,In Progress,LPR,5h 56m,21365,https://github.com/DogeGGss/lcs-tp-principal/issues/77
+2026-09-29T07:23:10.051957+00:00,78,US 030. Sincronizar muerte y reaparición,In Progress,LPR,5h 56m,21365,https://github.com/DogeGGss/lcs-tp-principal/issues/78
+2026-09-29T07:23:10.051957+00:00,116,US 073. ARROJABLE 1 - Granada de metralla,Todo,In Progress,6d 7h 58m,547128,https://github.com/DogeGGss/lcs-tp-principal/issues/116
+2026-09-29T07:23:10.051957+00:00,117,US 074. ARROJABLE 2 - Granada de humo,Todo,In Progress,6d 7h 58m,547128,https://github.com/DogeGGss/lcs-tp-principal/issues/117
+2026-09-29T07:23:10.051957+00:00,213,SPK 01. Prueba de concepto con Photon PUN 2,In Progress,LPR,5h 56m,21365,https://github.com/DogeGGss/lcs-tp-principal/issues/213
