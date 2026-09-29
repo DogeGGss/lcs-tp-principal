@@ -10,10 +10,37 @@ public class HealthSystem : MonoBehaviour
 
     public event System.Action Died;
 
+    // Multijugador (US 029): en la copia de otro jugador el daño no se aplica acá, se le manda a su dueño,
+    // que es el que decide su vida. Mientras es invulnerable (al reaparecer, US 030) no recibe daño.
+    public System.Action<int> DamageRedirect;
+    public bool Invulnerable;
+
     void Start()
     {
         currentHealth = maxHealth;
         currentShield = 0;
+    }
+
+    // Si este daño lo deja en 0 (lo usa el marcador de impacto para mostrar la baja, US 165).
+    public bool WouldDie(int damageAmount)
+    {
+        return currentHealth > 0 && !Invulnerable && damageAmount >= currentHealth + currentShield;
+    }
+
+    // Vida y escudo que manda el dueño de este jugador (multijugador, US 029).
+    public void SetState(int health, int shield)
+    {
+        currentHealth = Mathf.Clamp(health, 0, maxHealth);
+        currentShield = Mathf.Clamp(shield, 0, maxShield);
+    }
+
+    // Reaparición (US 030): vida completa, sin escudo y con el movimiento de vuelta.
+    public void Revive()
+    {
+        currentHealth = maxHealth;
+        currentShield = 0;
+        PlayerMovement movement = GetComponent<PlayerMovement>();
+        if (movement != null) movement.enabled = true;
     }
 
     public void AddShield(int shieldAmount)
@@ -34,7 +61,12 @@ public class HealthSystem : MonoBehaviour
 
     public void TakeDamage(int damageAmount)
     {
-        if (currentHealth <= 0) return;
+        if (DamageRedirect != null)
+        {
+            DamageRedirect(damageAmount);
+            return;
+        }
+        if (currentHealth <= 0 || Invulnerable) return;
 
         if (currentShield > 0)
         {
@@ -50,16 +82,16 @@ public class HealthSystem : MonoBehaviour
             }
         }
 
+        // El daño nunca deja la vida por debajo de 0 (US 029, CA4).
         if (damageAmount > 0)
         {
-            currentHealth -= damageAmount;
+            currentHealth = Mathf.Max(0, currentHealth - damageAmount);
         }
 
         Debug.Log("Recibes danio. Escudo: " + currentShield + " | Vida: " + currentHealth);
 
         if (currentHealth <= 0)
         {
-            currentHealth = 0;
             Die();
         }
     }

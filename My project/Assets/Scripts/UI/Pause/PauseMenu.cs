@@ -17,8 +17,8 @@ using static ShopUIKit;
 // En las partidas locales (Zombie) también tiene Reiniciar partida, con confirmación (US 052).
 // La interfaz se arma por código, igual que la tienda, con medidas de una pantalla de 1920 x 1080.
 //
-// Mientras no haya multijugador, la pausa congela el juego (Time.timeScale = 0). Cuando exista el online,
-// se marca isMultiplayer en Táctico y Deathmatch: el menú se ve solo en esta pantalla y la partida sigue (CA4).
+// En las partidas locales la pausa congela el juego (Time.timeScale = 0). En las online (Táctico y Deathmatch
+// en una sala) se marca isMultiplayer: el menú se ve solo en esta pantalla y la partida sigue (CA4).
 //
 // La configuración usa las mismas claves de PlayerPrefs y los mismos parámetros del AudioMixer que las
 // opciones del menú principal (SonidoUIController, SensibilidadUIController y GraficosUIController),
@@ -289,6 +289,8 @@ public class PauseMenu : MonoBehaviour
             Debug.LogError($"PauseMenu: la escena \"{mainMenuScene}\" no está en File > Build Profiles (Scene List).");
             return;
         }
+        // En una partida online, se sale de la sala: los demás dejan de ver a este jugador (F06).
+        Multijugador.SalirDeLaSala();
         SceneManager.LoadScene(mainMenuScene);
     }
 
@@ -341,7 +343,7 @@ public class PauseMenu : MonoBehaviour
         }
     }
 
-    // Para cuando exista el online: true en Táctico y Deathmatch.
+    // Partida online (Táctico y Deathmatch en una sala): la pausa no congela el juego. La marca PartidaEnRed.
     public void SetMultiplayer(bool value)
     {
         if (IsPaused) Resume();
