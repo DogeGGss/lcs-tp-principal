@@ -36,13 +36,13 @@ public class PlayerNameScreen : MonoBehaviour
     private Color fieldColor, okColor, chipHover;
 
     private RectTransform canvasRoot, chip, modal, panel, cancelRect, keysRect;
-    private CanvasGroup chipGroup;
+    private CanvasGroup chipGroup, modalGroup;
     private Img chipBg, acceptButton;
     private TextMeshProUGUI chipLabel, chipName, avatarLetter, eyebrow, message, counter, acceptLabel, keysText;
     private TMP_InputField input;
 
-    private bool firstTime, attempted;
-    private Coroutine shakeRoutine;
+    private bool firstTime, attempted, closing;
+    private Coroutine shakeRoutine, fadeRoutine;
 
     // =====================================================================
     // Ciclo de vida
@@ -88,7 +88,7 @@ public class PlayerNameScreen : MonoBehaviour
         if (chip.gameObject.activeSelf != showChip) chip.gameObject.SetActive(showChip);
         if (showChip && transitionOverlay != null) chipGroup.alpha = 1f - transitionOverlay.alpha;
 
-        if (!IsOpen) return;
+        if (!IsOpen || closing) return;
 
         if (Input.GetKeyDown(KeyCode.Escape) && !firstTime) { Close(); return; }
 
@@ -113,19 +113,63 @@ public class PlayerNameScreen : MonoBehaviour
 
         input.SetTextWithoutNotify(PlayerProfile.Name);
         UpdateValidation(input.text);
+
+        // Si se vuelve a abrir mientras se cerraba, sigue desde donde quedó.
+        if (!modal.gameObject.activeSelf) SetVisible(0f);
+        closing = false;
+        modalGroup.interactable = modalGroup.blocksRaycasts = true;
         modal.gameObject.SetActive(true);
+        Fade(true);
         StartCoroutine(FocusNextFrame());
     }
 
     public void Close()
     {
+        if (!IsOpen || closing) return;
+        closing = true;
+        modalGroup.interactable = modalGroup.blocksRaycasts = false;
+        input.DeactivateInputField();
+        if (EventSystem.current != null) EventSystem.current.SetSelectedGameObject(null);
+        Fade(false); // IsOpen pasa a false recién cuando termina de irse
+    }
+
+    private void Fade(bool opening)
+    {
+        if (fadeRoutine != null) StopCoroutine(fadeRoutine);
+        fadeRoutine = StartCoroutine(FadeAnimation(opening));
+    }
+
+    // Abre con un fundido y el panel crece un poco hasta su tamaño; cierra al revés y más rápido.
+    private IEnumerator FadeAnimation(bool opening)
+    {
+        float duration = opening ? 0.22f : 0.15f;
+        float from = modalGroup.alpha, to = opening ? 1f : 0f;
+        // Paso máximo de 1/30 s: si el cuadro tarda (por ejemplo, al cargar el menú), la animación igual se ve entera.
+        for (float t = 0f; t < duration; t += Mathf.Min(Time.unscaledDeltaTime, 1f / 30f))
+        {
+            float k = t / duration;
+            float eased = opening ? 1f - Mathf.Pow(1f - k, 3f) : k * k;
+            SetVisible(Mathf.Lerp(from, to, eased));
+            yield return null;
+        }
+        SetVisible(to);
+        fadeRoutine = null;
+
+        if (opening) yield break;
+        closing = false;
         IsOpen = false;
         modal.gameObject.SetActive(false);
-        if (EventSystem.current != null) EventSystem.current.SetSelectedGameObject(null);
+    }
+
+    private void SetVisible(float amount)
+    {
+        modalGroup.alpha = amount;
+        panel.localScale = Vector3.one * Mathf.Lerp(0.94f, 1f, amount);
     }
 
     private void Submit()
     {
+        if (closing) return;
         attempted = true;
         if (PlayerProfile.TrySetName(input.text, out string error))
         {
@@ -140,6 +184,7 @@ public class PlayerNameScreen : MonoBehaviour
     private IEnumerator FocusNextFrame()
     {
         yield return null;
+        if (closing) yield break;
         if (EventSystem.current != null) EventSystem.current.SetSelectedGameObject(input.gameObject);
         input.ActivateInputField();
     }
@@ -254,6 +299,7 @@ public class PlayerNameScreen : MonoBehaviour
     private void BuildModal()
     {
         modal = Stretch(Node("Ventana", canvasRoot));
+        modalGroup = modal.gameObject.AddComponent<CanvasGroup>();
         Image(Stretch(Node("Oscurecido", modal)), null, new Color(0f, 0f, 0f, DarkAlpha(0.72f)), 0f, true);
 
         panel = Node("Panel", modal);
@@ -304,9 +350,11 @@ public class PlayerNameScreen : MonoBehaviour
         area.offsetMax = new Vector2(-96f, 0f);
         area.gameObject.AddComponent<UnityEngine.UI.RectMask2D>();
 
-        TextMeshProUGUI placeholder = Text(Stretch(Node("Ejemplo", area)), displayFont, 40f, White(0.25f), TextAlignmentOptions.MidlineLeft, 3f);
+        // Centrado por la altura de la línea (Left) y no por las letras (MidlineLeft): con el campo vacío
+        // TextMeshPro no tiene letras para medir y el cursor quedaba más arriba que el texto.
+        TextMeshProUGUI placeholder = Text(Stretch(Node("Ejemplo", area)), displayFont, 40f, White(0.25f), TextAlignmentOptions.Left, 3f);
         placeholder.text = "Tu nombre";
-        TextMeshProUGUI value = Text(Stretch(Node("Texto", area)), displayFont, 40f, Ink, TextAlignmentOptions.MidlineLeft, 3f);
+        TextMeshProUGUI value = Text(Stretch(Node("Texto", area)), displayFont, 40f, Ink, TextAlignmentOptions.Left, 3f);
 
         counter = Text(Place(Node("Contador", box), w - 86f, 0f, 66f, 78f), labelFont, 18f, Mute, TextAlignmentOptions.MidlineRight, 6f);
 

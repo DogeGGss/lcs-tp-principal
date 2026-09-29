@@ -12,6 +12,10 @@ public class MeleeAttack : MonoBehaviour
     private float nextTimeToAttack = 0f;
     private bool isAttacking = false;
 
+    // Cada ataque con el cuchillo: el multijugador lo repite en las demás computadoras (US 028).
+    public static event System.Action<MeleeAttack> Swung;
+    public AudioClip SwingSound => swingSound;
+
     // Parámetros de movimiento del cuchiloo para animación rápida por código
     private float stabDistance = 0.3f;
     private float stabDuration = 0.08f;
@@ -61,6 +65,7 @@ public class MeleeAttack : MonoBehaviour
     private IEnumerator AttackRoutine(MeleeWeaponData data)
     {
         isAttacking = true;
+        Swung?.Invoke(this);
 
         // CA6: Sonido de ataque
         if (swingSound != null)

@@ -54,7 +54,7 @@ public class ModeSelectScreen : MonoBehaviour
     private static readonly string[] Blurbs =
     {
         "Plantá o desactivá el dispositivo. Sin reaparición.",
-        "Todos contra todos. Reaparecés a los 3 s.",
+        "Todos contra todos. Reaparecés a los 3 s.",
         "Sobreviví a la horda en la universidad."
     };
     private static readonly string[][] Chips =
@@ -83,7 +83,6 @@ public class ModeSelectScreen : MonoBehaviour
         "Como está pensado. Regenerás a los 4 s.",
         "125 % de vida, 150 % de daño y más zombis. +25 % de puntos."
     };
-    private const string CodeAlphabet = "ABCDEFGHJKMNPQRSTUVWXYZ23456789"; // sin O, I ni L
 
     // ---------- Piezas ----------
 
@@ -120,8 +119,11 @@ public class ModeSelectScreen : MonoBehaviour
         public CanvasGroup group;
         public RectTransform codeRow, room;
         public TMP_InputField code;
-        public TextMeshProUGUI status, roomCode, roomCount, roomFoot;
+        public TextMeshProUGUI status, roomCode, roomCount, roomFoot, roomMap, copyLabel;
         public readonly TextMeshProUGUI[] slots = new TextMeshProUGUI[8];
+        public RectTransform mapButton;
+        public UnityEngine.UI.Button startButton;
+        public CanvasGroup startGroup;
         public float actionsY;
     }
 
@@ -164,7 +166,7 @@ public class ModeSelectScreen : MonoBehaviour
     private readonly float[] motX = { W / 6f, W / 2f, 5f * W / 6f };
     private int hover = -1, open = -1;
     private bool dirty = true;
-    private float introAt, nextStrike, openAt;
+    private float introAt, nextStrike, openAt, copiedAt = -10f;
     private Vector2 lastMouse = new Vector2(-1f, -1f);
     private readonly Vector2[] p0 = new Vector2[N + 1], p1 = new Vector2[N + 1];
     private readonly List<Vector2> scratch = new List<Vector2>();
@@ -674,26 +676,37 @@ public class ModeSelectScreen : MonoBehaviour
         return d;
     }
 
+    // Sala online (US 026, US 027): código con botón para copiarlo, los 8 lugares, el mapa (lo cambia el anfitrión)
+    // e Iniciar partida, que solo ve el anfitrión.
     private RectTransform BuildRoom(Detail d, float y, Color c)
     {
-        RectTransform room = Place(Node("Sala", d.rect), 0f, y, 720f, 330f);
+        RectTransform room = Place(Node("Sala", d.rect), 0f, y, 720f, 390f);
         Image(room, rounded, new Color(0f, 0f, 0f, DarkAlpha(0.55f)), 10f);
         Border(room, 8f, White(0.18f));
         Text(Place(Node("Sala", room), 26f, 22f, 200f, 40f), labelFont, 22f, White(0.7f), TextAlignmentOptions.MidlineLeft, 10f, true).text = "Sala";
         d.roomCode = Text(Place(Node("Codigo", room), 160f, 22f, 400f, 40f), monoFont, 40f, c, TextAlignmentOptions.Center, 30f);
         d.roomCount = Text(Place(Node("Jugadores", room), 494f, 22f, 200f, 40f), labelFont, 22f, White(0.7f), TextAlignmentOptions.MidlineRight, 10f, true);
+        RectTransform copy = ButtonRect(room, 462f, 24f, "Copiar", false, c, CopyCode, 20f, 36f);
+        d.copyLabel = copy.GetComponentInChildren<TextMeshProUGUI>();
         for (int s = 0; s < 8; s++)
         {
             float x = 26f + (s % 2) * 344f, sy = 80f + (s / 2) * 40f;
             Segment(room, new Vector2(x, sy + 38f), new Vector2(x + 324f, sy + 38f), 1f, White(FadeAlpha(0.08f)));
             d.slots[s] = Text(Place(Node("Lugar", room), x, sy, 324f, 36f), bodyFont, 21f, Ink, TextAlignmentOptions.MidlineLeft);
         }
-        d.roomFoot = Text(Place(Node("Pie", room), 26f, 260f, 420f, 50f), bodyFont, 20f, White(0.7f), TextAlignmentOptions.MidlineLeft);
-        UnityEngine.UI.Button start = ButtonRect(room, 0f, 0f, "Iniciar partida", true, c, null, 26f, 54f).GetComponent<UnityEngine.UI.Button>();
-        RectTransform startRect = (RectTransform)start.transform;
-        startRect.anchoredPosition = new Vector2(720f - 26f - startRect.sizeDelta.x / 2f, -(260f + 27f));
-        start.interactable = false;
-        start.gameObject.AddComponent<CanvasGroup>().alpha = 0.4f;
+
+        Text(Place(Node("Mapa", room), 26f, 256f, 120f, 40f), labelFont, 22f, White(0.7f), TextAlignmentOptions.MidlineLeft, 10f, true).text = "Mapa";
+        d.roomMap = Text(Place(Node("NombreMapa", room), 120f, 256f, 330f, 40f), bodyFont, 24f, Ink, TextAlignmentOptions.MidlineLeft);
+        d.mapButton = ButtonRect(room, 462f, 258f, "Cambiar mapa", false, c, NextMap, 20f, 36f);
+
+        d.roomFoot = Text(Place(Node("Pie", room), 26f, 320f, 420f, 50f), bodyFont, 20f, White(0.7f), TextAlignmentOptions.MidlineLeft);
+        d.roomFoot.textWrappingMode = TextWrappingModes.Normal;
+        d.startButton = ButtonRect(room, 0f, 0f, "Iniciar partida", true, c, StartMatch, 26f, 54f).GetComponent<UnityEngine.UI.Button>();
+        RectTransform startRect = (RectTransform)d.startButton.transform;
+        startRect.anchoredPosition = new Vector2(720f - 26f - startRect.sizeDelta.x / 2f, -(320f + 27f));
+        d.startButton.interactable = false;
+        d.startGroup = d.startButton.gameObject.AddComponent<CanvasGroup>();
+        d.startGroup.alpha = 0.4f;
         return room;
     }
 
@@ -788,11 +801,20 @@ public class ModeSelectScreen : MonoBehaviour
         PlaceBackKey();
         Strike(0, true);
         Strike(1, true);
+
+        // Táctico y Deathmatch son online: se conecta ya, así crear o entrar a la sala es más rápido.
+        if (i < 2)
+        {
+            ListenNetwork(true);
+            Multijugador.Instancia.Conectar();
+        }
     }
 
     private void CloseMode()
     {
         if (open < 0) return;
+        // US 026 y US 027, CA9: con Esc se sale de la sala y se vuelve a los andenes.
+        Multijugador.SalirDeLaSala();
         open = -1;
         if (EventSystem.current != null) EventSystem.current.SetSelectedGameObject(null);
         backText.text = "Menú principal";
@@ -816,24 +838,23 @@ public class ModeSelectScreen : MonoBehaviour
         d.status.text = "";
     }
 
+    // US 027: crea la sala en Photon; la sala aparece cuando Photon confirma (OnNetworkChanged).
     private void CreateRoom(int mode)
     {
         Detail d = details[mode];
-        string code = "";
-        for (int k = 0; k < 5; k++) code += CodeAlphabet[UnityEngine.Random.Range(0, CodeAlphabet.Length)];
         MatchSettings.Mode = (GameMode)mode;
-        MatchSettings.RoomCode = code;
         onCreateRoom.Invoke((GameMode)mode);
 
         d.codeRow.gameObject.SetActive(false);
-        d.status.text = "";
-        ShowRoom(d, code, new[] { "Vos  <color=#FFD2A1>· anfitrión</color>" },
-            onCreateRoom.GetPersistentEventCount() == 0 ? "Falta conectar el multijugador (SPK 01)." : "Pasale el código a tus amigos.");
+        d.room.gameObject.SetActive(false);
+        d.status.text = "Creando la sala…";
+        Multijugador.Instancia.CrearSala((GameMode)mode);
     }
 
     private void ShowJoin(int mode)
     {
         Detail d = details[mode];
+        Multijugador.SalirDeLaSala();
         d.room.gameObject.SetActive(false);
         d.codeRow.gameObject.SetActive(true);
         d.status.text = "";
@@ -841,30 +862,103 @@ public class ModeSelectScreen : MonoBehaviour
         d.code.ActivateInputField();
     }
 
+    // US 026: entra con el código. Los errores (no existe, llena, ya empezó, otro modo) llegan por OnNetworkError.
     private void Join(int mode)
     {
         if (mode < 0 || mode > 1) return;
         Detail d = details[mode];
         string code = d.code.text.ToUpperInvariant();
-        if (code.Length != 5) { d.status.text = "El código tiene 5 letras."; d.code.ActivateInputField(); return; }
+        if (code.Length != 5) { d.status.text = "No existe una sala con ese código."; d.code.ActivateInputField(); return; }
         MatchSettings.Mode = (GameMode)mode;
-        MatchSettings.RoomCode = code;
         onJoinRoom.Invoke((GameMode)mode, code);
-        if (onJoinRoom.GetPersistentEventCount() == 0)
-            d.status.text = "Todavía no hay multijugador: la conexión con Photon está en el SPK 01.";
+        d.status.text = "Entrando a la sala…";
+        Multijugador.Instancia.UnirseASala(code, (GameMode)mode);
     }
 
-    private void ShowRoom(Detail d, string code, string[] players, string foot)
+    private void CopyCode()
     {
-        d.roomCode.text = code;
-        d.roomCount.text = $"{players.Length} / 8";
+        if (!Multijugador.EnSala || open < 0) return;
+        GUIUtility.systemCopyBuffer = Multijugador.Instancia.Codigo;
+        details[open].copyLabel.text = "Copiado";
+        copiedAt = Time.unscaledTime;
+    }
+
+    private void NextMap()
+    {
+        if (Multijugador.EnSala) Multijugador.Instancia.CambiarMapa();
+    }
+
+    private void StartMatch()
+    {
+        if (!Multijugador.EnSala || !Multijugador.Instancia.PuedeIniciar) return;
+        if (open >= 0) details[open].roomFoot.text = "Cargando la partida…";
+        Multijugador.Instancia.Iniciar();
+    }
+
+    // ---------- Multijugador ----------
+
+    private bool listening;
+
+    private void ListenNetwork(bool on)
+    {
+        if (on == listening || (!on && !Multijugador.Existe)) return;
+        listening = on;
+        Multijugador net = Multijugador.Instancia;
+        if (on) { net.Cambio += OnNetworkChanged; net.Error += OnNetworkError; }
+        else { net.Cambio -= OnNetworkChanged; net.Error -= OnNetworkError; }
+    }
+
+    private void OnDisable() => ListenNetwork(false);
+
+    private void OnNetworkChanged()
+    {
+        if (open == 0 || open == 1) RefreshRoom(details[open], open);
+    }
+
+    private void OnNetworkError(string message)
+    {
+        if (open != 0 && open != 1) return;
+        Detail d = details[open];
+        d.status.text = message;
+        if (d.codeRow.gameObject.activeSelf && d.code != null) d.code.ActivateInputField();
+    }
+
+    // US 027, CA5 a CA8 y US 026, CA3, CA6 y CA7: la sala tal como está en Photon.
+    private void RefreshRoom(Detail d, int mode)
+    {
+        Multijugador net = Multijugador.Instancia;
+        if (!Multijugador.EnSala || net.ModoSala != (GameMode)mode)
+        {
+            d.room.gameObject.SetActive(false);
+            return;
+        }
+
+        List<Multijugador.Jugador> players = net.Jugadores();
+        d.codeRow.gameObject.SetActive(false);
+        d.status.text = "";
+        d.roomCode.text = net.Codigo;
+        d.roomCount.text = $"{players.Count} / {Multijugador.MaxJugadores}";
         for (int s = 0; s < 8; s++)
         {
-            bool taken = s < players.Length;
-            d.slots[s].text = taken ? players[s] : "Libre";
+            bool taken = s < players.Count;
+            string name = taken ? players[s].nombre : "Libre";
+            if (taken && players[s].vos) name += " <color=#FFFFFF80>(vos)</color>";
+            if (taken && players[s].anfitrion) name += "  <color=#FFD2A1>· anfitrión</color>";
+            d.slots[s].text = name;
             d.slots[s].color = taken ? Ink : White(FadeAlpha(0.35f));
         }
-        d.roomFoot.text = foot;
+
+        ConfigRed.Mapa map = net.MapaActual;
+        d.roomMap.text = map != null ? map.nombre : "No hay mapas para este modo";
+        d.mapButton.gameObject.SetActive(net.EsAnfitrion && net.CantidadMapas > 1);
+
+        bool host = net.EsAnfitrion, ready = net.PuedeIniciar;
+        d.startButton.gameObject.SetActive(host);
+        d.startButton.interactable = ready;
+        d.startGroup.alpha = ready ? 1f : 0.4f;
+        d.roomFoot.text = !host ? "Esperando al anfitrión…"
+            : players.Count < Multijugador.MinJugadores ? "Pasale el código a tus amigos. Se necesitan al menos 2 jugadores."
+            : "Todo listo: iniciá la partida cuando quieras.";
         d.room.gameObject.SetActive(true);
     }
 
@@ -886,7 +980,15 @@ public class ModeSelectScreen : MonoBehaviour
             : $"Récord en {name}: <color={ModeHex[2]}>todavía no jugaste</color>";
     }
 
+    // US 015, CA1: en el Zombie, el personaje se elige después de la dificultad y antes de entrar al mapa.
     private void PlayZombie()
+    {
+        if (CharacterSelectScreen.IsOpen) return;
+        CharacterSelectScreen.Show(displayFont, labelFont, bodyFont, rounded,
+            "Modo Zombie · " + DifficultyName[(int)MatchSettings.Difficulty], 0f, StartZombie, () => { });
+    }
+
+    private void StartZombie()
     {
         MatchSettings.Mode = GameMode.Zombie;
         onPlayZombie.Invoke(MatchSettings.Difficulty);
@@ -903,6 +1005,11 @@ public class ModeSelectScreen : MonoBehaviour
         float now = Time.unscaledTime, dt = Mathf.Min(0.05f, Time.unscaledDeltaTime);
         Fit();
         HandleInput();
+        if (copiedAt > 0f && now - copiedAt > 1.5f)
+        {
+            copiedAt = -10f;
+            foreach (Detail d in details) if (d.copyLabel != null) d.copyLabel.text = "Copiar";
+        }
 
         ComputeTargets();
         float k = 1f - Mathf.Exp(-dt * 9f);
@@ -955,7 +1062,8 @@ public class ModeSelectScreen : MonoBehaviour
     {
         Vector2 size = ((RectTransform)transform).rect.size;
         if (size.x <= 0f || size.y <= 0f) return;
-        root.localScale = Vector3.one * Mathf.Max(size.x / W, size.y / H);
+        // Entra completa en cualquier pantalla: en las que no son 16:9 quedan bandas negras en vez de cortarse los bordes.
+        root.localScale = Vector3.one * Mathf.Min(size.x / W, size.y / H);
     }
 
     private void ComputeTargets()
@@ -1233,6 +1341,9 @@ public class ModeSelectScreen : MonoBehaviour
 
     private void HandleInput()
     {
+        // Mientras se elige el personaje (US 015), el teclado es de esa pantalla; tampoco se usa el Esc que la cerró.
+        if (CharacterSelectScreen.IsOpen || CharacterSelectScreen.ClosedFrame == Time.frameCount) return;
+
         GameObject selected = EventSystem.current != null ? EventSystem.current.currentSelectedGameObject : null;
         TMP_InputField typing = selected != null ? selected.GetComponent<TMP_InputField>() : null;
         bool isTyping = typing != null && typing.isFocused;
