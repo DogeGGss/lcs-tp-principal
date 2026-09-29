@@ -1,0 +1,19 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3fa870e38b86efb4e8cd2b3c8bba96ed, type: 3}
+  m_Name: Barrera
+  m_EditorClassIdentifier: Assembly-CSharp::AbilityData
+  displayName: Barrera
+  icon: {fileID: 0}
+  key: 113
+  cooldown: 30
+  description: 'Levanta una pared de energía de 4 m que frena las balas durante 6 s. Provisorio: el efecto se define en F04.'

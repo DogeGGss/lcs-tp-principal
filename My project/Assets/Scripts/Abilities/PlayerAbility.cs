@@ -15,6 +15,17 @@ public class PlayerAbility : MonoBehaviour
 
     public event System.Action Used;
 
+    [Tooltip("Usar la habilidad del personaje elegido en la selección (US 015). Si no hay personajes, queda la de arriba.")]
+    [SerializeField] private bool useSelectedCharacter = true;
+
+    // US 015, CA6: el jugador empieza la partida con la habilidad del personaje que eligió.
+    private void Awake()
+    {
+        if (!useSelectedCharacter) return;
+        CharacterData character = CharacterRoster.Selected;
+        if (character != null && character.ability != null) ability = character.ability;
+    }
+
     private void Update()
     {
         if (CooldownLeft > 0f) CooldownLeft = Mathf.Max(0f, CooldownLeft - Time.deltaTime);
