@@ -35,6 +35,10 @@ public class CombatHud : MonoBehaviour
     [Tooltip("Con la vida por debajo de esta parte del máximo, se ve en rojo y se tiñen los bordes de la pantalla.")]
     [SerializeField, Range(0f, 1f)] private float criticalHealth = 0.25f;
 
+    [Header("Inventario (US 055)")]
+    [Tooltip("Ícono del cuchillo en el espacio 3. Si queda vacío, el espacio muestra solo el nombre.")]
+    [SerializeField] private Sprite knifeIcon;
+
     [Header("Marcador de impacto (US 165)")]
     [Tooltip("Canal del mixer para el sonido del marcador (SFX), así respeta el volumen de efectos.")]
     [SerializeField] private UnityEngine.Audio.AudioMixerGroup sfxGroup;
@@ -56,6 +60,19 @@ public class CombatHud : MonoBehaviour
     // Medidas de la maqueta (px en 1920 x 1080).
     private const float BarW = 934f, BarH = 170f, BlockW = 240f, SkillW = 150f;
     private const float RailLeftX = 256f, SkillX = 392f, RailRightX = 558f, AmmoX = 694f;
+
+    // Inventario (US 055): los 4 espacios del equipo, uno arriba del otro, a la derecha de la munición.
+    private const float InvX = BarW + 24f, InvW = 170f, InvRowH = 36f, InvGap = 6f;
+    private class InvSlot
+    {
+        public RectTransform rect;
+        public UnityEngine.UI.Image bg, icon, keyBg;
+        public TextMeshProUGUI name, key, dash;
+    }
+    private readonly InvSlot[] invSlots = new InvSlot[4];
+    private readonly string[] invState = new string[4];
+    private bool sceneHasShop;
+    private Mitre mitre;
 
     private HealthSystem health;
     private PlayerAbility ability;
@@ -122,6 +139,7 @@ public class CombatHud : MonoBehaviour
         UpdateHealth();
         UpdateSkill();
         UpdateAmmo();
+        UpdateInventory();
         UpdateHitMarker();
 
         // La mira se ve con cualquier arma; con la pausa abierta se oculta (con la tienda ya se oculta todo el HUD).
@@ -245,6 +263,9 @@ public class CombatHud : MonoBehaviour
         switcher = player.GetComponentInChildren<WeaponSwitcher>(true);
         melee = player.GetComponent<MeleeWeaponHolder>();
         loadout = player.GetComponent<PlayerLoadout>();
+        mitre = switcher != null && switcher.mitreObj != null ? switcher.mitreObj.GetComponent<Mitre>() : null;
+        sceneHasShop = FindAnyObjectByType<ShopUI>() != null;
+        for (int i = 0; i < invState.Length; i++) invState[i] = null;
         ability = player.GetComponent<PlayerAbility>();
         if (ability != null) ability.Used += OnAbilityUsed;
 
@@ -442,6 +463,7 @@ public class CombatHud : MonoBehaviour
         BuildSkill(bar);
         Image(Place(Node("Rieles", bar), RailRightX, 160f, 120f, 12f), rails, Color.white);
         BuildAmmo(bar);
+        BuildInventory(bar);
         BuildCrosshair(root);
         BuildHitMarker(root);
     }
@@ -514,6 +536,102 @@ public class CombatHud : MonoBehaviour
         AddShadow(reserveText);
         sleepersRoot = Place(Node("Durmientes", block), 0f, 160f, BlockW, 10f);
     }
+
+    // ---------- Inventario (US 055) ----------
+
+    private void BuildInventory(RectTransform bar)
+    {
+        for (int i = 0; i < 4; i++)
+        {
+            InvSlot slot = new InvSlot();
+            // Pivote a la derecha: el espacio en la mano crece hacia la izquierda, sin salirse de la pantalla.
+            slot.rect = Place(Node("Espacio" + (i + 1), bar), InvX, 6f + i * (InvRowH + InvGap), InvW, InvRowH);
+            slot.rect.pivot = new Vector2(1f, 0.5f);
+            slot.rect.anchoredPosition = new Vector2(InvX + InvW, -(6f + i * (InvRowH + InvGap) + InvRowH / 2f));
+            slot.bg = Image(slot.rect, rounded, Rgb(10, 12, 17, DarkAlpha(0.55f)), 5f);
+
+            slot.icon = Image(Place(Node("Icono", slot.rect), 8f, 6f, 52f, 24f), null, Mute);
+            slot.icon.preserveAspect = true;
+            slot.dash = Text(Place(Node("Vacio", slot.rect), 8f, 0f, 52f, InvRowH), displayFont, 18f, Mute, TextAlignmentOptions.Center);
+            slot.dash.text = "—";
+            slot.name = Text(Place(Node("Nombre", slot.rect), 66f, 0f, InvW - 100f, InvRowH), labelFont, 15f, Mute, TextAlignmentOptions.MidlineLeft, 8f, true);
+            slot.name.overflowMode = TextOverflowModes.Ellipsis;
+
+            RectTransform keyRect = Place(Node("Tecla", slot.rect), InvW - 28f, 8f, 20f, 20f);
+            slot.keyBg = Image(keyRect, rounded, new Color(0f, 0f, 0f, DarkAlpha(0.35f)), 3f);
+            slot.key = Text(Stretch(Node("Texto", keyRect)), displayFont, 13f, Mute, TextAlignmentOptions.Center);
+            invSlots[i] = slot;
+        }
+    }
+
+    private void UpdateInventory()
+    {
+        // Qué tiene en la mano (CA4): 0 principal, 1 secundaria, 2 cuchillo; -1 si nada.
+        int held = -1;
+        if (switcher != null && switcher.mitreObj != null && switcher.mitreObj.activeInHierarchy) held = 0;
+        else if (switcher != null && switcher.pistolObj != null && switcher.pistolObj.activeInHierarchy) held = 1;
+        else if (melee != null && melee.CurrentViewModel != null && melee.CurrentViewModel.activeInHierarchy) held = 2;
+
+        // Principal (CA2, CA3): lo que compró; en escenas sin tienda el Mitre está siempre.
+        ShopItem primary = loadout != null ? loadout.Primary : null;
+        bool hasPrimary = primary != null || (!sceneHasShop && mitre != null);
+        string primaryName = primary != null ? ItemName(primary) : hasPrimary ? mitre.HudName : "Vacío";
+        Sprite primaryIcon = primary != null ? primary.icon : hasPrimary && mitre.shopItem != null ? mitre.shopItem.icon : null;
+
+        ShopItem secondary = loadout != null ? loadout.Secondary : null;
+        bool hasSecondary = secondary != null || (switcher != null && switcher.pistolObj != null);
+        string secondaryName = hasSecondary ? SecondaryName() : "Vacío";
+
+        bool hasKnife = melee != null && melee.CurrentWeapon != null;
+        string knifeName = hasKnife ? melee.CurrentWeapon.weaponName : "Vacío";
+
+        // Granadas (CA5): la primera que tenga y cuántas lleva en total.
+        ShopItem grenade = null;
+        int grenadeTotal = 0;
+        if (loadout != null && loadout.Catalog != null)
+            foreach (ShopItem item in loadout.Catalog.items)
+            {
+                if (item == null || item.kind != ShopItemKind.Grenade) continue;
+                int n = loadout.Count(item);
+                if (n <= 0) continue;
+                if (grenade == null) grenade = item;
+                grenadeTotal += n;
+            }
+        string grenadeName = grenade != null ? $"{ItemName(grenade)} ×{grenadeTotal}" : "Vacío";
+
+        SetSlot(0, hasPrimary, held == 0, primaryName, primaryIcon, KeyBindings.Label(GameAction.ArmaPrincipal));
+        SetSlot(1, hasSecondary, held == 1, secondaryName, secondary != null ? secondary.icon : null, KeyBindings.Label(GameAction.ArmaSecundaria));
+        SetSlot(2, hasKnife, held == 2, knifeName, knifeIcon, KeyBindings.Label(GameAction.Cuchillo));
+        SetSlot(3, grenade != null, false, grenadeName, grenade != null ? grenade.icon : null, KeyBindings.Label(GameAction.Granadas));
+    }
+
+    // CA6: solo se redibuja cuando algo cambió.
+    private void SetSlot(int i, bool has, bool inHand, string name, Sprite icon, string key)
+    {
+        string state = $"{has}|{inHand}|{name}|{(icon != null ? icon.name : "")}|{key}";
+        if (invState[i] == state) return;
+        invState[i] = state;
+
+        InvSlot slot = invSlots[i];
+        Color ink = inHand ? KeyInk : has ? Mute : Rgb(107, 113, 122);
+        slot.bg.color = inHand ? Ink : Rgb(10, 12, 17, DarkAlpha(has ? 0.55f : 0.35f));
+        slot.rect.localScale = Vector3.one * (inHand ? 1.08f : 1f);
+
+        bool showIcon = has && icon != null;
+        slot.icon.enabled = showIcon;
+        slot.icon.sprite = icon;
+        slot.icon.color = inHand ? KeyInk : Rgb(154, 161, 171);
+        slot.dash.gameObject.SetActive(!has);
+        slot.dash.color = ink;
+
+        slot.name.text = name;
+        slot.name.color = ink;
+        slot.key.text = key;
+        slot.key.color = ink;
+        slot.keyBg.color = inHand ? new Color(0f, 0f, 0f, 0.12f) : new Color(0f, 0f, 0f, DarkAlpha(0.35f));
+    }
+
+    private static string ItemName(ShopItem item) => string.IsNullOrEmpty(item.alias) ? item.displayName : item.alias;
 
     private void BuildSleepers(int count)
     {
