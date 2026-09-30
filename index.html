@@ -609,12 +609,76 @@ a.uslink{white-space:nowrap}
 tr:target td{background:var(--accent-soft)}
 h2:target,h3:target{color:var(--accent)}
 article:target,.card:target{outline:2px solid var(--accent);outline-offset:3px}
+
+/* ===== Barra lateral y ruta (30/09/2026) ===== */
+section{scroll-margin-top:68px}
+[id]{scroll-margin-top:68px}
+.side{position:fixed;left:0;top:0;bottom:0;width:268px;z-index:40;display:flex;flex-direction:column;background:var(--paper);border-right:1px solid var(--line);padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);transition:transform .2s ease}
+.side .brand{display:flex;flex-direction:column;align-items:center;gap:8px;padding:22px 16px 14px;text-decoration:none;color:var(--ink);border-bottom:1px solid var(--line)}
+.side .brand svg{width:46px;height:46px}
+.side .brand .bt{font:700 22px/1 var(--display);letter-spacing:.16em;text-transform:uppercase;text-align:center}
+.side .brand .bs{font:600 11px/1 var(--display);letter-spacing:.3em;text-transform:uppercase;color:var(--ink-2)}
+.side .find{position:relative;margin:12px 14px 4px}
+.side .find input{width:100%;font:500 14px var(--body);padding:8px 10px 8px 32px;border-radius:8px;border:1px solid var(--line);background:var(--bg);color:var(--ink)}
+.side .find input:focus{outline:2px solid var(--accent);outline-offset:0;border-color:transparent}
+.side .find svg{position:absolute;left:10px;top:50%;width:15px;height:15px;transform:translateY(-50%);color:var(--ink-2)}
+.side .scroll{flex:1;overflow-y:auto;padding:4px 10px 18px;overscroll-behavior:contain}
+.side .grp{font:600 11px/1 var(--display);letter-spacing:.24em;text-transform:uppercase;color:var(--ink-2);margin:18px 8px 6px}
+.side .grp:first-child{margin-top:10px}
+.side ul{list-style:none;margin:0;padding:0}
+.side a.it{display:flex;align-items:center;gap:10px;padding:7px 10px;border-radius:8px;text-decoration:none;color:var(--ink);font:500 15px/1.2 var(--body);border:1px solid transparent}
+.side a.it svg{flex:none;width:18px;height:18px;color:var(--ink-2)}
+.side a.it:hover,.side a.it:focus-visible{background:var(--mono-bg);outline:none}
+.side a.it.on{background:var(--accent-soft);border-color:var(--line);box-shadow:inset 3px 0 0 var(--accent);font-weight:600}
+.side a.it.on svg{color:var(--accent)}
+.side a.it .ext{margin-left:auto;font-size:12px;color:var(--ink-2)}
+.side ul.subs{margin:2px 0 6px 28px;border-left:1px solid var(--line)}
+.side ul.subs a{display:block;padding:4px 10px;font:500 13.5px/1.3 var(--body);color:var(--ink-2);text-decoration:none;border-left:2px solid transparent;margin-left:-1px}
+.side ul.subs a:hover{color:var(--ink)}
+.side ul.subs a.on{color:var(--accent);border-left-color:var(--accent);font-weight:600}
+.side .none{padding:10px;color:var(--ink-2);font-size:14px}
+.crumbs{position:sticky;top:env(safe-area-inset-top,0px);z-index:30;display:flex;align-items:center;gap:8px;margin:-28px -16px 22px;padding:12px 16px;background:var(--bg);border-bottom:1px solid var(--line);font:600 13px/1.2 var(--display);letter-spacing:.06em;text-transform:uppercase;color:var(--ink-2);min-width:0}
+.crumbs a{color:var(--ink-2);text-decoration:none}
+.crumbs a:hover{color:var(--accent)}
+.crumbs .sep{opacity:.5}
+.crumbs .mid{display:inline-flex;align-items:center;gap:8px}
+.crumbs .cur{color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.crumbs .trail{display:flex;align-items:center;gap:8px;min-width:0;overflow:hidden;white-space:nowrap}
+.crumbs .navbtn{display:none;flex:none;align-items:center;gap:6px;font:600 13px/1 var(--display);letter-spacing:.08em;text-transform:uppercase;border:1px solid var(--line);background:var(--paper);color:var(--ink);border-radius:6px;padding:7px 10px;cursor:pointer}
+.crumbs .navbtn svg{width:16px;height:16px}
+.side-bg{display:none}
+@media (min-width:1100px){
+  body{padding-left:calc(268px + 24px);padding-right:24px}
+  .crumbs{margin-left:-24px;margin-right:-24px;padding-left:24px;padding-right:24px}
+}
+@media (max-width:1099.98px){
+  .side{transform:translateX(-102%);box-shadow:0 0 40px rgba(0,0,0,.35)}
+  body.nav-open .side{transform:none}
+  body.nav-open .side-bg{display:block;position:fixed;inset:0;z-index:35;background:rgba(0,0,0,.45)}
+  .crumbs .navbtn{display:inline-flex}
+}
+@media (max-width:620px){.crumbs .trail .mid{display:none}}
+body.capture .side,body.capture-ms .side,body.capture-cr .side,body.capture .crumbs,body.capture-ms .crumbs,body.capture-cr .crumbs{display:none}
+body.capture,body.capture-ms,body.capture-cr{padding-left:0!important}
+@media (prefers-reduced-motion: reduce){.side{transition:none}}
 </style>
+
 
 </head>
 <body>
+<aside class="side" id="side" aria-label="Secciones de la guía">
+  <a class="brand" href="#top">
+    <svg viewBox="0 0 48 48" aria-hidden="true"><rect x="3" y="3" width="42" height="42" rx="10" fill="none" stroke="var(--accent)" stroke-width="2.5"/><path d="M15 9v30M33 9v30M15 15h18M15 24h18M15 33h18" stroke="var(--ink-2)" stroke-width="2" stroke-linecap="round" opacity=".55"/><path d="M27 7l-8 16h7l-5 18 11-21h-7l5-13z" fill="var(--accent)"/></svg>
+    <span class="bt">Project Riftwalker</span>
+    <span class="bs">Guía de diseño</span>
+  </a>
+  <label class="find"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg><input id="sideFind" type="search" placeholder="Buscar sección…" aria-label="Buscar sección" autocomplete="off"></label>
+  <nav class="scroll" id="sideNav"></nav>
+</aside>
+<div class="side-bg" id="sideBg"></div>
 <div class="wrap">
-<header>
+<div class="crumbs"><button class="navbtn" id="navBtn" type="button" aria-controls="side"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg>Secciones</button><span class="trail" id="crumbTrail"></span></div>
+<header id="top">
   <p class="eyebrow">Project Riftwalker · Guía de diseño para desarrolladores</p>
   <h1>Armería del Último Tren</h1>
   <p class="lede">La referencia de cómo se ve y cómo funciona el juego. Cada parte dice qué hay que construir, con qué medidas y colores, dónde está en el código y qué historia lo cubre. Si vas a hacer una pantalla o un arma, empezá por acá.</p>
@@ -799,7 +863,7 @@ article:target,.card:target{outline:2px solid var(--accent);outline-offset:3px}
       <code>ShopCatalog</code><span><code>CatalogoTactico.asset</code>: qué se vende y en qué orden.</span>
       <code>PlayerLoadout</code><span>Las reglas de compra: reemplazar un arma, máximos de granadas, vender y deshacer.</span>
       <code>PlayerWallet</code><span>La plata: $ 800 al empezar y tope de $ 9.000.</span>
-      <code>BuyPhase</code> · <code>BuyZone</code><span>La fase de 20 s y la zona de compra (prefab <code>ZonaDeCompra</code>).</span>
+      <span><code>BuyPhase</code> · <code>BuyZone</code></span><span>La fase de 20 s y la zona de compra (prefab <code>ZonaDeCompra</code>).</span>
     </div>
     <p style="margin:12px 0 0">En el juego no hay desenfoque: el fondo se oscurece al 50 %. Los sonidos de la tienda son CA de US 076. Falta el panel de compañeros (US 175, CA13) y la tienda de Zombie (US 148) y Deathmatch (US 138).</p>
   </div>
@@ -2760,6 +2824,119 @@ renderRules(); renderOneShot(); renderArsenal(); renderCalcOptions(); renderCalc
   }
   if (reduce) clock = CRAWL_START;
   requestAnimationFrame(frame);
+})();
+</script>
+
+<script>
+/* ===== Barra lateral: secciones por parte, sección actual resaltada, buscador y ruta ===== */
+(() => {
+  const ICON = {
+    home: '<path d="M3 11l9-7 9 7v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/>',
+    palette: '<path d="M12 3a9 9 0 1 0 0 18c1 0 1.5-.8 1.5-1.6 0-.9-.7-1.4-.7-2.3 0-1 .8-1.6 1.8-1.6H17a4 4 0 0 0 4-4C21 6.8 17 3 12 3z"/><circle cx="7.5" cy="11" r="1"/><circle cx="10" cy="7" r="1"/><circle cx="14.5" cy="7" r="1"/>',
+    cart: '<path d="M3 4h2l2.4 11h10.2L20 8H6.2"/><circle cx="9" cy="19" r="1.5"/><circle cx="17" cy="19" r="1.5"/>',
+    hud: '<path d="M3 12h4l2-5 4 10 2-5h6"/>',
+    rails: '<path d="M7 3v18M17 3v18M7 7h10M7 12h10M7 17h10"/>',
+    star: '<path d="M12 3l2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1L3.2 9.5l6.1-.9z"/>',
+    window: '<rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9h18"/>',
+    target: '<circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1"/>',
+    spray: '<circle cx="12" cy="12" r="6"/><path d="M12 2v5M12 17v5M2 12h5M17 12h5"/>',
+    gun: '<path d="M3 8h15l2-2h1v5h-6l-1.5 3.5h-3L12 11H3z"/><path d="M8 11l-1 6h3l1-6"/>',
+    calc: '<rect x="5" y="3" width="14" height="18" rx="2"/><path d="M8 7h8M8 12h.01M12 12h.01M16 12h.01M8 16h.01M12 16h.01M16 16h.01"/>',
+    plus: '<circle cx="12" cy="12" r="9"/><path d="M12 8v8M8 12h8"/>',
+    coins: '<ellipse cx="12" cy="6" rx="7" ry="3"/><path d="M5 6v6c0 1.7 3.1 3 7 3s7-1.3 7-3V6M5 12v6c0 1.7 3.1 3 7 3s7-1.3 7-3v-6"/>',
+    users: '<circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c.8-3.5 3.4-5.5 6.5-5.5s5.7 2 6.5 5.5"/><circle cx="17" cy="9" r="2.5"/><path d="M16 14.5c2.6 0 4.6 1.7 5.5 4.5"/>',
+    flag: '<path d="M5 21V4M5 4h11l-2 4 2 4H5"/>',
+    board: '<rect x="3" y="4" width="18" height="16" rx="2"/><path d="M9 4v16M15 4v16"/>',
+    code: '<path d="M8 7l-5 5 5 5M16 7l5 5-5 5"/>',
+    menu: '<path d="M4 7h16M4 12h16M4 17h16"/>'
+  };
+  const svg = n => `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${ICON[n]}</svg>`;
+  const NAV = [
+    { g: 'Inicio', items: [{ id: 'top', t: 'Inicio', i: 'home' }] },
+    { g: 'Identidad', p: 'Parte 1 · Identidad', items: [
+      { id: 'estilo', t: 'Estilo visual', i: 'palette', subs: [['colores', 'Colores'], ['tipografias', 'Tipografías'], ['piezas', 'Piezas'], ['reglas-codigo', 'Reglas para el código']] }] },
+    { g: 'Pantallas', p: 'Parte 2 · Pantallas', items: [
+      { id: 'tienda', t: 'Tienda', i: 'cart', subs: [['idea', 'Cómo se comporta'], ['tienda-partes', 'Partes de la pantalla'], ['tienda-estados', 'Estados'], ['tienda-codigo', 'Cómo está hecha']] },
+      { id: 'hud', t: 'HUD de combate', i: 'hud', subs: [['hud-estados', 'Estados'], ['hud-medidas', 'Medidas'], ['hud-codigo', 'Cómo está hecho']] },
+      { id: 'modos', t: 'Selección de modo', i: 'rails', subs: [['modos-codigo', 'Cómo está hecha']] },
+      { id: 'creditos', t: 'Créditos', i: 'star' },
+      { id: 'pantallas', t: 'Otras pantallas', i: 'window', subs: [['pantalla-menu', 'Menú principal'], ['pantalla-opciones', 'Opciones'], ['pantalla-pausa', 'Pausa'], ['pantalla-sala', 'Sala online'], ['pantalla-marcadores', 'Marcadores'], ['pantalla-resultado', 'Resultado de partida'], ['pantalla-nueva', 'Para hacer una pantalla nueva']] }] },
+    { g: 'Combate', p: 'Parte 3 · Combate', items: [
+      { id: 'danio', t: 'Modelo de daño', i: 'target', subs: [['reglas-balance', 'Reglas de balance'], ['un-tiro', 'Qué mata de un tiro'], ['zonas', 'Zonas del personaje'], ['reglas-comunes', 'Reglas comunes']] },
+      { id: 'retroceso', t: 'Retroceso y dispersión', i: 'spray', subs: [['campos-retroceso', 'Campos de la ficha']] },
+      { id: 'arsenal', t: 'Arsenal', i: 'gun', subs: [['cuchillo-granadas', 'Cuchillo y granadas']] },
+      { id: 'calc', t: 'Calculadora', i: 'calc' },
+      { id: 'nueva-arma', t: 'Cómo sumar un arma', i: 'plus' }] },
+    { g: 'Economía', p: 'Parte 4 · Economía', items: [
+      { id: 'eco', t: 'Economía', i: 'coins', subs: [['eco-tactico', 'Táctico'], ['eco-zombie', 'Zombie'], ['eco-deathmatch', 'Deathmatch'], ['escudos-granadas', 'Escudos y granadas']] }] },
+    { g: 'Personajes', p: 'Parte 5 · Personajes', items: [{ id: 'personajes', t: 'Personajes y habilidades', i: 'users' }] },
+    { g: 'Proyecto', p: 'Parte 6 · Decisiones y pendientes', items: [
+      { id: 'pendientes', t: 'Decisiones y pendientes', i: 'flag', subs: [['decisiones', 'Decisiones tomadas'], ['falta', 'Lo que falta']] },
+      { href: 'https://github.com/users/DogeGGss/projects/2', t: 'Tablero del proyecto', i: 'board' },
+      { href: 'https://github.com/DogeGGss/lcs-tp-principal', t: 'Repositorio', i: 'code' }] }
+  ];
+  const nav = document.getElementById('sideNav'), find = document.getElementById('sideFind');
+  const norm = s => s.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
+  const el = id => document.getElementById(id);
+  const sections = NAV.flatMap(g => g.items.filter(it => it.id).map(it => ({ ...it, grp: g }))).filter(it => el(it.id));
+  let cur = null, curSub = null, query = '';
+
+  function render() {
+    const q = norm(query.trim());
+    let html = '', any = false;
+    for (const g of NAV) {
+      let items = '';
+      for (const it of g.items) {
+        const subs = (it.subs || []).filter(([id]) => el(id));
+        const hit = !q || norm(it.t).includes(q) || norm(g.g).includes(q);
+        const subHits = q ? subs.filter(([, t]) => norm(t).includes(q)) : subs;
+        if (q && !hit && !subHits.length) continue;
+        const link = it.href
+          ? `<a class="it" href="${it.href}" target="_blank" rel="noopener">${svg(it.i)}<span>${it.t}</span><span class="ext">↗</span></a>`
+          : `<a class="it${it.id === cur ? ' on' : ''}" href="#${it.id}" data-id="${it.id}">${svg(it.i)}<span>${it.t}</span></a>`;
+        const show = q ? subHits : (it.id === cur ? subs : []);
+        items += `<li>${link}${show.length ? `<ul class="subs">${show.map(([id, t]) => `<li><a href="#${id}" data-sub="${id}"${id === curSub ? ' class="on"' : ''}>${t}</a></li>`).join('')}</ul>` : ''}</li>`;
+      }
+      if (items) { any = true; html += `<div class="grp">${g.g}</div><ul>${items}</ul>`; }
+    }
+    nav.innerHTML = any ? html : '<div class="none">No hay secciones con ese nombre.</div>';
+  }
+
+  function crumbs() {
+    const s = sections.find(x => x.id === cur) || sections[0];
+    const sub = s && (s.subs || []).find(([id]) => id === curSub);
+    const bits = ['<a href="#top">Guía de diseño</a>'];
+    if (s && s.grp.p) bits.push(`<span class="mid"><span class="sep">›</span>${s.grp.p}</span>`);
+    if (s && s.id !== 'top') bits.push(`<span class="sep">›</span>${sub ? `<a href="#${s.id}">${s.t}</a>` : `<span class="cur">${s.t}</span>`}`);
+    if (sub) bits.push(`<span class="sep">›</span><span class="cur">${sub[1]}</span>`);
+    document.getElementById('crumbTrail').innerHTML = bits.join('');
+  }
+
+  const LINE = 90;
+  function spy() {
+    let c = sections[0] ? sections[0].id : null;
+    for (const s of sections) if (el(s.id).getBoundingClientRect().top <= LINE) c = s.id;
+    let cs = null;
+    const s = sections.find(x => x.id === c);
+    if (s && s.subs) for (const [id] of s.subs) { const e = el(id); if (e && e.getBoundingClientRect().top <= LINE) cs = id; }
+    if (c !== cur || cs !== curSub) { cur = c; curSub = cs; if (!query) render(); crumbs(); }
+  }
+  let ticking = false;
+  addEventListener('scroll', () => { if (!ticking) { ticking = true; requestAnimationFrame(() => { ticking = false; spy(); }); } }, { passive: true });
+  addEventListener('resize', spy);
+
+  const body = document.body;
+  const close = () => body.classList.remove('nav-open');
+  document.getElementById('navBtn').addEventListener('click', () => body.classList.toggle('nav-open'));
+  document.getElementById('sideBg').addEventListener('click', close);
+  document.getElementById('side').addEventListener('click', e => { if (e.target.closest('a[href^="#"]')) close(); });
+  addEventListener('keydown', e => { if (e.key === 'Escape' && body.classList.contains('nav-open')) close(); });
+  find.addEventListener('input', () => { query = find.value; render(); });
+  find.addEventListener('keydown', e => { if (e.key === 'Enter') { const a = nav.querySelector('a[href^="#"]'); if (a) { location.hash = a.getAttribute('href'); close(); } } });
+
+  render(); spy(); crumbs();
+  setTimeout(spy, 400);
+  addEventListener("load", spy);
 })();
 </script>
 
