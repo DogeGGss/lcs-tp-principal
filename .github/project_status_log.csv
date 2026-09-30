@@ -336,3 +336,7 @@ fecha_utc,us_numero,us_titulo,estado_anterior,estado_nuevo,tiempo_en_estado_ante
 2026-09-30T20:02:55.594868+00:00,79,US 031. Formar equipos,In Progress,LPR,20h 55m,75350,https://github.com/DogeGGss/lcs-tp-principal/issues/79
 2026-09-30T20:02:55.594868+00:00,108,US 057. Mostrar información de la partida,Todo,LPR,7d 20h 38m,679114,https://github.com/DogeGGss/lcs-tp-principal/issues/108
 2026-09-30T20:02:55.594868+00:00,194,US 134. Mostrar marcador de la partida táctica,Blocked,In Progress,4d 21h 46m,423987,https://github.com/DogeGGss/lcs-tp-principal/issues/194
+2026-09-30T23:42:54.009076+00:00,32,US 083. Mapa 2,Todo,In Progress,8d 18m,692312,https://github.com/DogeGGss/lcs-tp-principal/issues/32
+2026-09-30T23:42:54.009076+00:00,39,US 009. Apuntar,Todo,In Progress,6d 23h 43m,603788,https://github.com/DogeGGss/lcs-tp-principal/issues/39
+2026-09-30T23:42:54.009076+00:00,91,US 068. ARMA Principal 3 - Último Tren (Francotirador),Todo,In Progress,1d 22h 15m,166549,https://github.com/DogeGGss/lcs-tp-principal/issues/91
+2026-09-30T23:42:54.009076+00:00,201,US 141. Mostrar marcador de Deathmatch,Blocked,In Progress,5d 1h 26m,437185,https://github.com/DogeGGss/lcs-tp-principal/issues/201
