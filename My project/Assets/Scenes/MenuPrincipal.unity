@@ -14012,6 +14012,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SonidoUIController
   audioMixer: {fileID: 24100000, guid: ddda7e32a2420c4489fcc2a1c31e1976, type: 2}
+  muestraEfectos: {fileID: 8300000, guid: 000e8fc4d47011c44bc72c8defaa0ef4, type: 3}
+  muestraInterfaz: {fileID: 8300000, guid: eabd1b8f67ac36340b3cdf5b214558ef, type: 3}
+  muestraMusica: {fileID: 8300000, guid: 51d8b945ae6fb2e429d9e477307b4818, type: 3}
 --- !u!1 &2022092268
 GameObject:
   m_ObjectHideFlags: 0
