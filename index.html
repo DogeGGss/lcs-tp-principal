@@ -591,6 +591,13 @@ a.uslink{white-space:nowrap}
 .spray .aim line{stroke:var(--ink);stroke-width:2}
 .kvs{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:4px 14px;font-size:15px;margin-top:10px}
 .kvs span:nth-child(even){font-family:var(--mono);font-size:14px;text-align:right}
+.gprev .confp{display:flex;flex-direction:column;gap:8px;background:rgba(10,12,17,.94);border:1px solid rgba(255,255,255,.09);border-radius:10px;padding:16px 18px;max-width:420px}
+.gprev .confp b{font:700 24px/1.1 var(--display);letter-spacing:.06em;text-transform:uppercase;padding-bottom:8px;border-bottom:2px solid #F29A38;align-self:flex-start}
+.gprev .confp > span{font-size:15px;color:#AEB5C0}
+.gprev .confb{display:flex;gap:10px;justify-content:flex-end;margin-top:6px}
+.gprev .confb .btnp{height:42px;font-size:17px}
+.gprev .btng{display:flex;align-items:center;height:42px;padding:0 16px;border-radius:8px;border:1px solid rgba(255,255,255,.3);font:700 17px/1 var(--display);letter-spacing:.1em;text-transform:uppercase;color:#F3F4F6}
+@media (max-width:620px){.gprev .it[style*="span 2"]{grid-column:auto!important}}
 .pj{border-top:4px solid var(--c)}
 .pj .hd{display:flex;justify-content:space-between;align-items:baseline;gap:10px}
 .pj .nm{font:700 30px/1 var(--display);text-transform:uppercase}
@@ -598,6 +605,10 @@ a.uslink{white-space:nowrap}
 .pj .ab{margin-top:10px;display:flex;gap:12px;align-items:flex-start}
 .pj .ab .kbd{flex:none;margin-top:2px}
 .wgroup .grid3{grid-template-columns:repeat(auto-fill,minmax(min(100%,300px),1fr))}
+[id]{scroll-margin-top:18px}
+tr:target td{background:var(--accent-soft)}
+h2:target,h3:target{color:var(--accent)}
+article:target,.card:target{outline:2px solid var(--accent);outline-offset:3px}
 </style>
 
 </head>
@@ -632,7 +643,7 @@ a.uslink{white-space:nowrap}
   <div class="sec-head"><h2>Estilo visual</h2><span class="sub">Trenes argentinos, de noche</span></div>
   <p>El juego se ve como un andén de noche: paneles oscuros, texto claro y un solo acento naranja, el de la línea de seguridad del andén. Las piezas salen de los trenes (vías, durmientes, relojes de andén, rayos) y las armas llevan nombres de líneas de tren y subte. Todo lo que va sobre el juego tiene que leerse sobre el cielo y sobre una pared clara.</p>
 
-  <h3>Colores</h3>
+  <h3 id="colores">Colores</h3>
   <p class="soft">En el código están en <code>ShopUIKit</code> con estos nombres. Usá siempre esas constantes, nunca un color suelto.</p>
   <div class="swatches">
     <div class="sw"><div class="c" style="background:rgba(10,12,17,.88)"></div><div class="t"><b>#0A0C11 · 88 %</b><br><code>PanelColor</code>: paneles</div></div>
@@ -643,6 +654,13 @@ a.uslink{white-space:nowrap}
     <div class="sw"><div class="c" style="background:#FF5C5C"></div><div class="t"><b>#FF5C5C</b><br><code>Bad</code>: error, falta plata, vida o balas bajas</div></div>
     <div class="sw"><div class="c" style="background:#3DDC97"></div><div class="t"><b>#3DDC97</b><br><code>Ok</code>: equipada, confirmado</div></div>
     <div class="sw"><div class="c" style="background:#58A6FF"></div><div class="t"><b>#58A6FF</b><br>Compañeros de equipo</div></div>
+    <div class="sw"><div class="c" style="background:#FF6161"></div><div class="t"><b>#FF6161</b><br>Rivales: nombres en marcadores y lista de muertes</div></div>
+  </div>
+  <p class="soft" style="margin-top:12px">Los botones de los menús tienen sus propios colores (US 128):</p>
+  <div class="swatches">
+    <div class="sw"><div class="c" style="background:#E5E7E9"></div><div class="t"><b>#E5E7E9</b><br>En reposo, tamaño 100 %</div></div>
+    <div class="sw"><div class="c" style="background:#F29A38"></div><div class="t"><b>#F29A38</b><br>Mouse encima, crece al 103 %</div></div>
+    <div class="sw"><div class="c" style="background:#C96F18"></div><div class="t"><b>#C96F18</b><br>Presionado, se achica al 98 %</div></div>
   </div>
   <p class="soft" style="margin-top:12px">Cada modo tiene su color, que se usa en su andén y en lo que es propio de ese modo:</p>
   <div class="swatches">
@@ -651,7 +669,7 @@ a.uslink{white-space:nowrap}
     <div class="sw"><div class="c" style="background:#7DE05A"></div><div class="t"><b>#7DE05A</b><br>Zombie</div></div>
   </div>
 
-  <h3>Tipografías</h3>
+  <h3 id="tipografias">Tipografías</h3>
   <div class="card typo">
     <div class="ty-line"><span style="font:700 40px/1 var(--display);letter-spacing:.1em;text-transform:uppercase">Tienda</span><span class="soft">Barlow Condensed Bold: títulos y números. Mayúsculas y espaciado.</span></div>
     <div class="ty-line"><span style="font:600 18px/1 var(--display);letter-spacing:.14em;text-transform:uppercase">Fase de compra</span><span class="soft">Barlow Condensed SemiBold: rótulos y botones.</span></div>
@@ -668,7 +686,7 @@ a.uslink{white-space:nowrap}
     <tr><td>Rótulos</td><td class="num">13–16 px</td><td>Encabezados de columnas, atajos, etiquetas</td></tr>
   </table></div>
 
-  <h3>Piezas</h3>
+  <h3 id="piezas">Piezas</h3>
   <p class="soft">Así se ven las piezas que se repiten. Usalas iguales en las pantallas nuevas.</p>
   <div class="gprev">
     <div class="it"><span class="cap">Título de panel</span><span class="ttl">Opciones</span></div>
@@ -678,16 +696,17 @@ a.uslink{white-space:nowrap}
     <div class="it"><span class="cap">Etiqueta de estado</span><span style="display:flex;gap:8px"><span class="badge own">Equipada</span><span class="badge max">Máximo</span></span></div>
     <div class="it"><span class="cap">Aviso</span><span class="warn">Fuera de la zona de compra</span></div>
     <div class="it"><span class="cap">Vía (unión y slider)</span><span class="viap"></span></div>
+    <div class="it" style="grid-column:span 2;min-width:0"><span class="cap">Ventana de confirmación</span><span class="confp"><b>¿Salir de la partida?</b><span>Vas a volver al menú principal.</span><span class="confb"><span class="btng">Cancelar</span><span class="btnp">Salir</span></span></span></div>
     <div class="it"><span class="cap">Línea de andén</span><span style="display:block;width:150px;height:3px;background:#F29A38;box-shadow:0 0 10px rgba(242,154,56,.5)"></span></div>
   </div>
 
   <div class="dev">
-    <h3>Reglas para el código</h3>
+    <h3 id="reglas-codigo">Reglas para el código</h3>
     <ul>
       <li><b>Pantalla de referencia 1920 × 1080.</b> Canvas en Scale With Screen Size con esa referencia. La tienda, el HUD, la selección de modo, la nota del PO, el nombre de jugador y los créditos se arman por código con esas medidas.</li>
       <li><b>Colores desde <code>ShopUIKit</code>.</b> El proyecto usa espacio de color lineal, donde el mismo alfa deja ver mucho más el fondo que en la maqueta. Para capas oscuras usá <code>DarkAlpha</code>, y para algo apoyado sobre un panel, <code>Over(arriba, abajo)</code>, que da el color opaco que se ve en la maqueta.</li>
       <li><b>Teclas desde <code>KeyBindings</code>.</b> Todas se pueden reasignar en Opciones (US 155), así que nunca escribas "B" o "Q" fijo: pedí la etiqueta con <code>KeyBindings.Label(GameAction.X)</code> y escuchá <code>KeyBindings.Changed</code>.</li>
-      <li><b>Esc siempre vuelve o cierra.</b> Si hay cambios sin guardar, pregunta antes (como las opciones).</li>
+      <li><b>Esc siempre vuelve o cierra.</b> Si hay cambios sin guardar, pregunta antes (como las opciones). Las confirmaciones (salir, reiniciar, restablecer) usan siempre la misma ventana: título con la línea naranja, una línea de texto y dos botones, "Cancelar" a la izquierda y la acción en naranja a la derecha.</li>
       <li><b>Sonidos por el mezclador.</b> <code>NewAudioMixer</code> tiene los canales Música, Efectos (SFX) e Interfaz, que regulan los volúmenes de Opciones (US 154). Ningún AudioSource sin grupo.</li>
       <li><b>Textos en castellano rioplatense.</b> Cortos, con "vos": "Te faltan $ 700", no "Fondos insuficientes".</li>
       <li><b>Probá en otras resoluciones.</b> Como mínimo, 1280 × 720 y 2560 × 1440.</li>
@@ -746,7 +765,7 @@ a.uslink{white-space:nowrap}
     <div class="card"><p><b>No pausa el juego.</b> Con la tienda abierta se sigue caminando. El cursor queda libre y no se puede disparar.</p><p><b>Se cierra sola</b> cuando termina la fase de compra (20 s) o si el jugador sale de la zona de compra. <span class="kbd">B</span> o <span class="kbd">Esc</span> la cierran a mano.</p></div>
     <div class="card"><p><b>El número compra directo</b> en la lista, como en CS. <span class="kbd">Enter</span> y el clic también compran. El clic derecho vende lo comprado en esta fase y devuelve la plata.</p><p><b>Movimiento:</b> las categorías se despliegan en 0,16 s, y la lista y la ficha, en 0,13 s. Si una compra falla, la fila tiembla.</p></div>
   </div>
-  <h3>Partes de la pantalla</h3>
+  <h3 id="tienda-partes">Partes de la pantalla</h3>
   <p class="soft">El botón "Referencias" de la maqueta pone estos números encima.</p>
   <ol class="anat">
     <li><span class="n">1</span><span><b>Barra superior:</b> modo y ronda, la fase con su cuenta regresiva, la plata y "Próxima ronda: mínimo $ X".</span></li>
@@ -758,7 +777,7 @@ a.uslink{white-space:nowrap}
     <li><span class="n">7</span><span><b>Compañeros</b> (Táctico): la plata y la compra de cada uno. En Zombie, la próxima oleada; en Deathmatch, la tabla. <span class="st st-todo">Falta</span></span></li>
     <li><span class="n">8</span><span><b>Atajos</b> siempre visibles, así la tienda se aprende sola.</span></li>
   </ol>
-  <h3>Estados</h3>
+  <h3 id="tienda-estados">Estados</h3>
   <div class="table-wrap"><table>
     <tr><th>Estado</th><th>Qué se ve</th><th>Probalo en la maqueta</th></tr>
     <tr><td>Normal</td><td>Precio en blanco y botón naranja "Comprar".</td><td>Plata $ 4.200 → Fusiles.</td></tr>
@@ -772,7 +791,7 @@ a.uslink{white-space:nowrap}
   </div>
 
   <div class="dev">
-    <h3>Cómo está hecha</h3>
+    <h3 id="tienda-codigo">Cómo está hecha</h3>
     <div class="files">
       <code>ShopUI.cs</code><span>Arma toda la interfaz por código con las medidas de la maqueta y la abre con la tecla de la tienda.</span>
       <code>ShopUIKit.cs</code><span>Colores, medidas y piezas (paneles, textos, teclas). Es la base de las demás pantallas armadas por código.</span>
@@ -810,7 +829,7 @@ a.uslink{white-space:nowrap}
     <div class="card"><b>Rieles en vez de diagonales.</b> Las partes se unen con dos rieles; debajo de la habilidad va la línea naranja del borde del andén.</div>
   </div>
 
-  <h3>Estados</h3>
+  <h3 id="hud-estados">Estados</h3>
   <div class="table-wrap"><table>
     <tr><th>Estado</th><th>Qué se ve</th><th>Probalo</th></tr>
     <tr><td>Habilidad lista</td><td>Aro completo, las 12 marcas encendidas y la tecla en blanco.</td><td>Arranque de ronda.</td></tr>
@@ -823,7 +842,7 @@ a.uslink{white-space:nowrap}
     <tr><td>Recargando</td><td>"Recargando" en naranja y los durmientes se llenan.</td><td>Apretá <span class="kbd">R</span>.</td></tr>
   </table></div>
 
-  <h3>Medidas</h3>
+  <h3 id="hud-medidas">Medidas</h3>
   <div class="grid3">
     <div class="card"><b>Posición.</b> Abajo al centro, a 26 px del borde. Ocupa unos 930 × 170 px sobre un degradé negro de 240 px de alto.</div>
     <div class="card"><b>Vida.</b> Rótulo de 13 px, número de 72 px y "+50" de 24 px en celeste. La vía mide 240 × 8 px, con marcas en 100 y 125.</div>
@@ -834,7 +853,7 @@ a.uslink{white-space:nowrap}
   </div>
 
   <div class="dev">
-    <h3>Cómo está hecho</h3>
+    <h3 id="hud-codigo">Cómo está hecho</h3>
     <div class="files">
       <code>CombatHud.cs</code><span>Arma el HUD por código y lee todo en cada cuadro: <code>HealthSystem</code> (vida y escudo), <code>PlayerAbility</code> (habilidad) y el arma que está en la mano.</span>
       <code>IHudWeapon</code><span>Interfaz que implementa cada arma para mostrar reserva y recarga (<code>ArmaDeFuego</code>, <code>Mitre</code>, <code>Pistola</code>). Un arma nueva tiene que implementarla.</span>
@@ -998,7 +1017,7 @@ a.uslink{white-space:nowrap}
   </div>
 
   <div class="dev">
-    <h3>Cómo está hecha</h3>
+    <h3 id="modos-codigo">Cómo está hecha</h3>
     <div class="files">
       <code>ModeSelectScreen.cs</code><span>Arma los andenes, los rayos, los motivos animados y el detalle de cada modo por código, sin imágenes de fondo.</span>
       <code>UIShapes.cs</code><span>Figuras vectoriales de UI (polígonos, líneas, aros) que se dibujan con su propia malla. Sirven para cualquier pantalla nueva.</span>
@@ -1078,19 +1097,25 @@ a.uslink{white-space:nowrap}
   <div class="sec-head"><h2>Otras pantallas</h2><span class="sub">Sin maqueta propia: siguen la parte 1</span></div>
   <div class="table-wrap"><table>
     <tr><th>Pantalla</th><th>Cómo se ve</th><th>Código</th><th>Historias</th><th>Estado</th></tr>
-    <tr><td><b>Menú principal</b></td><td>Título "PROJECT RIFTWALKER" y los botones Jugar, Opciones, Logros, Créditos y Salir. Los botones cambian de color y tamaño al pasar el mouse, y las pantallas se cambian con un fundido. Arriba a la derecha, el nombre del jugador.</td><td><code>MenuUIController</code>, <code>ButtonHoverAnimation</code></td><td>US 046, US 128, US 129</td><td><span class="st st-ok">En el juego</span></td></tr>
-    <tr><td><b>Nombre de jugador</b></td><td>Ventana "¿Cómo te llamás?" antes del menú, de 3 a 16 caracteres, que dice qué falta si no cumple.</td><td><code>PlayerNameScreen</code>, <code>PlayerProfile</code></td><td>US 164</td><td><span class="st st-ok">En el juego</span></td></tr>
-    <tr><td><b>Nota para el PO</b></td><td>Panel de 1320 px sobre el menú: saludo a Amin y dos columnas, "Lo que funciona" y "Lo que todavía falta". Se vuelve a abrir con un botón abajo a la derecha.</td><td><code>NotaPO</code> (textos en el prefab)</td><td>US 180</td><td><span class="st st-ok">En el juego</span></td></tr>
-    <tr><td><b>Opciones</b></td><td>Pestañas Gráficos, Controles y Sonido (<span class="kbd">Q</span> y <span class="kbd">E</span>). Panel oscuro, título con la línea naranja, filas de 44 unidades, sliders con forma de vía y "Aplicar" y "Restablecer" al pie.</td><td><code>OpcionesPantalla</code>, <code>OpcionesKit</code>, <code>ControlsPanel</code>, <code>GraficosUIController</code>, <code>SonidoUIController</code></td><td>US 048, US 153, US 154, US 155</td><td><span class="st st-ok">En el juego</span></td></tr>
-    <tr><td><b>Pausa</b></td><td>Reanudar, Opciones y Salir de la partida, con confirmación; en Zombie, también Reiniciar. En una partida online no congela el juego.</td><td><code>PauseMenu</code></td><td>US 051, US 049, US 052</td><td><span class="st st-ok">En el juego</span></td></tr>
-    <tr><td><b>Selección de personaje</b></td><td>Una tarjeta por personaje con retrato, nombre, rol y habilidad (tecla y recarga). Se elige con clic, con los números o con las flechas.</td><td><code>CharacterSelectScreen</code>, <code>CharacterRoster</code></td><td>US 015</td><td><span class="st st-mid">A medias</span></td></tr>
-    <tr><td><b>Sala online</b></td><td>El código de la sala en grande con botón para copiarlo, los 8 lugares, el mapa (lo cambia el anfitrión) e "Iniciar partida" desde 2 jugadores.</td><td><code>ModeSelectScreen</code>, <code>Multijugador</code></td><td>US 026, US 027</td><td><span class="st st-ok">En el juego</span></td></tr>
-    <tr><td><b>Cartel sobre los jugadores</b></td><td>Nombre y rayitas de vida (verdes) y escudo (celestes) arriba de cada jugador remoto. Hoy se ve demasiado grande.</td><td><code>JugadorEnRed</code></td><td>US 181</td><td><span class="st st-mid">A medias</span></td></tr>
-    <tr><td><b>Marcadores de partida</b></td><td>Marcador de rondas, tabla de bajas y oleada actual, uno por modo.</td><td>—</td><td>US 134, US 141, US 150</td><td><span class="st st-todo">Falta</span></td></tr>
+    <tr id="pantalla-menu"><td><b>Menú principal</b></td><td>Título "PROJECT RIFTWALKER" y los botones Jugar, Opciones, Logros, Créditos y Salir. Los botones cambian de color y tamaño al pasar el mouse, y las pantallas se cambian con un fundido. Arriba a la derecha, el nombre del jugador.</td><td><code>MenuUIController</code>, <code>ButtonHoverAnimation</code></td><td>US 046, US 128, US 129</td><td><span class="st st-ok">En el juego</span></td></tr>
+    <tr id="pantalla-nombre"><td><b>Nombre de jugador</b></td><td>Ventana "¿Cómo te llamás?" antes del menú, de 3 a 16 caracteres, que dice qué falta si no cumple.</td><td><code>PlayerNameScreen</code>, <code>PlayerProfile</code></td><td>US 164</td><td><span class="st st-ok">En el juego</span></td></tr>
+    <tr id="pantalla-nota-po"><td><b>Nota para el PO</b></td><td>Panel de 1320 px sobre el menú: saludo a Amin y dos columnas, "Lo que funciona" y "Lo que todavía falta". Se vuelve a abrir con un botón abajo a la derecha.</td><td><code>NotaPO</code> (textos en el prefab)</td><td>US 180</td><td><span class="st st-ok">En el juego</span></td></tr>
+    <tr id="pantalla-opciones"><td><b>Opciones</b></td><td>Pestañas Gráficos, Controles y Sonido (<span class="kbd">Q</span> y <span class="kbd">E</span>). Panel oscuro, título con la línea naranja, filas de 44 unidades, sliders con forma de vía y "Aplicar" y "Restablecer" al pie.</td><td><code>OpcionesPantalla</code>, <code>OpcionesKit</code>, <code>ControlsPanel</code>, <code>GraficosUIController</code>, <code>SonidoUIController</code></td><td>US 048, US 153, US 154, US 155</td><td><span class="st st-ok">En el juego</span></td></tr>
+    <tr id="pantalla-pausa"><td><b>Pausa</b></td><td>Reanudar, Opciones y Salir de la partida, con confirmación; en Zombie, también Reiniciar. En una partida online no congela el juego.</td><td><code>PauseMenu</code></td><td>US 051, US 049, US 052</td><td><span class="st st-ok">En el juego</span></td></tr>
+    <tr id="pantalla-personaje"><td><b>Selección de personaje</b></td><td>Una tarjeta por personaje con retrato, nombre, rol y habilidad (tecla y recarga). Se elige con clic, con los números o con las flechas.</td><td><code>CharacterSelectScreen</code>, <code>CharacterRoster</code></td><td>US 015</td><td><span class="st st-mid">A medias</span></td></tr>
+    <tr id="pantalla-sala"><td><b>Sala online</b></td><td>El código de la sala en grande con botón para copiarlo, los 8 lugares, el mapa (lo cambia el anfitrión) e "Iniciar partida" desde 2 jugadores.</td><td><code>ModeSelectScreen</code>, <code>Multijugador</code></td><td>US 026, US 027</td><td><span class="st st-ok">En el juego</span></td></tr>
+    <tr id="pantalla-cartel"><td><b>Cartel sobre los jugadores</b></td><td>Nombre y rayitas de vida (verdes) y escudo (celestes) arriba de cada jugador remoto. Hoy se ve demasiado grande.</td><td><code>JugadorEnRed</code></td><td>US 181</td><td><span class="st st-mid">A medias</span></td></tr>
+    <tr id="pantalla-aviso-muerte"><td><b>Aviso de muerte (online)</b></td><td>En el centro, "Te eliminó [nombre]" en grande (64 px) y debajo "Reaparecés en 3", que cuenta hacia atrás. En Táctico dice "Reaparecés en la ronda siguiente".</td><td><code>PartidaEnRed.Aviso</code>, <code>JugadorEnRed</code></td><td>US 030, US 137</td><td><span class="st st-mid">A medias</span></td></tr>
+    <tr id="pantalla-logros"><td><b>Logros</b></td><td>La pantalla de logros del menú (hoy solo tiene "Volver") y la notificación que aparece durante la partida al desbloquear uno.</td><td><code>MenuUIController</code> (panel de logros)</td><td>US 043, US 044, US 160</td><td><span class="st st-todo">Falta diseñar</span></td></tr>
+    <tr id="pantalla-espectador"><td><b>Espectador</b></td><td>Al morir en Táctico, la vista de un compañero vivo con su nombre en pantalla.</td><td>—</td><td>US 133</td><td><span class="st st-todo">Falta diseñar</span></td></tr>
+    <tr id="pantalla-resultado"><td><b>Resultado de partida</b></td><td>Victoria o derrota (o el puesto), el marcador final, la tabla de estadísticas y "Volver al menú". En Zombie, también el récord y "Jugar de nuevo".</td><td>—</td><td>US 034, US 142, US 151</td><td><span class="st st-todo">Falta diseñar</span></td></tr>
+    <tr id="pantalla-estadisticas"><td><b>Estadísticas</b></td><td>Pantalla del menú con los resultados guardados, empezando por el minijuego de pájaros.</td><td>—</td><td>US 159</td><td><span class="st st-todo">Falta diseñar</span></td></tr>
+    <tr id="pantalla-practica"><td><b>Campo de práctica</b></td><td>Carteles paso a paso con los controles y paneles con el objetivo de cada modo.</td><td>—</td><td>US 166, US 122</td><td><span class="st st-todo">Falta diseñar</span></td></tr>
+    <tr id="pantalla-marcadores"><td><b>Marcadores de partida</b></td><td>Un bloque arriba al centro con el estilo del HUD (reloj en el medio y un dato a cada lado), la lista de muertes arriba a la derecha y la tabla con Tab. Cada modo lo completa con lo suyo.</td><td>—</td><td>US 057, US 134, US 141, US 150</td><td><span class="st st-todo">Falta diseñar</span></td></tr>
   </table></div>
 
   <div class="dev">
-    <h3>Para hacer una pantalla nueva</h3>
+    <h3 id="pantalla-nueva">Para hacer una pantalla nueva</h3>
     <ol style="margin:0;padding-left:20px">
       <li>Armá la maqueta (en esta guía o en otro artifact) y escribí su historia de diseño con el link, como US 175.</li>
       <li>Canvas con Scale With Screen Size, referencia 1920 × 1080.</li>
@@ -1113,16 +1138,16 @@ a.uslink{white-space:nowrap}
     <div class="card"><h3 style="margin-top:0">Distancia</h3><p>Algunas armas pierden daño lejos, por tramos fijos. Los fusiles caros no pierden; los subfusiles y las escopetas, mucho. En la ficha es la lista <code>bands</code>: <code>upTo 0</code> quiere decir "sin límite".</p></div>
   </div>
 
-  <h3>Reglas de balance</h3>
+  <h3 id="reglas-balance">Reglas de balance</h3>
   <p class="soft">Son el contrato del balance y se calculan en vivo con los datos de esta página. Si cambiás una ficha, copiá el cambio acá: si rompe una regla, aparece en rojo.</p>
   <div class="card" id="rules"></div>
 
-  <h3>Qué mata de un tiro</h3>
+  <h3 id="un-tiro">Qué mata de un tiro</h3>
   <div class="table-wrap" id="oneShot"></div>
 
   <div class="grid2">
     <div class="card">
-      <h3 style="margin-top:0">Zonas del personaje</h3>
+      <h3 id="zonas" style="margin-top:0">Zonas del personaje</h3>
       <div style="display:grid;grid-template-columns:150px 1fr;gap:14px;align-items:center">
         <svg viewBox="0 0 150 300" aria-label="Zonas de impacto del personaje" role="img">
           <line x1="8" y1="10" x2="8" y2="290" stroke="currentColor" stroke-opacity=".3"/>
@@ -1151,7 +1176,7 @@ a.uslink{white-space:nowrap}
     </div>
   </div>
 
-  <h3>Reglas comunes a todas las armas</h3>
+  <h3 id="reglas-comunes">Reglas comunes a todas las armas</h3>
   <div class="table-wrap"><table>
     <tr><th>Situación</th><th>Regla</th><th>Estado</th></tr>
     <tr><td>Moverse</td><td>La dispersión pasa del valor "quieto" al "en movimiento" de cada arma desde 1 m/s. Al frenar vuelve a "quieto" en 0,15 s.</td><td><span class="st st-ok">En el juego</span></td></tr>
@@ -1179,7 +1204,7 @@ a.uslink{white-space:nowrap}
     <div class="card" id="sprayInfo"></div>
   </div>
 
-  <h3>Qué toca cada campo de la ficha</h3>
+  <h3 id="campos-retroceso">Qué toca cada campo de la ficha</h3>
   <div class="table-wrap" id="recoilTable"></div>
 
   <div class="dev">
@@ -1201,7 +1226,7 @@ a.uslink{white-space:nowrap}
   </div>
   <div id="arsenalList" style="margin-top:14px"></div>
 
-  <h3>Cuchillo y granadas</h3>
+  <h3 id="cuchillo-granadas">Cuchillo y granadas</h3>
   <div class="table-wrap" id="extrasTable"></div>
 </section>
 
@@ -1242,18 +1267,18 @@ a.uslink{white-space:nowrap}
   <div class="sec-head"><h2>Economía</h2><span class="sub">Plata, puntos y límites</span> <span class="st st-mid">A medias</span></div>
   <p class="soft">Hoy el juego tiene la plata inicial y el tope (<code>PlayerWallet</code>) y la fase de compra de 20 s (<code>BuyPhase</code>). Los premios de cada ronda llegan con US 135; los puntos de Zombie, con US 147.</p>
   <div class="grid3">
-    <div class="card"><h3 style="margin-top:0">Táctico</h3>
+    <div class="card" id="eco-tactico"><h3 style="margin-top:0">Táctico</h3>
       <table><tr><td>Plata inicial</td><td class="num">$ 800</td></tr><tr><td>Por eliminación</td><td class="num">+$ 200</td></tr><tr><td>Ronda ganada</td><td class="num">+$ 3.000</td></tr><tr><td>Ronda perdida</td><td class="num">+$ 1.900</td></tr><tr><td>2.ª derrota seguida</td><td class="num">+$ 2.400</td></tr><tr><td>3.ª o más</td><td class="num">+$ 2.900</td></tr><tr><td>Dispositivo plantado (atacantes)</td><td class="num">+$ 300</td></tr><tr><td>Tiempo agotado sin plantar (atacantes vivos)</td><td class="num">$ 0</td></tr><tr><td>Tope</td><td class="num">$ 9.000</td></tr><tr><td>Fase de compra</td><td class="num">20 s</td></tr></table>
       <p class="soft" style="margin-top:10px">Si sobrevivís, te quedás con armas y escudo (con lo que le quede). Si morís, los perdés. Al cambiar de lado, después de la ronda 6, todos vuelven a $ 800.</p></div>
-    <div class="card"><h3 style="margin-top:0">Zombie</h3>
+    <div class="card" id="eco-zombie"><h3 style="margin-top:0">Zombie</h3>
       <table><tr><td>Puntos iniciales</td><td class="num">500</td></tr><tr><td>Por impacto</td><td class="num">+10</td></tr><tr><td>Por eliminación</td><td class="num">+60</td></tr><tr><td>Eliminación a la cabeza</td><td class="num">+100</td></tr><tr><td>Precios</td><td class="num">la mitad</td></tr><tr><td>Munición (llena la reserva)</td><td class="num">150</td></tr><tr><td>Tienda</td><td class="num">entre oleadas</td></tr></table>
       <p class="soft" style="margin-top:10px">El lanzagranadas solo existe en Zombie.</p></div>
-    <div class="card"><h3 style="margin-top:0">Deathmatch</h3><p>No hay plata. Al reaparecer se abre la misma tienda en modo "Elegí tu equipo": todas las armas gratis, sin escudo ni granadas. La elección queda para la próxima vida.</p><p class="soft">Usar la misma pantalla en los tres modos ahorra trabajo y le da coherencia al juego.</p></div>
+    <div class="card" id="eco-deathmatch"><h3 style="margin-top:0">Deathmatch</h3><p>No hay plata. Al reaparecer se abre la misma tienda en modo "Elegí tu equipo": todas las armas gratis, sin escudo ni granadas. La elección queda para la próxima vida.</p><p class="soft">Usar la misma pantalla en los tres modos ahorra trabajo y le da coherencia al juego.</p></div>
   </div>
   <h3>¿Qué alcanza con cuánta plata?</h3>
   <div class="table-wrap" id="tiers"></div>
   <div class="callout"><b>Por qué hay premio por racha de derrotas:</b> si perdés la ronda 1 gastando todo, cobrás $ 1.900. Si en la 2 ahorrás y volvés a perder, cobrás $ 2.400 y llegás a $ 4.300: alcanza para Fusil y escudo completo en la 3. Sin ese premio, un equipo que pierde las dos primeras queda sin salida en una partida a 7 rondas (máximo 13, con cambio de lado en la 6 y muerte súbita).</div>
-  <h3>Escudos y granadas</h3>
+  <h3 id="escudos-granadas">Escudos y granadas</h3>
   <div class="table-wrap"><table>
     <tr><th>Qué</th><th>Precio</th><th>Máximo</th><th>Reglas</th></tr>
     <tr><td>Escudo liviano</td><td class="num">$ 400</td><td class="num">25</td><td>No se suma al completo: comprar el completo reemplaza al liviano. Si está dañado, se puede recomprar para llenarlo.</td></tr>
@@ -1287,7 +1312,7 @@ a.uslink{white-space:nowrap}
 <div class="part"><span class="pn">6</span><div><h2>Decisiones y pendientes</h2><p>Para no volver a discutir lo decidido y saber qué falta.</p></div></div>
 
 <section id="pendientes">
-  <div class="sec-head"><h2>Decisiones tomadas</h2></div>
+  <div class="sec-head"><h2 id="decisiones">Decisiones tomadas</h2></div>
   <div class="table-wrap"><table>
     <tr><th>Tema</th><th>Decisión</th><th>Dónde quedó</th></tr>
     <tr><td>HUD de combate</td><td>Diseño Andén: vida, habilidad y munición abajo al centro.</td><td>US 176</td></tr>
@@ -1301,7 +1326,7 @@ a.uslink{white-space:nowrap}
     <tr><td>Sonidos y animaciones</td><td>No son historias aparte: van como CA de la historia a la que pertenecen, un CA por sonido.</td><td>29/09/2026</td></tr>
   </table></div>
 
-  <h3>Lo que falta diseñar o terminar</h3>
+  <h3 id="falta">Lo que falta diseñar o terminar</h3>
   <div class="table-wrap"><table>
     <tr><th>Qué</th><th>Historias</th><th>Estado</th></tr>
     <tr><td>Los cuatro personajes y sus habilidades</td><td>US 183, US 019 a US 022</td><td><span class="st st-todo">Falta diseñar</span></td></tr>
@@ -2247,7 +2272,7 @@ function wcard(w) {
   const b0 = w.tramos[0];
   const stkRows = ['cabeza', 'cuerpo', 'piernas'].map(z => `<tr><td>${z}</td>${EHP.map(h => { const n = stk(shotDmg(w, b0, z), h); return `<td class="num" ${n === 1 ? 'style="color:var(--accent);font-weight:700"' : ''}>${n}</td>`; }).join('')}</tr>`).join('');
   const est = ESTADO[w.estado] || ESTADO["diseño"];
-  return `<article class="wcard">
+  return `<article class="wcard" id="arma-${w.id}">
     <div class="hd"><div><div class="nm">${esc(w.nombre)}</div><div class="al">${esc(w.alias)}</div></div><div class="pr">${w.soloZombie ? fmt(Math.round(w.precio / 2 / 50) * 50) + ' pts' : (w.precio ? '$ ' + fmt(w.precio) : 'Gratis')}</div></div>
     <div class="img"><img src="${img(w.icono)}" alt="${esc(w.nombre)}" loading="lazy"></div>
     <div class="tags"><span class="tag ${est[0]}">${est[1]}</span> ${levelTag(w.nivel)} ${w.backlog ? `<span class="tag us">${w.backlog}</span>` : ''} <span class="tag">${w.slot}</span> <span class="tag">${esc(w.modo)}</span></div>
