@@ -54,6 +54,10 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
     public bool Vivo => !muerto;
     public string Nombre => photonView != null && photonView.Owner != null ? photonView.Owner.NickName : "Jugador";
 
+    // Número de jugador de Photon y equipo táctico (US 031).
+    public int Actor => photonView != null && photonView.Owner != null ? photonView.Owner.ActorNumber : -1;
+    public int Equipo => EquiposTacticos.DeActor(Actor);
+
     // =====================================================================
     // Dueño
     // =====================================================================
@@ -113,6 +117,7 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
     private void RpcDanio(int danio, int atacante)
     {
         if (!photonView.IsMine || muerto || vida == null) return;
+        if (EquiposTacticos.SonAliados(atacante, Actor)) return; // US 031, CA6: por las dudas, también acá
         ultimoAtacante = atacante;
         vida.TakeDamage(danio);
     }
@@ -515,7 +520,11 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
         int escudo = vida != null && vida.currentShield > 0 ? Mathf.CeilToInt(5f * vida.currentShield / Mathf.Max(1, vida.maxShield)) : 0;
         string barra = "<color=#7DE05A>" + new string('|', llenas) + "</color><color=#FFFFFF40>" + new string('|', 10 - llenas) + "</color>";
         if (escudo > 0) barra += " <color=#6CB8FF>" + new string('|', escudo) + "</color>";
-        cartel.text = Nombre + "\n<size=70%>" + barra + "</size>";
+        // US 031, CA5: en Táctico el nombre va en verde si es aliado y en rojo si es rival.
+        string nombre = Nombre;
+        string tinte = EquiposTacticos.ColorHexDe(Actor);
+        if (tinte != null) nombre = $"<color={tinte}>{nombre}</color>";
+        cartel.text = nombre + "\n<size=70%>" + barra + "</size>";
 
         Camera mirando = Camera.main;
         if (mirando != null) cartel.transform.rotation = mirando.transform.rotation;

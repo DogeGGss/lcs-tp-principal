@@ -69,7 +69,7 @@ public class PlayerLoadout : MonoBehaviour
     public ShopResult CheckAccess()
     {
         if (BuyPhase.Current != null && !BuyPhase.Current.IsActive) return ShopResult.BuyPhaseOver;
-        if (!BuyZone.Contains(transform.position)) return ShopResult.OutsideBuyZone;
+        if (!BuyZone.Contains(transform.position, EquiposTacticos.LadoLocal)) return ShopResult.OutsideBuyZone;
         return ShopResult.Ok;
     }
 

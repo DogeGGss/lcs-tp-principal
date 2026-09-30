@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Collections.Generic;
 using ExitGames.Client.Photon;
 using Photon.Pun;
@@ -9,6 +10,7 @@ using UnityEngine;
 // estando en una sala. El jugador que ya tiene la escena queda como jugador local (con su HUD, tienda y pausa):
 // se le agrega un PhotonView y se avisa a los demás, que arman una copia de él. Cada uno arranca en un punto
 // distinto del mapa.
+// Táctico (US 031, CA4): cada equipo arranca en los puntos de aparición de su lado (atacante o defensor).
 public class PartidaEnRed : MonoBehaviour
 {
     public static PartidaEnRed Actual { get; private set; }
@@ -17,7 +19,9 @@ public class PartidaEnRed : MonoBehaviour
     public JugadorEnRed Local { get; private set; }
 
     private readonly Dictionary<int, JugadorEnRed> jugadores = new Dictionary<int, JugadorEnRed>();
-    private readonly List<Pose> puntos = new List<Pose>();
+    private readonly List<Pose> puntos = new List<Pose>();          // todos los puntos del mapa
+    private readonly List<Pose> puntosAtacante = new List<Pose>();  // los marcados como lado Atacante (US 031)
+    private readonly List<Pose> puntosDefensor = new List<Pose>();  // los marcados como lado Defensor (US 031)
     private GameObject molde;
 
     private GameObject aviso;
@@ -33,7 +37,9 @@ public class PartidaEnRed : MonoBehaviour
         if (Actual == this) Actual = null;
     }
 
-    private void Start()
+    // Start como corrutina: en Táctico espera (unos segundos como mucho) a que llegue el reparto de equipos
+    // que hizo el anfitrión, para que cada jugador arranque en la base que le toca (US 031).
+    private IEnumerator Start()
     {
         molde = ConfigRed.Actual != null ? ConfigRed.Actual.jugador : null;
         if (molde == null) Debug.LogError("PartidaEnRed: falta Resources/ConfigRed con el Player.prefab; no se van a ver los demás jugadores.");
@@ -42,8 +48,14 @@ public class PartidaEnRed : MonoBehaviour
         if (movimiento == null)
         {
             Debug.LogError("PartidaEnRed: el mapa no tiene jugador.");
-            return;
+            yield break;
         }
+
+        float limite = Time.time + 3f;
+        while (MatchSettings.Mode == GameMode.Tactico && !EquiposTacticos.HayEquipos && Time.time < limite)
+            yield return null;
+        if (MatchSettings.Mode == GameMode.Tactico && !EquiposTacticos.HayEquipos)
+            Debug.LogWarning("PartidaEnRed: no llegó el reparto de equipos; esta partida táctica sigue sin equipos.");
 
         // En online la pausa no congela el juego (US 051, CA4).
         if (PauseMenu.Instance != null) PauseMenu.Instance.SetMultiplayer(true);
@@ -61,7 +73,7 @@ public class PartidaEnRed : MonoBehaviour
         if (!PhotonNetwork.AllocateViewID(vista))
         {
             Debug.LogError("PartidaEnRed: Photon no dio un id para el jugador.");
-            return;
+            yield break;
         }
         Local.IniciarLocal(this);
         jugadores[PhotonNetwork.LocalPlayer.ActorNumber] = Local;
@@ -115,13 +127,24 @@ public class PartidaEnRed : MonoBehaviour
     // Los PuntoDeAparicion del mapa; si no tiene, lugares libres con piso alrededor de donde arranca el jugador.
     private void BuscarPuntos(Transform inicio)
     {
+        puntos.Clear();
+        puntosAtacante.Clear();
+        puntosDefensor.Clear();
+
         PuntoDeAparicion[] marcados = FindObjectsByType<PuntoDeAparicion>();
         System.Array.Sort(marcados, (a, b) => string.CompareOrdinal(a.name, b.name));
         foreach (PuntoDeAparicion punto in marcados)
-            puntos.Add(new Pose(punto.transform.position, Quaternion.Euler(0f, punto.transform.eulerAngles.y, 0f)));
+        {
+            Pose lugar = new Pose(punto.transform.position, Quaternion.Euler(0f, punto.transform.eulerAngles.y, 0f));
+            puntos.Add(lugar);
+            if (punto.lado == LadoTactico.Atacante) puntosAtacante.Add(lugar);
+            else if (punto.lado == LadoTactico.Defensor) puntosDefensor.Add(lugar);
+        }
         if (puntos.Count >= 2) return;
 
         puntos.Clear();
+        puntosAtacante.Clear();
+        puntosDefensor.Clear();
         Quaternion mirada = Quaternion.Euler(0f, inicio.eulerAngles.y, 0f);
         puntos.Add(new Pose(inicio.position, mirada));
 
@@ -150,13 +173,41 @@ public class PartidaEnRed : MonoBehaviour
         }
     }
 
-    // Cada jugador en un punto distinto, según el orden en que entró a la sala.
+    // Puntos marcados para un lado (vacío si el mapa no los tiene).
+    private List<Pose> PuntosDelLado(LadoTactico lado)
+    {
+        return lado == LadoTactico.Atacante ? puntosAtacante : lado == LadoTactico.Defensor ? puntosDefensor : new List<Pose>();
+    }
+
+    // Cada jugador en un punto distinto. En Táctico (US 031, CA4) cada equipo usa los puntos de su lado, uno
+    // por compañero; si no, según el orden en que entró a la sala.
     private Pose PuntoInicial()
     {
         var actores = new List<int>();
         foreach (Player p in PhotonNetwork.PlayerList) actores.Add(p.ActorNumber);
         actores.Sort();
-        int indice = Mathf.Max(0, actores.IndexOf(PhotonNetwork.LocalPlayer.ActorNumber));
+        int local = PhotonNetwork.LocalPlayer.ActorNumber;
+
+        if (EquiposTacticos.HayEquipos)
+        {
+            int equipo = EquiposTacticos.DeActor(local);
+            LadoTactico lado = EquiposTacticos.LadoDeEquipo(equipo);
+            List<Pose> propios = PuntosDelLado(lado);
+            if (propios.Count > 0)
+            {
+                // Puesto dentro del equipo: cuántos compañeros entraron antes que yo.
+                int puesto = 0;
+                foreach (int actor in actores)
+                {
+                    if (actor == local) break;
+                    if (EquiposTacticos.DeActor(actor) == equipo) puesto++;
+                }
+                return propios[puesto % propios.Count];
+            }
+            Debug.LogWarning($"PartidaEnRed: el mapa no tiene PuntoDeAparicion con lado {lado}; se reparte como si no hubiera equipos.");
+        }
+
+        int indice = Mathf.Max(0, actores.IndexOf(local));
         return puntos[indice % puntos.Count];
     }
 

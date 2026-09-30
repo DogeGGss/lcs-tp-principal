@@ -128,6 +128,8 @@ public class Multijugador : MonoBehaviourPunCallbacks, IOnEventCallback
     public void Iniciar()
     {
         if (!PuedeIniciar) return;
+        // US 031: en Táctico, el anfitrión reparte los equipos antes de cargar el mapa.
+        if (ModoSala == GameMode.Tactico) EquiposTacticos.Repartir();
         PhotonNetwork.CurrentRoom.IsOpen = false;
         PhotonNetwork.LoadLevel(MapaActual.escena);
     }
