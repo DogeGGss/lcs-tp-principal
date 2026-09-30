@@ -6,6 +6,8 @@ using Slider = UnityEngine.UI.Slider;
 // Controles (OpcionesKit) y tapa los controles que había en la escena.
 // Los cambios quedan pendientes hasta apretar "Aplicar" (CA3); "Restablecer" pide confirmación (CA4).
 // Lo guardado se aplica al abrir el juego aunque no se entre a las opciones (CA5): ver AplicarGuardado.
+// US 153: cada resolución aparece una sola vez (Unity la repite por cada frecuencia del monitor; se usa la más
+// alta) y la calidad se elige solo entre Baja, Media y Alta, aunque el proyecto tenga otros niveles.
 public class GraficosUIController : MonoBehaviour, OpcionesPantalla.ISeccion
 {
     // =========================
@@ -35,6 +37,7 @@ public class GraficosUIController : MonoBehaviour, OpcionesPantalla.ISeccion
     private const float FOV_MAXIMO = 100f;
 
     private static readonly int[] OpcionesFPS = { 30, 60, 144, -1 };
+    private static readonly string[] NivelesCalidad = { "Baja", "Media", "Alta" }; // niveles de Quality Settings
 
     // Lo que muestran los controles. "guardado" es lo último aplicado; "pendiente", lo que eligió el jugador.
     private struct Estado
@@ -67,7 +70,7 @@ public class GraficosUIController : MonoBehaviour, OpcionesPantalla.ISeccion
 
     private void Start()
     {
-        resoluciones = Screen.resolutions;
+        resoluciones = Unicas(Screen.resolutions);
         pantalla = OpcionesPantalla.De(this);
         if (pantalla != null) pantalla.Registrar(this);
 
@@ -101,8 +104,8 @@ public class GraficosUIController : MonoBehaviour, OpcionesPantalla.ISeccion
         y += 10f;
         kit.Grupo("Imagen", ref y);
         textoCalidad = kit.FilaSelector("Calidad", ref y,
-            () => Cambiar(ref pendiente.calidad, -1, QualitySettings.names.Length),
-            () => Cambiar(ref pendiente.calidad, 1, QualitySettings.names.Length));
+            () => Cambiar(ref pendiente.calidad, -1, NivelesCalidad.Length),
+            () => Cambiar(ref pendiente.calidad, 1, NivelesCalidad.Length));
         segVSync = kit.FilaSegmentos("VSync", ref y, NombresVSync, i => { pendiente.vsync = i == 0 ? 1 : 0; MostrarEnControles(pendiente); });
         segFPS = kit.FilaSegmentos("Límite de FPS", ref y, NombresFPS, i => { pendiente.fps = i; MostrarEnControles(pendiente); });
         sliderFOV = kit.FilaSlider("Campo de visión", ref y, FOV_MINIMO, FOV_MAXIMO, out textoFOV);
@@ -129,7 +132,7 @@ public class GraficosUIController : MonoBehaviour, OpcionesPantalla.ISeccion
             Resolution r = resoluciones[Mathf.Clamp(e.resolucion, 0, resoluciones.Length - 1)];
             textoResolucion.text = r.width + " x " + r.height;
         }
-        textoCalidad.text = QualitySettings.names.Length > 0 ? QualitySettings.names[Mathf.Clamp(e.calidad, 0, QualitySettings.names.Length - 1)] : "-";
+        textoCalidad.text = NivelesCalidad[Mathf.Clamp(e.calidad, 0, NivelesCalidad.Length - 1)];
         segModo.Marcar(e.modo);
         segVSync.Marcar(e.vsync == 1 ? 0 : 1);
         segFPS.Marcar(e.fps);
@@ -160,7 +163,7 @@ public class GraficosUIController : MonoBehaviour, OpcionesPantalla.ISeccion
             PlayerPrefs.SetInt(CLAVE_RESOLUCION_ANCHO, r.width);
             PlayerPrefs.SetInt(CLAVE_RESOLUCION_ALTO, r.height);
         }
-        PlayerPrefs.SetString(CLAVE_CALIDAD, QualitySettings.names[Mathf.Clamp(pendiente.calidad, 0, QualitySettings.names.Length - 1)]);
+        PlayerPrefs.SetString(CLAVE_CALIDAD, NivelesCalidad[Mathf.Clamp(pendiente.calidad, 0, NivelesCalidad.Length - 1)]);
         PlayerPrefs.SetInt(CLAVE_MODO_PANTALLA, pendiente.modo);
         PlayerPrefs.SetInt(CLAVE_VSYNC, pendiente.vsync);
         PlayerPrefs.SetInt(CLAVE_FPS, OpcionesFPS[Mathf.Clamp(pendiente.fps, 0, OpcionesFPS.Length - 1)]);
@@ -192,7 +195,7 @@ public class GraficosUIController : MonoBehaviour, OpcionesPantalla.ISeccion
 
     private void RestablecerAhora()
     {
-        int calidad = System.Array.IndexOf(QualitySettings.names, CALIDAD_DEFECTO);
+        int calidad = System.Array.IndexOf(NivelesCalidad, CALIDAD_DEFECTO);
         pendiente = new Estado
         {
             resolucion = BuscarResolucion(resoluciones, RESOLUCION_ANCHO_DEFECTO, RESOLUCION_ALTO_DEFECTO),
@@ -213,8 +216,9 @@ public class GraficosUIController : MonoBehaviour, OpcionesPantalla.ISeccion
 
     private Estado LeerGuardado()
     {
-        int calidad = System.Array.IndexOf(QualitySettings.names, PlayerPrefs.GetString(CLAVE_CALIDAD, CALIDAD_DEFECTO));
-        if (calidad < 0) calidad = System.Array.IndexOf(QualitySettings.names, CALIDAD_DEFECTO);
+        // Si había guardado otro nivel (por ejemplo "PC"), se muestra Media.
+        int calidad = System.Array.IndexOf(NivelesCalidad, PlayerPrefs.GetString(CLAVE_CALIDAD, CALIDAD_DEFECTO));
+        if (calidad < 0) calidad = System.Array.IndexOf(NivelesCalidad, CALIDAD_DEFECTO);
         int fps = System.Array.IndexOf(OpcionesFPS, PlayerPrefs.GetInt(CLAVE_FPS, FPS_DEFECTO));
 
         return new Estado
@@ -236,14 +240,14 @@ public class GraficosUIController : MonoBehaviour, OpcionesPantalla.ISeccion
     /// </summary>
     public static void AplicarGuardado()
     {
-        Resolution[] lista = Screen.resolutions;
+        Resolution[] lista = Unicas(Screen.resolutions);
         FullScreenMode modo = ModoPantalla(PlayerPrefs.GetInt(CLAVE_MODO_PANTALLA, MODO_PANTALLA_DEFECTO));
         if (lista.Length > 0)
         {
             Resolution r = lista[BuscarResolucion(lista,
                 PlayerPrefs.GetInt(CLAVE_RESOLUCION_ANCHO, RESOLUCION_ANCHO_DEFECTO),
                 PlayerPrefs.GetInt(CLAVE_RESOLUCION_ALTO, RESOLUCION_ALTO_DEFECTO))];
-            Screen.SetResolution(r.width, r.height, modo);
+            Screen.SetResolution(r.width, r.height, modo, r.refreshRateRatio);
         }
         else Screen.fullScreenMode = modo;
 
@@ -265,6 +269,19 @@ public class GraficosUIController : MonoBehaviour, OpcionesPantalla.ISeccion
             case 1: return FullScreenMode.FullScreenWindow;
             default: return FullScreenMode.ExclusiveFullScreen;
         }
+    }
+
+    // CA2: una entrada por tamaño, con la frecuencia más alta que admite el monitor para ese tamaño.
+    private static Resolution[] Unicas(Resolution[] lista)
+    {
+        var unicas = new System.Collections.Generic.List<Resolution>();
+        foreach (Resolution r in lista)
+        {
+            int i = unicas.FindIndex(u => u.width == r.width && u.height == r.height);
+            if (i < 0) unicas.Add(r);
+            else if (r.refreshRateRatio.value > unicas[i].refreshRateRatio.value) unicas[i] = r;
+        }
+        return unicas.ToArray();
     }
 
     private static int BuscarResolucion(Resolution[] lista, int ancho, int alto)

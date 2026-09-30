@@ -59,7 +59,7 @@ public class PauseMenu : MonoBehaviour
     public Panel Current { get; private set; } = Panel.None;
 
     // ---------- Claves compartidas con las opciones del menú principal ----------
-    private const string KeyGeneral = "VolumenGeneral", KeyMusic = "VolumenMusica", KeyEffects = "VolumenEfectos";
+    private const string KeyGeneral = "VolumenGeneral", KeyMusic = "VolumenMusica", KeyEffects = "VolumenEfectos", KeyInterface = "VolumenInterfaz";
     private const string KeySensitivity = "Sensibilidad";
     private const string KeyFov = "FOV";
     private const string KeyScreenMode = "Graficos_ModoPantalla";
@@ -136,6 +136,7 @@ public class PauseMenu : MonoBehaviour
         ApplyVolume(KeyGeneral, PlayerPrefs.GetFloat(KeyGeneral, DefaultVolume));
         ApplyVolume(KeyMusic, PlayerPrefs.GetFloat(KeyMusic, DefaultVolume));
         ApplyVolume(KeyEffects, PlayerPrefs.GetFloat(KeyEffects, DefaultVolume));
+        ApplyVolume(KeyInterface, PlayerPrefs.GetFloat(KeyInterface, DefaultVolume)); // US 154: se ajusta en el menú principal
     }
 
     private void OnDestroy()
