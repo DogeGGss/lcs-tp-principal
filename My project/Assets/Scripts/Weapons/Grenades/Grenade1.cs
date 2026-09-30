@@ -13,6 +13,9 @@ public class Grenade1 : MonoBehaviour
     // Fuerza con la que se lanza la granada
     public float throwForce = 15f;
 
+    // Quién la tiró: sus compañeros no reciben el daño de la explosión (US 031, CA6).
+    [HideInInspector] public Transform thrower;
+
     private float countdown;
     private bool exploded = false;
 
@@ -59,7 +62,7 @@ public class Grenade1 : MonoBehaviour
             HealthSystem health =
                 rangeObjects.GetComponent<HealthSystem>();
 
-            if (health != null)
+            if (health != null && !EquiposTacticos.SonAliados(thrower, health))
             {
                 // Distancia entre la granada y el objetivo
                 float distance = Vector3.Distance(

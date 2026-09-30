@@ -134,7 +134,7 @@ public class MeleeAttack : MonoBehaviour
                     {
                         // CA3: Aplicar daño al HealthSystem[cite: 1]
                         HealthSystem health = col.GetComponent<HealthSystem>();
-                        if (health != null)
+                        if (health != null && !EquiposTacticos.SonAliados(this, health)) // US 031, CA6
                         {
                             health.TakeDamage(data.damage);
                             Debug.Log($"Golpe cuerpo a cuerpo a {col.name}. Daño: {data.damage}");

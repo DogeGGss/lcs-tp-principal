@@ -46,6 +46,9 @@ public static class WeaponFire
                 continue;
             }
 
+            // US 031, CA6: los compañeros de equipo no reciben daño (la bala se frena en ellos).
+            if (EquiposTacticos.SonAliados(shooter, target)) continue;
+
             // Se mira antes de aplicar el daño: a un jugador de otra computadora el daño le llega después (US 029).
             int damage = weapon.HitDamage(zone, hit.distance);
             bool lethal = target.WouldDie(damage);

@@ -29,6 +29,10 @@ public class GrenadeThrower : MonoBehaviour
 
         if (grenade != null)
         {
+            // Quién la tira (US 031, CA6)
+            PlayerMovement owner = GetComponentInParent<PlayerMovement>();
+            grenade.thrower = owner != null ? owner.transform : transform.root;
+
             // La lanzamos hacia donde está mirando la cámara
             grenade.Throw(playerCamera.transform.forward);
         }
