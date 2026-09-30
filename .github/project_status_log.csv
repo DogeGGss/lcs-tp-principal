@@ -325,3 +325,11 @@ fecha_utc,us_numero,us_titulo,estado_anterior,estado_nuevo,tiempo_en_estado_ante
 2026-09-29T23:07:04.737421+00:00,7,F06. Multijugador,In Progress,Todo,21h 39m,77999,https://github.com/DogeGGss/lcs-tp-principal/issues/7
 2026-09-29T23:07:04.737421+00:00,79,US 031. Formar equipos,Blocked,In Progress,4d 50m,348636,https://github.com/DogeGGss/lcs-tp-principal/issues/79
 2026-09-29T23:07:04.737421+00:00,247,US 170. Marcas de impacto en el escenario,In Progress,Done,3h 40m,13241,https://github.com/DogeGGss/lcs-tp-principal/issues/247
+2026-09-30T08:27:12.406392+00:00,276,US 174. Guía de estilo visual,Todo,LPR,6h 21m,22919,https://github.com/DogeGGss/lcs-tp-principal/issues/276
+2026-09-30T08:27:12.406392+00:00,277,US 175. Diseño visual de la tienda,Todo,In Progress,6h 21m,22919,https://github.com/DogeGGss/lcs-tp-principal/issues/277
+2026-09-30T08:27:12.406392+00:00,278,US 176. Diseño visual del HUD de combate,Todo,LPR,6h 21m,22919,https://github.com/DogeGGss/lcs-tp-principal/issues/278
+2026-09-30T08:27:12.406392+00:00,279,US 177. Diseño visual de la selección de modo,Todo,LPR,6h 21m,22919,https://github.com/DogeGGss/lcs-tp-principal/issues/279
+2026-09-30T08:27:12.406392+00:00,280,US 178. Diseño del arsenal,Todo,LPR,6h 21m,22919,https://github.com/DogeGGss/lcs-tp-principal/issues/280
+2026-09-30T08:27:12.406392+00:00,281,US 179. Modelos 3D de las armas,Todo,In Progress,6h 21m,22919,https://github.com/DogeGGss/lcs-tp-principal/issues/281
+2026-09-30T08:27:12.406392+00:00,282,US 180. Nota para el PO,Todo,LPR,6h 21m,22919,https://github.com/DogeGGss/lcs-tp-principal/issues/282
+2026-09-30T08:27:12.406392+00:00,283,US 181. Nombre y vida sobre los demás jugadores,Todo,In Progress,6h 21m,22919,https://github.com/DogeGGss/lcs-tp-principal/issues/283
