@@ -90,7 +90,7 @@ tr:last-child td{border-bottom:none}
 .stage:focus-visible{box-shadow:0 0 0 3px var(--accent),0 18px 40px rgba(0,0,0,.25)}
 .stage-inner{position:absolute;left:0;top:0;width:1920px;height:1080px;transform-origin:0 0;
   --g-panel:rgba(10,12,17,.88); --g-panel-2:rgba(24,28,36,.94); --g-row:rgba(255,255,255,.035); --g-line:rgba(255,255,255,.09);
-  --g-ink:#F3F4F6; --g-mute:#8E96A3; --g-accent:#F29A38; --g-bad:#FF5C5C; --g-ok:#3DDC97; --g-shield:#4CC3FF; --g-ally:#58A6FF; --g-enemy:#FF6161;
+  --g-ink:#F3F4F6; --g-mute:#8E96A3; --g-accent:#F29A38; --g-bad:#FF5C5C; --g-ok:#3DDC97; --g-shield:#4CC3FF; --g-ally:#58A6FF; --g-enemy:#FF6161; --zm:#7DE05A;
   font-family:var(--body);color:var(--g-ink)}
 .g-bg{position:absolute;inset:0;background:#6a86b0 url(img/mapa.jpg) center/cover no-repeat;transition:filter .18s ease}
 .shop-open .g-bg{filter:blur(6px) brightness(.5) saturate(.75)}
@@ -661,6 +661,81 @@ section{scroll-margin-top:68px}
 body.capture .side,body.capture-ms .side,body.capture-cr .side,body.capture .crumbs,body.capture-ms .crumbs,body.capture-cr .crumbs{display:none}
 body.capture,body.capture-ms,body.capture-cr{padding-left:0!important}
 @media (prefers-reduced-motion: reduce){.side{transition:none}}
+
+/* ===== Marcadores (30/09/2026) ===== */
+/* Táctico y Deathmatch (US 057): un reloj al medio y un lado para cada equipo, con durmientes que cuentan rondas o bajas */
+.mk{position:absolute;top:22px;left:50%;transform:translateX(-50%);display:flex;align-items:flex-start;gap:14px;transition:opacity .15s}
+.mk-side{display:flex;flex-direction:column;gap:8px;min-width:250px;padding-top:4px}
+.mk-side.ally,.mk-side.me{align-items:flex-end}
+.mk-side.enemy,.mk-side.lead{align-items:flex-start}
+.mk-lab{font:600 13px/1 var(--display);letter-spacing:.18em;text-transform:uppercase;color:var(--g-mute);text-shadow:0 1px 4px rgba(0,0,0,.8)}
+.mk-lab b{color:var(--g-ink);font-weight:600}
+.mk-row{display:flex;align-items:center;gap:12px}
+.mk-pips{display:flex;gap:5px}
+.pip{position:relative;display:block;width:12px;height:28px;border-radius:3px;background:var(--g-ally);box-shadow:0 1px 4px rgba(0,0,0,.6)}
+.mk-side.enemy .pip{background:var(--g-enemy)}
+.pip.dead{background:rgba(255,255,255,.14)!important;box-shadow:none}
+.pip.dead::before{content:"";position:absolute;left:-2px;right:-2px;top:13px;height:2px;background:rgba(255,255,255,.45);transform:rotate(-55deg)}
+.pip.car::after{content:"";position:absolute;left:2px;top:-11px;width:8px;height:8px;background:var(--g-accent);transform:rotate(45deg)}
+.mk-rail{display:flex;gap:6px;height:12px}
+.mk-rail i{width:4px;background:rgba(255,255,255,.16)}
+.mk-rail i.a{background:var(--g-ally)} .mk-rail i.e{background:var(--g-enemy)} .mk-rail i.m{background:var(--g-ink)}
+.mk-rail.fine{gap:3px;height:10px} .mk-rail.fine i{width:3px}
+.mk-clock{background:rgba(8,10,14,.72);border:1px solid var(--g-line);border-radius:8px;padding:8px 22px;text-align:center;min-width:190px}
+.mk-clock .ph{font:700 16px/1 var(--display);letter-spacing:.16em;color:var(--g-accent);text-transform:uppercase}
+.mk-clock .t{display:flex;align-items:center;justify-content:center;gap:10px;font:700 46px/1.05 var(--display);font-variant-numeric:tabular-nums}
+.mk-clock .t svg{width:34px;height:34px}
+.mk-clock .rd{font:600 14px/1 var(--display);letter-spacing:.14em;color:var(--g-mute);text-transform:uppercase}
+.mk-clock.red{border-color:rgba(255,92,92,.65);background:rgba(40,8,8,.72)}
+.mk-clock.red .ph,.mk-clock.red .t{color:var(--g-bad)}
+.mk-big{font:700 44px/1 var(--display);font-variant-numeric:tabular-nums;text-shadow:0 2px 6px rgba(0,0,0,.6)}
+.mk-big small{font:600 22px/1 var(--display);color:var(--g-mute);margin-left:6px}
+.mk-big.me{color:var(--g-ink)} .mk-big.rv{color:var(--g-enemy)}
+.mk-tab{position:absolute;left:50%;top:170px;transform:translateX(-50%);width:1100px;background:var(--g-panel);border:1px solid var(--g-line);border-radius:10px;padding:18px 24px 14px}
+.mk-tab .ttl{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:12px}
+.mk-tab .ttl b{font:700 26px/1 var(--display);letter-spacing:.12em;text-transform:uppercase;padding-bottom:8px;border-bottom:2px solid var(--g-accent)}
+.mk-tab .ttl span{font:600 14px/1 var(--display);letter-spacing:.12em;text-transform:uppercase;color:var(--g-mute)}
+.mk-tab .grp{font:700 16px/1 var(--display);letter-spacing:.16em;text-transform:uppercase;margin:12px 0 6px}
+.mk-tab .grp.a{color:var(--g-ally)} .mk-tab .grp.e{color:var(--g-enemy)}
+.mk-tr{display:grid;grid-template-columns:48px 1fr 110px 110px 130px;align-items:center;height:44px;padding:0 12px;border-bottom:1px solid var(--g-line);font:600 21px/1 var(--display);letter-spacing:.04em;position:relative}
+.mk-tr.h{height:30px;font-size:13px;letter-spacing:.14em;text-transform:uppercase;color:var(--g-mute)}
+.mk-tr span:nth-child(n+3){text-align:right;font-variant-numeric:tabular-nums}
+.mk-tr.dead{color:var(--g-mute)}
+.mk-tr.me{background:rgba(242,154,56,.13)}
+.mk-tr.me::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--g-accent)}
+.kf .m{color:var(--g-ink)} .kf .r{color:var(--g-enemy)}
+.mk-side.ally .mk-rail,.mk-side.me .mk-rail{flex-direction:row-reverse}
+.stage-inner:has(.mk-tab) .focus-hint{opacity:0}
+.zm-rec.plain{color:var(--g-ink);border-color:rgba(255,255,255,.4);background:rgba(8,10,14,.85);box-shadow:none}
+.kf{transition:opacity .3s}
+/* Zombie (US 150): la oleada como un recorrido de 10 estaciones; la 10 es el jefe */
+.zm{position:absolute;top:22px;left:50%;transform:translateX(-50%);width:620px;background:rgba(6,10,6,.74);border:1px solid rgba(125,224,90,.28);border-radius:10px;padding:14px 26px 16px;text-align:center;transition:opacity .15s}
+.zm::after{content:"";position:absolute;left:50%;bottom:-2px;width:150px;height:3px;transform:translateX(-50%);background:var(--zm);box-shadow:0 0 12px rgba(125,224,90,.6)}
+.zm-head{display:flex;justify-content:center;align-items:baseline;gap:12px}
+.zm-w{font:700 44px/1 var(--display);letter-spacing:.06em;text-transform:uppercase}
+.zm-of{font:600 20px/1 var(--display);letter-spacing:.14em;text-transform:uppercase;color:var(--g-mute)}
+.zm-boss{font:700 15px/1 var(--display);letter-spacing:.16em;text-transform:uppercase;color:#10180c;background:var(--zm);border-radius:4px;padding:5px 8px;align-self:center}
+.zm-line{display:block;width:568px;height:62px;margin:6px auto 2px}
+.zm-line text{font:600 12px var(--mono);fill:var(--g-mute)}
+.zm-line .now{fill:var(--g-ink)}
+.zm-line .flag{font:700 11px var(--display);letter-spacing:.12em;fill:var(--g-accent)}
+.zm-ring{fill:none;stroke:var(--zm);stroke-width:2;transform-box:fill-box;transform-origin:center;animation:zmPulse 1.6s ease-out infinite}
+@keyframes zmPulse{0%{transform:scale(1);opacity:.9}100%{transform:scale(2.4);opacity:0}}
+.zm-info{display:flex;justify-content:center;align-items:baseline;gap:10px;font:600 16px/1 var(--display);letter-spacing:.16em;text-transform:uppercase;color:var(--g-mute)}
+.zm-info b{font:700 38px/1 var(--display);letter-spacing:.02em;color:var(--g-ink);font-variant-numeric:tabular-nums}
+.zm-info.rest b{color:var(--zm)}
+.zm-bar{width:520px;height:6px;margin:10px auto 0;background:rgba(255,255,255,.12);border-radius:3px;overflow:hidden}
+.zm-bar b{display:block;height:100%;background:var(--g-ink);transition:width .25s ease}
+.zm-bar.rest b{background:var(--zm)}
+.zm-rec{position:absolute;top:252px;left:50%;transform:translate(-50%,-10px);opacity:0;transition:.25s;background:rgba(10,24,8,.9);border:1px solid var(--zm);border-radius:30px;padding:10px 22px;font:700 24px/1 var(--display);letter-spacing:.1em;text-transform:uppercase;color:var(--zm);white-space:nowrap;box-shadow:0 0 24px rgba(125,224,90,.35)}
+.zm-rec.on{opacity:1;transform:translate(-50%,0)}
+.zm-pts{position:absolute;left:34px;bottom:30px;display:flex;align-items:baseline;gap:10px;font:700 44px/1 var(--display);font-variant-numeric:tabular-nums;text-shadow:0 2px 6px rgba(0,0,0,.6);transition:opacity .15s}
+.zm-pts small{font:600 16px/1 var(--display);letter-spacing:.14em;color:var(--g-mute)}
+.zm-pop{position:absolute;left:36px;bottom:84px;font:700 24px/1 var(--display);letter-spacing:.06em;text-shadow:0 2px 6px rgba(0,0,0,.7);animation:zmPop .9s ease-out forwards;pointer-events:none}
+.zm-pop.hs{color:var(--g-accent)}
+@keyframes zmPop{from{opacity:1;transform:none}to{opacity:0;transform:translateY(-44px)}}
+.shop-open .mk,.shop-open .zm,.shop-open .zm-pts,.shop-open .killfeed{opacity:0}
+@media (prefers-reduced-motion: reduce){.zm-ring{animation:none;opacity:0}}
 </style>
 
 
@@ -684,12 +759,12 @@ body.capture,body.capture-ms,body.capture-cr{padding-left:0!important}
   <p class="lede">La referencia de cómo se ve y cómo funciona el juego. Cada parte dice qué hay que construir, con qué medidas y colores, dónde está en el código y qué historia lo cubre. Si vas a hacer una pantalla o un arma, empezá por acá.</p>
   <div class="facts">
     <div class="fact"><b>5 de 7</b><span>armas de fuego del MVP en el juego</span></div>
-    <div class="fact"><b>4</b><span>maquetas interactivas en esta guía</span></div>
+    <div class="fact"><b>6</b><span>maquetas interactivas en esta guía</span></div>
     <div class="fact"><b>8</b><span>jugadores por sala online</span></div>
     <div class="fact"><b>1920 × 1080</b><span>pantalla de referencia</span></div>
   </div>
   <div class="callout" style="margin-top:22px"><b>Cómo trabajamos:</b> primero el diseño y después el código. Antes de hacer una pantalla o un arma nueva, se arma su maqueta o su ficha acá y se escribe su historia con el link a esta guía (como US 175). Cuando se termina, se actualizan la historia y esta guía con los valores finales.</div>
-  <p class="soft" style="margin-top:14px">Estados: <span class="st st-ok">En el juego</span> <span class="st st-mid">A medias</span> <span class="st st-todo">Falta hacerlo</span> <span class="st st-idea">Solo diseño</span>. Los "US ###" llevan a su historia en GitHub. Actualizada el 29/09/2026.</p>
+  <p class="soft" style="margin-top:14px">Estados: <span class="st st-ok">En el juego</span> <span class="st st-mid">A medias</span> <span class="st st-todo">Falta hacerlo</span> <span class="st st-idea">Solo diseño</span>. Los "US ###" llevan a su historia en GitHub. Actualizada el 30/09/2026.</p>
   <nav class="parts" aria-label="Partes de la guía">
     <a href="#estilo"><div class="pn">Parte 1</div><div class="pt">Identidad</div><div class="ps">Colores, tipografías, medidas, piezas y reglas para el código.</div></a>
     <a href="#tienda"><div class="pn">Parte 2</div><div class="pt">Pantallas</div><div class="ps">Tienda, HUD, selección de modo, créditos y el resto de los menús.</div></a>
@@ -923,7 +998,125 @@ body.capture,body.capture-ms,body.capture-cr{padding-left:0!important}
       <code>IHudWeapon</code><span>Interfaz que implementa cada arma para mostrar reserva y recarga (<code>ArmaDeFuego</code>, <code>Mitre</code>, <code>Pistola</code>). Un arma nueva tiene que implementarla.</span>
       <code>WeaponSwitcher</code><span>Dice qué hay en cada espacio (US 055 y US 064).</span>
     </div>
-    <p style="margin:12px 0 0">También dibuja la mira (US 171) y el marcador de impacto (US 165): cruz blanca al cuerpo, naranja con un "clin" a la cabeza y roja si mata. El marcador de arriba, la lista de muertes y la plata de la maqueta todavía no están: llegan con los marcadores de cada modo (US 134, US 141 y US 150).</p>
+    <p style="margin:12px 0 0">También dibuja la mira (US 171) y el marcador de impacto (US 165): cruz blanca al cuerpo, naranja con un "clin" a la cabeza y roja si mata. El marcador de arriba, la lista de muertes y los puntos todavía no están en el juego: su diseño está en <a href="#pantalla-marcadores">Marcadores de Táctico y Deathmatch</a> y <a href="#marcador-zombie">Marcador de Zombie</a>.</p>
+  </div>
+</section>
+
+<section id="pantalla-marcadores">
+  <div class="sec-head"><h2>Marcadores de Táctico y Deathmatch</h2><span class="sub">Maqueta interactiva · US 057 · US 134 · US 141</span> <span class="st st-idea">Solo diseño</span></div>
+  <p>Los dos modos contra jugadores comparten el mismo marcador (US 057): un bloque arriba al centro con el reloj en el medio y un lado para cada uno, la lista de bajas arriba a la derecha y la tabla con <span class="kbd">Tab</span>. Los lados usan durmientes, como el cargador del HUD: en Táctico cuentan las rondas ganadas (7 para ganar) y en Deathmatch, las bajas (25 para ganar). El modo Zombie tiene su propio marcador, más abajo.</p>
+  <p class="soft">Hacé clic en la pantalla: mantené <span class="kbd">Tab</span> para ver la tabla y usá "Simular baja" para ver cómo se actualiza todo en el momento.</p>
+  <div class="controls" id="mkControls">
+    <div><span class="ctl-label">Modo</span><span class="seg" data-kctl="mode"><button data-v="tactico" aria-pressed="true">Táctico</button><button data-v="dm">Deathmatch</button></span></div>
+    <div><span class="ctl-label">Situación</span><span class="seg" data-kctl="sit" id="mkSit"></span></div>
+    <div><span class="seg" data-kctl="tab"><button data-v="tab" aria-pressed="false">Tabla (Tab)</button></span></div>
+    <button class="btn" id="mkKill" type="button">Simular baja</button>
+  </div>
+  <div class="stage" id="mkStage" tabindex="0" aria-label="Maqueta del marcador de Táctico y Deathmatch. Enfocá y mantené Tab para ver la tabla.">
+    <div class="stage-inner" id="mki">
+      <div class="g-bg"></div><div class="g-vig"></div>
+      <div class="hud" id="mkHud"></div>
+      <div class="focus-hint">Hacé clic acá y mantené <span class="gk sm">Tab</span></div>
+    </div>
+  </div>
+
+  <h3 id="marcadores-partes">Partes</h3>
+  <ol class="anat">
+    <li><span class="n">1</span><span><b>Reloj</b> (US 057): la fase y el tiempo que queda en minutos y segundos. Se pone rojo con el dispositivo plantado (Táctico) o en el último minuto (Deathmatch).</span></li>
+    <li><span class="n">2</span><span><b>Lado propio</b>, siempre a la izquierda. Táctico: rondas ganadas, un ícono por jugador y 7 durmientes. Deathmatch: tus bajas sobre 25 con 25 durmientes.</span></li>
+    <li><span class="n">3</span><span><b>Lado rival</b>, a la derecha. Táctico: lo mismo del equipo rival. Deathmatch: quién va primero y sus bajas, o "Vas primero" y cuántas le sacás al segundo.</span></li>
+    <li><span class="n">4</span><span><b>Lista de bajas</b> arriba a la derecha: "Jugador [arma] Jugador", con la mira naranja si fue a la cabeza. Dura 4 s y se ven como máximo 5.</span></li>
+    <li><span class="n">5</span><span><b>Tabla con Tab</b>: mientras se mantiene apretado. Táctico, por equipo con bajas, muertes y plata (solo la de tu equipo). Deathmatch, todos ordenados por bajas, con tu fila resaltada.</span></li>
+  </ol>
+
+  <h3 id="marcadores-estados">Estados</h3>
+  <div class="table-wrap"><table>
+    <tr><th>Estado</th><th>Qué se ve</th><th>Historia</th><th>Probalo</th></tr>
+    <tr><td>Fase de compra</td><td>"Fase de compra" en naranja y los 20 s que quedan.</td><td>US 134</td><td>Táctico → Fase de compra.</td></tr>
+    <tr><td>Ronda en curso</td><td>"Ronda en curso" y el tiempo de la ronda. Debajo, la ronda actual.</td><td>US 134</td><td>Táctico → Ronda en curso.</td></tr>
+    <tr><td>Jugador muerto</td><td>Su ícono se apaga y se tacha, en el mismo momento de la baja.</td><td>US 134</td><td>Simular baja.</td></tr>
+    <tr><td>Portador del dispositivo</td><td>Rombo naranja arriba de su ícono. Solo lo ven los atacantes.</td><td>US 130, US 134</td><td>Táctico, cualquier situación.</td></tr>
+    <tr><td>Dispositivo plantado</td><td>El reloj se pone rojo, con el ícono del dispositivo y la cuenta de 45 s.</td><td>US 134</td><td>Táctico → Plantado.</td></tr>
+    <tr><td>Cambio de lado</td><td>Los rótulos pasan de "Atacantes" a "Defensores", pero tu equipo sigue a la izquierda con sus rondas.</td><td>US 134</td><td>Táctico → Cambio de lado.</td></tr>
+    <tr><td>Último minuto</td><td>El reloj se pone rojo.</td><td>US 141</td><td>Deathmatch → Último minuto.</td></tr>
+    <tr><td>Vas primero</td><td>El lado derecho dice "Vas primero" y cuántas bajas le sacás al segundo.</td><td>US 141</td><td>Deathmatch → Vas primero.</td></tr>
+    <tr><td>Tienda abierta</td><td>El marcador y la lista de bajas se ocultan.</td><td>US 057</td><td>En la maqueta de la tienda.</td></tr>
+  </table></div>
+
+  <h3 id="marcadores-medidas">Medidas</h3>
+  <div class="grid3">
+    <div class="card"><b>Posición.</b> Arriba al centro, a 22 px del borde. No baja de 110 px, así no tapa la mira ni el HUD de combate.</div>
+    <div class="card"><b>Reloj.</b> Mínimo 190 px de ancho, tiempo en 46 px, fase en 16 px naranja y ronda en 14 px gris. Rojo <code>Bad</code> cuando corre peligro.</div>
+    <div class="card"><b>Lados.</b> Rondas en 44 px, en celeste (compañeros) o rojo (rivales). Íconos de 12 × 28 px separados 5 px. Durmientes de 4 × 12 px cada 10 px; en Deathmatch, 3 × 10 px como los del cargador.</div>
+    <div class="card"><b>Lista de bajas.</b> Arriba a la derecha, a 24 px y 28 px de los bordes. Filas de 21 px, 5 como máximo, 4 s cada una.</div>
+    <div class="card"><b>Tabla.</b> 1100 px de ancho a 170 px del borde de arriba, con el título de panel de la parte 1. Filas de 44 px.</div>
+    <div class="card"><b>Colores.</b> Tu equipo <code>#58A6FF</code>, rivales <code>#FF6161</code>; en Deathmatch todos los demás son rivales y vos vas en blanco.</div>
+  </div>
+  <div class="dev">
+    <h3 id="marcadores-codigo">Cómo hacerlo</h3>
+    <ul>
+      <li>Una sola clase base para el bloque (reloj, dos lados, lista de bajas y tabla) armada por código con <code>ShopUIKit</code>, como el HUD de combate. Cada modo le pasa lo suyo: Táctico sus rondas y jugadores, Deathmatch sus bajas y el líder.</li>
+      <li>Los nombres salen del perfil del jugador (US 164). La lista de bajas se llena desde el mismo aviso que usa el marcador de impacto (US 165).</li>
+      <li>Se oculta con la tienda abierta, igual que el HUD.</li>
+    </ul>
+  </div>
+</section>
+
+<section id="marcador-zombie">
+  <div class="sec-head"><h2>Marcador de Zombie</h2><span class="sub">Maqueta interactiva · US 150</span> <span class="st st-idea">Solo diseño</span></div>
+  <p>El Zombie se juega solo contra la horda, así que su marcador es otro: no hay rivales, ni lista de bajas, ni tabla con Tab. Lo que importa es en qué oleada estás, cuánto falta para terminarla y cuántos puntos tenés para la tienda. Las 10 oleadas se muestran como el recorrido de una línea de tren: cada oleada es una estación, la 10 es la del jefe (US 146) y después viene el modo infinito.</p>
+  <p class="soft">Hacé clic en la pantalla para eliminar un zombie (clic derecho: a la cabeza). Al terminar la oleada empieza el descanso; pasá la oleada 7 para ver el aviso de récord.</p>
+  <div class="controls" id="zmControls">
+    <div><span class="ctl-label">Situación</span><span class="seg" data-zctl="sit"><button data-v="oleada" aria-pressed="true">Oleada en curso</button><button data-v="descanso">Descanso</button><button data-v="jefe">Oleada 10 · jefe</button><button data-v="infinito">Modo infinito</button></span></div>
+    <button class="btn" id="zmKill" type="button">Eliminar zombie</button>
+    <button class="btn ghost" id="zmNext" type="button">Siguiente oleada</button>
+  </div>
+  <div class="stage" id="zmStage" tabindex="0" aria-label="Maqueta del marcador de Zombie. Hacé clic para eliminar zombies.">
+    <div class="stage-inner" id="zmi">
+      <div class="g-bg"></div><div class="g-vig"></div>
+      <div class="hud" id="zmHud"></div>
+      <div class="zm-rec" id="zmRec"></div>
+      <div id="zmPops"></div>
+      <div class="focus-hint" style="top:420px">Hacé clic acá para eliminar un zombie</div>
+    </div>
+  </div>
+
+  <h3>Qué lo hace distinto</h3>
+  <div class="pairs">
+    <div class="card"><b>La oleada es un recorrido.</b> Diez estaciones sobre una vía: las pasadas en verde, la actual con un pulso y la 10, el jefe, con otra forma. De un vistazo se ve cuánto falta para terminar.</div>
+    <div class="card"><b>El récord está en la vía.</b> Una banderita naranja marca la oleada récord de esa dificultad (US 151). Al pasarla aparece "¡Nuevo récord!", una sola vez por partida.</div>
+    <div class="card"><b>Los puntos, donde está la plata.</b> Abajo a la izquierda, en el mismo lugar que la plata en Táctico. Cada baja muestra cuánto sumó: +60, o +100 en naranja si fue a la cabeza.</div>
+    <div class="card"><b>El color del modo.</b> El verde del andén de Zombie (<code>#7DE05A</code>) reemplaza al naranja en la línea de abajo del panel, en la vía y en el descanso.</div>
+  </div>
+
+  <h3 id="marcador-zombie-estados">Estados</h3>
+  <div class="table-wrap"><table>
+    <tr><th>Estado</th><th>Qué se ve</th><th>CA de US 150</th><th>Probalo</th></tr>
+    <tr><td>Oleada en curso</td><td>"Oleada N de 10", la vía y "Quedan N zombis" (cuenta los que todavía no aparecieron), con una barra que se vacía.</td><td>CA1, CA2</td><td>Oleada en curso.</td></tr>
+    <tr><td>Descanso</td><td>En lugar de los zombis, "Próxima oleada en 0:20" en verde, con una barra que se llena. La tienda está abierta (US 148).</td><td>CA3</td><td>Descanso, o eliminá todos los zombis.</td></tr>
+    <tr><td>Oleada del jefe</td><td>Etiqueta "Jefe" al lado del título y la estación 10 resaltada.</td><td>CA1</td><td>Oleada 10 · jefe.</td></tr>
+    <tr><td>Modo infinito</td><td>"Oleada N · modo infinito" y la vía completa hasta la estación ∞.</td><td>CA1</td><td>Modo infinito.</td></tr>
+    <tr><td>Puntos</td><td>Siempre abajo a la izquierda. Se actualizan en el momento y muestran lo que sumó cada baja.</td><td>CA4</td><td>Clic y clic derecho.</td></tr>
+    <tr><td>Nuevo récord</td><td>"¡Nuevo récord! · Oleada N" debajo del panel durante 3 s, una sola vez.</td><td>CA5</td><td>Pasá la oleada 7.</td></tr>
+    <tr><td>Tienda abierta</td><td>El marcador y los puntos se ocultan: la barra de la tienda ya muestra la oleada y los puntos.</td><td>CA6</td><td>Maqueta de la tienda → Zombie.</td></tr>
+  </table></div>
+
+  <h3 id="marcador-zombie-medidas">Medidas</h3>
+  <div class="grid3">
+    <div class="card"><b>Panel.</b> Arriba al centro, a 22 px del borde, 620 px de ancho. Fondo oscuro con borde verde al 28 % y una línea verde de 150 × 3 px abajo.</div>
+    <div class="card"><b>Título.</b> "Oleada N" en 44 px y "de 10" en 20 px gris. Etiqueta "Jefe" en 15 px sobre verde.</div>
+    <div class="card"><b>Vía.</b> 568 × 62 px con 11 estaciones cada 52 px (10 oleadas y ∞): pasadas de 7 px en verde, la actual de 10 px en blanco con pulso y el jefe, un rombo de 11 px.</div>
+    <div class="card"><b>Zombis y descanso.</b> Número en 38 px entre rótulos de 16 px. Barra de 520 × 6 px: blanca con zombis, verde en el descanso.</div>
+    <div class="card"><b>Puntos.</b> Abajo a la izquierda, a 34 px y 30 px de los bordes, en 44 px. Lo que suma cada baja sube 44 px y se va en 0,9 s.</div>
+    <div class="card"><b>Récord.</b> Píldora de 24 px en verde a 252 px del borde de arriba, 3 s.</div>
+  </div>
+  <div class="dev">
+    <h3 id="marcador-zombie-codigo">Cómo hacerlo</h3>
+    <ul>
+      <li>Es una pantalla aparte del marcador de Táctico y Deathmatch: no hereda de US 057. Se arma por código con <code>ShopUIKit</code> y <code>UIShapes</code> (la vía y las estaciones), y toma solo las fuentes, colores y sombras del HUD de combate (US 176).</li>
+      <li>Lee la oleada, los zombis que quedan y el descanso de las oleadas (US 144), los puntos de US 147 y el récord guardado de US 151.</li>
+      <li>Se oculta con la tienda abierta (US 148).</li>
+    </ul>
   </div>
 </section>
 
@@ -1175,7 +1368,6 @@ body.capture,body.capture-ms,body.capture-cr{padding-left:0!important}
     <tr id="pantalla-resultado"><td><b>Resultado de partida</b></td><td>Victoria o derrota (o el puesto), el marcador final, la tabla de estadísticas y "Volver al menú". En Zombie, también el récord y "Jugar de nuevo".</td><td>—</td><td>US 034, US 142, US 151</td><td><span class="st st-todo">Falta diseñar</span></td></tr>
     <tr id="pantalla-estadisticas"><td><b>Estadísticas</b></td><td>Pantalla del menú con los resultados guardados, empezando por el minijuego de pájaros.</td><td>—</td><td>US 159</td><td><span class="st st-todo">Falta diseñar</span></td></tr>
     <tr id="pantalla-practica"><td><b>Campo de práctica</b></td><td>Carteles paso a paso con los controles y paneles con el objetivo de cada modo.</td><td>—</td><td>US 166, US 122</td><td><span class="st st-todo">Falta diseñar</span></td></tr>
-    <tr id="pantalla-marcadores"><td><b>Marcadores de partida</b></td><td>Un bloque arriba al centro con el estilo del HUD (reloj en el medio y un dato a cada lado), la lista de muertes arriba a la derecha y la tabla con Tab. Cada modo lo completa con lo suyo.</td><td>—</td><td>US 057, US 134, US 141, US 150</td><td><span class="st st-todo">Falta diseñar</span></td></tr>
   </table></div>
 
   <div class="dev">
@@ -1389,6 +1581,7 @@ body.capture,body.capture-ms,body.capture-cr{padding-left:0!important}
     <tr><td>Retroceso del Mitre</td><td>Patrón fijo bala por bala, como el AK-47 de CS.</td><td>US 168</td></tr>
     <tr><td>Sonidos y animaciones</td><td>No son historias aparte: van como CA de la historia a la que pertenecen, un CA por sonido.</td><td>29/09/2026</td></tr>
     <tr id="decision-soltar-armas"><td>Soltar y levantar armas</td><td>Solo en Táctico, con <span class="kbd">G</span>. Se levanta pasando por encima con el espacio vacío, sin tecla para cambiar. Al morir cae la principal, o la secundaria si no hay. Se puede comprar un arma para un compañero y soltársela.</td><td>US 184</td></tr>
+    <tr id="decision-marcadores"><td>Marcadores</td><td>Táctico y Deathmatch comparten el marcador de US 057. Zombie tiene uno propio (oleada, zombis que quedan, descanso, puntos y récord), sin lista de bajas ni tabla con Tab, porque se juega solo contra la horda. Sus puntos van abajo a la izquierda, donde está la plata en Táctico.</td><td>US 057, US 150 · 30/09/2026</td></tr>
   </table></div>
 
   <h3 id="falta">Lo que falta diseñar o terminar</h3>
@@ -1401,7 +1594,8 @@ body.capture,body.capture-ms,body.capture-cr{padding-left:0!important}
     <tr><td>Soltar y levantar armas (se hace junto con el arma de los demás a tamaño real)</td><td>US 184, US 182</td><td><span class="st st-todo">Falta hacerla</span></td></tr>
     <tr><td>Cartel de nombre más chico</td><td>US 181</td><td><span class="st st-mid">A medias</span></td></tr>
     <tr><td>Panel de compañeros en la tienda, y tienda de Zombie y Deathmatch</td><td>US 175, US 148, US 138</td><td><span class="st st-todo">Falta hacerlo</span></td></tr>
-    <tr><td>Marcadores de partida y lista de muertes</td><td>US 134, US 141, US 150</td><td><span class="st st-todo">Falta hacerlo</span></td></tr>
+    <tr><td>Marcadores de Táctico y Deathmatch, con la lista de bajas y la tabla (diseño listo)</td><td>US 057, US 134, US 141</td><td><span class="st st-todo">Falta hacerlo</span></td></tr>
+    <tr><td>Marcador de Zombie (diseño listo)</td><td>US 150</td><td><span class="st st-todo">Falta hacerlo</span></td></tr>
     <tr><td>Recarga de la Línea A: la ficha dice 1,75 s y el código usa 1,5 s</td><td>US 071</td><td><span class="st st-mid">A corregir</span></td></tr>
     <tr><td>No disparar corriendo y movilidad al apuntar</td><td>Sin historia</td><td><span class="st st-idea">A decidir</span></td></tr>
     <tr><td>Aviso de versión nueva o launcher, para que todos jueguen con la última versión</td><td>A decidir con el PO</td><td><span class="st st-idea">A decidir</span></td></tr>
@@ -1832,10 +2026,100 @@ function undoAll() { while (S.bought.length) { const b = S.bought.pop(); S.money
 const HEAD_ICON = '<svg class="hs" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="7"/><path d="M12 2v5M12 17v5M2 12h5M17 12h5"/></svg>';
 const HEART = '<svg viewBox="0 0 24 24" fill="#F3F4F6"><path d="M12 21s-7.5-4.6-9.6-9.2C.9 8.3 3.1 4.5 6.8 4.5c2.1 0 3.6 1.1 5.2 3 1.6-1.9 3.1-3 5.2-3 3.7 0 5.9 3.8 4.4 7.3C19.5 16.4 12 21 12 21z"/></svg>';
 const SHIELD = '<svg viewBox="0 0 24 24" fill="#4CC3FF"><path d="M12 2l8 3v6c0 5.2-3.4 9.4-8 11-4.6-1.6-8-5.8-8-11V5l8-3z"/></svg>';
+/* ---------- marcadores: Táctico y Deathmatch (US 057, US 134, US 141) y Zombie (US 150) ---------- */
+const DEVICE_ICON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" aria-hidden="true"><path d="M12 2.5 20.5 7.5v9L12 21.5 3.5 16.5v-9z"/><circle cx="12" cy="12" r="3.2" fill="currentColor"/></svg>';
+const mmss = s => { s = Math.max(0, Math.floor(s)); return `${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`; };
+const durm = (n, filled, cls, fine) => `<span class="mk-rail${fine ? ' fine' : ''}">${Array.from({ length: n }, (_, i) => `<i class="${i < filled ? cls : ''}"></i>`).join('')}</span>`;
+const pipsHtml = (list, carrier) => `<span class="mk-pips">${list.map(p => `<i class="pip${p.dead ? ' dead' : ''}${carrier && p.car ? ' car' : ''}"></i>`).join('')}</span>`;
+/* jugadores de ejemplo: los nombres del equipo */
+const MK_ALLIES = () => [{ n: 'Ulises (vos)', me: true, k: 3, d: 2, m: 4200 }, { n: 'Nico', k: 5, d: 1, m: 1300 }, { n: 'Nahuel', k: 2, d: 3, m: 1850, car: true }, { n: 'Luka', k: 1, d: 3, m: 3100 }].map(p => ({ ally: true, ...p }));
+const MK_ENEMIES = () => [{ n: 'Franco', k: 4, d: 3 }, { n: 'David', k: 3, d: 2 }, { n: 'Lucas', k: 1, d: 4 }, { n: 'Agus', k: 2, d: 3 }].map(p => ({ ally: false, ...p }));
+const MK_DM = () => [{ n: 'Nico', k: 15, d: 6 }, { n: 'Ulises (vos)', k: 12, d: 8, me: true }, { n: 'Franco', k: 9, d: 9 }, { n: 'Luka', k: 7, d: 10 }, { n: 'Nahuel', k: 6, d: 8 }, { n: 'David', k: 5, d: 9 }, { n: 'Lucas', k: 4, d: 7 }];
+
+/* Táctico: rondas y jugadores de cada equipo; el reloj se pone rojo con el dispositivo plantado */
+function mkTacticoHtml(o) {
+  const swapped = o.sit === 'lado', planted = o.sit === 'plantado';
+  const clock = planted
+    ? `<div class="mk-clock red"><div class="ph">Dispositivo plantado</div><div class="t">${DEVICE_ICON}<span>${mmss(o.bomb)}</span></div><div class="rd">Ronda ${o.round} · a 7</div></div>`
+    : `<div class="mk-clock"><div class="ph">${o.sit === 'compra' ? 'Fase de compra' : 'Ronda en curso'}</div><div class="t">${mmss(o.time)}</div><div class="rd">Ronda ${o.round} · a 7</div></div>`;
+  return `<div class="mk">
+    <div class="mk-side ally"><span class="mk-lab"><b>Tu equipo</b> · ${swapped ? 'Defensores' : 'Atacantes'}</span><div class="mk-row">${pipsHtml(o.allies, !swapped)}<span class="score ally">${o.ally}</span></div>${durm(7, o.ally, 'a')}</div>
+    ${clock}
+    <div class="mk-side enemy"><span class="mk-lab">${swapped ? 'Atacantes' : 'Defensores'}</span><div class="mk-row"><span class="score enemy">${o.enemy}</span>${pipsHtml(o.enemies, swapped)}</div>${durm(7, o.enemy, 'e')}</div>
+  </div>`;
+}
+/* Deathmatch: tus bajas sobre 25 y quién va primero; el reloj se pone rojo en el último minuto */
+function mkDmHtml(o) {
+  const sorted = [...o.players].sort((a, b) => b.k - a.k), me = o.players.find(p => p.me), top = sorted[0], second = sorted[1];
+  const red = o.time <= 60;
+  const lead = top.me
+    ? `<span class="mk-lab"><b>Vas primero</b></span><div class="mk-big me">+${top.k - second.k}<small>sobre ${esc(second.n)}</small></div>${durm(25, second.k, 'e', true)}`
+    : `<span class="mk-lab">Va primero · <b>${esc(top.n)}</b></span><div class="mk-big rv">${top.k}<small>/ 25</small></div>${durm(25, top.k, 'e', true)}`;
+  return `<div class="mk">
+    <div class="mk-side me"><span class="mk-lab">Tus bajas</span><div class="mk-big me">${me.k}<small>/ 25</small></div>${durm(25, me.k, 'm', true)}</div>
+    <div class="mk-clock${red ? ' red' : ''}"><div class="ph">${red ? 'Último minuto' : 'Deathmatch'}</div><div class="t">${mmss(o.time)}</div><div class="rd">Gana el primero a 25</div></div>
+    <div class="mk-side lead">${lead}</div>
+  </div>`;
+}
+/* tabla con Tab: cada modo define sus columnas */
+function mkTabHtml(mode, st) {
+  const head = cols => `<div class="mk-tr h">${cols.map(c => `<span>${c}</span>`).join('')}</div>`;
+  if (mode === 'tactico') {
+    const row = (p, i, mine) => `<div class="mk-tr${p.dead ? ' dead' : ''}${p.me ? ' me' : ''}"><span>${i + 1}</span><span>${esc(p.n)}</span><span>${p.k}</span><span>${p.d}</span><span>${mine ? '$ ' + fmt(p.m) : '—'}</span></div>`;
+    const cols = ['', 'Jugador', 'Bajas', 'Muertes', 'Plata'];
+    return `<div class="mk-tab"><div class="ttl"><b>Partida</b><span>Ronda ${st.round} · ${st.ally} a ${st.enemy}</span></div>
+      <div class="grp a">Tu equipo</div>${head(cols)}${st.allies.map((p, i) => row(p, i, true)).join('')}
+      <div class="grp e">Rivales</div>${head(cols)}${st.enemies.map((p, i) => row(p, i, false)).join('')}</div>`;
+  }
+  const sorted = [...st.players].sort((a, b) => b.k - a.k);
+  return `<div class="mk-tab"><div class="ttl"><b>Deathmatch</b><span>Gana el primero a 25 bajas</span></div>${head(['#', 'Jugador', 'Bajas', 'Muertes', 'Diferencia'])}${sorted.map((p, i) => `<div class="mk-tr${p.me ? ' me' : ''}"><span>${i + 1}</span><span>${esc(p.n)}</span><span>${p.k}</span><span>${p.d}</span><span>${p.k - p.d > 0 ? '+' : ''}${p.k - p.d}</span></div>`).join('')}</div>`;
+}
+/* lista de bajas: "Jugador [arma] Jugador", como máximo 5 */
+function feedHtml(list, mode) {
+  const cls = p => mode === 'dm' ? (p.me ? 'm' : 'r') : (p.ally ? 'a' : 'e');
+  return `<div class="killfeed">${list.slice(-5).map(f => `<div class="kf"><span class="${cls(f.k)}">${esc(f.k.n)}</span><img src="${img(f.w)}" alt="">${f.hs ? HEAD_ICON : ''}<span class="${cls(f.v)}">${esc(f.v.n)}</span></div>`).join('')}</div>`;
+}
+
+/* Zombie: la oleada es un recorrido de 10 estaciones (la 10 es el jefe) y después ∞ */
+const ZM_TOTAL = n => 3 * n + 3; /* US 144: 6 en la primera y 3 más por oleada */
+const ZM_REST = 20;
+function zmLineSvg(wave, record) {
+  const X = i => 24 + i * 52, Y = 34, cur = Math.min(wave, 11) - 1;
+  let s = `<svg class="zm-line" viewBox="0 0 568 62" aria-hidden="true">
+    <line x1="${X(0)}" x2="${X(10)}" y1="${Y}" y2="${Y}" stroke="rgba(255,255,255,.18)" stroke-width="4"/>
+    <line x1="${X(0)}" x2="${X(cur)}" y1="${Y}" y2="${Y}" stroke="#7DE05A" stroke-width="4"/>`;
+  for (let i = 0; i <= 10; i++) {
+    const x = X(i), past = i < cur, now = i === cur;
+    const fill = now ? '#F3F4F6' : past ? '#7DE05A' : '#11160F', stroke = now || past ? '#7DE05A' : 'rgba(255,255,255,.35)';
+    if (now) s += `<circle class="zm-ring" cx="${x}" cy="${Y}" r="10"/>`;
+    s += i === 9
+      ? `<rect x="${x - 8}" y="${Y - 8}" width="16" height="16" transform="rotate(45 ${x} ${Y})" fill="${fill}" stroke="${stroke}" stroke-width="2.5"/>`
+      : `<circle cx="${x}" cy="${Y}" r="${now ? 10 : 7}" fill="${fill}" stroke="${stroke}" stroke-width="2.5"/>`;
+    s += `<text x="${x}" y="60" text-anchor="middle" class="${now ? 'now' : ''}">${i === 10 ? '∞' : i + 1}</text>`;
+  }
+  if (record) {
+    const x = X(Math.min(record, 11) - 1), end = record >= 9;
+    s += `<line x1="${x}" x2="${x}" y1="${Y - 12}" y2="3" stroke="#F29A38" stroke-width="2"/><path d="M${x} 3h11l-3.5 4 3.5 4h-11z" fill="#F29A38"/><text class="flag" x="${end ? x - 5 : x + 15}" y="11" text-anchor="${end ? 'end' : 'start'}">RÉCORD</text>`;
+  }
+  return s + '</svg>';
+}
+function zmTopHtml(o) {
+  const inf = o.wave > 10, total = ZM_TOTAL(o.wave);
+  const head = `<div class="zm-head"><span class="zm-w">Oleada ${o.wave}</span><span class="zm-of">${inf ? '· modo infinito' : 'de 10'}</span>${o.wave === 10 ? '<span class="zm-boss">Jefe</span>' : ''}</div>`;
+  const info = o.rest != null
+    ? `<div class="zm-info rest"><span>Próxima oleada en</span><b>${mmss(o.rest)}</b></div><div class="zm-bar rest"><b style="width:${((ZM_REST - o.rest) / ZM_REST * 100).toFixed(1)}%"></b></div>`
+    : `<div class="zm-info"><span>Quedan</span><b>${o.left}</b><span>${o.left === 1 ? 'zombi' : 'zombis'}</span></div><div class="zm-bar"><b style="width:${(o.left / total * 100).toFixed(1)}%"></b></div>`;
+  return `<div class="zm">${head}${zmLineSvg(o.wave, o.record)}${info}</div>`;
+}
+const zmPtsHtml = p => `<div class="zm-pts">${fmt(p)}<small>PTS</small></div>`;
+
+/* el marcador de arriba en la maqueta de la tienda, según el modo */
 function clockHtml() {
-  if (S.mode === 'zombie') return `<div class="clock"><div class="ph">${S.phase === 'compra' ? 'Entre oleadas' : 'Oleada en curso'}</div><div class="t">${S.phase === 'compra' ? '0:14' : '1:52'}</div><div class="rd">Oleada 4 de 10</div></div>`;
-  if (S.mode === 'dm') return `<div class="clock"><div class="ph">Reaparecés en</div><div class="t">0:03</div><div class="rd">Tus bajas: 12 / 25</div></div>`;
-  return `<span class="score ally">2</span><div class="clock"><div class="ph">${S.phase === 'terminada' ? 'Ronda en curso' : 'Fase de compra'}</div><div class="t">${S.phase === 'terminada' ? '1:34' : '0:17'}</div><div class="rd">Ronda 4</div></div><span class="score enemy">1</span>`;
+  if (S.mode === 'zombie') return zmTopHtml({ wave: 4, left: 9, rest: S.phase === 'compra' ? 14 : null, record: 7 });
+  if (S.mode === 'dm') return mkDmHtml({ time: 342, players: MK_DM() });
+  const allies = MK_ALLIES(), enemies = MK_ENEMIES();
+  if (S.phase === 'terminada') { enemies[2].dead = true; allies[3].dead = true; }
+  return mkTacticoHtml({ sit: S.phase === 'terminada' ? 'combate' : 'compra', time: S.phase === 'terminada' ? 94 : 17, round: 4, ally: 2, enemy: 1, allies, enemies });
 }
 /* ---------- HUD de combate (Andén): vida, habilidad y munición abajo al centro ---------- */
 const ICONS = {
@@ -1912,9 +2196,8 @@ function slotsHtml(prim, sec, active, gTotal) {
 }
 function killfeedHtml() {
   return `<div class="killfeed hide-open">
-      <div class="kf"><span class="a">Nico</span><img src="${img('g01')}" alt="Fusil">${HEAD_ICON}<span class="e">Rival 3</span></div>
-      <div class="kf"><span class="e">Rival 1</span><img src="${img('g04')}" alt="Francotirador"><span class="a">Luka</span></div>
-      <div class="kf"><span class="a">Nahuel</span><img src="${img('g15')}" alt="Pistola pesada">${HEAD_ICON}<span class="e">Rival 2</span></div>
+      <div class="kf"><span class="a">Nico</span><img src="${img('g01')}" alt="Fusil">${HEAD_ICON}<span class="e">Lucas</span></div>
+      <div class="kf"><span class="e">Franco</span><img src="${img('g04')}" alt="Francotirador"><span class="a">Luka</span></div>
     </div>`;
 }
 
@@ -1924,19 +2207,19 @@ function renderHud() {
   const showHint = S.phase === 'compra';
   const g = S.own.granadas, gTotal = g.metralla + g.humo + g.flash;
   $('#shopHud').innerHTML = `
-    <div class="hud-top">${clockHtml()}</div>
-    ${showHint ? `<div class="hint-b hide-open"><span class="gk">B</span>${S.mode === 'dm' ? 'Elegir equipo' : 'Tienda'}</div>` : ''}
+    ${clockHtml()}
+    ${showHint ? `<div class="hint-b hide-open"${S.mode === 'zombie' ? ' style="top:320px"' : ''}><span class="gk">B</span>${S.mode === 'dm' ? 'Elegir equipo' : 'Tienda'}</div>` : ''}
     <div class="crosshair hide-open"><i></i><i></i><i></i><i></i></div>
     ${S.mode === 'tactico' ? killfeedHtml() : ''}
     ${hudBottom()}
-    <div class="hud-bl">${S.mode !== 'dm' ? `<div class="money-hud hide-open">${money(S.money)} <small>${S.mode === 'zombie' ? 'puntos' : ''}</small></div>` : ''}</div>
+    ${S.mode === 'zombie' ? zmPtsHtml(S.money) : `<div class="hud-bl">${S.mode !== 'dm' ? `<div class="money-hud hide-open">${money(S.money)}</div>` : ''}</div>`}
     ${slotsHtml(prim, sec, prim ? 1 : 2, gTotal)}`;
 }
 
 /* HUD de la sección "HUD de combate": ronda en curso con el Fusil */
 function renderHud2() {
   $('#hud2').innerHTML = `
-    <div class="hud-top"><span class="score ally">2</span><div class="clock"><div class="ph">Ronda en curso</div><div class="t">1:34</div><div class="rd">Ronda 4</div></div><span class="score enemy">1</span></div>
+    ${(() => { const a = MK_ALLIES(), e = MK_ENEMIES(); e[2].dead = true; a[3].dead = true; return mkTacticoHtml({ sit: 'combate', time: 94, round: 4, ally: 2, enemy: 1, allies: a, enemies: e }); })()}
     <div class="crosshair"><i></i><i></i><i></i><i></i></div>
     ${H.mag === 0 && H.reload <= 0 ? '<div class="nohint">R · Recargar</div>' : ''}
     ${killfeedHtml()}
@@ -2492,6 +2775,156 @@ renderRules(); renderOneShot(); renderArsenal(); renderCalcOptions(); renderCalc
 </script>
 
 <script>
+/* ===== Marcadores: maquetas de Táctico y Deathmatch y de Zombie ===== */
+(() => {
+  const focusable = st => {
+    st.addEventListener('focus', () => st.classList.add('focused'));
+    st.addEventListener('blur', () => st.classList.remove('focused'));
+    st.addEventListener('contextmenu', e => e.preventDefault());
+  };
+
+  /* --- Táctico y Deathmatch --- */
+  const mkStage = $('#mkStage');
+  const SITS = {
+    tactico: [['compra', 'Fase de compra'], ['combate', 'Ronda en curso'], ['plantado', 'Plantado'], ['lado', 'Cambio de lado']],
+    dm: [['partida', 'Partida'], ['ultimo', 'Último minuto'], ['primero', 'Vas primero']]
+  };
+  const K = { mode: 'tactico', sit: 'combate', tab: false, tabKey: false, feed: [] };
+  const item = (k, v, w, hs, at = Infinity) => ({ k, v, w, hs, at });
+  function reset() {
+    Object.assign(K, { allies: MK_ALLIES(), enemies: MK_ENEMIES(), players: MK_DM(), ally: 2, enemy: 1, round: 4, bomb: 38, feed: [] });
+    if (K.mode === 'dm') {
+      K.time = K.sit === 'ultimo' ? 48 : 342;
+      if (K.sit === 'primero') K.players[1].k = 18;
+      K.feed = [item(K.players[0], K.players[3], 'g01', true), item(K.players[2], K.players[5], 'g07', false)];
+      return;
+    }
+    K.time = { compra: 17, combate: 94, plantado: 0, lado: 88 }[K.sit];
+    if (K.sit === 'lado') Object.assign(K, { ally: 3, enemy: 3, round: 7 });
+    if (K.sit !== 'compra') {
+      K.enemies[2].dead = true; K.allies[3].dead = true;
+      K.feed = [item(K.allies[1], K.enemies[2], 'g01', true), item(K.enemies[0], K.allies[3], 'g04', false)];
+    }
+  }
+  function renderSits() {
+    $('#mkSit').innerHTML = SITS[K.mode].map(([v, t]) => `<button data-v="${v}" aria-pressed="${v === K.sit}">${t}</button>`).join('');
+  }
+  function renderMk() {
+    const top = K.mode === 'dm' ? mkDmHtml(K) : mkTacticoHtml(K);
+    $('#mkHud').innerHTML = `${top}<div class="crosshair"><i></i><i></i><i></i><i></i></div>${feedHtml(K.feed, K.mode)}${K.tab || K.tabKey ? mkTabHtml(K.mode, K) : ''}${hudBottom()}`;
+  }
+  const pick = a => a[Math.floor(Math.random() * a.length)];
+  const GUNS = ['g01', 'g07', 'g08', 'g14', 'g04', 'g05'];
+  function simKill() {
+    const now = performance.now();
+    if (K.mode === 'dm') {
+      const killer = Math.random() < .35 ? K.players.find(p => p.me) : pick(K.players);
+      const victim = pick(K.players.filter(p => p !== killer));
+      killer.k++; victim.d++;
+      K.feed.push(item(killer, victim, pick(GUNS), Math.random() < .35, now));
+      if (killer.k >= 25) setTimeout(() => { reset(); renderMk(); }, 1500);
+      renderMk(); return;
+    }
+    if (K.sit === 'compra') { K.sit = 'combate'; K.time = 115; renderSits(); }
+    const allyAlive = K.allies.filter(p => !p.dead), enemyAlive = K.enemies.filter(p => !p.dead);
+    if (!allyAlive.length || !enemyAlive.length) return;
+    const allyShoots = Math.random() < .6;
+    const killer = pick(allyShoots ? allyAlive : enemyAlive), victim = pick(allyShoots ? enemyAlive : allyAlive);
+    victim.dead = true; killer.k++; victim.d++;
+    K.feed.push(item(killer, victim, pick(GUNS), Math.random() < .35, now));
+    const allyWon = K.enemies.every(p => p.dead), enemyWon = K.allies.every(p => p.dead);
+    if (allyWon || enemyWon) {
+      /* fin de la ronda: el marcador se actualiza en el mismo momento */
+      if (allyWon) K.ally++; else K.enemy++;
+      setTimeout(() => {
+        if (K.ally >= 7 || K.enemy >= 7) { K.ally = 0; K.enemy = 0; K.round = 0; }
+        K.round++; K.sit = K.round === 7 ? 'lado' : 'compra'; K.time = 20;
+        K.allies.forEach(p => p.dead = false); K.enemies.forEach(p => p.dead = false);
+        renderSits(); renderMk();
+      }, 1600);
+    }
+    renderMk();
+  }
+  function tickMk() {
+    const now = performance.now();
+    K.feed = K.feed.filter(f => now - f.at < 4000);
+    if (K.mode === 'dm') K.time = K.time <= 0 ? 480 : K.time - 1;
+    else if (K.sit === 'plantado') K.bomb = K.bomb <= 0 ? 45 : K.bomb - 1;
+    else if (K.sit === 'compra' && K.time <= 0) { K.sit = 'combate'; K.time = 115; renderSits(); }
+    else K.time = Math.max(0, K.time - 1);
+    renderMk();
+  }
+  $('#mkControls').addEventListener('click', e => {
+    const b = e.target.closest('button'); if (!b) return;
+    if (b.id === 'mkKill') { simKill(); return; }
+    const seg = b.closest('[data-kctl]'); if (!seg) return;
+    const ctl = seg.dataset.kctl;
+    if (ctl === 'mode') { K.mode = b.dataset.v; K.sit = SITS[K.mode][K.mode === 'dm' ? 0 : 1][0]; setPressed(seg, K.mode); renderSits(); reset(); }
+    else if (ctl === 'sit') { K.sit = b.dataset.v; setPressed(seg, K.sit); reset(); }
+    else { K.tab = !K.tab; b.setAttribute('aria-pressed', String(K.tab)); }
+    renderMk();
+  });
+  focusable(mkStage);
+  mkStage.addEventListener('mousedown', () => mkStage.focus());
+  mkStage.addEventListener('keydown', e => { if (e.key === 'Tab' && !e.shiftKey) { e.preventDefault(); if (!K.tabKey) { K.tabKey = true; renderMk(); } } });
+  mkStage.addEventListener('keyup', e => { if (e.key === 'Tab' && K.tabKey) { K.tabKey = false; renderMk(); } });
+  mkStage.addEventListener('blur', () => { if (K.tabKey) { K.tabKey = false; renderMk(); } });
+
+  /* --- Zombie --- */
+  const zmStage = $('#zmStage'), rec = $('#zmRec');
+  const Z = { wave: 7, left: 9, rest: null, pts: 2340, record: 7, beaten: false };
+  const SIT_Z = {
+    oleada: { wave: 7, left: 9, rest: null, pts: 2340, beaten: false },
+    descanso: { wave: 7, left: 0, rest: ZM_REST, pts: 2580, beaten: false },
+    jefe: { wave: 10, left: 13, rest: null, pts: 4820, beaten: true },
+    infinito: { wave: 12, left: 30, rest: null, pts: 7460, beaten: true }
+  };
+  let pillT = null;
+  function pill(text, plain, ms) {
+    rec.textContent = text; rec.classList.toggle('plain', plain); rec.classList.add('on');
+    clearTimeout(pillT); pillT = setTimeout(() => rec.classList.remove('on'), ms);
+  }
+  function renderZm() {
+    $('#zmHud').innerHTML = `${zmTopHtml(Z)}<div class="crosshair"><i></i><i></i><i></i><i></i></div>${Z.rest != null ? '<div class="hint-b" style="top:320px"><span class="gk">B</span>Tienda abierta</div>' : ''}${hudBottom()}${zmPtsHtml(Z.pts)}`;
+  }
+  function pop(text, hs) {
+    const p = document.createElement('div');
+    p.className = 'zm-pop' + (hs ? ' hs' : ''); p.textContent = text;
+    $('#zmPops').appendChild(p); setTimeout(() => p.remove(), 950);
+  }
+  function kill(hs) {
+    if (Z.rest != null) { pill('Descanso: la oleada ya terminó', true, 1400); return; }
+    Z.left--; const add = hs ? 100 : 60; Z.pts += add;
+    pop(hs ? `+${add} · cabeza` : `+${add}`, hs);
+    if (Z.left <= 0) { Z.left = 0; Z.rest = ZM_REST; pill(`Oleada ${Z.wave} superada`, true, 2200); }
+    renderZm();
+  }
+  function nextWave() {
+    Z.wave++; Z.left = ZM_TOTAL(Z.wave); Z.rest = null;
+    if (Z.wave > Z.record && !Z.beaten) { Z.beaten = true; pill(`¡Nuevo récord! · Oleada ${Z.wave}`, false, 3000); }
+    renderZm();
+  }
+  function tickZm() {
+    if (Z.rest == null) return;
+    Z.rest--;
+    if (Z.rest <= 0) nextWave(); else renderZm();
+  }
+  $('#zmControls').addEventListener('click', e => {
+    const b = e.target.closest('button'); if (!b) return;
+    if (b.id === 'zmKill') { kill(false); return; }
+    if (b.id === 'zmNext') { nextWave(); return; }
+    const seg = b.closest('[data-zctl]'); if (!seg) return;
+    setPressed(seg, b.dataset.v); Object.assign(Z, SIT_Z[b.dataset.v]); rec.classList.remove('on'); renderZm();
+  });
+  focusable(zmStage);
+  zmStage.addEventListener('mousedown', e => { zmStage.focus(); if (e.button === 0) kill(false); else if (e.button === 2) kill(true); });
+
+  renderSits(); reset(); renderMk(); renderZm();
+  setInterval(() => { tickMk(); tickZm(); }, 1000);
+})();
+</script>
+
+<script>
 /* ===== Selección de modo ===== */
 (() => {
   const W = 1920, H = 1080, N = 12;
@@ -2858,9 +3291,11 @@ renderRules(); renderOneShot(); renderArsenal(); renderCalcOptions(); renderCalc
     { g: 'Pantallas', p: 'Parte 2 · Pantallas', items: [
       { id: 'tienda', t: 'Tienda', i: 'cart', subs: [['idea', 'Cómo se comporta'], ['tienda-partes', 'Partes de la pantalla'], ['tienda-estados', 'Estados'], ['tienda-codigo', 'Cómo está hecha']] },
       { id: 'hud', t: 'HUD de combate', i: 'hud', subs: [['hud-estados', 'Estados'], ['hud-medidas', 'Medidas'], ['hud-codigo', 'Cómo está hecho']] },
+      { id: 'pantalla-marcadores', t: 'Marcadores de Táctico y Deathmatch', i: 'hud', subs: [['marcadores-partes', 'Partes'], ['marcadores-estados', 'Estados'], ['marcadores-medidas', 'Medidas'], ['marcadores-codigo', 'Cómo hacerlo']] },
+      { id: 'marcador-zombie', t: 'Marcador de Zombie', i: 'rails', subs: [['marcador-zombie-estados', 'Estados'], ['marcador-zombie-medidas', 'Medidas'], ['marcador-zombie-codigo', 'Cómo hacerlo']] },
       { id: 'modos', t: 'Selección de modo', i: 'rails', subs: [['modos-codigo', 'Cómo está hecha']] },
       { id: 'creditos', t: 'Créditos', i: 'star' },
-      { id: 'pantallas', t: 'Otras pantallas', i: 'window', subs: [['pantalla-menu', 'Menú principal'], ['pantalla-opciones', 'Opciones'], ['pantalla-pausa', 'Pausa'], ['pantalla-sala', 'Sala online'], ['pantalla-marcadores', 'Marcadores'], ['pantalla-resultado', 'Resultado de partida'], ['pantalla-nueva', 'Para hacer una pantalla nueva']] }] },
+      { id: 'pantallas', t: 'Otras pantallas', i: 'window', subs: [['pantalla-menu', 'Menú principal'], ['pantalla-opciones', 'Opciones'], ['pantalla-pausa', 'Pausa'], ['pantalla-sala', 'Sala online'],['pantalla-resultado', 'Resultado de partida'], ['pantalla-nueva', 'Para hacer una pantalla nueva']] }] },
     { g: 'Combate', p: 'Parte 3 · Combate', items: [
       { id: 'danio', t: 'Modelo de daño', i: 'target', subs: [['reglas-balance', 'Reglas de balance'], ['un-tiro', 'Qué mata de un tiro'], ['zonas', 'Zonas del personaje'], ['reglas-comunes', 'Reglas comunes']] },
       { id: 'retroceso', t: 'Retroceso y dispersión', i: 'spray', subs: [['campos-retroceso', 'Campos de la ficha']] },
