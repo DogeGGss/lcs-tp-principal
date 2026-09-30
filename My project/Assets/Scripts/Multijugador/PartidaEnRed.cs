@@ -85,12 +85,19 @@ public class PartidaEnRed : MonoBehaviour
             SendOptions.SendReliable);
 
         Lista = true;
+        if (MatchSettings.Mode == GameMode.Tactico) gameObject.AddComponent<MarcadorTactico>().Iniciar(this); // US 134
         foreach (object[] datos in Multijugador.Instancia.TomarPendientes()) CrearRemoto(datos);
     }
 
     // ================= Jugadores =================
 
     public IEnumerable<JugadorEnRed> Jugadores => jugadores.Values;
+
+    /// <summary>US 057: el arma que tiene en la mano ese jugador, para los avisos de bajas.</summary>
+    public string ArmaDe(int actor) => jugadores.TryGetValue(actor, out JugadorEnRed j) && j != null ? j.NombreArma : "";
+
+    /// <summary>El jugador con ese número de actor, o null.</summary>
+    public JugadorEnRed Buscar(int actor) => jugadores.TryGetValue(actor, out JugadorEnRed j) ? j : null;
 
     public void CrearRemoto(object[] datos)
     {
