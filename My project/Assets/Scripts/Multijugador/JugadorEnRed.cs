@@ -129,6 +129,7 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
         muerto = true;
         photonView.RPC(nameof(RpcMurio), RpcTarget.Others, ultimoAtacante);
         Bloquear(true);
+        AvisarBaja(ultimoAtacante); // US 057, CA4
 
         Player asesino = ultimoAtacante != 0 && PhotonNetwork.CurrentRoom != null ? PhotonNetwork.CurrentRoom.GetPlayer(ultimoAtacante) : null;
         string titulo = asesino != null ? $"Te eliminó {asesino.NickName}" : "Te eliminaron";
@@ -206,6 +207,71 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
         return banderas;
     }
 
+    // US 057, CA4 y CA7: el aviso "asesino [arma] víctima" con los nombres de cada jugador, igual en todas las computadoras.
+    private void AvisarBaja(int atacante)
+    {
+        Player asesino = atacante != 0 && PhotonNetwork.CurrentRoom != null ? PhotonNetwork.CurrentRoom.GetPlayer(atacante) : null;
+        JugadorEnRed tirador = partida != null ? partida.Buscar(atacante) : null;
+        MatchHud.ReportKill(asesino != null ? asesino.NickName : "", tirador != null ? tirador.NombreArma : "", Nombre,
+            ColorDe(atacante), ColorDe(photonView.OwnerActorNr), false, tirador != null ? tirador.IconoArma : null);
+    }
+
+    // Azul el propio equipo (y uno mismo), rojo el rival; blanco si no hay equipos.
+    private static Color ColorDe(int actor)
+    {
+        if (actor == 0) return Color.white;
+        bool yo = PhotonNetwork.LocalPlayer != null && actor == PhotonNetwork.LocalPlayer.ActorNumber;
+        if (!EquiposTacticos.HayEquipos) return yo ? MatchHud.TeamColor : Color.white;
+        return yo || EquiposTacticos.SonAliados(PhotonNetwork.LocalPlayer.ActorNumber, actor) ? MatchHud.TeamColor : MatchHud.RivalColor;
+    }
+
+    /// <summary>Nombre del arma que este jugador tiene en la mano (para los avisos de bajas).</summary>
+    public string NombreArma => NombreDeArma(ArmaActual);
+
+    /// <summary>Ícono (de la ficha de la tienda) del arma en la mano, o null.</summary>
+    public Sprite IconoArma
+    {
+        get
+        {
+            byte arma = ArmaActual;
+            ShopItem ficha = null;
+            if (photonView != null && photonView.IsMine)
+            {
+                // Dueño: los scripts de armas siguen estando.
+                if (arma == ArmaPistola && pistola != null)
+                {
+                    Pistola p = pistola.GetComponentInChildren<Pistola>(true);
+                    ficha = p != null ? p.shopItem : null;
+                }
+                else if (arma >= PrimeraPrincipal && arma - PrimeraPrincipal < principales.Count)
+                    ficha = WeaponSwitcher.FichaDe(principales[arma - PrimeraPrincipal]);
+            }
+            else if (arma == ArmaPistola) ficha = fichaPistola;
+            else if (arma >= PrimeraPrincipal && arma - PrimeraPrincipal < fichasPrincipales.Count)
+                ficha = fichasPrincipales[arma - PrimeraPrincipal];
+            return ficha != null ? ficha.icon : null;
+        }
+    }
+
+    // Fichas de la tienda de cada arma, guardadas al armar el jugador (en las copias se quitan los scripts de armas).
+    private readonly List<ShopItem> fichasPrincipales = new List<ShopItem>();
+    private ShopItem fichaPistola;
+
+    private byte ArmaActual => photonView != null && photonView.IsMine ? ArmaEnMano() : armaRed;
+
+    private string NombreDeArma(byte arma)
+    {
+        if (arma == ArmaCuchillo) return "Cuchillo";
+        if (arma == ArmaPistola) return "Pistola";
+        int i = arma - PrimeraPrincipal;
+        if (arma >= PrimeraPrincipal && i < principales.Count && principales[i] != null)
+        {
+            IHudWeapon hud = principales[i].GetComponentInChildren<IHudWeapon>(true);
+            return hud != null ? hud.HudName : principales[i].name;
+        }
+        return "";
+    }
+
     private byte ArmaEnMano()
     {
         for (int i = 0; i < principales.Count; i++)
@@ -243,7 +309,9 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
             ArmaDeFuego fuego = arma.GetComponent<ArmaDeFuego>();
             Mitre mitre = arma.GetComponent<Mitre>();
             jugador.sonidosPrincipales.Add(fuego != null ? fuego.shootSound : mitre != null ? mitre.shootSound : null);
+            jugador.fichasPrincipales.Add(WeaponSwitcher.FichaDe(arma)); // US 057: antes de quitar los componentes
         }
+        jugador.fichaPistola = pistola != null ? pistola.shopItem : null;
         jugador.pistola = cambio != null ? cambio.pistolObj : pistola != null ? pistola.gameObject : null;
         jugador.sonidoPistola = pistola != null ? pistola.shootSound : null;
         jugador.sonidoCuchillo = ataque != null ? ataque.SwingSound : null;
@@ -458,6 +526,7 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
     {
         if (photonView.IsMine) return;
         muerto = true;
+        AvisarBaja(atacante); // US 057, CA4
         if (vida != null) vida.SetState(0, 0);
         foreach (Collider c in colisiones) if (c != null) c.enabled = false;
         MostrarArma(SinArma);

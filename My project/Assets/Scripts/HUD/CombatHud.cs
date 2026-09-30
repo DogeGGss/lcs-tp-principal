@@ -73,6 +73,12 @@ public class CombatHud : MonoBehaviour
     private readonly string[] invState = new string[4];
     private bool sceneHasShop;
 
+    /// <summary>Nombre del arma en la mano, para los avisos de bajas (US 057).</summary>
+    public string WeaponName { get; private set; }
+
+    /// <summary>Ícono del arma en la mano (de su ficha de la tienda), para los avisos de bajas (US 057).</summary>
+    public Sprite WeaponIcon { get; private set; }
+
     private HealthSystem health;
     private PlayerAbility ability;
     private WeaponSwitcher switcher;
@@ -354,6 +360,7 @@ public class CombatHud : MonoBehaviour
     private void UpdateAmmo()
     {
         ReadWeapon(out string name, out int ammo, out int size, out int reserve, out float reload);
+        WeaponName = name;
         bool reloading = reload >= 0f;
         int filled = reloading ? Mathf.RoundToInt(reload * size) : ammo;
         string state = $"{name}|{ammo}|{size}|{reserve}|{(reloading ? filled : -1)}";
@@ -384,6 +391,7 @@ public class CombatHud : MonoBehaviour
     private void ReadWeapon(out string name, out int ammo, out int size, out int reserve, out float reload)
     {
         name = ""; ammo = 0; size = 0; reserve = -1; reload = -1f;
+        WeaponIcon = null;
 
         GameObject held = null;
         if (switcher != null)
@@ -396,6 +404,8 @@ public class CombatHud : MonoBehaviour
         {
             // La secundaria se muestra con su nombre de la tienda (Línea A o Línea H).
             name = held == switcher.pistolObj ? SecondaryName() : weapon.HudName;
+            ShopItem ficha = held == switcher.pistolObj ? (loadout != null ? loadout.Secondary : null) : WeaponSwitcher.FichaDe(held);
+            WeaponIcon = ficha != null ? ficha.icon : null;
             ammo = weapon.Ammo; size = weapon.MagazineSize; reserve = weapon.Reserve; reload = weapon.ReloadProgress;
             return;
         }
@@ -464,6 +474,7 @@ public class CombatHud : MonoBehaviour
         BuildInventory(bar);
         BuildCrosshair(root);
         BuildHitMarker(root);
+        gameObject.AddComponent<MatchHud>().Setup(root, displayFont, labelFont, rounded, this); // US 057
     }
 
     private void BuildHealth(RectTransform bar)
