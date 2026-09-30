@@ -333,3 +333,6 @@ fecha_utc,us_numero,us_titulo,estado_anterior,estado_nuevo,tiempo_en_estado_ante
 2026-09-30T08:27:12.406392+00:00,281,US 179. Modelos 3D de las armas,Todo,In Progress,6h 21m,22919,https://github.com/DogeGGss/lcs-tp-principal/issues/281
 2026-09-30T08:27:12.406392+00:00,282,US 180. Nota para el PO,Todo,LPR,6h 21m,22919,https://github.com/DogeGGss/lcs-tp-principal/issues/282
 2026-09-30T08:27:12.406392+00:00,283,US 181. Nombre y vida sobre los demás jugadores,Todo,In Progress,6h 21m,22919,https://github.com/DogeGGss/lcs-tp-principal/issues/283
+2026-09-30T20:02:55.594868+00:00,79,US 031. Formar equipos,In Progress,LPR,20h 55m,75350,https://github.com/DogeGGss/lcs-tp-principal/issues/79
+2026-09-30T20:02:55.594868+00:00,108,US 057. Mostrar información de la partida,Todo,LPR,7d 20h 38m,679114,https://github.com/DogeGGss/lcs-tp-principal/issues/108
+2026-09-30T20:02:55.594868+00:00,194,US 134. Mostrar marcador de la partida táctica,Blocked,In Progress,4d 21h 46m,423987,https://github.com/DogeGGss/lcs-tp-principal/issues/194
