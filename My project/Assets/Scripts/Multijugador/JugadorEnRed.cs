@@ -241,6 +241,7 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
     // con la marca de tiro a la cabeza si el golpe que lo mató fue a la cabeza.
     private void AvisarBaja(int atacante, bool cabeza)
     {
+        RondasTacticas.ContarBaja(atacante, photonView.OwnerActorNr); // US 135, CA2: $ 200 al que mató
         Player asesino = atacante != 0 && PhotonNetwork.CurrentRoom != null ? PhotonNetwork.CurrentRoom.GetPlayer(atacante) : null;
         JugadorEnRed tirador = partida != null ? partida.Buscar(atacante) : null;
         MatchHud.ReportKill(asesino != null ? asesino.NickName : "", tirador != null ? tirador.NombreArma : "", Nombre,
