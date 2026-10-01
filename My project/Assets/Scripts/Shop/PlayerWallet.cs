@@ -25,6 +25,13 @@ public class PlayerWallet : MonoBehaviour
         return true;
     }
 
+    /// <summary>US 032: la plata vuelve a un monto fijo (cambio de lado: $ 800; muerte súbita: $ 5.000).</summary>
+    public void Set(int amount)
+    {
+        Money = Mathf.Clamp(amount, 0, maxMoney);
+        MoneyChanged?.Invoke(Money);
+    }
+
     public void Add(int amount)
     {
         if (amount <= 0) return;

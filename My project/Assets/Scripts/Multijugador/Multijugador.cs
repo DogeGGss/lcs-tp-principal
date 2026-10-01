@@ -160,7 +160,7 @@ public class Multijugador : MonoBehaviourPunCallbacks, IOnEventCallback
         }
     }
 
-    public bool PuedeIniciar => EsAnfitrion && CantidadJugadores >= MinJugadores && MapaActual != null;
+    public bool PuedeIniciar => EsAnfitrion && CantidadJugadores >= (PruebaSolo.Activa ? 1 : MinJugadores) && MapaActual != null;
 
     // En el orden en que entraron (US 027, CA5).
     public List<Jugador> Jugadores()

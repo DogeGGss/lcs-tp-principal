@@ -96,6 +96,14 @@ public class MatchHud : MonoBehaviour
 
     // Tabla
     private RectTransform table;
+
+    // Carteles (US 032): el grande del medio, la ayuda de arriba y el aviso rojo de abajo.
+    private RectTransform hudRoot, banner, hint, warning;
+    private CanvasGroup bannerGroup;
+    private Img bannerFill;
+    private TextMeshProUGUI bannerFooter, hintText, warningText;
+    private string bannerFooterFormat;
+    private float bannerStart, bannerEnd, warningEnd;
     private float nextTableRefresh;
 
     // Bajas y muertes que pasan por los avisos, por nombre.
@@ -119,6 +127,7 @@ public class MatchHud : MonoBehaviour
         BuildMarker(root);
         BuildFeed(root);
         BuildTable(root);
+        hudRoot = root;
     }
 
     private void OnEnable() => WeaponFire.Hit += OnLocalHit;
@@ -248,6 +257,7 @@ public class MatchHud : MonoBehaviour
         if (!modeSetCenter) DefaultCenter();
         UpdateFeed();
         UpdateTable();
+        UpdateNotices();
     }
 
     // Sin modo: la fase de compra (US 076), si la hay.
@@ -448,6 +458,175 @@ public class MatchHud : MonoBehaviour
         if (kind != HitMarkerKind.Kill || PhotonNetwork.InRoom) return;
         ReportKill(LocalName(), combat != null ? combat.WeaponName : "", "Enemigo", TeamColor, RivalColor, false,
             combat != null ? combat.WeaponIcon : null);
+    }
+
+    // ---------- Carteles (US 032) ----------
+
+    /// <summary>
+    /// Cartel grande en el medio de la pantalla (por ejemplo "Ronda ganada"). seconds &lt;= 0 lo deja hasta que se
+    /// llame HideBanner. footer admite {0} para los segundos que faltan (por ejemplo "Siguiente ronda en {0}");
+    /// con seconds &gt; 0 también muestra una barrita que se vacía.
+    /// </summary>
+    public static void ShowBanner(string eyebrow, string title, Color color, string sub, IList<string> chips = null,
+        float seconds = 5f, string footer = null)
+    {
+        if (Instance == null) return;
+        Instance.BuildBanner(eyebrow, title, color, sub, chips, seconds, footer);
+    }
+
+    public static void HideBanner()
+    {
+        if (Instance != null && Instance.banner != null) Instance.banner.gameObject.SetActive(false);
+    }
+
+    /// <summary>Ayuda chica arriba, debajo del marcador (admite &lt;color&gt;). null o vacío la saca.</summary>
+    public static void SetHint(string text)
+    {
+        if (Instance == null) return;
+        Instance.ShowHint(text);
+    }
+
+    /// <summary>Aviso rojo abajo del centro durante unos segundos (por ejemplo "No podés salir de la base").</summary>
+    public static void Warn(string text, float seconds = 1.5f)
+    {
+        if (Instance == null) return;
+        Instance.ShowWarning(text, seconds);
+    }
+
+    private void BuildBanner(string eyebrow, string title, Color color, string sub, IList<string> chips, float seconds, string footer)
+    {
+        if (banner != null) Destroy(banner.gameObject);
+        banner = Node("Cartel", hudRoot);
+        banner.anchorMin = banner.anchorMax = banner.pivot = new Vector2(0.5f, 1f);
+        banner.anchoredPosition = new Vector2(0f, -220f);
+        const float W = 1300f;
+        bool hasChips = chips != null && chips.Count > 0;
+        bool timed = seconds > 0f;
+        float h = 40f + 26f + 112f + 18f + 36f + (hasChips ? 52f : 0f) + (footer != null ? 30f : 0f) + (timed ? 18f : 0f) + 26f;
+        banner.sizeDelta = new Vector2(W, h);
+        bannerGroup = banner.gameObject.AddComponent<CanvasGroup>();
+        bannerGroup.blocksRaycasts = false;
+
+        // Franja oscura con una línea de color arriba y abajo.
+        Image(Stretch(Node("Franja", banner)), null, Rgb(8, 10, 14, DarkAlpha(0.82f)));
+        Image(Place(Node("LineaArriba", banner), W * 0.2f, 0f, W * 0.6f, 2f), null, WithAlpha(color, 0.9f));
+        Image(Place(Node("LineaAbajo", banner), W * 0.2f, h - 2f, W * 0.6f, 2f), null, WithAlpha(color, 0.9f));
+
+        float y = 40f;
+        Text(Place(Node("Antetitulo", banner), 0f, y, W, 24f), labelFont, 22f, Mute, TextAlignmentOptions.Center, 24f, true).text = eyebrow ?? "";
+        y += 26f;
+        TextMeshProUGUI t = Text(Place(Node("Titulo", banner), 0f, y, W, 112f), displayFont, 110f, color, TextAlignmentOptions.Center, 4f, true);
+        t.text = title;
+        AddShadowTo(t);
+        y += 112f;
+        Image(Place(Node("Linea", banner), W / 2f - 70f, y + 4f, 140f, 4f), null, color);
+        y += 18f;
+        Text(Place(Node("Detalle", banner), 0f, y, W, 34f), labelFont, 28f, Ink, TextAlignmentOptions.Center).text = sub ?? "";
+        y += 36f;
+
+        if (hasChips)
+        {
+            var widths = new float[chips.Count];
+            float total = 0f;
+            var texts = new TextMeshProUGUI[chips.Count];
+            for (int i = 0; i < chips.Count; i++)
+            {
+                texts[i] = Text(Node("Dato", banner), labelFont, 20f, Ink, TextAlignmentOptions.Center, 8f, true);
+                texts[i].text = chips[i];
+                widths[i] = Width(texts[i], chips[i].ToUpperInvariant()) + 36f;
+                total += widths[i] + (i > 0 ? 12f : 0f);
+            }
+            float x = (W - total) / 2f;
+            for (int i = 0; i < chips.Count; i++)
+            {
+                RectTransform chip = Place(Node("Chip", banner), x, y + 12f, widths[i], 36f);
+                Image(chip, rounded, White(0.08f), 4f);
+                texts[i].rectTransform.SetParent(chip, false);
+                Stretch(texts[i].rectTransform);
+                x += widths[i] + 12f;
+            }
+            y += 52f;
+        }
+
+        bannerFooter = null;
+        bannerFooterFormat = footer;
+        if (footer != null)
+        {
+            bannerFooter = Text(Place(Node("Pie", banner), 0f, y + 6f, W, 24f), labelFont, 20f, Mute, TextAlignmentOptions.Center, 12f, true);
+            y += 30f;
+        }
+
+        bannerFill = null;
+        if (timed)
+        {
+            Image(Place(Node("Barra", banner), W / 2f - 180f, y + 10f, 360f, 4f), null, White(0.15f));
+            bannerFill = Image(Place(Node("Relleno", banner), W / 2f - 180f, y + 10f, 360f, 4f), null, color);
+        }
+
+        bannerStart = Time.unscaledTime;
+        bannerEnd = timed ? Time.unscaledTime + seconds : float.MaxValue;
+        UpdateBanner();
+    }
+
+    private void ShowHint(string text)
+    {
+        if (string.IsNullOrEmpty(text)) { if (hint != null) hint.gameObject.SetActive(false); return; }
+        if (hint == null)
+        {
+            hint = Node("Ayuda", hudRoot);
+            hint.anchorMin = hint.anchorMax = hint.pivot = new Vector2(0.5f, 1f);
+            // Debajo del aviso "B Tienda" de la tienda (que ocupa de 150 a 198), así no se superponen.
+            hint.anchoredPosition = new Vector2(0f, -212f);
+            Image(Stretch(Node("Fondo", hint)), rounded, Rgb(10, 12, 17, DarkAlpha(0.85f)), 6f);
+            hintText = Text(Stretch(Node("Texto", hint)), labelFont, 22f, Ink, TextAlignmentOptions.Center);
+        }
+        hint.gameObject.SetActive(true);
+        if (hintText.text == text) return;
+        hintText.text = text;
+        hint.sizeDelta = new Vector2(hintText.GetPreferredValues(text).x + 44f, 44f);
+    }
+
+    private void ShowWarning(string text, float seconds)
+    {
+        if (warning == null)
+        {
+            warning = Node("AvisoRojo", hudRoot);
+            warning.anchorMin = warning.anchorMax = warning.pivot = new Vector2(0.5f, 0.5f);
+            warning.anchoredPosition = new Vector2(0f, -120f);
+            Image(Stretch(Node("Borde", warning)), rounded, RivalColor, 6f);
+            Image(Place(Node("Fondo", warning), 2f, 2f, 10f, 10f), rounded, Over(WithAlpha(RivalColor, 0.18f), Rgb(10, 12, 17)), 5f);
+            warningText = Text(Stretch(Node("Texto", warning)), labelFont, 24f, Ink, TextAlignmentOptions.Center, 10f, true);
+        }
+        warning.gameObject.SetActive(true);
+        warningText.text = text;
+        float w = Width(warningText, text.ToUpperInvariant()) + 56f;
+        warning.sizeDelta = new Vector2(w, 50f);
+        ((RectTransform)warning.GetChild(1)).sizeDelta = new Vector2(w - 4f, 46f);
+        warningEnd = Time.unscaledTime + seconds;
+    }
+
+    private void UpdateNotices()
+    {
+        UpdateBanner();
+        if (warning != null && warning.gameObject.activeSelf && Time.unscaledTime >= warningEnd) warning.gameObject.SetActive(false);
+    }
+
+    private void UpdateBanner()
+    {
+        if (banner == null || !banner.gameObject.activeSelf) return;
+        float now = Time.unscaledTime;
+        if (now >= bannerEnd) { banner.gameObject.SetActive(false); return; }
+
+        // Aparece y se va con un fundido corto.
+        float fadeIn = Mathf.Clamp01((now - bannerStart) / 0.2f);
+        float fadeOut = bannerEnd == float.MaxValue ? 1f : Mathf.Clamp01((bannerEnd - now) / 0.3f);
+        bannerGroup.alpha = Mathf.Min(fadeIn, fadeOut);
+
+        if (bannerEnd == float.MaxValue) return;
+        float left = bannerEnd - now;
+        if (bannerFooter != null) bannerFooter.text = string.Format(bannerFooterFormat, Mathf.CeilToInt(left));
+        if (bannerFill != null)
+            bannerFill.rectTransform.sizeDelta = new Vector2(360f * Mathf.Clamp01(left / (bannerEnd - bannerStart)), 4f);
     }
 
     // ---------- Tabla con Tab (CA5) ----------
