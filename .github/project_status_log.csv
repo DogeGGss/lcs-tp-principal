@@ -341,3 +341,14 @@ fecha_utc,us_numero,us_titulo,estado_anterior,estado_nuevo,tiempo_en_estado_ante
 2026-09-30T23:42:54.009076+00:00,91,US 068. ARMA Principal 3 - Último Tren (Francotirador),Todo,In Progress,1d 22h 15m,166549,https://github.com/DogeGGss/lcs-tp-principal/issues/91
 2026-09-30T23:42:54.009076+00:00,201,US 141. Mostrar marcador de Deathmatch,Blocked,In Progress,5d 1h 26m,437185,https://github.com/DogeGGss/lcs-tp-principal/issues/201
 2026-10-01T02:29:01.733752+00:00,80,US 032. Iniciar partida táctica,Blocked,In Progress,7d 8h 57m,637062,https://github.com/DogeGGss/lcs-tp-principal/issues/80
+2026-10-01T09:21:20.850741+00:00,83,US 034. Finalizar partida,Blocked,LPR,7d 15h 50m,661801,https://github.com/DogeGGss/lcs-tp-principal/issues/83
+2026-10-01T09:21:20.850741+00:00,231,US 165. Zonas de impacto y marcador de impacto,Done,LPR,3d 10h 4m,295492,https://github.com/DogeGGss/lcs-tp-principal/issues/231
+2026-10-01T09:21:20.850741+00:00,244,US 167. Dispersión de las armas,Done,LPR,3d 10h 4m,295492,https://github.com/DogeGGss/lcs-tp-principal/issues/244
+2026-10-01T09:21:20.850741+00:00,252,US 171. Mira del arma,Done,LPR,3d 10h 4m,295492,https://github.com/DogeGGss/lcs-tp-principal/issues/252
+2026-10-01T09:21:20.850741+00:00,113,US 012. Ataque cuerpo a cuerpo,Done,LPR,2d 17h 17m,235061,https://github.com/DogeGGss/lcs-tp-principal/issues/113
+2026-10-01T09:21:20.850741+00:00,39,US 009. Apuntar,In Progress,LPR,9h 38m,34706,https://github.com/DogeGGss/lcs-tp-principal/issues/39
+2026-10-01T09:21:20.850741+00:00,66,US 016. Personaje único por equipo,Todo,In Progress,8d 9h 56m,727019,https://github.com/DogeGGss/lcs-tp-principal/issues/66
+2026-10-01T09:21:20.850741+00:00,80,US 032. Iniciar partida táctica,In Progress,LPR,6h 52m,24739,https://github.com/DogeGGss/lcs-tp-principal/issues/80
+2026-10-01T09:21:20.850741+00:00,81,US 033. Definir el ganador de la ronda,Blocked,LPR,7d 15h 50m,661801,https://github.com/DogeGGss/lcs-tp-principal/issues/81
+2026-10-01T09:21:20.850741+00:00,91,US 068. ARMA Principal 3 - Último Tren (Francotirador),In Progress,LPR,9h 38m,34706,https://github.com/DogeGGss/lcs-tp-principal/issues/91
+2026-10-01T09:21:20.850741+00:00,214,US 153. Opciones de video,R2D,In Progress,2d 11h 27m,214041,https://github.com/DogeGGss/lcs-tp-principal/issues/214
