@@ -12,6 +12,9 @@ using Img = UnityEngine.UI.Image;
 // - CA4: con tiempo límite (multijugador), al terminarse se asigna el último personaje usado, o uno al azar.
 // - CA5: el último elegido aparece preseleccionado.
 // - CA6: lo aplica PlayerAbility al empezar la partida (CharacterRoster.Selected).
+// US 016 (Táctico): con LockedBy, los personajes que ya eligió un compañero aparecen bloqueados ("Elegido por …");
+// con ConfirmHandler, confirmar no cierra enseguida: espera a que el servidor diga si se lo quedó (Accept) o si
+// otro llegó primero (Reject, "Ya lo eligió …").
 // Se arma por código con las medidas de una pantalla de 1920 x 1080, como la tienda y la selección de modo.
 public class CharacterSelectScreen : MonoBehaviour
 {
@@ -27,7 +30,20 @@ public class CharacterSelectScreen : MonoBehaviour
         public RectTransform rect;
         public Img frame, body;
         public bool hovered;
+        public GameObject lockLayer;      // US 016
+        public TextMeshProUGUI lockText;
+        public string lockedBy;
     }
+
+    /// <summary>US 016: nombre del compañero que ya eligió ese personaje, o null si está libre.</summary>
+    public System.Func<CharacterData, string> LockedBy;
+
+    /// <summary>US 016: si está, confirmar le pasa el personaje y espera Accept() o Reject().</summary>
+    public System.Action<CharacterData> ConfirmHandler;
+
+    private bool waiting, timedOut;
+    private TextMeshProUGUI warnText;
+    private float warnUntil;
 
     private readonly List<Card> cards = new List<Card>();
     private TMP_FontAsset displayFont, labelFont, bodyFont;
@@ -113,6 +129,9 @@ public class CharacterSelectScreen : MonoBehaviour
         hintText.text = $"<color=#F3F4F6>{keys}</color>  Elegir     <color=#F3F4F6>← →</color>  Mover     <color=#F3F4F6>Enter</color>  Confirmar" +
                         (onCancel != null ? "     <color=#F3F4F6>Esc</color>  Volver" : "");
 
+        warnText = Text(Place(Node("Aviso", root), 0f, CardTop + CardH + 40f, 1920f, 34f), labelFont, 24f, Bad, TextAlignmentOptions.Center, 8f, true);
+        warnText.gameObject.SetActive(false);
+
         float bx = 1920f - 96f - 240f;
         confirmBg = Button(root, bx, footY, 240f, 56f, "Confirmar", true, Confirm);
         if (onCancel != null) Button(root, bx - 16f - 170f, footY, 170f, 56f, "Volver", false, Cancel);
@@ -192,6 +211,15 @@ public class CharacterSelectScreen : MonoBehaviour
         description.overflowMode = TextOverflowModes.Ellipsis;
         description.text = text;
 
+        // US 016: capa de "Elegido por …" (se prende cuando un compañero lo elige).
+        RectTransform lockRect = Stretch(Node("Bloqueado", card.rect));
+        Image(lockRect, rounded, new Color(0f, 0f, 0f, DarkAlpha(0.72f)), 12f, true);
+        RectTransform lockTag = Place(Node("Etiqueta", lockRect), 20f, CardH / 2f - 30f, CardW - 40f, 60f);
+        Image(lockTag, rounded, Rgb(10, 12, 17, DarkAlpha(0.92f)), 6f);
+        card.lockText = Text(Stretch(Node("Texto", lockTag)), labelFont, 19f, Ink, TextAlignmentOptions.Center, 8f, true);
+        card.lockLayer = lockRect.gameObject;
+        card.lockLayer.SetActive(false);
+
         ShopPointerTarget pointer = card.rect.gameObject.AddComponent<ShopPointerTarget>();
         pointer.Hovered = () => { card.hovered = true; Refresh(); };
         pointer.Exited = () => { card.hovered = false; Refresh(); };
@@ -224,8 +252,11 @@ public class CharacterSelectScreen : MonoBehaviour
             int s = Mathf.CeilToInt(left);
             timerText.text = $"{s / 60}:{s % 60:00}";
             timerText.color = left <= 5f ? Bad : Ink;
-            if (left <= 0f) { TimeUp(); return; }
+            if (left <= 0f) { if (!timedOut) TimeUp(); return; }
         }
+        UpdateLocks();
+        if (warnText.gameObject.activeSelf && Time.unscaledTime >= warnUntil) warnText.gameObject.SetActive(false);
+        if (waiting) return;
 
         if (Input.GetKeyDown(KeyCode.Escape) && onCancel != null) { Cancel(); return; }
         if (Input.GetKeyDown(KeyCode.Return) || Input.GetKeyDown(KeyCode.KeypadEnter)) { Confirm(); return; }
@@ -237,8 +268,53 @@ public class CharacterSelectScreen : MonoBehaviour
 
     private void Select(int index)
     {
+        if (waiting || IsLocked(index)) return;
         selected = index;
         Refresh();
+    }
+
+    private bool IsLocked(int index) => index >= 0 && index < cards.Count && cards[index].lockedBy != null;
+
+    // US 016: prende o apaga el "Elegido por …" de cada tarjeta según lo que diga LockedBy.
+    private void UpdateLocks()
+    {
+        if (LockedBy == null) return;
+        bool changed = false;
+        foreach (Card c in cards)
+        {
+            string who = LockedBy(c.data);
+            if (who == c.lockedBy) continue;
+            c.lockedBy = who;
+            c.lockLayer.SetActive(who != null);
+            c.lockText.text = who != null ? $"Elegido por {who}" : "";
+            changed = true;
+        }
+        if (!changed) return;
+        if (!waiting && IsLocked(selected)) selected = -1;
+        Refresh();
+    }
+
+    /// <summary>US 016: el servidor confirmó que el personaje es de este jugador.</summary>
+    public void Accept()
+    {
+        if (!waiting || selected < 0) return;
+        waiting = false;
+        CharacterRoster.Selected = cards[selected].data;
+        Close();
+        onConfirm?.Invoke();
+    }
+
+    /// <summary>US 016: otro compañero lo eligió primero (CA3). Si ya se terminó el tiempo, se elige otro solo.</summary>
+    public void Reject(string message)
+    {
+        waiting = false;
+        selected = -1;
+        warnText.text = message;
+        warnText.gameObject.SetActive(true);
+        warnUntil = Time.unscaledTime + 3f;
+        UpdateLocks();
+        Refresh();
+        if (timedOut) TimeUp();
     }
 
     private void Refresh()
@@ -251,22 +327,45 @@ public class CharacterSelectScreen : MonoBehaviour
             c.body.color = on ? Over(WithAlpha(c.data.color, 0.08f), Rgb(12, 14, 19)) : Rgb(12, 14, 19);
             c.rect.anchoredPosition = new Vector2(c.rect.anchoredPosition.x, -(CardTop - (on ? 14f : c.hovered ? 6f : 0f)));
         }
-        if (confirmBg != null) confirmBg.color = selected >= 0 ? Accent : ChipColor;
+        if (confirmBg != null) confirmBg.color = selected >= 0 && !waiting ? Accent : ChipColor;
     }
 
     private void Confirm()
     {
-        if (selected < 0) return; // todavía no eligió ninguno
+        if (selected < 0 || waiting || IsLocked(selected)) return; // todavía no eligió ninguno (o está bloqueado)
+        if (ConfirmHandler != null)
+        {
+            // US 016: espera la respuesta del servidor.
+            waiting = true;
+            Refresh();
+            ConfirmHandler(cards[selected].data);
+            return;
+        }
         CharacterRoster.Selected = cards[selected].data;
         Close();
         onConfirm?.Invoke();
     }
 
-    // CA4: se terminó el tiempo sin confirmar.
+    // CA4: se terminó el tiempo sin confirmar. US 016, CA4: el último usado si está libre, si no uno libre al azar.
     private void TimeUp()
     {
-        if (selected < 0) selected = lastUsed >= 0 ? lastUsed : Random.Range(0, cards.Count);
+        timedOut = true;
+        if (waiting) return;
+        if (selected < 0 || IsLocked(selected))
+        {
+            var free = new List<int>();
+            for (int i = 0; i < cards.Count; i++) if (!IsLocked(i)) free.Add(i);
+            if (lastUsed >= 0 && !IsLocked(lastUsed)) selected = lastUsed;
+            else selected = free.Count > 0 ? free[Random.Range(0, free.Count)] : Random.Range(0, cards.Count);
+        }
+        if (IsLocked(selected)) { CharacterRoster.Selected = cards[selected].data; Close(); onConfirm?.Invoke(); return; } // todos ocupados
         Confirm();
+    }
+
+    /// <summary>US 016: la selección terminó por el reloj del anfitrión; si todavía no eligió, se elige solo.</summary>
+    public void ForceTimeUp()
+    {
+        if (!timedOut) TimeUp();
     }
 
     private void Cancel()

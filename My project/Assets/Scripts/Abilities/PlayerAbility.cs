@@ -26,6 +26,14 @@ public class PlayerAbility : MonoBehaviour
         if (character != null && character.ability != null) ability = character.ability;
     }
 
+    /// <summary>US 016: el personaje se eligió con la partida ya cargada (Modo Táctico): se usa su habilidad.</summary>
+    public void UsarPersonaje(CharacterData character)
+    {
+        if (!useSelectedCharacter || character == null || character.ability == null) return;
+        ability = character.ability;
+        CooldownLeft = 0f;
+    }
+
     private void Update()
     {
         if (CooldownLeft > 0f) CooldownLeft = Mathf.Max(0f, CooldownLeft - Time.deltaTime);

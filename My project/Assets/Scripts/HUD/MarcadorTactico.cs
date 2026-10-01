@@ -95,6 +95,9 @@ public class MarcadorTactico : MonoBehaviour
         float? tiempo = TiempoDeRonda != null ? TiempoDeRonda() : null;
         if (dispositivo.HasValue)
             MatchHud.SetCenter("Dispositivo plantado", dispositivo.Value, detalle, true, null, true);
+        else if (RondasTacticas.Actual != null && RondasTacticas.Actual.FaseActual == RondasTacticas.Fase.Seleccion)
+            // US 016: antes de la ronda 1, el tiempo para elegir personaje.
+            MatchHud.SetCenter("Selección", RondasTacticas.Actual.Restante, "Elegí tu personaje");
         else if (RondasTacticas.Actual != null && RondasTacticas.Actual.EsMuerteSubita &&
                  RondasTacticas.Actual.FaseActual != RondasTacticas.Fase.Terminada)
             // US 032, CA6: en la muerte súbita el centro queda en rojo.
@@ -116,11 +119,15 @@ public class MarcadorTactico : MonoBehaviour
             if (equipo < 0) continue;
             bool esAliado = equipo == mio;
             Color color = esAliado ? MatchHud.TeamColor : MatchHud.RivalColor;
+            // US 016: el retrato (o la inicial y el color) del personaje que eligió; si todavía no eligió, su inicial.
+            CharacterData pj = PersonajesTacticos.De(p.ActorNumber);
+            string nombre = pj != null ? pj.displayName : p.NickName;
             (esAliado ? aliados : rivales).Add(new MatchHud.RosterEntry
             {
                 name = p.NickName,
-                initial = string.IsNullOrEmpty(p.NickName) ? "?" : p.NickName.Substring(0, 1).ToUpperInvariant(),
-                color = color,
+                initial = string.IsNullOrEmpty(nombre) ? "?" : nombre.Substring(0, 1).ToUpperInvariant(),
+                portrait = pj != null ? pj.portrait : null,
+                color = pj != null ? pj.color : color,
                 team = color,
                 alive = EstaVivo(p.ActorNumber),
                 marked = esAliado && portador != 0 && p.ActorNumber == portador // el portador solo lo ven sus compañeros
