@@ -346,6 +346,14 @@ public class RondasTacticas : MonoBehaviour
 
     private void AlCambiar(int ronda, Fase fase, bool primeraVez)
     {
+        // US 135, CA1: la partida táctica arranca con $ 800, aunque el Player.prefab o el mapa tengan otra plata
+        // inicial (la tienda la sube para probar sin conexión).
+        if (primeraVez && ronda == 1 && (fase == Fase.Seleccion || fase == Fase.Compra))
+        {
+            PlayerWallet billetera = partida != null && partida.Local != null ? partida.Local.GetComponent<PlayerWallet>() : null;
+            if (billetera != null) billetera.Set(PlataInicial);
+        }
+
         switch (fase)
         {
             case Fase.Seleccion:
