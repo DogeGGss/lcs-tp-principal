@@ -32,6 +32,16 @@ public class ConfigRed : ScriptableObject
     [Tooltip("Segundos sin recibir daño al reaparecer. Se cortan si dispara.")]
     public float invulnerabilidad = 2f;
 
+    [Header("Táctico (US 032)")]
+    [Tooltip("Música del Modo Táctico (CA8). Suena en loop por el grupo de abajo.")]
+    public AudioClip musicaTactico;
+    [Tooltip("Ambiente del Modo Táctico (CA8). Suena en loop, más bajo que la música.")]
+    public AudioClip ambienteTactico;
+    [Tooltip("Grupo Musica del Audio Mixer: así lo regulan General y Música de Opciones (US 154).")]
+    public UnityEngine.Audio.AudioMixerGroup grupoMusica;
+    [Range(0f, 1f)] public float volumenMusica = 0.35f;
+    [Range(0f, 1f)] public float volumenAmbiente = 0.5f;
+
     private static ConfigRed actual;
 
     public static ConfigRed Actual

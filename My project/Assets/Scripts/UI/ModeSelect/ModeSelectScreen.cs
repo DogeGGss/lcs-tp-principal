@@ -957,7 +957,7 @@ public class ModeSelectScreen : MonoBehaviour
         d.startButton.interactable = ready;
         d.startGroup.alpha = ready ? 1f : 0.4f;
         d.roomFoot.text = !host ? "Esperando al anfitrión…"
-            : players.Count < Multijugador.MinJugadores ? "Pasale el código a tus amigos. Se necesitan al menos 2 jugadores."
+            : players.Count < Multijugador.MinJugadores && !PruebaSolo.Activa ? "Pasale el código a tus amigos. Se necesitan al menos 2 jugadores."
             : "Todo listo: iniciá la partida cuando quieras.";
         d.room.gameObject.SetActive(true);
     }

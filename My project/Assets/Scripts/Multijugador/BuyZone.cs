@@ -23,14 +23,16 @@ public class BuyZone : MonoBehaviour
     private void OnDisable() => zones.Remove(this);
 
     // "lado" es el lado del jugador que quiere comprar. Sin indicarlo (o con Cualquiera) vale cualquier zona.
-    public static bool Contains(Vector3 position, LadoTactico lado = LadoTactico.Cualquiera)
+    // ignorarAltura (US 032): solo mira el piso de la zona, así saltar no cuenta como salir de la base.
+    public static bool Contains(Vector3 position, LadoTactico lado = LadoTactico.Cualquiera, bool ignorarAltura = false)
     {
         if (zones.Count == 0) return true;
         foreach (BuyZone zone in zones)
         {
             if (zone.area == null) continue;
             bool ladoServe = lado == LadoTactico.Cualquiera || zone.lado == LadoTactico.Cualquiera || zone.lado == lado;
-            if (ladoServe && zone.area.bounds.Contains(position)) return true;
+            Vector3 punto = ignorarAltura ? new Vector3(position.x, zone.area.bounds.center.y, position.z) : position;
+            if (ladoServe && zone.area.bounds.Contains(punto)) return true;
         }
         return false;
     }

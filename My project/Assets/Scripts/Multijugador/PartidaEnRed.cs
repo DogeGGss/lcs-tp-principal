@@ -85,7 +85,11 @@ public class PartidaEnRed : MonoBehaviour
             SendOptions.SendReliable);
 
         Lista = true;
-        if (MatchSettings.Mode == GameMode.Tactico) gameObject.AddComponent<MarcadorTactico>().Iniciar(this); // US 134
+        if (MatchSettings.Mode == GameMode.Tactico)
+        {
+            gameObject.AddComponent<MarcadorTactico>().Iniciar(this); // US 134
+            gameObject.AddComponent<RondasTacticas>().Iniciar(this);  // US 032
+        }
         foreach (object[] datos in Multijugador.Instancia.TomarPendientes()) CrearRemoto(datos);
     }
 
@@ -217,6 +221,9 @@ public class PartidaEnRed : MonoBehaviour
         int indice = Mathf.Max(0, actores.IndexOf(local));
         return puntos[indice % puntos.Count];
     }
+
+    /// <summary>US 032: el punto de la base que le toca al jugador local en la ronda actual (cambia con el lado).</summary>
+    public Pose PuntoDeBase() => PuntoInicial();
 
     // US 030, CA5 (y US 137, CA2): el punto más lejos del rival vivo más cercano.
     public Pose PuntoDeReaparicion()

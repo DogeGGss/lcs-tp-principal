@@ -25,3 +25,8 @@ MonoBehaviour:
   trazadora: {fileID: 2100000, guid: 01dc322130393b24d97d92fa78f81228, type: 2}
   reaparicion: 3
   invulnerabilidad: 2
+  musicaTactico: {fileID: 8300000, guid: 51d8b945ae6fb2e429d9e477307b4818, type: 3}
+  ambienteTactico: {fileID: 8300000, guid: 4445e2a7ab87349b58d1d84896d24e86, type: 3}
+  grupoMusica: {fileID: -3878677901696022068, guid: ddda7e32a2420c4489fcc2a1c31e1976, type: 2}
+  volumenMusica: 0.35
+  volumenAmbiente: 0.5

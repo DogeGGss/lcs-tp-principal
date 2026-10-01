@@ -95,6 +95,11 @@ public class MarcadorTactico : MonoBehaviour
         float? tiempo = TiempoDeRonda != null ? TiempoDeRonda() : null;
         if (dispositivo.HasValue)
             MatchHud.SetCenter("Dispositivo plantado", dispositivo.Value, detalle, true, null, true);
+        else if (RondasTacticas.Actual != null && RondasTacticas.Actual.EsMuerteSubita &&
+                 RondasTacticas.Actual.FaseActual != RondasTacticas.Fase.Terminada)
+            // US 032, CA6: en la muerte súbita el centro queda en rojo.
+            MatchHud.SetCenter("Muerte súbita", compra != null && compra.IsActive ? compra.TimeLeft : tiempo,
+                $"Ronda {ronda} · {rondas[mio]} a {rondas[rival]}", true, "—", true);
         else if (compra != null && compra.IsActive)
             MatchHud.SetCenter("Fase de compra", compra.TimeLeft, detalle, compra.TimeLeft <= 5f);
         else if (tiempo.HasValue)

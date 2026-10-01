@@ -33,7 +33,9 @@ public static class EquiposTacticos
 
     // Hoy la ronda sale de la fase de compra. Cuando se haga la US 032 (rondas), si el número de ronda
     // pasa a vivir en otro lado, alcanza con cambiar esta línea.
-    public static int Ronda => BuyPhase.Current != null ? Mathf.Max(1, BuyPhase.Current.Round) : 1;
+    public static int Ronda =>
+        RondasTacticas.Actual != null ? RondasTacticas.Actual.Ronda : // US 032: la ronda que lleva el anfitrión
+        BuyPhase.Current != null ? Mathf.Max(1, BuyPhase.Current.Round) : 1;
 
     // ---------- Reparto (solo lo hace el anfitrión, al iniciar la partida) ----------
 
@@ -93,6 +95,9 @@ public static class EquiposTacticos
     public static LadoTactico LadoDeEquipo(int equipo)
     {
         if (equipo < 0 || !HayEquipos) return LadoTactico.Cualquiera;
+        // US 032, CA6: en la muerte súbita los lados se sortean de nuevo.
+        if (RondasTacticas.AtacanteMuerteSubita(out int atacanteSubita))
+            return equipo == atacanteSubita ? LadoTactico.Atacante : LadoTactico.Defensor;
         int atacante = (int)PhotonNetwork.CurrentRoom.CustomProperties[PropAtacante];
         bool intercambiados = Ronda >= RondaDeCambio;
         bool ataca = (equipo == atacante) != intercambiados;

@@ -167,6 +167,27 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
         photonView.RPC(nameof(RpcReaparecio), RpcTarget.Others, punto.position, punto.rotation.eulerAngles.y);
     }
 
+    /// <summary>
+    /// US 032, CA4 y CA7: arranca una ronda nueva del Táctico. Todos vuelven a su base; el que estaba muerto
+    /// revive (sin escudo y con lo que le quedó después de morir) y el que estaba vivo conserva su escudo.
+    /// </summary>
+    public void EmpezarRonda(Pose punto)
+    {
+        if (photonView == null || !photonView.IsMine || vida == null) return;
+        partida.Aviso(null);
+        Teletransportar(transform, punto.position, punto.rotation);
+        if (muerto) vida.Revive();
+        else vida.SetState(vida.maxHealth, vida.currentShield);
+        foreach (Pistola arma in GetComponentsInChildren<Pistola>(true)) arma.currentAmmo = arma.maxAmmo;
+        foreach (Mitre arma in GetComponentsInChildren<Mitre>(true)) arma.Refill();
+        foreach (ArmaDeFuego arma in GetComponentsInChildren<ArmaDeFuego>(true)) arma.Refill();
+        muerto = false;
+        ultimoAtacante = 0;
+        Bloquear(false);
+        vida.Invulnerable = false;
+        photonView.RPC(nameof(RpcReaparecio), RpcTarget.Others, punto.position, punto.rotation.eulerAngles.y);
+    }
+
     // Muerto no se mueve, no dispara ni cambia de arma; puede seguir mirando alrededor.
     private void Bloquear(bool bloquear)
     {
