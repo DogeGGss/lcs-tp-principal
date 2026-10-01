@@ -114,12 +114,12 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
 
     // US 029: el daño que le hicieron a la copia de este jugador en otra computadora.
     [PunRPC]
-    private void RpcDanio(int danio, int atacante)
+    private void RpcDanio(int danio, int atacante, bool cabeza)
     {
         if (!photonView.IsMine || muerto || vida == null) return;
         if (EquiposTacticos.SonAliados(atacante, Actor)) return; // US 031, CA6: por las dudas, también acá
         ultimoAtacante = atacante;
-        vida.TakeDamage(danio);
+        vida.TakeDamage(danio, cabeza);
     }
 
     // US 030: los demás lo ven caer. En Deathmatch reaparece; en Táctico espera la ronda siguiente (US 032).
@@ -127,9 +127,10 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
     {
         if (muerto) return;
         muerto = true;
-        photonView.RPC(nameof(RpcMurio), RpcTarget.Others, ultimoAtacante);
+        bool cabeza = vida != null && vida.KilledByHeadshot;
+        photonView.RPC(nameof(RpcMurio), RpcTarget.Others, ultimoAtacante, cabeza);
         Bloquear(true);
-        AvisarBaja(ultimoAtacante); // US 057, CA4
+        AvisarBaja(ultimoAtacante, cabeza); // US 057, CA4
 
         Player asesino = ultimoAtacante != 0 && PhotonNetwork.CurrentRoom != null ? PhotonNetwork.CurrentRoom.GetPlayer(ultimoAtacante) : null;
         string titulo = asesino != null ? $"Te eliminó {asesino.NickName}" : "Te eliminaron";
@@ -238,13 +239,14 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
         return banderas;
     }
 
-    // US 057, CA4 y CA7: el aviso "asesino [arma] víctima" con los nombres de cada jugador, igual en todas las computadoras.
-    private void AvisarBaja(int atacante)
+    // US 057, CA4 y CA7: el aviso "asesino [arma] víctima" con los nombres de cada jugador, igual en todas las computadoras,
+    // con la marca de tiro a la cabeza si el golpe que lo mató fue a la cabeza.
+    private void AvisarBaja(int atacante, bool cabeza)
     {
         Player asesino = atacante != 0 && PhotonNetwork.CurrentRoom != null ? PhotonNetwork.CurrentRoom.GetPlayer(atacante) : null;
         JugadorEnRed tirador = partida != null ? partida.Buscar(atacante) : null;
         MatchHud.ReportKill(asesino != null ? asesino.NickName : "", tirador != null ? tirador.NombreArma : "", Nombre,
-            ColorDe(atacante), ColorDe(photonView.OwnerActorNr), false, tirador != null ? tirador.IconoArma : null);
+            ColorDe(atacante), ColorDe(photonView.OwnerActorNr), cabeza, tirador != null ? tirador.IconoArma : null);
     }
 
     // Azul el propio equipo (y uno mismo), rojo el rival; blanco si no hay equipos.
@@ -420,10 +422,10 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
 
         // US 029: el daño a esta copia se le manda al dueño, que es el que sabe su vida.
         if (vida != null)
-            vida.DamageRedirect = danio =>
+            vida.DamageRedirect = (danio, cabeza) =>
             {
                 if (photonView.Owner != null)
-                    photonView.RPC(nameof(RpcDanio), photonView.Owner, danio, PhotonNetwork.LocalPlayer.ActorNumber);
+                    photonView.RPC(nameof(RpcDanio), photonView.Owner, danio, PhotonNetwork.LocalPlayer.ActorNumber, cabeza);
             };
 
         CrearCartel();
@@ -553,11 +555,11 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
 
     // US 030, CA1 y CA2: el cuerpo cae y ya no recibe disparos.
     [PunRPC]
-    private void RpcMurio(int atacante)
+    private void RpcMurio(int atacante, bool cabeza)
     {
         if (photonView.IsMine) return;
         muerto = true;
-        AvisarBaja(atacante); // US 057, CA4
+        AvisarBaja(atacante, cabeza); // US 057, CA4
         if (vida != null) vida.SetState(0, 0);
         foreach (Collider c in colisiones) if (c != null) c.enabled = false;
         MostrarArma(SinArma);

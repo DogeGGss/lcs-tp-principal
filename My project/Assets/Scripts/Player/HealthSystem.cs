@@ -12,8 +12,12 @@ public class HealthSystem : MonoBehaviour
 
     // Multijugador (US 029): en la copia de otro jugador el daño no se aplica acá, se le manda a su dueño,
     // que es el que decide su vida. Mientras es invulnerable (al reaparecer, US 030) no recibe daño.
-    public System.Action<int> DamageRedirect;
+    // El bool dice si fue a la cabeza, para el aviso de baja (US 057, CA4).
+    public System.Action<int, bool> DamageRedirect;
     public bool Invulnerable;
+
+    // Si el golpe que lo dejó en 0 fue a la cabeza: el aviso de baja lo marca (US 057, CA4).
+    public bool KilledByHeadshot { get; private set; }
 
     void Start()
     {
@@ -59,11 +63,12 @@ public class HealthSystem : MonoBehaviour
         currentShield = Mathf.Clamp(value, 0, maxShield);
     }
 
-    public void TakeDamage(int damageAmount)
+    // head: el golpe fue a la cabeza (zona de impacto, US 165).
+    public void TakeDamage(int damageAmount, bool head = false)
     {
         if (DamageRedirect != null)
         {
-            DamageRedirect(damageAmount);
+            DamageRedirect(damageAmount, head);
             return;
         }
         if (currentHealth <= 0 || Invulnerable) return;
@@ -92,6 +97,7 @@ public class HealthSystem : MonoBehaviour
 
         if (currentHealth <= 0)
         {
+            KilledByHeadshot = head;
             Die();
         }
     }

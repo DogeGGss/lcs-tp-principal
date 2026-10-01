@@ -113,36 +113,49 @@ public class MeleeAttack : MonoBehaviour
 
     private void ExecuteHitCheck(MeleeWeaponData data)
     {
-        // CA2: Busca todos los colliders dentro del rango del arma
-        Collider[] hitColliders = Physics.OverlapSphere(playerCamera.transform.position, data.range);
+        // CA2: Busca todos los colliders dentro del rango del arma, con las zonas de impacto de los huesos (US 165)
+        Vector3 origin = playerCamera.transform.position;
+        Vector3 forward = playerCamera.transform.forward;
+        Collider[] hitColliders = Physics.OverlapSphere(origin, data.range, Physics.DefaultRaycastLayers, QueryTriggerInteraction.Collide);
 
+        HealthSystem best = null;
+        float bestAngle = float.MaxValue;
         foreach (Collider col in hitColliders)
         {
-            // Ignorar al propio jugador
+            // Ignorar al propio jugador y los triggers que no son zonas de impacto (como la zona de compra)
             if (col.transform.root == transform.root) continue;
+            if (col.isTrigger && col.GetComponent<HitZone>() == null) continue;
 
-            // CA2: Comprobación del cono angular (attackAngle)
-            Vector3 directionToTarget = (col.bounds.center - playerCamera.transform.position).normalized;
-            float angleToTarget = Vector3.Angle(playerCamera.transform.forward, directionToTarget);
+            HealthSystem health = col.GetComponentInParent<HealthSystem>();
+            if (health == null || health.currentHealth <= 0 || EquiposTacticos.SonAliados(this, health)) continue; // US 031, CA6
 
-            if (angleToTarget <= data.attackAngle / 2f)
-            {
-                // Verificar que no haya una pared en el medio (sin contar triggers, como las zonas de impacto de US 165)
-                if (Physics.Raycast(playerCamera.transform.position, directionToTarget, out RaycastHit hit, data.range, Physics.DefaultRaycastLayers, QueryTriggerInteraction.Ignore))
-                {
-                    if (hit.collider == col)
-                    {
-                        // CA3: Aplicar daño al HealthSystem[cite: 1]
-                        HealthSystem health = col.GetComponent<HealthSystem>();
-                        if (health != null && !EquiposTacticos.SonAliados(this, health)) // US 031, CA6
-                        {
-                            health.TakeDamage(data.damage);
-                            Debug.Log($"Golpe cuerpo a cuerpo a {col.name}. Daño: {data.damage}");
-                            break; // Golpea a un solo objetivo por ataque
-                        }
-                    }
-                }
-            }
+            // CA2: Comprobación del cono angular (attackAngle), hasta el punto más cercano del collider y no hasta su
+            // centro: así un rival parado entra en el cono aunque su centro quede más abajo que los ojos.
+            Vector3 toTarget = ClosestPoint(col, origin) - origin;
+            float distance = toTarget.magnitude;
+            float angleToTarget = distance < 0.001f ? 0f : Vector3.Angle(forward, toTarget);
+            if (angleToTarget > data.attackAngle / 2f || angleToTarget >= bestAngle) continue;
+
+            // Verificar que no haya una pared en el medio (sin contar triggers, como las zonas de impacto de US 165)
+            if (distance >= 0.001f && Physics.Raycast(origin, toTarget / distance, out RaycastHit hit, distance, Physics.DefaultRaycastLayers, QueryTriggerInteraction.Ignore)
+                && hit.collider.GetComponentInParent<HealthSystem>() != health && hit.collider.transform.root != transform.root) continue;
+
+            best = health;
+            bestAngle = angleToTarget;
         }
+
+        // CA3: Aplicar daño al HealthSystem. Golpea a un solo objetivo por ataque: el más cercano a la mira.
+        if (best != null)
+        {
+            best.TakeDamage(data.damage);
+            Debug.Log($"Golpe cuerpo a cuerpo a {best.name}. Daño: {data.damage}");
+        }
+    }
+
+    // ClosestPoint solo sirve con cajas, esferas, cápsulas y mallas convexas; para el resto alcanza con su caja.
+    private static Vector3 ClosestPoint(Collider col, Vector3 point)
+    {
+        if (col is MeshCollider mesh && !mesh.convex) return col.bounds.ClosestPoint(point);
+        return col.ClosestPoint(point);
     }
 }
