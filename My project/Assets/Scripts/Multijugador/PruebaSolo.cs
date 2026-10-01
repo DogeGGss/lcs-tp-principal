@@ -3,7 +3,8 @@
 // - se puede iniciar una sala de Táctico estando solo (normalmente hacen falta 2 jugadores);
 // - en la partida, el anfitrión tiene atajos para avanzar las rondas (los lee RondasTacticas):
 //   F9 gana tu equipo, F10 gana el rival, F11 salta a la fase siguiente, F8 pone 6 a 6 (muerte súbita),
-//   F5 te elimina, F6 planta el dispositivo donde estás y F7 lo desactiva (US 033).
+//   F5 te elimina, F6 planta el dispositivo donde estás y F7 lo desactiva (US 033),
+//   F4 te paga una baja ($ 200, US 135).
 // En una build siempre está apagada.
 public static class PruebaSolo
 {

@@ -38,6 +38,10 @@ public class RondasTacticas : MonoBehaviour
     public const float DuracionCompra = 20f, DuracionCombate = 100f, DuracionCartel = 5f, DuracionAviso = 4f;
     public const int PlataInicial = 800, PlataMuerteSubita = 5000;
     public const float DuracionDispositivo = 45f; // F07: 45 s de dispositivo plantado
+
+    // Economía (US 135). El tope de $ 9.000 lo pone la billetera (CA7).
+    public const int PremioBaja = 200, PremioGanada = 3000, PremioPlantar = 300;
+    private static readonly int[] PremiosDerrota = { 1900, 2400, 2900 }; // 1.ª, 2.ª y 3.ª derrota seguida o más
     public const float RadioExplosion = 12f;      // US 033, CA1: metros alrededor del dispositivo
 
     public enum Fase { Compra, Combate, FinDeRonda, Terminada }
@@ -46,7 +50,8 @@ public class RondasTacticas : MonoBehaviour
     private const string PropRonda = "rt.ronda", PropFase = "rt.fase", PropFin = "rt.fin", PropGanador = "rt.gan",
         PropMotivo = "rt.mot", PropRondas0 = "rt.e0", PropRondas1 = "rt.e1", PropSubita = "rt.sub",
         PropDispositivo = "rt.disp", PropLugar = "rt.lugar", PropDesactivado = "rt.desact",
-        PropPlantador = "rt.plantador", PropDesactivador = "rt.desactivador";
+        PropPlantador = "rt.plantador", PropDesactivador = "rt.desactivador",
+        PropRacha0 = "rt.racha0", PropRacha1 = "rt.racha1"; // derrotas seguidas de cada equipo (US 135, CA4)
 
     /// <summary>US 034: estadísticas que cada jugador publica de sí mismo (plantadas y desactivaciones).</summary>
     public const string PropPlantadas = "st.pl", PropDesactivaciones = "st.des";
@@ -118,7 +123,7 @@ public class RondasTacticas : MonoBehaviour
         MarcadorTactico.TiempoDeRonda = TiempoDeCombate;
         ArrancarMusica();
         if (PruebaSolo.Activa)
-            Debug.Log("Prueba solo (Táctico): F5 morir · F6 plantar acá · F7 desactivar · F9 gana tu equipo · " +
+            Debug.Log("Prueba solo (Táctico): F4 cobrar una baja · F5 morir · F6 plantar acá · F7 desactivar · F9 gana tu equipo · " +
                       "F10 gana el rival · F11 salta la fase · F8 pone 6 a 6.");
     }
 
@@ -265,10 +270,14 @@ public class RondasTacticas : MonoBehaviour
         int e0 = RondasDe(0) + (ganador == 0 ? 1 : 0);
         int e1 = RondasDe(1) + (ganador == 1 ? 1 : 0);
         bool termina = e0 >= RondasParaGanar || e1 >= RondasParaGanar;
+        // US 135, CA4: el que pierde suma una derrota seguida; el que gana vuelve a 0.
+        int racha0 = ganador == 0 ? 0 : Leer(PropRacha0, 0) + 1;
+        int racha1 = ganador == 1 ? 0 : Leer(PropRacha1, 0) + 1;
         Publicar(new Hashtable
         {
             { PropFase, (int)(termina ? Fase.Terminada : Fase.FinDeRonda) }, { PropFin, Ahora + Ms(DuracionCartel) },
-            { PropGanador, ganador }, { PropMotivo, (int)motivo }, { PropRondas0, e0 }, { PropRondas1, e1 }
+            { PropGanador, ganador }, { PropMotivo, (int)motivo }, { PropRondas0, e0 }, { PropRondas1, e1 },
+            { PropRacha0, racha0 }, { PropRacha1, racha1 }
         }, true);
     }
 
@@ -347,7 +356,7 @@ public class RondasTacticas : MonoBehaviour
                 BloquearArmas(false);
                 if (primeraVez) break;
                 if (MotivoActual == Motivo.DispositivoExploto) Explotar();
-                CartelFinDeRonda(ronda);
+                CartelFinDeRonda(ronda, CobrarRonda()); // US 135
                 RondaTerminada?.Invoke(Ganador, MotivoActual);
                 break;
 
@@ -429,13 +438,63 @@ public class RondasTacticas : MonoBehaviour
         }
     }
 
-    private void CartelFinDeRonda(int ronda)
+    private void CartelFinDeRonda(int ronda, List<string> plata)
     {
         int mio = Mathf.Max(0, EquiposTacticos.Local);
         bool gane = Ganador == mio;
         MatchHud.ShowBanner($"Ronda {ronda}", gane ? "Ronda ganada" : "Ronda perdida",
             gane ? MatchHud.TeamColor : MatchHud.RivalColor, $"{TextoMotivo(gane)}  ·  {Resultado(mio)}",
-            null, Mathf.Max(0.5f, Restante), "Siguiente ronda en {0}");
+            plata, Mathf.Max(0.5f, Restante), "Siguiente ronda en {0}");
+    }
+
+    // =====================================================================
+    // Economía (US 135)
+    // =====================================================================
+
+    /// <summary>
+    /// CA2: lo llama JugadorEnRed en cada baja (en todas las computadoras). Cobra solo el que mató, si el muerto
+    /// es un rival y la ronda está en combate.
+    /// </summary>
+    public static void ContarBaja(int atacante, int muerto)
+    {
+        RondasTacticas r = Actual;
+        if (r == null || PhotonNetwork.LocalPlayer == null || atacante != PhotonNetwork.LocalPlayer.ActorNumber) return;
+        if (atacante == muerto || r.FaseActual != Fase.Combate || EquiposTacticos.SonAliados(atacante, muerto)) return;
+        r.Cobrar(PremioBaja);
+    }
+
+    // CA3 a CA6: lo que cobra el jugador local al terminar la ronda. Devuelve el detalle para el cartel.
+    private List<string> CobrarRonda()
+    {
+        var detalle = new List<string>();
+        int mio = Mathf.Max(0, EquiposTacticos.Local);
+        bool gane = Ganador == mio;
+        bool ataca = EquiposTacticos.LadoLocal == LadoTactico.Atacante;
+        bool vivo = partida != null && partida.Local != null && partida.Local.Vivo;
+
+        if (gane) Premio(detalle, PremioGanada, "Ronda ganada");                                    // CA3
+        else if (MotivoActual == Motivo.Tiempo && ataca && vivo) detalle.Add("Sin premio: no plantaron"); // CA6
+        else
+        {
+            // CA4: 1.900, 2.400 y desde la tercera derrota seguida 2.900.
+            int racha = Mathf.Clamp(Leer(mio == 0 ? PropRacha0 : PropRacha1, 1), 1, PremiosDerrota.Length);
+            Premio(detalle, PremiosDerrota[racha - 1], racha == 1 ? "Ronda perdida" : $"{racha}.ª derrota seguida");
+        }
+        if (HayDispositivo && ataca) Premio(detalle, PremioPlantar, "Dispositivo plantado");       // CA5
+        return detalle;
+    }
+
+    private void Premio(List<string> detalle, int monto, string motivo)
+    {
+        Cobrar(monto);
+        detalle.Add($"+{ShopUIKit.Money(monto)}  {motivo}");
+    }
+
+    // CA7: la billetera no pasa de $ 9.000 (lo que sobra se pierde).
+    private void Cobrar(int monto)
+    {
+        PlayerWallet billetera = partida != null && partida.Local != null ? partida.Local.GetComponent<PlayerWallet>() : null;
+        if (billetera != null) billetera.Add(monto);
     }
 
     // US 034: cada uno publica sus propias plantadas y desactivaciones, así todos las ven en el resultado.
@@ -560,7 +619,8 @@ public class RondasTacticas : MonoBehaviour
         if (fase == Fase.Terminada) return;
 
         JugadorEnRed local = partida != null ? partida.Local : null;
-        if (Input.GetKeyDown(KeyCode.F5) && local != null) local.Eliminar();                    // morir
+        if (Input.GetKeyDown(KeyCode.F4)) Cobrar(PremioBaja);                                     // como si matara a un rival
+        else if (Input.GetKeyDown(KeyCode.F5) && local != null) local.Eliminar();               // morir
         else if (Input.GetKeyDown(KeyCode.F6) && local != null) Plantar(local.transform.position); // plantar acá
         else if (Input.GetKeyDown(KeyCode.F7)) Desactivar();
         else if (Input.GetKeyDown(KeyCode.F9)) ForzarGanador(mio);
