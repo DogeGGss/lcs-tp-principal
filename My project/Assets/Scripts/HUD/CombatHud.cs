@@ -87,6 +87,7 @@ public class CombatHud : MonoBehaviour
 
     private CanvasGroup group;
     private GameObject crit, hint, skill;
+    private CanvasGroup[] hiddenWhenScoped;
     private TextMeshProUGUI hintText;
     private TextMeshProUGUI hpText, shieldText;
     private UnityEngine.UI.Image hpFill, shieldFill;
@@ -147,8 +148,11 @@ public class CombatHud : MonoBehaviour
         UpdateInventory();
         UpdateHitMarker();
 
-        // La mira se ve con cualquier arma; con la pausa abierta se oculta (con la tienda ya se oculta todo el HUD).
-        crosshair.gameObject.SetActive(!PauseMenu.IsPaused);
+        // La mira se ve con cualquier arma; con la pausa abierta se oculta (con la tienda ya se oculta todo el HUD), y
+        // con la mira telescópica puesta, la lente tiene su propia retícula (US 009).
+        crosshair.gameObject.SetActive(!PauseMenu.IsPaused && !MiraTelescopica.Puesta);
+        float center = MiraTelescopica.Puesta ? 0f : 1f;
+        foreach (CanvasGroup part in hiddenWhenScoped) part.alpha = center;
     }
 
     // ---------- Mira ----------
@@ -467,9 +471,11 @@ public class CombatHud : MonoBehaviour
         bar.sizeDelta = new Vector2(BarW, BarH);
 
         BuildHealth(bar);
-        Image(Place(Node("Rieles", bar), RailLeftX, 160f, 120f, 12f), rails, Color.white);
+        GameObject railsLeft = Image(Place(Node("Rieles", bar), RailLeftX, 160f, 120f, 12f), rails, Color.white).gameObject;
         BuildSkill(bar);
-        Image(Place(Node("Rieles", bar), RailRightX, 160f, 120f, 12f), rails, Color.white);
+        GameObject railsRight = Image(Place(Node("Rieles", bar), RailRightX, 160f, 120f, 12f), rails, Color.white).gameObject;
+        // Con la mira telescópica puesta (US 009) se oculta el centro del andén: la habilidad y sus rieles tapan la lente.
+        hiddenWhenScoped = new[] { railsLeft.AddComponent<CanvasGroup>(), skill.AddComponent<CanvasGroup>(), railsRight.AddComponent<CanvasGroup>() };
         BuildAmmo(bar);
         BuildInventory(bar);
         BuildCrosshair(root);

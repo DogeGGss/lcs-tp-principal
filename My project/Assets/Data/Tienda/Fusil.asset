@@ -31,7 +31,7 @@ MonoBehaviour:
   reloadTime: 2.5
   reloadPerShell: 0
   mobility: 0.92
-  zoom: 1.25
+  zoom: 0
   zoom2: 0
   pellets: 1
   penetration: Media

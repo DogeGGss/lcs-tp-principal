@@ -64,8 +64,12 @@ public class CameraLook : MonoBehaviour
 
     void Update()
     {
-        bool apuntando = Mitre.Aiming || ArmaDeFuego.Aiming;
-        float sensibilidad = apuntando ? mouseSensivility * sensibilidadApuntando : mouseSensivility;
+        // Con la mira telescópica puesta (US 009) el mouse va más lento en proporción al zoom, y encima se aplica la
+        // sensibilidad de mira de Opciones (US 155).
+        bool apuntando = MiraTelescopica.Puesta;
+        float sensibilidad = apuntando
+            ? mouseSensivility * sensibilidadApuntando * MiraTelescopica.EscalaSensibilidad
+            : mouseSensivility;
 
         float mouseX =
             Input.GetAxis("Mouse X") * sensibilidad;

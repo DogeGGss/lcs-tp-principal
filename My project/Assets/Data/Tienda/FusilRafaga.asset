@@ -31,7 +31,7 @@ MonoBehaviour:
   reloadTime: 2.5
   reloadPerShell: 0
   mobility: 0.93
-  zoom: 1.25
+  zoom: 0
   zoom2: 0
   pellets: 1
   penetration: Media
@@ -55,6 +55,13 @@ MonoBehaviour:
   recoilSwayShots: 4
   recoilRecovery: 0.12
   recoilPunch: 0.5
+  recoilPoints: []
+  recoilLateClimb: 0
+  recoilDrift: 0
+  recoilSwayBlocks: 0
+  recoilSwayGrowth: 0
+  recoilSwayBias: 0
+  recoilVariation: 0
   shieldPoints: 0
   grenadeType: 0
   maxCarry: 1
