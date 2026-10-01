@@ -111,6 +111,11 @@ public class MatchHud : MonoBehaviour
     private readonly Dictionary<string, int> deaths = new Dictionary<string, int>();
 
     public int KillsOf(string name) => Count(kills, name);
+
+    // US 034: para que otras pantallas usen las mismas tipografías.
+    public TMP_FontAsset DisplayFont => displayFont;
+    public TMP_FontAsset LabelFont => labelFont;
+    public Sprite Rounded => rounded;
     public int DeathsOf(string name) => Count(deaths, name);
 
     // =====================================================================

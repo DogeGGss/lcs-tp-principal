@@ -45,7 +45,11 @@ public class RondasTacticas : MonoBehaviour
 
     private const string PropRonda = "rt.ronda", PropFase = "rt.fase", PropFin = "rt.fin", PropGanador = "rt.gan",
         PropMotivo = "rt.mot", PropRondas0 = "rt.e0", PropRondas1 = "rt.e1", PropSubita = "rt.sub",
-        PropDispositivo = "rt.disp", PropLugar = "rt.lugar", PropDesactivado = "rt.desact";
+        PropDispositivo = "rt.disp", PropLugar = "rt.lugar", PropDesactivado = "rt.desact",
+        PropPlantador = "rt.plantador", PropDesactivador = "rt.desactivador";
+
+    /// <summary>US 034: estadísticas que cada jugador publica de sí mismo (plantadas y desactivaciones).</summary>
+    public const string PropPlantadas = "st.pl", PropDesactivaciones = "st.des";
 
     public static RondasTacticas Actual { get; private set; }
 
@@ -221,22 +225,29 @@ public class RondasTacticas : MonoBehaviour
     private bool Eliminado(int equipo) => equipo >= 0 && Jugadores(equipo) > 0 && Vivos(equipo) == 0;
 
     /// <summary>US 131: se terminó de plantar el dispositivo en "lugar". Lo puede llamar cualquier computadora.</summary>
-    public static void Plantar(Vector3 lugar)
+    /// actor: el jugador que lo plantó (por defecto, el de esta computadora); suma en sus estadísticas (US 034).
+    public static void Plantar(Vector3 lugar, int actor = 0)
     {
         RondasTacticas r = Actual;
         if (r == null || r.FaseActual != Fase.Combate || r.HayDispositivo) return;
+        if (actor == 0) actor = PhotonNetwork.LocalPlayer.ActorNumber;
         // Solo se aplica si sigue siendo la misma ronda en combate y nadie lo plantó antes.
         Sala.SetCustomProperties(
-            new Hashtable { { PropDispositivo, 1 }, { PropLugar, lugar }, { PropFin, Ahora + Ms(DuracionDispositivo) } },
+            new Hashtable
+            {
+                { PropDispositivo, 1 }, { PropLugar, lugar }, { PropFin, Ahora + Ms(DuracionDispositivo) }, { PropPlantador, actor }
+            },
             new Hashtable { { PropRonda, r.Ronda }, { PropFase, (int)Fase.Combate }, { PropDispositivo, 0 } });
     }
 
     /// <summary>US 132: un defensor terminó de desactivar el dispositivo. Lo puede llamar cualquier computadora.</summary>
-    public static void Desactivar()
+    /// actor: el jugador que lo desactivó (por defecto, el de esta computadora); suma en sus estadísticas (US 034).
+    public static void Desactivar(int actor = 0)
     {
         RondasTacticas r = Actual;
         if (r == null || r.FaseActual != Fase.Combate || !r.HayDispositivo) return;
-        Sala.SetCustomProperties(new Hashtable { { PropDesactivado, 1 } },
+        if (actor == 0) actor = PhotonNetwork.LocalPlayer.ActorNumber;
+        Sala.SetCustomProperties(new Hashtable { { PropDesactivado, 1 }, { PropDesactivador, actor } },
             new Hashtable { { PropRonda, r.Ronda }, { PropFase, (int)Fase.Combate }, { PropDispositivo, 1 } });
     }
 
@@ -343,7 +354,7 @@ public class RondasTacticas : MonoBehaviour
             case Fase.Terminada:
                 BloquearArmas(false);
                 if (!primeraVez && MotivoActual == Motivo.DispositivoExploto) Explotar();
-                CartelFinDePartida();
+                ResultadoPartida.Mostrar(this); // US 034
                 if (!primeraVez) RondaTerminada?.Invoke(Ganador, MotivoActual);
                 PartidaTerminada?.Invoke(Ganador);
                 break;
@@ -361,8 +372,16 @@ public class RondasTacticas : MonoBehaviour
         int estado = !HayDispositivo ? 0 : desactivado ? 2 : 1;
         if (estado != dispositivoVisto)
         {
-            if (estado == 1 && !primeraVez) DispositivoPlantado?.Invoke(LugarDelDispositivo);
-            if (estado == 2) DispositivoDesactivado?.Invoke();
+            if (estado == 1 && !primeraVez)
+            {
+                DispositivoPlantado?.Invoke(LugarDelDispositivo);
+                if (Leer(PropPlantador, 0) == PhotonNetwork.LocalPlayer.ActorNumber) Sumar(PropPlantadas); // US 034
+            }
+            if (estado == 2)
+            {
+                DispositivoDesactivado?.Invoke();
+                if (!primeraVez && Leer(PropDesactivador, 0) == PhotonNetwork.LocalPlayer.ActorNumber) Sumar(PropDesactivaciones);
+            }
             dispositivoVisto = estado;
         }
 
@@ -419,13 +438,13 @@ public class RondasTacticas : MonoBehaviour
             null, Mathf.Max(0.5f, Restante), "Siguiente ronda en {0}");
     }
 
-    // US 034 arma la pantalla final; mientras tanto queda este cartel.
-    private void CartelFinDePartida()
+    // US 034: cada uno publica sus propias plantadas y desactivaciones, así todos las ven en el resultado.
+    private static void Sumar(string clave)
     {
-        int mio = Mathf.Max(0, EquiposTacticos.Local);
-        bool gane = Ganador == mio;
-        MatchHud.ShowBanner("Fin de la partida", gane ? "Victoria" : "Derrota",
-            gane ? MatchHud.TeamColor : MatchHud.RivalColor, $"{TextoMotivo(gane)}  ·  {Resultado(mio)}", null, 0f);
+        Player yo = PhotonNetwork.LocalPlayer;
+        if (yo == null) return;
+        int actual = yo.CustomProperties.TryGetValue(clave, out object v) && v is int n ? n : 0;
+        yo.SetCustomProperties(new Hashtable { { clave, actual + 1 } });
     }
 
     private string TextoMotivo(bool gane)
