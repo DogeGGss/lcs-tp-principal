@@ -136,7 +136,8 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
 
         if (MatchSettings.Mode == GameMode.Deathmatch)
             StartCoroutine(Reaparecer(titulo, ConfigRed.Actual != null ? ConfigRed.Actual.reaparicion : 3f));
-        else
+        // US 033: si la ronda ya terminó (por ejemplo, lo eliminó la explosión), el cartel de fin de ronda ya lo explica.
+        else if (RondasTacticas.Actual == null || RondasTacticas.Actual.FaseActual == RondasTacticas.Fase.Combate)
             partida.Aviso(titulo, "Reaparecés en la ronda siguiente.");
     }
 
@@ -186,6 +187,15 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
         Bloquear(false);
         vida.Invulnerable = false;
         photonView.RPC(nameof(RpcReaparecio), RpcTarget.Others, punto.position, punto.rotation.eulerAngles.y);
+    }
+
+    /// <summary>US 033: lo elimina la explosión del dispositivo (también lo usa la prueba solo).</summary>
+    public void Eliminar()
+    {
+        if (photonView == null || !photonView.IsMine || muerto || vida == null) return;
+        ultimoAtacante = 0;
+        vida.Invulnerable = false;
+        vida.TakeDamage(vida.currentHealth + vida.currentShield + 1);
     }
 
     // Muerto no se mueve, no dispara ni cambia de arma; puede seguir mirando alrededor.
@@ -344,7 +354,6 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
         Quitar<WeaponSwitcher>(go);
         Quitar<Pistola>(go);
         Quitar<Mitre>(go);
-        Quitar<MiraTelescopica>(go);
         Quitar<ArmaDeFuego>(go);
         Quitar<MeleeAttack>(go);
         Quitar<PlayerAbility>(go);

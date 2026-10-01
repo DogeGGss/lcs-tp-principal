@@ -17,21 +17,35 @@ using UnityEngine;
 // Cómo funciona: el anfitrión decide los cambios de fase y los publica como propiedades de la sala (ronda, fase,
 // hora del servidor en que termina la fase, rondas ganadas). Cada computadora lee esas propiedades y hace lo suyo
 // (reubicar al jugador local, la tienda, los carteles). Si el anfitrión se va, Photon elige otro y sigue igual.
+// Ganador de la ronda (US 033), en DecidirGanador:
+// - CA1: si el dispositivo plantado llega a 0, explota y ganan los atacantes (aunque no quede ninguno vivo);
+//   la explosión elimina a los que estén a menos de RadioExplosion metros.
+// - CA2: si un defensor lo desactiva, ganan los defensores.
+// - CA3: si mueren todos los defensores, ganan los atacantes.
+// - CA4: si mueren todos los atacantes antes de plantar, ganan los defensores; con el dispositivo plantado la
+//   ronda sigue hasta que explote o lo desactiven.
+// - CA5: si se termina el tiempo sin plantar, ganan los defensores.
+// - CA6: el ganador suma una ronda y se pasa al cartel de fin de ronda; con 7, termina la partida.
 // Para las otras US:
-// - US 033: DecidirGanador() tiene la regla base (eliminación, o gana el que defiende si se acaba el tiempo).
-// - US 131 / 132: FijarFinDeCombate(segundos) al plantar y TerminarRonda(equipo, motivo) al explotar o desactivar.
+// - US 131: RondasTacticas.Plantar(lugar) cuando se termina de plantar: el reloj pasa a los 45 s del dispositivo.
+// - US 132: RondasTacticas.Desactivar() cuando un defensor termina de desactivarlo.
+//   Los eventos DispositivoPlantado / DispositivoExploto / DispositivoDesactivado llegan a todas las computadoras
+//   (para el modelo, los sonidos y la explosión).
 // - US 034: evento PartidaTerminada(equipo ganador). US 135: evento RondaTerminada(equipo ganador, motivo).
 // Lo agrega PartidaEnRed al empezar una partida del Modo Táctico.
 public class RondasTacticas : MonoBehaviour
 {
     public const float DuracionCompra = 20f, DuracionCombate = 100f, DuracionCartel = 5f, DuracionAviso = 4f;
     public const int PlataInicial = 800, PlataMuerteSubita = 5000;
+    public const float DuracionDispositivo = 45f; // F07: 45 s de dispositivo plantado
+    public const float RadioExplosion = 12f;      // US 033, CA1: metros alrededor del dispositivo
 
     public enum Fase { Compra, Combate, FinDeRonda, Terminada }
     public enum Motivo { Eliminacion, Tiempo, DispositivoExploto, DispositivoDesactivado }
 
     private const string PropRonda = "rt.ronda", PropFase = "rt.fase", PropFin = "rt.fin", PropGanador = "rt.gan",
-        PropMotivo = "rt.mot", PropRondas0 = "rt.e0", PropRondas1 = "rt.e1", PropSubita = "rt.sub";
+        PropMotivo = "rt.mot", PropRondas0 = "rt.e0", PropRondas1 = "rt.e1", PropSubita = "rt.sub",
+        PropDispositivo = "rt.disp", PropLugar = "rt.lugar", PropDesactivado = "rt.desact";
 
     public static RondasTacticas Actual { get; private set; }
 
@@ -40,6 +54,10 @@ public class RondasTacticas : MonoBehaviour
 
     /// <summary>US 033 / US 135: terminó una ronda (equipo ganador, motivo). Llega en todas las computadoras.</summary>
     public static event System.Action<int, Motivo> RondaTerminada;
+
+    /// <summary>US 131 / 132: el dispositivo se plantó, explotó o se desactivó (llega en todas las computadoras).</summary>
+    public static event System.Action<Vector3> DispositivoPlantado, DispositivoExploto;
+    public static event System.Action DispositivoDesactivado;
 
     public static int RondasParaGanar => MarcadorTactico.RondasParaGanar;
     /// <summary>La ronda 13: solo se llega con 6 a 6.</summary>
@@ -55,6 +73,12 @@ public class RondasTacticas : MonoBehaviour
     public bool EsMuerteSubita => Ronda >= RondaMuerteSubita;
     public int RondasDe(int equipo) => Leer(equipo == 0 ? PropRondas0 : PropRondas1, 0);
 
+    /// <summary>US 033: el dispositivo está plantado en esta ronda.</summary>
+    public bool HayDispositivo => Leer(PropDispositivo, 0) == 1;
+    /// <summary>Dónde se plantó el dispositivo de esta ronda.</summary>
+    public Vector3 LugarDelDispositivo =>
+        Sala != null && Sala.CustomProperties.TryGetValue(PropLugar, out object v) && v is Vector3 lugar ? lugar : Vector3.zero;
+
     /// <summary>Segundos que le quedan a la fase actual (según la hora del servidor, igual en todas las computadoras).</summary>
     public float Restante => Listo ? Mathf.Max(0f, unchecked(Leer(PropFin, Ahora) - Ahora) / 1000f) : 0f;
 
@@ -66,6 +90,7 @@ public class RondasTacticas : MonoBehaviour
     private Fase faseVista;
     private bool primeraVez = true;
     private float esperaAnfitrion;
+    private int dispositivoVisto;
     private Vector3? ultimoDentro;
     private readonly List<Behaviour> armasBloqueadas = new List<Behaviour>();
 
@@ -83,13 +108,14 @@ public class RondasTacticas : MonoBehaviour
             Publicar(new Hashtable
             {
                 { PropRonda, 1 }, { PropFase, (int)Fase.Compra }, { PropFin, Ahora + Ms(DuracionCompra) },
-                { PropRondas0, 0 }, { PropRondas1, 0 }, { PropGanador, -1 }
+                { PropRondas0, 0 }, { PropRondas1, 0 }, { PropGanador, -1 }, { PropDispositivo, 0 }, { PropDesactivado, 0 }
             });
 
         MarcadorTactico.TiempoDeRonda = TiempoDeCombate;
         ArrancarMusica();
         if (PruebaSolo.Activa)
-            Debug.Log("Prueba solo (Táctico): F9 gana tu equipo · F10 gana el rival · F11 salta la fase · F8 pone 6 a 6.");
+            Debug.Log("Prueba solo (Táctico): F5 morir · F6 plantar acá · F7 desactivar · F9 gana tu equipo · " +
+                      "F10 gana el rival · F11 salta la fase · F8 pone 6 a 6.");
     }
 
     private void OnDestroy()
@@ -123,6 +149,8 @@ public class RondasTacticas : MonoBehaviour
 
         if (fase == Fase.Compra) { EncerrarEnBase(); Ayuda(); }
         else MatchHud.SetHint(null);
+
+        VerDispositivo(fase);
 
         MarcadorTactico.SetRondas(RondasDe(0), RondasDe(1));
     }
@@ -159,23 +187,57 @@ public class RondasTacticas : MonoBehaviour
     }
 
     /// <summary>
-    /// US 033 (regla base): gana el equipo que deja al otro sin jugadores vivos; si se acaba el tiempo, gana el que
-    /// defiende. Un equipo sin jugadores (por ejemplo, probando solo) no pierde por eliminación.
+    /// US 033: decide si la ronda terminó y quién ganó. Un equipo sin jugadores (por ejemplo, probando solo) no
+    /// pierde por eliminación.
     /// </summary>
     private bool DecidirGanador(out int ganador, out Motivo motivo)
     {
-        motivo = Motivo.Eliminacion;
-        for (int equipo = 0; equipo < 2; equipo++)
+        int atacante = EquipoDelLado(LadoTactico.Atacante);
+        int defensor = EquipoDelLado(LadoTactico.Defensor);
+        bool sinDefensores = Eliminado(defensor);
+
+        if (HayDispositivo)
         {
-            if (Jugadores(equipo) > 0 && Vivos(equipo) == 0)
-            {
-                ganador = 1 - equipo;
-                return true;
-            }
+            // CA2: lo desactivaron.
+            if (Leer(PropDesactivado, 0) == 1) { ganador = defensor; motivo = Motivo.DispositivoDesactivado; return true; }
+            // CA1: llegó a 0 sin que lo desactiven (aunque no quede ningún atacante vivo).
+            if (Restante <= 0f) { ganador = atacante; motivo = Motivo.DispositivoExploto; return true; }
+            // CA3: murieron todos los defensores.
+            if (sinDefensores) { ganador = atacante; motivo = Motivo.Eliminacion; return true; }
+            // CA4: si murieron los atacantes, la ronda sigue hasta que explote o lo desactiven.
+            ganador = -1; motivo = Motivo.Eliminacion;
+            return false;
         }
+
+        // CA3 y CA4 (sin plantar).
+        if (sinDefensores) { ganador = atacante; motivo = Motivo.Eliminacion; return true; }
+        if (Eliminado(atacante)) { ganador = defensor; motivo = Motivo.Eliminacion; return true; }
+        // CA5: se terminó el tiempo sin plantar.
+        ganador = defensor;
         motivo = Motivo.Tiempo;
-        ganador = EquipoDelLado(LadoTactico.Defensor);
         return Restante <= 0f;
+    }
+
+    private bool Eliminado(int equipo) => equipo >= 0 && Jugadores(equipo) > 0 && Vivos(equipo) == 0;
+
+    /// <summary>US 131: se terminó de plantar el dispositivo en "lugar". Lo puede llamar cualquier computadora.</summary>
+    public static void Plantar(Vector3 lugar)
+    {
+        RondasTacticas r = Actual;
+        if (r == null || r.FaseActual != Fase.Combate || r.HayDispositivo) return;
+        // Solo se aplica si sigue siendo la misma ronda en combate y nadie lo plantó antes.
+        Sala.SetCustomProperties(
+            new Hashtable { { PropDispositivo, 1 }, { PropLugar, lugar }, { PropFin, Ahora + Ms(DuracionDispositivo) } },
+            new Hashtable { { PropRonda, r.Ronda }, { PropFase, (int)Fase.Combate }, { PropDispositivo, 0 } });
+    }
+
+    /// <summary>US 132: un defensor terminó de desactivar el dispositivo. Lo puede llamar cualquier computadora.</summary>
+    public static void Desactivar()
+    {
+        RondasTacticas r = Actual;
+        if (r == null || r.FaseActual != Fase.Combate || !r.HayDispositivo) return;
+        Sala.SetCustomProperties(new Hashtable { { PropDesactivado, 1 } },
+            new Hashtable { { PropRonda, r.Ronda }, { PropFase, (int)Fase.Combate }, { PropDispositivo, 1 } });
     }
 
     /// <summary>US 131 (solo el anfitrión): el combate pasa a terminar en "segundos" (por ejemplo, 45 s al plantar).</summary>
@@ -209,7 +271,8 @@ public class RondasTacticas : MonoBehaviour
         int ronda = Ronda + 1;
         var datos = new Hashtable
         {
-            { PropRonda, ronda }, { PropFase, (int)Fase.Compra }, { PropFin, Ahora + Ms(DuracionCompra) }, { PropGanador, -1 }
+            { PropRonda, ronda }, { PropFase, (int)Fase.Compra }, { PropFin, Ahora + Ms(DuracionCompra) }, { PropGanador, -1 },
+            { PropDispositivo, 0 }, { PropDesactivado, 0 }
         };
         if (ronda == RondaMuerteSubita) datos[PropSubita] = Random.Range(0, 2); // CA6: nuevo sorteo de lados
         Publicar(datos, true);
@@ -272,17 +335,49 @@ public class RondasTacticas : MonoBehaviour
             case Fase.FinDeRonda:
                 BloquearArmas(false);
                 if (primeraVez) break;
+                if (MotivoActual == Motivo.DispositivoExploto) Explotar();
                 CartelFinDeRonda(ronda);
                 RondaTerminada?.Invoke(Ganador, MotivoActual);
                 break;
 
             case Fase.Terminada:
                 BloquearArmas(false);
+                if (!primeraVez && MotivoActual == Motivo.DispositivoExploto) Explotar();
                 CartelFinDePartida();
                 if (!primeraVez) RondaTerminada?.Invoke(Ganador, MotivoActual);
                 PartidaTerminada?.Invoke(Ganador);
                 break;
         }
+    }
+
+    // =====================================================================
+    // Dispositivo (US 033; plantar y desactivar son de las US 131 y 132)
+    // =====================================================================
+
+    // Avisa los cambios del dispositivo y le pasa al marcador el tiempo que le queda.
+    private void VerDispositivo(Fase fase)
+    {
+        bool desactivado = Leer(PropDesactivado, 0) == 1;
+        int estado = !HayDispositivo ? 0 : desactivado ? 2 : 1;
+        if (estado != dispositivoVisto)
+        {
+            if (estado == 1 && !primeraVez) DispositivoPlantado?.Invoke(LugarDelDispositivo);
+            if (estado == 2) DispositivoDesactivado?.Invoke();
+            dispositivoVisto = estado;
+        }
+
+        if (estado == 1 && fase == Fase.Combate) MarcadorTactico.SetDispositivo(Restante); // US 134, CA3
+        else MarcadorTactico.ClearDispositivo();
+    }
+
+    // CA1: la explosión elimina al jugador local si está cerca del dispositivo.
+    private void Explotar()
+    {
+        Vector3 lugar = LugarDelDispositivo;
+        DispositivoExploto?.Invoke(lugar);
+        JugadorEnRed local = partida != null ? partida.Local : null;
+        if (local != null && local.Vivo && Vector3.Distance(local.transform.position, lugar) <= RadioExplosion)
+            local.Eliminar();
     }
 
     private void EmpezarRonda(int ronda)
@@ -445,7 +540,11 @@ public class RondasTacticas : MonoBehaviour
         Fase fase = FaseActual;
         if (fase == Fase.Terminada) return;
 
-        if (Input.GetKeyDown(KeyCode.F9)) ForzarGanador(mio);
+        JugadorEnRed local = partida != null ? partida.Local : null;
+        if (Input.GetKeyDown(KeyCode.F5) && local != null) local.Eliminar();                    // morir
+        else if (Input.GetKeyDown(KeyCode.F6) && local != null) Plantar(local.transform.position); // plantar acá
+        else if (Input.GetKeyDown(KeyCode.F7)) Desactivar();
+        else if (Input.GetKeyDown(KeyCode.F9)) ForzarGanador(mio);
         else if (Input.GetKeyDown(KeyCode.F10)) ForzarGanador(1 - mio);
         else if (Input.GetKeyDown(KeyCode.F11))
         {
