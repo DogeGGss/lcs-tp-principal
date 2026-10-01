@@ -13,19 +13,15 @@ public enum LadoTactico { Cualquiera, Atacante, Defensor }
 //   El reparto se guarda en las propiedades de la sala de Photon, así todos los jugadores lo leen igual.
 // - Un equipo ataca y el otro defiende en las rondas 1 a 6; en la ronda 7 se intercambian (LadoDeEquipo).
 // - SonAliados dice si dos jugadores son del mismo equipo: lo usan las armas, el cuchillo y las granadas
-//   para no dañar a los compañeros (CA6), y el cartel de los jugadores para pintar aliados y rivales (CA5).
+//   para no dañar a los compañeros (CA6), y EsRival dice a quién se le dibuja el contorno rojo (CA5).
 // Fuera del Táctico (o sin sala) no hay equipos y todo funciona como antes: HayEquipos es false.
 public static class EquiposTacticos
 {
     public const int MaxPorEquipo = 4;
     public const int RondaDeCambio = 7;
 
-    // Colores del nombre sobre la cabeza: aliados en verde y rivales en rojo (CA5).
-    public const string HexAliado = "#3DDC97";
-    public const string HexRival = "#FF5C5C";
-
-    // SOLO PARA PROBAR: con true, todos los jugadores quedan en el mismo equipo. Sirve para probar el
-    // nombre de los aliados y el "sin fuego amigo" con dos instancias del juego. Dejalo en false.
+    // SOLO PARA PROBAR: con true, todos los jugadores quedan en el mismo equipo. Sirve para probar que los
+    // aliados no tienen contorno y el "sin fuego amigo" con dos instancias del juego. Dejalo en false.
     public static bool PruebaTodosAliados = false;
 
     private const string PropAtacante = "eqAtq"; // equipo (0 o 1) que ataca en las rondas 1 a 6
@@ -128,11 +124,13 @@ public static class EquiposTacticos
         return SonAliados(a.Actor, b.Actor);
     }
 
-    // CA5: color (en hexadecimal) con que se pinta el nombre de un jugador. null si no hay equipos.
-    public static string ColorHexDe(int actor)
+    // CA5: si el jugador de esta computadora tiene que ver a ese jugador como rival (con el contorno rojo, ContornoRival).
+    // Sin equipos (Deathmatch, o el Táctico antes del reparto) todos son rivales; en Zombie se juega juntos.
+    public static bool EsRival(int actor)
     {
-        if (!HayEquipos || DeActor(actor) < 0) return null;
-        return SonAliados(PhotonNetwork.LocalPlayer.ActorNumber, actor) ? HexAliado : HexRival;
+        if (MatchSettings.Mode == GameMode.Zombie) return false;
+        if (!HayEquipos || DeActor(actor) < 0) return true;
+        return !SonAliados(PhotonNetwork.LocalPlayer.ActorNumber, actor);
     }
 
     private static string Clave(int actor)

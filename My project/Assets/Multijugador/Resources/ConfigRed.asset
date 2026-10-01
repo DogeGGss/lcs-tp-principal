@@ -23,6 +23,7 @@ MonoBehaviour:
     tactico: 1
     deathmatch: 1
   trazadora: {fileID: 2100000, guid: 01dc322130393b24d97d92fa78f81228, type: 2}
+  contornoRival: {fileID: 2100000, guid: a6d54a5dc7201b3439d1a2d1a5f6a79f, type: 2}
   reaparicion: 3
   invulnerabilidad: 2
   musicaTactico: {fileID: 8300000, guid: 51d8b945ae6fb2e429d9e477307b4818, type: 3}

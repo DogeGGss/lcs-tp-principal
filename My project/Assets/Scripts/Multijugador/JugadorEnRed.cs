@@ -2,7 +2,6 @@ using System.Collections;
 using System.Collections.Generic;
 using Photon.Pun;
 using Photon.Realtime;
-using TMPro;
 using UnityEngine;
 using UnityEngine.Audio;
 
@@ -48,7 +47,6 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
     private AudioSource sonido;
     private AudioClip sonidoPistola, sonidoCuchillo;
     private readonly List<AudioClip> sonidosPrincipales = new List<AudioClip>();
-    private TextMeshPro cartel;
     private Coroutine caida;
 
     public bool Vivo => !muerto;
@@ -426,7 +424,9 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
                     photonView.RPC(nameof(RpcDanio), photonView.Owner, danio, PhotonNetwork.LocalPlayer.ActorNumber);
             };
 
-        CrearCartel();
+        // US 031, CA5: a los rivales se los reconoce por el contorno rojo, como en Valorant. No se ve su nombre ni su vida.
+        ContornoRival.Crear(gameObject, modelo, ConfigRed.Actual != null ? ConfigRed.Actual.contornoRival : null,
+            () => Vivo && EquiposTacticos.EsRival(Actor));
     }
 
     private void Update()
@@ -469,7 +469,6 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
         if (vida != null) vida.Invulnerable = (banderasRed & Invulnerable) != 0;
 
         MostrarArma(muerto ? SinArma : armaRed);
-        ActualizarCartel();
     }
 
     private void MostrarArma(byte arma)
@@ -593,41 +592,6 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
             yield return null;
         }
         modelo.localRotation = hasta;
-    }
-
-    // Nombre y vida arriba de la cabeza (US 029, CA3: todos ven la misma vida).
-    private void CrearCartel()
-    {
-        var go = new GameObject("Nombre");
-        go.transform.SetParent(transform, false);
-        go.transform.localPosition = new Vector3(0f, 1.35f, 0f);
-        cartel = go.AddComponent<TextMeshPro>();
-        cartel.fontSize = 2.2f;
-        cartel.alignment = TextAlignmentOptions.Center;
-        cartel.textWrappingMode = TextWrappingModes.NoWrap;
-        cartel.rectTransform.sizeDelta = new Vector2(3f, 0.6f);
-        cartel.outlineWidth = 0.25f;
-        cartel.outlineColor = new Color32(0, 0, 0, 220);
-    }
-
-    private void ActualizarCartel()
-    {
-        if (cartel == null) return;
-        cartel.gameObject.SetActive(!muerto);
-        if (muerto) return;
-
-        int llenas = vida != null ? Mathf.CeilToInt(10f * vida.currentHealth / Mathf.Max(1, vida.maxHealth)) : 10;
-        int escudo = vida != null && vida.currentShield > 0 ? Mathf.CeilToInt(5f * vida.currentShield / Mathf.Max(1, vida.maxShield)) : 0;
-        string barra = "<color=#7DE05A>" + new string('|', llenas) + "</color><color=#FFFFFF40>" + new string('|', 10 - llenas) + "</color>";
-        if (escudo > 0) barra += " <color=#6CB8FF>" + new string('|', escudo) + "</color>";
-        // US 031, CA5: en Táctico el nombre va en verde si es aliado y en rojo si es rival.
-        string nombre = Nombre;
-        string tinte = EquiposTacticos.ColorHexDe(Actor);
-        if (tinte != null) nombre = $"<color={tinte}>{nombre}</color>";
-        cartel.text = nombre + "\n<size=70%>" + barra + "</size>";
-
-        Camera mirando = Camera.main;
-        if (mirando != null) cartel.transform.rotation = mirando.transform.rotation;
     }
 
     // =====================================================================

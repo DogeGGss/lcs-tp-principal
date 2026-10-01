@@ -26,6 +26,9 @@ public class ConfigRed : ScriptableObject
     [Tooltip("Material de la trazadora de los disparos de los demás jugadores (US 028).")]
     public Material trazadora;
 
+    [Tooltip("Material del contorno rojo de los rivales (US 031, CA5), con el shader Efectos/ContornoRival.")]
+    public Material contornoRival;
+
     [Header("Deathmatch (US 030 y US 137)")]
     [Tooltip("Segundos entre la muerte y la reaparición.")]
     public float reaparicion = 3f;
