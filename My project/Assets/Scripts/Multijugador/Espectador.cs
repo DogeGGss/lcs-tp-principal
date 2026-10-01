@@ -31,6 +31,7 @@ public class Espectador : MonoBehaviour
     private Quaternion camaraRot;
     private readonly List<Behaviour> apagados = new List<Behaviour>();
     private readonly List<Renderer> ocultos = new List<Renderer>();
+    private readonly List<Renderer> armasOcultas = new List<Renderer>(); // el arma en la mano del que murió
 
     // Cartel de abajo con el nombre del compañero.
     private GameObject cartel;
@@ -141,7 +142,17 @@ public class Espectador : MonoBehaviour
                 apagados.Add(c);
             }
         }
+        // El arma en la mano cuelga de la cámara: si no se oculta, se ve al mirar a un compañero o al dispositivo.
+        OcultarArmas(local.Ojos);
+        if (camara != null) OcultarArmas(camara.transform);
         // Comprar: la tienda solo abre en la fase de compra, y ahí no se puede morir (no se dispara).
+    }
+
+    private void OcultarArmas(Transform raiz)
+    {
+        if (raiz == null) return;
+        foreach (Renderer r in raiz.GetComponentsInChildren<Renderer>(true))
+            if (r.enabled) { r.enabled = false; armasOcultas.Add(r); }
     }
 
     private void Terminar()
@@ -156,6 +167,8 @@ public class Espectador : MonoBehaviour
         }
         foreach (Behaviour c in apagados) if (c != null) c.enabled = true;
         apagados.Clear();
+        foreach (Renderer r in armasOcultas) if (r != null) r.enabled = true;
+        armasOcultas.Clear();
         if (cartel != null) cartel.SetActive(false);
     }
 
