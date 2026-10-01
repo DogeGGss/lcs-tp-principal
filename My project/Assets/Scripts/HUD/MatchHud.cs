@@ -80,7 +80,8 @@ public class MatchHud : MonoBehaviour
 
     // Centro
     private RectTransform marker;
-    private Img centerBg, centerEdge, alertIcon;
+    private Img centerBg, centerEdge, alertIcon, deviceLight;
+    private GameObject deviceIcon; // US 134, CA3: ícono del dispositivo plantado
     private TextMeshProUGUI centerLabel, clock, centerSub;
     private bool modeSetCenter;
 
@@ -159,6 +160,16 @@ public class MatchHud : MonoBehaviour
         clock = Text(Place(Node("Reloj", center), 0f, 22f, CenterW, 38f), displayFont, 40f, Ink, TextAlignmentOptions.Center, 2f);
         alertIcon = Image(Place(Node("Alerta", center), CenterW / 2f - 64f, 31f, 20f, 20f), rounded, RivalColor, 10f);
         Image(Place(Node("Centro", alertIcon.rectTransform), 6f, 6f, 8f, 8f), rounded, Rgb(10, 12, 17), 4f);
+
+        // Dispositivo: una cajita roja con antena y una luz que titila.
+        RectTransform device = Place(Node("Dispositivo", center), CenterW / 2f - 72f, 27f, 28f, 28f);
+        Image(Place(Node("Antena", device), 6f, 0f, 3f, 8f), null, RivalColor);
+        Image(Place(Node("Caja", device), 0f, 7f, 28f, 20f), rounded, RivalColor, 4f);
+        Image(Place(Node("Frente", device), 2f, 9f, 24f, 16f), rounded, Rgb(30, 10, 12), 3f);
+        Image(Place(Node("Cable", device), 5f, 15f, 10f, 3f), null, WithAlpha(RivalColor, 0.6f));
+        deviceLight = Image(Place(Node("Luz", device), 17f, 13f, 7f, 7f), rounded, RivalColor, 3.5f);
+        deviceIcon = device.gameObject;
+        deviceIcon.SetActive(false);
         centerSub = Text(Place(Node("Detalle", center), 0f, 58f, CenterW, 14f), labelFont, 13f, Mute, TextAlignmentOptions.Center, 14f, true);
 
         for (int i = 0; i < 2; i++)
@@ -216,6 +227,18 @@ public class MatchHud : MonoBehaviour
         if (Instance == null) return;
         Instance.modeSetCenter = true;
         Instance.ShowCenter(label, seconds, sub, red, counter, alert);
+    }
+
+    /// <summary>US 134, CA3: el centro en rojo con el ícono del dispositivo y la cuenta que le queda.</summary>
+    public static void SetCenterDevice(string label, float seconds, string sub = "")
+    {
+        if (Instance == null) return;
+        SetCenter(label, seconds, sub, true, null, true);
+        Instance.alertIcon.gameObject.SetActive(false);
+        Instance.deviceIcon.SetActive(true);
+        // La luz titila más rápido en los últimos 10 segundos.
+        float speed = seconds <= 10f ? 14f : 6f;
+        Instance.deviceLight.color = WithAlpha(RivalColor, 0.35f + 0.65f * Mathf.Abs(Mathf.Sin(Time.unscaledTime * speed)));
     }
 
     /// <summary>Vuelve al comportamiento por defecto (fase de compra, si la hay).</summary>
@@ -289,6 +312,7 @@ public class MatchHud : MonoBehaviour
         centerEdge.enabled = alert;
         centerBg.color = alert ? Over(WithAlpha(RivalColor, 0.18f), Rgb(10, 12, 17)) : Rgb(10, 12, 17, DarkAlpha(0.85f));
         alertIcon.gameObject.SetActive(alert);
+        deviceIcon.SetActive(false);
     }
 
     private void ShowSide(int i, string value, string title, Color color, int count, int filled)
