@@ -44,7 +44,9 @@ public class RondasTacticas : MonoBehaviour
     private static readonly int[] PremiosDerrota = { 1900, 2400, 2900 }; // 1.ª, 2.ª y 3.ª derrota seguida o más
     public const float RadioExplosion = 12f;      // US 033, CA1: metros alrededor del dispositivo
 
-    public enum Fase { Compra, Combate, FinDeRonda, Terminada }
+    // Seleccion (US 016) va al final para no cambiar los números de las otras fases.
+    public enum Fase { Compra, Combate, FinDeRonda, Terminada, Seleccion }
+    public const float DuracionSeleccion = 20f; // US 016, CA1
     public enum Motivo { Eliminacion, Tiempo, DispositivoExploto, DispositivoDesactivado }
 
     private const string PropRonda = "rt.ronda", PropFase = "rt.fase", PropFin = "rt.fin", PropGanador = "rt.gan",
@@ -116,11 +118,13 @@ public class RondasTacticas : MonoBehaviour
         if (PhotonNetwork.IsMasterClient && Sala != null && !Sala.CustomProperties.ContainsKey(PropFase))
             Publicar(new Hashtable
             {
-                { PropRonda, 1 }, { PropFase, (int)Fase.Compra }, { PropFin, Ahora + Ms(DuracionCompra) },
+                // US 016: antes de la ronda 1, 20 s para elegir personaje.
+                { PropRonda, 1 }, { PropFase, (int)Fase.Seleccion }, { PropFin, Ahora + Ms(DuracionSeleccion) },
                 { PropRondas0, 0 }, { PropRondas1, 0 }, { PropGanador, -1 }, { PropDispositivo, 0 }, { PropDesactivado, 0 }
             });
 
         MarcadorTactico.TiempoDeRonda = TiempoDeCombate;
+        gameObject.AddComponent<PersonajesTacticos>().Iniciar(partida); // US 016
         ArrancarMusica();
         if (PruebaSolo.Activa)
             Debug.Log("Prueba solo (Táctico): F4 cobrar una baja · F5 morir · F6 plantar acá · F7 desactivar · F9 gana tu equipo · " +
@@ -183,6 +187,9 @@ public class RondasTacticas : MonoBehaviour
         if (Time.unscaledTime < esperaAnfitrion) return;
         switch (FaseActual)
         {
+            case Fase.Seleccion:
+                if (Restante <= 0f) CambiarFase(Fase.Compra, DuracionCompra); // US 016: termina la selección
+                break;
             case Fase.Compra:
                 if (Restante <= 0f) CambiarFase(Fase.Combate, DuracionCombate); // CA3
                 break;
@@ -339,8 +346,20 @@ public class RondasTacticas : MonoBehaviour
 
     private void AlCambiar(int ronda, Fase fase, bool primeraVez)
     {
+        // US 135, CA1: la partida táctica arranca con $ 800, aunque el Player.prefab o el mapa tengan otra plata
+        // inicial (la tienda la sube para probar sin conexión).
+        if (primeraVez && ronda == 1 && (fase == Fase.Seleccion || fase == Fase.Compra))
+        {
+            PlayerWallet billetera = partida != null && partida.Local != null ? partida.Local.GetComponent<PlayerWallet>() : null;
+            if (billetera != null) billetera.Set(PlataInicial);
+        }
+
         switch (fase)
         {
+            case Fase.Seleccion:
+                BloquearArmas(true); // los controles los traba PersonajesTacticos mientras dura la selección
+                break;
+
             case Fase.Compra:
                 ultimoDentro = null;
                 // La ronda 1 ya arranca en la base con $ 800 y la pistola (CA1). Las siguientes, todos vuelven (CA4).
