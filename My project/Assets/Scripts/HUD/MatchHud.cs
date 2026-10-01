@@ -135,8 +135,8 @@ public class MatchHud : MonoBehaviour
         hudRoot = root;
     }
 
-    private void OnEnable() => WeaponFire.Hit += OnLocalHit;
-    private void OnDisable() => WeaponFire.Hit -= OnLocalHit;
+    private void OnEnable() => WeaponFire.Killed += OnLocalKill;
+    private void OnDisable() => WeaponFire.Killed -= OnLocalKill;
 
     private void OnDestroy()
     {
@@ -458,10 +458,10 @@ public class MatchHud : MonoBehaviour
 
     // Sin conexión, las bajas del jugador salen de sus disparos (zombis y enemigos de prueba).
     // En el multijugador las avisa JugadorEnRed, para que todos vean las mismas.
-    private void OnLocalHit(HitMarkerKind kind)
+    private void OnLocalKill(bool headshot)
     {
-        if (kind != HitMarkerKind.Kill || PhotonNetwork.InRoom) return;
-        ReportKill(LocalName(), combat != null ? combat.WeaponName : "", "Enemigo", TeamColor, RivalColor, false,
+        if (PhotonNetwork.InRoom) return;
+        ReportKill(LocalName(), combat != null ? combat.WeaponName : "", "Enemigo", TeamColor, RivalColor, headshot,
             combat != null ? combat.WeaponIcon : null);
     }
 

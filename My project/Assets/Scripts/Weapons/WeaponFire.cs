@@ -13,6 +13,9 @@ public static class WeaponFire
     // Un disparo que pegó: el HUD muestra el marcador de impacto (US 165).
     public static event System.Action<HitMarkerKind> Hit;
 
+    // Cada baja de un disparo, y si fue a la cabeza: sin conexión, el aviso de baja sale de acá (US 057, CA4).
+    public static event System.Action<bool> Killed;
+
     // Cada disparo, con quién tiró, desde dónde y la dirección de cada perdigón. El multijugador lo repite
     // en las demás computadoras (US 028).
     public static event System.Action<Transform, Vector3, Vector3[]> Fired;
@@ -52,10 +55,14 @@ public static class WeaponFire
             // Se mira antes de aplicar el daño: a un jugador de otra computadora el daño le llega después (US 029).
             int damage = weapon.HitDamage(zone, hit.distance);
             bool lethal = target.WouldDie(damage);
-            target.TakeDamage(damage);
+            target.TakeDamage(damage, zone == BodyZone.Head);
             anyHit = true;
             if (zone == BodyZone.Head) head = true;
-            if (lethal) kill = true;
+            if (lethal)
+            {
+                kill = true;
+                Killed?.Invoke(zone == BodyZone.Head);
+            }
         }
 
         aim.Kick(weapon);
