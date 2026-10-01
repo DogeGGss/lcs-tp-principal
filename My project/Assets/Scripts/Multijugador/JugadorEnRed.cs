@@ -323,6 +323,7 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
         Quitar<WeaponSwitcher>(go);
         Quitar<Pistola>(go);
         Quitar<Mitre>(go);
+        Quitar<MiraTelescopica>(go);
         Quitar<ArmaDeFuego>(go);
         Quitar<MeleeAttack>(go);
         Quitar<PlayerAbility>(go);

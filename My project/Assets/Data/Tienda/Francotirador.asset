@@ -21,8 +21,11 @@ MonoBehaviour:
   tint: {r: 1, g: 1, b: 1, a: 1}
   description: "Un tiro al cuerpo o a la cabeza mata a cualquiera, con escudo o sin \xE9l. Es la \xFAnica arma que lo hace."
   fireMode: Cerrojo
+  automatic: 0
   fireRate: 0.75
   burstCount: 1
+  burstRate: 0
+  equipTime: 1.25
   magazine: 5
   reserve: 10
   reloadTime: 3.7
@@ -33,12 +36,28 @@ MonoBehaviour:
   pellets: 1
   penetration: Alta
   spread: {x: 0, y: 6}
+  spamSpread: 0
+  spamSpreadMax: 0
   recoil: "Sin mira dispara donde quiere; con mira, al centro. Despu\xE9s de cada tiro se recarga el cerrojo (1,33 s)."
   bands:
   - upTo: 0
     head: 255
     body: 150
     legs: 127
+  recoilExactShots: 0
+  recoilKick: 0
+  recoilMaxClimb: 0
+  recoilSway: 0
+  recoilSwayShots: 4
+  recoilRecovery: 0.3
+  recoilPunch: 2.5
+  recoilPoints: []
+  recoilLateClimb: 0
+  recoilDrift: 0
+  recoilSwayBlocks: 0
+  recoilSwayGrowth: 0
+  recoilSwayBias: 0
+  recoilVariation: 0
   shieldPoints: 0
   grenadeType: 0
   maxCarry: 1

@@ -29,13 +29,7 @@ public class Mitre : MonoBehaviour, IHudWeapon
     public float speedMultiplier = 0.92f;
     private bool isEquipping = false;
 
-    [Header("Zoom al apuntar (1.25x)")]
-    public float zoomFactor = 1.25f;
-
-    /// <summary>Verdadero mientras se apunta con la mira del Mitre.</summary>
-    public static bool Aiming { get; private set; }
-    private float defaultFOV;
-    private Camera camComponent;
+    // Sin mira: solo los francotiradores apuntan (US 009).
 
     [Header("Referencias y Audio")]
     public Camera playerCamera;
@@ -83,12 +77,6 @@ public class Mitre : MonoBehaviour, IHudWeapon
             playerCamera = Camera.main;
         }
 
-        if (playerCamera != null)
-        {
-            camComponent = playerCamera.GetComponent<Camera>();
-            if (camComponent != null) defaultFOV = camComponent.fieldOfView;
-        }
-
         audioSource = GetComponent<AudioSource>();
         if (audioSource == null)
         {
@@ -114,7 +102,6 @@ public class Mitre : MonoBehaviour, IHudWeapon
 
     void OnDisable()
     {
-        Aiming = false;
         isReloading = false;
         isEquipping = false;
 
@@ -122,12 +109,6 @@ public class Mitre : MonoBehaviour, IHudWeapon
         if (playerMovement != null)
         {
             // playerMovement.speedMultiplier = 1.0f;
-        }
-
-        // Restaurar Zoom
-        if (camComponent != null)
-        {
-            camComponent.fieldOfView = defaultFOV;
         }
     }
 
@@ -141,9 +122,6 @@ public class Mitre : MonoBehaviour, IHudWeapon
 
     void Update()
     {
-        // Control de zoom con clic derecho
-        HandleZoom();
-
         // Bloqueos de estado
         if (isReloading || isEquipping) return;
 
@@ -180,26 +158,7 @@ public class Mitre : MonoBehaviour, IHudWeapon
         }
 
         // Retroceso, dispersión, zonas, daño por distancia, marcas y marcador de impacto (núcleo de disparo).
-        // Apuntar con el zoom (clic derecho) reduce la dispersión (US 167, CA5).
-        bool aiming = KeyBindings.Held(GameAction.Apuntar) && zoomFactor > 1f;
-        WeaponFire.Fire(Data, playerCamera, shooter, aiming, maxRange);
-    }
-
-    void HandleZoom()
-    {
-        if (camComponent == null) return;
-
-        // Apuntando con la mira: CameraLook usa la sensibilidad al apuntar (US 155).
-        Aiming = KeyBindings.Held(GameAction.Apuntar) && zoomFactor > 1f;
-
-        if (KeyBindings.Held(GameAction.Apuntar)) // Clic derecho mantenido (tecla reasignable)
-        {
-            camComponent.fieldOfView = Mathf.Lerp(camComponent.fieldOfView, defaultFOV / zoomFactor, Time.deltaTime * 10f);
-        }
-        else
-        {
-            camComponent.fieldOfView = Mathf.Lerp(camComponent.fieldOfView, defaultFOV, Time.deltaTime * 10f);
-        }
+        WeaponFire.Fire(Data, playerCamera, shooter, false, maxRange);
     }
 
     private IEnumerator EquipRoutine()

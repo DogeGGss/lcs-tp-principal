@@ -18,6 +18,9 @@ public class EnemyChaser : MonoBehaviour
     [Tooltip("Segundos que tarda en desaparecer después de morir.")]
     public float destroyDelay = 1.5f;
 
+    [Tooltip("Plata que gana el jugador al eliminarlo (por ahora, para llegar a comprar en el mapa de pruebas).")]
+    public int killReward = 300;
+
     private Transform target;
     private HealthSystem health;
     private Collider hitbox;
@@ -88,6 +91,10 @@ public class EnemyChaser : MonoBehaviour
         // Congelamos el cuerpo al morir para que deje de empujar
         rb.linearVelocity = Vector3.zero;
         rb.isKinematic = true;
+
+        // La cápsula solo la puede eliminar el jugador al que persigue.
+        PlayerWallet wallet = target != null ? target.GetComponentInParent<PlayerWallet>() : null;
+        if (wallet != null) wallet.Add(killReward);
 
         Destroy(gameObject, destroyDelay);
     }

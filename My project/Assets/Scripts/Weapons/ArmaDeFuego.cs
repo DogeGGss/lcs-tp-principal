@@ -2,12 +2,14 @@ using System.Collections;
 using UnityEngine;
 using UnityEngine.Audio;
 
-// Arma principal que sale entera de su ficha de la tienda (US 067 Urquiza, US 069 Belgrano Sur y US 070 Roca):
+// Arma principal que sale entera de su ficha de la tienda (US 067 Urquiza, US 068 Último Tren, US 069 Belgrano Sur y
+// US 070 Roca):
 // - automática: dispara mientras se mantiene apretado el botón;
 // - de ráfaga: cada clic tira la ráfaga, aunque se mantenga apretado;
-// - de bombeo: un tiro por clic, con recarga de a un cartucho que se corta disparando.
-// Cadencia, cargador, reserva, recarga, zoom, tiempo para sacarla y velocidad al moverse salen de la ficha; el daño
-// por zona y distancia, la dispersión y el retroceso, del núcleo de disparo (WeaponFire y WeaponAim).
+// - de bombeo o de cerrojo: un tiro por clic; la escopeta recarga de a un cartucho que se corta disparando.
+// Cadencia, cargador, reserva, recarga, tiempo para sacarla y velocidad al moverse salen de la ficha; el daño por zona
+// y distancia, la dispersión y el retroceso, del núcleo de disparo (WeaponFire y WeaponAim). Solo los francotiradores
+// apuntan: llevan además una MiraTelescopica (US 009).
 public class ArmaDeFuego : MonoBehaviour, IHudWeapon
 {
     [Tooltip("Ficha de la tienda de esta arma: de acá salen todos sus números.")]
@@ -33,12 +35,9 @@ public class ArmaDeFuego : MonoBehaviour, IHudWeapon
     public int currentAmmo;
     public int reserveAmmo;
 
-    // Verdadero mientras se apunta con la mira de un arma con zoom: CameraLook usa la sensibilidad al apuntar (US 155).
-    public static bool Aiming { get; private set; }
-
     private AudioSource audioSource;
     private Transform shooter;
-    private float defaultFOV;
+    private MiraTelescopica mira;
     private float nextShot;
     private bool loaded, equipping, reloading, bursting;
     private float reloadStart, reloadDuration = 1f;
@@ -54,7 +53,9 @@ public class ArmaDeFuego : MonoBehaviour, IHudWeapon
     // Velocidad del jugador con esta arma en la mano (por ejemplo, 97 % con el Urquiza).
     public float SpeedMultiplier => shopItem != null && shopItem.mobility > 0f ? shopItem.mobility : 1f;
 
-    private bool CanAim => shopItem.zoom > 1f;
+    // La mira telescópica no se pone mientras se recarga o se saca el arma.
+    public bool Recargando => reloading;
+    public bool Equipando => equipping;
 
     private void Awake()
     {
@@ -68,6 +69,7 @@ public class ArmaDeFuego : MonoBehaviour, IHudWeapon
         audioSource.playOnAwake = false;
         if (sfxGroup != null) audioSource.outputAudioMixerGroup = sfxGroup;
 
+        mira = GetComponent<MiraTelescopica>();
         if (!loaded) Refill();
     }
 
@@ -82,7 +84,6 @@ public class ArmaDeFuego : MonoBehaviour, IHudWeapon
 
     private void OnEnable()
     {
-        if (playerCamera != null) defaultFOV = playerCamera.fieldOfView;
         bursting = false;
         reloading = false;
         StartCoroutine(Equip());
@@ -92,17 +93,14 @@ public class ArmaDeFuego : MonoBehaviour, IHudWeapon
     {
         // Al guardarla (o al abrir la pausa o la tienda) se corta la recarga, como con la pistola.
         StopAllCoroutines();
-        Aiming = false;
         reloading = false;
         bursting = false;
         equipping = false;
-        if (playerCamera != null && defaultFOV > 0f) playerCamera.fieldOfView = defaultFOV;
     }
 
     private void Update()
     {
         if (shopItem == null) return;
-        HandleZoom();
         if (equipping || bursting) return;
 
         bool press = KeyBindings.Down(GameAction.Disparar);
@@ -127,8 +125,12 @@ public class ArmaDeFuego : MonoBehaviour, IHudWeapon
         currentAmmo--;
         if (shootSound != null) audioSource.PlayOneShot(shootSound);
         // Cada perdigón hace su daño por separado; los perdigones y el cono salen de la ficha (US 070, CA1).
-        WeaponFire.Fire(shopItem, playerCamera, shooter, Aiming, alcance);
+        // Con la mira telescópica puesta la dispersión es la de apuntar (US 167, CA5).
+        bool conMira = mira != null && mira.Nivel > 0;
+        WeaponFire.Fire(shopItem, playerCamera, shooter, conMira, alcance);
         if (pumpSound != null && currentAmmo > 0) StartCoroutine(PlayLater(pumpSound, pumpDelay));
+        // Cerrojo: sale de la mira y vuelve sola cuando se puede volver a disparar (US 068, CA3).
+        if (mira != null) mira.AlDisparar(1f / Mathf.Max(0.01f, shopItem.fireRate));
     }
 
     private IEnumerator PlayLater(AudioClip clip, float delay)
@@ -150,14 +152,6 @@ public class ArmaDeFuego : MonoBehaviour, IHudWeapon
         bursting = false;
     }
 
-    private void HandleZoom()
-    {
-        Aiming = CanAim && KeyBindings.Held(GameAction.Apuntar);
-        if (playerCamera == null || !CanAim || defaultFOV <= 0f) return;
-        float target = Aiming ? defaultFOV / shopItem.zoom : defaultFOV;
-        playerCamera.fieldOfView = Mathf.Lerp(playerCamera.fieldOfView, target, Time.deltaTime * 10f);
-    }
-
     private IEnumerator Equip()
     {
         equipping = true;
@@ -168,6 +162,7 @@ public class ArmaDeFuego : MonoBehaviour, IHudWeapon
     private void StartReload()
     {
         reloading = true;
+        if (mira != null) mira.AlRecargar();
         reloadRoutine = StartCoroutine(shopItem.reloadPerShell ? ReloadShells() : ReloadMagazine());
     }
 

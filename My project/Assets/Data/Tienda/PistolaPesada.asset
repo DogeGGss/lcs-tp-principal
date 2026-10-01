@@ -21,18 +21,23 @@ MonoBehaviour:
   tint: {r: 1, g: 1, b: 1, a: 1}
   description: 'El arma de las rondas de ahorro: un tiro a la cabeza mata a cualquiera a menos de 30 m.'
   fireMode: "Semiautom\xE1tica"
+  automatic: 0
   fireRate: 4
   burstCount: 1
+  burstRate: 0
+  equipTime: 1
   magazine: 6
   reserve: 24
   reloadTime: 2.25
   reloadPerShell: 0
   mobility: 1
-  zoom: 1.25
+  zoom: 0
   zoom2: 0
   pellets: 1
   penetration: Media
   spread: {x: 0.25, y: 3}
+  spamSpread: 0
+  spamSpreadMax: 0
   recoil: 'Patada fuerte hacia arriba: para acertar, un tiro cada 0,4 s.'
   bands:
   - upTo: 30
@@ -43,6 +48,20 @@ MonoBehaviour:
     head: 145
     body: 50
     legs: 42
+  recoilExactShots: 0
+  recoilKick: 0
+  recoilMaxClimb: 0
+  recoilSway: 0
+  recoilSwayShots: 4
+  recoilRecovery: 0.3
+  recoilPunch: 0
+  recoilPoints: []
+  recoilLateClimb: 0
+  recoilDrift: 0
+  recoilSwayBlocks: 0
+  recoilSwayGrowth: 0
+  recoilSwayBias: 0
+  recoilVariation: 0
   shieldPoints: 0
   grenadeType: 0
   maxCarry: 1
