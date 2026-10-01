@@ -1025,9 +1025,9 @@ body.capture,body.capture-ms,body.capture-cr{padding-left:0!important}
     <div class="card"><b>Lente.</b> Todo oscuro (#07090C) menos un círculo de 0,94 veces el alto de la pantalla, con el borde suave, un poco de viñeta hacia adentro y un aro naranja fino. A los costados, dos franjas del mismo color.</div>
     <div class="card"><b>Retícula.</b> En naranja (#F29A38), con sombra de 1 px. Cerca del centro, líneas de 2 px con marcas cada 40 px (más largas cada tres), un hueco de 16 px y un punto de 4 px. Desde el 55 % del radio, postes de 7 px a la izquierda, a la derecha y abajo.</div>
     <div class="card"><b>Datos.</b> Arriba del poste izquierdo, el zoom ("2,5×"); arriba del derecho, la distancia a lo que está en el centro ("124 m", o "—" si no hay nada hasta 500 m). Rótulo de 15 px en gris y número de 30 px en JetBrains Mono, sobre una placa oscura.</div>
-    <div class="card"><b>Zoom.</b> El clic derecho pasa por 2,5×, 5× y sin mira (los zooms salen de la ficha). La cámara llega al zoom en 0,12 s y el mouse gira más lento en proporción al zoom, por la sensibilidad de mira de Opciones.</div>
+    <div class="card"><b>Zoom.</b> El clic derecho pasa por 2,5×, 5× y sin mira (los zooms salen de la ficha). La cámara llega al zoom en 0,12 s y el mouse gira más lento en proporción al zoom, por la sensibilidad de mira de Opciones. La mira no cambia la precisión: el francotirador tira igual con ella o sin ella.</div>
     <div class="card"><b>Cerrojo.</b> Al disparar se sale de la mira y vuelve sola al mismo zoom cuando se puede volver a disparar, como el AWP de CS. Recargar, cambiar de arma, pausar o abrir la tienda la sacan.</div>
-    <div class="card"><b>HUD.</b> Con la mira puesta se ocultan el arma, la mira del HUD y el centro del andén (la habilidad y sus rieles). La vida, la munición y el inventario se siguen viendo: la lente va debajo del HUD.</div>
+    <div class="card"><b>HUD.</b> Con un francotirador en la mano no hay mira del HUD, ni siquiera sin la mira telescópica: se tira a ojo, como con el AWP. Con la mira puesta se ocultan además el arma y el centro del andén (la habilidad y sus rieles). La vida, la munición y el inventario se siguen viendo: la lente va debajo del HUD.</div>
   </div>
 
   <div class="dev">
@@ -1039,7 +1039,7 @@ body.capture,body.capture-ms,body.capture-cr{padding-left:0!important}
       <code>MiraTelescopica.cs</code><span>Va en el arma con mira (hoy, el Último Tren): maneja los zooms de la ficha (<code>zoom</code> y <code>zoom2</code>), la salida durante el cerrojo, la cámara y la sensibilidad (US 009).</span>
       <code>MiraTelescopicaHud.cs</code><span>Dibuja la lente por código, debajo del HUD.</span>
     </div>
-    <p style="margin:12px 0 0">También dibuja la mira (US 171), que se oculta con la mira telescópica puesta, y el marcador de impacto (US 165): cruz blanca al cuerpo, naranja con un "clin" a la cabeza y roja si mata. El marcador de arriba, la lista de muertes y la plata de la maqueta todavía no están: llegan con los marcadores de cada modo (US 134, US 141 y US 150).</p>
+    <p style="margin:12px 0 0">También dibuja la mira (US 171), que no se ve con un francotirador en la mano, y el marcador de impacto (US 165): cruz blanca al cuerpo, naranja con un "clin" a la cabeza y roja si mata. El marcador de arriba, la lista de muertes y la plata de la maqueta todavía no están: llegan con los marcadores de cada modo (US 134, US 141 y US 150).</p>
   </div>
 </section>
 
@@ -1479,7 +1479,7 @@ body.capture,body.capture-ms,body.capture-cr{padding-left:0!important}
     <tr><td>Moverse</td><td>La dispersión pasa del valor "quieto" al "en movimiento" de cada arma desde 1 m/s. Al frenar vuelve a "quieto" en 0,15 s.</td><td><span class="st st-ok">En el juego</span></td></tr>
     <tr><td>Saltar</td><td>Dispersión ×4: saltando no se acierta, como en CS.</td><td><span class="st st-ok">En el juego</span></td></tr>
     <tr><td>Agacharse</td><td>Dispersión y retroceso −25 %.</td><td><span class="st st-ok">En el juego</span></td></tr>
-    <tr><td>Apuntar (clic derecho)</td><td>Solo los francotiradores: <a href="#mira-telescopica">mira telescópica</a> con los zooms de la ficha y dispersión −30 %. Sin la mira usan la dispersión "en movimiento". Las demás armas no apuntan.</td><td><span class="st st-ok">En el juego</span></td></tr>
+    <tr><td>Apuntar (clic derecho)</td><td>Solo los francotiradores: <a href="#mira-telescopica">mira telescópica</a> con los zooms de la ficha. Tiran igual de preciso con la mira o sin ella (dispersión −30 % siempre) y no tienen mira en el HUD, como el AWP de CS. Las demás armas no apuntan.</td><td><span class="st st-ok">En el juego</span></td></tr>
     <tr><td>Velocidad</td><td>Se multiplica por la movilidad del arma en la mano (cuchillo ×1,15, pistolas ×1, fusiles ×0,92, francotirador ×0,85).</td><td><span class="st st-ok">En el juego</span></td></tr>
     <tr><td>Marcador de impacto</td><td>Cruz blanca al cuerpo, naranja con un "clin" a la cabeza y roja si mata.</td><td><span class="st st-ok">En el juego</span></td></tr>
     <tr><td>Moverse apuntando</td><td>Velocidad ×0,76 mientras se apunta.</td><td><span class="st st-idea">Solo diseño</span></td></tr>
@@ -1728,12 +1728,12 @@ const DATA = {
       "rol": "Barato y ágil: cabeza mata a cualquiera; al cuerpo solo a quien no tiene escudo.",
       "modo": "Cerrojo", "cadencia": 1.4, "cargador": 5, "reserva": 15, "recarga": 2.5, "equipar": 1.1, "movilidad": 0.9, "zoom": 3.5, "perdigones": 1, "penetracion": "Media",
       "tramos": [ { "hasta": null, "cuerpo": 101, "cabeza": 202, "piernas": 85 } ],
-      "dispersion": [0.0, 3.0], "retroceso": "Sin mira no es preciso; con mira, el primer tiro va al centro." },
+      "dispersion": [0.0, 3.0], "retroceso": "Igual de preciso con la mira o sin ella (dispersión −30 %): quieto, el primer tiro va al centro. Sin mira en el HUD." },
     { "id": "francotirador", "nombre": "Francotirador", "alias": "Último Tren", "cat": "francotiradores", "slot": "Principal", "icono": "g04", "precio": 4700, "backlog": "US 068", "nivel": "MVP",
       "rol": "Un tiro al cuerpo o a la cabeza mata a cualquiera, con escudo o sin él. Es la única arma que lo hace.",
       "modo": "Cerrojo", "cadencia": 0.75, "cargador": 5, "reserva": 10, "recarga": 3.7, "equipar": 1.25, "movilidad": 0.85, "zoom": 2.5, "zoom2": 5, "perdigones": 1, "penetracion": "Alta",
       "tramos": [ { "hasta": null, "cuerpo": 150, "cabeza": 255, "piernas": 127 } ],
-      "dispersion": [0.0, 6.0], "retroceso": "Sin mira dispara donde quiere; con mira, al centro. Después de cada tiro se recarga el cerrojo (1,33 s)." },
+      "dispersion": [0.0, 6.0], "retroceso": "Igual de preciso con la mira o sin ella (dispersión −30 %: 4,2° en movimiento); quieto, al centro. Sin mira en el HUD, como el AWP. Después de cada tiro se recarga el cerrojo (1,33 s)." },
     { "id": "ballesta", "nombre": "Ballesta", "alias": "Tren Fantasma", "cat": "francotiradores", "slot": "Principal", "icono": "g06", "precio": 1500, "backlog": null, "nivel": "Opcional",
       "rol": "Silenciosa y con caída. En Zombie, cada virote atraviesa hasta 2 zombies.",
       "modo": "Proyectil (1 virote)", "cadencia": 0.55, "cargador": 1, "reserva": 10, "recarga": 0, "equipar": 1.0, "movilidad": 0.92, "zoom": 2.0, "perdigones": 1, "penetracion": "Ninguna",
