@@ -353,3 +353,9 @@ fecha_utc,us_numero,us_titulo,estado_anterior,estado_nuevo,tiempo_en_estado_ante
 2026-10-01T09:21:20.850741+00:00,91,US 068. ARMA Principal 3 - Último Tren (Francotirador),In Progress,LPR,9h 38m,34706,https://github.com/DogeGGss/lcs-tp-principal/issues/91
 2026-10-01T09:21:20.850741+00:00,214,US 153. Opciones de video,R2D,In Progress,2d 11h 27m,214041,https://github.com/DogeGGss/lcs-tp-principal/issues/214
 2026-10-01T16:34:42.125391+00:00,282,US 180. Nota para el PO,LPR,TESTING,1d 8h 7m,115649,https://github.com/DogeGGss/lcs-tp-principal/issues/282
+2026-10-01T21:18:52.794772+00:00,66,US 016. Personaje único por equipo,In Progress,LPR,11h 57m,43051,https://github.com/DogeGGss/lcs-tp-principal/issues/66
+2026-10-01T21:18:52.794772+00:00,193,US 133. Espectar al morir,Blocked,In Progress,5d 23h 2m,514944,https://github.com/DogeGGss/lcs-tp-principal/issues/193
+2026-10-01T21:18:52.794772+00:00,195,US 135. Economía por ronda,Blocked,LPR,5d 23h 2m,514944,https://github.com/DogeGGss/lcs-tp-principal/issues/195
+2026-10-01T21:18:52.794772+00:00,282,US 180. Nota para el PO,TESTING,R2D,4h 44m,17050,https://github.com/DogeGGss/lcs-tp-principal/issues/282
+2026-10-01T21:18:52.794772+00:00,44,US 025. Sincronizar movimiento,LPR,R2D,2d 13h 55m,222942,https://github.com/DogeGGss/lcs-tp-principal/issues/44
+2026-10-01T21:18:52.794772+00:00,75,US 027. Crear sala,LPR,R2D,2d 13h 55m,222942,https://github.com/DogeGGss/lcs-tp-principal/issues/75
