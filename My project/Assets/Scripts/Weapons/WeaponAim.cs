@@ -149,9 +149,10 @@ public class WeaponAim : MonoBehaviour
 
     public static float SpreadFor(ShopItem weapon, float moveFactor, bool grounded, bool crouching, bool aiming, float extra = 0f)
     {
-        // Los francotiradores sin apuntar usan el valor "en movimiento".
-        bool sniperHip = weapon.category == ShopCategory.Snipers && !aiming;
-        float spread = (sniperHip ? weapon.spread.y : Mathf.Lerp(weapon.spread.x, weapon.spread.y, moveFactor)) + extra;
+        // Los francotiradores tienen la misma precisión con la mira puesta o sin ella (US 068): cuentan siempre
+        // como apuntando. Lo que les falta sin la mira es la mira del HUD, como el AWP de CS.
+        if (weapon.category == ShopCategory.Snipers) aiming = true;
+        float spread = Mathf.Lerp(weapon.spread.x, weapon.spread.y, moveFactor) + extra;
         if (!grounded) spread *= AirMultiplier;
         if (crouching) spread *= CrouchMultiplier;
         if (aiming) spread *= AimMultiplier;
