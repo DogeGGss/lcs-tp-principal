@@ -8,13 +8,19 @@ using static ShopUIKit;
 // - CA2: después la cámara pasa a la vista en primera persona de un compañero vivo, con su nombre en pantalla.
 // - CA3: clic izquierdo pasa al siguiente compañero vivo y clic derecho al anterior.
 // - CA4: si el compañero que mira muere, la cámara pasa sola a otro compañero vivo.
-// - CA5: si no queda ningún compañero vivo, la cámara queda fija donde murió hasta el final de la ronda.
+// - CA5: si no queda ningún compañero vivo, la cámara queda fija donde murió hasta el final de la ronda; si el
+//   dispositivo está plantado, queda fija mirando el dispositivo (así se ve si explota o lo desactivan).
 // - CA6: al empezar la ronda siguiente reaparece en su base (RondasTacticas) y la cámara vuelve a la normalidad.
 // Solo se puede mirar a compañeros: nunca a los rivales ni moverse libre por el mapa.
 // Lo agrega RondasTacticas al empezar una partida del Modo Táctico.
 public class Espectador : MonoBehaviour
 {
     public const float EsperaAlMorir = 2f; // CA1
+    private const float DistanciaAlDispositivo = 4.5f, AlturaSobreDispositivo = 2.2f;
+
+    private bool viendoDispositivo;
+    private Vector3 dispositivoPos;
+    private Quaternion dispositivoRot;
 
     private PartidaEnRed partida;
     private bool muerto;
@@ -55,6 +61,8 @@ public class Espectador : MonoBehaviour
         if (!muerto) Empezar(local);
         if (Time.time - murioEn < EsperaAlMorir) return; // CA1: cámara quieta
 
+        VerDispositivo(local);
+
         // CA4: si el que miraba murió (o se fue), se pasa a otro.
         if (mirando == null || !mirando.Vivo) Mirar(Siguiente(local, mirando, 1));
         // CA3
@@ -71,6 +79,8 @@ public class Espectador : MonoBehaviour
             Transform ojos = mirando.Ojos;
             camara.transform.SetPositionAndRotation(ojos.position, ojos.rotation);
         }
+        else if (viendoDispositivo)
+            camara.transform.SetPositionAndRotation(dispositivoPos, dispositivoRot); // CA5, con dispositivo plantado
         else
         {
             // CA1 y CA5: quieta donde murió.
@@ -83,9 +93,35 @@ public class Espectador : MonoBehaviour
     // Muerte y vuelta
     // =====================================================================
 
+    // CA5: sin compañeros vivos y con el dispositivo plantado, la cámara se para cerca y lo mira.
+    private void VerDispositivo(JugadorEnRed local)
+    {
+        RondasTacticas rondas = RondasTacticas.Actual;
+        bool ver = rondas != null && rondas.HayDispositivo && Companeros(local).Count == 0;
+        if (ver == viendoDispositivo) return;
+        viendoDispositivo = ver;
+        if (ver)
+        {
+            Vector3 bomba = rondas.LugarDelDispositivo;
+            // Desde el lado donde murió el jugador, a unos metros y un poco arriba.
+            Vector3 hacia = local.transform.position - bomba;
+            hacia.y = 0f;
+            if (hacia.sqrMagnitude < 0.25f) hacia = -local.transform.forward;
+            Vector3 centro = bomba + Vector3.up * 0.4f;
+            Vector3 lugar = centro + hacia.normalized * DistanciaAlDispositivo + Vector3.up * AlturaSobreDispositivo;
+            // Si hay una pared en el medio, la cámara se queda de este lado.
+            if (Physics.Linecast(centro, lugar, out RaycastHit pared, Physics.DefaultRaycastLayers, QueryTriggerInteraction.Ignore))
+                lugar = Vector3.Lerp(centro, pared.point, 0.85f);
+            dispositivoPos = lugar;
+            dispositivoRot = Quaternion.LookRotation(centro - lugar, Vector3.up);
+        }
+        MostrarCartel();
+    }
+
     private void Empezar(JugadorEnRed local)
     {
         muerto = true;
+        viendoDispositivo = false;
         murioEn = Time.time;
         mirando = null;
         camara = Camera.main;
@@ -178,7 +214,7 @@ public class Espectador : MonoBehaviour
         }
         else
         {
-            cartelTitulo.text = "No quedan compañeros vivos";
+            cartelTitulo.text = viendoDispositivo ? "Mirando el dispositivo" : "No quedan compañeros vivos";
             cartelAyuda.text = "Reaparecés en la ronda siguiente";
         }
     }
