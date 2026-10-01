@@ -21,6 +21,9 @@ public class MiraTelescopica : MonoBehaviour
     public static MiraTelescopica Activa { get; private set; }
     public static bool Puesta => Activa != null;
 
+    // El francotirador que el jugador tiene en la mano, o null. Sin la mira puesta no tiene mira en el HUD (US 068).
+    public static MiraTelescopica EnMano { get; private set; }
+
     // El mouse se mueve más lento en proporción al zoom, como en CS; encima va la sensibilidad de mira de Opciones (US 155).
     public static float EscalaSensibilidad => Activa != null ? 1f / Activa.ZoomActual : 1f;
 
@@ -54,11 +57,13 @@ public class MiraTelescopica : MonoBehaviour
         fovCambiado = false;
         nivel = 0;
         volverEn = -1f;
+        EnMano = this;
     }
 
     private void OnDisable()
     {
         Salir();
+        if (EnMano == this) EnMano = null;
     }
 
     private void Update()
