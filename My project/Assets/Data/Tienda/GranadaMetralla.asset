@@ -51,3 +51,4 @@ MonoBehaviour:
   effectDuration: 0
   recovery: 0
   shortEffect: Hasta 100
+  grenadePrefab: {fileID: 100100000, guid: 313c34b5636bbcd4686e963d715759d5, type: 3}

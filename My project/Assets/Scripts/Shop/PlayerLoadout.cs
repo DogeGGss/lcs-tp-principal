@@ -65,6 +65,27 @@ public class PlayerLoadout : MonoBehaviour
     public bool IsEquipped(ShopItem item) => item != null && (item == Primary || item == Secondary);
     public bool BoughtThisPhase(ShopItem item) => LastPurchaseOf(item) != null;
 
+    // Granadas que tiene ahora, en el orden del catálogo (así la tecla 4 las recorre siempre igual).
+    public List<ShopItem> OwnedGrenades()
+    {
+        List<ShopItem> owned = new List<ShopItem>();
+        if (catalog == null) return owned;
+        foreach (ShopItem item in catalog.ItemsIn(ShopCategory.Grenades))
+            if (Count(item) > 0) owned.Add(item);
+        return owned;
+    }
+
+    // Lanza una granada (US 079, CA6): se gasta una y esa compra ya no se puede vender ni deshacer.
+    public bool Consume(ShopItem grenade)
+    {
+        if (grenade == null || grenade.kind != ShopItemKind.Grenade || Count(grenade) <= 0) return false;
+        grenades[grenade] = Count(grenade) - 1;
+        Purchase bought = LastPurchaseOf(grenade);
+        if (bought != null) purchases.Remove(bought); // si no, "Deshacer" devolvería la plata de una granada ya usada
+        Changed?.Invoke();
+        return true;
+    }
+
     // Si ahora se puede usar la tienda: fase de compra activa y dentro de la zona (US 076, CA9).
     public ShopResult CheckAccess()
     {
