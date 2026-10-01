@@ -16,6 +16,7 @@ public class WeaponSwitcher : MonoBehaviour
     // Tienda (US 077): con tienda en la escena el arma principal se saca solo si se compró.
     private enum Pendiente { Nada, Principal, Pistola }
     private PlayerLoadout loadout;
+    private GrenadeThrower granadas;
     private bool hayTienda;
     private GameObject teniaPrincipal;
     private Pendiente pendiente = Pendiente.Nada;
@@ -26,6 +27,10 @@ public class WeaponSwitcher : MonoBehaviour
     void Awake()
     {
         loadout = GetComponentInParent<PlayerLoadout>();
+
+        // Granadas (US 079): el manejo vive en GrenadeThrower; se agrega solo si el jugador no lo tiene.
+        granadas = GetComponentInParent<GrenadeThrower>();
+        if (granadas == null) granadas = gameObject.AddComponent<GrenadeThrower>();
     }
 
     void Start()
@@ -33,11 +38,19 @@ public class WeaponSwitcher : MonoBehaviour
         hayTienda = FindAnyObjectByType<ShopUI>() != null;
         teniaPrincipal = PrimaryObj;
         if (loadout != null) loadout.Changed += OnLoadoutChanged;
+        if (granadas != null) granadas.Emptied += OnGranadasVacias;
     }
 
     void OnDestroy()
     {
         if (loadout != null) loadout.Changed -= OnLoadoutChanged;
+        if (granadas != null) granadas.Emptied -= OnGranadasVacias;
+    }
+
+    // Se lanzó o se perdió la última granada que estaba en la mano: se vuelve a la pistola (US 079, CA6).
+    void OnGranadasVacias()
+    {
+        CambiarA(Pendiente.Pistola);
     }
 
     void OnEnable()
@@ -153,8 +166,8 @@ public class WeaponSwitcher : MonoBehaviour
             EquipKnife();
         }
 
-        // Tecla 4: Granada
-        if (KeyBindings.Down(GameAction.Granadas))
+        // Tecla 4: Granadas. Cada vez que se aprieta pasa a la siguiente que tenga; sin granadas no hace nada (US 079, CA1 y CA6)
+        if (KeyBindings.Down(GameAction.Granadas) && granadas != null && granadas.SelectNext())
         {
             EquipGrenade();
         }
@@ -162,7 +175,7 @@ public class WeaponSwitcher : MonoBehaviour
 
     void EquipPrimary()
     {
-        GrenadeEquipped = false;
+        GuardarGranada();
 
         GameObject principal = PrimaryObj;
         GuardarPrincipales(principal);
@@ -179,7 +192,7 @@ public class WeaponSwitcher : MonoBehaviour
 
     void EquipPistol()
     {
-        GrenadeEquipped = false;
+        GuardarGranada();
 
         GuardarPrincipales(null);
         if (pistolObj != null) pistolObj.SetActive(true);
@@ -194,7 +207,7 @@ public class WeaponSwitcher : MonoBehaviour
 
     void EquipKnife()
     {
-        GrenadeEquipped = false;
+        GuardarGranada();
 
         GuardarPrincipales(null);
         if (pistolObj != null) pistolObj.SetActive(false);
@@ -212,6 +225,14 @@ public class WeaponSwitcher : MonoBehaviour
             : 1.0f;
 
         ApplySpeedMultiplier(knifeSpeed);
+    }
+
+    // Guarda la granada que tenía en la mano (si tenía) al sacar otra arma.
+    void GuardarGranada()
+    {
+        GrenadeEquipped = false;
+        if (grenadeObj != null) grenadeObj.SetActive(false);
+        if (granadas != null) granadas.Deselect();
     }
 
     void EquipGrenade()

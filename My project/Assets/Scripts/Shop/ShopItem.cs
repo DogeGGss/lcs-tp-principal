@@ -108,6 +108,9 @@ public class ShopItem : ScriptableObject
     [Tooltip("Resumen corto para la lista de la tienda (por ejemplo, \"Hasta 100\").")]
     public string shortEffect;
 
+    [Tooltip("Granadas: prefab que se lanza (con el componente Grenade1).")]
+    public GameObject grenadePrefab;
+
     public bool IsWeapon => kind == ShopItemKind.PrimaryWeapon || kind == ShopItemKind.SecondaryWeapon;
 
     // Daño de un disparo completo a una zona (en escopetas, todos los perdigones).
