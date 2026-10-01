@@ -50,6 +50,9 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
     private Coroutine caida;
 
     public bool Vivo => !muerto;
+
+    /// <summary>US 133: el punto de vista del jugador (en la copia, con la mirada que llega por la red).</summary>
+    public Transform Ojos => camara != null ? camara : transform;
     public string Nombre => photonView != null && photonView.Owner != null ? photonView.Owner.NickName : "Jugador";
 
     // Número de jugador de Photon y equipo táctico (US 031).

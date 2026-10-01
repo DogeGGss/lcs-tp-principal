@@ -53,6 +53,9 @@ public class MarcadorTactico : MonoBehaviour
     /// <summary>CA5: actor de Photon del que lleva el dispositivo; 0 si nadie (US 130).</summary>
     public static void SetPortador(int actor) => portador = actor;
 
+    /// <summary>El actor que lleva el dispositivo (0 si nadie).</summary>
+    public static int Portador => portador;
+
     // ---------- Ciclo de vida ----------
 
     public void Iniciar(PartidaEnRed partida)
@@ -94,7 +97,7 @@ public class MarcadorTactico : MonoBehaviour
         BuyPhase compra = BuyPhase.Current;
         float? tiempo = TiempoDeRonda != null ? TiempoDeRonda() : null;
         if (dispositivo.HasValue)
-            MatchHud.SetCenter("Dispositivo plantado", dispositivo.Value, detalle, true, null, true);
+            MatchHud.SetCenterDevice("Dispositivo plantado", dispositivo.Value, detalle); // CA3
         else if (RondasTacticas.Actual != null && RondasTacticas.Actual.FaseActual == RondasTacticas.Fase.Seleccion)
             // US 016: antes de la ronda 1, el tiempo para elegir personaje.
             MatchHud.SetCenter("Selección", RondasTacticas.Actual.Restante, "Elegí tu personaje");

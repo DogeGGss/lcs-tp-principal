@@ -125,9 +125,10 @@ public class RondasTacticas : MonoBehaviour
 
         MarcadorTactico.TiempoDeRonda = TiempoDeCombate;
         gameObject.AddComponent<PersonajesTacticos>().Iniciar(partida); // US 016
+        gameObject.AddComponent<Espectador>().Iniciar(partida);         // US 133
         ArrancarMusica();
         if (PruebaSolo.Activa)
-            Debug.Log("Prueba solo (Táctico): F4 cobrar una baja · F5 morir · F6 plantar acá · F7 desactivar · F9 gana tu equipo · " +
+            Debug.Log("Prueba solo (Táctico): F3 ser portador · F4 cobrar una baja · F5 morir · F6 plantar acá · F7 desactivar · F9 gana tu equipo · " +
                       "F10 gana el rival · F11 salta la fase · F8 pone 6 a 6.");
     }
 
@@ -638,7 +639,12 @@ public class RondasTacticas : MonoBehaviour
         if (fase == Fase.Terminada) return;
 
         JugadorEnRed local = partida != null ? partida.Local : null;
-        if (Input.GetKeyDown(KeyCode.F4)) Cobrar(PremioBaja);                                     // como si matara a un rival
+        if (Input.GetKeyDown(KeyCode.F3))                                                          // US 134, CA5: ser portador
+        {
+            int yo = PhotonNetwork.LocalPlayer.ActorNumber;
+            MarcadorTactico.SetPortador(MarcadorTactico.Portador == yo ? 0 : yo);
+        }
+        else if (Input.GetKeyDown(KeyCode.F4)) Cobrar(PremioBaja);                                // como si matara a un rival
         else if (Input.GetKeyDown(KeyCode.F5) && local != null) local.Eliminar();               // morir
         else if (Input.GetKeyDown(KeyCode.F6) && local != null) Plantar(local.transform.position); // plantar acá
         else if (Input.GetKeyDown(KeyCode.F7)) Desactivar();
