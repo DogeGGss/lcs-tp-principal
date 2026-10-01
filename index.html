@@ -4,7 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="description" content="Guía de diseño de Project Riftwalker para el equipo: identidad visual, pantallas, combate, economía, personajes y pendientes.">
-<style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#faf9f5;color:#141413}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#faf9f5;color:#141413}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}.scope-mock{border-radius:14px;overflow:hidden;border:1px solid var(--line);margin:14px 0 16px;background:#07090C}.scope-mock svg{display:block;width:100%;height:auto}
+</style>
 <title>Armería del Último Tren</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=Barlow:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap">
@@ -991,14 +992,54 @@ body.capture,body.capture-ms,body.capture-cr{padding-left:0!important}
     <div class="card"><b>Colores.</b> Blanco lo que está listo, gris lo que recarga, naranja al usar o recargar, celeste el escudo y rojo lo que está bajo.</div>
   </div>
 
+  <h3 id="mira-telescopica">Mira telescópica</h3>
+  <p>Solo los francotiradores tienen mira (hoy, el Último Tren). No es un zoom: como en CS o Valorant, al apuntar se ve la lente del visor y el arma desaparece de la pantalla. Las demás armas no apuntan: con ellas el clic derecho no hace nada (US 009).</p>
+  <div class="scope-mock"><svg viewBox="0 0 1920 1080" role="img" aria-label="Maqueta de la mira telescópica: zoom 2,5× y un blanco a 124 m">
+    <defs>
+      <linearGradient id="smFondo" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#5E83B8"/><stop offset="0.49" stop-color="#D8E6F3"/><stop offset="0.5" stop-color="#77706A"/><stop offset="1" stop-color="#48433F"/></linearGradient>
+      <radialGradient id="smVineta" cx="960" cy="540" r="508" gradientUnits="userSpaceOnUse"><stop offset="0.82" stop-color="#07090C" stop-opacity="0"/><stop offset="1" stop-color="#07090C" stop-opacity="0.55"/></radialGradient>
+    </defs>
+    <rect width="1920" height="1080" fill="url(#smFondo)"/>
+    <rect x="1088" y="452" width="34" height="88" rx="16" fill="#2B3039"/><circle cx="1105" cy="438" r="15" fill="#2B3039"/>
+    <circle cx="960" cy="540" r="508" fill="url(#smVineta)"/>
+    <path fill="#07090C" fill-rule="evenodd" d="M0 0H1920V1080H0Z M960 32 A508 508 0 1 0 960.01 32 Z"/>
+    <circle cx="960" cy="540" r="505" fill="none" stroke="#F29A38" stroke-opacity="0.6" stroke-width="3"/>
+    <g fill="#F29A38">
+      <rect x="976" y="539" width="263" height="2"/><rect x="681" y="539" width="263" height="2"/>
+      <rect x="959" y="556" width="2" height="263"/><rect x="959" y="32" width="2" height="492"/>
+      <rect x="1239" y="536.5" width="229" height="7"/><rect x="452" y="536.5" width="229" height="7"/><rect x="956.5" y="819" width="7" height="229"/>
+      <rect x="958" y="538" width="4" height="4"/>
+      <rect x="999" y="535.5" width="2" height="9"/><rect x="1039" y="535.5" width="2" height="9"/><rect x="1079" y="532" width="2" height="16"/><rect x="1119" y="535.5" width="2" height="9"/><rect x="1159" y="535.5" width="2" height="9"/><rect x="1199" y="532" width="2" height="16"/>
+      <rect x="919" y="535.5" width="2" height="9"/><rect x="879" y="535.5" width="2" height="9"/><rect x="839" y="532" width="2" height="16"/><rect x="799" y="535.5" width="2" height="9"/><rect x="759" y="535.5" width="2" height="9"/><rect x="719" y="532" width="2" height="16"/>
+      <rect x="955.5" y="579" width="9" height="2"/><rect x="955.5" y="619" width="9" height="2"/><rect x="952" y="659" width="16" height="2"/><rect x="955.5" y="699" width="9" height="2"/><rect x="955.5" y="739" width="9" height="2"/><rect x="952" y="779" width="16" height="2"/>
+    </g>
+    <g text-anchor="middle">
+      <rect x="509" y="455" width="150" height="70" fill="#07090C" fill-opacity="0.6"/><rect x="1261" y="455" width="150" height="70" fill="#07090C" fill-opacity="0.6"/>
+      <text x="584" y="481" font-size="15" letter-spacing="2" fill="#8E96A3" font-family="'Barlow Condensed', sans-serif">ZOOM</text>
+      <text x="584" y="517" font-size="30" fill="#F3F4F6" font-family="'JetBrains Mono', monospace">2,5×</text>
+      <text x="1336" y="481" font-size="15" letter-spacing="2" fill="#8E96A3" font-family="'Barlow Condensed', sans-serif">DISTANCIA</text>
+      <text x="1336" y="517" font-size="30" fill="#F3F4F6" font-family="'JetBrains Mono', monospace">124 m</text>
+    </g>
+  </svg></div>
+  <div class="grid3">
+    <div class="card"><b>Lente.</b> Todo oscuro (#07090C) menos un círculo de 0,94 veces el alto de la pantalla, con el borde suave, un poco de viñeta hacia adentro y un aro naranja fino. A los costados, dos franjas del mismo color.</div>
+    <div class="card"><b>Retícula.</b> En naranja (#F29A38), con sombra de 1 px. Cerca del centro, líneas de 2 px con marcas cada 40 px (más largas cada tres), un hueco de 16 px y un punto de 4 px. Desde el 55 % del radio, postes de 7 px a la izquierda, a la derecha y abajo.</div>
+    <div class="card"><b>Datos.</b> Arriba del poste izquierdo, el zoom ("2,5×"); arriba del derecho, la distancia a lo que está en el centro ("124 m", o "—" si no hay nada hasta 500 m). Rótulo de 15 px en gris y número de 30 px en JetBrains Mono, sobre una placa oscura.</div>
+    <div class="card"><b>Zoom.</b> El clic derecho pasa por 2,5×, 5× y sin mira (los zooms salen de la ficha). La cámara llega al zoom en 0,12 s y el mouse gira más lento en proporción al zoom, por la sensibilidad de mira de Opciones.</div>
+    <div class="card"><b>Cerrojo.</b> Al disparar se sale de la mira y vuelve sola al mismo zoom cuando se puede volver a disparar, como el AWP de CS. Recargar, cambiar de arma, pausar o abrir la tienda la sacan.</div>
+    <div class="card"><b>HUD.</b> Con la mira puesta se ocultan el arma, la mira del HUD y el centro del andén (la habilidad y sus rieles). La vida, la munición y el inventario se siguen viendo: la lente va debajo del HUD.</div>
+  </div>
+
   <div class="dev">
     <h3 id="hud-codigo">Cómo está hecho</h3>
     <div class="files">
       <code>CombatHud.cs</code><span>Arma el HUD por código y lee todo en cada cuadro: <code>HealthSystem</code> (vida y escudo), <code>PlayerAbility</code> (habilidad) y el arma que está en la mano.</span>
       <code>IHudWeapon</code><span>Interfaz que implementa cada arma para mostrar reserva y recarga (<code>ArmaDeFuego</code>, <code>Mitre</code>, <code>Pistola</code>). Un arma nueva tiene que implementarla.</span>
       <code>WeaponSwitcher</code><span>Dice qué hay en cada espacio (US 055 y US 064).</span>
+      <code>MiraTelescopica.cs</code><span>Va en el arma con mira (hoy, el Último Tren): maneja los zooms de la ficha (<code>zoom</code> y <code>zoom2</code>), la salida durante el cerrojo, la cámara y la sensibilidad (US 009).</span>
+      <code>MiraTelescopicaHud.cs</code><span>Dibuja la lente por código, debajo del HUD.</span>
     </div>
-    <p style="margin:12px 0 0">También dibuja la mira (US 171) y el marcador de impacto (US 165): cruz blanca al cuerpo, naranja con un "clin" a la cabeza y roja si mata. El marcador de arriba, la lista de muertes y los puntos todavía no están en el juego: su diseño está en <a href="#pantalla-marcadores">Marcadores de Táctico y Deathmatch</a> y <a href="#marcador-zombie">Marcador de Zombie</a>.</p>
+    <p style="margin:12px 0 0">También dibuja la mira (US 171), que se oculta con la mira telescópica puesta, y el marcador de impacto (US 165): cruz blanca al cuerpo, naranja con un "clin" a la cabeza y roja si mata. El marcador de arriba, la lista de muertes y la plata de la maqueta todavía no están: llegan con los marcadores de cada modo (US 134, US 141 y US 150).</p>
   </div>
 </section>
 
@@ -1438,7 +1479,7 @@ body.capture,body.capture-ms,body.capture-cr{padding-left:0!important}
     <tr><td>Moverse</td><td>La dispersión pasa del valor "quieto" al "en movimiento" de cada arma desde 1 m/s. Al frenar vuelve a "quieto" en 0,15 s.</td><td><span class="st st-ok">En el juego</span></td></tr>
     <tr><td>Saltar</td><td>Dispersión ×4: saltando no se acierta, como en CS.</td><td><span class="st st-ok">En el juego</span></td></tr>
     <tr><td>Agacharse</td><td>Dispersión y retroceso −25 %.</td><td><span class="st st-ok">En el juego</span></td></tr>
-    <tr><td>Apuntar (clic derecho)</td><td>Zoom de la ficha y dispersión −30 %. Los francotiradores sin mira usan la dispersión "en movimiento".</td><td><span class="st st-ok">En el juego</span></td></tr>
+    <tr><td>Apuntar (clic derecho)</td><td>Solo los francotiradores: <a href="#mira-telescopica">mira telescópica</a> con los zooms de la ficha y dispersión −30 %. Sin la mira usan la dispersión "en movimiento". Las demás armas no apuntan.</td><td><span class="st st-ok">En el juego</span></td></tr>
     <tr><td>Velocidad</td><td>Se multiplica por la movilidad del arma en la mano (cuchillo ×1,15, pistolas ×1, fusiles ×0,92, francotirador ×0,85).</td><td><span class="st st-ok">En el juego</span></td></tr>
     <tr><td>Marcador de impacto</td><td>Cruz blanca al cuerpo, naranja con un "clin" a la cabeza y roja si mata.</td><td><span class="st st-ok">En el juego</span></td></tr>
     <tr><td>Moverse apuntando</td><td>Velocidad ×0,76 mientras se apunta.</td><td><span class="st st-idea">Solo diseño</span></td></tr>
@@ -1505,7 +1546,7 @@ body.capture,body.capture-ms,body.capture-cr{padding-left:0!important}
 <section id="nueva-arma">
   <div class="sec-head"><h2>Cómo sumar un arma</h2><span class="sub">Paso a paso, como se hicieron el Urquiza, el Belgrano Sur y la Roca</span></div>
   <ol class="steps">
-    <li><b>Ficha.</b> Duplicá la ficha más parecida en <code>Assets/Data/Tienda</code> y cargá todo: nombre y alias, categoría, precio, modo (<code>automatic</code>, <code>burstCount</code> y <code>burstRate</code>), cadencia, cargador y reserva, recarga (<code>reloadPerShell</code> para las de a un cartucho), <code>equipTime</code>, <code>mobility</code>, zoom, perdigones, dispersión, tramos de daño y retroceso. Sumala a <code>CatalogoTactico</code>.</li>
+    <li><b>Ficha.</b> Duplicá la ficha más parecida en <code>Assets/Data/Tienda</code> y cargá todo: nombre y alias, categoría, precio, modo (<code>automatic</code>, <code>burstCount</code> y <code>burstRate</code>), cadencia, cargador y reserva, recarga (<code>reloadPerShell</code> para las de a un cartucho), <code>equipTime</code>, <code>mobility</code>, zoom (solo los francotiradores, que además llevan <code>MiraTelescopica</code>), perdigones, dispersión, tramos de daño y retroceso. Sumala a <code>CatalogoTactico</code>.</li>
     <li><b>Modelo.</b> Del Sci-Fi Modular Gun Pack de Quaternius (<code>Assets/Modelos (armas)</code>), que no repita el de otra arma (US 179). El ícono de la ficha es la silueta del mismo modelo.</li>
     <li><b>Prefab.</b> En <code>Assets/Prefabs/Armas</code>, con el componente <code>ArmaDeFuego</code>: la ficha, la cámara, los sonidos (disparo y recarga; bombeo y cartucho si es de bombeo) y el grupo Efectos del mezclador.</li>
     <li><b>Jugador.</b> En <code>Player.prefab</code>, poné el prefab bajo Main Camera, en la misma posición que el Mitre y desactivado, y sumalo a <code>WeaponSwitcher → otrasPrincipales</code>. Las secundarias todavía no tienen lista: hoy el espacio 2 es solo la Línea A (<code>Pistola.cs</code>), así que la Línea H necesita generalizarlo primero.</li>
@@ -1589,7 +1630,8 @@ body.capture,body.capture-ms,body.capture-cr{padding-left:0!important}
     <tr><th>Qué</th><th>Historias</th><th>Estado</th></tr>
     <tr><td>Los cuatro personajes y sus habilidades</td><td>US 183, US 019 a US 022</td><td><span class="st st-todo">Falta diseñar</span></td></tr>
     <tr><td>Diseño del Mapa 1 y del Mapa 2 (hoy sus historias no dicen cómo son)</td><td>US 082, US 083</td><td><span class="st st-todo">Falta diseñar</span></td></tr>
-    <tr><td>Último Tren y Línea H: modelo, sonidos y lugar en el inventario</td><td>US 068, US 072</td><td><span class="st st-todo">Falta hacerlas</span></td></tr>
+    <tr><td>Último Tren con mira telescópica</td><td>US 068, US 009</td><td><span class="st st-mid">En prueba</span></td></tr>
+    <tr><td>Línea H: modelo, sonidos y lugar en el inventario</td><td>US 072</td><td><span class="st st-todo">Falta hacerla</span></td></tr>
     <tr><td>Arma de los demás jugadores a tamaño real, en su mano</td><td>US 182</td><td><span class="st st-todo">Falta hacerla</span></td></tr>
     <tr><td>Soltar y levantar armas (se hace junto con el arma de los demás a tamaño real)</td><td>US 184, US 182</td><td><span class="st st-todo">Falta hacerla</span></td></tr>
     <tr><td>Cartel de nombre más chico</td><td>US 181</td><td><span class="st st-mid">A medias</span></td></tr>
@@ -1615,7 +1657,7 @@ const DATA = {
   "armas": [
     { "id": "pistola", "nombre": "Pistola", "alias": "Línea A", "cat": "pistolas", "slot": "Secundaria", "icono": "g05", "precio": 0, "backlog": "US 071", "nivel": "MVP",
       "rol": "La que tenés siempre. Gana duelos a la cabeza; al cuerpo no alcanza.",
-      "modo": "Semiautomática", "cadencia": 6.75, "cargador": 20, "reserva": 60, "recarga": 1.75, "equipar": 0.75, "movilidad": 1.0, "zoom": 1.15, "perdigones": 1, "penetracion": "Baja",
+      "modo": "Semiautomática", "cadencia": 6.75, "cargador": 20, "reserva": 60, "recarga": 1.75, "equipar": 0.75, "movilidad": 1.0, "zoom": null, "perdigones": 1, "penetracion": "Baja",
       "tramos": [ { "hasta": 30, "cuerpo": 25, "cabeza": 75, "piernas": 21 }, { "hasta": null, "cuerpo": 21, "cabeza": 63, "piernas": 18 } ],
       "dispersion": [0.4, 2.5], "retroceso": "Leve y vuelve rápido: premia tirar de a un tiro." },
     { "id": "pistolaAuto", "nombre": "Pistola automática", "alias": "Línea B", "cat": "pistolas", "slot": "Secundaria", "icono": "g10", "precio": 450, "backlog": null, "nivel": "Opcional",
@@ -1625,18 +1667,18 @@ const DATA = {
       "dispersion": [0.65, 2.0], "retroceso": "Se descontrola después de la cuarta bala." },
     { "id": "ballestaMano", "nombre": "Ballesta de mano", "alias": "Línea C", "cat": "pistolas", "slot": "Secundaria", "icono": "g11", "precio": 600, "backlog": null, "nivel": "Opcional",
       "rol": "Silenciosa. Un virote a la cabeza mata si el rival tiene escudo liviano o nada.",
-      "modo": "Proyectil (1 virote)", "cadencia": 0.8, "cargador": 1, "reserva": 8, "recarga": 0, "equipar": 0.8, "movilidad": 1.0, "zoom": 1.25, "perdigones": 1, "penetracion": "Ninguna",
+      "modo": "Proyectil (1 virote)", "cadencia": 0.8, "cargador": 1, "reserva": 8, "recarga": 0, "equipar": 0.8, "movilidad": 1.0, "zoom": null, "perdigones": 1, "penetracion": "Ninguna",
       "tramos": [ { "hasta": null, "cuerpo": 55, "cabeza": 140, "piernas": 47 } ],
       "dispersion": [0.0, 1.5], "retroceso": "Sin retroceso; el virote viaja a 60 m/s y cae un poco con la distancia." },
     { "id": "pistolaPesada", "nombre": "Pistola pesada", "alias": "Línea H", "cat": "pistolas", "slot": "Secundaria", "icono": "g15", "precio": 800, "backlog": "US 072", "nivel": "MVP",
       "rol": "El arma de las rondas de ahorro: un tiro a la cabeza mata a cualquiera a menos de 30 m.",
-      "modo": "Semiautomática", "cadencia": 4, "cargador": 6, "reserva": 24, "recarga": 2.25, "equipar": 0.9, "movilidad": 1.0, "zoom": 1.25, "perdigones": 1, "penetracion": "Media",
+      "modo": "Semiautomática", "cadencia": 4, "cargador": 6, "reserva": 24, "recarga": 2.25, "equipar": 0.9, "movilidad": 1.0, "zoom": null, "perdigones": 1, "penetracion": "Media",
       "tramos": [ { "hasta": 30, "cuerpo": 55, "cabeza": 159, "piernas": 46 }, { "hasta": null, "cuerpo": 50, "cabeza": 145, "piernas": 42 } ],
       "dispersion": [0.25, 3.0], "retroceso": "Patada fuerte hacia arriba: para acertar, un tiro cada 0,4 s." },
 
     { "id": "subfusil", "nombre": "Subfusil", "alias": "Urquiza", "cat": "subfusiles", "slot": "Principal", "icono": "g07", "precio": 1600, "backlog": "US 067", "nivel": "MVP",
       "rol": "Corta distancia y movimiento. Barato, pero pierde contra un fusil a más de 20 m.",
-      "modo": "Automática", "cadencia": 11, "cargador": 30, "reserva": 90, "recarga": 2.25, "equipar": 0.75, "movilidad": 0.97, "zoom": 1.15, "perdigones": 1, "penetracion": "Baja",
+      "modo": "Automática", "cadencia": 11, "cargador": 30, "reserva": 90, "recarga": 2.25, "equipar": 0.75, "movilidad": 0.97, "zoom": null, "perdigones": 1, "penetracion": "Baja",
       "tramos": [ { "hasta": 20, "cuerpo": 25, "cabeza": 75, "piernas": 21 }, { "hasta": null, "cuerpo": 21, "cabeza": 63, "piernas": 18 } ],
       "dispersion": [0.4, 0.9], "retroceso": "Suave y parejo; es el arma más precisa en movimiento." },
     { "id": "subfusilCompacto", "nombre": "Subfusil compacto", "alias": "Premetro", "cat": "subfusiles", "slot": "Principal", "icono": "g13", "precio": 1100, "backlog": null, "nivel": "Opcional",
@@ -1646,7 +1688,7 @@ const DATA = {
       "dispersion": [0.8, 1.2], "retroceso": "Vibra mucho: sirve pegado al rival." },
     { "id": "pdw", "nombre": "PDW", "alias": "Tren de la Costa", "cat": "subfusiles", "slot": "Principal", "icono": "g17", "precio": 1850, "backlog": null, "nivel": "Opcional",
       "rol": "Cargador de 50 para sostener el fuego; menos daño por bala.",
-      "modo": "Automática", "cadencia": 12, "cargador": 50, "reserva": 100, "recarga": 2.8, "equipar": 0.85, "movilidad": 0.95, "zoom": 1.25, "perdigones": 1, "penetracion": "Media",
+      "modo": "Automática", "cadencia": 12, "cargador": 50, "reserva": 100, "recarga": 2.8, "equipar": 0.85, "movilidad": 0.95, "zoom": null, "perdigones": 1, "penetracion": "Media",
       "tramos": [ { "hasta": 25, "cuerpo": 24, "cabeza": 60, "piernas": 20 }, { "hasta": null, "cuerpo": 21, "cabeza": 52, "piernas": 18 } ],
       "dispersion": [0.5, 1.1], "retroceso": "Sube despacio; con el cargador grande se corrige sobre la marcha." },
 
@@ -1663,22 +1705,22 @@ const DATA = {
 
     { "id": "rafaga", "nombre": "Fusil de ráfaga", "alias": "Belgrano Sur", "cat": "fusiles", "slot": "Principal", "icono": "g08", "precio": 2100, "backlog": "US 069", "nivel": "MVP",
       "rol": "El fusil de las rondas forzadas: una ráfaga entera al cuerpo mata a quien no tiene escudo.",
-      "modo": "Ráfaga de 3", "rafaga": 3, "cadenciaInterna": 15, "cadencia": 2.5, "cargador": 30, "reserva": 90, "recarga": 2.5, "equipar": 1.0, "movilidad": 0.93, "zoom": 1.25, "perdigones": 1, "penetracion": "Media",
+      "modo": "Ráfaga de 3", "rafaga": 3, "cadenciaInterna": 15, "cadencia": 2.5, "cargador": 30, "reserva": 90, "recarga": 2.5, "equipar": 1.0, "movilidad": 0.93, "zoom": null, "perdigones": 1, "penetracion": "Media",
       "tramos": [ { "hasta": 40, "cuerpo": 35, "cabeza": 115, "piernas": 30 }, { "hasta": null, "cuerpo": 31, "cabeza": 100, "piernas": 26 } ],
       "dispersion": [0.3, 3.5], "retroceso": "Cada ráfaga sube un poco y vuelve antes de la siguiente." },
     { "id": "fusilTactico", "nombre": "Fusil táctico", "alias": "San Martín", "cat": "fusiles", "slot": "Principal", "icono": "g19", "precio": 2900, "backlog": null, "nivel": "Extensión",
       "rol": "Silenciado y fácil de controlar. Mata de un tiro a la cabeza con escudo completo solo de cerca.",
-      "modo": "Automática (silenciada)", "cadencia": 11, "cargador": 30, "reserva": 60, "recarga": 2.5, "equipar": 1.0, "movilidad": 0.92, "zoom": 1.25, "perdigones": 1, "penetracion": "Media",
+      "modo": "Automática (silenciada)", "cadencia": 11, "cargador": 30, "reserva": 60, "recarga": 2.5, "equipar": 1.0, "movilidad": 0.92, "zoom": null, "perdigones": 1, "penetracion": "Media",
       "tramos": [ { "hasta": 15, "cuerpo": 39, "cabeza": 156, "piernas": 33 }, { "hasta": 30, "cuerpo": 35, "cabeza": 140, "piernas": 30 }, { "hasta": null, "cuerpo": 31, "cabeza": 124, "piernas": 26 } ],
       "dispersion": [0.2, 4.5], "retroceso": "Poca patada y sin trazadoras: el rival no ve de dónde le disparan." },
     { "id": "fusil", "nombre": "Fusil", "alias": "Mitre", "cat": "fusiles", "slot": "Principal", "icono": "g01", "precio": 2900, "backlog": "US 013", "nivel": "MVP",
       "rol": "El caro de siempre: un tiro a la cabeza mata a cualquiera a cualquier distancia. Al cuerpo necesita cuatro.",
-      "modo": "Automática", "cadencia": 9.75, "cargador": 30, "reserva": 60, "recarga": 2.5, "equipar": 1.0, "movilidad": 0.92, "zoom": 1.25, "perdigones": 1, "penetracion": "Media",
+      "modo": "Automática", "cadencia": 9.75, "cargador": 30, "reserva": 60, "recarga": 2.5, "equipar": 1.0, "movilidad": 0.92, "zoom": null, "perdigones": 1, "penetracion": "Media",
       "tramos": [ { "hasta": null, "cuerpo": 40, "cabeza": 160, "piernas": 34 } ],
       "dispersion": [0.25, 5.0], "retroceso": "Primer tiro perfecto; sube fuerte desde la tercera bala y después zigzaguea." },
     { "id": "dmr", "nombre": "Fusil de precisión", "alias": "Belgrano Norte", "cat": "fusiles", "slot": "Principal", "icono": "g02", "precio": 2250, "backlog": null, "nivel": "Extensión",
       "rol": "Semiautomático de media distancia: cabeza mata a cualquiera, cuerpo en dos o tres tiros.",
-      "modo": "Semiautomática", "cadencia": 5, "cargador": 12, "reserva": 36, "recarga": 2.5, "equipar": 1.0, "movilidad": 0.9, "zoom": 1.5, "perdigones": 1, "penetracion": "Alta",
+      "modo": "Semiautomática", "cadencia": 5, "cargador": 12, "reserva": 36, "recarga": 2.5, "equipar": 1.0, "movilidad": 0.9, "zoom": null, "perdigones": 1, "penetracion": "Alta",
       "tramos": [ { "hasta": null, "cuerpo": 65, "cabeza": 195, "piernas": 55 } ],
       "dispersion": [0.1, 4.0], "retroceso": "Patada seca por tiro; vuelve al centro en 0,2 s." },
 
@@ -1700,12 +1742,12 @@ const DATA = {
 
     { "id": "ametralladoraLigera", "nombre": "Ametralladora liviana", "alias": "Carguero", "cat": "pesadas", "slot": "Principal", "icono": "g03", "precio": 1600, "backlog": null, "nivel": "Opcional",
       "rol": "Cargador de 50 y penetración alta: sirve para tirar a través de paredes finas.",
-      "modo": "Automática (acelera)", "cadencia": 13, "cadenciaInicial": 10, "cargador": 50, "reserva": 50, "recarga": 3.25, "equipar": 1.25, "movilidad": 0.85, "zoom": 1.25, "perdigones": 1, "penetracion": "Alta",
+      "modo": "Automática (acelera)", "cadencia": 13, "cadenciaInicial": 10, "cargador": 50, "reserva": 50, "recarga": 3.25, "equipar": 1.25, "movilidad": 0.85, "zoom": null, "perdigones": 1, "penetracion": "Alta",
       "tramos": [ { "hasta": 30, "cuerpo": 30, "cabeza": 72, "piernas": 25 }, { "hasta": null, "cuerpo": 27, "cabeza": 65, "piernas": 23 } ],
       "dispersion": [0.8, 6.0], "retroceso": "Empieza lenta (10/s) y en un segundo llega a 13/s; hay que apoyarse o agacharse." },
     { "id": "ametralladoraPesada", "nombre": "Ametralladora pesada", "alias": "Locomotora", "cat": "pesadas", "slot": "Principal", "icono": "g16", "precio": 3200, "backlog": null, "nivel": "Opcional",
       "rol": "Cien balas para cubrir una entrada entera. Lenta de mover y de recargar.",
-      "modo": "Automática (acelera)", "cadencia": 15.6, "cadenciaInicial": 12, "cargador": 100, "reserva": 100, "recarga": 5.0, "equipar": 1.25, "movilidad": 0.82, "zoom": 1.25, "perdigones": 1, "penetracion": "Alta",
+      "modo": "Automática (acelera)", "cadencia": 15.6, "cadenciaInicial": 12, "cargador": 100, "reserva": 100, "recarga": 5.0, "equipar": 1.25, "movilidad": 0.82, "zoom": null, "perdigones": 1, "penetracion": "Alta",
       "tramos": [ { "hasta": 30, "cuerpo": 38, "cabeza": 95, "piernas": 32 }, { "hasta": null, "cuerpo": 31, "cabeza": 77, "piernas": 26 } ],
       "dispersion": [0.8, 6.0], "retroceso": "Muy fuerte al principio; agachado mejora un 25 %." },
     { "id": "lanzagranadas", "nombre": "Lanzagranadas", "alias": "Descarrilador", "cat": "pesadas", "slot": "Principal", "icono": "g18", "precio": 2500, "backlog": null, "nivel": "Zombie",
@@ -1771,7 +1813,8 @@ const EXTRA = {
     nota: 'La ficha de la tienda dice 1,75 s de recarga, pero Pistola.cs usa 1,5 s (lo que pide US 071). Hay que dejar un solo valor.',
     rc: { exact: 0, kick: 0.6, max: 2, late: 0, drift: 0, sway: 0, swayShots: 4, blocks: false, growth: 0, bias: 0, variation: 0, recovery: 0.2, punch: 0.9 } },
   pistolaPesada: { estado: 'pendiente', modelo: 'A elegir del pack (US 179)', sonido: 'Falta' },
-  francotirador: { estado: 'pendiente', modelo: 'A elegir del pack (US 179)', sonido: 'Falta' }
+  francotirador: { estado: 'juego', modelo: 'Sniper_3 (cargador aparte)', sonido: 'ultimo_tren_disparo.wav (Tikka T3 .30-06) · ultimo_tren_cerrojo.wav · ultimo_tren_recarga.wav',
+    rc: { exact: 0, kick: 0, max: 0, late: 0, drift: 0, sway: 0, swayShots: 4, blocks: false, growth: 0, bias: 0, variation: 0, recovery: 0.3, punch: 2.5 } }
 };
 DATA.armas.forEach(w => Object.assign(w, { estado: 'diseño' }, EXTRA[w.id] || {}));
 const ESTADO = { juego: ['st-ok', 'En el juego'], pendiente: ['st-todo', 'Falta hacerla'], 'diseño': ['st-idea', 'Solo diseño'] };
@@ -3290,7 +3333,7 @@ renderRules(); renderOneShot(); renderArsenal(); renderCalcOptions(); renderCalc
       { id: 'estilo', t: 'Estilo visual', i: 'palette', subs: [['colores', 'Colores'], ['tipografias', 'Tipografías'], ['piezas', 'Piezas'], ['reglas-codigo', 'Reglas para el código']] }] },
     { g: 'Pantallas', p: 'Parte 2 · Pantallas', items: [
       { id: 'tienda', t: 'Tienda', i: 'cart', subs: [['idea', 'Cómo se comporta'], ['tienda-partes', 'Partes de la pantalla'], ['tienda-estados', 'Estados'], ['tienda-codigo', 'Cómo está hecha']] },
-      { id: 'hud', t: 'HUD de combate', i: 'hud', subs: [['hud-estados', 'Estados'], ['hud-medidas', 'Medidas'], ['hud-codigo', 'Cómo está hecho']] },
+      { id: 'hud', t: 'HUD de combate', i: 'hud', subs: [['hud-estados', 'Estados'], ['hud-medidas', 'Medidas'], ['mira-telescopica', 'Mira telescópica'], ['hud-codigo', 'Cómo está hecho']] },
       { id: 'pantalla-marcadores', t: 'Marcadores de Táctico y Deathmatch', i: 'hud', subs: [['marcadores-partes', 'Partes'], ['marcadores-estados', 'Estados'], ['marcadores-medidas', 'Medidas'], ['marcadores-codigo', 'Cómo hacerlo']] },
       { id: 'marcador-zombie', t: 'Marcador de Zombie', i: 'rails', subs: [['marcador-zombie-estados', 'Estados'], ['marcador-zombie-medidas', 'Medidas'], ['marcador-zombie-codigo', 'Cómo hacerlo']] },
       { id: 'modos', t: 'Selección de modo', i: 'rails', subs: [['modos-codigo', 'Cómo está hecha']] },
