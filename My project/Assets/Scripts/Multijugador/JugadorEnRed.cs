@@ -14,14 +14,16 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
 {
     private const float AlcanceTrazadora = 300f;
     private const byte Agachado = 1, Corriendo = 2, Cayendo = 4, Invulnerable = 8;
-    // Arma en la mano: las principales van desde PrimeraPrincipal, en el orden de WeaponSwitcher.Principales().
-    private const byte SinArma = 0, ArmaPistola = 2, ArmaCuchillo = 3, PrimeraPrincipal = 10;
+    // Arma en la mano: las principales van desde PrimeraPrincipal, en el orden de WeaponSwitcher.Principales(), y las
+    // demás secundarias (Línea H...) desde PrimeraSecundaria, en el orden de WeaponSwitcher.otrasSecundarias (US 072).
+    private const byte SinArma = 0, ArmaPistola = 2, ArmaCuchillo = 3, PrimeraSecundaria = 4, PrimeraPrincipal = 10;
 
     private HealthSystem vida;
     private Animator animador;
     private Transform camara;     // "Main Camera": su giro vertical es hacia dónde mira
     private List<GameObject> principales = new List<GameObject>();
     private GameObject pistola;
+    private List<GameObject> secundarias = new List<GameObject>(); // las demás secundarias (sin la Línea A)
     private MeleeWeaponHolder cuchillo;
     private PartidaEnRed partida;
     private bool muerto;
@@ -51,6 +53,7 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
     private AudioSource sonido;
     private AudioClip sonidoPistola, sonidoCuchillo;
     private readonly List<AudioClip> sonidosPrincipales = new List<AudioClip>();
+    private readonly List<AudioClip> sonidosSecundarias = new List<AudioClip>();
     private Coroutine caida;
 
     public bool Vivo => !muerto;
@@ -76,7 +79,7 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
         cuchillo = GetComponent<MeleeWeaponHolder>();
         WeaponSwitcher cambio = GetComponentInChildren<WeaponSwitcher>(true);
         camara = cambio != null ? cambio.transform : transform.Find("Main Camera");
-        if (cambio != null) { principales = cambio.Principales(); pistola = cambio.pistolObj; }
+        if (cambio != null) { principales = cambio.Principales(); pistola = cambio.pistolObj; secundarias = OtrasSecundarias(cambio); }
         PlayerLoadout carga = GetComponentInChildren<PlayerLoadout>(true);
         catalogo = carga != null ? carga.Catalog : null;
 
@@ -328,17 +331,34 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
                 }
                 else if (arma >= PrimeraPrincipal && arma - PrimeraPrincipal < principales.Count)
                     ficha = WeaponSwitcher.FichaDe(principales[arma - PrimeraPrincipal]);
+                else if (EsSecundaria(arma))
+                    ficha = WeaponSwitcher.FichaDe(secundarias[arma - PrimeraSecundaria]);
             }
             else if (arma == ArmaPistola) ficha = fichaPistola;
             else if (arma >= PrimeraPrincipal && arma - PrimeraPrincipal < fichasPrincipales.Count)
                 ficha = fichasPrincipales[arma - PrimeraPrincipal];
+            else if (EsSecundaria(arma) && arma - PrimeraSecundaria < fichasSecundarias.Count)
+                ficha = fichasSecundarias[arma - PrimeraSecundaria];
             return ficha != null ? ficha.icon : null;
         }
     }
 
     // Fichas de la tienda de cada arma, guardadas al armar el jugador (en las copias se quitan los scripts de armas).
     private readonly List<ShopItem> fichasPrincipales = new List<ShopItem>();
+    private readonly List<ShopItem> fichasSecundarias = new List<ShopItem>();
     private ShopItem fichaPistola;
+
+    private bool EsSecundaria(byte arma) => arma >= PrimeraSecundaria && arma < PrimeraPrincipal && arma - PrimeraSecundaria < secundarias.Count;
+
+    // Las secundarias que no son la Línea A (US 072), en el orden de WeaponSwitcher.otrasSecundarias.
+    private static List<GameObject> OtrasSecundarias(WeaponSwitcher cambio)
+    {
+        var lista = new List<GameObject>();
+        if (cambio != null && cambio.otrasSecundarias != null)
+            foreach (GameObject arma in cambio.otrasSecundarias)
+                if (arma != null) lista.Add(arma);
+        return lista;
+    }
 
     private byte ArmaActual => photonView != null && photonView.IsMine ? ArmaEnMano() : armaRed;
 
@@ -346,6 +366,14 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
     {
         if (arma == ArmaCuchillo) return "Cuchillo";
         if (arma == ArmaPistola) return "Pistola";
+        if (EsSecundaria(arma))
+        {
+            GameObject secundaria = secundarias[arma - PrimeraSecundaria];
+            IHudWeapon hudSecundaria = secundaria != null ? secundaria.GetComponentInChildren<IHudWeapon>(true) : null;
+            if (hudSecundaria != null) return hudSecundaria.HudName;
+            ShopItem ficha = arma - PrimeraSecundaria < fichasSecundarias.Count ? fichasSecundarias[arma - PrimeraSecundaria] : null;
+            return ficha != null && !string.IsNullOrEmpty(ficha.alias) ? ficha.alias : secundaria != null ? secundaria.name : "";
+        }
         int i = arma - PrimeraPrincipal;
         if (arma >= PrimeraPrincipal && i < principales.Count && principales[i] != null)
         {
@@ -360,6 +388,8 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
         for (int i = 0; i < principales.Count; i++)
             if (principales[i] != null && principales[i].activeSelf) return (byte)(PrimeraPrincipal + i);
         if (pistola != null && pistola.activeSelf) return ArmaPistola;
+        for (int i = 0; i < secundarias.Count; i++)
+            if (secundarias[i] != null && secundarias[i].activeSelf) return (byte)(PrimeraSecundaria + i);
         if (cuchillo != null && cuchillo.CurrentViewModel != null && cuchillo.CurrentViewModel.activeSelf) return ArmaCuchillo;
         return SinArma;
     }
@@ -397,6 +427,13 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
         jugador.fichaPistola = pistola != null ? pistola.shopItem : null;
         jugador.pistola = cambio != null ? cambio.pistolObj : pistola != null ? pistola.gameObject : null;
         jugador.sonidoPistola = pistola != null ? pistola.shootSound : null;
+        jugador.secundarias = OtrasSecundarias(cambio); // US 072: la Línea H y las que vengan
+        foreach (GameObject arma in jugador.secundarias)
+        {
+            ArmaDeFuego fuego = arma.GetComponent<ArmaDeFuego>();
+            jugador.sonidosSecundarias.Add(fuego != null ? fuego.shootSound : null);
+            jugador.fichasSecundarias.Add(WeaponSwitcher.FichaDe(arma));
+        }
         jugador.sonidoCuchillo = ataque != null ? ataque.SwingSound : null;
         if (movimiento != null) { jugador.alturaParado = movimiento.standingCameraHeight; jugador.alturaAgachado = movimiento.crouchCameraHeight; }
         AudioMixerGroup efectos = pistola != null ? pistola.sfxGroup : null;
@@ -426,6 +463,7 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
         // Las armas en la mano se dibujan con una cámara aparte (capa ArmaEnMano): en la copia van con el resto del mundo.
         foreach (GameObject arma in jugador.principales) PonerCapa(arma, 0);
         PonerCapa(jugador.pistola, 0);
+        foreach (GameObject arma in jugador.secundarias) PonerCapa(arma, 0);
 
         jugador.animador = go.GetComponentInChildren<Animator>(true);
         if (jugador.animador != null)
@@ -545,6 +583,8 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
         for (int i = 0; i < principales.Count; i++)
             if (principales[i] != null) principales[i].SetActive(arma == PrimeraPrincipal + i);
         if (pistola != null) pistola.SetActive(arma == ArmaPistola);
+        for (int i = 0; i < secundarias.Count; i++)
+            if (secundarias[i] != null) secundarias[i].SetActive(arma == PrimeraSecundaria + i);
         if (modeloCuchillo != null) modeloCuchillo.SetActive(arma == ArmaCuchillo);
     }
 
@@ -558,10 +598,13 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
         MostrarArma(arma);
         int principal = arma - PrimeraPrincipal;
         bool esPrincipal = principal >= 0 && principal < principales.Count;
-        AudioClip clip = esPrincipal ? sonidosPrincipales[principal] : sonidoPistola;
+        int secundaria = arma - PrimeraSecundaria;
+        bool esSecundaria = EsSecundaria(arma);
+        AudioClip clip = esPrincipal ? sonidosPrincipales[principal]
+            : esSecundaria && secundaria < sonidosSecundarias.Count ? sonidosSecundarias[secundaria] : sonidoPistola;
         if (clip != null && sonido != null) sonido.PlayOneShot(clip);
 
-        GameObject enMano = esPrincipal ? principales[principal] : pistola;
+        GameObject enMano = esPrincipal ? principales[principal] : esSecundaria ? secundarias[secundaria] : pistola;
         Vector3 boca = enMano != null ? enMano.transform.position : origen;
         for (int i = 0; i + 2 < direcciones.Length; i += 3)
         {

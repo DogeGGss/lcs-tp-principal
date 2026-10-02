@@ -8,6 +8,8 @@ public class WeaponSwitcher : MonoBehaviour
     [Tooltip("Las demás armas principales (Urquiza, Belgrano Sur, Roca...), cada una con su ArmaDeFuego. Con tienda, en el espacio 1 va la que se compró.")]
     public GameObject[] otrasPrincipales = new GameObject[0];
     public GameObject pistolObj;       // Slot 2: Pistola
+    [Tooltip("Las demás armas secundarias (Línea H...), cada una con su ArmaDeFuego. Con tienda, en el espacio 2 va la que se compró; si no compró ninguna, la Línea A (pistolObj).")]
+    public GameObject[] otrasSecundarias = new GameObject[0];
     public MeleeWeaponHolder meleeScript; // Slot 3: Cuchillo
     public GameObject grenadeObj;       // Slot 4: Granada
 
@@ -19,6 +21,7 @@ public class WeaponSwitcher : MonoBehaviour
     private GrenadeThrower granadas;
     private bool hayTienda;
     private GameObject teniaPrincipal;
+    private GameObject teniaSecundaria;
     private Pendiente pendiente = Pendiente.Nada;
 
     // Indica si actualmente está equipada la granada
@@ -40,6 +43,7 @@ public class WeaponSwitcher : MonoBehaviour
     {
         hayTienda = FindAnyObjectByType<ShopUI>() != null;
         teniaPrincipal = PrimaryObj;
+        teniaSecundaria = SecondaryObj;
         if (loadout != null) loadout.Changed += OnLoadoutChanged;
         if (granadas != null) granadas.Emptied += OnGranadasVacias;
     }
@@ -100,14 +104,51 @@ public class WeaponSwitcher : MonoBehaviour
         }
     }
 
-    // Ficha de la tienda de un arma principal (Mitre o ArmaDeFuego).
+    // Todas las armas secundarias que tiene el jugador en la mano, empezando por la Línea A (US 072).
+    public List<GameObject> Secundarias()
+    {
+        var lista = new List<GameObject>();
+        if (pistolObj != null) lista.Add(pistolObj);
+        if (otrasSecundarias != null)
+            foreach (GameObject arma in otrasSecundarias)
+                if (arma != null) lista.Add(arma);
+        return lista;
+    }
+
+    // El arma secundaria que tiene: la que compró en la tienda (por ejemplo, la Línea H) o, si no compró
+    // ninguna, la Línea A.
+    public GameObject SecondaryObj
+    {
+        get
+        {
+            if (hayTienda && loadout != null && loadout.Secondary != null && otrasSecundarias != null)
+                foreach (GameObject arma in otrasSecundarias)
+                    if (arma != null && FichaDe(arma) == loadout.Secondary) return arma;
+            return pistolObj;
+        }
+    }
+
+    // El arma secundaria que está en la mano, o null.
+    public GameObject HeldSecondary
+    {
+        get
+        {
+            foreach (GameObject arma in Secundarias())
+                if (arma.activeInHierarchy) return arma;
+            return null;
+        }
+    }
+
+    // Ficha de la tienda de un arma (Mitre, ArmaDeFuego o la Línea A).
     public static ShopItem FichaDe(GameObject arma)
     {
         if (arma == null) return null;
         ArmaDeFuego fuego = arma.GetComponent<ArmaDeFuego>();
         if (fuego != null) return fuego.shopItem;
         Mitre mitre = arma.GetComponent<Mitre>();
-        return mitre != null ? mitre.shopItem : null;
+        if (mitre != null) return mitre.shopItem;
+        Pistola pistola = arma.GetComponent<Pistola>();
+        return pistola != null ? pistola.shopItem : null;
     }
 
     void OnLoadoutChanged()
@@ -126,6 +167,17 @@ public class WeaponSwitcher : MonoBehaviour
             if (teniaPrincipal.activeSelf) CambiarA(Pendiente.Pistola);
         }
         teniaPrincipal = principal;
+
+        // Secundaria (US 072): al comprar la Línea H reemplaza a la Línea A y se saca; al venderla o perderla
+        // vuelve la Línea A, y si estaba en la mano se cambia en el momento.
+        GameObject secundaria = SecondaryObj;
+        if (secundaria != teniaSecundaria)
+        {
+            bool estabaEnMano = teniaSecundaria != null && teniaSecundaria.activeSelf;
+            if (secundaria != pistolObj) Rellenar(secundaria);
+            if (secundaria != pistolObj || estabaEnMano) CambiarA(Pendiente.Pistola);
+            teniaSecundaria = secundaria;
+        }
     }
 
     static void Rellenar(GameObject arma)
@@ -183,7 +235,7 @@ public class WeaponSwitcher : MonoBehaviour
         GameObject principal = PrimaryObj;
         GuardarPrincipales(principal);
         if (principal != null) principal.SetActive(true);
-        if (pistolObj != null) pistolObj.SetActive(false);
+        GuardarSecundarias(null);
         if (meleeScript != null && meleeScript.CurrentViewModel != null)
         {
             meleeScript.CurrentViewModel.SetActive(false);
@@ -198,14 +250,16 @@ public class WeaponSwitcher : MonoBehaviour
         GuardarGranada();
 
         GuardarPrincipales(null);
-        if (pistolObj != null) pistolObj.SetActive(true);
+        GameObject secundaria = SecondaryObj; // la Línea A o la que compró (US 072)
+        GuardarSecundarias(secundaria);
+        if (secundaria != null) secundaria.SetActive(true);
         if (meleeScript != null && meleeScript.CurrentViewModel != null)
         {
             meleeScript.CurrentViewModel.SetActive(false);
         }
 
-        // Velocidad normal para pistola (100%)
-        ApplySpeedMultiplier(1.0f);
+        // Cada secundaria tiene su velocidad (la Línea A y la Línea H, al 100 %)
+        ApplySpeedMultiplier(secundaria != null && secundaria != pistolObj ? VelocidadCon(secundaria) : 1.0f);
     }
 
     void EquipKnife()
@@ -213,7 +267,7 @@ public class WeaponSwitcher : MonoBehaviour
         GuardarGranada();
 
         GuardarPrincipales(null);
-        if (pistolObj != null) pistolObj.SetActive(false);
+        GuardarSecundarias(null);
         if (meleeScript != null && meleeScript.CurrentViewModel != null)
         {
             // Suena solo si se cambia al cuchillo, no al volver a apretar el 3 con el cuchillo en la mano (US 114).
@@ -241,7 +295,7 @@ public class WeaponSwitcher : MonoBehaviour
     void EquipGrenade()
     {
         GuardarPrincipales(null);
-        if (pistolObj != null) pistolObj.SetActive(false);
+        GuardarSecundarias(null);
 
         if (meleeScript != null && meleeScript.CurrentViewModel != null)
         {
@@ -264,6 +318,13 @@ public class WeaponSwitcher : MonoBehaviour
     void GuardarPrincipales(GameObject salvo)
     {
         foreach (GameObject arma in Principales())
+            if (arma != salvo) arma.SetActive(false);
+    }
+
+    // Guarda todas las armas secundarias menos la que se va a sacar.
+    void GuardarSecundarias(GameObject salvo)
+    {
+        foreach (GameObject arma in Secundarias())
             if (arma != salvo) arma.SetActive(false);
     }
 
