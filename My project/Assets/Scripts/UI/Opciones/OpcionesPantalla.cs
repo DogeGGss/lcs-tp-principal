@@ -74,6 +74,15 @@ public class OpcionesPantalla : MonoBehaviour
 
         menu = FindAnyObjectByType<MenuUIController>(FindObjectsInactive.Include);
 
+        // El panel entero tenía la animación de los botones: toda la pantalla de opciones se agrandaba al pasar
+        // el mouse y se achicaba con cada clic. Se apaga acá (los botones siguen teniendo la suya).
+        ButtonHoverAnimation animacion = GetComponent<ButtonHoverAnimation>();
+        if (animacion != null)
+        {
+            animacion.enabled = false;
+            transform.localScale = Vector3.one;
+        }
+
         for (int i = 0; i < NombresPestañas.Length; i++)
         {
             Transform boton = Buscar(transform, NombresPestañas[i]);
@@ -82,6 +91,7 @@ public class OpcionesPantalla : MonoBehaviour
             pestañas.Add(boton.GetComponent<UnityEngine.UI.Button>());
             paneles.Add(panel.gameObject);
         }
+        CrearPestañaMira();
         desplegables = GetComponentsInChildren<TMP_Dropdown>(true);
 
         // CA6: "Volver" pasa por acá para revisar si hay cambios sin aplicar.
@@ -114,6 +124,7 @@ public class OpcionesPantalla : MonoBehaviour
 
     private void OnDisable()
     {
+        if (panelMira != null) panelMira.SetActive(false); // el menú solo apaga las tres pestañas de la escena
         CerrarDialogo();
         if (lienzo != null) lienzo.SetActive(false);
     }
@@ -149,6 +160,47 @@ public class OpcionesPantalla : MonoBehaviour
     // =====================================================================
     // Pestañas (CA2)
     // =====================================================================
+
+    // Pestaña "Mira" (US 172): se crea por código al lado de Sonido, copiando su botón, sin tocar la escena.
+    private GameObject panelMira;
+
+    private void CrearPestañaMira()
+    {
+        if (panelMira != null || pestañas.Count < 2 || pestañas[pestañas.Count - 1] == null) return;
+        UnityEngine.UI.Button ultimo = pestañas[pestañas.Count - 1], anterior = pestañas[pestañas.Count - 2];
+        GameObject ultimoPanel = paneles[paneles.Count - 1];
+
+        GameObject clon = Instantiate(ultimo.gameObject, ultimo.transform.parent);
+        clon.name = "BtnMira";
+        RectTransform rect = (RectTransform)clon.transform, rectUltimo = (RectTransform)ultimo.transform;
+        Vector2 paso = anterior != null ? rectUltimo.anchoredPosition - ((RectTransform)anterior.transform).anchoredPosition : new Vector2(163f, 0f);
+        rect.anchoredPosition = rectUltimo.anchoredPosition + paso;
+        rect.SetSiblingIndex(rectUltimo.GetSiblingIndex() + 1);
+        TMP_Text texto = clon.GetComponentInChildren<TMP_Text>(true);
+        if (texto != null) texto.text = texto.text == texto.text.ToUpperInvariant() ? "MIRA" : "Mira";
+
+        panelMira = new GameObject("PanelMira", typeof(RectTransform));
+        panelMira.layer = ultimoPanel.layer;
+        panelMira.SetActive(false);
+        panelMira.transform.SetParent(ultimoPanel.transform.parent, false);
+        panelMira.transform.SetSiblingIndex(ultimoPanel.transform.GetSiblingIndex() + 1);
+        panelMira.AddComponent<MiraUIController>();
+
+        // Las otras pestañas apagan la de la mira; la de la mira apaga las otras.
+        foreach (UnityEngine.UI.Button b in pestañas)
+            if (b != null) b.onClick.AddListener(() => panelMira.SetActive(false));
+        List<GameObject> otros = new List<GameObject>(paneles);
+        UnityEngine.UI.Button boton = clon.GetComponent<UnityEngine.UI.Button>();
+        boton.onClick = new UnityEngine.UI.Button.ButtonClickedEvent(); // sin lo que traía la copia (mostrar Sonido)
+        boton.onClick.AddListener(() =>
+        {
+            foreach (GameObject p in otros) p.SetActive(false);
+            panelMira.SetActive(true);
+        });
+
+        pestañas.Add(boton);
+        paneles.Add(panelMira);
+    }
 
     private int PestañaActual()
     {

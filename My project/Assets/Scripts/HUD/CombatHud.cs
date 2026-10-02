@@ -43,9 +43,11 @@ public class CombatHud : MonoBehaviour
     [Tooltip("Canal del mixer para el sonido del marcador (SFX), así respeta el volumen de efectos.")]
     [SerializeField] private UnityEngine.Audio.AudioMixerGroup sfxGroup;
 
-    // Mira fija (US 171): cuatro rayitas blancas con borde oscuro y un hueco en el centro (px en 1920 x 1080).
-    private const float CrosshairLength = 8f, CrosshairThickness = 2f, CrosshairGap = 5f;
+    // Mira (US 171): por defecto, cuatro rayitas blancas con borde oscuro y un hueco en el centro (px en 1920 x 1080).
+    // El jugador la cambia desde Opciones > Mira (US 172): forma, color y si se abre con la dispersión del arma.
     private RectTransform crosshair;
+    private MiraDibujo crosshairDrawing;
+    private float crosshairOpen; // px que está abierta por la dispersión (mira dinámica)
 
     // Cuatro rayitas en la mira durante 0,15 s: blancas al acertar, amarillas a la cabeza, rojas y más grandes si mata.
     private const float HitMarkerTime = 0.15f;
@@ -152,6 +154,7 @@ public class CombatHud : MonoBehaviour
         // de CS (US 068), y con ella puesta la lente tiene su propia retícula (US 009). Con la pausa abierta se oculta
         // (con la tienda ya se oculta todo el HUD).
         crosshair.gameObject.SetActive(!PauseMenu.IsPaused && MiraTelescopica.EnMano == null);
+        UpdateCrosshair();
         float center = MiraTelescopica.Puesta ? 0f : 1f;
         foreach (CanvasGroup part in hiddenWhenScoped) part.alpha = center;
     }
@@ -160,29 +163,38 @@ public class CombatHud : MonoBehaviour
 
     private void BuildCrosshair(RectTransform root)
     {
-        crosshair = Node("Mira", root);
-        crosshair.anchorMin = crosshair.anchorMax = crosshair.pivot = new Vector2(0.5f, 0.5f);
-        crosshair.anchoredPosition = Vector2.zero;
-        crosshair.sizeDelta = Vector2.one * 2f * (CrosshairGap + CrosshairLength);
-
-        float offset = CrosshairGap + CrosshairLength * 0.5f;
-        CrosshairLine("Arriba", new Vector2(0f, offset), new Vector2(CrosshairThickness, CrosshairLength));
-        CrosshairLine("Abajo", new Vector2(0f, -offset), new Vector2(CrosshairThickness, CrosshairLength));
-        CrosshairLine("Izquierda", new Vector2(-offset, 0f), new Vector2(CrosshairLength, CrosshairThickness));
-        CrosshairLine("Derecha", new Vector2(offset, 0f), new Vector2(CrosshairLength, CrosshairThickness));
+        crosshairDrawing = new MiraDibujo(root);
+        crosshair = crosshairDrawing.raiz;
+        crosshairDrawing.Aplicar(MiraConfig.Actual);
     }
 
-    private void CrosshairLine(string name, Vector2 position, Vector2 size)
+    // US 172: la mira se dibuja con lo guardado en Opciones > Mira. Con "Se abre con la dispersión" (CA4), las
+    // rayitas se separan según la dispersión actual del arma en la mano (US 167) y se cierran al frenar.
+    private void UpdateCrosshair()
     {
-        RectTransform line = Node(name, crosshair);
-        line.anchorMin = line.anchorMax = line.pivot = new Vector2(0.5f, 0.5f);
-        line.anchoredPosition = position;
-        line.sizeDelta = size;
-        Image(line, null, Color.white);
-        // Borde oscuro de 1 px para que se lea sobre el cielo y sobre paredes oscuras.
-        UnityEngine.UI.Outline border = line.gameObject.AddComponent<UnityEngine.UI.Outline>();
-        border.effectColor = new Color(0f, 0f, 0f, 0.85f);
-        border.effectDistance = new Vector2(1f, 1f);
+        MiraConfig.Mira config = MiraConfig.Actual;
+        float target = config.dinamica ? SpreadPixels() : 0f;
+        crosshairOpen = Mathf.Lerp(crosshairOpen, target, 1f - Mathf.Exp(-18f * Time.unscaledDeltaTime));
+        if (Mathf.Abs(crosshairOpen - target) < 0.05f) crosshairOpen = target;
+        crosshairDrawing.Aplicar(config, crosshairOpen);
+    }
+
+    // La dispersión del arma en la mano, pasada de grados a px del HUD: hasta dónde puede desviarse una bala.
+    private float SpreadPixels()
+    {
+        Camera view = Camera.main;
+        if (view == null || switcher == null) return 0f;
+
+        ShopItem weapon = null;
+        GameObject held = switcher.HeldPrimary;
+        if (held != null) weapon = WeaponSwitcher.FichaDe(held);
+        else if (switcher.pistolObj != null && switcher.pistolObj.activeInHierarchy && loadout != null) weapon = loadout.Secondary;
+        if (weapon == null) return 0f;
+
+        float degrees = WeaponAim.For(view).CurrentSpread(weapon, false);
+        RectTransform canvas = crosshair.parent as RectTransform;
+        float half = canvas != null && canvas.rect.height > 0f ? canvas.rect.height * 0.5f : 540f;
+        return Mathf.Tan(degrees * Mathf.Deg2Rad) / Mathf.Tan(view.fieldOfView * 0.5f * Mathf.Deg2Rad) * half;
     }
 
     // ---------- Marcador de impacto ----------
@@ -415,7 +427,10 @@ public class CombatHud : MonoBehaviour
             return;
         }
         if (melee != null && melee.CurrentViewModel != null && melee.CurrentViewModel.activeInHierarchy)
+        {
             name = melee.CurrentWeapon != null ? melee.CurrentWeapon.weaponName : "Cuchillo";
+            WeaponIcon = knifeIcon; // para el aviso de baja con cuchillo
+        }
     }
 
     // La pistola de hoy es el arma secundaria: se muestra con su nombre de la tienda (Línea A), como en Valorant.

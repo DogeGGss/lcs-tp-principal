@@ -28,7 +28,7 @@ using static ShopUIKit;
 [DefaultExecutionOrder(-50)]
 public class PauseMenu : MonoBehaviour
 {
-    public enum Panel { None, Main, Settings, Exit, Restart, Controls, Graphics }
+    public enum Panel { None, Main, Settings, Exit, Restart, Controls, Graphics, Crosshair }
 
     [Header("Partida")]
     [SerializeField] private string mainMenuScene = "MenuPrincipal";
@@ -98,9 +98,10 @@ public class PauseMenu : MonoBehaviour
         public System.Action activate; // filas que abren otra pantalla (Controles)
     }
 
-    private RectTransform canvasRoot, root, col1, colSettings, colExit, colControls, colGraphics;
-    private CanvasGroup settingsGroup, exitGroup, controlsGroup, graphicsGroup;
+    private RectTransform canvasRoot, root, col1, colSettings, colExit, colControls, colGraphics, colCrosshair;
+    private CanvasGroup settingsGroup, exitGroup, controlsGroup, graphicsGroup, crosshairGroup;
     private GraficosUIController graphics; // la misma pestaña Gráficos del menú principal (US 153)
+    private MiraUIController crosshairPanel; // la misma pestaña Mira del menú principal (US 172)
     private const float ColControlsW = 640f;
     private UIImage shade, statusChip, statusDot;
     private TextMeshProUGUI metaText, statusText, noteText, exitWarning, savedText;
@@ -184,6 +185,7 @@ public class PauseMenu : MonoBehaviour
                 if (!ControlsPanel.IsBusy && Input.GetKeyDown(KeyCode.Backspace)) Back();
                 break;
             case Panel.Graphics:
+            case Panel.Crosshair:
                 if (Input.GetKeyDown(KeyCode.Backspace)) Back();
                 break;
             case Panel.Exit:
@@ -278,6 +280,7 @@ public class PauseMenu : MonoBehaviour
         if (Current == Panel.Controls) { KeyBindings.Save(); Show(Panel.Settings); return; }
         // Los gráficos se usan al apretar Aplicar: lo que quedó sin aplicar se descarta al volver.
         if (Current == Panel.Graphics) { if (graphics != null) graphics.Descartar(); Show(Panel.Settings); return; }
+        if (Current == Panel.Crosshair) { if (crosshairPanel != null) crosshairPanel.Descartar(); Show(Panel.Settings); return; }
         if (Current == Panel.Settings) PlayerPrefs.Save();
         Show(Panel.Main);
     }
@@ -513,13 +516,15 @@ public class PauseMenu : MonoBehaviour
         colSettings.gameObject.SetActive(panel == Panel.Settings);
         colControls.gameObject.SetActive(panel == Panel.Controls);
         colGraphics.gameObject.SetActive(panel == Panel.Graphics);
+        colCrosshair.gameObject.SetActive(panel == Panel.Crosshair);
         colExit.gameObject.SetActive(panel == Panel.Exit || panel == Panel.Restart);
 
         if (panel == Panel.Settings) LoadSettingsIntoUI();
         if (panel == Panel.Exit || panel == Panel.Restart) SetConfirmTexts(panel == Panel.Restart);
-        if (panel == Panel.Settings && previous != Panel.Settings && previous != Panel.Controls && previous != Panel.Graphics) Reveal(settingsGroup);
+        if (panel == Panel.Settings && previous != Panel.Settings && previous != Panel.Controls && previous != Panel.Graphics && previous != Panel.Crosshair) Reveal(settingsGroup);
         if (panel == Panel.Controls && previous != Panel.Controls) Reveal(controlsGroup);
         if (panel == Panel.Graphics && previous != Panel.Graphics) Reveal(graphicsGroup);
+        if (panel == Panel.Crosshair && previous != Panel.Crosshair) Reveal(crosshairGroup);
         if ((panel == Panel.Exit || panel == Panel.Restart) && previous != panel) Reveal(exitGroup);
         if (panel == Panel.Main && previous == Panel.None) Reveal(col1.GetComponent<CanvasGroup>());
 
@@ -577,7 +582,7 @@ public class PauseMenu : MonoBehaviour
             int id = visibleOptions[i];
             Option o = options[id];
             bool isSelected = Current == Panel.Main && i == selected;
-            bool isOpen = (id == OptRestart && Current == Panel.Restart) || (id == OptSettings && (Current == Panel.Settings || Current == Panel.Controls || Current == Panel.Graphics))
+            bool isOpen = (id == OptRestart && Current == Panel.Restart) || (id == OptSettings && (Current == Panel.Settings || Current == Panel.Controls || Current == Panel.Graphics || Current == Panel.Crosshair))
                        || (id == OptExit && Current == Panel.Exit);
             o.bg.color = isSelected ? (o.danger ? badSelected : SelectedColor) : isOpen ? HoverColor : Clear;
             o.chip.color = isSelected ? (o.danger ? Bad : Accent) : ChipDim;
@@ -650,6 +655,7 @@ public class PauseMenu : MonoBehaviour
         BuildSettingsColumn();
         BuildControlsColumn();
         BuildGraphicsColumn();
+        BuildCrosshairColumn();
         BuildExitColumn();
     }
 
@@ -746,6 +752,7 @@ public class PauseMenu : MonoBehaviour
         SliderRow("Campo de visión", ref y, 60f, 100f, 1f, SetFov, true);        // mismo rango que el menú
         // Resolución, modo de pantalla, calidad, VSync y límite de FPS: la misma pestaña del menú principal.
         OpenRow("Gráficos", "Cambiar gráficos", ref y, () => Show(Panel.Graphics));
+        OpenRow("Mira", "Personalizar mira", ref y, () => Show(Panel.Crosshair)); // US 172
         Group("Teclas", ref y);
         OpenRow("Controles", "Cambiar teclas", ref y, () => Show(Panel.Controls));
 
@@ -813,6 +820,24 @@ public class PauseMenu : MonoBehaviour
         panelObject.SetActive(true);
 
         colGraphics.gameObject.SetActive(false);
+    }
+
+    // La misma pestaña Mira del menú principal (US 172), dentro de la pausa.
+    private void BuildCrosshairColumn()
+    {
+        colCrosshair = Column("Mira", Col1W, ColControlsW, col2Color);
+        crosshairGroup = colCrosshair.GetComponent<CanvasGroup>();
+
+        GameObject panelObject = new GameObject("PanelMira", typeof(RectTransform));
+        panelObject.layer = 5;
+        panelObject.SetActive(false); // se configura antes de que arranque
+        panelObject.transform.SetParent(colCrosshair, false);
+        Stretch((RectTransform)panelObject.transform);
+        crosshairPanel = panelObject.AddComponent<MiraUIController>();
+        crosshairPanel.Setup(displayFont, labelFont, bodyFont, rounded, () => Back());
+        panelObject.SetActive(true);
+
+        colCrosshair.gameObject.SetActive(false);
     }
 
     private void Group(string title, ref float y)

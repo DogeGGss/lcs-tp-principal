@@ -18,9 +18,23 @@ public class OpcionesKit
     private readonly TMP_FontAsset displayFont, labelFont, bodyFont;
     private readonly Sprite rounded;
 
-    public float Inner => width - Pad * 2f;
-    public float ControlX => Pad + LabelW;
-    public float ControlW => width - Pad * 2f - LabelW;
+    // Columna donde se arman las filas: por defecto, todo el ancho del panel menos los márgenes.
+    private float left, colW;
+
+    public float Left => left;
+    public float Inner => colW;
+    public float ControlX => left + LabelW;
+    public float ControlW => colW - LabelW;
+    public TMP_FontAsset DisplayFont => displayFont;
+    public TMP_FontAsset LabelFont => labelFont;
+    public Sprite Rounded => rounded;
+
+    /// <summary>Las filas que se armen después van en esta columna (x y ancho en unidades del panel).</summary>
+    public void Columna(float x, float ancho)
+    {
+        left = x;
+        colW = ancho;
+    }
 
     /// <summary>Filas de opciones con segmentos, para pintarlas cuando cambia el valor.</summary>
     public class Segmentos
@@ -111,6 +125,8 @@ public class OpcionesKit
         root = Stretch(Node("Pestaña", panel));
         Image(root, rounded, Rgb(10, 12, 17, DarkAlpha(0.97f)), 10f, true);
         width = panel.rect.width > 0f ? panel.rect.width : 600f;
+        left = Pad;
+        colW = width - Pad * 2f;
 
         Text(Place(Node("Titulo", root), Pad, 36f, Inner, 50f), displayFont, 46f, Ink, TextAlignmentOptions.MidlineLeft, 2f, true).text = titulo;
         Image(Place(Node("LineaAnden", root), Pad, 92f, 120f, 3f), null, Accent);
@@ -122,26 +138,26 @@ public class OpcionesKit
 
     public void Grupo(string titulo, ref float y)
     {
-        Text(Place(Node("Grupo", root), Pad, y, 300f, 20f), labelFont, 15f, Mute, TextAlignmentOptions.MidlineLeft, 16f, true).text = titulo;
+        Text(Place(Node("Grupo", root), left, y, 300f, 20f), labelFont, 15f, Mute, TextAlignmentOptions.MidlineLeft, 16f, true).text = titulo;
         y += 24f;
     }
 
     public void Ayuda(string texto, ref float y)
     {
-        Text(Place(Node("Ayuda", root), Pad, y, Inner, 22f), bodyFont, 16f, Mute, TextAlignmentOptions.MidlineLeft).text = texto;
+        Text(Place(Node("Ayuda", root), left, y, Inner, 22f), bodyFont, 16f, Mute, TextAlignmentOptions.MidlineLeft).text = texto;
         y += 32f;
     }
 
-    private void Etiqueta(string titulo, float y)
+    public void Etiqueta(string titulo, float y)
     {
-        Text(Place(Node(titulo, root), Pad, y, LabelW, RowH), labelFont, 19f, Ink, TextAlignmentOptions.MidlineLeft, 5f, true).text = titulo;
+        Text(Place(Node(titulo, root), left, y, LabelW, RowH), labelFont, 19f, Ink, TextAlignmentOptions.MidlineLeft, 5f, true).text = titulo;
     }
 
     /// <summary>Slider con forma de vía y el valor a la derecha, como Sensibilidad en Controles.</summary>
     public Slider FilaSlider(string titulo, ref float y, float min, float max, out TextMeshProUGUI valor)
     {
         Etiqueta(titulo, y);
-        valor = Text(Place(Node("Valor", root), width - Pad - 60f, y, 60f, RowH), labelFont, 18f, Ink, TextAlignmentOptions.MidlineRight);
+        valor = Text(Place(Node("Valor", root), left + colW - 60f, y, 60f, RowH), labelFont, 18f, Ink, TextAlignmentOptions.MidlineRight);
         Slider slider = CrearSlider(root, ControlX, y + (RowH - 26f) / 2f, ControlW - 76f, min, max);
         y += RowH;
         return slider;
@@ -204,8 +220,8 @@ public class OpcionesKit
     public void Pie(ref float y, System.Action aplicar, System.Action restablecer)
     {
         y += 12f;
-        Boton(Pad, y, 150f, 40f, "Aplicar", true, aplicar);
-        Boton(Pad + 166f, y, 170f, 40f, "Restablecer", false, restablecer);
+        Boton(left, y, 150f, 40f, "Aplicar", true, aplicar);
+        Boton(left + 166f, y, 170f, 40f, "Restablecer", false, restablecer);
         y += 40f;
     }
 
