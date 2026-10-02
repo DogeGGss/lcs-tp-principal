@@ -28,7 +28,7 @@ using static ShopUIKit;
 [DefaultExecutionOrder(-50)]
 public class PauseMenu : MonoBehaviour
 {
-    public enum Panel { None, Main, Settings, Exit, Restart, Controls }
+    public enum Panel { None, Main, Settings, Exit, Restart, Controls, Graphics }
 
     [Header("Partida")]
     [SerializeField] private string mainMenuScene = "MenuPrincipal";
@@ -98,8 +98,9 @@ public class PauseMenu : MonoBehaviour
         public System.Action activate; // filas que abren otra pantalla (Controles)
     }
 
-    private RectTransform canvasRoot, root, col1, colSettings, colExit, colControls;
-    private CanvasGroup settingsGroup, exitGroup, controlsGroup;
+    private RectTransform canvasRoot, root, col1, colSettings, colExit, colControls, colGraphics;
+    private CanvasGroup settingsGroup, exitGroup, controlsGroup, graphicsGroup;
+    private GraficosUIController graphics; // la misma pestaña Gráficos del menú principal (US 153)
     private const float ColControlsW = 640f;
     private UIImage shade, statusChip, statusDot;
     private TextMeshProUGUI metaText, statusText, noteText, exitWarning, savedText;
@@ -181,6 +182,9 @@ public class PauseMenu : MonoBehaviour
             case Panel.Settings: SettingsKeys(); break;
             case Panel.Controls:
                 if (!ControlsPanel.IsBusy && Input.GetKeyDown(KeyCode.Backspace)) Back();
+                break;
+            case Panel.Graphics:
+                if (Input.GetKeyDown(KeyCode.Backspace)) Back();
                 break;
             case Panel.Exit:
             case Panel.Restart: ExitKeys(); break;
@@ -272,6 +276,8 @@ public class PauseMenu : MonoBehaviour
     public void Back()
     {
         if (Current == Panel.Controls) { KeyBindings.Save(); Show(Panel.Settings); return; }
+        // Los gráficos se usan al apretar Aplicar: lo que quedó sin aplicar se descarta al volver.
+        if (Current == Panel.Graphics) { if (graphics != null) graphics.Descartar(); Show(Panel.Settings); return; }
         if (Current == Panel.Settings) PlayerPrefs.Save();
         Show(Panel.Main);
     }
@@ -458,13 +464,14 @@ public class PauseMenu : MonoBehaviour
         settingRows[0].slider.SetValueWithoutNotify(PlayerPrefs.GetFloat(KeyGeneral, DefaultVolume));
         settingRows[1].slider.SetValueWithoutNotify(PlayerPrefs.GetFloat(KeyMusic, DefaultVolume));
         settingRows[2].slider.SetValueWithoutNotify(PlayerPrefs.GetFloat(KeyEffects, DefaultVolume));
-        settingRows[3].slider.SetValueWithoutNotify(PlayerPrefs.GetFloat(KeySensitivity, DefaultSensitivity));
-        settingRows[4].slider.SetValueWithoutNotify(PlayerPrefs.GetFloat(KeyFov, DefaultFov));
+        settingRows[3].slider.SetValueWithoutNotify(PlayerPrefs.GetFloat(KeyInterface, DefaultVolume));
+        settingRows[4].slider.SetValueWithoutNotify(PlayerPrefs.GetFloat(KeySensitivity, DefaultSensitivity));
+        settingRows[5].slider.SetValueWithoutNotify(PlayerPrefs.GetFloat(KeyFov, DefaultFov));
         screenMode = PlayerPrefs.GetInt(KeyScreenMode, DefaultScreenMode);
 
-        for (int i = 0; i < 3; i++) settingRows[i].value.text = Mathf.RoundToInt(settingRows[i].slider.value * 100f) + " %";
-        settingRows[3].value.text = Number(settingRows[3].slider.value);
-        settingRows[4].value.text = Mathf.RoundToInt(settingRows[4].slider.value) + "°";
+        for (int i = 0; i < 4; i++) settingRows[i].value.text = Mathf.RoundToInt(settingRows[i].slider.value * 100f) + " %";
+        settingRows[4].value.text = Number(settingRows[4].slider.value);
+        settingRows[5].value.text = Mathf.RoundToInt(settingRows[5].slider.value) + "°";
     }
 
     private void ResetSettings()
@@ -473,9 +480,10 @@ public class PauseMenu : MonoBehaviour
         settingRows[0].slider.value = DefaultVolume;
         settingRows[1].slider.value = DefaultVolume;
         settingRows[2].slider.value = DefaultVolume;
-        settingRows[3].slider.value = DefaultSensitivity;
-        settingRows[4].slider.value = DefaultFov;
-        SetScreenMode(DefaultScreenMode);
+        settingRows[3].slider.value = DefaultVolume;
+        settingRows[4].slider.value = DefaultSensitivity;
+        settingRows[5].slider.value = DefaultFov;
+        // Los gráficos (resolución, modo, calidad…) se restablecen desde su propia pantalla.
         PlayerPrefs.Save();
         FlashSaved();
     }
@@ -504,12 +512,14 @@ public class PauseMenu : MonoBehaviour
 
         colSettings.gameObject.SetActive(panel == Panel.Settings);
         colControls.gameObject.SetActive(panel == Panel.Controls);
+        colGraphics.gameObject.SetActive(panel == Panel.Graphics);
         colExit.gameObject.SetActive(panel == Panel.Exit || panel == Panel.Restart);
 
         if (panel == Panel.Settings) LoadSettingsIntoUI();
         if (panel == Panel.Exit || panel == Panel.Restart) SetConfirmTexts(panel == Panel.Restart);
-        if (panel == Panel.Settings && previous != Panel.Settings && previous != Panel.Controls) Reveal(settingsGroup);
+        if (panel == Panel.Settings && previous != Panel.Settings && previous != Panel.Controls && previous != Panel.Graphics) Reveal(settingsGroup);
         if (panel == Panel.Controls && previous != Panel.Controls) Reveal(controlsGroup);
+        if (panel == Panel.Graphics && previous != Panel.Graphics) Reveal(graphicsGroup);
         if ((panel == Panel.Exit || panel == Panel.Restart) && previous != panel) Reveal(exitGroup);
         if (panel == Panel.Main && previous == Panel.None) Reveal(col1.GetComponent<CanvasGroup>());
 
@@ -567,7 +577,7 @@ public class PauseMenu : MonoBehaviour
             int id = visibleOptions[i];
             Option o = options[id];
             bool isSelected = Current == Panel.Main && i == selected;
-            bool isOpen = (id == OptRestart && Current == Panel.Restart) || (id == OptSettings && (Current == Panel.Settings || Current == Panel.Controls))
+            bool isOpen = (id == OptRestart && Current == Panel.Restart) || (id == OptSettings && (Current == Panel.Settings || Current == Panel.Controls || Current == Panel.Graphics))
                        || (id == OptExit && Current == Panel.Exit);
             o.bg.color = isSelected ? (o.danger ? badSelected : SelectedColor) : isOpen ? HoverColor : Clear;
             o.chip.color = isSelected ? (o.danger ? Bad : Accent) : ChipDim;
@@ -639,6 +649,7 @@ public class PauseMenu : MonoBehaviour
         BuildMainColumn();
         BuildSettingsColumn();
         BuildControlsColumn();
+        BuildGraphicsColumn();
         BuildExitColumn();
     }
 
@@ -728,11 +739,13 @@ public class PauseMenu : MonoBehaviour
         SliderRow("General", ref y, 0.0001f, 1f, 0.05f, (v, label) => SetVolume(KeyGeneral, v, label));
         SliderRow("Música", ref y, 0.0001f, 1f, 0.05f, (v, label) => SetVolume(KeyMusic, v, label));
         SliderRow("Efectos", ref y, 0.0001f, 1f, 0.05f, (v, label) => SetVolume(KeyEffects, v, label));
+        SliderRow("Interfaz", ref y, 0.0001f, 1f, 0.05f, (v, label) => SetVolume(KeyInterface, v, label)); // US 154
         Group("Mouse", ref y);
         SliderRow("Sensibilidad", ref y, KeyBindings.MinSensitivity, KeyBindings.MaxSensitivity, 0.1f, SetSensitivity); // mismo rango que Controles (US 155)
         Group("Video", ref y);
         SliderRow("Campo de visión", ref y, 60f, 100f, 1f, SetFov, true);        // mismo rango que el menú
-        ScreenModeRow(ref y);
+        // Resolución, modo de pantalla, calidad, VSync y límite de FPS: la misma pestaña del menú principal.
+        OpenRow("Gráficos", "Cambiar gráficos", ref y, () => Show(Panel.Graphics));
         Group("Teclas", ref y);
         OpenRow("Controles", "Cambiar teclas", ref y, () => Show(Panel.Controls));
 
@@ -782,6 +795,24 @@ public class PauseMenu : MonoBehaviour
         panelObject.SetActive(true);
 
         colControls.gameObject.SetActive(false);
+    }
+
+    // La misma pestaña Gráficos del menú principal (US 153), dentro de la pausa.
+    private void BuildGraphicsColumn()
+    {
+        colGraphics = Column("Graficos", Col1W, ColControlsW, col2Color);
+        graphicsGroup = colGraphics.GetComponent<CanvasGroup>();
+
+        GameObject panelObject = new GameObject("PanelGraficos", typeof(RectTransform));
+        panelObject.layer = 5;
+        panelObject.SetActive(false); // se configura antes de que arranque
+        panelObject.transform.SetParent(colGraphics, false);
+        Stretch((RectTransform)panelObject.transform);
+        graphics = panelObject.AddComponent<GraficosUIController>();
+        graphics.Setup(displayFont, labelFont, bodyFont, rounded, () => Back());
+        panelObject.SetActive(true);
+
+        colGraphics.gameObject.SetActive(false);
     }
 
     private void Group(string title, ref float y)
