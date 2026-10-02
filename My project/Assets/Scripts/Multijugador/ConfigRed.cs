@@ -29,6 +29,12 @@ public class ConfigRed : ScriptableObject
     [Tooltip("Material del contorno rojo de los rivales (US 031, CA5), con el shader Efectos/ContornoRival.")]
     public Material contornoRival;
 
+    [Header("Armas en el piso (US 184)")]
+    [Tooltip("Golpe del arma contra el piso al soltarla (CA12).")]
+    public AudioClip sonidoSoltarArma;
+    [Tooltip("Sonido de sacar el arma al levantarla del piso (CA13).")]
+    public AudioClip sonidoLevantarArma;
+
     [Header("Deathmatch (US 030 y US 137)")]
     [Tooltip("Segundos entre la muerte y la reaparición.")]
     public float reaparicion = 3f;

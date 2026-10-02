@@ -47,6 +47,8 @@ public class ShopItem : ScriptableObject
     public float reloadTime;
     public bool reloadPerShell;
     public float mobility = 1f;
+    [Tooltip("Largo real del arma, en metros: así se ve en la mano de los demás jugadores y en el piso (US 182 y US 184). 0 = el que trae el modelo de primera persona.")]
+    public float realLength;
     public float zoom;
     public float zoom2;
     public int pellets = 1;

@@ -31,6 +31,12 @@ public class PlayerLoadout : MonoBehaviour
 
     public event System.Action Changed;
 
+    // Al morir, justo antes de perder el equipamiento: así el arma todavía se puede soltar al piso (US 184, CA8).
+    public event System.Action LosingEquipment;
+
+    // El cambio que se está avisando es un arma levantada del piso (US 184): no se rellena ni se saca.
+    public bool PickingUp { get; private set; }
+
     public int SpentThisPhase
     {
         get
@@ -194,9 +200,43 @@ public class PlayerLoadout : MonoBehaviour
         Changed?.Invoke();
     }
 
+    // Suelta un arma al piso (US 184): su espacio queda vacío y esa compra ya no se puede vender ni deshacer (CA7).
+    public bool Drop(ShopItem item)
+    {
+        if (item == null) return false;
+        if (item == Primary) Primary = null;
+        else if (item == Secondary) Secondary = null;
+        else return false;
+        Purchase bought = LastPurchaseOf(item);
+        if (bought != null) purchases.Remove(bought);
+        Changed?.Invoke();
+        return true;
+    }
+
+    // Se puede levantar un arma del piso solo si su espacio (principal o secundaria) está vacío (US 184, CA5 y CA6).
+    public bool CanPickUp(ShopItem item)
+    {
+        if (item == null) return false;
+        if (item.kind == ShopItemKind.PrimaryWeapon) return Primary == null;
+        if (item.kind == ShopItemKind.SecondaryWeapon) return Secondary == null;
+        return false;
+    }
+
+    // Levanta un arma del piso: va a su espacio sin pagar y no cuenta como compra.
+    public bool PickUp(ShopItem item)
+    {
+        if (!CanPickUp(item)) return false;
+        if (item.kind == ShopItemKind.PrimaryWeapon) Primary = item; else Secondary = item;
+        PickingUp = true;
+        try { Changed?.Invoke(); }
+        finally { PickingUp = false; }
+        return true;
+    }
+
     // Al morir se pierde todo menos la plata; se reaparece con el arma secundaria inicial.
     public void LoseEquipment()
     {
+        LosingEquipment?.Invoke();
         Primary = null;
         Secondary = catalog != null ? catalog.starterSecondary : null;
         grenades.Clear();

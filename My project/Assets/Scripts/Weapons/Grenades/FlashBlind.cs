@@ -146,6 +146,7 @@ public class FlashBlind : MonoBehaviour
         {
             if (hit.collider.GetComponentInParent<HealthSystem>() != null) continue;
             if (hit.collider.GetComponentInParent<Grenade1>() != null) continue;
+            if (hit.collider.GetComponentInParent<ArmaEnPiso>() != null) continue; // un arma tirada no tapa
             if (hit.collider.transform.IsChildOf(viewer.root)) continue;
             return true;
         }

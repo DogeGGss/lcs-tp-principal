@@ -625,7 +625,8 @@ public class CombatHud : MonoBehaviour
         Sprite primaryIcon = primary != null ? primary.icon : alwaysItem != null ? alwaysItem.icon : null;
 
         ShopItem secondary = loadout != null ? loadout.Secondary : null;
-        bool hasSecondary = secondary != null || (switcher != null && switcher.pistolObj != null);
+        // Con tienda, la que tiene en la tienda: si soltó la Línea A (US 184, CA4), el espacio queda vacío.
+        bool hasSecondary = secondary != null || (!sceneHasShop && switcher != null && switcher.pistolObj != null);
         string secondaryName = hasSecondary ? SecondaryName() : "Vacío";
 
         bool hasKnife = melee != null && melee.CurrentWeapon != null;

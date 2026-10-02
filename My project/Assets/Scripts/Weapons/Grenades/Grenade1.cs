@@ -301,6 +301,7 @@ public class Grenade1 : MonoBehaviour
             if (other.IsChildOf(transform)) continue;
             if (other.IsChildOf(target)) continue;
             if (hit.collider.GetComponentInParent<HealthSystem>() != null) continue;
+            if (hit.collider.GetComponentInParent<ArmaEnPiso>() != null) continue; // un arma tirada no es pared
             return true;
         }
         return false;

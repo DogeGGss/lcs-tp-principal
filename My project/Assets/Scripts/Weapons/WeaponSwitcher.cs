@@ -37,6 +37,11 @@ public class WeaponSwitcher : MonoBehaviour
         // Granadas (US 079): el manejo vive en GrenadeThrower; se agrega solo si el jugador no lo tiene.
         granadas = GetComponentInParent<GrenadeThrower>();
         if (granadas == null) granadas = gameObject.AddComponent<GrenadeThrower>();
+
+        // Soltar y levantar armas (US 184): igual, se agrega solo.
+        if (GetComponentInParent<SoltarArmas>() == null) gameObject.AddComponent<SoltarArmas>();
+        // Brazos de primera persona pegados a la cámara con la Línea A (si el jugador tiene brazos de primera persona).
+        if (GetComponentInParent<BrazosEnCamara>() == null) gameObject.AddComponent<BrazosEnCamara>();
     }
 
     void Start()
@@ -116,12 +121,13 @@ public class WeaponSwitcher : MonoBehaviour
     }
 
     // El arma secundaria que tiene: la que compró en la tienda (por ejemplo, la Línea H) o, si no compró
-    // ninguna, la Línea A.
+    // ninguna, la Línea A. Si la soltó (US 184), ninguna.
     public GameObject SecondaryObj
     {
         get
         {
-            if (hayTienda && loadout != null && loadout.Secondary != null && otrasSecundarias != null)
+            if (hayTienda && loadout != null && loadout.Secondary == null) return null;
+            if (hayTienda && loadout != null && otrasSecundarias != null)
                 foreach (GameObject arma in otrasSecundarias)
                     if (arma != null && FichaDe(arma) == loadout.Secondary) return arma;
             return pistolObj;
@@ -153,6 +159,14 @@ public class WeaponSwitcher : MonoBehaviour
 
     void OnLoadoutChanged()
     {
+        // Levantada del piso (US 184, CA5): queda con las balas que tenía y se sigue con lo que hay en la mano.
+        if (loadout.PickingUp)
+        {
+            teniaPrincipal = PrimaryObj;
+            teniaSecundaria = SecondaryObj;
+            return;
+        }
+
         GameObject principal = PrimaryObj;
         if (principal != null && principal != teniaPrincipal)
         {
@@ -169,13 +183,14 @@ public class WeaponSwitcher : MonoBehaviour
         teniaPrincipal = principal;
 
         // Secundaria (US 072): al comprar la Línea H reemplaza a la Línea A y se saca; al venderla o perderla
-        // vuelve la Línea A, y si estaba en la mano se cambia en el momento.
+        // vuelve la Línea A, y si estaba en la mano se cambia en el momento. Si la soltó, se pasa al cuchillo.
         GameObject secundaria = SecondaryObj;
         if (secundaria != teniaSecundaria)
         {
             bool estabaEnMano = teniaSecundaria != null && teniaSecundaria.activeSelf;
-            if (secundaria != pistolObj) Rellenar(secundaria);
-            if (secundaria != pistolObj || estabaEnMano) CambiarA(Pendiente.Pistola);
+            bool nueva = secundaria != null && secundaria != pistolObj;
+            if (nueva) Rellenar(secundaria);
+            if (nueva || estabaEnMano) CambiarA(Pendiente.Pistola);
             teniaSecundaria = secundaria;
         }
     }
@@ -209,8 +224,8 @@ public class WeaponSwitcher : MonoBehaviour
             EquipPrimary();
         }
 
-        // Tecla 2: Pistola (Arma secundaria)
-        if (KeyBindings.Down(GameAction.ArmaSecundaria))
+        // Tecla 2: Pistola (Arma secundaria), solo si tiene una (la puede haber soltado, US 184)
+        if (KeyBindings.Down(GameAction.ArmaSecundaria) && SecondaryObj != null)
         {
             EquipPistol();
         }
@@ -247,10 +262,13 @@ public class WeaponSwitcher : MonoBehaviour
 
     void EquipPistol()
     {
+        GameObject secundaria = SecondaryObj; // la Línea A o la que compró (US 072)
+        // Sin secundaria (la soltó, US 184, CA4), la siguiente arma es el cuchillo.
+        if (secundaria == null && meleeScript != null) { EquipKnife(); return; }
+
         GuardarGranada();
 
         GuardarPrincipales(null);
-        GameObject secundaria = SecondaryObj; // la Línea A o la que compró (US 072)
         GuardarSecundarias(secundaria);
         if (secundaria != null) secundaria.SetActive(true);
         if (meleeScript != null && meleeScript.CurrentViewModel != null)
