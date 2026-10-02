@@ -141,6 +141,10 @@ public class ControlsPanel : MonoBehaviour, OpcionesPantalla.ISeccion
             aplicado = Foto.Actual();
         }
 
+        // En las opciones del menú, PanelControles viene estirado distinto a lo ancho y a lo alto: se corrige para
+        // que las letras no salgan deformadas (igual que Gráficos y Sonido).
+        if (pantalla != null) OpcionesKit.SinDeformar(transform.parent as RectTransform, OpcionesKit.AltoControles);
+
         // Estirado al tamaño de PanelControles y dibujado encima de lo que tenga.
         RectTransform self = transform as RectTransform;
         if (self == null) self = gameObject.AddComponent<RectTransform>();

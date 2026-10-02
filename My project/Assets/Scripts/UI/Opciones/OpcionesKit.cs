@@ -11,6 +11,7 @@ using Slider = UnityEngine.UI.Slider;
 public class OpcionesKit
 {
     public const float Pad = 40f, RowH = 44f, LabelW = 190f;
+    public const float AltoPestana = 600f, AltoControles = 940f; // alto de diseño de Gráficos / Sonido y de Controles
 
     public readonly RectTransform root;
     public readonly float width;
@@ -62,6 +63,8 @@ public class OpcionesKit
             panel.localScale = modelo.localScale;
         }
 
+        if (pantalla != null) SinDeformar(panel, AltoPestana);
+
         // Lo que se había armado a mano en la escena queda apagado (no se borra).
         for (int i = 0; i < panel.childCount; i++) panel.GetChild(i).gameObject.SetActive(false);
         Img fondoViejo = panel.GetComponent<Img>();
@@ -72,6 +75,30 @@ public class OpcionesKit
             controles != null ? controles.LabelFont : null,
             controles != null ? controles.BodyFont : null,
             controles != null ? controles.Rounded : null);
+    }
+
+    /// <summary>Arma la pestaña sobre un panel propio, con sus tipografías (lo usa el menú de pausa).</summary>
+    public static OpcionesKit ArmarCon(RectTransform panel, string titulo, TMP_FontAsset display, TMP_FontAsset label,
+        TMP_FontAsset body, Sprite sprite)
+    {
+        return new OpcionesKit(panel, titulo, display, label, body, sprite);
+    }
+
+    /// <summary>
+    /// En la escena los paneles de opciones están estirados con una escala distinta a lo ancho y a lo alto, y todo
+    /// lo que se dibuja adentro (sobre todo las letras) sale deformado. Esto deja el panel ocupando el mismo lugar
+    /// en pantalla, pero con la misma escala en los dos ejes. altoDiseno: alto en unidades que necesita el contenido.
+    /// </summary>
+    public static void SinDeformar(RectTransform panel, float altoDiseno)
+    {
+        if (panel == null) return;
+        Vector3 escala = panel.localScale;
+        float ancho = panel.rect.width * Mathf.Abs(escala.x), alto = panel.rect.height * Mathf.Abs(escala.y);
+        if (ancho <= 0f || alto <= 0f || altoDiseno <= 0f) return;
+        float k = alto / altoDiseno;
+        panel.localScale = new Vector3(k, k, 1f);
+        panel.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, ancho / k);
+        panel.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, alto / k);
     }
 
     private OpcionesKit(RectTransform panel, string titulo, TMP_FontAsset display, TMP_FontAsset label, TMP_FontAsset body, Sprite sprite)
