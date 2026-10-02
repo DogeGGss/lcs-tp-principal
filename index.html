@@ -1549,9 +1549,9 @@ body.capture,body.capture-ms,body.capture-cr{padding-left:0!important}
     <li><b>Ficha.</b> Duplicá la ficha más parecida en <code>Assets/Data/Tienda</code> y cargá todo: nombre y alias, categoría, precio, modo (<code>automatic</code>, <code>burstCount</code> y <code>burstRate</code>), cadencia, cargador y reserva, recarga (<code>reloadPerShell</code> para las de a un cartucho), <code>equipTime</code>, <code>mobility</code>, zoom (solo los francotiradores, que además llevan <code>MiraTelescopica</code>), perdigones, dispersión, tramos de daño y retroceso. Sumala a <code>CatalogoTactico</code>.</li>
     <li><b>Modelo.</b> Del Sci-Fi Modular Gun Pack de Quaternius (<code>Assets/Modelos (armas)</code>), que no repita el de otra arma (US 179). El ícono de la ficha es la silueta del mismo modelo.</li>
     <li><b>Prefab.</b> En <code>Assets/Prefabs/Armas</code>, con el componente <code>ArmaDeFuego</code>: la ficha, la cámara, los sonidos (disparo y recarga; bombeo y cartucho si es de bombeo) y el grupo Efectos del mezclador.</li>
-    <li><b>Jugador.</b> En <code>Player.prefab</code>, poné el prefab bajo Main Camera, en la misma posición que el Mitre y desactivado, y sumalo a <code>WeaponSwitcher → otrasPrincipales</code>. Las secundarias todavía no tienen lista: hoy el espacio 2 es solo la Línea A (<code>Pistola.cs</code>), así que la Línea H necesita generalizarlo primero.</li>
+    <li><b>Jugador.</b> En <code>Player.prefab</code>, poné el prefab bajo Main Camera, en la misma posición que el Mitre y desactivado, y sumalo a <code>WeaponSwitcher → otrasPrincipales</code>. Una secundaria va igual, pero en la posición de la Línea H y en <code>WeaponSwitcher → otrasSecundarias</code>: en el espacio 2 va la que se compró y, si no compró ninguna, la Línea A (<code>Pistola.cs</code>).</li>
     <li><b>Sonidos.</b> En <code>Assets/Sonidos/Armas</code>, con licencia libre, recortados a un tiro para que no se amontonen a la cadencia del arma. Sumá la fuente a los créditos.</li>
-    <li><b>Multijugador.</b> No hace falta nada: <code>JugadorEnRed</code> toma las principales del <code>WeaponSwitcher</code> y sus sonidos de disparo.</li>
+    <li><b>Multijugador.</b> No hace falta nada: <code>JugadorEnRed</code> toma las principales y las secundarias del <code>WeaponSwitcher</code> y sus sonidos de disparo.</li>
     <li><b>Probar.</b> Daño por tramo contra un blanco, recarga, ráfaga o bombeo, comprar y reemplazar en la tienda, el HUD y una partida de Deathmatch editor contra build.</li>
     <li><b>Documentar.</b> Actualizá la historia del arma con los valores finales (y sus CA de sonido) y esta guía.</li>
   </ol>
@@ -1631,7 +1631,7 @@ body.capture,body.capture-ms,body.capture-cr{padding-left:0!important}
     <tr><td>Los cuatro personajes y sus habilidades</td><td>US 183, US 019 a US 022</td><td><span class="st st-todo">Falta diseñar</span></td></tr>
     <tr><td>Diseño del Mapa 1 y del Mapa 2 (hoy sus historias no dicen cómo son)</td><td>US 082, US 083</td><td><span class="st st-todo">Falta diseñar</span></td></tr>
     <tr><td>Último Tren con mira telescópica</td><td>US 068, US 009</td><td><span class="st st-mid">En prueba</span></td></tr>
-    <tr><td>Línea H: modelo, sonidos y lugar en el inventario</td><td>US 072</td><td><span class="st st-todo">Falta hacerla</span></td></tr>
+    <tr><td>Línea H: modelo, sonidos y lugar en el inventario</td><td>US 072</td><td><span class="st st-mid">En prueba</span></td></tr>
     <tr><td>Arma de los demás jugadores a tamaño real, en su mano</td><td>US 182</td><td><span class="st st-todo">Falta hacerla</span></td></tr>
     <tr><td>Soltar y levantar armas (se hace junto con el arma de los demás a tamaño real)</td><td>US 184, US 182</td><td><span class="st st-todo">Falta hacerla</span></td></tr>
     <tr><td>Panel de compañeros en la tienda, y tienda de Zombie y Deathmatch</td><td>US 175, US 148, US 138</td><td><span class="st st-todo">Falta hacerlo</span></td></tr>
@@ -1811,7 +1811,8 @@ const EXTRA = {
   pistola: { estado: 'juego', modelo: 'Pistol_2', sonido: 'pistola.mp3 · pistola_recarga.wav', recarga: 1.5,
     nota: 'La ficha de la tienda dice 1,75 s de recarga, pero Pistola.cs usa 1,5 s (lo que pide US 071). Hay que dejar un solo valor.',
     rc: { exact: 0, kick: 0.6, max: 2, late: 0, drift: 0, sway: 0, swayShots: 4, blocks: false, growth: 0, bias: 0, variation: 0, recovery: 0.2, punch: 0.9 } },
-  pistolaPesada: { estado: 'pendiente', modelo: 'A elegir del pack (US 179)', sonido: 'Falta' },
+  pistolaPesada: { estado: 'juego', modelo: 'Pistol_1', sonido: 'linea_h_disparo.wav (Colt 1911 .45) · linea_h_recarga.wav',
+    rc: { exact: 0, kick: 1.2, max: 4, late: 0, drift: 0, sway: 0, swayShots: 4, blocks: false, growth: 0, bias: 0, variation: 0, recovery: 0.15, punch: 3 } },
   francotirador: { estado: 'juego', modelo: 'Sniper_3 (cargador aparte)', sonido: 'ultimo_tren_disparo.wav (Tikka T3 .30-06) · ultimo_tren_cerrojo.wav · ultimo_tren_recarga.wav',
     rc: { exact: 0, kick: 0, max: 0, late: 0, drift: 0, sway: 0, swayShots: 4, blocks: false, growth: 0, bias: 0, variation: 0, recovery: 0.3, punch: 2.5 } }
 };
