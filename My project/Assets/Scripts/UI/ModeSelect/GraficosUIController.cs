@@ -35,6 +35,7 @@ public class GraficosUIController : MonoBehaviour, OpcionesPantalla.ISeccion
     private const float FOV_POR_DEFECTO = 80f;
     private const float FOV_MINIMO = 60f;
     private const float FOV_MAXIMO = 100f;
+    private const int ALTO_MINIMO = 720;
 
     private static readonly int[] OpcionesFPS = { 30, 60, 144, -1 };
     private static readonly string[] NivelesCalidad = { "Baja", "Media", "Alta" }; // niveles de Quality Settings
@@ -59,6 +60,12 @@ public class GraficosUIController : MonoBehaviour, OpcionesPantalla.ISeccion
     private OpcionesPantalla pantalla;
     private bool listo;
 
+    // Uso en el menú de pausa (Setup)
+    private bool enPausa;
+    private TMP_FontAsset fuenteDisplay, fuenteLabel, fuenteBody;
+    private Sprite redondeado;
+    private System.Action alVolver;
+
     // Controles armados por código
     private TextMeshProUGUI textoResolucion, textoCalidad, textoFOV;
     private OpcionesKit.Segmentos segModo, segVSync, segFPS;
@@ -77,22 +84,46 @@ public class GraficosUIController : MonoBehaviour, OpcionesPantalla.ISeccion
         guardado = LeerGuardado();
         pendiente = guardado;
 
-        Transform panel = transform.parent != null ? transform.parent.Find("PanelGraficos") : null;
+        // En el menú de pausa (Setup) se arma sobre este mismo objeto; en el menú principal, sobre PanelGraficos.
+        Transform panel = enPausa ? transform : transform.parent != null ? transform.parent.Find("PanelGraficos") : null;
         if (panel != null) Armar((RectTransform)panel);
 
         listo = true;
         MostrarEnControles(pendiente);
     }
 
+    /// <summary>
+    /// Para usar la pestaña fuera del menú principal (menú de pausa): se arma sobre este mismo objeto, con estas
+    /// tipografías, y suma un botón "Volver".
+    /// </summary>
+    public void Setup(TMP_FontAsset display, TMP_FontAsset label, TMP_FontAsset body, Sprite sprite, System.Action onBack)
+    {
+        enPausa = true;
+        fuenteDisplay = display;
+        fuenteLabel = label;
+        fuenteBody = body;
+        redondeado = sprite;
+        alVolver = onBack;
+    }
+
     private void OnEnable()
     {
-        // Al volver a la pestaña, los controles muestran lo pendiente.
-        if (listo) MostrarEnControles(pendiente);
+        if (!listo) return;
+        // Si no hay nada pendiente, se vuelve a leer lo guardado (pudo cambiar desde otro lado, por ejemplo el
+        // campo de visión de la pausa). Si no, los controles muestran lo pendiente.
+        if (!HayCambios)
+        {
+            guardado = LeerGuardado();
+            pendiente = guardado;
+        }
+        MostrarEnControles(pendiente);
     }
 
     private void Armar(RectTransform panel)
     {
-        OpcionesKit kit = OpcionesKit.Armar(panel, "Gráficos");
+        OpcionesKit kit = enPausa
+            ? OpcionesKit.ArmarCon(panel, "Gráficos", fuenteDisplay, fuenteLabel, fuenteBody, redondeado)
+            : OpcionesKit.Armar(panel, "Gráficos");
         float y = 114f;
 
         kit.Grupo("Pantalla", ref y);
@@ -114,7 +145,9 @@ public class GraficosUIController : MonoBehaviour, OpcionesPantalla.ISeccion
 
         y += 10f;
         kit.Ayuda("Los cambios se usan al apretar Aplicar.", ref y);
+        float yPie = y + 12f;
         kit.Pie(ref y, AplicarConfiguracion, RestablecerConfiguracion);
+        if (alVolver != null) kit.Boton(OpcionesKit.Pad + 352f, yPie, 130f, 40f, "Volver", false, alVolver);
     }
 
     private void Cambiar(ref int indice, int paso, int cantidad)
@@ -171,6 +204,12 @@ public class GraficosUIController : MonoBehaviour, OpcionesPantalla.ISeccion
         PlayerPrefs.Save();
 
         AplicarGuardado();
+        // En partida, el campo de visión se ve al instante (CameraLook lo lee solo al empezar).
+        foreach (CameraLook mirada in FindObjectsByType<CameraLook>())
+        {
+            Camera camara = mirada.GetComponent<Camera>();
+            if (camara != null) camara.fieldOfView = pendiente.fov;
+        }
         guardado = pendiente;
         Debug.Log("Configuración gráfica aplicada y guardada.");
     }
@@ -241,13 +280,18 @@ public class GraficosUIController : MonoBehaviour, OpcionesPantalla.ISeccion
     public static void AplicarGuardado()
     {
         Resolution[] lista = Unicas(Screen.resolutions);
-        FullScreenMode modo = ModoPantalla(PlayerPrefs.GetInt(CLAVE_MODO_PANTALLA, MODO_PANTALLA_DEFECTO));
+        int indiceModo = Mathf.Clamp(PlayerPrefs.GetInt(CLAVE_MODO_PANTALLA, MODO_PANTALLA_DEFECTO), 0, 2);
+        FullScreenMode modo = ModoPantalla(indiceModo);
         if (lista.Length > 0)
         {
             Resolution r = lista[BuscarResolucion(lista,
                 PlayerPrefs.GetInt(CLAVE_RESOLUCION_ANCHO, RESOLUCION_ANCHO_DEFECTO),
                 PlayerPrefs.GetInt(CLAVE_RESOLUCION_ALTO, RESOLUCION_ALTO_DEFECTO))];
+            // CA1: "Sin bordes" es una ventana de ese tamaño sin marco (no ocupa toda la pantalla, salvo que se
+            // elija la resolución del monitor). En los otros modos se le devuelve el marco si se lo habían sacado.
+            if (indiceModo != 1) VentanaSinBordes.Restaurar();
             Screen.SetResolution(r.width, r.height, modo, r.refreshRateRatio);
+            if (indiceModo == 1) VentanaSinBordes.Quitar(r.width, r.height);
         }
         else Screen.fullScreenMode = modo;
 
@@ -255,6 +299,8 @@ public class GraficosUIController : MonoBehaviour, OpcionesPantalla.ISeccion
         if (calidad < 0) calidad = System.Array.IndexOf(QualitySettings.names, CALIDAD_DEFECTO);
         if (calidad < 0) calidad = 0;
         QualitySettings.SetQualityLevel(calidad, true);
+        // CA3: los tres niveles usan el mismo asset de URP; acá se ajusta lo que hace que se note la diferencia.
+        CalidadGrafica.Aplicar(QualitySettings.names.Length > 0 ? QualitySettings.names[calidad] : CALIDAD_DEFECTO);
 
         // Después de la calidad: cada nivel de calidad trae su propio VSync.
         QualitySettings.vSyncCount = PlayerPrefs.GetInt(CLAVE_VSYNC, VSYNC_DEFECTO) == 1 ? 1 : 0;
@@ -266,16 +312,22 @@ public class GraficosUIController : MonoBehaviour, OpcionesPantalla.ISeccion
         switch (indice)
         {
             case 0: return FullScreenMode.Windowed;
-            case 1: return FullScreenMode.FullScreenWindow;
+            case 1: return FullScreenMode.Windowed; // sin bordes: una ventana a la que VentanaSinBordes le saca el marco
             default: return FullScreenMode.ExclusiveFullScreen;
         }
     }
 
     // CA2: una entrada por tamaño, con la frecuencia más alta que admite el monitor para ese tamaño.
+    // Solo las que tienen la misma forma que el monitor (por ejemplo 16:9) y al menos 720 de alto: las demás se
+    // ven con barras negras a los costados y borrosas en pantalla completa.
     private static Resolution[] Unicas(Resolution[] lista)
     {
+        float forma = Display.main.systemHeight > 0 ? (float)Display.main.systemWidth / Display.main.systemHeight : 16f / 9f;
         var unicas = new System.Collections.Generic.List<Resolution>();
-        foreach (Resolution r in lista)
+        var todas = new System.Collections.Generic.List<Resolution>(lista);
+        var buenas = todas.FindAll(r => r.height >= ALTO_MINIMO && Mathf.Abs((float)r.width / r.height - forma) < 0.02f);
+        if (buenas.Count == 0) buenas = todas; // monitor raro: se muestran todas
+        foreach (Resolution r in buenas)
         {
             int i = unicas.FindIndex(u => u.width == r.width && u.height == r.height);
             if (i < 0) unicas.Add(r);
