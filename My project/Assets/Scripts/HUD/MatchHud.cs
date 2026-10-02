@@ -136,8 +136,17 @@ public class MatchHud : MonoBehaviour
         hudRoot = root;
     }
 
-    private void OnEnable() => WeaponFire.Killed += OnLocalKill;
-    private void OnDisable() => WeaponFire.Killed -= OnLocalKill;
+    private void OnEnable()
+    {
+        WeaponFire.Killed += OnLocalKill;
+        Grenade1.Killed += OnGrenadeKill;
+    }
+
+    private void OnDisable()
+    {
+        WeaponFire.Killed -= OnLocalKill;
+        Grenade1.Killed -= OnGrenadeKill;
+    }
 
     private void OnDestroy()
     {
@@ -487,6 +496,14 @@ public class MatchHud : MonoBehaviour
         if (PhotonNetwork.InRoom) return;
         ReportKill(LocalName(), combat != null ? combat.WeaponName : "", "Enemigo", TeamColor, RivalColor, headshot,
             combat != null ? combat.WeaponIcon : null);
+    }
+
+    // Sin conexión, una granada que eliminó a un enemigo (US 073): el aviso lleva la granada, no el arma en la mano.
+    private void OnGrenadeKill(Grenade1 grenade, HealthSystem victim)
+    {
+        if (PhotonNetwork.InRoom || victim == null || victim.GetComponent<PlayerMovement>() != null) return;
+        ReportKill(LocalName(), grenade.WeaponName, "Enemigo", TeamColor, RivalColor, false,
+            grenade.Item != null ? grenade.Item.icon : null);
     }
 
     // ---------- Carteles (US 032) ----------

@@ -24,6 +24,9 @@ public class WeaponSwitcher : MonoBehaviour
     // Indica si actualmente está equipada la granada
     public bool GrenadeEquipped { get; private set; }
 
+    // Las granadas del jugador (cuál tiene en la mano): el HUD la muestra (US 073).
+    public GrenadeThrower Granadas => granadas;
+
     void Awake()
     {
         loadout = GetComponentInParent<PlayerLoadout>();

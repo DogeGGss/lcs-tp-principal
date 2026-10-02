@@ -19,6 +19,10 @@ public class HealthSystem : MonoBehaviour
     // Si el golpe que lo dejó en 0 fue a la cabeza: el aviso de baja lo marca (US 057, CA4).
     public bool KilledByHeadshot { get; private set; }
 
+    // Con qué se está haciendo el daño en este momento, para el aviso de baja (por ejemplo, la granada de metralla,
+    // US 073). Vacío: el arma que el atacante tiene en la mano. Lo pone quien hace el daño justo antes de TakeDamage.
+    public static string DamageSource;
+
     void Start()
     {
         currentHealth = maxHealth;

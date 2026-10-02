@@ -21,8 +21,11 @@ MonoBehaviour:
   tint: {r: 0.9490196, g: 0.6039216, b: 0.21960784, a: 1}
   description: "100 de da\xF1o a menos de 1,5 m; baja en l\xEDnea recta hasta 25 a 5 m. No atraviesa paredes."
   fireMode: 
+  automatic: 0
   fireRate: 0
   burstCount: 1
+  burstRate: 0
+  equipTime: 1
   magazine: 0
   reserve: 0
   reloadTime: 0
@@ -33,6 +36,8 @@ MonoBehaviour:
   pellets: 1
   penetration: 
   spread: {x: 0, y: 0}
+  spamSpread: 0
+  spamSpreadMax: 0
   recoil: 
   bands:
   - upTo: 1.5
@@ -43,6 +48,20 @@ MonoBehaviour:
     head: 25
     body: 25
     legs: 25
+  recoilExactShots: 0
+  recoilKick: 0
+  recoilMaxClimb: 0
+  recoilSway: 0
+  recoilSwayShots: 4
+  recoilRecovery: 0.3
+  recoilPunch: 0
+  recoilPoints: []
+  recoilLateClimb: 0
+  recoilDrift: 0
+  recoilSwayBlocks: 0
+  recoilSwayGrowth: 0
+  recoilSwayBias: 0
+  recoilVariation: 0
   shieldPoints: 0
   grenadeType: 0
   maxCarry: 1
@@ -51,4 +70,4 @@ MonoBehaviour:
   effectDuration: 0
   recovery: 0
   shortEffect: Hasta 100
-  grenadePrefab: {fileID: 100100000, guid: 313c34b5636bbcd4686e963d715759d5, type: 3}
+  grenadePrefab: {fileID: 4592134357684169486, guid: 914c6fac9d24630438f0b4b9fb58462f, type: 3}
