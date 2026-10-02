@@ -412,14 +412,15 @@ public class CombatHud : MonoBehaviour
         if (switcher != null)
         {
             held = switcher.HeldPrimary;
-            if (held == null && switcher.pistolObj != null && switcher.pistolObj.activeInHierarchy) held = switcher.pistolObj;
+            if (held == null) held = switcher.HeldSecondary; // la Línea A o la que compró (US 072)
         }
         IHudWeapon weapon = held != null ? held.GetComponentInChildren<IHudWeapon>() : null;
         if (weapon != null)
         {
             // La secundaria se muestra con su nombre de la tienda (Línea A o Línea H).
-            name = held == switcher.pistolObj ? SecondaryName() : weapon.HudName;
-            ShopItem ficha = held == switcher.pistolObj ? (loadout != null ? loadout.Secondary : null) : WeaponSwitcher.FichaDe(held);
+            bool secondary = held == switcher.HeldSecondary;
+            name = secondary ? SecondaryName() : weapon.HudName;
+            ShopItem ficha = secondary ? (loadout != null ? loadout.Secondary : null) : WeaponSwitcher.FichaDe(held);
             WeaponIcon = ficha != null ? ficha.icon : null;
             ammo = weapon.Ammo; size = weapon.MagazineSize; reserve = weapon.Reserve; reload = weapon.ReloadProgress;
             return;
@@ -595,7 +596,7 @@ public class CombatHud : MonoBehaviour
         // Qué tiene en la mano (CA4): 0 principal, 1 secundaria, 2 cuchillo; -1 si nada.
         int held = -1;
         if (switcher != null && switcher.HeldPrimary != null) held = 0;
-        else if (switcher != null && switcher.pistolObj != null && switcher.pistolObj.activeInHierarchy) held = 1;
+        else if (switcher != null && switcher.HeldSecondary != null) held = 1;
         else if (melee != null && melee.CurrentViewModel != null && melee.CurrentViewModel.activeInHierarchy) held = 2;
         else if (HeldGrenade() != null) held = 3;
 

@@ -1047,7 +1047,7 @@ public class ShopUI : MonoBehaviour
 
         SlotHeader(1, KeyBindings.Label(GameAction.ArmaSecundaria), "Secundaria", held == 1);
         SlotWeapon(1, loadout.Secondary);
-        SlotAmmo(1, loadout.Secondary != null && switcher != null ? switcher.pistolObj : null);
+        SlotAmmo(1, loadout.Secondary != null && switcher != null ? switcher.SecondaryObj : null); // la Línea A o la H (US 072)
         Dim(1, loadout.Secondary == null);
 
         MeleeWeaponData knife = switcher != null && switcher.meleeScript != null ? switcher.meleeScript.CurrentWeapon : null;
@@ -1169,7 +1169,7 @@ public class ShopUI : MonoBehaviour
         if (switcher == null) return -1;
         if (thrower != null && thrower.IsHolding) return 3;
         if (switcher.HeldPrimary != null) return 0;
-        if (switcher.pistolObj != null && switcher.pistolObj.activeInHierarchy) return 1;
+        if (switcher.HeldSecondary != null) return 1;
         MeleeWeaponHolder melee = switcher.meleeScript;
         if (melee != null && melee.CurrentViewModel != null && melee.CurrentViewModel.activeInHierarchy) return 2;
         return -1;
@@ -1182,7 +1182,7 @@ public class ShopUI : MonoBehaviour
     {
         FindWeapons();
         IHudWeapon a = switcher != null && loadout.Primary != null ? HudWeapon(switcher.PrimaryObj) : null;
-        IHudWeapon b = switcher != null && loadout.Secondary != null ? HudWeapon(switcher.pistolObj) : null;
+        IHudWeapon b = switcher != null && loadout.Secondary != null ? HudWeapon(switcher.SecondaryObj) : null;
         return $"{HeldSlot()}|{(a != null ? a.Ammo : -1)}|{(a != null ? a.Reserve : -1)}|{(b != null ? b.Ammo : -1)}|{(b != null ? b.Reserve : -1)}|" +
                $"{loadout.Shield}|{(thrower != null && thrower.Selected != null ? thrower.Selected.name : "")}";
     }

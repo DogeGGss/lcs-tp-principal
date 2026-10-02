@@ -25,7 +25,7 @@ MonoBehaviour:
   fireRate: 4
   burstCount: 1
   burstRate: 0
-  equipTime: 1
+  equipTime: 0.9
   magazine: 6
   reserve: 24
   reloadTime: 2.25
@@ -36,8 +36,8 @@ MonoBehaviour:
   pellets: 1
   penetration: Media
   spread: {x: 0.25, y: 3}
-  spamSpread: 0
-  spamSpreadMax: 0
+  spamSpread: 2
+  spamSpreadMax: 5
   recoil: 'Patada fuerte hacia arriba: para acertar, un tiro cada 0,4 s.'
   bands:
   - upTo: 30
@@ -49,12 +49,12 @@ MonoBehaviour:
     body: 50
     legs: 42
   recoilExactShots: 0
-  recoilKick: 0
-  recoilMaxClimb: 0
+  recoilKick: 1.2
+  recoilMaxClimb: 4
   recoilSway: 0
   recoilSwayShots: 4
-  recoilRecovery: 0.3
-  recoilPunch: 0
+  recoilRecovery: 0.15
+  recoilPunch: 3
   recoilPoints: []
   recoilLateClimb: 0
   recoilDrift: 0
@@ -70,3 +70,4 @@ MonoBehaviour:
   effectDuration: 0
   recovery: 0
   shortEffect: 
+  grenadePrefab: {fileID: 0}
