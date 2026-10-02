@@ -1067,31 +1067,50 @@ public class ShopUI : MonoBehaviour
         }
         Dim(2, !hasKnife);
 
-        // CA2: "Flash 1/2". Las que no lleva quedan atenuadas; si no lleva ninguna, "Vacío".
+        // CA2: "Flash 1/2", con el nombre corto (alias) para que entren todas. Las que no lleva quedan atenuadas;
+        // si no lleva ninguna, "Vacío" arriba a la derecha (las fichas van en la fila de abajo y no lo pisan).
         SlotHeader(3, KeyBindings.Label(GameAction.Granadas), "Granadas", held == 3);
         ShopItem inHand = thrower != null ? thrower.Selected : null;
+        List<ShopItem> grenades = catalog.ItemsIn(ShopCategory.Grenades);
         int total = 0;
-        foreach (ShopItem grenade in catalog.ItemsIn(ShopCategory.Grenades)) total += loadout.Count(grenade);
+        foreach (ShopItem grenade in grenades) total += loadout.Count(grenade);
         if (total == 0)
         {
             TextMeshProUGUI empty = Text(Place(Node("Vacio", loadoutCells[3]), loadoutWidths[3] - 112f, 21f, 100f, 24f), displayFont, 16f, Mute, TextAlignmentOptions.MidlineRight, 5f, true);
             empty.text = "Vacío";
         }
-        float x = 18f;
-        foreach (ShopItem grenade in catalog.ItemsIn(ShopCategory.Grenades))
+        // Las fichas van en una fila que corta en el borde del espacio: nunca pisan al escudo.
+        const float ChipPad = 23f + 7f, ChipGap = 8f;
+        float rowWidth = loadoutWidths[3] - 18f - 12f;
+        RectTransform row = Place(Node("Granadas", loadoutCells[3]), 18f, 58.5f, rowWidth, 25f);
+        row.gameObject.AddComponent<UnityEngine.UI.RectMask2D>();
+        RectTransform[] chips = new RectTransform[grenades.Count];
+        TextMeshProUGUI[] texts = new TextMeshProUGUI[grenades.Count];
+        float textWidth = 0f;
+        for (int i = 0; i < grenades.Count; i++)
         {
+            ShopItem grenade = grenades[i];
             int count = loadout.Count(grenade);
             bool selectedGrenade = grenade == inHand && count > 0;
-            RectTransform chip = Place(Node("Granada", loadoutCells[3]), x, 58.5f, 10f, 25f);
-            Image(chip, rounded, selectedGrenade ? Ink : ChipColor, 4f);
-            chip.gameObject.AddComponent<CanvasGroup>().alpha = count > 0 ? 1f : FadeAlpha(0.35f);
-            Image(Place(Node("Color", chip), 7f, 7.5f, 10f, 10f), circle, grenade.tint);
-            TextMeshProUGUI text = Text(Place(Node("Cantidad", chip), 23f, 0f, 160f, 25f), monoFont, 14f, selectedGrenade ? KeyInk : Ink);
-            text.fontStyle = FontStyles.Bold;
-            text.text = $"{ItemName(grenade)} {count}/{grenade.maxCarry}";
-            float width = 23f + Width(text, text.text) + 7f;
-            chip.sizeDelta = new Vector2(width, 25f);
-            x += width + 8f;
+            chips[i] = Node("Granada", row);
+            Image(chips[i], rounded, selectedGrenade ? Ink : ChipColor, 4f);
+            chips[i].gameObject.AddComponent<CanvasGroup>().alpha = count > 0 ? 1f : FadeAlpha(0.35f);
+            Image(Place(Node("Color", chips[i]), 7f, 7.5f, 10f, 10f), circle, grenade.tint);
+            texts[i] = Text(Place(Node("Cantidad", chips[i]), 23f, 0f, 160f, 25f), monoFont, 14f, selectedGrenade ? KeyInk : Ink);
+            texts[i].fontStyle = FontStyles.Bold;
+            texts[i].text = $"{ListName(grenade)} {count}/{grenade.maxCarry}";
+            textWidth += Width(texts[i], texts[i].text);
+        }
+        // Si a 14 no entran, se achica la letra lo justo (no menos de 11); lo que igual sobre lo corta la fila.
+        float room = rowWidth - grenades.Count * ChipPad - Mathf.Max(0, grenades.Count - 1) * ChipGap;
+        float fontSize = textWidth > room ? Mathf.Max(11f, 14f * room / textWidth) : 14f;
+        float x = 0f;
+        for (int i = 0; i < chips.Length; i++)
+        {
+            texts[i].fontSize = fontSize;
+            float width = ChipPad + Width(texts[i], texts[i].text);
+            Place(chips[i], x, 0f, width, 25f);
+            x += width + ChipGap;
         }
         Dim(3, total == 0);
 
