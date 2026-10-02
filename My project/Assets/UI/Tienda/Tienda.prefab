@@ -72,6 +72,7 @@ MonoBehaviour:
   closeSound: {fileID: 8300000, guid: e69a4a31e2fcd5548b1345b2a4c7224a, type: 3}
   buySound: {fileID: 8300000, guid: 12a22432ab02e6948a4936194b889677, type: 3}
   sellSound: {fileID: 8300000, guid: c491478c44a06e44fb04622850f50678, type: 3}
+  knifeIcon: {fileID: 21300000, guid: 5f04af05b319426f816d7eb908d4d497, type: 3}
   errorSound: {fileID: 8300000, guid: f29fc802e7c02354d846bcc999bfa557, type: 3}
   categorySound: {fileID: 8300000, guid: eabd1b8f67ac36340b3cdf5b214558ef, type: 3}
   soundVolume: 0.8
