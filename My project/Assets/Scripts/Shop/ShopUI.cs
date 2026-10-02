@@ -425,7 +425,8 @@ public class ShopUI : MonoBehaviour
         bool phaseActive = phase == null || phase.IsActive;
         ShopResult access = loadout.CheckAccess();
 
-        hudClock.SetActive(!open && phase != null && phase.IsActive);
+        // Con marcador (US 057) el tiempo de la compra ya está en su centro: este reloj quedaba abajo, asomándose.
+        hudClock.SetActive(!open && phase != null && phase.IsActive && MatchHud.Instance == null);
         hudHint.SetActive(!open && phaseActive && access == ShopResult.Ok);
         hudMoney.gameObject.SetActive(!open);
         if (phase != null)

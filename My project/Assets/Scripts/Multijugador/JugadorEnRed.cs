@@ -652,7 +652,7 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
         else
         {
             ShopItem item = FichaDe(indice);
-            Grenade1.PlayExplosion(item != null && item.grenadePrefab != null ? item.grenadePrefab.GetComponent<Grenade1>() : null, centro);
+            Grenade1.PlayExplosion(item != null && item.grenadePrefab != null ? item.grenadePrefab.GetComponent<Grenade1>() : null, centro, item);
         }
         granadasRemotas.Remove(id);
     }
