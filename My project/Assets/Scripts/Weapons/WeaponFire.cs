@@ -25,6 +25,13 @@ public static class WeaponFire
     private static readonly IComparer<RaycastHit> byDistance =
         Comparer<RaycastHit>.Create((a, b) => a.distance.CompareTo(b.distance));
 
+    /// <summary>Un golpe cuerpo a cuerpo que acertó: muestra el marcador de impacto y, si mató, avisa la baja.</summary>
+    public static void ReportMelee(bool lethal)
+    {
+        if (lethal) Killed?.Invoke(false);
+        Hit?.Invoke(lethal ? HitMarkerKind.Kill : HitMarkerKind.Body);
+    }
+
     public static void Fire(ShopItem weapon, Camera camera, Transform shooter, bool aiming, float range)
     {
         if (weapon == null || camera == null) return;

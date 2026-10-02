@@ -147,7 +147,11 @@ public class MeleeAttack : MonoBehaviour
         // CA3: Aplicar daño al HealthSystem. Golpea a un solo objetivo por ataque: el más cercano a la mira.
         if (best != null)
         {
+            // Se mira antes de aplicar el daño (a un jugador de otra computadora le llega después), para el marcador
+            // de impacto y el aviso de baja: antes las bajas con cuchillo no salían en los avisos sin conexión.
+            bool lethal = best.WouldDie(data.damage);
             best.TakeDamage(data.damage);
+            WeaponFire.ReportMelee(lethal);
             Debug.Log($"Golpe cuerpo a cuerpo a {best.name}. Daño: {data.damage}");
         }
     }
