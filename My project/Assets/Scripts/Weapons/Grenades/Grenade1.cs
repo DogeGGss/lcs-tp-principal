@@ -12,6 +12,8 @@ using UnityEngine.Audio;
 //   CA8 y CA9: suena al lanzarla y al explotar (por el grupo SFX del mezclador), y al explotar se ve el efecto.
 // Multijugador: el daño lo calcula solo la computadora de quien la tiró; en las demás se ve una copia "de muestra"
 // (cosmetic) que vuela igual y explota donde explotó la de verdad (JugadorEnRed la manda por la red).
+// La granada flash (US 075) usa este mismo script con su ficha: no hace daño y, al explotar, cada computadora
+// enceguece a su jugador según hacia dónde mire (FlashBlind).
 public class Grenade1 : MonoBehaviour
 {
     [Tooltip("Segundos hasta explotar. En el juego lo pisa la ficha de la granada (fuse).")]
@@ -38,6 +40,8 @@ public class Grenade1 : MonoBehaviour
     public AudioMixerGroup sfxGroup;
     [Tooltip("Efecto de la explosión (War FX). Se borra solo cuando termina; si no, a los 8 s.")]
     public GameObject explosionEffect;
+    [Tooltip("Flash: pitido de oído (el \"tímpano roto\") mientras te tiene encandilado. Se repite en bucle.")]
+    public AudioClip blindSound;
 
     // Multijugador: la copia de muestra no hace daño; netId la une con la granada de verdad de la otra computadora.
     [HideInInspector] public bool cosmetic;
@@ -59,6 +63,9 @@ public class Grenade1 : MonoBehaviour
 
     // Nombre con el que aparece en el aviso de baja.
     public string WeaponName => Item == null ? "Granada" : string.IsNullOrEmpty(Item.alias) ? Item.displayName : Item.alias;
+
+    // Qué granada es (sin ficha, la de metralla).
+    public GrenadeType Type => Item != null ? Item.grenadeType : GrenadeType.Frag;
 
     private float countdown;
     private bool exploded;
@@ -153,7 +160,7 @@ public class Grenade1 : MonoBehaviour
         Vector3 center = Center();
         if (!cosmetic)
         {
-            ApplyDamage(center);
+            if (Type == GrenadeType.Frag) ApplyDamage(center); // la flash no hace daño (US 075)
             Exploded?.Invoke(this, center);
         }
         PlayExplosion(this, center);
@@ -213,13 +220,18 @@ public class Grenade1 : MonoBehaviour
     }
 
     // CA9: efecto y sonido de la explosión. Sirve también sin la granada (por ejemplo, si a otra computadora
-    // le llega la explosión de una granada que no llegó a ver): toma los datos del prefab.
-    public static void PlayExplosion(Grenade1 settings, Vector3 center)
+    // le llega la explosión de una granada que no llegó a ver): toma los datos del prefab y de la ficha.
+    public static void PlayExplosion(Grenade1 settings, Vector3 center, ShopItem item = null)
     {
         if (settings == null) return;
+        if (item == null) item = settings.Item;
         if (settings.explosionEffect != null)
             Destroy(Instantiate(settings.explosionEffect, center, Quaternion.identity), 8f);
         PlaySound(settings.explosionSound, center, settings.sfxGroup, 6f, 120f);
+
+        // US 075: la flash enceguece al jugador de esta computadora (también a quien la tiró y a sus compañeros).
+        if (item != null && item.grenadeType == GrenadeType.Flash)
+            FlashBlind.Apply(center, item, settings.blindSound, settings.sfxGroup);
     }
 
     // Sonido 3D en un punto, por el grupo del mezclador; el objeto se borra cuando termina.

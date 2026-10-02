@@ -96,9 +96,9 @@ public class GrenadeThrower : MonoBehaviour
             Debug.LogWarning("GrenadeThrower: la granada no tiene prefab con Grenade1 (revisá la ficha de la granada).");
             return;
         }
-        if (item.grenadeType != GrenadeType.Frag)
+        if (item.grenadeType == GrenadeType.Smoke)
         {
-            Debug.Log("Esta granada todavía no se puede lanzar (por ahora solo la de metralla, US 079).");
+            Debug.Log("La granada de humo todavía no se puede lanzar (US 074).");
             return;
         }
 

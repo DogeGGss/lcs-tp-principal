@@ -45,7 +45,8 @@ public class CreditsScreen : MonoBehaviour
         new Credit { item = "Texturas", source = "Cartoon Texture Pack" },
         new Credit { item = "Modelos de las armas", source = "Sci-Fi Modular Gun Pack, de Quaternius (CC0)" },
         new Credit { item = "Disparos", source = "The Free Firearm Sound Library, de Ben Jaszczak, Brian Nelson, Kevin Heras y Matthew Nanney (CC0)" },
-        new Credit { item = "Recargas", source = "Gun reload sounds, de SpringySpringo, y Shotgun Reload Sound Effects, de zer0_sol (CC0, OpenGameArt)" }
+        new Credit { item = "Recargas", source = "Gun reload sounds, de SpringySpringo, y Shotgun Reload Sound Effects, de zer0_sol (CC0, OpenGameArt)" },
+        new Credit { item = "Estallido de la flash", source = "Flashbang explode, de MadPanCake (CC BY-NC 4.0, Freesound)" }
     };
     [SerializeField] private List<Credit> fonts = new List<Credit>
     {

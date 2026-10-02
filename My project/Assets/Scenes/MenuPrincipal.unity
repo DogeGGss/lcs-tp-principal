@@ -15622,7 +15622,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 3476484619042369127, guid: 2ded74b6d1acee840b5a6c9c71e0a504, type: 3}
       propertyPath: assets.Array.size
-      value: 7
+      value: 8
       objectReference: {fileID: 0}
     - target: {fileID: 3476484619042369127, guid: 2ded74b6d1acee840b5a6c9c71e0a504, type: 3}
       propertyPath: assets.Array.data[4].item
@@ -15647,6 +15647,14 @@ PrefabInstance:
     - target: {fileID: 3476484619042369127, guid: 2ded74b6d1acee840b5a6c9c71e0a504, type: 3}
       propertyPath: assets.Array.data[6].source
       value: Gun reload sounds, de SpringySpringo, y Shotgun Reload Sound Effects, de zer0_sol (CC0, OpenGameArt)
+      objectReference: {fileID: 0}
+    - target: {fileID: 3476484619042369127, guid: 2ded74b6d1acee840b5a6c9c71e0a504, type: 3}
+      propertyPath: assets.Array.data[7].item
+      value: Estallido de la flash
+      objectReference: {fileID: 0}
+    - target: {fileID: 3476484619042369127, guid: 2ded74b6d1acee840b5a6c9c71e0a504, type: 3}
+      propertyPath: assets.Array.data[7].source
+      value: Flashbang explode, de MadPanCake (CC BY-NC 4.0, Freesound)
       objectReference: {fileID: 0}
     - target: {fileID: 3510006640910348605, guid: 2ded74b6d1acee840b5a6c9c71e0a504, type: 3}
       propertyPath: m_Name
