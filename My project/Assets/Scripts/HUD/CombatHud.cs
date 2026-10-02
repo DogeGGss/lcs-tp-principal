@@ -398,6 +398,16 @@ public class CombatHud : MonoBehaviour
         name = ""; ammo = 0; size = 0; reserve = -1; reload = -1f;
         WeaponIcon = null;
 
+        // Granada en la mano (US 073): su nombre y cuántas de esas lleva.
+        ShopItem grenadeInHand = HeldGrenade();
+        if (grenadeInHand != null)
+        {
+            name = ItemName(grenadeInHand);
+            WeaponIcon = grenadeInHand.icon;
+            ammo = size = loadout != null ? loadout.Count(grenadeInHand) : 1;
+            return;
+        }
+
         GameObject held = null;
         if (switcher != null)
         {
@@ -587,6 +597,7 @@ public class CombatHud : MonoBehaviour
         if (switcher != null && switcher.HeldPrimary != null) held = 0;
         else if (switcher != null && switcher.pistolObj != null && switcher.pistolObj.activeInHierarchy) held = 1;
         else if (melee != null && melee.CurrentViewModel != null && melee.CurrentViewModel.activeInHierarchy) held = 2;
+        else if (HeldGrenade() != null) held = 3;
 
         // Principal (CA2, CA3): lo que compró; en escenas sin tienda el Mitre está siempre.
         ShopItem primary = loadout != null ? loadout.Primary : null;
@@ -621,7 +632,14 @@ public class CombatHud : MonoBehaviour
         SetSlot(0, hasPrimary, held == 0, primaryName, primaryIcon, KeyBindings.Label(GameAction.ArmaPrincipal));
         SetSlot(1, hasSecondary, held == 1, secondaryName, secondary != null ? secondary.icon : null, KeyBindings.Label(GameAction.ArmaSecundaria));
         SetSlot(2, hasKnife, held == 2, knifeName, knifeIcon, KeyBindings.Label(GameAction.Cuchillo));
-        SetSlot(3, grenade != null, false, grenadeName, grenade != null ? grenade.icon : null, KeyBindings.Label(GameAction.Granadas));
+        SetSlot(3, grenade != null, held == 3, grenadeName, grenade != null ? grenade.icon : null, KeyBindings.Label(GameAction.Granadas));
+    }
+
+    // La granada que tiene en la mano (US 073), o null.
+    private ShopItem HeldGrenade()
+    {
+        if (switcher == null || !switcher.GrenadeEquipped || switcher.Granadas == null) return null;
+        return switcher.Granadas.Selected;
     }
 
     // CA6: solo se redibuja cuando algo cambió.

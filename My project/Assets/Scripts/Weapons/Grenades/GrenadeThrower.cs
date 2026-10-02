@@ -39,6 +39,9 @@ public class GrenadeThrower : MonoBehaviour
     // Se quedó sin la granada que tenía en la mano (la lanzó, la vendió o murió): hay que volver a un arma.
     public event System.Action Emptied;
 
+    // Cada granada que se lanza, con quién la tiró: el multijugador la repite en las demás computadoras.
+    public static event System.Action<Transform, Grenade1> Thrown;
+
     void Awake()
     {
         loadout = GetComponentInParent<PlayerLoadout>();
@@ -125,6 +128,7 @@ public class GrenadeThrower : MonoBehaviour
 
         CharacterController body = owner.GetComponent<CharacterController>();
         grenade.Throw(direction, body != null ? body.velocity : Vector3.zero);
+        Thrown?.Invoke(owner, grenade);
     }
 
     // La que tenía en la mano se acabó (la lanzó, la vendió, la deshizo en la tienda o murió).
@@ -165,6 +169,11 @@ public class GrenadeThrower : MonoBehaviour
         model.transform.SetParent(cam.transform, false);
         model.transform.localPosition = Vector3.zero;
         model.transform.localRotation = Quaternion.identity;
+
+        // Como las demás armas en la mano: en su capa la dibuja la cámara de las armas, así no atraviesa las paredes.
+        int handLayer = LayerMask.NameToLayer("ArmaEnMano");
+        if (handLayer >= 0)
+            foreach (Transform part in model.GetComponentsInChildren<Transform>(true)) part.gameObject.layer = handLayer;
 
         Renderer[] renderers = model.GetComponentsInChildren<Renderer>();
         if (renderers.Length == 0) return model;

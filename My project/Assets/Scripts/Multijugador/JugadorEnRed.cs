@@ -31,6 +31,10 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
     private byte saltos, aterrizajes;
     private float finInvulnerable;
     private int ultimoAtacante;
+    private string ultimaArma = "";   // con qué lo dañaron por última vez, si no fue el arma en la mano (una granada)
+    private ShopCatalog catalogo;      // qué granada es (US 073): la tienda está en el mismo orden en todas las computadoras
+    private int ultimaGranada;
+    private readonly Dictionary<int, Grenade1> granadasRemotas = new Dictionary<int, Grenade1>();
     private readonly List<Behaviour> bloqueados = new List<Behaviour>();
 
     // ---------- Copia ----------
@@ -73,6 +77,8 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
         WeaponSwitcher cambio = GetComponentInChildren<WeaponSwitcher>(true);
         camara = cambio != null ? cambio.transform : transform.Find("Main Camera");
         if (cambio != null) { principales = cambio.Principales(); pistola = cambio.pistolObj; }
+        PlayerLoadout carga = GetComponentInChildren<PlayerLoadout>(true);
+        catalogo = carga != null ? carga.Catalog : null;
 
         if (movimiento != null)
         {
@@ -82,12 +88,16 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
         if (vida != null) vida.Died += AlMorir;
         WeaponFire.Fired += AlDisparar;
         MeleeAttack.Swung += AlAcuchillar;
+        GrenadeThrower.Thrown += AlLanzarGranada;
+        Grenade1.Exploded += AlExplotarGranada;
     }
 
     private void OnDestroy()
     {
         WeaponFire.Fired -= AlDisparar;
         MeleeAttack.Swung -= AlAcuchillar;
+        GrenadeThrower.Thrown -= AlLanzarGranada;
+        Grenade1.Exploded -= AlExplotarGranada;
         if (vida != null) vida.Died -= AlMorir;
     }
 
@@ -113,13 +123,35 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
         photonView.RPC(nameof(RpcCuchillo), RpcTarget.Others);
     }
 
-    // US 029: el daño que le hicieron a la copia de este jugador en otra computadora.
+    // US 073: este jugador tiró una granada; en las demás computadoras se ve una igual (RpcGranada).
+    private void AlLanzarGranada(Transform tirador, Grenade1 granada)
+    {
+        if (tirador != transform || muerto || granada == null) return;
+        int indice = catalogo != null ? catalogo.items.IndexOf(granada.Item) : -1;
+        if (indice < 0 || indice > byte.MaxValue) return;
+        if (vida != null) vida.Invulnerable = false; // como disparar (US 137, CA5)
+        granada.netId = ++ultimaGranada;
+        photonView.RPC(nameof(RpcGranada), RpcTarget.Others, granada.netId, (byte)indice,
+            granada.LaunchOrigin, granada.LaunchDirection, granada.LaunchInherited);
+    }
+
+    // Explotó una granada de este jugador: en las demás computadoras explota en el mismo lugar.
+    private void AlExplotarGranada(Grenade1 granada, Vector3 centro)
+    {
+        if (granada == null || granada.thrower != transform || granada.netId == 0) return;
+        int indice = catalogo != null ? catalogo.items.IndexOf(granada.Item) : -1;
+        photonView.RPC(nameof(RpcExplosionGranada), RpcTarget.Others, granada.netId, (byte)Mathf.Clamp(indice, 0, byte.MaxValue), centro);
+    }
+
+    // US 029: el daño que le hicieron a la copia de este jugador en otra computadora. arma: con qué, si no fue el
+    // arma que el atacante tiene en la mano (por ejemplo, una granada); va al aviso de baja (US 057).
     [PunRPC]
-    private void RpcDanio(int danio, int atacante, bool cabeza)
+    private void RpcDanio(int danio, int atacante, bool cabeza, string arma)
     {
         if (!photonView.IsMine || muerto || vida == null) return;
         if (EquiposTacticos.SonAliados(atacante, Actor)) return; // US 031, CA6: por las dudas, también acá
         ultimoAtacante = atacante;
+        ultimaArma = arma ?? "";
         vida.TakeDamage(danio, cabeza);
     }
 
@@ -129,9 +161,9 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
         if (muerto) return;
         muerto = true;
         bool cabeza = vida != null && vida.KilledByHeadshot;
-        photonView.RPC(nameof(RpcMurio), RpcTarget.Others, ultimoAtacante, cabeza);
+        photonView.RPC(nameof(RpcMurio), RpcTarget.Others, ultimoAtacante, cabeza, ultimaArma);
         Bloquear(true);
-        AvisarBaja(ultimoAtacante, cabeza); // US 057, CA4
+        AvisarBaja(ultimoAtacante, cabeza, ultimaArma); // US 057, CA4
 
         Player asesino = ultimoAtacante != 0 && PhotonNetwork.CurrentRoom != null ? PhotonNetwork.CurrentRoom.GetPlayer(ultimoAtacante) : null;
         string titulo = asesino != null ? $"Te eliminó {asesino.NickName}" : "Te eliminaron";
@@ -161,6 +193,7 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
         foreach (ArmaDeFuego arma in GetComponentsInChildren<ArmaDeFuego>(true)) arma.Refill();
         muerto = false;
         ultimoAtacante = 0;
+        ultimaArma = "";
         Bloquear(false);
 
         float segundos = ConfigRed.Actual != null ? ConfigRed.Actual.invulnerabilidad : 2f;
@@ -186,6 +219,7 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
         foreach (ArmaDeFuego arma in GetComponentsInChildren<ArmaDeFuego>(true)) arma.Refill();
         muerto = false;
         ultimoAtacante = 0;
+        ultimaArma = "";
         Bloquear(false);
         vida.Invulnerable = false;
         photonView.RPC(nameof(RpcReaparecio), RpcTarget.Others, punto.position, punto.rotation.eulerAngles.y);
@@ -196,6 +230,7 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
     {
         if (photonView == null || !photonView.IsMine || muerto || vida == null) return;
         ultimoAtacante = 0;
+        ultimaArma = "";
         vida.Invulnerable = false;
         vida.TakeDamage(vida.currentHealth + vida.currentShield + 1);
     }
@@ -241,14 +276,27 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
     }
 
     // US 057, CA4 y CA7: el aviso "asesino [arma] víctima" con los nombres de cada jugador, igual en todas las computadoras,
-    // con la marca de tiro a la cabeza si el golpe que lo mató fue a la cabeza.
-    private void AvisarBaja(int atacante, bool cabeza)
+    // con la marca de tiro a la cabeza si el golpe que lo mató fue a la cabeza. arma: con qué lo mató, si no fue el arma
+    // que el asesino tiene en la mano (por ejemplo, una granada, US 073); vacío, el arma en la mano.
+    private void AvisarBaja(int atacante, bool cabeza, string arma)
     {
         RondasTacticas.ContarBaja(atacante, photonView.OwnerActorNr); // US 135, CA2: $ 200 al que mató
         Player asesino = atacante != 0 && PhotonNetwork.CurrentRoom != null ? PhotonNetwork.CurrentRoom.GetPlayer(atacante) : null;
         JugadorEnRed tirador = partida != null ? partida.Buscar(atacante) : null;
-        MatchHud.ReportKill(asesino != null ? asesino.NickName : "", tirador != null ? tirador.NombreArma : "", Nombre,
-            ColorDe(atacante), ColorDe(photonView.OwnerActorNr), cabeza, tirador != null ? tirador.IconoArma : null);
+        bool otraArma = !string.IsNullOrEmpty(arma);
+        string nombreArma = otraArma ? arma : tirador != null ? tirador.NombreArma : "";
+        Sprite icono = otraArma ? IconoDe(arma) : tirador != null ? tirador.IconoArma : null;
+        MatchHud.ReportKill(asesino != null ? asesino.NickName : "", nombreArma, Nombre,
+            ColorDe(atacante), ColorDe(photonView.OwnerActorNr), cabeza, icono);
+    }
+
+    // Ícono de la ficha de la tienda que se llama así (por ejemplo, la granada de metralla), o null.
+    private Sprite IconoDe(string arma)
+    {
+        if (catalogo == null) return null;
+        foreach (ShopItem item in catalogo.items)
+            if (item != null && (item.displayName == arma || item.alias == arma)) return item.icon;
+        return null;
     }
 
     // Azul el propio equipo (y uno mismo), rojo el rival; blanco si no hay equipos.
@@ -361,6 +409,9 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
         Quitar<ArmaDeFuego>(go);
         Quitar<MeleeAttack>(go);
         Quitar<PlayerAbility>(go);
+        Quitar<GrenadeThrower>(go); // la copia no tira granadas: las que tiró su dueño llegan por RpcGranada (US 073)
+        PlayerLoadout carga = go.GetComponentInChildren<PlayerLoadout>(true);
+        jugador.catalogo = carga != null ? carga.Catalog : null; // para saber qué granada tiró
         Quitar<PlayerLoadout>(go); // antes que la billetera, que la necesita
         Quitar<PlayerWallet>(go);
         Quitar<PlayerMovement>(go);
@@ -422,12 +473,14 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
         sonido.rolloffMode = AudioRolloffMode.Linear;
         sonido.outputAudioMixerGroup = efectos;
 
-        // US 029: el daño a esta copia se le manda al dueño, que es el que sabe su vida.
+        // US 029: el daño a esta copia se le manda al dueño, que es el que sabe su vida. Va con qué se hizo, si no fue
+        // el arma en la mano (HealthSystem.DamageSource, por ejemplo la granada), para el aviso de baja.
         if (vida != null)
             vida.DamageRedirect = (danio, cabeza) =>
             {
                 if (photonView.Owner != null)
-                    photonView.RPC(nameof(RpcDanio), photonView.Owner, danio, PhotonNetwork.LocalPlayer.ActorNumber, cabeza);
+                    photonView.RPC(nameof(RpcDanio), photonView.Owner, danio, PhotonNetwork.LocalPlayer.ActorNumber, cabeza,
+                        HealthSystem.DamageSource ?? "");
             };
 
         // US 031, CA5: a los rivales se los reconoce por el contorno rojo, como en Valorant. No se ve su nombre ni su vida.
@@ -528,6 +581,41 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
         if (cuchilloListo != null) StartCoroutine(Estocada(cuchilloListo.transform));
     }
 
+    // US 073: la granada que tiró este jugador en su computadora. Acá se ve una de muestra que vuela igual y suena,
+    // pero no hace daño: el daño lo calcula la computadora de quien la tiró y llega por RpcDanio.
+    [PunRPC]
+    private void RpcGranada(int id, byte indice, Vector3 origen, Vector3 direccion, Vector3 heredada)
+    {
+        if (photonView.IsMine) return;
+        ShopItem item = FichaDe(indice);
+        if (item == null || item.grenadePrefab == null) return;
+        GameObject go = Instantiate(item.grenadePrefab, origen, Quaternion.identity);
+        Grenade1 granada = go.GetComponent<Grenade1>();
+        if (granada == null) { Destroy(go); return; }
+        granada.cosmetic = true;
+        granada.netId = id;
+        granada.thrower = transform; // que no choque con la copia de quien la tiró
+        granada.Configure(item);
+        granada.Throw(direccion, heredada);
+        granadasRemotas[id] = granada;
+    }
+
+    // Explotó la granada de verdad: la de muestra explota en el mismo lugar (si no llegó a verse, solo el efecto).
+    [PunRPC]
+    private void RpcExplosionGranada(int id, byte indice, Vector3 centro)
+    {
+        if (photonView.IsMine) return;
+        if (granadasRemotas.TryGetValue(id, out Grenade1 granada) && granada != null) granada.ExplodeAt(centro);
+        else
+        {
+            ShopItem item = FichaDe(indice);
+            Grenade1.PlayExplosion(item != null && item.grenadePrefab != null ? item.grenadePrefab.GetComponent<Grenade1>() : null, centro);
+        }
+        granadasRemotas.Remove(id);
+    }
+
+    private ShopItem FichaDe(byte indice) => catalogo != null && indice < catalogo.items.Count ? catalogo.items[indice] : null;
+
     private static IEnumerator Estocada(Transform hoja)
     {
         Vector3 inicio = hoja.localPosition, adelante = inicio + Vector3.forward * 0.3f;
@@ -558,11 +646,11 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
 
     // US 030, CA1 y CA2: el cuerpo cae y ya no recibe disparos.
     [PunRPC]
-    private void RpcMurio(int atacante, bool cabeza)
+    private void RpcMurio(int atacante, bool cabeza, string arma)
     {
         if (photonView.IsMine) return;
         muerto = true;
-        AvisarBaja(atacante, cabeza); // US 057, CA4
+        AvisarBaja(atacante, cabeza, arma); // US 057, CA4
         if (vida != null) vida.SetState(0, 0);
         foreach (Collider c in colisiones) if (c != null) c.enabled = false;
         MostrarArma(SinArma);

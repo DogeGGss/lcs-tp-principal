@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Audio;
 
 // Granada de metralla ya lanzada (US 079). Va en el prefab Grenade (con su Rigidbody y su collider).
 //   CA2: rebota en paredes y piso (se le pone un material con rebote al arrancar).
@@ -8,6 +9,9 @@ using UnityEngine;
 //        punto más cercano del cuerpo (no hasta sus pies) y cada personaje recibe el daño una sola vez.
 //   CA5: si hay una pared entre el centro y el cuerpo, no hay daño.
 //   CA7: daña a quien la tiró, pero no a sus compañeros (EquiposTacticos.SonAliados).
+//   CA8 y CA9: suena al lanzarla y al explotar (por el grupo SFX del mezclador), y al explotar se ve el efecto.
+// Multijugador: el daño lo calcula solo la computadora de quien la tiró; en las demás se ve una copia "de muestra"
+// (cosmetic) que vuela igual y explota donde explotó la de verdad (JugadorEnRed la manda por la red).
 public class Grenade1 : MonoBehaviour
 {
     [Tooltip("Segundos hasta explotar. En el juego lo pisa la ficha de la granada (fuse).")]
@@ -24,6 +28,37 @@ public class Grenade1 : MonoBehaviour
 
     // Quién la tiró: sus compañeros no reciben el daño de la explosión (US 031, CA6).
     [HideInInspector] public Transform thrower;
+
+    [Header("Sonido y efecto (CA8 y CA9)")]
+    [Tooltip("Sonido al lanzarla (CA8).")]
+    public AudioClip throwSound;
+    [Tooltip("Sonido de la explosión, propio de esta granada (CA9).")]
+    public AudioClip explosionSound;
+    [Tooltip("Grupo SFX del Audio Mixer: así lo regulan los volúmenes General y Efectos de Opciones (US 154).")]
+    public AudioMixerGroup sfxGroup;
+    [Tooltip("Efecto de la explosión (War FX). Se borra solo cuando termina; si no, a los 8 s.")]
+    public GameObject explosionEffect;
+
+    // Multijugador: la copia de muestra no hace daño; netId la une con la granada de verdad de la otra computadora.
+    [HideInInspector] public bool cosmetic;
+    [HideInInspector] public int netId;
+
+    // Si a la copia de muestra no le llega dónde explotó la de verdad, explota sola este tiempo después de la mecha.
+    private const float CosmeticGrace = 1.5f;
+
+    // La granada de verdad explotó en este punto: el multijugador se lo avisa a los demás.
+    public static event System.Action<Grenade1, Vector3> Exploded;
+    // La explosión eliminó a alguien: sin conexión, el aviso de baja sale de acá (US 057, CA4).
+    public static event System.Action<Grenade1, HealthSystem> Killed;
+
+    // Ficha de la tienda de esta granada, y desde dónde y cómo se lanzó (para repetirla en las demás computadoras).
+    public ShopItem Item { get; private set; }
+    public Vector3 LaunchOrigin { get; private set; }
+    public Vector3 LaunchDirection { get; private set; }
+    public Vector3 LaunchInherited { get; private set; }
+
+    // Nombre con el que aparece en el aviso de baja.
+    public string WeaponName => Item == null ? "Granada" : string.IsNullOrEmpty(Item.alias) ? Item.displayName : Item.alias;
 
     private float countdown;
     private bool exploded;
@@ -59,7 +94,7 @@ public class Grenade1 : MonoBehaviour
         if (exploded) return;
         countdown -= Time.deltaTime; // con la pausa local (timeScale 0) la mecha se congela
 
-        if (countdown <= 0f)
+        if (countdown <= (cosmetic ? -CosmeticGrace : 0f))
         {
             exploded = true;
             Explode();
@@ -70,6 +105,7 @@ public class Grenade1 : MonoBehaviour
     public void Configure(ShopItem item)
     {
         if (item == null) return;
+        Item = item;
         if (item.fuse > 0f) delay = item.fuse;
         if (item.effectRadius > 0f) radius = item.effectRadius;
         if (item.bands != null && item.bands.Length > 0)
@@ -86,6 +122,11 @@ public class Grenade1 : MonoBehaviour
     // Lanza la granada en la dirección indicada (CA2). 'inherited' es la velocidad de quien la tira.
     public void Throw(Vector3 direction, Vector3 inherited = default)
     {
+        LaunchOrigin = transform.position;
+        LaunchDirection = direction;
+        LaunchInherited = inherited;
+        PlaySound(throwSound, LaunchOrigin, sfxGroup, 2f, 40f); // CA8
+
         // Que no choque con quien la tira mientras sale de su mano.
         if (thrower != null)
             foreach (Collider mine in GetComponentsInChildren<Collider>())
@@ -110,6 +151,27 @@ public class Grenade1 : MonoBehaviour
     void Explode()
     {
         Vector3 center = Center();
+        if (!cosmetic)
+        {
+            ApplyDamage(center);
+            Exploded?.Invoke(this, center);
+        }
+        PlayExplosion(this, center);
+        Destroy(gameObject);
+    }
+
+    // La copia de muestra explota donde explotó la de verdad (lo avisa la red).
+    public void ExplodeAt(Vector3 center)
+    {
+        if (exploded) return;
+        exploded = true;
+        PlayExplosion(this, center);
+        Destroy(gameObject);
+    }
+
+    // CA4, CA5 y CA7: el daño de la explosión. Solo lo hace la granada de verdad.
+    void ApplyDamage(Vector3 center)
+    {
         Collider[] parts = Physics.OverlapSphere(center, radius, ~0, QueryTriggerInteraction.Collide);
 
         // Distancia más corta de cada personaje al centro, mirando solo las partes que la explosión "ve".
@@ -141,10 +203,41 @@ public class Grenade1 : MonoBehaviour
         foreach (KeyValuePair<HealthSystem, float> entry in reached)
         {
             int damage = DamageAt(entry.Value);
-            if (damage > 0) entry.Key.TakeDamage(damage); // primero el escudo y el resto a la vida
+            if (damage <= 0) continue;
+            bool lethal = entry.Key.WouldDie(damage);
+            HealthSystem.DamageSource = WeaponName; // el aviso de baja dice la granada, no el arma que tiene en la mano
+            entry.Key.TakeDamage(damage); // primero el escudo y el resto a la vida
+            HealthSystem.DamageSource = null;
+            if (lethal) Killed?.Invoke(this, entry.Key);
         }
+    }
 
-        Destroy(gameObject);
+    // CA9: efecto y sonido de la explosión. Sirve también sin la granada (por ejemplo, si a otra computadora
+    // le llega la explosión de una granada que no llegó a ver): toma los datos del prefab.
+    public static void PlayExplosion(Grenade1 settings, Vector3 center)
+    {
+        if (settings == null) return;
+        if (settings.explosionEffect != null)
+            Destroy(Instantiate(settings.explosionEffect, center, Quaternion.identity), 8f);
+        PlaySound(settings.explosionSound, center, settings.sfxGroup, 6f, 120f);
+    }
+
+    // Sonido 3D en un punto, por el grupo del mezclador; el objeto se borra cuando termina.
+    static void PlaySound(AudioClip clip, Vector3 at, AudioMixerGroup group, float minDistance, float maxDistance)
+    {
+        if (clip == null) return;
+        var go = new GameObject("Sonido " + clip.name);
+        go.transform.position = at;
+        AudioSource source = go.AddComponent<AudioSource>();
+        source.clip = clip;
+        source.outputAudioMixerGroup = group;
+        source.spatialBlend = 1f;
+        source.rolloffMode = AudioRolloffMode.Linear;
+        source.minDistance = minDistance;
+        source.maxDistance = maxDistance;
+        source.dopplerLevel = 0f;
+        source.Play();
+        Destroy(go, clip.length + 0.1f);
     }
 
     // Centro de la explosión: el de la granada (el modelo puede tener el pivote corrido).
