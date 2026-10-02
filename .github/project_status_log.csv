@@ -373,3 +373,8 @@ fecha_utc,us_numero,us_titulo,estado_anterior,estado_nuevo,tiempo_en_estado_ante
 2026-10-02T06:46:41.254721+00:00,46,US 026. Unirse a sala,LPR,R2D,2d 23h 23m,257011,https://github.com/DogeGGss/lcs-tp-principal/issues/46
 2026-10-02T18:31:56.810211+00:00,108,US 057. Mostrar información de la partida,LPR,TESTING,1d 22h 29m,167341,https://github.com/DogeGGss/lcs-tp-principal/issues/108
 2026-10-02T18:31:56.810211+00:00,253,US 172. Personalizar la mira,In Progress,LPR,11h 45m,42315,https://github.com/DogeGGss/lcs-tp-principal/issues/253
+2026-10-02T22:30:38.667308+00:00,61,US 055. Mostrar inventario,TESTING,R2D,15h 43m,56637,https://github.com/DogeGGss/lcs-tp-principal/issues/61
+2026-10-02T22:30:38.667308+00:00,280,US 178. Diseño del arsenal,LPR,TESTING,2d 14h 3m,223406,https://github.com/DogeGGss/lcs-tp-principal/issues/280
+2026-10-02T22:30:38.667308+00:00,118,US 075. ARROJABLE 3 - Granada flash,Todo,LPR,9d 23h 6m,860777,https://github.com/DogeGGss/lcs-tp-principal/issues/118
+2026-10-02T22:30:38.667308+00:00,284,US 182. Arma de los demás jugadores,Todo,LPR,2d 20h 25m,246326,https://github.com/DogeGGss/lcs-tp-principal/issues/284
+2026-10-02T22:30:38.667308+00:00,287,US 184. Soltar y levantar armas,Blocked,LPR,2d 2h 27m,181663,https://github.com/DogeGGss/lcs-tp-principal/issues/287
