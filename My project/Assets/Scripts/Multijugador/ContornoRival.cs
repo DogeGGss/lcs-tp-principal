@@ -100,12 +100,29 @@ public class ContornoRival : MonoBehaviour
 
     private void LateUpdate()
     {
+        // Si Unity recarga los scripts con el juego andando, se pierde esRival (no se guarda): sin ella, el contorno
+        // se apaga en vez de tirar un error en cada cuadro.
+        if (esRival == null)
+        {
+            if (partes == null) partes = BuscarPartes(); // también se pierde la lista: se buscan por nombre
+            Mostrar(false);
+            enabled = false;
+            return;
+        }
         Mostrar(esRival());
+    }
+
+    private Renderer[] BuscarPartes()
+    {
+        var lista = new List<Renderer>();
+        foreach (Renderer r in GetComponentsInChildren<Renderer>(true))
+            if (r.name == "Contorno" || r.name == "ContornoMascara") lista.Add(r);
+        return lista.ToArray();
     }
 
     private void Mostrar(bool ver)
     {
-        if (ver == visible) return;
+        if (ver == visible || partes == null) return;
         visible = ver;
         foreach (Renderer r in partes)
             if (r != null) r.enabled = ver;
