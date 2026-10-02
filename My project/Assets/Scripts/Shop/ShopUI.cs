@@ -35,6 +35,8 @@ public class ShopUI : MonoBehaviour
     [SerializeField] private Sprite backIcon;
     [Tooltip("Escala de grises para los íconos de lo que no alcanza a pagarse.")]
     [SerializeField] private Material grayscale;
+    [Tooltip("Ícono del cuchillo en el inventario de abajo (US 066). Si queda vacío, se muestra solo el nombre.")]
+    [SerializeField] private Sprite knifeIcon;
 
     // Sonidos de la tienda (US 117): al cerrar suena el de abrir con las notas bajando, al comprar
     // monedas y una traba metálica, al vender o deshacer monedas, al fallar un "bip-bip" grave de saldo
@@ -461,6 +463,12 @@ public class ShopUI : MonoBehaviour
         {
             lastAccess = access;
             Render();
+        }
+        else if (open)
+        {
+            // US 066: el inventario de abajo sigue lo que pasa (arma en la mano, balas, escudo) con la tienda abierta.
+            string state = LoadoutState();
+            if (state != loadoutState) RenderLoadout();
         }
     }
 
@@ -1019,43 +1027,99 @@ public class ShopUI : MonoBehaviour
 
     // ---------- Equipamiento ----------
 
+    // Inventario detallado (US 066). La versión corta está en el HUD (US 055).
+    // - CA1: los 4 espacios con su tecla, ícono y nombre.   - CA2: cada tipo de granada con cuántas lleva sobre el máximo.
+    // - CA3: balas en el cargador y en la reserva.          - CA4: el escudo que lleva y sus puntos.
+    // - CA5: el espacio sin nada, atenuado y con "Vacío".   - CA6: el espacio en la mano, resaltado.
     private void RenderLoadout()
     {
         for (int i = 0; i < loadoutCells.Length; i++) Clear(loadoutCells[i]);
+        FindWeapons();
+        loadoutState = LoadoutState();
+        int held = HeldSlot();
+        for (int i = 0; i < 4; i++) if (i == held) SlotInHand(i);
 
-        SlotHeader(0, KeyBindings.Label(GameAction.ArmaPrincipal), "Principal");
+        GameObject primaryObj = switcher != null ? switcher.PrimaryObj : null;
+        SlotHeader(0, KeyBindings.Label(GameAction.ArmaPrincipal), "Principal", held == 0);
         SlotWeapon(0, loadout.Primary);
-        SlotHeader(1, KeyBindings.Label(GameAction.ArmaSecundaria), "Secundaria");
-        SlotWeapon(1, loadout.Secondary);
-        SlotHeader(2, KeyBindings.Label(GameAction.Cuchillo), "Cuchillo");
-        SlotLabel(2, 18f, "Cuchillo", Ink);
+        SlotAmmo(0, loadout.Primary != null ? primaryObj : null);
+        Dim(0, loadout.Primary == null);
 
-        SlotHeader(3, KeyBindings.Label(GameAction.Granadas), "Granadas");
+        SlotHeader(1, KeyBindings.Label(GameAction.ArmaSecundaria), "Secundaria", held == 1);
+        SlotWeapon(1, loadout.Secondary);
+        SlotAmmo(1, loadout.Secondary != null && switcher != null ? switcher.pistolObj : null);
+        Dim(1, loadout.Secondary == null);
+
+        MeleeWeaponData knife = switcher != null && switcher.meleeScript != null ? switcher.meleeScript.CurrentWeapon : null;
+        bool hasKnife = knife != null || switcher == null; // sin datos del jugador se asume el cuchillo de siempre
+        SlotHeader(2, KeyBindings.Label(GameAction.Cuchillo), "Cuchillo", held == 2);
+        if (!hasKnife) SlotLabel(2, 18f, "Vacío", Mute);
+        else
+        {
+            float knifeX = 18f;
+            if (knifeIcon != null)
+            {
+                float w = Mathf.Min(70f, 34f * knifeIcon.rect.width / Mathf.Max(1f, knifeIcon.rect.height));
+                Image(Place(Node("Icono", loadoutCells[2]), 18f, 54f, w, 34f), knifeIcon, Ink).preserveAspect = true;
+                knifeX += w + 10f;
+            }
+            SlotLabel(2, knifeX, knife != null ? knife.weaponName : "Cuchillo", Ink);
+        }
+        Dim(2, !hasKnife);
+
+        // CA2: "Flash 1/2". Las que no lleva quedan atenuadas; si no lleva ninguna, "Vacío".
+        SlotHeader(3, KeyBindings.Label(GameAction.Granadas), "Granadas", held == 3);
+        ShopItem inHand = thrower != null ? thrower.Selected : null;
+        int total = 0;
+        foreach (ShopItem grenade in catalog.ItemsIn(ShopCategory.Grenades)) total += loadout.Count(grenade);
+        if (total == 0)
+        {
+            TextMeshProUGUI empty = Text(Place(Node("Vacio", loadoutCells[3]), loadoutWidths[3] - 112f, 21f, 100f, 24f), displayFont, 16f, Mute, TextAlignmentOptions.MidlineRight, 5f, true);
+            empty.text = "Vacío";
+        }
         float x = 18f;
         foreach (ShopItem grenade in catalog.ItemsIn(ShopCategory.Grenades))
         {
             int count = loadout.Count(grenade);
+            bool selectedGrenade = grenade == inHand && count > 0;
             RectTransform chip = Place(Node("Granada", loadoutCells[3]), x, 58.5f, 10f, 25f);
-            Image(chip, rounded, ChipColor, 4f);
+            Image(chip, rounded, selectedGrenade ? Ink : ChipColor, 4f);
             chip.gameObject.AddComponent<CanvasGroup>().alpha = count > 0 ? 1f : FadeAlpha(0.35f);
             Image(Place(Node("Color", chip), 7f, 7.5f, 10f, 10f), circle, grenade.tint);
-            TextMeshProUGUI text = Text(Place(Node("Cantidad", chip), 23f, 0f, 60f, 25f), monoFont, 15f, Ink);
+            TextMeshProUGUI text = Text(Place(Node("Cantidad", chip), 23f, 0f, 160f, 25f), monoFont, 14f, selectedGrenade ? KeyInk : Ink);
             text.fontStyle = FontStyles.Bold;
-            text.text = $"{count}/{grenade.maxCarry}";
+            text.text = $"{ItemName(grenade)} {count}/{grenade.maxCarry}";
             float width = 23f + Width(text, text.text) + 7f;
             chip.sizeDelta = new Vector2(width, 25f);
-            x += width + 14f;
+            x += width + 8f;
         }
+        Dim(3, total == 0);
 
-        SlotHeader(4, null, "Escudo");
+        // CA4: qué escudo lleva (el más chico de la tienda que cubre sus puntos) y cuántos puntos le quedan.
         int maxShield = 0;
-        foreach (ShopItem shield in catalog.ItemsIn(ShopCategory.Shields)) maxShield = Mathf.Max(maxShield, shield.shieldPoints);
-        RectTransform track = Place(Node("Barra", loadoutCells[4]), 18f, 65f, 150f, 12f);
+        ShopItem carried = null;
+        foreach (ShopItem shield in catalog.ItemsIn(ShopCategory.Shields))
+        {
+            maxShield = Mathf.Max(maxShield, shield.shieldPoints);
+            if (loadout.Shield > 0 && shield.shieldPoints >= loadout.Shield && (carried == null || shield.shieldPoints < carried.shieldPoints))
+                carried = shield;
+        }
+        SlotHeader(4, null, loadout.Shield <= 0 ? "Escudo" : carried != null ? $"Escudo  ·  <color=#E6E9EE>{ItemName(carried)}</color>" : "Escudo");
+        RectTransform track = Place(Node("Barra", loadoutCells[4]), 18f, 65f, 130f, 12f);
         Image(track, rounded, TrackColor, 6f);
         float ratio = Mathf.Clamp01(loadout.Shield / (float)Mathf.Max(1, maxShield));
-        if (ratio > 0f) Image(Place(Node("Relleno", track), 0f, 0f, 150f * ratio, 12f), rounded, ShieldColor, 6f);
-        TextMeshProUGUI shieldValue = Text(Place(Node("Valor", loadoutCells[4]), 178f, 51f, 80f, 40f), monoFont, 20f, ShieldColor);
-        shieldValue.text = loadout.Shield.ToString();
+        if (ratio > 0f) Image(Place(Node("Relleno", track), 0f, 0f, 130f * ratio, 12f), rounded, ShieldColor, 6f);
+        if (loadout.Shield > 0)
+        {
+            TextMeshProUGUI shieldValue = Text(Place(Node("Valor", loadoutCells[4]), 158f, 51f, 90f, 40f), monoFont, 20f, ShieldColor);
+            shieldValue.text = $"{loadout.Shield}<size=14><color=#8E96A3>/{maxShield}</color></size>";
+        }
+        else
+        {
+            TextMeshProUGUI none = Text(Place(Node("Valor", loadoutCells[4]), 158f, 51f, 90f, 40f), displayFont, 18f, Mute, TextAlignmentOptions.MidlineLeft, 5f, true);
+            none.text = "Vacío";
+        }
+        Dim(4, loadout.Shield <= 0);
 
         // Gastado esta ronda y "Deshacer" (US 076, CA10), alineados a la derecha.
         float right = loadoutWidths[5] - 18f;
@@ -1078,12 +1142,75 @@ public class ShopUI : MonoBehaviour
         spent.text = Money(loadout.SpentThisPhase);
     }
 
-    private void SlotHeader(int cell, string key, string label)
+    private void SlotHeader(int cell, string key, string label, bool inHand = false)
     {
         float x = 18f;
-        if (key != null) x += Key(loadoutCells[cell], x, 21f, key, false, true).width + 8f;
-        TextMeshProUGUI text = Text(Place(Node("Titulo", loadoutCells[cell]), x, 21f, 220f, 24f), labelFont, 14f, Mute, TextAlignmentOptions.MidlineLeft, 12f, true);
+        if (key != null) x += Key(loadoutCells[cell], x, 21f, key, false, !inHand).width + 8f;
+        TextMeshProUGUI text = Text(Place(Node("Titulo", loadoutCells[cell]), x, 21f, 220f, 24f), labelFont, 14f, inHand ? Accent : Mute, TextAlignmentOptions.MidlineLeft, 12f, true);
         text.text = label;
+    }
+
+    // ---------- Inventario: lo que lee del jugador (US 066) ----------
+
+    private WeaponSwitcher switcher;
+    private GrenadeThrower thrower;
+    private string loadoutState;
+
+    private void FindWeapons()
+    {
+        if (loadout == null) return;
+        if (switcher == null) switcher = loadout.GetComponentInChildren<WeaponSwitcher>(true);
+        if (thrower == null) thrower = loadout.GetComponentInChildren<GrenadeThrower>(true);
+    }
+
+    // CA6: qué espacio tiene en la mano: 0 principal, 1 secundaria, 2 cuchillo, 3 granada; -1 si no se sabe.
+    private int HeldSlot()
+    {
+        if (switcher == null) return -1;
+        if (thrower != null && thrower.IsHolding) return 3;
+        if (switcher.HeldPrimary != null) return 0;
+        if (switcher.pistolObj != null && switcher.pistolObj.activeInHierarchy) return 1;
+        MeleeWeaponHolder melee = switcher.meleeScript;
+        if (melee != null && melee.CurrentViewModel != null && melee.CurrentViewModel.activeInHierarchy) return 2;
+        return -1;
+    }
+
+    private static IHudWeapon HudWeapon(GameObject weapon) => weapon != null ? weapon.GetComponentInChildren<IHudWeapon>(true) : null;
+
+    // Todo lo que cambia sin pasar por una compra: si es distinto al último dibujo, se dibuja de nuevo.
+    private string LoadoutState()
+    {
+        FindWeapons();
+        IHudWeapon a = switcher != null && loadout.Primary != null ? HudWeapon(switcher.PrimaryObj) : null;
+        IHudWeapon b = switcher != null && loadout.Secondary != null ? HudWeapon(switcher.pistolObj) : null;
+        return $"{HeldSlot()}|{(a != null ? a.Ammo : -1)}|{(a != null ? a.Reserve : -1)}|{(b != null ? b.Ammo : -1)}|{(b != null ? b.Reserve : -1)}|" +
+               $"{loadout.Shield}|{(thrower != null && thrower.Selected != null ? thrower.Selected.name : "")}";
+    }
+
+    // CA6: fondo y línea de color en el espacio que tiene en la mano.
+    private void SlotInHand(int cell)
+    {
+        RectTransform back = Place(Node("EnMano", loadoutCells[cell]), 0f, 1f, loadoutWidths[cell] - 1f, LoadoutH - 2f);
+        Image(back, null, Over(WithAlpha(Accent, 0.13f), PanelBase));
+        Image(Place(Node("Linea", loadoutCells[cell]), 0f, LoadoutH - 4f, loadoutWidths[cell] - 1f, 3f), null, Accent);
+    }
+
+    // CA3: balas en el cargador y en la reserva, arriba a la derecha del espacio.
+    private void SlotAmmo(int cell, GameObject weapon)
+    {
+        IHudWeapon hud = HudWeapon(weapon);
+        if (hud == null) return;
+        TextMeshProUGUI text = Text(Place(Node("Balas", loadoutCells[cell]), loadoutWidths[cell] - 132f, 21f, 120f, 24f), monoFont, 15f, Ink, TextAlignmentOptions.MidlineRight);
+        text.fontStyle = FontStyles.Bold;
+        text.text = hud.Reserve >= 0 ? $"{hud.Ammo}<color=#8E96A3> / {hud.Reserve}</color>" : hud.Ammo.ToString();
+    }
+
+    // CA5: el espacio sin nada queda atenuado.
+    private void Dim(int cell, bool empty)
+    {
+        CanvasGroup group = loadoutCells[cell].GetComponent<CanvasGroup>();
+        if (group == null) group = loadoutCells[cell].gameObject.AddComponent<CanvasGroup>();
+        group.alpha = empty ? FadeAlpha(0.55f) : 1f;
     }
 
     private void SlotWeapon(int cell, ShopItem item)
@@ -1662,7 +1789,7 @@ public class ShopUI : MonoBehaviour
         loadoutBar = Place(Node("Equipamiento", stage), LoadoutX, LoadoutY, LoadoutW, LoadoutH);
         Image(loadoutBar, rounded, PanelColor, 10f, true);
 
-        float[] weights = { 1f, 1f, 0.7f, 1f, 1f, 1.25f };
+        float[] weights = { 1f, 1f, 0.7f, 1.3f, 0.85f, 1.1f }; // granadas más ancho: entra el nombre de cada tipo (US 066)
         float unit = (LoadoutW - 2f) / 5.95f, x = 1f;
         loadoutCells = new RectTransform[weights.Length];
         loadoutWidths = new float[weights.Length];
