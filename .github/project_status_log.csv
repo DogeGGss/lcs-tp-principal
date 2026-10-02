@@ -363,3 +363,11 @@ fecha_utc,us_numero,us_titulo,estado_anterior,estado_nuevo,tiempo_en_estado_ante
 2026-10-02T00:55:43.240371+00:00,193,US 133. Espectar al morir,In Progress,LPR,3h 36m,13010,https://github.com/DogeGGss/lcs-tp-principal/issues/193
 2026-10-02T00:55:43.240371+00:00,196,US 136. Iniciar partida Deathmatch,Blocked,Todo,6d 2h 39m,527954,https://github.com/DogeGGss/lcs-tp-principal/issues/196
 2026-10-02T00:55:43.240371+00:00,218,US 156. Pájaros en la fase de compra,Blocked,Todo,6d 14m,519279,https://github.com/DogeGGss/lcs-tp-principal/issues/218
+2026-10-02T06:46:41.254721+00:00,61,US 055. Mostrar inventario,LPR,TESTING,2d 11h 20m,213618,https://github.com/DogeGGss/lcs-tp-principal/issues/61
+2026-10-02T06:46:41.254721+00:00,64,US 066. Consultar el inventario,Todo,LPR,3d 5h 19m,278376,https://github.com/DogeGGss/lcs-tp-principal/issues/64
+2026-10-02T06:46:41.254721+00:00,115,US 072. ARMA Secundaria 2 - Línea H (Pistola pesada),Todo,LPR,3d 5h 19m,278376,https://github.com/DogeGGss/lcs-tp-principal/issues/115
+2026-10-02T06:46:41.254721+00:00,116,US 073. ARROJABLE 1 - Granada de metralla,In Progress,LPR,2d 23h 23m,257011,https://github.com/DogeGGss/lcs-tp-principal/issues/116
+2026-10-02T06:46:41.254721+00:00,214,US 153. Opciones de video,In Progress,Done,21h 25m,77120,https://github.com/DogeGGss/lcs-tp-principal/issues/214
+2026-10-02T06:46:41.254721+00:00,253,US 172. Personalizar la mira,Todo,In Progress,5d 5h 3m,450182,https://github.com/DogeGGss/lcs-tp-principal/issues/253
+2026-10-02T06:46:41.254721+00:00,281,US 179. Modelos 3D de las armas,In Progress,LPR,1d 22h 19m,166768,https://github.com/DogeGGss/lcs-tp-principal/issues/281
+2026-10-02T06:46:41.254721+00:00,46,US 026. Unirse a sala,LPR,R2D,2d 23h 23m,257011,https://github.com/DogeGGss/lcs-tp-principal/issues/46
