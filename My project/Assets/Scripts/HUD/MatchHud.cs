@@ -99,10 +99,10 @@ public class MatchHud : MonoBehaviour
     private RectTransform table;
 
     // Carteles (US 032): el grande del medio, la ayuda de arriba y el aviso rojo de abajo.
-    private RectTransform hudRoot, banner, hint, warning;
+    private RectTransform hudRoot, banner, hint, warning, prompt;
     private CanvasGroup bannerGroup;
     private Img bannerFill;
-    private TextMeshProUGUI bannerFooter, hintText, warningText;
+    private TextMeshProUGUI bannerFooter, hintText, warningText, promptText;
     private string bannerFooterFormat;
     private float bannerStart, bannerEnd, warningEnd;
     private float nextTableRefresh;
@@ -532,6 +532,16 @@ public class MatchHud : MonoBehaviour
         Instance.ShowHint(text);
     }
 
+    /// <summary>
+    /// US 184, CA6: aviso debajo de la mira mientras se mira algo que se puede agarrar (admite &lt;color&gt;),
+    /// por ejemplo "Soltá tu Mitre con G para levantarla". null o vacío lo saca.
+    /// </summary>
+    public static void SetPrompt(string text)
+    {
+        if (Instance == null) return;
+        Instance.ShowPrompt(text);
+    }
+
     /// <summary>Aviso rojo abajo del centro durante unos segundos (por ejemplo "No podés salir de la base").</summary>
     public static void Warn(string text, float seconds = 1.5f)
     {
@@ -630,6 +640,24 @@ public class MatchHud : MonoBehaviour
         if (hintText.text == text) return;
         hintText.text = text;
         hint.sizeDelta = new Vector2(hintText.GetPreferredValues(text).x + 44f, 44f);
+    }
+
+    // Como la ayuda de arriba, pero debajo de la mira.
+    private void ShowPrompt(string text)
+    {
+        if (string.IsNullOrEmpty(text)) { if (prompt != null) prompt.gameObject.SetActive(false); return; }
+        if (prompt == null)
+        {
+            prompt = Node("AvisoMira", hudRoot);
+            prompt.anchorMin = prompt.anchorMax = prompt.pivot = new Vector2(0.5f, 0.5f);
+            prompt.anchoredPosition = new Vector2(0f, -110f);
+            Image(Stretch(Node("Fondo", prompt)), rounded, Rgb(10, 12, 17, DarkAlpha(0.85f)), 6f);
+            promptText = Text(Stretch(Node("Texto", prompt)), labelFont, 22f, Ink, TextAlignmentOptions.Center);
+        }
+        prompt.gameObject.SetActive(true);
+        if (promptText.text == text) return;
+        promptText.text = text;
+        prompt.sizeDelta = new Vector2(promptText.GetPreferredValues(text).x + 44f, 44f);
     }
 
     private void ShowWarning(string text, float seconds)

@@ -31,6 +31,7 @@ MonoBehaviour:
   reloadTime: 3.7
   reloadPerShell: 0
   mobility: 0.85
+  realLength: 1.18
   zoom: 2.5
   zoom2: 5
   pellets: 1
@@ -66,3 +67,4 @@ MonoBehaviour:
   effectDuration: 0
   recovery: 0
   shortEffect: 
+  grenadePrefab: {fileID: 0}

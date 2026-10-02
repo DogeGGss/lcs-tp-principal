@@ -17,6 +17,8 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
     // Arma en la mano: las principales van desde PrimeraPrincipal, en el orden de WeaponSwitcher.Principales(), y las
     // demás secundarias (Línea H...) desde PrimeraSecundaria, en el orden de WeaponSwitcher.otrasSecundarias (US 072).
     private const byte SinArma = 0, ArmaPistola = 2, ArmaCuchillo = 3, PrimeraSecundaria = 4, PrimeraPrincipal = 10;
+    // La granada en la mano (US 182): PrimeraGranada más su lugar en la tienda.
+    private const byte PrimeraGranada = 200;
 
     private HealthSystem vida;
     private Animator animador;
@@ -25,6 +27,7 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
     private GameObject pistola;
     private List<GameObject> secundarias = new List<GameObject>(); // las demás secundarias (sin la Línea A)
     private MeleeWeaponHolder cuchillo;
+    private WeaponSwitcher cambioLocal; // dueño: para saber qué granada tiene en la mano
     private PartidaEnRed partida;
     private bool muerto;
 
@@ -56,6 +59,11 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
     private readonly List<AudioClip> sonidosSecundarias = new List<AudioClip>();
     private Coroutine caida;
 
+    // US 182: el arma a tamaño real en la mano derecha, una por código de arma (las de primera persona no se ven).
+    private class ModeloEnMano { public GameObject go; public Bounds limites; }
+    private readonly Dictionary<byte, ModeloEnMano> enLaMano = new Dictionary<byte, ModeloEnMano>();
+    private Transform manoDerecha, soporteMano;
+
     public bool Vivo => !muerto;
 
     /// <summary>US 133: el punto de vista del jugador (en la copia, con la mirada que llega por la red).</summary>
@@ -80,8 +88,16 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
         WeaponSwitcher cambio = GetComponentInChildren<WeaponSwitcher>(true);
         camara = cambio != null ? cambio.transform : transform.Find("Main Camera");
         if (cambio != null) { principales = cambio.Principales(); pistola = cambio.pistolObj; secundarias = OtrasSecundarias(cambio); }
+        cambioLocal = cambio;
         PlayerLoadout carga = GetComponentInChildren<PlayerLoadout>(true);
         catalogo = carga != null ? carga.Catalog : null;
+
+        // US 184: las armas del piso se mandan a los demás y se levantan con permiso del dueño de la sala.
+        SoltarArmas.EnRed = true;
+        SoltarArmas.IdBase = Actor * 100000;
+        SoltarArmas.Soltada += AlSoltarArma;
+        SoltarArmas.Pedida += AlPedirArma;
+        ArmaEnPiso.Quieta += AlQuedarQuieta;
 
         if (movimiento != null)
         {
@@ -101,7 +117,11 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
         MeleeAttack.Swung -= AlAcuchillar;
         GrenadeThrower.Thrown -= AlLanzarGranada;
         Grenade1.Exploded -= AlExplotarGranada;
+        SoltarArmas.Soltada -= AlSoltarArma;
+        SoltarArmas.Pedida -= AlPedirArma;
+        ArmaEnPiso.Quieta -= AlQuedarQuieta;
         if (vida != null) vida.Died -= AlMorir;
+        if (photonView != null && photonView.IsMine) SoltarArmas.EnRed = false;
     }
 
     private void AlDisparar(Transform tirador, Vector3 origen, Vector3[] direcciones)
@@ -144,6 +164,63 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
         if (granada == null || granada.thrower != transform || granada.netId == 0) return;
         int indice = catalogo != null ? catalogo.items.IndexOf(granada.Item) : -1;
         photonView.RPC(nameof(RpcExplosionGranada), RpcTarget.Others, granada.netId, (byte)Mathf.Clamp(indice, 0, byte.MaxValue), centro);
+    }
+
+    // US 184, CA10: este jugador soltó un arma; en las demás computadoras cae igual, en el mismo lugar.
+    private void AlSoltarArma(SoltarArmas.Suelta suelta)
+    {
+        int indice = catalogo != null ? catalogo.items.IndexOf(suelta.item) : -1;
+        if (indice < 0 || indice > byte.MaxValue) return;
+        photonView.RPC(nameof(RpcArmaSoltada), RpcTarget.Others, suelta.id, (byte)indice, suelta.desde, suelta.velocidad,
+            suelta.yaw, suelta.cargador, suelta.reserva);
+    }
+
+    [PunRPC]
+    private void RpcArmaSoltada(int id, byte indice, Vector3 desde, Vector3 velocidad, float yaw, int cargador, int reserva)
+    {
+        ShopItem item = FichaDe(indice);
+        if (item != null) ArmaEnPiso.Crear(id, item, desde, velocidad, yaw, cargador, reserva, false);
+    }
+
+    // CA10: la que soltó este jugador ya se quedó quieta; en las demás computadoras queda en el mismo lugar.
+    private void AlQuedarQuieta(ArmaEnPiso arma)
+    {
+        photonView.RPC(nameof(RpcArmaQuieta), RpcTarget.Others, arma.Id, arma.transform.position, arma.transform.rotation);
+    }
+
+    [PunRPC]
+    private void RpcArmaQuieta(int id, Vector3 posicion, Quaternion giro)
+    {
+        ArmaEnPiso arma = ArmaEnPiso.Buscar(id);
+        if (arma != null) arma.Asentar(posicion, giro);
+    }
+
+    // CA10: para levantar un arma se le pide al dueño de la sala; si dos la piden a la vez, se la da al primero.
+    private void AlPedirArma(int id)
+    {
+        photonView.RPC(nameof(RpcPedirArma), RpcTarget.MasterClient, id);
+    }
+
+    [PunRPC]
+    private void RpcPedirArma(int id, PhotonMessageInfo info)
+    {
+        if (!PhotonNetwork.IsMasterClient || ArmaEnPiso.Buscar(id) == null || info.Sender == null) return;
+        // A todos, también acá mismo y en el momento: si llega otro pedido, el arma ya no está.
+        photonView.RPC(nameof(RpcArmaLevantada), RpcTarget.All, id, info.Sender.ActorNumber);
+    }
+
+    [PunRPC]
+    private void RpcArmaLevantada(int id, int actor)
+    {
+        ArmaEnPiso arma = ArmaEnPiso.Buscar(id);
+        if (arma == null) return;
+        if (actor == PhotonNetwork.LocalPlayer.ActorNumber && SoltarArmas.Local != null)
+        {
+            SoltarArmas.Local.Levantar(arma); // va a su espacio con sus balas, y suena
+            return;
+        }
+        ArmaEnPiso.Sonar(ConfigRed.Actual != null ? ConfigRed.Actual.sonidoLevantarArma : null, arma.Centro, ArmaEnPiso.Grupo);
+        ArmaEnPiso.Quitar(id);
     }
 
     // US 029: el daño que le hicieron a la copia de este jugador en otra computadora. arma: con qué, si no fue el
@@ -321,7 +398,8 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
         {
             byte arma = ArmaActual;
             ShopItem ficha = null;
-            if (photonView != null && photonView.IsMine)
+            if (arma >= PrimeraGranada) ficha = FichaDe((byte)(arma - PrimeraGranada));
+            else if (photonView != null && photonView.IsMine)
             {
                 // Dueño: los scripts de armas siguen estando.
                 if (arma == ArmaPistola && pistola != null)
@@ -364,6 +442,7 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
 
     private string NombreDeArma(byte arma)
     {
+        if (arma >= PrimeraGranada) return ModeloReal.NombreDe(FichaDe((byte)(arma - PrimeraGranada)));
         if (arma == ArmaCuchillo) return "Cuchillo";
         if (arma == ArmaPistola) return "Pistola";
         if (EsSecundaria(arma))
@@ -391,6 +470,10 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
         for (int i = 0; i < secundarias.Count; i++)
             if (secundarias[i] != null && secundarias[i].activeSelf) return (byte)(PrimeraSecundaria + i);
         if (cuchillo != null && cuchillo.CurrentViewModel != null && cuchillo.CurrentViewModel.activeSelf) return ArmaCuchillo;
+        // US 182: la granada que tiene en la mano, por su lugar en la tienda.
+        ShopItem granada = cambioLocal != null && cambioLocal.Granadas != null ? cambioLocal.Granadas.Selected : null;
+        int indice = granada != null && catalogo != null ? catalogo.items.IndexOf(granada) : -1;
+        if (indice >= 0 && PrimeraGranada + indice <= byte.MaxValue) return (byte)(PrimeraGranada + indice);
         return SinArma;
     }
 
@@ -447,6 +530,7 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
         Quitar<MeleeAttack>(go);
         Quitar<PlayerAbility>(go);
         Quitar<GrenadeThrower>(go); // la copia no tira granadas: las que tiró su dueño llegan por RpcGranada (US 073)
+        Quitar<SoltarArmas>(go);    // ni suelta armas: las que soltó su dueño llegan por RpcArmaSoltada (US 184)
         PlayerLoadout carga = go.GetComponentInChildren<PlayerLoadout>(true);
         jugador.catalogo = carga != null ? carga.Catalog : null; // para saber qué granada tiró
         Quitar<PlayerLoadout>(go); // antes que la billetera, que la necesita
@@ -474,6 +558,15 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
         jugador.vida = go.GetComponent<HealthSystem>();
         jugador.cuchillo = go.GetComponent<MeleeWeaponHolder>();
         jugador.colisiones = go.GetComponentsInChildren<Collider>(true);
+
+        // US 182: cada arma a tamaño real para la mano derecha; las de primera persona no se ven (CA4).
+        for (int i = 0; i < jugador.principales.Count; i++)
+            jugador.ArmarEnMano((byte)(PrimeraPrincipal + i), jugador.principales[i],
+                i < jugador.fichasPrincipales.Count ? jugador.fichasPrincipales[i] : null, ModeloReal.LargoSinFicha);
+        jugador.ArmarEnMano(ArmaPistola, jugador.pistola, jugador.fichaPistola, ModeloReal.LargoSinFicha);
+        for (int i = 0; i < jugador.secundarias.Count; i++)
+            jugador.ArmarEnMano((byte)(PrimeraSecundaria + i), jugador.secundarias[i],
+                i < jugador.fichasSecundarias.Count ? jugador.fichasSecundarias[i] : null, ModeloReal.LargoSinFicha);
 
         var vista = go.AddComponent<PhotonView>();
         vista.ObservedComponents = new List<Component> { jugador };
@@ -568,24 +661,74 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
         MostrarArma(muerto ? SinArma : armaRed);
     }
 
+    // US 182, CA1 y CA2: en la mano se ve el arma a tamaño real que tiene el jugador (o ninguna).
     private void MostrarArma(byte arma)
     {
-        // El cuchillo lo arma MeleeWeaponHolder en su Start: cuando aparece, se pasa a la capa del mundo.
+        // El cuchillo lo arma MeleeWeaponHolder en su Start: cuando aparece, se arma su modelo para la mano.
         GameObject modeloCuchillo = cuchillo != null ? cuchillo.CurrentViewModel : null;
         if (modeloCuchillo != cuchilloListo)
         {
             cuchilloListo = modeloCuchillo;
-            PonerCapa(modeloCuchillo, 0);
+            if (modeloCuchillo != null)
+            {
+                ArmarEnMano(ArmaCuchillo, modeloCuchillo, null, LargoCuchillo);
+                modeloCuchillo.SetActive(false); // CA4: no se ve el de primera persona
+            }
             armaVista = 255;
+        }
+        // La granada se arma la primera vez que la saca, con el prefab de su ficha.
+        if (arma >= PrimeraGranada && !enLaMano.ContainsKey(arma))
+        {
+            ShopItem granada = FichaDe((byte)(arma - PrimeraGranada));
+            if (granada != null && granada.grenadePrefab != null) ArmarEnMano(arma, granada.grenadePrefab, null, LargoGranada);
         }
         if (arma == armaVista) return;
         armaVista = arma;
-        for (int i = 0; i < principales.Count; i++)
-            if (principales[i] != null) principales[i].SetActive(arma == PrimeraPrincipal + i);
-        if (pistola != null) pistola.SetActive(arma == ArmaPistola);
-        for (int i = 0; i < secundarias.Count; i++)
-            if (secundarias[i] != null) secundarias[i].SetActive(arma == PrimeraSecundaria + i);
-        if (modeloCuchillo != null) modeloCuchillo.SetActive(arma == ArmaCuchillo);
+        foreach (KeyValuePair<byte, ModeloEnMano> modelo in enLaMano)
+            if (modelo.Value.go != null) modelo.Value.go.SetActive(modelo.Key == arma);
+    }
+
+    private const float LargoCuchillo = 0.3f, LargoGranada = 0.12f;
+
+    // Arma a tamaño real para la mano derecha (US 182). La de primera persona queda apagada (CA4).
+    private void ArmarEnMano(byte codigo, GameObject arma, ShopItem ficha, float largoSinFicha)
+    {
+        if (arma == null) return;
+        if (enLaMano.TryGetValue(codigo, out ModeloEnMano viejo) && viejo.go != null) Destroy(viejo.go);
+        float largo = ficha != null && ficha.realLength > 0f ? ficha.realLength : largoSinFicha;
+        GameObject modelo = ModeloReal.Crear(arma, largo, out Bounds limites, arma.name + " (en la mano)");
+        modelo.transform.SetParent(SoporteMano(), false);
+        // La mano agarra la empuñadura: el centro del arma queda un poco más arriba y más adelante.
+        modelo.transform.localPosition = new Vector3(0f, limites.extents.y * 0.5f, limites.extents.z * 0.45f);
+        modelo.SetActive(false);
+        enLaMano[codigo] = new ModeloEnMano { go = modelo, limites = limites };
+        if (arma.scene.IsValid()) arma.SetActive(false); // el prefab de la granada no se toca
+        armaVista = 255;
+    }
+
+    // Sigue a la mano derecha del personaje y apunta hacia donde mira el jugador (LateUpdate).
+    private Transform SoporteMano()
+    {
+        if (soporteMano != null) return soporteMano;
+        soporteMano = new GameObject("Arma en la mano").transform;
+        soporteMano.SetParent(transform, false);
+        return soporteMano;
+    }
+
+    private void LateUpdate()
+    {
+        if (soporteMano == null || photonView == null || photonView.IsMine) return;
+        // El hueso se busca ya con la copia prendida (con el personaje apagado, el Animator no lo da).
+        if (manoDerecha == null && animador != null && animador.isHuman) manoDerecha = animador.GetBoneTransform(HumanBodyBones.RightHand);
+        if (manoDerecha != null) soporteMano.position = manoDerecha.position;
+        if (camara != null) soporteMano.rotation = camara.rotation;
+    }
+
+    // CA5: la boca del caño del arma que tiene en la mano; si no tiene ninguna, "siNo".
+    private Vector3 Boca(byte arma, Vector3 siNo)
+    {
+        if (!enLaMano.TryGetValue(arma, out ModeloEnMano modelo) || modelo.go == null) return siNo;
+        return modelo.go.transform.TransformPoint(new Vector3(0f, 0f, modelo.limites.max.z));
     }
 
     // US 028: el disparo se ve y se escucha desde el arma de la copia, con la trazadora hasta donde pegó y la
@@ -604,8 +747,7 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
             : esSecundaria && secundaria < sonidosSecundarias.Count ? sonidosSecundarias[secundaria] : sonidoPistola;
         if (clip != null && sonido != null) sonido.PlayOneShot(clip);
 
-        GameObject enMano = esPrincipal ? principales[principal] : esSecundaria ? secundarias[secundaria] : pistola;
-        Vector3 boca = enMano != null ? enMano.transform.position : origen;
+        Vector3 boca = Boca(arma, origen); // US 182, CA5: del caño del arma en la mano
         for (int i = 0; i + 2 < direcciones.Length; i += 3)
         {
             Vector3 direccion = new Vector3(direcciones[i], direcciones[i + 1], direcciones[i + 2]);
@@ -621,7 +763,7 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
         armaRed = ArmaCuchillo;
         MostrarArma(ArmaCuchillo);
         if (sonidoCuchillo != null && sonido != null) sonido.PlayOneShot(sonidoCuchillo);
-        if (cuchilloListo != null) StartCoroutine(Estocada(cuchilloListo.transform));
+        if (enLaMano.TryGetValue(ArmaCuchillo, out ModeloEnMano hoja) && hoja.go != null) StartCoroutine(Estocada(hoja.go.transform));
     }
 
     // US 073: la granada que tiró este jugador en su computadora. Acá se ve una de muestra que vuela igual y suena,

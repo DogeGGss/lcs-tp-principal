@@ -31,6 +31,7 @@ MonoBehaviour:
   reloadTime: 0.5
   reloadPerShell: 1
   mobility: 0.95
+  realLength: 1
   zoom: 0
   zoom2: 0
   pellets: 12
@@ -59,6 +60,13 @@ MonoBehaviour:
   recoilSwayShots: 4
   recoilRecovery: 0.3
   recoilPunch: 3
+  recoilPoints: []
+  recoilLateClimb: 0
+  recoilDrift: 0
+  recoilSwayBlocks: 0
+  recoilSwayGrowth: 0
+  recoilSwayBias: 0
+  recoilVariation: 0
   shieldPoints: 0
   grenadeType: 0
   maxCarry: 1
@@ -67,3 +75,4 @@ MonoBehaviour:
   effectDuration: 0
   recovery: 0
   shortEffect: 
+  grenadePrefab: {fileID: 0}
