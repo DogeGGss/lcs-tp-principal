@@ -359,3 +359,7 @@ fecha_utc,us_numero,us_titulo,estado_anterior,estado_nuevo,tiempo_en_estado_ante
 2026-10-01T21:18:52.794772+00:00,282,US 180. Nota para el PO,TESTING,R2D,4h 44m,17050,https://github.com/DogeGGss/lcs-tp-principal/issues/282
 2026-10-01T21:18:52.794772+00:00,44,US 025. Sincronizar movimiento,LPR,R2D,2d 13h 55m,222942,https://github.com/DogeGGss/lcs-tp-principal/issues/44
 2026-10-01T21:18:52.794772+00:00,75,US 027. Crear sala,LPR,R2D,2d 13h 55m,222942,https://github.com/DogeGGss/lcs-tp-principal/issues/75
+2026-10-02T00:55:43.240371+00:00,190,US 130. Portar y soltar el dispositivo,Blocked,Todo,6d 2h 39m,527954,https://github.com/DogeGGss/lcs-tp-principal/issues/190
+2026-10-02T00:55:43.240371+00:00,193,US 133. Espectar al morir,In Progress,LPR,3h 36m,13010,https://github.com/DogeGGss/lcs-tp-principal/issues/193
+2026-10-02T00:55:43.240371+00:00,196,US 136. Iniciar partida Deathmatch,Blocked,Todo,6d 2h 39m,527954,https://github.com/DogeGGss/lcs-tp-principal/issues/196
+2026-10-02T00:55:43.240371+00:00,218,US 156. Pájaros en la fase de compra,Blocked,Todo,6d 14m,519279,https://github.com/DogeGGss/lcs-tp-principal/issues/218
