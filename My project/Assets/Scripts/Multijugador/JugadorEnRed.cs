@@ -795,11 +795,12 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
         if (clip != null && sonido != null) sonido.PlayOneShot(clip);
 
         Vector3 boca = Boca(arma, origen); // US 182, CA5: del caño del arma en la mano
+        global::Trazadora.Fogonazo(boca);
         for (int i = 0; i + 2 < direcciones.Length; i += 3)
         {
             Vector3 direccion = new Vector3(direcciones[i], direcciones[i + 1], direcciones[i + 2]);
             Vector3 fin = WeaponFire.Replay(origen, direccion, AlcanceTrazadora, transform);
-            Trazadora(boca, fin);
+            global::Trazadora.Mostrar(boca, fin);
         }
     }
 
@@ -857,23 +858,6 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
             yield return null;
         }
         if (hoja != null) hoja.localPosition = inicio;
-    }
-
-    private void Trazadora(Vector3 desde, Vector3 hasta)
-    {
-        Material material = ConfigRed.Actual != null ? ConfigRed.Actual.trazadora : null;
-        if (material == null) return;
-        var go = new GameObject("Trazadora");
-        var linea = go.AddComponent<LineRenderer>();
-        linea.sharedMaterial = material;
-        linea.positionCount = 2;
-        linea.SetPosition(0, desde);
-        linea.SetPosition(1, hasta);
-        linea.startWidth = 0.025f;
-        linea.endWidth = 0.01f;
-        linea.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
-        linea.receiveShadows = false;
-        Destroy(go, 0.05f);
     }
 
     // US 030, CA1 y CA2: el cuerpo cae y ya no recibe disparos.
