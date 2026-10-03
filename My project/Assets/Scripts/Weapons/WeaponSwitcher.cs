@@ -12,6 +12,12 @@ public class WeaponSwitcher : MonoBehaviour
     public GameObject[] otrasSecundarias = new GameObject[0];
     public MeleeWeaponHolder meleeScript; // Slot 3: Cuchillo
     public GameObject grenadeObj;       // Slot 4: Granada
+    // Slot 5: el dispositivo del Modo Táctico (US 130). Lo crea y lo pone DispositivoTactico; se saca con la
+    // tecla 5 solo mientras LlevaDispositivo.
+    [System.NonSerialized] public GameObject dispositivoObj;
+    [System.NonSerialized] public bool LlevaDispositivo;
+    // Mientras planta o desactiva (US 131 y US 132) no se cambia de arma.
+    [System.NonSerialized] public bool Ocupado;
 
     private bool setupInicialListo = false;
 
@@ -26,6 +32,9 @@ public class WeaponSwitcher : MonoBehaviour
 
     // Indica si actualmente está equipada la granada
     public bool GrenadeEquipped { get; private set; }
+
+    // El dispositivo está en la mano (US 130).
+    public bool DispositivoEquipado => dispositivoObj != null && dispositivoObj.activeSelf;
 
     // Las granadas del jugador (cuál tiene en la mano): el HUD la muestra (US 073).
     public GrenadeThrower Granadas => granadas;
@@ -218,6 +227,8 @@ public class WeaponSwitcher : MonoBehaviour
             setupInicialListo = true;
         }
 
+        if (Ocupado) return;
+
         // Tecla 1: arma principal, solo si tiene una
         if (KeyBindings.Down(GameAction.ArmaPrincipal) && PrimaryObj != null)
         {
@@ -241,11 +252,51 @@ public class WeaponSwitcher : MonoBehaviour
         {
             EquipGrenade();
         }
+
+        // Tecla 5: el dispositivo, solo si lo lleva (US 130)
+        if (KeyBindings.Down(GameAction.Dispositivo) && LlevaDispositivo && dispositivoObj != null)
+        {
+            SacarDispositivo();
+        }
+    }
+
+    // US 130: el dispositivo en la mano (con la tecla 5, o al plantar, US 131).
+    public void SacarDispositivo()
+    {
+        if (dispositivoObj == null) return;
+        GuardarGranada();
+        GuardarPrincipales(null);
+        GuardarSecundarias(null);
+        if (meleeScript != null && meleeScript.CurrentViewModel != null) meleeScript.CurrentViewModel.SetActive(false);
+        dispositivoObj.SetActive(true);
+        ApplySpeedMultiplier(1.0f);
+    }
+
+    // Guarda todo lo que tiene en la mano (al desactivar el dispositivo, US 132, no se dispara).
+    public void GuardarTodo()
+    {
+        GuardarGranada();
+        GuardarDispositivo();
+        GuardarPrincipales(null);
+        GuardarSecundarias(null);
+        if (meleeScript != null && meleeScript.CurrentViewModel != null) meleeScript.CurrentViewModel.SetActive(false);
+    }
+
+    // Vuelve al arma principal si la tiene; si no, a la secundaria (o al cuchillo).
+    public void VolverAlArma()
+    {
+        if (PrimaryObj != null) EquipPrimary(); else EquipPistol();
+    }
+
+    void GuardarDispositivo()
+    {
+        if (dispositivoObj != null) dispositivoObj.SetActive(false);
     }
 
     void EquipPrimary()
     {
         GuardarGranada();
+        GuardarDispositivo();
 
         GameObject principal = PrimaryObj;
         GuardarPrincipales(principal);
@@ -267,6 +318,7 @@ public class WeaponSwitcher : MonoBehaviour
         if (secundaria == null && meleeScript != null) { EquipKnife(); return; }
 
         GuardarGranada();
+        GuardarDispositivo();
 
         GuardarPrincipales(null);
         GuardarSecundarias(secundaria);
@@ -283,6 +335,7 @@ public class WeaponSwitcher : MonoBehaviour
     void EquipKnife()
     {
         GuardarGranada();
+        GuardarDispositivo();
 
         GuardarPrincipales(null);
         GuardarSecundarias(null);
@@ -312,6 +365,7 @@ public class WeaponSwitcher : MonoBehaviour
 
     void EquipGrenade()
     {
+        GuardarDispositivo();
         GuardarPrincipales(null);
         GuardarSecundarias(null);
 
