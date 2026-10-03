@@ -382,3 +382,5 @@ fecha_utc,us_numero,us_titulo,estado_anterior,estado_nuevo,tiempo_en_estado_ante
 2026-10-03T01:22:43.917000+00:00,190,US 130. Portar y soltar el dispositivo,Todo,LPR,1d 27m,88020,https://github.com/DogeGGss/lcs-tp-principal/issues/190
 2026-10-03T01:22:43.917000+00:00,191,US 131. Plantar el dispositivo,Blocked,LPR,7d 3h 6m,615975,https://github.com/DogeGGss/lcs-tp-principal/issues/191
 2026-10-03T01:22:43.917000+00:00,192,US 132. Desactivar el dispositivo,Blocked,LPR,7d 3h 6m,615975,https://github.com/DogeGGss/lcs-tp-principal/issues/192
+2026-10-03T06:45:39.546380+00:00,279,US 177. Diseño visual de la selección de modo,TESTING,R2D,5h 22m,19375,https://github.com/DogeGGss/lcs-tp-principal/issues/279
+2026-10-03T06:45:39.546380+00:00,117,US 074. ARROJABLE 2 - Granada de humo,In Progress,LPR,3d 23h 22m,343349,https://github.com/DogeGGss/lcs-tp-principal/issues/117
