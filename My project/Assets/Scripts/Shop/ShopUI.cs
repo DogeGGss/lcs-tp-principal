@@ -1,5 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
+using Photon.Pun;
+using Photon.Realtime;
 using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -74,6 +76,11 @@ public class ShopUI : MonoBehaviour
     private const float Pad = 22f, ContentW = 516f;
     private const float ButtonY = 668f, ButtonH = 66f;
     private const float FxScale = 492f / 500f; // los gráficos de la maqueta son SVG de 500 px de ancho
+    private const float TeamX = 1540f, TeamW = 324f, TeamRowH = 106f; // compañeros (US 175, CA13)
+
+    // Lo que cada jugador publica de su equipamiento para que lo vean sus compañeros en la tienda (US 175, CA13).
+    // La plata ya la publica el marcador (MarcadorTactico).
+    private const string PropPlata = "plata", PropPrincipal = "eq.pri", PropEscudo = "eq.esc", PropGastado = "eq.gasto";
 
     private class Row
     {
@@ -124,7 +131,13 @@ public class ShopUI : MonoBehaviour
     private RectTransform[] loadoutCells;
     private float[] loadoutWidths;
 
-    private Coroutine toastRoutine, shakeRoutine, openRoutine, catsRoutine, listRoutine, detailRoutine;
+    // Compañeros (US 175, CA13)
+    private RectTransform teamPanel, teamRowsRoot;
+    private UnityEngine.UI.RectMask2D teamMask;
+    private TextMeshProUGUI teamTotal;
+    private string teamState, publishedState;
+
+    private Coroutine toastRoutine, shakeRoutine, openRoutine, catsRoutine, listRoutine, detailRoutine, teamRoutine;
 
     private void Awake()
     {
@@ -181,6 +194,7 @@ public class ShopUI : MonoBehaviour
         if (KeyBindings.Down(GameAction.Tienda)) SetOpen(!open);
         else if (open) HandleKeys();
         UpdateLive();
+        PublishLoadout();
     }
 
     // ---------- Jugador y controles ----------
@@ -221,6 +235,7 @@ public class ShopUI : MonoBehaviour
             if (openRoutine != null) StopCoroutine(openRoutine);
             openRoutine = StartCoroutine(OpenAnimation());
             Reveal(ref catsRoutine, catsMask, true, 0.16f);
+            if (teamPanel.gameObject.activeSelf) Reveal(ref teamRoutine, teamMask, true, 0.16f);
             Play(openSound);
         }
         else
@@ -470,6 +485,8 @@ public class ShopUI : MonoBehaviour
             // US 066: el inventario de abajo sigue lo que pasa (arma en la mano, balas, escudo) con la tienda abierta.
             string state = LoadoutState();
             if (state != loadoutState) RenderLoadout();
+            // US 175, CA13: lo que compran los compañeros llega por la red mientras la tienda está abierta.
+            if (TeamState() != teamState) RenderTeam();
         }
     }
 
@@ -497,6 +514,7 @@ public class ShopUI : MonoBehaviour
         RenderItems();
         RenderDetail();
         RenderLoadout();
+        RenderTeam();
     }
 
     private void RenderBar()
@@ -1170,6 +1188,144 @@ public class ShopUI : MonoBehaviour
         text.text = label;
     }
 
+    // ---------- Compañeros (US 175, CA13) ----------
+
+    // A la derecha, en el Táctico: la plata y la compra de cada uno del equipo (vos primero), para decidir juntos si
+    // es ronda de ahorro. Cada jugador publica su equipamiento (PublishLoadout); la plata la publica el marcador.
+    // En los demás modos la columna no se ve (en Zombie y Deathmatch va a mostrar la oleada y la tabla).
+    private void RenderTeam()
+    {
+        teamState = TeamState();
+        bool show = EquiposTacticos.HayEquipos;
+        teamPanel.gameObject.SetActive(show);
+        if (!show) return;
+
+        Clear(teamRowsRoot);
+        List<Player> team = Teammates();
+        int total = 0;
+        for (int i = 0; i < team.Count; i++)
+        {
+            Player player = team[i];
+            int money = MoneyOf(player);
+            total += Mathf.Max(0, money);
+            TeamRow(i, player, money);
+        }
+        teamTotal.text = Money(total);
+        float height = HeadH + team.Count * TeamRowH;
+        teamPanel.sizeDelta = new Vector2(TeamW, height);
+        teamRowsRoot.sizeDelta = new Vector2(TeamW, team.Count * TeamRowH);
+    }
+
+    private void TeamRow(int index, Player player, int money)
+    {
+        float y = index * TeamRowH;
+        bool me = player.IsLocal;
+        if (index > 0) Line(teamRowsRoot, 0f, y, TeamW);
+
+        TextMeshProUGUI who = Text(Place(Node("Nombre", teamRowsRoot), 18f, y + 12f, TeamW - 160f, 24f), displayFont, 22f,
+            me ? Ink : MatchHud.TeamColor, TextAlignmentOptions.MidlineLeft, 6f);
+        who.text = me ? $"{player.NickName} <color=#8E96A3>(vos)</color>" : player.NickName;
+        who.overflowMode = TextOverflowModes.Ellipsis;
+        TextMeshProUGUI cash = Text(Place(Node("Plata", teamRowsRoot), TeamW - 138f, y + 12f, 120f, 24f), displayFont, 22f, Ink,
+            TextAlignmentOptions.MidlineRight);
+        cash.text = money >= 0 ? Money(money) : "—";
+
+        // El arma principal (o "Sin principal") y el escudo.
+        ShopItem primary = me ? loadout.Primary : ItemAt(Read(player, PropPrincipal, -1));
+        int shield = me ? loadout.Shield : Read(player, PropEscudo, 0);
+        float x = 18f;
+        if (primary != null && primary.icon != null)
+        {
+            float w = Mathf.Min(110f, 28f * primary.icon.rect.width / Mathf.Max(1f, primary.icon.rect.height));
+            Image(Place(Node("Principal", teamRowsRoot), x, y + 45f, w, 28f), primary.icon, Ink).preserveAspect = true;
+            x += w + 8f;
+        }
+        else
+        {
+            TextMeshProUGUI none = Text(Place(Node("SinPrincipal", teamRowsRoot), x, y + 45f, 140f, 28f), displayFont, 14f, Mute,
+                TextAlignmentOptions.MidlineLeft, 10f, true);
+            none.text = primary != null ? ListName(primary) : "Sin principal";
+            x += Width(none, none.text.ToUpperInvariant()) + 10f;
+        }
+        if (shield > 0)
+        {
+            RectTransform badge = Place(Node("Escudo", teamRowsRoot), x, y + 48f, 10f, 22f);
+            Image(badge, rounded, Over(WithAlpha(ShieldColor, 0.08f), PanelBase), 4f);
+            Border(badge, 4f, Over(WithAlpha(ShieldColor, 0.5f), PanelBase));
+            TextMeshProUGUI points = Text(Stretch(Node("Puntos", badge)), monoFont, 14f, ShieldColor, TextAlignmentOptions.Midline);
+            points.fontStyle = FontStyles.Bold;
+            points.text = shield.ToString();
+            badge.sizeDelta = new Vector2(Width(points, points.text) + 12f, 22f);
+        }
+
+        // Cómo viene su compra: completa, comprando, sin comprar o ahorrando con la pistola.
+        int spent = me ? loadout.SpentThisPhase : Read(player, PropGastado, 0);
+        string state;
+        Color color;
+        if (primary != null && shield >= MaxShield()) { state = "Compra completa"; color = Ok; }
+        else if (spent > 0) { state = "Comprando"; color = Mute; }
+        else if (primary == null) { state = "Ahorra · pistola"; color = Accent; }
+        else { state = "Sin comprar"; color = Accent; }
+        TextMeshProUGUI status = Text(Place(Node("Estado", teamRowsRoot), 18f, y + 80f, TeamW - 36f, 14f), labelFont, 13f, color,
+            TextAlignmentOptions.MidlineLeft, 12f, true);
+        status.text = state;
+    }
+
+    // Vos primero y después tus compañeros, siempre en el mismo orden.
+    private static List<Player> Teammates()
+    {
+        var team = new List<Player>();
+        int mine = EquiposTacticos.Local;
+        foreach (Player player in PhotonNetwork.PlayerList)
+            if (!player.IsLocal && EquiposTacticos.DeActor(player.ActorNumber) == mine) team.Add(player);
+        team.Sort((a, b) => a.ActorNumber.CompareTo(b.ActorNumber));
+        if (PhotonNetwork.LocalPlayer != null) team.Insert(0, PhotonNetwork.LocalPlayer);
+        return team;
+    }
+
+    private int MoneyOf(Player player) => player.IsLocal ? loadout.Wallet.Money : Read(player, PropPlata, -1);
+
+    private static int Read(Player player, string key, int fallback) =>
+        player.CustomProperties.TryGetValue(key, out object value) && value is int n ? n : fallback;
+
+    private ShopItem ItemAt(int index) => catalog != null && index >= 0 && index < catalog.items.Count ? catalog.items[index] : null;
+
+    private int MaxShield()
+    {
+        int max = 0;
+        foreach (ShopItem shield in catalog.ItemsIn(ShopCategory.Shields)) max = Mathf.Max(max, shield.shieldPoints);
+        return Mathf.Max(1, max);
+    }
+
+    // Lo que hace falta redibujar: el equipo y lo que publicó cada uno.
+    private string TeamState()
+    {
+        if (!EquiposTacticos.HayEquipos || loadout == null) return "";
+        var sb = new System.Text.StringBuilder();
+        foreach (Player player in Teammates())
+            sb.Append(player.ActorNumber).Append(player.NickName).Append(':').Append(MoneyOf(player)).Append(',')
+              .Append(player.IsLocal ? catalog.items.IndexOf(loadout.Primary) : Read(player, PropPrincipal, -1)).Append(',')
+              .Append(player.IsLocal ? loadout.Shield : Read(player, PropEscudo, 0)).Append(',')
+              .Append(player.IsLocal ? loadout.SpentThisPhase : Read(player, PropGastado, 0)).Append('|');
+        return sb.ToString();
+    }
+
+    // Cada jugador publica su arma principal (su lugar en el catálogo, igual en todas las computadoras), su escudo y
+    // lo que gastó en esta fase. Solo cuando cambia.
+    private void PublishLoadout()
+    {
+        if (!PhotonNetwork.InRoom || !EquiposTacticos.HayEquipos || loadout == null || catalog == null) return;
+        int primary = loadout.Primary != null ? catalog.items.IndexOf(loadout.Primary) : -1;
+        int shield = loadout.Shield, spent = loadout.SpentThisPhase;
+        string state = $"{primary},{shield},{spent}";
+        if (state == publishedState) return;
+        publishedState = state;
+        PhotonNetwork.LocalPlayer.SetCustomProperties(new ExitGames.Client.Photon.Hashtable
+        {
+            { PropPrincipal, primary }, { PropEscudo, shield }, { PropGastado, spent }
+        });
+    }
+
     // ---------- Inventario: lo que lee del jugador (US 066) ----------
 
     private WeaponSwitcher switcher;
@@ -1427,6 +1583,7 @@ public class ShopUI : MonoBehaviour
         BuildCategoryPanel();
         BuildListPanel();
         BuildDetailPanel();
+        BuildTeamPanel();
         BuildLoadoutBar();
         BuildToast();
     }
@@ -1802,6 +1959,17 @@ public class ShopUI : MonoBehaviour
         pointer.RightClicked = () => { if (selected != null) TrySell(selected); };
 
         Border(detailPanel, 10f, LineColor);
+    }
+
+    // Compañeros (US 175, CA13): a la derecha de la ficha, como en la maqueta. El alto crece con el equipo.
+    private void BuildTeamPanel()
+    {
+        teamPanel = Panel("Companeros", TeamX, PanelTop, TeamW, HeadH, out teamMask);
+        ColumnHeader(teamPanel, TeamW, "").text = "Tu equipo";
+        teamTotal = teamPanel.Find("Ayuda").GetComponent<TextMeshProUGUI>(); // la plata de todo el equipo
+        teamRowsRoot = Place(Node("Filas", teamPanel), 0f, HeadH, TeamW, 10f);
+        Border(teamPanel, 10f, LineColor);
+        teamPanel.gameObject.SetActive(false);
     }
 
     private void BuildLoadoutBar()
