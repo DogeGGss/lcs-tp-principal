@@ -457,7 +457,11 @@ public class ControlsPanel : MonoBehaviour, OpcionesPantalla.ISeccion
         row.bg = Image(rect, rounded, rowColor, 4f, true);
         row.label = Text(Place(Node("Accion", rect), 12f, 0f, w - 120f, KeyRowH), labelFont, 17f, Ink, TextAlignmentOptions.MidlineLeft, 4f, true);
         row.label.text = KeyBindings.Name(action);
-        row.chip = Image(Place(Node("Tecla", rect), w - 104f, (KeyRowH - 28f) / 2f, 96f, 28f), rounded, ChipDim, 4f);
+        // Los nombres largos ("Correr / caminar despacio") se achican para no taparse con la tecla.
+        row.label.enableAutoSizing = true;
+        row.label.fontSizeMin = 12f;
+        row.label.fontSizeMax = 17f;
+        row.chip =Image(Place(Node("Tecla", rect), w - 104f, (KeyRowH - 28f) / 2f, 96f, 28f), rounded, ChipDim, 4f);
         row.key = Text(Stretch(Node("Texto", row.chip.rectTransform)), displayFont, 16f, Ink, TextAlignmentOptions.Center, 2f, true);
 
         ShopPointerTarget pointer = rect.gameObject.AddComponent<ShopPointerTarget>();

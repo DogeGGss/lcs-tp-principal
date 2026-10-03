@@ -57,7 +57,7 @@ public class CombatHud : MonoBehaviour
     private float hitAt = -10f;
     private HitMarkerKind hitKind;
     private AudioSource hitAudio;
-    private AudioClip hitBodyClip, hitHeadClip, hitKillClip;
+    private AudioClip hitBodyClip, hitHeadClip, hitKillClip, hitSample;
 
     // Medidas de la maqueta (px en 1920 x 1080).
     private const float BarW = 934f, BarH = 170f, BlockW = 240f, SkillW = 150f;
@@ -205,8 +205,15 @@ public class CombatHud : MonoBehaviour
     {
         hitKind = kind;
         hitAt = Time.unscaledTime;
+        if (hitAudio == null) return;
+        if (hitSample != null)
+        {
+            hitAudio.pitch = kind == HitMarkerKind.Kill ? 0.8f : kind == HitMarkerKind.Head ? 1.35f : 1f;
+            hitAudio.PlayOneShot(hitSample, kind == HitMarkerKind.Kill ? 1f : 0.8f);
+            return;
+        }
         AudioClip clip = kind == HitMarkerKind.Kill ? hitKillClip : kind == HitMarkerKind.Head ? hitHeadClip : hitBodyClip;
-        if (hitAudio != null && clip != null) hitAudio.PlayOneShot(clip);
+        if (clip != null) hitAudio.PlayOneShot(clip);
     }
 
     private void UpdateHitMarker()
@@ -253,6 +260,10 @@ public class CombatHud : MonoBehaviour
         hitAudio.spatialBlend = 0f;
         hitAudio.volume = 0.35f;
         hitAudio.outputAudioMixerGroup = sfxGroup;
+        // El sonido del marcador está en Resources/SonidosJugador: a la cabeza suena más agudo y en una baja, más grave
+        // (los tres tienen que distinguirse, US 165). Si no está, se usan los tonos de antes.
+        SonidosJugador sonidos = SonidosJugador.Actual;
+        hitSample = sonidos != null ? sonidos.marcadorImpacto : null;
         hitBodyClip = Tone("ImpactoCuerpo", 0.05f, 1900f, 0f, 60f);
         hitHeadClip = Tone("ImpactoCabeza", 0.10f, 2600f, 3900f, 28f);
         hitKillClip = Tone("ImpactoBaja", 0.16f, 900f, 2600f, 18f);
