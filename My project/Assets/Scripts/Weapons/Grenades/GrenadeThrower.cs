@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-// Granadas en la mano del jugador (US 079): elegirlas con la tecla 4 (CA1), lanzarlas con el clic izquierdo (CA2)
+// Granadas en la mano del jugador (US 079; la de humo es la US 074): elegirlas con la tecla 4 (CA1), lanzarlas con el clic izquierdo (CA2)
 // y gastarlas al lanzar (CA6). Las que tiene salen de PlayerLoadout (lo que compró en la tienda).
 // WeaponSwitcher lo agrega solo al jugador si no está: no hace falta tocar la escena.
 public class GrenadeThrower : MonoBehaviour
@@ -94,11 +94,6 @@ public class GrenadeThrower : MonoBehaviour
         if (prefab == null || prefab.GetComponent<Grenade1>() == null)
         {
             Debug.LogWarning("GrenadeThrower: la granada no tiene prefab con Grenade1 (revisá la ficha de la granada).");
-            return;
-        }
-        if (item.grenadeType == GrenadeType.Smoke)
-        {
-            Debug.Log("La granada de humo todavía no se puede lanzar (US 074).");
             return;
         }
 
