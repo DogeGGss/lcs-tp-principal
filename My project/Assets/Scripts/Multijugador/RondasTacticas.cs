@@ -369,6 +369,9 @@ public class RondasTacticas : MonoBehaviour
                 ultimoDentro = null;
                 // La ronda 1 ya arranca en la base con $ 800 y la pistola (CA1). Las siguientes, todos vuelven (CA4).
                 if (!primeraVez && ronda > 1) EmpezarRonda(ronda);
+                // US 184, CA11: la ronda nueva arranca sin armas en el piso, también las que cayeron durante el cartel
+                // de fin de ronda.
+                ArmaEnPiso.QuitarTodas();
                 BloquearArmas(true);
                 break;
 
@@ -581,7 +584,7 @@ public class RondasTacticas : MonoBehaviour
         MatchHud.Warn("No podés salir de la base durante la compra");
     }
 
-    // No se dispara ni se acuchilla durante la compra (los pájaros del minijuego son de la US 157).
+    // No se dispara, no se acuchilla ni se tiran granadas durante la compra (los pájaros del minijuego son de la US 157).
     private void BloquearArmas(bool bloquear)
     {
         if (!bloquear)
@@ -593,7 +596,8 @@ public class RondasTacticas : MonoBehaviour
         JugadorEnRed local = partida != null ? partida.Local : null;
         if (local == null || armasBloqueadas.Count > 0) return;
         foreach (Behaviour componente in local.GetComponentsInChildren<Behaviour>(true))
-            if (componente.enabled && (componente is Pistola || componente is Mitre || componente is ArmaDeFuego || componente is MeleeAttack))
+            if (componente.enabled && (componente is Pistola || componente is Mitre || componente is ArmaDeFuego || componente is MeleeAttack ||
+                                       componente is GrenadeThrower))
             {
                 componente.enabled = false;
                 armasBloqueadas.Add(componente);

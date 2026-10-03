@@ -444,6 +444,28 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
 
     private byte ArmaActual => photonView != null && photonView.IsMine ? ArmaEnMano() : armaRed;
 
+    /// <summary>US 133: lo que tiene en la mano ahora (en la copia, lo que llega por la red), para el espectador.</summary>
+    public byte ArmaVisible => muerto ? SinArma : ArmaActual;
+
+    /// <summary>US 133: avisa en la copia cada disparo de su dueño (el espectador mueve el arma).</summary>
+    public event System.Action Disparo;
+
+    /// <summary>
+    /// US 133: el modelo de primera persona de este jugador (el de esta computadora) para un arma, con el mismo código
+    /// que viaja por la red: así el espectador muestra lo que tiene en la mano el compañero que mira. null si no hay.
+    /// </summary>
+    public GameObject PrimeraPersona(byte arma)
+    {
+        if (arma == SinArma) return null;
+        if (arma >= PrimeraGranada) return cambioLocal != null ? cambioLocal.grenadeObj : null;
+        if (arma == ArmaDispositivo) return cambioLocal != null ? cambioLocal.dispositivoObj : null;
+        if (arma == ArmaCuchillo) return cuchillo != null ? cuchillo.CurrentViewModel : null;
+        if (arma == ArmaPistola) return pistola;
+        if (EsSecundaria(arma)) return secundarias[arma - PrimeraSecundaria];
+        int i = arma - PrimeraPrincipal;
+        return arma >= PrimeraPrincipal && i < principales.Count ? principales[i] : null;
+    }
+
     private string NombreDeArma(byte arma)
     {
         if (arma >= PrimeraGranada) return ModeloReal.NombreDe(FichaDe((byte)(arma - PrimeraGranada)));
@@ -763,6 +785,7 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
         if (photonView.IsMine) return;
         armaRed = arma;
         MostrarArma(arma);
+        Disparo?.Invoke();
         int principal = arma - PrimeraPrincipal;
         bool esPrincipal = principal >= 0 && principal < principales.Count;
         int secundaria = arma - PrimeraSecundaria;

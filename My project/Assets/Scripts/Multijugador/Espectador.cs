@@ -12,6 +12,9 @@ using static ShopUIKit;
 //   dispositivo está plantado, queda fija mirando el dispositivo (así se ve si explota o lo desactivan).
 // - CA6: al empezar la ronda siguiente reaparece en su base (RondasTacticas) y la cámara vuelve a la normalidad.
 // Solo se puede mirar a compañeros: nunca a los rivales ni moverse libre por el mapa.
+// Mirando a un compañero se ve en primera persona lo que tiene en la mano: una copia del arma de primera persona
+// propia que corresponde (y la mano, si BrazosEnCamara tiene la foto de los brazos con esa arma), que se sacude un
+// poco con cada disparo suyo. La dibuja la cámara de las armas, como la propia.
 // Lo agrega RondasTacticas al empezar una partida del Modo Táctico.
 public class Espectador : MonoBehaviour
 {
@@ -32,6 +35,15 @@ public class Espectador : MonoBehaviour
     private readonly List<Behaviour> apagados = new List<Behaviour>();
     private readonly List<Renderer> ocultos = new List<Renderer>();
     private readonly List<Renderer> armasOcultas = new List<Renderer>(); // el arma en la mano del que murió
+
+    // El arma en la mano del compañero que se mira, en primera persona.
+    private Camera camaraArmas;          // la cámara que dibuja las armas en la mano
+    private JugadorEnRed local;
+    private GameObject armaMirada;       // el arma de primera persona propia que corresponde a la del compañero
+    private Transform vistaArma;         // su copia, hija de la cámara
+    private readonly Dictionary<GameObject, Transform> vistas = new Dictionary<GameObject, Transform>();
+    private float sacudon;
+    private const float SacudonAtras = 0.035f, SacudonArriba = 3f, SacudonVuelta = 8f;
 
     // Cartel de abajo con el nombre del compañero.
     private GameObject cartel;
@@ -79,6 +91,7 @@ public class Espectador : MonoBehaviour
         {
             Transform ojos = mirando.Ojos;
             camara.transform.SetPositionAndRotation(ojos.position, ojos.rotation);
+            VerArmaDelCompanero();
         }
         else if (viendoDispositivo)
             camara.transform.SetPositionAndRotation(dispositivoPos, dispositivoRot); // CA5, con dispositivo plantado
@@ -133,9 +146,11 @@ public class Espectador : MonoBehaviour
         }
 
         // CA1: ni mirar alrededor (el movimiento y las armas ya los traba JugadorEnRed al morir).
+        this.local = local;
         foreach (Behaviour c in local.GetComponentsInChildren<Behaviour>(true))
         {
             bool camaraDeArmas = c is Camera cam && cam != camara; // la que dibuja el arma en la mano
+            if (camaraDeArmas) camaraArmas = (Camera)c;
             if (c.enabled && (c is CameraLook || c is PlayerMovement || c is WeaponSwitcher || camaraDeArmas))
             {
                 c.enabled = false;
@@ -165,12 +180,74 @@ public class Espectador : MonoBehaviour
             camara.transform.localPosition = camaraPos;
             camara.transform.localRotation = camaraRot;
         }
+        foreach (Transform vista in vistas.Values) if (vista != null) Destroy(vista.gameObject);
+        vistas.Clear();
+        vistaArma = null;
+        armaMirada = null;
         foreach (Behaviour c in apagados) if (c != null) c.enabled = true;
         apagados.Clear();
         foreach (Renderer r in armasOcultas) if (r != null) r.enabled = true;
         armasOcultas.Clear();
         if (cartel != null) cartel.SetActive(false);
     }
+
+    // =====================================================================
+    // El arma en la mano del compañero
+    // =====================================================================
+
+    // Muestra la copia del arma que tiene en la mano el compañero que se mira (la cambia si cambió de arma).
+    private void VerArmaDelCompanero()
+    {
+        GameObject arma = local != null ? local.PrimeraPersona(mirando.ArmaVisible) : null;
+        if (arma != armaMirada)
+        {
+            armaMirada = arma;
+            if (vistaArma != null) vistaArma.gameObject.SetActive(false);
+            vistaArma = arma != null ? VistaDe(arma) : null;
+            if (vistaArma != null) vistaArma.gameObject.SetActive(true);
+            sacudon = 0f;
+        }
+        if (camaraArmas != null) camaraArmas.enabled = vistaArma != null;
+        if (vistaArma == null) return;
+
+        sacudon = Mathf.MoveTowards(sacudon, 0f, SacudonVuelta * Time.deltaTime);
+        vistaArma.localPosition = new Vector3(0f, 0f, -SacudonAtras * sacudon);
+        vistaArma.localRotation = Quaternion.Euler(-SacudonArriba * sacudon, 0f, 0f);
+    }
+
+    // La copia (en primera persona) de un arma propia, con la mano si hay foto de los brazos con esa arma.
+    private Transform VistaDe(GameObject arma)
+    {
+        if (vistas.TryGetValue(arma, out Transform vista) && vista != null) return vista;
+        // También las partes que se ocultaron al morir (el arma que tenía en la mano).
+        System.Func<Renderer, bool> visible = r => r.enabled || armasOcultas.Contains(r);
+        GameObject copia = ModeloReal.CopiaEnPrimeraPersona(arma, camara.transform, visible, "Espectador: " + arma.name);
+        BrazosEnCamara brazos = local.GetComponentInChildren<BrazosEnCamara>(true);
+        MeshRenderer foto = brazos != null ? brazos.FotoDe(arma) : null;
+        if (foto != null)
+        {
+            GameObject mano = ModeloReal.CopiaEnPrimeraPersona(foto.gameObject, camara.transform, r => true, "Brazos");
+            mano.transform.SetParent(copia.transform, false);
+        }
+
+        int capa = camaraArmas != null ? CapaVisible(camaraArmas) : copia.layer;
+        foreach (Transform parte in copia.GetComponentsInChildren<Transform>(true)) parte.gameObject.layer = capa;
+        foreach (Renderer r in copia.GetComponentsInChildren<Renderer>(true)) r.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
+        copia.transform.SetParent(camara.transform, false);
+        vistas[arma] = copia.transform;
+        return copia.transform;
+    }
+
+    // La capa que dibuja la cámara de las armas (ArmaEnMano).
+    private static int CapaVisible(Camera camaraDeArmas)
+    {
+        int capa = LayerMask.NameToLayer("ArmaEnMano");
+        if (capa >= 0 && (camaraDeArmas.cullingMask & (1 << capa)) != 0) return capa;
+        for (int i = 0; i < 32; i++) if ((camaraDeArmas.cullingMask & (1 << i)) != 0) return i;
+        return 0;
+    }
+
+    private void AlDispararElCompanero() => sacudon = 1f;
 
     // =====================================================================
     // A quién mirar
@@ -202,7 +279,14 @@ public class Espectador : MonoBehaviour
         // El cuerpo del que se mira no se dibuja (si no, la cámara queda adentro de su cabeza).
         foreach (Renderer r in ocultos) if (r != null) r.enabled = true;
         ocultos.Clear();
+        if (mirando != null) mirando.Disparo -= AlDispararElCompanero;
         mirando = jugador;
+        if (mirando != null) mirando.Disparo += AlDispararElCompanero;
+        // Su arma se arma de nuevo en el próximo LateUpdate; sin nadie a quien mirar, no se ve ninguna.
+        armaMirada = null;
+        if (vistaArma != null) vistaArma.gameObject.SetActive(false);
+        vistaArma = null;
+        if (camaraArmas != null && muerto) camaraArmas.enabled = false;
         if (mirando != null)
             foreach (Renderer r in mirando.GetComponentsInChildren<Renderer>(true))
                 if (r.enabled) { r.enabled = false; ocultos.Add(r); }

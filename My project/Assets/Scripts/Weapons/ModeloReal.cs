@@ -40,32 +40,7 @@ public static class ModeloReal
         var piezas = new GameObject("Piezas").transform;
         piezas.SetParent(raiz.transform, false);
 
-        bool hayCaja = false;
-        Bounds caja = new Bounds();
-        foreach (MeshRenderer original in arma.GetComponentsInChildren<MeshRenderer>(true))
-        {
-            MeshFilter filtro = original.GetComponent<MeshFilter>();
-            if (filtro == null || filtro.sharedMesh == null || !original.enabled) continue;
-            if (original.gameObject != arma && !original.gameObject.activeSelf) continue;
-
-            Matrix4x4 m = marco.worldToLocalMatrix * original.transform.localToWorldMatrix;
-            var pieza = new GameObject(original.name).transform;
-            pieza.SetParent(piezas, false);
-            pieza.localPosition = m.GetPosition();
-            pieza.localRotation = m.rotation;
-            pieza.localScale = m.lossyScale;
-            pieza.gameObject.AddComponent<MeshFilter>().sharedMesh = filtro.sharedMesh;
-            pieza.gameObject.AddComponent<MeshRenderer>().sharedMaterials = original.sharedMaterials;
-
-            Bounds b = filtro.sharedMesh.bounds;
-            for (int i = 0; i < 8; i++)
-            {
-                Vector3 esquina = b.center + Vector3.Scale(b.extents, new Vector3((i & 1) == 0 ? -1 : 1, (i & 2) == 0 ? -1 : 1, (i & 4) == 0 ? -1 : 1));
-                Vector3 p = m.MultiplyPoint3x4(esquina);
-                if (!hayCaja) { caja = new Bounds(p, Vector3.zero); hayCaja = true; }
-                else caja.Encapsulate(p);
-            }
-        }
+        bool hayCaja = CopiarPiezas(arma, marco, piezas, r => r.enabled, false, out Bounds caja);
         if (!hayCaja) return raiz;
 
         // Del largo del modelo de primera persona al real, con el centro en el origen.
@@ -74,6 +49,67 @@ public static class ModeloReal
         piezas.localPosition = -caja.center * escala;
         limites = new Bounds(Vector3.zero, caja.size * escala);
         return raiz;
+    }
+
+    /// <summary>
+    /// US 133: copia visual del arma de primera persona tal como se ve desde "camara" (mismo lugar y tamaño), para
+    /// mostrar en el espectador lo que tiene en la mano el compañero que se mira. Sale en el espacio de esa cámara: se
+    /// pone como hija suya en (0, 0, 0). "visible" dice qué partes copiar (por ejemplo, también las que ocultó el
+    /// espectador). Las mallas con huesos se copian en la pose que tienen ahora.
+    /// </summary>
+    public static GameObject CopiaEnPrimeraPersona(GameObject arma, Transform camara, System.Func<Renderer, bool> visible, string nombre)
+    {
+        if (arma == null || camara == null) return null;
+        var raiz = new GameObject(nombre);
+        CopiarPiezas(arma, camara, raiz.transform, visible, true, out _);
+        return raiz;
+    }
+
+    // Copia las mallas de "arma" como hijas de "piezas", ubicadas en el espacio de "marco". Devuelve si copió alguna, y
+    // "caja", la caja de todas en ese espacio.
+    private static bool CopiarPiezas(GameObject arma, Transform marco, Transform piezas, System.Func<Renderer, bool> visible,
+        bool conHuesos, out Bounds caja)
+    {
+        bool hayCaja = false;
+        caja = new Bounds();
+        foreach (Renderer original in arma.GetComponentsInChildren<Renderer>(true))
+        {
+            if (!visible(original)) continue;
+            if (original.gameObject != arma && !original.gameObject.activeSelf) continue;
+
+            Mesh malla;
+            Matrix4x4 m = marco.worldToLocalMatrix * original.transform.localToWorldMatrix;
+            if (original is MeshRenderer)
+            {
+                MeshFilter filtro = original.GetComponent<MeshFilter>();
+                if (filtro == null || filtro.sharedMesh == null) continue;
+                malla = filtro.sharedMesh;
+            }
+            else if (conHuesos && original is SkinnedMeshRenderer piel && piel.sharedMesh != null)
+            {
+                malla = new Mesh { name = piel.sharedMesh.name + " (pose)" };
+                piel.BakeMesh(malla, false); // sin la escala: la pone la matriz de la pieza
+            }
+            else continue;
+
+            var pieza = new GameObject(original.name).transform;
+            pieza.SetParent(piezas, false);
+            pieza.localPosition = m.GetPosition();
+            pieza.localRotation = m.rotation;
+            pieza.localScale = m.lossyScale;
+            pieza.gameObject.AddComponent<MeshFilter>().sharedMesh = malla;
+            pieza.gameObject.AddComponent<MeshRenderer>().sharedMaterials = original.sharedMaterials;
+
+            Bounds b = malla.bounds;
+            for (int i = 0; i < 8; i++)
+            {
+                Vector3 esquina = b.center + Vector3.Scale(b.extents, new Vector3((i & 1) == 0 ? -1 : 1, (i & 2) == 0 ? -1 : 1, (i & 4) == 0 ? -1 : 1));
+                Vector3 p = m.MultiplyPoint3x4(esquina);
+                if (!hayCaja) { caja = new Bounds(p, Vector3.zero); hayCaja = true; }
+                else caja.Encapsulate(p);
+            }
+        }
+        return hayCaja;
     }
 
     // El de una ficha, con el largo que dice la ficha.
