@@ -378,3 +378,7 @@ fecha_utc,us_numero,us_titulo,estado_anterior,estado_nuevo,tiempo_en_estado_ante
 2026-10-02T22:30:38.667308+00:00,118,US 075. ARROJABLE 3 - Granada flash,Todo,LPR,9d 23h 6m,860777,https://github.com/DogeGGss/lcs-tp-principal/issues/118
 2026-10-02T22:30:38.667308+00:00,284,US 182. Arma de los demás jugadores,Todo,LPR,2d 20h 25m,246326,https://github.com/DogeGGss/lcs-tp-principal/issues/284
 2026-10-02T22:30:38.667308+00:00,287,US 184. Soltar y levantar armas,Blocked,LPR,2d 2h 27m,181663,https://github.com/DogeGGss/lcs-tp-principal/issues/287
+2026-10-03T01:22:43.917000+00:00,279,US 177. Diseño visual de la selección de modo,LPR,TESTING,2d 16h 55m,233731,https://github.com/DogeGGss/lcs-tp-principal/issues/279
+2026-10-03T01:22:43.917000+00:00,190,US 130. Portar y soltar el dispositivo,Todo,LPR,1d 27m,88020,https://github.com/DogeGGss/lcs-tp-principal/issues/190
+2026-10-03T01:22:43.917000+00:00,191,US 131. Plantar el dispositivo,Blocked,LPR,7d 3h 6m,615975,https://github.com/DogeGGss/lcs-tp-principal/issues/191
+2026-10-03T01:22:43.917000+00:00,192,US 132. Desactivar el dispositivo,Blocked,LPR,7d 3h 6m,615975,https://github.com/DogeGGss/lcs-tp-principal/issues/192
