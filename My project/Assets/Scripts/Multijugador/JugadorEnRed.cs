@@ -13,7 +13,7 @@ using UnityEngine.Audio;
 public class JugadorEnRed : MonoBehaviourPun, IPunObservable
 {
     private const float AlcanceTrazadora = 300f;
-    private const byte Agachado = 1, Corriendo = 2, Cayendo = 4, Invulnerable = 8;
+    private const byte Agachado = 1, Corriendo = 2, Cayendo = 4, Invulnerable = 8, Despacio = 16;
     // Arma en la mano: las principales van desde PrimeraPrincipal, en el orden de WeaponSwitcher.Principales(), y las
     // demás secundarias (Línea H...) desde PrimeraSecundaria, en el orden de WeaponSwitcher.otrasSecundarias (US 072).
     private const byte SinArma = 0, ArmaPistola = 2, ArmaCuchillo = 3, PrimeraSecundaria = 4, PrimeraPrincipal = 10;
@@ -60,6 +60,7 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
     private readonly List<AudioClip> sonidosPrincipales = new List<AudioClip>();
     private readonly List<AudioClip> sonidosSecundarias = new List<AudioClip>();
     private Coroutine caida;
+    private Pasos pasos; // US 001 y US 198: sus pasos se escuchan desde donde está (salvo agachado o despacio)
 
     // US 182: el arma a tamaño real en la mano derecha, una por código de arma (las de primera persona no se ven).
     private class ModeloEnMano { public GameObject go; public Bounds limites; }
@@ -354,6 +355,7 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
             if (animador.GetBool("isFalling")) banderas |= Cayendo;
         }
         if (vida != null && vida.Invulnerable) banderas |= Invulnerable;
+        if (movimiento != null && movimiento.CaminandoDespacio) banderas |= Despacio; // US 198
         return banderas;
     }
 
@@ -608,6 +610,9 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
         sonido.rolloffMode = AudioRolloffMode.Linear;
         sonido.outputAudioMixerGroup = efectos;
 
+        pasos = gameObject.AddComponent<Pasos>();
+        pasos.ComoCopia();
+
         // US 029: el daño a esta copia se le manda al dueño, que es el que sabe su vida. Va con qué se hizo, si no fue
         // el arma en la mano (HealthSystem.DamageSource, por ejemplo la granada), para el aviso de baja.
         if (vida != null)
@@ -657,10 +662,22 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
             animador.SetBool("isCrouching", agachado);
             animador.SetBool("isSprinting", (banderasRed & Corriendo) != 0);
             animador.SetBool("isFalling", (banderasRed & Cayendo) != 0);
-            if (saltosVistos != saltosRed) { saltosVistos = saltosRed; animador.SetTrigger("Jump"); }
+            if (saltosVistos != saltosRed)
+            {
+                saltosVistos = saltosRed;
+                animador.SetTrigger("Jump");
+                if (pasos != null) pasos.Salto(); // US 003, CA6: se escucha desde donde está
+            }
             if (aterrizajesVistos != aterrizajesRed) { aterrizajesVistos = aterrizajesRed; animador.SetTrigger("Land"); }
         }
         if (vida != null) vida.Invulnerable = (banderasRed & Invulnerable) != 0;
+        if (pasos != null)
+        {
+            pasos.Agachado = agachado;
+            pasos.Despacio = (banderasRed & Despacio) != 0;
+            pasos.EnElAire = (banderasRed & Cayendo) != 0;
+            pasos.Muerto = muerto;
+        }
 
         MostrarArma(muerto ? SinArma : armaRed);
     }

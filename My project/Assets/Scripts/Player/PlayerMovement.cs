@@ -8,6 +8,8 @@ public class PlayerMovement : MonoBehaviour
     public float speed = 5f;
     public float sprintSpeed = 8f;
     public float crounchSpeed = 2.5f;
+    [Tooltip("En el Táctico, Shift no corre: camina despacio a esta velocidad y sin ruido (US 198).")]
+    public float slowWalkSpeed = 3f;
     public float gravity = -9.8f;
     public float jumpForce = 5f;
 
@@ -24,6 +26,10 @@ public class PlayerMovement : MonoBehaviour
 
     // Para el multijugador (US 025): los demás repiten el salto y el aterrizaje en su copia de este jugador.
     public event System.Action Jumped, Landed;
+
+    // Para los pasos (Pasos): agachado o caminando despacio no suenan (US 198).
+    public bool Agachado { get; private set; }
+    public bool CaminandoDespacio { get; private set; }
 
     private float verticalVelocity;
 
@@ -53,6 +59,9 @@ public class PlayerMovement : MonoBehaviour
 
         controller.height = standingHeight;
         controller.center = standingCenter;
+
+        // Los pasos se agregan solos (US 001 y US 002): no hace falta tocar el prefab.
+        if (GetComponent<Pasos>() == null) gameObject.AddComponent<Pasos>();
     }
 
 
@@ -83,6 +92,7 @@ public class PlayerMovement : MonoBehaviour
 
         bool isCrounching = KeyBindings.Held(GameAction.Agacharse);
         animator.SetBool("isCrouching", isCrounching);
+        Agachado = isCrounching;
 
         if (isCrounching)
         {
@@ -114,6 +124,7 @@ public class PlayerMovement : MonoBehaviour
         float currentSpeed = speed;
 
         bool isSprinting = false;
+        bool despacio = false;
 
         if (isCrounching)
         {
@@ -121,8 +132,26 @@ public class PlayerMovement : MonoBehaviour
         }
         else if (KeyBindings.Held(GameAction.Correr))
         {
-            currentSpeed = sprintSpeed;
-            isSprinting = true;
+            // US 198: en el Táctico no se corre; Shift camina despacio y sin ruido.
+            if (MatchSettings.Mode == GameMode.Tactico)
+            {
+                currentSpeed = slowWalkSpeed;
+                despacio = true;
+            }
+            else
+            {
+                currentSpeed = sprintSpeed;
+                isSprinting = true;
+            }
+        }
+        CaminandoDespacio = despacio;
+
+        // Caminando despacio, la animación de caminar va más lenta (los demás la ven igual: VelX y VelZ viajan por la red).
+        if (despacio)
+        {
+            float lento = slowWalkSpeed / Mathf.Max(0.01f, speed);
+            animator.SetFloat("VelX", x * lento);
+            animator.SetFloat("VelZ", z * lento);
         }
 
         currentSpeed *= speedMultiplier;

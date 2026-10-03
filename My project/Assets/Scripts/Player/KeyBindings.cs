@@ -52,7 +52,7 @@ public static class KeyBindings
         { GameAction.Derecha, "Derecha" },
         { GameAction.Saltar, "Saltar" },
         { GameAction.Agacharse, "Agacharse" },
-        { GameAction.Correr, "Correr" },
+        { GameAction.Correr, "Correr / caminar despacio" }, // US 198: en el Táctico, caminar despacio
         { GameAction.Disparar, "Disparar" },
         { GameAction.Apuntar, "Apuntar" },
         { GameAction.Recargar, "Recargar" },
