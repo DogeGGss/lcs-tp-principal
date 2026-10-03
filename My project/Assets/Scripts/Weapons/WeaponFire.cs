@@ -43,11 +43,16 @@ public static class WeaponFire
         bool anyHit = false, head = false, kill = false;
         int pellets = Mathf.Max(1, weapon.pellets);
         Vector3[] directions = new Vector3[pellets];
+        // La bala se ve: fogonazo en la boca del arma y una estela por perdigón hasta donde pegó.
+        Vector3 muzzle = Trazadora.BocaLocal(camera);
+        Trazadora.Fogonazo(muzzle);
         for (int i = 0; i < pellets; i++)
         {
             Vector3 direction = view * Deviation(spread) * Vector3.forward;
             directions[i] = direction;
-            if (!Trace(camera.transform.position, direction, range, shooter, out RaycastHit hit, out HealthSystem target, out BodyZone zone))
+            bool touched = Trace(camera.transform.position, direction, range, shooter, out RaycastHit hit, out HealthSystem target, out BodyZone zone);
+            Trazadora.Mostrar(muzzle, touched ? hit.point : camera.transform.position + direction * Mathf.Min(range, 300f));
+            if (!touched)
                 continue;
 
             if (target == null)
