@@ -10,7 +10,7 @@ using UnityEngine.Rendering;
 // El contorno son dos copias de la malla del personaje que se mueven con sus mismos huesos, con el shader
 // Efectos/ContornoRival (material ContornoRival): una máscara que marca lo que se ve del personaje y, después, el
 // contorno, un poco más grande, que se dibuja solo fuera de esa marca. Así queda solo la silueta. No se ve a través
-// de las paredes.
+// de las paredes, ni a través del humo de una granada (US 074).
 public class ContornoRival : MonoBehaviour
 {
     private static Material mascara;
@@ -109,8 +109,22 @@ public class ContornoRival : MonoBehaviour
             enabled = false;
             return;
         }
-        Mostrar(esRival());
+        Mostrar(esRival() && !TapadoPorHumo());
     }
+
+    // US 074 (CA4): el contorno se dibuja encima del humo, así que si hay una nube entre la cámara y el pecho del
+    // personaje no se muestra (si no, se lo vería a través del humo).
+    private bool TapadoPorHumo()
+    {
+        Camera cam = Camera.main;
+        if (cam == null) return false;
+        if (cuerpo == null) cuerpo = GetComponent<Collider>(); // el CharacterController del jugador
+        Vector3 pecho = cuerpo != null ? cuerpo.bounds.center + Vector3.up * cuerpo.bounds.extents.y * 0.3f
+                                       : transform.position + Vector3.up;
+        return HumoGranada.TapaVista(cam.transform.position, pecho);
+    }
+
+    private Collider cuerpo;
 
     private Renderer[] BuscarPartes()
     {

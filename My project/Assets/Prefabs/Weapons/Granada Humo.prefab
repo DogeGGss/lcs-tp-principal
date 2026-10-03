@@ -1,0 +1,35 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1001 &6120458913074455217
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 715020718664439521, guid: 914c6fac9d24630438f0b4b9fb58462f, type: 3}
+      propertyPath: explosionSound
+      value: 
+      objectReference: {fileID: 8300000, guid: 5e45b98d22d64b7bb5bb6a2e549b6b61, type: 3}
+    - target: {fileID: 715020718664439521, guid: 914c6fac9d24630438f0b4b9fb58462f, type: 3}
+      propertyPath: explosionEffect
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 715020718664439521, guid: 914c6fac9d24630438f0b4b9fb58462f, type: 3}
+      propertyPath: smokeMaterial
+      value: 
+      objectReference: {fileID: 2100000, guid: 34d513672558fe0478dd3a29e7f55db4, type: 2}
+    - target: {fileID: 2646557121353485019, guid: 914c6fac9d24630438f0b4b9fb58462f, type: 3}
+      propertyPath: 'm_Materials.Array.data[3]'
+      value: 
+      objectReference: {fileID: 2100000, guid: 853776ea370b410884a927decc9158da, type: 2}
+    - target: {fileID: 4592134357684169486, guid: 914c6fac9d24630438f0b4b9fb58462f, type: 3}
+      propertyPath: m_Name
+      value: Granada Humo
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 914c6fac9d24630438f0b4b9fb58462f, type: 3}
