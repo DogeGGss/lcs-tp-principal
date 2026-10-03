@@ -99,10 +99,10 @@ public class MatchHud : MonoBehaviour
     private RectTransform table;
 
     // Carteles (US 032): el grande del medio, la ayuda de arriba y el aviso rojo de abajo.
-    private RectTransform hudRoot, banner, hint, warning, prompt;
+    private RectTransform hudRoot, banner, hint, warning, prompt, action;
     private CanvasGroup bannerGroup;
-    private Img bannerFill;
-    private TextMeshProUGUI bannerFooter, hintText, warningText, promptText;
+    private Img bannerFill, actionFill;
+    private TextMeshProUGUI bannerFooter, hintText, warningText, promptText, actionText;
     private string bannerFooterFormat;
     private float bannerStart, bannerEnd, warningEnd;
     private float nextTableRefresh;
@@ -118,6 +118,9 @@ public class MatchHud : MonoBehaviour
     public TMP_FontAsset LabelFont => labelFont;
     public Sprite Rounded => rounded;
     public int DeathsOf(string name) => Count(deaths, name);
+
+    /// <summary>El lienzo del HUD (1920 x 1080 de referencia), para dibujar marcas sobre el juego (US 130).</summary>
+    public RectTransform Root => hudRoot;
 
     // =====================================================================
     // Armado (lo llama CombatHud)
@@ -170,13 +173,7 @@ public class MatchHud : MonoBehaviour
         alertIcon = Image(Place(Node("Alerta", center), CenterW / 2f - 64f, 31f, 20f, 20f), rounded, RivalColor, 10f);
         Image(Place(Node("Centro", alertIcon.rectTransform), 6f, 6f, 8f, 8f), rounded, Rgb(10, 12, 17), 4f);
 
-        // Dispositivo: una cajita roja con antena y una luz que titila.
-        RectTransform device = Place(Node("Dispositivo", center), CenterW / 2f - 72f, 27f, 28f, 28f);
-        Image(Place(Node("Antena", device), 6f, 0f, 3f, 8f), null, RivalColor);
-        Image(Place(Node("Caja", device), 0f, 7f, 28f, 20f), rounded, RivalColor, 4f);
-        Image(Place(Node("Frente", device), 2f, 9f, 24f, 16f), rounded, Rgb(30, 10, 12), 3f);
-        Image(Place(Node("Cable", device), 5f, 15f, 10f, 3f), null, WithAlpha(RivalColor, 0.6f));
-        deviceLight = Image(Place(Node("Luz", device), 17f, 13f, 7f, 7f), rounded, RivalColor, 3.5f);
+        RectTransform device = Place(DeviceGlyph(center, RivalColor, rounded, out deviceLight), CenterW / 2f - 72f, 27f, 28f, 28f);
         deviceIcon = device.gameObject;
         deviceIcon.SetActive(false);
         centerSub = Text(Place(Node("Detalle", center), 0f, 58f, CenterW, 14f), labelFont, 13f, Mute, TextAlignmentOptions.Center, 14f, true);
@@ -214,6 +211,21 @@ public class MatchHud : MonoBehaviour
         table.anchoredPosition = new Vector2(0f, 30f);
         table.sizeDelta = new Vector2(TableW, 200f);
         table.gameObject.SetActive(false);
+    }
+
+    /// <summary>
+    /// El ícono del dispositivo (28 x 28): una cajita con antena y una luz que titila. Lo usan el reloj del centro,
+    /// el espacio 5 del inventario y las marcas en pantalla (US 130). Va en (0, 0); se mueve con Place.
+    /// </summary>
+    public static RectTransform DeviceGlyph(RectTransform parent, Color color, Sprite sprite, out Img light)
+    {
+        RectTransform device = Place(Node("Dispositivo", parent), 0f, 0f, 28f, 28f);
+        Image(Place(Node("Antena", device), 6f, 0f, 3f, 8f), null, color);
+        Image(Place(Node("Caja", device), 0f, 7f, 28f, 20f), sprite, color, 4f);
+        Image(Place(Node("Frente", device), 2f, 9f, 24f, 16f), sprite, Over(WithAlpha(color, 0.12f), Rgb(14, 10, 12)), 3f);
+        Image(Place(Node("Cable", device), 5f, 15f, 10f, 3f), null, WithAlpha(color, 0.6f));
+        light = Image(Place(Node("Luz", device), 17f, 13f, 7f, 7f), sprite, color, 3.5f);
+        return device;
     }
 
     private static void AddShadowTo(TextMeshProUGUI text)
@@ -542,6 +554,17 @@ public class MatchHud : MonoBehaviour
         Instance.ShowPrompt(text);
     }
 
+    /// <summary>
+    /// US 131 y US 132: una acción que se hace manteniendo una tecla, debajo de la mira (admite &lt;color&gt;).
+    /// Con progress (0 a 1) muestra la barra que se llena, por ejemplo "Plantando el dispositivo"; sin progress, solo
+    /// el texto ("Mantené E para plantar"). null o vacío la saca.
+    /// </summary>
+    public static void SetAction(string text, float? progress = null)
+    {
+        if (Instance == null) return;
+        Instance.ShowAction(text, progress);
+    }
+
     /// <summary>Aviso rojo abajo del centro durante unos segundos (por ejemplo "No podés salir de la base").</summary>
     public static void Warn(string text, float seconds = 1.5f)
     {
@@ -658,6 +681,36 @@ public class MatchHud : MonoBehaviour
         if (promptText.text == text) return;
         promptText.text = text;
         prompt.sizeDelta = new Vector2(promptText.GetPreferredValues(text).x + 44f, 44f);
+    }
+
+    // Más abajo que el aviso de la mira: un texto y, si hay progreso, una barra naranja que se llena.
+    private void ShowAction(string text, float? progress)
+    {
+        if (string.IsNullOrEmpty(text)) { if (action != null) action.gameObject.SetActive(false); return; }
+        const float BarW = 300f;
+        if (action == null)
+        {
+            action = Node("Accion", hudRoot);
+            action.anchorMin = action.anchorMax = action.pivot = new Vector2(0.5f, 0.5f);
+            action.anchoredPosition = new Vector2(0f, -190f);
+            Image(Stretch(Node("Fondo", action)), rounded, Rgb(10, 12, 17, DarkAlpha(0.85f)), 6f);
+            actionText = Text(Place(Node("Texto", action), 0f, 0f, 10f, 44f), labelFont, 22f, Ink, TextAlignmentOptions.Center);
+            RectTransform track = Node("Barra", action);
+            track.anchorMin = track.anchorMax = track.pivot = new Vector2(0.5f, 0f);
+            track.anchoredPosition = new Vector2(0f, 12f);
+            track.sizeDelta = new Vector2(BarW, 6f);
+            Image(track, rounded, White(FadeAlpha(0.16f)), 3f);
+            actionFill = Image(Place(Node("Relleno", track), 0f, 0f, 0f, 6f), rounded, Accent, 3f);
+        }
+        action.gameObject.SetActive(true);
+        bool bar = progress.HasValue;
+        actionFill.transform.parent.gameObject.SetActive(bar);
+        if (bar) actionFill.rectTransform.sizeDelta = new Vector2(BarW * Mathf.Clamp01(progress.Value), 6f);
+        float h = bar ? 70f : 44f;
+        if (actionText.text != text) actionText.text = text;
+        float w = Mathf.Max(bar ? BarW + 44f : 0f, actionText.GetPreferredValues(text).x + 44f);
+        action.sizeDelta = new Vector2(w, h);
+        actionText.rectTransform.sizeDelta = new Vector2(w, 44f);
     }
 
     private void ShowWarning(string text, float seconds)

@@ -64,15 +64,17 @@ public class CombatHud : MonoBehaviour
     private const float RailLeftX = 256f, SkillX = 392f, RailRightX = 558f, AmmoX = 694f;
 
     // Inventario (US 055): los 4 espacios del equipo, uno arriba del otro, a la derecha de la munición.
+    // El 5, el dispositivo del Modo Táctico (US 130), va arriba de todo y solo se ve mientras lo lleva.
     private const float InvX = BarW + 24f, InvW = 170f, InvRowH = 36f, InvGap = 6f;
+    private const int DeviceSlot = 4;
     private class InvSlot
     {
         public RectTransform rect;
         public UnityEngine.UI.Image bg, icon, keyBg;
         public TextMeshProUGUI name, key, dash;
     }
-    private readonly InvSlot[] invSlots = new InvSlot[4];
-    private readonly string[] invState = new string[4];
+    private readonly InvSlot[] invSlots = new InvSlot[5];
+    private readonly string[] invState = new string[5];
     private bool sceneHasShop;
 
     /// <summary>Nombre del arma en la mano, para los avisos de bajas (US 057).</summary>
@@ -420,6 +422,13 @@ public class CombatHud : MonoBehaviour
             return;
         }
 
+        // El dispositivo en la mano (US 130): sin balas.
+        if (switcher != null && switcher.DispositivoEquipado)
+        {
+            name = "Dispositivo";
+            return;
+        }
+
         GameObject held = null;
         if (switcher != null)
         {
@@ -583,13 +592,15 @@ public class CombatHud : MonoBehaviour
 
     private void BuildInventory(RectTransform bar)
     {
-        for (int i = 0; i < 4; i++)
+        for (int i = 0; i < invSlots.Length; i++)
         {
             InvSlot slot = new InvSlot();
             // Pivote a la derecha: el espacio en la mano crece hacia la izquierda, sin salirse de la pantalla.
-            slot.rect = Place(Node("Espacio" + (i + 1), bar), InvX, 6f + i * (InvRowH + InvGap), InvW, InvRowH);
+            // El del dispositivo, arriba del espacio 1.
+            float y = 6f + (i == DeviceSlot ? -1 : i) * (InvRowH + InvGap);
+            slot.rect = Place(Node("Espacio" + (i + 1), bar), InvX, y, InvW, InvRowH);
             slot.rect.pivot = new Vector2(1f, 0.5f);
-            slot.rect.anchoredPosition = new Vector2(InvX + InvW, -(6f + i * (InvRowH + InvGap) + InvRowH / 2f));
+            slot.rect.anchoredPosition = new Vector2(InvX + InvW, -(y + InvRowH / 2f));
             slot.bg = Image(slot.rect, rounded, Rgb(10, 12, 17, DarkAlpha(0.55f)), 5f);
 
             slot.icon = Image(Place(Node("Icono", slot.rect), 8f, 6f, 52f, 24f), null, Mute);
@@ -604,6 +615,10 @@ public class CombatHud : MonoBehaviour
             slot.key = Text(Stretch(Node("Texto", keyRect)), displayFont, 13f, Mute, TextAlignmentOptions.Center);
             invSlots[i] = slot;
         }
+
+        // El dispositivo no tiene ficha en la tienda: se dibuja su ícono (el mismo del reloj del marcador), en naranja.
+        Place(MatchHud.DeviceGlyph(invSlots[DeviceSlot].rect, Accent, rounded, out _), 20f, 4f, 28f, 28f);
+        invSlots[DeviceSlot].rect.gameObject.SetActive(false);
     }
 
     private void UpdateInventory()
@@ -614,6 +629,7 @@ public class CombatHud : MonoBehaviour
         else if (switcher != null && switcher.HeldSecondary != null) held = 1;
         else if (melee != null && melee.CurrentViewModel != null && melee.CurrentViewModel.activeInHierarchy) held = 2;
         else if (HeldGrenade() != null) held = 3;
+        else if (switcher != null && switcher.DispositivoEquipado) held = DeviceSlot;
 
         // Principal (CA2, CA3): lo que compró; en escenas sin tienda el Mitre está siempre.
         ShopItem primary = loadout != null ? loadout.Primary : null;
@@ -650,6 +666,11 @@ public class CombatHud : MonoBehaviour
         SetSlot(1, hasSecondary, held == 1, secondaryName, secondary != null ? secondary.icon : null, KeyBindings.Label(GameAction.ArmaSecundaria));
         SetSlot(2, hasKnife, held == 2, knifeName, knifeIcon, KeyBindings.Label(GameAction.Cuchillo));
         SetSlot(3, grenade != null, held == 3, grenadeName, grenade != null ? grenade.icon : null, KeyBindings.Label(GameAction.Granadas));
+
+        // US 130: el dispositivo ocupa su propio espacio mientras lo lleva.
+        bool device = switcher != null && switcher.LlevaDispositivo;
+        if (invSlots[DeviceSlot].rect.gameObject.activeSelf != device) invSlots[DeviceSlot].rect.gameObject.SetActive(device);
+        if (device) SetSlot(DeviceSlot, true, held == DeviceSlot, "Dispositivo", null, KeyBindings.Label(GameAction.Dispositivo));
     }
 
     // La granada que tiene en la mano (US 073), o null.

@@ -27,8 +27,9 @@ using UnityEngine;
 // - CA5: si se termina el tiempo sin plantar, ganan los defensores.
 // - CA6: el ganador suma una ronda y se pasa al cartel de fin de ronda; con 7, termina la partida.
 // Para las otras US:
-// - US 131: RondasTacticas.Plantar(lugar) cuando se termina de plantar: el reloj pasa a los 45 s del dispositivo.
-// - US 132: RondasTacticas.Desactivar() cuando un defensor termina de desactivarlo.
+// - US 130 a US 132: el dispositivo (llevarlo, soltarlo, plantarlo y desactivarlo) es de DispositivoTactico, que
+//   llama a RondasTacticas.Plantar(lugar) cuando se termina de plantar (el reloj pasa a los 45 s del dispositivo) y a
+//   RondasTacticas.Desactivar() cuando un defensor termina de desactivarlo.
 //   Los eventos DispositivoPlantado / DispositivoExploto / DispositivoDesactivado llegan a todas las computadoras
 //   (para el modelo, los sonidos y la explosión).
 // - US 034: evento PartidaTerminada(equipo ganador). US 135: evento RondaTerminada(equipo ganador, motivo).
@@ -86,6 +87,8 @@ public class RondasTacticas : MonoBehaviour
 
     /// <summary>US 033: el dispositivo está plantado en esta ronda.</summary>
     public bool HayDispositivo => Leer(PropDispositivo, 0) == 1;
+    /// <summary>US 132: el dispositivo plantado ya se desactivó.</summary>
+    public bool EstaDesactivado => Leer(PropDesactivado, 0) == 1;
     /// <summary>Dónde se plantó el dispositivo de esta ronda.</summary>
     public Vector3 LugarDelDispositivo =>
         Sala != null && Sala.CustomProperties.TryGetValue(PropLugar, out object v) && v is Vector3 lugar ? lugar : Vector3.zero;
@@ -126,6 +129,7 @@ public class RondasTacticas : MonoBehaviour
         MarcadorTactico.TiempoDeRonda = TiempoDeCombate;
         gameObject.AddComponent<PersonajesTacticos>().Iniciar(partida); // US 016
         gameObject.AddComponent<Espectador>().Iniciar(partida);         // US 133
+        gameObject.AddComponent<DispositivoTactico>().Iniciar(partida, this); // US 130 a US 132
         ArrancarMusica();
         if (PruebaSolo.Activa)
             Debug.Log("Prueba solo (Táctico): F3 ser portador · F4 cobrar una baja · F5 morir · F6 plantar acá · F7 desactivar · F9 gana tu equipo · " +
@@ -639,11 +643,7 @@ public class RondasTacticas : MonoBehaviour
         if (fase == Fase.Terminada) return;
 
         JugadorEnRed local = partida != null ? partida.Local : null;
-        if (Input.GetKeyDown(KeyCode.F3))                                                          // US 134, CA5: ser portador
-        {
-            int yo = PhotonNetwork.LocalPlayer.ActorNumber;
-            MarcadorTactico.SetPortador(MarcadorTactico.Portador == yo ? 0 : yo);
-        }
+        if (Input.GetKeyDown(KeyCode.F3)) DispositivoTactico.CambiarPortadorDePrueba();            // US 130: llevar el dispositivo
         else if (Input.GetKeyDown(KeyCode.F4)) Cobrar(PremioBaja);                                // como si matara a un rival
         else if (Input.GetKeyDown(KeyCode.F5) && local != null) local.Eliminar();               // morir
         else if (Input.GetKeyDown(KeyCode.F6) && local != null) Plantar(local.transform.position); // plantar acá

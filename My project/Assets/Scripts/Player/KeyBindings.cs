@@ -10,7 +10,7 @@ public enum GameAction
     Saltar, Agacharse, Correr,
     Disparar, Apuntar, Recargar, Habilidad,
     ArmaPrincipal, ArmaSecundaria, Cuchillo, Granadas,
-    Tienda, Plantar, Soltar
+    Tienda, Plantar, Soltar, Dispositivo
 }
 
 // Teclas del jugador (US 155). Sigue usando el Input clásico: los scripts preguntan
@@ -41,6 +41,7 @@ public static class KeyBindings
         { GameAction.Tienda, KeyCode.B },
         { GameAction.Plantar, KeyCode.E },
         { GameAction.Soltar, KeyCode.G }, // US 184: soltar el arma en la mano (solo en Táctico)
+        { GameAction.Dispositivo, KeyCode.Alpha5 }, // US 130: sacar el dispositivo (solo el portador, en Táctico)
     };
 
     private static readonly Dictionary<GameAction, string> Names = new Dictionary<GameAction, string>
@@ -63,6 +64,7 @@ public static class KeyBindings
         { GameAction.Tienda, "Tienda" },
         { GameAction.Plantar, "Plantar / desactivar" },
         { GameAction.Soltar, "Soltar arma" },
+        { GameAction.Dispositivo, "Dispositivo" },
     };
 
     // ---------- Opciones del mouse (CA1, CA2) ----------

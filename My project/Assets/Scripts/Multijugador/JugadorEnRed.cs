@@ -17,6 +17,8 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
     // Arma en la mano: las principales van desde PrimeraPrincipal, en el orden de WeaponSwitcher.Principales(), y las
     // demás secundarias (Línea H...) desde PrimeraSecundaria, en el orden de WeaponSwitcher.otrasSecundarias (US 072).
     private const byte SinArma = 0, ArmaPistola = 2, ArmaCuchillo = 3, PrimeraSecundaria = 4, PrimeraPrincipal = 10;
+    // El dispositivo del Modo Táctico en la mano (US 130).
+    private const byte ArmaDispositivo = 1;
     // La granada en la mano (US 182): PrimeraGranada más su lugar en la tienda.
     private const byte PrimeraGranada = 200;
 
@@ -443,6 +445,7 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
     private string NombreDeArma(byte arma)
     {
         if (arma >= PrimeraGranada) return ModeloReal.NombreDe(FichaDe((byte)(arma - PrimeraGranada)));
+        if (arma == ArmaDispositivo) return "Dispositivo";
         if (arma == ArmaCuchillo) return "Cuchillo";
         if (arma == ArmaPistola) return "Pistola";
         if (EsSecundaria(arma))
@@ -469,6 +472,7 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
         if (pistola != null && pistola.activeSelf) return ArmaPistola;
         for (int i = 0; i < secundarias.Count; i++)
             if (secundarias[i] != null && secundarias[i].activeSelf) return (byte)(PrimeraSecundaria + i);
+        if (cambioLocal != null && cambioLocal.DispositivoEquipado) return ArmaDispositivo;
         if (cuchillo != null && cuchillo.CurrentViewModel != null && cuchillo.CurrentViewModel.activeSelf) return ArmaCuchillo;
         // US 182: la granada que tiene en la mano, por su lugar en la tienda.
         ShopItem granada = cambioLocal != null && cambioLocal.Granadas != null ? cambioLocal.Granadas.Selected : null;
@@ -682,13 +686,16 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
             ShopItem granada = FichaDe((byte)(arma - PrimeraGranada));
             if (granada != null && granada.grenadePrefab != null) ArmarEnMano(arma, granada.grenadePrefab, null, LargoGranada);
         }
+        // El dispositivo (US 130), también la primera vez que lo saca.
+        if (arma == ArmaDispositivo && !enLaMano.ContainsKey(arma) && ConfigRed.Actual != null && ConfigRed.Actual.modeloDispositivo != null)
+            ArmarEnMano(arma, ConfigRed.Actual.modeloDispositivo, null, LargoDispositivo);
         if (arma == armaVista) return;
         armaVista = arma;
         foreach (KeyValuePair<byte, ModeloEnMano> modelo in enLaMano)
             if (modelo.Value.go != null) modelo.Value.go.SetActive(modelo.Key == arma);
     }
 
-    private const float LargoCuchillo = 0.3f, LargoGranada = 0.12f;
+    private const float LargoCuchillo = 0.3f, LargoGranada = 0.12f, LargoDispositivo = 0.3f;
 
     // Arma a tamaño real para la mano derecha (US 182). La de primera persona queda apagada (CA4).
     private void ArmarEnMano(byte codigo, GameObject arma, ShopItem ficha, float largoSinFicha)
