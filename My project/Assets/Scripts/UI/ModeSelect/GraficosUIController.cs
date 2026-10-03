@@ -45,10 +45,11 @@ public class GraficosUIController : MonoBehaviour, OpcionesPantalla.ISeccion
     {
         public int resolucion, calidad, modo, vsync, fps;
         public float fov;
+        public bool indicador; // US 197: mostrar FPS y ping
 
         public bool IgualA(Estado o) =>
             resolucion == o.resolucion && calidad == o.calidad && modo == o.modo &&
-            vsync == o.vsync && fps == o.fps && Mathf.Approximately(fov, o.fov);
+            vsync == o.vsync && fps == o.fps && Mathf.Approximately(fov, o.fov) && indicador == o.indicador;
     }
 
     private static readonly string[] NombresModo = { "Ventana", "Sin bordes", "Completa" };
@@ -68,7 +69,8 @@ public class GraficosUIController : MonoBehaviour, OpcionesPantalla.ISeccion
 
     // Controles armados por código
     private TextMeshProUGUI textoResolucion, textoCalidad, textoFOV;
-    private OpcionesKit.Segmentos segModo, segVSync, segFPS;
+    private OpcionesKit.Segmentos segModo, segVSync, segFPS, segIndicador;
+    private static readonly string[] NombresIndicador = { "Ocultar", "Mostrar" };
     private Slider sliderFOV;
 
     // =========================================================
@@ -139,6 +141,8 @@ public class GraficosUIController : MonoBehaviour, OpcionesPantalla.ISeccion
             () => Cambiar(ref pendiente.calidad, 1, NivelesCalidad.Length));
         segVSync = kit.FilaSegmentos("VSync", ref y, NombresVSync, i => { pendiente.vsync = i == 0 ? 1 : 0; MostrarEnControles(pendiente); });
         segFPS = kit.FilaSegmentos("Límite de FPS", ref y, NombresFPS, i => { pendiente.fps = i; MostrarEnControles(pendiente); });
+        // US 197, CA1: "Mostrar FPS y ping", apagado por defecto.
+        segIndicador = kit.FilaSegmentos("FPS y ping", ref y, NombresIndicador, i => { pendiente.indicador = i == 1; MostrarEnControles(pendiente); });
         sliderFOV = kit.FilaSlider("Campo de visión", ref y, FOV_MINIMO, FOV_MAXIMO, out textoFOV);
         sliderFOV.wholeNumbers = true;
         sliderFOV.onValueChanged.AddListener(v => { pendiente.fov = v; textoFOV.text = Mathf.RoundToInt(v) + "°"; });
@@ -169,6 +173,7 @@ public class GraficosUIController : MonoBehaviour, OpcionesPantalla.ISeccion
         segModo.Marcar(e.modo);
         segVSync.Marcar(e.vsync == 1 ? 0 : 1);
         segFPS.Marcar(e.fps);
+        segIndicador.Marcar(e.indicador ? 1 : 0);
         sliderFOV.SetValueWithoutNotify(e.fov);
         textoFOV.text = Mathf.RoundToInt(e.fov) + "°";
     }
@@ -201,6 +206,7 @@ public class GraficosUIController : MonoBehaviour, OpcionesPantalla.ISeccion
         PlayerPrefs.SetInt(CLAVE_VSYNC, pendiente.vsync);
         PlayerPrefs.SetInt(CLAVE_FPS, OpcionesFPS[Mathf.Clamp(pendiente.fps, 0, OpcionesFPS.Length - 1)]);
         PlayerPrefs.SetFloat(CLAVE_FOV, pendiente.fov);
+        IndicadorRendimiento.Activo = pendiente.indicador; // US 197, CA5
         PlayerPrefs.Save();
 
         AplicarGuardado();
@@ -242,7 +248,8 @@ public class GraficosUIController : MonoBehaviour, OpcionesPantalla.ISeccion
             modo = MODO_PANTALLA_DEFECTO,
             vsync = VSYNC_DEFECTO,
             fps = System.Array.IndexOf(OpcionesFPS, FPS_DEFECTO),
-            fov = FOV_POR_DEFECTO
+            fov = FOV_POR_DEFECTO,
+            indicador = false
         };
         MostrarEnControles(pendiente);
         Aplicar();
@@ -269,7 +276,8 @@ public class GraficosUIController : MonoBehaviour, OpcionesPantalla.ISeccion
             modo = Mathf.Clamp(PlayerPrefs.GetInt(CLAVE_MODO_PANTALLA, MODO_PANTALLA_DEFECTO), 0, 2),
             vsync = PlayerPrefs.GetInt(CLAVE_VSYNC, VSYNC_DEFECTO) == 1 ? 1 : 0,
             fps = fps < 0 ? System.Array.IndexOf(OpcionesFPS, FPS_DEFECTO) : fps,
-            fov = Mathf.Clamp(PlayerPrefs.GetFloat(CLAVE_FOV, FOV_POR_DEFECTO), FOV_MINIMO, FOV_MAXIMO)
+            fov = Mathf.Clamp(PlayerPrefs.GetFloat(CLAVE_FOV, FOV_POR_DEFECTO), FOV_MINIMO, FOV_MAXIMO),
+            indicador = IndicadorRendimiento.Activo
         };
     }
 
