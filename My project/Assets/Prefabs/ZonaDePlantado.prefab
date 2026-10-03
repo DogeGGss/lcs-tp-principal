@@ -191,6 +191,7 @@ GameObject:
   - component: {fileID: 6799918282616050102}
   - component: {fileID: 2541809876392642738}
   - component: {fileID: 4560615986802276461}
+  - component: {fileID: 7724619547417871275}
   m_Layer: 0
   m_Name: Letra
   m_TagString: Untagged
@@ -361,6 +362,14 @@ MonoBehaviour:
   m_hasFontAssetChanged: 0
   m_renderer: {fileID: 2541809876392642738}
   m_maskType: 0
+--- !u!33 &7724619547417871275
+MeshFilter:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2199600734497869210}
+  m_Mesh: {fileID: 0}
 --- !u!1 &3577259605312768942
 GameObject:
   m_ObjectHideFlags: 0

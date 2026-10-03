@@ -19,6 +19,9 @@ public class BuyZone : MonoBehaviour
         area.isTrigger = true;
     }
 
+    /// <summary>De qué lado es la zona (US 190: los muros de la base se arman por zona).</summary>
+    public LadoTactico Lado => lado;
+
     private void OnEnable() => zones.Add(this);
     private void OnDisable() => zones.Remove(this);
 
