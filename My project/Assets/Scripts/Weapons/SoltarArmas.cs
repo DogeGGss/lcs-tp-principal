@@ -181,9 +181,10 @@ public class SoltarArmas : MonoBehaviour
     }
 
     // CA8: al morir cae la principal, o la secundaria si no tenía. Las granadas y el escudo no.
+    // Al cambiar de lado (US 032, CA5) también se pierde el equipo, pero vivo: ahí no cae nada.
     private void AlMorir()
     {
-        if (!Activo || switcher == null) return;
+        if (!Activo || switcher == null || Vivo) return;
         GameObject arma = switcher.PrimaryObj != null ? switcher.PrimaryObj : switcher.SecondaryObj;
         if (arma != null) Soltar(arma, true);
     }

@@ -153,6 +153,9 @@ public class BrazosEnCamara : MonoBehaviour
         preparando = null;
     }
 
+    /// <summary>US 133: la foto de los brazos agarrando esa arma, o null. El espectador la copia para mostrar la mano.</summary>
+    public MeshRenderer FotoDe(GameObject arma) => arma != null && fotos.TryGetValue(arma, out MeshRenderer foto) ? foto : null;
+
     // Tira las fotos y vuelve cada arma a su lugar: se sacan de nuevo (por ejemplo, después de mover los agarres).
     public void Rehacer()
     {
