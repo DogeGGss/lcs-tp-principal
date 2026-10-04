@@ -15,6 +15,8 @@ public class ConfigRed : ScriptableObject
         public string escena;
         public bool tactico = true;
         public bool deathmatch = true;
+        [Tooltip("Captura del mapa para el fondo de la pantalla de carga (US 196). Sin imagen, el fondo queda liso.")]
+        public Sprite imagen;
     }
 
     [Tooltip("Player.prefab: cada computadora arma con él las copias de los demás jugadores.")]

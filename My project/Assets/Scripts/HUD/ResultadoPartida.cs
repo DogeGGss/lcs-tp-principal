@@ -229,6 +229,6 @@ public class ResultadoPartida : MonoBehaviour
         }
         Time.timeScale = 1f;
         Multijugador.SalirDeLaSala();
-        SceneManager.LoadScene(EscenaMenu);
+        PantallaDeCarga.Cargar(EscenaMenu, "", "Menú principal"); // US 196
     }
 }
