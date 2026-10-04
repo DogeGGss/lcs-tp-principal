@@ -85,6 +85,7 @@ public class PartidaEnRed : MonoBehaviour
             SendOptions.SendReliable);
 
         Lista = true;
+        gameObject.AddComponent<MarcasDeCompaneros>().Iniciar(this); // US 193: solo se ven cuando hay equipos
         if (MatchSettings.Mode == GameMode.Tactico)
         {
             gameObject.AddComponent<MarcadorTactico>().Iniciar(this); // US 134
