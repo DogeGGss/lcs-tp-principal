@@ -389,3 +389,6 @@ fecha_utc,us_numero,us_titulo,estado_anterior,estado_nuevo,tiempo_en_estado_ante
 2026-10-03T19:15:12.006043+00:00,194,US 134. Mostrar marcador de la partida táctica,In Progress,LPR,2d 23h 12m,256336,https://github.com/DogeGGss/lcs-tp-principal/issues/194
 2026-10-03T19:15:12.006043+00:00,317,US 190. Muro de la base en la fase de compra,Todo,LPR,12h 29m,44972,https://github.com/DogeGGss/lcs-tp-principal/issues/317
 2026-10-04T00:38:59.517492+00:00,323,US 196. Pantalla de carga,Todo,In Progress,17h 53m,64399,https://github.com/DogeGGss/lcs-tp-principal/issues/323
+2026-10-04T06:21:46.950483+00:00,278,US 176. Diseño visual del HUD de combate,LPR,R2D,3d 21h 54m,338074,https://github.com/DogeGGss/lcs-tp-principal/issues/278
+2026-10-04T06:21:46.950483+00:00,64,US 066. Consultar el inventario en la tienda,LPR,R2D,1d 23h 35m,171305,https://github.com/DogeGGss/lcs-tp-principal/issues/64
+2026-10-04T06:21:46.950483+00:00,323,US 196. Pantalla de carga,In Progress,LPR,5h 42m,20567,https://github.com/DogeGGss/lcs-tp-principal/issues/323
