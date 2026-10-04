@@ -393,3 +393,5 @@ fecha_utc,us_numero,us_titulo,estado_anterior,estado_nuevo,tiempo_en_estado_ante
 2026-10-04T06:21:46.950483+00:00,64,US 066. Consultar el inventario en la tienda,LPR,R2D,1d 23h 35m,171305,https://github.com/DogeGGss/lcs-tp-principal/issues/64
 2026-10-04T06:21:46.950483+00:00,323,US 196. Pantalla de carga,In Progress,LPR,5h 42m,20567,https://github.com/DogeGGss/lcs-tp-principal/issues/323
 2026-10-04T12:38:01.691397+00:00,265,US 173. Posicionamiento de manos al sostener armas,In Progress,LPR,6d 10h 52m,557565,https://github.com/DogeGGss/lcs-tp-principal/issues/265
+2026-10-04T17:02:07.935256+00:00,319,US 192. Indicador de dirección del daño,Todo,LPR,1d 10h 16m,123388,https://github.com/DogeGGss/lcs-tp-principal/issues/319
+2026-10-04T17:02:07.935256+00:00,320,US 193. Marca de compañeros,Todo,In Progress,1d 10h 16m,123388,https://github.com/DogeGGss/lcs-tp-principal/issues/320
