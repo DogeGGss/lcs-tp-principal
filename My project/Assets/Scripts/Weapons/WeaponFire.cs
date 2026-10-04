@@ -67,6 +67,7 @@ public static class WeaponFire
             // Se mira antes de aplicar el daño: a un jugador de otra computadora el daño le llega después (US 029).
             int damage = weapon.HitDamage(zone, hit.distance);
             bool lethal = target.WouldDie(damage);
+            HealthSystem.DamageOrigin = camera.transform.position; // US 192: desde dónde le dispararon
             target.TakeDamage(damage, zone == BodyZone.Head);
             anyHit = true;
             if (zone == BodyZone.Head) head = true;

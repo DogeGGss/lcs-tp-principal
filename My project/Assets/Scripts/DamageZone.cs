@@ -12,6 +12,7 @@ public class DamageZone : MonoBehaviour
 
         if (health != null)
         {
+            HealthSystem.DamageOrigin = transform.position; // US 192
             health.TakeDamage(damageToGive);
         }
     }

@@ -229,12 +229,13 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
     // US 029: el daño que le hicieron a la copia de este jugador en otra computadora. arma: con qué, si no fue el
     // arma que el atacante tiene en la mano (por ejemplo, una granada); va al aviso de baja (US 057).
     [PunRPC]
-    private void RpcDanio(int danio, int atacante, bool cabeza, string arma)
+    private void RpcDanio(int danio, int atacante, bool cabeza, string arma, Vector3 origen)
     {
         if (!photonView.IsMine || muerto || vida == null) return;
         if (EquiposTacticos.SonAliados(atacante, Actor)) return; // US 031, CA6: por las dudas, también acá
         ultimoAtacante = atacante;
         ultimaArma = arma ?? "";
+        HealthSystem.DamageOrigin = origen; // US 192, CA7: desde dónde dispararon (o dónde explotó la granada)
         vida.TakeDamage(danio, cabeza);
     }
 
@@ -641,8 +642,13 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
             vida.DamageRedirect = (danio, cabeza) =>
             {
                 if (photonView.Owner != null)
+                {
+                    // US 192: el lugar del daño; si quien lo hizo no lo avisó, donde está el jugador de esta computadora.
+                    JugadorEnRed yo = this.partida != null ? this.partida.Local : null;
+                    Vector3 origen = HealthSystem.DamageOrigin ?? (yo != null ? yo.transform.position : transform.position);
                     photonView.RPC(nameof(RpcDanio), photonView.Owner, danio, PhotonNetwork.LocalPlayer.ActorNumber, cabeza,
-                        HealthSystem.DamageSource ?? "");
+                        HealthSystem.DamageSource ?? "", origen);
+                }
             };
 
         // US 031, CA5: a los rivales se los reconoce por el contorno rojo, como en Valorant. No se ve su nombre ni su vida.

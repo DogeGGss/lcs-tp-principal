@@ -84,6 +84,7 @@ public class CombatHud : MonoBehaviour
     public Sprite WeaponIcon { get; private set; }
 
     private HealthSystem health;
+    private IndicadorDeDano damageIndicator; // US 192
     private PlayerAbility ability;
     private WeaponSwitcher switcher;
     private MeleeWeaponHolder melee;
@@ -295,6 +296,7 @@ public class CombatHud : MonoBehaviour
         if (player == null) return;
 
         health = player.GetComponent<HealthSystem>();
+        if (damageIndicator != null) damageIndicator.Seguir(health);
         switcher = player.GetComponentInChildren<WeaponSwitcher>(true);
         melee = player.GetComponent<MeleeWeaponHolder>();
         loadout = player.GetComponent<PlayerLoadout>();
@@ -527,6 +529,7 @@ public class CombatHud : MonoBehaviour
         BuildInventory(bar);
         BuildCrosshair(root);
         BuildHitMarker(root);
+        damageIndicator = Node("IndicadorDeDano", root).gameObject.AddComponent<IndicadorDeDano>(); // US 192
         gameObject.AddComponent<MatchHud>().Setup(root, displayFont, labelFont, rounded, this); // US 057
     }
 
