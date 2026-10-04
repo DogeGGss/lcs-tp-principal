@@ -218,6 +218,7 @@ public class Grenade1 : MonoBehaviour
             if (damage <= 0) continue;
             bool lethal = entry.Key.WouldDie(damage);
             HealthSystem.DamageSource = WeaponName; // el aviso de baja dice la granada, no el arma que tiene en la mano
+            HealthSystem.DamageOrigin = center; // US 192, CA5: el indicador marca donde explotó
             entry.Key.TakeDamage(damage); // primero el escudo y el resto a la vida
             HealthSystem.DamageSource = null;
             if (lethal) Killed?.Invoke(this, entry.Key);

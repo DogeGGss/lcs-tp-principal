@@ -23,6 +23,13 @@ public class HealthSystem : MonoBehaviour
     // US 073). Vacío: el arma que el atacante tiene en la mano. Lo pone quien hace el daño justo antes de TakeDamage.
     public static string DamageSource;
 
+    // Desde dónde viene el daño (US 192): el lugar del que disparó o donde explotó la granada. Lo pone quien hace el
+    // daño justo antes de TakeDamage y se borra al usarlo. Sin lugar, el indicador de dirección no muestra nada.
+    public static Vector3? DamageOrigin;
+
+    // Avisa cada golpe que de verdad le sacó escudo o vida a alguien: a quién, cuánto y desde dónde (US 192).
+    public static event System.Action<HealthSystem, int, Vector3?> Damaged;
+
     void Start()
     {
         currentHealth = maxHealth;
@@ -70,12 +77,16 @@ public class HealthSystem : MonoBehaviour
     // head: el golpe fue a la cabeza (zona de impacto, US 165).
     public void TakeDamage(int damageAmount, bool head = false)
     {
+        Vector3? origin = DamageOrigin;
         if (DamageRedirect != null)
         {
-            DamageRedirect(damageAmount, head);
+            DamageRedirect(damageAmount, head); // lee DamageOrigin para mandarlo por la red
+            DamageOrigin = null;
             return;
         }
+        DamageOrigin = null;
         if (currentHealth <= 0 || Invulnerable) return;
+        if (damageAmount > 0) Damaged?.Invoke(this, damageAmount, origin);
 
         if (currentShield > 0)
         {
