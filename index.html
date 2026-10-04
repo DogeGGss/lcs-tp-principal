@@ -781,7 +781,7 @@ body.capture,body.capture-ms,body.capture-cr{padding-left:0!important}
 
 <section id="estilo">
   <div class="sec-head"><h2>Estilo visual</h2><span class="sub">Trenes argentinos, de noche</span></div>
-  <p>El juego se ve como un andén de noche: paneles oscuros, texto claro y un solo acento naranja, el de la línea de seguridad del andén. Las piezas salen de los trenes (vías, durmientes, relojes de andén, rayos) y las armas llevan nombres de líneas de tren y subte. Todo lo que va sobre el juego tiene que leerse sobre el cielo y sobre una pared clara.</p>
+  <p>El juego se ve como un andén de noche: paneles oscuros, texto claro y un solo acento naranja, el de la línea de seguridad del andén. Las piezas salen de los trenes (vías, durmientes, relojes de andén, rayos) y las armas llevan nombres de trenes argentinos: líneas como Mitre o Roca, y trenes con nombre propio como La Porteña o La Trochita. Todo lo que va sobre el juego tiene que leerse sobre el cielo y sobre una pared clara.</p>
 
   <h3 id="colores">Colores</h3>
   <p class="soft">En el código están en <code>ShopUIKit</code> con estos nombres. Usá siempre esas constantes, nunca un color suelto.</p>
@@ -1492,7 +1492,7 @@ body.capture,body.capture-ms,body.capture-cr{padding-left:0!important}
   <p><code>WeaponAim</code> mueve la mira en tres capas: la <b>dispersión</b> (un cono al azar alrededor de la mira, que depende de si te movés, saltás, te agachás o apuntás), el <b>patrón</b> (hacia dónde sube la mira con cada bala seguida) y el <b>sacudón</b> (un golpe visual de cada tiro que vuelve solo). El patrón se aprende: si tirás hacia abajo y al revés del patrón, las balas quedan juntas.</p>
   <p class="soft">Este gráfico usa el mismo cálculo que <code>WeaponAim.PatternOffset</code>. Cada punto es dónde pega una bala si no corregís la mira; la cruz es donde apuntaste.</p>
   <div class="controls" id="sprayCtl">
-    <div><span class="ctl-label">Arma</span><span class="seg" data-sctl="arma"><button data-v="fusil" aria-pressed="true">Mitre</button><button data-v="subfusil">Urquiza</button><button data-v="rafaga">Belgrano Sur</button><button data-v="pistola">Línea A</button></span></div>
+    <div><span class="ctl-label">Arma</span><span class="seg" data-sctl="arma"><button data-v="fusil" aria-pressed="true">Mitre</button><button data-v="subfusil">Urquiza</button><button data-v="rafaga">Belgrano Sur</button><button data-v="pistola">La Porteña</button></span></div>
     <div><span class="seg" data-sctl="crouch"><button data-v="crouch" aria-pressed="false">Agachado</button></span></div>
     <button class="btn ghost" id="sprayRoll" type="button">Otra ráfaga</button>
   </div>
@@ -1549,7 +1549,7 @@ body.capture,body.capture-ms,body.capture-cr{padding-left:0!important}
     <li><b>Ficha.</b> Duplicá la ficha más parecida en <code>Assets/Data/Tienda</code> y cargá todo: nombre y alias, categoría, precio, modo (<code>automatic</code>, <code>burstCount</code> y <code>burstRate</code>), cadencia, cargador y reserva, recarga (<code>reloadPerShell</code> para las de a un cartucho), <code>equipTime</code>, <code>mobility</code>, zoom (solo los francotiradores, que además llevan <code>MiraTelescopica</code>), perdigones, dispersión, tramos de daño y retroceso. Sumala a <code>CatalogoTactico</code>.</li>
     <li><b>Modelo.</b> Del Sci-Fi Modular Gun Pack de Quaternius (<code>Assets/Modelos (armas)</code>), que no repita el de otra arma (US 179). El ícono de la ficha es la silueta del mismo modelo.</li>
     <li><b>Prefab.</b> En <code>Assets/Prefabs/Armas</code>, con el componente <code>ArmaDeFuego</code>: la ficha, la cámara, los sonidos (disparo y recarga; bombeo y cartucho si es de bombeo) y el grupo Efectos del mezclador.</li>
-    <li><b>Jugador.</b> En <code>Player.prefab</code>, poné el prefab bajo Main Camera, en la misma posición que el Mitre y desactivado, y sumalo a <code>WeaponSwitcher → otrasPrincipales</code>. Una secundaria va igual, pero en la posición de la Línea H y en <code>WeaponSwitcher → otrasSecundarias</code>: en el espacio 2 va la que se compró y, si no compró ninguna, la Línea A (<code>Pistola.cs</code>).</li>
+    <li><b>Jugador.</b> En <code>Player.prefab</code>, poné el prefab bajo Main Camera, en la misma posición que el Mitre y desactivado, y sumalo a <code>WeaponSwitcher → otrasPrincipales</code>. Una secundaria va igual, pero en la posición de La Trochita y en <code>WeaponSwitcher → otrasSecundarias</code>: en el espacio 2 va la que se compró y, si no compró ninguna, La Porteña (<code>Pistola.cs</code>).</li>
     <li><b>Sonidos.</b> En <code>Assets/Sonidos/Armas</code>, con licencia libre, recortados a un tiro para que no se amontonen a la cadencia del arma. Sumá la fuente a los créditos.</li>
     <li><b>Multijugador.</b> No hace falta nada: <code>JugadorEnRed</code> toma las principales y las secundarias del <code>WeaponSwitcher</code> y sus sonidos de disparo.</li>
     <li><b>Probar.</b> Daño por tramo contra un blanco, recarga, ráfaga o bombeo, comprar y reemplazar en la tienda, el HUD y una partida de Deathmatch editor contra build.</li>
@@ -1614,7 +1614,7 @@ body.capture,body.capture-ms,body.capture-cr{padding-left:0!important}
     <tr><th>Tema</th><th>Decisión</th><th>Dónde quedó</th></tr>
     <tr><td>HUD de combate</td><td>Diseño Andén: vida, habilidad y munición abajo al centro.</td><td>US 176</td></tr>
     <tr><td>Tecla de la habilidad</td><td><span class="kbd">Q</span>. <span class="kbd">E</span>, <span class="kbd">C</span> y <span class="kbd">X</span> quedan para cuando haya más habilidades.</td><td>US 014</td></tr>
-    <tr><td>Nombres de las armas</td><td>El tipo más un alias de tren o subte (Mitre, Roca, Último Tren…). El alias es el que se ve.</td><td>US 178</td></tr>
+    <tr><td>Nombres de las armas</td><td>El tipo más un alias de tren (Mitre, La Trochita, Último Tren…). El alias es el que se ve.</td><td>US 178</td></tr>
     <tr><td>Inventario</td><td>Cuatro espacios: 1 principal, 2 secundaria, 3 cuchillo y 4 granadas (apretar 4 de nuevo cambia de granada).</td><td>US 063, US 064</td></tr>
     <tr><td>Fase de compra</td><td>20 s.</td><td>US 076</td></tr>
     <tr><td>Premio por racha de derrotas</td><td>$ 1.900, $ 2.400 y $ 2.900.</td><td>US 135</td></tr>
@@ -1631,13 +1631,13 @@ body.capture,body.capture-ms,body.capture-cr{padding-left:0!important}
     <tr><td>Los cuatro personajes y sus habilidades</td><td>US 183, US 019 a US 022</td><td><span class="st st-todo">Falta diseñar</span></td></tr>
     <tr><td>Diseño del Mapa 1 y del Mapa 2 (hoy sus historias no dicen cómo son)</td><td>US 082, US 083</td><td><span class="st st-todo">Falta diseñar</span></td></tr>
     <tr><td>Último Tren con mira telescópica</td><td>US 068, US 009</td><td><span class="st st-mid">En prueba</span></td></tr>
-    <tr><td>Línea H: modelo, sonidos y lugar en el inventario</td><td>US 072</td><td><span class="st st-mid">En prueba</span></td></tr>
+    <tr><td>La Trochita: modelo, sonidos y lugar en el inventario</td><td>US 072</td><td><span class="st st-mid">En prueba</span></td></tr>
     <tr><td>Arma de los demás jugadores a tamaño real, en su mano</td><td>US 182</td><td><span class="st st-todo">Falta hacerla</span></td></tr>
     <tr><td>Soltar y levantar armas (se hace junto con el arma de los demás a tamaño real)</td><td>US 184, US 182</td><td><span class="st st-todo">Falta hacerla</span></td></tr>
     <tr><td>Panel de compañeros en la tienda, y tienda de Zombie y Deathmatch</td><td>US 175, US 148, US 138</td><td><span class="st st-todo">Falta hacerlo</span></td></tr>
     <tr><td>Marcadores de Táctico y Deathmatch, con la lista de bajas y la tabla (diseño listo)</td><td>US 057, US 134, US 141</td><td><span class="st st-todo">Falta hacerlo</span></td></tr>
     <tr><td>Marcador de Zombie (diseño listo)</td><td>US 150</td><td><span class="st st-todo">Falta hacerlo</span></td></tr>
-    <tr><td>Recarga de la Línea A: la ficha dice 1,75 s y el código usa 1,5 s</td><td>US 071</td><td><span class="st st-mid">A corregir</span></td></tr>
+    <tr><td>Recarga de La Porteña: la ficha dice 1,75 s y el código usa 1,5 s</td><td>US 071</td><td><span class="st st-mid">A corregir</span></td></tr>
     <tr><td>No disparar corriendo y movilidad al apuntar</td><td>Sin historia</td><td><span class="st st-idea">A decidir</span></td></tr>
     <tr><td>Aviso de versión nueva o launcher, para que todos jueguen con la última versión</td><td>A decidir con el PO</td><td><span class="st st-idea">A decidir</span></td></tr>
   </table></div>
@@ -1654,22 +1654,22 @@ const DATA = {
     { "id": "escudoCompleto", "nombre": "Escudo completo", "puntos": 50, "precio": 1000, "backlog": "US 080" }
   ],
   "armas": [
-    { "id": "pistola", "nombre": "Pistola", "alias": "Línea A", "cat": "pistolas", "slot": "Secundaria", "icono": "g05", "precio": 0, "backlog": "US 071", "nivel": "MVP",
+    { "id": "pistola", "nombre": "Pistola", "alias": "La Porteña", "cat": "pistolas", "slot": "Secundaria", "icono": "g05", "precio": 0, "backlog": "US 071", "nivel": "MVP",
       "rol": "La que tenés siempre. Gana duelos a la cabeza; al cuerpo no alcanza.",
       "modo": "Semiautomática", "cadencia": 6.75, "cargador": 20, "reserva": 60, "recarga": 1.75, "equipar": 0.75, "movilidad": 1.0, "zoom": null, "perdigones": 1, "penetracion": "Baja",
       "tramos": [ { "hasta": 30, "cuerpo": 25, "cabeza": 75, "piernas": 21 }, { "hasta": null, "cuerpo": 21, "cabeza": 63, "piernas": 18 } ],
       "dispersion": [0.4, 2.5], "retroceso": "Leve y vuelve rápido: premia tirar de a un tiro." },
-    { "id": "pistolaAuto", "nombre": "Pistola automática", "alias": "Línea B", "cat": "pistolas", "slot": "Secundaria", "icono": "g10", "precio": 450, "backlog": null, "nivel": "Opcional",
+    { "id": "pistolaAuto", "nombre": "Pistola automática", "alias": "El Marplatense", "cat": "pistolas", "slot": "Secundaria", "icono": "g10", "precio": 450, "backlog": null, "nivel": "Opcional",
       "rol": "Ráfaga barata para rondas de ahorro a corta distancia.",
       "modo": "Automática", "cadencia": 10, "cargador": 13, "reserva": 39, "recarga": 1.5, "equipar": 0.75, "movilidad": 1.0, "zoom": null, "perdigones": 1, "penetracion": "Baja",
       "tramos": [ { "hasta": 20, "cuerpo": 26, "cabeza": 78, "piernas": 22 }, { "hasta": null, "cuerpo": 21, "cabeza": 63, "piernas": 18 } ],
       "dispersion": [0.65, 2.0], "retroceso": "Se descontrola después de la cuarta bala." },
-    { "id": "ballestaMano", "nombre": "Ballesta de mano", "alias": "Línea C", "cat": "pistolas", "slot": "Secundaria", "icono": "g11", "precio": 600, "backlog": null, "nivel": "Opcional",
+    { "id": "ballestaMano", "nombre": "Ballesta de mano", "alias": "La Estrella del Norte", "cat": "pistolas", "slot": "Secundaria", "icono": "g11", "precio": 600, "backlog": null, "nivel": "Opcional",
       "rol": "Silenciosa. Un virote a la cabeza mata si el rival tiene escudo liviano o nada.",
       "modo": "Proyectil (1 virote)", "cadencia": 0.8, "cargador": 1, "reserva": 8, "recarga": 0, "equipar": 0.8, "movilidad": 1.0, "zoom": null, "perdigones": 1, "penetracion": "Ninguna",
       "tramos": [ { "hasta": null, "cuerpo": 55, "cabeza": 140, "piernas": 47 } ],
       "dispersion": [0.0, 1.5], "retroceso": "Sin retroceso; el virote viaja a 60 m/s y cae un poco con la distancia." },
-    { "id": "pistolaPesada", "nombre": "Pistola pesada", "alias": "Línea H", "cat": "pistolas", "slot": "Secundaria", "icono": "g15", "precio": 800, "backlog": "US 072", "nivel": "MVP",
+    { "id": "pistolaPesada", "nombre": "Pistola pesada", "alias": "La Trochita", "cat": "pistolas", "slot": "Secundaria", "icono": "g15", "precio": 800, "backlog": "US 072", "nivel": "MVP",
       "rol": "El arma de las rondas de ahorro: un tiro a la cabeza mata a cualquiera a menos de 30 m.",
       "modo": "Semiautomática", "cadencia": 4, "cargador": 6, "reserva": 24, "recarga": 2.25, "equipar": 0.9, "movilidad": 1.0, "zoom": null, "perdigones": 1, "penetracion": "Media",
       "tramos": [ { "hasta": 30, "cuerpo": 55, "cabeza": 159, "piernas": 46 }, { "hasta": null, "cuerpo": 50, "cabeza": 145, "piernas": 42 } ],
@@ -1733,23 +1733,23 @@ const DATA = {
       "modo": "Cerrojo", "cadencia": 0.75, "cargador": 5, "reserva": 10, "recarga": 3.7, "equipar": 1.25, "movilidad": 0.85, "zoom": 2.5, "zoom2": 5, "perdigones": 1, "penetracion": "Alta",
       "tramos": [ { "hasta": null, "cuerpo": 150, "cabeza": 255, "piernas": 127 } ],
       "dispersion": [0.0, 6.0], "retroceso": "Igual de preciso con la mira o sin ella (dispersión −30 %: 4,2° en movimiento); quieto, al centro. Sin mira en el HUD, como el AWP. Después de cada tiro se recarga el cerrojo (1,33 s)." },
-    { "id": "ballesta", "nombre": "Ballesta", "alias": "Tren Fantasma", "cat": "francotiradores", "slot": "Principal", "icono": "g06", "precio": 1500, "backlog": null, "nivel": "Opcional",
+    { "id": "ballesta", "nombre": "Ballesta", "alias": "Tren del Fin del Mundo", "cat": "francotiradores", "slot": "Principal", "icono": "g06", "precio": 1500, "backlog": null, "nivel": "Opcional",
       "rol": "Silenciosa y con caída. En Zombie, cada virote atraviesa hasta 2 zombies.",
       "modo": "Proyectil (1 virote)", "cadencia": 0.55, "cargador": 1, "reserva": 10, "recarga": 0, "equipar": 1.0, "movilidad": 0.92, "zoom": 2.0, "perdigones": 1, "penetracion": "Ninguna",
       "tramos": [ { "hasta": null, "cuerpo": 70, "cabeza": 180, "piernas": 60 } ],
       "dispersion": [0.0, 2.0], "retroceso": "Sin retroceso; el virote viaja a 80 m/s con caída." },
 
-    { "id": "ametralladoraLigera", "nombre": "Ametralladora liviana", "alias": "Carguero", "cat": "pesadas", "slot": "Principal", "icono": "g03", "precio": 1600, "backlog": null, "nivel": "Opcional",
+    { "id": "ametralladoraLigera", "nombre": "Ametralladora liviana", "alias": "Tren de las Sierras", "cat": "pesadas", "slot": "Principal", "icono": "g03", "precio": 1600, "backlog": null, "nivel": "Opcional",
       "rol": "Cargador de 50 y penetración alta: sirve para tirar a través de paredes finas.",
       "modo": "Automática (acelera)", "cadencia": 13, "cadenciaInicial": 10, "cargador": 50, "reserva": 50, "recarga": 3.25, "equipar": 1.25, "movilidad": 0.85, "zoom": null, "perdigones": 1, "penetracion": "Alta",
       "tramos": [ { "hasta": 30, "cuerpo": 30, "cabeza": 72, "piernas": 25 }, { "hasta": null, "cuerpo": 27, "cabeza": 65, "piernas": 23 } ],
       "dispersion": [0.8, 6.0], "retroceso": "Empieza lenta (10/s) y en un segundo llega a 13/s; hay que apoyarse o agacharse." },
-    { "id": "ametralladoraPesada", "nombre": "Ametralladora pesada", "alias": "Locomotora", "cat": "pesadas", "slot": "Principal", "icono": "g16", "precio": 3200, "backlog": null, "nivel": "Opcional",
+    { "id": "ametralladoraPesada", "nombre": "Ametralladora pesada", "alias": "Tren Patagónico", "cat": "pesadas", "slot": "Principal", "icono": "g16", "precio": 3200, "backlog": null, "nivel": "Opcional",
       "rol": "Cien balas para cubrir una entrada entera. Lenta de mover y de recargar.",
       "modo": "Automática (acelera)", "cadencia": 15.6, "cadenciaInicial": 12, "cargador": 100, "reserva": 100, "recarga": 5.0, "equipar": 1.25, "movilidad": 0.82, "zoom": null, "perdigones": 1, "penetracion": "Alta",
       "tramos": [ { "hasta": 30, "cuerpo": 38, "cabeza": 95, "piernas": 32 }, { "hasta": null, "cuerpo": 31, "cabeza": 77, "piernas": 26 } ],
       "dispersion": [0.8, 6.0], "retroceso": "Muy fuerte al principio; agachado mejora un 25 %." },
-    { "id": "lanzagranadas", "nombre": "Lanzagranadas", "alias": "Descarrilador", "cat": "pesadas", "slot": "Principal", "icono": "g18", "precio": 2500, "backlog": null, "nivel": "Zombie",
+    { "id": "lanzagranadas", "nombre": "Lanzagranadas", "alias": "El Gran Capitán", "cat": "pesadas", "slot": "Principal", "icono": "g18", "precio": 2500, "backlog": null, "nivel": "Zombie",
       "soloZombie": true,
       "rol": "Solo en modo Zombie: limpia grupos. Explota en un radio de 4 m y te lastima si tirás muy cerca.",
       "modo": "Proyectil explosivo", "cadencia": 1.2, "cargador": 6, "reserva": 12, "recarga": 3.5, "equipar": 1.25, "movilidad": 0.85, "zoom": null, "perdigones": 1, "penetracion": "Ninguna",
