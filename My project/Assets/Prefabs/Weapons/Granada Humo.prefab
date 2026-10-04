@@ -9,6 +9,10 @@ PrefabInstance:
     m_TransformParent: {fileID: 0}
     m_Modifications:
     - target: {fileID: 715020718664439521, guid: 914c6fac9d24630438f0b4b9fb58462f, type: 3}
+      propertyPath: smokeMaterial
+      value: 
+      objectReference: {fileID: 2100000, guid: 34d513672558fe0478dd3a29e7f55db4, type: 2}
+    - target: {fileID: 715020718664439521, guid: 914c6fac9d24630438f0b4b9fb58462f, type: 3}
       propertyPath: explosionSound
       value: 
       objectReference: {fileID: 8300000, guid: 5e45b98d22d64b7bb5bb6a2e549b6b61, type: 3}
@@ -16,14 +20,14 @@ PrefabInstance:
       propertyPath: explosionEffect
       value: 
       objectReference: {fileID: 0}
-    - target: {fileID: 715020718664439521, guid: 914c6fac9d24630438f0b4b9fb58462f, type: 3}
-      propertyPath: smokeMaterial
+    - target: {fileID: 2646557121353485019, guid: 914c6fac9d24630438f0b4b9fb58462f, type: 3}
+      propertyPath: 'm_Materials.Array.data[0]'
       value: 
-      objectReference: {fileID: 2100000, guid: 34d513672558fe0478dd3a29e7f55db4, type: 2}
+      objectReference: {fileID: 2100000, guid: 853776ea370b410884a927decc9158da, type: 2}
     - target: {fileID: 2646557121353485019, guid: 914c6fac9d24630438f0b4b9fb58462f, type: 3}
       propertyPath: 'm_Materials.Array.data[3]'
       value: 
-      objectReference: {fileID: 2100000, guid: 853776ea370b410884a927decc9158da, type: 2}
+      objectReference: {fileID: -8848810374240701247, guid: 90382c05949dd144581dccd964d2a132, type: 3}
     - target: {fileID: 4592134357684169486, guid: 914c6fac9d24630438f0b4b9fb58462f, type: 3}
       propertyPath: m_Name
       value: Granada Humo

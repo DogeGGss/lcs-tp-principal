@@ -20,10 +20,14 @@ public class GrenadeThrower : MonoBehaviour
     public float spawnDistance = 0.6f;
 
     [Header("Modelo en la mano")]
-    [Tooltip("Dónde se ve la granada en la mano, relativo a la cámara (x derecha, y arriba, z adelante).")]
+    [Tooltip("Dónde se ve la granada en la mano, relativo a la cámara (x derecha, y arriba, z adelante). Solo si la cámara no tiene el objeto \"Mano con granada\".")]
     public Vector3 handPosition = new Vector3(0.28f, -0.22f, 0.55f);
-    [Tooltip("Tamaño con el que se ve en la mano (m).")]
+    [Tooltip("Tamaño con el que se ve en la mano (m), con la \"Mano con granada\" a escala 1.")]
     public float handSize = 0.12f;
+
+    // US 173: hijo de la cámara donde va la granada en la mano, con los agarres de las manos (BrazosEnCamara). Las tres
+    // granadas se arman ahí, centradas y del tamaño de handSize por su escala: se ajusta una vez para todas.
+    public const string NombreMano = "Mano con granada";
 
     private PlayerLoadout loadout;
     private Transform owner;
@@ -161,7 +165,8 @@ public class GrenadeThrower : MonoBehaviour
         Rigidbody rb = model.GetComponent<Rigidbody>();
         if (rb != null) rb.isKinematic = true;
 
-        model.transform.SetParent(cam.transform, false);
+        Transform mano = cam.transform.Find(NombreMano);
+        model.transform.SetParent(mano != null ? mano : cam.transform, false);
         model.transform.localPosition = Vector3.zero;
         model.transform.localRotation = Quaternion.identity;
 
@@ -176,11 +181,13 @@ public class GrenadeThrower : MonoBehaviour
         Bounds bounds = renderers[0].bounds;
         foreach (Renderer r in renderers) bounds.Encapsulate(r.bounds);
         float biggest = Mathf.Max(bounds.size.x, bounds.size.y, bounds.size.z);
-        if (biggest > 0.0001f) model.transform.localScale *= handSize / biggest;
+        float size = handSize * (mano != null ? mano.lossyScale.x / cam.transform.lossyScale.x : 1f);
+        if (biggest > 0.0001f) model.transform.localScale *= size / biggest;
 
         bounds = renderers[0].bounds;
         foreach (Renderer r in renderers) bounds.Encapsulate(r.bounds);
-        model.transform.position += cam.transform.TransformPoint(handPosition) - bounds.center;
+        Vector3 center = mano != null ? mano.position : cam.transform.TransformPoint(handPosition);
+        model.transform.position += center - bounds.center;
         return model;
     }
 

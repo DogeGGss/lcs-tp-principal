@@ -56,6 +56,14 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: -7511558181221131132, guid: 90382c05949dd144581dccd964d2a132, type: 3}
+      propertyPath: 'm_Materials.Array.data[0]'
+      value: 
+      objectReference: {fileID: 2100000, guid: bf8eb70fc834f6f4eb60ddab2c69d369, type: 2}
+    - target: {fileID: -7511558181221131132, guid: 90382c05949dd144581dccd964d2a132, type: 3}
+      propertyPath: 'm_Materials.Array.data[3]'
+      value: 
+      objectReference: {fileID: -8848810374240701247, guid: 90382c05949dd144581dccd964d2a132, type: 3}
     - target: {fileID: 919132149155446097, guid: 90382c05949dd144581dccd964d2a132, type: 3}
       propertyPath: m_Name
       value: Grenade 1
@@ -130,6 +138,8 @@ MonoBehaviour:
   explosionSound: {fileID: 8300000, guid: 09a89d14e4279034fa2d88d5e2a3a8e3, type: 3}
   sfxGroup: {fileID: -490443676671801125, guid: ddda7e32a2420c4489fcc2a1c31e1976, type: 2}
   explosionEffect: {fileID: 100006, guid: a49596ebf788acd4ab1281bffea444b1, type: 3}
+  blindSound: {fileID: 0}
+  smokeMaterial: {fileID: 0}
   cosmetic: 0
   netId: 0
 --- !u!135 &2905656692049983662
