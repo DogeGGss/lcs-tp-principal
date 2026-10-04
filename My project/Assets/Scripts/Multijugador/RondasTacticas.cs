@@ -118,13 +118,7 @@ public class RondasTacticas : MonoBehaviour
         Actual = this;
 
         // CA1: el anfitrión arranca la ronda 1. La sala se cierra al iniciar, así que hay una sola partida por sala.
-        if (PhotonNetwork.IsMasterClient && Sala != null && !Sala.CustomProperties.ContainsKey(PropFase))
-            Publicar(new Hashtable
-            {
-                // US 016: antes de la ronda 1, 20 s para elegir personaje.
-                { PropRonda, 1 }, { PropFase, (int)Fase.Seleccion }, { PropFin, Ahora + Ms(DuracionSeleccion) },
-                { PropRondas0, 0 }, { PropRondas1, 0 }, { PropGanador, -1 }, { PropDispositivo, 0 }, { PropDesactivado, 0 }
-            });
+        // (Se hace en Update: espera a que todos terminen de cargar el mapa, US 196.)
 
         MarcadorTactico.TiempoDeRonda = TiempoDeCombate;
         gameObject.AddComponent<PersonajesTacticos>().Iniciar(partida); // US 016
@@ -149,8 +143,25 @@ public class RondasTacticas : MonoBehaviour
     // Cuadro a cuadro
     // =====================================================================
 
+    // CA1: el anfitrión arranca la ronda 1 cuando todos terminaron de cargar el mapa (US 196, CA4).
+    private void ArrancarPartida()
+    {
+        if (!PhotonNetwork.IsMasterClient || Sala == null || Sala.CustomProperties.ContainsKey(PropFase)) return;
+        if (PantallaDeCarga.EsperandoJugadores || Time.unscaledTime < proximoArranque) return;
+        proximoArranque = Time.unscaledTime + 2f; // la propiedad tarda un instante en volver del servidor
+        Publicar(new Hashtable
+        {
+            // US 016: antes de la ronda 1, 20 s para elegir personaje.
+            { PropRonda, 1 }, { PropFase, (int)Fase.Seleccion }, { PropFin, Ahora + Ms(DuracionSeleccion) },
+            { PropRondas0, 0 }, { PropRondas1, 0 }, { PropGanador, -1 }, { PropDispositivo, 0 }, { PropDesactivado, 0 }
+        });
+    }
+
+    private float proximoArranque;
+
     private void Update()
     {
+        ArrancarPartida();
         if (!Listo) return;
         if (PhotonNetwork.IsMasterClient) { Atajos(); Anfitrion(); }
 

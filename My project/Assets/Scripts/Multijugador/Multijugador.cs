@@ -131,6 +131,8 @@ public class Multijugador : MonoBehaviourPunCallbacks, IOnEventCallback
         // US 031: en Táctico, el anfitrión reparte los equipos antes de cargar el mapa.
         if (ModoSala == GameMode.Tactico) EquiposTacticos.Repartir();
         PhotonNetwork.CurrentRoom.IsOpen = false;
+        // US 196: pantalla de carga (los demás la ven cuando Photon les manda cargar el mapa).
+        PantallaDeCarga.MostrarOnline(MapaActual.escena, ModoSala, MapaActual.nombre, MapaActual.imagen, Codigo);
         PhotonNetwork.LoadLevel(MapaActual.escena);
     }
 
@@ -308,7 +310,7 @@ public class Multijugador : MonoBehaviourPunCallbacks, IOnEventCallback
             Time.timeScale = 1f;
             Cursor.lockState = CursorLockMode.None;
             Cursor.visible = true;
-            SceneManager.LoadScene(EscenaMenu);
+            PantallaDeCarga.Cargar(EscenaMenu, "", "Menú principal"); // US 196
         }
     }
 

@@ -123,6 +123,7 @@ public class PauseMenu : MonoBehaviour
     {
         Instance = this;
         IsPaused = false;
+        PantallaDeCarga.Registrar(displayFont, labelFont, bodyFont, rounded); // US 196
         col2Color = Rgb(18, 21, 28, DarkAlpha(0.92f));
         badSelected = Over(Rgb(255, 92, 92, 0.13f), PanelBase);
         BuildCanvas();
@@ -301,7 +302,7 @@ public class PauseMenu : MonoBehaviour
         }
         // En una partida online, se sale de la sala: los demás dejan de ver a este jugador (F06).
         Multijugador.SalirDeLaSala();
-        SceneManager.LoadScene(mainMenuScene);
+        PantallaDeCarga.Cargar(mainMenuScene, "", "Menú principal"); // US 196, CA1
     }
 
     // CA3 (US 052): vuelve a cargar la escena desde cero, así se descarta todo el progreso

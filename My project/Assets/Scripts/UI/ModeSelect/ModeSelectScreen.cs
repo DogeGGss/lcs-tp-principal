@@ -176,6 +176,7 @@ public class ModeSelectScreen : MonoBehaviour
         ModeColor ??= new[] { Hex(0xF29A38), Hex(0xFF4B4B), Hex(0x7DE05A) };
         ModeBg ??= new[] { Hex(0x0D0A07), Hex(0x0C0606), Hex(0x060906) };
         menu = GetComponentInParent<MenuUIController>();
+        PantallaDeCarga.Registrar(displayFont, labelFont, bodyFont, rounded); // US 196
         foreach (Bolt b in bolts) NewJitter(b);
         Build();
     }
@@ -993,7 +994,15 @@ public class ModeSelectScreen : MonoBehaviour
         MatchSettings.Mode = GameMode.Zombie;
         onPlayZombie.Invoke(MatchSettings.Difficulty);
         if (!string.IsNullOrEmpty(zombieScene) && Application.CanStreamedLevelBeLoaded(zombieScene))
-            SceneManager.LoadScene(zombieScene);
+        {
+            // US 196: pantalla de carga con el nombre del mapa (si está en ConfigRed) y consejos del modo.
+            string mapa = zombieScene;
+            Sprite imagen = null;
+            if (ConfigRed.Actual != null)
+                foreach (ConfigRed.Mapa m in ConfigRed.Actual.mapas)
+                    if (m != null && m.escena == zombieScene) { mapa = m.nombre; imagen = m.imagen; }
+            PantallaDeCarga.Cargar(zombieScene, "Modo Zombie · " + DifficultyName[(int)MatchSettings.Difficulty], mapa, imagen, GameMode.Zombie);
+        }
         else if (onPlayZombie.GetPersistentEventCount() == 0)
             details[2].status.text = "El modo Zombie todavía está en desarrollo (F08).";
     }
