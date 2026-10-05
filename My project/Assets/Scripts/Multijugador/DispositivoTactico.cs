@@ -159,6 +159,9 @@ public class DispositivoTactico : MonoBehaviour
     }
 
     /// <summary>El actor que lleva el dispositivo ahora (0 si nadie: está en el piso, plantado o no se repartió).</summary>
+    /// <summary>Dónde está el dispositivo cuando quedó en el piso, o null (para el minimapa, US 194).</summary>
+    public Vector3? LugarEnPiso => enPiso != null && enPiso.go != null ? enPiso.go.transform.position : (Vector3?)null;
+
     public int Portador => EnJuego && !rondas.HayDispositivo && EstadoActual == Estado.Portado ? Leer(PropPortador, 0) : 0;
 
     private bool Llevo => Portador != 0 && Portador == Yo;

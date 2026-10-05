@@ -14,6 +14,10 @@ public class ZonaDePlantado : MonoBehaviour
 
     private Collider area;
 
+    /// <summary>Todas las zonas del mapa y el lugar que ocupa cada una (para el minimapa, US 194).</summary>
+    public static IReadOnlyList<ZonaDePlantado> Todas => zonas;
+    public Bounds Limites => area != null ? area.bounds : new Bounds(transform.position, Vector3.one);
+
     private void Awake()
     {
         area = GetComponent<Collider>();
