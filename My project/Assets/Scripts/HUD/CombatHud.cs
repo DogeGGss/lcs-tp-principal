@@ -85,6 +85,7 @@ public class CombatHud : MonoBehaviour
 
     private HealthSystem health;
     private IndicadorDeDano damageIndicator; // US 192
+    private Minimapa minimap; // US 194
     private PlayerAbility ability;
     private WeaponSwitcher switcher;
     private MeleeWeaponHolder melee;
@@ -297,6 +298,7 @@ public class CombatHud : MonoBehaviour
 
         health = player.GetComponent<HealthSystem>();
         if (damageIndicator != null) damageIndicator.Seguir(health);
+        if (minimap != null) minimap.Seguir(player.transform);
         switcher = player.GetComponentInChildren<WeaponSwitcher>(true);
         melee = player.GetComponent<MeleeWeaponHolder>();
         loadout = player.GetComponent<PlayerLoadout>();
@@ -530,6 +532,8 @@ public class CombatHud : MonoBehaviour
         BuildCrosshair(root);
         BuildHitMarker(root);
         damageIndicator = Node("IndicadorDeDano", root).gameObject.AddComponent<IndicadorDeDano>(); // US 192
+        minimap = gameObject.AddComponent<Minimapa>(); // US 194
+        minimap.Iniciar(root, labelFont, rounded);
         gameObject.AddComponent<MatchHud>().Setup(root, displayFont, labelFont, rounded, this); // US 057
     }
 
