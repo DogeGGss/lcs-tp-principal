@@ -15,6 +15,9 @@ using UnityEngine.Audio;
 // La granada flash (US 075) usa este mismo script con su ficha: no hace daño y, al explotar, cada computadora
 // enceguece a su jugador según hacia dónde mire (FlashBlind).
 // La granada de humo (US 074) también: no hace daño y, al activarse, cada computadora arma la nube (HumoGranada).
+// Su mecha (CA2) recién empieza a correr cuando toca por primera vez el escenario (piso, pared u otro objeto; no los
+// jugadores, las armas tiradas ni otras granadas) y los rebotes siguientes no la reinician; si en MaxSinTocar segundos
+// desde que se lanzó no tocó nada, se activa igual donde esté.
 public class Grenade1 : MonoBehaviour
 {
     [Tooltip("Segundos hasta explotar. En el juego lo pisa la ficha de la granada (fuse).")]
@@ -55,6 +58,9 @@ public class Grenade1 : MonoBehaviour
     // Si a la copia de muestra no le llega dónde explotó la de verdad, explota sola este tiempo después de la mecha.
     private const float CosmeticGrace = 1.5f;
 
+    // US 074, CA2: la de humo se activa igual si en este tiempo desde que se lanzó no tocó nada.
+    public const float MaxSinTocar = 5f;
+
     // La granada de verdad explotó en este punto: el multijugador se lo avisa a los demás.
     public static event System.Action<Grenade1, Vector3> Exploded;
     // La explosión eliminó a alguien: sin conexión, el aviso de baja sale de acá (US 057, CA4).
@@ -74,6 +80,11 @@ public class Grenade1 : MonoBehaviour
 
     private float countdown;
     private bool exploded;
+    private bool tocoEscenario;  // humo: ya tocó el escenario y corre la mecha
+    private float sinTocar;      // humo: segundos desde que se lanzó sin tocar nada
+
+    // Solo la de humo espera a tocar el escenario para empezar a contar (US 074, CA2).
+    private bool EsperaChoque => Type == GrenadeType.Smoke;
     private Rigidbody body;
     private Collider centerCollider;
 
@@ -104,6 +115,13 @@ public class Grenade1 : MonoBehaviour
     void Update()
     {
         if (exploded) return;
+        if (EsperaChoque && !tocoEscenario)
+        {
+            // US 074, CA2: la mecha no corre hasta el primer toque; a los MaxSinTocar segundos se activa igual.
+            sinTocar += Time.deltaTime;
+            if (sinTocar < MaxSinTocar + (cosmetic ? CosmeticGrace : 0f)) return;
+            countdown = cosmetic ? -CosmeticGrace : 0f;
+        }
         countdown -= Time.deltaTime; // con la pausa local (timeScale 0) la mecha se congela
 
         if (countdown <= (cosmetic ? -CosmeticGrace : 0f))
@@ -111,6 +129,18 @@ public class Grenade1 : MonoBehaviour
             exploded = true;
             Explode();
         }
+    }
+
+    // US 074, CA2: el primer toque con el escenario arranca la mecha de la de humo; los rebotes no la reinician.
+    void OnCollisionEnter(Collision choque)
+    {
+        if (exploded || tocoEscenario || !EsperaChoque) return;
+        Collider otro = choque.collider;
+        if (otro == null || otro.isTrigger) return;
+        if (otro.GetComponentInParent<HealthSystem>() != null) return; // un jugador o un enemigo no cuenta
+        if (otro.GetComponentInParent<ArmaEnPiso>() != null) return;   // un arma tirada tampoco
+        if (otro.GetComponentInParent<Grenade1>() != null) return;     // ni otra granada
+        tocoEscenario = true; // countdown sigue en "delay": desde ahora corre 1 s (la mecha de la ficha)
     }
 
     // Los números salen de la ficha (ShopItem): mecha, alcance y daño por tramo.
