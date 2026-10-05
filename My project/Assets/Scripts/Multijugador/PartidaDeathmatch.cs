@@ -133,7 +133,7 @@ public class PartidaDeathmatch : MonoBehaviour
         anotado.Clear();
         ArrancarMusica();
         if (PruebaSolo.Activa)
-            Debug.Log("Prueba solo (Deathmatch): F9 suma una baja tuya · F8 te deja en 19 bajas · F11 deja el reloj en 1:05.");
+            Debug.Log("Prueba solo (Deathmatch): F9 suma una baja tuya · F8 te deja en 19 bajas · F11 deja el reloj en 1:05 · F10 lo deja en 0:03.");
     }
 
     private void OnDestroy()
@@ -240,6 +240,7 @@ public class PartidaDeathmatch : MonoBehaviour
                 MatchHud.HideBanner();
                 MatchHud.SetHint(null);
                 if (partida != null) partida.Aviso(null);
+                ResultadoDeathmatch.Mostrar(); // US 142
                 Terminada?.Invoke();
                 break;
         }
@@ -354,6 +355,8 @@ public class PartidaDeathmatch : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.F9)) ContarBaja(yo, 0, false);
         else if (Input.GetKeyDown(KeyCode.F8))
             Sala.SetCustomProperties(new Hashtable { { PropBajas + yo, BajasDeAviso - 1 }, { PropCuando + yo, Ahora } });
+        else if (Input.GetKeyDown(KeyCode.F10))
+            Sala.SetCustomProperties(new Hashtable { { PropFin, Ahora + Ms(3f) } });
         else if (Input.GetKeyDown(KeyCode.F11))
             Sala.SetCustomProperties(new Hashtable { { PropFin, Ahora + Ms(SegundosDeAviso + 5f) } });
     }
