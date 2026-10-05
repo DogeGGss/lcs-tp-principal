@@ -93,11 +93,14 @@ public sealed class RiftwalkerBrandingImporter : AssetPostprocessor
     internal static bool Configure(TextureImporter importer, bool sprite)
     {
         var type = sprite ? TextureImporterType.Sprite : TextureImporterType.Default;
-        bool changed = importer.textureType != type || importer.alphaSource != TextureImporterAlphaSource.FromInput
+        // A bare .meta (only its guid) can import the PNG as a Cubemap, and then neither the icon nor the logo loads.
+        bool changed = importer.textureShape != TextureImporterShape.Texture2D
+            || importer.textureType != type || importer.alphaSource != TextureImporterAlphaSource.FromInput
             || !importer.alphaIsTransparency || importer.mipmapEnabled || importer.maxTextureSize != 4096
             || importer.textureCompression != TextureImporterCompression.Uncompressed
             || importer.npotScale != TextureImporterNPOTScale.None || importer.wrapMode != TextureWrapMode.Clamp
             || !importer.sRGBTexture || importer.filterMode != FilterMode.Bilinear;
+        importer.textureShape = TextureImporterShape.Texture2D;
         importer.textureType = type;
         importer.alphaSource = TextureImporterAlphaSource.FromInput;
         importer.alphaIsTransparency = true;
