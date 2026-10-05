@@ -418,3 +418,18 @@ fecha_utc,us_numero,us_titulo,estado_anterior,estado_nuevo,tiempo_en_estado_ante
 2026-10-05T08:20:45.172691+00:00,350,US 209. Ventana propia del launcher,Todo,LPR,6h 26m,23161,https://github.com/DogeGGss/lcs-tp-principal/issues/350
 2026-10-05T08:20:45.172691+00:00,351,US 210. Publicar el launcher en su propio release,Todo,LPR,6h 26m,23161,https://github.com/DogeGGss/lcs-tp-principal/issues/351
 2026-10-05T08:20:45.172691+00:00,352,US 211. Proteger las descargas y la instalación,Todo,LPR,6h 26m,23161,https://github.com/DogeGGss/lcs-tp-principal/issues/352
+2026-10-05T23:12:31.591868+00:00,191,US 131. Plantar el dispositivo,LPR,TESTING,2d 21h 49m,251387,https://github.com/DogeGGss/lcs-tp-principal/issues/191
+2026-10-05T23:12:31.591868+00:00,265,US 173. Posicionamiento de manos al sostener armas,LPR,R2D,1d 10h 34m,124469,https://github.com/DogeGGss/lcs-tp-principal/issues/265
+2026-10-05T23:12:31.591868+00:00,190,US 130. Portar y soltar el dispositivo,LPR,TESTING,2d 21h 49m,251387,https://github.com/DogeGGss/lcs-tp-principal/issues/190
+2026-10-05T23:12:31.591868+00:00,76,US 028. Sincronizar disparos,LPR,R2D,6d 15h 49m,575361,https://github.com/DogeGGss/lcs-tp-principal/issues/76
+2026-10-05T23:12:31.591868+00:00,78,US 030. Sincronizar muerte y reaparición,LPR,R2D,6d 15h 49m,575361,https://github.com/DogeGGss/lcs-tp-principal/issues/78
+2026-10-05T23:12:31.591868+00:00,77,US 029. Sincronizar daño,LPR,R2D,6d 15h 49m,575361,https://github.com/DogeGGss/lcs-tp-principal/issues/77
+2026-10-05T23:12:31.591868+00:00,83,US 034. Finalizar partida,LPR,R2D,4d 13h 51m,395470,https://github.com/DogeGGss/lcs-tp-principal/issues/83
+2026-10-05T23:12:31.591868+00:00,321,US 194. Minimapa,In Progress,LPR,1d 3h 6m,97608,https://github.com/DogeGGss/lcs-tp-principal/issues/321
+2026-10-05T23:12:31.591868+00:00,117,US 074. ARROJABLE 2 - Granada de humo,LPR,Done,2d 16h 26m,232012,https://github.com/DogeGGss/lcs-tp-principal/issues/117
+2026-10-05T23:12:31.591868+00:00,196,US 136. Iniciar partida Deathmatch,Todo,LPR,3d 22h 16m,339408,https://github.com/DogeGGss/lcs-tp-principal/issues/196
+2026-10-05T23:12:31.591868+00:00,198,US 138. Elegir equipo en Deathmatch,Blocked,LPR,10d 56m,867363,https://github.com/DogeGGss/lcs-tp-principal/issues/198
+2026-10-05T23:12:31.591868+00:00,199,US 139. Curación por baja,Blocked,In Progress,10d 56m,867363,https://github.com/DogeGGss/lcs-tp-principal/issues/199
+2026-10-05T23:12:31.591868+00:00,200,US 140. Puntuación y victoria en Deathmatch,Blocked,LPR,10d 56m,867363,https://github.com/DogeGGss/lcs-tp-principal/issues/200
+2026-10-05T23:12:31.591868+00:00,201,US 141. Mostrar marcador de Deathmatch,In Progress,LPR,4d 23h 29m,430177,https://github.com/DogeGGss/lcs-tp-principal/issues/201
+2026-10-05T23:12:31.591868+00:00,202,US 142. Mostrar resultado de Deathmatch,Blocked,In Progress,10d 56m,867363,https://github.com/DogeGGss/lcs-tp-principal/issues/202
