@@ -33,7 +33,7 @@ public class NotaPO : MonoBehaviour
     [TextArea(5, 12)]
     [SerializeField] private string works =
         "Movimiento: caminar, correr, saltar y agacharse, con gravedad, colisiones y reaparición si caés del mapa.\n" +
-        "Armas: pistola Línea A, fusil Mitre y cuchillo. Daño por zona (cabeza, cuerpo y piernas) y por distancia, dispersión, retroceso, recarga y marcas de bala en las paredes.\n" +
+        "Armas: pistola La Porteña, fusil Mitre y cuchillo. Daño por zona (cabeza, cuerpo y piernas) y por distancia, dispersión, retroceso, recarga y marcas de bala en las paredes.\n" +
         "Tienda: en la fase de compra y dentro de la zona de compra se puede comprar, vender y deshacer compras. Los escudos protegen de verdad.\n" +
         "HUD: vida, escudo, arma y munición, mira y marcador de impacto. La habilidad muestra su tiempo de recarga.\n" +
         "Menús: principal con música, opciones de video, sonido y controles, nombre de jugador, créditos y pausa (seguir, reiniciar, opciones y salir).";
@@ -41,7 +41,7 @@ public class NotaPO : MonoBehaviour
     [Tooltip("Un punto por renglón. Lo que va antes de \":\" sale resaltado.")]
     [TextArea(5, 12)]
     [SerializeField] private string missing =
-        "Resto de las armas: la tienda muestra todas, pero por ahora solo se usan la pistola Línea A, el Mitre y el cuchillo. Las demás se pueden comprar, pero todavía no se pueden usar.\n" +
+        "Resto de las armas: la tienda muestra todas, pero por ahora solo se usan la pistola La Porteña, el Mitre y el cuchillo. Las demás se pueden comprar, pero todavía no se pueden usar.\n" +
         "Granadas: se compran, pero todavía no se pueden tirar.\n" +
         "Habilidad: el Silbato carga y se ve en el HUD, pero todavía no tiene efecto.\n" +
         "Modos y multijugador: Táctico y Deathmatch muestran la sala, pero falta la conexión online. Zombie todavía no tiene zombis: Jugar abre el mapa de la universidad para recorrerlo con las armas, la tienda y el HUD.\n" +
