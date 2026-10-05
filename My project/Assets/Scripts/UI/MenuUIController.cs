@@ -35,6 +35,7 @@ public class MenuUIController : MonoBehaviour
         OcultarTodosLosPaneles();
 
         panelMenuPrincipal.SetActive(true);
+        VersionDelJuego.MostrarEnMenu(panelMenuPrincipal.transform);
 
         overlayTransicion.alpha = 0f;
         overlayTransicion.blocksRaycasts = false;

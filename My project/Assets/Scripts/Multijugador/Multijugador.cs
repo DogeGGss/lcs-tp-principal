@@ -80,13 +80,30 @@ public class Multijugador : MonoBehaviourPunCallbacks, IOnEventCallback
     // Se llama al abrir el andén de Táctico o Deathmatch, así al crear o entrar ya está conectado.
     public void Conectar()
     {
+        StartCoroutine(ConectarConVersion());
+    }
+
+    private System.Collections.IEnumerator ConectarConVersion()
+    {
+        string aviso = null;
+        yield return VersionDelJuego.Comprobar(resultado => aviso = resultado);
+        if (aviso != null) { Fallar(aviso); yield break; }
+        ConectarAhora();
+    }
+
+    private void ConectarAhora()
+    {
         if (PhotonNetwork.IsConnected) return;
         PhotonNetwork.AutomaticallySyncScene = true;
-        PhotonNetwork.GameVersion = Application.version; // solo se juntan jugadores con la misma versión del juego
         PhotonNetwork.SendRate = 30;
         PhotonNetwork.SerializationRate = 15;
         PhotonNetwork.NickName = NombreBase();
-        if (!PhotonNetwork.ConnectUsingSettings()) Fallar("No se pudo conectar. Revisá tu conexión.");
+        // Solo se juntan jugadores con la misma versión del juego (US 204). ConnectUsingSettings pisa GameVersion con la
+        // AppVersion de PhotonServerSettings (vacía), así que la versión va en una copia de esa configuración.
+        var ajustes = PhotonNetwork.PhotonServerSettings == null ? null : PhotonNetwork.PhotonServerSettings.AppSettings.CopyTo(new AppSettings());
+        if (ajustes != null) ajustes.AppVersion = Application.version;
+        if (ajustes == null || !PhotonNetwork.ConnectUsingSettings(ajustes, PhotonNetwork.PhotonServerSettings.StartInOfflineMode))
+            Fallar("No se pudo conectar. Revisá tu conexión.");
     }
 
     public void CrearSala(GameMode modo)
@@ -94,7 +111,7 @@ public class Multijugador : MonoBehaviourPunCallbacks, IOnEventCallback
         pedido = Pedido.Crear;
         modoPedido = modo;
         intentos = 0;
-        Seguir();
+        StartCoroutine(SeguirConVersion());
     }
 
     public void UnirseASala(string codigo, GameMode modo)
@@ -102,6 +119,14 @@ public class Multijugador : MonoBehaviourPunCallbacks, IOnEventCallback
         pedido = Pedido.Unirse;
         modoPedido = modo;
         codigoPedido = codigo.ToUpperInvariant();
+        StartCoroutine(SeguirConVersion());
+    }
+
+    private System.Collections.IEnumerator SeguirConVersion()
+    {
+        string aviso = null;
+        yield return VersionDelJuego.Comprobar(resultado => aviso = resultado);
+        if (aviso != null) { Fallar(aviso); yield break; }
         Seguir();
     }
 

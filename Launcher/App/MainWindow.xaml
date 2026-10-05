@@ -1,0 +1,139 @@
+<Window x:Class="Riftwalker.Launcher.MainWindow" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+ Title="Project Riftwalker" Icon="pack://application:,,,/Assets/riftwalker.ico" SizeToContent="WidthAndHeight" WindowStyle="None" AllowsTransparency="True" ResizeMode="CanMinimize" WindowStartupLocation="CenterScreen" Background="Transparent" Foreground="#F3F4F6" FontFamily="{StaticResource BodyFont}" FontSize="15" UseLayoutRounding="True">
+ <!-- Own frame instead of Windows': a panel with cut corners (large top-left and bottom-right, small at the other two),
+      12 px bigger on each side for the shadow; that margin is transparent and lets clicks through. The panel has a
+      logical size (1120 x 700, or 16:9 in the large size) and the whole window is scaled (Escala): the three sizes in
+      Ajustes look the same. The shape and the corner strokes are built in code for the logical size (ArmarMarco). -->
+ <Grid x:Name="Raiz">
+ <Grid>
+  <Grid.LayoutTransform><ScaleTransform x:Name="Escala" ScaleX="1" ScaleY="1"/></Grid.LayoutTransform>
+ <Grid x:Name="Marco" Margin="12" Width="1120" Height="700">
+  <Path x:Name="Fondo" Fill="#0A0C11">
+   <Path.Effect><DropShadowEffect Color="#000000" BlurRadius="18" ShadowDepth="0" Opacity="0.8"/></Path.Effect>
+  </Path>
+ <Grid x:Name="Shell">
+  <Grid.RowDefinitions><RowDefinition Height="70"/><RowDefinition Height="*"/><RowDefinition Height="44"/></Grid.RowDefinitions>
+  <Border BorderBrush="#272C35" BorderThickness="0,0,0,1" Padding="32,0,16,0" Background="Transparent" MouseLeftButtonDown="Arrastrar">
+   <Grid><StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+    <Path Data="M 16,0 L 3,19 L 13,19 L 7,35 L 29,12 L 18,12 L 24,0 Z" Fill="#F29A38" Width="30" Height="36" Margin="0,0,14,0"/>
+    <TextBlock Text="RIFTWALKER" FontFamily="{StaticResource DisplayFont}" FontWeight="Bold" FontSize="27" VerticalAlignment="Center"/>
+    <Border Background="#1E241E" CornerRadius="3" Margin="22,0,0,0" Padding="10,4" VerticalAlignment="Center"><TextBlock x:Name="ChannelBadge" Text="ESTABLE" Foreground="#3DDC97" FontSize="11" FontWeight="SemiBold"/></Border>
+   </StackPanel><StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
+    <Button Content="GUÍA DEL JUEGO ↗" Click="Guide_Click" Background="Transparent" BorderThickness="0" Margin="0,0,12,0"/>
+    <Button Content="⚙  AJUSTES" Click="Settings_Click" AutomationProperties.Name="Abrir ajustes del launcher"/>
+    <Border Width="1" Height="26" Background="#303743" Margin="18,0,8,0"/>
+    <Button Style="{StaticResource BotonVentana}" Click="Minimizar_Click" ToolTip="Minimizar" AutomationProperties.Name="Minimizar">
+     <Path Data="M 0,0.5 L 12,0.5" Stroke="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}" StrokeThickness="1.5" Width="12" Height="2"/>
+    </Button>
+    <Button Style="{StaticResource BotonCerrar}" Click="Cerrar_Click" ToolTip="Cerrar" AutomationProperties.Name="Cerrar el launcher">
+     <Path Data="M 0,0 L 11,11 M 11,0 L 0,11" Stroke="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}" StrokeThickness="1.5" Width="11" Height="11"/>
+    </Button>
+   </StackPanel></Grid>
+  </Border>
+  <Grid Grid.Row="1">
+   <Grid.RowDefinitions><RowDefinition Height="188"/><RowDefinition Height="*"/></Grid.RowDefinitions>
+   <Border ClipToBounds="True" MouseLeftButtonDown="Arrastrar">
+    <Grid>
+     <Grid.Background><LinearGradientBrush StartPoint="0,0" EndPoint="1,0.8"><GradientStop Color="#101821"/><GradientStop Color="#17232B" Offset="0.55"/><GradientStop Color="#272017" Offset="1"/></LinearGradientBrush></Grid.Background>
+     <Viewbox HorizontalAlignment="Right" Width="680" Stretch="Fill" Opacity="0.7">
+      <Canvas Width="680" Height="240" ClipToBounds="True">
+       <Path Data="M 0,240 L 365,75 L 680,240 M 80,240 L 365,75 L 600,240 M 180,240 L 365,75 L 500,240 M 0,216 L 680,216 M 85,182 L 608,182 M 180,147 L 541,147 M 260,116 L 457,116" Stroke="#41464A" StrokeThickness="1"/>
+       <Path Data="M 210,142 L 210,35 L 288,35 L 288,103 M 220,142 L 220,47 L 277,47 L 277,108 M 461,127 L 461,30 L 590,30 L 590,197 M 473,137 L 473,43 L 578,43 L 578,191 M 295,102 L 295,18 L 315,18 L 315,92 M 407,98 L 407,18 L 428,18 L 428,111" Stroke="#64717B" StrokeThickness="2"/>
+       <Path Data="M 498,-20 L 369,84 L 425,84 L 282,259 L 345,107 L 305,107 Z" Fill="#F29A38" Opacity="0.08"/>
+       <Path x:Name="Rift" Data="M 498,-20 L 369,84 L 411,84 L 282,259" Stroke="#F29A38" StrokeThickness="3">
+        <Path.Effect><DropShadowEffect Color="#F29A38" BlurRadius="28" ShadowDepth="0" Opacity="0.7"/></Path.Effect>
+        <Path.Triggers><EventTrigger RoutedEvent="Loaded"><BeginStoryboard><Storyboard RepeatBehavior="Forever" AutoReverse="True"><DoubleAnimation Storyboard.TargetProperty="Opacity" From="0.45" To="1" Duration="0:0:2.8"/></Storyboard></BeginStoryboard></EventTrigger></Path.Triggers>
+       </Path>
+       <Ellipse Width="6" Height="6" Fill="#F29A38" Canvas.Left="210" Canvas.Top="33"/><Ellipse Width="6" Height="6" Fill="#4CC3FF" Canvas.Left="461" Canvas.Top="28"/>
+      </Canvas>
+     </Viewbox>
+     <Border><Border.Background><LinearGradientBrush><GradientStop Color="#F20A0C11"/><GradientStop Color="#A00A0C11" Offset="0.43"/><GradientStop Color="#000A0C11" Offset="1"/></LinearGradientBrush></Border.Background></Border>
+     <StackPanel Margin="34,22,0,0" HorizontalAlignment="Left">
+      <TextBlock Text="EL PRÓXIMO CRUCE ES TUYO" Foreground="#F29A38" FontSize="12" FontWeight="SemiBold"/>
+      <TextBlock Text="PROJECT" FontSize="28" FontWeight="Bold" FontFamily="{StaticResource DisplayFont}" Margin="0,6,0,-11"/>
+      <TextBlock Text="RIFTWALKER" FontSize="66" FontWeight="Bold" FontFamily="{StaticResource DisplayFont}"/>
+      <TextBlock Text="Elegí tu equipo. Prepará tu próxima partida." Foreground="#AEB5C0" FontSize="16" Margin="2,3,0,0"/>
+     </StackPanel>
+     <TextBlock Text="01 / PUNTO DE ENCUENTRO" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="0,0,28,20" Foreground="#8E96A3" FontSize="11"/>
+    </Grid>
+   </Border>
+   <Grid Grid.Row="1" Margin="32,25,32,20">
+    <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="30"/><ColumnDefinition Width="340"/></Grid.ColumnDefinitions>
+    <Grid><Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="*"/></Grid.RowDefinitions>
+     <Grid Margin="0,0,0,14"><StackPanel><TextBlock Text="NOVEDADES DEL ANDÉN" FontFamily="{StaticResource DisplayFont}" FontWeight="Bold" FontSize="23"/><TextBlock x:Name="NotesSubtitle" Text="Lo nuevo, antes de entrar." Foreground="#8E96A3" FontSize="13" Margin="0,3,0,0"/></StackPanel>
+      <ComboBox x:Name="ReleasePicker" HorizontalAlignment="Right" Width="180" VerticalAlignment="Center" SelectionChanged="Release_Changed" DisplayMemberPath="Label" AutomationProperties.Name="Versión de las notas del parche"/>
+     </Grid>
+     <Border Grid.Row="1" Background="#10141B" BorderBrush="#272C35" BorderThickness="1" CornerRadius="4" Padding="20,15">
+      <FlowDocumentScrollViewer x:Name="Notes" VerticalScrollBarVisibility="Auto" IsToolBarVisible="False" Foreground="#F3F4F6" Background="Transparent"/>
+     </Border>
+    </Grid>
+    <!-- The main action stays visible at any window size: progress and button are docked at the bottom, and the state
+         text above scrolls if it does not fit. -->
+    <Border Grid.Column="2" Background="#141922" BorderBrush="#303743" BorderThickness="1" CornerRadius="4" Padding="23,21">
+     <DockPanel LastChildFill="True">
+      <Grid DockPanel.Dock="Bottom" Margin="0,6,0,0"><Button x:Name="Retry" Content="↻ Reintentar" Click="Retry_Click" Padding="5,5" BorderThickness="0" Background="Transparent" HorizontalAlignment="Left"/>
+       <Button x:Name="Cancel" Content="Cancelar" Click="Cancel_Click" Visibility="Collapsed" Padding="5,5" BorderThickness="0" Background="Transparent" HorizontalAlignment="Right"/>
+      </Grid>
+      <Button x:Name="MainAction" DockPanel.Dock="Bottom" Content="BUSCANDO…" Click="Main_Click" Background="#F29A38" Foreground="#1A1106" BorderBrush="#F29A38" FontFamily="{StaticResource DisplayFont}" FontSize="25" FontWeight="Bold" Height="57" IsEnabled="False"/>
+      <StackPanel DockPanel.Dock="Bottom" Margin="0,12,0,14">
+       <ProgressBar x:Name="Progress" Height="5" Minimum="0" Maximum="100" Foreground="#F29A38" Background="#303743" BorderThickness="0" IsIndeterminate="True"/>
+       <TextBlock x:Name="ProgressText" Foreground="#8E96A3" FontSize="12" Margin="0,8,0,0" TextWrapping="Wrap"/>
+      </StackPanel>
+      <ScrollViewer VerticalScrollBarVisibility="Auto" Focusable="False">
+       <StackPanel><TextBlock Text="TU PRÓXIMA PARTIDA" FontSize="12" Foreground="#8E96A3" FontWeight="SemiBold"/>
+        <TextBlock x:Name="StateTitle" Text="PREPARANDO EL ANDÉN" FontFamily="{StaticResource DisplayFont}" FontWeight="Bold" FontSize="28" TextWrapping="Wrap" Margin="0,8,0,8"/>
+        <TextBlock x:Name="InstalledText" Text="Juego sin instalar" Foreground="#AEB5C0" FontSize="14"/>
+        <Border Background="#272C35" Height="1" Margin="0,14"/>
+        <TextBlock x:Name="StatusText" Text="Buscando actualizaciones…" TextWrapping="Wrap" LineHeight="20" AutomationProperties.LiveSetting="Polite"/>
+       </StackPanel>
+      </ScrollViewer>
+     </DockPanel>
+    </Border>
+   </Grid>
+  </Grid>
+  <Border Grid.Row="2" BorderBrush="#272C35" BorderThickness="0,1,0,0" Padding="32,0"><Grid>
+   <StackPanel Orientation="Horizontal" VerticalAlignment="Center"><Ellipse x:Name="ConnectionDot" Width="6" Height="6" Fill="#8E96A3" Margin="0,0,9,0"/><TextBlock x:Name="ConnectionText" Text="CONECTANDO" FontSize="11" Foreground="#8E96A3"/></StackPanel>
+   <TextBlock x:Name="LauncherVersionText" HorizontalAlignment="Right" VerticalAlignment="Center" Text="PROJECT RIFTWALKER / LAUNCHER" FontSize="11" Foreground="#8E96A3"/>
+  </Grid></Border>
+  <Border x:Name="SettingsPanel" Grid.RowSpan="3" Visibility="Collapsed" Background="#E6090B10">
+   <Border Width="570" VerticalAlignment="Center" HorizontalAlignment="Center" Background="#141922" BorderBrush="#F29A38" BorderThickness="1,3,1,1" Padding="32">
+    <StackPanel><TextBlock x:Name="SettingsTitle" Text="TU ANDÉN, A TU MANERA" FontSize="32" FontWeight="Bold" FontFamily="{StaticResource DisplayFont}"/>
+     <TextBlock x:Name="SetupHint" Text="Elegí dónde guardar el juego y qué versiones recibir." Foreground="#8E96A3" TextWrapping="Wrap" Margin="0,8,0,22"/>
+     <TextBlock Text="CARPETA DE INSTALACIÓN" FontSize="12" Margin="0,0,0,8"/>
+     <Grid><Grid.ColumnDefinitions><ColumnDefinition/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions><TextBox x:Name="InstallPath" AutomationProperties.Name="Carpeta de instalación"/><Button x:Name="Browse" Grid.Column="1" Content="Elegir…" Click="Browse_Click" Margin="8,0,0,0"/></Grid>
+     <CheckBox x:Name="Experimental" Content="Versiones experimentales" Margin="0,25,0,8"/>
+     <TextBlock Text="Probá lo que está en desarrollo. Solo podrás jugar online con personas que tengan exactamente tu versión." TextWrapping="Wrap" Foreground="#8E96A3" LineHeight="21"/>
+     <TextBlock Text="TAMAÑO DE LA VENTANA" FontSize="12" Margin="0,24,0,8"/>
+     <UniformGrid Rows="1" Columns="3">
+      <RadioButton x:Name="TamanoChica" GroupName="Tamano" Content="Chica" Style="{StaticResource Segmento}"/>
+      <RadioButton x:Name="TamanoNormal" GroupName="Tamano" Content="Normal" Style="{StaticResource Segmento}" Margin="6,0"/>
+      <RadioButton x:Name="TamanoGrande" GroupName="Tamano" Content="Grande · 16:9" Style="{StaticResource Segmento}"/>
+     </UniformGrid>
+     <TextBlock Text="Grande ocupa casi toda la pantalla." TextWrapping="Wrap" Foreground="#8E96A3" FontSize="13" Margin="0,8,0,0"/>
+     <TextBlock x:Name="SettingsError" Foreground="#FF5C5C" TextWrapping="Wrap" Margin="0,15,0,0"/>
+     <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,22,0,0"><Button Content="Volver" Click="CloseSettings_Click" Margin="0,0,10,0"/><Button x:Name="SaveSettings" Content="Guardar" Click="SaveSettings_Click" Background="#F29A38" Foreground="#1A1106"/></StackPanel>
+    </StackPanel>
+   </Border>
+  </Border>
+ </Grid>
+  <!-- Frame on top of the content: thin outline, two glowing orange strokes along the large cut corners (like the rift
+       in the banner) with a terminal at each end, and a cyan touch on the small top-right corner. -->
+  <Canvas IsHitTestVisible="False">
+   <Path x:Name="Contorno" Stroke="#343B47" StrokeThickness="1"/>
+   <Path Data="M 0.5,118 L 0.5,30.5 L 30.5,0.5 L 236,0.5" Stroke="#F29A38" StrokeThickness="2">
+    <Path.Effect><DropShadowEffect Color="#F29A38" BlurRadius="12" ShadowDepth="0" Opacity="0.85"/></Path.Effect>
+   </Path>
+   <Rectangle Canvas.Left="236" Canvas.Top="-2" Width="5" Height="5" Fill="#F29A38"/>
+   <Rectangle Canvas.Left="-2" Canvas.Top="118" Width="5" Height="5" Fill="#F29A38"/>
+   <Path x:Name="AcentoAbajo" Stroke="#F29A38" StrokeThickness="2">
+    <Path.Effect><DropShadowEffect Color="#F29A38" BlurRadius="12" ShadowDepth="0" Opacity="0.85"/></Path.Effect>
+   </Path>
+   <Rectangle x:Name="PuntaAbajo" Width="5" Height="5" Fill="#F29A38"/>
+   <Rectangle x:Name="PuntaDerecha" Width="5" Height="5" Fill="#F29A38"/>
+   <Path x:Name="AcentoCeleste" Stroke="#4CC3FF" StrokeThickness="1.5" Opacity="0.8"/>
+   <Path x:Name="AcentoGris" Stroke="#8E96A3" StrokeThickness="1.5" Opacity="0.6"/>
+  </Canvas>
+ </Grid>
+ </Grid>
+ </Grid>
+</Window>
