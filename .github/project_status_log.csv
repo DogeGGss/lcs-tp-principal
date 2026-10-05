@@ -401,3 +401,20 @@ fecha_utc,us_numero,us_titulo,estado_anterior,estado_nuevo,tiempo_en_estado_ante
 2026-10-05T01:54:43.483550+00:00,39,US 009. Apuntar,LPR,TESTING,3d 16h 33m,318802,https://github.com/DogeGGss/lcs-tp-principal/issues/39
 2026-10-05T01:54:43.483550+00:00,108,US 057. Mostrar información de la partida,TESTING,R2D,2d 7h 22m,199366,https://github.com/DogeGGss/lcs-tp-principal/issues/108
 2026-10-05T01:54:43.483550+00:00,280,US 178. Diseño del arsenal,TESTING,R2D,2d 3h 24m,185044,https://github.com/DogeGGss/lcs-tp-principal/issues/280
+2026-10-05T08:20:45.172691+00:00,253,US 172. Personalizar la mira,TESTING,R2D,9h 16m,33401,https://github.com/DogeGGss/lcs-tp-principal/issues/253
+2026-10-05T08:20:45.172691+00:00,39,US 009. Apuntar,TESTING,R2D,6h 26m,23161,https://github.com/DogeGGss/lcs-tp-principal/issues/39
+2026-10-05T08:20:45.172691+00:00,218,US 156. Pájaros en la fase de compra,Todo,LPR,3d 7h 25m,285901,https://github.com/DogeGGss/lcs-tp-principal/issues/218
+2026-10-05T08:20:45.172691+00:00,219,US 157. Disparar sin gastar balas en la fase de compra,Blocked,LPR,9d 7h 39m,805181,https://github.com/DogeGGss/lcs-tp-principal/issues/219
+2026-10-05T08:20:45.172691+00:00,220,US 158. Mostrar puntaje al acertar un pájaro,Blocked,LPR,9d 7h 39m,805181,https://github.com/DogeGGss/lcs-tp-principal/issues/220
+2026-10-05T08:20:45.172691+00:00,337,US 200. Abrir el juego desde el launcher,Todo,LPR,1d 1h 58m,93538,https://github.com/DogeGGss/lcs-tp-principal/issues/337
+2026-10-05T08:20:45.172691+00:00,338,US 201. Buscar actualizaciones,Todo,LPR,1d 1h 58m,93538,https://github.com/DogeGGss/lcs-tp-principal/issues/338
+2026-10-05T08:20:45.172691+00:00,339,US 202. Descargar e instalar la actualización,Blocked,LPR,1d 1h 58m,93538,https://github.com/DogeGGss/lcs-tp-principal/issues/339
+2026-10-05T08:20:45.172691+00:00,340,US 203. Ver las notas del parche,Blocked,LPR,1d 1h 58m,93538,https://github.com/DogeGGss/lcs-tp-principal/issues/340
+2026-10-05T08:20:45.172691+00:00,341,US 204. Jugar online solo con la misma versión,Todo,LPR,1d 1h 58m,93538,https://github.com/DogeGGss/lcs-tp-principal/issues/341
+2026-10-05T08:20:45.172691+00:00,342,US 205. Publicar una versión para el launcher,Todo,LPR,1d 1h 58m,93538,https://github.com/DogeGGss/lcs-tp-principal/issues/342
+2026-10-05T08:20:45.172691+00:00,343,US 206. Instalar el launcher,Todo,LPR,1d 1h 58m,93538,https://github.com/DogeGGss/lcs-tp-principal/issues/343
+2026-10-05T08:20:45.172691+00:00,344,US 207. Actualizar el launcher solo,Blocked,LPR,1d 1h 58m,93538,https://github.com/DogeGGss/lcs-tp-principal/issues/344
+2026-10-05T08:20:45.172691+00:00,345,US 208. Probar versiones experimentales desde el launcher,Blocked,LPR,1d 1h 58m,93538,https://github.com/DogeGGss/lcs-tp-principal/issues/345
+2026-10-05T08:20:45.172691+00:00,350,US 209. Ventana propia del launcher,Todo,LPR,6h 26m,23161,https://github.com/DogeGGss/lcs-tp-principal/issues/350
+2026-10-05T08:20:45.172691+00:00,351,US 210. Publicar el launcher en su propio release,Todo,LPR,6h 26m,23161,https://github.com/DogeGGss/lcs-tp-principal/issues/351
+2026-10-05T08:20:45.172691+00:00,352,US 211. Proteger las descargas y la instalación,Todo,LPR,6h 26m,23161,https://github.com/DogeGGss/lcs-tp-principal/issues/352
