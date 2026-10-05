@@ -765,10 +765,11 @@ body.capture,body.capture-ms,body.capture-cr{padding-left:0!important}
     <div class="fact"><b>1920 × 1080</b><span>pantalla de referencia</span></div>
   </div>
   <div class="callout" style="margin-top:22px"><b>Cómo trabajamos:</b> primero el diseño y después el código. Antes de hacer una pantalla o un arma nueva, se arma su maqueta o su ficha acá y se escribe su historia con el link a esta guía (como US 175). Cuando se termina, se actualizan la historia y esta guía con los valores finales.</div>
-  <p class="soft" style="margin-top:14px">Estados: <span class="st st-ok">En el juego</span> <span class="st st-mid">A medias</span> <span class="st st-todo">Falta hacerlo</span> <span class="st st-idea">Solo diseño</span>. Los "US ###" llevan a su historia en GitHub. Actualizada el 30/09/2026.</p>
+  <div class="callout" style="margin-top:12px"><b>Para jugar:</b> bajá el launcher una sola vez desde <a href="https://github.com/DogeGGss/lcs-tp-principal/releases/download/launcher/Riftwalker-Launcher.exe">Riftwalker-Launcher.exe</a>. Instala el juego, lo mantiene actualizado y muestra las notas de cada versión. Más detalles en <a href="#launcher">Launcher</a>.</div>
+  <p class="soft" style="margin-top:14px">Estados: <span class="st st-ok">En el juego</span> <span class="st st-mid">A medias</span> <span class="st st-todo">Falta hacerlo</span> <span class="st st-idea">Solo diseño</span>. Los "US ###" llevan a su historia en GitHub. Actualizada el 05/10/2026.</p>
   <nav class="parts" aria-label="Partes de la guía">
     <a href="#estilo"><div class="pn">Parte 1</div><div class="pt">Identidad</div><div class="ps">Colores, tipografías, medidas, piezas y reglas para el código.</div></a>
-    <a href="#tienda"><div class="pn">Parte 2</div><div class="pt">Pantallas</div><div class="ps">Tienda, HUD, selección de modo, créditos y el resto de los menús.</div></a>
+    <a href="#tienda"><div class="pn">Parte 2</div><div class="pt">Pantallas</div><div class="ps">Tienda, HUD, selección de modo, créditos, el launcher y el resto de los menús.</div></a>
     <a href="#danio"><div class="pn">Parte 3</div><div class="pt">Combate</div><div class="ps">Daño, retroceso, arsenal, calculadora y cómo sumar un arma.</div></a>
     <a href="#eco"><div class="pn">Parte 4</div><div class="pt">Economía</div><div class="ps">Plata, puntos, escudos y granadas en cada modo.</div></a>
     <a href="#personajes"><div class="pn">Parte 5</div><div class="pt">Personajes</div><div class="ps">Los cuatro provisorios y qué tiene que definir su diseño.</div></a>
@@ -1424,6 +1425,43 @@ body.capture,body.capture-ms,body.capture-cr{padding-left:0!important}
   </div>
 </section>
 
+<section id="launcher">
+  <div class="sec-head"><h2>Launcher</h2><span class="sub">Instala el juego y lo mantiene al día</span> <span class="st st-mid">En prueba</span></div>
+  <p>Programa aparte, como el cliente de League of Legends, que se abre antes del juego: muestra las notas del parche, baja e instala la última versión y abre el juego. Online solo se juntan jugadores con la misma versión, así que para jugar con los demás hay que estar actualizado. Historias: US 200 a US 211.</p>
+  <p><a class="btn" style="display:inline-block;text-decoration:none" href="https://github.com/DogeGGss/lcs-tp-principal/releases/download/launcher/Riftwalker-Launcher.exe">Descargar el launcher</a></p>
+  <p class="soft">El link no cambia nunca: <code>github.com/DogeGGss/lcs-tp-principal/releases/download/launcher/Riftwalker-Launcher.exe</code>. Es un solo .exe de unos 60 MB y no hace falta instalar nada más.</p>
+
+  <h3 id="launcher-descargas">Qué se descarga y desde dónde</h3>
+  <div class="table-wrap"><table>
+    <tr><th>Qué</th><th>Para quién</th><th>Dónde</th></tr>
+    <tr><td><b>Proyecto de Unity</b></td><td>El equipo</td><td>El repositorio (git)</td></tr>
+    <tr><td><b>Launcher</b></td><td>Jugadores, una sola vez</td><td>Su propio release fijo, <code>launcher</code>, con el link de arriba (US 210)</td></tr>
+    <tr><td><b>Versiones del juego</b></td><td>El launcher: no se bajan a mano</td><td>Un release por versión, con el .zip del juego y su <code>release.json</code> (US 205)</td></tr>
+  </table></div>
+
+  <h3 id="launcher-instalar">Instalar y desinstalar</h3>
+  <ol style="margin:0;padding-left:20px">
+    <li>Bajá el .exe y abrilo. Si Windows muestra "Windows protegió su PC" (el .exe no tiene firma), tocá <b>Más información → Ejecutar de todas formas</b>.</li>
+    <li>La primera vez propone una carpeta (<code>%LOCALAPPDATA%Project Riftwalker</code>), crea los accesos directos en el escritorio y en el menú Inicio, y se vuelve a abrir desde ahí. No pide permisos de administrador (US 206).</li>
+    <li>Tocá <b>Instalar</b>: baja la última versión, la verifica y el botón pasa a <b>Jugar</b>. Para las versiones de prueba, prendé "Versiones experimentales" en Ajustes (US 208).</li>
+    <li>Para desinstalarlo, borrá esa carpeta y los dos accesos directos. Las opciones y las partidas se guardan aparte y no se borran.</li>
+  </ol>
+
+  <h3 id="launcher-ventana">Cómo se ve</h3>
+  <p>Ventana propia, sin el marco de Windows: un panel oscuro con las esquinas cortadas en diagonal, trazos naranjas en las esquinas grandes y botones propios para minimizar y cerrar. Usa los colores, las tipografías y los botones de la parte 1. En Ajustes se elige el tamaño: Chica, Normal (1120 × 700) o Grande (16:9, casi toda la pantalla). Se escala todo junto, así el diseño es el mismo en los tres (US 200, US 209).</p>
+
+  <div class="dev">
+    <h3 id="launcher-publicar">Para publicar una versión</h3>
+    <ol style="margin:0;padding-left:20px">
+      <li>En Unity, <b>Riftwalker → Publicar versión</b>: pide el número (X.Y.Z, o X.Y.Z-exp.N para una de prueba), lo pone como versión del proyecto y arma el build con su sello.</li>
+      <li>Escribí las notas con la plantilla (Qué trae, Cambios, Correcciones y Problemas conocidos) y corré <code>Launcher/tools/Publish-Release.ps1</code>: arma el .zip y el <code>release.json</code>, y con <code>-Upload -Publish</code> lo sube a GitHub.</li>
+      <li>Subí al repositorio el cambio de versión de <code>ProjectSettings/ProjectSettings.asset</code>, así el editor de todos tiene la misma versión que el release: Photon solo junta versiones iguales (US 204).</li>
+      <li>El launcher se publica aparte, en su release fijo, con <code>Launcher/tools/Publish-Launcher.ps1</code>, y se actualiza solo en las computadoras de los jugadores (US 207).</li>
+    </ol>
+    <p style="margin:10px 0 0">El código está en la carpeta <code>Launcher/</code> del repositorio (C# .NET con WPF), con el paso a paso completo en <code>Launcher/README.md</code>. Del lado del juego: <code>VersionDelJuego</code> (versión en el menú y aviso para actualizar) y <code>Multijugador</code>.</p>
+  </div>
+</section>
+
 <!-- ===================== PARTE 3 · COMBATE ===================== -->
 <div class="part"><span class="pn">3</span><div><h2>Combate</h2><p>Cómo se hace daño, cómo patea cada arma y cómo se suma una nueva. Historias: US 178, US 165, US 167 y US 168.</p></div></div>
 
@@ -1922,7 +1960,7 @@ $('#sprayCtl').addEventListener('click', e => {
 
 /* ---------- los "US ###" llevan a su historia en GitHub ---------- */
 const REPO = 'https://github.com/DogeGGss/lcs-tp-principal/issues/';
-const US_ISSUE = {"001":33,"002":35,"003":36,"004":38,"005":40,"006":56,"007":59,"008":60,"009":39,"010":41,"011":42,"012":113,"013":89,"014":47,"015":65,"016":66,"017":67,"018":68,"019":69,"020":70,"021":71,"022":72,"023":73,"024":74,"025":44,"026":46,"027":75,"028":76,"029":77,"030":78,"031":79,"032":80,"033":81,"034":83,"035":84,"036":85,"037":86,"038":87,"039":88,"040":94,"041":95,"042":96,"043":97,"044":98,"045":99,"046":100,"047":101,"048":102,"049":103,"050":104,"051":105,"052":106,"053":57,"054":58,"055":61,"056":107,"057":108,"058":109,"059":110,"060":111,"061":112,"062":119,"063":43,"064":45,"065":63,"066":64,"067":90,"068":91,"069":92,"070":93,"071":114,"072":115,"073":116,"074":117,"075":118,"076":51,"077":52,"078":53,"079":54,"080":55,"081":25,"082":31,"083":32,"084":29,"085":120,"112":146,"117":141,"118":163,"119":164,"120":165,"121":166,"122":167,"123":173,"124":174,"125":175,"126":177,"127":178,"128":187,"129":188,"130":190,"131":191,"132":192,"133":193,"134":194,"135":195,"136":196,"137":197,"138":198,"139":199,"140":200,"141":201,"142":202,"143":203,"144":204,"145":205,"146":206,"147":207,"148":208,"149":209,"150":210,"151":211,"153":214,"154":215,"155":216,"156":218,"157":219,"158":220,"159":221,"160":222,"161":225,"162":228,"163":229,"164":230,"165":231,"166":232,"167":244,"168":245,"169":246,"170":247,"171":252,"172":253,"173":265,"174":276,"175":277,"176":278,"177":279,"178":280,"179":281,"180":282,"182":284,"183":285,"184":287};
+const US_ISSUE = {"001":33,"002":35,"003":36,"004":38,"005":40,"006":56,"007":59,"008":60,"009":39,"010":41,"011":42,"012":113,"013":89,"014":47,"015":65,"016":66,"017":67,"018":68,"019":69,"020":70,"021":71,"022":72,"023":73,"024":74,"025":44,"026":46,"027":75,"028":76,"029":77,"030":78,"031":79,"032":80,"033":81,"034":83,"035":84,"036":85,"037":86,"038":87,"039":88,"040":94,"041":95,"042":96,"043":97,"044":98,"045":99,"046":100,"047":101,"048":102,"049":103,"050":104,"051":105,"052":106,"053":57,"054":58,"055":61,"056":107,"057":108,"058":109,"059":110,"060":111,"061":112,"062":119,"063":43,"064":45,"065":63,"066":64,"067":90,"068":91,"069":92,"070":93,"071":114,"072":115,"073":116,"074":117,"075":118,"076":51,"077":52,"078":53,"079":54,"080":55,"081":25,"082":31,"083":32,"084":29,"085":120,"112":146,"117":141,"118":163,"119":164,"120":165,"121":166,"122":167,"123":173,"124":174,"125":175,"126":177,"127":178,"128":187,"129":188,"130":190,"131":191,"132":192,"133":193,"134":194,"135":195,"136":196,"137":197,"138":198,"139":199,"140":200,"141":201,"142":202,"143":203,"144":204,"145":205,"146":206,"147":207,"148":208,"149":209,"150":210,"151":211,"153":214,"154":215,"155":216,"156":218,"157":219,"158":220,"159":221,"160":222,"161":225,"162":228,"163":229,"164":230,"165":231,"166":232,"167":244,"168":245,"169":246,"170":247,"171":252,"172":253,"173":265,"174":276,"175":277,"176":278,"177":279,"178":280,"179":281,"180":282,"182":284,"183":285,"184":287,"200":337,"201":338,"202":339,"203":340,"204":341,"205":342,"206":343,"207":344,"208":345,"209":350,"210":351,"211":352};
 function linkUS(root) {
   const base = root || document.querySelector('.wrap');
   const walker = document.createTreeWalker(base, NodeFilter.SHOW_TEXT, { acceptNode: n => /US \d{3}/.test(n.nodeValue) && !n.parentElement.closest('a,script,style,.stage,select,option,button') ? NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_REJECT });
@@ -3324,7 +3362,8 @@ renderRules(); renderOneShot(); renderArsenal(); renderCalcOptions(); renderCalc
     flag: '<path d="M5 21V4M5 4h11l-2 4 2 4H5"/>',
     board: '<rect x="3" y="4" width="18" height="16" rx="2"/><path d="M9 4v16M15 4v16"/>',
     code: '<path d="M8 7l-5 5 5 5M16 7l5 5-5 5"/>',
-    menu: '<path d="M4 7h16M4 12h16M4 17h16"/>'
+    menu: '<path d="M4 7h16M4 12h16M4 17h16"/>',
+    download: '<path d="M12 3v12M7 10l5 5 5-5M4 20h16"/>'
   };
   const svg = n => `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${ICON[n]}</svg>`;
   const NAV = [
@@ -3338,7 +3377,8 @@ renderRules(); renderOneShot(); renderArsenal(); renderCalcOptions(); renderCalc
       { id: 'marcador-zombie', t: 'Marcador de Zombie', i: 'rails', subs: [['marcador-zombie-estados', 'Estados'], ['marcador-zombie-medidas', 'Medidas'], ['marcador-zombie-codigo', 'Cómo hacerlo']] },
       { id: 'modos', t: 'Selección de modo', i: 'rails', subs: [['modos-codigo', 'Cómo está hecha']] },
       { id: 'creditos', t: 'Créditos', i: 'star' },
-      { id: 'pantallas', t: 'Otras pantallas', i: 'window', subs: [['pantalla-menu', 'Menú principal'], ['pantalla-opciones', 'Opciones'], ['pantalla-pausa', 'Pausa'], ['pantalla-sala', 'Sala online'],['pantalla-resultado', 'Resultado de partida'], ['pantalla-nueva', 'Para hacer una pantalla nueva']] }] },
+      { id: 'pantallas', t: 'Otras pantallas', i: 'window', subs: [['pantalla-menu', 'Menú principal'], ['pantalla-opciones', 'Opciones'], ['pantalla-pausa', 'Pausa'], ['pantalla-sala', 'Sala online'],['pantalla-resultado', 'Resultado de partida'], ['pantalla-nueva', 'Para hacer una pantalla nueva']] },
+      { id: 'launcher', t: 'Launcher', i: 'download', subs: [['launcher-descargas', 'Qué se descarga'], ['launcher-instalar', 'Instalar y desinstalar'], ['launcher-ventana', 'Cómo se ve'], ['launcher-publicar', 'Publicar una versión']] }] },
     { g: 'Combate', p: 'Parte 3 · Combate', items: [
       { id: 'danio', t: 'Modelo de daño', i: 'target', subs: [['reglas-balance', 'Reglas de balance'], ['un-tiro', 'Qué mata de un tiro'], ['zonas', 'Zonas del personaje'], ['reglas-comunes', 'Reglas comunes']] },
       { id: 'retroceso', t: 'Retroceso y dispersión', i: 'spray', subs: [['campos-retroceso', 'Campos de la ficha']] },
