@@ -86,6 +86,7 @@ public class PartidaEnRed : MonoBehaviour
 
         Lista = true;
         gameObject.AddComponent<MarcasDeCompaneros>().Iniciar(this); // US 193: solo se ven cuando hay equipos
+        gameObject.AddComponent<RivalesVistos>().Iniciar(this);      // US 194, CA4: rivales vistos, para el minimapa
         if (MatchSettings.Mode == GameMode.Tactico)
         {
             gameObject.AddComponent<MarcadorTactico>().Iniciar(this); // US 134
