@@ -113,6 +113,7 @@ public class MeleeAttack : MonoBehaviour
 
     private void ExecuteHitCheck(MeleeWeaponData data)
     {
+        if (MinijuegoPajaros.Activo) return; // US 157, CA7: en la compra el cuchillo se usa, pero no hace daño
         // CA2: Busca todos los colliders dentro del rango del arma, con las zonas de impacto de los huesos (US 165)
         Vector3 origin = playerCamera.transform.position;
         Vector3 forward = playerCamera.transform.forward;

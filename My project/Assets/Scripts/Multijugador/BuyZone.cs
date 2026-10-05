@@ -39,4 +39,20 @@ public class BuyZone : MonoBehaviour
         }
         return false;
     }
+
+    // La base de un lado: todas sus zonas juntas (si no tiene, las que sirven para todos). Los pájaros del minijuego
+    // vuelan sobre la base del equipo (F21, US 156).
+    public static bool Area(LadoTactico lado, out Bounds limites)
+    {
+        limites = default;
+        bool hay = false;
+        for (int pasada = 0; pasada < 2 && !hay; pasada++)
+            foreach (BuyZone zone in zones)
+            {
+                if (zone.area == null || zone.lado != (pasada == 0 ? lado : LadoTactico.Cualquiera)) continue;
+                if (hay) limites.Encapsulate(zone.area.bounds);
+                else { limites = zone.area.bounds; hay = true; }
+            }
+        return hay;
+    }
 }
