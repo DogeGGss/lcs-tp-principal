@@ -289,7 +289,7 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
         string tecla = KeyBindings.Label(GameAction.Tienda);
         while (Time.time < fin)
         {
-            partida.Aviso(titulo, $"Reaparecés en {Mathf.CeilToInt(fin - Time.time)} · {tecla}: cambiar de equipo");
+            partida.Aviso(titulo, $"Reaparecés en {Mathf.CeilToInt(fin - Time.time)}. Apretá {tecla} para cambiar de equipo");
             yield return null;
         }
         // US 138, CA5: si está eligiendo equipo, lo espera hasta que cierre la tienda (con un tope).

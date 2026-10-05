@@ -595,7 +595,7 @@ public class MatchHud : MonoBehaviour
         Image(Place(Node("LineaAbajo", banner), W * 0.2f, h - 2f, W * 0.6f, 2f), null, WithAlpha(color, 0.9f));
 
         float y = 40f;
-        Text(Place(Node("Antetitulo", banner), 0f, y, W, 24f), labelFont, 22f, Mute, TextAlignmentOptions.Center, 24f, true).text = eyebrow ?? "";
+        Text(Place(Node("Antetitulo", banner), 0f, y, W, 24f), labelFont, 22f, Mute, TextAlignmentOptions.Center, 16f).text = (eyebrow ?? "").ToUpperInvariant();
         y += 26f;
         TextMeshProUGUI t = Text(Place(Node("Titulo", banner), 0f, y, W, 112f), displayFont, 110f, color, TextAlignmentOptions.Center, 4f, true);
         t.text = title;

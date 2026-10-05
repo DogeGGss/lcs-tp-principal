@@ -252,8 +252,8 @@ public class PartidaDeathmatch : MonoBehaviour
         int segundo = Mathf.CeilToInt(Restante);
         if (segundo == segundoVisto || segundo <= 0) return;
         segundoVisto = segundo;
-        MatchHud.ShowBanner("Deathmatch · Todos contra todos", segundo.ToString(), ShopUIKit.Accent,
-            $"{KeyBindings.Label(GameAction.Tienda)}: elegí tu equipo", null, 1.2f);
+        MatchHud.ShowBanner("Deathmatch  ·  Todos contra todos", segundo.ToString(), ShopUIKit.Accent,
+            $"Apretá {KeyBindings.Label(GameAction.Tienda)} para elegir tu equipo", null, 1.2f);
     }
 
     // US 140, CA6: alguien llegó a 20 bajas o quedan 60 s.
