@@ -163,12 +163,14 @@ public class PlayerMovement : MonoBehaviour
         // GRAVEDAD
         // =====================================================
 
+        // Apoyado al empezar el cuadro (lo dejó así el Move del cuadro anterior): para pegarlo a las rampas al final.
+        bool estabaApoyado = controller.isGrounded;
+        bool saltoEsteCuadro = false;
+
         if (controller.isGrounded && verticalVelocity < 0)
         {
             verticalVelocity = -2f;
         }
-
-        verticalVelocity += gravity * Time.deltaTime;
 
 
         // =====================================================
@@ -178,6 +180,7 @@ public class PlayerMovement : MonoBehaviour
         if (KeyBindings.Down(GameAction.Saltar) && controller.isGrounded)
         {
             verticalVelocity = jumpForce;
+            saltoEsteCuadro = true;
 
             // Inicia JumpUp
             animator.SetTrigger("Jump");
@@ -216,11 +219,24 @@ public class PlayerMovement : MonoBehaviour
         // MOVIMIENTO DEL CHARACTER CONTROLLER
         // =====================================================
 
+        // US 003, CA2: la gravedad se aplica con la cuenta exacta del movimiento con aceleración constante
+        // (promedio de la velocidad al principio y al final del cuadro). Así el salto llega siempre a 1,28 m a los
+        // 0,51 s, a cualquier cantidad de FPS (sumando velocidad * tiempo daba 1,32 m a 60 FPS y 1,36 m a 30).
+        float dt = Time.deltaTime;
+        float verticalInicio = verticalVelocity;
+        verticalVelocity += gravity * dt;
+
         Vector3 velocity = move * currentSpeed;
-        velocity.y = verticalVelocity;
+        Vector3 desplazamiento = velocity * dt;
+        desplazamiento.y = (verticalInicio + verticalVelocity) * 0.5f * dt;
 
         CollisionFlags collisions =
-            controller.Move(velocity * Time.deltaTime);
+            controller.Move(desplazamiento);
+
+        // US 003, CA1: bajando una rampa el personaje se despegaba (baja más rápido de lo que lo empuja el -2 m/s)
+        // y mientras tanto no podía saltar. Si venía apoyado y no saltó, se lo vuelve a apoyar en la rampa.
+        if (estabaApoyado && !saltoEsteCuadro && verticalVelocity <= 0f && !controller.isGrounded)
+            PegarAlPiso(new Vector2(desplazamiento.x, desplazamiento.z).magnitude);
 
 
         // =====================================================
@@ -251,5 +267,28 @@ public class PlayerMovement : MonoBehaviour
         {
             verticalVelocity = 0f;
         }
+    }
+
+    // Busca el piso justo debajo, a lo sumo a lo que bajaría una pendiente caminable (slopeLimit) en lo que se movió
+    // este cuadro. Si hay piso caminable, lo baja hasta apoyarlo. Un borde de verdad (un escalón alto, el borde de
+    // una losa) queda más lejos y el personaje cae normalmente.
+    private void PegarAlPiso(float avance)
+    {
+        float maximo = avance * Mathf.Tan(controller.slopeLimit * Mathf.Deg2Rad) + controller.skinWidth + 0.05f;
+        float radio = controller.radius * 0.9f;
+        Vector3 centro = transform.TransformPoint(controller.center);
+        Vector3 pie = centro + Vector3.down * (controller.height * 0.5f - controller.radius); // centro de la esfera de abajo
+
+        float mejor = float.MaxValue;
+        foreach (RaycastHit golpe in Physics.SphereCastAll(pie, radio, Vector3.down, maximo + (controller.radius - radio), ~0, QueryTriggerInteraction.Ignore))
+        {
+            if (golpe.collider.transform.IsChildOf(transform)) continue;       // el propio cuerpo, las armas
+            if (golpe.distance <= 0f) continue;                                 // ya lo tocaba al empezar
+            if (Vector3.Angle(golpe.normal, Vector3.up) > controller.slopeLimit) continue; // pared, no piso
+            if (golpe.distance < mejor) mejor = golpe.distance;
+        }
+        if (mejor == float.MaxValue) return;
+
+        controller.Move(Vector3.down * (mejor + controller.skinWidth));
     }
 }
