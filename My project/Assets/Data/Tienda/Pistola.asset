@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Pistola
   m_EditorClassIdentifier: Assembly-CSharp::ShopItem
   displayName: Pistola
-  alias: "L\xEDnea A"
+  alias: "La Porte\xF1a"
   category: 0
   kind: 1
   price: 0

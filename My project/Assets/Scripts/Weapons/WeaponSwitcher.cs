@@ -8,7 +8,7 @@ public class WeaponSwitcher : MonoBehaviour
     [Tooltip("Las demás armas principales (Urquiza, Belgrano Sur, Roca...), cada una con su ArmaDeFuego. Con tienda, en el espacio 1 va la que se compró.")]
     public GameObject[] otrasPrincipales = new GameObject[0];
     public GameObject pistolObj;       // Slot 2: Pistola
-    [Tooltip("Las demás armas secundarias (Línea H...), cada una con su ArmaDeFuego. Con tienda, en el espacio 2 va la que se compró; si no compró ninguna, la Línea A (pistolObj).")]
+    [Tooltip("Las demás armas secundarias (La Trochita...), cada una con su ArmaDeFuego. Con tienda, en el espacio 2 va la que se compró; si no compró ninguna, La Porteña (pistolObj).")]
     public GameObject[] otrasSecundarias = new GameObject[0];
     public MeleeWeaponHolder meleeScript; // Slot 3: Cuchillo
     public GameObject grenadeObj;       // Slot 4: Granada

@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: PistolaPesada
   m_EditorClassIdentifier: Assembly-CSharp::ShopItem
   displayName: Pistola pesada
-  alias: "L\xEDnea H"
+  alias: La Trochita
   category: 0
   kind: 1
   price: 800

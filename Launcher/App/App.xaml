@@ -1,0 +1,87 @@
+<Application x:Class="Riftwalker.Launcher.App" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+ <Application.Resources>
+  <SolidColorBrush x:Key="Ink" Color="#F3F4F6"/><SolidColorBrush x:Key="Muted" Color="#8E96A3"/>
+  <SolidColorBrush x:Key="Accent" Color="#F29A38"/><SolidColorBrush x:Key="Line" Color="#272C35"/>
+  <FontFamily x:Key="DisplayFont">pack://application:,,,/Assets/#Barlow Condensed</FontFamily>
+  <FontFamily x:Key="BodyFont">pack://application:,,,/Assets/#Barlow</FontFamily>
+  <Style TargetType="ScrollBar">
+   <Setter Property="Width" Value="7"/><Setter Property="Background" Value="Transparent"/>
+   <Setter Property="Template"><Setter.Value><ControlTemplate TargetType="ScrollBar"><Track x:Name="PART_Track" IsDirectionReversed="True" Orientation="Vertical"><Track.Thumb><Thumb><Thumb.Template><ControlTemplate TargetType="Thumb"><Border Background="#39414D" CornerRadius="3" Margin="1"/></ControlTemplate></Thumb.Template></Thumb></Track.Thumb></Track></ControlTemplate></Setter.Value></Setter>
+  </Style>
+  <Style TargetType="Button">
+   <Setter Property="Foreground" Value="{StaticResource Ink}"/><Setter Property="Background" Value="#1B2029"/>
+   <Setter Property="BorderBrush" Value="#343B47"/><Setter Property="BorderThickness" Value="1"/>
+   <Setter Property="Padding" Value="18,11"/><Setter Property="FontFamily" Value="{StaticResource BodyFont}"/><Setter Property="FontSize" Value="14"/><Setter Property="Cursor" Value="Hand"/>
+   <Setter Property="Template"><Setter.Value><ControlTemplate TargetType="Button">
+    <Border x:Name="Chrome" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" CornerRadius="3" Padding="{TemplateBinding Padding}"><ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/></Border>
+    <ControlTemplate.Triggers>
+     <Trigger Property="IsMouseOver" Value="True"><Setter TargetName="Chrome" Property="BorderBrush" Value="#F29A38"/><Setter TargetName="Chrome" Property="Opacity" Value="0.86"/></Trigger>
+     <Trigger Property="IsKeyboardFocused" Value="True"><Setter TargetName="Chrome" Property="BorderBrush" Value="#F29A38"/></Trigger>
+     <Trigger Property="IsPressed" Value="True"><Setter TargetName="Chrome" Property="Opacity" Value="0.65"/></Trigger>
+     <Trigger Property="IsEnabled" Value="False"><Setter TargetName="Chrome" Property="Opacity" Value="0.45"/><Setter Property="Cursor" Value="Arrow"/></Trigger>
+    </ControlTemplate.Triggers>
+   </ControlTemplate></Setter.Value></Setter>
+  </Style>
+  <!-- Window buttons of the own frame (minimize, close): flat, they light up on hover; close turns red. -->
+  <Style x:Key="BotonVentana" TargetType="Button">
+   <Setter Property="Width" Value="38"/><Setter Property="Height" Value="34"/><Setter Property="Foreground" Value="#AEB5C0"/>
+   <Setter Property="Background" Value="Transparent"/><Setter Property="Cursor" Value="Hand"/><Setter Property="Focusable" Value="True"/>
+   <Setter Property="Template"><Setter.Value><ControlTemplate TargetType="Button">
+    <Border x:Name="Fondo" Background="{TemplateBinding Background}" CornerRadius="3"><ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/></Border>
+    <ControlTemplate.Triggers>
+     <Trigger Property="IsMouseOver" Value="True"><Setter TargetName="Fondo" Property="Background" Value="#1B2029"/><Setter Property="Foreground" Value="#F3F4F6"/></Trigger>
+     <Trigger Property="IsKeyboardFocused" Value="True"><Setter TargetName="Fondo" Property="Background" Value="#1B2029"/></Trigger>
+     <Trigger Property="IsPressed" Value="True"><Setter TargetName="Fondo" Property="Opacity" Value="0.7"/></Trigger>
+    </ControlTemplate.Triggers>
+   </ControlTemplate></Setter.Value></Setter>
+  </Style>
+  <Style x:Key="BotonCerrar" TargetType="Button" BasedOn="{StaticResource BotonVentana}">
+   <Setter Property="Template"><Setter.Value><ControlTemplate TargetType="Button">
+    <Border x:Name="Fondo" Background="{TemplateBinding Background}" CornerRadius="3"><ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/></Border>
+    <ControlTemplate.Triggers>
+     <Trigger Property="IsMouseOver" Value="True"><Setter TargetName="Fondo" Property="Background" Value="#C42B1C"/><Setter Property="Foreground" Value="#FFFFFF"/></Trigger>
+     <Trigger Property="IsKeyboardFocused" Value="True"><Setter TargetName="Fondo" Property="Background" Value="#C42B1C"/><Setter Property="Foreground" Value="#FFFFFF"/></Trigger>
+     <Trigger Property="IsPressed" Value="True"><Setter TargetName="Fondo" Property="Opacity" Value="0.75"/></Trigger>
+    </ControlTemplate.Triggers>
+   </ControlTemplate></Setter.Value></Setter>
+  </Style>
+  <!-- One of several options side by side (window size): the chosen one is orange. -->
+  <Style x:Key="Segmento" TargetType="RadioButton">
+   <Setter Property="Foreground" Value="#F3F4F6"/><Setter Property="FontFamily" Value="{StaticResource BodyFont}"/><Setter Property="FontSize" Value="14"/><Setter Property="Cursor" Value="Hand"/>
+   <Setter Property="Template"><Setter.Value><ControlTemplate TargetType="RadioButton">
+    <Border x:Name="Fondo" Background="#1B2029" BorderBrush="#343B47" BorderThickness="1" CornerRadius="3" Padding="10"><ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/></Border>
+    <ControlTemplate.Triggers>
+     <Trigger Property="IsMouseOver" Value="True"><Setter TargetName="Fondo" Property="BorderBrush" Value="#F29A38"/></Trigger>
+     <Trigger Property="IsKeyboardFocused" Value="True"><Setter TargetName="Fondo" Property="BorderBrush" Value="#F29A38"/></Trigger>
+     <Trigger Property="IsChecked" Value="True"><Setter TargetName="Fondo" Property="Background" Value="#F29A38"/><Setter TargetName="Fondo" Property="BorderBrush" Value="#F29A38"/><Setter Property="Foreground" Value="#1A1106"/></Trigger>
+    </ControlTemplate.Triggers>
+   </ControlTemplate></Setter.Value></Setter>
+  </Style>
+  <Style TargetType="TextBox"><Setter Property="Background" Value="#0A0C11"/><Setter Property="Foreground" Value="#F3F4F6"/><Setter Property="CaretBrush" Value="#F29A38"/><Setter Property="BorderBrush" Value="#343B47"/><Setter Property="Padding" Value="12"/><Setter Property="FontFamily" Value="{StaticResource BodyFont}"/></Style>
+  <Style TargetType="CheckBox">
+   <Setter Property="Foreground" Value="#F3F4F6"/><Setter Property="FontFamily" Value="{StaticResource BodyFont}"/><Setter Property="FontSize" Value="16"/><Setter Property="Cursor" Value="Hand"/>
+   <Setter Property="Template"><Setter.Value><ControlTemplate TargetType="CheckBox">
+    <StackPanel Orientation="Horizontal" Background="Transparent">
+     <Border x:Name="Box" Width="18" Height="18" CornerRadius="3" BorderThickness="1" BorderBrush="#343B47" Background="#0A0C11" VerticalAlignment="Center">
+      <Path x:Name="Mark" Data="M 3,8 L 6.5,11.5 L 13,4" Stroke="#1A1106" StrokeThickness="2.2" Visibility="Collapsed"/>
+     </Border>
+     <ContentPresenter Margin="10,0,0,0" VerticalAlignment="Center"/>
+    </StackPanel>
+    <ControlTemplate.Triggers>
+     <Trigger Property="IsMouseOver" Value="True"><Setter TargetName="Box" Property="BorderBrush" Value="#F29A38"/></Trigger>
+     <Trigger Property="IsKeyboardFocused" Value="True"><Setter TargetName="Box" Property="BorderBrush" Value="#F29A38"/></Trigger>
+     <Trigger Property="IsChecked" Value="True"><Setter TargetName="Box" Property="Background" Value="#F29A38"/><Setter TargetName="Box" Property="BorderBrush" Value="#F29A38"/><Setter TargetName="Mark" Property="Visibility" Value="Visible"/></Trigger>
+    </ControlTemplate.Triggers>
+   </ControlTemplate></Setter.Value></Setter>
+  </Style>
+  <Style TargetType="ComboBoxItem"><Setter Property="Padding" Value="12,9"/><Setter Property="Foreground" Value="#F3F4F6"/><Setter Property="Background" Value="#1B2029"/></Style>
+  <Style TargetType="ComboBox">
+   <Setter Property="FontFamily" Value="{StaticResource BodyFont}"/><Setter Property="FontSize" Value="14"/><Setter Property="Foreground" Value="#F3F4F6"/><Setter Property="MinHeight" Value="34"/>
+   <Setter Property="Template"><Setter.Value><ControlTemplate TargetType="ComboBox"><Grid>
+    <ToggleButton IsChecked="{Binding IsDropDownOpen, RelativeSource={RelativeSource TemplatedParent}, Mode=TwoWay}" Focusable="False"><ToggleButton.Template><ControlTemplate TargetType="ToggleButton"><Border Background="#1B2029" BorderBrush="#343B47" BorderThickness="1" CornerRadius="3"><TextBlock Text="⌄" HorizontalAlignment="Right" Margin="0,0,10,0" VerticalAlignment="Center" Foreground="#F29A38"/></Border></ControlTemplate></ToggleButton.Template></ToggleButton>
+    <TextBlock Margin="12,5,26,5" VerticalAlignment="Center" IsHitTestVisible="False" Text="{Binding SelectedItem.Label, RelativeSource={RelativeSource TemplatedParent}}"/>
+    <Popup x:Name="PART_Popup" IsOpen="{TemplateBinding IsDropDownOpen}" Placement="Bottom" AllowsTransparency="True"><Border Background="#1B2029" BorderBrush="#343B47" BorderThickness="1" MinWidth="180" MaxHeight="280"><ScrollViewer><ItemsPresenter/></ScrollViewer></Border></Popup>
+   </Grid></ControlTemplate></Setter.Value></Setter>
+  </Style>
+ </Application.Resources>
+</Application>
