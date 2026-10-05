@@ -1396,7 +1396,7 @@ body.capture,body.capture-ms,body.capture-cr{padding-left:0!important}
   <div class="sec-head"><h2>Otras pantallas</h2><span class="sub">Sin maqueta propia: siguen la parte 1</span></div>
   <div class="table-wrap"><table>
     <tr><th>Pantalla</th><th>Cómo se ve</th><th>Código</th><th>Historias</th><th>Estado</th></tr>
-    <tr id="pantalla-menu"><td><b>Menú principal</b></td><td>Título "PROJECT RIFTWALKER" y los botones Jugar, Opciones, Logros, Créditos y Salir. Los botones cambian de color y tamaño al pasar el mouse, y las pantallas se cambian con un fundido. Arriba a la derecha, el nombre del jugador.</td><td><code>MenuUIController</code>, <code>ButtonHoverAnimation</code></td><td>US 046, US 128, US 129</td><td><span class="st st-ok">En el juego</span></td></tr>
+    <tr id="pantalla-menu"><td><b>Menú principal</b></td><td>Título "PROJECT RIFTWALKER" y los botones Jugar, Opciones, Logros, Créditos y Salir. Los botones cambian de color y tamaño al pasar el mouse, y las pantallas se cambian con un fundido. Arriba a la derecha, el nombre del jugador; abajo a la derecha, la versión del juego en gris (<code>Mute</code>, 20 px), por ejemplo "v0.2.0".</td><td><code>MenuUIController</code>, <code>ButtonHoverAnimation</code>, <code>VersionDelJuego</code></td><td>US 046, US 128, US 129, US 204</td><td><span class="st st-ok">En el juego</span></td></tr>
     <tr id="pantalla-nombre"><td><b>Nombre de jugador</b></td><td>Ventana "¿Cómo te llamás?" antes del menú, de 3 a 16 caracteres, que dice qué falta si no cumple.</td><td><code>PlayerNameScreen</code>, <code>PlayerProfile</code></td><td>US 164</td><td><span class="st st-ok">En el juego</span></td></tr>
     <tr id="pantalla-nota-po"><td><b>Nota para el PO</b></td><td>Panel de 1320 px sobre el menú: saludo a Amin y dos columnas, "Lo que funciona" y "Lo que todavía falta". Se vuelve a abrir con un botón abajo a la derecha.</td><td><code>NotaPO</code> (textos en el prefab)</td><td>US 180</td><td><span class="st st-ok">En el juego</span></td></tr>
     <tr id="pantalla-opciones"><td><b>Opciones</b></td><td>Pestañas Gráficos, Controles y Sonido (<span class="kbd">Q</span> y <span class="kbd">E</span>). Panel oscuro, título con la línea naranja, filas de 44 unidades, sliders con forma de vía y "Aplicar" y "Restablecer" al pie.</td><td><code>OpcionesPantalla</code>, <code>OpcionesKit</code>, <code>ControlsPanel</code>, <code>GraficosUIController</code>, <code>SonidoUIController</code></td><td>US 048, US 153, US 154, US 155</td><td><span class="st st-ok">En el juego</span></td></tr>
@@ -1448,7 +1448,41 @@ body.capture,body.capture-ms,body.capture-cr{padding-left:0!important}
   </ol>
 
   <h3 id="launcher-ventana">Cómo se ve</h3>
-  <p>Ventana propia, sin el marco de Windows: un panel oscuro con las esquinas cortadas en diagonal, trazos naranjas en las esquinas grandes y botones propios para minimizar y cerrar. Usa los colores, las tipografías y los botones de la parte 1. En Ajustes se elige el tamaño: Chica, Normal (1120 × 700) o Grande (16:9, casi toda la pantalla). Se escala todo junto, así el diseño es el mismo en los tres (US 200, US 209).</p>
+  <p>Ventana propia, sin el marco de Windows: un panel oscuro con las esquinas cortadas en diagonal, trazos naranjas en las esquinas grandes y botones propios para minimizar y cerrar. Usa los <a href="#colores">colores</a>, las <a href="#tipografias">tipografías</a> y las <a href="#piezas">piezas</a> de la parte 1. En Ajustes se elige el tamaño: Chica, Normal (1120 × 700) o Grande (16:9, casi toda la pantalla). Se escala todo junto, así el diseño es el mismo en los tres (US 200, US 209). Las capturas son del launcher real, en su vista previa.</p>
+  <figure style="margin:16px 0 0"><img src="img/launcher-principal.png" alt="Ventana principal del launcher en tamaño Normal" width="1144" height="724" style="display:block;max-width:100%;height:auto"><figcaption class="soft" style="margin-top:6px">Ventana principal, tamaño Normal. Arriba: logo, canal, guía, Ajustes, minimizar y cerrar. Debajo del banner: las notas del parche a la izquierda y, a la derecha, el estado y el botón principal.</figcaption></figure>
+  <figure style="margin:16px 0 0"><img src="img/launcher-ajustes.png" alt="Ajustes del launcher la primera vez que se abre" width="1144" height="724" style="display:block;max-width:100%;height:auto"><figcaption class="soft" style="margin-top:6px">Ajustes la primera vez: carpeta de instalación, versiones experimentales y tamaño de la ventana (el elegido, en naranja).</figcaption></figure>
+
+  <h3 id="launcher-medidas">Medidas y colores</h3>
+  <div class="table-wrap"><table>
+    <tr><th>Parte</th><th>Cómo es</th></tr>
+    <tr><td><b>Panel</b></td><td>1120 × 700 en Normal. Chica: el mismo al 80 %. Grande: 16:9 (1244 × 700), agrandado hasta ocupar el 92 % de la pantalla. Se escala todo junto.</td></tr>
+    <tr><td><b>Esquinas</b></td><td>Cortadas en diagonal: 30 px arriba a la izquierda y abajo a la derecha, 12 px en las otras dos.</td></tr>
+    <tr><td><b>Fondo y contorno</b></td><td>Fondo <code>#0A0C11</code> con una sombra negra alrededor; contorno de 1 px <code>#343B47</code>.</td></tr>
+    <tr><td><b>Trazos de las esquinas</b></td><td>En las dos esquinas grandes, un trazo de 2 px en el naranja <code>Accent</code> (<code>#F29A38</code>), con brillo y un cuadradito en cada punta. Arriba a la derecha, un toque celeste (<code>#4CC3FF</code>); abajo a la izquierda, uno gris (<code>Mute</code>).</td></tr>
+    <tr><td><b>Banner</b></td><td>188 px de alto, con la grieta naranja y las vías en perspectiva.</td></tr>
+    <tr><td><b>Tipografías</b></td><td>Barlow Condensed para los títulos y el botón principal; Barlow para el texto.</td></tr>
+    <tr><td><b>Botón principal</b></td><td>Abajo a la derecha, 57 px de alto: fondo <code>#F29A38</code> y texto <code>#1A1106</code> en Barlow Condensed Bold de 25 px. Siempre se ve entero; si el texto de arriba no entra, se desplaza.</td></tr>
+    <tr><td><b>Botones comunes</b></td><td>Fondo <code>#1B2029</code> y borde <code>#343B47</code>; al pasar el mouse o con el foco, el borde se pone naranja.</td></tr>
+    <tr><td><b>Minimizar y cerrar</b></td><td>38 × 34 px, sin fondo; al pasar el mouse se iluminan, y el de cerrar se pone rojo (<code>#C42B1C</code>).</td></tr>
+  </table></div>
+
+  <h3 id="launcher-estados">Estados del botón principal</h3>
+  <div class="table-wrap"><table>
+    <tr><th>Situación</th><th>Botón</th><th>Qué dice arriba</th><th>Historia</th></tr>
+    <tr><td>Buscando versiones</td><td>"Buscando actualizaciones…", deshabilitado</td><td>Consultando las versiones publicadas</td><td>US 200, US 201</td></tr>
+    <tr><td>Juego sin instalar</td><td><b>INSTALAR ↓</b></td><td>"Primera parada"</td><td>US 200</td></tr>
+    <tr><td>Hay una versión nueva</td><td><b>ACTUALIZAR ↓</b></td><td>"Hay algo nuevo" y "Nueva versión X.Y.Z. Instalá esta versión para jugar desde el launcher."</td><td>US 201</td></tr>
+    <tr><td>Descargando</td><td>"Descargando…", deshabilitado, con Cancelar</td><td>Barra con porcentaje, MB y tiempo restante</td><td>US 202</td></tr>
+    <tr><td>Al día</td><td><b>JUGAR →</b></td><td>"Listo para entrar" y "Versión X.Y.Z · Actualizado"</td><td>US 201</td></tr>
+    <tr><td>Sin conexión</td><td><b>JUGAR →</b> y ↻ Reintentar</td><td>"No se pudo buscar actualizaciones. Podés jugar con la versión instalada."</td><td>US 201</td></tr>
+    <tr><td>Experimental con la opción apagada</td><td><b>VOLVER A LA ESTABLE ↓</b></td><td>La última versión estable</td><td>US 208</td></tr>
+    <tr><td>Actualizándose el launcher</td><td>"ACTUALIZANDO LAUNCHER…", deshabilitado</td><td>"Actualizando el launcher…"</td><td>US 207</td></tr>
+  </table></div>
+
+  <div class="dev">
+    <h3 id="launcher-revisar">Para revisar el diseño</h3>
+    <p style="margin:0">El launcher se muestra sin instalar nada ni conectarse con <code>Riftwalker-Launcher.exe --preview</code>. Con <code>--render captura.png</code> guarda una captura, <code>--tamano chica</code>, <code>normal</code> o <code>grande</code> elige el tamaño y <code>--settings-preview</code> abre Ajustes (US 209). Así se comparan los cambios con estas capturas. <b>Si cambia la ventana, se actualizan las capturas y las tablas de acá en el mismo PR.</b></p>
+  </div>
 
   <div class="dev">
     <h3 id="launcher-publicar">Para publicar una versión</h3>
@@ -3378,7 +3412,7 @@ renderRules(); renderOneShot(); renderArsenal(); renderCalcOptions(); renderCalc
       { id: 'modos', t: 'Selección de modo', i: 'rails', subs: [['modos-codigo', 'Cómo está hecha']] },
       { id: 'creditos', t: 'Créditos', i: 'star' },
       { id: 'pantallas', t: 'Otras pantallas', i: 'window', subs: [['pantalla-menu', 'Menú principal'], ['pantalla-opciones', 'Opciones'], ['pantalla-pausa', 'Pausa'], ['pantalla-sala', 'Sala online'],['pantalla-resultado', 'Resultado de partida'], ['pantalla-nueva', 'Para hacer una pantalla nueva']] },
-      { id: 'launcher', t: 'Launcher', i: 'download', subs: [['launcher-descargas', 'Qué se descarga'], ['launcher-instalar', 'Instalar y desinstalar'], ['launcher-ventana', 'Cómo se ve'], ['launcher-publicar', 'Publicar una versión']] }] },
+      { id: 'launcher', t: 'Launcher', i: 'download', subs: [['launcher-descargas', 'Qué se descarga'], ['launcher-instalar', 'Instalar y desinstalar'], ['launcher-ventana', 'Cómo se ve'], ['launcher-medidas', 'Medidas y colores'], ['launcher-estados', 'Estados'], ['launcher-revisar', 'Revisar el diseño'], ['launcher-publicar', 'Publicar una versión']] }] },
     { g: 'Combate', p: 'Parte 3 · Combate', items: [
       { id: 'danio', t: 'Modelo de daño', i: 'target', subs: [['reglas-balance', 'Reglas de balance'], ['un-tiro', 'Qué mata de un tiro'], ['zonas', 'Zonas del personaje'], ['reglas-comunes', 'Reglas comunes']] },
       { id: 'retroceso', t: 'Retroceso y dispersión', i: 'spray', subs: [['campos-retroceso', 'Campos de la ficha']] },
