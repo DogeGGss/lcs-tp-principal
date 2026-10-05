@@ -69,6 +69,23 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
 
     public bool Vivo => !muerto;
 
+    // US 138, CA5: para saber hasta cuándo se puede cambiar de equipo en Deathmatch.
+    public const float TopeConTienda = 10f; // muerto y con la tienda abierta, como mucho se espera esto
+    private float reaparecioEn = -100f, finEspera, topeEspera;
+    private bool atacoDesdeReaparicion;
+    public float ReaparecioEn => reaparecioEn;
+    public bool AtacoDesdeReaparicion => atacoDesdeReaparicion;
+    /// <summary>Muerto: segundos que faltan para reaparecer (0 si ya solo espera a que cierre la tienda).</summary>
+    public float EsperaRestante => Mathf.Max(0f, finEspera - Time.time);
+    /// <summary>Muerto: segundos que faltan para reaparecer sí o sí, aunque la tienda siga abierta.</summary>
+    public float TopeRestante => Mathf.Max(0f, topeEspera - Time.time);
+    /// <summary>Empieza a correr el rato en que todavía se puede cambiar de equipo (al reaparecer o al empezar el combate).</summary>
+    public void AbrirVentanaDeEquipo()
+    {
+        reaparecioEn = Time.time;
+        atacoDesdeReaparicion = false;
+    }
+
     /// <summary>US 133: el punto de vista del jugador (en la copia, con la mirada que llega por la red).</summary>
     public Transform Ojos => camara != null ? camara : transform;
     public string Nombre => photonView != null && photonView.Owner != null ? photonView.Owner.NickName : "Jugador";
@@ -131,6 +148,7 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
     {
         if (tirador != transform || muerto) return;
         if (vida != null) vida.Invulnerable = false; // US 137, CA5: disparar corta la invulnerabilidad
+        atacoDesdeReaparicion = true;
 
         var plano = new float[direcciones.Length * 3];
         for (int i = 0; i < direcciones.Length; i++)
@@ -146,6 +164,7 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
     {
         if (ataque.gameObject != gameObject || muerto) return;
         if (vida != null) vida.Invulnerable = false;
+        atacoDesdeReaparicion = true;
         photonView.RPC(nameof(RpcCuchillo), RpcTarget.Others);
     }
 
@@ -156,6 +175,7 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
         int indice = catalogo != null ? catalogo.items.IndexOf(granada.Item) : -1;
         if (indice < 0 || indice > byte.MaxValue) return;
         if (vida != null) vida.Invulnerable = false; // como disparar (US 137, CA5)
+        atacoDesdeReaparicion = true;
         granada.netId = ++ultimaGranada;
         photonView.RPC(nameof(RpcGranada), RpcTarget.Others, granada.netId, (byte)indice,
             granada.LaunchOrigin, granada.LaunchDirection, granada.LaunchInherited);
@@ -246,6 +266,8 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
         muerto = true;
         bool cabeza = vida != null && vida.KilledByHeadshot;
         photonView.RPC(nameof(RpcMurio), RpcTarget.Others, ultimoAtacante, cabeza, ultimaArma);
+        // Si murió con la tienda abierta se cierra antes de trabar: al cerrarse después devolvería las armas a un muerto.
+        if (MatchSettings.Mode == GameMode.Deathmatch) ShopUI.Cerrar();
         Bloquear(true);
         AvisarBaja(ultimoAtacante, cabeza, ultimaArma); // US 057, CA4
 
@@ -262,11 +284,17 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
     private IEnumerator Reaparecer(string titulo, float espera)
     {
         float fin = Time.time + espera;
+        finEspera = fin;
+        topeEspera = Time.time + Mathf.Max(espera, TopeConTienda);
+        string tecla = KeyBindings.Label(GameAction.Tienda);
         while (Time.time < fin)
         {
-            partida.Aviso(titulo, $"Reaparecés en {Mathf.CeilToInt(fin - Time.time)}");
+            partida.Aviso(titulo, $"Reaparecés en {Mathf.CeilToInt(fin - Time.time)}. Apretá {tecla} para cambiar de equipo");
             yield return null;
         }
+        // US 138, CA5: si está eligiendo equipo, lo espera hasta que cierre la tienda (con un tope).
+        while (ShopUI.IsOpen && Time.time < topeEspera && !PartidaDeathmatch.YaTermino) yield return null;
+        ShopUI.Cerrar();
         partida.Aviso(null);
         if (PartidaDeathmatch.YaTermino) yield break; // la partida terminó mientras esperaba: ya no reaparece
 
@@ -280,6 +308,7 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
         ultimoAtacante = 0;
         ultimaArma = "";
         Bloquear(false);
+        AbrirVentanaDeEquipo();
 
         float segundos = ConfigRed.Actual != null ? ConfigRed.Actual.invulnerabilidad : 2f;
         vida.Invulnerable = segundos > 0f;

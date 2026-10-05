@@ -59,6 +59,43 @@ public class PartidaDeathmatch : MonoBehaviour
     public static bool YaTermino => Actual != null && Actual.Lista && Actual.FaseActual == Fase.Terminada;
 
     /// <summary>Segundos que le quedan a la fase actual (la cuenta regresiva o el reloj de 8 minutos).</summary>
+    // US 138, CA5: segundos después de reaparecer (o de empezar el combate) en que todavía se puede cambiar de equipo.
+    public const float GraciaParaElegir = 5f;
+
+    /// <summary>
+    /// US 138, CA5: si ahora se puede abrir la tienda. Se puede en la cuenta inicial, muerto y en los primeros
+    /// segundos después de reaparecer si todavía no atacó. texto y restante son para mostrar en la tienda
+    /// (restante menor que 0: sin reloj).
+    /// </summary>
+    public static bool PuedeElegir(out string texto, out float restante)
+    {
+        texto = "Elegí tu equipo";
+        restante = -1f;
+        PartidaDeathmatch p = Actual;
+        if (p == null || !p.Lista) return true;
+        Fase fase = p.FaseActual;
+        if (fase == Fase.Terminada) return false;
+        if (fase == Fase.Cuenta)
+        {
+            texto = "Empieza en";
+            restante = p.Restante;
+            return true;
+        }
+        JugadorEnRed yo = p.partida != null ? p.partida.Local : null;
+        if (yo == null) return false;
+        if (!yo.Vivo)
+        {
+            bool esperando = yo.EsperaRestante > 0f;
+            texto = esperando ? "Reaparecés en" : "Cerrá para reaparecer";
+            restante = esperando ? yo.EsperaRestante : yo.TopeRestante;
+            return true;
+        }
+        if (yo.AtacoDesdeReaparicion) return false;
+        texto = "Podés cambiar";
+        restante = yo.ReaparecioEn + GraciaParaElegir - Time.time;
+        return restante > 0f;
+    }
+
     public float Restante => Lista ? Mathf.Max(0f, unchecked(Leer(PropFin, Ahora) - Ahora) / 1000f) : DuracionCuenta;
 
     public static int Bajas(int actor) => Leer(PropBajas + actor, 0);
@@ -189,6 +226,8 @@ public class PartidaDeathmatch : MonoBehaviour
             case Fase.Combate:
                 // US 136, CA2 y CA4: todos libres a la vez, con 100 de vida y sin escudo.
                 Destrabar();
+                ShopUI.Rebloquear(); // si la tienda sigue abierta, las armas siguen trabadas hasta cerrarla
+                if (local != null) local.AbrirVentanaDeEquipo(); // US 138, CA5
                 if (faseVista == (int)Fase.Cuenta || faseVista < 0)
                 {
                     HealthSystem vida = local != null ? local.GetComponent<HealthSystem>() : null;
@@ -197,6 +236,7 @@ public class PartidaDeathmatch : MonoBehaviour
                 }
                 break;
             case Fase.Terminada:
+                ShopUI.Cerrar();
                 MatchHud.HideBanner();
                 MatchHud.SetHint(null);
                 if (partida != null) partida.Aviso(null);
@@ -212,7 +252,8 @@ public class PartidaDeathmatch : MonoBehaviour
         int segundo = Mathf.CeilToInt(Restante);
         if (segundo == segundoVisto || segundo <= 0) return;
         segundoVisto = segundo;
-        MatchHud.ShowBanner("Deathmatch · Todos contra todos", segundo.ToString(), ShopUIKit.Accent, "Elegí tus armas", null, 1.2f);
+        MatchHud.ShowBanner("Deathmatch  ·  Todos contra todos", segundo.ToString(), ShopUIKit.Accent,
+            $"Apretá {KeyBindings.Label(GameAction.Tienda)} para elegir tu equipo", null, 1.2f);
     }
 
     // US 140, CA6: alguien llegó a 20 bajas o quedan 60 s.
