@@ -1,0 +1,14 @@
+<!doctype html>
+<html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Project Riftwalker · Presentación</title><meta name="description" content="Presentación interactiva del equipo de Project Riftwalker. Recorrido de 20 minutos para el Sprint 3.">
+<link rel="stylesheet" href="style.css"><script defer src="content.js"></script><script defer src="arsenal.js"></script><script defer src="app.js"></script></head>
+<body>
+<header class="top"><a href="../index.html" class="brand" aria-label="Volver a la guía">RW<span>PROJECT RIFTWALKER</span></a><span id="edition"></span><div class="tools"><button id="contrast" aria-pressed="false">Proyector</button><button id="fullscreen">Pantalla completa</button><button id="blank">Oscurecer</button></div></header>
+<main id="slide" tabindex="-1" aria-label="Diapositiva actual"></main>
+<footer class="navigation"><button id="prev">← Anterior</button><button id="indexButton">Índice <span id="position"></span></button><div class="clock"><button id="timerToggle" title="Iniciar o pausar el ensayo">▶ Ensayar</button><output id="timer">20:00</output><button id="timerReset" aria-label="Reiniciar reloj">↺</button></div><button id="notesButton" aria-expanded="false">Guion</button><button id="next" class="primary">Siguiente →</button><div id="progress"></div></footer>
+<dialog id="indexDialog"><div class="dialog-head"><h2>Elegí el próximo bloque</h2><button data-close="indexDialog">Cerrar ×</button></div><div id="indexGrid"></div><p>← → navegar · B oscurecer · F pantalla completa · Esc cerrar</p></dialog>
+<dialog id="notesDialog"><div class="dialog-head"><h2>Guion de ensayo</h2><button data-close="notesDialog">Cerrar ×</button></div><p class="notice">Este guion se ve en el proyector si lo abrís. Cerralo antes de exponer.</p><p id="note"></p></dialog>
+<dialog id="demoDialog"><div class="dialog-head"><div><strong id="demoTitle"></strong><small>Maqueta interactiva de la guía</small></div><button id="resetDemo">Reiniciar demo</button><button data-close="demoDialog" class="primary">← Volver al recorrido</button></div><iframe id="demoFrame" title="Demostración interactiva" src="about:blank"></iframe></dialog>
+<dialog id="clipDialog"><div class="dialog-head"><h2 id="clipTitle"></h2><button data-close="clipDialog">← Volver al recorrido</button></div><video id="video" controls playsinline></video></dialog>
+<div id="blackout" hidden><button id="unblank">Volver a la presentación</button></div><div id="announcement" class="sr" aria-live="polite"></div>
+</body></html>
