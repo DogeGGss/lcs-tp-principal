@@ -67,6 +67,11 @@ public class ConfigRed : ScriptableObject
     [Tooltip("Segundos sin recibir daño al reaparecer. Se cortan si dispara.")]
     public float invulnerabilidad = 2f;
 
+    [Tooltip("Música del Modo Deathmatch (US 136, CA6). Suena en loop por el grupo Música. Sin clip, no suena nada.")]
+    public AudioClip musicaDeathmatch;
+    [Tooltip("Ambiente del Modo Deathmatch (US 136, CA6). Suena en loop, más bajo que la música.")]
+    public AudioClip ambienteDeathmatch;
+
     [Header("Táctico (US 032)")]
     [Tooltip("Música del Modo Táctico (CA8). Suena en loop por el grupo de abajo.")]
     public AudioClip musicaTactico;

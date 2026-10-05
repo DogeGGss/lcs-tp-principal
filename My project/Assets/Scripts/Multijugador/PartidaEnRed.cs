@@ -92,6 +92,11 @@ public class PartidaEnRed : MonoBehaviour
             gameObject.AddComponent<MarcadorTactico>().Iniciar(this); // US 134
             gameObject.AddComponent<RondasTacticas>().Iniciar(this);  // US 032
         }
+        else if (MatchSettings.Mode == GameMode.Deathmatch)
+        {
+            gameObject.AddComponent<PartidaDeathmatch>().Iniciar(this); // US 136 y US 140
+            gameObject.AddComponent<MarcadorDeathmatch>().Iniciar();    // US 141
+        }
         foreach (object[] datos in Multijugador.Instancia.TomarPendientes()) CrearRemoto(datos);
     }
 

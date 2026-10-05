@@ -274,10 +274,13 @@ public class MatchHud : MonoBehaviour
     /// CA2: completa un lado. title va arriba (admite colores con &lt;color&gt;), value es el número grande y
     /// ticks/filled dibujan rayitas debajo (por ejemplo, 7 rondas y 3 ganadas). value null oculta el lado.
     /// </summary>
-    public static void SetSide(bool left, string value, string title, Color color, int ticks = 0, int filled = 0)
+    /// nearCenter (US 141): el lado no tiene jugadores al costado, así que el título va pegado al reloj, arriba del número.
+    public static void SetSide(bool left, string value, string title, Color color, int ticks = 0, int filled = 0, bool nearCenter = false)
     {
         if (Instance == null) return;
         Instance.ShowSide(left ? 0 : 1, value, title, color, ticks, filled);
+        // El título del lado izquierdo ocupa todo el ancho del grupo: alineado a la derecha termina junto al reloj.
+        if (left) Instance.sideTitle[0].alignment = nearCenter ? TextAlignmentOptions.MidlineRight : TextAlignmentOptions.MidlineLeft;
     }
 
     /// <summary>CA2: fila de hasta 4 jugadores al costado de un lado. null o vacío la saca.</summary>
