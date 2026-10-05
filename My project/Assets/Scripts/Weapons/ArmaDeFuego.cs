@@ -122,7 +122,7 @@ public class ArmaDeFuego : MonoBehaviour, IHudWeapon
 
     private void FireOne()
     {
-        currentAmmo--;
+        if (!MinijuegoPajaros.Activo) currentAmmo--; // US 157, CA2: en la compra los disparos no gastan balas
         if (shootSound != null) audioSource.PlayOneShot(shootSound);
         // Cada perdigón hace su daño por separado; los perdigones y el cono salen de la ficha (US 070, CA1).
         // Con la mira telescópica puesta la dispersión es la de apuntar (US 167, CA5).

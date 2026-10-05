@@ -46,6 +46,11 @@ public static class WeaponFire
         // La bala se ve: fogonazo en la boca del arma y una estela por perdigón hasta donde pegó.
         Vector3 muzzle = Trazadora.BocaLocal(camera);
         Trazadora.Fogonazo(muzzle);
+        if (MinijuegoPajaros.Activo)
+        {
+            FirePractice(weapon, camera, aim, view, spread, pellets, muzzle, range);
+            return;
+        }
         for (int i = 0; i < pellets; i++)
         {
             Vector3 direction = view * Deviation(spread) * Vector3.forward;
@@ -81,6 +86,26 @@ public static class WeaponFire
         aim.Kick(weapon);
         Fired?.Invoke(shooter, camera.transform.position, directions);
         if (anyHit) Hit?.Invoke(kill ? HitMarkerKind.Kill : head ? HitMarkerKind.Head : HitMarkerKind.Body);
+    }
+
+    // Fase de compra del Táctico (F21, US 157): el disparo es solo para el minijuego. Tiene la cadencia, la dispersión y
+    // el retroceso del arma, pero solo le pega a los pájaros: no daña a nadie, no deja marcas y no va por la red (cada
+    // jugador tiene sus pájaros). Un acierto muestra el marcador de impacto (US 158, CA4).
+    private static void FirePractice(ShopItem weapon, Camera camera, WeaponAim aim, Quaternion view, float spread, int pellets,
+        Vector3 muzzle, float range)
+    {
+        MinijuegoPajaros.ContarDisparo();
+        float reach = MinijuegoPajaros.Alcance(range);
+        bool anyHit = false;
+        for (int i = 0; i < pellets; i++)
+        {
+            Vector3 direction = view * Deviation(spread) * Vector3.forward;
+            Pajaro bird = MinijuegoPajaros.Buscar(camera.transform.position, direction, reach, out Vector3 point);
+            Trazadora.Mostrar(muzzle, bird != null ? point : camera.transform.position + direction * Mathf.Min(reach, 300f));
+            if (bird != null && MinijuegoPajaros.Acertar(bird, point)) anyHit = true;
+        }
+        aim.Kick(weapon);
+        if (anyHit) Hit?.Invoke(HitMarkerKind.Body);
     }
 
     // El disparo de otro jugador que llega por la red (US 028): se busca dónde pega para dibujar la trazadora y
