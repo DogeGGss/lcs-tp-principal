@@ -139,8 +139,27 @@ public class ShopUI : MonoBehaviour
 
     private Coroutine toastRoutine, shakeRoutine, openRoutine, catsRoutine, listRoutine, detailRoutine, teamRoutine;
 
+    private static ShopUI instance;
+    private TextMeshProUGUI barTitle;
+
+    // Deathmatch (US 138): la misma pantalla, pero se elige equipo gratis en vez de comprar.
+    private static bool Dm => PlayerLoadout.Free;
+
+    /// <summary>Cierra la tienda si está abierta (al reaparecer, al morir o al terminar la partida).</summary>
+    public static void Cerrar()
+    {
+        if (instance != null && instance.open) instance.SetOpen(false);
+    }
+
+    /// <summary>Con la tienda abierta, vuelve a trabar lo que otro script haya destrabado mientras tanto.</summary>
+    public static void Rebloquear()
+    {
+        if (instance != null && instance.open) instance.BlockMore();
+    }
+
     private void Awake()
     {
+        instance = this;
         BuildCanvas();
         sounds = gameObject.AddComponent<AudioSource>();
         sounds.playOnAwake = false;
@@ -181,6 +200,7 @@ public class ShopUI : MonoBehaviour
         }
         if (open) RestorePlayerControls();
         IsOpen = false;
+        if (instance == this) instance = null;
     }
 
     private void Update()
@@ -191,7 +211,15 @@ public class ShopUI : MonoBehaviour
             if (loadout == null) return;
         }
 
-        if (KeyBindings.Down(GameAction.Tienda)) SetOpen(!open);
+        if (KeyBindings.Down(GameAction.Tienda))
+        {
+            // US 138, CA5: en Deathmatch solo se abre muerto, en la cuenta inicial o recién reaparecido.
+            if (!open && Dm && loadout.CheckAccess() != ShopResult.Ok)
+            {
+                if (!PartidaDeathmatch.YaTermino) MatchHud.Warn("Cambiás de equipo al morir o recién reaparecido", 2f);
+            }
+            else SetOpen(!open);
+        }
         else if (open) HandleKeys();
         UpdateLive();
         PublishLoadout();
@@ -210,6 +238,8 @@ public class ShopUI : MonoBehaviour
         loadout.Wallet.MoneyChanged += OnMoneyChanged;
         categories.Clear();
         categories.AddRange(catalog.ActiveCategories());
+        // US 138, CA2: en Deathmatch no hay escudos ni granadas.
+        if (Dm) categories.RemoveAll(c => c == ShopCategory.Shields || c == ShopCategory.Grenades);
         BuildCategoryRows();
         lastAccess = loadout.CheckAccess();
         Render();
@@ -252,14 +282,19 @@ public class ShopUI : MonoBehaviour
     private void BlockPlayerControls()
     {
         blocked.Clear();
+        BlockMore();
+        Cursor.lockState = CursorLockMode.None;
+        Cursor.visible = true;
+    }
+
+    private void BlockMore()
+    {
         Block(FindObjectsByType<CameraLook>());
         Block(FindObjectsByType<MeleeAttack>());
         Block(FindObjectsByType<Pistola>());
         Block(FindObjectsByType<Mitre>());
         Block(FindObjectsByType<ArmaDeFuego>());
         Block(FindObjectsByType<WeaponSwitcher>());
-        Cursor.lockState = CursorLockMode.None;
-        Cursor.visible = true;
     }
 
     private void Block<T>(T[] components) where T : Behaviour
@@ -284,7 +319,7 @@ public class ShopUI : MonoBehaviour
     private void OnPhaseEnded()
     {
         // Si la tienda está abierta cuando termina la fase, se cierra sola (US 076, CA9).
-        if (open) SetOpen(false);
+        if (open && !Dm) SetOpen(false);
         Render();
     }
 
@@ -384,7 +419,7 @@ public class ShopUI : MonoBehaviour
         ShopResult result = loadout.Buy(item);
         if (result == ShopResult.Ok)
         {
-            ShowToast(item.price > 0 ? $"{ItemName(item)} <color=#F29A38>−{Money(item.price)}</color>" : $"Elegiste {ItemName(item)}");
+            ShowToast(item.price > 0 && !Dm ? $"{ItemName(item)} <color=#F29A38>−{Money(item.price)}</color>" : $"Elegiste {ItemName(item)}");
             Play(buySound);
             return;
         }
@@ -395,6 +430,7 @@ public class ShopUI : MonoBehaviour
 
     private void TrySell(ShopItem item)
     {
+        if (Dm) return; // US 138: no hay nada que vender
         if (loadout.CheckAccess() != ShopResult.Ok) return;
         ShopResult result = loadout.Sell(item);
         if (result == ShopResult.Ok)
@@ -416,7 +452,7 @@ public class ShopUI : MonoBehaviour
             case ShopResult.AlreadyEquipped: return $"Ya tenés {ItemName(item)}";
             case ShopResult.MaxReached: return $"Máximo de {item.displayName.ToLowerInvariant()}";
             case ShopResult.ShieldFull: return "Tu escudo ya está lleno";
-            case ShopResult.BuyPhaseOver: return "Terminó la fase de compra";
+            case ShopResult.BuyPhaseOver: return Dm ? "Ahora no podés cambiar de equipo" : "Terminó la fase de compra";
             case ShopResult.OutsideBuyZone: return "Fuera de la zona de compra";
             case ShopResult.NotSellable:
                 bool owned = loadout.IsEquipped(item) || loadout.Count(item) > 0 || (item.kind == ShopItemKind.Shield && loadout.Shield > 0);
@@ -440,17 +476,32 @@ public class ShopUI : MonoBehaviour
         bool phaseActive = phase == null || phase.IsActive;
         ShopResult access = loadout.CheckAccess();
 
+        // US 138, CA5: se terminó el rato para cambiar (o disparó): la tienda se cierra sola.
+        if (open && Dm && access != ShopResult.Ok)
+        {
+            SetOpen(false);
+            MatchHud.Warn("Se terminó el tiempo para cambiar de equipo", 2f);
+        }
+
         // Con marcador (US 057) el tiempo de la compra ya está en su centro: este reloj quedaba abajo, asomándose.
-        hudClock.SetActive(!open && phase != null && phase.IsActive && MatchHud.Instance == null);
-        hudHint.SetActive(!open && phaseActive && access == ShopResult.Ok);
-        hudMoney.gameObject.SetActive(!open);
+        hudClock.SetActive(!open && !Dm && phase != null && phase.IsActive && MatchHud.Instance == null);
+        hudHint.SetActive(!open && (phaseActive || Dm) && access == ShopResult.Ok && !PantallaDeCarga.Visible);
+        hudMoney.gameObject.SetActive(!open && !Dm); // US 138, CA1: sin plata
         if (phase != null)
         {
             hudTime.text = Clock(phase.TimeLeft);
             hudRound.text = $"Ronda {phase.Round}";
         }
 
-        if (open)
+        if (open && Dm)
+        {
+            PartidaDeathmatch.PuedeElegir(out string reason, out float left);
+            barPhase.text = reason;
+            barPhase.color = Accent;
+            barTime.text = left >= 0f ? Clock(left) : "—";
+            SetProgress(1f);
+        }
+        else if (open)
         {
             if (phase == null)
             {
@@ -519,6 +570,16 @@ public class ShopUI : MonoBehaviour
 
     private void RenderBar()
     {
+        barTitle.text = Dm ? "Elegí tu equipo" : "Tienda";
+        if (Dm)
+        {
+            // US 138, CA1: sin plata ni precios.
+            barSub.text = "Deathmatch";
+            barMoney.text = "Todo gratis";
+            barNext.text = "Se guarda para la próxima vida";
+            banner.SetActive(false);
+            return;
+        }
         barSub.text = phase != null ? $"Táctico · Ronda {phase.Round}" : "Táctico";
         barMoney.text = Money(loadout.Wallet.Money);
         barNext.text = $"Próxima ronda: mínimo {Money(minimumNextRound)}";
@@ -541,7 +602,7 @@ public class ShopUI : MonoBehaviour
             List<ShopItem> items = catalog.ItemsIn(value);
 
             // Una categoría sin nada que se pueda comprar se ve al 38 %, como el ".row.off" de la maqueta.
-            float opacity = items.Exists(IsReachable) ? 1f : 0.38f;
+            float opacity = Dm || items.Exists(IsReachable) ? 1f : 0.38f;
             PaintRow(row, isSelected, (level == 0 && highlight == i) || row.hovered, opacity);
             row.nameText.color = Faded(Ink, opacity);
             row.rightText.color = Faded(Mute, opacity);
@@ -551,7 +612,7 @@ public class ShopUI : MonoBehaviour
                 : new Color(1f, 1f, 1f, FadeAlpha(0.9f * opacity));
 
             // Nombre, rango de precios y flecha, uno detrás del otro como en la maqueta.
-            row.rightText.text = PriceRange(items);
+            row.rightText.text = Dm ? "" : PriceRange(items);
             float nameWidth = Width(row.nameText, row.nameText.text.ToUpperInvariant());
             float rangeWidth = Width(row.rightText, row.rightText.text);
             float rangeX = Mathf.Max(361f - rangeWidth, 155f + nameWidth + 14f);
@@ -584,7 +645,7 @@ public class ShopUI : MonoBehaviour
             }
             else
             {
-                row.rightText.text = item.price <= 0 ? "Gratis" : Money(item.price);
+                row.rightText.text = Dm ? "" : item.price <= 0 ? "Gratis" : Money(item.price);
                 row.rightText.color = cant ? Bad : Ink;
                 stateWidth = Mathf.Max(84f, Width(row.rightText, row.rightText.text));
                 Place(row.rightText.rectTransform, 461f - stateWidth, 0f, stateWidth, ItemRowH);
@@ -636,7 +697,7 @@ public class ShopUI : MonoBehaviour
         string title = ItemName(item);
         float nameSize = title.Length > 15 ? 36f : 46f;
 
-        detailPrice.text = item.price <= 0 ? "Gratis" : Money(item.price);
+        detailPrice.text = Dm ? "" : item.price <= 0 ? "Gratis" : Money(item.price);
         detailPrice.color = cant ? Bad : Ink;
         float priceWidth = Width(detailPrice, detailPrice.text);
         detailName.text = title;
@@ -1010,7 +1071,14 @@ public class ShopUI : MonoBehaviour
         int money = loadout.Wallet.Money;
         int cost = loadout.CostOf(item);
 
-        if (access != ShopResult.Ok)
+        if (Dm)
+        {
+            // US 138, CA3: elegir equipa gratis; la que ya está en uso dice "Elegida".
+            if (access != ShopResult.Ok) PaintButton(ButtonStyle.Locked, "Ahora no", "solo mirar");
+            else if (loadout.IsEquipped(item)) PaintButton(ButtonStyle.Owned, "Elegida", "se guarda para la próxima vida");
+            else PaintButton(ButtonStyle.Normal, "Elegir", "Enter · clic");
+        }
+        else if (access != ShopResult.Ok)
             PaintButton(ButtonStyle.Locked, access == ShopResult.BuyPhaseOver ? "Terminó la compra" : "Fuera de la zona", "solo mirar");
         else if (item.IsWeapon && loadout.IsEquipped(item))
             PaintButton(ButtonStyle.Owned, "Ya la tenés", loadout.BoughtThisPhase(item)
@@ -1162,7 +1230,14 @@ public class ShopUI : MonoBehaviour
         // Gastado esta ronda y "Deshacer" (US 076, CA10), alineados a la derecha.
         float right = loadoutWidths[5] - 18f;
         TextMeshProUGUI title = Text(Place(Node("Titulo", loadoutCells[5]), 0f, 21f, right, 24f), labelFont, 14f, Mute, TextAlignmentOptions.MidlineRight, 12f, true);
-        title.text = "Gastado esta ronda";
+        title.text = Dm ? "Tu equipo" : "Gastado esta ronda";
+        if (Dm)
+        {
+            // US 138, CA4: no hay gasto; se avisa que lo elegido queda.
+            TextMeshProUGUI keep = Text(Place(Node("Guardado", loadoutCells[5]), 0f, 51f, right, 40f), labelFont, 17f, Ink, TextAlignmentOptions.MidlineRight, 6f, true);
+            keep.text = "Se guarda para la próxima vida";
+            return;
+        }
         if (loadout.HasPurchases && loadout.CheckAccess() == ShopResult.Ok)
         {
             RectTransform undo = Place(Node("Deshacer", loadoutCells[5]), 0f, 54f, 10f, 34f);
@@ -1435,7 +1510,7 @@ public class ShopUI : MonoBehaviour
     {
         ink = Ok;
         fill = Over(Rgb(61, 220, 151, 0.16f), PanelBase);
-        if (item.IsWeapon && loadout.IsEquipped(item)) return "Equipada";
+        if (item.IsWeapon && loadout.IsEquipped(item)) return Dm ? "Elegida" : "Equipada";
         if (item.kind == ShopItemKind.Shield && loadout.Shield >= item.shieldPoints) return "Lleno";
         if (item.kind == ShopItemKind.Grenade && loadout.Count(item) >= item.maxCarry)
         {
@@ -1745,8 +1820,8 @@ public class ShopUI : MonoBehaviour
         content.sizeDelta = new Vector2(1920f, 92f);
 
         Key(content, 56f, 31f, KeyBindings.Label(GameAction.Tienda), true, false);
-        TextMeshProUGUI title = Text(Place(Node("Titulo", content), 102f, 18f, 500f, 40f), displayFont, 40f, Ink, TextAlignmentOptions.MidlineLeft, 10f, true);
-        title.text = "Tienda";
+        barTitle = Text(Place(Node("Titulo", content), 102f, 18f, 640f, 40f), displayFont, 40f, Ink, TextAlignmentOptions.MidlineLeft, 10f, true);
+        barTitle.text = "Tienda";
         barSub = Text(Place(Node("Modo", content), 102f, 58f, 500f, 16f), labelFont, 16f, Mute, TextAlignmentOptions.MidlineLeft, 14f, true);
 
         barPhase = Text(Place(Node("Fase", content), 750f, 12f, 420f, 17f), displayFont, 16f, Accent, TextAlignmentOptions.Midline, 18f, true);

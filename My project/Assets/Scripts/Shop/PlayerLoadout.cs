@@ -31,6 +31,9 @@ public class PlayerLoadout : MonoBehaviour
 
     public event System.Action Changed;
 
+    // Deathmatch (US 138): no hay plata. Las armas se eligen gratis y se conservan de una vida a la otra.
+    public static bool Free => MatchSettings.Mode == GameMode.Deathmatch;
+
     // Al morir, justo antes de perder el equipamiento: así el arma todavía se puede soltar al piso (US 184, CA8).
     public event System.Action LosingEquipment;
 
@@ -59,6 +62,20 @@ public class PlayerLoadout : MonoBehaviour
         phase = BuyPhase.Current;
         if (phase != null) phase.Started += OnPhaseStarted;
         if (health != null) health.Died += LoseEquipment;
+        if (Free) StartCoroutine(DefaultEquipment());
+    }
+
+    // US 138, CA6: si no eligió nada, juega con el Mitre y La Porteña. Un cuadro después, para que el resto
+    // (cambio de arma, tienda) ya esté escuchando el cambio.
+    private System.Collections.IEnumerator DefaultEquipment()
+    {
+        yield return null;
+        if (Primary != null || catalog == null) yield break;
+        ShopItem rifle = catalog.items.Find(i => i != null && i.kind == ShopItemKind.PrimaryWeapon && i.alias == "Mitre");
+        if (rifle == null) rifle = catalog.items.Find(i => i != null && i.kind == ShopItemKind.PrimaryWeapon);
+        if (rifle == null) yield break;
+        Primary = rifle;
+        Changed?.Invoke();
     }
 
     private void OnDestroy()
@@ -95,6 +112,8 @@ public class PlayerLoadout : MonoBehaviour
     // Si ahora se puede usar la tienda: fase de compra activa y dentro de la zona (US 076, CA9).
     public ShopResult CheckAccess()
     {
+        // US 138, CA5: en Deathmatch no hay fase ni zona; se elige muerto, en la cuenta inicial o recién reaparecido.
+        if (Free) return PartidaDeathmatch.PuedeElegir(out _, out _) ? ShopResult.Ok : ShopResult.BuyPhaseOver;
         if (BuyPhase.Current != null && !BuyPhase.Current.IsActive) return ShopResult.BuyPhaseOver;
         // En el Modo Zombie se compra en cualquier parte del mapa: no hay bases, aunque el mapa tenga zonas de compra.
         if (MatchSettings.Mode != GameMode.Zombie && !BuyZone.Contains(transform.position, EquiposTacticos.LadoLocal))
@@ -105,6 +124,7 @@ public class PlayerLoadout : MonoBehaviour
     // Lo que se paga de verdad: el precio menos lo que se devuelve por reemplazar algo comprado en esta fase.
     public int CostOf(ShopItem item)
     {
+        if (Free) return 0;
         int refund = 0;
         if (item.kind == ShopItemKind.PrimaryWeapon) refund = PaidThisPhase(Primary);
         else if (item.kind == ShopItemKind.SecondaryWeapon) refund = PaidThisPhase(Secondary);
@@ -116,6 +136,12 @@ public class PlayerLoadout : MonoBehaviour
     {
         ShopResult access = CheckAccess();
         if (access != ShopResult.Ok) return access;
+        if (Free)
+        {
+            // US 138, CA2 y CA3: solo armas, sin pagar.
+            if (!item.IsWeapon) return ShopResult.NotSellable;
+            return IsEquipped(item) ? ShopResult.AlreadyEquipped : ShopResult.Ok;
+        }
 
         switch (item.kind)
         {
@@ -165,8 +191,8 @@ public class PlayerLoadout : MonoBehaviour
                 break;
         }
 
-        wallet.Spend(item.price);
-        if (item.price > 0)
+        if (!Free) wallet.Spend(item.price);
+        if (item.price > 0 && !Free)
             purchases.Add(new Purchase { item = item, paid = item.price, shieldBefore = shieldBefore });
         Changed?.Invoke();
         return ShopResult.Ok;
@@ -174,6 +200,7 @@ public class PlayerLoadout : MonoBehaviour
 
     public ShopResult CanSell(ShopItem item)
     {
+        if (Free) return ShopResult.NotSellable;
         ShopResult access = CheckAccess();
         if (access != ShopResult.Ok) return access;
 
@@ -238,6 +265,7 @@ public class PlayerLoadout : MonoBehaviour
     // Al morir se pierde todo menos la plata; se reaparece con el arma secundaria inicial.
     public void LoseEquipment()
     {
+        if (Free) return; // US 138, CA4: lo elegido queda para las vidas siguientes
         LosingEquipment?.Invoke();
         Primary = null;
         Secondary = catalog != null ? catalog.starterSecondary : null;
