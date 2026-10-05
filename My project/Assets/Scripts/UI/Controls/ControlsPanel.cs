@@ -143,7 +143,11 @@ public class ControlsPanel : MonoBehaviour, OpcionesPantalla.ISeccion
 
         // En las opciones del menú, PanelControles viene estirado distinto a lo ancho y a lo alto: se corrige para
         // que las letras no salgan deformadas (igual que Gráficos y Sonido).
-        if (pantalla != null) OpcionesKit.SinDeformar(transform.parent as RectTransform, OpcionesKit.AltoControles);
+        // El alto de diseño era para 9 filas de teclas por columna: cada fila de más suma su alto, así el pie no se corta.
+        int acciones = new List<GameAction>(KeyBindings.All).Count;
+        int filasDeMas = Mathf.Max(0, Mathf.CeilToInt((acciones + 1) / 2f) - 9);
+        if (pantalla != null)
+            OpcionesKit.SinDeformar(transform.parent as RectTransform, OpcionesKit.AltoControles + filasDeMas * (KeyRowH + KeyGap));
 
         // Estirado al tamaño de PanelControles y dibujado encima de lo que tenga.
         RectTransform self = transform as RectTransform;

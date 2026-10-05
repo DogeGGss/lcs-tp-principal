@@ -96,7 +96,9 @@ public class PlayerLoadout : MonoBehaviour
     public ShopResult CheckAccess()
     {
         if (BuyPhase.Current != null && !BuyPhase.Current.IsActive) return ShopResult.BuyPhaseOver;
-        if (!BuyZone.Contains(transform.position, EquiposTacticos.LadoLocal)) return ShopResult.OutsideBuyZone;
+        // En el Modo Zombie se compra en cualquier parte del mapa: no hay bases, aunque el mapa tenga zonas de compra.
+        if (MatchSettings.Mode != GameMode.Zombie && !BuyZone.Contains(transform.position, EquiposTacticos.LadoLocal))
+            return ShopResult.OutsideBuyZone;
         return ShopResult.Ok;
     }
 
