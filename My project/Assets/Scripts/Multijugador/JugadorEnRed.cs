@@ -268,6 +268,7 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
             yield return null;
         }
         partida.Aviso(null);
+        if (PartidaDeathmatch.YaTermino) yield break; // la partida terminó mientras esperaba: ya no reaparece
 
         Pose punto = partida.PuntoDeReaparicion();
         Teletransportar(transform, punto.position, punto.rotation);
@@ -366,6 +367,7 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
     private void AvisarBaja(int atacante, bool cabeza, string arma)
     {
         RondasTacticas.ContarBaja(atacante, photonView.OwnerActorNr); // US 135, CA2: $ 200 al que mató
+        PartidaDeathmatch.ContarBaja(atacante, photonView.OwnerActorNr, cabeza); // US 140, CA1 y CA2
         Player asesino = atacante != 0 && PhotonNetwork.CurrentRoom != null ? PhotonNetwork.CurrentRoom.GetPlayer(atacante) : null;
         JugadorEnRed tirador = partida != null ? partida.Buscar(atacante) : null;
         bool otraArma = !string.IsNullOrEmpty(arma);
