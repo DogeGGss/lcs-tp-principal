@@ -441,3 +441,11 @@ fecha_utc,us_numero,us_titulo,estado_anterior,estado_nuevo,tiempo_en_estado_ante
 2026-10-06T10:07:11.417206+00:00,67,US 017. Recarga de habilidad,LPR,R2D,10d 15h,918059,https://github.com/DogeGGss/lcs-tp-principal/issues/67
 2026-10-06T16:46:26.145343+00:00,323,US 196. Pantalla de carga,LPR,TESTING,2d 10h 24m,210279,https://github.com/DogeGGss/lcs-tp-principal/issues/323
 2026-10-06T16:46:26.145343+00:00,199,US 139. Curación por baja,In Progress,LPR,17h 33m,63234,https://github.com/DogeGGss/lcs-tp-principal/issues/199
+2026-10-06T21:18:16.522559+00:00,39,US 009. Apuntar,R2D,Done,1d 12h 57m,133051,https://github.com/DogeGGss/lcs-tp-principal/issues/39
+2026-10-06T21:18:16.522559+00:00,56,US 006. Reaparición al caer del mapa,Done,LPR,10d 15h 46m,920777,https://github.com/DogeGGss/lcs-tp-principal/issues/56
+2026-10-06T21:18:16.522559+00:00,245,US 168. Retroceso visible,Done,LPR,8d 22h 1m,770508,https://github.com/DogeGGss/lcs-tp-principal/issues/245
+2026-10-06T21:18:16.522559+00:00,113,US 012. Ataque cuerpo a cuerpo,LPR,In Progress,5d 11h 56m,475015,https://github.com/DogeGGss/lcs-tp-principal/issues/113
+2026-10-06T21:18:16.522559+00:00,33,US 001. Caminar,Done,LPR,12d 21h 18m,1113511,https://github.com/DogeGGss/lcs-tp-principal/issues/33
+2026-10-06T21:18:16.522559+00:00,41,US 010. Disparar,Done,LPR,6d 22h 11m,598271,https://github.com/DogeGGss/lcs-tp-principal/issues/41
+2026-10-06T21:18:16.522559+00:00,197,US 137. Reaparecer en Deathmatch,Blocked,In Progress,10d 23h 1m,946907,https://github.com/DogeGGss/lcs-tp-principal/issues/197
+2026-10-06T21:18:16.522559+00:00,247,US 170. Marcas de impacto en el escenario,Done,LPR,6d 22h 11m,598271,https://github.com/DogeGGss/lcs-tp-principal/issues/247
