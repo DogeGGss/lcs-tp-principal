@@ -292,7 +292,36 @@ public class PartidaEnRed : MonoBehaviour
         }
 
         int indice = Mathf.Max(0, actores.IndexOf(local));
-        return puntos[indice % puntos.Count];
+        List<Pose> repartidos = PuntosRepartidos();
+        return repartidos[indice % repartidos.Count];
+    }
+
+    // Los puntos del mapa ordenados para que los primeros queden lo más lejos posible entre sí: así, al empezar un
+    // Deathmatch, nadie aparece enfrente de otro (US 137). Todas las computadoras arman el mismo orden.
+    private List<Pose> PuntosRepartidos()
+    {
+        var orden = new List<Pose> { puntos[0] };
+        var libres = new List<Pose>(puntos);
+        libres.RemoveAt(0);
+        while (libres.Count > 0)
+        {
+            int mejor = 0;
+            float mejorDistancia = -1f;
+            for (int i = 0; i < libres.Count; i++)
+            {
+                float cercano = float.MaxValue;
+                foreach (Pose elegido in orden)
+                    cercano = Mathf.Min(cercano, Vector3.Distance(libres[i].position, elegido.position));
+                if (cercano > mejorDistancia)
+                {
+                    mejorDistancia = cercano;
+                    mejor = i;
+                }
+            }
+            orden.Add(libres[mejor]);
+            libres.RemoveAt(mejor);
+        }
+        return orden;
     }
 
     /// <summary>US 032: el punto de la base que le toca al jugador local en la ronda actual (cambia con el lado).</summary>

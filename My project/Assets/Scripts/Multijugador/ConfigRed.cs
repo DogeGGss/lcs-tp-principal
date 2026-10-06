@@ -66,6 +66,9 @@ public class ConfigRed : ScriptableObject
     public float reaparicion = 3f;
     [Tooltip("Segundos sin recibir daño al reaparecer. Se cortan si dispara.")]
     public float invulnerabilidad = 2f;
+    [Tooltip("Sonido al reaparecer (US 137). Lo escucha solo el que reaparece. Sin clip, suena un tono generado.")]
+    public AudioClip sonidoReaparicion;
+    [Range(0f, 1f)] public float volumenReaparicion = 0.6f;
 
     [Tooltip("Música del Modo Deathmatch (US 136, CA6). Suena en loop por el grupo Música. Sin clip, no suena nada.")]
     public AudioClip musicaDeathmatch;
