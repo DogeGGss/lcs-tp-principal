@@ -86,7 +86,12 @@ Descargá **Riftwalker-Launcher.exe** una sola vez desde su link fijo: <https://
 
 La primera apertura propone `%LOCALAPPDATA%/Project Riftwalker`. Se puede elegir otra carpeta vacía con permiso de escritura. Crea accesos directos en el escritorio y en el menú Inicio, sin pedir administrador. Después, **Instalar** descarga el juego. **Jugar** abre el juego y cierra el launcher. Podés volver a abrir el launcher para iniciar otra copia y probar multijugador en la misma computadora. La actualización del juego espera a que cierres todas sus copias.
 
-Windows puede mostrar **«Windows protegió su PC»** porque el ejecutable no tiene firma. Para el archivo descargado del release oficial del equipo: **Más información → Ejecutar de todas formas**. Si la política de la computadora no permite continuar, consultá al administrador. No se modifica Defender ni la política de ejecución. Las capturas de este diálogo quedan pendientes de la prueba en una computadora limpia; no se incluye una captura simulada.
+Como el ejecutable no tiene firma digital, la primera vez que lo abrís Windows SmartScreen puede mostrar una ventana azul que dice **«Windows protegió su PC»**. Si lo bajaste del link oficial de arriba:
+
+1. Tocá **Más información**, el texto que está debajo del mensaje.
+2. Abajo aparece el botón **Ejecutar de todas formas**: tocalo y el launcher se abre.
+
+Windows lo pregunta una sola vez por archivo. Si no aparece el botón **Ejecutar de todas formas** (por ejemplo, en una computadora de la facultad con restricciones), el launcher no se puede instalar ahí: consultá al administrador. El launcher no toca Defender ni la configuración de Windows.
 
 ## Actualizaciones y recuperación
 
@@ -128,7 +133,6 @@ La comprobación de versión es una regla del cliente; no es un mecanismo antitr
 - [ ] Actualizar de una versión real a la siguiente; comprobar opciones y progreso.
 - [ ] Cortar/reanudar la red durante la descarga y comprobar la recuperación.
 - [ ] Probar retorno experimental → estable y actualización del launcher con una versión mayor.
-- [ ] Capturar el aviso de SmartScreen, si aparece, e incorporarlo a esta guía.
 
 Estas comprobaciones de entorno no se sustituyen por las pruebas automatizadas.
 
