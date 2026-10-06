@@ -62,6 +62,17 @@ public class PlayerMovement : MonoBehaviour
 
         // Los pasos se agregan solos (US 001 y US 002): no hace falta tocar el prefab.
         if (GetComponent<Pasos>() == null) gameObject.AddComponent<Pasos>();
+        // Igual lo que pasa al caerse del mapa (US 006).
+        if (GetComponent<FueraDelMapa>() == null) gameObject.AddComponent<FueraDelMapa>();
+    }
+
+    /// <summary>US 006, CA6: al reaparecer no conserva la velocidad de la caída ni lo que venía moviéndose.</summary>
+    public void Frenar()
+    {
+        verticalVelocity = 0f;
+        moveX = moveZ = 0f;
+        wasInAir = false;
+        if (animator != null) animator.SetBool("isFalling", false);
     }
 
 

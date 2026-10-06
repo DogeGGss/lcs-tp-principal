@@ -273,7 +273,7 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
         AvisarBaja(ultimoAtacante, cabeza, ultimaArma); // US 057, CA4
 
         Player asesino = ultimoAtacante != 0 && PhotonNetwork.CurrentRoom != null ? PhotonNetwork.CurrentRoom.GetPlayer(ultimoAtacante) : null;
-        string titulo = asesino != null ? $"Te eliminó {asesino.NickName}" : "Te eliminaron";
+        string titulo = asesino != null ? $"Te eliminó {asesino.NickName}" : ultimaArma == Caida ? "Te caíste del mapa" : "Te eliminaron";
 
         if (MatchSettings.Mode == GameMode.Deathmatch)
             StartCoroutine(Reaparecer(titulo, ConfigRed.Actual != null ? ConfigRed.Actual.reaparicion : 3f));
@@ -410,12 +410,18 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
     private static int Indice(Player jugador, string clave) =>
         jugador.CustomProperties.TryGetValue(clave, out object v) && v is int n ? n : -1;
 
-    /// <summary>US 033: lo elimina la explosión del dispositivo (también lo usa la prueba solo).</summary>
-    public void Eliminar()
+    /// <summary>US 006: con qué murió el que se cayó del mapa (para el aviso de baja y el cartel).</summary>
+    public const string Caida = "Caída";
+
+    /// <summary>
+    /// US 033: lo elimina la explosión del dispositivo (también lo usa la prueba solo). US 006: o se cayó del mapa
+    /// (causa = Caida). Nadie suma la baja.
+    /// </summary>
+    public void Eliminar(string causa = "")
     {
         if (photonView == null || !photonView.IsMine || muerto || vida == null) return;
         ultimoAtacante = 0;
-        ultimaArma = "";
+        ultimaArma = causa ?? "";
         vida.Invulnerable = false;
         vida.TakeDamage(vida.currentHealth + vida.currentShield + 1);
     }
@@ -1090,5 +1096,8 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
         jugador.SetPositionAndRotation(posicion, rotacion);
         if (prendido) cuerpo.enabled = true;
         Physics.SyncTransforms();
+        // US 006, CA6: al reaparecer no sigue con la velocidad que traía (por ejemplo, de una caída).
+        PlayerMovement movimiento = jugador.GetComponent<PlayerMovement>();
+        if (movimiento != null) movimiento.Frenar();
     }
 }
