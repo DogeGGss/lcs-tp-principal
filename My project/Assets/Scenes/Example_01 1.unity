@@ -19442,51 +19442,6 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: d9496913daf444c5c9205545c44d78c4, type: 3}
---- !u!1 &276412196
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 276412198}
-  - component: {fileID: 276412197}
-  m_Layer: 0
-  m_Name: PuntoDeReaparicion 02 (2)
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!114 &276412197
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 276412196}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 92991123c7883a14b997ed07c880c7ef, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::PuntoDeAparicion
-  lado: 0
---- !u!4 &276412198
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 276412196}
-  serializedVersion: 2
-  m_LocalRotation: {x: -0, y: 0.5471282, z: -0, w: 0.8370489}
-  m_LocalPosition: {x: 7.82, y: 0.88, z: -9.71}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 66.34, z: 0}
 --- !u!4 &277160907 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 440360, guid: d8b78681a0006415a824f4e6273244dd, type: 3}
@@ -52989,7 +52944,7 @@ Transform:
   m_GameObject: {fileID: 766461041}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: 0.5471282, z: -0, w: 0.8370489}
-  m_LocalPosition: {x: 56.71, y: -4.5472736, z: 1.56}
+  m_LocalPosition: {x: 56.71, y: -4.17, z: 1.56}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -134209,7 +134164,7 @@ Transform:
   m_GameObject: {fileID: 1890717140}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: 0.5471282, z: -0, w: 0.8370489}
-  m_LocalPosition: {x: 67.41, y: -4.5472736, z: 6.25}
+  m_LocalPosition: {x: 67.41, y: -4.063, z: 6.25}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -149270,7 +149225,6 @@ SceneRoots:
   - {fileID: 775128790}
   - {fileID: 1043540341}
   - {fileID: 1200066476}
-  - {fileID: 276412198}
   - {fileID: 1621951826}
   - {fileID: 1823571891}
   - {fileID: 118681691}
