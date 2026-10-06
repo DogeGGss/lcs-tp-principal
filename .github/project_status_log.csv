@@ -433,3 +433,7 @@ fecha_utc,us_numero,us_titulo,estado_anterior,estado_nuevo,tiempo_en_estado_ante
 2026-10-05T23:12:31.591868+00:00,200,US 140. Puntuación y victoria en Deathmatch,Blocked,LPR,10d 56m,867363,https://github.com/DogeGGss/lcs-tp-principal/issues/200
 2026-10-05T23:12:31.591868+00:00,201,US 141. Mostrar marcador de Deathmatch,In Progress,LPR,4d 23h 29m,430177,https://github.com/DogeGGss/lcs-tp-principal/issues/201
 2026-10-05T23:12:31.591868+00:00,202,US 142. Mostrar resultado de Deathmatch,Blocked,In Progress,10d 56m,867363,https://github.com/DogeGGss/lcs-tp-principal/issues/202
+2026-10-06T03:01:50.601869+00:00,194,US 134. Mostrar marcador de la partida táctica,LPR,R2D,2d 7h 46m,200798,https://github.com/DogeGGss/lcs-tp-principal/issues/194
+2026-10-06T03:01:50.601869+00:00,322,US 195. Abandono y reconexión a la partida,Todo,LPR,2d 20h 16m,245771,https://github.com/DogeGGss/lcs-tp-principal/issues/322
+2026-10-06T03:01:50.601869+00:00,81,US 033. Definir el ganador de la ronda,LPR,R2D,4d 17h 40m,409229,https://github.com/DogeGGss/lcs-tp-principal/issues/81
+2026-10-06T03:01:50.601869+00:00,202,US 142. Mostrar resultado de Deathmatch,In Progress,LPR,3h 49m,13759,https://github.com/DogeGGss/lcs-tp-principal/issues/202
