@@ -79,8 +79,10 @@ public class ShopUI : MonoBehaviour
     private const float TeamX = 1540f, TeamW = 324f, TeamRowH = 106f; // compañeros (US 175, CA13)
 
     // Lo que cada jugador publica de su equipamiento para que lo vean sus compañeros en la tienda (US 175, CA13).
-    // La plata ya la publica el marcador (MarcadorTactico).
-    private const string PropPlata = "plata", PropPrincipal = "eq.pri", PropEscudo = "eq.esc", PropGastado = "eq.gasto";
+    // La plata ya la publica el marcador (MarcadorTactico). Las armas también sirven para la US 195: el anfitrión tira
+    // al piso la del que se desconecta (CA4) y en Deathmatch el que vuelve recupera las que había elegido (CA3).
+    private const string PropPlata = "plata", PropEscudo = "eq.esc", PropGastado = "eq.gasto";
+    public const string PropPrincipal = "eq.pri", PropSecundaria = "eq.sec";
 
     private class Row
     {
@@ -1385,19 +1387,23 @@ public class ShopUI : MonoBehaviour
         return sb.ToString();
     }
 
-    // Cada jugador publica su arma principal (su lugar en el catálogo, igual en todas las computadoras), su escudo y
-    // lo que gastó en esta fase. Solo cuando cambia.
+    // Cada jugador publica sus armas (su lugar en el catálogo, igual en todas las computadoras), su escudo y lo que
+    // gastó en esta fase. Solo cuando cambia. En Deathmatch también, para recuperar las armas al volver (US 195).
     private void PublishLoadout()
     {
-        if (!PhotonNetwork.InRoom || !EquiposTacticos.HayEquipos || loadout == null || catalog == null) return;
+        if (!PhotonNetwork.InRoom || loadout == null || catalog == null) return;
+        if (MatchSettings.Mode == GameMode.Tactico && !EquiposTacticos.HayEquipos) return;
+        // US 195: no antes de que la partida arme al jugador, así el que vuelve recupera lo que había publicado.
+        if (PartidaEnRed.Actual == null || !PartidaEnRed.Actual.Lista) return;
         int primary = loadout.Primary != null ? catalog.items.IndexOf(loadout.Primary) : -1;
+        int secondary = loadout.Secondary != null ? catalog.items.IndexOf(loadout.Secondary) : -1;
         int shield = loadout.Shield, spent = loadout.SpentThisPhase;
-        string state = $"{primary},{shield},{spent}";
+        string state = $"{primary},{secondary},{shield},{spent}";
         if (state == publishedState) return;
         publishedState = state;
         PhotonNetwork.LocalPlayer.SetCustomProperties(new ExitGames.Client.Photon.Hashtable
         {
-            { PropPrincipal, primary }, { PropEscudo, shield }, { PropGastado, spent }
+            { PropPrincipal, primary }, { PropSecundaria, secondary }, { PropEscudo, shield }, { PropGastado, spent }
         });
     }
 

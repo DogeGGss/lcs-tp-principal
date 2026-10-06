@@ -74,6 +74,8 @@ public class PersonajesTacticos : MonoBehaviour
             // Terminó la selección (reloj del anfitrión): si todavía no eligió, se elige solo (CA4).
             if (abierta && pantalla != null && pedido == null) pantalla.ForceTimeUp();
             if (!abierta) { Destrabar(); if (elegido) MatchHud.SetHint(null); }
+            // US 195, CA3: el que vuelve a la partida después de la selección sigue con el personaje que había elegido.
+            if (!abierta && !elegido) Recuperar();
         }
 
         Responder();
@@ -151,6 +153,15 @@ public class PersonajesTacticos : MonoBehaviour
         if (dueno != 0) { string quien = ElegidoPor(pedidoDe); pedido = null; pantalla.Reject($"Ya lo eligió {quien}"); return; }
         // Sin respuesta (por ejemplo, se cortó la conexión un momento): se deja elegir de nuevo.
         if (Time.unscaledTime >= pedidoHasta) { pedido = null; pantalla.Reject("No se pudo confirmar, probá de nuevo"); }
+    }
+
+    // US 195, CA3: el personaje que tiene en la sala (lo eligió antes de desconectarse), con su habilidad.
+    private void Recuperar()
+    {
+        elegido = true;
+        CharacterData mio = De(PhotonNetwork.LocalPlayer.ActorNumber);
+        PlayerAbility habilidad = partida != null && partida.Local != null ? partida.Local.GetComponent<PlayerAbility>() : null;
+        if (mio != null && habilidad != null) habilidad.UsarPersonaje(mio);
     }
 
     // Se quedó con el personaje: se usa su habilidad desde ya.

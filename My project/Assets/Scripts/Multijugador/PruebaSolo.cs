@@ -5,6 +5,8 @@
 //   F9 gana tu equipo, F10 gana el rival, F11 salta a la fase siguiente, F8 pone 6 a 6 (muerte súbita),
 //   F5 te elimina, F6 planta el dispositivo donde estás y F7 lo desactiva (US 033),
 //   F4 te paga una baja ($ 200, US 135), F3 te da el dispositivo o te lo saca (US 130).
+// - en cualquier partida online, F12 simula un corte de conexión (US 195): a los pocos segundos vuelve al menú, que
+//   ofrece "Volver a la partida". Funciona también en la computadora de un jugador que no es el anfitrión.
 // Además, Riftwalker > Prueba: todos en el mismo equipo deja a todos los jugadores en el mismo equipo (alcanza con
 // prenderlo en la computadora del anfitrión, que es la que reparte): sirve para probar el espectador (US 133) y el
 // personaje único (US 016) con dos jugadores.

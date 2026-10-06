@@ -58,6 +58,9 @@ public class PartidaDeathmatch : MonoBehaviour
     public int Ganador => Leer(PropGanador, 0);
     public static bool YaTermino => Actual != null && Actual.Lista && Actual.FaseActual == Fase.Terminada;
 
+    /// <summary>US 195: la partida ya está en combate, según la sala (se puede leer antes de que exista PartidaDeathmatch).</summary>
+    public static bool EnCombate => Sala != null && Sala.CustomProperties.ContainsKey(PropFase) && (Fase)Leer(PropFase, 0) == Fase.Combate;
+
     /// <summary>Segundos que le quedan a la fase actual (la cuenta regresiva o el reloj de 8 minutos).</summary>
     // US 138, CA5: segundos después de reaparecer (o de empezar el combate) en que todavía se puede cambiar de equipo.
     public const float GraciaParaElegir = 5f;
@@ -228,7 +231,8 @@ public class PartidaDeathmatch : MonoBehaviour
                 Destrabar();
                 ShopUI.Rebloquear(); // si la tienda sigue abierta, las armas siguen trabadas hasta cerrarla
                 if (local != null) local.AbrirVentanaDeEquipo(); // US 138, CA5
-                if (faseVista == (int)Fase.Cuenta || faseVista < 0)
+                // El que vuelve a la partida en medio del combate no ve el "¡A pelear!" (US 195).
+                if (faseVista == (int)Fase.Cuenta || (faseVista < 0 && !Reconexion.Volvio))
                 {
                     HealthSystem vida = local != null ? local.GetComponent<HealthSystem>() : null;
                     if (vida != null && local.Vivo) vida.SetState(vida.maxHealth, 0);

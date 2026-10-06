@@ -11,6 +11,14 @@ using UnityEngine;
 // se le agrega un PhotonView y se avisa a los demás, que arman una copia de él. Cada uno arranca en un punto
 // distinto del mapa.
 // Táctico (US 031, CA4): cada equipo arranca en los puntos de aparición de su lado (atacante o defensor).
+// Abandono y reconexión (US 195):
+// - CA1: cuando alguien se desconecta o vuelve, aviso para todos ("Luka se desconectó"). Su copia se saca de la
+//   partida y, en el marcador, su ícono queda gris (MarcadorTactico).
+// - CA3: el que vuelve recupera su plata (Táctico) o sus armas elegidas (Deathmatch). Sus bajas, sus muertes y su
+//   equipo ya quedaron en la sala, con su número de jugador. En el Táctico, si vuelve con la ronda empezada, espera
+//   la siguiente como si hubiera muerto; en Deathmatch reaparece enseguida (JugadorEnRed.AlVolver).
+// - CA4: si se desconecta vivo en el Táctico, su arma queda en el piso donde estaba (la tira el anfitrión para todos).
+//   El dispositivo, si lo llevaba, lo suelta DispositivoTactico.
 public class PartidaEnRed : MonoBehaviour
 {
     public static PartidaEnRed Actual { get; private set; }
@@ -78,13 +86,26 @@ public class PartidaEnRed : MonoBehaviour
         Local.IniciarLocal(this);
         jugadores[PhotonNetwork.LocalPlayer.ActorNumber] = Local;
 
-        // Queda guardado en la sala: los que terminan de cargar el mapa después también lo reciben.
+        // US 195, CA3: el que vuelve a la partida recupera lo suyo y, si hace falta, espera para reaparecer. Antes de
+        // avisar que está listo, así la pantalla de carga no le devuelve los controles a uno que espera muerto.
+        if (Reconexion.Volvio)
+        {
+            Recuperar(movimiento.gameObject);
+            Local.AlVolver();
+        }
+
+        // Queda guardado en la sala: los que terminan de cargar el mapa después también lo reciben. Primero se borra el
+        // aviso que haya quedado de este jugador de antes de desconectarse (US 195), que tiene otro lugar y otro id.
+        PhotonNetwork.RaiseEvent(Multijugador.EventoJugador, null,
+            new RaiseEventOptions { CachingOption = EventCaching.RemoveFromRoomCache, TargetActors = new[] { PhotonNetwork.LocalPlayer.ActorNumber } },
+            SendOptions.SendReliable);
         PhotonNetwork.RaiseEvent(Multijugador.EventoJugador,
             new object[] { vista.ViewID, inicio.position, inicio.rotation.eulerAngles.y },
             new RaiseEventOptions { Receivers = ReceiverGroup.Others, CachingOption = EventCaching.AddToRoomCache },
             SendOptions.SendReliable);
 
         Lista = true;
+        gameObject.AddComponent<Reconexion>();                       // US 195: anota la partida para poder volver
         gameObject.AddComponent<MarcasDeCompaneros>().Iniciar(this); // US 193: solo se ven cuando hay equipos
         gameObject.AddComponent<RivalesVistos>().Iniciar(this);      // US 194, CA4: rivales vistos, para el minimapa
         if (MatchSettings.Mode == GameMode.Tactico)
@@ -115,7 +136,8 @@ public class PartidaEnRed : MonoBehaviour
         if (datos.Length < 3 || !(datos[0] is int viewId) || !(datos[1] is Vector3 posicion) || !(datos[2] is float yaw)) return;
         int actor = viewId / PhotonNetwork.MAX_VIEW_IDS;
         Player dueno = PhotonNetwork.CurrentRoom != null ? PhotonNetwork.CurrentRoom.GetPlayer(actor) : null;
-        if (dueno == null || dueno.IsLocal || jugadores.ContainsKey(actor) || molde == null) return;
+        // US 195: el aviso de uno que está desconectado sigue guardado en la sala; aparece cuando vuelva (con uno nuevo).
+        if (dueno == null || dueno.IsLocal || dueno.IsInactive || jugadores.ContainsKey(actor) || molde == null) return;
 
         jugadores[actor] = JugadorEnRed.CrearCopia(molde, posicion, Quaternion.Euler(0f, yaw, 0f), viewId, dueno, this);
         Debug.Log($"PartidaEnRed: aparece {dueno.NickName}.");
@@ -125,8 +147,52 @@ public class PartidaEnRed : MonoBehaviour
     {
         if (!jugadores.TryGetValue(actor, out JugadorEnRed jugador)) return;
         jugadores.Remove(actor);
-        if (jugador != null && jugador != Local) Destroy(jugador.gameObject);
+        if (jugador == null || jugador == Local) return;
+        // US 195, CA4: el que se va vivo en el Táctico deja su arma en el piso. La tira el anfitrión, para todos.
+        if (PhotonNetwork.IsMasterClient && Local != null && SoltarArmas.Activo && jugador.Vivo) Local.SoltarArmaDe(jugador);
+        Destroy(jugador.gameObject);
     }
+
+    // =====================================================================
+    // Abandono y reconexión (US 195)
+    // =====================================================================
+
+    /// <summary>CA1: alguien se desconectó (IsInactive: puede volver en 2 minutos) o se fue de la partida.</summary>
+    public void AlIrse(Player jugador)
+    {
+        if (jugador == null) return;
+        QuitarJugador(jugador.ActorNumber);
+        MatchHud.ReportEvent(jugador.NickName, JugadorEnRed.ColorDe(jugador.ActorNumber),
+            jugador.IsInactive ? "se desconectó" : "se fue de la partida");
+    }
+
+    /// <summary>CA2: alguien volvió a la partida. Su copia aparece cuando avisa que terminó de cargar el mapa.</summary>
+    public void AlVolver(Player jugador)
+    {
+        if (jugador == null) return;
+        MatchHud.ReportEvent(jugador.NickName, JugadorEnRed.ColorDe(jugador.ActorNumber), "volvió a la partida");
+    }
+
+    // CA3: lo que el jugador había publicado en la sala antes de desconectarse. En el Táctico, la plata (el equipo se
+    // pierde como al morir: el arma quedó en el piso). En Deathmatch, las armas que había elegido.
+    private static void Recuperar(GameObject jugador)
+    {
+        Player yo = PhotonNetwork.LocalPlayer;
+        if (MatchSettings.Mode == GameMode.Tactico)
+        {
+            PlayerWallet billetera = jugador.GetComponent<PlayerWallet>();
+            if (billetera != null && yo.CustomProperties.TryGetValue(MarcadorTactico.PropPlata, out object plata) && plata is int monto)
+                billetera.Set(monto);
+        }
+        else if (MatchSettings.Mode == GameMode.Deathmatch)
+        {
+            PlayerLoadout equipo = jugador.GetComponent<PlayerLoadout>();
+            if (equipo != null) equipo.Restaurar(Indice(yo, ShopUI.PropPrincipal), Indice(yo, ShopUI.PropSecundaria));
+        }
+    }
+
+    private static int Indice(Player jugador, string clave) =>
+        jugador.CustomProperties.TryGetValue(clave, out object v) && v is int n ? n : -1;
 
     // El mapa de pruebas genera enemigos: en online cada computadora tendría los suyos, así que se apagan.
     private static void ApagarEnemigosDePrueba()

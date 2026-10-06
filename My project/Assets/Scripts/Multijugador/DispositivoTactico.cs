@@ -177,6 +177,12 @@ public class DispositivoTactico : MonoBehaviour
     private void Update()
     {
         if (rondas == null || !rondas.Listo || Sala == null) return;
+        // US 195, CA4 y CA5: todos anotan dónde se vio al portador por última vez. Si el que se desconecta es el
+        // anfitrión, el nuevo anfitrión ya sabe dónde dejar el dispositivo.
+        int portador = Portador;
+        JugadorEnRed visto = portador != 0 ? partida.Buscar(portador) : null;
+        if (visto != null) ultimoLugarPortador = visto.transform.position;
+        else if (portador == 0) ultimoLugarPortador = null;
         if (PhotonNetwork.IsMasterClient) Anfitrion();
         if (BuscarLocal()) Jugador();
         Ver();
@@ -210,7 +216,8 @@ public class DispositivoTactico : MonoBehaviour
         {
             JugadorEnRed jugador = partida.Buscar(portador);
             if (jugador != null) ultimoLugarPortador = jugador.transform.position;
-            bool perdido = Sala.GetPlayer(portador) == null || (jugador != null && !jugador.Vivo);
+            // US 195, CA4: también si se desconectó (sigue en la sala 2 minutos, para poder volver).
+            bool perdido = !Reconexion.Conectado(portador) || (jugador != null && !jugador.Vivo);
             if (!perdido) perdidoDesde = -1f;
             else if (perdidoDesde < 0f) perdidoDesde = Time.unscaledTime;
             else if (Time.unscaledTime - perdidoDesde > 2f)
@@ -235,7 +242,7 @@ public class DispositivoTactico : MonoBehaviour
         if (manipula != 0)
         {
             JugadorEnRed jugador = partida.Buscar(manipula);
-            if (Sala.GetPlayer(manipula) == null || (jugador != null && !jugador.Vivo)) Publicar(new Hashtable { { PropManipula, 0 } });
+            if (!Reconexion.Conectado(manipula) || (jugador != null && !jugador.Vivo)) Publicar(new Hashtable { { PropManipula, 0 } });
         }
     }
 
@@ -245,7 +252,7 @@ public class DispositivoTactico : MonoBehaviour
         var atacantes = new List<int>();
         foreach (Player p in PhotonNetwork.PlayerList)
         {
-            if (!EsAtacante(p.ActorNumber)) continue;
+            if (!EsAtacante(p.ActorNumber) || p.IsInactive) continue; // US 195: a un desconectado, no
             JugadorEnRed jugador = partida.Buscar(p.ActorNumber);
             if (soloVivos && jugador != null && !jugador.Vivo) continue;
             atacantes.Add(p.ActorNumber);

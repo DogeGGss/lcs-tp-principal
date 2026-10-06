@@ -250,10 +250,21 @@ public class SoltarArmas : MonoBehaviour
         return centro - Vector3.up * (cuerpo.height * 0.5f * Mathf.Abs(cuerpo.transform.lossyScale.y));
     }
 
-    // Las balas del arma levantada (CA3).
+    // Las balas del arma levantada (CA3). Menos de 0: no se saben (la soltó el anfitrión por un jugador que se
+    // desconectó, US 195), así que queda llena.
     private static void PonerBalas(GameObject arma, int cargador, int reserva)
     {
         if (arma == null) return;
+        if (cargador < 0)
+        {
+            ArmaDeFuego llena = arma.GetComponent<ArmaDeFuego>();
+            if (llena != null) llena.Refill();
+            Mitre mitreLleno = arma.GetComponent<Mitre>();
+            if (mitreLleno != null) mitreLleno.Refill();
+            Pistola pistolaLlena = arma.GetComponent<Pistola>();
+            if (pistolaLlena != null) pistolaLlena.currentAmmo = pistolaLlena.maxAmmo;
+            return;
+        }
         ArmaDeFuego fuego = arma.GetComponent<ArmaDeFuego>();
         if (fuego != null) { fuego.currentAmmo = cargador; fuego.reserveAmmo = reserva; }
         Mitre mitre = arma.GetComponent<Mitre>();

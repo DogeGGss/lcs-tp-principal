@@ -11,6 +11,8 @@ using Hashtable = ExitGames.Client.Photon.Hashtable;
 // El anfitrión crea la sala y recibe un código de 5 caracteres; los demás entran con ese código. La sala guarda
 // el modo y el mapa. Al iniciar, el anfitrión carga el mapa y Photon lo carga en todos a la vez; en la escena
 // del mapa, PartidaEnRed arma los jugadores (US 025 a US 030).
+// US 195: al iniciar, la sala pasa a guardar 2 minutos a quien se desconecta. VolverALaPartida (el botón del menú
+// principal) se conecta con el usuario y la región anotados por Reconexion y vuelve a entrar a esa sala.
 public class Multijugador : MonoBehaviourPunCallbacks, IOnEventCallback
 {
     public const int MaxJugadores = 8;
@@ -25,6 +27,7 @@ public class Multijugador : MonoBehaviourPunCallbacks, IOnEventCallback
 
     private const string ErrorCrear = "No se pudo crear la sala. Revisá tu conexión.";
     private const string ErrorEntrar = "No se pudo entrar a la sala. Revisá tu conexión.";
+    private const string ErrorVolver = "No se pudo volver a la partida. Revisá tu conexión.";
 
     public struct Jugador
     {
@@ -56,12 +59,14 @@ public class Multijugador : MonoBehaviourPunCallbacks, IOnEventCallback
     // No se pudo conectar, crear la sala o entrar: el mensaje es para mostrarlo tal cual.
     public event Action<string> Error;
 
-    private enum Pedido { Nada, Crear, Unirse }
+    private enum Pedido { Nada, Crear, Unirse, Volver }
 
     private Pedido pedido;
     private GameMode modoPedido;
     private string codigoPedido;
     private int intentos;
+    private Reconexion.Partida vuelta;  // US 195: la partida a la que se vuelve
+    private bool cambiandoUsuario;      // US 195: se desconectó para conectarse de nuevo con el usuario de esa partida
     private readonly List<object[]> pendientes = new List<object[]>();
 
     private void Awake()
@@ -98,10 +103,15 @@ public class Multijugador : MonoBehaviourPunCallbacks, IOnEventCallback
         PhotonNetwork.SendRate = 30;
         PhotonNetwork.SerializationRate = 15;
         PhotonNetwork.NickName = NombreBase();
+        // US 195: Photon reconoce al que vuelve a una sala por su usuario. Para volver se usan el usuario y la región
+        // con los que se jugó esa partida.
+        bool volviendo = pedido == Pedido.Volver;
+        PhotonNetwork.AuthValues = new AuthenticationValues(volviendo ? vuelta.usuario : Reconexion.UsuarioDeEstaVez);
         // Solo se juntan jugadores con la misma versión del juego (US 204). ConnectUsingSettings pisa GameVersion con la
         // AppVersion de PhotonServerSettings (vacía), así que la versión va en una copia de esa configuración.
         var ajustes = PhotonNetwork.PhotonServerSettings == null ? null : PhotonNetwork.PhotonServerSettings.AppSettings.CopyTo(new AppSettings());
         if (ajustes != null) ajustes.AppVersion = Application.version;
+        if (ajustes != null && volviendo && !string.IsNullOrEmpty(vuelta.region)) ajustes.FixedRegion = vuelta.region;
         if (ajustes == null || !PhotonNetwork.ConnectUsingSettings(ajustes, PhotonNetwork.PhotonServerSettings.StartInOfflineMode))
             Fallar("No se pudo conectar. Revisá tu conexión.");
     }
@@ -130,8 +140,22 @@ public class Multijugador : MonoBehaviourPunCallbacks, IOnEventCallback
         Seguir();
     }
 
+    /// <summary>US 195, CA2: vuelve a la partida anotada por Reconexion (botón del menú principal).</summary>
+    public void VolverALaPartida()
+    {
+        if (!Reconexion.HayPartida(out vuelta))
+        {
+            Fallar("Ya no se puede volver a esa partida.");
+            return;
+        }
+        pedido = Pedido.Volver;
+        StartCoroutine(SeguirConVersion());
+    }
+
     public static void SalirDeLaSala()
     {
+        // US 195, CA7: el que sale a propósito de la partida no vuelve.
+        if (PhotonNetwork.CurrentRoom != null) Reconexion.OlvidarSiEsLaSala(PhotonNetwork.CurrentRoom.Name);
         if (instancia == null) return;
         instancia.pedido = Pedido.Nada;
         instancia.pendientes.Clear();
@@ -156,6 +180,11 @@ public class Multijugador : MonoBehaviourPunCallbacks, IOnEventCallback
         // US 031: en Táctico, el anfitrión reparte los equipos antes de cargar el mapa.
         if (ModoSala == GameMode.Tactico) EquiposTacticos.Repartir();
         PhotonNetwork.CurrentRoom.IsOpen = false;
+        // US 195: desde ahora, el que se desconecta queda 2 minutos en la sala para poder volver. En el andén no: ahí el
+        // que se va deja su lugar libre en el momento. La sala también espera 2 minutos si se desconectan todos a la vez
+        // (por ejemplo, se cortó la red de todos).
+        PhotonNetwork.CurrentRoom.PlayerTtl = Reconexion.SegundosParaVolver * 1000;
+        PhotonNetwork.CurrentRoom.EmptyRoomTtl = Reconexion.SegundosParaVolver * 1000;
         // US 196: pantalla de carga (los demás la ven cuando Photon les manda cargar el mapa).
         PantallaDeCarga.MostrarOnline(MapaActual.escena, ModoSala, MapaActual.nombre, MapaActual.imagen, Codigo);
         PhotonNetwork.LoadLevel(MapaActual.escena);
@@ -210,9 +239,26 @@ public class Multijugador : MonoBehaviourPunCallbacks, IOnEventCallback
     {
         if (pedido == Pedido.Nada) return;
         if (PhotonNetwork.InRoom) { PhotonNetwork.LeaveRoom(false); return; }
+        // US 195: si está conectado con otro usuario o a otra región, se reconecta con los de la partida.
+        if (pedido == Pedido.Volver && PhotonNetwork.IsConnected && !ConectadoComoEnLaPartida())
+        {
+            cambiandoUsuario = true;
+            PhotonNetwork.Disconnect();
+            return;
+        }
         if (!PhotonNetwork.IsConnected) { Conectar(); return; }
         if (PhotonNetwork.NetworkClientState != ClientState.ConnectedToMasterServer) return;
 
+        if (pedido == Pedido.Volver)
+        {
+            // US 195, CA2: entra a la misma sala con el mismo nombre. Photon le devuelve su número de jugador (y con él,
+            // su equipo y sus propiedades). El mapa se carga en OnJoinedRoom: si Photon lo cargara solo, lo haría antes
+            // de terminar de entrar a la sala y la partida no se armaría.
+            PhotonNetwork.AutomaticallySyncScene = false;
+            PhotonNetwork.NickName = string.IsNullOrEmpty(vuelta.nombre) ? NombreBase() : vuelta.nombre;
+            if (!PhotonNetwork.RejoinRoom(vuelta.sala)) FallarVuelta(ErrorVolver, false);
+            return;
+        }
         PhotonNetwork.AutomaticallySyncScene = true; // cuando el anfitrión inicia, todos cargan su mapa
         if (pedido == Pedido.Crear) CrearAhora();
         else if (!PhotonNetwork.JoinRoom(codigoPedido)) Fallar(ErrorEntrar);
@@ -237,6 +283,17 @@ public class Multijugador : MonoBehaviourPunCallbacks, IOnEventCallback
 
     private static string NombreBase() => PlayerProfile.HasName ? PlayerProfile.Name : "Jugador";
 
+    private bool ConectadoComoEnLaPartida() =>
+        PhotonNetwork.AuthValues != null && PhotonNetwork.AuthValues.UserId == vuelta.usuario &&
+        (string.IsNullOrEmpty(vuelta.region) || Reconexion.Region(PhotonNetwork.CloudRegion) == vuelta.region);
+
+    // US 195: no se pudo volver. olvidar: ya no hay a qué volver, así que el menú deja de ofrecerlo.
+    private void FallarVuelta(string mensaje, bool olvidar = true)
+    {
+        if (olvidar) Reconexion.Olvidar();
+        Fallar(mensaje);
+    }
+
     private void Fallar(string mensaje)
     {
         pedido = Pedido.Nada;
@@ -258,6 +315,22 @@ public class Multijugador : MonoBehaviourPunCallbacks, IOnEventCallback
 
     public override void OnJoinRoomFailed(short returnCode, string message)
     {
+        if (pedido == Pedido.Volver)
+        {
+            // US 195, CA2.
+            Debug.LogWarning($"Multijugador: no se pudo volver a la sala {vuelta.sala} ({returnCode}: {message}).");
+            switch (returnCode)
+            {
+                // Photon todavía no se dio cuenta de que se cortó la conexión: en unos segundos sí.
+                case ErrorCode.JoinFailedFoundActiveJoiner:
+                    FallarVuelta("Todavía figurás en la partida. Probá de nuevo en unos segundos.", false);
+                    break;
+                case ErrorCode.GameDoesNotExist: FallarVuelta("La partida ya terminó."); break;
+                case ErrorCode.JoinFailedWithRejoinerNotFound: FallarVuelta("Ya no se puede volver a esa partida."); break;
+                default: FallarVuelta(ErrorVolver, false); break;
+            }
+            return;
+        }
         // US 026, CA4 y CA5.
         switch (returnCode)
         {
@@ -290,6 +363,19 @@ public class Multijugador : MonoBehaviourPunCallbacks, IOnEventCallback
         MatchSettings.Mode = modo;
         MatchSettings.RoomCode = PhotonNetwork.CurrentRoom.Name;
 
+        if (hecho == Pedido.Volver)
+        {
+            // US 195, CA2: ya está en la sala, con el nombre de antes: se carga el mapa de la partida, con la pantalla de
+            // carga. Desde acá sigue igual que los demás (si el anfitrión carga otra escena, la carga también).
+            ConfigRed.Mapa mapa = MapaActual;
+            if (mapa != null) PantallaDeCarga.MostrarOnline(mapa.escena, modo, mapa.nombre, mapa.imagen, Codigo);
+            PhotonNetwork.AutomaticallySyncScene = true; // carga la escena que tiene el anfitrión
+            // Si quedó como anfitrión (no hay nadie más conectado), Photon no le carga nada: se carga acá.
+            if (PhotonNetwork.IsMasterClient && mapa != null) PhotonNetwork.LoadLevel(mapa.escena);
+            Cambio?.Invoke();
+            return;
+        }
+
         // US 026, CA9: si el nombre ya está en la sala, se le agrega un número solo para esta partida (US 164).
         var otros = new List<string>();
         foreach (Player p in PhotonNetwork.PlayerListOthers) otros.Add(p.NickName);
@@ -306,14 +392,16 @@ public class Multijugador : MonoBehaviourPunCallbacks, IOnEventCallback
 
     public override void OnPlayerEnteredRoom(Player newPlayer)
     {
-        Debug.Log($"Multijugador: entró {newPlayer.NickName}.");
+        Debug.Log($"Multijugador: {(newPlayer.HasRejoined ? "volvió" : "entró")} {newPlayer.NickName}.");
+        if (newPlayer.HasRejoined && PartidaEnRed.Actual != null) PartidaEnRed.Actual.AlVolver(newPlayer); // US 195
         Cambio?.Invoke();
     }
 
     public override void OnPlayerLeftRoom(Player otherPlayer)
     {
-        Debug.Log($"Multijugador: salió {otherPlayer.NickName}.");
-        if (PartidaEnRed.Actual != null) PartidaEnRed.Actual.QuitarJugador(otherPlayer.ActorNumber);
+        // US 195: IsInactive, se desconectó y tiene 2 minutos para volver; si no, se fue de la sala.
+        Debug.Log($"Multijugador: {(otherPlayer.IsInactive ? "se desconectó" : "salió")} {otherPlayer.NickName}.");
+        if (PartidaEnRed.Actual != null) PartidaEnRed.Actual.AlIrse(otherPlayer);
         Cambio?.Invoke();
     }
 
@@ -325,7 +413,16 @@ public class Multijugador : MonoBehaviourPunCallbacks, IOnEventCallback
     {
         Pedido habia = pedido;
         pendientes.Clear();
-        if (habia != Pedido.Nada) Fallar(habia == Pedido.Crear ? ErrorCrear : ErrorEntrar);
+        Reconexion.TerminarCorteDePrueba(); // US 195: si era el corte de prueba (F12), ya se puede volver a conectar
+        // US 195: se desconectó a propósito para volver a la partida con su usuario: se conecta de nuevo.
+        if (habia == Pedido.Volver && cambiandoUsuario)
+        {
+            cambiandoUsuario = false;
+            Conectar();
+            return;
+        }
+        cambiandoUsuario = false;
+        if (habia != Pedido.Nada) Fallar(habia == Pedido.Crear ? ErrorCrear : habia == Pedido.Volver ? ErrorVolver : ErrorEntrar);
         else if (cause != DisconnectCause.DisconnectByClientLogic) Error?.Invoke("Se perdió la conexión con el servidor.");
         Cambio?.Invoke();
 
