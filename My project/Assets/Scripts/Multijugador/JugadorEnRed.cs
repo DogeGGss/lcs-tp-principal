@@ -21,6 +21,8 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
     private const byte ArmaDispositivo = 1;
     // La granada en la mano (US 182): PrimeraGranada más su lugar en la tienda.
     private const byte PrimeraGranada = 200;
+    // No se sabe con qué arma se hizo el daño: el aviso de baja usa la que tiene en la mano.
+    private const byte ArmaDesconocida = 255;
 
     private HealthSystem vida;
     private Animator animador;
@@ -39,6 +41,7 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
     private float finInvulnerable;
     private int ultimoAtacante;
     private string ultimaArma = "";   // con qué lo dañaron por última vez, si no fue el arma en la mano (una granada)
+    private byte ultimoCodigo = ArmaDesconocida; // el arma en la mano del que lo dañó por última vez, al hacer el daño
     private ShopCatalog catalogo;      // qué granada es (US 073): la tienda está en el mismo orden en todas las computadoras
     private int ultimaGranada;
     private readonly Dictionary<int, Grenade1> granadasRemotas = new Dictionary<int, Grenade1>();
@@ -249,13 +252,16 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
 
     // US 029: el daño que le hicieron a la copia de este jugador en otra computadora. arma: con qué, si no fue el
     // arma que el atacante tiene en la mano (por ejemplo, una granada); va al aviso de baja (US 057).
+    // codigo: el arma que tenía en la mano el atacante cuando hizo el daño. Va al aviso de baja aunque, por el lag,
+    // cuando llega el aviso ya tenga otra (por ejemplo, mató con el Mitre y enseguida sacó el cuchillo).
     [PunRPC]
-    private void RpcDanio(int danio, int atacante, bool cabeza, string arma, Vector3 origen)
+    private void RpcDanio(int danio, int atacante, bool cabeza, string arma, byte codigo, Vector3 origen)
     {
         if (!photonView.IsMine || muerto || vida == null) return;
         if (EquiposTacticos.SonAliados(atacante, Actor)) return; // US 031, CA6: por las dudas, también acá
         ultimoAtacante = atacante;
         ultimaArma = arma ?? "";
+        ultimoCodigo = codigo;
         HealthSystem.DamageOrigin = origen; // US 192, CA7: desde dónde dispararon (o dónde explotó la granada)
         vida.TakeDamage(danio, cabeza);
     }
@@ -266,11 +272,11 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
         if (muerto) return;
         muerto = true;
         bool cabeza = vida != null && vida.KilledByHeadshot;
-        photonView.RPC(nameof(RpcMurio), RpcTarget.Others, ultimoAtacante, cabeza, ultimaArma);
+        photonView.RPC(nameof(RpcMurio), RpcTarget.Others, ultimoAtacante, cabeza, ultimaArma, ultimoCodigo);
         // Si murió con la tienda abierta se cierra antes de trabar: al cerrarse después devolvería las armas a un muerto.
         if (MatchSettings.Mode == GameMode.Deathmatch) ShopUI.Cerrar();
         Bloquear(true);
-        AvisarBaja(ultimoAtacante, cabeza, ultimaArma); // US 057, CA4
+        AvisarBaja(ultimoAtacante, cabeza, ultimaArma, ultimoCodigo); // US 057, CA4
 
         Player asesino = ultimoAtacante != 0 && PhotonNetwork.CurrentRoom != null ? PhotonNetwork.CurrentRoom.GetPlayer(ultimoAtacante) : null;
         string titulo = asesino != null ? $"Te eliminó {asesino.NickName}" : ultimaArma == Caida ? "Te caíste del mapa" : "Te eliminaron";
@@ -308,6 +314,7 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
         muerto = false;
         ultimoAtacante = 0;
         ultimaArma = "";
+        ultimoCodigo = ArmaDesconocida;
         Bloquear(false);
         AbrirVentanaDeEquipo();
 
@@ -335,6 +342,7 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
         muerto = false;
         ultimoAtacante = 0;
         ultimaArma = "";
+        ultimoCodigo = ArmaDesconocida;
         Bloquear(false);
         vida.Invulnerable = false;
         photonView.RPC(nameof(RpcReaparecio), RpcTarget.Others, punto.position, punto.rotation.eulerAngles.y);
@@ -422,6 +430,7 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
         if (photonView == null || !photonView.IsMine || muerto || vida == null) return;
         ultimoAtacante = 0;
         ultimaArma = causa ?? "";
+        ultimoCodigo = ArmaDesconocida;
         vida.Invulnerable = false;
         vida.TakeDamage(vida.currentHealth + vida.currentShield + 1);
     }
@@ -470,15 +479,17 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
     // US 057, CA4 y CA7: el aviso "asesino [arma] víctima" con los nombres de cada jugador, igual en todas las computadoras,
     // con la marca de tiro a la cabeza si el golpe que lo mató fue a la cabeza. arma: con qué lo mató, si no fue el arma
     // que el asesino tiene en la mano (por ejemplo, una granada, US 073); vacío, el arma en la mano.
-    private void AvisarBaja(int atacante, bool cabeza, string arma)
+    // codigo: el arma que tenía en la mano el asesino al hacer el daño (si no se sabe, la que tiene ahora).
+    private void AvisarBaja(int atacante, bool cabeza, string arma, byte codigo)
     {
         RondasTacticas.ContarBaja(atacante, photonView.OwnerActorNr); // US 135, CA2: $ 200 al que mató
         PartidaDeathmatch.ContarBaja(atacante, photonView.OwnerActorNr, cabeza); // US 140, CA1 y CA2
         Player asesino = atacante != 0 && PhotonNetwork.CurrentRoom != null ? PhotonNetwork.CurrentRoom.GetPlayer(atacante) : null;
         JugadorEnRed tirador = partida != null ? partida.Buscar(atacante) : null;
         bool otraArma = !string.IsNullOrEmpty(arma);
-        string nombreArma = otraArma ? arma : tirador != null ? tirador.NombreArma : "";
-        Sprite icono = otraArma ? IconoDe(arma) : tirador != null ? tirador.IconoArma : null;
+        byte usada = tirador == null ? SinArma : codigo != SinArma && codigo != ArmaDesconocida ? codigo : tirador.ArmaActual;
+        string nombreArma = otraArma ? arma : tirador != null ? tirador.NombreDeArma(usada) : "";
+        Sprite icono = otraArma ? IconoDe(arma) : tirador != null ? tirador.IconoDeArma(usada) : null;
         MatchHud.ReportKill(asesino != null ? asesino.NickName : "", nombreArma, Nombre,
             ColorDe(atacante), ColorDe(photonView.OwnerActorNr), cabeza, icono);
     }
@@ -505,33 +516,32 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
     public string NombreArma => NombreDeArma(ArmaActual);
 
     /// <summary>Ícono (de la ficha de la tienda) del arma en la mano, o null.</summary>
-    public Sprite IconoArma
+    public Sprite IconoArma => IconoDeArma(ArmaActual);
+
+    // Ícono (de la ficha de la tienda) del arma con ese código, o null.
+    private Sprite IconoDeArma(byte arma)
     {
-        get
+        ShopItem ficha = null;
+        if (arma >= PrimeraGranada) ficha = FichaDe((byte)(arma - PrimeraGranada));
+        else if (photonView != null && photonView.IsMine)
         {
-            byte arma = ArmaActual;
-            ShopItem ficha = null;
-            if (arma >= PrimeraGranada) ficha = FichaDe((byte)(arma - PrimeraGranada));
-            else if (photonView != null && photonView.IsMine)
+            // Dueño: los scripts de armas siguen estando.
+            if (arma == ArmaPistola && pistola != null)
             {
-                // Dueño: los scripts de armas siguen estando.
-                if (arma == ArmaPistola && pistola != null)
-                {
-                    Pistola p = pistola.GetComponentInChildren<Pistola>(true);
-                    ficha = p != null ? p.shopItem : null;
-                }
-                else if (arma >= PrimeraPrincipal && arma - PrimeraPrincipal < principales.Count)
-                    ficha = WeaponSwitcher.FichaDe(principales[arma - PrimeraPrincipal]);
-                else if (EsSecundaria(arma))
-                    ficha = WeaponSwitcher.FichaDe(secundarias[arma - PrimeraSecundaria]);
+                Pistola p = pistola.GetComponentInChildren<Pistola>(true);
+                ficha = p != null ? p.shopItem : null;
             }
-            else if (arma == ArmaPistola) ficha = fichaPistola;
-            else if (arma >= PrimeraPrincipal && arma - PrimeraPrincipal < fichasPrincipales.Count)
-                ficha = fichasPrincipales[arma - PrimeraPrincipal];
-            else if (EsSecundaria(arma) && arma - PrimeraSecundaria < fichasSecundarias.Count)
-                ficha = fichasSecundarias[arma - PrimeraSecundaria];
-            return ficha != null ? ficha.icon : null;
+            else if (arma >= PrimeraPrincipal && arma - PrimeraPrincipal < principales.Count)
+                ficha = WeaponSwitcher.FichaDe(principales[arma - PrimeraPrincipal]);
+            else if (EsSecundaria(arma))
+                ficha = WeaponSwitcher.FichaDe(secundarias[arma - PrimeraSecundaria]);
         }
+        else if (arma == ArmaPistola) ficha = fichaPistola;
+        else if (arma >= PrimeraPrincipal && arma - PrimeraPrincipal < fichasPrincipales.Count)
+            ficha = fichasPrincipales[arma - PrimeraPrincipal];
+        else if (EsSecundaria(arma) && arma - PrimeraSecundaria < fichasSecundarias.Count)
+            ficha = fichasSecundarias[arma - PrimeraSecundaria];
+        return ficha != null ? ficha.icon : null;
     }
 
     // Fichas de la tienda de cada arma, guardadas al armar el jugador (en las copias se quitan los scripts de armas).
@@ -754,8 +764,9 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
                     // US 192: el lugar del daño; si quien lo hizo no lo avisó, donde está el jugador de esta computadora.
                     JugadorEnRed yo = this.partida != null ? this.partida.Local : null;
                     Vector3 origen = HealthSystem.DamageOrigin ?? (yo != null ? yo.transform.position : transform.position);
+                    // El arma en la mano de quien hizo el daño, ahora: el daño se calcula en el mismo cuadro del tiro.
                     photonView.RPC(nameof(RpcDanio), photonView.Owner, danio, PhotonNetwork.LocalPlayer.ActorNumber, cabeza,
-                        HealthSystem.DamageSource ?? "", origen);
+                        HealthSystem.DamageSource ?? "", yo != null ? yo.ArmaActual : ArmaDesconocida, origen);
                 }
             };
 
@@ -976,11 +987,11 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
 
     // US 030, CA1 y CA2: el cuerpo cae y ya no recibe disparos.
     [PunRPC]
-    private void RpcMurio(int atacante, bool cabeza, string arma)
+    private void RpcMurio(int atacante, bool cabeza, string arma, byte codigo)
     {
         if (photonView.IsMine) return;
         muerto = true;
-        AvisarBaja(atacante, cabeza, arma); // US 057, CA4
+        AvisarBaja(atacante, cabeza, arma, codigo); // US 057, CA4
         if (vida != null) vida.SetState(0, 0);
         foreach (Collider c in colisiones) if (c != null) c.enabled = false;
         MostrarArma(SinArma);
