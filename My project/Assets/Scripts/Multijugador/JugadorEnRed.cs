@@ -484,6 +484,7 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
     {
         RondasTacticas.ContarBaja(atacante, photonView.OwnerActorNr); // US 135, CA2: $ 200 al que mató
         PartidaDeathmatch.ContarBaja(atacante, photonView.OwnerActorNr, cabeza); // US 140, CA1 y CA2
+        CurarPorBaja(atacante);
         Player asesino = atacante != 0 && PhotonNetwork.CurrentRoom != null ? PhotonNetwork.CurrentRoom.GetPlayer(atacante) : null;
         JugadorEnRed tirador = partida != null ? partida.Buscar(atacante) : null;
         bool otraArma = !string.IsNullOrEmpty(arma);
@@ -492,6 +493,35 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
         Sprite icono = otraArma ? IconoDe(arma) : tirador != null ? tirador.IconoDeArma(usada) : null;
         MatchHud.ReportKill(asesino != null ? asesino.NickName : "", nombreArma, Nombre,
             ColorDe(atacante), ColorDe(photonView.OwnerActorNr), cabeza, icono);
+    }
+
+    // US 139: en Deathmatch, cada baja le devuelve vida al que la hizo.
+    public const int VidaPorBaja = 50;
+
+    // Corre en todas las computadoras con cada muerte; solo actúa en la del que mató, sobre su propio jugador.
+    private void CurarPorBaja(int atacante)
+    {
+        if (MatchSettings.Mode != GameMode.Deathmatch || PartidaDeathmatch.YaTermino) return;
+        if (PhotonNetwork.LocalPlayer == null || atacante != PhotonNetwork.LocalPlayer.ActorNumber) return;
+        if (atacante == photonView.OwnerActorNr) return; // matarse solo no cura
+        JugadorEnRed yo = partida != null ? partida.Local : null;
+        if (yo != null) yo.SumarVidaPorBaja();
+    }
+
+    /// <summary>US 139: le suma la vida de una baja a este jugador (el local) y lo avisa en el HUD.</summary>
+    public void SumarVidaPorBaja()
+    {
+        if (!Vivo || vida == null) return; // si ya murió, no revive
+        int antes = vida.currentHealth;
+        int despues = Mathf.Min(vida.maxHealth, antes + VidaPorBaja); // tope en la vida máxima
+        if (despues > antes) vida.SetState(despues, vida.currentShield);
+        CombatHud.ShowHeal(VidaPorBaja); // el aviso dice siempre "+50", como pide la US
+    }
+
+    /// <summary>Solo para "Prueba solo": le saca vida al jugador local sin matarlo.</summary>
+    public void LastimarDePrueba(int cuanto)
+    {
+        if (Vivo && vida != null) vida.SetState(Mathf.Max(1, vida.currentHealth - cuanto), vida.currentShield);
     }
 
     // Ícono de la ficha de la tienda que se llama así (por ejemplo, la granada de metralla), o null.

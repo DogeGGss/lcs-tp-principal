@@ -96,6 +96,20 @@ public class CombatHud : MonoBehaviour
     private CanvasGroup[] hiddenWhenScoped;
     private TextMeshProUGUI hintText;
     private TextMeshProUGUI hpText, shieldText;
+
+    // US 139, CA3: aviso verde "+50" al lado de la vida durante 1 s.
+    private static CombatHud current;
+    private TextMeshProUGUI healText;
+    private float healUntil = -1f;
+    private const float HealSeconds = 1f;
+
+    /// <summary>Muestra "+N" en verde al lado de la vida durante 1 s (US 139).</summary>
+    public static void ShowHeal(int amount)
+    {
+        if (current == null || current.healText == null || amount <= 0) return;
+        current.healText.text = $"+{amount}";
+        current.healUntil = Time.time + HealSeconds;
+    }
     private UnityEngine.UI.Image hpFill, shieldFill;
     private RectTransform markHealth, markHalfShield;
     private UnityEngine.UI.Image ringFill, icon, keyChip;
@@ -124,6 +138,7 @@ public class CombatHud : MonoBehaviour
 
     private void OnEnable()
     {
+        current = this;
         WeaponFire.Hit += OnHit;
     }
 
@@ -149,6 +164,7 @@ public class CombatHud : MonoBehaviour
         // Con la tienda abierta, su barra de equipo ocupa este lugar.
         group.alpha = ShopUI.IsOpen ? 0f : 1f;
         UpdateHealth();
+        UpdateHeal();
         UpdateSkill();
         UpdateAmmo();
         UpdateInventory();
@@ -351,6 +367,20 @@ public class CombatHud : MonoBehaviour
         crit.SetActive(low);
     }
 
+    // US 139, CA3: el "+50" aparece a la derecha del número, sube un poco y se apaga.
+    private void UpdateHeal()
+    {
+        if (healText == null) return;
+        float left = healUntil - Time.time;
+        bool show = left > 0f;
+        if (healText.gameObject.activeSelf != show) healText.gameObject.SetActive(show);
+        if (!show) return;
+        float t = 1f - left / HealSeconds; // 0 a 1
+        float x = Width(hpText, hpText.text) + 12f + (shieldText.text.Length > 0 ? Width(shieldText, shieldText.text) + 10f : 0f);
+        healText.rectTransform.anchoredPosition = new Vector2(x, -(104f - 14f * t));
+        healText.alpha = t < 0.7f ? 1f : 1f - (t - 0.7f) / 0.3f;
+    }
+
     // ---------- La habilidad: un reloj de andén que se enciende mientras recarga ----------
 
     private void SetupSkill(AbilityData data)
@@ -544,6 +574,9 @@ public class CombatHud : MonoBehaviour
         AddShadow(hpText);
         shieldText = Text(Place(Node("Escudo", block), 100f, 126f, 140f, 21f), labelFont, 24f, ShieldColor);
         AddShadow(shieldText);
+        healText = Text(Place(Node("Curacion", block), 100f, 104f, 160f, 40f), displayFont, 40f, Ok);
+        AddShadow(healText);
+        healText.gameObject.SetActive(false);
 
         RectTransform track = Place(Node("ViaDeVida", block), 0f, 162f, BlockW, 8f);
         Image(track, null, White(FadeAlpha(0.14f)));
