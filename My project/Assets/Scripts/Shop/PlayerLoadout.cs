@@ -262,6 +262,26 @@ public class PlayerLoadout : MonoBehaviour
         return true;
     }
 
+    // US 195, CA3: en Deathmatch, el que vuelve a la partida recupera las armas que había elegido (su lugar en el
+    // catálogo; menos de 0, ninguna).
+    public void Restaurar(int primary, int secondary)
+    {
+        if (catalog == null) return;
+        ShopItem principal = primary >= 0 && primary < catalog.items.Count ? catalog.items[primary] : null;
+        ShopItem secundaria = secondary >= 0 && secondary < catalog.items.Count ? catalog.items[secondary] : null;
+        if (principal == null && secundaria == null) return;
+        if (principal != null && principal.kind == ShopItemKind.PrimaryWeapon) Primary = principal;
+        if (secundaria != null && secundaria.kind == ShopItemKind.SecondaryWeapon) Secondary = secundaria;
+        StartCoroutine(AvisarRestaurado());
+    }
+
+    // Un cuadro después, como DefaultEquipment: el cambio de arma y la tienda ya están escuchando.
+    private System.Collections.IEnumerator AvisarRestaurado()
+    {
+        yield return null;
+        Changed?.Invoke();
+    }
+
     // Al morir se pierde todo menos la plata; se reaparece con el arma secundaria inicial.
     public void LoseEquipment()
     {

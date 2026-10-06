@@ -34,6 +34,11 @@ using UnityEngine;
 //   Los eventos DispositivoPlantado / DispositivoExploto / DispositivoDesactivado llegan a todas las computadoras
 //   (para el modelo, los sonidos y la explosión).
 // - US 034: evento PartidaTerminada(equipo ganador). US 135: evento RondaTerminada(equipo ganador, motivo).
+// Abandono y reconexión (US 195):
+// - El desconectado no cuenta como vivo: si todo un equipo está desconectado, pierde la ronda por eliminación.
+// - CA6: si se van de la sala todos los jugadores de un equipo (salieron o pasaron los 2 minutos sin volver), la
+//   partida termina y gana el otro equipo, con la pantalla de resultado (US 034).
+// - CA3: cada jugador publica sus bajas y sus muertes en la sala, así las conserva aunque se desconecte y vuelva.
 // Lo agrega PartidaEnRed al empezar una partida del Modo Táctico.
 public class RondasTacticas : MonoBehaviour
 {
@@ -49,7 +54,7 @@ public class RondasTacticas : MonoBehaviour
     // Seleccion (US 016) va al final para no cambiar los números de las otras fases.
     public enum Fase { Compra, Combate, FinDeRonda, Terminada, Seleccion }
     public const float DuracionSeleccion = 20f; // US 016, CA1
-    public enum Motivo { Eliminacion, Tiempo, DispositivoExploto, DispositivoDesactivado }
+    public enum Motivo { Eliminacion, Tiempo, DispositivoExploto, DispositivoDesactivado, Abandono }
 
     private const string PropRonda = "rt.ronda", PropFase = "rt.fase", PropFin = "rt.fin", PropGanador = "rt.gan",
         PropMotivo = "rt.mot", PropRondas0 = "rt.e0", PropRondas1 = "rt.e1", PropSubita = "rt.sub",
@@ -59,6 +64,29 @@ public class RondasTacticas : MonoBehaviour
 
     /// <summary>US 034: estadísticas que cada jugador publica de sí mismo (plantadas y desactivaciones).</summary>
     public const string PropPlantadas = "st.pl", PropDesactivaciones = "st.des";
+    /// <summary>US 195, CA3: bajas y muertes, también publicadas por cada jugador.</summary>
+    public const string PropBajas = "st.k", PropMuertes = "st.m";
+
+    /// <summary>Bajas de ese jugador en esta partida (para la tabla y el resultado).</summary>
+    public static int BajasDe(Player p) => Estadistica(p, PropBajas);
+    /// <summary>Muertes de ese jugador en esta partida (para la tabla y el resultado).</summary>
+    public static int MuertesDe(Player p) => Estadistica(p, PropMuertes);
+    public static int Estadistica(Player p, string clave) =>
+        p != null && p.CustomProperties.TryGetValue(clave, out object v) && v is int n ? n : 0;
+
+    /// <summary>
+    /// US 195: la ronda en juego ya está en combate (o terminando), según lo que publicó el anfitrión. Se puede leer
+    /// antes de que exista RondasTacticas (al volver a la partida).
+    /// </summary>
+    public static bool RondaEmpezada
+    {
+        get
+        {
+            if (Sala == null || !Sala.CustomProperties.ContainsKey(PropFase)) return false;
+            Fase fase = (Fase)Leer(PropFase, 0);
+            return fase == Fase.Combate || fase == Fase.FinDeRonda;
+        }
+    }
 
     public static RondasTacticas Actual { get; private set; }
 
@@ -118,6 +146,7 @@ public class RondasTacticas : MonoBehaviour
     {
         this.partida = partida;
         Actual = this;
+        anotado.Clear(); // lo anotado de otra partida no cuenta
 
         // CA1: el anfitrión arranca la ronda 1. La sala se cierra al iniciar, así que hay una sola partida por sala.
         // (Se hace en Update: espera a que todos terminen de cargar el mapa, US 196.)
@@ -205,6 +234,12 @@ public class RondasTacticas : MonoBehaviour
     {
         // Lo que publica tarda un momento en volver: mientras tanto no decide de nuevo.
         if (Time.unscaledTime < esperaAnfitrion) return;
+        // US 195, CA6: se fueron todos los de un equipo.
+        if (FaseActual != Fase.Terminada && EquipoQueQueda(out int queda))
+        {
+            TerminarPorAbandono(queda);
+            return;
+        }
         switch (FaseActual)
         {
             case Fase.Seleccion:
@@ -308,6 +343,29 @@ public class RondasTacticas : MonoBehaviour
         }, true);
     }
 
+    // US 195, CA6: un equipo que tenía jugadores ya no tiene ninguno en la sala, y el otro sí. Los desconectados
+    // todavía están (tienen 2 minutos para volver). Probando solo, el equipo rival nunca tuvo jugadores: no cuenta.
+    private bool EquipoQueQueda(out int queda)
+    {
+        queda = -1;
+        for (int equipo = 0; equipo < 2; equipo++)
+            if (EquiposTacticos.Asignados(equipo) > 0 && Jugadores(equipo) == 0 && Jugadores(1 - equipo) > 0)
+            {
+                queda = 1 - equipo;
+                return true;
+            }
+        return false;
+    }
+
+    // CA6: la partida termina en el momento, en cualquier fase, y gana el equipo que queda.
+    private void TerminarPorAbandono(int ganador)
+    {
+        Publicar(new Hashtable
+        {
+            { PropFase, (int)Fase.Terminada }, { PropFin, Ahora }, { PropGanador, ganador }, { PropMotivo, (int)Motivo.Abandono }
+        }, true);
+    }
+
     private void CambiarFase(Fase fase, float segundos)
     {
         Publicar(new Hashtable { { PropFase, (int)fase }, { PropFin, Ahora + Ms(segundos) } }, true);
@@ -346,7 +404,8 @@ public class RondasTacticas : MonoBehaviour
         int n = 0;
         foreach (Player p in PhotonNetwork.PlayerList)
         {
-            if (EquiposTacticos.DeActor(p.ActorNumber) != equipo) continue;
+            // US 195: el desconectado no cuenta como vivo (mientras tanto sigue en la sala, para poder volver).
+            if (EquiposTacticos.DeActor(p.ActorNumber) != equipo || p.IsInactive) continue;
             JugadorEnRed j = partida != null ? partida.Buscar(p.ActorNumber) : null;
             if (j == null || j.Vivo) n++; // si todavía no cargó, cuenta como vivo
         }
@@ -367,8 +426,8 @@ public class RondasTacticas : MonoBehaviour
     private void AlCambiar(int ronda, Fase fase, bool primeraVez)
     {
         // US 135, CA1: la partida táctica arranca con $ 800, aunque el Player.prefab o el mapa tengan otra plata
-        // inicial (la tienda la sube para probar sin conexión).
-        if (primeraVez && ronda == 1 && (fase == Fase.Seleccion || fase == Fase.Compra))
+        // inicial (la tienda la sube para probar sin conexión). El que vuelve a la partida ya recuperó la suya (US 195).
+        if (primeraVez && ronda == 1 && (fase == Fase.Seleccion || fase == Fase.Compra) && !Reconexion.Volvio)
         {
             PlayerWallet billetera = partida != null && partida.Local != null ? partida.Local.GetComponent<PlayerWallet>() : null;
             if (billetera != null) billetera.Set(PlataInicial);
@@ -504,8 +563,13 @@ public class RondasTacticas : MonoBehaviour
     public static void ContarBaja(int atacante, int muerto)
     {
         RondasTacticas r = Actual;
-        if (r == null || PhotonNetwork.LocalPlayer == null || atacante != PhotonNetwork.LocalPlayer.ActorNumber) return;
-        if (atacante == muerto || r.FaseActual != Fase.Combate || EquiposTacticos.SonAliados(atacante, muerto)) return;
+        if (r == null || PhotonNetwork.LocalPlayer == null) return;
+        int yo = PhotonNetwork.LocalPlayer.ActorNumber;
+        // US 195, CA3: cada uno anota en la sala sus propias muertes y bajas (las mismas que cuenta el aviso de bajas).
+        if (muerto == yo) Sumar(PropMuertes);
+        if (atacante != yo || atacante == muerto) return;
+        Sumar(PropBajas);
+        if (r.FaseActual != Fase.Combate || EquiposTacticos.SonAliados(atacante, muerto)) return;
         r.Cobrar(PremioBaja);
     }
 
@@ -544,13 +608,18 @@ public class RondasTacticas : MonoBehaviour
     }
 
     // US 034: cada uno publica sus propias plantadas y desactivaciones, así todos las ven en el resultado.
+    // US 195: también sus bajas y muertes. Lo anotado acá cuenta mientras el servidor no lo devuelve, así dos bajas
+    // casi juntas no se pisan.
     private static void Sumar(string clave)
     {
         Player yo = PhotonNetwork.LocalPlayer;
         if (yo == null) return;
-        int actual = yo.CustomProperties.TryGetValue(clave, out object v) && v is int n ? n : 0;
-        yo.SetCustomProperties(new Hashtable { { clave, actual + 1 } });
+        int valor = Mathf.Max(Estadistica(yo, clave), anotado.TryGetValue(clave, out int n) ? n : 0) + 1;
+        anotado[clave] = valor;
+        yo.SetCustomProperties(new Hashtable { { clave, valor } });
     }
+
+    private static readonly Dictionary<string, int> anotado = new Dictionary<string, int>();
 
     private string TextoMotivo(bool gane)
     {
@@ -560,6 +629,7 @@ public class RondasTacticas : MonoBehaviour
                 return gane ? "Se terminó el tiempo y tu equipo defendió" : "Se terminó el tiempo y los rivales defendieron";
             case Motivo.DispositivoExploto: return "Explotó el dispositivo";
             case Motivo.DispositivoDesactivado: return "Se desactivó el dispositivo";
+            case Motivo.Abandono: return gane ? "Los rivales abandonaron la partida" : "Tu equipo abandonó la partida";
             default: return gane ? "Tu equipo eliminó a todos los rivales" : "Los rivales eliminaron a tu equipo";
         }
     }

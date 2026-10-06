@@ -81,11 +81,13 @@ public class MarcadorDeathmatch : MonoBehaviour
         {
             Player p = puestos[i];
             int b = PartidaDeathmatch.Bajas(p.ActorNumber), m = PartidaDeathmatch.Muertes(p.ActorNumber), dif = b - m;
-            string nombre = $"<color=#8E96A3>{i + 1}.</color>  {p.NickName}" + (p.IsLocal ? " <color=#8E96A3>(vos)</color>" : "");
+            string nombre = $"<color=#8E96A3>{i + 1}.</color>  {p.NickName}" + (p.IsLocal ? " <color=#8E96A3>(vos)</color>"
+                : p.IsInactive ? " <color=#8E96A3>(desconectado)</color>" : ""); // US 195, CA1
             seccion.rows.Add(new MatchHud.Row
             {
                 cells = new[] { nombre, b.ToString(), m.ToString(), dif > 0 ? $"+{dif}" : dif.ToString() },
-                highlight = p.IsLocal
+                highlight = p.IsLocal,
+                dim = p.IsInactive
             });
         }
         tabla.sections.Add(seccion);

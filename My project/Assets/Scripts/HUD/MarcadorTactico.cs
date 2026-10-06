@@ -13,6 +13,8 @@ using static ShopUIKit;
 // - CA6: tu equipo siempre a la izquierda, aunque cambien de lado (cambia el título Atacantes / Defensores).
 // - CA2 (en parte): el tiempo de la fase de compra.
 // - Tabla con Tab: tu equipo y los rivales, con bajas, muertes y la plata de tus compañeros (US 135).
+// - US 195, CA1: el desconectado queda en gris (distinto del muerto) y en la tabla dice "(desconectado)". Las bajas y
+//   las muertes salen de lo que publica cada jugador en la sala (RondasTacticas), así no se pierden al volver.
 // Queda preparado para que lo completen otras US, llamando a:
 // - CA1: SetRondas(equipo0, equipo1) al terminar cada ronda (US 032, US 033).
 // - CA2: TiempoDeRonda, el tiempo que queda de la ronda en combate (US 032).
@@ -22,7 +24,8 @@ using static ShopUIKit;
 public class MarcadorTactico : MonoBehaviour
 {
     public const int RondasParaGanar = 7;
-    private const string PropPlata = "plata";
+    /// <summary>La plata de cada jugador, publicada en la sala (también la recupera el que vuelve a la partida, US 195).</summary>
+    public const string PropPlata = "plata";
 
     public static MarcadorTactico Instance { get; private set; }
 
@@ -133,6 +136,7 @@ public class MarcadorTactico : MonoBehaviour
                 color = pj != null ? pj.color : color,
                 team = color,
                 alive = EstaVivo(p.ActorNumber),
+                offline = p.IsInactive, // US 195, CA1
                 marked = esAliado && portador != 0 && p.ActorNumber == portador // el portador solo lo ven sus compañeros
             });
         }
@@ -179,7 +183,7 @@ public class MarcadorTactico : MonoBehaviour
         var jugadores = new List<Player>();
         foreach (Player p in PhotonNetwork.PlayerList)
             if (EquiposTacticos.DeActor(p.ActorNumber) == equipo) jugadores.Add(p);
-        jugadores.Sort((a, b) => MatchHud.Instance.KillsOf(b.NickName).CompareTo(MatchHud.Instance.KillsOf(a.NickName)));
+        jugadores.Sort((a, b) => RondasTacticas.BajasDe(b).CompareTo(RondasTacticas.BajasDe(a)));
 
         var seccion = new MatchHud.Section { title = titulo, color = color };
         for (int i = 0; i < jugadores.Count; i++)
@@ -192,13 +196,14 @@ public class MarcadorTactico : MonoBehaviour
                 cells = new[]
                 {
                     (i + 1).ToString(),
-                    p.IsLocal ? $"{p.NickName} <color=#8E96A3>(vos)</color>" : p.NickName,
-                    MatchHud.Instance.KillsOf(p.NickName).ToString(),
-                    MatchHud.Instance.DeathsOf(p.NickName).ToString(),
+                    p.IsLocal ? $"{p.NickName} <color=#8E96A3>(vos)</color>"
+                        : p.IsInactive ? $"{p.NickName} <color=#8E96A3>(desconectado)</color>" : p.NickName,
+                    RondasTacticas.BajasDe(p).ToString(),
+                    RondasTacticas.MuertesDe(p).ToString(),
                     plata
                 },
                 highlight = p.IsLocal,
-                dim = !EstaVivo(p.ActorNumber)
+                dim = p.IsInactive || !EstaVivo(p.ActorNumber)
             });
         }
         return seccion;

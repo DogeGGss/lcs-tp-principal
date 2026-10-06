@@ -87,6 +87,18 @@ public static class EquiposTacticos
 
     public static int Local => PhotonNetwork.InRoom ? DeActor(PhotonNetwork.LocalPlayer.ActorNumber) : -1;
 
+    // US 195, CA6: cuántos jugadores le tocaron a ese equipo en el reparto (aunque después se hayan ido de la sala).
+    public static int Asignados(int equipo)
+    {
+        if (!PhotonNetwork.InRoom) return 0;
+        int n = 0;
+        foreach (System.Collections.DictionaryEntry propiedad in PhotonNetwork.CurrentRoom.CustomProperties)
+            if (propiedad.Key is string clave && clave.Length > 2 && clave.StartsWith("eq") && int.TryParse(clave.Substring(2), out _) &&
+                propiedad.Value is int valor && valor == equipo)
+                n++;
+        return n;
+    }
+
     // CA3: lado de un equipo en la ronda actual. Las rondas 1 a 6 ataca el equipo sorteado; desde la 7 se intercambian.
     public static LadoTactico LadoDeEquipo(int equipo)
     {

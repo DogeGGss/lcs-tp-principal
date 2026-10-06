@@ -114,7 +114,8 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
 
         // US 184: las armas del piso se mandan a los demás y se levantan con permiso del dueño de la sala.
         SoltarArmas.EnRed = true;
-        SoltarArmas.IdBase = Actor * 100000;
+        // US 195: el que vuelve a la partida no repite los ids de las que soltó antes de desconectarse.
+        SoltarArmas.IdBase = Actor * 100000 + (Reconexion.Volvio ? 40000 + (PhotonNetwork.ServerTimestamp & 0x3FFF) : 0);
         SoltarArmas.Soltada += AlSoltarArma;
         SoltarArmas.Pedida += AlPedirArma;
         ArmaEnPiso.Quieta += AlQuedarQuieta;
@@ -339,6 +340,76 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
         photonView.RPC(nameof(RpcReaparecio), RpcTarget.Others, punto.position, punto.rotation.eulerAngles.y);
     }
 
+    /// <summary>
+    /// US 195, CA3: volvió a la partida después de desconectarse. En el Táctico, si la ronda ya empezó, espera la
+    /// siguiente como si hubiera muerto (sin aviso de baja). En Deathmatch reaparece enseguida, como al morir (US 137).
+    /// </summary>
+    public void AlVolver()
+    {
+        if (photonView == null || !photonView.IsMine || vida == null) return;
+        if (MatchSettings.Mode == GameMode.Tactico && RondasTacticas.RondaEmpezada)
+        {
+            QuedarAfuera();
+            partida.Aviso("Volviste a la partida", "Reaparecés en la ronda siguiente.");
+        }
+        else if (MatchSettings.Mode == GameMode.Deathmatch && PartidaDeathmatch.EnCombate)
+        {
+            QuedarAfuera();
+            StartCoroutine(Reaparecer("Volviste a la partida", ConfigRed.Actual != null ? ConfigRed.Actual.reaparicion : 3f));
+        }
+    }
+
+    // Como muerto, pero sin morir: no hay aviso de baja ni suma una muerte, y no se le cae nada. Los demás lo ven
+    // afuera porque le llega la vida en 0 (OnPhotonSerializeView).
+    private void QuedarAfuera()
+    {
+        muerto = true;
+        vida.SetState(0, 0);
+        Bloquear(true);
+        StartCoroutine(SinVida());
+    }
+
+    // La vida del jugador se llena en su Start, que puede correr después: se deja en 0 de nuevo.
+    private IEnumerator SinVida()
+    {
+        yield return null;
+        if (muerto && vida != null) vida.SetState(0, 0);
+    }
+
+    /// <summary>
+    /// US 195, CA4 (solo el anfitrión): el arma de otro jugador que se fue vivo cae donde estaba, en todas las
+    /// computadoras. Es la que cae al morir (US 184, CA8): la principal, o la secundaria si no tenía. Las conoce por lo
+    /// que publicó en la tienda; las balas, llenas.
+    /// </summary>
+    public void SoltarArmaDe(JugadorEnRed otro)
+    {
+        if (otro == null || catalogo == null || otro.photonView == null || otro.photonView.Owner == null) return;
+        Player dueno = otro.photonView.Owner;
+        int indice = Indice(dueno, ShopUI.PropPrincipal);
+        if (indice < 0) indice = Indice(dueno, ShopUI.PropSecundaria);
+        ShopItem item = indice >= 0 && indice <= byte.MaxValue ? FichaDe((byte)indice) : null;
+        if (item == null) return;
+
+        var suelta = new SoltarArmas.Suelta
+        {
+            id = otro.Actor * 100000 + 90000 + (++soltadasPorOtros % 10000), // no se pisa con las que soltó él (SoltarArmas)
+            item = item,
+            desde = otro.transform.position + Vector3.up * 0.8f,
+            velocidad = Vector3.up * 0.5f,
+            yaw = otro.transform.eulerAngles.y,
+            cargador = item.magazine > 0 ? item.magazine : -1,
+            reserva = item.magazine > 0 ? item.reserve : -1
+        };
+        // Propia: cuando se queda quieta, esta computadora les avisa a las demás dónde quedó (AlQuedarQuieta).
+        ArmaEnPiso.Crear(suelta.id, item, suelta.desde, suelta.velocidad, suelta.yaw, suelta.cargador, suelta.reserva, true);
+        AlSoltarArma(suelta);
+    }
+
+    private int soltadasPorOtros;
+
+    private static int Indice(Player jugador, string clave) =>
+        jugador.CustomProperties.TryGetValue(clave, out object v) && v is int n ? n : -1;
+
     /// <summary>US 033: lo elimina la explosión del dispositivo (también lo usa la prueba solo).</summary>
     public void Eliminar()
     {
@@ -416,7 +487,7 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
     }
 
     // Azul el propio equipo (y uno mismo), rojo el rival; blanco si no hay equipos.
-    private static Color ColorDe(int actor)
+    public static Color ColorDe(int actor)
     {
         if (actor == 0) return Color.white;
         bool yo = PhotonNetwork.LocalPlayer != null && actor == PhotonNetwork.LocalPlayer.ActorNumber;
@@ -917,6 +988,7 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
     {
         if (photonView.IsMine) return;
         muerto = false;
+        if (afuera) { afuera = false; if (modelo != null) modelo.gameObject.SetActive(true); }
         transform.SetPositionAndRotation(posicion, Quaternion.Euler(0f, yaw, 0f));
         posicionRed = posicion;
         velocidadRed = Vector3.zero;
@@ -925,6 +997,20 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
         foreach (Collider c in colisiones) if (c != null) c.enabled = true;
         if (caida != null) StopCoroutine(caida);
         caida = StartCoroutine(Caer(false));
+    }
+
+    // US 195: la copia se armó cuando su dueño ya estaba fuera de juego (murió antes, o volvió a la partida y espera
+    // para reaparecer). No se la ve hasta que reaparece, y no recibe disparos.
+    private bool afuera;
+
+    private void QuedarAfueraCopia()
+    {
+        muerto = true;
+        afuera = true;
+        if (vida != null) vida.SetState(0, 0);
+        foreach (Collider c in colisiones) if (c != null) c.enabled = false;
+        MostrarArma(SinArma);
+        if (modelo != null) modelo.gameObject.SetActive(false);
     }
 
     private IEnumerator Caer(bool cae)
@@ -958,7 +1044,7 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
             stream.SendNext(muerto ? SinArma : ArmaEnMano());
             stream.SendNext(saltos);
             stream.SendNext(aterrizajes);
-            stream.SendNext(vida != null ? (short)vida.currentHealth : (short)0);
+            stream.SendNext(vida != null && !muerto ? (short)vida.currentHealth : (short)0); // muerto: 0 (US 195)
             stream.SendNext(vida != null ? (short)vida.currentShield : (short)0);
             return;
         }
@@ -983,6 +1069,8 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
             // Los contadores arrancan donde está el dueño: no se repiten saltos viejos.
             saltosVistos = saltosRed;
             aterrizajesVistos = aterrizajesRed;
+            // US 195: si su dueño ya estaba fuera de juego cuando se armó esta copia, no se lo ve hasta que reaparece.
+            if (salud <= 0 && !muerto) QuedarAfueraCopia();
         }
         posicionRed = posicion;
         tiempoRed = tiempo;

@@ -36,6 +36,7 @@ public class MenuUIController : MonoBehaviour
 
         panelMenuPrincipal.SetActive(true);
         VersionDelJuego.MostrarEnMenu(panelMenuPrincipal.transform);
+        VolverALaPartida.MostrarEnMenu(panelMenuPrincipal.transform); // US 195, CA2
 
         overlayTransicion.alpha = 0f;
         overlayTransicion.blocksRaycasts = false;

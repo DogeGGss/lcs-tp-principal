@@ -13,6 +13,8 @@ using static ShopUIKit;
 // - CA3: tabla con los dos equipos y, por jugador, bajas, muertes, plantadas y desactivaciones, ordenados por bajas.
 // - CA4: botón "Volver al menú" (también con Enter): sale de la sala y carga el menú principal.
 // - CA5: los nombres son los de Photon, que salen del perfil de cada jugador (US 164).
+// US 195: si la partida terminó porque se fue todo un equipo (CA6), arriba dice quién abandonó. Los desconectados
+// figuran en la tabla con sus bajas y muertes.
 public class ResultadoPartida : MonoBehaviour
 {
     private const string EscenaMenu = "MenuPrincipal";
@@ -77,7 +79,10 @@ public class ResultadoPartida : MonoBehaviour
         bool gane = rondas.Ganador == mio;
         Color color = gane ? MatchHud.TeamColor : MatchHud.RivalColor;
 
-        Text(Place(Node("Antetitulo", root), 0f, 70f, 1920f, 30f), labelFont, 24f, Mute, TextAlignmentOptions.Center, 24f, true).text = "Fin de la partida";
+        // US 195, CA6: si terminó porque se fueron todos los de un equipo, se dice.
+        bool abandono = rondas.MotivoActual == RondasTacticas.Motivo.Abandono;
+        Text(Place(Node("Antetitulo", root), 0f, 70f, 1920f, 30f), labelFont, 24f, Mute, TextAlignmentOptions.Center, 24f, true).text =
+            !abandono ? "Fin de la partida" : gane ? "Fin de la partida  ·  Los rivales abandonaron" : "Fin de la partida  ·  Tu equipo abandonó";
         TextMeshProUGUI titulo = Text(Place(Node("Titulo", root), 0f, 100f, 1920f, 170f), displayFont, 150f, color, TextAlignmentOptions.Center, 6f, true);
         titulo.text = gane ? "Victoria" : "Derrota";
         Image(Place(Node("Linea", root), 870f, 280f, 180f, 4f), null, color);
@@ -129,7 +134,8 @@ public class ResultadoPartida : MonoBehaviour
             Player p = jugadores[i];
             Fila(y, new[]
             {
-                p.IsLocal ? $"{p.NickName} <color=#8E96A3>(vos)</color>" : p.NickName,
+                p.IsLocal ? $"{p.NickName} <color=#8E96A3>(vos)</color>"
+                    : p.IsInactive ? $"{p.NickName} <color=#8E96A3>(desconectado)</color>" : p.NickName,
                 Bajas(p).ToString(), Muertes(p).ToString(),
                 Estadistica(p, RondasTacticas.PropPlantadas).ToString(),
                 Estadistica(p, RondasTacticas.PropDesactivaciones).ToString()
@@ -175,10 +181,10 @@ public class ResultadoPartida : MonoBehaviour
         return lista;
     }
 
-    private static int Bajas(Player p) => MatchHud.Instance != null ? MatchHud.Instance.KillsOf(p.NickName) : 0;
-    private static int Muertes(Player p) => MatchHud.Instance != null ? MatchHud.Instance.DeathsOf(p.NickName) : 0;
-    private static int Estadistica(Player p, string clave) =>
-        p.CustomProperties.TryGetValue(clave, out object v) && v is int n ? n : 0;
+    // Lo que publicó cada jugador en la sala: se conserva aunque se haya desconectado y vuelto (US 195, CA3).
+    private static int Bajas(Player p) => RondasTacticas.BajasDe(p);
+    private static int Muertes(Player p) => RondasTacticas.MuertesDe(p);
+    private static int Estadistica(Player p, string clave) => RondasTacticas.Estadistica(p, clave);
 
     // =====================================================================
     // Cuadro a cuadro

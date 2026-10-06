@@ -38,6 +38,7 @@ public class MatchHud : MonoBehaviour
         public Color team;     // rayita de abajo
         public bool alive;
         public bool marked;    // marca naranja arriba (por ejemplo, el portador del dispositivo, US 130)
+        public bool offline;   // desconectado: queda en gris, sin la cruz del muerto (US 195, CA1)
     }
 
     /// <summary>Tabla con Tab que arma cada modo.</summary>
@@ -300,6 +301,13 @@ public class MatchHud : MonoBehaviour
         if (!string.IsNullOrEmpty(victim)) Instance.deaths[victim] = Instance.Count(Instance.deaths, victim) + 1;
     }
 
+    /// <summary>US 195, CA1: aviso sin baja en la misma columna (por ejemplo, "Luka se desconectó").</summary>
+    public static void ReportEvent(string player, Color playerColor, string text)
+    {
+        if (Instance == null) return;
+        Instance.AddNotice(player, playerColor, text);
+    }
+
     // =====================================================================
     // Cuadro a cuadro
     // =====================================================================
@@ -384,7 +392,7 @@ public class MatchHud : MonoBehaviour
         var sb = new System.Text.StringBuilder();
         if (entries != null)
             foreach (RosterEntry e in entries)
-                sb.Append(e.name).Append(e.alive).Append(e.marked).Append(e.initial).Append(e.portrait != null ? e.portrait.name : "")
+                sb.Append(e.name).Append(e.alive).Append(e.marked).Append(e.offline).Append(e.initial).Append(e.portrait != null ? e.portrait.name : "")
                   .Append(ColorUtility.ToHtmlStringRGB(e.color)).Append(ColorUtility.ToHtmlStringRGB(e.team)).Append('|');
         string state = sb.ToString();
         if (rosterState[side] == state) return;
@@ -401,16 +409,19 @@ public class MatchHud : MonoBehaviour
             // El primero queda pegado al número, de los dos lados.
             float x = side == 0 ? RosterW - (k + 1) * ChipS - k * ChipGap : k * (ChipS + ChipGap);
             RectTransform chip = Place(Node(e.name, roster), x, 0f, ChipS, ChipS);
-            Image(chip, rounded, Over(WithAlpha(e.color, 0.3f), Rgb(14, 16, 20)), 5f);
+            // US 195, CA1: el desconectado, todo en gris (el retrato apagado y sin el color de su equipo).
+            Image(chip, rounded, e.offline ? Rgb(30, 32, 36) : Over(WithAlpha(e.color, 0.3f), Rgb(14, 16, 20)), 5f);
             if (e.portrait != null)
             {
-                Img pic = Image(Place(Node("Retrato", chip), 2f, 2f, ChipS - 4f, ChipS - 6f), e.portrait, Color.white);
+                Img pic = Image(Place(Node("Retrato", chip), 2f, 2f, ChipS - 4f, ChipS - 6f), e.portrait,
+                    e.offline ? new Color(0.42f, 0.44f, 0.47f, 0.55f) : Color.white);
                 pic.preserveAspect = true;
             }
             else
-                Text(Stretch(Node("Inicial", chip)), displayFont, 26f, e.color, TextAlignmentOptions.Center, 0f, true).text = e.initial;
-            Image(Place(Node("Equipo", chip), 0f, ChipS - 4f, ChipS, 4f), null, e.team);
+                Text(Stretch(Node("Inicial", chip)), displayFont, 26f, e.offline ? Mute : e.color, TextAlignmentOptions.Center, 0f, true).text = e.initial;
+            Image(Place(Node("Equipo", chip), 0f, ChipS - 4f, ChipS, 4f), null, e.offline ? Mute : e.team);
 
+            if (e.offline) continue;
             if (!e.alive)
             {
                 Image(Stretch(Node("Muerto", chip)), rounded, new Color(0f, 0f, 0f, DarkAlpha(0.6f)), 5f);
@@ -438,13 +449,35 @@ public class MatchHud : MonoBehaviour
 
     // ---------- Avisos de bajas (CA4) ----------
 
-    private void AddFeed(string killer, string weapon, string victim, Color killerColor, Color victimColor, bool headshot, Sprite weaponIcon)
+    private RectTransform NewFeedRow()
     {
         if (feed.Count >= FeedMax) RemoveFeed(0);
-
         RectTransform row = Node("Aviso", feedRoot);
         row.anchorMin = row.anchorMax = row.pivot = new Vector2(1f, 1f);
         Image(row, rounded, Rgb(10, 12, 17, DarkAlpha(0.8f)), 5f);
+        return row;
+    }
+
+    private void PushFeedRow(RectTransform row, float width)
+    {
+        row.sizeDelta = new Vector2(width, FeedRowH);
+        feed.Add(new FeedRow { rect = row, group = row.gameObject.AddComponent<CanvasGroup>(), at = Time.unscaledTime });
+        LayoutFeed();
+    }
+
+    // US 195, CA1: un aviso sin baja, con el nombre del jugador en su color y el texto apagado.
+    private void AddNotice(string player, Color playerColor, string text)
+    {
+        RectTransform row = NewFeedRow();
+        float x = 12f;
+        if (!string.IsNullOrEmpty(player)) x = FeedText(row, player, playerColor, x) + 8f;
+        x = FeedText(row, text, Mute, x) + 12f;
+        PushFeedRow(row, x);
+    }
+
+    private void AddFeed(string killer, string weapon, string victim, Color killerColor, Color victimColor, bool headshot, Sprite weaponIcon)
+    {
+        RectTransform row = NewFeedRow();
 
         float x = 12f;
         if (!string.IsNullOrEmpty(killer)) x = FeedText(row, killer, killerColor, x) + 10f;
@@ -466,10 +499,7 @@ public class MatchHud : MonoBehaviour
         }
 
         x = FeedText(row, victim, victimColor, x) + 12f;
-        row.sizeDelta = new Vector2(x, FeedRowH);
-
-        feed.Add(new FeedRow { rect = row, group = row.gameObject.AddComponent<CanvasGroup>(), at = Time.unscaledTime });
-        LayoutFeed();
+        PushFeedRow(row, x);
     }
 
     private float FeedText(RectTransform row, string value, Color color, float x)
