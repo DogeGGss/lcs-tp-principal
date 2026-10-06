@@ -39,6 +39,8 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
     private PlayerMovement movimiento;
     private byte saltos, aterrizajes;
     private float finInvulnerable;
+    private Semitransparente transparencia; // US 137: en la copia, mientras es invulnerable
+    private static AudioClip tonoReaparicion;
     private int ultimoAtacante;
     private string ultimaArma = "";   // con qué lo dañaron por última vez, si no fue el arma en la mano (una granada)
     private byte ultimoCodigo = ArmaDesconocida; // el arma en la mano del que lo dañó por última vez, al hacer el daño
@@ -322,7 +324,51 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
         vida.Invulnerable = segundos > 0f;
         finInvulnerable = Time.time + segundos;
 
+        SonarReaparicion();
         photonView.RPC(nameof(RpcReaparecio), RpcTarget.Others, punto.position, punto.rotation.eulerAngles.y);
+    }
+
+    // US 137: sonido de reaparición, por el grupo SFX. Lo escucha solo el que reaparece.
+    private void SonarReaparicion()
+    {
+        if (MatchSettings.Mode != GameMode.Deathmatch) return;
+        ConfigRed config = ConfigRed.Actual;
+        AudioClip clip = config != null ? config.sonidoReaparicion : null;
+        if (clip == null)
+        {
+            if (tonoReaparicion == null) tonoReaparicion = TonoDeReaparicion();
+            clip = tonoReaparicion;
+        }
+        Pistola pistola = GetComponentInChildren<Pistola>(true);
+        var go = new GameObject("Sonido reaparición");
+        go.transform.position = transform.position;
+        AudioSource fuente = go.AddComponent<AudioSource>();
+        fuente.clip = clip;
+        fuente.outputAudioMixerGroup = sonido != null ? sonido.outputAudioMixerGroup : pistola != null ? pistola.sfxGroup : null;
+        fuente.volume = config != null ? config.volumenReaparicion : 0.6f;
+        fuente.spatialBlend = 0f;
+        fuente.Play();
+        Destroy(go, clip.length + 0.1f);
+    }
+
+    // Dos notas que suben, generadas: así hay sonido aunque todavía no se haya cargado un clip en ConfigRed.
+    private static AudioClip TonoDeReaparicion()
+    {
+        const int rate = 44100;
+        const float duracion = 0.45f;
+        int muestras = Mathf.CeilToInt(duracion * rate);
+        var datos = new float[muestras];
+        for (int i = 0; i < muestras; i++)
+        {
+            float t = i / (float)rate;
+            float frecuencia = t < 0.16f ? 520f : 780f;
+            float local = t < 0.16f ? t : t - 0.16f;
+            float envolvente = Mathf.Exp(-7f * local) * Mathf.Clamp01(local * 300f);
+            datos[i] = (Mathf.Sin(2f * Mathf.PI * frecuencia * t) * 0.7f + Mathf.Sin(4f * Mathf.PI * frecuencia * t) * 0.3f) * envolvente * 0.6f;
+        }
+        AudioClip clip = AudioClip.Create("Reaparición", muestras, 1, rate, false);
+        clip.SetData(datos, 0);
+        return clip;
     }
 
     /// <summary>
@@ -803,6 +849,7 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
         // US 031, CA5: a los rivales se los reconoce por el contorno rojo, como en Valorant. No se ve su nombre ni su vida.
         ContornoRival.Crear(gameObject, modelo, ConfigRed.Actual != null ? ConfigRed.Actual.contornoRival : null,
             () => Vivo && EquiposTacticos.EsRival(Actor));
+        transparencia = Semitransparente.Crear(gameObject, modelo); // US 137
     }
 
     private void Update()
@@ -848,6 +895,8 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
             if (aterrizajesVistos != aterrizajesRed) { aterrizajesVistos = aterrizajesRed; animador.SetTrigger("Land"); }
         }
         if (vida != null) vida.Invulnerable = (banderasRed & Invulnerable) != 0;
+        // US 137: recién reaparecido e invulnerable, se lo ve semitransparente.
+        if (transparencia != null) transparencia.Poner(!muerto && vida != null && vida.Invulnerable);
         if (pasos != null)
         {
             pasos.Agachado = agachado;
