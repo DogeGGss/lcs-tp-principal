@@ -258,6 +258,71 @@ public class WeaponSwitcher : MonoBehaviour
         {
             SacarDispositivo();
         }
+
+        // Rueda del mouse (US 064, CA3): hacia abajo pasa al espacio siguiente y hacia arriba al anterior.
+        float rueda = Input.mouseScrollDelta.y;
+        if (rueda != 0f && Time.unscaledTime >= proximaRueda)
+        {
+            proximaRueda = Time.unscaledTime + EntreRuedas;
+            PasarConRueda(rueda < 0f ? 1 : -1);
+        }
+    }
+
+    // ---------- Rueda del mouse (US 064, CA3) ----------
+
+    // Espacios en orden: 0 principal, 1 secundaria, 2 cuchillo, 3 granadas y 4 el dispositivo (solo si lo lleva).
+    private const int Espacios = 5;
+    // Con un touchpad la rueda manda muchos movimientos chiquitos seguidos: así no pasa varios espacios de golpe.
+    private const float EntreRuedas = 0.08f;
+    private float proximaRueda;
+
+    // Pasa al espacio siguiente (paso 1) o al anterior (paso -1), salteando los vacíos y dando la vuelta.
+    void PasarConRueda(int paso)
+    {
+        int actual = EspacioEnLaMano();
+        if (actual < 0) actual = paso > 0 ? Espacios - 1 : 0;
+        for (int i = 1; i < Espacios; i++)
+            if (Sacar(((actual + paso * i) % Espacios + Espacios) % Espacios)) return;
+    }
+
+    int EspacioEnLaMano()
+    {
+        if (HeldPrimary != null) return 0;
+        if (HeldSecondary != null) return 1;
+        if (meleeScript != null && meleeScript.CurrentViewModel != null && meleeScript.CurrentViewModel.activeSelf) return 2;
+        if (GrenadeEquipped) return 3;
+        if (DispositivoEquipado) return 4;
+        return -1;
+    }
+
+    // Saca lo de ese espacio, como su tecla. Devuelve false si está vacío (CA4: no pasa nada).
+    bool Sacar(int espacio)
+    {
+        switch (espacio)
+        {
+            case 0:
+                if (PrimaryObj == null) return false;
+                EquipPrimary();
+                return true;
+            case 1:
+                if (SecondaryObj == null) return false;
+                EquipPistol();
+                return true;
+            case 2:
+                if (meleeScript == null || meleeScript.CurrentViewModel == null) return false;
+                EquipKnife();
+                return true;
+            case 3:
+                // Sale la primera granada que tenga (al guardarla se deseleccionó, así que no se saltea ninguna).
+                if (granadas == null || !granadas.SelectNext()) return false;
+                EquipGrenade();
+                return true;
+            case 4:
+                if (!LlevaDispositivo || dispositivoObj == null) return false;
+                SacarDispositivo();
+                return true;
+        }
+        return false;
     }
 
     // US 130: el dispositivo en la mano (con la tecla 5, o al plantar, US 131).

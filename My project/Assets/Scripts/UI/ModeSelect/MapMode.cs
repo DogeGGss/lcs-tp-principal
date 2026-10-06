@@ -8,8 +8,17 @@ public class MapMode : MonoBehaviour
 {
     [SerializeField] private GameMode mode = GameMode.Zombie;
 
+    /// <summary>El modo del mapa cargado, o null si la escena no tiene MapMode (por ejemplo, una escena de prueba).</summary>
+    public static GameMode? DeEstaEscena { get; private set; }
+
     private void Awake()
     {
         MatchSettings.Mode = mode;
+        DeEstaEscena = mode;
+    }
+
+    private void OnDestroy()
+    {
+        if (DeEstaEscena == mode) DeEstaEscena = null;
     }
 }
