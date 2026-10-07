@@ -260,6 +260,10 @@ public class Multijugador : MonoBehaviourPunCallbacks, IOnEventCallback
             return;
         }
         PhotonNetwork.AutomaticallySyncScene = true; // cuando el anfitrión inicia, todos cargan su mapa
+        // Photon conserva las propiedades del jugador local al salir de una sala y las lleva a la siguiente: sin esto,
+        // las bajas, muertes, plantadas y desactivaciones de la tabla (y la plata y las armas publicadas) arrancarían
+        // con lo de la partida anterior. Al volver a la misma partida (arriba) no se borran: las devuelve la sala.
+        PhotonNetwork.LocalPlayer.CustomProperties = new Hashtable();
         if (pedido == Pedido.Crear) CrearAhora();
         else if (!PhotonNetwork.JoinRoom(codigoPedido)) Fallar(ErrorEntrar);
     }
