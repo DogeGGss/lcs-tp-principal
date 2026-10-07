@@ -14,20 +14,20 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::ConfigRed
   jugador: {fileID: 1009967349104221202, guid: 53d168d46ca1f5842bc362b89b8bd65e, type: 3}
   mapas:
+  - nombre: Mapa 2
+    escena: Mapa_modo_tactico
+    tactico: 1
+    deathmatch: 0
+    imagen: {fileID: 0}
   - nombre: Mapa 1
     escena: Example_01 1
-    tactico: 1
+    tactico: 0
     deathmatch: 1
     imagen: {fileID: 0}
   - nombre: Mapa de pruebas
     escena: MapaPruebasV1
     tactico: 1
     deathmatch: 1
-    imagen: {fileID: 0}
-  - nombre: Mapa 2
-    escena: Mapa_modo_tactico
-    tactico: 1
-    deathmatch: 0
     imagen: {fileID: 0}
   trazadora: {fileID: 2100000, guid: 01dc322130393b24d97d92fa78f81228, type: 2}
   contornoRival: {fileID: 2100000, guid: a6d54a5dc7201b3439d1a2d1a5f6a79f, type: 2}
