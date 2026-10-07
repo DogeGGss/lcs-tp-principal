@@ -617,6 +617,62 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
     /// <summary>US 133: lo que tiene en la mano ahora (en la copia, lo que llega por la red), para el espectador.</summary>
     public byte ArmaVisible => muerto ? SinArma : ArmaActual;
 
+    /// <summary>US 133: la granada que tiene en la mano ahora (null si no tiene una), para el espectador.</summary>
+    public ShopItem GranadaVisible
+    {
+        get
+        {
+            byte arma = ArmaVisible;
+            return arma >= PrimeraGranada && arma != ArmaDesconocida ? FichaDe((byte)(arma - PrimeraGranada)) : null;
+        }
+    }
+
+    // US 133: balas del arma en la mano de la copia, como llegan por la red. recarga: 255 = no está recargando;
+    // si no, el avance de 0 a 200.
+    private short cargadorRed, tamanoRed, reservaRed = -1;
+    private byte recargaRed = SinRecarga;
+    private const byte SinRecarga = 255;
+
+    /// <summary>
+    /// US 133: las balas del arma en la mano (en la copia, lo que llega por la red), con el mismo formato que usa el
+    /// HUD: reserva -1 si el arma no tiene; recarga -1 si no está recargando, o de 0 a 1.
+    /// </summary>
+    public void Balas(out int cargador, out int tamano, out int reserva, out float recarga)
+    {
+        short c = cargadorRed, t = tamanoRed, r = reservaRed;
+        byte avance = recargaRed;
+        if (photonView != null && photonView.IsMine) LeerBalasPropias(out c, out t, out r, out avance);
+        cargador = c; tamano = t; reserva = r;
+        recarga = avance == SinRecarga ? -1f : avance / 200f;
+    }
+
+    // Dueño: lo mismo que muestra su HUD para el arma (o la granada) que tiene en la mano.
+    private void LeerBalasPropias(out short cargador, out short tamano, out short reserva, out byte recarga)
+    {
+        cargador = 0; tamano = 0; reserva = -1; recarga = SinRecarga;
+        if (muerto || cambioLocal == null) return;
+
+        ShopItem granada = cambioLocal.Granadas != null ? cambioLocal.Granadas.Selected : null;
+        if (granada != null)
+        {
+            PlayerLoadout carga = GetComponentInChildren<PlayerLoadout>(true);
+            cargador = tamano = (short)(carga != null ? carga.Count(granada) : 1);
+            return;
+        }
+        GameObject enMano = cambioLocal.HeldPrimary;
+        if (enMano == null) enMano = cambioLocal.HeldSecondary;
+        IHudWeapon arma = enMano != null ? enMano.GetComponentInChildren<IHudWeapon>() : null;
+        if (arma == null) return;
+        cargador = (short)Mathf.Clamp(arma.Ammo, 0, short.MaxValue);
+        tamano = (short)Mathf.Clamp(arma.MagazineSize, 0, short.MaxValue);
+        reserva = (short)Mathf.Clamp(arma.Reserve, -1, short.MaxValue);
+        float avance = arma.ReloadProgress;
+        recarga = avance < 0f ? SinRecarga : (byte)Mathf.RoundToInt(Mathf.Clamp01(avance) * 200f);
+    }
+
+    /// <summary>El jugador de Photon dueño de este personaje (null si todavía no se sabe).</summary>
+    public Player Dueno => photonView != null ? photonView.Owner : null;
+
     /// <summary>US 133: avisa en la copia cada disparo de su dueño (el espectador mueve el arma).</summary>
     public event System.Action Disparo;
 
@@ -1117,6 +1173,12 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
             stream.SendNext(aterrizajes);
             stream.SendNext(vida != null && !muerto ? (short)vida.currentHealth : (short)0); // muerto: 0 (US 195)
             stream.SendNext(vida != null ? (short)vida.currentShield : (short)0);
+            // US 133: las balas del arma en la mano, para el que lo mira como espectador.
+            LeerBalasPropias(out short cargador, out short tamano, out short reserva, out byte recarga);
+            stream.SendNext(cargador);
+            stream.SendNext(tamano);
+            stream.SendNext(reserva);
+            stream.SendNext(recarga);
             return;
         }
 
@@ -1131,6 +1193,18 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
         aterrizajesRed = (byte)stream.ReceiveNext();
         short salud = (short)stream.ReceiveNext();
         short blindaje = (short)stream.ReceiveNext();
+        // Si el que manda tiene una versión anterior del juego, estos datos no vienen: se sigue sin ellos.
+        try
+        {
+            if (stream.PeekNext() is short)
+            {
+                cargadorRed = (short)stream.ReceiveNext();
+                tamanoRed = (short)stream.ReceiveNext();
+                reservaRed = (short)stream.ReceiveNext();
+                recargaRed = (byte)stream.ReceiveNext();
+            }
+        }
+        catch (System.IndexOutOfRangeException) { }
 
         double tiempo = info.SentServerTime;
         if (recibido && tiempo > tiempoRed)

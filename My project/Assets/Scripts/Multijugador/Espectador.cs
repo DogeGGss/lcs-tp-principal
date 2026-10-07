@@ -42,6 +42,8 @@ public class Espectador : MonoBehaviour
     private GameObject armaMirada;       // el arma de primera persona propia que corresponde a la del compañero
     private Transform vistaArma;         // su copia, hija de la cámara
     private readonly Dictionary<GameObject, Transform> vistas = new Dictionary<GameObject, Transform>();
+    private ShopItem granadaMirada;      // la granada que tiene en la mano el compañero (no hay un modelo propio fijo)
+    private readonly Dictionary<ShopItem, Transform> vistasGranada = new Dictionary<ShopItem, Transform>();
     private float sacudon;
     private const float SacudonAtras = 0.035f, SacudonArriba = 3f, SacudonVuelta = 8f;
 
@@ -182,8 +184,14 @@ public class Espectador : MonoBehaviour
         }
         foreach (Transform vista in vistas.Values) if (vista != null) Destroy(vista.gameObject);
         vistas.Clear();
+        foreach (Transform vista in vistasGranada.Values) if (vista != null) Destroy(vista.gameObject);
+        vistasGranada.Clear();
         vistaArma = null;
         armaMirada = null;
+        granadaMirada = null;
+        // Por si no pasó por Mirar(null): el HUD vuelve a mostrar lo propio.
+        CombatHud.Spectate(null);
+        ShopUI.Spectated = null;
         foreach (Behaviour c in apagados) if (c != null) c.enabled = true;
         apagados.Clear();
         foreach (Renderer r in armasOcultas) if (r != null) r.enabled = true;
@@ -198,12 +206,15 @@ public class Espectador : MonoBehaviour
     // Muestra la copia del arma que tiene en la mano el compañero que se mira (la cambia si cambió de arma).
     private void VerArmaDelCompanero()
     {
-        GameObject arma = local != null ? local.PrimeraPersona(mirando.ArmaVisible) : null;
-        if (arma != armaMirada)
+        // La granada se arma aparte: el jugador no tiene un modelo fijo de granada en primera persona para copiar.
+        ShopItem granada = mirando.GranadaVisible;
+        GameObject arma = granada == null && local != null ? local.PrimeraPersona(mirando.ArmaVisible) : null;
+        if (arma != armaMirada || granada != granadaMirada)
         {
             armaMirada = arma;
+            granadaMirada = granada;
             if (vistaArma != null) vistaArma.gameObject.SetActive(false);
-            vistaArma = arma != null ? VistaDe(arma) : null;
+            vistaArma = granada != null ? VistaDeGranada(granada) : arma != null ? VistaDe(arma) : null;
             if (vistaArma != null) vistaArma.gameObject.SetActive(true);
             sacudon = 0f;
         }
@@ -236,6 +247,29 @@ public class Espectador : MonoBehaviour
         copia.transform.SetParent(camara.transform, false);
         vistas[arma] = copia.transform;
         return copia.transform;
+    }
+
+    // La granada en la mano, como la ve el que la sostiene. Va dentro de una caja hija de la cámara, que es la que
+    // se sacude.
+    private Transform VistaDeGranada(ShopItem granada)
+    {
+        if (vistasGranada.TryGetValue(granada, out Transform vista) && vista != null) return vista;
+        GrenadeThrower lanzador = local != null ? local.GetComponentInChildren<GrenadeThrower>(true) : null;
+        GameObject modelo = lanzador != null ? lanzador.BuildPreview(granada) : null;
+        if (modelo == null) return null;
+
+        var caja = new GameObject("Espectador: " + granada.name).transform;
+        caja.SetParent(camara.transform, false);
+        modelo.transform.SetParent(caja, true); // queda donde la armó el lanzador
+        int capa = camaraArmas != null ? CapaVisible(camaraArmas) : modelo.layer;
+        foreach (Transform parte in caja.GetComponentsInChildren<Transform>(true)) parte.gameObject.layer = capa;
+        foreach (Renderer r in caja.GetComponentsInChildren<Renderer>(true))
+        {
+            r.enabled = true;
+            r.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
+        }
+        vistasGranada[granada] = caja;
+        return caja;
     }
 
     // La capa que dibuja la cámara de las armas (ArmaEnMano).
@@ -284,9 +318,13 @@ public class Espectador : MonoBehaviour
         if (mirando != null) mirando.Disparo += AlDispararElCompanero;
         // Su arma se arma de nuevo en el próximo LateUpdate; sin nadie a quien mirar, no se ve ninguna.
         armaMirada = null;
+        granadaMirada = null;
         if (vistaArma != null) vistaArma.gameObject.SetActive(false);
         vistaArma = null;
         if (camaraArmas != null && muerto) camaraArmas.enabled = false;
+        // La vida, el minimapa y la plata del HUD pasan a ser los del compañero que se mira (o vuelven a los propios).
+        CombatHud.Spectate(mirando);
+        ShopUI.Spectated = mirando != null ? mirando.Dueno : null;
         if (mirando != null)
             foreach (Renderer r in mirando.GetComponentsInChildren<Renderer>(true))
                 if (r.enabled) { r.enabled = false; ocultos.Add(r); }

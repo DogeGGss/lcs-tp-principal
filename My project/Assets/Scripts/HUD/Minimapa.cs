@@ -295,6 +295,16 @@ public class Minimapa : MonoBehaviour
         if (!armado) StartCoroutine(Armar());
     }
 
+    /// <summary>
+    /// Espectador (US 133): el radar se centra en otro jugador y gira con su mirada. El dibujo del mapa es el mismo.
+    /// </summary>
+    public void Seguir(Transform quien, Transform mirada)
+    {
+        if (quien == null) return;
+        jugador = quien;
+        vista = mirada != null ? mirada : quien;
+    }
+
     // =====================================================================
     // Dibujo del mapa (CA7)
     // =====================================================================
