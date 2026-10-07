@@ -514,3 +514,6 @@ fecha_utc,us_numero,us_titulo,estado_anterior,estado_nuevo,tiempo_en_estado_ante
 2026-10-07T19:46:43.036535+00:00,66,US 016. Personaje único por equipo,LPR,TESTING,5d 22h 27m,512870,https://github.com/DogeGGss/lcs-tp-principal/issues/66
 2026-10-07T19:46:43.036535+00:00,317,US 190. Muro de la base en la fase de compra,Rehacer,TESTING,5h 50m,21047,https://github.com/DogeGGss/lcs-tp-principal/issues/317
 2026-10-07T19:46:43.036535+00:00,213,SPK 01. Prueba de concepto con Photon PUN 2,LPR,Done,8d 12h 23m,735812,https://github.com/DogeGGss/lcs-tp-principal/issues/213
+2026-10-07T23:53:41.194860+00:00,195,US 135. Economía por ronda,LPR,TESTING,6d 2h 34m,527688,https://github.com/DogeGGss/lcs-tp-principal/issues/195
+2026-10-07T23:53:41.194860+00:00,191,US 131. Plantar el dispositivo,TESTING,R2D,2d 41m,175269,https://github.com/DogeGGss/lcs-tp-principal/issues/191
+2026-10-07T23:53:41.194860+00:00,287,US 184. Soltar y levantar armas,LPR,TESTING,5d 1h 23m,436982,https://github.com/DogeGGss/lcs-tp-principal/issues/287

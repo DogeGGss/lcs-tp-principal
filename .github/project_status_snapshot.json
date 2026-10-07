@@ -600,8 +600,8 @@
     "since": "2026-10-07T06:37:29.217824+00:00"
   },
   "PVTI_lAHOCikQ8M4Bj9Nyzg81g2c": {
-    "status": "TESTING",
-    "since": "2026-10-05T23:12:31.591868+00:00"
+    "status": "R2D",
+    "since": "2026-10-07T23:53:41.194860+00:00"
   },
   "PVTI_lAHOCikQ8M4Bj9Nyzg81g34": {
     "status": "LPR",
@@ -616,8 +616,8 @@
     "since": "2026-10-07T00:49:45.303809+00:00"
   },
   "PVTI_lAHOCikQ8M4Bj9Nyzg81g9U": {
-    "status": "LPR",
-    "since": "2026-10-01T21:18:52.794772+00:00"
+    "status": "TESTING",
+    "since": "2026-10-07T23:53:41.194860+00:00"
   },
   "PVTI_lAHOCikQ8M4Bj9Nyzg81qJ4": {
     "status": "LPR",
@@ -824,8 +824,8 @@
     "since": "2026-09-30T02:05:12.508835+00:00"
   },
   "PVTI_lAHOCikQ8M4Bj9Nyzg9tWW8": {
-    "status": "LPR",
-    "since": "2026-10-02T22:30:38.667308+00:00"
+    "status": "TESTING",
+    "since": "2026-10-07T23:53:41.194860+00:00"
   },
   "PVTI_lAHOCikQ8M4Bj9Nyzg9uWeQ": {
     "status": "In Progress",
