@@ -33,6 +33,7 @@ public class PantallaDeCarga : MonoBehaviour
 
     private GameObject raiz;
     private Img imagenMapa;
+    private UnityEngine.UI.AspectRatioFitter ajusteMapa;
     private TextMeshProUGUI modoTexto, mapaTexto, detalleTexto, consejoTexto, estadoTexto, listosTexto, pieTexto;
     private GameObject consejoCaja;
     private RectTransform relleno, cursor;
@@ -114,6 +115,7 @@ public class PantallaDeCarga : MonoBehaviour
         detalleTexto.text = detalle;
         imagenMapa.sprite = imagen;
         imagenMapa.enabled = imagen != null;
+        if (imagen != null) ajusteMapa.aspectRatio = imagen.rect.width / imagen.rect.height;
         consejoCaja.SetActive(consejosDe.HasValue);
         if (consejosDe.HasValue) consejoTexto.text = Consejo(consejosDe.Value); // CA3
         listosTexto.text = "";
@@ -298,6 +300,10 @@ public class PantallaDeCarga : MonoBehaviour
         raiz = todo.gameObject;
         Image(todo, null, Rgb(8, 10, 14), 0f, true); // tapa el juego y frena los clics
         imagenMapa = Image(Stretch(Node("Mapa", todo)), null, Color.white);
+        // La captura cubre toda la pantalla sin deformarse: si la pantalla no es 16:9, se recorta lo que sobra en los bordes.
+        ajusteMapa = imagenMapa.gameObject.AddComponent<UnityEngine.UI.AspectRatioFitter>();
+        ajusteMapa.aspectMode = UnityEngine.UI.AspectRatioFitter.AspectMode.EnvelopeParent;
+        ajusteMapa.aspectRatio = 16f / 9f;
         Image(Stretch(Node("Oscurecido", todo)), null, Rgb(8, 10, 14, 0.72f));
 
         RectTransform c = Node("Contenido", todo);

@@ -14,11 +14,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::ConfigRed
   jugador: {fileID: 1009967349104221202, guid: 53d168d46ca1f5842bc362b89b8bd65e, type: 3}
   mapas:
-  - nombre: Mapa 2
+  - nombre: "Mapa t\xE1ctico"
     escena: Mapa_modo_tactico
     tactico: 1
     deathmatch: 0
-    imagen: {fileID: 0}
+    imagen: {fileID: 21300000, guid: 318f34202fcb442f962163fb2928f756, type: 3}
   - nombre: Mapa 1
     escena: Example_01 1
     tactico: 0
