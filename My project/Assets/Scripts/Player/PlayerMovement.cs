@@ -282,9 +282,10 @@ public class PlayerMovement : MonoBehaviour
 
     // Busca el piso justo debajo, a lo sumo a lo que bajaría una pendiente caminable (slopeLimit) en lo que se movió
     // este cuadro. Si hay piso caminable, lo baja hasta apoyarlo. Un borde de verdad (un escalón alto, el borde de
-    // una losa) queda más lejos y el personaje cae normalmente.
-    private void PegarAlPiso(float avance)
+    // una losa) queda más lejos y el personaje cae normalmente. Devuelve si lo apoyó (lo usa también el Trasbordo, US 019).
+    public bool PegarAlPiso(float avance)
     {
+        if (controller == null) controller = GetComponent<CharacterController>();
         float maximo = avance * Mathf.Tan(controller.slopeLimit * Mathf.Deg2Rad) + controller.skinWidth + 0.05f;
         float radio = controller.radius * 0.9f;
         Vector3 centro = transform.TransformPoint(controller.center);
@@ -298,8 +299,9 @@ public class PlayerMovement : MonoBehaviour
             if (Vector3.Angle(golpe.normal, Vector3.up) > controller.slopeLimit) continue; // pared, no piso
             if (golpe.distance < mejor) mejor = golpe.distance;
         }
-        if (mejor == float.MaxValue) return;
+        if (mejor == float.MaxValue) return false;
 
         controller.Move(Vector3.down * (mejor + controller.skinWidth));
+        return true;
     }
 }
