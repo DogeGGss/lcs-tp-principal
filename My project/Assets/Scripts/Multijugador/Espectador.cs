@@ -46,6 +46,9 @@ public class Espectador : MonoBehaviour
     private readonly Dictionary<ShopItem, Transform> vistasGranada = new Dictionary<ShopItem, Transform>();
     private float sacudon;
     private const float SacudonAtras = 0.035f, SacudonArriba = 3f, SacudonVuelta = 8f;
+    // La puñalada del compañero: el cuchillo va para adelante y vuelve, como en su pantalla.
+    private float punaladaEn = -10f;
+    private const float PunaladaIda = 0.08f, PunaladaVuelta = 0.12f, PunaladaLargo = 0.3f;
 
     // Cartel de abajo con el nombre del compañero.
     private GameObject cartel;
@@ -93,6 +96,9 @@ public class Espectador : MonoBehaviour
         {
             Transform ojos = mirando.Ojos;
             camara.transform.SetPositionAndRotation(ojos.position, ojos.rotation);
+            // Lo que su cuerpo arme después de empezar a mirarlo (la granada en la mano se arma la primera vez
+            // que la saca) tampoco se dibuja: si no, se ve flotando al lado de la cámara.
+            OcultarCuerpo(mirando);
             VerArmaDelCompanero();
         }
         else if (viendoDispositivo)
@@ -222,7 +228,10 @@ public class Espectador : MonoBehaviour
         if (vistaArma == null) return;
 
         sacudon = Mathf.MoveTowards(sacudon, 0f, SacudonVuelta * Time.deltaTime);
-        vistaArma.localPosition = new Vector3(0f, 0f, -SacudonAtras * sacudon);
+        float t = Time.time - punaladaEn, estocada = 0f;
+        if (t >= 0f && t < PunaladaIda + PunaladaVuelta)
+            estocada = t < PunaladaIda ? t / PunaladaIda : 1f - (t - PunaladaIda) / PunaladaVuelta;
+        vistaArma.localPosition = new Vector3(0f, 0f, -SacudonAtras * sacudon + PunaladaLargo * estocada);
         vistaArma.localRotation = Quaternion.Euler(-SacudonArriba * sacudon, 0f, 0f);
     }
 
@@ -307,6 +316,14 @@ public class Espectador : MonoBehaviour
     }
 
     private void AlDispararElCompanero() => sacudon = 1f;
+    private void AlAcuchillarElCompanero() => punaladaEn = Time.time;
+
+    // El cuerpo del que se mira no se dibuja (si no, la cámara queda adentro de su cabeza).
+    private void OcultarCuerpo(JugadorEnRed jugador)
+    {
+        foreach (Renderer r in jugador.GetComponentsInChildren<Renderer>(true))
+            if (r.enabled) { r.enabled = false; ocultos.Add(r); }
+    }
 
     // =====================================================================
     // A quién mirar
@@ -338,9 +355,10 @@ public class Espectador : MonoBehaviour
         // El cuerpo del que se mira no se dibuja (si no, la cámara queda adentro de su cabeza).
         foreach (Renderer r in ocultos) if (r != null) r.enabled = true;
         ocultos.Clear();
-        if (mirando != null) mirando.Disparo -= AlDispararElCompanero;
+        if (mirando != null) { mirando.Disparo -= AlDispararElCompanero; mirando.Punalada -= AlAcuchillarElCompanero; }
         mirando = jugador;
-        if (mirando != null) mirando.Disparo += AlDispararElCompanero;
+        if (mirando != null) { mirando.Disparo += AlDispararElCompanero; mirando.Punalada += AlAcuchillarElCompanero; }
+        punaladaEn = -10f;
         // Su arma se arma de nuevo en el próximo LateUpdate; sin nadie a quien mirar, no se ve ninguna.
         armaMirada = null;
         granadaMirada = null;
@@ -350,9 +368,7 @@ public class Espectador : MonoBehaviour
         // La vida, el minimapa y la plata del HUD pasan a ser los del compañero que se mira (o vuelven a los propios).
         CombatHud.Spectate(mirando);
         ShopUI.Spectated = mirando != null ? mirando.Dueno : null;
-        if (mirando != null)
-            foreach (Renderer r in mirando.GetComponentsInChildren<Renderer>(true))
-                if (r.enabled) { r.enabled = false; ocultos.Add(r); }
+        if (mirando != null) OcultarCuerpo(mirando);
 
         if (muerto && partida != null) partida.Aviso(null); // el "Te eliminaron" ya no hace falta
         MostrarCartel();
