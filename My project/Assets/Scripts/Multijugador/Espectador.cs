@@ -253,7 +253,11 @@ public class Espectador : MonoBehaviour
     // se sacude.
     private Transform VistaDeGranada(ShopItem granada)
     {
-        if (vistasGranada.TryGetValue(granada, out Transform vista) && vista != null) return vista;
+        if (vistasGranada.TryGetValue(granada, out Transform vista) && vista != null)
+        {
+            PonerManoDeGranada(vista);
+            return vista;
+        }
         GrenadeThrower lanzador = local != null ? local.GetComponentInChildren<GrenadeThrower>(true) : null;
         GameObject modelo = lanzador != null ? lanzador.BuildPreview(granada) : null;
         if (modelo == null) return null;
@@ -269,7 +273,28 @@ public class Espectador : MonoBehaviour
             r.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
         }
         vistasGranada[granada] = caja;
+        PonerManoDeGranada(caja);
         return caja;
+    }
+
+    // La mano que sostiene la granada: la foto de los brazos que BrazosEnCamara saca para la "Mano con granada".
+    // Si todavía no la sacó, se intenta de nuevo la próxima vez que se muestre.
+    private void PonerManoDeGranada(Transform caja)
+    {
+        const string nombre = "Brazos";
+        if (caja.Find(nombre) != null || local == null) return;
+        Transform mano = camara.transform.Find(GrenadeThrower.NombreMano);
+        BrazosEnCamara brazos = local.GetComponentInChildren<BrazosEnCamara>(true);
+        MeshRenderer foto = brazos != null && mano != null ? brazos.FotoDe(mano.gameObject) : null;
+        if (foto == null) return;
+
+        GameObject copia = ModeloReal.CopiaEnPrimeraPersona(foto.gameObject, camara.transform, r => true, nombre);
+        if (copia == null) return;
+        copia.transform.SetParent(caja, false);
+        int capa = camaraArmas != null ? CapaVisible(camaraArmas) : copia.layer;
+        foreach (Transform parte in copia.GetComponentsInChildren<Transform>(true)) parte.gameObject.layer = capa;
+        foreach (Renderer r in copia.GetComponentsInChildren<Renderer>(true))
+            r.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
     }
 
     // La capa que dibuja la cámara de las armas (ArmaEnMano).
