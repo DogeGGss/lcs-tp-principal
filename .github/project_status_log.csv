@@ -509,3 +509,8 @@ fecha_utc,us_numero,us_titulo,estado_anterior,estado_nuevo,tiempo_en_estado_ante
 2026-10-07T06:37:29.217824+00:00,69,US 019. Habilidad 1 · Trasbordo,In Progress,LPR,5h 47m,20863,https://github.com/DogeGGss/lcs-tp-principal/issues/69
 2026-10-07T13:55:55.952110+00:00,317,US 190. Muro de la base en la fase de compra,LPR,Rehacer,3d 18h 40m,326443,https://github.com/DogeGGss/lcs-tp-principal/issues/317
 2026-10-07T13:55:55.952110+00:00,93,US 070. ARMA Principal 5 - Roca (Escopeta),LPR,TESTING,7d 18h 29m,671372,https://github.com/DogeGGss/lcs-tp-principal/issues/93
+2026-10-07T19:46:43.036535+00:00,322,US 195. Abandono y reconexión a la partida,LPR,R2D,1d 16h 44m,146692,https://github.com/DogeGGss/lcs-tp-principal/issues/322
+2026-10-07T19:46:43.036535+00:00,319,US 192. Indicador de dirección del daño,LPR,R2D,3d 2h 44m,269075,https://github.com/DogeGGss/lcs-tp-principal/issues/319
+2026-10-07T19:46:43.036535+00:00,66,US 016. Personaje único por equipo,LPR,TESTING,5d 22h 27m,512870,https://github.com/DogeGGss/lcs-tp-principal/issues/66
+2026-10-07T19:46:43.036535+00:00,317,US 190. Muro de la base en la fase de compra,Rehacer,TESTING,5h 50m,21047,https://github.com/DogeGGss/lcs-tp-principal/issues/317
+2026-10-07T19:46:43.036535+00:00,213,SPK 01. Prueba de concepto con Photon PUN 2,LPR,Done,8d 12h 23m,735812,https://github.com/DogeGGss/lcs-tp-principal/issues/213
