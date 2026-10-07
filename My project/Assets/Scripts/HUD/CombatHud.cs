@@ -97,6 +97,32 @@ public class CombatHud : MonoBehaviour
     private TextMeshProUGUI hintText;
     private TextMeshProUGUI hpText, shieldText;
 
+    // Espectador (US 133): mientras se mira a un compañero, la vida y el minimapa son los suyos.
+    private HealthSystem watched;
+    private JugadorEnRed watchedMate;
+    private Transform playerRoot;
+
+    /// <summary>Muestra la vida y el minimapa de un compañero (espectador). null vuelve al jugador propio.</summary>
+    public static void Spectate(JugadorEnRed mate)
+    {
+        CombatHud hud = current;
+        if (hud == null) return;
+        hud.watched = mate != null ? mate.GetComponent<HealthSystem>() : null;
+        hud.watchedMate = mate;
+        hud.lastHp = int.MinValue; // que se vuelva a dibujar
+        hud.lastAmmoState = null;
+        // El inventario de abajo es el propio (no se conoce el del compañero): no se ve mientras se especta.
+        foreach (InvSlot slot in hud.invSlots)
+            if (slot != null && slot.rect != null) slot.rect.localScale = mate != null ? Vector3.zero : Vector3.one;
+        if (hud.minimap == null) return;
+        if (mate != null) hud.minimap.Seguir(mate.transform, mate.Ojos);
+        else if (hud.playerRoot != null)
+        {
+            Camera own = hud.playerRoot.GetComponentInChildren<Camera>();
+            hud.minimap.Seguir(hud.playerRoot, own != null ? own.transform : null);
+        }
+    }
+
     // US 139, CA3: aviso verde "+50" al lado de la vida durante 1 s.
     private static CombatHud current;
     private TextMeshProUGUI healText;
@@ -317,6 +343,7 @@ public class CombatHud : MonoBehaviour
         if (player == null) return;
 
         health = player.GetComponent<HealthSystem>();
+        playerRoot = player.transform;
         if (damageIndicator != null) damageIndicator.Seguir(health);
         if (minimap != null) minimap.Seguir(player.transform);
         switcher = player.GetComponentInChildren<WeaponSwitcher>(true);
@@ -350,8 +377,9 @@ public class CombatHud : MonoBehaviour
 
     private void UpdateHealth()
     {
-        int hp = Mathf.Max(0, health.currentHealth), shield = Mathf.Max(0, health.currentShield);
-        int maxHp = Mathf.Max(1, health.maxHealth), maxShield = Mathf.Max(0, health.maxShield);
+        HealthSystem shown = watched != null ? watched : health; // espectador: la del compañero que se mira
+        int hp = Mathf.Max(0, shown.currentHealth), shield = Mathf.Max(0, shown.currentShield);
+        int maxHp = Mathf.Max(1, shown.maxHealth), maxShield = Mathf.Max(0, shown.maxShield);
         if (hp == lastHp && shield == lastShield && maxHp == lastMaxHp && maxShield == lastMaxShield) return;
         lastHp = hp; lastShield = shield; lastMaxHp = maxHp; lastMaxShield = maxShield;
 
@@ -483,6 +511,15 @@ public class CombatHud : MonoBehaviour
     {
         name = ""; ammo = 0; size = 0; reserve = -1; reload = -1f;
         WeaponIcon = null;
+
+        // Espectador (US 133): el arma y las balas del compañero que se mira, que llegan por la red.
+        if (watchedMate != null)
+        {
+            if (!watchedMate.Vivo) return;
+            name = watchedMate.NombreArma;
+            watchedMate.Balas(out ammo, out size, out reserve, out reload);
+            return;
+        }
 
         // Granada en la mano (US 073): su nombre y cuántas de esas lleva.
         ShopItem grenadeInHand = HeldGrenade();

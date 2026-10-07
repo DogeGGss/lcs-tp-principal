@@ -147,6 +147,20 @@ public class ShopUI : MonoBehaviour
     // Deathmatch (US 138): la misma pantalla, pero se elige equipo gratis en vez de comprar.
     private static bool Dm => PlayerLoadout.Free;
 
+    /// <summary>
+    /// Espectador (US 133): de quién es la plata que muestra el HUD. null = la propia. La de los compañeros llega
+    /// por la red (la publica MarcadorTactico).
+    /// </summary>
+    public static Player Spectated;
+    private bool showedSpectated;
+
+    private string HudMoneyText()
+    {
+        if (Spectated == null) return Money(loadout.Wallet.Money);
+        int money = Read(Spectated, PropPlata, -1);
+        return money >= 0 ? Money(money) : "—";
+    }
+
     /// <summary>Cierra la tienda si está abierta (al reaparecer, al morir o al terminar la partida).</summary>
     public static void Cerrar()
     {
@@ -202,6 +216,7 @@ public class ShopUI : MonoBehaviour
         }
         if (open) RestorePlayerControls();
         IsOpen = false;
+        Spectated = null;
         if (instance == this) instance = null;
     }
 
@@ -489,6 +504,14 @@ public class ShopUI : MonoBehaviour
         hudClock.SetActive(!open && !Dm && phase != null && phase.IsActive && MatchHud.Instance == null);
         hudHint.SetActive(!open && (phaseActive || Dm) && access == ShopResult.Ok && !PantallaDeCarga.Visible);
         hudMoney.gameObject.SetActive(!open && !Dm); // US 138, CA1: sin plata
+        if (Spectated != null || showedSpectated)
+        {
+            // La plata del compañero cambia sin avisar (llega por la red): se revisa en cada cuadro. Al dejar de
+            // espectar se revisa una vez más, para volver a la propia.
+            showedSpectated = Spectated != null;
+            string money = HudMoneyText();
+            if (hudMoney.text != money) hudMoney.text = money;
+        }
         if (phase != null)
         {
             hudTime.text = Clock(phase.TimeLeft);
@@ -559,7 +582,7 @@ public class ShopUI : MonoBehaviour
     private void Render()
     {
         if (loadout == null || shopRoot == null) return;
-        hudMoney.text = Money(loadout.Wallet.Money);
+        hudMoney.text = HudMoneyText();
         if (!open) return;
 
         RenderBar();

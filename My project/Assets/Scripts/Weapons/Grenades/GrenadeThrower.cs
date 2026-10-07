@@ -191,6 +191,17 @@ public class GrenadeThrower : MonoBehaviour
         return model;
     }
 
+    /// <summary>
+    /// Espectador (US 133): un modelo de la granada en la mano, igual al que ve el que la sostiene, sin tocar la que
+    /// tiene este jugador. Lo destruye el que lo pide.
+    /// </summary>
+    public GameObject BuildPreview(ShopItem item)
+    {
+        GameObject prefab = grenadePrefab != null ? grenadePrefab : item != null ? item.grenadePrefab : null;
+        Camera cam = ViewCamera();
+        return prefab != null && cam != null ? BuildHeldModel(prefab, cam) : null;
+    }
+
     void DestroyHeldModel()
     {
         if (heldModel != null) Destroy(heldModel);
