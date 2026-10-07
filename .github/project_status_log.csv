@@ -500,3 +500,10 @@ fecha_utc,us_numero,us_titulo,estado_anterior,estado_nuevo,tiempo_en_estado_ante
 2026-10-07T00:49:45.303809+00:00,44,US 025. Sincronizar movimiento,R2D,Done,5d 3h 30m,444652,https://github.com/DogeGGss/lcs-tp-principal/issues/44
 2026-10-07T00:49:45.303809+00:00,75,US 027. Crear sala,R2D,Done,5d 3h 30m,444652,https://github.com/DogeGGss/lcs-tp-principal/issues/75
 2026-10-07T00:49:45.303809+00:00,46,US 026. Unirse a sala,R2D,Done,4d 18h 3m,410584,https://github.com/DogeGGss/lcs-tp-principal/issues/46
+2026-10-07T06:37:29.217824+00:00,332,US 199. Ver las balas al disparar,TESTING,R2D,20h 30m,73817,https://github.com/DogeGGss/lcs-tp-principal/issues/332
+2026-10-07T06:37:29.217824+00:00,324,US 197. Mostrar FPS y ping,LPR,R2D,3d 11h 22m,300137,https://github.com/DogeGGss/lcs-tp-principal/issues/324
+2026-10-07T06:37:29.217824+00:00,190,US 130. Portar y soltar el dispositivo,TESTING,R2D,1d 7h 24m,113097,https://github.com/DogeGGss/lcs-tp-principal/issues/190
+2026-10-07T06:37:29.217824+00:00,325,US 198. Caminar despacio en el Táctico,LPR,R2D,3d 23h 51m,345109,https://github.com/DogeGGss/lcs-tp-principal/issues/325
+2026-10-07T06:37:29.217824+00:00,65,US 015. Seleccionar personaje,LPR,TESTING,8d 5h 10m,709824,https://github.com/DogeGGss/lcs-tp-principal/issues/65
+2026-10-07T06:37:29.217824+00:00,321,US 194. Minimapa,LPR,TESTING,1d 7h 24m,113097,https://github.com/DogeGGss/lcs-tp-principal/issues/321
+2026-10-07T06:37:29.217824+00:00,69,US 019. Habilidad 1 · Trasbordo,In Progress,LPR,5h 47m,20863,https://github.com/DogeGGss/lcs-tp-principal/issues/69
