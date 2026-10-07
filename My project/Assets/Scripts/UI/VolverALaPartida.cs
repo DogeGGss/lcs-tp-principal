@@ -2,26 +2,31 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-// Botón "Volver a la partida" del menú principal (US 195, CA2).
+// Tarjeta "Volver a la partida" del menú principal (US 195, CA2).
 // Aparece solo si hay una partida online a la que todavía se puede volver: se cortó la conexión o se cerró el juego
-// hace menos de 2 minutos (lo anota Reconexion). Abajo dice la sala y cuánto tiempo queda. Al tocarlo vuelve a esa
-// partida, en el mismo equipo (Multijugador.VolverALaPartida). Si no se puede, lo explica abajo un rato.
-// Es una copia del botón JUGAR, arriba de él y con el mismo estilo. Lo agrega MenuUIController al abrir el menú.
+// hace menos de 2 minutos (lo anota Reconexion). Muestra la sala, el tiempo que queda y un botón "Volver", que vuelve
+// a esa partida en el mismo equipo (Multijugador.VolverALaPartida). Si no se puede, lo explica ahí mismo un rato.
+// Va debajo de la columna de botones, con el estilo de las otras tarjetas del menú (fondo oscuro y borde naranja):
+// arriba de JUGAR tapaba el título del juego. Las medidas salen del alto de los botones, así acompaña al menú.
+// La agrega MenuUIController al abrir el menú.
 public class VolverALaPartida : MonoBehaviour
 {
     private const float DuracionError = 6f;
-    private static readonly Color ColorDetalle = new Color32(142, 150, 163, 255);
-    private static readonly Color ColorError = new Color32(255, 92, 92, 255);
+    private static readonly Color Naranja = new Color32(242, 154, 56, 255);
+    private static readonly Color Tinta = new Color32(243, 244, 246, 255);
+    private static readonly Color Apagado = new Color32(142, 150, 163, 255);
+    private static readonly Color Rojo = new Color32(255, 92, 92, 255);
+    private static readonly Color Fondo = new Color32(10, 12, 17, 240);
 
     private Button boton;
-    private CanvasGroup grupo; // el botón se oculta así: apagado, no correría este Update para volver a mostrarlo
-    private TMP_Text texto;
-    private TextMeshProUGUI detalle;
+    private CanvasGroup grupo; // la tarjeta se oculta así: apagada, no correría este Update para volver a mostrarla
+    private TextMeshProUGUI etiqueta, titulo, tiempo;
+    private float tamanoTitulo;
     private bool volviendo, escuchando;
     private string error;
     private float errorHasta, proximo;
 
-    /// <summary>Agrega el botón al panel del menú principal, arriba de JUGAR (una sola vez).</summary>
+    /// <summary>Agrega la tarjeta al panel del menú principal, debajo de los botones (una sola vez).</summary>
     public static void MostrarEnMenu(Transform panel)
     {
         if (panel == null || panel.GetComponentInChildren<VolverALaPartida>(true) != null) return;
@@ -32,60 +37,141 @@ public class VolverALaPartida : MonoBehaviour
             return;
         }
 
-        var copia = (RectTransform)Instantiate(jugar.gameObject, jugar.parent).transform;
-        copia.name = "BtnVolverALaPartida";
-        copia.SetSiblingIndex(jugar.GetSiblingIndex());
-        // Arriba de JUGAR, con la misma separación que hay entre JUGAR y el botón de abajo.
-        var abajo = panel.Find("BtnLogros") as RectTransform;
-        float paso = abajo != null ? Mathf.Abs(jugar.anchoredPosition.y - abajo.anchoredPosition.y) : jugar.sizeDelta.y * 2f;
-        copia.anchoredPosition = jugar.anchoredPosition + new Vector2(0f, paso);
+        // El botón más bajo de la columna de JUGAR: la tarjeta va debajo de ese.
+        RectTransform ultimo = jugar;
+        foreach (Transform hijo in jugar.parent)
+        {
+            var rect = hijo as RectTransform;
+            if (rect == null || !rect.gameObject.activeSelf || rect.GetComponent<Button>() == null) continue;
+            if (rect.anchorMin != jugar.anchorMin || rect.anchorMax != jugar.anchorMax) continue;
+            if (Mathf.Abs(rect.anchoredPosition.x - jugar.anchoredPosition.x) > 1f) continue;
+            if (rect.anchoredPosition.y < ultimo.anchoredPosition.y) ultimo = rect;
+        }
 
-        VolverALaPartida volver = copia.gameObject.AddComponent<VolverALaPartida>();
-        volver.Armar(copia, paso - copia.sizeDelta.y);
+        var go = new GameObject("TarjetaVolverALaPartida", typeof(RectTransform));
+        go.transform.SetParent(jugar.parent, false);
+        go.AddComponent<VolverALaPartida>().Armar((RectTransform)go.transform, jugar, ultimo);
     }
 
-    private void Armar(RectTransform rect, float espacio)
+    // u = alto de un botón del menú: todas las medidas de la tarjeta salen de ahí.
+    private void Armar(RectTransform tarjeta, RectTransform jugar, RectTransform ultimo)
     {
-        grupo = GetComponent<CanvasGroup>();
-        if (grupo == null) grupo = gameObject.AddComponent<CanvasGroup>();
-        boton = GetComponent<Button>();
+        float u = Mathf.Max(8f, jugar.sizeDelta.y);
+        float ancho = 24f * u, alto = 2.9f * u, margen = 0.6f * u;
+        TMP_Text muestra = jugar.GetComponentInChildren<TMP_Text>(true);
+        TMP_FontAsset fuente = muestra != null ? muestra.font : null;
+        Image imagenBoton = jugar.GetComponent<Image>();
+        Sprite forma = imagenBoton != null ? imagenBoton.sprite : null;
+
+        tarjeta.anchorMin = jugar.anchorMin;
+        tarjeta.anchorMax = jugar.anchorMax;
+        tarjeta.pivot = new Vector2(0.5f, 1f);
+        tarjeta.sizeDelta = new Vector2(ancho, alto);
+        float bajoElUltimo = ultimo.anchoredPosition.y - ultimo.sizeDelta.y * ultimo.pivot.y;
+        tarjeta.anchoredPosition = new Vector2(jugar.anchoredPosition.x, bajoElUltimo - 1.1f * u);
+        grupo = gameObject.AddComponent<CanvasGroup>();
+
+        // Borde naranja y fondo oscuro, como las otras tarjetas del menú.
+        Caja("Borde", tarjeta, Vector2.zero, new Vector2(ancho, alto), new Color(Naranja.r, Naranja.g, Naranja.b, 0.55f), null);
+        float linea = Mathf.Max(1f, u * 0.05f);
+        Caja("Fondo", tarjeta, new Vector2(linea, 0f), new Vector2(ancho - 2f * linea, alto - 2f * linea), Fondo, null);
+
+        // Ícono redondo.
+        float lado = 1.7f * u;
+        RectTransform icono = Caja("Icono", tarjeta, new Vector2(margen, 0f), new Vector2(lado, lado), Naranja, forma);
+        TextMeshProUGUI flecha = Texto("Flecha", icono, fuente, 1.1f * u, new Color32(26, 17, 6, 255), TextAlignmentOptions.Center);
+        Estirar(flecha.rectTransform);
+        flecha.text = "«";
+
+        // Botón "Volver": una copia de JUGAR, así tiene su forma, su sonido y su animación.
+        float anchoBoton = 4.6f * u;
+        var copia = (RectTransform)Instantiate(jugar.gameObject, tarjeta).transform;
+        copia.name = "BtnVolver";
+        Izquierda(copia, new Vector2(ancho - margen - anchoBoton, 0f), new Vector2(anchoBoton, 1.3f * u));
+        boton = copia.GetComponent<Button>();
         if (boton != null)
         {
             boton.onClick = new Button.ButtonClickedEvent(); // sin lo que hacía JUGAR
             boton.onClick.AddListener(Volver);
         }
-        texto = GetComponentInChildren<TMP_Text>(true);
-        if (texto != null)
-        {
-            texto.text = "VOLVER A LA PARTIDA";
-            // Más ancho que JUGAR, para que entre el texto.
-            rect.sizeDelta = new Vector2(Mathf.Max(rect.sizeDelta.x, texto.GetPreferredValues(texto.text).x + 40f), rect.sizeDelta.y);
-        }
+        Image fondoBoton = copia.GetComponent<Image>();
+        if (fondoBoton != null) fondoBoton.color = Naranja;
+        TMP_Text textoBoton = copia.GetComponentInChildren<TMP_Text>(true);
+        if (textoBoton != null) textoBoton.text = "VOLVER";
 
-        // La sala y el tiempo que queda, chiquito, entre este botón y JUGAR.
-        var go = new GameObject("Detalle", typeof(RectTransform));
-        go.transform.SetParent(rect.parent, false);
-        var linea = (RectTransform)go.transform;
-        linea.anchorMin = rect.anchorMin;
-        linea.anchorMax = rect.anchorMax;
-        linea.pivot = new Vector2(0.5f, 1f);
-        float alto = Mathf.Clamp(espacio - 4f, 14f, 24f);
-        linea.sizeDelta = new Vector2(Mathf.Max(rect.sizeDelta.x, 420f), alto);
-        linea.anchoredPosition = rect.anchoredPosition + new Vector2(0f, -rect.sizeDelta.y * (1f - rect.pivot.y) - 2f);
-        detalle = go.AddComponent<TextMeshProUGUI>();
-        if (texto != null) detalle.font = texto.font;
-        detalle.fontSize = alto * 0.8f;
-        detalle.alignment = TextAlignmentOptions.Center;
-        detalle.raycastTarget = false;
-        detalle.color = ColorDetalle;
+        // Tiempo que queda, a la izquierda del botón.
+        float anchoTiempo = 2.6f * u;
+        tiempo = Texto("Tiempo", tarjeta, fuente, 1.05f * u, Tinta, TextAlignmentOptions.MidlineRight);
+        Izquierda(tiempo.rectTransform, new Vector2(ancho - margen - anchoBoton - 0.7f * u - anchoTiempo, 0f), new Vector2(anchoTiempo, alto));
+
+        // Dos renglones: la etiqueta chica y la sala.
+        float x = margen + lado + 0.7f * u;
+        float anchoTexto = ancho - x - (margen + anchoBoton + 0.7f * u + anchoTiempo + 0.4f * u);
+        etiqueta = Texto("Etiqueta", tarjeta, fuente, 0.5f * u, Apagado, TextAlignmentOptions.MidlineLeft);
+        etiqueta.characterSpacing = 18f;
+        Izquierda(etiqueta.rectTransform, new Vector2(x, 0.62f * u), new Vector2(anchoTexto, 0.7f * u));
+        tamanoTitulo = 0.9f * u;
+        titulo = Texto("Sala", tarjeta, fuente, tamanoTitulo, Tinta, TextAlignmentOptions.MidlineLeft);
+        titulo.characterSpacing = 6f;
+        titulo.enableAutoSizing = true; // un error largo se achica para entrar
+        titulo.fontSizeMax = tamanoTitulo;
+        titulo.fontSizeMin = 0.45f * u;
+        Izquierda(titulo.rectTransform, new Vector2(x, -0.42f * u), new Vector2(anchoTexto, 1.2f * u));
 
         Actualizar();
+    }
+
+    // Rectángulo pegado a la izquierda de la tarjeta y centrado en alto; "lugar" es desde ese borde y desde el medio.
+    private static void Izquierda(RectTransform rect, Vector2 lugar, Vector2 medida)
+    {
+        rect.anchorMin = rect.anchorMax = new Vector2(0f, 0.5f);
+        rect.pivot = new Vector2(0f, 0.5f);
+        rect.sizeDelta = medida;
+        rect.anchoredPosition = lugar;
+    }
+
+    private static void Estirar(RectTransform rect)
+    {
+        rect.anchorMin = Vector2.zero;
+        rect.anchorMax = Vector2.one;
+        rect.offsetMin = rect.offsetMax = Vector2.zero;
+    }
+
+    private static RectTransform Caja(string nombre, RectTransform padre, Vector2 lugar, Vector2 medida, Color color, Sprite forma)
+    {
+        var go = new GameObject(nombre, typeof(RectTransform));
+        go.transform.SetParent(padre, false);
+        var rect = (RectTransform)go.transform;
+        Izquierda(rect, lugar, medida);
+        Image imagen = go.AddComponent<Image>();
+        imagen.color = color;
+        imagen.raycastTarget = false;
+        if (forma != null)
+        {
+            imagen.sprite = forma;
+            imagen.type = forma.border.sqrMagnitude > 0f ? Image.Type.Sliced : Image.Type.Simple;
+        }
+        return rect;
+    }
+
+    private static TextMeshProUGUI Texto(string nombre, RectTransform padre, TMP_FontAsset fuente, float tamano, Color color, TextAlignmentOptions alineacion)
+    {
+        var go = new GameObject(nombre, typeof(RectTransform));
+        go.transform.SetParent(padre, false);
+        TextMeshProUGUI texto = go.AddComponent<TextMeshProUGUI>();
+        if (fuente != null) texto.font = fuente;
+        texto.fontSize = tamano;
+        texto.color = color;
+        texto.alignment = alineacion;
+        texto.textWrappingMode = TextWrappingModes.NoWrap;
+        texto.overflowMode = TextOverflowModes.Overflow;
+        texto.raycastTarget = false;
+        return texto;
     }
 
     private void OnDestroy()
     {
         if (escuchando && Multijugador.Existe) Multijugador.Instancia.Error -= AlFallar;
-        if (detalle != null) Destroy(detalle.gameObject);
     }
 
     private void Update()
@@ -101,18 +187,34 @@ public class VolverALaPartida : MonoBehaviour
         bool conError = error != null && Time.unscaledTime < errorHasta;
         if (!conError) error = null;
 
-        bool visible = hay || volviendo;
+        bool visible = hay || volviendo || conError;
         grupo.alpha = visible ? 1f : 0f;
         grupo.interactable = visible && !volviendo;
         grupo.blocksRaycasts = visible;
-        if (detalle == null) return;
-        detalle.gameObject.SetActive(hay || volviendo || conError);
-        if (conError) { detalle.color = ColorError; detalle.text = error; return; }
-        detalle.color = ColorDetalle;
-        if (volviendo) { detalle.text = "Volviendo a la partida…"; return; }
-        if (!hay) return;
+        if (!visible) return;
+        if (boton != null) boton.gameObject.SetActive(hay && !volviendo);
+
+        if (conError)
+        {
+            etiqueta.text = "NO SE PUDO VOLVER";
+            etiqueta.color = Rojo;
+            titulo.text = error;
+            titulo.color = Rojo;
+            tiempo.text = "";
+            return;
+        }
+        etiqueta.text = "PARTIDA EN CURSO";
+        etiqueta.color = Apagado;
+        titulo.color = Tinta;
+        if (volviendo)
+        {
+            titulo.text = "VOLVIENDO A LA PARTIDA…";
+            tiempo.text = "";
+            return;
+        }
         int s = Mathf.CeilToInt(partida.restante);
-        detalle.text = $"Te desconectaste de la sala {partida.sala}  ·  podés volver durante {s / 60}:{s % 60:00}";
+        titulo.text = $"SALA <color=#F29A38>{partida.sala}</color>  ·  PODÉS VOLVER";
+        tiempo.text = $"{s / 60}:{s % 60:00}";
     }
 
     private void Volver()
