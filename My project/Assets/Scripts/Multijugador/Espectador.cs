@@ -44,6 +44,8 @@ public class Espectador : MonoBehaviour
     private readonly Dictionary<GameObject, Transform> vistas = new Dictionary<GameObject, Transform>();
     private ShopItem granadaMirada;      // la granada que tiene en la mano el compañero (no hay un modelo propio fijo)
     private readonly Dictionary<ShopItem, Transform> vistasGranada = new Dictionary<ShopItem, Transform>();
+    private bool dispositivoMirado;      // el compañero tiene el dispositivo en la mano
+    private Transform vistaDispositivo;  // modelo propio: el del jugador solo existe si alguna vez lo llevó él
     private float sacudon;
     private const float SacudonAtras = 0.035f, SacudonArriba = 3f, SacudonVuelta = 8f;
     // La puñalada del compañero: el cuchillo va para adelante y vuelve, como en su pantalla.
@@ -192,6 +194,9 @@ public class Espectador : MonoBehaviour
         vistas.Clear();
         foreach (Transform vista in vistasGranada.Values) if (vista != null) Destroy(vista.gameObject);
         vistasGranada.Clear();
+        if (vistaDispositivo != null) Destroy(vistaDispositivo.gameObject);
+        vistaDispositivo = null;
+        dispositivoMirado = false;
         vistaArma = null;
         armaMirada = null;
         granadaMirada = null;
@@ -214,13 +219,17 @@ public class Espectador : MonoBehaviour
     {
         // La granada se arma aparte: el jugador no tiene un modelo fijo de granada en primera persona para copiar.
         ShopItem granada = mirando.GranadaVisible;
-        GameObject arma = granada == null && local != null ? local.PrimeraPersona(mirando.ArmaVisible) : null;
-        if (arma != armaMirada || granada != granadaMirada)
+        // El dispositivo también: el modelo en la mano del jugador se crea recién cuando lo lleva él, así que si
+        // nunca lo llevó no hay nada que copiar.
+        bool dispositivo = granada == null && mirando.DispositivoVisible;
+        GameObject arma = granada == null && !dispositivo && local != null ? local.PrimeraPersona(mirando.ArmaVisible) : null;
+        if (arma != armaMirada || granada != granadaMirada || dispositivo != dispositivoMirado)
         {
             armaMirada = arma;
             granadaMirada = granada;
+            dispositivoMirado = dispositivo;
             if (vistaArma != null) vistaArma.gameObject.SetActive(false);
-            vistaArma = granada != null ? VistaDeGranada(granada) : arma != null ? VistaDe(arma) : null;
+            vistaArma = granada != null ? VistaDeGranada(granada) : dispositivo ? VistaDeDispositivo() : arma != null ? VistaDe(arma) : null;
             if (vistaArma != null) vistaArma.gameObject.SetActive(true);
             sacudon = 0f;
         }
@@ -283,6 +292,30 @@ public class Espectador : MonoBehaviour
         }
         vistasGranada[granada] = caja;
         PonerManoDeGranada(caja);
+        return caja;
+    }
+
+    // El dispositivo en la mano, en el mismo lugar y con el mismo giro que lo ve el que lo lleva (DispositivoTactico).
+    private Transform VistaDeDispositivo()
+    {
+        if (vistaDispositivo != null) return vistaDispositivo;
+        GameObject prefab = ConfigRed.Actual != null ? ConfigRed.Actual.modeloDispositivo : null;
+        if (prefab == null) return null;
+
+        var caja = new GameObject("Espectador: dispositivo").transform;
+        caja.SetParent(camara.transform, false);
+        GameObject modelo = Instantiate(prefab, caja, false);
+        modelo.transform.localPosition = new Vector3(0.16f, -0.24f, 0.42f);
+        modelo.transform.localRotation = Quaternion.Euler(32f, 166f, -4f); // con la pantallita hacia la cámara
+        foreach (Collider c in modelo.GetComponentsInChildren<Collider>(true)) c.enabled = false;
+        foreach (TMP_Text texto in modelo.GetComponentsInChildren<TMP_Text>(true))
+            if (texto.name == "Pantalla") texto.text = "- - : - -";
+
+        int capa = camaraArmas != null ? CapaVisible(camaraArmas) : modelo.layer;
+        foreach (Transform parte in caja.GetComponentsInChildren<Transform>(true)) parte.gameObject.layer = capa;
+        foreach (Renderer r in caja.GetComponentsInChildren<Renderer>(true))
+            r.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
+        vistaDispositivo = caja;
         return caja;
     }
 
@@ -362,6 +395,7 @@ public class Espectador : MonoBehaviour
         // Su arma se arma de nuevo en el próximo LateUpdate; sin nadie a quien mirar, no se ve ninguna.
         armaMirada = null;
         granadaMirada = null;
+        dispositivoMirado = false;
         if (vistaArma != null) vistaArma.gameObject.SetActive(false);
         vistaArma = null;
         if (camaraArmas != null && muerto) camaraArmas.enabled = false;
