@@ -70,6 +70,11 @@ public class ConfigRed : ScriptableObject
     public AudioClip sonidoReaparicion;
     [Range(0f, 1f)] public float volumenReaparicion = 0.6f;
 
+    [Header("Habilidades (F04)")]
+    [Tooltip("Trasbordo (US 019, CA10): suena donde estaba el jugador y se escucha a unos 25 m. Sin clip, suena uno generado.")]
+    public AudioClip sonidoTrasbordo;
+    [Range(0f, 1f)] public float volumenTrasbordo = 0.8f;
+
     [Tooltip("Música del Modo Deathmatch (US 136, CA6). Suena en loop por el grupo Música. Sin clip, no suena nada.")]
     public AudioClip musicaDeathmatch;
     [Tooltip("Ambiente del Modo Deathmatch (US 136, CA6). Suena en loop, más bajo que la música.")]

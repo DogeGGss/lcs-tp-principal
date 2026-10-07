@@ -52,6 +52,7 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
     private bool recibido;
     private Vector3 posicionRed, velocidadRed;
     private double tiempoRed;
+    private double tiempoTrasbordo = double.MinValue; // US 019: las posiciones mandadas antes del Trasbordo ya no valen
     private float yawRed, pitchRed, velXRed, velZRed;
     private byte banderasRed, armaRed, saltosRed, aterrizajesRed;
     private byte saltosVistos, aterrizajesVistos, armaVista = 255;
@@ -134,6 +135,7 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
         MeleeAttack.Swung += AlAcuchillar;
         GrenadeThrower.Thrown += AlLanzarGranada;
         Grenade1.Exploded += AlExplotarGranada;
+        HabilidadTrasbordo.Usado += AlTrasbordar;
     }
 
     private void OnDestroy()
@@ -142,6 +144,7 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
         MeleeAttack.Swung -= AlAcuchillar;
         GrenadeThrower.Thrown -= AlLanzarGranada;
         Grenade1.Exploded -= AlExplotarGranada;
+        HabilidadTrasbordo.Usado -= AlTrasbordar;
         SoltarArmas.Soltada -= AlSoltarArma;
         SoltarArmas.Pedida -= AlPedirArma;
         ArmaEnPiso.Quieta -= AlQuedarQuieta;
@@ -1053,6 +1056,26 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
         caida = StartCoroutine(Caer(true));
     }
 
+    // US 019, CA9: el Trasbordo se avisa aparte de la posición, para que los demás lo vean aparecer de golpe y con el efecto.
+    private void AlTrasbordar(Transform jugador, Vector3 origen, Vector3 destino)
+    {
+        if (jugador != transform || muerto) return;
+        photonView.RPC(nameof(RpcTrasbordo), RpcTarget.Others, origen, destino);
+    }
+
+    // CA8: los demás ven el destello donde estaba y donde aparece, y aparece de golpe (no se desliza hasta ahí).
+    [PunRPC]
+    private void RpcTrasbordo(Vector3 origen, Vector3 destino, PhotonMessageInfo info)
+    {
+        if (photonView.IsMine || muerto) return;
+        transform.position = destino;
+        posicionRed = destino;
+        velocidadRed = Vector3.zero;
+        tiempoRed = info.SentServerTime;
+        tiempoTrasbordo = info.SentServerTime;
+        EfectosTrasbordo.Reproducir(origen, destino, transform, false, sonido != null ? sonido.outputAudioMixerGroup : null);
+    }
+
     // US 030, CA3 y CA5: aparece en el punto que eligió el dueño, sin deslizarse desde donde murió.
     [PunRPC]
     private void RpcReaparecio(Vector3 posicion, float yaw)
@@ -1133,8 +1156,14 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
         short blindaje = (short)stream.ReceiveNext();
 
         double tiempo = info.SentServerTime;
+        // US 019: una posición mandada antes del Trasbordo que llega después no lo hace volver para atrás.
+        if (tiempo < tiempoTrasbordo) { posicion = posicionRed; tiempo = tiempoRed; }
         if (recibido && tiempo > tiempoRed)
-            velocidadRed = Vector3.ClampMagnitude((posicion - posicionRed) / (float)(tiempo - tiempoRed), 20f);
+        {
+            // Un salto de más de 4 m (Trasbordo, reaparición) no es velocidad: no se lo adelanta hacia ese lado.
+            bool salto = (posicion - posicionRed).sqrMagnitude > 16f;
+            velocidadRed = salto ? Vector3.zero : Vector3.ClampMagnitude((posicion - posicionRed) / (float)(tiempo - tiempoRed), 20f);
+        }
         if (!recibido)
         {
             // Los contadores arrancan donde está el dueño: no se repiten saltos viejos.
