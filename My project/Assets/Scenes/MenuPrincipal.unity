@@ -15622,7 +15622,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 3476484619042369127, guid: 2ded74b6d1acee840b5a6c9c71e0a504, type: 3}
       propertyPath: assets.Array.size
-      value: 8
+      value: 10
       objectReference: {fileID: 0}
     - target: {fileID: 3476484619042369127, guid: 2ded74b6d1acee840b5a6c9c71e0a504, type: 3}
       propertyPath: assets.Array.data[4].item
@@ -15637,6 +15637,18 @@ PrefabInstance:
       value: Recargas
       objectReference: {fileID: 0}
     - target: {fileID: 3476484619042369127, guid: 2ded74b6d1acee840b5a6c9c71e0a504, type: 3}
+      propertyPath: assets.Array.data[7].item
+      value: Estallido de la flash
+      objectReference: {fileID: 0}
+    - target: {fileID: 3476484619042369127, guid: 2ded74b6d1acee840b5a6c9c71e0a504, type: 3}
+      propertyPath: assets.Array.data[8].item
+      value: "M\xFAsica del Modo Deathmatch"
+      objectReference: {fileID: 0}
+    - target: {fileID: 3476484619042369127, guid: 2ded74b6d1acee840b5a6c9c71e0a504, type: 3}
+      propertyPath: assets.Array.data[9].item
+      value: "Sonido de reaparici\xF3n"
+      objectReference: {fileID: 0}
+    - target: {fileID: 3476484619042369127, guid: 2ded74b6d1acee840b5a6c9c71e0a504, type: 3}
       propertyPath: assets.Array.data[4].source
       value: Sci-Fi Modular Gun Pack, de Quaternius (CC0)
       objectReference: {fileID: 0}
@@ -15649,12 +15661,16 @@ PrefabInstance:
       value: Gun reload sounds, de SpringySpringo, y Shotgun Reload Sound Effects, de zer0_sol (CC0, OpenGameArt)
       objectReference: {fileID: 0}
     - target: {fileID: 3476484619042369127, guid: 2ded74b6d1acee840b5a6c9c71e0a504, type: 3}
-      propertyPath: assets.Array.data[7].item
-      value: Estallido de la flash
-      objectReference: {fileID: 0}
-    - target: {fileID: 3476484619042369127, guid: 2ded74b6d1acee840b5a6c9c71e0a504, type: 3}
       propertyPath: assets.Array.data[7].source
       value: Flashbang explode, de MadPanCake (CC BY-NC 4.0, Freesound)
+      objectReference: {fileID: 0}
+    - target: {fileID: 3476484619042369127, guid: 2ded74b6d1acee840b5a6c9c71e0a504, type: 3}
+      propertyPath: assets.Array.data[8].source
+      value: 'action track 4, A.I. fight & jumping cyborg, mezcla de glitchart: action track 4, de Alexandr Zhelanov (CC BY 3.0), y A.I. fight & jumping cyborg, de tricksntraps (CC0, OpenGameArt)'
+      objectReference: {fileID: 0}
+    - target: {fileID: 3476484619042369127, guid: 2ded74b6d1acee840b5a6c9c71e0a504, type: 3}
+      propertyPath: assets.Array.data[9].source
+      value: Teleport, de fins (CC0, Freesound y OpenGameArt)
       objectReference: {fileID: 0}
     - target: {fileID: 3510006640910348605, guid: 2ded74b6d1acee840b5a6c9c71e0a504, type: 3}
       propertyPath: m_Name

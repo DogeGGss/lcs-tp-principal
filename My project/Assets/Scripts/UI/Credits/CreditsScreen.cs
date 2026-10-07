@@ -46,7 +46,9 @@ public class CreditsScreen : MonoBehaviour
         new Credit { item = "Modelos de las armas", source = "Sci-Fi Modular Gun Pack, de Quaternius (CC0)" },
         new Credit { item = "Disparos", source = "The Free Firearm Sound Library, de Ben Jaszczak, Brian Nelson, Kevin Heras y Matthew Nanney (CC0)" },
         new Credit { item = "Recargas", source = "Gun reload sounds, de SpringySpringo, y Shotgun Reload Sound Effects, de zer0_sol (CC0, OpenGameArt)" },
-        new Credit { item = "Estallido de la flash", source = "Flashbang explode, de MadPanCake (CC BY-NC 4.0, Freesound)" }
+        new Credit { item = "Estallido de la flash", source = "Flashbang explode, de MadPanCake (CC BY-NC 4.0, Freesound)" },
+        new Credit { item = "Música del Modo Deathmatch", source = "action track 4, A.I. fight & jumping cyborg, mezcla de glitchart: action track 4, de Alexandr Zhelanov (CC BY 3.0), y A.I. fight & jumping cyborg, de tricksntraps (CC0, OpenGameArt)" },
+        new Credit { item = "Sonido de reaparición", source = "Teleport, de fins (CC0, Freesound y OpenGameArt)" }
     };
     [SerializeField] private List<Credit> fonts = new List<Credit>
     {
