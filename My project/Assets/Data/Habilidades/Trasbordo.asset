@@ -10,10 +10,12 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 3fa870e38b86efb4e8cd2b3c8bba96ed, type: 3}
-  m_Name: Impulso
+  m_Name: Trasbordo
   m_EditorClassIdentifier: Assembly-CSharp::AbilityData
-  displayName: Impulso
+  displayName: Trasbordo
   icon: {fileID: 0}
   key: 113
-  cooldown: 15
-  description: 'Desplazamiento rápido de 6 m hacia donde te estás moviendo. Provisorio: el efecto se define en F04.'
+  cooldown: 10
+  cargas: 2
+  efecto: 1
+  description: 'Desaparecés y aparecés 7 m más allá, hacia donde caminás (o hacia adelante si estás quieto). No atraviesa paredes ni jugadores. 2 cargas: cada una vuelve en 10 s.'

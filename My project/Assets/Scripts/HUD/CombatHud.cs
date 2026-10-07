@@ -114,6 +114,10 @@ public class CombatHud : MonoBehaviour
     private RectTransform markHealth, markHalfShield;
     private UnityEngine.UI.Image ringFill, icon, keyChip;
     private readonly UnityEngine.UI.Image[] ticks = new UnityEngine.UI.Image[12];
+    // US 019, CA7: una marca por carga, debajo del aro (solo si la habilidad tiene más de una).
+    private RectTransform chargesRoot;
+    private UnityEngine.UI.Image[] charges = new UnityEngine.UI.Image[0];
+    private AbilityData shownSkill;
     private TextMeshProUGUI cooldownText, keyText, nameText;
     private TextMeshProUGUI weaponText, magText, reserveText;
     private RectTransform sleepersRoot;
@@ -385,6 +389,9 @@ public class CombatHud : MonoBehaviour
 
     private void SetupSkill(AbilityData data)
     {
+        shownSkill = data;
+        lastSkillState = int.MinValue;
+        BuildCharges(ability != null ? ability.MaxCargas : 1);
         icon.sprite = data.icon;
         icon.enabled = data.icon != null;
         keyText.text = KeyBindings.Label(GameAction.Habilidad);
@@ -398,14 +405,18 @@ public class CombatHud : MonoBehaviour
     private void UpdateSkill()
     {
         if (ability == null || ability.Ability == null) return;
+        // US 016: en el Táctico el personaje (y su habilidad) se elige con la partida ya cargada.
+        if (ability.Ability != shownSkill) SetupSkill(ability.Ability);
 
         float progress = ability.Progress;
         bool ready = ability.IsReady, used = Time.time - usedAt < 0.4f;
         int lit = Mathf.FloorToInt(progress * 12f + 0.0001f);
-        int seconds = ready ? 0 : Mathf.CeilToInt(ability.CooldownLeft);
+        // US 019, CA7: con cargas, los segundos son los que faltan para la próxima aunque quede alguna para usar.
+        int seconds = ability.Recargando ? Mathf.CeilToInt(ability.CooldownLeft) : 0;
+        int left = ability.Cargas;
         ringFill.fillAmount = progress;
 
-        int state = lit + seconds * 16 + (ready ? 1 << 20 : 0) + (used ? 1 << 21 : 0);
+        int state = lit + seconds * 16 + (ready ? 1 << 20 : 0) + (used ? 1 << 21 : 0) + (left << 22);
         if (state == lastSkillState) return;
         lastSkillState = state;
 
@@ -417,6 +428,22 @@ public class CombatHud : MonoBehaviour
         keyChip.color = ready ? Ink : White(FadeAlpha(0.14f));
         keyText.color = ready ? KeyInk : Ink;
         nameText.color = ready ? Ink : Mute;
+        for (int i = 0; i < charges.Length; i++) charges[i].color = i < left ? (used && i == left - 1 ? Accent : Ink) : dim;
+        if (charges.Length > 0) cooldownText.color = ready ? Mute : Color.white;
+    }
+
+    // Marcas cortas centradas debajo del aro, como los vagones de una formación.
+    private void BuildCharges(int count)
+    {
+        if (chargesRoot == null) return;
+        int shown = count > 1 ? count : 0;
+        if (charges.Length == shown) return;
+        foreach (UnityEngine.UI.Image old in charges) if (old != null) Destroy(old.gameObject);
+        charges = new UnityEngine.UI.Image[shown];
+        const float w = 16f, gap = 5f;
+        float x = (SkillW - (shown * w + (shown - 1) * gap)) / 2f;
+        for (int i = 0; i < shown; i++)
+            charges[i] = Image(Place(Node("Carga" + (i + 1), chargesRoot), x + i * (w + gap), 0f, w, 4f), rounded, Ink, 2f);
     }
 
     // ---------- Munición: un durmiente por bala ----------
@@ -616,6 +643,8 @@ public class CombatHud : MonoBehaviour
         icon.preserveAspect = true;
         cooldownText = Text(Stretch(Node("Segundos", ringRect)), displayFont, 34f, Color.white, TextAlignmentOptions.Midline);
         AddShadow(cooldownText);
+
+        chargesRoot = Place(Node("Cargas", block), 0f, 125f, SkillW, 4f);
 
         RectTransform keyRow = Place(Node("Tecla", block), 0f, 133f, SkillW, 24f);
         keyChip = Image(Place(Node("Chip", keyRow), 0f, 0f, 24f, 24f), rounded, Ink, 5f);

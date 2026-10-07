@@ -42,6 +42,9 @@ public class DispositivoTactico : MonoBehaviour
 
     public static DispositivoTactico Actual { get; private set; }
 
+    /// <summary>El jugador de esta computadora está plantando o desactivando (US 019, CA6: no puede usar la habilidad).</summary>
+    public static bool Manipulando => Actual != null && Actual.accion != Accion.Nada;
+
     private PartidaEnRed partida;
     private RondasTacticas rondas;
     private ConfigRed config;
