@@ -673,6 +673,9 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
         recarga = avance < 0f ? SinRecarga : (byte)Mathf.RoundToInt(Mathf.Clamp01(avance) * 200f);
     }
 
+    /// <summary>US 133: si tiene el dispositivo en la mano ahora, para el espectador.</summary>
+    public bool DispositivoVisible => ArmaVisible == ArmaDispositivo;
+
     /// <summary>El jugador de Photon dueño de este personaje (null si todavía no se sabe).</summary>
     public Player Dueno => photonView != null ? photonView.Owner : null;
 
