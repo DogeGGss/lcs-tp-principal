@@ -39,6 +39,8 @@ public class GrenadeThrower : MonoBehaviour
     // Qué granada tiene en la mano (null si no hay ninguna).
     public bool IsHolding => selected != null;
     public ShopItem Selected => selected;
+    // La última que eligió con la tecla 4, aunque ahora tenga otra arma en la mano (US 055, CA5: la muestra el HUD).
+    public ShopItem UltimaElegida { get; private set; }
 
     // Se quedó sin la granada que tenía en la mano (la lanzó, la vendió o murió): hay que volver a un arma.
     public event System.Action Emptied;
@@ -143,6 +145,7 @@ public class GrenadeThrower : MonoBehaviour
         selected = item;
         DestroyHeldModel();
         if (item == null) return;
+        UltimaElegida = item;
 
         // Si el WeaponSwitcher tiene su propio objeto de granada en la mano, ese se usa.
         if (switcher != null && switcher.grenadeObj != null) return;
