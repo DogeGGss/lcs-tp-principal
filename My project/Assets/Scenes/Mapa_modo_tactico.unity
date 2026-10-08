@@ -240169,6 +240169,65 @@ PrefabInstance:
       insertIndex: -1
       addedObject: {fileID: 7390043042389637990}
   m_SourcePrefab: {fileID: 100100000, guid: 3e541691191f44de8b9db8a516d098f3, type: 3}
+--- !u!1 &1495302183
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1981082184}
+  - component: {fileID: 1178557536}
+  m_Layer: 0
+  m_Name: Ambiente
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1981082184
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1495302183}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1178557536
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1495302183}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0d9dcfe726f64dfa8f730d86175129ca, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::AmbienteDelMapa
+  efectos: {fileID: -490443676671801125, guid: ddda7e32a2420c4489fcc2a1c31e1976, type: 2}
+  fondo: {fileID: 8300000, guid: 4445e2a7ab87349b58d1d84896d24e86, type: 3}
+  volumenFondo: 0.3
+  consola: {fileID: 0}
+  maquina: {fileID: 8300000, guid: 284c97ab4ab954a0d9c8de221d392040, type: 3}
+  volumenEquipos: 0.6
+  distanciaMinima: 1.5
+  distanciaMaxima: 10
+  consolas:
+  - Wall_Console
+  - Intercom
+  maquinas:
+  - Wall_Gear
+  - Wall_Pipes
+  - Pipes_
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
@@ -240820,3 +240879,4 @@ SceneRoots:
   - {fileID: 1366836409}
   - {fileID: 1437413091}
   - {fileID: 698980042}
+  - {fileID: 1981082184}

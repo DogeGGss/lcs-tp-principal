@@ -157,7 +157,7 @@ public class RondasTacticas : MonoBehaviour
         gameObject.AddComponent<DispositivoTactico>().Iniciar(partida, this); // US 130 a US 132
         minijuego = gameObject.AddComponent<MinijuegoPajaros>();             // F21: pájaros en la compra
         minijuego.Iniciar(partida);
-        ArrancarMusica();
+        // US 032, CA8: el Táctico no tiene música; el sonido de fondo lo pone el mapa (AmbienteDelMapa, US 083 CA1).
         if (PruebaSolo.Activa)
             Debug.Log("Prueba solo (Táctico): F3 ser portador · F4 cobrar una baja · F5 morir · F6 plantar acá · F7 desactivar · F9 gana tu equipo · " +
                       "F10 gana el rival · F11 salta la fase · F8 pone 6 a 6.");
@@ -696,31 +696,6 @@ public class RondasTacticas : MonoBehaviour
         int s = Mathf.CeilToInt(Restante);
         // La tecla de la tienda ya la muestra la tienda arriba ("B Tienda").
         MatchHud.SetHint($"La salida de la base se abre en <color=#F29A38>{s / 60}:{s % 60:00}</color>");
-    }
-
-    // =====================================================================
-    // Música y ambiente (CA8)
-    // =====================================================================
-
-    private void ArrancarMusica()
-    {
-        ConfigRed config = ConfigRed.Actual;
-        if (config == null) return;
-        Fuente(config.musicaTactico, config.volumenMusica, config.grupoMusica);
-        Fuente(config.ambienteTactico, config.volumenAmbiente, config.grupoMusica);
-    }
-
-    private void Fuente(AudioClip clip, float volumen, UnityEngine.Audio.AudioMixerGroup grupo)
-    {
-        if (clip == null) return;
-        AudioSource fuente = gameObject.AddComponent<AudioSource>();
-        fuente.clip = clip;
-        fuente.loop = true;
-        fuente.playOnAwake = false;
-        fuente.spatialBlend = 0f;
-        fuente.volume = volumen;
-        fuente.outputAudioMixerGroup = grupo;
-        fuente.Play();
     }
 
     // =====================================================================
