@@ -80,11 +80,7 @@ public class ConfigRed : ScriptableObject
     [Tooltip("Ambiente del Modo Deathmatch (US 136, CA6). Suena en loop, más bajo que la música.")]
     public AudioClip ambienteDeathmatch;
 
-    [Header("Táctico (US 032)")]
-    [Tooltip("Música del Modo Táctico (CA8). Suena en loop por el grupo de abajo.")]
-    public AudioClip musicaTactico;
-    [Tooltip("Ambiente del Modo Táctico (CA8). Suena en loop, más bajo que la música.")]
-    public AudioClip ambienteTactico;
+    // El Táctico no tiene música (US 032 CA8): el ambiente lo pone cada mapa (AmbienteDelMapa, US 083 CA1).
     [Tooltip("Grupo Musica del Audio Mixer: así lo regulan General y Música de Opciones (US 154).")]
     public UnityEngine.Audio.AudioMixerGroup grupoMusica;
     [Range(0f, 1f)] public float volumenMusica = 0.35f;
