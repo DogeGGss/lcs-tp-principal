@@ -260,8 +260,8 @@
     "since": "2026-09-30T20:02:55.594868+00:00"
   },
   "PVTI_lAHOCikQ8M4Bj9Nyzg7ryyE": {
-    "status": "LPR",
-    "since": "2026-10-01T09:21:20.850741+00:00"
+    "status": "TESTING",
+    "since": "2026-10-08T17:55:40.293770+00:00"
   },
   "PVTI_lAHOCikQ8M4Bj9Nyzg7rzIk": {
     "status": "R2D",
@@ -848,8 +848,8 @@
     "since": "2026-09-30T20:02:55.594868+00:00"
   },
   "PVTI_lAHOCikQ8M4Bj9Nyzg-QCus": {
-    "status": "TESTING",
-    "since": "2026-10-07T19:46:43.036535+00:00"
+    "status": "R2D",
+    "since": "2026-10-08T17:55:40.293770+00:00"
   },
   "PVTI_lAHOCikQ8M4Bj9Nyzg-QCwE": {
     "status": "Todo",

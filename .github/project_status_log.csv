@@ -521,3 +521,5 @@ fecha_utc,us_numero,us_titulo,estado_anterior,estado_nuevo,tiempo_en_estado_ante
 2026-10-08T04:08:29.894077+00:00,375,US 213. Mapa 2 · Preparado para el Modo Táctico,In Progress,LPR,1d 3h 18m,98324,https://github.com/DogeGGss/lcs-tp-principal/issues/375
 2026-10-08T04:08:29.894077+00:00,376,US 214. Mapa 2 · Recorridos y límites,In Progress,LPR,1d 3h 18m,98324,https://github.com/DogeGGss/lcs-tp-principal/issues/376
 2026-10-08T04:08:29.894077+00:00,377,US 215. Mapa 2 · Rendimiento,In Progress,LPR,1d 3h 18m,98324,https://github.com/DogeGGss/lcs-tp-principal/issues/377
+2026-10-08T17:55:40.293770+00:00,317,US 190. Muro de la base en la fase de compra,TESTING,R2D,22h 8m,79737,https://github.com/DogeGGss/lcs-tp-principal/issues/317
+2026-10-08T17:55:40.293770+00:00,80,US 032. Iniciar partida táctica,LPR,TESTING,7d 8h 34m,635659,https://github.com/DogeGGss/lcs-tp-principal/issues/80
