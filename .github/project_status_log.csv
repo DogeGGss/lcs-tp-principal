@@ -517,3 +517,7 @@ fecha_utc,us_numero,us_titulo,estado_anterior,estado_nuevo,tiempo_en_estado_ante
 2026-10-07T23:53:41.194860+00:00,195,US 135. Economía por ronda,LPR,TESTING,6d 2h 34m,527688,https://github.com/DogeGGss/lcs-tp-principal/issues/195
 2026-10-07T23:53:41.194860+00:00,191,US 131. Plantar el dispositivo,TESTING,R2D,2d 41m,175269,https://github.com/DogeGGss/lcs-tp-principal/issues/191
 2026-10-07T23:53:41.194860+00:00,287,US 184. Soltar y levantar armas,LPR,TESTING,5d 1h 23m,436982,https://github.com/DogeGGss/lcs-tp-principal/issues/287
+2026-10-08T04:08:29.894077+00:00,32,US 083. Mapa 2 · Estación espacial,In Progress,LPR,7d 4h 25m,620735,https://github.com/DogeGGss/lcs-tp-principal/issues/32
+2026-10-08T04:08:29.894077+00:00,375,US 213. Mapa 2 · Preparado para el Modo Táctico,In Progress,LPR,1d 3h 18m,98324,https://github.com/DogeGGss/lcs-tp-principal/issues/375
+2026-10-08T04:08:29.894077+00:00,376,US 214. Mapa 2 · Recorridos y límites,In Progress,LPR,1d 3h 18m,98324,https://github.com/DogeGGss/lcs-tp-principal/issues/376
+2026-10-08T04:08:29.894077+00:00,377,US 215. Mapa 2 · Rendimiento,In Progress,LPR,1d 3h 18m,98324,https://github.com/DogeGGss/lcs-tp-principal/issues/377
