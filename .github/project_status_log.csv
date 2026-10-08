@@ -523,3 +523,8 @@ fecha_utc,us_numero,us_titulo,estado_anterior,estado_nuevo,tiempo_en_estado_ante
 2026-10-08T04:08:29.894077+00:00,377,US 215. Mapa 2 · Rendimiento,In Progress,LPR,1d 3h 18m,98324,https://github.com/DogeGGss/lcs-tp-principal/issues/377
 2026-10-08T17:55:40.293770+00:00,317,US 190. Muro de la base en la fase de compra,TESTING,R2D,22h 8m,79737,https://github.com/DogeGGss/lcs-tp-principal/issues/317
 2026-10-08T17:55:40.293770+00:00,80,US 032. Iniciar partida táctica,LPR,TESTING,7d 8h 34m,635659,https://github.com/DogeGGss/lcs-tp-principal/issues/80
+2026-10-08T23:01:18.610962+00:00,281,US 179. Modelos 3D de las armas,LPR,TESTING,6d 16h 14m,576877,https://github.com/DogeGGss/lcs-tp-principal/issues/281
+2026-10-08T23:01:18.610962+00:00,93,US 070. ARMA Principal 5 - Roca (Escopeta),TESTING,R2D,1d 9h 5m,119122,https://github.com/DogeGGss/lcs-tp-principal/issues/93
+2026-10-08T23:01:18.610962+00:00,117,US 074. ARROJABLE 2 - Granada de humo,LPR,TESTING,1d 22h 11m,166293,https://github.com/DogeGGss/lcs-tp-principal/issues/117
+2026-10-08T23:01:18.610962+00:00,90,US 067. ARMA Principal 2 - Urquiza (Subfusil),LPR,TESTING,9d 3h 34m,790495,https://github.com/DogeGGss/lcs-tp-principal/issues/90
+2026-10-08T23:01:18.610962+00:00,320,US 193. Marca de compañeros,LPR,TESTING,4d 2h 55m,356135,https://github.com/DogeGGss/lcs-tp-principal/issues/320
