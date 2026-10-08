@@ -765,19 +765,19 @@ public class CombatHud : MonoBehaviour
         bool hasKnife = melee != null && melee.CurrentWeapon != null;
         string knifeName = hasKnife ? melee.CurrentWeapon.weaponName : "Vacío";
 
-        // Granadas (CA5): la primera que tenga y cuántas lleva en total.
-        ShopItem grenade = null;
-        int grenadeTotal = 0;
-        if (loadout != null && loadout.Catalog != null)
+        // Granadas (CA5): la seleccionada (la que tiene en la mano o la última que eligió con la tecla 4, si todavía
+        // la tiene; si no, la primera que tenga) y cuántas lleva de ese tipo.
+        ShopItem grenade = HeldGrenade();
+        if (grenade == null && switcher != null && switcher.Granadas != null && loadout != null)
+        {
+            ShopItem ultima = switcher.Granadas.UltimaElegida;
+            if (ultima != null && loadout.Count(ultima) > 0) grenade = ultima;
+        }
+        if (grenade == null && loadout != null && loadout.Catalog != null)
             foreach (ShopItem item in loadout.Catalog.items)
-            {
-                if (item == null || item.kind != ShopItemKind.Grenade) continue;
-                int n = loadout.Count(item);
-                if (n <= 0) continue;
-                if (grenade == null) grenade = item;
-                grenadeTotal += n;
-            }
-        string grenadeName = grenade != null ? $"{ItemName(grenade)} ×{grenadeTotal}" : "Vacío";
+                if (item != null && item.kind == ShopItemKind.Grenade && loadout.Count(item) > 0) { grenade = item; break; }
+        int grenadeCount = grenade != null && loadout != null ? loadout.Count(grenade) : 0;
+        string grenadeName = grenade != null ? $"{ItemName(grenade)} ×{grenadeCount}" : "Vacío";
 
         SetSlot(0, hasPrimary, held == 0, primaryName, primaryIcon, KeyBindings.Label(GameAction.ArmaPrincipal));
         SetSlot(1, hasSecondary, held == 1, secondaryName, secondary != null ? secondary.icon : null, KeyBindings.Label(GameAction.ArmaSecundaria));
