@@ -40,6 +40,8 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
     private byte saltos, aterrizajes;
     private float finInvulnerable;
     private Semitransparente transparencia; // US 137: en la copia, mientras es invulnerable
+    private bool cuerpoPropio;              // la copia ya tiene el modelo de su personaje (CharacterData.modelo)
+    private float proximoCuerpo;
     private int ultimoAtacante;
     private string ultimaArma = "";   // con qué lo dañaron por última vez, si no fue el arma en la mano (una granada)
     private byte ultimoCodigo = ArmaDesconocida; // el arma en la mano del que lo dañó por última vez, al hacer el daño
@@ -887,9 +889,28 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
             };
 
         // US 031, CA5: a los rivales se los reconoce por el contorno rojo, como en Valorant. No se ve su nombre ni su vida.
+        CrearContorno();
+        transparencia = Semitransparente.Crear(gameObject, modelo); // US 137
+    }
+
+    private void CrearContorno()
+    {
         ContornoRival.Crear(gameObject, modelo, ConfigRed.Actual != null ? ConfigRed.Actual.contornoRival : null,
             () => Vivo && EquiposTacticos.EsRival(Actor));
-        transparencia = Semitransparente.Crear(gameObject, modelo); // US 137
+    }
+
+    // Los demás ven a este jugador con el modelo de su personaje (Astra, por ejemplo), en cuanto se sabe cuál eligió.
+    // Se pregunta cada medio segundo hasta que lo tiene: en el Táctico se elige con la partida ya cargada (US 016).
+    private void CuerpoDelPersonaje()
+    {
+        proximoCuerpo = Time.time + 0.5f;
+        CharacterData personaje = PersonajesTacticos.De(Actor);
+        if (personaje == null || personaje.modelo == null) return;
+        cuerpoPropio = true;
+        if (!CuerpoDePersonaje.Cambiar(animador, personaje.modelo)) return;
+        // El contorno rojo copiaba las mallas del cuerpo anterior: se arma de nuevo con las nuevas.
+        foreach (ContornoRival viejo in GetComponents<ContornoRival>()) Destroy(viejo);
+        CrearContorno();
     }
 
     private void Update()
@@ -901,6 +922,7 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
             return;
         }
         if (!recibido) return;
+        if (!cuerpoPropio && Time.time >= proximoCuerpo) CuerpoDelPersonaje();
 
         // US 025: se acerca a lo último que llegó, adelantándolo según su velocidad lo que tardó en llegar.
         float dt = Time.deltaTime;
