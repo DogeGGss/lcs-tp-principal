@@ -15,9 +15,9 @@ MonoBehaviour:
   order: 3
   displayName: Astra
   role: Duelista
-  portrait: {fileID: 0}
+  portrait: {fileID: 21300000, guid: 451c0a5fb5fef5348b45d460fc11f1ec, type: 3}
   color: {r: 0.7059, g: 0.5490, b: 1.0000, a: 1}
   description: 
   ability: {fileID: 11400000, guid: 63fbcd92f0ac481c83a373ba47db687a, type: 2}
   modelo: {fileID: 919132149155446097, guid: cbf86353a745459ea8020d0b26e4697c, type: 3}
-  provisional: 1
+  provisional: 0
