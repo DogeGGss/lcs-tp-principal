@@ -528,3 +528,6 @@ fecha_utc,us_numero,us_titulo,estado_anterior,estado_nuevo,tiempo_en_estado_ante
 2026-10-08T23:01:18.610962+00:00,117,US 074. ARROJABLE 2 - Granada de humo,LPR,TESTING,1d 22h 11m,166293,https://github.com/DogeGGss/lcs-tp-principal/issues/117
 2026-10-08T23:01:18.610962+00:00,90,US 067. ARMA Principal 2 - Urquiza (Subfusil),LPR,TESTING,9d 3h 34m,790495,https://github.com/DogeGGss/lcs-tp-principal/issues/90
 2026-10-08T23:01:18.610962+00:00,320,US 193. Marca de compañeros,LPR,TESTING,4d 2h 55m,356135,https://github.com/DogeGGss/lcs-tp-principal/issues/320
+2026-10-09T02:54:45.857467+00:00,32,US 083. Mapa 2 · Estación espacial,LPR,TESTING,22h 46m,81975,https://github.com/DogeGGss/lcs-tp-principal/issues/32
+2026-10-09T02:54:45.857467+00:00,281,US 179. Modelos 3D de las armas,TESTING,R2D,3h 53m,14007,https://github.com/DogeGGss/lcs-tp-principal/issues/281
+2026-10-09T02:54:45.857467+00:00,117,US 074. ARROJABLE 2 - Granada de humo,TESTING,R2D,3h 53m,14007,https://github.com/DogeGGss/lcs-tp-principal/issues/117
