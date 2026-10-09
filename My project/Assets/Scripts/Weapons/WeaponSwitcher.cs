@@ -51,6 +51,8 @@ public class WeaponSwitcher : MonoBehaviour
         if (GetComponentInParent<SoltarArmas>() == null) gameObject.AddComponent<SoltarArmas>();
         // Brazos de primera persona pegados a la cámara con la Línea A (si el jugador tiene brazos de primera persona).
         if (GetComponentInParent<BrazosEnCamara>() == null) gameObject.AddComponent<BrazosEnCamara>();
+        // Animación del arma en primera persona (disparo, recarga, sacarla, caminar). Por ahora, solo la pistola.
+        if (GetComponent<AnimacionPrimeraPersona>() == null) gameObject.AddComponent<AnimacionPrimeraPersona>();
     }
 
     void Start()
