@@ -534,3 +534,9 @@ fecha_utc,us_numero,us_titulo,estado_anterior,estado_nuevo,tiempo_en_estado_ante
 2026-10-09T10:04:38.215824+00:00,80,US 032. Iniciar partida táctica,TESTING,R2D,16h 8m,58137,https://github.com/DogeGGss/lcs-tp-principal/issues/80
 2026-10-09T10:04:38.215824+00:00,32,US 083. Mapa 2 · Estación espacial,TESTING,R2D,7h 9m,25792,https://github.com/DogeGGss/lcs-tp-principal/issues/32
 2026-10-09T10:04:38.215824+00:00,47,US 014. Activar habilidad,LPR,TESTING,13d 14h 58m,1177106,https://github.com/DogeGGss/lcs-tp-principal/issues/47
+2026-10-09T21:34:26.664098+00:00,192,US 132. Desactivar el dispositivo,LPR,TESTING,6d 20h 11m,591102,https://github.com/DogeGGss/lcs-tp-principal/issues/192
+2026-10-09T21:34:26.664098+00:00,195,US 135. Economía por ronda,TESTING,R2D,1d 21h 40m,164445,https://github.com/DogeGGss/lcs-tp-principal/issues/195
+2026-10-09T21:34:26.664098+00:00,65,US 015. Seleccionar personaje,TESTING,R2D,2d 14h 56m,226617,https://github.com/DogeGGss/lcs-tp-principal/issues/65
+2026-10-09T21:34:26.664098+00:00,47,US 014. Activar habilidad,TESTING,R2D,11h 29m,41388,https://github.com/DogeGGss/lcs-tp-principal/issues/47
+2026-10-09T21:34:26.664098+00:00,91,US 068. ARMA Principal 3 - Último Tren (Francotirador),LPR,TESTING,8d 12h 13m,735185,https://github.com/DogeGGss/lcs-tp-principal/issues/91
+2026-10-09T21:34:26.664098+00:00,56,US 006. Reaparición al caer del mapa,LPR,R2D,3d 16m,260170,https://github.com/DogeGGss/lcs-tp-principal/issues/56
