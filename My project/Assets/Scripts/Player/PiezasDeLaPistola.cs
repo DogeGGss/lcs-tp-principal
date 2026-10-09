@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 // Los detalles de La Porteña en primera persona: la corredera que va y vuelve en cada tiro (y queda atrás sin balas),
-// el fogonazo en la boca del caño, la vaina que sale volando y el cargador que se cae y entra uno nuevo al recargar.
+// el fogonazo en la boca del caño y el cargador que se cae y entra uno nuevo al recargar.
 // Lo maneja AnimacionPrimeraPersona.
 // El modelo (Pistol_2.fbx) está hecho de piezas sueltas: las de arriba (la corredera, con el caño) se separan en otra
 // malla para poder moverlas. Las medidas de abajo están en las coordenadas del modelo en Blender (x hacia la boca,
@@ -13,7 +13,6 @@ public class PiezasDeLaPistola
     private const float LargoModelo = 0.990f; // de punta a punta en x (de -0.167 a 0.823)
     private static readonly Vector3 Boca = new Vector3(0.823f, 0f, 0.195f);
     private static readonly Vector3 Atras = new Vector3(-0.167f, 0f, 0.195f);
-    private static readonly Vector3 Ventana = new Vector3(0.45f, -0.06f, 0.215f); // por donde sale la vaina, a la derecha
     private static readonly Vector3 PieDelCargador = new Vector3(-0.124f, 0f, -0.098f); // abajo de la empuñadura
     private static readonly Vector3 EjeDelCargador = new Vector3(-0.657f, 0f, -0.754f); // a lo largo de la empuñadura, hacia abajo
     private static readonly Vector3 TamanoCargador = new Vector3(0.065f, 0.24f, 0.075f); // ancho, largo, grosor
@@ -37,7 +36,6 @@ public class PiezasDeLaPistola
 
     private struct Suelta { public Transform t; public Vector3 velocidad, eje; public float giro, hasta; }
     private readonly List<Suelta> sueltas = new List<Suelta>();
-    private static Material materialVaina;
 
     public float escalaFogonazo = 0.35f;
 
@@ -59,7 +57,7 @@ public class PiezasDeLaPistola
     private static Vector3 Direccion(Vector3 d) => new Vector3(-d.x, d.y, d.z).normalized;
     private int Capa => arma.gameObject.layer;
 
-    // Largo del arma visto desde la cámara: las vainas y el cargador vuelan en proporción.
+    // Largo del arma visto desde la cámara: el cargador cae en proporción.
     private float Largo => (camara.InverseTransformPoint(arma.TransformPoint(Punto(Boca))) -
                             camara.InverseTransformPoint(arma.TransformPoint(Punto(Atras)))).magnitude;
 
@@ -156,14 +154,13 @@ public class PiezasDeLaPistola
         return true;
     }
 
-    /// <summary>Un tiro: la corredera va atrás, fogonazo y vaina.</summary>
+    /// <summary>Un tiro: la corredera va atrás y fogonazo.</summary>
     public void Disparo(int balasQueQuedan, GameObject fogonazo)
     {
         if (!Armar() && escala <= 0f) return;
         ultimoDisparo = Time.time;
         trabada = balasQueQuedan <= 0;
         Fogonazo(fogonazo);
-        Vaina();
     }
 
     /// <summary>Cada cuadro, con la pistola en la mano. "recarga" es el avance de la recarga (de 0 a 1), o -1.</summary>
@@ -199,7 +196,7 @@ public class PiezasDeLaPistola
         soltado = false;
     }
 
-    /// <summary>Lo que salió volando (vainas, el cargador vacío): cae y se borra. Cada cuadro, haya o no pistola.</summary>
+    /// <summary>El cargador vacío que se soltó: cae y se borra. Cada cuadro, haya o no pistola.</summary>
     public void ActualizarSueltas(float dt)
     {
         if (sueltas.Count == 0) return;
@@ -241,44 +238,6 @@ public class PiezasDeLaPistola
             ps.Emit(1);
         }
         Object.Destroy(f, 0.3f);
-    }
-
-    // ---------- Vaina ----------
-
-    private void Vaina()
-    {
-        if (escala <= 0f) return;
-        GameObject go = GameObject.CreatePrimitive(PrimitiveType.Cylinder);
-        Object.Destroy(go.GetComponent<Collider>());
-        go.name = "Vaina";
-        go.layer = Capa;
-        MeshRenderer vista = go.GetComponent<MeshRenderer>();
-        if (materialVaina == null)
-        {
-            materialVaina = new Material(vista.sharedMaterial) { name = "Vaina (bronce)" };
-            materialVaina.color = new Color(0.86f, 0.66f, 0.28f);
-            if (materialVaina.HasProperty("_Metallic")) materialVaina.SetFloat("_Metallic", 0.85f);
-            if (materialVaina.HasProperty("_Smoothness")) materialVaina.SetFloat("_Smoothness", 0.6f);
-        }
-        vista.sharedMaterial = materialVaina;
-        vista.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
-
-        Transform t = go.transform;
-        t.SetParent(arma, false);
-        t.localPosition = Punto(Ventana);
-        t.localRotation = Quaternion.Euler(0f, 0f, 90f); // acostada, a lo largo del caño
-        t.localScale = new Vector3(0.045f, 0.045f, 0.045f) * escala; // 4,5 de ancho y 9 de largo, en medidas del modelo
-        t.SetParent(camara, true);
-
-        float largo = Largo;
-        sueltas.Add(new Suelta
-        {
-            t = t,
-            velocidad = new Vector3(Random.Range(2.6f, 3.4f), Random.Range(2.2f, 3f), Random.Range(-1f, 0f)) * largo,
-            eje = Random.onUnitSphere,
-            giro = Random.Range(700f, 1100f),
-            hasta = Time.time + 0.6f,
-        });
     }
 
     // ---------- Cargador ----------
