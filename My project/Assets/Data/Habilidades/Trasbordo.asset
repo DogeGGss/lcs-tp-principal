@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Trasbordo
   m_EditorClassIdentifier: Assembly-CSharp::AbilityData
   displayName: Trasbordo
-  icon: {fileID: 0}
+  icon: {fileID: 21300000, guid: 6b4426556ee24119bb84ff72d5c23e3a, type: 3}
   key: 113
   cooldown: 10
   cargas: 2
