@@ -6,6 +6,7 @@ using UnityEngine;
 // - Recarga: el arma baja y se inclina, queda abajo mientras se cambia el cargador y vuelve.
 // - Sacar el arma: sube desde abajo de la pantalla.
 // - Caminar y mirar: balanceo al caminar y un leve retraso del arma al girar la cámara.
+// - Detalles (PiezasDeLaPistola): corredera, fogonazo, vaina que sale volando y cambio de cargador.
 // Por ahora solo con la pistola inicial (La Porteña). Se apaga con "Activa" en el Inspector, para comparar.
 // El movimiento se suma al final del cuadro (después de BrazosEnCamara) y se saca al empezar el siguiente
 // (RestaurarPrimeraPersona), así ningún otro script ve el arma corrida.
@@ -51,12 +52,19 @@ public class AnimacionPrimeraPersona : MonoBehaviour
     public float retrasoAlMirar = 0.06f;
     public float retrasoMaximo = 4f;
 
+    [Header("Detalles del arma")]
+    [Tooltip("Corredera que va y vuelve, fogonazo, vaina y cambio de cargador.")]
+    public bool detalles = true;
+    [Tooltip("Tamaño del fogonazo en la boca del caño.")]
+    public float escalaFogonazo = 0.35f;
+
     private WeaponSwitcher switcher;
     private Camera camara;
     private CharacterController cuerpo;
     private Transform jugador;
     private Pistola pistola;
     private Transform foto, agarre;
+    private PiezasDeLaPistola piezas;
 
     // Lo que se le sumó en este cuadro, para sacarlo al empezar el siguiente.
     private Transform[] movidos = new Transform[2];
@@ -95,6 +103,18 @@ public class AnimacionPrimeraPersona : MonoBehaviour
     {
         if (!activa || tirador != jugador || !ConPistola()) return;
         golpeVel += new Vector3(-retrocesoArriba, Random.Range(-retrocesoCostado, retrocesoCostado), retrocesoAtras) * 22f;
+        if (detalles)
+        {
+            if (pistola == null) pistola = switcher.pistolObj.GetComponent<Pistola>();
+            Piezas().escalaFogonazo = escalaFogonazo;
+            Piezas().Disparo(pistola != null ? pistola.Ammo : 1, ConfigRed.Actual != null ? ConfigRed.Actual.fogonazoPrimeraPersona : null);
+        }
+    }
+
+    private PiezasDeLaPistola Piezas()
+    {
+        if (piezas == null) piezas = new PiezasDeLaPistola(switcher.pistolObj, transform);
+        return piezas;
     }
 
     private bool ConPistola() => switcher != null && switcher.pistolObj != null && switcher.HeldSecondary == switcher.pistolObj;
@@ -125,8 +145,11 @@ public class AnimacionPrimeraPersona : MonoBehaviour
         golpeVel += (-resorte * golpePos - 2f * amortiguacion * w * golpeVel) * dt;
         golpePos += golpeVel * dt;
 
+        piezas?.ActualizarSueltas(dt);
+
         if (!conPistola)
         {
+            piezas?.Quieta();
             estado = !activa ? "Apagada (Activa sin tildar)"
                 : camara == null ? "No está en la cámara del jugador"
                 : !camara.enabled ? "La cámara está apagada (no es el jugador local)"
@@ -178,6 +201,9 @@ public class AnimacionPrimeraPersona : MonoBehaviour
 
         // Mirar
         girar += new Vector3(retraso.x, retraso.y, -retraso.y * 0.5f);
+
+        if (detalles) Piezas().Actualizar(recarga, pistola != null ? pistola.Ammo : 1);
+        else piezas?.Quieta();
 
         Aplicar(arma.transform, mover, Quaternion.Euler(girar));
         estado = "Animando " + arma.name + (foto != null ? " con sus brazos" : " (sin encontrar la foto de los brazos)") +
