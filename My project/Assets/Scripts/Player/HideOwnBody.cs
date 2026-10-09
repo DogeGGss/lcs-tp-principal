@@ -18,6 +18,39 @@ public class HideOwnBody : MonoBehaviour
     private void Start()
     {
         vida = GetComponent<HealthSystem>();
+        CuerpoElegido();
+        Armar();
+    }
+
+    // Fuera del Táctico (Zombie, por ejemplo) el personaje se elige en el menú, antes de la partida: el cuerpo pasa a
+    // ser el suyo desde el principio, y con él los brazos. En el Táctico se elige con la partida empezada y lo cambia
+    // JugadorEnRed (que después llama a Rehacer).
+    private void CuerpoElegido()
+    {
+        if (MatchSettings.Mode == GameMode.Tactico) return;
+        CharacterData personaje = CharacterRoster.Selected;
+        if (personaje == null || personaje.modelo == null) return;
+        foreach (Animator animador in GetComponentsInChildren<Animator>())
+            if (animador.isHuman)
+            {
+                CuerpoDePersonaje.Cambiar(animador, personaje.modelo);
+                return;
+            }
+    }
+
+    /// <summary>
+    /// Se cambió el cuerpo (el modelo del personaje elegido, CuerpoDePersonaje): se esconde el nuevo y se arman sus
+    /// brazos. Los brazos del cuerpo anterior se fueron con él.
+    /// </summary>
+    public void Rehacer()
+    {
+        foreach (Renderer r in brazos) if (r != null) Destroy(r.gameObject);
+        brazos.Clear();
+        Armar();
+    }
+
+    private void Armar()
+    {
         foreach (var r in GetComponentsInChildren<Renderer>())
         {
             if (ownCamera != null && r.transform.IsChildOf(ownCamera.transform)) continue;
@@ -71,6 +104,7 @@ public class HideOwnBody : MonoBehaviour
         Mesh copia = Instantiate(malla);
         copia.name = malla.name + " (brazos)";
         var quedan = new List<int>();
+        int total = 0;
         for (int s = 0; s < malla.subMeshCount; s++)
         {
             int[] triangulos = malla.GetTriangles(s);
@@ -81,6 +115,13 @@ public class HideOwnBody : MonoBehaviour
                 if (vertice[a] && vertice[b] && vertice[c]) { quedan.Add(a); quedan.Add(b); quedan.Add(c); }
             }
             copia.SetTriangles(quedan, s, false);
+            total += quedan.Count;
+        }
+        // Mallas sin brazos (el pelo, por ejemplo, en un personaje que lo tiene aparte): no se arma nada.
+        if (total == 0)
+        {
+            Destroy(copia);
+            return;
         }
 
         var go = new GameObject("Brazos (primera persona)");

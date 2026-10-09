@@ -901,6 +901,7 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
 
     // Los demás ven a este jugador con el modelo de su personaje (Astra, por ejemplo), en cuanto se sabe cuál eligió.
     // Se pregunta cada medio segundo hasta que lo tiene: en el Táctico se elige con la partida ya cargada (US 016).
+    // El propio jugador también cambia de cuerpo, así sus brazos en primera persona son los de su personaje.
     private void CuerpoDelPersonaje()
     {
         proximoCuerpo = Time.time + 0.5f;
@@ -908,6 +909,15 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
         if (personaje == null || personaje.modelo == null) return;
         cuerpoPropio = true;
         if (!CuerpoDePersonaje.Cambiar(animador, personaje.modelo)) return;
+        if (photonView.IsMine)
+        {
+            // Primera persona: el cuerpo nuevo no se ve (solo su sombra) y los brazos se arman y fotografían de nuevo.
+            HideOwnBody oculto = GetComponent<HideOwnBody>();
+            if (oculto != null) oculto.Rehacer();
+            BrazosEnCamara brazos = GetComponentInChildren<BrazosEnCamara>(true);
+            if (brazos != null) brazos.Rehacer();
+            return;
+        }
         // El contorno rojo copiaba las mallas del cuerpo anterior: se arma de nuevo con las nuevas.
         foreach (ContornoRival viejo in GetComponents<ContornoRival>()) Destroy(viejo);
         CrearContorno();
@@ -919,6 +929,7 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
         if (photonView.IsMine)
         {
             if (vida != null && vida.Invulnerable && Time.time >= finInvulnerable) vida.Invulnerable = false;
+            if (!cuerpoPropio && animador != null && Time.time >= proximoCuerpo) CuerpoDelPersonaje();
             return;
         }
         if (!recibido) return;
