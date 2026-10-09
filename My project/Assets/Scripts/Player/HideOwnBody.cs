@@ -18,7 +18,24 @@ public class HideOwnBody : MonoBehaviour
     private void Start()
     {
         vida = GetComponent<HealthSystem>();
+        CuerpoElegido();
         Armar();
+    }
+
+    // Fuera del Táctico (Zombie, por ejemplo) el personaje se elige en el menú, antes de la partida: el cuerpo pasa a
+    // ser el suyo desde el principio, y con él los brazos. En el Táctico se elige con la partida empezada y lo cambia
+    // JugadorEnRed (que después llama a Rehacer).
+    private void CuerpoElegido()
+    {
+        if (MatchSettings.Mode == GameMode.Tactico) return;
+        CharacterData personaje = CharacterRoster.Selected;
+        if (personaje == null || personaje.modelo == null) return;
+        foreach (Animator animador in GetComponentsInChildren<Animator>())
+            if (animador.isHuman)
+            {
+                CuerpoDePersonaje.Cambiar(animador, personaje.modelo);
+                return;
+            }
     }
 
     /// <summary>
