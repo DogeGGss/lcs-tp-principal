@@ -531,3 +531,6 @@ fecha_utc,us_numero,us_titulo,estado_anterior,estado_nuevo,tiempo_en_estado_ante
 2026-10-09T02:54:45.857467+00:00,32,US 083. Mapa 2 · Estación espacial,LPR,TESTING,22h 46m,81975,https://github.com/DogeGGss/lcs-tp-principal/issues/32
 2026-10-09T02:54:45.857467+00:00,281,US 179. Modelos 3D de las armas,TESTING,R2D,3h 53m,14007,https://github.com/DogeGGss/lcs-tp-principal/issues/281
 2026-10-09T02:54:45.857467+00:00,117,US 074. ARROJABLE 2 - Granada de humo,TESTING,R2D,3h 53m,14007,https://github.com/DogeGGss/lcs-tp-principal/issues/117
+2026-10-09T10:04:38.215824+00:00,80,US 032. Iniciar partida táctica,TESTING,R2D,16h 8m,58137,https://github.com/DogeGGss/lcs-tp-principal/issues/80
+2026-10-09T10:04:38.215824+00:00,32,US 083. Mapa 2 · Estación espacial,TESTING,R2D,7h 9m,25792,https://github.com/DogeGGss/lcs-tp-principal/issues/32
+2026-10-09T10:04:38.215824+00:00,47,US 014. Activar habilidad,LPR,TESTING,13d 14h 58m,1177106,https://github.com/DogeGGss/lcs-tp-principal/issues/47
