@@ -55,4 +55,3 @@ MonoBehaviour:
   grupoMusica: {fileID: -3878677901696022068, guid: ddda7e32a2420c4489fcc2a1c31e1976, type: 2}
   volumenMusica: 0.35
   volumenAmbiente: 0.5
-  fogonazoPrimeraPersona: {fileID: 100006, guid: 30b4cc2728d8cec499fad63ba93785a4, type: 3}

@@ -6,7 +6,7 @@ using UnityEngine;
 // - Recarga: el arma baja y se inclina, queda abajo mientras se cambia el cargador y vuelve.
 // - Sacar el arma: sube desde abajo de la pantalla.
 // - Caminar y mirar: balanceo al caminar y un leve retraso del arma al girar la cámara.
-// - Detalles (PiezasDeLaPistola): corredera, fogonazo y cambio de cargador.
+// - Detalles (PiezasDeLaPistola): corredera y cambio de cargador.
 // Por ahora solo con la pistola inicial (La Porteña). Se apaga con "Activa" en el Inspector, para comparar.
 // El movimiento se suma al final del cuadro (después de BrazosEnCamara) y se saca al empezar el siguiente
 // (RestaurarPrimeraPersona), así ningún otro script ve el arma corrida.
@@ -53,10 +53,8 @@ public class AnimacionPrimeraPersona : MonoBehaviour
     public float retrasoMaximo = 4f;
 
     [Header("Detalles del arma")]
-    [Tooltip("Corredera que va y vuelve, fogonazo y cambio de cargador.")]
+    [Tooltip("Corredera que va y vuelve y cambio de cargador.")]
     public bool detalles = true;
-    [Tooltip("Tamaño del fogonazo en la boca del caño.")]
-    public float escalaFogonazo = 0.35f;
 
     private WeaponSwitcher switcher;
     private Camera camara;
@@ -106,8 +104,7 @@ public class AnimacionPrimeraPersona : MonoBehaviour
         if (detalles)
         {
             if (pistola == null) pistola = switcher.pistolObj.GetComponent<Pistola>();
-            Piezas().escalaFogonazo = escalaFogonazo;
-            Piezas().Disparo(pistola != null ? pistola.Ammo : 1, ConfigRed.Actual != null ? ConfigRed.Actual.fogonazoPrimeraPersona : null);
+            Piezas().Disparo(pistola != null ? pistola.Ammo : 1);
         }
     }
 

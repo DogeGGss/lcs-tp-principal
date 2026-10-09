@@ -1,8 +1,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-// Los detalles de La Porteña en primera persona: la corredera que va y vuelve en cada tiro (y queda atrás sin balas),
-// el fogonazo en la boca del caño y el cargador que se cae y entra uno nuevo al recargar.
+// Los detalles de La Porteña en primera persona: la corredera que va y vuelve en cada tiro (y queda atrás sin balas)
+// y el cargador que se cae y entra uno nuevo al recargar.
 // Lo maneja AnimacionPrimeraPersona.
 // El modelo (Pistol_2.fbx) está hecho de piezas sueltas: las de arriba (la corredera, con el caño) se separan en otra
 // malla para poder moverlas. Las medidas de abajo están en las coordenadas del modelo en Blender (x hacia la boca,
@@ -37,7 +37,6 @@ public class PiezasDeLaPistola
     private struct Suelta { public Transform t; public Vector3 velocidad, eje; public float giro, hasta; }
     private readonly List<Suelta> sueltas = new List<Suelta>();
 
-    public float escalaFogonazo = 0.35f;
 
     public PiezasDeLaPistola(GameObject pistola, Transform camara)
     {
@@ -154,13 +153,12 @@ public class PiezasDeLaPistola
         return true;
     }
 
-    /// <summary>Un tiro: la corredera va atrás y fogonazo.</summary>
-    public void Disparo(int balasQueQuedan, GameObject fogonazo)
+    /// <summary>Un tiro: la corredera va atrás.</summary>
+    public void Disparo(int balasQueQuedan)
     {
         if (!Armar() && escala <= 0f) return;
         ultimoDisparo = Time.time;
         trabada = balasQueQuedan <= 0;
-        Fogonazo(fogonazo);
     }
 
     /// <summary>Cada cuadro, con la pistola en la mano. "recarga" es el avance de la recarga (de 0 a 1), o -1.</summary>
@@ -215,29 +213,6 @@ public class PiezasDeLaPistola
             s.t.Rotate(s.eje, s.giro * dt, Space.Self);
             sueltas[i] = s;
         }
-    }
-
-    // ---------- Fogonazo ----------
-
-    private void Fogonazo(GameObject modelo)
-    {
-        if (modelo == null || escala <= 0f) return;
-        Vector3 boca = arma.TransformPoint(Punto(Boca));
-        Vector3 adelante = arma.TransformDirection(Direccion(Vector3.right));
-        GameObject f = Object.Instantiate(modelo, boca, Quaternion.LookRotation(adelante, camara.up), camara);
-        f.name = "Fogonazo (primera persona)";
-        f.transform.localScale = Vector3.one * escalaFogonazo;
-        foreach (Transform t in f.GetComponentsInChildren<Transform>(true)) t.gameObject.layer = Capa;
-        // La luz ya la pone Trazadora.Fogonazo. Se apaga el objeto entero para que su script de parpadeo no falle.
-        foreach (Light luz in f.GetComponentsInChildren<Light>(true))
-            if (luz.GetComponent<ParticleSystem>() == null) luz.gameObject.SetActive(false); else luz.enabled = false;
-        // Viene hecho para un arma automática (dispara en loop): acá sale un solo destello.
-        foreach (ParticleSystem ps in f.GetComponentsInChildren<ParticleSystem>(true))
-        {
-            ps.Stop(false, ParticleSystemStopBehavior.StopEmittingAndClear);
-            ps.Emit(1);
-        }
-        Object.Destroy(f, 0.3f);
     }
 
     // ---------- Cargador ----------

@@ -70,10 +70,6 @@ public class ConfigRed : ScriptableObject
     public AudioClip sonidoReaparicion;
     [Range(0f, 1f)] public float volumenReaparicion = 0.6f;
 
-    [Header("Armas en primera persona")]
-    [Tooltip("Fogonazo en la boca del caño al disparar La Porteña (AnimacionPrimeraPersona). Sin efecto, no se ve.")]
-    public GameObject fogonazoPrimeraPersona;
-
     [Header("Habilidades (F04)")]
     [Tooltip("Trasbordo (US 019, CA10): suena donde estaba el jugador y se escucha a unos 25 m. Sin clip, suena uno generado.")]
     public AudioClip sonidoTrasbordo;
