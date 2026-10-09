@@ -16,6 +16,9 @@ public class CharacterData : ScriptableObject
     public Color color = new Color(0.949f, 0.604f, 0.220f);
     [TextArea] public string description;
     public AbilityData ability;
+    [Tooltip("Modelo del cuerpo (FBX humanoide, como los de Mixamo). Si queda vacío, el personaje usa el cuerpo de siempre. " +
+             "Lo ven los demás jugadores; en primera persona se siguen viendo los brazos de siempre.")]
+    public GameObject modelo;
     [Tooltip("Marcado mientras el personaje no esté definido en la sesión de diseño de F04.")]
     public bool provisional = true;
 }
