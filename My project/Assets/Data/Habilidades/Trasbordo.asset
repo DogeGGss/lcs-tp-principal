@@ -18,4 +18,4 @@ MonoBehaviour:
   cooldown: 10
   cargas: 2
   efecto: 1
-  description: 'Desaparecés y aparecés 7 m más allá, hacia donde caminás (o hacia adelante si estás quieto). No atraviesa paredes ni jugadores. 2 cargas: cada una vuelve en 10 s.'
+  description: 'Desaparecés y aparecés 9 m más allá, hacia donde caminás (o hacia adelante si estás quieto). No atraviesa paredes ni jugadores. 2 cargas: cada una vuelve en 10 s.'

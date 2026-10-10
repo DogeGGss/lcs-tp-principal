@@ -1,13 +1,13 @@
 using UnityEngine;
 
-// US 019 · Trasbordo: el jugador desaparece y aparece 7 m más allá, hacia donde camina (o hacia adelante si está quieto).
+// US 019 · Trasbordo: el jugador desaparece y aparece 9 m más allá, hacia donde camina (o hacia adelante si está quieto).
 // Es instantáneo: en un mismo cuadro se lo mueve de a tramos cortos con el CharacterController, así sube escalones y
 // rampas como caminando (US 008), no atraviesa paredes, puertas, muros de la base ni jugadores (CA3), y si pasa por
 // encima de un vacío sigue derecho y después cae (CA4, US 007). La cámara no se toca: puede disparar enseguida (CA2).
 [RequireComponent(typeof(CharacterController))]
 public class HabilidadTrasbordo : EfectoHabilidad
 {
-    public const float Distancia = 7f;   // CA1
+    public const float Distancia = 9f;   // CA1
     public const float Minimo = 1f;      // CA3: con un obstáculo más cerca, no se hace ni se gasta la carga
     private const float Tramo = 0.5f;
 
