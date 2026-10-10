@@ -45,6 +45,13 @@ public class PlayerAbility : MonoBehaviour
         Preparar();
     }
 
+    /// <summary>Todas las cargas listas, sin nada recargándose (por ejemplo, al empezar una ronda del Táctico).</summary>
+    public void Recargar()
+    {
+        Cargas = MaxCargas;
+        CooldownLeft = 0f;
+    }
+
     // Todas las cargas listas y el componente del efecto que corresponde (y ninguno de otra habilidad).
     private void Preparar()
     {
