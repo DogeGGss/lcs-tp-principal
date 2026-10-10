@@ -518,6 +518,9 @@ public class RondasTacticas : MonoBehaviour
         JugadorEnRed local = partida != null ? partida.Local : null;
         if (local == null) return;
         local.EmpezarRonda(partida.PuntoDeBase());
+        // La habilidad arranca cada ronda con todas sus cargas: no arrastra lo que se gastó en la anterior.
+        PlayerAbility habilidad = local.GetComponent<PlayerAbility>();
+        if (habilidad != null) habilidad.Recargar();
 
         PlayerWallet billetera = local.GetComponent<PlayerWallet>();
         PlayerLoadout equipo = local.GetComponent<PlayerLoadout>();
