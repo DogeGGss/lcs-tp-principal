@@ -366,8 +366,10 @@ public class WeaponSwitcher : MonoBehaviour
         GuardarDispositivo();
 
         GameObject principal = PrimaryObj;
+        bool yaEnMano = principal != null && principal.activeSelf;
         GuardarPrincipales(principal);
         if (principal != null) principal.SetActive(true);
+        if (!yaEnMano) SonarSacar(principal);
         GuardarSecundarias(null);
         if (meleeScript != null && meleeScript.CurrentViewModel != null)
         {
@@ -388,8 +390,10 @@ public class WeaponSwitcher : MonoBehaviour
         GuardarDispositivo();
 
         GuardarPrincipales(null);
+        bool yaEnMano = secundaria != null && secundaria.activeSelf;
         GuardarSecundarias(secundaria);
         if (secundaria != null) secundaria.SetActive(true);
+        if (!yaEnMano) SonarSacar(secundaria);
         if (meleeScript != null && meleeScript.CurrentViewModel != null)
         {
             meleeScript.CurrentViewModel.SetActive(false);
@@ -397,6 +401,27 @@ public class WeaponSwitcher : MonoBehaviour
 
         // Cada secundaria tiene su velocidad (la Línea A y la Línea H, al 100 %)
         ApplySpeedMultiplier(secundaria != null && secundaria != pistolObj ? VelocidadCon(secundaria) : 1.0f);
+    }
+
+    // Sonido de sacar un arma de fuego (US 064, CA8): el mismo que al levantarla del piso (US 184, CA13).
+    // No suena al arrancar ni al volver a apretar la tecla del arma que ya está en la mano.
+    private AudioSource sonidoSacar;
+
+    void SonarSacar(GameObject arma)
+    {
+        if (arma == null || !setupInicialListo) return;
+        AudioClip clip = ConfigRed.Actual != null ? ConfigRed.Actual.sonidoLevantarArma : null;
+        if (clip == null) return;
+        if (sonidoSacar == null)
+        {
+            sonidoSacar = gameObject.AddComponent<AudioSource>();
+            sonidoSacar.playOnAwake = false;
+            sonidoSacar.spatialBlend = 0f;
+            // El grupo SFX del mezclador, el mismo de las armas: lo regulan General y Efectos (US 154).
+            Pistola pistola = pistolObj != null ? pistolObj.GetComponent<Pistola>() : null;
+            sonidoSacar.outputAudioMixerGroup = pistola != null ? pistola.sfxGroup : null;
+        }
+        sonidoSacar.PlayOneShot(clip);
     }
 
     void EquipKnife()
