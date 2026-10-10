@@ -540,3 +540,13 @@ fecha_utc,us_numero,us_titulo,estado_anterior,estado_nuevo,tiempo_en_estado_ante
 2026-10-09T21:34:26.664098+00:00,47,US 014. Activar habilidad,TESTING,R2D,11h 29m,41388,https://github.com/DogeGGss/lcs-tp-principal/issues/47
 2026-10-09T21:34:26.664098+00:00,91,US 068. ARMA Principal 3 - Último Tren (Francotirador),LPR,TESTING,8d 12h 13m,735185,https://github.com/DogeGGss/lcs-tp-principal/issues/91
 2026-10-09T21:34:26.664098+00:00,56,US 006. Reaparición al caer del mapa,LPR,R2D,3d 16m,260170,https://github.com/DogeGGss/lcs-tp-principal/issues/56
+2026-10-10T01:13:11.963372+00:00,66,US 016. Personaje único por equipo,TESTING,R2D,2d 5h 26m,192388,https://github.com/DogeGGss/lcs-tp-principal/issues/66
+2026-10-10T01:13:11.963372+00:00,192,US 132. Desactivar el dispositivo,TESTING,R2D,3h 38m,13125,https://github.com/DogeGGss/lcs-tp-principal/issues/192
+2026-10-10T01:13:11.963372+00:00,114,US 071. ARMA Secundaria 1 - Pistola,LPR,TESTING,3d 23m,260606,https://github.com/DogeGGss/lcs-tp-principal/issues/114
+2026-10-10T01:13:11.963372+00:00,231,US 165. Zonas de impacto y marcador de impacto,LPR,R2D,8d 15h 51m,748311,https://github.com/DogeGGss/lcs-tp-principal/issues/231
+2026-10-10T01:13:11.963372+00:00,244,US 167. Dispersión de las armas,LPR,R2D,8d 15h 51m,748311,https://github.com/DogeGGss/lcs-tp-principal/issues/244
+2026-10-10T01:13:11.963372+00:00,245,US 168. Retroceso visible,LPR,R2D,3d 3h 54m,273295,https://github.com/DogeGGss/lcs-tp-principal/issues/245
+2026-10-10T01:13:11.963372+00:00,41,US 010. Disparar,LPR,R2D,3d 3h 54m,273295,https://github.com/DogeGGss/lcs-tp-principal/issues/41
+2026-10-10T01:13:11.963372+00:00,118,US 075. ARROJABLE 3 - Granada flash,LPR,R2D,7d 2h 42m,614553,https://github.com/DogeGGss/lcs-tp-principal/issues/118
+2026-10-10T01:13:11.963372+00:00,247,US 170. Marcas de impacto en el escenario,LPR,R2D,3d 3h 54m,273295,https://github.com/DogeGGss/lcs-tp-principal/issues/247
+2026-10-10T01:13:11.963372+00:00,284,US 182. Arma de los demás jugadores,LPR,TESTING,7d 2h 42m,614553,https://github.com/DogeGGss/lcs-tp-principal/issues/284
