@@ -539,10 +539,12 @@ MonoBehaviour:
   distancias: 
   filas: 1900000023000000i
   zonasFila:
-  - piernas
-  - cuerpo
-  - cabeza
+  - 
+  - 
   separacionFila: 4
+  tirador: 0
+  lugarTirador: {x: 0, y: 0, z: 30}
+  cadenciaTirador: 1
   otros:
   - {x: -5.3, y: 0, z: 0.48}
   nombresOtros:
