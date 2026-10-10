@@ -550,3 +550,10 @@ fecha_utc,us_numero,us_titulo,estado_anterior,estado_nuevo,tiempo_en_estado_ante
 2026-10-10T01:13:11.963372+00:00,118,US 075. ARROJABLE 3 - Granada flash,LPR,R2D,7d 2h 42m,614553,https://github.com/DogeGGss/lcs-tp-principal/issues/118
 2026-10-10T01:13:11.963372+00:00,247,US 170. Marcas de impacto en el escenario,LPR,R2D,3d 3h 54m,273295,https://github.com/DogeGGss/lcs-tp-principal/issues/247
 2026-10-10T01:13:11.963372+00:00,284,US 182. Arma de los demás jugadores,LPR,TESTING,7d 2h 42m,614553,https://github.com/DogeGGss/lcs-tp-principal/issues/284
+2026-10-10T07:13:03.028749+00:00,116,US 073. ARROJABLE 1 - Granada de metralla,LPR,R2D,8d 26m,692781,https://github.com/DogeGGss/lcs-tp-principal/issues/116
+2026-10-10T07:13:03.028749+00:00,284,US 182. Arma de los demás jugadores,TESTING,R2D,5h 59m,21591,https://github.com/DogeGGss/lcs-tp-principal/issues/284
+2026-10-10T07:13:03.028749+00:00,92,US 069. ARMA Principal 4 - Belgrano Sur (Fusil de ráfaga),LPR,TESTING,10d 11h 46m,906399,https://github.com/DogeGGss/lcs-tp-principal/issues/92
+2026-10-10T07:13:03.028749+00:00,114,US 071. ARMA Secundaria 1 - Pistola,TESTING,R2D,5h 59m,21591,https://github.com/DogeGGss/lcs-tp-principal/issues/114
+2026-10-10T07:13:03.028749+00:00,115,US 072. ARMA Secundaria 2 - La Trochita (Pistola pesada),LPR,R2D,8d 26m,692781,https://github.com/DogeGGss/lcs-tp-principal/issues/115
+2026-10-10T07:13:03.028749+00:00,287,US 184. Soltar y levantar armas,TESTING,R2D,2d 7h 19m,199161,https://github.com/DogeGGss/lcs-tp-principal/issues/287
+2026-10-10T07:13:03.028749+00:00,353,"US 212. Crear el ícono, el logo y la presentación de inicio del juego",LPR,TESTING,4d 22h 52m,427937,https://github.com/DogeGGss/lcs-tp-principal/issues/353
