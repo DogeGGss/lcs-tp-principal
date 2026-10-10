@@ -4,7 +4,8 @@ using UnityEngine.Audio;
 
 // Muros de la base en la fase de compra (US 190). Las paredes son los hijos de este objeto (cada uno con su collider
 // y su malla); se arman con "Generar muros" (menú del componente, en el Inspector) a partir de las zonas de compra
-// del mapa, solo donde se puede salir caminando.
+// del mapa: rodean todo el borde de la base, aunque atraviesen paredes u objetos del mapa, para que no quede ningún
+// hueco por donde salir (saltando una caja, por una puerta angosta, etc.).
 // - CA1: durante la compra, el borde de cada base se ve como una pared roja semitransparente, más alta de lo que se
 //   puede saltar.
 // - CA2: la pared frena como cualquier otra; al chocarla aparece el aviso "No podés salir de la base durante la compra".
@@ -125,11 +126,11 @@ public class MurosDeBase : MonoBehaviour
 #if UNITY_EDITOR
     // ---------- Armado en el editor ----------
 
-    private const float Paso = 0.5f, Grosor = 0.12f;
+    private const float Paso = 0.1f, Grosor = 0.12f, Junta = 0.05f;
 
     /// <summary>
-    /// Arma las paredes en el borde de cada zona de compra del mapa, solo en los tramos por donde se puede salir
-    /// caminando (sin paredes ni obstáculos en el medio). No pone pared entre dos zonas del mismo lado que se tocan.
+    /// Arma las paredes en todo el borde de cada zona de compra del mapa, sin importar lo que haya en el medio.
+    /// No pone pared entre dos zonas del mismo lado que se tocan.
     /// Borra las que había. Volver a usarlo si cambia el mapa.
     /// </summary>
     [ContextMenu("Generar muros")]
@@ -156,7 +157,7 @@ public class MurosDeBase : MonoBehaviour
         Debug.Log($"MurosDeBase: {cantidad} paredes.");
     }
 
-    // Recorre un borde y pone una pared en cada tramo abierto.
+    // Recorre un borde y pone una pared en cada tramo que no da a otra zona del mismo lado.
     private int Borde(BuyZone zona, List<BuyZone> zonas, Vector3 desde, Vector3 hasta, float piso)
     {
         float largo = Vector3.Distance(desde, hasta);
@@ -178,19 +179,16 @@ public class MurosDeBase : MonoBehaviour
         return cantidad;
     }
 
-    // Se puede pasar caminando por ahí: no hay nada a la altura del cuerpo y no es el borde con otra zona del mismo lado.
+    // Es borde de la base: no cae dentro de otra zona del mismo lado (ni justo en el borde que comparten).
     private static bool Abierto(BuyZone zona, List<BuyZone> zonas, Vector3 punto, float piso)
     {
         foreach (BuyZone otra in zonas)
         {
             if (otra == zona || otra.Lado != zona.Lado) continue;
             Bounds b = otra.GetComponent<Collider>().bounds;
-            b.Expand(new Vector3(0.6f, 0f, 0.6f));
+            b.Expand(new Vector3(Junta * 2f, 0f, Junta * 2f));
             if (punto.x > b.min.x && punto.x < b.max.x && punto.z > b.min.z && punto.z < b.max.z) return false;
         }
-        Vector3 centro = new Vector3(punto.x, piso + 1.1f, punto.z);
-        foreach (Collider c in Physics.OverlapBox(centro, new Vector3(0.2f, 0.7f, 0.2f), Quaternion.identity, Physics.DefaultRaycastLayers, QueryTriggerInteraction.Ignore))
-            if (c.GetComponentInParent<CharacterController>() == null) return false;
         return true;
     }
 
