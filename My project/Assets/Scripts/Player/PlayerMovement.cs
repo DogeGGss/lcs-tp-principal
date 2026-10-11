@@ -42,6 +42,18 @@ public class PlayerMovement : MonoBehaviour
     // Se utiliza para detectar correctamente el aterrizaje
     private bool wasInAir;
 
+    // No pararse arriba de otro jugador: si tiene a otro jugador debajo de los pies, no puede saltar desde ahí y
+    // se lo hace resbalar hacia afuera (sin esto, dos jugadores pueden subirse uno arriba del otro).
+    // Resbala de a poco (acelera hasta 3 m/s) y el "está arriba" dura un instante más, así no se corta y vuelve
+    // cuadro a cuadro (eso hacía temblar la cámara).
+    private const float ResbalarDeJugador = 3f;  // m/s
+    private const float AceleracionResbalar = 10f; // m/s²
+    private const float SigueArriba = 0.15f;     // s
+    private bool sobreJugador;
+    private float vistoArriba = -10f, resbalando;
+    private Vector3 haciaAfuera;
+    private readonly RaycastHit[] debajo = new RaycastHit[8];
+
     //manejo de camara al agacharse
     public Transform cameraTransform;
     public float standingCameraHeight = 0.8f;
@@ -184,6 +196,9 @@ public class PlayerMovement : MonoBehaviour
 
         // Apoyado al empezar el cuadro (lo dejó así el Move del cuadro anterior): para pegarlo a las rampas al final.
         bool estabaApoyado = controller.isGrounded;
+        if (JugadorDebajo()) sobreJugador = true; // además de lo que avisó el Move anterior (OnControllerColliderHit)
+        if (sobreJugador) vistoArriba = Time.time;
+        bool arribaDeOtro = Time.time - vistoArriba < SigueArriba;
         bool saltoEsteCuadro = false;
 
         if (controller.isGrounded && verticalVelocity < 0)
@@ -196,7 +211,7 @@ public class PlayerMovement : MonoBehaviour
         // SALTO
         // =====================================================
 
-        if (KeyBindings.Down(GameAction.Saltar) && controller.isGrounded)
+        if (KeyBindings.Down(GameAction.Saltar) && controller.isGrounded && !arribaDeOtro)
         {
             verticalVelocity = jumpForce;
             saltoEsteCuadro = true;
@@ -257,6 +272,16 @@ public class PlayerMovement : MonoBehaviour
             desplazamiento.z = plano.z;
         }
 
+        // Si está parado sobre otro jugador, resbala hacia afuera y no puede seguir caminando hacia el centro del otro.
+        resbalando = Mathf.MoveTowards(resbalando, arribaDeOtro ? ResbalarDeJugador : 0f, AceleracionResbalar * dt);
+        if (arribaDeOtro)
+        {
+            float hacia = Vector3.Dot(new Vector3(desplazamiento.x, 0f, desplazamiento.z), haciaAfuera);
+            if (hacia < 0f) desplazamiento -= haciaAfuera * hacia;
+        }
+        if (resbalando > 0f) desplazamiento += haciaAfuera * (resbalando * dt);
+        sobreJugador = false; // lo vuelve a marcar OnControllerColliderHit durante el Move
+
         CollisionFlags collisions =
             controller.Move(desplazamiento);
 
@@ -294,6 +319,50 @@ public class PlayerMovement : MonoBehaviour
         {
             verticalVelocity = 0f;
         }
+    }
+
+    // Hay otro jugador (o algo con vida) debajo de los pies, aunque sea apenas el borde de su hombro: una esfera casi
+    // del ancho del cuerpo, tirada hacia abajo desde el centro hasta apenas debajo de los pies. No cuenta lo que ya
+    // estaba tocando al empezar (un jugador parado al lado).
+    private bool JugadorDebajo()
+    {
+        float escala = transform.lossyScale.y;
+        float radio = controller.radius * 0.98f * escala;
+        Vector3 centro = transform.TransformPoint(controller.center);
+        float hastaPies = Mathf.Max(0f, controller.height * 0.5f * escala - radio);
+        int n = Physics.SphereCastNonAlloc(centro, radio, Vector3.down, debajo, hastaPies + controller.skinWidth + 0.15f,
+            Physics.AllLayers, QueryTriggerInteraction.Ignore);
+        for (int i = 0; i < n; i++)
+        {
+            Collider c = debajo[i].collider;
+            if (c == null || c.transform.IsChildOf(transform)) continue; // su propio cuerpo
+            if (debajo[i].distance <= 0f) continue; // ya lo tocaba de costado
+            HealthSystem otro = c.GetComponentInParent<HealthSystem>();
+            if (otro == null || otro.transform == transform) continue;
+            Afuera(otro.transform.position);
+            return true;
+        }
+        return false;
+    }
+
+    private void Afuera(Vector3 otro)
+    {
+        Vector3 afuera = transform.position - otro;
+        afuera.y = 0f;
+        if (afuera.sqrMagnitude < 0.0001f) afuera = new Vector3(transform.forward.x, 0f, transform.forward.z);
+        haciaAfuera = afuera.normalized;
+    }
+
+    // Lo llama el CharacterController en el Move por cada cosa que toca. Si lo que tiene debajo es otro jugador
+    // (o cualquier cosa con vida, como un bot), no cuenta como piso.
+    private void OnControllerColliderHit(ControllerColliderHit golpe)
+    {
+        // Cualquier apoyo que empuje un poco hacia arriba: también el borde del hombro, donde el piso es casi vertical.
+        if (golpe.normal.y < 0.05f || golpe.collider == null) return; // de costado, no lo tiene debajo
+        HealthSystem otro = golpe.collider.GetComponentInParent<HealthSystem>();
+        if (otro == null || otro.transform == transform) return;
+        Afuera(otro.transform.position);
+        sobreJugador = true;
     }
 
     // Lo que suma la cápsula al pararse (de lo alto de la cápsula agachada a lo alto de la parada) no choca con nada.
