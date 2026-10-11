@@ -565,3 +565,30 @@ fecha_utc,us_numero,us_titulo,estado_anterior,estado_nuevo,tiempo_en_estado_ante
 2026-10-10T21:36:50.490079+00:00,193,US 133. Espectar al morir,LPR,TESTING,8d 20h 41m,765667,https://github.com/DogeGGss/lcs-tp-principal/issues/193
 2026-10-10T21:36:50.490079+00:00,69,US 019. Habilidad 1 · Trasbordo,TESTING,R2D,3h 32m,12720,https://github.com/DogeGGss/lcs-tp-principal/issues/69
 2026-10-11T00:28:19.033712+00:00,193,US 133. Espectar al morir,TESTING,R2D,2h 51m,10288,https://github.com/DogeGGss/lcs-tp-principal/issues/193
+2026-10-11T06:18:12.680771+00:00,323,US 196. Pantalla de carga en modo tactico,TESTING,Done,4d 13h 31m,394306,https://github.com/DogeGGss/lcs-tp-principal/issues/323
+2026-10-11T06:18:12.680771+00:00,79,US 031. Formar equipos,TESTING,LPR,8h 41m,31282,https://github.com/DogeGGss/lcs-tp-principal/issues/79
+2026-10-11T06:18:12.680771+00:00,92,US 069. ARMA Principal 4 - Belgrano Sur (Fusil de ráfaga),TESTING,R2D,23h 5m,83109,https://github.com/DogeGGss/lcs-tp-principal/issues/92
+2026-10-11T06:18:12.680771+00:00,195,US 135. Economía por ronda,R2D,Done,1d 8h 43m,117826,https://github.com/DogeGGss/lcs-tp-principal/issues/195
+2026-10-11T06:18:12.680771+00:00,91,US 068. ARMA Principal 3 - Último Tren (Francotirador),R2D,Done,12h 13m,44002,https://github.com/DogeGGss/lcs-tp-principal/issues/91
+2026-10-11T06:18:12.680771+00:00,191,US 131. Plantar el dispositivo,R2D,Done,3d 6h 24m,282271,https://github.com/DogeGGss/lcs-tp-principal/issues/191
+2026-10-11T06:18:12.680771+00:00,65,US 015. Seleccionar personaje,R2D,Done,1d 8h 43m,117826,https://github.com/DogeGGss/lcs-tp-principal/issues/65
+2026-10-11T06:18:12.680771+00:00,320,US 193. Marca de compañeros,TESTING,Done,2d 7h 16m,199014,https://github.com/DogeGGss/lcs-tp-principal/issues/320
+2026-10-11T06:18:12.680771+00:00,90,US 067. ARMA Principal 2 - Urquiza (Subfusil),R2D,Done,8h 41m,31282,https://github.com/DogeGGss/lcs-tp-principal/issues/90
+2026-10-11T06:18:12.680771+00:00,66,US 016. Personaje único por equipo,R2D,Done,1d 5h 5m,104700,https://github.com/DogeGGss/lcs-tp-principal/issues/66
+2026-10-11T06:18:12.680771+00:00,322,US 195. Abandono y reconexión a la partida,R2D,Done,3d 10h 31m,297089,https://github.com/DogeGGss/lcs-tp-principal/issues/322
+2026-10-11T06:18:12.680771+00:00,80,US 032. Iniciar partida táctica,R2D,Done,1d 20h 13m,159214,https://github.com/DogeGGss/lcs-tp-principal/issues/80
+2026-10-11T06:18:12.680771+00:00,81,US 033. Definir el ganador de la ronda,R2D,Done,5d 3h 16m,443782,https://github.com/DogeGGss/lcs-tp-principal/issues/81
+2026-10-11T06:18:12.680771+00:00,93,US 070. ARMA Principal 5 - Roca (Escopeta),R2D,Done,2d 7h 16m,199014,https://github.com/DogeGGss/lcs-tp-principal/issues/93
+2026-10-11T06:18:12.680771+00:00,332,US 199. Ver las balas al disparar,R2D,Done,3d 23h 40m,344443,https://github.com/DogeGGss/lcs-tp-principal/issues/332
+2026-10-11T06:18:12.680771+00:00,324,US 197. Mostrar FPS y ping,R2D,Done,3d 23h 40m,344443,https://github.com/DogeGGss/lcs-tp-principal/issues/324
+2026-10-11T06:18:12.680771+00:00,190,US 130. Portar y soltar el dispositivo,R2D,Done,3d 23h 40m,344443,https://github.com/DogeGGss/lcs-tp-principal/issues/190
+2026-10-11T06:18:12.680771+00:00,325,US 198. Caminar despacio en el Táctico,R2D,Done,3d 23h 40m,344443,https://github.com/DogeGGss/lcs-tp-principal/issues/325
+2026-10-11T06:18:12.680771+00:00,319,US 192. Indicador de dirección del daño,R2D,Done,3d 10h 31m,297089,https://github.com/DogeGGss/lcs-tp-principal/issues/319
+2026-10-11T06:18:12.680771+00:00,193,US 133. Espectar al morir,R2D,Done,5h 49m,20993,https://github.com/DogeGGss/lcs-tp-principal/issues/193
+2026-10-11T06:18:12.680771+00:00,114,US 071. ARMA Secundaria 1 - Pistola,R2D,Done,23h 5m,83109,https://github.com/DogeGGss/lcs-tp-principal/issues/114
+2026-10-11T06:18:12.680771+00:00,56,US 006. Reaparición al caer del mapa,R2D,Rehacer,1d 8h 43m,117826,https://github.com/DogeGGss/lcs-tp-principal/issues/56
+2026-10-11T06:18:12.680771+00:00,115,US 072. ARMA Secundaria 2 - La Trochita (Pistola pesada),R2D,Done,23h 5m,83109,https://github.com/DogeGGss/lcs-tp-principal/issues/115
+2026-10-11T06:18:12.680771+00:00,277,US 175. Diseño visual de la tienda,TESTING,Blocked,12h 13m,44002,https://github.com/DogeGGss/lcs-tp-principal/issues/277
+2026-10-11T06:18:12.680771+00:00,117,US 074. ARROJABLE 2 - Granada de humo,R2D,Done,2d 3h 23m,185006,https://github.com/DogeGGss/lcs-tp-principal/issues/117
+2026-10-11T06:18:12.680771+00:00,118,US 075. ARROJABLE 3 - Granada flash,R2D,Done,1d 5h 5m,104700,https://github.com/DogeGGss/lcs-tp-principal/issues/118
+2026-10-11T06:18:12.680771+00:00,287,US 184. Soltar y levantar armas,R2D,Done,23h 5m,83109,https://github.com/DogeGGss/lcs-tp-principal/issues/287
