@@ -42,6 +42,12 @@ public class PlayerMovement : MonoBehaviour
     // Se utiliza para detectar correctamente el aterrizaje
     private bool wasInAir;
 
+    // No pararse arriba de otro jugador: si en el último Move quedó apoyado sobre otro, no puede saltar desde ahí y
+    // se lo hace resbalar hacia afuera (sin esto, dos jugadores pueden subirse uno arriba del otro).
+    private const float ResbalarDeJugador = 4f; // m/s
+    private bool sobreJugador;
+    private Vector3 haciaAfuera;
+
     //manejo de camara al agacharse
     public Transform cameraTransform;
     public float standingCameraHeight = 0.8f;
@@ -196,7 +202,7 @@ public class PlayerMovement : MonoBehaviour
         // SALTO
         // =====================================================
 
-        if (KeyBindings.Down(GameAction.Saltar) && controller.isGrounded)
+        if (KeyBindings.Down(GameAction.Saltar) && controller.isGrounded && !sobreJugador)
         {
             verticalVelocity = jumpForce;
             saltoEsteCuadro = true;
@@ -257,6 +263,10 @@ public class PlayerMovement : MonoBehaviour
             desplazamiento.z = plano.z;
         }
 
+        // Si está parado sobre otro jugador, además de lo que camina resbala hacia afuera.
+        if (sobreJugador) desplazamiento += haciaAfuera * (ResbalarDeJugador * dt);
+        sobreJugador = false; // lo vuelve a marcar OnControllerColliderHit durante el Move
+
         CollisionFlags collisions =
             controller.Move(desplazamiento);
 
@@ -294,6 +304,20 @@ public class PlayerMovement : MonoBehaviour
         {
             verticalVelocity = 0f;
         }
+    }
+
+    // Lo llama el CharacterController en el Move por cada cosa que toca. Si lo que tiene debajo es otro jugador
+    // (o cualquier cosa con vida, como un bot), no cuenta como piso.
+    private void OnControllerColliderHit(ControllerColliderHit golpe)
+    {
+        if (golpe.normal.y < 0.3f || golpe.collider == null) return; // no lo tiene debajo
+        HealthSystem otro = golpe.collider.GetComponentInParent<HealthSystem>();
+        if (otro == null || otro.transform == transform) return;
+        Vector3 afuera = transform.position - golpe.collider.bounds.center;
+        afuera.y = 0f;
+        if (afuera.sqrMagnitude < 0.0001f) afuera = new Vector3(transform.forward.x, 0f, transform.forward.z);
+        haciaAfuera = afuera.normalized;
+        sobreJugador = true;
     }
 
     // Lo que suma la cápsula al pararse (de lo alto de la cápsula agachada a lo alto de la parada) no choca con nada.
