@@ -313,20 +313,22 @@ public class PlayerMovement : MonoBehaviour
         }
     }
 
-    // Hay otro jugador (o algo con vida) justo debajo de los pies: una esfera un poco más angosta que el cuerpo,
-    // tirada hacia abajo desde el centro hasta apenas debajo de los pies.
+    // Hay otro jugador (o algo con vida) debajo de los pies, aunque sea apenas el borde de su hombro: una esfera casi
+    // del ancho del cuerpo, tirada hacia abajo desde el centro hasta apenas debajo de los pies. No cuenta lo que ya
+    // estaba tocando al empezar (un jugador parado al lado).
     private bool JugadorDebajo()
     {
         float escala = transform.lossyScale.y;
-        float radio = controller.radius * 0.9f * escala;
+        float radio = controller.radius * 0.98f * escala;
         Vector3 centro = transform.TransformPoint(controller.center);
         float hastaPies = Mathf.Max(0f, controller.height * 0.5f * escala - radio);
         int n = Physics.SphereCastNonAlloc(centro, radio, Vector3.down, debajo, hastaPies + controller.skinWidth + 0.15f,
-            Physics.DefaultRaycastLayers, QueryTriggerInteraction.Ignore);
+            Physics.AllLayers, QueryTriggerInteraction.Ignore);
         for (int i = 0; i < n; i++)
         {
             Collider c = debajo[i].collider;
             if (c == null || c.transform.IsChildOf(transform)) continue; // su propio cuerpo
+            if (debajo[i].distance <= 0f) continue; // ya lo tocaba de costado
             HealthSystem otro = c.GetComponentInParent<HealthSystem>();
             if (otro == null || otro.transform == transform) continue;
             Afuera(otro.transform.position);
@@ -347,7 +349,8 @@ public class PlayerMovement : MonoBehaviour
     // (o cualquier cosa con vida, como un bot), no cuenta como piso.
     private void OnControllerColliderHit(ControllerColliderHit golpe)
     {
-        if (golpe.normal.y < 0.3f || golpe.collider == null) return; // no lo tiene debajo
+        // Cualquier apoyo que empuje un poco hacia arriba: también el borde del hombro, donde el piso es casi vertical.
+        if (golpe.normal.y < 0.05f || golpe.collider == null) return; // de costado, no lo tiene debajo
         HealthSystem otro = golpe.collider.GetComponentInParent<HealthSystem>();
         if (otro == null || otro.transform == transform) return;
         Afuera(otro.transform.position);
