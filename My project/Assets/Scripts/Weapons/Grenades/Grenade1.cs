@@ -65,6 +65,8 @@ public class Grenade1 : MonoBehaviour
     public static event System.Action<Grenade1, Vector3> Exploded;
     // La explosión eliminó a alguien: sin conexión, el aviso de baja sale de acá (US 057, CA4).
     public static event System.Action<Grenade1, HealthSystem> Killed;
+    // A quién le hizo daño, a qué distancia y cuánto (lo usa la herramienta de prueba RadiosGranada, solo en el editor).
+    public static event System.Action<Grenade1, HealthSystem, float, int> Damaged;
 
     // Ficha de la tienda de esta granada, y desde dónde y cómo se lanzó (para repetirla en las demás computadoras).
     public ShopItem Item { get; private set; }
@@ -251,6 +253,7 @@ public class Grenade1 : MonoBehaviour
             HealthSystem.DamageOrigin = center; // US 192, CA5: el indicador marca donde explotó
             entry.Key.TakeDamage(damage); // primero el escudo y el resto a la vida
             HealthSystem.DamageSource = null;
+            Damaged?.Invoke(this, entry.Key, entry.Value, damage);
             if (lethal) Killed?.Invoke(this, entry.Key);
         }
     }
