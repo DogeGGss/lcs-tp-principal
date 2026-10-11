@@ -610,6 +610,37 @@ a.uslink{white-space:nowrap}
 .pj .ret{flex:none;width:64px;height:64px;border-radius:8px;object-fit:cover;background:#FFFFFF;border:1px solid var(--line)}
 #pjList{grid-template-columns:repeat(auto-fit,minmax(min(100%,340px),1fr))}
 @media (min-width:1100px){#pjList{grid-template-columns:repeat(2,1fr)}}
+/* Mapa 2: plano aéreo con capas */
+.mapa-fig{margin:16px 0}
+.mapa-fig img{display:block;width:100%;height:auto;border-radius:10px;border:1px solid var(--line)}
+.mapa-fig figcaption{margin-top:6px;font-size:14px;color:var(--ink-2)}
+.mapa-ctl{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0 8px}
+.mapa-ctl button{font:600 14px/1 var(--display);letter-spacing:.06em;text-transform:uppercase;padding:9px 12px;border-radius:8px;border:1px solid var(--line);background:var(--paper);color:var(--ink);cursor:pointer}
+.mapa-ctl button.on{border-color:var(--accent);color:var(--accent)}
+.mapa-capas{display:flex;flex-wrap:wrap;gap:6px 16px;margin:0 0 10px;font-size:14px;color:var(--ink-2)}
+.mapa-capas label{display:inline-flex;align-items:center;gap:6px;cursor:pointer}
+.mapa-wrap{overflow-x:auto;border-radius:10px}
+.mapa-plano{position:relative;min-width:640px;border-radius:10px;overflow:hidden;background:#07090C;border:1px solid var(--line)}
+.mapa-plano img{display:block;width:100%;height:auto}
+.mapa-plano svg{position:absolute;inset:0;width:100%;height:100%}
+.mapa-plano .z-at{fill:rgba(255,97,97,.14);stroke:#FF6161;stroke-width:.45;stroke-dasharray:1.6 1}
+.mapa-plano .z-de{fill:rgba(88,166,255,.14);stroke:#58A6FF;stroke-width:.45;stroke-dasharray:1.6 1}
+.mapa-plano [data-capa="muros"] line{stroke:#FF4B4B;stroke-width:1.1;stroke-linecap:round}
+.mapa-plano .p-at{fill:#FF6161;stroke:#000;stroke-width:.35}
+.mapa-plano .p-de{fill:#58A6FF;stroke:#000;stroke-width:.35}
+.mapa-plano .sitio{fill:rgba(242,154,56,.22);stroke:#F29A38;stroke-width:.6}
+.mapa-plano text{font-family:var(--display);font-weight:700;paint-order:stroke;stroke:#000;stroke-width:.5}
+.mapa-plano .t-at{fill:#FF6161;font-size:2.6px}
+.mapa-plano .t-de{fill:#58A6FF;font-size:2.6px}
+.mapa-plano .t-sitio{fill:#F29A38;font-size:7px}
+.mapa-plano .t-nivel{fill:#F3F4F6;font-size:2.3px}
+.mapa-plano .linea{stroke:#FFD84A;stroke-width:.6;stroke-dasharray:2 1}
+.mapa-plano .t-linea{fill:#FFD84A;font-size:3px}
+.mapa-plano .escala line{stroke:#F3F4F6;stroke-width:.4}
+.mapa-plano .escala text{fill:#F3F4F6;font-size:2.6px}
+.mapa-leyenda{display:flex;flex-wrap:wrap;gap:6px 18px;margin:8px 0 4px;font-size:14px;color:var(--ink-2)}
+.mapa-leyenda span{display:inline-flex;align-items:center;gap:6px}
+.mapa-leyenda i{display:inline-block;width:14px;height:10px;border-radius:2px}
 .pj .ab .ico{flex:none;width:34px;height:34px;padding:6px;border-radius:8px;background:#0A0C11;box-sizing:border-box}
 .wgroup .grid3{grid-template-columns:repeat(auto-fill,minmax(min(100%,300px),1fr))}
 [id]{scroll-margin-top:18px}
@@ -1875,23 +1906,134 @@ body.capture,body.capture-ms,body.capture-cr{padding-left:0!important}
 
 <section id="mapas">
   <div class="sec-head"><h2>Mapa 2 · Estación espacial</h2><span class="sub">Modo Táctico · US 083</span> <span class="st st-ok">En el juego</span></div>
-  <p>El mapa del Táctico, y el que viene elegido al crear la sala (US 213). Es una estación espacial armada con el kit sci-fi de Creepy Cat, de unos 200 × 95 m. La estructura central y los caminos a los sitios son espejo uno del otro, así el mapa no favorece a ningún equipo; las bases sí son distintas, para que los defensores lleguen antes a los sitios.</p>
+  <p>El mapa del Táctico y el que viene elegido al crear la sala (US 213). Es una estación espacial de unos 200 × 95 m, de dos niveles, armada con el kit sci-fi de Creepy Cat. La estructura central y los caminos a los sitios son espejo uno del otro, así el mapa no favorece a ningún equipo; las bases sí son distintas, para que los defensores lleguen antes a los sitios.</p>
+  <p class="soft">Se reparte en cinco historias: cómo se ve (US 083), lo que necesita el Táctico (US 213), los recorridos y los límites (US 214), el rendimiento (US 215) y los muros de la base (US 190). Cada una enlaza la parte de esta sección que le toca.</p>
+  <figure class="mapa-fig"><img src="img/tactico-vista.jpg" alt="El mapa táctico en perspectiva: pasarelas, pilas de cajas, el sitio A en rojo y las luces verdes y naranjas de la estación" loading="lazy" width="1280" height="720"><figcaption>La vista que usa la pantalla de carga (US 196).</figcaption></figure>
+
+  <h3 id="mapa-tactico-plano">Plano</h3>
+  <p class="soft">Vista aérea del mapa en el juego, cortada a la altura de cada nivel, con el norte arriba: los atacantes están al este y los defensores al oeste. Se sacó de la escena con una cámara ortográfica (cada píxel es la misma distancia en todo el plano). Prendé y apagá las capas.</p>
+  <div class="mapa-ctl" role="group" aria-label="Nivel del plano">
+    <button type="button" class="on" data-nivel="baja" aria-pressed="true">Planta baja · piso a ≈2 m</button>
+    <button type="button" data-nivel="alto" aria-pressed="false">Nivel alto · piso a ≈6 m</button>
+  </div>
+  <div class="mapa-capas">
+    <label><input type="checkbox" data-capa="compra" checked> Zonas de compra</label>
+    <label><input type="checkbox" data-capa="muros" checked> Muros de la base</label>
+    <label><input type="checkbox" data-capa="apar" checked> Apariciones</label>
+    <label><input type="checkbox" data-capa="sitios" checked> Sitios A y B</label>
+    <label><input type="checkbox" data-capa="linea"> Línea de tiro más larga</label>
+  </div>
+  <div class="mapa-wrap"><div class="mapa-plano" id="mapaTactico">
+    <img id="mapaTacticoImg" src="img/tactico-planta-baja.jpg" alt="Plano de la planta baja del mapa táctico visto desde arriba" width="1600" height="784">
+    <svg viewBox="0 0 198 97" preserveAspectRatio="none" aria-hidden="true">
+      <g class="capa" data-capa="compra">
+        <rect class="z-at" x="157.7" y="23.3" width="39.7" height="42.6"/>
+        <rect class="z-de" x="1.1" y="8.6" width="58.6" height="57.3"/>
+        <rect class="z-de" x="37.1" y="63.8" width="22.3" height="23.6"/>
+        <text class="t-at" x="177.5" y="63.6" text-anchor="middle">COMPRA ATACANTE</text>
+        <text class="t-de" x="30.4" y="63.6" text-anchor="middle">COMPRA DEFENSORA</text>
+        <text class="t-de" x="48.2" y="85.4" text-anchor="middle">FRENTE</text>
+      </g>
+      <g class="capa" data-capa="muros">
+        <line x1="182" y1="23" x2="187" y2="23"/><line x1="158" y1="35" x2="158" y2="45"/><line x1="160" y1="58" x2="160" y2="68"/>
+        <line x1="59" y1="64" x2="59" y2="74"/><line x1="45" y1="7" x2="45" y2="22"/><line x1="45" y1="33" x2="55" y2="33"/>
+      </g>
+      <g class="capa" data-capa="apar">
+        <circle class="p-at" cx="185.5" cy="34.8" r="1.1"/><circle class="p-at" cx="185.6" cy="37.1" r="1.1"/><circle class="p-at" cx="185.6" cy="39.6" r="1.1"/><circle class="p-at" cx="182.9" cy="37.1" r="1.1"/>
+        <circle class="p-de" cx="16.4" cy="30.8" r="1.1"/><circle class="p-de" cx="16.4" cy="33.7" r="1.1"/><circle class="p-de" cx="16.4" cy="36.5" r="1.1"/><circle class="p-de" cx="13.5" cy="33.6" r="1.1"/>
+      </g>
+      <g class="capa" data-capa="sitios">
+        <rect class="sitio" x="93.1" y="79.1" width="10" height="10"/><text class="t-sitio" x="98.1" y="86.6" text-anchor="middle">A</text><text class="t-nivel" x="98.1" y="93" text-anchor="middle">NIVEL ALTO</text>
+        <rect class="sitio" x="93.1" y="11.9" width="10" height="10"/><text class="t-sitio" x="98.1" y="19.4" text-anchor="middle">B</text><text class="t-nivel" x="98.1" y="26.6" text-anchor="middle">PLANTA BAJA</text>
+      </g>
+      <g class="capa" data-capa="linea" style="display:none">
+        <line class="linea" x1="50" y1="13" x2="189" y2="13"/><text class="t-linea" x="140" y="11" text-anchor="middle">139 m</text>
+      </g>
+      <g class="escala"><line x1="6" y1="92" x2="26" y2="92"/><line x1="6" y1="90.8" x2="6" y2="93.2"/><line x1="26" y1="90.8" x2="26" y2="93.2"/><text x="16" y="89.6" text-anchor="middle">20 m</text><text x="190" y="7" text-anchor="middle">N ↑</text></g>
+    </svg>
+  </div></div>
+  <div class="mapa-leyenda"><span><i style="background:#FF6161"></i>Atacantes (este)</span><span><i style="background:#58A6FF"></i>Defensores (oeste)</span><span><i style="background:#FF4B4B;height:4px"></i>Muro de la base</span><span><i style="background:#F29A38"></i>Sitio de plantado</span><span><i style="background:#FFD84A;height:2px"></i>Línea de tiro</span></div>
+
+  <h3 id="mapa-tactico-zonas">Bases, zonas y sitios</h3>
   <div class="table-wrap"><table>
     <tr><th>Parte</th><th>Cómo es</th><th>Historia</th></tr>
-    <tr><td>Niveles</td><td>Una planta baja y un nivel alto, a unos 6 m, unidos por escaleras y rampas.</td><td>US 083</td></tr>
-    <tr><td>Bases</td><td>Atacantes al este y defensores al oeste, con 4 puntos de aparición cada una. Desde una base no se ve la otra.</td><td>US 213</td></tr>
-    <tr><td>Sitios A y B</td><td>Zonas de plantado de 10 × 10 m marcadas con su letra: A en el nivel alto y B en la planta baja. A cada una se llega por al menos dos caminos, y un defensor rota de una a otra en menos de 20 s.</td><td>US 131, US 213</td></tr>
-    <tr><td>Zonas de compra</td><td>Una de los atacantes y dos de los defensores, que llegan hasta los muros de la base. Desde su borde, los defensores llegan a cada sitio entre 4 y 6 s antes que los atacantes.</td><td>US 213</td></tr>
-    <tr><td>Muros de la base</td><td>Paredes rojas semitransparentes que cierran las salidas de cada base durante los 20 s de compra. No se pueden atravesar, ni con el Trasbordo, y desaparecen al empezar el combate.</td><td>US 190</td></tr>
-    <tr><td>Caídas</td><td>Cerca de los sitios A y B hay vacíos. Caerse cuenta como una muerte: se espera a la ronda siguiente.</td><td>US 214, US 006</td></tr>
-    <tr><td>Sonido y luz</td><td>Sin música: el zumbido de la estación y el ruido de algunas máquinas, que se escucha al acercarse. El cielo del kit, sin sol, y la luz de las lámparas, horneada para que ande bien.</td><td>US 083, US 215</td></tr>
+    <tr><td>Bases</td><td>Atacantes al este y defensores al oeste, con 4 apariciones cada una sobre el piso de la base. La base atacante es la sala de control del kit (<code>Prefab_Control_Room</code>); al norte de cada base hay cuatro hangares (<code>Prefab_Corridor_Large_02</code>). Desde una base no se ve la otra.</td><td>US 213 (CA1, CA2)</td></tr>
+    <tr><td>Zonas de compra</td><td>Una de los atacantes (40 × 43 m) y dos de los defensores: la de la base (59 × 57 m) y la del frente, hacia A (22 × 24 m). Llegan hasta los muros de la base.</td><td>US 213 (CA3)</td></tr>
+    <tr><td>Muros de la base</td><td>Seis paredes rojas semitransparentes, tres por base, que cierran las salidas durante los 20 s de compra. No se atraviesan, ni con el Trasbordo, y desaparecen al empezar el combate. No son espejo: cada base tiene sus salidas.</td><td>US 190</td></tr>
+    <tr><td>Sitio A</td><td>Zona de plantado de 10 × 10 m en el nivel alto (a 6 m), al sur del centro.</td><td>US 131, US 213 (CA4)</td></tr>
+    <tr><td>Sitio B</td><td>Zona de plantado de 10 × 10 m en la planta baja, al norte del centro, en el pasillo largo que cruza el mapa.</td><td>US 131, US 213 (CA4)</td></tr>
+    <tr><td>Llegada a los sitios</td><td>Desde el borde de su zona de compra, los defensores llegan a cada sitio entre 4 y 6 s antes que los atacantes. En línea recta, la base atacante está a 72 m de A y a 66 m de B; la defensora, a 61 m de A y a 44 m de B.</td><td>US 213 (CA5)</td></tr>
+    <tr><td>Caminos y rotación</td><td>A cada sitio se llega por al menos dos caminos, y un defensor va de A a B (67 m en línea recta) en menos de 20 s.</td><td>US 213 (CA6, CA7)</td></tr>
   </table></div>
-  <p class="soft">En la sala también se pueden elegir el Mapa 1 (US 082), que hoy es la escena de ejemplo del kit, y el Mapa de pruebas. El mapa lo cambia el anfitrión (<code>ConfigRed</code>).</p>
+
+  <h3 id="mapa-tactico-recorridos">Recorridos y líneas de tiro</h3>
+  <p>Dos niveles unidos por 33 escaleras y rampas, y caídas solo cerca de A y B (caerse es una muerte hasta la ronda siguiente). Para ver qué armas pide el mapa se midieron las líneas de tiro: desde cada punto del piso, a la altura de los ojos, cuánto se ve en 16 direcciones antes de chocar con algo.</p>
+  <div class="grid3">
+    <div class="card"><b>La mitad, menos de 8,6 m.</b> Pasillos y salas: es el terreno del Urquiza, la Roca y las pistolas.</div>
+    <div class="card"><b>El 90 %, menos de 28 m.</b> Hasta ahí llegan los fusiles (Mitre y Belgrano Sur) sin perder daño.</div>
+    <div class="card"><b>Solo el 3 %, más de 40 m.</b> Pocas líneas largas para el Último Tren: el pasillo norte de B y el eje central.</div>
+  </div>
+  <p class="soft" style="margin-top:12px">La más larga mide 139 m: va por el pasillo norte, de la zona de compra defensora a los hangares atacantes. Hay que revisar que no rompa US 213 CA1 (desde una base no se ve la otra); si la rompe, se corta con una pila de cajas o una puerta.</p>
+  <div class="table-wrap"><table>
+    <tr><th>Regla</th><th>Medida</th><th>Historia</th></tr>
+    <tr><td>Altura libre</td><td>2,2 m en pasillos, puertas y escaleras: el personaje mide 2 m más el margen de su colisión.</td><td>US 214 (CA4)</td></tr>
+    <tr><td>Escalones y rampas</td><td>Se suben caminando: escalones de hasta 0,5 m en cualquier dirección y rampas de hasta 45°.</td><td>US 008, US 214 (CA3)</td></tr>
+    <tr><td>Límites</td><td>No se sale del mapa ni se sube a los techos. Solo se puede caer cerca de A y B.</td><td>US 214 (CA5, CA8)</td></tr>
+    <tr><td>Colisiones</td><td>Las balas y las granadas chocan con lo mismo que el jugador, y no hay paredes ni pisos invisibles.</td><td>US 214 (CA1, CA2, CA7)</td></tr>
+  </table></div>
+
+  <h3 id="mapa-tactico-assets">Por qué el kit de Creepy Cat</h3>
+  <p>Todo el mapa sale de un solo kit, el <b>3D Scifi Kit Starter Kit</b> de Creepy Cat (Unity Asset Store, en los créditos), en su versión URP: 2.397 de las 2.429 mallas de la escena (98,7 %), con 111 piezas distintas. Así el mapa tiene un solo estilo y cada pieza ya trae su colisión.</p>
+  <div class="table-wrap"><table>
+    <tr><th>Qué</th><th>Cómo se usa</th><th>Por qué</th></tr>
+    <tr><td>Pisos y paredes</td><td>Pisos de 6 × 6 m (<code>Floor_01_6x6</code>, 247) y tiras de 2 × 6 m; paredes en módulos de 2 m (<code>Wall_Cube_01_Long</code>, 106).</td><td>Todo encaja en múltiplos de 2 m: las medidas de los pasillos y de las zonas salen solas y las dos mitades se espejan sin huecos.</td></tr>
+    <tr><td>Salas armadas</td><td>La sala de control (<code>Prefab_Control_Room</code>) para la base y los pasillos grandes (<code>Prefab_Corridor_Large_02</code>) para los hangares.</td><td>Son las salas que el kit ya trae armadas y probadas: lo que se repite no se arma pieza por pieza.</td></tr>
+    <tr><td>Cobertura</td><td>80 pilas de cajas (<code>Crate_01</code>) en los sitios y los pasillos, y 104 paneles de vidrio.</td><td>Las cajas dan dónde cubrirse; el vidrio deja ver sin pasar.</td></tr>
+    <tr><td>Carteles</td><td>21 carteles del kit, con las letras de los sitios y números.</td><td>Para orientarse y nombrar lugares al hablar en partida.</td></tr>
+    <tr><td>Luz</td><td>1.888 luces puntuales <b>horneadas</b> y tiras emisivas (<code>Light_SideLight</code>), en 2 lightmaps, más un grupo de light probes. La luz direccional está apagada: no hay sol.</td><td>Ninguna luz se calcula en tiempo real. En la escena de ejemplo del kit son 1.050 en tiempo real, y por eso no se usa tal cual (US 215).</td></tr>
+    <tr><td>Materiales</td><td>60 materiales, todos URP (Lit y Unlit).</td><td>La versión HDRP del kit no sirve con URP: sus materiales se ven magenta.</td></tr>
+    <tr><td>Sonido</td><td>Un zumbido de fondo en todo el mapa y el ruido de las consolas y máquinas del kit (<code>Wall_Console</code>, <code>Wall_Gear</code>, <code>Wall_Pipes</code>), que se escucha de 1,5 a 10 m. Sin música.</td><td><code>AmbienteDelMapa</code> busca las piezas por nombre y manda todo por el grupo de efectos (US 083 CA1, US 154).</td></tr>
+    <tr><td>Cielo</td><td>El cielo del kit, sin niebla.</td><td>Es una estación espacial: la luz sale de sus lámparas (US 083 CA5).</td></tr>
+  </table></div>
+
+  <h3 id="mapa-tactico-armado">Cómo se armó</h3>
+  <figure class="mapa-fig"><img src="img/tactico-plano-base.jpg" alt="Plano base del mapa táctico: las dos bases a los costados, los sitios A y B en el centro y los caminos entre ellos" loading="lazy" width="1250" height="729"><figcaption>El plano base, de Nahuel (01/10/2026). Está girado 180° respecto del plano de arriba: A queda arriba y los atacantes a la izquierda.</figcaption></figure>
+  <ol>
+    <li><b>Plano base.</b> El mapa se construyó sobre ese plano, puesto como material debajo de la escena (<code>Materials/planos mapa 2.jpg</code>, <code>RefMapaTactico</code>), igual que la universidad se arma sobre la foto aérea y el plano de la UNGS. Fija la escala y dónde van las bases, los sitios y los caminos. Ya no está en la escena.</li>
+    <li><b>Medio mapa y su espejo.</b> Se armó el lado este y el oeste es su espejo (<code>Espejo_Oeste</code>, PR #369). Todo cambio en el centro o en los caminos se repite del otro lado.</li>
+    <li><b>Bases y zonas.</b> Las apariciones, las zonas de compra, los sitios y los muros van aparte, en <code>ModoTactico</code>, porque no son espejo.</li>
+    <li><b>Luz y sonido al final.</b> Se hornea la luz (US 215) y se suman las máquinas que hacen ruido (US 083).</li>
+  </ol>
+
+  <h3 id="mapa-tactico-reglas">Para cambiar el mapa</h3>
+  <ol>
+    <li><b>Los dos lados.</b> Si tocás el centro o un camino, repetí el cambio en el espejo. Las bases y sus zonas de compra son la excepción.</li>
+    <li><b>Piezas del kit, en múltiplos de 2 m.</b> Sin ProBuilder ni mallas sueltas (hoy hay cero), así no aparecen huecos ni colisiones raras.</li>
+    <li><b>Altura y escalones.</b> 2,2 m libres de alto, escalones de hasta 0,5 m y rampas de hasta 45°.</li>
+    <li><b>Luces horneadas.</b> Toda luz nueva va en <i>Baked</i>. Después se vuelve a hornear y se sube el <code>LightingData</code> junto con la escena.</li>
+    <li><b>Muros de la base.</b> Se mueven a mano en <code>ModoTactico › MurosDeBase</code>. No uses "Generar muros" (menú del componente): rearma las paredes desde las zonas de compra y pisa las que se acomodaron a mano. Si movés un muro, mové también el borde de su zona de compra.</li>
+    <li><b>Apariciones.</b> 4 por base, sobre el piso y sin chocar con nada ni entre ellas.</li>
+    <li><b>Sonido.</b> Una consola o máquina nueva suena sola si su nombre empieza como las del kit (<code>Wall_Console</code>, <code>Intercom</code>, <code>Wall_Gear</code>, <code>Wall_Pipes</code>, <code>Pipes_</code>).</li>
+    <li><b>Probar.</b> Una partida de Táctico editor contra build: salir de cada base por todas sus salidas, ir de A a B y caerse cerca de los sitios.</li>
+  </ol>
+
+  <div class="dev">
+    <h3 id="mapa-tactico-codigo">Dónde está</h3>
+    <div class="files">
+      <code>Scenes/Mapa_modo_tactico</code><span>La escena del mapa.</span>
+      <code>ModoTactico</code><span><code>Bases</code> (zonas de compra y apariciones), <code>ZonasDePlantado</code> (A y B) y <code>MurosDeBase</code>.</span>
+      <code>Mapa</code><span><code>Pisos</code>, <code>Paredes</code>, <code>Techos</code>, <code>Escaleras</code>, <code>Cajas</code>, <code>Carteles</code>, <code>Equipos (hacen ruido)</code>, <code>Salas armadas</code> y <code>Espejo_Oeste</code>.</span>
+      <code>ConfigRed</code><span>El primer mapa de la lista es el que viene elegido en la sala.</span>
+      <code>AmbienteDelMapa</code><span>El sonido del mapa (objeto <code>Ambiente</code>).</span>
+      <code>UI/Carga/MapaTactico.jpg</code><span>El fondo de la pantalla de carga.</span>
+    </div>
+  </div>
+  <p class="soft" style="margin-top:12px">El Mapa 1 (US 082) es el del Deathmatch: hoy es la escena de ejemplo del kit (<code>Example_01 1</code>). El Mapa de pruebas también se puede elegir en la sala.</p>
 </section>
 
 <section id="mapa-universidad">
   <div class="sec-head"><h2>Mapa 3 · Universidad</h2><span class="sub">Modo Zombie · US 084</span> <span class="st st-mid">A medias</span></div>
-  <p>El campus de la UNGS de noche, a escala real sobre el plano oficial (1:500) y fotos de los edificios, para que lo reconozca cualquiera que estudia ahí. Es el mapa del Zombie, que llega en el Sprint 4.</p>
+  <p>El campus de la UNGS de noche, a escala real, para que lo reconozca cualquiera que estudia ahí. Se arma igual que el táctico, sobre referencias puestas debajo de la escena: la foto aérea del campus con sus medidas (<code>Art/Reference/aerial_campus.png</code>), el plano oficial 1:500 (<code>plano_ungs.png</code>) y fotos de cada edificio. Es el mapa del Zombie, que llega en el Sprint 4.</p>
   <div class="table-wrap"><table>
     <tr><th>Parte</th><th>Cómo es</th><th>Historia</th><th>Estado</th></tr>
     <tr><td>Edificios</td><td>Los módulos 2, 4, 5 y 6 unidos por el pasillo techado con columnas, el módulo 7 en forma de L y de 3 pisos, el módulo 9 (el bar) y la entrada con el cilindro de la UNGS y la garita. Algunos edificios todavía son solo el volumen, sin ventanas ni detalles.</td><td>US 084</td><td><span class="st st-mid">A medias</span></td></tr>
@@ -1933,7 +2075,8 @@ body.capture,body.capture-ms,body.capture-cr{padding-left:0!important}
     <tr><td>Los otros tres personajes y sus habilidades (Astra y el Trasbordo ya están)</td><td>US 183, US 020 a US 022</td><td><span class="st st-todo">Falta diseñar</span></td></tr>
     <tr><td>Modo Zombie: oleadas, tipos de zombi, jefe, puntos, tienda, marcador (diseño listo) y resultado con récord</td><td>US 143 a US 151</td><td><span class="st st-todo">Falta hacerlo</span></td></tr>
     <tr><td>Mapa 3: la noche, lo que necesitan los zombis, los recorridos y el rendimiento</td><td>US 186 a US 189</td><td><span class="st st-mid">A medias</span></td></tr>
-    <tr><td>Mapa 1: definir cómo es (hoy usa la escena de ejemplo del kit)</td><td>US 082</td><td><span class="st st-todo">Falta diseñar</span></td></tr>
+    <tr><td>Mapa 2: revisar la línea de tiro de 139 m del pasillo norte (desde una base no se tiene que ver la otra)</td><td>US 213</td><td><span class="st st-mid">A revisar</span></td></tr>
+    <tr><td>Mapa 1, el del Deathmatch: definir cómo es (hoy es la escena de ejemplo del kit, con 1.050 luces en tiempo real)</td><td>US 082</td><td><span class="st st-todo">Falta diseñar</span></td></tr>
     <tr><td>Logros, estadísticas y campo de práctica</td><td>US 040 a US 045, US 159, US 118 a US 122, US 166</td><td><span class="st st-todo">Falta diseñar</span></td></tr>
     <tr><td>Recarga de La Porteña: la ficha dice 1,75 s y el código usa 1,5 s</td><td>US 071</td><td><span class="st st-mid">A corregir</span></td></tr>
     <tr><td>Texto del Último Tren en la ficha de la tienda: dice que sin mira "dispara donde quiere", pero tira igual de preciso con la mira o sin ella</td><td>US 068</td><td><span class="st st-mid">A corregir</span></td></tr>
@@ -2126,6 +2269,23 @@ const PERSONAJES = [
   { nombre: 'Bravo', rol: 'Centinela', color: '#4CC3FF', hab: 'Barrera', recarga: 30, efecto: 'Levanta una pared de energía de 4 m que frena las balas durante 6 s.' },
   { nombre: 'Charlie', rol: 'Explorador', color: '#7DE05A', hab: 'Pulso', recarga: 25, efecto: 'Revela a los rivales que estén a menos de 15 m durante 3 s.' }
 ];
+/* ---------- plano del mapa táctico: nivel y capas ---------- */
+function initMapaTactico() {
+  const box = document.getElementById('mapaTactico');
+  if (!box) return;
+  const img = document.getElementById('mapaTacticoImg');
+  const NIVELES = { baja: ['img/tactico-planta-baja.jpg', 'Plano de la planta baja del mapa táctico visto desde arriba'], alto: ['img/tactico-nivel-alto.jpg', 'Plano del nivel alto del mapa táctico visto desde arriba'] };
+  const botones = document.querySelectorAll('.mapa-ctl [data-nivel]');
+  botones.forEach(b => b.addEventListener('click', () => {
+    const n = NIVELES[b.dataset.nivel]; img.src = n[0]; img.alt = n[1];
+    botones.forEach(o => { o.classList.toggle('on', o === b); o.setAttribute('aria-pressed', o === b ? 'true' : 'false'); });
+  }));
+  document.querySelectorAll('.mapa-capas [data-capa]').forEach(c => {
+    const g = box.querySelector(`.capa[data-capa="${c.dataset.capa}"]`);
+    const aplicar = () => { if (g) g.style.display = c.checked ? '' : 'none'; };
+    c.addEventListener('change', aplicar); aplicar();
+  });
+}
 function renderPersonajes() {
   $('#pjList').innerHTML = PERSONAJES.map(p => `<article class="card pj" style="--c:${p.color}">
     <div class="top">${p.retrato ? `<img class="ret" src="${p.retrato}" alt="Retrato de ${esc(p.nombre)}">` : ''}<div class="hd"><span class="nm">${esc(p.nombre)}</span><span class="rl">${esc(p.rol)}</span></div></div>
@@ -3113,7 +3273,7 @@ render();
 renderHud2();
 if (H.cd.some(v => v > 0)) hudKick();
 fit();
-renderRules(); renderOneShot(); renderArsenal(); renderCalcOptions(); renderCalc(); renderChart(); renderTiers(); renderSpray(); renderRecoilTable(); renderPersonajes(); linkUS();
+renderRules(); renderOneShot(); renderArsenal(); renderCalcOptions(); renderCalc(); renderChart(); renderTiers(); renderSpray(); renderRecoilTable(); renderPersonajes(); initMapaTactico(); linkUS();
 </script>
 
 <script>
@@ -3655,7 +3815,7 @@ renderRules(); renderOneShot(); renderArsenal(); renderCalcOptions(); renderCalc
       { id: 'eco', t: 'Economía', i: 'coins', subs: [['eco-tactico', 'Táctico'], ['eco-zombie', 'Zombie'], ['eco-deathmatch', 'Deathmatch'], ['escudos-granadas', 'Escudos y granadas']] }] },
     { g: 'Personajes', p: 'Parte 5 · Personajes', items: [{ id: 'personajes', t: 'Personajes y habilidades', i: 'users', subs: [['trasbordo', 'Trasbordo']] }] },
     { g: 'Mapas', p: 'Parte 6 · Mapas', items: [
-      { id: 'mapas', t: 'Mapa 2 · Estación espacial', i: 'map' },
+      { id: 'mapas', t: 'Mapa 2 · Estación espacial', i: 'map', subs: [['mapa-tactico-plano', 'Plano'], ['mapa-tactico-zonas', 'Bases, zonas y sitios'], ['mapa-tactico-recorridos', 'Recorridos y líneas de tiro'], ['mapa-tactico-assets', 'Por qué el kit'], ['mapa-tactico-armado', 'Cómo se armó'], ['mapa-tactico-reglas', 'Para cambiar el mapa'], ['mapa-tactico-codigo', 'Dónde está']] },
       { id: 'mapa-universidad', t: 'Mapa 3 · Universidad', i: 'map' }] },
     { g: 'Proyecto', p: 'Parte 7 · Decisiones y pendientes', items: [
       { id: 'pendientes', t: 'Decisiones y pendientes', i: 'flag', subs: [['decisiones', 'Decisiones tomadas'], ['falta', 'Lo que falta']] },
