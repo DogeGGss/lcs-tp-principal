@@ -917,7 +917,7 @@ body.capture,body.capture-ms,body.capture-cr{padding-left:0!important}
     <li><span class="n">4</span><span><b>Ficha:</b> daño por zona y tiros para matar según el escudo del rival. Las celdas de un tiro van en naranja.</span></li>
     <li><span class="n">5</span><span><b>Botón de compra.</b> Si no se puede, dice por qué: cuánto falta, que ya la tiene, que llegó al máximo o que terminó la fase.</span></li>
     <li><span class="n">6</span><span><b>Tu equipo:</b> los cuatro espacios, el escudo y lo gastado en esta fase, con "Deshacer".</span></li>
-    <li><span class="n">7</span><span><b>Compañeros</b> (Táctico): la plata y la compra de cada uno. En Zombie, la próxima oleada; en Deathmatch, la tabla. <span class="st st-todo">Falta</span></span></li>
+    <li><span class="n">7</span><span><b>Compañeros</b> (Táctico): el nombre, la plata y la compra de cada uno, para decidir juntos si es ronda de ahorro. <span class="st st-ok">En el juego</span> En Zombie y Deathmatch ese lugar va a mostrar la próxima oleada y la tabla, cuando estén esos modos.</span></li>
     <li><span class="n">8</span><span><b>Atajos</b> siempre visibles, así la tienda se aprende sola.</span></li>
   </ol>
   <h3 id="tienda-estados">Estados</h3>
@@ -944,7 +944,7 @@ body.capture,body.capture-ms,body.capture-cr{padding-left:0!important}
       <code>PlayerWallet</code><span>La plata: $ 800 al empezar y tope de $ 9.000.</span>
       <span><code>BuyPhase</code> · <code>BuyZone</code></span><span>La fase de 20 s y la zona de compra (prefab <code>ZonaDeCompra</code>).</span>
     </div>
-    <p style="margin:12px 0 0">En el juego no hay desenfoque: el fondo se oscurece al 50 %. Los sonidos de la tienda son CA de US 076. Falta el panel de compañeros (US 175, CA13) y la tienda de Zombie (US 148) y Deathmatch (US 138).</p>
+    <p style="margin:12px 0 0">En el juego no hay desenfoque: el fondo se oscurece al 50 %. Los sonidos de la tienda son CA de US 076. Falta la tienda de Zombie (US 148) y Deathmatch (US 138).</p>
   </div>
 </section>
 
@@ -1875,7 +1875,7 @@ body.capture,body.capture-ms,body.capture-cr{padding-left:0!important}
     <tr><td>La Trochita: modelo, sonidos y lugar en el inventario</td><td>US 072</td><td><span class="st st-mid">En prueba</span></td></tr>
     <tr><td>Arma de los demás jugadores a tamaño real, en su mano</td><td>US 182</td><td><span class="st st-todo">Falta hacerla</span></td></tr>
     <tr><td>Soltar y levantar armas (se hace junto con el arma de los demás a tamaño real)</td><td>US 184, US 182</td><td><span class="st st-todo">Falta hacerla</span></td></tr>
-    <tr><td>Panel de compañeros en la tienda, y tienda de Zombie y Deathmatch</td><td>US 175, US 148, US 138</td><td><span class="st st-todo">Falta hacerlo</span></td></tr>
+    <tr><td>Tienda de Zombie y Deathmatch</td><td>US 148, US 138</td><td><span class="st st-todo">Falta hacerlo</span></td></tr>
     <tr><td>Marcadores de Táctico y Deathmatch, con la lista de bajas y la tabla (diseño listo)</td><td>US 057, US 134, US 141</td><td><span class="st st-todo">Falta hacerlo</span></td></tr>
     <tr><td>Marcador de Zombie (diseño listo)</td><td>US 150</td><td><span class="st st-todo">Falta hacerlo</span></td></tr>
     <tr><td>Recarga de La Porteña: la ficha dice 1,75 s y el código usa 1,5 s</td><td>US 071</td><td><span class="st st-mid">A corregir</span></td></tr>
