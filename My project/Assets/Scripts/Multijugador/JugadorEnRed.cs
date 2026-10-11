@@ -375,6 +375,17 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
     }
 
     /// <summary>
+    /// Al empezar la partida, vuelve al punto que le toca sin tocar nada más (vida, armas y plata quedan igual). Si el
+    /// anfitrión tardó en cargar el mapa, los demás pudieron moverse antes de empezar y arrancaban desde ahí.
+    /// </summary>
+    public void VolverAlInicio(Pose punto)
+    {
+        if (photonView == null || !photonView.IsMine || muerto) return;
+        Teletransportar(transform, punto.position, punto.rotation);
+        photonView.RPC(nameof(RpcReaparecio), RpcTarget.Others, punto.position, punto.rotation.eulerAngles.y);
+    }
+
+    /// <summary>
     /// US 195, CA3: volvió a la partida después de desconectarse. En el Táctico, si la ronda ya empezó, espera la
     /// siguiente como si hubiera muerto (sin aviso de baja). En Deathmatch reaparece enseguida, como al morir (US 137).
     /// </summary>
@@ -461,20 +472,22 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
         vida.TakeDamage(vida.currentHealth + vida.currentShield + 1);
     }
 
-    // Muerto no se mueve, no dispara ni cambia de arma; puede seguir mirando alrededor.
+    // Muerto no se mueve, no dispara ni cambia de arma; puede seguir mirando alrededor. Si muere con la pausa
+    // abierta, también se queda con lo que había apagado la pausa (PauseMenu.Release).
     private void Bloquear(bool bloquear)
     {
         if (!bloquear)
         {
             foreach (Behaviour componente in bloqueados)
-                if (componente != null) componente.enabled = true;
+                if (componente != null && !PauseMenu.Hold(componente)) componente.enabled = true;
             bloqueados.Clear();
             return;
         }
         bloqueados.Clear();
         foreach (Behaviour componente in GetComponentsInChildren<Behaviour>(true))
-            if (componente.enabled && (componente is PlayerMovement || componente is Pistola || componente is Mitre ||
-                componente is ArmaDeFuego || componente is MeleeAttack || componente is WeaponSwitcher || componente is PlayerAbility))
+            if ((componente is PlayerMovement || componente is Pistola || componente is Mitre || componente is ArmaDeFuego ||
+                 componente is MeleeAttack || componente is WeaponSwitcher || componente is PlayerAbility) &&
+                (componente.enabled || PauseMenu.Release(componente)))
             {
                 componente.enabled = false;
                 bloqueados.Add(componente);
@@ -1304,7 +1317,7 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
         jugador.SetPositionAndRotation(posicion, rotacion);
         if (prendido) cuerpo.enabled = true;
         Physics.SyncTransforms();
-        // US 006, CA6: al reaparecer no sigue con la velocidad que traía (por ejemplo, de una caída).
+        // US 006, CA4: al reaparecer no sigue con la velocidad que traía (por ejemplo, de una caída).
         PlayerMovement movimiento = jugador.GetComponent<PlayerMovement>();
         if (movimiento != null) movimiento.Frenar();
     }

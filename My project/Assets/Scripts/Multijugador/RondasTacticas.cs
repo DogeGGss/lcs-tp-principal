@@ -431,6 +431,8 @@ public class RondasTacticas : MonoBehaviour
         {
             PlayerWallet billetera = partida != null && partida.Local != null ? partida.Local.GetComponent<PlayerWallet>() : null;
             if (billetera != null) billetera.Set(PlataInicial);
+            // La ronda 1 arranca en la base aunque se haya movido mientras el anfitrión terminaba de cargar.
+            if (partida != null && partida.Local != null) partida.Local.VolverAlInicio(partida.PuntoDeBase());
         }
 
         // F21 (US 156, CA1): los pájaros del minijuego aparecen solo durante la compra.

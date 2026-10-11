@@ -161,7 +161,8 @@ public class Espectador : MonoBehaviour
         {
             bool camaraDeArmas = c is Camera cam && cam != camara; // la que dibuja el arma en la mano
             if (camaraDeArmas) camaraArmas = (Camera)c;
-            if (c.enabled && (c is CameraLook || c is PlayerMovement || c is WeaponSwitcher || camaraDeArmas))
+            // Con la pausa abierta, también lo que apagó la pausa (si no, al reanudar volvería a mirar con el mouse).
+            if ((c is CameraLook || c is PlayerMovement || c is WeaponSwitcher || camaraDeArmas) && (c.enabled || PauseMenu.Release(c)))
             {
                 c.enabled = false;
                 apagados.Add(c);
@@ -203,7 +204,7 @@ public class Espectador : MonoBehaviour
         // Por si no pasó por Mirar(null): el HUD vuelve a mostrar lo propio.
         CombatHud.Spectate(null);
         ShopUI.Spectated = null;
-        foreach (Behaviour c in apagados) if (c != null) c.enabled = true;
+        foreach (Behaviour c in apagados) if (c != null && !PauseMenu.Hold(c)) c.enabled = true;
         apagados.Clear();
         foreach (Renderer r in armasOcultas) if (r != null) r.enabled = true;
         armasOcultas.Clear();
