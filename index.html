@@ -605,6 +605,12 @@ a.uslink{white-space:nowrap}
 .pj .rl{font:600 14px/1 var(--display);letter-spacing:.12em;text-transform:uppercase;color:var(--ink-2)}
 .pj .ab{margin-top:10px;display:flex;gap:12px;align-items:flex-start}
 .pj .ab .kbd{flex:none;margin-top:2px}
+.pj .top{display:flex;align-items:center;gap:14px}
+.pj .top .hd{flex:1;min-width:0}
+.pj .ret{flex:none;width:64px;height:64px;border-radius:8px;object-fit:cover;background:#FFFFFF;border:1px solid var(--line)}
+#pjList{grid-template-columns:repeat(auto-fit,minmax(min(100%,340px),1fr))}
+@media (min-width:1100px){#pjList{grid-template-columns:repeat(2,1fr)}}
+.pj .ab .ico{flex:none;width:34px;height:34px;padding:6px;border-radius:8px;background:#0A0C11;box-sizing:border-box}
 .wgroup .grid3{grid-template-columns:repeat(auto-fill,minmax(min(100%,300px),1fr))}
 [id]{scroll-margin-top:18px}
 tr:target td{background:var(--accent-soft)}
@@ -761,21 +767,22 @@ body.capture,body.capture-ms,body.capture-cr{padding-left:0!important}
   <p style="margin-top:18px"><a class="btn" style="display:inline-block;text-decoration:none" href="presentacion/">Abrir presentación · 20 minutos →</a></p>
   <p class="lede">La referencia de cómo se ve y cómo funciona el juego. Cada parte dice qué hay que construir, con qué medidas y colores, dónde está en el código y qué historia lo cubre. Si vas a hacer una pantalla o un arma, empezá por acá.</p>
   <div class="facts">
-    <div class="fact"><b>5 de 7</b><span>armas de fuego del MVP en el juego</span></div>
+    <div class="fact"><b>7 de 7</b><span>armas de fuego del MVP en el juego</span></div>
     <div class="fact"><b>6</b><span>maquetas interactivas en esta guía</span></div>
     <div class="fact"><b>8</b><span>jugadores por sala online</span></div>
     <div class="fact"><b>1920 × 1080</b><span>pantalla de referencia</span></div>
   </div>
   <div class="callout" style="margin-top:22px"><b>Cómo trabajamos:</b> primero el diseño y después el código. Antes de hacer una pantalla o un arma nueva, se arma su maqueta o su ficha acá y se escribe su historia con el link a esta guía (como US 175). Cuando se termina, se actualizan la historia y esta guía con los valores finales.</div>
   <div class="callout" style="margin-top:12px"><b>Para jugar:</b> bajá el launcher una sola vez desde <a href="https://github.com/DogeGGss/lcs-tp-principal/releases/download/launcher/Riftwalker-Launcher.exe">Riftwalker-Launcher.exe</a>. Instala el juego, lo mantiene actualizado y muestra las notas de cada versión. Más detalles en <a href="#launcher">Launcher</a>.</div>
-  <p class="soft" style="margin-top:14px">Estados: <span class="st st-ok">En el juego</span> <span class="st st-mid">A medias</span> <span class="st st-todo">Falta hacerlo</span> <span class="st st-idea">Solo diseño</span>. Los "US ###" llevan a su historia en GitHub. Actualizada el 07/10/2026.</p>
+  <p class="soft" style="margin-top:14px">Estados: <span class="st st-ok">En el juego</span> <span class="st st-mid">A medias</span> <span class="st st-todo">Falta hacerlo</span> <span class="st st-idea">Solo diseño</span>. Los "US ###" llevan a su historia en GitHub. Actualizada el 11/10/2026.</p>
   <nav class="parts" aria-label="Partes de la guía">
     <a href="#estilo"><div class="pn">Parte 1</div><div class="pt">Identidad</div><div class="ps">Colores, tipografías, medidas, piezas y reglas para el código.</div></a>
     <a href="#tienda"><div class="pn">Parte 2</div><div class="pt">Pantallas</div><div class="ps">Tienda, HUD, selección de modo, créditos, el launcher y el resto de los menús.</div></a>
     <a href="#danio"><div class="pn">Parte 3</div><div class="pt">Combate</div><div class="ps">Daño, retroceso, arsenal, calculadora y cómo sumar un arma.</div></a>
     <a href="#eco"><div class="pn">Parte 4</div><div class="pt">Economía</div><div class="ps">Plata, puntos, escudos y granadas en cada modo.</div></a>
-    <a href="#personajes"><div class="pn">Parte 5</div><div class="pt">Personajes</div><div class="ps">Los cuatro provisorios y qué tiene que definir su diseño.</div></a>
-    <a href="#pendientes"><div class="pn">Parte 6</div><div class="pt">Decisiones y pendientes</div><div class="ps">Lo que ya se decidió y lo que falta diseñar o terminar.</div></a>
+    <a href="#personajes"><div class="pn">Parte 5</div><div class="pt">Personajes</div><div class="ps">Astra y el Trasbordo, los tres provisorios y qué tiene que definir su diseño.</div></a>
+    <a href="#mapas"><div class="pn">Parte 6</div><div class="pt">Mapas</div><div class="ps">La estación espacial del Táctico y la universidad del Zombie.</div></a>
+    <a href="#pendientes"><div class="pn">Parte 7</div><div class="pt">Decisiones y pendientes</div><div class="ps">Lo que ya se decidió y lo que falta diseñar o terminar.</div></a>
   </nav>
 </header>
 
@@ -929,7 +936,7 @@ body.capture,body.capture-ms,body.capture-cr{padding-left:0!important}
     <tr><td>Límite</td><td>Contador (2/2) y etiqueta "Máximo".</td><td>Comprá dos flash.</td></tr>
     <tr><td>Fuera de la zona o de la fase</td><td>Aviso rojo arriba; todo bloqueado, pero se puede mirar.</td><td>Estado → Fuera de zona o Terminó.</td></tr>
     <tr><td>Zombie <span class="st st-todo">Falta</span></td><td>Puntos en vez de plata, precios a la mitad y munición para comprar. A la derecha, la próxima oleada.</td><td>Modo → Zombie.</td></tr>
-    <tr><td>Deathmatch <span class="st st-todo">Falta</span></td><td>"Elegí tu equipo": todo gratis, sin escudo ni granadas.</td><td>Modo → Deathmatch.</td></tr>
+    <tr><td>Deathmatch <span class="st st-ok">En el juego</span></td><td>"Elegí tu equipo": todo gratis, sin escudo ni granadas. Se abre muerto, en la cuenta inicial o recién reaparecido (US 138).</td><td>Modo → Deathmatch.</td></tr>
   </table></div>
   </div>
 
@@ -944,7 +951,7 @@ body.capture,body.capture-ms,body.capture-cr{padding-left:0!important}
       <code>PlayerWallet</code><span>La plata: $ 800 al empezar y tope de $ 9.000.</span>
       <span><code>BuyPhase</code> · <code>BuyZone</code></span><span>La fase de 20 s y la zona de compra (prefab <code>ZonaDeCompra</code>).</span>
     </div>
-    <p style="margin:12px 0 0">En el juego no hay desenfoque: el fondo se oscurece al 50 %. Los sonidos de la tienda son CA de US 076. Falta la tienda de Zombie (US 148) y Deathmatch (US 138).</p>
+    <p style="margin:12px 0 0">En el juego no hay desenfoque: el fondo se oscurece al 50 %. Los sonidos de la tienda son CA de US 076. Falta la tienda de Zombie (US 148).</p>
   </div>
 </section>
 
@@ -978,6 +985,7 @@ body.capture,body.capture-ms,body.capture-cr{padding-left:0!important}
     <tr><td>Habilidad lista</td><td>Aro completo, las 12 marcas encendidas y la tecla en blanco.</td><td>Arranque de ronda.</td></tr>
     <tr><td>Recién usada</td><td>El aro y el ícono se ponen naranjas un instante.</td><td>Apretá <span class="kbd">Q</span>.</td></tr>
     <tr><td>En recarga</td><td>Ícono apagado, los segundos en el centro y las marcas que se encienden de a una.</td><td>Apretá <span class="kbd">Q</span> (20 s).</td></tr>
+    <tr><td>Con cargas</td><td>Debajo del aro, una raya por carga: blanca si está lista y naranja la que se acaba de usar. Los segundos son los que faltan para la próxima carga, aunque quede alguna para usar (US 019).</td><td>En el juego, con Astra.</td></tr>
     <tr><td>Vida crítica (25 o menos)</td><td>Número y vía en rojo, y los bordes de la pantalla se tiñen de rojo.</td><td>En combate.</td></tr>
     <tr><td>Sin escudo</td><td>La vía pierde el tramo celeste y no aparece el "+25" o "+50".</td><td>En combate.</td></tr>
     <tr><td>Poca munición (25 % o menos)</td><td>Número y durmientes en rojo.</td><td>En combate.</td></tr>
@@ -1038,7 +1046,7 @@ body.capture,body.capture-ms,body.capture-cr{padding-left:0!important}
     <div class="files">
       <code>CombatHud.cs</code><span>Arma el HUD por código y lee todo en cada cuadro: <code>HealthSystem</code> (vida y escudo), <code>PlayerAbility</code> (habilidad) y el arma que está en la mano.</span>
       <code>IHudWeapon</code><span>Interfaz que implementa cada arma para mostrar reserva y recarga (<code>ArmaDeFuego</code>, <code>Mitre</code>, <code>Pistola</code>). Un arma nueva tiene que implementarla.</span>
-      <code>WeaponSwitcher</code><span>Dice qué hay en cada espacio (US 055 y US 064).</span>
+      <code>WeaponSwitcher</code><span>Dice qué hay en cada espacio (US 055 y US 064). Con las granadas en la mano, el espacio 4 muestra la elegida y cuántas quedan de ese tipo.</span>
       <code>MiraTelescopica.cs</code><span>Va en el arma con mira (hoy, el Último Tren): maneja los zooms de la ficha (<code>zoom</code> y <code>zoom2</code>), la salida durante el cerrojo, la cámara y la sensibilidad (US 009).</span>
       <code>MiraTelescopicaHud.cs</code><span>Dibuja la lente por código, debajo del HUD.</span>
     </div>
@@ -1429,6 +1437,9 @@ body.capture,body.capture-ms,body.capture-cr{padding-left:0!important}
           <div class="cr-asset"><b>Modelos de las armas</b><span>Sci-Fi Modular Gun Pack, de Quaternius (CC0)</span></div>
           <div class="cr-asset"><b>Disparos</b><span>The Free Firearm Sound Library, de Ben Jaszczak, Brian Nelson, Kevin Heras y Matthew Nanney (CC0)</span></div>
           <div class="cr-asset"><b>Recargas</b><span>Gun reload sounds, de SpringySpringo, y Shotgun Reload Sound Effects, de zer0_sol (CC0, OpenGameArt)</span></div>
+          <div class="cr-asset"><b>Estallido de la flash</b><span>Flashbang explode, de MadPanCake (CC BY-NC 4.0, Freesound)</span></div>
+          <div class="cr-asset"><b>Música del Modo Deathmatch</b><span>action track 4, A.I. fight &amp; jumping cyborg, mezcla de glitchart: action track 4, de Alexandr Zhelanov (CC BY 3.0), y A.I. fight &amp; jumping cyborg, de tricksntraps (CC0, OpenGameArt)</span></div>
+          <div class="cr-asset"><b>Sonido de reaparición</b><span>Teleport, de fins (CC0, Freesound y OpenGameArt)</span></div>
 
 
           <div class="cr-role">Tipografías</div>
@@ -1567,10 +1578,10 @@ body.capture,body.capture-ms,body.capture-cr{padding-left:0!important}
     <tr id="pantalla-nota-po"><td><b>Nota para el PO</b></td><td>Panel de 1320 px sobre el menú: saludo a Amin y dos columnas, "Lo que funciona" y "Lo que todavía falta". Se vuelve a abrir con un botón abajo a la derecha.</td><td><code>NotaPO</code> (textos en el prefab)</td><td>US 180</td><td><span class="st st-ok">En el juego</span></td></tr>
     <tr id="pantalla-opciones"><td><b>Opciones</b></td><td>Pestañas Gráficos, Controles, Sonido y <a href="#mira-personalizable">Mira</a> (<span class="kbd">Q</span> y <span class="kbd">E</span>). Panel oscuro, título con la línea naranja, filas de 44 unidades, sliders con forma de vía y "Aplicar" y "Restablecer" al pie. Gráficos suma la opción "FPS y ping" (US 197) y Sonido, el volumen de Interfaz.</td><td><code>OpcionesPantalla</code>, <code>OpcionesKit</code>, <code>ControlsPanel</code>, <code>GraficosUIController</code>, <code>SonidoUIController</code>, <code>MiraUIController</code></td><td>US 048, US 153, US 154, US 155, US 172, US 197</td><td><span class="st st-ok">En el juego</span></td></tr>
     <tr id="pantalla-pausa"><td><b>Pausa</b></td><td>Reanudar, Opciones y Salir de la partida, con confirmación; en Zombie, también Reiniciar. En una partida online no congela el juego. En Configuración están las mismas pestañas de Gráficos y Mira que en el menú.</td><td><code>PauseMenu</code></td><td>US 051, US 049, US 052</td><td><span class="st st-ok">En el juego</span></td></tr>
-    <tr id="pantalla-personaje"><td><b>Selección de personaje</b></td><td>Una tarjeta por personaje con retrato, nombre, rol y habilidad (tecla y recarga). Se elige con clic, con los números o con las flechas. En Táctico hay 20 s antes de la ronda 1, y el personaje que confirma un compañero queda bloqueado con "Elegido por [nombre]".</td><td><code>CharacterSelectScreen</code>, <code>CharacterRoster</code>, <code>PersonajesTacticos</code></td><td>US 015, US 016</td><td><span class="st st-mid">A medias</span></td></tr>
+    <tr id="pantalla-personaje"><td><b>Selección de personaje</b></td><td>Una tarjeta por personaje con retrato, nombre, rol y habilidad (tecla y recarga). Se elige con clic, con los números o con las flechas. En Táctico hay 20 s antes de la ronda 1, y el personaje que confirma un compañero queda bloqueado con "Elegido por [nombre]". Astra tiene su retrato; los otros tres son provisorios y lo dicen en su tarjeta.</td><td><code>CharacterSelectScreen</code>, <code>CharacterRoster</code>, <code>PersonajesTacticos</code></td><td>US 015, US 016</td><td><span class="st st-mid">A medias</span></td></tr>
     <tr id="pantalla-sala"><td><b>Sala online</b></td><td>El código de la sala en grande con botón para copiarlo, los 8 lugares, el mapa (lo cambia el anfitrión) e "Iniciar partida" desde 2 jugadores.</td><td><code>ModeSelectScreen</code>, <code>Multijugador</code></td><td>US 026, US 027</td><td><span class="st st-ok">En el juego</span></td></tr>
-    <tr id="pantalla-contorno"><td><b>Contorno de los rivales</b></td><td>Contorno rojo fino (2 px, el rojo de rivales) alrededor de cada rival, como en Valorant: solo la silueta, sin rayas por dentro. Los compañeros no tienen contorno, y no se ve a través de las paredes ni en los muertos. Nadie tiene nombre ni vida arriba de la cabeza.</td><td><code>ContornoRival</code></td><td>US 031</td><td><span class="st st-mid">En prueba</span></td></tr>
-    <tr id="pantalla-aviso-muerte"><td><b>Aviso de muerte (online)</b></td><td>En el centro, "Te eliminó [nombre]" en grande (64 px) y debajo "Reaparecés en 3", que cuenta hacia atrás. En Táctico dice "Reaparecés en la ronda siguiente".</td><td><code>PartidaEnRed.Aviso</code>, <code>JugadorEnRed</code></td><td>US 030, US 137</td><td><span class="st st-mid">A medias</span></td></tr>
+    <tr id="pantalla-contorno"><td><b>Contorno de los rivales</b></td><td>Contorno rojo fino (2 px, el rojo de rivales) alrededor de cada rival, como en Valorant: solo la silueta, sin rayas por dentro. Los compañeros no tienen contorno, y no se ve a través de las paredes ni en los muertos. Nadie tiene nombre ni vida arriba de la cabeza.</td><td><code>ContornoRival</code></td><td>US 031</td><td><span class="st st-ok">En el juego</span></td></tr>
+    <tr id="pantalla-aviso-muerte"><td><b>Aviso de muerte (online)</b></td><td>En el centro, "Te eliminó [nombre]" en grande (64 px) y debajo "Reaparecés en 3", que cuenta hacia atrás. En Táctico dice "Reaparecés en la ronda siguiente". Si se cayó del mapa, el título es "Te caíste del mapa" y nadie suma la baja (US 006).</td><td><code>PartidaEnRed.Aviso</code>, <code>JugadorEnRed</code></td><td>US 030, US 137</td><td><span class="st st-ok">En el juego</span></td></tr>
     <tr id="pantalla-logros"><td><b>Logros</b></td><td>La pantalla de logros del menú (hoy solo tiene "Volver") y la notificación que aparece durante la partida al desbloquear uno.</td><td><code>MenuUIController</code> (panel de logros)</td><td>US 043, US 044, US 160</td><td><span class="st st-todo">Falta diseñar</span></td></tr>
     <tr id="pantalla-espectador"><td><b>Espectador</b></td><td>Al morir en Táctico, la vista de un compañero vivo con su nombre en pantalla. Ver <a href="#modo-espectador">Espectador</a>.</td><td><code>Espectador</code></td><td>US 133</td><td><span class="st st-ok">En el juego</span></td></tr>
     <tr id="pantalla-resultado"><td><b>Resultado de partida</b></td><td>Victoria o derrota (o el puesto), el marcador final, la tabla de estadísticas y "Volver al menú". Táctico y Deathmatch, en <a href="#resultado-partida">Resultado de partida</a>. Falta Zombie, con el récord y "Jugar de nuevo".</td><td><code>ResultadoPartida</code>, <code>ResultadoDeathmatch</code></td><td>US 034, US 142, US 151</td><td><span class="st st-mid">A medias</span></td></tr>
@@ -1721,10 +1732,11 @@ body.capture,body.capture-ms,body.capture-cr{padding-left:0!important}
     <tr><td>Saltar</td><td>Dispersión ×4: saltando no se acierta, como en CS.</td><td><span class="st st-ok">En el juego</span></td></tr>
     <tr><td>Agacharse</td><td>Dispersión y retroceso −25 %.</td><td><span class="st st-ok">En el juego</span></td></tr>
     <tr><td>Apuntar (clic derecho)</td><td>Solo los francotiradores: <a href="#mira-telescopica">mira telescópica</a> con los zooms de la ficha. Tiran igual de preciso con la mira o sin ella (dispersión −30 % siempre) y no tienen mira en el HUD, como el AWP de CS. Las demás armas no apuntan.</td><td><span class="st st-ok">En el juego</span></td></tr>
-    <tr><td>Velocidad</td><td>Se multiplica por la movilidad del arma en la mano (cuchillo ×1,15, pistolas ×1, fusiles ×0,92, francotirador ×0,85).</td><td><span class="st st-ok">En el juego</span></td></tr>
+    <tr><td>Velocidad</td><td>Se multiplica por la movilidad del arma en la mano: cuchillo ×1,15, pistolas ×1, Urquiza ×0,97, Roca ×0,95, Belgrano Sur ×0,93, Mitre ×0,92 y Último Tren ×0,85.</td><td><span class="st st-ok">En el juego</span></td></tr>
+    <tr><td><span class="kbd">Shift</span> en el Táctico</td><td>No se corre: camina despacio (3 m/s en vez de 5) y sus pasos no se escuchan, para acercarse sin avisar (US 198). En Deathmatch y Zombie, Shift corre a 8 m/s.</td><td><span class="st st-ok">En el juego</span></td></tr>
     <tr><td>Marcador de impacto</td><td>Cruz blanca al cuerpo, naranja con un "clin" a la cabeza y roja si mata.</td><td><span class="st st-ok">En el juego</span></td></tr>
     <tr><td>Moverse apuntando</td><td>Velocidad ×0,76 mientras se apunta.</td><td><span class="st st-idea">Solo diseño</span></td></tr>
-    <tr><td>Correr</td><td>No se dispara corriendo. Al soltar Shift, el arma tarda en volver: 0,2 s pistolas y subfusiles, 0,25 s fusiles y escopetas, 0,35 s francotiradores.</td><td><span class="st st-idea">Solo diseño</span></td></tr>
+    <tr><td>Correr (Deathmatch y Zombie)</td><td>No se dispara corriendo. Al soltar Shift, el arma tarda en volver: 0,2 s pistolas y subfusiles, 0,25 s fusiles y escopetas, 0,35 s francotiradores.</td><td><span class="st st-idea">Solo diseño</span></td></tr>
   </table></div>
 </section>
 
@@ -1793,7 +1805,7 @@ body.capture,body.capture-ms,body.capture-cr{padding-left:0!important}
     <li><b>Jugador.</b> En <code>Player.prefab</code>, poné el prefab bajo Main Camera, en la misma posición que el Mitre y desactivado, y sumalo a <code>WeaponSwitcher → otrasPrincipales</code>. Una secundaria va igual, pero en la posición de La Trochita y en <code>WeaponSwitcher → otrasSecundarias</code>: en el espacio 2 va la que se compró y, si no compró ninguna, La Porteña (<code>Pistola.cs</code>).</li>
     <li><b>Sonidos.</b> En <code>Assets/Sonidos/Armas</code>, con licencia libre, recortados a un tiro para que no se amontonen a la cadencia del arma. Sumá la fuente a los créditos.</li>
     <li><b>Multijugador.</b> No hace falta nada: <code>JugadorEnRed</code> toma las principales y las secundarias del <code>WeaponSwitcher</code> y sus sonidos de disparo.</li>
-    <li><b>Probar.</b> Daño por tramo contra un blanco, recarga, ráfaga o bombeo, comprar y reemplazar en la tienda, el HUD y una partida de Deathmatch editor contra build.</li>
+    <li><b>Probar.</b> Daño por tramo en la escena <code>Pruebas_Armas</code> (una pista de 35 m marcada cada metro y muñecos con vida y escudo que muestran el daño recibido; se abre y se le da Play), recarga, ráfaga o bombeo, comprar y reemplazar en la tienda, el HUD y una partida de Deathmatch editor contra build.</li>
     <li><b>Documentar.</b> Actualizá la historia del arma con los valores finales (y sus CA de sonido) y esta guía.</li>
   </ol>
 </section>
@@ -1803,10 +1815,10 @@ body.capture,body.capture-ms,body.capture-cr{padding-left:0!important}
 
 <section id="eco">
   <div class="sec-head"><h2>Economía</h2><span class="sub">Plata, puntos y límites</span> <span class="st st-mid">A medias</span></div>
-  <p class="soft">Hoy el juego tiene la plata inicial y el tope (<code>PlayerWallet</code>) y la fase de compra de 20 s (<code>BuyPhase</code>). Los premios de cada ronda llegan con US 135; los puntos de Zombie, con US 147.</p>
+  <p class="soft">El Táctico ya tiene todo: la plata y su tope (<code>PlayerWallet</code>), la fase de compra de 20 s y los premios de cada ronda (US 135, en <code>RondasTacticas</code>). Deathmatch no usa plata (US 138). Falta Zombie: sus puntos y su tienda llegan con US 147 y US 148.</p>
   <div class="grid3">
     <div class="card" id="eco-tactico"><h3 style="margin-top:0">Táctico</h3>
-      <table><tr><td>Plata inicial</td><td class="num">$ 800</td></tr><tr><td>Por eliminación</td><td class="num">+$ 200</td></tr><tr><td>Ronda ganada</td><td class="num">+$ 3.000</td></tr><tr><td>Ronda perdida</td><td class="num">+$ 1.900</td></tr><tr><td>2.ª derrota seguida</td><td class="num">+$ 2.400</td></tr><tr><td>3.ª o más</td><td class="num">+$ 2.900</td></tr><tr><td>Dispositivo plantado (atacantes)</td><td class="num">+$ 300</td></tr><tr><td>Tiempo agotado sin plantar (atacantes vivos)</td><td class="num">$ 0</td></tr><tr><td>Tope</td><td class="num">$ 9.000</td></tr><tr><td>Fase de compra</td><td class="num">20 s</td></tr></table>
+      <table><tr><td>Plata inicial</td><td class="num">$ 800</td></tr><tr><td>Por eliminación</td><td class="num">+$ 200</td></tr><tr><td>Ronda ganada</td><td class="num">+$ 3.000</td></tr><tr><td>Ronda perdida</td><td class="num">+$ 1.900</td></tr><tr><td>2.ª derrota seguida</td><td class="num">+$ 2.400</td></tr><tr><td>3.ª o más</td><td class="num">+$ 2.900</td></tr><tr><td>Dispositivo plantado (atacantes)</td><td class="num">+$ 300</td></tr><tr><td>Tiempo agotado sin plantar (atacantes vivos)</td><td class="num">$ 0</td></tr><tr><td>Tope</td><td class="num">$ 9.000</td></tr><tr><td>Muerte súbita (ronda 13, 6 a 6)</td><td class="num">$ 5.000 para todos</td></tr><tr><td>Fase de compra</td><td class="num">20 s</td></tr></table>
       <p class="soft" style="margin-top:10px">Si sobrevivís, te quedás con armas y escudo (con lo que le quede). Si morís, los perdés. Al cambiar de lado, después de la ronda 6, todos vuelven a $ 800.</p></div>
     <div class="card" id="eco-zombie"><h3 style="margin-top:0">Zombie</h3>
       <table><tr><td>Puntos iniciales</td><td class="num">500</td></tr><tr><td>Por impacto</td><td class="num">+10</td></tr><tr><td>Por eliminación</td><td class="num">+60</td></tr><tr><td>Eliminación a la cabeza</td><td class="num">+100</td></tr><tr><td>Precios</td><td class="num">la mitad</td></tr><tr><td>Munición (llena la reserva)</td><td class="num">150</td></tr><tr><td>Tienda</td><td class="num">entre oleadas</td></tr></table>
@@ -1828,12 +1840,24 @@ body.capture,body.capture-ms,body.capture-cr{padding-left:0!important}
 </section>
 
 <!-- ===================== PARTE 5 · PERSONAJES ===================== -->
-<div class="part"><span class="pn">5</span><div><h2>Personajes</h2><p>Los que hay hoy son provisorios. El diseño es US 183.</p></div></div>
+<div class="part"><span class="pn">5</span><div><h2>Personajes</h2><p>Astra es la primera terminada; los otros tres siguen siendo provisorios. El diseño es US 183.</p></div></div>
 
 <section id="personajes">
-  <div class="sec-head"><h2>Personajes y habilidades</h2><span class="sub">Provisorios · US 183</span> <span class="st st-todo">Falta diseñarlos</span></div>
-  <p>Hoy hay cuatro personajes de prueba para que funcionen la selección (US 015), la habilidad con <span class="kbd">Q</span> (US 014 y US 017) y el reloj del HUD. Sus nombres, roles y habilidades son provisorios: el efecto de cada habilidad todavía no está hecho.</p>
+  <div class="sec-head"><h2>Personajes y habilidades</h2><span class="sub">US 183 · US 019</span> <span class="st st-mid">A medias</span></div>
+  <p>Hay cuatro personajes en la selección (US 015). <b>Astra</b> es la primera terminada: tiene su modelo, su retrato, sus brazos en primera persona y su habilidad, el <b>Trasbordo</b> (US 019). Los otros tres (Alfa, Bravo y Charlie) son de prueba, para que funcionen la selección, la habilidad con <span class="kbd">Q</span> (US 014 y US 017) y el reloj del HUD: sus nombres, roles y habilidades son provisorios y sus habilidades todavía no hacen nada.</p>
   <div class="grid2" id="pjList"></div>
+  <h3 id="trasbordo">Trasbordo, la habilidad de Astra</h3>
+  <p>Un salto corto como el de Tracer (Overwatch), con cargas y valores pensados para un juego táctico. Las cifras se ajustan jugando.</p>
+  <div class="table-wrap"><table>
+    <tr><th>Qué</th><th>Cómo es</th><th>CA de US 019</th></tr>
+    <tr><td>Salto</td><td>Aparece al instante 9 m más allá, hacia donde camina con WASD; quieta, hacia donde mira. Es horizontal: solo sube o baja para seguir el piso, los escalones y las rampas. Si termina sobre el vacío, cae.</td><td>CA1, CA4</td></tr>
+    <tr><td>Cámara</td><td>Sigue mirando hacia el mismo lado y puede disparar enseguida.</td><td>CA2</td></tr>
+    <tr><td>Obstáculos</td><td>No atraviesa paredes, puertas, muros de la base ni jugadores: queda justo antes. Si el obstáculo está a menos de 1 m, no salta ni gasta la carga.</td><td>CA3</td></tr>
+    <tr><td>Cargas</td><td>2 cargas; cada una vuelve sola en 10 s, de a una. En el Táctico cada ronda arranca con las 2 llenas.</td><td>CA5</td></tr>
+    <tr><td>Cuándo no se puede</td><td>En la fase de compra, con la tienda abierta, plantando o desactivando el dispositivo, y muerta.</td><td>CA6</td></tr>
+    <tr><td>HUD</td><td>El reloj de la habilidad muestra las cargas que quedan (ver <a href="#hud-estados">Estados del HUD</a>).</td><td>CA7</td></tr>
+    <tr><td>Se ve y se escucha</td><td>Los demás ven un destello donde salió y otro donde llegó, y la ven aparecer de golpe. Su sonido se escucha hasta unos 25 m, desde donde salió.</td><td>CA8 a CA10</td></tr>
+  </table></div>
   <div class="dev">
     <h3>Qué tiene que definir el diseño</h3>
     <ul>
@@ -1841,13 +1865,45 @@ body.capture,body.capture-ms,body.capture-cr{padding-left:0!important}
       <li><b>Cómo se ven:</b> que se distingan a la distancia por la silueta o los colores, y un retrato para la tarjeta de selección.</li>
       <li><b>Su habilidad:</b> qué hace, cuánto dura, su alcance y su recarga, sin romper el balance de las armas (parte 3).</li>
       <li><b>Su ícono:</b> que se entienda dentro del aro de 112 px del HUD, con un dibujo de unos 46 px.</li>
-      <li><b>Dónde se carga:</b> cada personaje es un <code>CharacterData</code> en <code>Resources/Personajes</code> y cada habilidad, un <code>AbilityData</code> en <code>Assets/Data/Habilidades</code>. Con el diseño se completan US 019 a US 022.</li>
+      <li><b>Dónde se carga:</b> cada personaje es un <code>CharacterData</code> en <code>Resources/Personajes</code> y cada habilidad, un <code>AbilityData</code> en <code>Assets/Data/Habilidades</code>. Con el diseño se completan US 020 a US 022 (la de Astra, US 019, ya está).</li>
     </ul>
   </div>
 </section>
 
-<!-- ===================== PARTE 6 · DECISIONES Y PENDIENTES ===================== -->
-<div class="part"><span class="pn">6</span><div><h2>Decisiones y pendientes</h2><p>Para no volver a discutir lo decidido y saber qué falta.</p></div></div>
+<!-- ===================== PARTE 6 · MAPAS ===================== -->
+<div class="part"><span class="pn">6</span><div><h2>Mapas</h2><p>Dónde se juega cada modo. Historias: US 082 a US 084, US 185 a US 190 y US 213 a US 215.</p></div></div>
+
+<section id="mapas">
+  <div class="sec-head"><h2>Mapa 2 · Estación espacial</h2><span class="sub">Modo Táctico · US 083</span> <span class="st st-ok">En el juego</span></div>
+  <p>El mapa del Táctico, y el que viene elegido al crear la sala (US 213). Es una estación espacial armada con el kit sci-fi de Creepy Cat, de unos 200 × 95 m. La estructura central y los caminos a los sitios son espejo uno del otro, así el mapa no favorece a ningún equipo; las bases sí son distintas, para que los defensores lleguen antes a los sitios.</p>
+  <div class="table-wrap"><table>
+    <tr><th>Parte</th><th>Cómo es</th><th>Historia</th></tr>
+    <tr><td>Niveles</td><td>Una planta baja y un nivel alto, a unos 6 m, unidos por escaleras y rampas.</td><td>US 083</td></tr>
+    <tr><td>Bases</td><td>Atacantes al este y defensores al oeste, con 4 puntos de aparición cada una. Desde una base no se ve la otra.</td><td>US 213</td></tr>
+    <tr><td>Sitios A y B</td><td>Zonas de plantado de 10 × 10 m marcadas con su letra: A en el nivel alto y B en la planta baja. A cada una se llega por al menos dos caminos, y un defensor rota de una a otra en menos de 20 s.</td><td>US 131, US 213</td></tr>
+    <tr><td>Zonas de compra</td><td>Una de los atacantes y dos de los defensores, que llegan hasta los muros de la base. Desde su borde, los defensores llegan a cada sitio entre 4 y 6 s antes que los atacantes.</td><td>US 213</td></tr>
+    <tr><td>Muros de la base</td><td>Paredes rojas semitransparentes que cierran las salidas de cada base durante los 20 s de compra. No se pueden atravesar, ni con el Trasbordo, y desaparecen al empezar el combate.</td><td>US 190</td></tr>
+    <tr><td>Caídas</td><td>Cerca de los sitios A y B hay vacíos. Caerse cuenta como una muerte: se espera a la ronda siguiente.</td><td>US 214, US 006</td></tr>
+    <tr><td>Sonido y luz</td><td>Sin música: el zumbido de la estación y el ruido de algunas máquinas, que se escucha al acercarse. El cielo del kit, sin sol, y la luz de las lámparas, horneada para que ande bien.</td><td>US 083, US 215</td></tr>
+  </table></div>
+  <p class="soft">En la sala también se pueden elegir el Mapa 1 (US 082), que hoy es la escena de ejemplo del kit, y el Mapa de pruebas. El mapa lo cambia el anfitrión (<code>ConfigRed</code>).</p>
+</section>
+
+<section id="mapa-universidad">
+  <div class="sec-head"><h2>Mapa 3 · Universidad</h2><span class="sub">Modo Zombie · US 084</span> <span class="st st-mid">A medias</span></div>
+  <p>El campus de la UNGS de noche, a escala real sobre el plano oficial (1:500) y fotos de los edificios, para que lo reconozca cualquiera que estudia ahí. Es el mapa del Zombie, que llega en el Sprint 4.</p>
+  <div class="table-wrap"><table>
+    <tr><th>Parte</th><th>Cómo es</th><th>Historia</th><th>Estado</th></tr>
+    <tr><td>Edificios</td><td>Los módulos 2, 4, 5 y 6 unidos por el pasillo techado con columnas, el módulo 7 en forma de L y de 3 pisos, el módulo 9 (el bar) y la entrada con el cilindro de la UNGS y la garita. Algunos edificios todavía son solo el volumen, sin ventanas ni detalles.</td><td>US 084</td><td><span class="st st-mid">A medias</span></td></tr>
+    <tr><td>Exterior</td><td>La plaza con el árbol, el campo de pasto, los caminos, las calles laterales, el estacionamiento detrás del módulo 7 y la reja perimetral.</td><td>US 185</td><td><span class="st st-mid">A medias</span></td></tr>
+    <tr><td>Noche</td><td>Cielo con luna y estrellas, los faroles de la UNGS, luciérnagas y polillas y un clima de terror, sin perder de vista a un zombi a 15 m.</td><td>US 186</td><td><span class="st st-mid">A medias</span></td></tr>
+    <tr><td>Para el Zombie</td><td>Inicio en la entrada, apariciones de zombis por todo el mapa y el NavMesh para que lleguen a cualquier parte.</td><td>US 187</td><td><span class="st st-todo">Falta hacerlo</span></td></tr>
+    <tr><td>Recorridos y rendimiento</td><td>Colisiones, límites del mapa y que ande fluido.</td><td>US 188, US 189</td><td><span class="st st-todo">Falta hacerlo</span></td></tr>
+  </table></div>
+</section>
+
+<!-- ===================== PARTE 7 · DECISIONES Y PENDIENTES ===================== -->
+<div class="part"><span class="pn">7</span><div><h2>Decisiones y pendientes</h2><p>Para no volver a discutir lo decidido y saber qué falta.</p></div></div>
 
 <section id="pendientes">
   <div class="sec-head"><h2 id="decisiones">Decisiones tomadas</h2></div>
@@ -1864,23 +1920,24 @@ body.capture,body.capture-ms,body.capture-cr{padding-left:0!important}
     <tr><td>Sonidos y animaciones</td><td>No son historias aparte: van como CA de la historia a la que pertenecen, un CA por sonido.</td><td>29/09/2026</td></tr>
     <tr id="decision-soltar-armas"><td>Soltar y levantar armas</td><td>Solo en Táctico, con <span class="kbd">G</span>. Se levanta pasando por encima con el espacio vacío, sin tecla para cambiar. Al morir cae la principal, o la secundaria si no hay. Se puede comprar un arma para un compañero y soltársela.</td><td>US 184</td></tr>
     <tr id="decision-marcadores"><td>Marcadores</td><td>Táctico y Deathmatch comparten el marcador de US 057. Zombie tiene uno propio (oleada, zombis que quedan, descanso, puntos y récord), sin lista de bajas ni tabla con Tab, porque se juega solo contra la horda. Sus puntos van abajo a la izquierda, donde está la plata en Táctico.</td><td>US 057, US 150 · 30/09/2026</td></tr>
+    <tr><td>Correr en el Táctico</td><td>No se corre: <span class="kbd">Shift</span> camina despacio y sin ruido de pasos. En Deathmatch y Zombie, Shift corre.</td><td>US 198</td></tr>
+    <tr><td>Muros de la base</td><td>Cierran las salidas de cada base durante la compra, y la zona de compra llega hasta ellos. Las bases no son espejo: cada una tiene sus salidas.</td><td>US 190, US 213 · 11/10/2026</td></tr>
+    <tr><td>Caerse del mapa</td><td>Cada modo lo define en su historia: en el Táctico es una muerte hasta la ronda siguiente (US 006), en Deathmatch reaparece a los 3 s (US 137) y en Zombie termina la partida (US 151).</td><td>11/10/2026</td></tr>
+    <tr><td>Habilidad en cada ronda</td><td>En el Táctico cada ronda arranca con todas las cargas de la habilidad: no se arrastra lo gastado en la anterior.</td><td>US 019</td></tr>
+    <tr><td>Versión para jugar online</td><td>Solo se juntan jugadores con la misma versión. El juego se instala y se actualiza con el launcher.</td><td>US 204</td></tr>
   </table></div>
 
   <h3 id="falta">Lo que falta diseñar o terminar</h3>
   <div class="table-wrap"><table>
     <tr><th>Qué</th><th>Historias</th><th>Estado</th></tr>
-    <tr><td>Los cuatro personajes y sus habilidades</td><td>US 183, US 019 a US 022</td><td><span class="st st-todo">Falta diseñar</span></td></tr>
-    <tr><td>Diseño del Mapa 1 y del Mapa 2 (hoy sus historias no dicen cómo son)</td><td>US 082, US 083</td><td><span class="st st-todo">Falta diseñar</span></td></tr>
-    <tr><td>Último Tren con mira telescópica</td><td>US 068, US 009</td><td><span class="st st-mid">En prueba</span></td></tr>
-    <tr><td>La Trochita: modelo, sonidos y lugar en el inventario</td><td>US 072</td><td><span class="st st-mid">En prueba</span></td></tr>
-    <tr><td>Arma de los demás jugadores a tamaño real, en su mano</td><td>US 182</td><td><span class="st st-todo">Falta hacerla</span></td></tr>
-    <tr><td>Soltar y levantar armas (se hace junto con el arma de los demás a tamaño real)</td><td>US 184, US 182</td><td><span class="st st-todo">Falta hacerla</span></td></tr>
-    <tr><td>Tienda de Zombie y Deathmatch</td><td>US 148, US 138</td><td><span class="st st-todo">Falta hacerlo</span></td></tr>
-    <tr><td>Marcadores de Táctico y Deathmatch, con la lista de bajas y la tabla (diseño listo)</td><td>US 057, US 134, US 141</td><td><span class="st st-todo">Falta hacerlo</span></td></tr>
-    <tr><td>Marcador de Zombie (diseño listo)</td><td>US 150</td><td><span class="st st-todo">Falta hacerlo</span></td></tr>
+    <tr><td>Los otros tres personajes y sus habilidades (Astra y el Trasbordo ya están)</td><td>US 183, US 020 a US 022</td><td><span class="st st-todo">Falta diseñar</span></td></tr>
+    <tr><td>Modo Zombie: oleadas, tipos de zombi, jefe, puntos, tienda, marcador (diseño listo) y resultado con récord</td><td>US 143 a US 151</td><td><span class="st st-todo">Falta hacerlo</span></td></tr>
+    <tr><td>Mapa 3: la noche, lo que necesitan los zombis, los recorridos y el rendimiento</td><td>US 186 a US 189</td><td><span class="st st-mid">A medias</span></td></tr>
+    <tr><td>Mapa 1: definir cómo es (hoy usa la escena de ejemplo del kit)</td><td>US 082</td><td><span class="st st-todo">Falta diseñar</span></td></tr>
+    <tr><td>Logros, estadísticas y campo de práctica</td><td>US 040 a US 045, US 159, US 118 a US 122, US 166</td><td><span class="st st-todo">Falta diseñar</span></td></tr>
     <tr><td>Recarga de La Porteña: la ficha dice 1,75 s y el código usa 1,5 s</td><td>US 071</td><td><span class="st st-mid">A corregir</span></td></tr>
+    <tr><td>Texto del Último Tren en la ficha de la tienda: dice que sin mira "dispara donde quiere", pero tira igual de preciso con la mira o sin ella</td><td>US 068</td><td><span class="st st-mid">A corregir</span></td></tr>
     <tr><td>No disparar corriendo y movilidad al apuntar</td><td>Sin historia</td><td><span class="st st-idea">A decidir</span></td></tr>
-    <tr><td>Aviso de versión nueva o launcher, para que todos jueguen con la última versión</td><td>A decidir con el PO</td><td><span class="st st-idea">A decidir</span></td></tr>
   </table></div>
 </section>
 
@@ -2038,7 +2095,7 @@ const weapon = id => DATA.armas.find(w => w.id === id);
 const img = id => `img/${id}.png`;
 function levelTag(n) { const cls = { 'MVP':'mvp', 'Extensión':'ext', 'Opcional':'opt', 'Zombie':'zom' }[n] || 'opt'; return `<span class="tag ${cls}">${n}</span>`; }
 
-/* ---------- estado en el juego (29/09/2026): modelo, sonidos y retroceso de las fichas de Assets/Data/Tienda ---------- */
+/* ---------- estado en el juego (11/10/2026): modelo, sonidos y retroceso de las fichas de Assets/Data/Tienda ---------- */
 const EXTRA = {
   fusil: { estado: 'juego', modelo: 'AR_1', sonido: 'mitre_disparo.wav (AK-47) · mitre_recarga.wav',
     rc: { exact: 2, kick: 1, max: 4.12, late: 0.48, drift: 0, sway: 1, swayShots: 3, blocks: true, growth: 0.08, bias: 0.25, variation: 0.12, recovery: 0.3, punch: 0.4,
@@ -2059,20 +2116,21 @@ const EXTRA = {
 };
 DATA.armas.forEach(w => Object.assign(w, { estado: 'diseño' }, EXTRA[w.id] || {}));
 const ESTADO = { juego: ['st-ok', 'En el juego'], pendiente: ['st-todo', 'Falta hacerla'], 'diseño': ['st-idea', 'Solo diseño'] };
-const GR_EST = { metralla: ['st-mid', 'En desarrollo'], humo: ['st-mid', 'En desarrollo'], flash: ['st-todo', 'Falta hacerla'] };
+const GR_EST = { metralla: ['st-ok', 'En el juego'], humo: ['st-ok', 'En el juego'], flash: ['st-ok', 'En el juego'] };
 
-/* ---------- personajes provisorios (Resources/Personajes y Assets/Data/Habilidades) ---------- */
+/* ---------- personajes (Resources/Personajes y Assets/Data/Habilidades) ---------- */
 const PERSONAJES = [
+  { nombre: 'Astra', rol: 'Duelista', color: '#B48CFF', hab: 'Trasbordo', recarga: 10, cargas: 2, retrato: 'img/astra.png', icono: 'img/trasbordo.png',
+    efecto: 'Desaparece y aparece 9 m más allá, hacia donde camina (o hacia adelante si está quieta). No atraviesa paredes ni jugadores.' },
   { nombre: 'Alfa', rol: 'Iniciador', color: '#F29A38', hab: 'Silbato', recarga: 20, efecto: 'Aturde 1,5 s a los rivales en un cono de 8 m. Es el ejemplo del HUD.' },
   { nombre: 'Bravo', rol: 'Centinela', color: '#4CC3FF', hab: 'Barrera', recarga: 30, efecto: 'Levanta una pared de energía de 4 m que frena las balas durante 6 s.' },
-  { nombre: 'Charlie', rol: 'Explorador', color: '#7DE05A', hab: 'Pulso', recarga: 25, efecto: 'Revela a los rivales que estén a menos de 15 m durante 3 s.' },
-  { nombre: 'Delta', rol: 'Duelista', color: '#B48CFF', hab: 'Impulso', recarga: 15, efecto: 'Desplazamiento rápido de 6 m hacia donde te estás moviendo.' }
+  { nombre: 'Charlie', rol: 'Explorador', color: '#7DE05A', hab: 'Pulso', recarga: 25, efecto: 'Revela a los rivales que estén a menos de 15 m durante 3 s.' }
 ];
 function renderPersonajes() {
   $('#pjList').innerHTML = PERSONAJES.map(p => `<article class="card pj" style="--c:${p.color}">
-    <div class="hd"><span class="nm">${esc(p.nombre)}</span><span class="rl">${esc(p.rol)}</span></div>
-    <div class="ab"><span class="kbd">Q</span><div><b>${esc(p.hab)}</b> · recarga ${p.recarga} s<br><span class="soft">${esc(p.efecto)}</span></div></div>
-    <p class="soft" style="margin:10px 0 0;font-size:14px">Color <code>${p.color}</code> · sin retrato · <span class="st st-idea">Provisorio</span></p>
+    <div class="top">${p.retrato ? `<img class="ret" src="${p.retrato}" alt="Retrato de ${esc(p.nombre)}">` : ''}<div class="hd"><span class="nm">${esc(p.nombre)}</span><span class="rl">${esc(p.rol)}</span></div></div>
+    <div class="ab">${p.icono ? `<img class="ico" src="${p.icono}" alt="">` : ''}<span class="kbd">Q</span><div><b>${esc(p.hab)}</b> · ${p.cargas ? `${p.cargas} cargas de ${p.recarga} s` : `recarga ${p.recarga} s`}<br><span class="soft">${esc(p.efecto)}</span></div></div>
+    <p class="soft" style="margin:10px 0 0;font-size:14px">Color <code>${p.color}</code> · ${p.retrato ? 'con retrato, modelo y brazos propios · <span class="st st-ok">En el juego</span>' : 'sin retrato · <span class="st st-idea">Provisorio</span>'}</p>
   </article>`).join('');
 }
 
@@ -2163,7 +2221,7 @@ $('#sprayCtl').addEventListener('click', e => {
 
 /* ---------- los "US ###" llevan a su historia en GitHub ---------- */
 const REPO = 'https://github.com/DogeGGss/lcs-tp-principal/issues/';
-const US_ISSUE = {"001":33,"002":35,"003":36,"004":38,"005":40,"006":56,"007":59,"008":60,"009":39,"010":41,"011":42,"012":113,"013":89,"014":47,"015":65,"016":66,"017":67,"018":68,"019":69,"020":70,"021":71,"022":72,"023":73,"024":74,"025":44,"026":46,"027":75,"028":76,"029":77,"030":78,"031":79,"032":80,"033":81,"034":83,"035":84,"036":85,"037":86,"038":87,"039":88,"040":94,"041":95,"042":96,"043":97,"044":98,"045":99,"046":100,"047":101,"048":102,"049":103,"050":104,"051":105,"052":106,"053":57,"054":58,"055":61,"056":107,"057":108,"058":109,"059":110,"060":111,"061":112,"062":119,"063":43,"064":45,"065":63,"066":64,"067":90,"068":91,"069":92,"070":93,"071":114,"072":115,"073":116,"074":117,"075":118,"076":51,"077":52,"078":53,"079":54,"080":55,"081":25,"082":31,"083":32,"084":29,"085":120,"112":146,"117":141,"118":163,"119":164,"120":165,"121":166,"122":167,"123":173,"124":174,"125":175,"126":177,"127":178,"128":187,"129":188,"130":190,"131":191,"132":192,"133":193,"134":194,"135":195,"136":196,"137":197,"138":198,"139":199,"140":200,"141":201,"142":202,"143":203,"144":204,"145":205,"146":206,"147":207,"148":208,"149":209,"150":210,"151":211,"153":214,"154":215,"155":216,"156":218,"157":219,"158":220,"159":221,"160":222,"161":225,"162":228,"163":229,"164":230,"165":231,"166":232,"167":244,"168":245,"169":246,"170":247,"171":252,"172":253,"173":265,"174":276,"175":277,"176":278,"177":279,"178":280,"179":281,"180":282,"182":284,"183":285,"184":287,"200":337,"201":338,"202":339,"203":340,"204":341,"205":342,"206":343,"207":344,"208":345,"209":350,"210":351,"211":352};
+const US_ISSUE = {"100":158,"101":157,"102":136,"103":135,"104":138,"105":137,"106":132,"107":131,"108":134,"109":133,"110":144,"111":143,"112":146,"113":145,"114":140,"115":139,"116":142,"117":141,"118":163,"119":164,"120":165,"121":166,"122":167,"123":173,"124":174,"125":175,"126":177,"127":178,"128":187,"129":188,"130":190,"131":191,"132":192,"133":193,"134":194,"135":195,"136":196,"137":197,"138":198,"139":199,"140":200,"141":201,"142":202,"143":203,"144":204,"145":205,"146":206,"147":207,"148":208,"149":209,"150":210,"151":211,"152":212,"153":214,"154":215,"155":216,"156":218,"157":219,"158":220,"159":221,"160":222,"161":225,"162":228,"163":229,"164":230,"165":231,"166":232,"167":244,"168":245,"169":246,"170":247,"171":252,"172":253,"173":265,"174":276,"175":277,"176":278,"177":279,"178":280,"179":281,"180":282,"181":283,"182":284,"183":285,"184":287,"185":288,"186":289,"187":290,"188":291,"189":292,"190":317,"191":318,"192":319,"193":320,"194":321,"195":322,"196":323,"197":324,"198":325,"199":332,"200":337,"201":338,"202":339,"203":340,"204":341,"205":342,"206":343,"207":344,"208":345,"209":350,"210":351,"211":352,"212":353,"213":375,"214":376,"215":377,"001":33,"002":35,"003":36,"004":38,"005":40,"006":56,"007":59,"008":60,"009":39,"010":41,"011":42,"012":113,"013":89,"014":47,"015":65,"016":66,"017":67,"018":68,"019":69,"020":70,"021":71,"022":72,"023":73,"024":74,"025":44,"026":46,"027":75,"028":76,"029":77,"030":78,"031":79,"032":80,"033":81,"034":83,"035":84,"036":85,"037":86,"038":87,"039":88,"040":94,"041":95,"042":96,"043":97,"044":98,"045":99,"046":100,"047":101,"048":102,"049":103,"050":104,"051":105,"052":106,"053":57,"054":58,"055":61,"056":107,"057":108,"058":109,"059":110,"060":111,"061":112,"062":119,"063":43,"064":45,"065":63,"066":64,"067":90,"068":91,"069":92,"070":93,"071":114,"072":115,"073":116,"074":117,"075":118,"076":51,"077":52,"078":53,"079":54,"080":55,"081":25,"082":31,"083":32,"084":29,"085":120,"086":152,"087":151,"088":154,"089":153,"090":148,"091":147,"092":150,"093":149,"094":160,"095":159,"096":162,"097":161,"098":156,"099":155};
 function linkUS(root) {
   const base = root || document.querySelector('.wrap');
   const walker = document.createTreeWalker(base, NodeFilter.SHOW_TEXT, { acceptNode: n => /US \d{3}/.test(n.nodeValue) && !n.parentElement.closest('a,script,style,.stage,select,option,button') ? NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_REJECT });
@@ -3566,7 +3624,8 @@ renderRules(); renderOneShot(); renderArsenal(); renderCalcOptions(); renderCalc
     board: '<rect x="3" y="4" width="18" height="16" rx="2"/><path d="M9 4v16M15 4v16"/>',
     code: '<path d="M8 7l-5 5 5 5M16 7l5 5-5 5"/>',
     menu: '<path d="M4 7h16M4 12h16M4 17h16"/>',
-    download: '<path d="M12 3v12M7 10l5 5 5-5M4 20h16"/>'
+    download: '<path d="M12 3v12M7 10l5 5 5-5M4 20h16"/>',
+    map: '<path d="M9 4L3 6v14l6-2 6 2 6-2V4l-6 2-6-2z"/><path d="M9 4v14M15 6v14"/>'
   };
   const svg = n => `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${ICON[n]}</svg>`;
   const NAV = [
@@ -3594,8 +3653,11 @@ renderRules(); renderOneShot(); renderArsenal(); renderCalcOptions(); renderCalc
       { id: 'nueva-arma', t: 'Cómo sumar un arma', i: 'plus' }] },
     { g: 'Economía', p: 'Parte 4 · Economía', items: [
       { id: 'eco', t: 'Economía', i: 'coins', subs: [['eco-tactico', 'Táctico'], ['eco-zombie', 'Zombie'], ['eco-deathmatch', 'Deathmatch'], ['escudos-granadas', 'Escudos y granadas']] }] },
-    { g: 'Personajes', p: 'Parte 5 · Personajes', items: [{ id: 'personajes', t: 'Personajes y habilidades', i: 'users' }] },
-    { g: 'Proyecto', p: 'Parte 6 · Decisiones y pendientes', items: [
+    { g: 'Personajes', p: 'Parte 5 · Personajes', items: [{ id: 'personajes', t: 'Personajes y habilidades', i: 'users', subs: [['trasbordo', 'Trasbordo']] }] },
+    { g: 'Mapas', p: 'Parte 6 · Mapas', items: [
+      { id: 'mapas', t: 'Mapa 2 · Estación espacial', i: 'map' },
+      { id: 'mapa-universidad', t: 'Mapa 3 · Universidad', i: 'map' }] },
+    { g: 'Proyecto', p: 'Parte 7 · Decisiones y pendientes', items: [
       { id: 'pendientes', t: 'Decisiones y pendientes', i: 'flag', subs: [['decisiones', 'Decisiones tomadas'], ['falta', 'Lo que falta']] },
       { href: 'https://github.com/users/DogeGGss/projects/2', t: 'Tablero del proyecto', i: 'board' },
       { href: 'https://github.com/DogeGGss/lcs-tp-principal', t: 'Repositorio', i: 'code' }] }
