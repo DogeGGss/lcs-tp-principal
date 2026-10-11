@@ -15,12 +15,18 @@ public class PlayerMovement : MonoBehaviour
 
     public Animator animator;
 
-    // Ajustes de agachado
+    // Ajustes de agachado. Agachado, la cápsula (1,45 m) sigue tapando la cámara (a 1,3 m): si fuera más baja,
+    // debajo de algo bajo la cámara quedaba adentro del objeto (US 004).
     public float standingHeight = 2.0f;
-    public float crounchHeight = 1.0f;
+    public float crounchHeight = 1.45f;
 
     private Vector3 standingCenter = new Vector3(0, 0, 0);
-    private Vector3 crounchCenter = new Vector3(0, -0.5f, 0);
+    // Agachada, la cápsula sigue apoyada en el mismo piso: baja el centro la mitad de lo que se achica.
+    private Vector3 crounchCenter => new Vector3(0, (crounchHeight - standingHeight) * 0.5f, 0);
+
+    [Tooltip("US 008: lo más alto que sube caminando, sin saltar, en cualquier dirección. El \"Step Offset\" del " +
+             "CharacterController está para que de frente llegue a esto; en diagonal lo frena SinTreparMasAlto.")]
+    public float alturaMaximaEscalon = 0.5f;
 
     [HideInInspector] public float speedMultiplier = 1f;
 
@@ -101,7 +107,9 @@ public class PlayerMovement : MonoBehaviour
         // AGACHARSE
         // =====================================================
 
-        bool isCrounching = KeyBindings.Held(GameAction.Agacharse);
+        // US 004: si suelta Ctrl con algo encima, sigue agachado hasta que haya lugar para pararse (si no, la cápsula
+        // de 2 m quedaba metida en el objeto y no se podía mover).
+        bool isCrounching = KeyBindings.Held(GameAction.Agacharse) || (Agachado && !HayLugarParaPararse());
         animator.SetBool("isCrouching", isCrounching);
         Agachado = isCrounching;
 
@@ -241,6 +249,14 @@ public class PlayerMovement : MonoBehaviour
         Vector3 desplazamiento = velocity * dt;
         desplazamiento.y = (verticalInicio + verticalVelocity) * 0.5f * dt;
 
+        // US 008: apoyado y sin saltar, no encara bordes más altos que el escalón máximo (en diagonal los subía).
+        if (estabaApoyado && !saltoEsteCuadro)
+        {
+            Vector3 plano = SinTreparMasAlto(controller, new Vector3(desplazamiento.x, 0f, desplazamiento.z), alturaMaximaEscalon);
+            desplazamiento.x = plano.x;
+            desplazamiento.z = plano.z;
+        }
+
         CollisionFlags collisions =
             controller.Move(desplazamiento);
 
@@ -278,6 +294,56 @@ public class PlayerMovement : MonoBehaviour
         {
             verticalVelocity = 0f;
         }
+    }
+
+    // Lo que suma la cápsula al pararse (de lo alto de la cápsula agachada a lo alto de la parada) no choca con nada.
+    // Un poco más angosta que el cuerpo, para no contar las paredes que ya está tocando.
+    private bool HayLugarParaPararse()
+    {
+        float radio = controller.radius * 0.95f;
+        Vector3 abajo = transform.TransformPoint(crounchCenter + Vector3.up * (crounchHeight * 0.5f - controller.radius));
+        Vector3 arriba = transform.TransformPoint(standingCenter + Vector3.up * (standingHeight * 0.5f - controller.radius));
+        foreach (Collider c in Physics.OverlapCapsule(abajo, arriba, radio, Physics.DefaultRaycastLayers, QueryTriggerInteraction.Ignore))
+            if (!c.transform.IsChildOf(transform)) return false;
+        return true;
+    }
+
+    // US 008: el CharacterController sube bordes más altos que su "Step Offset" si los encara en diagonal (la base de
+    // la cápsula es redonda y toma el borde como una rampa). Antes de moverse se mira, en una franja justo arriba de la
+    // altura máxima, el frente de la cápsula: si ahí hay algo que no es una rampa caminable ni un techo, el movimiento
+    // se desliza a lo largo de eso en vez de encararlo. Lo que es más bajo que la franja se sube como siempre.
+    public static Vector3 SinTreparMasAlto(CharacterController cc, Vector3 horizontal, float alturaMaxima)
+    {
+        float largo = horizontal.magnitude;
+        if (largo < 1e-5f) return horizontal;
+
+        const float RadioSonda = 0.05f;
+        Transform cuerpo = cc.transform;
+        Vector3 centro = cuerpo.TransformPoint(cc.center);
+        float piso = centro.y - cc.height * 0.5f - cc.skinWidth;
+        float altura = piso + alturaMaxima + 0.03f + RadioSonda;
+        if (altura + RadioSonda > centro.y + cc.height * 0.5f) return horizontal; // la cápsula no llega a la franja
+
+        Vector3 hacia = horizontal / largo;
+        float alcance = largo + cc.skinWidth + 0.02f;
+        float limite = Mathf.Cos(cc.slopeLimit * Mathf.Deg2Rad);
+        // Cinco sondas repartidas por el frente de la cápsula (de -80° a 80° de hacia dónde va), al borde del cuerpo.
+        for (int i = -2; i <= 2; i++)
+        {
+            Vector3 lado = Quaternion.Euler(0f, i * 40f, 0f) * hacia;
+            Vector3 origen = new Vector3(centro.x, altura, centro.z) + lado * (cc.radius - RadioSonda);
+            foreach (RaycastHit golpe in Physics.SphereCastAll(origen, RadioSonda, hacia, alcance, Physics.DefaultRaycastLayers, QueryTriggerInteraction.Ignore))
+            {
+                if (golpe.distance <= 0f || golpe.collider.transform.IsChildOf(cuerpo)) continue;
+                if (golpe.normal.y >= limite || golpe.normal.y < -0.2f) continue; // rampa caminable, o techo
+                Vector3 normal = new Vector3(golpe.normal.x, 0f, golpe.normal.z);
+                if (normal.sqrMagnitude < 1e-6f) continue;
+                normal.Normalize();
+                float contra = Vector3.Dot(horizontal, normal);
+                if (contra < 0f) horizontal -= normal * contra;
+            }
+        }
+        return horizontal;
     }
 
     // Busca el piso justo debajo, a lo sumo a lo que bajaría una pendiente caminable (slopeLimit) en lo que se movió
