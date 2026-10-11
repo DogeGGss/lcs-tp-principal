@@ -44,8 +44,13 @@ public class PlayerMovement : MonoBehaviour
 
     // No pararse arriba de otro jugador: si tiene a otro jugador debajo de los pies, no puede saltar desde ahí y
     // se lo hace resbalar hacia afuera (sin esto, dos jugadores pueden subirse uno arriba del otro).
-    private const float ResbalarDeJugador = 7f; // m/s
+    // Resbala de a poco (acelera hasta 3 m/s) y el "está arriba" dura un instante más, así no se corta y vuelve
+    // cuadro a cuadro (eso hacía temblar la cámara).
+    private const float ResbalarDeJugador = 3f;  // m/s
+    private const float AceleracionResbalar = 10f; // m/s²
+    private const float SigueArriba = 0.15f;     // s
     private bool sobreJugador;
+    private float vistoArriba = -10f, resbalando;
     private Vector3 haciaAfuera;
     private readonly RaycastHit[] debajo = new RaycastHit[8];
 
@@ -192,6 +197,8 @@ public class PlayerMovement : MonoBehaviour
         // Apoyado al empezar el cuadro (lo dejó así el Move del cuadro anterior): para pegarlo a las rampas al final.
         bool estabaApoyado = controller.isGrounded;
         if (JugadorDebajo()) sobreJugador = true; // además de lo que avisó el Move anterior (OnControllerColliderHit)
+        if (sobreJugador) vistoArriba = Time.time;
+        bool arribaDeOtro = Time.time - vistoArriba < SigueArriba;
         bool saltoEsteCuadro = false;
 
         if (controller.isGrounded && verticalVelocity < 0)
@@ -204,7 +211,7 @@ public class PlayerMovement : MonoBehaviour
         // SALTO
         // =====================================================
 
-        if (KeyBindings.Down(GameAction.Saltar) && controller.isGrounded && !sobreJugador)
+        if (KeyBindings.Down(GameAction.Saltar) && controller.isGrounded && !arribaDeOtro)
         {
             verticalVelocity = jumpForce;
             saltoEsteCuadro = true;
@@ -266,12 +273,13 @@ public class PlayerMovement : MonoBehaviour
         }
 
         // Si está parado sobre otro jugador, resbala hacia afuera y no puede seguir caminando hacia el centro del otro.
-        if (sobreJugador)
+        resbalando = Mathf.MoveTowards(resbalando, arribaDeOtro ? ResbalarDeJugador : 0f, AceleracionResbalar * dt);
+        if (arribaDeOtro)
         {
             float hacia = Vector3.Dot(new Vector3(desplazamiento.x, 0f, desplazamiento.z), haciaAfuera);
             if (hacia < 0f) desplazamiento -= haciaAfuera * hacia;
-            desplazamiento += haciaAfuera * (ResbalarDeJugador * dt);
         }
+        if (resbalando > 0f) desplazamiento += haciaAfuera * (resbalando * dt);
         sobreJugador = false; // lo vuelve a marcar OnControllerColliderHit durante el Move
 
         CollisionFlags collisions =
