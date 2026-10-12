@@ -595,3 +595,11 @@ fecha_utc,us_numero,us_titulo,estado_anterior,estado_nuevo,tiempo_en_estado_ante
 2026-10-11T18:03:20.004758+00:00,376,US 214. Mapa 2 · Recorridos y límites,LPR,TESTING,3d 13h 54m,309290,https://github.com/DogeGGss/lcs-tp-principal/issues/376
 2026-10-11T21:51:12.400235+00:00,376,US 214. Mapa 2 · Recorridos y límites,TESTING,In Progress,3h 47m,13672,https://github.com/DogeGGss/lcs-tp-principal/issues/376
 2026-10-11T21:51:12.400235+00:00,375,US 213. Mapa 2 · Preparado para el Modo Táctico,LPR,TESTING,3d 17h 42m,322962,https://github.com/DogeGGss/lcs-tp-principal/issues/375
+2026-10-12T00:48:19.101619+00:00,79,US 031. Formar equipos,LPR,R2D,18h 30m,66606,https://github.com/DogeGGss/lcs-tp-principal/issues/79
+2026-10-12T00:48:19.101619+00:00,231,US 165. Zonas de impacto y marcador de impacto,R2D,Done,1d 23h 35m,171307,https://github.com/DogeGGss/lcs-tp-principal/issues/231
+2026-10-12T00:48:19.101619+00:00,244,US 167. Dispersión de las armas,R2D,Done,1d 23h 35m,171307,https://github.com/DogeGGss/lcs-tp-principal/issues/244
+2026-10-12T00:48:19.101619+00:00,245,US 168. Retroceso visible,R2D,Done,1d 23h 35m,171307,https://github.com/DogeGGss/lcs-tp-principal/issues/245
+2026-10-12T00:48:19.101619+00:00,113,US 012. Ataque cuerpo a cuerpo,Rehacer,Done,4d 23h 58m,431913,https://github.com/DogeGGss/lcs-tp-principal/issues/113
+2026-10-12T00:48:19.101619+00:00,41,US 010. Disparar,R2D,Done,1d 23h 35m,171307,https://github.com/DogeGGss/lcs-tp-principal/issues/41
+2026-10-12T00:48:19.101619+00:00,277,US 175. Diseño visual de la tienda,Blocked,In Progress,18h 30m,66606,https://github.com/DogeGGss/lcs-tp-principal/issues/277
+2026-10-12T00:48:19.101619+00:00,247,US 170. Marcas de impacto en el escenario,R2D,Done,1d 23h 35m,171307,https://github.com/DogeGGss/lcs-tp-principal/issues/247
