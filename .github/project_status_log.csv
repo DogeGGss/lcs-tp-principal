@@ -618,3 +618,11 @@ fecha_utc,us_numero,us_titulo,estado_anterior,estado_nuevo,tiempo_en_estado_ante
 2026-10-12T06:38:56.871263+00:00,377,US 215. Mapa 2 · Rendimiento,LPR,TESTING,4d 2h 30m,354626,https://github.com/DogeGGss/lcs-tp-principal/issues/377
 2026-10-12T06:38:56.871263+00:00,56,US 006. Reaparición al caer del mapa,Rehacer,Done,1d 20m,87644,https://github.com/DogeGGss/lcs-tp-principal/issues/56
 2026-10-12T06:38:56.871263+00:00,103,US 049. Salir de partida,LPR,Done,5d 5h 49m,452951,https://github.com/DogeGGss/lcs-tp-principal/issues/103
+2026-10-12T15:37:44.439732+00:00,276,Spike. Guía de estilo visual,LPR,In Progress,12d 7h 10m,1062632,https://github.com/DogeGGss/lcs-tp-principal/issues/276
+2026-10-12T15:37:44.439732+00:00,415,US 216. Caída del mapa en el Táctico,LPR,Done,8h 58m,32327,https://github.com/DogeGGss/lcs-tp-principal/issues/415
+2026-10-12T15:37:44.439732+00:00,353,"US 212. Crear el ícono, el logo y la presentación de inicio del juego",R2D,Done,8h 58m,32327,https://github.com/DogeGGss/lcs-tp-principal/issues/353
+2026-10-12T15:37:44.439732+00:00,377,US 215. Mapa 2 · Rendimiento,TESTING,Done,8h 58m,32327,https://github.com/DogeGGss/lcs-tp-principal/issues/377
+2026-10-12T15:37:44.439732+00:00,375,US 213. Mapa 2 · Preparado para el Modo Táctico,TESTING,Done,17h 46m,63992,https://github.com/DogeGGss/lcs-tp-principal/issues/375
+2026-10-12T15:37:44.439732+00:00,376,US 214. Mapa 2 · Recorridos y límites,R2D,Done,8h 58m,32327,https://github.com/DogeGGss/lcs-tp-principal/issues/376
+2026-10-12T15:37:44.439732+00:00,277,US 175. Diseño visual de la tienda,In Progress,Done,14h 49m,53365,https://github.com/DogeGGss/lcs-tp-principal/issues/277
+2026-10-12T15:37:44.439732+00:00,321,US 194. Minimapa modo tactico,TESTING,Done,5d 9h,464415,https://github.com/DogeGGss/lcs-tp-principal/issues/321
