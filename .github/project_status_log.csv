@@ -626,3 +626,29 @@ fecha_utc,us_numero,us_titulo,estado_anterior,estado_nuevo,tiempo_en_estado_ante
 2026-10-12T15:37:44.439732+00:00,376,US 214. Mapa 2 · Recorridos y límites,R2D,Done,8h 58m,32327,https://github.com/DogeGGss/lcs-tp-principal/issues/376
 2026-10-12T15:37:44.439732+00:00,277,US 175. Diseño visual de la tienda,In Progress,Done,14h 49m,53365,https://github.com/DogeGGss/lcs-tp-principal/issues/277
 2026-10-12T15:37:44.439732+00:00,321,US 194. Minimapa modo tactico,TESTING,Done,5d 9h,464415,https://github.com/DogeGGss/lcs-tp-principal/issues/321
+2026-10-12T18:17:46.186700+00:00,89,US 013. ARMA Principal 1 - Mitre (Fusil),LPR,Done,5d 17h 28m,494880,https://github.com/DogeGGss/lcs-tp-principal/issues/89
+2026-10-12T18:17:46.186700+00:00,106,US 052. Reiniciar partida,LPR,Done,5d 17h 28m,494880,https://github.com/DogeGGss/lcs-tp-principal/issues/106
+2026-10-12T18:17:46.186700+00:00,187,US 128 - Estados visuales de los botones,LPR,Done,5d 17h 28m,494880,https://github.com/DogeGGss/lcs-tp-principal/issues/187
+2026-10-12T18:17:46.186700+00:00,101,US 047. Seleccionar modo de juego,LPR,Done,5d 17h 28m,494880,https://github.com/DogeGGss/lcs-tp-principal/issues/101
+2026-10-12T18:17:46.186700+00:00,107,US 056. Mostrar arma equipada y munición,LPR,Done,5d 17h 28m,494880,https://github.com/DogeGGss/lcs-tp-principal/issues/107
+2026-10-12T18:17:46.186700+00:00,252,US 171. Mira del arma,LPR,Done,11d 8h 56m,982585,https://github.com/DogeGGss/lcs-tp-principal/issues/252
+2026-10-12T18:17:46.186700+00:00,105,US 051. Menu de pausa,LPR,Done,5d 17h 28m,494880,https://github.com/DogeGGss/lcs-tp-principal/issues/105
+2026-10-12T18:17:46.186700+00:00,74,US 024.  Gestionar escudo,LPR,Done,5d 17h 28m,494880,https://github.com/DogeGGss/lcs-tp-principal/issues/74
+2026-10-12T18:17:46.186700+00:00,57,US 053. Mostrar vida,LPR,Done,5d 17h 28m,494880,https://github.com/DogeGGss/lcs-tp-principal/issues/57
+2026-10-12T18:17:46.186700+00:00,73,US 023. Gestionar vida,LPR,Done,5d 17h 28m,494880,https://github.com/DogeGGss/lcs-tp-principal/issues/73
+2026-10-12T18:17:46.186700+00:00,100,US 046. Menú principal,LPR,Done,5d 17h 28m,494880,https://github.com/DogeGGss/lcs-tp-principal/issues/100
+2026-10-12T18:17:46.186700+00:00,119,US 062. ARMA Melee,LPR,Done,5d 17h 28m,494880,https://github.com/DogeGGss/lcs-tp-principal/issues/119
+2026-10-12T18:17:46.186700+00:00,55,US 080. Comprar escudo/blindaje,LPR,Done,5d 17h 28m,494880,https://github.com/DogeGGss/lcs-tp-principal/issues/55
+2026-10-12T18:17:46.186700+00:00,53,US 078. Comprar arma secundaria,LPR,Done,5d 17h 28m,494880,https://github.com/DogeGGss/lcs-tp-principal/issues/53
+2026-10-12T18:17:46.186700+00:00,52,US 077. Comprar arma primaria,LPR,Done,5d 17h 28m,494880,https://github.com/DogeGGss/lcs-tp-principal/issues/52
+2026-10-12T18:17:46.186700+00:00,188,US 129 - Transiciones entre pantallas,LPR,Done,5d 17h 28m,494880,https://github.com/DogeGGss/lcs-tp-principal/issues/188
+2026-10-12T18:17:46.186700+00:00,58,US 054. Mostrar escudo,LPR,Done,5d 17h 28m,494880,https://github.com/DogeGGss/lcs-tp-principal/issues/58
+2026-10-12T18:17:46.186700+00:00,54,US 079. Comprar arrojable,LPR,Done,5d 17h 28m,494880,https://github.com/DogeGGss/lcs-tp-principal/issues/54
+2026-10-12T18:17:46.186700+00:00,109,US 058. Actualizar información del HUD,LPR,Done,5d 17h 28m,494880,https://github.com/DogeGGss/lcs-tp-principal/issues/109
+2026-10-12T18:17:46.186700+00:00,51,US 076. Acceder a la tienda,LPR,Done,5d 17h 28m,494880,https://github.com/DogeGGss/lcs-tp-principal/issues/51
+2026-10-12T18:17:46.186700+00:00,45,US 064. Cambio entre equipamientos,LPR,Done,5d 17h 28m,494880,https://github.com/DogeGGss/lcs-tp-principal/issues/45
+2026-10-12T18:17:46.186700+00:00,63,US 065. Asignación de equipamientos,LPR,Done,5d 17h 28m,494880,https://github.com/DogeGGss/lcs-tp-principal/issues/63
+2026-10-12T18:17:46.186700+00:00,102,US 048. Configurar opciones,LPR,Done,5d 17h 28m,494880,https://github.com/DogeGGss/lcs-tp-principal/issues/102
+2026-10-12T18:17:46.186700+00:00,215,US 154. Opciones de sonido,LPR,Done,5d 17h 28m,494880,https://github.com/DogeGGss/lcs-tp-principal/issues/215
+2026-10-12T18:17:46.186700+00:00,43,US 063. Espacios del inventario,LPR,Done,5d 17h 28m,494880,https://github.com/DogeGGss/lcs-tp-principal/issues/43
+2026-10-12T18:17:46.186700+00:00,230,US 164. Elegir nombre de jugador,LPR,Done,5d 17h 28m,494880,https://github.com/DogeGGss/lcs-tp-principal/issues/230
