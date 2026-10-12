@@ -1,0 +1,29 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 97fc439b6813a9c4aada9169880ec7e6, type: 3}
+  m_Name: SonidosJugador
+  m_EditorClassIdentifier: Assembly-CSharp::SonidosJugador
+  pasos:
+  - {fileID: 8300000, guid: d151b9686dabe8a458b9c6e68eaa1d9d, type: 3}
+  - {fileID: 8300000, guid: ef59c2ff8a638f94d8e666910ffa598e, type: 3}
+  - {fileID: 8300000, guid: 81ce6f11ac71dbd43839178eb48bf530, type: 3}
+  - {fileID: 8300000, guid: 2bdec64b70fa59b46ab16ec64c8c42d1, type: 3}
+  - {fileID: 8300000, guid: e5116161d50b179488252e679bd43357, type: 3}
+  - {fileID: 8300000, guid: 69cf70b379099ad43b54aa69f72284c9, type: 3}
+  grupo: {fileID: -490443676671801125, guid: ddda7e32a2420c4489fcc2a1c31e1976, type: 2}
+  volumenPropios: 0.7
+  volumenDemas: 1
+  zancada: 2.1
+  alcanceDemas: 25
+  salto: {fileID: 8300000, guid: cec60105b3c8c4145be6a60f74298d42, type: 3}
+  volumenSalto: 0.6
+  marcadorImpacto: {fileID: 8300000, guid: af459206a768fea439c9cb3afc922395, type: 3}

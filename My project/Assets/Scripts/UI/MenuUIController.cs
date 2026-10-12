@@ -28,14 +28,27 @@ public class MenuUIController : MonoBehaviour
     [SerializeField] private float duracionTransicion = 0.4f;
 [SerializeField] private float duracionEntradaPanel = 0.3f;
 
+    private static bool opcionesCargadas;
+
     private void Start()
     {
         OcultarTodosLosPaneles();
 
         panelMenuPrincipal.SetActive(true);
+        VersionDelJuego.MostrarEnMenu(panelMenuPrincipal.transform);
+        VolverALaPartida.MostrarEnMenu(panelMenuPrincipal.transform); // US 195, CA2
 
         overlayTransicion.alpha = 0f;
         overlayTransicion.blocksRaycasts = false;
+
+        // US 048, CA5: las opciones guardadas se usan desde que arranca el juego, sin tener que abrir Opciones.
+        if (!opcionesCargadas)
+        {
+            opcionesCargadas = true;
+            GraficosUIController.AplicarGuardado();
+        }
+        foreach (SonidoUIController sonido in FindObjectsByType<SonidoUIController>(FindObjectsInactive.Include, FindObjectsSortMode.None))
+            sonido.AplicarGuardado();
     }
 
 public void IrAlEscenario()

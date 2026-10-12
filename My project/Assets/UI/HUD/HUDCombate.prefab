@@ -55,4 +55,5 @@ MonoBehaviour:
   vignette: {fileID: 21300000, guid: fc2944fd4430257489da04b63c1067d5, type: 3}
   glow: {fileID: 21300000, guid: bcdd2dea48e48e44ea08cc21b6ef8884, type: 3}
   criticalHealth: 0.25
+  knifeIcon: {fileID: 21300000, guid: 5f04af05b319426f816d7eb908d4d497, type: 3}
   sfxGroup: {fileID: -490443676671801125, guid: ddda7e32a2420c4489fcc2a1c31e1976, type: 2}

@@ -17,8 +17,8 @@ using static ShopUIKit;
 // En las partidas locales (Zombie) también tiene Reiniciar partida, con confirmación (US 052).
 // La interfaz se arma por código, igual que la tienda, con medidas de una pantalla de 1920 x 1080.
 //
-// Mientras no haya multijugador, la pausa congela el juego (Time.timeScale = 0). Cuando exista el online,
-// se marca isMultiplayer en Táctico y Deathmatch: el menú se ve solo en esta pantalla y la partida sigue (CA4).
+// En las partidas locales la pausa congela el juego (Time.timeScale = 0). En las online (Táctico y Deathmatch
+// en una sala) se marca isMultiplayer: el menú se ve solo en esta pantalla y la partida sigue (CA4).
 //
 // La configuración usa las mismas claves de PlayerPrefs y los mismos parámetros del AudioMixer que las
 // opciones del menú principal (SonidoUIController, SensibilidadUIController y GraficosUIController),
@@ -28,7 +28,7 @@ using static ShopUIKit;
 [DefaultExecutionOrder(-50)]
 public class PauseMenu : MonoBehaviour
 {
-    public enum Panel { None, Main, Settings, Exit, Restart, Controls }
+    public enum Panel { None, Main, Settings, Exit, Restart, Controls, Graphics, Crosshair }
 
     [Header("Partida")]
     [SerializeField] private string mainMenuScene = "MenuPrincipal";
@@ -59,7 +59,7 @@ public class PauseMenu : MonoBehaviour
     public Panel Current { get; private set; } = Panel.None;
 
     // ---------- Claves compartidas con las opciones del menú principal ----------
-    private const string KeyGeneral = "VolumenGeneral", KeyMusic = "VolumenMusica", KeyEffects = "VolumenEfectos";
+    private const string KeyGeneral = "VolumenGeneral", KeyMusic = "VolumenMusica", KeyEffects = "VolumenEfectos", KeyInterface = "VolumenInterfaz";
     private const string KeySensitivity = "Sensibilidad";
     private const string KeyFov = "FOV";
     private const string KeyScreenMode = "Graficos_ModoPantalla";
@@ -98,8 +98,10 @@ public class PauseMenu : MonoBehaviour
         public System.Action activate; // filas que abren otra pantalla (Controles)
     }
 
-    private RectTransform canvasRoot, root, col1, colSettings, colExit, colControls;
-    private CanvasGroup settingsGroup, exitGroup, controlsGroup;
+    private RectTransform canvasRoot, root, col1, colSettings, colExit, colControls, colGraphics, colCrosshair;
+    private CanvasGroup settingsGroup, exitGroup, controlsGroup, graphicsGroup, crosshairGroup;
+    private GraficosUIController graphics; // la misma pestaña Gráficos del menú principal (US 153)
+    private MiraUIController crosshairPanel; // la misma pestaña Mira del menú principal (US 172)
     private const float ColControlsW = 640f;
     private UIImage shade, statusChip, statusDot;
     private TextMeshProUGUI metaText, statusText, noteText, exitWarning, savedText;
@@ -111,6 +113,7 @@ public class PauseMenu : MonoBehaviour
     private int selected, settingSelected, exitSelected = 1, screenMode;
     private float savedTimeScale = 1f;
     private readonly List<Behaviour> blocked = new List<Behaviour>();
+    private readonly List<PlayerMovement> withoutControls = new List<PlayerMovement>();
     private Coroutine savedRoutine;
 
     // =====================================================================
@@ -121,6 +124,7 @@ public class PauseMenu : MonoBehaviour
     {
         Instance = this;
         IsPaused = false;
+        PantallaDeCarga.Registrar(displayFont, labelFont, bodyFont, rounded); // US 196
         col2Color = Rgb(18, 21, 28, DarkAlpha(0.92f));
         badSelected = Over(Rgb(255, 92, 92, 0.13f), PanelBase);
         BuildCanvas();
@@ -136,6 +140,7 @@ public class PauseMenu : MonoBehaviour
         ApplyVolume(KeyGeneral, PlayerPrefs.GetFloat(KeyGeneral, DefaultVolume));
         ApplyVolume(KeyMusic, PlayerPrefs.GetFloat(KeyMusic, DefaultVolume));
         ApplyVolume(KeyEffects, PlayerPrefs.GetFloat(KeyEffects, DefaultVolume));
+        ApplyVolume(KeyInterface, PlayerPrefs.GetFloat(KeyInterface, DefaultVolume)); // US 154: se ajusta en el menú principal
     }
 
     private void OnDestroy()
@@ -180,6 +185,10 @@ public class PauseMenu : MonoBehaviour
             case Panel.Settings: SettingsKeys(); break;
             case Panel.Controls:
                 if (!ControlsPanel.IsBusy && Input.GetKeyDown(KeyCode.Backspace)) Back();
+                break;
+            case Panel.Graphics:
+            case Panel.Crosshair:
+                if (Input.GetKeyDown(KeyCode.Backspace)) Back();
                 break;
             case Panel.Exit:
             case Panel.Restart: ExitKeys(); break;
@@ -271,6 +280,9 @@ public class PauseMenu : MonoBehaviour
     public void Back()
     {
         if (Current == Panel.Controls) { KeyBindings.Save(); Show(Panel.Settings); return; }
+        // Los gráficos se usan al apretar Aplicar: lo que quedó sin aplicar se descarta al volver.
+        if (Current == Panel.Graphics) { if (graphics != null) graphics.Descartar(); Show(Panel.Settings); return; }
+        if (Current == Panel.Crosshair) { if (crosshairPanel != null) crosshairPanel.Descartar(); Show(Panel.Settings); return; }
         if (Current == Panel.Settings) PlayerPrefs.Save();
         Show(Panel.Main);
     }
@@ -289,7 +301,9 @@ public class PauseMenu : MonoBehaviour
             Debug.LogError($"PauseMenu: la escena \"{mainMenuScene}\" no está en File > Build Profiles (Scene List).");
             return;
         }
-        SceneManager.LoadScene(mainMenuScene);
+        // En una partida online, se sale de la sala: los demás dejan de ver a este jugador (F06).
+        Multijugador.SalirDeLaSala();
+        PantallaDeCarga.Cargar(mainMenuScene, "", "Menú principal"); // US 196, CA1
     }
 
     // CA3 (US 052): vuelve a cargar la escena desde cero, así se descarta todo el progreso
@@ -341,7 +355,7 @@ public class PauseMenu : MonoBehaviour
         }
     }
 
-    // Para cuando exista el online: true en Táctico y Deathmatch.
+    // Partida online (Táctico y Deathmatch en una sala): la pausa no congela el juego. La marca PartidaEnRed.
     public void SetMultiplayer(bool value)
     {
         if (IsPaused) Resume();
@@ -367,15 +381,56 @@ public class PauseMenu : MonoBehaviour
     {
         blocked.Clear();
         Block(FindObjectsByType<CameraLook>());
-        Block(FindObjectsByType<PlayerMovement>());
+        // El movimiento no se apaga, solo deja de leer las teclas: online la partida sigue y, apagado, el personaje
+        // quedaba flotando si se pausaba en el aire.
+        withoutControls.Clear();
+        foreach (PlayerMovement movement in FindObjectsByType<PlayerMovement>())
+        {
+            if (!movement.enabled || movement.SinControles) continue;
+            movement.SinControles = true;
+            withoutControls.Add(movement);
+        }
         Block(FindObjectsByType<MeleeAttack>());
         Block(FindObjectsByType<Pistola>());
         Block(FindObjectsByType<Mitre>());
+        Block(FindObjectsByType<ArmaDeFuego>());
         Block(FindObjectsByType<WeaponSwitcher>());
         Block(FindObjectsByType<PlayerAbility>());
         Block(FindObjectsByType<ShopUI>());
         Cursor.lockState = CursorLockMode.None;
         Cursor.visible = true;
+    }
+
+    /// <summary>
+    /// Online la partida sigue con la pausa abierta, así que se puede morir (por ejemplo, cayéndose del mapa).
+    /// JugadorEnRed y Espectador se quedan con lo que apagó la pausa: así, al reanudar, no se le devuelven las armas
+    /// ni la mirada a un muerto, y al reaparecer las prende el que las tiene.
+    /// </summary>
+    public static bool Release(Behaviour component) => Instance != null && component != null && Instance.blocked.Remove(component);
+
+    /// <summary>
+    /// Al revés: si reaparece con la pausa abierta, la pausa se queda con lo que se iba a prender y lo devuelve al
+    /// reanudar (si no, se podía disparar o mirar con el menú abierto). Devuelve false si no lo tomó.
+    /// </summary>
+    public static bool Hold(Behaviour component)
+    {
+        if (!IsPaused || Instance == null || component == null) return false;
+        if (component is PlayerMovement movement)
+        {
+            movement.enabled = true;
+            if (!movement.SinControles)
+            {
+                movement.SinControles = true;
+                Instance.withoutControls.Add(movement);
+            }
+            return true;
+        }
+        if (!(component is CameraLook || component is MeleeAttack || component is Pistola || component is Mitre ||
+              component is ArmaDeFuego || component is WeaponSwitcher || component is PlayerAbility || component is ShopUI))
+            return false;
+        component.enabled = false;
+        if (!Instance.blocked.Contains(component)) Instance.blocked.Add(component);
+        return true;
     }
 
     private void Block<T>(T[] components) where T : Behaviour
@@ -394,6 +449,9 @@ public class PauseMenu : MonoBehaviour
         foreach (Behaviour component in blocked)
             if (component != null) component.enabled = true;
         blocked.Clear();
+        foreach (PlayerMovement movement in withoutControls)
+            if (movement != null) movement.SinControles = false;
+        withoutControls.Clear();
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
     }
@@ -454,13 +512,14 @@ public class PauseMenu : MonoBehaviour
         settingRows[0].slider.SetValueWithoutNotify(PlayerPrefs.GetFloat(KeyGeneral, DefaultVolume));
         settingRows[1].slider.SetValueWithoutNotify(PlayerPrefs.GetFloat(KeyMusic, DefaultVolume));
         settingRows[2].slider.SetValueWithoutNotify(PlayerPrefs.GetFloat(KeyEffects, DefaultVolume));
-        settingRows[3].slider.SetValueWithoutNotify(PlayerPrefs.GetFloat(KeySensitivity, DefaultSensitivity));
-        settingRows[4].slider.SetValueWithoutNotify(PlayerPrefs.GetFloat(KeyFov, DefaultFov));
+        settingRows[3].slider.SetValueWithoutNotify(PlayerPrefs.GetFloat(KeyInterface, DefaultVolume));
+        settingRows[4].slider.SetValueWithoutNotify(PlayerPrefs.GetFloat(KeySensitivity, DefaultSensitivity));
+        settingRows[5].slider.SetValueWithoutNotify(PlayerPrefs.GetFloat(KeyFov, DefaultFov));
         screenMode = PlayerPrefs.GetInt(KeyScreenMode, DefaultScreenMode);
 
-        for (int i = 0; i < 3; i++) settingRows[i].value.text = Mathf.RoundToInt(settingRows[i].slider.value * 100f) + " %";
-        settingRows[3].value.text = Number(settingRows[3].slider.value);
-        settingRows[4].value.text = Mathf.RoundToInt(settingRows[4].slider.value) + "°";
+        for (int i = 0; i < 4; i++) settingRows[i].value.text = Mathf.RoundToInt(settingRows[i].slider.value * 100f) + " %";
+        settingRows[4].value.text = Number(settingRows[4].slider.value);
+        settingRows[5].value.text = Mathf.RoundToInt(settingRows[5].slider.value) + "°";
     }
 
     private void ResetSettings()
@@ -469,9 +528,10 @@ public class PauseMenu : MonoBehaviour
         settingRows[0].slider.value = DefaultVolume;
         settingRows[1].slider.value = DefaultVolume;
         settingRows[2].slider.value = DefaultVolume;
-        settingRows[3].slider.value = DefaultSensitivity;
-        settingRows[4].slider.value = DefaultFov;
-        SetScreenMode(DefaultScreenMode);
+        settingRows[3].slider.value = DefaultVolume;
+        settingRows[4].slider.value = DefaultSensitivity;
+        settingRows[5].slider.value = DefaultFov;
+        // Los gráficos (resolución, modo, calidad…) se restablecen desde su propia pantalla.
         PlayerPrefs.Save();
         FlashSaved();
     }
@@ -500,12 +560,16 @@ public class PauseMenu : MonoBehaviour
 
         colSettings.gameObject.SetActive(panel == Panel.Settings);
         colControls.gameObject.SetActive(panel == Panel.Controls);
+        colGraphics.gameObject.SetActive(panel == Panel.Graphics);
+        colCrosshair.gameObject.SetActive(panel == Panel.Crosshair);
         colExit.gameObject.SetActive(panel == Panel.Exit || panel == Panel.Restart);
 
         if (panel == Panel.Settings) LoadSettingsIntoUI();
         if (panel == Panel.Exit || panel == Panel.Restart) SetConfirmTexts(panel == Panel.Restart);
-        if (panel == Panel.Settings && previous != Panel.Settings && previous != Panel.Controls) Reveal(settingsGroup);
+        if (panel == Panel.Settings && previous != Panel.Settings && previous != Panel.Controls && previous != Panel.Graphics && previous != Panel.Crosshair) Reveal(settingsGroup);
         if (panel == Panel.Controls && previous != Panel.Controls) Reveal(controlsGroup);
+        if (panel == Panel.Graphics && previous != Panel.Graphics) Reveal(graphicsGroup);
+        if (panel == Panel.Crosshair && previous != Panel.Crosshair) Reveal(crosshairGroup);
         if ((panel == Panel.Exit || panel == Panel.Restart) && previous != panel) Reveal(exitGroup);
         if (panel == Panel.Main && previous == Panel.None) Reveal(col1.GetComponent<CanvasGroup>());
 
@@ -563,7 +627,7 @@ public class PauseMenu : MonoBehaviour
             int id = visibleOptions[i];
             Option o = options[id];
             bool isSelected = Current == Panel.Main && i == selected;
-            bool isOpen = (id == OptRestart && Current == Panel.Restart) || (id == OptSettings && (Current == Panel.Settings || Current == Panel.Controls))
+            bool isOpen = (id == OptRestart && Current == Panel.Restart) || (id == OptSettings && (Current == Panel.Settings || Current == Panel.Controls || Current == Panel.Graphics || Current == Panel.Crosshair))
                        || (id == OptExit && Current == Panel.Exit);
             o.bg.color = isSelected ? (o.danger ? badSelected : SelectedColor) : isOpen ? HoverColor : Clear;
             o.chip.color = isSelected ? (o.danger ? Bad : Accent) : ChipDim;
@@ -635,6 +699,8 @@ public class PauseMenu : MonoBehaviour
         BuildMainColumn();
         BuildSettingsColumn();
         BuildControlsColumn();
+        BuildGraphicsColumn();
+        BuildCrosshairColumn();
         BuildExitColumn();
     }
 
@@ -724,11 +790,14 @@ public class PauseMenu : MonoBehaviour
         SliderRow("General", ref y, 0.0001f, 1f, 0.05f, (v, label) => SetVolume(KeyGeneral, v, label));
         SliderRow("Música", ref y, 0.0001f, 1f, 0.05f, (v, label) => SetVolume(KeyMusic, v, label));
         SliderRow("Efectos", ref y, 0.0001f, 1f, 0.05f, (v, label) => SetVolume(KeyEffects, v, label));
+        SliderRow("Interfaz", ref y, 0.0001f, 1f, 0.05f, (v, label) => SetVolume(KeyInterface, v, label)); // US 154
         Group("Mouse", ref y);
         SliderRow("Sensibilidad", ref y, KeyBindings.MinSensitivity, KeyBindings.MaxSensitivity, 0.1f, SetSensitivity); // mismo rango que Controles (US 155)
         Group("Video", ref y);
         SliderRow("Campo de visión", ref y, 60f, 100f, 1f, SetFov, true);        // mismo rango que el menú
-        ScreenModeRow(ref y);
+        // Resolución, modo de pantalla, calidad, VSync y límite de FPS: la misma pestaña del menú principal.
+        OpenRow("Gráficos", "Cambiar gráficos", ref y, () => Show(Panel.Graphics));
+        OpenRow("Mira", "Personalizar mira", ref y, () => Show(Panel.Crosshair)); // US 172
         Group("Teclas", ref y);
         OpenRow("Controles", "Cambiar teclas", ref y, () => Show(Panel.Controls));
 
@@ -778,6 +847,42 @@ public class PauseMenu : MonoBehaviour
         panelObject.SetActive(true);
 
         colControls.gameObject.SetActive(false);
+    }
+
+    // La misma pestaña Gráficos del menú principal (US 153), dentro de la pausa.
+    private void BuildGraphicsColumn()
+    {
+        colGraphics = Column("Graficos", Col1W, ColControlsW, col2Color);
+        graphicsGroup = colGraphics.GetComponent<CanvasGroup>();
+
+        GameObject panelObject = new GameObject("PanelGraficos", typeof(RectTransform));
+        panelObject.layer = 5;
+        panelObject.SetActive(false); // se configura antes de que arranque
+        panelObject.transform.SetParent(colGraphics, false);
+        Stretch((RectTransform)panelObject.transform);
+        graphics = panelObject.AddComponent<GraficosUIController>();
+        graphics.Setup(displayFont, labelFont, bodyFont, rounded, () => Back());
+        panelObject.SetActive(true);
+
+        colGraphics.gameObject.SetActive(false);
+    }
+
+    // La misma pestaña Mira del menú principal (US 172), dentro de la pausa.
+    private void BuildCrosshairColumn()
+    {
+        colCrosshair = Column("Mira", Col1W, ColControlsW, col2Color);
+        crosshairGroup = colCrosshair.GetComponent<CanvasGroup>();
+
+        GameObject panelObject = new GameObject("PanelMira", typeof(RectTransform));
+        panelObject.layer = 5;
+        panelObject.SetActive(false); // se configura antes de que arranque
+        panelObject.transform.SetParent(colCrosshair, false);
+        Stretch((RectTransform)panelObject.transform);
+        crosshairPanel = panelObject.AddComponent<MiraUIController>();
+        crosshairPanel.Setup(displayFont, labelFont, bodyFont, rounded, () => Back());
+        panelObject.SetActive(true);
+
+        colCrosshair.gameObject.SetActive(false);
     }
 
     private void Group(string title, ref float y)

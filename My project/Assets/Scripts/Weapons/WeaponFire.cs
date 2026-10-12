@@ -13,10 +13,24 @@ public static class WeaponFire
     // Un disparo que pegó: el HUD muestra el marcador de impacto (US 165).
     public static event System.Action<HitMarkerKind> Hit;
 
+    // Cada baja de un disparo, y si fue a la cabeza: sin conexión, el aviso de baja sale de acá (US 057, CA4).
+    public static event System.Action<bool> Killed;
+
+    // Cada disparo, con quién tiró, desde dónde y la dirección de cada perdigón. El multijugador lo repite
+    // en las demás computadoras (US 028).
+    public static event System.Action<Transform, Vector3, Vector3[]> Fired;
+
     private static readonly RaycastHit[] hits = new RaycastHit[32];
     private static readonly Dictionary<HealthSystem, bool> zoned = new Dictionary<HealthSystem, bool>();
     private static readonly IComparer<RaycastHit> byDistance =
         Comparer<RaycastHit>.Create((a, b) => a.distance.CompareTo(b.distance));
+
+    /// <summary>Un golpe cuerpo a cuerpo que acertó: muestra el marcador de impacto y, si mató, avisa la baja.</summary>
+    public static void ReportMelee(bool lethal)
+    {
+        if (lethal) Killed?.Invoke(false);
+        Hit?.Invoke(lethal ? HitMarkerKind.Kill : HitMarkerKind.Body);
+    }
 
     public static void Fire(ShopItem weapon, Camera camera, Transform shooter, bool aiming, float range)
     {
@@ -28,10 +42,22 @@ public static class WeaponFire
 
         bool anyHit = false, head = false, kill = false;
         int pellets = Mathf.Max(1, weapon.pellets);
+        Vector3[] directions = new Vector3[pellets];
+        // La bala se ve: fogonazo en la boca del arma y una estela por perdigón hasta donde pegó.
+        Vector3 muzzle = Trazadora.BocaLocal(camera);
+        Trazadora.Fogonazo(muzzle);
+        if (MinijuegoPajaros.Activo)
+        {
+            FirePractice(weapon, camera, aim, view, spread, pellets, muzzle, range);
+            return;
+        }
         for (int i = 0; i < pellets; i++)
         {
             Vector3 direction = view * Deviation(spread) * Vector3.forward;
-            if (!Trace(camera.transform.position, direction, range, shooter, out RaycastHit hit, out HealthSystem target, out BodyZone zone))
+            directions[i] = direction;
+            bool touched = Trace(camera.transform.position, direction, range, shooter, out RaycastHit hit, out HealthSystem target, out BodyZone zone);
+            Trazadora.Mostrar(muzzle, touched ? hit.point : camera.transform.position + direction * Mathf.Min(range, 300f));
+            if (!touched)
                 continue;
 
             if (target == null)
@@ -40,15 +66,56 @@ public static class WeaponFire
                 continue;
             }
 
-            bool wasAlive = target.currentHealth > 0;
-            target.TakeDamage(weapon.HitDamage(zone, hit.distance));
+            // US 031, CA6: los compañeros de equipo no reciben daño (la bala se frena en ellos).
+            if (EquiposTacticos.SonAliados(shooter, target)) continue;
+
+            // Se mira antes de aplicar el daño: a un jugador de otra computadora el daño le llega después (US 029).
+            int damage = weapon.HitDamage(zone, hit.distance);
+            bool lethal = target.WouldDie(damage);
+            HealthSystem.DamageOrigin = camera.transform.position; // US 192: desde dónde le dispararon
+            target.TakeDamage(damage, zone == BodyZone.Head);
             anyHit = true;
             if (zone == BodyZone.Head) head = true;
-            if (wasAlive && target.currentHealth <= 0) kill = true;
+            if (lethal)
+            {
+                kill = true;
+                Killed?.Invoke(zone == BodyZone.Head);
+            }
         }
 
         aim.Kick(weapon);
+        Fired?.Invoke(shooter, camera.transform.position, directions);
         if (anyHit) Hit?.Invoke(kill ? HitMarkerKind.Kill : head ? HitMarkerKind.Head : HitMarkerKind.Body);
+    }
+
+    // Fase de compra del Táctico (F21, US 157): el disparo es solo para el minijuego. Tiene la cadencia, la dispersión y
+    // el retroceso del arma, pero solo le pega a los pájaros: no daña a nadie, no deja marcas y no va por la red (cada
+    // jugador tiene sus pájaros). Un acierto muestra el marcador de impacto (US 158, CA4).
+    private static void FirePractice(ShopItem weapon, Camera camera, WeaponAim aim, Quaternion view, float spread, int pellets,
+        Vector3 muzzle, float range)
+    {
+        MinijuegoPajaros.ContarDisparo();
+        float reach = MinijuegoPajaros.Alcance(range);
+        bool anyHit = false;
+        for (int i = 0; i < pellets; i++)
+        {
+            Vector3 direction = view * Deviation(spread) * Vector3.forward;
+            Pajaro bird = MinijuegoPajaros.Buscar(camera.transform.position, direction, reach, out Vector3 point);
+            Trazadora.Mostrar(muzzle, bird != null ? point : camera.transform.position + direction * Mathf.Min(reach, 300f));
+            if (bird != null && MinijuegoPajaros.Acertar(bird, point)) anyHit = true;
+        }
+        aim.Kick(weapon);
+        if (anyHit) Hit?.Invoke(HitMarkerKind.Body);
+    }
+
+    // El disparo de otro jugador que llega por la red (US 028): se busca dónde pega para dibujar la trazadora y
+    // la marca en el escenario, sin hacer daño (el daño lo calcula quien disparó). Devuelve el punto final.
+    public static Vector3 Replay(Vector3 origin, Vector3 direction, float range, Transform shooter)
+    {
+        if (!Trace(origin, direction, range, shooter, out RaycastHit hit, out HealthSystem target, out BodyZone _))
+            return origin + direction * range;
+        if (target == null) ImpactMarks.Spawn(hit);
+        return hit.point;
     }
 
     // Ficha del arma para un jugador: la del catálogo de su tienda con ese alias (por ejemplo, "Mitre").

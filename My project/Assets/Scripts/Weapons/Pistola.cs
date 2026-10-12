@@ -14,7 +14,7 @@ public class Pistola : MonoBehaviour, IHudWeapon
     [Header("Referencias")]
     public Camera playerCamera;
 
-    [Tooltip("Ficha de la tienda de esta arma. Si falta, usa la pistola inicial del catálogo (Línea A).")]
+    [Tooltip("Ficha de la tienda de esta arma. Si falta, usa la pistola inicial del catálogo (La Porteña).")]
     public ShopItem shopItem;
 
     public AudioClip shootSound;
@@ -99,7 +99,7 @@ public class Pistola : MonoBehaviour, IHudWeapon
             return;
         }
 
-        currentAmmo--;
+        if (!MinijuegoPajaros.Activo) currentAmmo--; // US 157, CA2: en la compra los disparos no gastan balas
 
         Debug.Log(
             "¡PUM! Balas en cargador: " +

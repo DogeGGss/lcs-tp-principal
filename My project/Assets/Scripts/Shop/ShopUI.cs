@@ -1,5 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
+using Photon.Pun;
+using Photon.Realtime;
 using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -35,6 +37,8 @@ public class ShopUI : MonoBehaviour
     [SerializeField] private Sprite backIcon;
     [Tooltip("Escala de grises para los íconos de lo que no alcanza a pagarse.")]
     [SerializeField] private Material grayscale;
+    [Tooltip("Ícono del cuchillo en el inventario de abajo (US 066). Si queda vacío, se muestra solo el nombre.")]
+    [SerializeField] private Sprite knifeIcon;
 
     // Sonidos de la tienda (US 117): al cerrar suena el de abrir con las notas bajando, al comprar
     // monedas y una traba metálica, al vender o deshacer monedas, al fallar un "bip-bip" grave de saldo
@@ -72,6 +76,13 @@ public class ShopUI : MonoBehaviour
     private const float Pad = 22f, ContentW = 516f;
     private const float ButtonY = 668f, ButtonH = 66f;
     private const float FxScale = 492f / 500f; // los gráficos de la maqueta son SVG de 500 px de ancho
+    private const float TeamX = 1540f, TeamW = 324f, TeamRowH = 106f; // compañeros (US 175, CA13)
+
+    // Lo que cada jugador publica de su equipamiento para que lo vean sus compañeros en la tienda (US 175, CA13).
+    // La plata ya la publica el marcador (MarcadorTactico). Las armas también sirven para la US 195: el anfitrión tira
+    // al piso la del que se desconecta (CA4) y en Deathmatch el que vuelve recupera las que había elegido (CA3).
+    private const string PropPlata = "plata", PropEscudo = "eq.esc", PropGastado = "eq.gasto";
+    public const string PropPrincipal = "eq.pri", PropSecundaria = "eq.sec";
 
     private class Row
     {
@@ -122,10 +133,49 @@ public class ShopUI : MonoBehaviour
     private RectTransform[] loadoutCells;
     private float[] loadoutWidths;
 
-    private Coroutine toastRoutine, shakeRoutine, openRoutine, catsRoutine, listRoutine, detailRoutine;
+    // Compañeros (US 175, CA13)
+    private RectTransform teamPanel, teamRowsRoot;
+    private UnityEngine.UI.RectMask2D teamMask;
+    private TextMeshProUGUI teamTotal;
+    private string teamState, publishedState;
+
+    private Coroutine toastRoutine, shakeRoutine, openRoutine, catsRoutine, listRoutine, detailRoutine, teamRoutine;
+
+    private static ShopUI instance;
+    private TextMeshProUGUI barTitle;
+
+    // Deathmatch (US 138): la misma pantalla, pero se elige equipo gratis en vez de comprar.
+    private static bool Dm => PlayerLoadout.Free;
+
+    /// <summary>
+    /// Espectador (US 133): de quién es la plata que muestra el HUD. null = la propia. La de los compañeros llega
+    /// por la red (la publica MarcadorTactico).
+    /// </summary>
+    public static Player Spectated;
+    private bool showedSpectated;
+
+    private string HudMoneyText()
+    {
+        if (Spectated == null) return Money(loadout.Wallet.Money);
+        int money = Read(Spectated, PropPlata, -1);
+        return money >= 0 ? Money(money) : "—";
+    }
+
+    /// <summary>Cierra la tienda si está abierta (al reaparecer, al morir o al terminar la partida).</summary>
+    public static void Cerrar()
+    {
+        if (instance != null && instance.open) instance.SetOpen(false);
+    }
+
+    /// <summary>Con la tienda abierta, vuelve a trabar lo que otro script haya destrabado mientras tanto.</summary>
+    public static void Rebloquear()
+    {
+        if (instance != null && instance.open) instance.BlockMore();
+    }
 
     private void Awake()
     {
+        instance = this;
         BuildCanvas();
         sounds = gameObject.AddComponent<AudioSource>();
         sounds.playOnAwake = false;
@@ -166,6 +216,8 @@ public class ShopUI : MonoBehaviour
         }
         if (open) RestorePlayerControls();
         IsOpen = false;
+        Spectated = null;
+        if (instance == this) instance = null;
     }
 
     private void Update()
@@ -176,9 +228,18 @@ public class ShopUI : MonoBehaviour
             if (loadout == null) return;
         }
 
-        if (KeyBindings.Down(GameAction.Tienda)) SetOpen(!open);
+        if (KeyBindings.Down(GameAction.Tienda))
+        {
+            // US 138, CA5: en Deathmatch solo se abre muerto, en la cuenta inicial o recién reaparecido.
+            if (!open && Dm && loadout.CheckAccess() != ShopResult.Ok)
+            {
+                if (!PartidaDeathmatch.YaTermino) MatchHud.Warn("Cambiás de equipo al morir o recién reaparecido", 2f);
+            }
+            else SetOpen(!open);
+        }
         else if (open) HandleKeys();
         UpdateLive();
+        PublishLoadout();
     }
 
     // ---------- Jugador y controles ----------
@@ -194,6 +255,8 @@ public class ShopUI : MonoBehaviour
         loadout.Wallet.MoneyChanged += OnMoneyChanged;
         categories.Clear();
         categories.AddRange(catalog.ActiveCategories());
+        // US 138, CA2: en Deathmatch no hay escudos ni granadas.
+        if (Dm) categories.RemoveAll(c => c == ShopCategory.Shields || c == ShopCategory.Grenades);
         BuildCategoryRows();
         lastAccess = loadout.CheckAccess();
         Render();
@@ -219,6 +282,7 @@ public class ShopUI : MonoBehaviour
             if (openRoutine != null) StopCoroutine(openRoutine);
             openRoutine = StartCoroutine(OpenAnimation());
             Reveal(ref catsRoutine, catsMask, true, 0.16f);
+            if (teamPanel.gameObject.activeSelf) Reveal(ref teamRoutine, teamMask, true, 0.16f);
             Play(openSound);
         }
         else
@@ -235,13 +299,19 @@ public class ShopUI : MonoBehaviour
     private void BlockPlayerControls()
     {
         blocked.Clear();
+        BlockMore();
+        Cursor.lockState = CursorLockMode.None;
+        Cursor.visible = true;
+    }
+
+    private void BlockMore()
+    {
         Block(FindObjectsByType<CameraLook>());
         Block(FindObjectsByType<MeleeAttack>());
         Block(FindObjectsByType<Pistola>());
         Block(FindObjectsByType<Mitre>());
+        Block(FindObjectsByType<ArmaDeFuego>());
         Block(FindObjectsByType<WeaponSwitcher>());
-        Cursor.lockState = CursorLockMode.None;
-        Cursor.visible = true;
     }
 
     private void Block<T>(T[] components) where T : Behaviour
@@ -266,7 +336,7 @@ public class ShopUI : MonoBehaviour
     private void OnPhaseEnded()
     {
         // Si la tienda está abierta cuando termina la fase, se cierra sola (US 076, CA9).
-        if (open) SetOpen(false);
+        if (open && !Dm) SetOpen(false);
         Render();
     }
 
@@ -366,7 +436,7 @@ public class ShopUI : MonoBehaviour
         ShopResult result = loadout.Buy(item);
         if (result == ShopResult.Ok)
         {
-            ShowToast(item.price > 0 ? $"{ItemName(item)} <color=#F29A38>−{Money(item.price)}</color>" : $"Elegiste {ItemName(item)}");
+            ShowToast(item.price > 0 && !Dm ? $"{ItemName(item)} <color=#F29A38>−{Money(item.price)}</color>" : $"Elegiste {ItemName(item)}");
             Play(buySound);
             return;
         }
@@ -377,6 +447,7 @@ public class ShopUI : MonoBehaviour
 
     private void TrySell(ShopItem item)
     {
+        if (Dm) return; // US 138: no hay nada que vender
         if (loadout.CheckAccess() != ShopResult.Ok) return;
         ShopResult result = loadout.Sell(item);
         if (result == ShopResult.Ok)
@@ -398,7 +469,7 @@ public class ShopUI : MonoBehaviour
             case ShopResult.AlreadyEquipped: return $"Ya tenés {ItemName(item)}";
             case ShopResult.MaxReached: return $"Máximo de {item.displayName.ToLowerInvariant()}";
             case ShopResult.ShieldFull: return "Tu escudo ya está lleno";
-            case ShopResult.BuyPhaseOver: return "Terminó la fase de compra";
+            case ShopResult.BuyPhaseOver: return Dm ? "Ahora no podés cambiar de equipo" : "Terminó la fase de compra";
             case ShopResult.OutsideBuyZone: return "Fuera de la zona de compra";
             case ShopResult.NotSellable:
                 bool owned = loadout.IsEquipped(item) || loadout.Count(item) > 0 || (item.kind == ShopItemKind.Shield && loadout.Shield > 0);
@@ -422,16 +493,40 @@ public class ShopUI : MonoBehaviour
         bool phaseActive = phase == null || phase.IsActive;
         ShopResult access = loadout.CheckAccess();
 
-        hudClock.SetActive(!open && phase != null && phase.IsActive);
-        hudHint.SetActive(!open && phaseActive && access == ShopResult.Ok);
-        hudMoney.gameObject.SetActive(!open);
+        // US 138, CA5: se terminó el rato para cambiar (o disparó): la tienda se cierra sola.
+        if (open && Dm && access != ShopResult.Ok)
+        {
+            SetOpen(false);
+            MatchHud.Warn("Se terminó el tiempo para cambiar de equipo", 2f);
+        }
+
+        // Con marcador (US 057) el tiempo de la compra ya está en su centro: este reloj quedaba abajo, asomándose.
+        hudClock.SetActive(!open && !Dm && phase != null && phase.IsActive && MatchHud.Instance == null);
+        hudHint.SetActive(!open && (phaseActive || Dm) && access == ShopResult.Ok && !PantallaDeCarga.Visible);
+        hudMoney.gameObject.SetActive(!open && !Dm); // US 138, CA1: sin plata
+        if (Spectated != null || showedSpectated)
+        {
+            // La plata del compañero cambia sin avisar (llega por la red): se revisa en cada cuadro. Al dejar de
+            // espectar se revisa una vez más, para volver a la propia.
+            showedSpectated = Spectated != null;
+            string money = HudMoneyText();
+            if (hudMoney.text != money) hudMoney.text = money;
+        }
         if (phase != null)
         {
             hudTime.text = Clock(phase.TimeLeft);
             hudRound.text = $"Ronda {phase.Round}";
         }
 
-        if (open)
+        if (open && Dm)
+        {
+            PartidaDeathmatch.PuedeElegir(out string reason, out float left);
+            barPhase.text = reason;
+            barPhase.color = Accent;
+            barTime.text = left >= 0f ? Clock(left) : "—";
+            SetProgress(1f);
+        }
+        else if (open)
         {
             if (phase == null)
             {
@@ -461,6 +556,14 @@ public class ShopUI : MonoBehaviour
             lastAccess = access;
             Render();
         }
+        else if (open)
+        {
+            // US 066: el inventario de abajo sigue lo que pasa (arma en la mano, balas, escudo) con la tienda abierta.
+            string state = LoadoutState();
+            if (state != loadoutState) RenderLoadout();
+            // US 175, CA13: lo que compran los compañeros llega por la red mientras la tienda está abierta.
+            if (TeamState() != teamState) RenderTeam();
+        }
     }
 
     private void SetProgress(float ratio)
@@ -479,7 +582,7 @@ public class ShopUI : MonoBehaviour
     private void Render()
     {
         if (loadout == null || shopRoot == null) return;
-        hudMoney.text = Money(loadout.Wallet.Money);
+        hudMoney.text = HudMoneyText();
         if (!open) return;
 
         RenderBar();
@@ -487,10 +590,21 @@ public class ShopUI : MonoBehaviour
         RenderItems();
         RenderDetail();
         RenderLoadout();
+        RenderTeam();
     }
 
     private void RenderBar()
     {
+        barTitle.text = Dm ? "Elegí tu equipo" : "Tienda";
+        if (Dm)
+        {
+            // US 138, CA1: sin plata ni precios.
+            barSub.text = "Deathmatch";
+            barMoney.text = "Todo gratis";
+            barNext.text = "Se guarda para la próxima vida";
+            banner.SetActive(false);
+            return;
+        }
         barSub.text = phase != null ? $"Táctico · Ronda {phase.Round}" : "Táctico";
         barMoney.text = Money(loadout.Wallet.Money);
         barNext.text = $"Próxima ronda: mínimo {Money(minimumNextRound)}";
@@ -513,7 +627,7 @@ public class ShopUI : MonoBehaviour
             List<ShopItem> items = catalog.ItemsIn(value);
 
             // Una categoría sin nada que se pueda comprar se ve al 38 %, como el ".row.off" de la maqueta.
-            float opacity = items.Exists(IsReachable) ? 1f : 0.38f;
+            float opacity = Dm || items.Exists(IsReachable) ? 1f : 0.38f;
             PaintRow(row, isSelected, (level == 0 && highlight == i) || row.hovered, opacity);
             row.nameText.color = Faded(Ink, opacity);
             row.rightText.color = Faded(Mute, opacity);
@@ -523,7 +637,7 @@ public class ShopUI : MonoBehaviour
                 : new Color(1f, 1f, 1f, FadeAlpha(0.9f * opacity));
 
             // Nombre, rango de precios y flecha, uno detrás del otro como en la maqueta.
-            row.rightText.text = PriceRange(items);
+            row.rightText.text = Dm ? "" : PriceRange(items);
             float nameWidth = Width(row.nameText, row.nameText.text.ToUpperInvariant());
             float rangeWidth = Width(row.rightText, row.rightText.text);
             float rangeX = Mathf.Max(361f - rangeWidth, 155f + nameWidth + 14f);
@@ -556,7 +670,7 @@ public class ShopUI : MonoBehaviour
             }
             else
             {
-                row.rightText.text = item.price <= 0 ? "Gratis" : Money(item.price);
+                row.rightText.text = Dm ? "" : item.price <= 0 ? "Gratis" : Money(item.price);
                 row.rightText.color = cant ? Bad : Ink;
                 stateWidth = Mathf.Max(84f, Width(row.rightText, row.rightText.text));
                 Place(row.rightText.rectTransform, 461f - stateWidth, 0f, stateWidth, ItemRowH);
@@ -608,7 +722,7 @@ public class ShopUI : MonoBehaviour
         string title = ItemName(item);
         float nameSize = title.Length > 15 ? 36f : 46f;
 
-        detailPrice.text = item.price <= 0 ? "Gratis" : Money(item.price);
+        detailPrice.text = Dm ? "" : item.price <= 0 ? "Gratis" : Money(item.price);
         detailPrice.color = cant ? Bad : Ink;
         float priceWidth = Width(detailPrice, detailPrice.text);
         detailName.text = title;
@@ -982,7 +1096,14 @@ public class ShopUI : MonoBehaviour
         int money = loadout.Wallet.Money;
         int cost = loadout.CostOf(item);
 
-        if (access != ShopResult.Ok)
+        if (Dm)
+        {
+            // US 138, CA3: elegir equipa gratis; la que ya está en uso dice "Elegida".
+            if (access != ShopResult.Ok) PaintButton(ButtonStyle.Locked, "Ahora no", "solo mirar");
+            else if (loadout.IsEquipped(item)) PaintButton(ButtonStyle.Owned, "Elegida", "se guarda para la próxima vida");
+            else PaintButton(ButtonStyle.Normal, "Elegir", "Enter · clic");
+        }
+        else if (access != ShopResult.Ok)
             PaintButton(ButtonStyle.Locked, access == ShopResult.BuyPhaseOver ? "Terminó la compra" : "Fuera de la zona", "solo mirar");
         else if (item.IsWeapon && loadout.IsEquipped(item))
             PaintButton(ButtonStyle.Owned, "Ya la tenés", loadout.BoughtThisPhase(item)
@@ -1018,48 +1139,130 @@ public class ShopUI : MonoBehaviour
 
     // ---------- Equipamiento ----------
 
+    // Inventario detallado (US 066). La versión corta está en el HUD (US 055).
+    // - CA1: los 4 espacios con su tecla, ícono y nombre.   - CA2: cada tipo de granada con cuántas lleva sobre el máximo.
+    // - CA3: balas en el cargador y en la reserva.          - CA4: el escudo que lleva y sus puntos.
+    // - CA5: el espacio sin nada, atenuado y con "Vacío".   - CA6: el espacio en la mano, resaltado.
     private void RenderLoadout()
     {
         for (int i = 0; i < loadoutCells.Length; i++) Clear(loadoutCells[i]);
+        FindWeapons();
+        loadoutState = LoadoutState();
+        int held = HeldSlot();
+        for (int i = 0; i < 4; i++) if (i == held) SlotInHand(i);
 
-        SlotHeader(0, KeyBindings.Label(GameAction.ArmaPrincipal), "Principal");
+        GameObject primaryObj = switcher != null ? switcher.PrimaryObj : null;
+        SlotHeader(0, KeyBindings.Label(GameAction.ArmaPrincipal), "Principal", held == 0);
         SlotWeapon(0, loadout.Primary);
-        SlotHeader(1, KeyBindings.Label(GameAction.ArmaSecundaria), "Secundaria");
+        SlotAmmo(0, loadout.Primary != null ? primaryObj : null);
+        Dim(0, loadout.Primary == null);
+
+        SlotHeader(1, KeyBindings.Label(GameAction.ArmaSecundaria), "Secundaria", held == 1);
         SlotWeapon(1, loadout.Secondary);
-        SlotHeader(2, KeyBindings.Label(GameAction.Cuchillo), "Cuchillo");
-        SlotLabel(2, 18f, "Cuchillo", Ink);
+        SlotAmmo(1, loadout.Secondary != null && switcher != null ? switcher.SecondaryObj : null); // la Línea A o la H (US 072)
+        Dim(1, loadout.Secondary == null);
 
-        SlotHeader(3, KeyBindings.Label(GameAction.Granadas), "Granadas");
-        float x = 18f;
-        foreach (ShopItem grenade in catalog.ItemsIn(ShopCategory.Grenades))
+        MeleeWeaponData knife = switcher != null && switcher.meleeScript != null ? switcher.meleeScript.CurrentWeapon : null;
+        bool hasKnife = knife != null || switcher == null; // sin datos del jugador se asume el cuchillo de siempre
+        SlotHeader(2, KeyBindings.Label(GameAction.Cuchillo), "Cuchillo", held == 2);
+        if (!hasKnife) SlotLabel(2, 18f, "Vacío", Mute);
+        else
         {
-            int count = loadout.Count(grenade);
-            RectTransform chip = Place(Node("Granada", loadoutCells[3]), x, 58.5f, 10f, 25f);
-            Image(chip, rounded, ChipColor, 4f);
-            chip.gameObject.AddComponent<CanvasGroup>().alpha = count > 0 ? 1f : FadeAlpha(0.35f);
-            Image(Place(Node("Color", chip), 7f, 7.5f, 10f, 10f), circle, grenade.tint);
-            TextMeshProUGUI text = Text(Place(Node("Cantidad", chip), 23f, 0f, 60f, 25f), monoFont, 15f, Ink);
-            text.fontStyle = FontStyles.Bold;
-            text.text = $"{count}/{grenade.maxCarry}";
-            float width = 23f + Width(text, text.text) + 7f;
-            chip.sizeDelta = new Vector2(width, 25f);
-            x += width + 14f;
+            float knifeX = 18f;
+            if (knifeIcon != null)
+            {
+                float w = Mathf.Min(70f, 34f * knifeIcon.rect.width / Mathf.Max(1f, knifeIcon.rect.height));
+                Image(Place(Node("Icono", loadoutCells[2]), 18f, 54f, w, 34f), knifeIcon, Ink).preserveAspect = true;
+                knifeX += w + 10f;
+            }
+            SlotLabel(2, knifeX, knife != null ? knife.weaponName : "Cuchillo", Ink);
         }
+        Dim(2, !hasKnife);
 
-        SlotHeader(4, null, "Escudo");
+        // CA2: "Flash 1/2", con el nombre corto (alias) para que entren todas. Las que no lleva quedan atenuadas;
+        // si no lleva ninguna, "Vacío" arriba a la derecha (las fichas van en la fila de abajo y no lo pisan).
+        SlotHeader(3, KeyBindings.Label(GameAction.Granadas), "Granadas", held == 3);
+        ShopItem inHand = thrower != null ? thrower.Selected : null;
+        List<ShopItem> grenades = catalog.ItemsIn(ShopCategory.Grenades);
+        int total = 0;
+        foreach (ShopItem grenade in grenades) total += loadout.Count(grenade);
+        if (total == 0)
+        {
+            TextMeshProUGUI empty = Text(Place(Node("Vacio", loadoutCells[3]), loadoutWidths[3] - 112f, 21f, 100f, 24f), displayFont, 16f, Mute, TextAlignmentOptions.MidlineRight, 5f, true);
+            empty.text = "Vacío";
+        }
+        // Las fichas van en una fila que corta en el borde del espacio: nunca pisan al escudo.
+        const float ChipPad = 23f + 7f, ChipGap = 8f;
+        float rowWidth = loadoutWidths[3] - 18f - 12f;
+        RectTransform row = Place(Node("Granadas", loadoutCells[3]), 18f, 58.5f, rowWidth, 25f);
+        row.gameObject.AddComponent<UnityEngine.UI.RectMask2D>();
+        RectTransform[] chips = new RectTransform[grenades.Count];
+        TextMeshProUGUI[] texts = new TextMeshProUGUI[grenades.Count];
+        float textWidth = 0f;
+        for (int i = 0; i < grenades.Count; i++)
+        {
+            ShopItem grenade = grenades[i];
+            int count = loadout.Count(grenade);
+            bool selectedGrenade = grenade == inHand && count > 0;
+            chips[i] = Node("Granada", row);
+            Image(chips[i], rounded, selectedGrenade ? Ink : ChipColor, 4f);
+            chips[i].gameObject.AddComponent<CanvasGroup>().alpha = count > 0 ? 1f : FadeAlpha(0.35f);
+            Image(Place(Node("Color", chips[i]), 7f, 7.5f, 10f, 10f), circle, grenade.tint);
+            texts[i] = Text(Place(Node("Cantidad", chips[i]), 23f, 0f, 160f, 25f), monoFont, 14f, selectedGrenade ? KeyInk : Ink);
+            texts[i].fontStyle = FontStyles.Bold;
+            texts[i].text = $"{ListName(grenade)} {count}/{grenade.maxCarry}";
+            textWidth += Width(texts[i], texts[i].text);
+        }
+        // Si a 14 no entran, se achica la letra lo justo (no menos de 11); lo que igual sobre lo corta la fila.
+        float room = rowWidth - grenades.Count * ChipPad - Mathf.Max(0, grenades.Count - 1) * ChipGap;
+        float fontSize = textWidth > room ? Mathf.Max(11f, 14f * room / textWidth) : 14f;
+        float x = 0f;
+        for (int i = 0; i < chips.Length; i++)
+        {
+            texts[i].fontSize = fontSize;
+            float width = ChipPad + Width(texts[i], texts[i].text);
+            Place(chips[i], x, 0f, width, 25f);
+            x += width + ChipGap;
+        }
+        Dim(3, total == 0);
+
+        // CA4: qué escudo lleva (el más chico de la tienda que cubre sus puntos) y cuántos puntos le quedan.
         int maxShield = 0;
-        foreach (ShopItem shield in catalog.ItemsIn(ShopCategory.Shields)) maxShield = Mathf.Max(maxShield, shield.shieldPoints);
-        RectTransform track = Place(Node("Barra", loadoutCells[4]), 18f, 65f, 150f, 12f);
+        ShopItem carried = null;
+        foreach (ShopItem shield in catalog.ItemsIn(ShopCategory.Shields))
+        {
+            maxShield = Mathf.Max(maxShield, shield.shieldPoints);
+            if (loadout.Shield > 0 && shield.shieldPoints >= loadout.Shield && (carried == null || shield.shieldPoints < carried.shieldPoints))
+                carried = shield;
+        }
+        SlotHeader(4, null, loadout.Shield <= 0 ? "Escudo" : carried != null ? $"Escudo  ·  <color=#E6E9EE>{ItemName(carried)}</color>" : "Escudo");
+        RectTransform track = Place(Node("Barra", loadoutCells[4]), 18f, 65f, 130f, 12f);
         Image(track, rounded, TrackColor, 6f);
         float ratio = Mathf.Clamp01(loadout.Shield / (float)Mathf.Max(1, maxShield));
-        if (ratio > 0f) Image(Place(Node("Relleno", track), 0f, 0f, 150f * ratio, 12f), rounded, ShieldColor, 6f);
-        TextMeshProUGUI shieldValue = Text(Place(Node("Valor", loadoutCells[4]), 178f, 51f, 80f, 40f), monoFont, 20f, ShieldColor);
-        shieldValue.text = loadout.Shield.ToString();
+        if (ratio > 0f) Image(Place(Node("Relleno", track), 0f, 0f, 130f * ratio, 12f), rounded, ShieldColor, 6f);
+        if (loadout.Shield > 0)
+        {
+            TextMeshProUGUI shieldValue = Text(Place(Node("Valor", loadoutCells[4]), 158f, 51f, 90f, 40f), monoFont, 20f, ShieldColor);
+            shieldValue.text = $"{loadout.Shield}<size=14><color=#8E96A3>/{maxShield}</color></size>";
+        }
+        else
+        {
+            TextMeshProUGUI none = Text(Place(Node("Valor", loadoutCells[4]), 158f, 51f, 90f, 40f), displayFont, 18f, Mute, TextAlignmentOptions.MidlineLeft, 5f, true);
+            none.text = "Vacío";
+        }
+        Dim(4, loadout.Shield <= 0);
 
         // Gastado esta ronda y "Deshacer" (US 076, CA10), alineados a la derecha.
         float right = loadoutWidths[5] - 18f;
         TextMeshProUGUI title = Text(Place(Node("Titulo", loadoutCells[5]), 0f, 21f, right, 24f), labelFont, 14f, Mute, TextAlignmentOptions.MidlineRight, 12f, true);
-        title.text = "Gastado esta ronda";
+        title.text = Dm ? "Tu equipo" : "Gastado esta ronda";
+        if (Dm)
+        {
+            // US 138, CA4: no hay gasto; se avisa que lo elegido queda.
+            TextMeshProUGUI keep = Text(Place(Node("Guardado", loadoutCells[5]), 0f, 51f, right, 40f), labelFont, 17f, Ink, TextAlignmentOptions.MidlineRight, 6f, true);
+            keep.text = "Se guarda para la próxima vida";
+            return;
+        }
         if (loadout.HasPurchases && loadout.CheckAccess() == ShopResult.Ok)
         {
             RectTransform undo = Place(Node("Deshacer", loadoutCells[5]), 0f, 54f, 10f, 34f);
@@ -1077,12 +1280,218 @@ public class ShopUI : MonoBehaviour
         spent.text = Money(loadout.SpentThisPhase);
     }
 
-    private void SlotHeader(int cell, string key, string label)
+    private void SlotHeader(int cell, string key, string label, bool inHand = false)
     {
         float x = 18f;
-        if (key != null) x += Key(loadoutCells[cell], x, 21f, key, false, true).width + 8f;
-        TextMeshProUGUI text = Text(Place(Node("Titulo", loadoutCells[cell]), x, 21f, 220f, 24f), labelFont, 14f, Mute, TextAlignmentOptions.MidlineLeft, 12f, true);
+        if (key != null) x += Key(loadoutCells[cell], x, 21f, key, false, !inHand).width + 8f;
+        TextMeshProUGUI text = Text(Place(Node("Titulo", loadoutCells[cell]), x, 21f, 220f, 24f), labelFont, 14f, inHand ? Accent : Mute, TextAlignmentOptions.MidlineLeft, 12f, true);
         text.text = label;
+    }
+
+    // ---------- Compañeros (US 175, CA13) ----------
+
+    // A la derecha, en el Táctico: la plata y la compra de cada uno del equipo (vos primero), para decidir juntos si
+    // es ronda de ahorro. Cada jugador publica su equipamiento (PublishLoadout); la plata la publica el marcador.
+    // En los demás modos la columna no se ve (en Zombie y Deathmatch va a mostrar la oleada y la tabla).
+    private void RenderTeam()
+    {
+        teamState = TeamState();
+        bool show = EquiposTacticos.HayEquipos;
+        teamPanel.gameObject.SetActive(show);
+        if (!show) return;
+
+        Clear(teamRowsRoot);
+        List<Player> team = Teammates();
+        int total = 0;
+        for (int i = 0; i < team.Count; i++)
+        {
+            Player player = team[i];
+            int money = MoneyOf(player);
+            total += Mathf.Max(0, money);
+            TeamRow(i, player, money);
+        }
+        teamTotal.text = Money(total);
+        float height = HeadH + team.Count * TeamRowH;
+        teamPanel.sizeDelta = new Vector2(TeamW, height);
+        teamRowsRoot.sizeDelta = new Vector2(TeamW, team.Count * TeamRowH);
+    }
+
+    private void TeamRow(int index, Player player, int money)
+    {
+        float y = index * TeamRowH;
+        bool me = player.IsLocal;
+        if (index > 0) Line(teamRowsRoot, 0f, y, TeamW);
+
+        // Caja de 40 de alto (centrada donde va la plata): con Ellipsis, si el renglón no entra a lo alto, TMP no lo dibuja.
+        TextMeshProUGUI who = Text(Place(Node("Nombre", teamRowsRoot), 18f, y + 4f, TeamW - 160f, 40f), displayFont, 22f,
+            me ? Ink : MatchHud.TeamColor, TextAlignmentOptions.MidlineLeft, 6f);
+        who.text = me ? $"{player.NickName} <color=#8E96A3>(vos)</color>" : player.NickName;
+        who.overflowMode = TextOverflowModes.Ellipsis;
+        TextMeshProUGUI cash = Text(Place(Node("Plata", teamRowsRoot), TeamW - 138f, y + 12f, 120f, 24f), displayFont, 22f, Ink,
+            TextAlignmentOptions.MidlineRight);
+        cash.text = money >= 0 ? Money(money) : "—";
+
+        // El arma principal (o "Sin principal") y el escudo.
+        ShopItem primary = me ? loadout.Primary : ItemAt(Read(player, PropPrincipal, -1));
+        int shield = me ? loadout.Shield : Read(player, PropEscudo, 0);
+        float x = 18f;
+        if (primary != null && primary.icon != null)
+        {
+            float w = Mathf.Min(110f, 28f * primary.icon.rect.width / Mathf.Max(1f, primary.icon.rect.height));
+            Image(Place(Node("Principal", teamRowsRoot), x, y + 45f, w, 28f), primary.icon, Ink).preserveAspect = true;
+            x += w + 8f;
+        }
+        else
+        {
+            TextMeshProUGUI none = Text(Place(Node("SinPrincipal", teamRowsRoot), x, y + 45f, 140f, 28f), displayFont, 14f, Mute,
+                TextAlignmentOptions.MidlineLeft, 10f, true);
+            none.text = primary != null ? ListName(primary) : "Sin principal";
+            x += Width(none, none.text.ToUpperInvariant()) + 10f;
+        }
+        if (shield > 0)
+        {
+            RectTransform badge = Place(Node("Escudo", teamRowsRoot), x, y + 48f, 10f, 22f);
+            Image(badge, rounded, Over(WithAlpha(ShieldColor, 0.08f), PanelBase), 4f);
+            Border(badge, 4f, Over(WithAlpha(ShieldColor, 0.5f), PanelBase));
+            TextMeshProUGUI points = Text(Stretch(Node("Puntos", badge)), monoFont, 14f, ShieldColor, TextAlignmentOptions.Midline);
+            points.fontStyle = FontStyles.Bold;
+            points.text = shield.ToString();
+            badge.sizeDelta = new Vector2(Width(points, points.text) + 12f, 22f);
+        }
+
+        // Cómo viene su compra: completa, comprando, sin comprar o ahorrando con la pistola.
+        int spent = me ? loadout.SpentThisPhase : Read(player, PropGastado, 0);
+        string state;
+        Color color;
+        if (primary != null && shield >= MaxShield()) { state = "Compra completa"; color = Ok; }
+        else if (spent > 0) { state = "Comprando"; color = Mute; }
+        else if (primary == null) { state = "Ahorra · pistola"; color = Accent; }
+        else { state = "Sin comprar"; color = Accent; }
+        TextMeshProUGUI status = Text(Place(Node("Estado", teamRowsRoot), 18f, y + 80f, TeamW - 36f, 14f), labelFont, 13f, color,
+            TextAlignmentOptions.MidlineLeft, 12f, true);
+        status.text = state;
+    }
+
+    // Vos primero y después tus compañeros, siempre en el mismo orden.
+    private static List<Player> Teammates()
+    {
+        var team = new List<Player>();
+        int mine = EquiposTacticos.Local;
+        foreach (Player player in PhotonNetwork.PlayerList)
+            if (!player.IsLocal && EquiposTacticos.DeActor(player.ActorNumber) == mine) team.Add(player);
+        team.Sort((a, b) => a.ActorNumber.CompareTo(b.ActorNumber));
+        if (PhotonNetwork.LocalPlayer != null) team.Insert(0, PhotonNetwork.LocalPlayer);
+        return team;
+    }
+
+    private int MoneyOf(Player player) => player.IsLocal ? loadout.Wallet.Money : Read(player, PropPlata, -1);
+
+    private static int Read(Player player, string key, int fallback) =>
+        player.CustomProperties.TryGetValue(key, out object value) && value is int n ? n : fallback;
+
+    private ShopItem ItemAt(int index) => catalog != null && index >= 0 && index < catalog.items.Count ? catalog.items[index] : null;
+
+    private int MaxShield()
+    {
+        int max = 0;
+        foreach (ShopItem shield in catalog.ItemsIn(ShopCategory.Shields)) max = Mathf.Max(max, shield.shieldPoints);
+        return Mathf.Max(1, max);
+    }
+
+    // Lo que hace falta redibujar: el equipo y lo que publicó cada uno.
+    private string TeamState()
+    {
+        if (!EquiposTacticos.HayEquipos || loadout == null) return "";
+        var sb = new System.Text.StringBuilder();
+        foreach (Player player in Teammates())
+            sb.Append(player.ActorNumber).Append(player.NickName).Append(':').Append(MoneyOf(player)).Append(',')
+              .Append(player.IsLocal ? catalog.items.IndexOf(loadout.Primary) : Read(player, PropPrincipal, -1)).Append(',')
+              .Append(player.IsLocal ? loadout.Shield : Read(player, PropEscudo, 0)).Append(',')
+              .Append(player.IsLocal ? loadout.SpentThisPhase : Read(player, PropGastado, 0)).Append('|');
+        return sb.ToString();
+    }
+
+    // Cada jugador publica sus armas (su lugar en el catálogo, igual en todas las computadoras), su escudo y lo que
+    // gastó en esta fase. Solo cuando cambia. En Deathmatch también, para recuperar las armas al volver (US 195).
+    private void PublishLoadout()
+    {
+        if (!PhotonNetwork.InRoom || loadout == null || catalog == null) return;
+        if (MatchSettings.Mode == GameMode.Tactico && !EquiposTacticos.HayEquipos) return;
+        // US 195: no antes de que la partida arme al jugador, así el que vuelve recupera lo que había publicado.
+        if (PartidaEnRed.Actual == null || !PartidaEnRed.Actual.Lista) return;
+        int primary = loadout.Primary != null ? catalog.items.IndexOf(loadout.Primary) : -1;
+        int secondary = loadout.Secondary != null ? catalog.items.IndexOf(loadout.Secondary) : -1;
+        int shield = loadout.Shield, spent = loadout.SpentThisPhase;
+        string state = $"{primary},{secondary},{shield},{spent}";
+        if (state == publishedState) return;
+        publishedState = state;
+        PhotonNetwork.LocalPlayer.SetCustomProperties(new ExitGames.Client.Photon.Hashtable
+        {
+            { PropPrincipal, primary }, { PropSecundaria, secondary }, { PropEscudo, shield }, { PropGastado, spent }
+        });
+    }
+
+    // ---------- Inventario: lo que lee del jugador (US 066) ----------
+
+    private WeaponSwitcher switcher;
+    private GrenadeThrower thrower;
+    private string loadoutState;
+
+    private void FindWeapons()
+    {
+        if (loadout == null) return;
+        if (switcher == null) switcher = loadout.GetComponentInChildren<WeaponSwitcher>(true);
+        if (thrower == null) thrower = loadout.GetComponentInChildren<GrenadeThrower>(true);
+    }
+
+    // CA6: qué espacio tiene en la mano: 0 principal, 1 secundaria, 2 cuchillo, 3 granada; -1 si no se sabe.
+    private int HeldSlot()
+    {
+        if (switcher == null) return -1;
+        if (thrower != null && thrower.IsHolding) return 3;
+        if (switcher.HeldPrimary != null) return 0;
+        if (switcher.HeldSecondary != null) return 1;
+        MeleeWeaponHolder melee = switcher.meleeScript;
+        if (melee != null && melee.CurrentViewModel != null && melee.CurrentViewModel.activeInHierarchy) return 2;
+        return -1;
+    }
+
+    private static IHudWeapon HudWeapon(GameObject weapon) => weapon != null ? weapon.GetComponentInChildren<IHudWeapon>(true) : null;
+
+    // Todo lo que cambia sin pasar por una compra: si es distinto al último dibujo, se dibuja de nuevo.
+    private string LoadoutState()
+    {
+        FindWeapons();
+        IHudWeapon a = switcher != null && loadout.Primary != null ? HudWeapon(switcher.PrimaryObj) : null;
+        IHudWeapon b = switcher != null && loadout.Secondary != null ? HudWeapon(switcher.SecondaryObj) : null;
+        return $"{HeldSlot()}|{(a != null ? a.Ammo : -1)}|{(a != null ? a.Reserve : -1)}|{(b != null ? b.Ammo : -1)}|{(b != null ? b.Reserve : -1)}|" +
+               $"{loadout.Shield}|{(thrower != null && thrower.Selected != null ? thrower.Selected.name : "")}";
+    }
+
+    // CA6: fondo y línea de color en el espacio que tiene en la mano.
+    private void SlotInHand(int cell)
+    {
+        RectTransform back = Place(Node("EnMano", loadoutCells[cell]), 0f, 1f, loadoutWidths[cell] - 1f, LoadoutH - 2f);
+        Image(back, null, Over(WithAlpha(Accent, 0.13f), PanelBase));
+        Image(Place(Node("Linea", loadoutCells[cell]), 0f, LoadoutH - 4f, loadoutWidths[cell] - 1f, 3f), null, Accent);
+    }
+
+    // CA3: balas en el cargador y en la reserva, arriba a la derecha del espacio.
+    private void SlotAmmo(int cell, GameObject weapon)
+    {
+        IHudWeapon hud = HudWeapon(weapon);
+        if (hud == null) return;
+        TextMeshProUGUI text = Text(Place(Node("Balas", loadoutCells[cell]), loadoutWidths[cell] - 132f, 21f, 120f, 24f), monoFont, 15f, Ink, TextAlignmentOptions.MidlineRight);
+        text.fontStyle = FontStyles.Bold;
+        text.text = hud.Reserve >= 0 ? $"{hud.Ammo}<color=#8E96A3> / {hud.Reserve}</color>" : hud.Ammo.ToString();
+    }
+
+    // CA5: el espacio sin nada queda atenuado.
+    private void Dim(int cell, bool empty)
+    {
+        CanvasGroup group = loadoutCells[cell].GetComponent<CanvasGroup>();
+        if (group == null) group = loadoutCells[cell].gameObject.AddComponent<CanvasGroup>();
+        group.alpha = empty ? FadeAlpha(0.55f) : 1f;
     }
 
     private void SlotWeapon(int cell, ShopItem item)
@@ -1131,7 +1540,7 @@ public class ShopUI : MonoBehaviour
     {
         ink = Ok;
         fill = Over(Rgb(61, 220, 151, 0.16f), PanelBase);
-        if (item.IsWeapon && loadout.IsEquipped(item)) return "Equipada";
+        if (item.IsWeapon && loadout.IsEquipped(item)) return Dm ? "Elegida" : "Equipada";
         if (item.kind == ShopItemKind.Shield && loadout.Shield >= item.shieldPoints) return "Lleno";
         if (item.kind == ShopItemKind.Grenade && loadout.Count(item) >= item.maxCarry)
         {
@@ -1279,6 +1688,7 @@ public class ShopUI : MonoBehaviour
         BuildCategoryPanel();
         BuildListPanel();
         BuildDetailPanel();
+        BuildTeamPanel();
         BuildLoadoutBar();
         BuildToast();
     }
@@ -1440,8 +1850,8 @@ public class ShopUI : MonoBehaviour
         content.sizeDelta = new Vector2(1920f, 92f);
 
         Key(content, 56f, 31f, KeyBindings.Label(GameAction.Tienda), true, false);
-        TextMeshProUGUI title = Text(Place(Node("Titulo", content), 102f, 18f, 500f, 40f), displayFont, 40f, Ink, TextAlignmentOptions.MidlineLeft, 10f, true);
-        title.text = "Tienda";
+        barTitle = Text(Place(Node("Titulo", content), 102f, 18f, 640f, 40f), displayFont, 40f, Ink, TextAlignmentOptions.MidlineLeft, 10f, true);
+        barTitle.text = "Tienda";
         barSub = Text(Place(Node("Modo", content), 102f, 58f, 500f, 16f), labelFont, 16f, Mute, TextAlignmentOptions.MidlineLeft, 14f, true);
 
         barPhase = Text(Place(Node("Fase", content), 750f, 12f, 420f, 17f), displayFont, 16f, Accent, TextAlignmentOptions.Midline, 18f, true);
@@ -1656,12 +2066,23 @@ public class ShopUI : MonoBehaviour
         Border(detailPanel, 10f, LineColor);
     }
 
+    // Compañeros (US 175, CA13): a la derecha de la ficha, como en la maqueta. El alto crece con el equipo.
+    private void BuildTeamPanel()
+    {
+        teamPanel = Panel("Companeros", TeamX, PanelTop, TeamW, HeadH, out teamMask);
+        ColumnHeader(teamPanel, TeamW, "").text = "Tu equipo";
+        teamTotal = teamPanel.Find("Ayuda").GetComponent<TextMeshProUGUI>(); // la plata de todo el equipo
+        teamRowsRoot = Place(Node("Filas", teamPanel), 0f, HeadH, TeamW, 10f);
+        Border(teamPanel, 10f, LineColor);
+        teamPanel.gameObject.SetActive(false);
+    }
+
     private void BuildLoadoutBar()
     {
         loadoutBar = Place(Node("Equipamiento", stage), LoadoutX, LoadoutY, LoadoutW, LoadoutH);
         Image(loadoutBar, rounded, PanelColor, 10f, true);
 
-        float[] weights = { 1f, 1f, 0.7f, 1f, 1f, 1.25f };
+        float[] weights = { 1f, 1f, 0.7f, 1.3f, 0.85f, 1.1f }; // granadas más ancho: entra el nombre de cada tipo (US 066)
         float unit = (LoadoutW - 2f) / 5.95f, x = 1f;
         loadoutCells = new RectTransform[weights.Length];
         loadoutWidths = new float[weights.Length];

@@ -55,6 +55,33 @@ public class BuyPhase : MonoBehaviour
         if (testRoundLength > 0f) StartCoroutine(NextTestRound());
     }
 
+    /// <summary>
+    /// Modo Táctico (US 032): las rondas las lleva RondasTacticas y acá solo se copia el estado. Si cambia la ronda
+    /// o la compra estaba cerrada, se avisa Started (la tienda deja de poder vender lo de la ronda anterior).
+    /// </summary>
+    public void Sincronizar(int ronda, float restante)
+    {
+        StopAllCoroutines();
+        testRoundLength = 0f;
+        TimeLeft = Mathf.Max(0f, restante);
+        if (IsActive && Round == ronda) return;
+        Round = ronda;
+        IsActive = true;
+        Started?.Invoke();
+    }
+
+    /// <summary>US 032: cierra la compra ya (empieza el combate).</summary>
+    public void Terminar()
+    {
+        if (!IsActive) return;
+        TimeLeft = 0f;
+        IsActive = false;
+        Ended?.Invoke();
+    }
+
+    /// <summary>US 032: número de ronda sin abrir la compra (por ejemplo, al entrar con la ronda ya empezada).</summary>
+    public void PonerRonda(int ronda) => Round = ronda;
+
     private IEnumerator NextTestRound()
     {
         yield return new WaitForSeconds(testRoundLength);

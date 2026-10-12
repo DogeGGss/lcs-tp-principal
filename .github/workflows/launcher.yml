@@ -1,0 +1,26 @@
+name: Launcher Windows
+on:
+  workflow_dispatch:
+  push:
+    paths: ['Launcher/**', 'My project/Assets/Scripts/ReleaseVersion.cs', '.github/workflows/launcher.yml']
+  pull_request:
+    paths: ['Launcher/**', 'My project/Assets/Scripts/ReleaseVersion.cs', '.github/workflows/launcher.yml']
+permissions:
+  contents: read
+jobs:
+  validate:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+      - name: Tests de actualización
+        run: dotnet run --project Launcher/Tests/Riftwalker.Launcher.Tests.csproj -c Release
+      - name: Publicar ejecutable autónomo
+        shell: pwsh
+        run: ./Launcher/tools/Build-Launcher.ps1
+      - uses: actions/upload-artifact@v4
+        with:
+          name: Riftwalker-Launcher-windows-x64
+          path: Launcher/artifacts/publish/Riftwalker-Launcher.exe

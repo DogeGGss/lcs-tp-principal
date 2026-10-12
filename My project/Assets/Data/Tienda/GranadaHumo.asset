@@ -43,3 +43,4 @@ MonoBehaviour:
   effectDuration: 15
   recovery: 0
   shortEffect: "15 s \xB7 4 m"
+  grenadePrefab: {fileID: 7731190902572222911, guid: 3babfc4d80d44d969bb0d227655ba0d8, type: 3}

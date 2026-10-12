@@ -10,7 +10,7 @@ public enum GameAction
     Saltar, Agacharse, Correr,
     Disparar, Apuntar, Recargar, Habilidad,
     ArmaPrincipal, ArmaSecundaria, Cuchillo, Granadas,
-    Tienda, Plantar
+    Tienda, Plantar, Soltar, Dispositivo, Mapa
 }
 
 // Teclas del jugador (US 155). Sigue usando el Input clásico: los scripts preguntan
@@ -40,6 +40,9 @@ public static class KeyBindings
         { GameAction.Granadas, KeyCode.Alpha4 },
         { GameAction.Tienda, KeyCode.B },
         { GameAction.Plantar, KeyCode.E },
+        { GameAction.Soltar, KeyCode.G }, // US 184: soltar el arma en la mano (solo en Táctico)
+        { GameAction.Dispositivo, KeyCode.Alpha5 }, // US 130: sacar el dispositivo (solo el portador, en Táctico)
+        { GameAction.Mapa, KeyCode.H }, // US 194, CA6: mientras se mantiene, el mapa completo
     };
 
     private static readonly Dictionary<GameAction, string> Names = new Dictionary<GameAction, string>
@@ -50,7 +53,7 @@ public static class KeyBindings
         { GameAction.Derecha, "Derecha" },
         { GameAction.Saltar, "Saltar" },
         { GameAction.Agacharse, "Agacharse" },
-        { GameAction.Correr, "Correr" },
+        { GameAction.Correr, "Correr / caminar despacio" }, // US 198: en el Táctico, caminar despacio
         { GameAction.Disparar, "Disparar" },
         { GameAction.Apuntar, "Apuntar" },
         { GameAction.Recargar, "Recargar" },
@@ -61,6 +64,9 @@ public static class KeyBindings
         { GameAction.Granadas, "Granadas" },
         { GameAction.Tienda, "Tienda" },
         { GameAction.Plantar, "Plantar / desactivar" },
+        { GameAction.Soltar, "Soltar arma" },
+        { GameAction.Dispositivo, "Dispositivo" },
+        { GameAction.Mapa, "Mapa completo" },
     };
 
     // ---------- Opciones del mouse (CA1, CA2) ----------

@@ -1,0 +1,719 @@
+diff --git a/My project/Assets/Data/Tienda/GranadaMetralla.asset b/My project/Assets/Data/Tienda/GranadaMetralla.asset
+index 5d5d643..f465fef 100644
+--- a/My project/Assets/Data/Tienda/GranadaMetralla.asset	
++++ b/My project/Assets/Data/Tienda/GranadaMetralla.asset	
+@@ -51,3 +51,4 @@ MonoBehaviour:
+   effectDuration: 0
+   recovery: 0
+   shortEffect: Hasta 100
++  grenadePrefab: {fileID: 100100000, guid: 313c34b5636bbcd4686e963d715759d5, type: 3}
+diff --git a/My project/Assets/Prefabs/Weapons/Grenade.prefab b/My project/Assets/Prefabs/Weapons/Grenade.prefab
+index d45a059..a768b78 100644
+--- a/My project/Assets/Prefabs/Weapons/Grenade.prefab	
++++ b/My project/Assets/Prefabs/Weapons/Grenade.prefab	
+@@ -118,7 +118,7 @@ MonoBehaviour:
+   m_Script: {fileID: 11500000, guid: 5906e9ea67bf946409d545b5097af2a1, type: 3}
+   m_Name: 
+   m_EditorClassIdentifier: Assembly-CSharp::Grenade1
+-  delay: 3
++  delay: 2
+   explosionForce: 70
+   radius: 5
+   maxDamage: 100
+diff --git a/My project/Assets/Scripts/Shop/PlayerLoadout.cs b/My project/Assets/Scripts/Shop/PlayerLoadout.cs
+index cdb360d..2e26815 100644
+--- a/My project/Assets/Scripts/Shop/PlayerLoadout.cs	
++++ b/My project/Assets/Scripts/Shop/PlayerLoadout.cs	
+@@ -65,6 +65,27 @@ public class PlayerLoadout : MonoBehaviour
+     public bool IsEquipped(ShopItem item) => item != null && (item == Primary || item == Secondary);
+     public bool BoughtThisPhase(ShopItem item) => LastPurchaseOf(item) != null;
+ 
++    // Granadas que tiene ahora, en el orden del catálogo (así la tecla 4 las recorre siempre igual).
++    public List<ShopItem> OwnedGrenades()
++    {
++        List<ShopItem> owned = new List<ShopItem>();
++        if (catalog == null) return owned;
++        foreach (ShopItem item in catalog.ItemsIn(ShopCategory.Grenades))
++            if (Count(item) > 0) owned.Add(item);
++        return owned;
++    }
++
++    // Lanza una granada (US 079, CA6): se gasta una y esa compra ya no se puede vender ni deshacer.
++    public bool Consume(ShopItem grenade)
++    {
++        if (grenade == null || grenade.kind != ShopItemKind.Grenade || Count(grenade) <= 0) return false;
++        grenades[grenade] = Count(grenade) - 1;
++        Purchase bought = LastPurchaseOf(grenade);
++        if (bought != null) purchases.Remove(bought); // si no, "Deshacer" devolvería la plata de una granada ya usada
++        Changed?.Invoke();
++        return true;
++    }
++
+     // Si ahora se puede usar la tienda: fase de compra activa y dentro de la zona (US 076, CA9).
+     public ShopResult CheckAccess()
+     {
+diff --git a/My project/Assets/Scripts/Shop/ShopItem.cs b/My project/Assets/Scripts/Shop/ShopItem.cs
+index 7c1ca38..516ac57 100644
+--- a/My project/Assets/Scripts/Shop/ShopItem.cs	
++++ b/My project/Assets/Scripts/Shop/ShopItem.cs	
+@@ -108,6 +108,9 @@ public class ShopItem : ScriptableObject
+     [Tooltip("Resumen corto para la lista de la tienda (por ejemplo, \"Hasta 100\").")]
+     public string shortEffect;
+ 
++    [Tooltip("Granadas: prefab que se lanza (con el componente Grenade1).")]
++    public GameObject grenadePrefab;
++
+     public bool IsWeapon => kind == ShopItemKind.PrimaryWeapon || kind == ShopItemKind.SecondaryWeapon;
+ 
+     // Daño de un disparo completo a una zona (en escopetas, todos los perdigones).
+diff --git a/My project/Assets/Scripts/Weapons/Grenades/Grenade1.cs b/My project/Assets/Scripts/Weapons/Grenades/Grenade1.cs
+index 8be1893..79d0a91 100644
+--- a/My project/Assets/Scripts/Weapons/Grenades/Grenade1.cs	
++++ b/My project/Assets/Scripts/Weapons/Grenades/Grenade1.cs	
+@@ -1,7 +1,16 @@
++using System.Collections.Generic;
+ using UnityEngine;
+ 
++// Granada de metralla ya lanzada (US 079). Va en el prefab Grenade (con su Rigidbody y su collider).
++//   CA2: rebota en paredes y piso (se le pone un material con rebote al arrancar).
++//   CA3: explota a los "delay" segundos de aparecer (2 s: GrenadeThrower lo toma de la ficha).
++//   CA4: 100 hasta 1,5 m del centro, baja en línea recta hasta 25 a 5 m, y más lejos nada. Se mide hasta el
++//        punto más cercano del cuerpo (no hasta sus pies) y cada personaje recibe el daño una sola vez.
++//   CA5: si hay una pared entre el centro y el cuerpo, no hay daño.
++//   CA7: daña a quien la tiró, pero no a sus compañeros (EquiposTacticos.SonAliados).
+ public class Grenade1 : MonoBehaviour
+ {
++    [Tooltip("Segundos hasta explotar. En el juego lo pisa la ficha de la granada (fuse).")]
+     public float delay = 2f;
+     public float explosionForce = 70f;
+     public float radius = 5f;
+@@ -11,13 +20,34 @@ public class Grenade1 : MonoBehaviour
+     public float fullDamageRadius = 1.5f;
+ 
+     // Fuerza con la que se lanza la granada
+-    public float throwForce = 15f;
+-
+-    // Quién la tiró: sus compañeros no reciben el daño de la explosión (US 031, CA6).
++    public float throwForce = 15f;
++
++    // Quién la tiró: sus compañeros no reciben el daño de la explosión (US 031, CA6).
+     [HideInInspector] public Transform thrower;
+ 
+     private float countdown;
+-    private bool exploded = false;
++    private bool exploded;
++    private Rigidbody body;
++    private Collider centerCollider;
++
++    void Awake()
++    {
++        body = GetComponent<Rigidbody>();
++        if (body != null) body.collisionDetectionMode = CollisionDetectionMode.ContinuousDynamic; // que no atraviese paredes finas
++
++        // CA2: sin material la granada no rebota (el rebote por defecto es 0).
++        PhysicsMaterial bouncy = new PhysicsMaterial("Granada")
++        {
++            bounciness = 0.45f,
++            dynamicFriction = 0.6f,
++            staticFriction = 0.6f,
++            bounceCombine = PhysicsMaterialCombine.Maximum,
++        };
++        foreach (Collider part in GetComponentsInChildren<Collider>())
++            if (!part.isTrigger) part.sharedMaterial = bouncy;
++
++        FitCollider();
++    }
+ 
+     void Start()
+     {
+@@ -26,97 +56,166 @@ public class Grenade1 : MonoBehaviour
+ 
+     void Update()
+     {
+-        countdown -= Time.deltaTime;
++        if (exploded) return;
++        countdown -= Time.deltaTime; // con la pausa local (timeScale 0) la mecha se congela
+ 
+-        if (countdown <= 0 && exploded == false)
++        if (countdown <= 0f)
+         {
+-            Explode();
+             exploded = true;
++            Explode();
+         }
+     }
+ 
+-    // Lanza la granada en la dirección indicada
+-    public void Throw(Vector3 direction)
++    // Los números salen de la ficha (ShopItem): mecha, alcance y daño por tramo.
++    public void Configure(ShopItem item)
+     {
+-        Rigidbody rb = GetComponent<Rigidbody>();
+-
+-        if (rb != null)
++        if (item == null) return;
++        if (item.fuse > 0f) delay = item.fuse;
++        if (item.effectRadius > 0f) radius = item.effectRadius;
++        if (item.bands != null && item.bands.Length > 0)
+         {
+-            rb.AddForce(
+-                direction * throwForce,
+-                ForceMode.Impulse
+-            );
++            DamageBand near = item.bands[0];
++            DamageBand far = item.bands[item.bands.Length - 1];
++            maxDamage = near.body;
++            fullDamageRadius = near.upTo;
++            minDamage = far.body;
++            if (item.effectRadius <= 0f) radius = far.upTo;
+         }
+     }
+ 
++    // Lanza la granada en la dirección indicada (CA2). 'inherited' es la velocidad de quien la tira.
++    public void Throw(Vector3 direction, Vector3 inherited = default)
++    {
++        // Que no choque con quien la tira mientras sale de su mano.
++        if (thrower != null)
++            foreach (Collider mine in GetComponentsInChildren<Collider>())
++                foreach (Collider theirs in thrower.GetComponentsInChildren<Collider>())
++                    Physics.IgnoreCollision(mine, theirs);
++
++        if (body == null) return;
++        body.AddForce(direction * throwForce, ForceMode.Impulse);
++        body.AddForce(inherited, ForceMode.VelocityChange);
++        body.angularVelocity = Random.insideUnitSphere * 6f;
++    }
++
++    // Daño a una distancia del centro (CA4): pleno cerca, baja en línea recta y 0 más lejos.
++    public int DamageAt(float distance)
++    {
++        if (distance > radius) return 0;
++        if (distance <= fullDamageRadius) return Mathf.RoundToInt(maxDamage);
++        float t = (distance - fullDamageRadius) / (radius - fullDamageRadius);
++        return Mathf.RoundToInt(Mathf.Lerp(maxDamage, minDamage, t));
++    }
++
+     void Explode()
+     {
+-        Collider[] colliders = Physics.OverlapSphere(
+-            transform.position,
+-            radius
+-        );
++        Vector3 center = Center();
++        Collider[] parts = Physics.OverlapSphere(center, radius, ~0, QueryTriggerInteraction.Collide);
++
++        // Distancia más corta de cada personaje al centro, mirando solo las partes que la explosión "ve".
++        var reached = new Dictionary<HealthSystem, float>();
++        var pushed = new HashSet<Rigidbody>();
+ 
+-        foreach (var rangeObjects in colliders)
++        foreach (Collider part in parts)
+         {
+-            // Buscamos el sistema de vida del objetivo
+-            HealthSystem health =
+-                rangeObjects.GetComponent<HealthSystem>();
+-
+-            if (health != null && !EquiposTacticos.SonAliados(thrower, health))
+-            {
+-                // Distancia entre la granada y el objetivo
+-                float distance = Vector3.Distance(
+-                    transform.position,
+-                    rangeObjects.transform.position
+-                );
+-
+-                float damage;
+-
+-                // Hasta 1.5 metros = 100 de daño
+-                if (distance <= fullDamageRadius)
+-                {
+-                    damage = maxDamage;
+-                }
+-                // Entre 1.5 y 5 metros = daño lineal
+-                else if (distance <= radius)
+-                {
+-                    float t = (distance - fullDamageRadius) /
+-                              (radius - fullDamageRadius);
+-
+-                    damage = Mathf.Lerp(
+-                        maxDamage,
+-                        minDamage,
+-                        t
+-                    );
+-                }
+-                // Fuera del radio = 0 daño
+-                else
+-                {
+-                    damage = 0;
+-                }
+-
+-                // Aplicamos el daño
+-                if (damage > 0)
+-                {
+-                    health.TakeDamage(
+-                        Mathf.RoundToInt(damage)
+-                    );
+-                }
+-            }
+-
+-            // Fuerza de explosión
+-            Rigidbody rb = rangeObjects.GetComponent<Rigidbody>();
+-
+-            if (rb != null)
+-            {
+-                rb.AddExplosionForce(
+-                    explosionForce * 10,
+-                    transform.position,
+-                    radius
+-                );
+-            }
++            if (part.transform.IsChildOf(transform)) continue;
++
++            HealthSystem health = part.GetComponentInParent<HealthSystem>();
++            if (health != null && (health.currentHealth <= 0 || EquiposTacticos.SonAliados(thrower, health))) continue; // CA7
++
++            Vector3 point = ClosestPoint(part, center);
++            float distance = Vector3.Distance(center, point);
++            if (distance > radius) continue;
++            if (Blocked(center, point, health != null ? health.transform : part.transform)) continue; // CA5
++
++            if (health != null && (!reached.TryGetValue(health, out float best) || distance < best))
++                reached[health] = distance;
++
++            // Fuerza de explosión sobre objetos con física (una sola vez por objeto)
++            Rigidbody rb = part.attachedRigidbody;
++            if (rb != null && rb != body && pushed.Add(rb))
++                rb.AddExplosionForce(explosionForce * 10, center, radius);
++        }
++
++        // El daño se aplica una sola vez por personaje, aunque tenga varios colliders (CA4).
++        foreach (KeyValuePair<HealthSystem, float> entry in reached)
++        {
++            int damage = DamageAt(entry.Value);
++            if (damage > 0) entry.Key.TakeDamage(damage); // primero el escudo y el resto a la vida
+         }
+ 
+         Destroy(gameObject);
+     }
++
++    // Centro de la explosión: el de la granada (el modelo puede tener el pivote corrido).
++    Vector3 Center()
++    {
++        if (centerCollider == null) centerCollider = GetComponentInChildren<Collider>();
++        return centerCollider != null ? centerCollider.bounds.center : transform.position;
++    }
++
++    // Punto de la parte más cercano al centro. CharacterController y MeshCollider no convexo no soportan
++    // Collider.ClosestPoint: el primero se trata como cápsula y el segundo con su caja.
++    static Vector3 ClosestPoint(Collider part, Vector3 from)
++    {
++        if (part is CharacterController controller) return ClosestOnCapsule(controller, from);
++        if (part is MeshCollider mesh && !mesh.convex) return part.bounds.ClosestPoint(from);
++        return part.ClosestPoint(from);
++    }
++
++    static Vector3 ClosestOnCapsule(CharacterController controller, Vector3 from)
++    {
++        Transform t = controller.transform;
++        Vector3 scale = t.lossyScale;
++        float r = controller.radius * Mathf.Max(Mathf.Abs(scale.x), Mathf.Abs(scale.z));
++        float h = Mathf.Max(controller.height * Mathf.Abs(scale.y), 2f * r);
++        Vector3 middle = t.TransformPoint(controller.center);
++        Vector3 halfAxis = t.up * (h * 0.5f - r);
++        Vector3 a = middle - halfAxis, b = middle + halfAxis;
++
++        Vector3 axis = b - a;
++        float along = axis.sqrMagnitude > 1e-6f ? Mathf.Clamp01(Vector3.Dot(from - a, axis) / axis.sqrMagnitude) : 0f;
++        Vector3 onAxis = a + axis * along;
++        Vector3 away = from - onAxis;
++        float distance = away.magnitude;
++        if (distance <= r) return from; // el centro está adentro del cuerpo
++        return onAxis + away / distance * r;
++    }
++
++    // ¿Hay una pared entre el centro y ese punto? Los triggers, la propia granada y los personajes
++    // (el objetivo y cualquier otro) no cuentan como pared; sí el escenario y los colliders sólidos.
++    bool Blocked(Vector3 from, Vector3 to, Transform target)
++    {
++        Vector3 direction = to - from;
++        float distance = direction.magnitude - 0.05f; // no contar la superficie donde termina el rayo (piso, pared del objetivo)
++        if (distance <= 0f) return false;
++
++        foreach (RaycastHit hit in Physics.RaycastAll(from, direction.normalized, distance, ~0, QueryTriggerInteraction.Ignore))
++        {
++            Transform other = hit.collider.transform;
++            if (other.IsChildOf(transform)) continue;
++            if (other.IsChildOf(target)) continue;
++            if (hit.collider.GetComponentInParent<HealthSystem>() != null) continue;
++            return true;
++        }
++        return false;
++    }
++
++    // Si el collider del prefab quedó muy chico (el modelo viene escalado por la importación), lo ajusta al
++    // modelo, entre 6 y 15 cm de radio: si no, a 15 m/s la granada atraviesa pisos y paredes.
++    void FitCollider()
++    {
++        SphereCollider sphere = GetComponent<SphereCollider>();
++        Renderer[] renderers = GetComponentsInChildren<Renderer>();
++        if (sphere == null || renderers.Length == 0) return;
++
++        Bounds bounds = renderers[0].bounds;
++        foreach (Renderer r in renderers) bounds.Encapsulate(r.bounds);
++
++        float world = Mathf.Clamp(Mathf.Max(bounds.extents.x, bounds.extents.y, bounds.extents.z), 0.06f, 0.15f);
++        Vector3 scale = transform.lossyScale;
++        float biggest = Mathf.Max(Mathf.Abs(scale.x), Mathf.Abs(scale.y), Mathf.Abs(scale.z));
++        sphere.center = transform.InverseTransformPoint(bounds.center);
++        sphere.radius = world / Mathf.Max(0.0001f, biggest);
++    }
+ }
+diff --git a/My project/Assets/Scripts/Weapons/Grenades/GrenadeThrower.cs b/My project/Assets/Scripts/Weapons/Grenades/GrenadeThrower.cs
+index c484732..b9161af 100644
+--- a/My project/Assets/Scripts/Weapons/Grenades/GrenadeThrower.cs	
++++ b/My project/Assets/Scripts/Weapons/Grenades/GrenadeThrower.cs	
+@@ -1,84 +1,194 @@
++using System.Collections.Generic;
+ using UnityEngine;
+ 
++// Granadas en la mano del jugador (US 079): elegirlas con la tecla 4 (CA1), lanzarlas con el clic izquierdo (CA2)
++// y gastarlas al lanzar (CA6). Las que tiene salen de PlayerLoadout (lo que compró en la tienda).
++// WeaponSwitcher lo agrega solo al jugador si no está: no hace falta tocar la escena.
+ public class GrenadeThrower : MonoBehaviour
+ {
++    [Tooltip("Prefab de la granada (con Grenade1). Si está vacío se usa el de la ficha (ShopItem.grenadePrefab).")]
+     public GameObject grenadePrefab;
++    [Tooltip("Opcional: de dónde sale la granada. Si está vacío sale de adelante de la cámara.")]
+     public Transform grenadeSpawnPoint;
++    [Tooltip("Opcional: si está vacía se usa la Main Camera.")]
+     public Camera playerCamera;
+ 
+-    void Update()
++    [Header("Lanzamiento")]
++    [Tooltip("Grados hacia arriba respecto de donde mira, para que haga arco.")]
++    public float upwardAngle = 6f;
++    [Tooltip("A qué distancia de la cámara aparece (m). Si hay una pared antes, aparece pegada a ella.")]
++    public float spawnDistance = 0.6f;
++
++    [Header("Modelo en la mano")]
++    [Tooltip("Dónde se ve la granada en la mano, relativo a la cámara (x derecha, y arriba, z adelante).")]
++    public Vector3 handPosition = new Vector3(0.28f, -0.22f, 0.55f);
++    [Tooltip("Tamaño con el que se ve en la mano (m).")]
++    public float handSize = 0.12f;
++
++    private PlayerLoadout loadout;
++    private Transform owner;
++    private HealthSystem ownerHealth;
++    private WeaponSwitcher switcher;
++    private ShopItem selected;
++    private GameObject heldModel;
++
++    // Qué granada tiene en la mano (null si no hay ninguna).
++    public bool IsHolding => selected != null;
++    public ShopItem Selected => selected;
++
++    // Se quedó sin la granada que tenía en la mano (la lanzó, la vendió o murió): hay que volver a un arma.
++    public event System.Action Emptied;
++
++    void Awake()
+     {
+-        // Click izquierdo: lanzar granada
+-        if (KeyBindings.Down(GameAction.Disparar))
+-        {
+-            ThrowGrenade();
+-        }
++        loadout = GetComponentInParent<PlayerLoadout>();
++        PlayerMovement movement = GetComponentInParent<PlayerMovement>();
++        owner = movement != null ? movement.transform : transform.root;
++        ownerHealth = owner.GetComponent<HealthSystem>();
++        switcher = GetComponentInParent<WeaponSwitcher>();
+     }
+ 
+-    void ThrowGrenade()
++    void Start()
+     {
+-        // Creamos la granada en el punto de lanzamiento
+-        GameObject grenadeObject = Instantiate(
+-            grenadePrefab,
+-            grenadeSpawnPoint.position,
+-            grenadeSpawnPoint.rotation
+-        );
++        if (loadout != null) loadout.Changed += OnLoadoutChanged;
++    }
+ 
+-        // Buscamos el script de la granada
+-        Grenade1 grenade = grenadeObject.GetComponent<Grenade1>();
++    void OnDestroy()
++    {
++        if (loadout != null) loadout.Changed -= OnLoadoutChanged;
++        DestroyHeldModel();
++    }
+ 
+-        if (grenade != null)
+-        {
+-            // Quién la tira (US 031, CA6)
+-            PlayerMovement owner = GetComponentInParent<PlayerMovement>();
+-            grenade.thrower = owner != null ? owner.transform : transform.root;
++    // CA1: saca la primera granada que tenga; si ya tiene una en la mano, pasa a la siguiente distinta.
++    // Devuelve false si no tiene ninguna (CA6: la tecla 4 no selecciona nada).
++    public bool SelectNext()
++    {
++        if (loadout == null) return false;
++        List<ShopItem> owned = loadout.OwnedGrenades();
++        if (owned.Count == 0) return false;
+ 
+-            // La lanzamos hacia donde está mirando la cámara
+-            grenade.Throw(playerCamera.transform.forward);
+-        }
++        int index = selected != null ? owned.IndexOf(selected) : -1;
++        SetSelected(owned[(index + 1) % owned.Count]);
++        return true;
+     }
+-}
+ 
++    // Se guarda la granada (se eligió otra arma).
++    public void Deselect() => SetSelected(null);
+ 
+-//Si la granada no esta equipada con el 4 no se lanza
+-/*
+-using UnityEngine;
++    void Update()
++    {
++        if (selected == null) return;
++        if (PauseMenu.IsPaused || ShopUI.IsOpen) return; // el clic de la tienda no tira granadas
++        if (ownerHealth != null && ownerHealth.currentHealth <= 0) return;
+ 
+-public class GrenadeThrower : MonoBehaviour
+-{
+-    public GameObject grenadePrefab;
+-    public Transform grenadeSpawnPoint;
+-    public Camera playerCamera;
+-    public WeaponSwitcher weaponSwitcher;
++        if (KeyBindings.Down(GameAction.Disparar)) Throw(); // CA2
++    }
+ 
+-    void Update()
++    void Throw()
+     {
+-        // Click izquierdo: lanzar granada
+-        if (weaponSwitcher != null &&
+-            weaponSwitcher.GrenadeEquipped &&
+-            KeyBindings.Down(GameAction.Disparar))
++        ShopItem item = selected;
++        GameObject prefab = grenadePrefab != null ? grenadePrefab : item.grenadePrefab;
++        if (prefab == null || prefab.GetComponent<Grenade1>() == null)
+         {
+-            ThrowGrenade();
++            Debug.LogWarning("GrenadeThrower: la granada no tiene prefab con Grenade1 (revisá la ficha de la granada).");
++            return;
++        }
++        if (item.grenadeType != GrenadeType.Frag)
++        {
++            Debug.Log("Esta granada todavía no se puede lanzar (por ahora solo la de metralla, US 079).");
++            return;
+         }
+-    }
+ 
+-    void ThrowGrenade()
+-    {
+-        // Creamos la granada en el punto de lanzamiento
+-        GameObject grenadeObject = Instantiate(
+-            grenadePrefab,
+-            grenadeSpawnPoint.position,
+-            grenadeSpawnPoint.rotation
+-        );
++        Camera cam = ViewCamera();
++        if (cam == null || loadout == null) return;
++        if (!loadout.Consume(item)) return; // CA6: se gasta al lanzarla
+ 
+-        // Buscamos el script de la granada
+-        Grenade1 grenade = grenadeObject.GetComponent<Grenade1>();
++        Vector3 forward = cam.transform.forward;
++        Vector3 direction = Quaternion.AngleAxis(-upwardAngle, cam.transform.right) * forward;
+ 
+-        if (grenade != null)
++        Vector3 origin;
++        if (grenadeSpawnPoint != null) origin = grenadeSpawnPoint.position;
++        else
+         {
+-            // La lanzamos hacia donde está mirando la cámara
+-            grenade.Throw(playerCamera.transform.forward);
++            // Si hay una pared pegada, que aparezca antes de atravesarla.
++            float distance = spawnDistance;
++            if (Physics.Raycast(cam.transform.position, forward, out RaycastHit wall, spawnDistance + 0.1f, ~0, QueryTriggerInteraction.Ignore)
++                && !wall.collider.transform.IsChildOf(owner))
++                distance = Mathf.Max(0.05f, wall.distance - 0.1f);
++            origin = cam.transform.position + forward * distance;
+         }
++
++        GameObject thrown = Instantiate(prefab, origin, Quaternion.identity);
++        Grenade1 grenade = thrown.GetComponent<Grenade1>();
++        grenade.thrower = owner; // quién la tira (US 031, CA7)
++        grenade.Configure(item);  // mecha, alcance y daño salen de la ficha
++
++        CharacterController body = owner.GetComponent<CharacterController>();
++        grenade.Throw(direction, body != null ? body.velocity : Vector3.zero);
++    }
++
++    // La que tenía en la mano se acabó (la lanzó, la vendió, la deshizo en la tienda o murió).
++    void OnLoadoutChanged()
++    {
++        if (selected == null || loadout.Count(selected) > 0) return;
++        SetSelected(null);
++        Emptied?.Invoke();
++    }
++
++    void SetSelected(ShopItem item)
++    {
++        selected = item;
++        DestroyHeldModel();
++        if (item == null) return;
++
++        // Si el WeaponSwitcher tiene su propio objeto de granada en la mano, ese se usa.
++        if (switcher != null && switcher.grenadeObj != null) return;
++
++        GameObject prefab = grenadePrefab != null ? grenadePrefab : item.grenadePrefab;
++        Camera cam = ViewCamera();
++        if (prefab == null || cam == null) return;
++        heldModel = BuildHeldModel(prefab, cam);
++    }
++
++    // Copia solo visual del modelo (sin física ni scripts), centrada y a tamaño fijo en la mano.
++    GameObject BuildHeldModel(GameObject prefab, Camera cam)
++    {
++        GameObject model = Instantiate(prefab);
++        model.name = "GranadaEnMano";
++
++        Grenade1 logic = model.GetComponent<Grenade1>();
++        if (logic != null) logic.enabled = false;
++        foreach (Collider c in model.GetComponentsInChildren<Collider>()) c.enabled = false;
++        Rigidbody rb = model.GetComponent<Rigidbody>();
++        if (rb != null) rb.isKinematic = true;
++
++        model.transform.SetParent(cam.transform, false);
++        model.transform.localPosition = Vector3.zero;
++        model.transform.localRotation = Quaternion.identity;
++
++        Renderer[] renderers = model.GetComponentsInChildren<Renderer>();
++        if (renderers.Length == 0) return model;
++
++        Bounds bounds = renderers[0].bounds;
++        foreach (Renderer r in renderers) bounds.Encapsulate(r.bounds);
++        float biggest = Mathf.Max(bounds.size.x, bounds.size.y, bounds.size.z);
++        if (biggest > 0.0001f) model.transform.localScale *= handSize / biggest;
++
++        bounds = renderers[0].bounds;
++        foreach (Renderer r in renderers) bounds.Encapsulate(r.bounds);
++        model.transform.position += cam.transform.TransformPoint(handPosition) - bounds.center;
++        return model;
++    }
++
++    void DestroyHeldModel()
++    {
++        if (heldModel != null) Destroy(heldModel);
++        heldModel = null;
++    }
++
++    Camera ViewCamera()
++    {
++        if (playerCamera == null) playerCamera = Camera.main;
++        return playerCamera;
+     }
+ }
+-*/
+\ No newline at end of file
+diff --git a/My project/Assets/Scripts/Weapons/WeaponSwitcher.cs b/My project/Assets/Scripts/Weapons/WeaponSwitcher.cs
+index 9510105..6eccf95 100644
+--- a/My project/Assets/Scripts/Weapons/WeaponSwitcher.cs	
++++ b/My project/Assets/Scripts/Weapons/WeaponSwitcher.cs	
+@@ -16,6 +16,7 @@ public class WeaponSwitcher : MonoBehaviour
+     // Tienda (US 077): con tienda en la escena el arma principal se saca solo si se compró.
+     private enum Pendiente { Nada, Principal, Pistola }
+     private PlayerLoadout loadout;
++    private GrenadeThrower granadas;
+     private bool hayTienda;
+     private GameObject teniaPrincipal;
+     private Pendiente pendiente = Pendiente.Nada;
+@@ -26,6 +27,10 @@ public class WeaponSwitcher : MonoBehaviour
+     void Awake()
+     {
+         loadout = GetComponentInParent<PlayerLoadout>();
++
++        // Granadas (US 079): el manejo vive en GrenadeThrower; se agrega solo si el jugador no lo tiene.
++        granadas = GetComponentInParent<GrenadeThrower>();
++        if (granadas == null) granadas = gameObject.AddComponent<GrenadeThrower>();
+     }
+ 
+     void Start()
+@@ -33,11 +38,19 @@ public class WeaponSwitcher : MonoBehaviour
+         hayTienda = FindAnyObjectByType<ShopUI>() != null;
+         teniaPrincipal = PrimaryObj;
+         if (loadout != null) loadout.Changed += OnLoadoutChanged;
++        if (granadas != null) granadas.Emptied += OnGranadasVacias;
+     }
+ 
+     void OnDestroy()
+     {
+         if (loadout != null) loadout.Changed -= OnLoadoutChanged;
++        if (granadas != null) granadas.Emptied -= OnGranadasVacias;
++    }
++
++    // Se lanzó o se perdió la última granada que estaba en la mano: se vuelve a la pistola (US 079, CA6).
++    void OnGranadasVacias()
++    {
++        CambiarA(Pendiente.Pistola);
+     }
+ 
+     void OnEnable()
+@@ -153,8 +166,8 @@ public class WeaponSwitcher : MonoBehaviour
+             EquipKnife();
+         }
+ 
+-        // Tecla 4: Granada
+-        if (KeyBindings.Down(GameAction.Granadas))
++        // Tecla 4: Granadas. Cada vez que se aprieta pasa a la siguiente que tenga; sin granadas no hace nada (US 079, CA1 y CA6)
++        if (KeyBindings.Down(GameAction.Granadas) && granadas != null && granadas.SelectNext())
+         {
+             EquipGrenade();
+         }
+@@ -162,7 +175,7 @@ public class WeaponSwitcher : MonoBehaviour
+ 
+     void EquipPrimary()
+     {
+-        GrenadeEquipped = false;
++        GuardarGranada();
+ 
+         GameObject principal = PrimaryObj;
+         GuardarPrincipales(principal);
+@@ -179,7 +192,7 @@ public class WeaponSwitcher : MonoBehaviour
+ 
+     void EquipPistol()
+     {
+-        GrenadeEquipped = false;
++        GuardarGranada();
+ 
+         GuardarPrincipales(null);
+         if (pistolObj != null) pistolObj.SetActive(true);
+@@ -194,7 +207,7 @@ public class WeaponSwitcher : MonoBehaviour
+ 
+     void EquipKnife()
+     {
+-        GrenadeEquipped = false;
++        GuardarGranada();
+ 
+         GuardarPrincipales(null);
+         if (pistolObj != null) pistolObj.SetActive(false);
+@@ -214,6 +227,14 @@ public class WeaponSwitcher : MonoBehaviour
+         ApplySpeedMultiplier(knifeSpeed);
+     }
+ 
++    // Guarda la granada que tenía en la mano (si tenía) al sacar otra arma.
++    void GuardarGranada()
++    {
++        GrenadeEquipped = false;
++        if (grenadeObj != null) grenadeObj.SetActive(false);
++        if (granadas != null) granadas.Deselect();
++    }
++
+     void EquipGrenade()
+     {
+         GuardarPrincipales(null);

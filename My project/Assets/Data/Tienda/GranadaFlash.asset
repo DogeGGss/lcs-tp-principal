@@ -21,8 +21,11 @@ MonoBehaviour:
   tint: {r: 1, g: 0.8901961, b: 0.43137255, a: 1}
   description: "Mir\xE1ndola de frente a menos de 15 m: 2,5 s de ceguera total + 1 s para recuperar la vista. De costado, la mitad. De espaldas, 0,5 s."
   fireMode: 
+  automatic: 0
   fireRate: 0
   burstCount: 1
+  burstRate: 0
+  equipTime: 1
   magazine: 0
   reserve: 0
   reloadTime: 0
@@ -33,8 +36,24 @@ MonoBehaviour:
   pellets: 1
   penetration: 
   spread: {x: 0, y: 0}
+  spamSpread: 0
+  spamSpreadMax: 0
   recoil: 
   bands: []
+  recoilExactShots: 0
+  recoilKick: 0
+  recoilMaxClimb: 0
+  recoilSway: 0
+  recoilSwayShots: 4
+  recoilRecovery: 0.3
+  recoilPunch: 0
+  recoilPoints: []
+  recoilLateClimb: 0
+  recoilDrift: 0
+  recoilSwayBlocks: 0
+  recoilSwayGrowth: 0
+  recoilSwayBias: 0
+  recoilVariation: 0
   shieldPoints: 0
   grenadeType: 2
   maxCarry: 2
@@ -43,3 +62,4 @@ MonoBehaviour:
   effectDuration: 2.5
   recovery: 1
   shortEffect: Hasta 2,5 s
+  grenadePrefab: {fileID: 7972107039713546371, guid: 63e4dba9d5a7dc749981284529260d5d, type: 3}

@@ -13,7 +13,9 @@ using Slider = UnityEngine.UI.Slider;
 // - CA4: clic en una acción y se aprieta la tecla nueva; Esc cancela.
 // - CA5: si la tecla ya la usa otra acción, avisa y pregunta si se intercambian.
 // - CA6: se guarda en PlayerPrefs y el juego lee las teclas desde KeyBindings.
-public class ControlsPanel : MonoBehaviour
+// Dentro de las opciones del menú principal (US 048) los cambios quedan pendientes hasta "Aplicar", y
+// "Restablecer" pide confirmación. En la pausa se guardan al instante, como antes.
+public class ControlsPanel : MonoBehaviour, OpcionesPantalla.ISeccion
 {
     [Header("Tipografías (las mismas de la tienda)")]
     [SerializeField] private TMP_FontAsset displayFont; // Barlow Condensed Bold
@@ -60,6 +62,46 @@ public class ControlsPanel : MonoBehaviour
 
     private System.Action onBack;
 
+    // Opciones del menú principal (US 048): null en la pausa.
+    private OpcionesPantalla pantalla;
+
+    // Teclas y mouse como estaban la última vez que se aplicó, para descartar cambios.
+    private class Foto
+    {
+        public readonly Dictionary<GameAction, KeyCode> teclas = new Dictionary<GameAction, KeyCode>();
+        public float sensibilidad, apuntar;
+        public bool invertir;
+
+        public static Foto Actual()
+        {
+            Foto f = new Foto { sensibilidad = KeyBindings.Sensitivity, apuntar = KeyBindings.AimSensitivity, invertir = KeyBindings.InvertY };
+            foreach (GameAction a in KeyBindings.All) f.teclas[a] = KeyBindings.Key(a);
+            return f;
+        }
+
+        public bool IgualA(Foto o)
+        {
+            if (!Mathf.Approximately(sensibilidad, o.sensibilidad) || !Mathf.Approximately(apuntar, o.apuntar) || invertir != o.invertir) return false;
+            foreach (var par in teclas) if (!o.teclas.TryGetValue(par.Key, out KeyCode k) || k != par.Value) return false;
+            return true;
+        }
+
+        public void Restaurar()
+        {
+            foreach (var par in teclas) if (KeyBindings.Key(par.Key) != par.Value) KeyBindings.Set(par.Key, par.Value);
+            KeyBindings.Sensitivity = sensibilidad;
+            KeyBindings.AimSensitivity = apuntar;
+            KeyBindings.InvertY = invertir;
+        }
+    }
+    private Foto aplicado;
+
+    // Para que las opciones usen las mismas tipografías en su ventana de confirmación.
+    public TMP_FontAsset DisplayFont => displayFont;
+    public TMP_FontAsset LabelFont => labelFont;
+    public TMP_FontAsset BodyFont => bodyFont;
+    public Sprite Rounded => rounded;
+
     /// <summary>
     /// Para usarlo fuera del menú principal (la pausa): se llama con el objeto apagado, antes de que arranque.
     /// onBack agrega un botón Volver al pie.
@@ -92,6 +134,21 @@ public class ControlsPanel : MonoBehaviour
             assignable = keys.ToArray();
         }
 
+        pantalla = OpcionesPantalla.De(this);
+        if (pantalla != null)
+        {
+            pantalla.Registrar(this);
+            aplicado = Foto.Actual();
+        }
+
+        // En las opciones del menú, PanelControles viene estirado distinto a lo ancho y a lo alto: se corrige para
+        // que las letras no salgan deformadas (igual que Gráficos y Sonido).
+        // El alto de diseño era para 9 filas de teclas por columna: cada fila de más suma su alto, así el pie no se corta.
+        int acciones = new List<GameAction>(KeyBindings.All).Count;
+        int filasDeMas = Mathf.Max(0, Mathf.CeilToInt((acciones + 1) / 2f) - 9);
+        if (pantalla != null)
+            OpcionesKit.SinDeformar(transform.parent as RectTransform, OpcionesKit.AltoControles + filasDeMas * (KeyRowH + KeyGap));
+
         // Estirado al tamaño de PanelControles y dibujado encima de lo que tenga.
         RectTransform self = transform as RectTransform;
         if (self == null) self = gameObject.AddComponent<RectTransform>();
@@ -109,7 +166,7 @@ public class ControlsPanel : MonoBehaviour
     {
         CancelCapture();
         CloseConflict();
-        KeyBindings.Save();
+        Guardar();
     }
 
     private void Update()
@@ -198,6 +255,39 @@ public class ControlsPanel : MonoBehaviour
         if (root != null) RefreshRows();
     }
 
+    // US 048, CA4: en las opciones del menú, Restablecer pide confirmación antes.
+    private void PedirRestablecer()
+    {
+        if (pantalla == null) { ResetAll(); return; }
+        CancelCapture();
+        CloseConflict();
+        pantalla.ConfirmarRestablecer("los controles", () => { ResetAll(); aplicado = Foto.Actual(); });
+    }
+
+    // =====================================================================
+    // US 048, CA3: aplicar o descartar (solo en las opciones del menú)
+    // =====================================================================
+
+    public bool HayCambios => pantalla != null && aplicado != null && !Foto.Actual().IgualA(aplicado);
+
+    public void Aplicar()
+    {
+        CancelCapture();
+        CloseConflict();
+        KeyBindings.Save();
+        aplicado = Foto.Actual();
+    }
+
+    public void Descartar()
+    {
+        if (aplicado == null) return;
+        CancelCapture();
+        CloseConflict();
+        aplicado.Restaurar();
+        KeyBindings.Save();
+        if (root != null) RefreshAll();
+    }
+
     private void ResetAll()
     {
         CancelCapture();
@@ -207,8 +297,15 @@ public class ControlsPanel : MonoBehaviour
         Saved();
     }
 
+    // En la pausa se guarda al instante; en las opciones del menú, recién con "Aplicar" (US 048, CA3).
+    private void Guardar()
+    {
+        if (pantalla == null) KeyBindings.Save();
+    }
+
     private void Saved()
     {
+        if (pantalla != null) { RefreshAll(); return; }
         KeyBindings.Save();
         savedUntil = Time.unscaledTime + 1.2f;
         RefreshAll();
@@ -271,9 +368,9 @@ public class ControlsPanel : MonoBehaviour
         float y = 114f;
         Group("Mouse", ref y);
         sensitivity = SliderRow("Sensibilidad", ref y, w, KeyBindings.MinSensitivity, KeyBindings.MaxSensitivity, out sensitivityValue);
-        sensitivity.onValueChanged.AddListener(v => { KeyBindings.Sensitivity = v; sensitivityValue.text = Number(v); KeyBindings.Save(); });
+        sensitivity.onValueChanged.AddListener(v => { KeyBindings.Sensitivity = v; sensitivityValue.text = Number(v); Guardar(); });
         aimSensitivity = SliderRow("Al apuntar", ref y, w, KeyBindings.MinAimSensitivity, KeyBindings.MaxAimSensitivity, out aimValue);
-        aimSensitivity.onValueChanged.AddListener(v => { KeyBindings.AimSensitivity = v; aimValue.text = "×" + v.ToString("0.00").Replace('.', ','); KeyBindings.Save(); });
+        aimSensitivity.onValueChanged.AddListener(v => { KeyBindings.AimSensitivity = v; aimValue.text = "×" + v.ToString("0.00").Replace('.', ','); Guardar(); });
         InvertRow(ref y);
 
         // ---- Teclas (CA3, CA4) ----
@@ -313,7 +410,12 @@ public class ControlsPanel : MonoBehaviour
             Button(root, footX, y, 130f, 40f, "Volver", false, onBack);
             footX += 146f;
         }
-        Button(root, footX, y, 170f, 40f, "Restablecer", false, ResetAll);
+        if (pantalla != null)
+        {
+            Button(root, footX, y, 150f, 40f, "Aplicar", true, () => { Aplicar(); pantalla.AvisarGuardado(); });
+            footX += 166f;
+        }
+        Button(root, footX, y, 170f, 40f, "Restablecer", false, PedirRestablecer);
         savedText = Text(Place(Node("Guardado", root), footX + 186f, y, 140f, 40f), labelFont, 16f, Ok, TextAlignmentOptions.MidlineLeft, 12f, true);
         savedText.text = "Guardado";
         savedText.alpha = 0f;
@@ -347,7 +449,7 @@ public class ControlsPanel : MonoBehaviour
             invertSegs[i] = Image(seg, rounded, ChipColor, 3f, true);
             invertLabels[i] = Text(Stretch(Node("Texto", seg)), labelFont, 16f, Mute, TextAlignmentOptions.Center, 8f, true);
             invertLabels[i].text = names[i];
-            seg.gameObject.AddComponent<ShopPointerTarget>().Clicked = () => { KeyBindings.InvertY = value; KeyBindings.Save(); RefreshInvert(); };
+            seg.gameObject.AddComponent<ShopPointerTarget>().Clicked = () => { KeyBindings.InvertY = value; Guardar(); RefreshInvert(); };
         }
         y += RowH;
     }
@@ -359,7 +461,11 @@ public class ControlsPanel : MonoBehaviour
         row.bg = Image(rect, rounded, rowColor, 4f, true);
         row.label = Text(Place(Node("Accion", rect), 12f, 0f, w - 120f, KeyRowH), labelFont, 17f, Ink, TextAlignmentOptions.MidlineLeft, 4f, true);
         row.label.text = KeyBindings.Name(action);
-        row.chip = Image(Place(Node("Tecla", rect), w - 104f, (KeyRowH - 28f) / 2f, 96f, 28f), rounded, ChipDim, 4f);
+        // Los nombres largos ("Correr / caminar despacio") se achican para no taparse con la tecla.
+        row.label.enableAutoSizing = true;
+        row.label.fontSizeMin = 12f;
+        row.label.fontSizeMax = 17f;
+        row.chip =Image(Place(Node("Tecla", rect), w - 104f, (KeyRowH - 28f) / 2f, 96f, 28f), rounded, ChipDim, 4f);
         row.key = Text(Stretch(Node("Texto", row.chip.rectTransform)), displayFont, 16f, Ink, TextAlignmentOptions.Center, 2f, true);
 
         ShopPointerTarget pointer = rect.gameObject.AddComponent<ShopPointerTarget>();

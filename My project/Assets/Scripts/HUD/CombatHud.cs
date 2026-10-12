@@ -35,13 +35,19 @@ public class CombatHud : MonoBehaviour
     [Tooltip("Con la vida por debajo de esta parte del máximo, se ve en rojo y se tiñen los bordes de la pantalla.")]
     [SerializeField, Range(0f, 1f)] private float criticalHealth = 0.25f;
 
+    [Header("Inventario (US 055)")]
+    [Tooltip("Ícono del cuchillo en el espacio 3. Si queda vacío, el espacio muestra solo el nombre.")]
+    [SerializeField] private Sprite knifeIcon;
+
     [Header("Marcador de impacto (US 165)")]
     [Tooltip("Canal del mixer para el sonido del marcador (SFX), así respeta el volumen de efectos.")]
     [SerializeField] private UnityEngine.Audio.AudioMixerGroup sfxGroup;
 
-    // Mira fija (US 171): cuatro rayitas blancas con borde oscuro y un hueco en el centro (px en 1920 x 1080).
-    private const float CrosshairLength = 8f, CrosshairThickness = 2f, CrosshairGap = 5f;
+    // Mira (US 171): por defecto, cuatro rayitas blancas con borde oscuro y un hueco en el centro (px en 1920 x 1080).
+    // El jugador la cambia desde Opciones > Mira (US 172): forma, color y si se abre con la dispersión del arma.
     private RectTransform crosshair;
+    private MiraDibujo crosshairDrawing;
+    private float crosshairOpen; // px que está abierta por la dispersión (mira dinámica)
 
     // Cuatro rayitas en la mira durante 0,15 s: blancas al acertar, amarillas a la cabeza, rojas y más grandes si mata.
     private const float HitMarkerTime = 0.15f;
@@ -51,13 +57,35 @@ public class CombatHud : MonoBehaviour
     private float hitAt = -10f;
     private HitMarkerKind hitKind;
     private AudioSource hitAudio;
-    private AudioClip hitBodyClip, hitHeadClip, hitKillClip;
+    private AudioClip hitBodyClip, hitHeadClip, hitKillClip, hitSample;
 
     // Medidas de la maqueta (px en 1920 x 1080).
     private const float BarW = 934f, BarH = 170f, BlockW = 240f, SkillW = 150f;
     private const float RailLeftX = 256f, SkillX = 392f, RailRightX = 558f, AmmoX = 694f;
 
+    // Inventario (US 055): los 4 espacios del equipo, uno arriba del otro, a la derecha de la munición.
+    // El 5, el dispositivo del Modo Táctico (US 130), va arriba de todo y solo se ve mientras lo lleva.
+    private const float InvX = BarW + 24f, InvW = 170f, InvRowH = 36f, InvGap = 6f;
+    private const int DeviceSlot = 4;
+    private class InvSlot
+    {
+        public RectTransform rect;
+        public UnityEngine.UI.Image bg, icon, keyBg;
+        public TextMeshProUGUI name, key, dash;
+    }
+    private readonly InvSlot[] invSlots = new InvSlot[5];
+    private readonly string[] invState = new string[5];
+    private bool sceneHasShop;
+
+    /// <summary>Nombre del arma en la mano, para los avisos de bajas (US 057).</summary>
+    public string WeaponName { get; private set; }
+
+    /// <summary>Ícono del arma en la mano (de su ficha de la tienda), para los avisos de bajas (US 057).</summary>
+    public Sprite WeaponIcon { get; private set; }
+
     private HealthSystem health;
+    private IndicadorDeDano damageIndicator; // US 192
+    private Minimapa minimap; // US 194
     private PlayerAbility ability;
     private WeaponSwitcher switcher;
     private MeleeWeaponHolder melee;
@@ -65,12 +93,57 @@ public class CombatHud : MonoBehaviour
 
     private CanvasGroup group;
     private GameObject crit, hint, skill;
+    private CanvasGroup[] hiddenWhenScoped;
     private TextMeshProUGUI hintText;
     private TextMeshProUGUI hpText, shieldText;
+
+    // Espectador (US 133): mientras se mira a un compañero, la vida y el minimapa son los suyos.
+    private HealthSystem watched;
+    private JugadorEnRed watchedMate;
+    private Transform playerRoot;
+
+    /// <summary>Muestra la vida y el minimapa de un compañero (espectador). null vuelve al jugador propio.</summary>
+    public static void Spectate(JugadorEnRed mate)
+    {
+        CombatHud hud = current;
+        if (hud == null) return;
+        hud.watched = mate != null ? mate.GetComponent<HealthSystem>() : null;
+        hud.watchedMate = mate;
+        hud.lastHp = int.MinValue; // que se vuelva a dibujar
+        hud.lastAmmoState = null;
+        // El inventario de abajo es el propio (no se conoce el del compañero): no se ve mientras se especta.
+        foreach (InvSlot slot in hud.invSlots)
+            if (slot != null && slot.rect != null) slot.rect.localScale = mate != null ? Vector3.zero : Vector3.one;
+        if (hud.minimap == null) return;
+        if (mate != null) hud.minimap.Seguir(mate.transform, mate.Ojos);
+        else if (hud.playerRoot != null)
+        {
+            Camera own = hud.playerRoot.GetComponentInChildren<Camera>();
+            hud.minimap.Seguir(hud.playerRoot, own != null ? own.transform : null);
+        }
+    }
+
+    // US 139, CA3: aviso verde "+50" al lado de la vida durante 1 s.
+    private static CombatHud current;
+    private TextMeshProUGUI healText;
+    private float healUntil = -1f;
+    private const float HealSeconds = 1f;
+
+    /// <summary>Muestra "+N" en verde al lado de la vida durante 1 s (US 139).</summary>
+    public static void ShowHeal(int amount)
+    {
+        if (current == null || current.healText == null || amount <= 0) return;
+        current.healText.text = $"+{amount}";
+        current.healUntil = Time.time + HealSeconds;
+    }
     private UnityEngine.UI.Image hpFill, shieldFill;
     private RectTransform markHealth, markHalfShield;
     private UnityEngine.UI.Image ringFill, icon, keyChip;
     private readonly UnityEngine.UI.Image[] ticks = new UnityEngine.UI.Image[12];
+    // US 019, CA7: una marca por carga, debajo del aro (solo si la habilidad tiene más de una).
+    private RectTransform chargesRoot;
+    private UnityEngine.UI.Image[] charges = new UnityEngine.UI.Image[0];
+    private AbilityData shownSkill;
     private TextMeshProUGUI cooldownText, keyText, nameText;
     private TextMeshProUGUI weaponText, magText, reserveText;
     private RectTransform sleepersRoot;
@@ -95,6 +168,7 @@ public class CombatHud : MonoBehaviour
 
     private void OnEnable()
     {
+        current = this;
         WeaponFire.Hit += OnHit;
     }
 
@@ -120,41 +194,57 @@ public class CombatHud : MonoBehaviour
         // Con la tienda abierta, su barra de equipo ocupa este lugar.
         group.alpha = ShopUI.IsOpen ? 0f : 1f;
         UpdateHealth();
+        UpdateHeal();
         UpdateSkill();
         UpdateAmmo();
+        UpdateInventory();
         UpdateHitMarker();
 
-        // La mira se ve con cualquier arma; con la pausa abierta se oculta (con la tienda ya se oculta todo el HUD).
-        crosshair.gameObject.SetActive(!PauseMenu.IsPaused);
+        // La mira se ve con cualquier arma menos los francotiradores: sin la mira telescópica se tira a ojo, como el AWP
+        // de CS (US 068), y con ella puesta la lente tiene su propia retícula (US 009). Con la pausa abierta se oculta
+        // (con la tienda ya se oculta todo el HUD).
+        crosshair.gameObject.SetActive(!PauseMenu.IsPaused && MiraTelescopica.EnMano == null);
+        UpdateCrosshair();
+        float center = MiraTelescopica.Puesta ? 0f : 1f;
+        foreach (CanvasGroup part in hiddenWhenScoped) part.alpha = center;
     }
 
     // ---------- Mira ----------
 
     private void BuildCrosshair(RectTransform root)
     {
-        crosshair = Node("Mira", root);
-        crosshair.anchorMin = crosshair.anchorMax = crosshair.pivot = new Vector2(0.5f, 0.5f);
-        crosshair.anchoredPosition = Vector2.zero;
-        crosshair.sizeDelta = Vector2.one * 2f * (CrosshairGap + CrosshairLength);
-
-        float offset = CrosshairGap + CrosshairLength * 0.5f;
-        CrosshairLine("Arriba", new Vector2(0f, offset), new Vector2(CrosshairThickness, CrosshairLength));
-        CrosshairLine("Abajo", new Vector2(0f, -offset), new Vector2(CrosshairThickness, CrosshairLength));
-        CrosshairLine("Izquierda", new Vector2(-offset, 0f), new Vector2(CrosshairLength, CrosshairThickness));
-        CrosshairLine("Derecha", new Vector2(offset, 0f), new Vector2(CrosshairLength, CrosshairThickness));
+        crosshairDrawing = new MiraDibujo(root);
+        crosshair = crosshairDrawing.raiz;
+        crosshairDrawing.Aplicar(MiraConfig.Actual);
     }
 
-    private void CrosshairLine(string name, Vector2 position, Vector2 size)
+    // US 172: la mira se dibuja con lo guardado en Opciones > Mira. Con "Se abre con la dispersión" (CA4), las
+    // rayitas se separan según la dispersión actual del arma en la mano (US 167) y se cierran al frenar.
+    private void UpdateCrosshair()
     {
-        RectTransform line = Node(name, crosshair);
-        line.anchorMin = line.anchorMax = line.pivot = new Vector2(0.5f, 0.5f);
-        line.anchoredPosition = position;
-        line.sizeDelta = size;
-        Image(line, null, Color.white);
-        // Borde oscuro de 1 px para que se lea sobre el cielo y sobre paredes oscuras.
-        UnityEngine.UI.Outline border = line.gameObject.AddComponent<UnityEngine.UI.Outline>();
-        border.effectColor = new Color(0f, 0f, 0f, 0.85f);
-        border.effectDistance = new Vector2(1f, 1f);
+        MiraConfig.Mira config = MiraConfig.Actual;
+        float target = config.dinamica ? SpreadPixels() : 0f;
+        crosshairOpen = Mathf.Lerp(crosshairOpen, target, 1f - Mathf.Exp(-18f * Time.unscaledDeltaTime));
+        if (Mathf.Abs(crosshairOpen - target) < 0.05f) crosshairOpen = target;
+        crosshairDrawing.Aplicar(config, crosshairOpen);
+    }
+
+    // La dispersión del arma en la mano, pasada de grados a px del HUD: hasta dónde puede desviarse una bala.
+    private float SpreadPixels()
+    {
+        Camera view = Camera.main;
+        if (view == null || switcher == null) return 0f;
+
+        ShopItem weapon = null;
+        GameObject held = switcher.HeldPrimary;
+        if (held != null) weapon = WeaponSwitcher.FichaDe(held);
+        else if (switcher.pistolObj != null && switcher.pistolObj.activeInHierarchy && loadout != null) weapon = loadout.Secondary;
+        if (weapon == null) return 0f;
+
+        float degrees = WeaponAim.For(view).CurrentSpread(weapon, false);
+        RectTransform canvas = crosshair.parent as RectTransform;
+        float half = canvas != null && canvas.rect.height > 0f ? canvas.rect.height * 0.5f : 540f;
+        return Mathf.Tan(degrees * Mathf.Deg2Rad) / Mathf.Tan(view.fieldOfView * 0.5f * Mathf.Deg2Rad) * half;
     }
 
     // ---------- Marcador de impacto ----------
@@ -163,8 +253,15 @@ public class CombatHud : MonoBehaviour
     {
         hitKind = kind;
         hitAt = Time.unscaledTime;
+        if (hitAudio == null) return;
+        if (hitSample != null)
+        {
+            hitAudio.pitch = kind == HitMarkerKind.Kill ? 0.8f : kind == HitMarkerKind.Head ? 1.35f : 1f;
+            hitAudio.PlayOneShot(hitSample, kind == HitMarkerKind.Kill ? 1f : 0.8f);
+            return;
+        }
         AudioClip clip = kind == HitMarkerKind.Kill ? hitKillClip : kind == HitMarkerKind.Head ? hitHeadClip : hitBodyClip;
-        if (hitAudio != null && clip != null) hitAudio.PlayOneShot(clip);
+        if (clip != null) hitAudio.PlayOneShot(clip);
     }
 
     private void UpdateHitMarker()
@@ -211,6 +308,10 @@ public class CombatHud : MonoBehaviour
         hitAudio.spatialBlend = 0f;
         hitAudio.volume = 0.35f;
         hitAudio.outputAudioMixerGroup = sfxGroup;
+        // El sonido del marcador está en Resources/SonidosJugador: a la cabeza suena más agudo y en una baja, más grave
+        // (los tres tienen que distinguirse, US 165). Si no está, se usan los tonos de antes.
+        SonidosJugador sonidos = SonidosJugador.Actual;
+        hitSample = sonidos != null ? sonidos.marcadorImpacto : null;
         hitBodyClip = Tone("ImpactoCuerpo", 0.05f, 1900f, 0f, 60f);
         hitHeadClip = Tone("ImpactoCabeza", 0.10f, 2600f, 3900f, 28f);
         hitKillClip = Tone("ImpactoBaja", 0.16f, 900f, 2600f, 18f);
@@ -242,9 +343,14 @@ public class CombatHud : MonoBehaviour
         if (player == null) return;
 
         health = player.GetComponent<HealthSystem>();
+        playerRoot = player.transform;
+        if (damageIndicator != null) damageIndicator.Seguir(health);
+        if (minimap != null) minimap.Seguir(player.transform);
         switcher = player.GetComponentInChildren<WeaponSwitcher>(true);
         melee = player.GetComponent<MeleeWeaponHolder>();
         loadout = player.GetComponent<PlayerLoadout>();
+        sceneHasShop = FindAnyObjectByType<ShopUI>() != null;
+        for (int i = 0; i < invState.Length; i++) invState[i] = null;
         ability = player.GetComponent<PlayerAbility>();
         if (ability != null) ability.Used += OnAbilityUsed;
 
@@ -271,8 +377,9 @@ public class CombatHud : MonoBehaviour
 
     private void UpdateHealth()
     {
-        int hp = Mathf.Max(0, health.currentHealth), shield = Mathf.Max(0, health.currentShield);
-        int maxHp = Mathf.Max(1, health.maxHealth), maxShield = Mathf.Max(0, health.maxShield);
+        HealthSystem shown = watched != null ? watched : health; // espectador: la del compañero que se mira
+        int hp = Mathf.Max(0, shown.currentHealth), shield = Mathf.Max(0, shown.currentShield);
+        int maxHp = Mathf.Max(1, shown.maxHealth), maxShield = Mathf.Max(0, shown.maxShield);
         if (hp == lastHp && shield == lastShield && maxHp == lastMaxHp && maxShield == lastMaxShield) return;
         lastHp = hp; lastShield = shield; lastMaxHp = maxHp; lastMaxShield = maxShield;
 
@@ -292,10 +399,27 @@ public class CombatHud : MonoBehaviour
         crit.SetActive(low);
     }
 
+    // US 139, CA3: el "+50" aparece a la derecha del número, sube un poco y se apaga.
+    private void UpdateHeal()
+    {
+        if (healText == null) return;
+        float left = healUntil - Time.time;
+        bool show = left > 0f;
+        if (healText.gameObject.activeSelf != show) healText.gameObject.SetActive(show);
+        if (!show) return;
+        float t = 1f - left / HealSeconds; // 0 a 1
+        float x = Width(hpText, hpText.text) + 12f + (shieldText.text.Length > 0 ? Width(shieldText, shieldText.text) + 10f : 0f);
+        healText.rectTransform.anchoredPosition = new Vector2(x, -(104f - 14f * t));
+        healText.alpha = t < 0.7f ? 1f : 1f - (t - 0.7f) / 0.3f;
+    }
+
     // ---------- La habilidad: un reloj de andén que se enciende mientras recarga ----------
 
     private void SetupSkill(AbilityData data)
     {
+        shownSkill = data;
+        lastSkillState = int.MinValue;
+        BuildCharges(ability != null ? ability.MaxCargas : 1);
         icon.sprite = data.icon;
         icon.enabled = data.icon != null;
         keyText.text = KeyBindings.Label(GameAction.Habilidad);
@@ -309,14 +433,18 @@ public class CombatHud : MonoBehaviour
     private void UpdateSkill()
     {
         if (ability == null || ability.Ability == null) return;
+        // US 016: en el Táctico el personaje (y su habilidad) se elige con la partida ya cargada.
+        if (ability.Ability != shownSkill) SetupSkill(ability.Ability);
 
         float progress = ability.Progress;
         bool ready = ability.IsReady, used = Time.time - usedAt < 0.4f;
         int lit = Mathf.FloorToInt(progress * 12f + 0.0001f);
-        int seconds = ready ? 0 : Mathf.CeilToInt(ability.CooldownLeft);
+        // US 019, CA7: con cargas, los segundos son los que faltan para la próxima aunque quede alguna para usar.
+        int seconds = ability.Recargando ? Mathf.CeilToInt(ability.CooldownLeft) : 0;
+        int left = ability.Cargas;
         ringFill.fillAmount = progress;
 
-        int state = lit + seconds * 16 + (ready ? 1 << 20 : 0) + (used ? 1 << 21 : 0);
+        int state = lit + seconds * 16 + (ready ? 1 << 20 : 0) + (used ? 1 << 21 : 0) + (left << 22);
         if (state == lastSkillState) return;
         lastSkillState = state;
 
@@ -328,6 +456,22 @@ public class CombatHud : MonoBehaviour
         keyChip.color = ready ? Ink : White(FadeAlpha(0.14f));
         keyText.color = ready ? KeyInk : Ink;
         nameText.color = ready ? Ink : Mute;
+        for (int i = 0; i < charges.Length; i++) charges[i].color = i < left ? (used && i == left - 1 ? Accent : Ink) : dim;
+        if (charges.Length > 0) cooldownText.color = ready ? Mute : Color.white;
+    }
+
+    // Marcas cortas centradas debajo del aro, como los vagones de una formación.
+    private void BuildCharges(int count)
+    {
+        if (chargesRoot == null) return;
+        int shown = count > 1 ? count : 0;
+        if (charges.Length == shown) return;
+        foreach (UnityEngine.UI.Image old in charges) if (old != null) Destroy(old.gameObject);
+        charges = new UnityEngine.UI.Image[shown];
+        const float w = 16f, gap = 5f;
+        float x = (SkillW - (shown * w + (shown - 1) * gap)) / 2f;
+        for (int i = 0; i < shown; i++)
+            charges[i] = Image(Place(Node("Carga" + (i + 1), chargesRoot), x + i * (w + gap), 0f, w, 4f), rounded, Ink, 2f);
     }
 
     // ---------- Munición: un durmiente por bala ----------
@@ -335,6 +479,7 @@ public class CombatHud : MonoBehaviour
     private void UpdateAmmo()
     {
         ReadWeapon(out string name, out int ammo, out int size, out int reserve, out float reload);
+        WeaponName = name;
         bool reloading = reload >= 0f;
         int filled = reloading ? Mathf.RoundToInt(reload * size) : ammo;
         string state = $"{name}|{ammo}|{size}|{reserve}|{(reloading ? filled : -1)}";
@@ -365,23 +510,56 @@ public class CombatHud : MonoBehaviour
     private void ReadWeapon(out string name, out int ammo, out int size, out int reserve, out float reload)
     {
         name = ""; ammo = 0; size = 0; reserve = -1; reload = -1f;
+        WeaponIcon = null;
+
+        // Espectador (US 133): el arma y las balas del compañero que se mira, que llegan por la red.
+        if (watchedMate != null)
+        {
+            if (!watchedMate.Vivo) return;
+            name = watchedMate.NombreArma;
+            watchedMate.Balas(out ammo, out size, out reserve, out reload);
+            return;
+        }
+
+        // Granada en la mano (US 073): su nombre y cuántas de esas lleva.
+        ShopItem grenadeInHand = HeldGrenade();
+        if (grenadeInHand != null)
+        {
+            name = ItemName(grenadeInHand);
+            WeaponIcon = grenadeInHand.icon;
+            ammo = size = loadout != null ? loadout.Count(grenadeInHand) : 1;
+            return;
+        }
+
+        // El dispositivo en la mano (US 130): sin balas.
+        if (switcher != null && switcher.DispositivoEquipado)
+        {
+            name = "Dispositivo";
+            return;
+        }
 
         GameObject held = null;
         if (switcher != null)
         {
-            if (switcher.mitreObj != null && switcher.mitreObj.activeInHierarchy) held = switcher.mitreObj;
-            else if (switcher.pistolObj != null && switcher.pistolObj.activeInHierarchy) held = switcher.pistolObj;
+            held = switcher.HeldPrimary;
+            if (held == null) held = switcher.HeldSecondary; // la Línea A o la que compró (US 072)
         }
         IHudWeapon weapon = held != null ? held.GetComponentInChildren<IHudWeapon>() : null;
         if (weapon != null)
         {
             // La secundaria se muestra con su nombre de la tienda (Línea A o Línea H).
-            name = held == switcher.pistolObj ? SecondaryName() : weapon.HudName;
+            bool secondary = held == switcher.HeldSecondary;
+            name = secondary ? SecondaryName() : weapon.HudName;
+            ShopItem ficha = secondary ? (loadout != null ? loadout.Secondary : null) : WeaponSwitcher.FichaDe(held);
+            WeaponIcon = ficha != null ? ficha.icon : null;
             ammo = weapon.Ammo; size = weapon.MagazineSize; reserve = weapon.Reserve; reload = weapon.ReloadProgress;
             return;
         }
         if (melee != null && melee.CurrentViewModel != null && melee.CurrentViewModel.activeInHierarchy)
+        {
             name = melee.CurrentWeapon != null ? melee.CurrentWeapon.weaponName : "Cuchillo";
+            WeaponIcon = knifeIcon; // para el aviso de baja con cuchillo
+        }
     }
 
     // La pistola de hoy es el arma secundaria: se muestra con su nombre de la tienda (Línea A), como en Valorant.
@@ -438,12 +616,19 @@ public class CombatHud : MonoBehaviour
         bar.sizeDelta = new Vector2(BarW, BarH);
 
         BuildHealth(bar);
-        Image(Place(Node("Rieles", bar), RailLeftX, 160f, 120f, 12f), rails, Color.white);
+        GameObject railsLeft = Image(Place(Node("Rieles", bar), RailLeftX, 160f, 120f, 12f), rails, Color.white).gameObject;
         BuildSkill(bar);
-        Image(Place(Node("Rieles", bar), RailRightX, 160f, 120f, 12f), rails, Color.white);
+        GameObject railsRight = Image(Place(Node("Rieles", bar), RailRightX, 160f, 120f, 12f), rails, Color.white).gameObject;
+        // Con la mira telescópica puesta (US 009) se oculta el centro del andén: la habilidad y sus rieles tapan la lente.
+        hiddenWhenScoped = new[] { railsLeft.AddComponent<CanvasGroup>(), skill.AddComponent<CanvasGroup>(), railsRight.AddComponent<CanvasGroup>() };
         BuildAmmo(bar);
+        BuildInventory(bar);
         BuildCrosshair(root);
         BuildHitMarker(root);
+        damageIndicator = Node("IndicadorDeDano", root).gameObject.AddComponent<IndicadorDeDano>(); // US 192
+        minimap = gameObject.AddComponent<Minimapa>(); // US 194
+        minimap.Iniciar(root, labelFont, rounded);
+        gameObject.AddComponent<MatchHud>().Setup(root, displayFont, labelFont, rounded, this); // US 057
     }
 
     private void BuildHealth(RectTransform bar)
@@ -453,6 +638,9 @@ public class CombatHud : MonoBehaviour
         AddShadow(hpText);
         shieldText = Text(Place(Node("Escudo", block), 100f, 126f, 140f, 21f), labelFont, 24f, ShieldColor);
         AddShadow(shieldText);
+        healText = Text(Place(Node("Curacion", block), 100f, 104f, 160f, 40f), displayFont, 40f, Ok);
+        AddShadow(healText);
+        healText.gameObject.SetActive(false);
 
         RectTransform track = Place(Node("ViaDeVida", block), 0f, 162f, BlockW, 8f);
         Image(track, null, White(FadeAlpha(0.14f)));
@@ -493,6 +681,8 @@ public class CombatHud : MonoBehaviour
         cooldownText = Text(Stretch(Node("Segundos", ringRect)), displayFont, 34f, Color.white, TextAlignmentOptions.Midline);
         AddShadow(cooldownText);
 
+        chargesRoot = Place(Node("Cargas", block), 0f, 125f, SkillW, 4f);
+
         RectTransform keyRow = Place(Node("Tecla", block), 0f, 133f, SkillW, 24f);
         keyChip = Image(Place(Node("Chip", keyRow), 0f, 0f, 24f, 24f), rounded, Ink, 5f);
         keyText = Text(Stretch(Node("Letra", keyChip.rectTransform)), monoFont, 14f, KeyInk, TextAlignmentOptions.Midline);
@@ -514,6 +704,126 @@ public class CombatHud : MonoBehaviour
         AddShadow(reserveText);
         sleepersRoot = Place(Node("Durmientes", block), 0f, 160f, BlockW, 10f);
     }
+
+    // ---------- Inventario (US 055) ----------
+
+    private void BuildInventory(RectTransform bar)
+    {
+        for (int i = 0; i < invSlots.Length; i++)
+        {
+            InvSlot slot = new InvSlot();
+            // Pivote a la derecha: el espacio en la mano crece hacia la izquierda, sin salirse de la pantalla.
+            // El del dispositivo, arriba del espacio 1.
+            float y = 6f + (i == DeviceSlot ? -1 : i) * (InvRowH + InvGap);
+            slot.rect = Place(Node("Espacio" + (i + 1), bar), InvX, y, InvW, InvRowH);
+            slot.rect.pivot = new Vector2(1f, 0.5f);
+            slot.rect.anchoredPosition = new Vector2(InvX + InvW, -(y + InvRowH / 2f));
+            slot.bg = Image(slot.rect, rounded, Rgb(10, 12, 17, DarkAlpha(0.55f)), 5f);
+
+            slot.icon = Image(Place(Node("Icono", slot.rect), 8f, 6f, 52f, 24f), null, Mute);
+            slot.icon.preserveAspect = true;
+            slot.dash = Text(Place(Node("Vacio", slot.rect), 8f, 0f, 52f, InvRowH), displayFont, 18f, Mute, TextAlignmentOptions.Center);
+            slot.dash.text = "—";
+            slot.name = Text(Place(Node("Nombre", slot.rect), 66f, 0f, InvW - 100f, InvRowH), labelFont, 15f, Mute, TextAlignmentOptions.MidlineLeft, 8f, true);
+            slot.name.overflowMode = TextOverflowModes.Ellipsis;
+
+            RectTransform keyRect = Place(Node("Tecla", slot.rect), InvW - 28f, 8f, 20f, 20f);
+            slot.keyBg = Image(keyRect, rounded, new Color(0f, 0f, 0f, DarkAlpha(0.35f)), 3f);
+            slot.key = Text(Stretch(Node("Texto", keyRect)), displayFont, 13f, Mute, TextAlignmentOptions.Center);
+            invSlots[i] = slot;
+        }
+
+        // El dispositivo no tiene ficha en la tienda: se dibuja su ícono (el mismo del reloj del marcador), en naranja.
+        Place(MatchHud.DeviceGlyph(invSlots[DeviceSlot].rect, Accent, rounded, out _), 20f, 4f, 28f, 28f);
+        invSlots[DeviceSlot].rect.gameObject.SetActive(false);
+    }
+
+    private void UpdateInventory()
+    {
+        // Qué tiene en la mano (CA4): 0 principal, 1 secundaria, 2 cuchillo; -1 si nada.
+        int held = -1;
+        if (switcher != null && switcher.HeldPrimary != null) held = 0;
+        else if (switcher != null && switcher.HeldSecondary != null) held = 1;
+        else if (melee != null && melee.CurrentViewModel != null && melee.CurrentViewModel.activeInHierarchy) held = 2;
+        else if (HeldGrenade() != null) held = 3;
+        else if (switcher != null && switcher.DispositivoEquipado) held = DeviceSlot;
+
+        // Principal (CA2, CA3): lo que compró; en escenas sin tienda el Mitre está siempre.
+        ShopItem primary = loadout != null ? loadout.Primary : null;
+        GameObject always = !sceneHasShop && switcher != null ? switcher.PrimaryObj : null;
+        IHudWeapon alwaysHud = always != null ? always.GetComponent<IHudWeapon>() : null;
+        ShopItem alwaysItem = WeaponSwitcher.FichaDe(always);
+        bool hasPrimary = primary != null || alwaysHud != null;
+        string primaryName = primary != null ? ItemName(primary) : hasPrimary ? alwaysHud.HudName : "Vacío";
+        Sprite primaryIcon = primary != null ? primary.icon : alwaysItem != null ? alwaysItem.icon : null;
+
+        ShopItem secondary = loadout != null ? loadout.Secondary : null;
+        // Con tienda, la que tiene en la tienda: si soltó la Línea A (US 184, CA4), el espacio queda vacío.
+        bool hasSecondary = secondary != null || (!sceneHasShop && switcher != null && switcher.pistolObj != null);
+        string secondaryName = hasSecondary ? SecondaryName() : "Vacío";
+
+        bool hasKnife = melee != null && melee.CurrentWeapon != null;
+        string knifeName = hasKnife ? melee.CurrentWeapon.weaponName : "Vacío";
+
+        // Granadas (CA5): la seleccionada (la que tiene en la mano o la última que eligió con la tecla 4, si todavía
+        // la tiene; si no, la primera que tenga) y cuántas lleva de ese tipo.
+        ShopItem grenade = HeldGrenade();
+        if (grenade == null && switcher != null && switcher.Granadas != null && loadout != null)
+        {
+            ShopItem ultima = switcher.Granadas.UltimaElegida;
+            if (ultima != null && loadout.Count(ultima) > 0) grenade = ultima;
+        }
+        if (grenade == null && loadout != null && loadout.Catalog != null)
+            foreach (ShopItem item in loadout.Catalog.items)
+                if (item != null && item.kind == ShopItemKind.Grenade && loadout.Count(item) > 0) { grenade = item; break; }
+        int grenadeCount = grenade != null && loadout != null ? loadout.Count(grenade) : 0;
+        string grenadeName = grenade != null ? $"{ItemName(grenade)} ×{grenadeCount}" : "Vacío";
+
+        SetSlot(0, hasPrimary, held == 0, primaryName, primaryIcon, KeyBindings.Label(GameAction.ArmaPrincipal));
+        SetSlot(1, hasSecondary, held == 1, secondaryName, secondary != null ? secondary.icon : null, KeyBindings.Label(GameAction.ArmaSecundaria));
+        SetSlot(2, hasKnife, held == 2, knifeName, knifeIcon, KeyBindings.Label(GameAction.Cuchillo));
+        SetSlot(3, grenade != null, held == 3, grenadeName, grenade != null ? grenade.icon : null, KeyBindings.Label(GameAction.Granadas));
+
+        // US 130: el dispositivo ocupa su propio espacio mientras lo lleva.
+        bool device = switcher != null && switcher.LlevaDispositivo;
+        if (invSlots[DeviceSlot].rect.gameObject.activeSelf != device) invSlots[DeviceSlot].rect.gameObject.SetActive(device);
+        if (device) SetSlot(DeviceSlot, true, held == DeviceSlot, "Dispositivo", null, KeyBindings.Label(GameAction.Dispositivo));
+    }
+
+    // La granada que tiene en la mano (US 073), o null.
+    private ShopItem HeldGrenade()
+    {
+        if (switcher == null || !switcher.GrenadeEquipped || switcher.Granadas == null) return null;
+        return switcher.Granadas.Selected;
+    }
+
+    // CA6: solo se redibuja cuando algo cambió.
+    private void SetSlot(int i, bool has, bool inHand, string name, Sprite icon, string key)
+    {
+        string state = $"{has}|{inHand}|{name}|{(icon != null ? icon.name : "")}|{key}";
+        if (invState[i] == state) return;
+        invState[i] = state;
+
+        InvSlot slot = invSlots[i];
+        Color ink = inHand ? KeyInk : has ? Mute : Rgb(107, 113, 122);
+        slot.bg.color = inHand ? Ink : Rgb(10, 12, 17, DarkAlpha(has ? 0.55f : 0.35f));
+        slot.rect.localScale = Vector3.one * (inHand ? 1.08f : 1f);
+
+        bool showIcon = has && icon != null;
+        slot.icon.enabled = showIcon;
+        slot.icon.sprite = icon;
+        slot.icon.color = inHand ? KeyInk : Rgb(154, 161, 171);
+        slot.dash.gameObject.SetActive(!has);
+        slot.dash.color = ink;
+
+        slot.name.text = name;
+        slot.name.color = ink;
+        slot.key.text = key;
+        slot.key.color = ink;
+        slot.keyBg.color = inHand ? new Color(0f, 0f, 0f, 0.12f) : new Color(0f, 0f, 0f, DarkAlpha(0.35f));
+    }
+
+    private static string ItemName(ShopItem item) => string.IsNullOrEmpty(item.alias) ? item.displayName : item.alias;
 
     private void BuildSleepers(int count)
     {
