@@ -37,7 +37,16 @@ public class PlayerMovement : MonoBehaviour
     public bool Agachado { get; private set; }
     public bool CaminandoDespacio { get; private set; }
 
+    /// <summary>
+    /// Pausa (US 051): no lee las teclas, pero la gravedad sigue. En una partida online la pausa no congela el juego,
+    /// y apagando este componente el personaje quedaba flotando en el aire (y no llegaba a caerse del mapa, US 006).
+    /// </summary>
+    public bool SinControles { get; set; }
+
     private float verticalVelocity;
+
+    // En el aire sigue con la velocidad que tenía al despegar: agacharse o caminar despacio en el aire no lo frena.
+    private float velocidadAlDespegar;
 
     // Se utiliza para detectar correctamente el aterrizaje
     private bool wasInAir;
@@ -77,6 +86,7 @@ public class PlayerMovement : MonoBehaviour
 
         controller.height = standingHeight;
         controller.center = standingCenter;
+        velocidadAlDespegar = speed;
 
         // Los pasos se agregan solos (US 001 y US 002): no hace falta tocar el prefab.
         if (GetComponent<Pasos>() == null) gameObject.AddComponent<Pasos>();
@@ -84,11 +94,12 @@ public class PlayerMovement : MonoBehaviour
         if (GetComponent<FueraDelMapa>() == null) gameObject.AddComponent<FueraDelMapa>();
     }
 
-    /// <summary>US 006, CA6: al reaparecer no conserva la velocidad de la caída ni lo que venía moviéndose.</summary>
+    /// <summary>US 006, CA4: al reaparecer no conserva la velocidad de la caída ni lo que venía moviéndose.</summary>
     public void Frenar()
     {
         verticalVelocity = 0f;
         moveX = moveZ = 0f;
+        velocidadAlDespegar = speed;
         wasInAir = false;
         if (animator != null) animator.SetBool("isFalling", false);
     }
@@ -101,8 +112,8 @@ public class PlayerMovement : MonoBehaviour
         // =====================================================
 
         // Teclas reasignables (US 155), suavizadas como Input.GetAxis.
-        moveX = SmoothAxis(moveX, KeyBindings.Axis(GameAction.Izquierda, GameAction.Derecha));
-        moveZ = SmoothAxis(moveZ, KeyBindings.Axis(GameAction.Atras, GameAction.Adelante));
+        moveX = SmoothAxis(moveX, SinControles ? 0f : KeyBindings.Axis(GameAction.Izquierda, GameAction.Derecha));
+        moveZ = SmoothAxis(moveZ, SinControles ? 0f : KeyBindings.Axis(GameAction.Atras, GameAction.Adelante));
         float x = moveX;
         float z = moveZ;
 
@@ -121,7 +132,8 @@ public class PlayerMovement : MonoBehaviour
 
         // US 004: si suelta Ctrl con algo encima, sigue agachado hasta que haya lugar para pararse (si no, la cápsula
         // de 2 m quedaba metida en el objeto y no se podía mover).
-        bool isCrounching = KeyBindings.Held(GameAction.Agacharse) || (Agachado && !HayLugarParaPararse());
+        bool quiereAgacharse = SinControles ? Agachado : KeyBindings.Held(GameAction.Agacharse);
+        bool isCrounching = quiereAgacharse || (Agachado && !HayLugarParaPararse());
         animator.SetBool("isCrouching", isCrounching);
         Agachado = isCrounching;
 
@@ -161,7 +173,7 @@ public class PlayerMovement : MonoBehaviour
         {
             currentSpeed = crounchSpeed;
         }
-        else if (KeyBindings.Held(GameAction.Correr))
+        else if (!SinControles && KeyBindings.Held(GameAction.Correr))
         {
             // US 198: en el Táctico no se corre; Shift camina despacio y sin ruido.
             if (MatchSettings.Mode == GameMode.Tactico)
@@ -187,6 +199,10 @@ public class PlayerMovement : MonoBehaviour
 
         currentSpeed *= speedMultiplier;
 
+        // Apoyado se anota la velocidad; en el aire se sigue con esa (agacharse en el aire bajaba a 2,5 m/s).
+        if (controller.isGrounded) velocidadAlDespegar = currentSpeed;
+        else currentSpeed = velocidadAlDespegar;
+
         animator.SetBool("isSprinting", isSprinting);
 
 
@@ -211,7 +227,7 @@ public class PlayerMovement : MonoBehaviour
         // SALTO
         // =====================================================
 
-        if (KeyBindings.Down(GameAction.Saltar) && controller.isGrounded && !arribaDeOtro)
+        if (!SinControles && KeyBindings.Down(GameAction.Saltar) && controller.isGrounded && !arribaDeOtro)
         {
             verticalVelocity = jumpForce;
             saltoEsteCuadro = true;

@@ -15,7 +15,7 @@ using Hashtable = ExitGames.Client.Photon.Hashtable;
 // - CA2: nombre del mapa y del modo, imagen del mapa (ConfigRed, campo "imagen"; si no tiene, fondo liso) y barra de avance.
 // - CA3: un consejo al azar del modo o de los controles, con las teclas que tiene configuradas el jugador (US 155).
 // - CA4: online muestra cuántos jugadores ya cargaron ("3 / 8 listos"). La partida empieza cuando cargaron todos
-//   (o a los 20 s, para que un jugador colgado no deje a todos esperando).
+//   (o a los 20 s, para que un jugador colgado no deje a todos esperando). Al anfitrión se lo espera siempre.
 // - CA5: el mapa se carga de fondo y el ícono de carga sigue girando.
 // - CA6: tipografías, colores y vía del resto del juego (ShopUIKit).
 // Se crea sola la primera vez que se usa y sigue entre escenas: no hay que ponerla en ninguna.
@@ -191,14 +191,22 @@ public class PantallaDeCarga : MonoBehaviour
         PonerAvance(1f);
 
         int total = PhotonNetwork.CurrentRoom.PlayerCount, listos = 0;
+        bool anfitrionListo = PhotonNetwork.IsMasterClient;
         foreach (Player p in PhotonNetwork.PlayerList)
-            if (p.CustomProperties.TryGetValue(PropListo, out object v) && v is string s && s == escena) listos++;
+            if (p.CustomProperties.TryGetValue(PropListo, out object v) && v is string s && s == escena)
+            {
+                listos++;
+                if (p.IsMasterClient) anfitrionListo = true;
+            }
         listos = Mathf.Max(listos, 1);
         listosTexto.text = $"<color=#3DDC97>{listos} / {total}</color> listos";
-        pieTexto.text = listos < total ? "Esperando a los demás jugadores  ·  la partida empieza cuando cargaron todos" : "";
+        pieTexto.text = !anfitrionListo ? "Esperando al anfitrión  ·  la partida empieza cuando termine de cargar"
+            : listos < total ? "Esperando a los demás jugadores  ·  la partida empieza cuando cargaron todos" : "";
 
+        // Los 20 s son para no esperar a otro jugador colgado. Al anfitrión se lo espera siempre: es el que arranca la
+        // partida, y sin él los demás quedaban caminando por el mapa y empezaban la ronda desde donde estuvieran.
         bool tiempoMinimo = Time.unscaledTime - desde >= TiempoMinimo;
-        if ((listos >= total && tiempoMinimo) || Time.unscaledTime - cargadoEn > EsperaMaxima) Ocultar();
+        if (anfitrionListo && ((listos >= total && tiempoMinimo) || Time.unscaledTime - cargadoEn > EsperaMaxima)) Ocultar();
     }
 
     // En las computadoras que no son el anfitrión, la partida empieza cuando Photon manda cargar el mapa.

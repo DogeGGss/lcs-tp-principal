@@ -5,11 +5,11 @@ using UnityEngine;
 // - CA1: el jugador está fuera del mapa si entra en una zona marcada (PlayerRespawn, por ejemplo debajo de un
 //   vacío) o si baja del límite inferior del mapa: unos metros debajo de lo más bajo que tiene la escena.
 // - CA2: en el Táctico cuenta como una muerte sin baja para nadie y espera la ronda siguiente (US 133).
-// - CA3: en Deathmatch cuenta como una muerte sin baja para nadie y reaparece a los 3 s (US 137 y US 140).
-// - CA4: en Zombie cuenta como una muerte. El fin de la partida es de la US 151 (escucha la muerte del jugador).
-// - CA5: fuera de los modos (escenas de prueba), reaparece al instante en el punto de reaparición más cercano.
-// - CA6: al reaparecer no conserva la velocidad de la caída (JugadorEnRed.Teletransportar usa PlayerMovement.Frenar),
+// - CA3: fuera de los modos (escenas de prueba), reaparece al instante en el punto de reaparición más cercano.
+// - CA4: al reaparecer no conserva la velocidad de la caída (JugadorEnRed.Teletransportar usa PlayerMovement.Frenar),
 //   y el punto no choca con el escenario ni con otros personajes.
+// Los otros modos tienen lo suyo en sus historias: en Deathmatch (US 137, CA7) es una muerte sin baja para nadie y
+// reaparece a los 3 s; en Zombie (US 151, CA6) es una muerte, y el fin de la partida escucha la muerte del jugador.
 public class FueraDelMapa : MonoBehaviour
 {
     private const float DebajoDelMapa = 10f;  // metros debajo de lo más bajo de la escena
@@ -56,7 +56,7 @@ public class FueraDelMapa : MonoBehaviour
     {
         if (vida != null && vida.currentHealth <= 0) return; // ya está muerto: no cuenta de nuevo
 
-        // CA2 y CA3: en una partida online, muerte sin baja para nadie (JugadorEnRed se ocupa del resto).
+        // CA2 (y US 137, CA7): en una partida online, muerte sin baja para nadie (JugadorEnRed se ocupa del resto).
         JugadorEnRed enRed = GetComponent<JugadorEnRed>();
         if (enRed != null && PartidaEnRed.Actual != null)
         {
@@ -64,7 +64,7 @@ public class FueraDelMapa : MonoBehaviour
             return;
         }
 
-        // CA4: en Zombie, muerte.
+        // US 151, CA6: en Zombie, muerte.
         if (MapMode.DeEstaEscena == GameMode.Zombie)
         {
             if (vida == null) return;
@@ -73,7 +73,7 @@ public class FueraDelMapa : MonoBehaviour
             return;
         }
 
-        // CA5 y CA6: en las escenas de prueba, al punto más cercano que esté libre (Teletransportar lo frena).
+        // CA3 y CA4: en las escenas de prueba, al punto más cercano que esté libre (Teletransportar lo frena).
         Pose destino = PuntoMasCercano(punto);
         JugadorEnRed.Teletransportar(transform, destino.position, destino.rotation);
     }
@@ -99,7 +99,7 @@ public class FueraDelMapa : MonoBehaviour
 
     private static Pose PoseDe(Transform t) => new Pose(t.position, Quaternion.Euler(0f, t.eulerAngles.y, 0f));
 
-    // CA6: en ese lugar el cuerpo no choca con el escenario ni con otro personaje.
+    // CA4: en ese lugar el cuerpo no choca con el escenario ni con otro personaje.
     private bool Libre(Vector3 lugar)
     {
         if (cuerpo == null) return true;

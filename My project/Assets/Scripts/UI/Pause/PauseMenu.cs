@@ -113,6 +113,7 @@ public class PauseMenu : MonoBehaviour
     private int selected, settingSelected, exitSelected = 1, screenMode;
     private float savedTimeScale = 1f;
     private readonly List<Behaviour> blocked = new List<Behaviour>();
+    private readonly List<PlayerMovement> withoutControls = new List<PlayerMovement>();
     private Coroutine savedRoutine;
 
     // =====================================================================
@@ -380,7 +381,15 @@ public class PauseMenu : MonoBehaviour
     {
         blocked.Clear();
         Block(FindObjectsByType<CameraLook>());
-        Block(FindObjectsByType<PlayerMovement>());
+        // El movimiento no se apaga, solo deja de leer las teclas: online la partida sigue y, apagado, el personaje
+        // quedaba flotando si se pausaba en el aire.
+        withoutControls.Clear();
+        foreach (PlayerMovement movement in FindObjectsByType<PlayerMovement>())
+        {
+            if (!movement.enabled || movement.SinControles) continue;
+            movement.SinControles = true;
+            withoutControls.Add(movement);
+        }
         Block(FindObjectsByType<MeleeAttack>());
         Block(FindObjectsByType<Pistola>());
         Block(FindObjectsByType<Mitre>());
@@ -390,6 +399,38 @@ public class PauseMenu : MonoBehaviour
         Block(FindObjectsByType<ShopUI>());
         Cursor.lockState = CursorLockMode.None;
         Cursor.visible = true;
+    }
+
+    /// <summary>
+    /// Online la partida sigue con la pausa abierta, así que se puede morir (por ejemplo, cayéndose del mapa).
+    /// JugadorEnRed y Espectador se quedan con lo que apagó la pausa: así, al reanudar, no se le devuelven las armas
+    /// ni la mirada a un muerto, y al reaparecer las prende el que las tiene.
+    /// </summary>
+    public static bool Release(Behaviour component) => Instance != null && component != null && Instance.blocked.Remove(component);
+
+    /// <summary>
+    /// Al revés: si reaparece con la pausa abierta, la pausa se queda con lo que se iba a prender y lo devuelve al
+    /// reanudar (si no, se podía disparar o mirar con el menú abierto). Devuelve false si no lo tomó.
+    /// </summary>
+    public static bool Hold(Behaviour component)
+    {
+        if (!IsPaused || Instance == null || component == null) return false;
+        if (component is PlayerMovement movement)
+        {
+            movement.enabled = true;
+            if (!movement.SinControles)
+            {
+                movement.SinControles = true;
+                Instance.withoutControls.Add(movement);
+            }
+            return true;
+        }
+        if (!(component is CameraLook || component is MeleeAttack || component is Pistola || component is Mitre ||
+              component is ArmaDeFuego || component is WeaponSwitcher || component is PlayerAbility || component is ShopUI))
+            return false;
+        component.enabled = false;
+        if (!Instance.blocked.Contains(component)) Instance.blocked.Add(component);
+        return true;
     }
 
     private void Block<T>(T[] components) where T : Behaviour
@@ -408,6 +449,9 @@ public class PauseMenu : MonoBehaviour
         foreach (Behaviour component in blocked)
             if (component != null) component.enabled = true;
         blocked.Clear();
+        foreach (PlayerMovement movement in withoutControls)
+            if (movement != null) movement.SinControles = false;
+        withoutControls.Clear();
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
     }
