@@ -1322,7 +1322,8 @@ public class ShopUI : MonoBehaviour
         bool me = player.IsLocal;
         if (index > 0) Line(teamRowsRoot, 0f, y, TeamW);
 
-        TextMeshProUGUI who = Text(Place(Node("Nombre", teamRowsRoot), 18f, y + 12f, TeamW - 160f, 24f), displayFont, 22f,
+        // Caja de 40 de alto (centrada donde va la plata): con Ellipsis, si el renglón no entra a lo alto, TMP no lo dibuja.
+        TextMeshProUGUI who = Text(Place(Node("Nombre", teamRowsRoot), 18f, y + 4f, TeamW - 160f, 40f), displayFont, 22f,
             me ? Ink : MatchHud.TeamColor, TextAlignmentOptions.MidlineLeft, 6f);
         who.text = me ? $"{player.NickName} <color=#8E96A3>(vos)</color>" : player.NickName;
         who.overflowMode = TextOverflowModes.Ellipsis;
