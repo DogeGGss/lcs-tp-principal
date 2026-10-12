@@ -603,3 +603,18 @@ fecha_utc,us_numero,us_titulo,estado_anterior,estado_nuevo,tiempo_en_estado_ante
 2026-10-12T00:48:19.101619+00:00,41,US 010. Disparar,R2D,Done,1d 23h 35m,171307,https://github.com/DogeGGss/lcs-tp-principal/issues/41
 2026-10-12T00:48:19.101619+00:00,277,US 175. Diseño visual de la tienda,Blocked,In Progress,18h 30m,66606,https://github.com/DogeGGss/lcs-tp-principal/issues/277
 2026-10-12T00:48:19.101619+00:00,247,US 170. Marcas de impacto en el escenario,R2D,Done,1d 23h 35m,171307,https://github.com/DogeGGss/lcs-tp-principal/issues/247
+2026-10-12T06:38:56.871263+00:00,353,"US 212. Crear el ícono, el logo y la presentación de inicio del juego",TESTING,R2D,1d 23h 25m,170753,https://github.com/DogeGGss/lcs-tp-principal/issues/353
+2026-10-12T06:38:56.871263+00:00,376,US 214. Mapa 2 · Recorridos y límites,In Progress,R2D,8h 47m,31664,https://github.com/DogeGGss/lcs-tp-principal/issues/376
+2026-10-12T06:38:56.871263+00:00,92,US 069. ARMA Principal 4 - Belgrano Sur (Fusil de ráfaga),R2D,Done,1d 20m,87644,https://github.com/DogeGGss/lcs-tp-principal/issues/92
+2026-10-12T06:38:56.871263+00:00,284,US 182. Arma de los demás jugadores,R2D,Done,1d 23h 25m,170753,https://github.com/DogeGGss/lcs-tp-principal/issues/284
+2026-10-12T06:38:56.871263+00:00,317,US 190. Muro de la base en la fase de compra,R2D,Done,3d 12h 43m,304996,https://github.com/DogeGGss/lcs-tp-principal/issues/317
+2026-10-12T06:38:56.871263+00:00,47,US 014. Activar habilidad,R2D,Done,2d 9h 4m,205470,https://github.com/DogeGGss/lcs-tp-principal/issues/47
+2026-10-12T06:38:56.871263+00:00,69,US 019. Habilidad 1 · Trasbordo,R2D,Done,1d 9h 2m,118926,https://github.com/DogeGGss/lcs-tp-principal/issues/69
+2026-10-12T06:38:56.871263+00:00,32,US 083. Mapa 2 · Estación espacial,R2D,Done,2d 20h 34m,246858,https://github.com/DogeGGss/lcs-tp-principal/issues/32
+2026-10-12T06:38:56.871263+00:00,281,US 179. Modelos 3D de las armas,R2D,Done,3d 3h 44m,272651,https://github.com/DogeGGss/lcs-tp-principal/issues/281
+2026-10-12T06:38:56.871263+00:00,79,US 031. Formar equipos,R2D,Done,5h 50m,21037,https://github.com/DogeGGss/lcs-tp-principal/issues/79
+2026-10-12T06:38:56.871263+00:00,192,US 132. Desactivar el dispositivo,R2D,Done,2d 5h 25m,192344,https://github.com/DogeGGss/lcs-tp-principal/issues/192
+2026-10-12T06:38:56.871263+00:00,116,US 073. ARROJABLE 1 - Granada de metralla,R2D,Done,1d 23h 25m,170753,https://github.com/DogeGGss/lcs-tp-principal/issues/116
+2026-10-12T06:38:56.871263+00:00,377,US 215. Mapa 2 · Rendimiento,LPR,TESTING,4d 2h 30m,354626,https://github.com/DogeGGss/lcs-tp-principal/issues/377
+2026-10-12T06:38:56.871263+00:00,56,US 006. Reaparición al caer del mapa,Rehacer,Done,1d 20m,87644,https://github.com/DogeGGss/lcs-tp-principal/issues/56
+2026-10-12T06:38:56.871263+00:00,103,US 049. Salir de partida,LPR,Done,5d 5h 49m,452951,https://github.com/DogeGGss/lcs-tp-principal/issues/103
