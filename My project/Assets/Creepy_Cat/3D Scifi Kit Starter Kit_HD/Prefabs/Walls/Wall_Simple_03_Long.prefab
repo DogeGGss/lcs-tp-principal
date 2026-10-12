@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 400000}
   - component: {fileID: 10800000}
-  - component: {fileID: 3715488926394209673}
+  - component: {fileID: 1592140682498912624}
   m_Layer: 0
   m_Name: Point light_Up
   m_TagString: Untagged
@@ -98,7 +98,7 @@ Light:
   m_LightUnit: 1
   m_LuxAtDistance: 1
   m_EnableSpotReflector: 1
---- !u!114 &3715488926394209673
+--- !u!114 &1592140682498912624
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -137,7 +137,7 @@ GameObject:
   m_Component:
   - component: {fileID: 400002}
   - component: {fileID: 10800002}
-  - component: {fileID: 1334777367326967058}
+  - component: {fileID: 284086336790978310}
   m_Layer: 0
   m_Name: Point light_Up
   m_TagString: Untagged
@@ -225,7 +225,7 @@ Light:
   m_LightUnit: 1
   m_LuxAtDistance: 1
   m_EnableSpotReflector: 1
---- !u!114 &1334777367326967058
+--- !u!114 &284086336790978310
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -264,7 +264,7 @@ GameObject:
   m_Component:
   - component: {fileID: 400004}
   - component: {fileID: 10800004}
-  - component: {fileID: 3622788292462973597}
+  - component: {fileID: 2562222670699012801}
   m_Layer: 0
   m_Name: Point light_Down
   m_TagString: Untagged
@@ -352,7 +352,7 @@ Light:
   m_LightUnit: 1
   m_LuxAtDistance: 1
   m_EnableSpotReflector: 1
---- !u!114 &3622788292462973597
+--- !u!114 &2562222670699012801
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -391,7 +391,7 @@ GameObject:
   m_Component:
   - component: {fileID: 400006}
   - component: {fileID: 10800006}
-  - component: {fileID: 1917530650180472931}
+  - component: {fileID: 7893406665127489234}
   m_Layer: 0
   m_Name: Point light_Down
   m_TagString: Untagged
@@ -479,7 +479,7 @@ Light:
   m_LightUnit: 1
   m_LuxAtDistance: 1
   m_EnableSpotReflector: 1
---- !u!114 &1917530650180472931
+--- !u!114 &7893406665127489234
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -518,7 +518,7 @@ GameObject:
   m_Component:
   - component: {fileID: 400008}
   - component: {fileID: 10800008}
-  - component: {fileID: 5124179253293145667}
+  - component: {fileID: 4755313329082966361}
   m_Layer: 0
   m_Name: Point light
   m_TagString: Untagged
@@ -606,7 +606,7 @@ Light:
   m_LightUnit: 1
   m_LuxAtDistance: 1
   m_EnableSpotReflector: 1
---- !u!114 &5124179253293145667
+--- !u!114 &4755313329082966361
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -645,7 +645,7 @@ GameObject:
   m_Component:
   - component: {fileID: 400010}
   - component: {fileID: 10800010}
-  - component: {fileID: 6075199828654929700}
+  - component: {fileID: 6313902906603083844}
   m_Layer: 0
   m_Name: Point light
   m_TagString: Untagged
@@ -733,7 +733,7 @@ Light:
   m_LightUnit: 1
   m_LuxAtDistance: 1
   m_EnableSpotReflector: 1
---- !u!114 &6075199828654929700
+--- !u!114 &6313902906603083844
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -880,7 +880,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 0.885}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 400010}
