@@ -24,6 +24,11 @@ public class MinijuegoPajaros : MonoBehaviour
     private const float AlcanceMinimo = 150f;                     // m: con cualquier arma se llega a los pájaros
     private const float DuracionPuntaje = 0.8f, SubidaPuntaje = 46f, TamanoPuntaje = 40f; // US 158, CA2
 
+    // Entrega del Sprint 2: los pájaros (F21) son del Sprint 3, y en el mapa de noche no se ven. No sale ninguno, pero
+    // la compra sigue funcionando como pide la US 032 (CA2): se dispara sin gastar balas ni hacer daño.
+    // Para volver a prenderlos, poner true.
+    private static readonly bool ConPajaros = false;
+
     /// <summary>Lo que se registra del minijuego (US 159, CA1). Todavía no se guarda.</summary>
     public sealed class Resultados
     {
@@ -105,7 +110,7 @@ public class MinijuegoPajaros : MonoBehaviour
 
     private void Update()
     {
-        if (!activo) return;
+        if (!activo || !ConPajaros) return;
         pajaros.RemoveAll(p => p == null);
         // Los últimos segundos de la compra: no salen más y los que quedan se van.
         float restante = RondasTacticas.Actual != null ? RondasTacticas.Actual.Restante : 0f;

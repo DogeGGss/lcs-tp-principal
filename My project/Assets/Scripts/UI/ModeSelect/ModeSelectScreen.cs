@@ -45,6 +45,11 @@ public class ModeSelectScreen : MonoBehaviour
 
     private const float W = 1920f, H = 1080f;
     private const int N = 12;
+
+    // Entrega del Sprint 2: el Deathmatch (F09) es del Sprint 3. Crear o unirse a una sala avisa que todavía no está
+    // implementado, como antes del multijugador. Para volver a prenderlo, poner true.
+    private static readonly bool DeathmatchDisponible = false;
+    private const string DeathmatchNoImplementado = "El modo Deathmatch todavía no está implementado.";
     private const float LabelTop = 610f, LabelBottom = 900f;
 
     // Se arman en Awake: ShopUIKit consulta el espacio de color y Unity no deja hacerlo al crear el componente.
@@ -804,7 +809,7 @@ public class ModeSelectScreen : MonoBehaviour
         Strike(1, true);
 
         // Táctico y Deathmatch son online: se conecta ya, así crear o entrar a la sala es más rápido.
-        if (i < 2)
+        if (i < 2 && (i != 1 || DeathmatchDisponible))
         {
             ListenNetwork(true);
             Multijugador.Instancia.Conectar();
@@ -843,6 +848,7 @@ public class ModeSelectScreen : MonoBehaviour
     private void CreateRoom(int mode)
     {
         Detail d = details[mode];
+        if (mode == 1 && !DeathmatchDisponible) { d.status.text = DeathmatchNoImplementado; return; }
         MatchSettings.Mode = (GameMode)mode;
         onCreateRoom.Invoke((GameMode)mode);
 
@@ -855,6 +861,7 @@ public class ModeSelectScreen : MonoBehaviour
     private void ShowJoin(int mode)
     {
         Detail d = details[mode];
+        if (mode == 1 && !DeathmatchDisponible) { d.status.text = DeathmatchNoImplementado; return; }
         Multijugador.SalirDeLaSala();
         d.room.gameObject.SetActive(false);
         d.codeRow.gameObject.SetActive(true);

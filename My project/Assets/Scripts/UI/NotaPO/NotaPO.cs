@@ -23,30 +23,30 @@ public class NotaPO : MonoBehaviour
     [SerializeField] private CanvasGroup transitionOverlay;
 
     [Header("Textos")]
-    [SerializeField] private string eyebrow = "Nota para el PO · Sprint 1";
+    [SerializeField] private string eyebrow = "Nota para el PO · Sprint 2";
     [SerializeField] private string title = "Hola, Amin";
     [TextArea(2, 4)]
     [SerializeField] private string intro =
-        "Esta es la entrega del Sprint 1 de Project Riftwalker. Para que sepas qué probar, acá va lo que ya funciona y lo que todavía falta implementar.";
+        "Esta es la entrega del Sprint 2 de Project Riftwalker: el Modo Táctico online, 4 contra 4 en la estación espacial. Para jugarlo hacen falta al menos 2 jugadores, cada uno en su computadora.";
     [SerializeField] private string worksTitle = "Lo que funciona";
     [Tooltip("Un punto por renglón. Lo que va antes de \":\" sale resaltado.")]
     [TextArea(5, 12)]
     [SerializeField] private string works =
-        "Movimiento: caminar, correr, saltar y agacharse, con gravedad, colisiones y reaparición si caés del mapa.\n" +
-        "Armas: pistola La Porteña, fusil Mitre y cuchillo. Daño por zona (cabeza, cuerpo y piernas) y por distancia, dispersión, retroceso, recarga y marcas de bala en las paredes.\n" +
-        "Tienda: en la fase de compra y dentro de la zona de compra se puede comprar, vender y deshacer compras. Los escudos protegen de verdad.\n" +
-        "HUD: vida, escudo, arma y munición, mira y marcador de impacto. La habilidad muestra su tiempo de recarga.\n" +
-        "Menús: principal con música, opciones de video, sonido y controles, nombre de jugador, créditos y pausa (seguir, reiniciar, opciones y salir).";
+        "Modo Táctico online: salas con código, de 2 a 8 jugadores. Equipos al azar, compra, rondas, cambio de lado y muerte súbita; gana el primero en llegar a 7.\n" +
+        "Dispositivo: se planta en A o B y se desactiva. Al morir mirás a un compañero hasta la ronda siguiente.\n" +
+        "Personajes: se eligen antes de la ronda 1, sin repetir en el equipo. Astra usa su habilidad, el Trasbordo.\n" +
+        "Armas: 7 de fuego, el cuchillo y granadas de metralla, humo y flash. Se sueltan y se levantan del piso.\n" +
+        "Tienda y HUD: plata por ronda, lo que compran tus compañeros, marcador, minimapa, tabla con Tab, FPS y ping.\n" +
+        "Reconexión: si se te corta, volvés a la misma partida desde el menú.";
     [SerializeField] private string missingTitle = "Lo que todavía falta";
     [Tooltip("Un punto por renglón. Lo que va antes de \":\" sale resaltado.")]
     [TextArea(5, 12)]
     [SerializeField] private string missing =
-        "Resto de las armas: la tienda muestra todas, pero por ahora solo se usan la pistola La Porteña, el Mitre y el cuchillo. Las demás se pueden comprar, pero todavía no se pueden usar.\n" +
-        "Granadas: se compran, pero todavía no se pueden tirar.\n" +
-        "Habilidad: el Silbato carga y se ve en el HUD, pero todavía no tiene efecto.\n" +
-        "Modos y multijugador: Táctico y Deathmatch muestran la sala, pero falta la conexión online. Zombie todavía no tiene zombis: Jugar abre el mapa de la universidad para recorrerlo con las armas, la tienda y el HUD.\n" +
+        "Deathmatch: el andén está, pero crear o unirse a una sala todavía no está implementado.\n" +
+        "Zombie: todavía no hay zombis. Jugar abre el mapa de la universidad, que está en construcción, para recorrerlo.\n" +
+        "Personajes: Alfa, Bravo y Charlie son provisionales. Su habilidad carga, pero todavía no tiene efecto.\n" +
         "Logros: la pantalla está, pero todavía no tiene logros.\n" +
-        "Mapas y rivales: Pruebas y Pruebas 2 abren dos mapas de prueba, temporales, para mostrar la jugabilidad. En Pruebas aparecen enemigos que te persiguen y se pueden matar, pero todavía no atacan.";
+        "Mapas de prueba: Pruebas y Pruebas 2 abren dos mapas sin conexión. Los enemigos de Pruebas todavía no atacan.";
 
     [Header("Tipografías (las mismas de la tienda)")]
     [SerializeField] private TMP_FontAsset displayFont; // Barlow Condensed Bold
@@ -75,15 +75,19 @@ public class NotaPO : MonoBehaviour
     private static readonly (string label, GameAction[] keys, string join)[] Controls =
     {
         ("Mover", new[] { GameAction.Adelante, GameAction.Izquierda, GameAction.Atras, GameAction.Derecha }, ""),
-        ("Correr", new[] { GameAction.Correr }, ""),
+        ("Correr (en el Táctico, caminar despacio)", new[] { GameAction.Correr }, ""),
         ("Saltar", new[] { GameAction.Saltar }, ""),
         ("Agacharse", new[] { GameAction.Agacharse }, ""),
         ("Disparar", new[] { GameAction.Disparar }, ""),
         ("Apuntar", new[] { GameAction.Apuntar }, ""),
         ("Recargar", new[] { GameAction.Recargar }, ""),
-        ("Mitre / pistola / cuchillo", new[] { GameAction.ArmaPrincipal, GameAction.ArmaSecundaria, GameAction.Cuchillo }, " / "),
+        ("Principal / secundaria / cuchillo / granadas", new[] { GameAction.ArmaPrincipal, GameAction.ArmaSecundaria, GameAction.Cuchillo, GameAction.Granadas }, " / "),
+        ("Dispositivo", new[] { GameAction.Dispositivo }, ""),
+        ("Plantar y desactivar", new[] { GameAction.Plantar }, ""),
+        ("Soltar el arma", new[] { GameAction.Soltar }, ""),
         ("Tienda", new[] { GameAction.Tienda }, ""),
         ("Habilidad", new[] { GameAction.Habilidad }, ""),
+        ("Mapa", new[] { GameAction.Mapa }, ""),
     };
 
     private RectTransform canvasRoot, chip, modal, panel;

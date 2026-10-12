@@ -23,12 +23,16 @@ public static class VersionDelJuego
     [Serializable] private class Release { public string tag_name; public bool draft, prerelease; public Asset[] assets; }
     [Serializable] private class Asset { public string name; }
 
+    // Sprint 2 delivery: the launcher (F22) is Sprint 3 and the PO gets the game without it, so there is nothing to
+    // update from. Without the check the game never asks for a newer version. Set it back to true to turn it on.
+    private static readonly bool BuscarActualizaciones = false;
+
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
     private static void Reiniciar() { buscando = false; comprobadaEn = -1000; versionNueva = null; }
 
     public static IEnumerator Comprobar(Action<string> terminado)
     {
-        if (Application.isEditor || Debug.isDebugBuild) { terminado(null); yield break; }
+        if (!BuscarActualizaciones || Application.isEditor || Debug.isDebugBuild) { terminado(null); yield break; }
         while (buscando) yield return null;
         if (Time.realtimeSinceStartup - comprobadaEn < 60) { terminado(Aviso()); yield break; }
         ReleaseVersion local;
