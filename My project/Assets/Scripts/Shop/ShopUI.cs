@@ -117,6 +117,7 @@ public class ShopUI : MonoBehaviour
     private UnityEngine.UI.RectMask2D catsMask, listMask, detailMask;
     private CanvasGroup shopGroup, detailGroup, toastGroup;
     private GameObject hudClock, hudHint, banner;
+    private TextMeshProUGUI hudHintText;
     private TextMeshProUGUI hudTime, hudRound, hudMoney, bannerText, toastText;
     private TextMeshProUGUI barSub, barPhase, barTime, barMoney, barNext;
     private RectTransform barProgress, catRowsRoot, legendRoot, listRowsRoot;
@@ -257,6 +258,8 @@ public class ShopUI : MonoBehaviour
         categories.AddRange(catalog.ActiveCategories());
         // US 138, CA2: en Deathmatch no hay escudos ni granadas.
         if (Dm) categories.RemoveAll(c => c == ShopCategory.Shields || c == ShopCategory.Grenades);
+        // US 119: en el campo de práctica no es una tienda, es donde se cambia de arma.
+        if (CampoDePractica.Activo) SetHint("Cambiar arma");
         BuildCategoryRows();
         lastAccess = loadout.CheckAccess();
         Render();
@@ -518,6 +521,15 @@ public class ShopUI : MonoBehaviour
             hudRound.text = $"Ronda {phase.Round}";
         }
 
+        // US 119: en el campo de práctica se cambia cuando quiera: no hay tiempo que mostrar.
+        bool clock = !CampoDePractica.Activo;
+        if (open && barTime.gameObject.activeSelf != clock)
+        {
+            barPhase.gameObject.SetActive(clock);
+            barTime.gameObject.SetActive(clock);
+            barProgress.parent.gameObject.SetActive(clock);
+        }
+
         if (open && Dm)
         {
             PartidaDeathmatch.PuedeElegir(out string reason, out float left);
@@ -595,7 +607,7 @@ public class ShopUI : MonoBehaviour
 
     private void RenderBar()
     {
-        barTitle.text = Dm ? "Elegí tu equipo" : "Tienda";
+        barTitle.text = CampoDePractica.Activo ? "Cambiar arma" : Dm ? "Elegí tu equipo" : "Tienda";
         if (Dm)
         {
             // US 138, CA1: sin plata ni precios.
@@ -1797,6 +1809,16 @@ public class ShopUI : MonoBehaviour
         parent.DetachChildren();
     }
 
+    // El aviso de abajo ("B Tienda"), con el ancho justo para el texto.
+    private void SetHint(string text)
+    {
+        hudHintText.text = text;
+        RectTransform hint = (RectTransform)hudHint.transform;
+        float hintWidth = 59f + Width(hudHintText, text.ToUpperInvariant()) + 19f;
+        hint.sizeDelta = new Vector2(hintWidth, 48f);
+        hint.anchoredPosition = new Vector2(960f - hintWidth / 2f, -150f);
+    }
+
     private void BuildHud()
     {
         RectTransform clock = Place(Node("RelojFase", hud), 865f, 22f, 190f, 96f);
@@ -1812,12 +1834,9 @@ public class ShopUI : MonoBehaviour
         Image(hint, rounded, HudColor, 24f);
         Border(hint, 24f, Over(Rgb(242, 154, 56, 0.6f), HudBase));
         Key(hint, 19f, 9f, KeyBindings.Label(GameAction.Tienda), true, false);
-        TextMeshProUGUI hintText = Text(Place(Node("Texto", hint), 59f, 0f, 200f, 48f), labelFont, 20f, Ink, TextAlignmentOptions.MidlineLeft, 10f, true);
-        hintText.text = "Tienda";
-        float hintWidth = 59f + Width(hintText, "TIENDA") + 19f;
-        hint.sizeDelta = new Vector2(hintWidth, 48f);
-        hint.anchoredPosition = new Vector2(960f - hintWidth / 2f, -150f);
+        hudHintText = Text(Place(Node("Texto", hint), 59f, 0f, 200f, 48f), labelFont, 20f, Ink, TextAlignmentOptions.MidlineLeft, 10f, true);
         hudHint = hint.gameObject;
+        SetHint("Tienda");
 
         hudMoney = Text(Place(Node("Plata", hud), 34f, 866f, 600f, 40f), displayFont, 34f, Ink);
         Material shadow = hudMoney.fontMaterial;
