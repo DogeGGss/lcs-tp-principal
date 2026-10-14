@@ -491,7 +491,8 @@ public class CombatHud : MonoBehaviour
         weaponText.color = reloading ? Accent : Mute;
         magText.text = hasAmmo ? ammo.ToString() : "—";
         magText.color = low ? Bad : Ink;
-        reserveText.text = hasAmmo && reserve >= 0 ? $"/ {reserve}" : "";
+        // US 121: en el campo de práctica la reserva es infinita.
+        reserveText.text = hasAmmo && reserve >= 0 ? (CampoDePractica.Activo ? "/ ∞" : $"/ {reserve}") : "";
         float reserveW = reserveText.text.Length > 0 ? Width(reserveText, reserveText.text) + 8f : 0f;
         Place(magText.rectTransform, 0f, 88f, BlockW - reserveW, 64f);
 

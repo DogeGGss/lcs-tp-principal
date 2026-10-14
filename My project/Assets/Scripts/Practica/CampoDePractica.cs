@@ -8,6 +8,8 @@ using UnityEngine;
 //   tocan.
 // - Las armas no se sueltan con G (SoltarArmas): acá se cambian con la tienda.
 // - Sin habilidad (PlayerAbility) ni fase de compra (BuyPhase).
+// - US 121: munición infinita (al recargar no se gasta la reserva: ArmaDeFuego, Mitre y Pistola) y el jugador no pierde
+//   vida ni muere (invulnerable). Solo acá: en las partidas no cambia nada (CA3).
 // Corre antes que el resto de los scripts, así "Activo" ya vale cuando el jugador y la tienda arrancan.
 [DefaultExecutionOrder(-1000)]
 public class CampoDePractica : MonoBehaviour
@@ -15,6 +17,16 @@ public class CampoDePractica : MonoBehaviour
     public static bool Activo { get; private set; }
 
     private void Awake() => Activo = true;
+
+    // US 121, CA2: el jugador no recibe daño (HealthSystem.TakeDamage no hace nada si es invulnerable).
+    private void Start()
+    {
+        foreach (PlayerLoadout jugador in FindObjectsByType<PlayerLoadout>(FindObjectsSortMode.None))
+        {
+            HealthSystem vida = jugador.GetComponent<HealthSystem>();
+            if (vida != null) vida.Invulnerable = true;
+        }
+    }
 
     private void OnDestroy() => Activo = false;
 }

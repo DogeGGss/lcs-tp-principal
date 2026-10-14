@@ -165,7 +165,7 @@ public class Pistola : MonoBehaviour, IHudWeapon
         int ammoToLoad = Mathf.Min(neededAmmo, reserveAmmo);
 
         currentAmmo += ammoToLoad;
-        reserveAmmo -= ammoToLoad;
+        if (!CampoDePractica.Activo) reserveAmmo -= ammoToLoad; // US 121, CA1: en el campo de práctica la reserva no se gasta
 
         isReloading = false;
 
