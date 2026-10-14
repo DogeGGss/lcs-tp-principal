@@ -105,12 +105,18 @@ public static class MapaDePractica
         Cartel(zona, texto, x0, x1, ZCarteles);
     }
 
-    // El jugador va sin habilidad: se saca de la copia de la escena (el prefab no cambia). Sin PlayerAbility el HUD
-    // esconde el chip de la habilidad solo.
+    // El jugador va sin habilidad: en la copia de la escena (el prefab no cambia) PlayerAbility queda sin habilidad y sin
+    // tomar la del personaje elegido. Sin habilidad la Q no hace nada y el HUD esconde el chip solo. Se cambian los
+    // campos en vez de sacar el componente porque Unity no deja borrar componentes de un prefab desde un script.
     private static void SacarHabilidad()
     {
         foreach (PlayerAbility habilidad in Object.FindObjectsByType<PlayerAbility>(FindObjectsInactive.Include, FindObjectsSortMode.None))
-            Object.DestroyImmediate(habilidad);
+        {
+            var campos = new SerializedObject(habilidad);
+            campos.FindProperty("ability").objectReferenceValue = null;
+            campos.FindProperty("useSelectedCharacter").boolValue = false;
+            campos.ApplyModifiedPropertiesWithoutUndo();
+        }
     }
 
     // =====================================================================
