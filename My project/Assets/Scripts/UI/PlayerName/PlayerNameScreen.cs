@@ -29,6 +29,9 @@ public class PlayerNameScreen : MonoBehaviour
 
     public static bool IsOpen { get; private set; }
 
+    /// <summary>Prueba del menú nuevo (MenuRiftwalker): su credencial ya muestra el nombre, así que esta se esconde.</summary>
+    public static bool ChipOculto { get; set; }
+
     private const float PanelW = 760f, PanelH = 470f, Pad = 48f;
     private const string Hint = "De 3 a 16 caracteres: letras, números, espacio, guion y guion bajo.";
 
@@ -84,7 +87,7 @@ public class PlayerNameScreen : MonoBehaviour
 
     private void Update()
     {
-        bool showChip = !IsOpen && PlayerProfile.HasName && (mainMenuPanel == null || mainMenuPanel.activeInHierarchy);
+        bool showChip = !ChipOculto && !IsOpen && PlayerProfile.HasName && (mainMenuPanel == null || mainMenuPanel.activeInHierarchy);
         if (chip.gameObject.activeSelf != showChip) chip.gameObject.SetActive(showChip);
         if (showChip && transitionOverlay != null) chipGroup.alpha = 1f - transitionOverlay.alpha;
 
