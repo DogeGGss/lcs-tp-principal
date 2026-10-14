@@ -63,11 +63,11 @@ public void IrAlEscenario2()
     SceneManager.LoadScene(escenaPruebas2);
 }
 
-    // US 122, CA1 y CA2: el botón "Campo de práctica" del menú lleva directo al mapa de práctica. Se vuelve con la pausa
-    // (CA3).
+    // US 122, CA1 y CA2: el botón "Campo de práctica" del menú lleva directo al mapa de práctica, con la pantalla de
+    // carga (US 196) como las partidas. Se vuelve con la pausa (CA3).
     public void IrAlCampoDePractica()
     {
-        SceneManager.LoadScene(escenaPractica);
+        PantallaDeCarga.Cargar(escenaPractica, "Campo de práctica", "Mapa de práctica");
     }
 
     public void MostrarMenuPrincipal()
