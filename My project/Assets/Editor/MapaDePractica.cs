@@ -8,12 +8,15 @@ using UnityEngine.SceneManagement;
 
 // US 118 · Mapa de práctica (Shooting Range). Arma la escena Scenes/Mapa_practica desde el menú de Unity:
 // Riftwalker > Crear mapa de práctica. Después es una escena común: se abre y se retoca a mano (luces, decoración).
-// Se puede volver a correr: pregunta antes de reemplazar la escena.
+// Se puede volver a correr: pregunta antes de reemplazar la escena. Para no perder lo retocado a mano, el otro menú
+// (Riftwalker > Mapa de práctica: carteles y sin habilidad) le suma a la escena abierta solo los carteles y la
+// habilidad.
 // - CA1: una escena aparte de los mapas de partida, solo para practicar (se suma sola al Build Settings).
 // - CA2: zona de distancias a la izquierda: tres carriles con rayas en el piso cada 5 m hasta 50 m y un blanco a 10,
 //   25 y 50 m, cada uno con su cartel.
 // - CA3: zona de blancos a la derecha: blancos a distintas distancias, alturas y costados.
 // - CA4: tiene el jugador (con la pausa, que vuelve al menú) y el HUD, sin sala ni rondas: no necesita una partida.
+//   El jugador va sin habilidad (el mapa es para practicar con las armas), así el HUD tampoco la muestra.
 // Medidas en metros. El 0 es la línea de tiro: hacia adelante (+z) los blancos, hacia atrás la zona de salida.
 // Piso, paredes y cajas son piezas del kit Sci-fi (las mismas del mapa táctico). Debajo de cada pared y del piso queda
 // un cubo invisible que es el que choca, así la sala queda cerrada aunque las piezas del kit tengan huecos. Las medidas
@@ -23,6 +26,7 @@ using UnityEngine.SceneManagement;
 public static class MapaDePractica
 {
     private const string Menu = "Riftwalker/Crear mapa de práctica";
+    private const string MenuActualizar = "Riftwalker/Mapa de práctica: carteles y sin habilidad";
     private const string Ruta = "Assets/Scenes/Mapa_practica.unity";
     private const string Carpeta = "Assets/Scenes/Mapa_practica";
     private const string Jugador = "Assets/Prefabs/Player.prefab";
@@ -37,8 +41,11 @@ public static class MapaDePractica
     private static readonly float[] Carriles = { -9f, -6f, -3f };
     private static readonly int[] DistanciasCarriles = { 10, 25, 50 };
     private const int Largo = 50, CadaRaya = 5;
+    private static float DistanciasX0 => Carriles[0] - 1.5f;
+    private static float DistanciasX1 => Carriles[Carriles.Length - 1] + 1.5f;
+    private const float BlancosX0 = 1.5f, BlancosX1 = 11.5f, ZCarteles = 1.5f;
 
-    private static Material piso, pared, linea, raya, blanco, rojo, poste, caja;
+    private static Material piso, pared, linea, raya, blanco, rojo, poste, caja, cartel;
 
     [MenuItem(Menu)]
     private static void Crear()
@@ -58,11 +65,52 @@ public static class MapaDePractica
         ZonaDeDistancias(mapa);
         ZonaDeBlancos(mapa);
         Luz();
-        if (!Prefab(Jugador, new Vector3(0f, AlturaJugador, -8f)) | !Prefab(Hud, Vector3.zero)) return;
+        if (Prefab(Jugador, new Vector3(0f, AlturaJugador, -8f)) == null || Prefab(Hud, Vector3.zero) == null) return;
+        SacarHabilidad();
 
         EditorSceneManager.SaveScene(escena, Ruta);
         SumarAlBuild();
         Debug.Log($"Mapa de práctica: escena guardada en {Ruta} y sumada al Build Settings.");
+    }
+
+    // Para una escena ya armada y retocada a mano: le pone los carteles con marco y le saca la habilidad al jugador, sin
+    // tocar nada más. Hay que tener abierta Scenes/Mapa_practica.
+    [MenuItem(MenuActualizar)]
+    private static void Actualizar()
+    {
+        if (EditorApplication.isPlaying) return;
+        Scene escena = SceneManager.GetActiveScene();
+        GameObject raiz = escena.path == Ruta ? escena.GetRootGameObjects().FirstOrDefault(g => g.name == "Mapa de práctica") : null;
+        if (raiz == null)
+        {
+            EditorUtility.DisplayDialog("Mapa de práctica", $"Abrí primero {Ruta} (con su grupo \"Mapa de práctica\").", "Aceptar");
+            return;
+        }
+        Materiales();
+        CambiarCartel(raiz.transform.Find("Zona de distancias"), "ZONA DE DISTANCIAS", DistanciasX0, DistanciasX1);
+        CambiarCartel(raiz.transform.Find("Zona de blancos"), "ZONA DE BLANCOS", BlancosX0, BlancosX1);
+        SacarHabilidad();
+        EditorSceneManager.MarkSceneDirty(escena);
+        EditorSceneManager.SaveScene(escena);
+        Debug.Log("Mapa de práctica: carteles con marco puestos y jugador sin habilidad.");
+    }
+
+    // Saca el cartel viejo (solo el texto) y pone el nuevo. Si la zona ya tiene el nuevo (con tablero), no hace nada.
+    private static void CambiarCartel(Transform zona, string texto, float x0, float x1)
+    {
+        if (zona == null) return;
+        Transform viejo = zona.Find("Cartel");
+        if (viejo != null && viejo.Find("Tablero") != null) return;
+        if (viejo != null) Object.DestroyImmediate(viejo.gameObject);
+        Cartel(zona, texto, x0, x1, ZCarteles);
+    }
+
+    // El jugador va sin habilidad: se saca de la copia de la escena (el prefab no cambia). Sin PlayerAbility el HUD
+    // esconde el chip de la habilidad solo.
+    private static void SacarHabilidad()
+    {
+        foreach (PlayerAbility habilidad in Object.FindObjectsByType<PlayerAbility>(FindObjectsInactive.Include, FindObjectsSortMode.None))
+            Object.DestroyImmediate(habilidad);
     }
 
     // =====================================================================
@@ -205,9 +253,9 @@ public static class MapaDePractica
     private static void ZonaDeDistancias(Transform mapa)
     {
         Transform zona = Grupo("Zona de distancias", mapa);
-        float izquierda = Carriles[0] - 1.5f, derecha = Carriles[Carriles.Length - 1] + 1.5f;
+        float izquierda = DistanciasX0, derecha = DistanciasX1;
         float ancho = derecha - izquierda, centro = (izquierda + derecha) * 0.5f;
-        Texto("Cartel", zona, "ZONA DE DISTANCIAS", new Vector3(centro, 3.2f, 1.5f), 8f, Color.white, false);
+        Cartel(zona, "ZONA DE DISTANCIAS", izquierda, derecha, ZCarteles);
 
         // Una raya cada 5 m a lo ancho de los carriles, con los metros escritos en el piso.
         for (int m = CadaRaya; m <= Largo; m += CadaRaya)
@@ -240,9 +288,9 @@ public static class MapaDePractica
         Transform zona = Grupo("Zona de blancos", mapa);
         // Separada de la de distancias por una baranda baja.
         Caja("Baranda", zona, new Vector3(0f, 0.6f, 15f), new Vector3(0.3f, 1.2f, 30f), pared);
-        Texto("Cartel", zona, "ZONA DE BLANCOS", new Vector3(6.5f, 3.2f, 1.5f), 8f, Color.white, false);
         // Contorno de la zona en el piso.
-        const float x0 = 1.5f, x1 = 11.5f, z0 = 4f, z1 = 30f;
+        const float x0 = BlancosX0, x1 = BlancosX1, z0 = 4f, z1 = 30f;
+        Cartel(zona, "ZONA DE BLANCOS", x0, x1, ZCarteles);
         Caja("Borde", zona, new Vector3((x0 + x1) * 0.5f, 0.005f, z0), new Vector3(x1 - x0, 0.01f, 0.1f), linea, false);
         Caja("Borde", zona, new Vector3((x0 + x1) * 0.5f, 0.005f, z1), new Vector3(x1 - x0, 0.01f, 0.1f), linea, false);
         Caja("Borde", zona, new Vector3(x0, 0.005f, (z0 + z1) * 0.5f), new Vector3(0.1f, 0.01f, z1 - z0), linea, false);
@@ -261,6 +309,33 @@ public static class MapaDePractica
         Blanco("Blanco alto 24 m", zona, new Vector3(4.5f, arriba, 24f), 1.5f);
         arriba = CajasDelKit("Cajas", zona, new Vector3(9f, 0f, 16f), 1.5f);
         Blanco("Blanco alto 16 m", zona, new Vector3(9f, arriba, 16f), 1.5f);
+    }
+
+    // El cartel con el nombre de la zona: un tablero oscuro con marco amarillo, sobre dos postes, a lo ancho de la zona
+    // (de x0 a x1) y de frente a la línea de tiro. El texto se achica solo para entrar en el tablero.
+    private static void Cartel(Transform padre, string texto, float x0, float x1, float z)
+    {
+        const float centroY = 3.6f, alto = 1.1f, marco = 0.08f;
+        float ancho = x1 - x0;
+        Transform c = Grupo("Cartel", padre);
+        c.localPosition = new Vector3((x0 + x1) * 0.5f, 0f, z);
+        float tope = centroY + alto * 0.5f;
+        foreach (float lado in new[] { -1f, 1f })
+            Caja("Poste", c, new Vector3(lado * (ancho * 0.5f - 0.2f), tope * 0.5f, 0.1f), new Vector3(0.15f, tope, 0.15f), poste);
+        Caja("Tablero", c, new Vector3(0f, centroY, 0f), new Vector3(ancho, alto, 0.1f), cartel);
+        // El marco, apenas delante del tablero.
+        const float zMarco = -0.07f;
+        Caja("Marco", c, new Vector3(0f, centroY + (alto - marco) * 0.5f, zMarco), new Vector3(ancho, marco, 0.04f), linea, false);
+        Caja("Marco", c, new Vector3(0f, centroY - (alto - marco) * 0.5f, zMarco), new Vector3(ancho, marco, 0.04f), linea, false);
+        Caja("Marco", c, new Vector3(-(ancho - marco) * 0.5f, centroY, zMarco), new Vector3(marco, alto, 0.04f), linea, false);
+        Caja("Marco", c, new Vector3((ancho - marco) * 0.5f, centroY, zMarco), new Vector3(marco, alto, 0.04f), linea, false);
+
+        TextMeshPro t = Texto("Texto", c, texto, new Vector3(0f, centroY, -0.08f), 8f, Color.white, false);
+        t.rectTransform.sizeDelta = new Vector2(ancho - 0.6f, alto - 0.25f);
+        t.textWrappingMode = TextWrappingModes.NoWrap;
+        t.enableAutoSizing = true;
+        t.fontSizeMin = 2f;
+        t.fontSizeMax = 8f;
     }
 
     // Un blanco redondo sobre un poste, de frente a la línea de tiro (los aros del lado de -z, el poste atrás). "pie"
@@ -291,17 +366,17 @@ public static class MapaDePractica
         luz.shadows = LightShadows.Soft;
     }
 
-    private static bool Prefab(string ruta, Vector3 lugar)
+    private static GameObject Prefab(string ruta, Vector3 lugar)
     {
         GameObject prefab = AssetDatabase.LoadAssetAtPath<GameObject>(ruta);
         if (prefab == null)
         {
             EditorUtility.DisplayDialog("Mapa de práctica", $"No se encontró {ruta}: la escena no se guardó.", "Aceptar");
-            return false;
+            return null;
         }
         var go = (GameObject)PrefabUtility.InstantiatePrefab(prefab);
         go.transform.position = lugar;
-        return true;
+        return go;
     }
 
     private static void SumarAlBuild()
@@ -329,6 +404,7 @@ public static class MapaDePractica
         rojo = CrearMaterial("Rojo", new Color(0.85f, 0.15f, 0.15f));
         poste = CrearMaterial("Poste", new Color(0.1f, 0.1f, 0.12f));
         caja = CrearMaterial("Caja", new Color(0.42f, 0.33f, 0.22f));
+        cartel = CrearMaterial("Cartel", new Color(0.07f, 0.09f, 0.13f));
     }
 
     // Un material guardado como asset (los que no son assets se pierden al guardar la escena). Si ya existe, se usa
@@ -383,7 +459,7 @@ public static class MapaDePractica
 
     // Texto 3D. "acostado": sobre el piso, para leerlo desde la línea de tiro. "giroY": hacia dónde mira el cartel
     // (0 = se lee desde la línea de tiro, mirando hacia adelante).
-    private static void Texto(string nombre, Transform padre, string texto, Vector3 lugar, float tamano, Color color,
+    private static TextMeshPro Texto(string nombre, Transform padre, string texto, Vector3 lugar, float tamano, Color color,
         bool acostado, float giroY = 0f)
     {
         var go = new GameObject(nombre);
@@ -397,5 +473,6 @@ public static class MapaDePractica
         t.fontStyle = FontStyles.Bold;
         t.alignment = TextAlignmentOptions.Center;
         t.rectTransform.sizeDelta = new Vector2(30f, 4f);
+        return t;
     }
 }
