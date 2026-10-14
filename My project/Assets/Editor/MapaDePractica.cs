@@ -15,8 +15,11 @@ using UnityEngine.SceneManagement;
 // - CA3: zona de blancos a la derecha: blancos a distintas distancias, alturas y costados.
 // - CA4: tiene el jugador (con la pausa, que vuelve al menú) y el HUD, sin sala ni rondas: no necesita una partida.
 // Medidas en metros. El 0 es la línea de tiro: hacia adelante (+z) los blancos, hacia atrás la zona de salida.
-// Piso, paredes y blancos son cubos y cilindros con materiales de color (en Scenes/Mapa_practica/), así se pueden
-// cambiar por los del kit Sci-fi sin tocar las medidas.
+// Piso, paredes y cajas son piezas del kit Sci-fi (las mismas del mapa táctico). Debajo de cada pared y del piso queda
+// un cubo invisible que es el que choca, así la sala queda cerrada aunque las piezas del kit tengan huecos. Las medidas
+// de cada pieza se toman de la pieza misma al armar el mapa (no hace falta saber dónde tiene el centro). Si una pieza
+// no está, queda el cubo con su color. Los blancos y las rayas son cubos y cilindros con materiales de color (en
+// Scenes/Mapa_practica/).
 public static class MapaDePractica
 {
     private const string Menu = "Riftwalker/Crear mapa de práctica";
@@ -24,6 +27,10 @@ public static class MapaDePractica
     private const string Carpeta = "Assets/Scenes/Mapa_practica";
     private const string Jugador = "Assets/Prefabs/Player.prefab";
     private const string Hud = "Assets/UI/HUD/HUDCombate.prefab";
+    private const string Kit = "Assets/Creepy_Cat/3D Scifi Kit Starter Kit_HD/Prefabs";
+    private const string KitPiso = Kit + "/Floors/Floor_Squared_01_6x6.prefab";
+    private const string KitPared = Kit + "/Walls/Wall_Cube_01_Long.prefab";
+    private const string KitCaja = Kit + "/Props/Crate_01.prefab";
 
     private const float Ancho = 24f, Atras = 12f, Adelante = 58f, Alto = 6f, Grosor = 0.5f;
     private const float AlturaJugador = 1.15f; // la misma que en Pruebas_Armas: pies en el piso
@@ -66,11 +73,118 @@ public static class MapaDePractica
     {
         Transform sala = Grupo("Sala", mapa);
         float largo = Atras + Adelante, centroZ = (Adelante - Atras) * 0.5f;
-        Caja("Piso", sala, new Vector3(0f, -0.25f, centroZ), new Vector3(Ancho, 0.5f, largo), piso);
-        Caja("Pared izquierda", sala, new Vector3(-(Ancho + Grosor) * 0.5f, Alto * 0.5f, centroZ), new Vector3(Grosor, Alto, largo + 2f * Grosor), pared);
-        Caja("Pared derecha", sala, new Vector3((Ancho + Grosor) * 0.5f, Alto * 0.5f, centroZ), new Vector3(Grosor, Alto, largo + 2f * Grosor), pared);
-        Caja("Pared del fondo", sala, new Vector3(0f, Alto * 0.5f, Adelante + Grosor * 0.5f), new Vector3(Ancho, Alto, Grosor), pared);
-        Caja("Pared de atrás", sala, new Vector3(0f, Alto * 0.5f, -Atras - Grosor * 0.5f), new Vector3(Ancho, Alto, Grosor), pared);
+        // Los cubos que chocan. Se ven solo si falta la pieza del kit.
+        bool conPiso = AssetDatabase.LoadAssetAtPath<GameObject>(KitPiso) != null;
+        bool conPared = AssetDatabase.LoadAssetAtPath<GameObject>(KitPared) != null;
+        Caja("Piso", sala, new Vector3(0f, -0.25f, centroZ), new Vector3(Ancho, 0.5f, largo), piso, true, !conPiso);
+        Caja("Pared izquierda", sala, new Vector3(-(Ancho + Grosor) * 0.5f, Alto * 0.5f, centroZ), new Vector3(Grosor, Alto, largo + 2f * Grosor), pared, true, !conPared);
+        Caja("Pared derecha", sala, new Vector3((Ancho + Grosor) * 0.5f, Alto * 0.5f, centroZ), new Vector3(Grosor, Alto, largo + 2f * Grosor), pared, true, !conPared);
+        Caja("Pared del fondo", sala, new Vector3(0f, Alto * 0.5f, Adelante + Grosor * 0.5f), new Vector3(Ancho, Alto, Grosor), pared, true, !conPared);
+        Caja("Pared de atrás", sala, new Vector3(0f, Alto * 0.5f, -Atras - Grosor * 0.5f), new Vector3(Ancho, Alto, Grosor), pared, true, !conPared);
+
+        // Lo que se ve: baldosas del kit en el piso y piezas de pared del kit contra cada pared, de adentro.
+        Transform kit = Grupo("Kit Sci-fi", sala);
+        PisoDelKit(kit, -Ancho * 0.5f, Ancho * 0.5f, -Atras, Adelante);
+        ParedDelKit("Pared izquierda (kit)", kit, Vector3.forward, new Vector3(-Ancho * 0.5f, 0f, -Atras), largo, Vector3.right);
+        ParedDelKit("Pared derecha (kit)", kit, Vector3.forward, new Vector3(Ancho * 0.5f, 0f, -Atras), largo, Vector3.left);
+        ParedDelKit("Pared del fondo (kit)", kit, Vector3.right, new Vector3(-Ancho * 0.5f, 0f, Adelante), Ancho, Vector3.back);
+        ParedDelKit("Pared de atrás (kit)", kit, Vector3.right, new Vector3(-Ancho * 0.5f, 0f, -Atras), Ancho, Vector3.forward);
+    }
+
+    // =====================================================================
+    // Piezas del kit Sci-fi
+    // =====================================================================
+
+    // Cuánto ocupa una pieza girada "giro" grados (en y) con su centro en el 0: así se acomoda sin saber dónde está su
+    // centro. Se miden solo las mallas (no las luces ni las partículas que traen algunas piezas).
+    private static Bounds Medir(GameObject prefab, float giro)
+    {
+        var go = (GameObject)PrefabUtility.InstantiatePrefab(prefab);
+        go.transform.SetPositionAndRotation(Vector3.zero, Quaternion.Euler(0f, giro, 0f));
+        Bounds b = new Bounds(Vector3.zero, Vector3.zero);
+        bool hay = false;
+        foreach (MeshRenderer r in go.GetComponentsInChildren<MeshRenderer>())
+        {
+            if (!hay) { b = r.bounds; hay = true; }
+            else b.Encapsulate(r.bounds);
+        }
+        Object.DestroyImmediate(go);
+        return b;
+    }
+
+    private static GameObject Poner(GameObject prefab, string nombre, Transform padre, Vector3 lugar, float giro)
+    {
+        var go = (GameObject)PrefabUtility.InstantiatePrefab(prefab, padre);
+        go.name = nombre;
+        go.transform.SetPositionAndRotation(lugar, Quaternion.Euler(0f, giro, 0f));
+        return go;
+    }
+
+    // Baldosas del kit cubriendo el rectángulo, con la cara de arriba en y = 0.
+    private static void PisoDelKit(Transform padre, float x0, float x1, float z0, float z1)
+    {
+        GameObject prefab = AssetDatabase.LoadAssetAtPath<GameObject>(KitPiso);
+        if (prefab == null) return;
+        Bounds b = Medir(prefab, 0f);
+        if (b.size.x < 0.5f || b.size.z < 0.5f) return;
+        Transform grupo = Grupo("Piso", padre);
+        for (float x = x0; x < x1 - 0.01f; x += b.size.x)
+            for (float z = z0; z < z1 - 0.01f; z += b.size.z)
+                Poner(prefab, "Baldosa", grupo, new Vector3(x - b.min.x, -b.max.y, z - b.min.z), 0f);
+    }
+
+    // Piezas de pared del kit a lo largo de una pared: desde "inicio", "largo" metros en la dirección "a lo largo",
+    // con la cara contra la línea de la pared y apiladas hasta la altura de la sala. "adentro" apunta al centro de la
+    // sala: la pieza se gira para que su lado largo quede a lo largo de la pared y su cara mire hacia adentro.
+    private static void ParedDelKit(string nombre, Transform padre, Vector3 aLoLargo, Vector3 inicio, float largo, Vector3 adentro)
+    {
+        GameObject prefab = AssetDatabase.LoadAssetAtPath<GameObject>(KitPared);
+        if (prefab == null) return;
+        // De los cuatro giros, el que deja el lado largo a lo largo de la pared. Entre los dos que sirven, el que mira
+        // hacia adentro: así las cuatro paredes muestran la misma cara a la sala.
+        float giro = Mathf.Atan2(adentro.x, adentro.z) * Mathf.Rad2Deg;
+        Bounds b = Medir(prefab, giro);
+        if (Mathf.Abs(Vector3.Dot(b.size, aLoLargo)) < Mathf.Abs(Vector3.Dot(b.size, adentro)))
+        {
+            giro += 90f;
+            b = Medir(prefab, giro);
+        }
+        float paso = Mathf.Abs(Vector3.Dot(b.size, aLoLargo)), alto = b.size.y;
+        if (paso < 0.5f || alto < 0.5f) return;
+        // Qué parte de la pieza queda contra la pared: su lado más lejos del centro de la sala.
+        Vector3 haciaAfuera = -adentro;
+        float fondo = Vector3.Dot(b.center, haciaAfuera) + Mathf.Abs(Vector3.Dot(b.extents, haciaAfuera));
+        float desdeInicio = Vector3.Dot(b.min, aLoLargo) < Vector3.Dot(b.max, aLoLargo)
+            ? Vector3.Dot(b.min, aLoLargo) : Vector3.Dot(b.max, aLoLargo);
+
+        Transform grupo = Grupo(nombre, padre);
+        for (float y = 0f; y < Alto - 0.01f; y += alto)
+            for (float d = 0f; d < largo - 0.01f; d += paso)
+            {
+                Vector3 lugar = inicio + aLoLargo * (d - desdeInicio) - haciaAfuera * fondo + Vector3.up * (y - b.min.y);
+                Poner(prefab, "Pared", grupo, lugar, giro);
+            }
+    }
+
+    // Cajas del kit apiladas hasta llegar al menos a "altura". Devuelve dónde queda la cara de arriba.
+    private static float CajasDelKit(string nombre, Transform padre, Vector3 pie, float altura)
+    {
+        GameObject prefab = AssetDatabase.LoadAssetAtPath<GameObject>(KitCaja);
+        if (prefab == null)
+        {
+            Caja(nombre, padre, pie + Vector3.up * altura * 0.5f, new Vector3(2f, altura, 2f), caja);
+            return pie.y + altura;
+        }
+        Bounds b = Medir(prefab, 0f);
+        if (b.size.y < 0.1f) return pie.y;
+        Transform grupo = Grupo(nombre, padre);
+        float y = pie.y;
+        while (y < pie.y + altura - 0.01f)
+        {
+            Poner(prefab, "Caja", grupo, new Vector3(pie.x - b.center.x, y - b.min.y, pie.z - b.center.z), 0f);
+            y += b.size.y;
+        }
+        return y;
     }
 
     // Detrás de la línea de tiro: donde aparece el jugador.
@@ -79,6 +193,8 @@ public static class MapaDePractica
         Transform zona = Grupo("Zona de salida", mapa);
         Caja("Línea de tiro", zona, new Vector3(0f, 0.005f, 0f), new Vector3(Ancho, 0.01f, 0.2f), linea, false);
         Texto("Cartel línea de tiro", zona, "LÍNEA DE TIRO", new Vector3(0f, 0.02f, -0.8f), 5f, Color.white, true);
+        CajasDelKit("Cajas", zona, new Vector3(-10f, 0f, -10f), 1.5f);
+        CajasDelKit("Cajas", zona, new Vector3(10f, 0f, -10f), 0.7f);
         Texto("Cartel del mapa", zona, "MAPA DE PRÁCTICA", new Vector3(0f, 3.6f, -Atras + 0.05f), 12f, Color.white, false, 180f);
     }
 
@@ -141,10 +257,10 @@ public static class MapaDePractica
         foreach (Vector3 l in lugares) Blanco($"Blanco {l.y:0} m", zona, new Vector3(l.x, 0f, l.y), l.z);
 
         // Dos blancos arriba de cajas, para apuntar más alto.
-        Caja("Caja", zona, new Vector3(4.5f, 1f, 24f), new Vector3(2f, 2f, 2f), caja);
-        Blanco("Blanco alto 24 m", zona, new Vector3(4.5f, 2f, 24f), 1.5f);
-        Caja("Caja", zona, new Vector3(9f, 0.75f, 16f), new Vector3(1.5f, 1.5f, 1.5f), caja);
-        Blanco("Blanco alto 16 m", zona, new Vector3(9f, 1.5f, 16f), 1.5f);
+        float arriba = CajasDelKit("Cajas", zona, new Vector3(4.5f, 0f, 24f), 2f);
+        Blanco("Blanco alto 24 m", zona, new Vector3(4.5f, arriba, 24f), 1.5f);
+        arriba = CajasDelKit("Cajas", zona, new Vector3(9f, 0f, 16f), 1.5f);
+        Blanco("Blanco alto 16 m", zona, new Vector3(9f, arriba, 16f), 1.5f);
     }
 
     // Un blanco redondo sobre un poste, de frente a la línea de tiro (los aros del lado de -z, el poste atrás). "pie"
@@ -236,9 +352,11 @@ public static class MapaDePractica
         return t;
     }
 
-    private static void Caja(string nombre, Transform padre, Vector3 lugar, Vector3 tamano, Material material, bool conColision = true)
+    private static void Caja(string nombre, Transform padre, Vector3 lugar, Vector3 tamano, Material material,
+        bool conColision = true, bool visible = true)
     {
-        Pieza(PrimitiveType.Cube, nombre, padre, lugar, Quaternion.identity, tamano, material, conColision);
+        GameObject go = Pieza(PrimitiveType.Cube, nombre, padre, lugar, Quaternion.identity, tamano, material, conColision);
+        go.GetComponent<Renderer>().enabled = visible;
     }
 
     // Un cilindro aplastado y parado, de frente a -z (como el tablero).
@@ -248,7 +366,7 @@ public static class MapaDePractica
             new Vector3(diametro, 0.002f, diametro), material, false);
     }
 
-    private static void Pieza(PrimitiveType tipo, string nombre, Transform padre, Vector3 lugar, Quaternion giro,
+    private static GameObject Pieza(PrimitiveType tipo, string nombre, Transform padre, Vector3 lugar, Quaternion giro,
         Vector3 tamano, Material material, bool conColision)
     {
         GameObject go = GameObject.CreatePrimitive(tipo);
@@ -260,6 +378,7 @@ public static class MapaDePractica
         go.transform.localScale = tamano;
         go.GetComponent<Renderer>().sharedMaterial = material;
         GameObjectUtility.SetStaticEditorFlags(go, StaticEditorFlags.BatchingStatic | StaticEditorFlags.ContributeGI);
+        return go;
     }
 
     // Texto 3D. "acostado": sobre el piso, para leerlo desde la línea de tiro. "giroY": hacia dónde mira el cartel
