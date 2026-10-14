@@ -599,9 +599,9 @@ public class ShopUI : MonoBehaviour
         if (Dm)
         {
             // US 138, CA1: sin plata ni precios.
-            barSub.text = "Deathmatch";
+            barSub.text = CampoDePractica.Activo ? "Campo de práctica" : "Deathmatch";
             barMoney.text = "Todo gratis";
-            barNext.text = "Se guarda para la próxima vida";
+            barNext.text = CampoDePractica.Activo ? "Cambiala cuando quieras" : "Se guarda para la próxima vida";
             banner.SetActive(false);
             return;
         }
@@ -1100,7 +1100,8 @@ public class ShopUI : MonoBehaviour
         {
             // US 138, CA3: elegir equipa gratis; la que ya está en uso dice "Elegida".
             if (access != ShopResult.Ok) PaintButton(ButtonStyle.Locked, "Ahora no", "solo mirar");
-            else if (loadout.IsEquipped(item)) PaintButton(ButtonStyle.Owned, "Elegida", "se guarda para la próxima vida");
+            else if (loadout.IsEquipped(item))
+                PaintButton(ButtonStyle.Owned, "Elegida", CampoDePractica.Activo ? "la tenés en la mano" : "se guarda para la próxima vida");
             else PaintButton(ButtonStyle.Normal, "Elegir", "Enter · clic");
         }
         else if (access != ShopResult.Ok)
@@ -1260,7 +1261,7 @@ public class ShopUI : MonoBehaviour
         {
             // US 138, CA4: no hay gasto; se avisa que lo elegido queda.
             TextMeshProUGUI keep = Text(Place(Node("Guardado", loadoutCells[5]), 0f, 51f, right, 40f), labelFont, 17f, Ink, TextAlignmentOptions.MidlineRight, 6f, true);
-            keep.text = "Se guarda para la próxima vida";
+            keep.text = CampoDePractica.Activo ? "Cambiala cuando quieras" : "Se guarda para la próxima vida";
             return;
         }
         if (loadout.HasPurchases && loadout.CheckAccess() == ShopResult.Ok)

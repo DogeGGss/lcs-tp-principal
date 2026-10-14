@@ -9,13 +9,14 @@ using UnityEngine.SceneManagement;
 // US 118 · Mapa de práctica (Shooting Range). Arma la escena Scenes/Mapa_practica desde el menú de Unity:
 // Riftwalker > Crear mapa de práctica. Después es una escena común: se abre y se retoca a mano (luces, decoración).
 // Se puede volver a correr: pregunta antes de reemplazar la escena. Para no perder lo retocado a mano, el otro menú
-// (Riftwalker > Mapa de práctica: carteles y sin habilidad) le suma a la escena abierta solo los carteles y la
-// habilidad.
+// (Riftwalker > Mapa de práctica: actualizar escena) le suma a la escena abierta solo lo que le falte: los carteles,
+// la habilidad apagada y lo de la US 119 (la tienda y el CampoDePractica).
 // - CA1: una escena aparte de los mapas de partida, solo para practicar (se suma sola al Build Settings).
 // - CA2: zona de distancias a la izquierda: tres carriles con rayas en el piso cada 5 m hasta 50 m y un blanco a 10,
 //   25 y 50 m, cada uno con su cartel.
 // - CA3: zona de blancos a la derecha: blancos a distintas distancias, alturas y costados.
 // - CA4: tiene el jugador (con la pausa, que vuelve al menú) y el HUD, sin sala ni rondas: no necesita una partida.
+// - US 119: la tienda (B) y el CampoDePractica, que hace que en esta escena todas las armas se elijan gratis.
 //   El jugador va sin habilidad (el mapa es para practicar con las armas), así el HUD tampoco la muestra.
 // Medidas en metros. El 0 es la línea de tiro: hacia adelante (+z) los blancos, hacia atrás la zona de salida.
 // Piso, paredes y cajas son piezas del kit Sci-fi (las mismas del mapa táctico). Debajo de cada pared y del piso queda
@@ -26,11 +27,12 @@ using UnityEngine.SceneManagement;
 public static class MapaDePractica
 {
     private const string Menu = "Riftwalker/Crear mapa de práctica";
-    private const string MenuActualizar = "Riftwalker/Mapa de práctica: carteles y sin habilidad";
+    private const string MenuActualizar = "Riftwalker/Mapa de práctica: actualizar escena";
     private const string Ruta = "Assets/Scenes/Mapa_practica.unity";
     private const string Carpeta = "Assets/Scenes/Mapa_practica";
     private const string Jugador = "Assets/Prefabs/Player.prefab";
     private const string Hud = "Assets/UI/HUD/HUDCombate.prefab";
+    private const string Tienda = "Assets/UI/Tienda/Tienda.prefab"; // US 119: con ella se eligen las armas, gratis
     private const string Kit = "Assets/Creepy_Cat/3D Scifi Kit Starter Kit_HD/Prefabs";
     private const string KitPiso = Kit + "/Floors/Floor_Squared_01_6x6.prefab";
     private const string KitPared = Kit + "/Walls/Wall_Cube_01_Long.prefab";
@@ -67,14 +69,16 @@ public static class MapaDePractica
         Luz();
         if (Prefab(Jugador, new Vector3(0f, AlturaJugador, -8f)) == null || Prefab(Hud, Vector3.zero) == null) return;
         SacarHabilidad();
+        if (!ArmasDePractica()) return;
 
         EditorSceneManager.SaveScene(escena, Ruta);
         SumarAlBuild();
         Debug.Log($"Mapa de práctica: escena guardada en {Ruta} y sumada al Build Settings.");
     }
 
-    // Para una escena ya armada y retocada a mano: le pone los carteles con marco y le saca la habilidad al jugador, sin
-    // tocar nada más. Hay que tener abierta Scenes/Mapa_practica.
+    // Para una escena ya armada y retocada a mano: le pone los carteles con marco, le saca la habilidad al jugador y le
+    // suma la tienda y el CampoDePractica (US 119) si no los tiene, sin tocar nada más. Hay que tener abierta
+    // Scenes/Mapa_practica.
     [MenuItem(MenuActualizar)]
     private static void Actualizar()
     {
@@ -90,9 +94,10 @@ public static class MapaDePractica
         CambiarCartel(raiz.transform.Find("Zona de distancias"), "ZONA DE DISTANCIAS", DistanciasX0, DistanciasX1);
         CambiarCartel(raiz.transform.Find("Zona de blancos"), "ZONA DE BLANCOS", BlancosX0, BlancosX1);
         SacarHabilidad();
+        if (!ArmasDePractica()) return;
         EditorSceneManager.MarkSceneDirty(escena);
         EditorSceneManager.SaveScene(escena);
-        Debug.Log("Mapa de práctica: carteles con marco puestos y jugador sin habilidad.");
+        Debug.Log("Mapa de práctica: escena actualizada (carteles, sin habilidad, tienda y campo de práctica).");
     }
 
     // Saca el cartel viejo (solo el texto) y pone el nuevo. Si la zona ya tiene el nuevo (con tablero), no hace nada.
@@ -117,6 +122,16 @@ public static class MapaDePractica
             campos.FindProperty("useSelectedCharacter").boolValue = false;
             campos.ApplyModifiedPropertiesWithoutUndo();
         }
+    }
+
+    // US 119: el CampoDePractica (todas las armas gratis) y la tienda, que es donde se eligen. Si ya están, no se tocan.
+    private static bool ArmasDePractica()
+    {
+        if (Object.FindAnyObjectByType<CampoDePractica>(FindObjectsInactive.Include) == null)
+            new GameObject("Campo de práctica", typeof(CampoDePractica));
+        if (Object.FindAnyObjectByType<ShopUI>(FindObjectsInactive.Include) == null && Prefab(Tienda, Vector3.zero) == null)
+            return false;
+        return true;
     }
 
     // =====================================================================
