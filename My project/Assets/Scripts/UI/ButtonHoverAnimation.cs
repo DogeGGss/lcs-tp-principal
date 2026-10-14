@@ -33,6 +33,9 @@ public class ButtonHoverAnimation : MonoBehaviour,
     public void OnPointerEnter(PointerEventData eventData)
     {
         escalaObjetivo = Vector3.one * escalaHover;
+        // Los botones deshabilitados no suenan.
+        UnityEngine.UI.Selectable boton = GetComponent<UnityEngine.UI.Selectable>();
+        if (boton == null || boton.IsInteractable()) SonidoInterfaz.Pasar();
     }
 
     public void OnPointerExit(PointerEventData eventData)

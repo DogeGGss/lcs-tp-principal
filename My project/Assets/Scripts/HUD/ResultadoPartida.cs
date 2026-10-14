@@ -91,6 +91,11 @@ public class ResultadoPartida : MonoBehaviour
         Text(Place(Node("Equipos", root), 0f, 398f, 1920f, 24f), labelFont, 20f, Mute, TextAlignmentOptions.Center, 16f, true).text =
             "<color=#58A6FF>Tu equipo</color>   ·   <color=#FF5C5C>Rivales</color>";
 
+        // Prueba del menú (Perfil y cápsulas): los créditos se ganan jugando.
+        int creditos = PerfilDatos.GanarPorPartida(gane);
+        Text(Place(Node("Creditos", root), 1420f, 40f, 460f, 34f), labelFont, 24f, Accent, TextAlignmentOptions.MidlineRight, 12f, true).text =
+            $"+{creditos} créditos";
+
         // CA3: tabla (se arma de nuevo cada tanto, por si llegan estadísticas atrasadas).
         tabla = Place(Node("Tabla", root), (1920f - TablaW) / 2f, 450f, TablaW, 100f);
         float alto = DibujarTabla();
