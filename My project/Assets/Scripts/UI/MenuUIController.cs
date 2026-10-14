@@ -22,6 +22,8 @@ public class MenuUIController : MonoBehaviour
     [SerializeField] private string escenaPruebas = "MapaPruebasV1";
     [Tooltip("Escena que abre el botón PRUEBAS 2 (tiene que estar en Build Settings).")]
     [SerializeField] private string escenaPruebas2 = "Example_01 1";
+    [Tooltip("Escena del campo de práctica (US 118), la que abre el menú principal (US 122).")]
+    [SerializeField] private string escenaPractica = "Mapa_practica";
 
     [Header("Transición")]
     [SerializeField] private CanvasGroup overlayTransicion;
@@ -60,6 +62,13 @@ public void IrAlEscenario2()
 {
     SceneManager.LoadScene(escenaPruebas2);
 }
+
+    // US 122, CA1 y CA2: el botón "Campo de práctica" del menú lleva directo al mapa de práctica. Se vuelve con la pausa
+    // (CA3).
+    public void IrAlCampoDePractica()
+    {
+        SceneManager.LoadScene(escenaPractica);
+    }
 
     public void MostrarMenuPrincipal()
     {

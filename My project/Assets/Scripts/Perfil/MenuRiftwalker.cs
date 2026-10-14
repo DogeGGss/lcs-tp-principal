@@ -389,16 +389,14 @@ public class MenuRiftwalker : MonoBehaviour
             p.Hovered = () => { t.color = Accent; marca.color = Accent; t.rectTransform.anchoredPosition = new Vector2(16f, 0f); };
             p.Exited = () => { t.color = Soft; marca.color = WithAlpha(Accent, 0f); t.rectTransform.anchoredPosition = Vector2.zero; };
         }
+        // US 122: el campo de práctica (Shooting Range, US 118) se abre desde acá. Reemplaza a las escenas de prueba
+        // viejas (Pruebas y Pruebas 2).
         T(capaMenu, "CamposRotulo", 122f, 718f, 200f, 24f, FRotulo, 17f, Mute, "Campos de prueba:", TextAlignmentOptions.MidlineLeft, 12f, true);
-        string[] pruebas = { "Pruebas", "Pruebas 2" };
-        Action[] irPruebas = { () => menuUI?.IrAlEscenario(), () => menuUI?.IrAlEscenario2() };
-        for (int i = 0; i < 2; i++)
         {
-            TextMeshProUGUI t = T(capaMenu, pruebas[i], 300f + i * 120f, 718f, 110f, 24f, FRotulo, 17f, Soft, pruebas[i], TextAlignmentOptions.MidlineLeft, 12f, true);
+            TextMeshProUGUI t = T(capaMenu, "Campo de práctica", 300f, 718f, 240f, 24f, FRotulo, 17f, Soft, "Campo de práctica", TextAlignmentOptions.MidlineLeft, 12f, true);
             t.raycastTarget = true;
             var p = t.gameObject.AddComponent<ShopPointerTarget>();
-            int k = i;
-            p.Clicked = () => irPruebas[k]();
+            p.Clicked = () => menuUI?.IrAlCampoDePractica();
             p.Hovered = () => t.color = Accent;
             p.Exited = () => t.color = Soft;
         }
