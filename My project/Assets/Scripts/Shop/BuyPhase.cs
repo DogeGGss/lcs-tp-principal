@@ -32,7 +32,8 @@ public class BuyPhase : MonoBehaviour
 
     private void Start()
     {
-        if (startOnPlay) Begin();
+        // En el campo de práctica (US 119) no hay fase de compra: las armas se cambian cuando quiera.
+        if (startOnPlay && !CampoDePractica.Activo) Begin();
     }
 
     public void Begin()

@@ -32,7 +32,8 @@ public class PlayerLoadout : MonoBehaviour
     public event System.Action Changed;
 
     // Deathmatch (US 138): no hay plata. Las armas se eligen gratis y se conservan de una vida a la otra.
-    public static bool Free => MatchSettings.Mode == GameMode.Deathmatch;
+    // En el campo de práctica (US 119), igual: todas las armas gratis y sin zona de compra.
+    public static bool Free => MatchSettings.Mode == GameMode.Deathmatch || CampoDePractica.Activo;
 
     // Al morir, justo antes de perder el equipamiento: así el arma todavía se puede soltar al piso (US 184, CA8).
     public event System.Action LosingEquipment;
