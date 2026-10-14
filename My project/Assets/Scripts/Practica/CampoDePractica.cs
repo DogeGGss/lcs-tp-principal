@@ -7,6 +7,9 @@ using UnityEngine;
 // - CA2 y CA3: el cambio de arma y las armas son los mismos de una partida (WeaponSwitcher, ArmaDeFuego): no se
 //   tocan.
 // - Las armas no se sueltan con G (SoltarArmas): acá se cambian con la tienda.
+// - Sin habilidad (PlayerAbility) ni fase de compra (BuyPhase).
+// Corre antes que el resto de los scripts, así "Activo" ya vale cuando el jugador y la tienda arrancan.
+[DefaultExecutionOrder(-1000)]
 public class CampoDePractica : MonoBehaviour
 {
     public static bool Activo { get; private set; }

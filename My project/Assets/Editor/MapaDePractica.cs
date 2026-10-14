@@ -10,14 +10,14 @@ using UnityEngine.SceneManagement;
 // Riftwalker > Crear mapa de práctica. Después es una escena común: se abre y se retoca a mano (luces, decoración).
 // Se puede volver a correr: pregunta antes de reemplazar la escena. Para no perder lo retocado a mano, el otro menú
 // (Riftwalker > Mapa de práctica: actualizar escena) le suma a la escena abierta solo lo que le falte: los carteles,
-// la habilidad apagada y lo de la US 119 (la tienda y el CampoDePractica).
+// y lo de la US 119 (la tienda y el CampoDePractica).
 // - CA1: una escena aparte de los mapas de partida, solo para practicar (se suma sola al Build Settings).
 // - CA2: zona de distancias a la izquierda: tres carriles con rayas en el piso cada 5 m hasta 50 m y un blanco a 10,
 //   25 y 50 m, cada uno con su cartel.
 // - CA3: zona de blancos a la derecha: blancos a distintas distancias, alturas y costados.
 // - CA4: tiene el jugador (con la pausa, que vuelve al menú) y el HUD, sin sala ni rondas: no necesita una partida.
 // - US 119: la tienda (B) y el CampoDePractica, que hace que en esta escena todas las armas se elijan gratis.
-//   El jugador va sin habilidad (el mapa es para practicar con las armas), así el HUD tampoco la muestra.
+//   El jugador va sin habilidad (el mapa es para practicar con las armas): lo hace el CampoDePractica.
 // Medidas en metros. El 0 es la línea de tiro: hacia adelante (+z) los blancos, hacia atrás la zona de salida.
 // Piso, paredes y cajas son piezas del kit Sci-fi (las mismas del mapa táctico). Debajo de cada pared y del piso queda
 // un cubo invisible que es el que choca, así la sala queda cerrada aunque las piezas del kit tengan huecos. Las medidas
@@ -68,7 +68,6 @@ public static class MapaDePractica
         ZonaDeBlancos(mapa);
         Luz();
         if (Prefab(Jugador, new Vector3(0f, AlturaJugador, -8f)) == null || Prefab(Hud, Vector3.zero) == null) return;
-        SacarHabilidad();
         if (!ArmasDePractica()) return;
 
         EditorSceneManager.SaveScene(escena, Ruta);
@@ -76,7 +75,7 @@ public static class MapaDePractica
         Debug.Log($"Mapa de práctica: escena guardada en {Ruta} y sumada al Build Settings.");
     }
 
-    // Para una escena ya armada y retocada a mano: le pone los carteles con marco, le saca la habilidad al jugador y le
+    // Para una escena ya armada y retocada a mano: le pone los carteles con marco y le
     // suma la tienda y el CampoDePractica (US 119) si no los tiene, sin tocar nada más. Hay que tener abierta
     // Scenes/Mapa_practica.
     [MenuItem(MenuActualizar)]
@@ -93,11 +92,10 @@ public static class MapaDePractica
         Materiales();
         CambiarCartel(raiz.transform.Find("Zona de distancias"), "ZONA DE DISTANCIAS", DistanciasX0, DistanciasX1);
         CambiarCartel(raiz.transform.Find("Zona de blancos"), "ZONA DE BLANCOS", BlancosX0, BlancosX1);
-        SacarHabilidad();
         if (!ArmasDePractica()) return;
         EditorSceneManager.MarkSceneDirty(escena);
         EditorSceneManager.SaveScene(escena);
-        Debug.Log("Mapa de práctica: escena actualizada (carteles, sin habilidad, tienda y campo de práctica).");
+        Debug.Log("Mapa de práctica: escena actualizada (carteles, tienda y campo de práctica).");
     }
 
     // Saca el cartel viejo (solo el texto) y pone el nuevo. Si la zona ya tiene el nuevo (con tablero), no hace nada.
@@ -108,20 +106,6 @@ public static class MapaDePractica
         if (viejo != null && viejo.Find("Tablero") != null) return;
         if (viejo != null) Object.DestroyImmediate(viejo.gameObject);
         Cartel(zona, texto, x0, x1, ZCarteles);
-    }
-
-    // El jugador va sin habilidad: en la copia de la escena (el prefab no cambia) PlayerAbility queda sin habilidad y sin
-    // tomar la del personaje elegido. Sin habilidad la Q no hace nada y el HUD esconde el chip solo. Se cambian los
-    // campos en vez de sacar el componente porque Unity no deja borrar componentes de un prefab desde un script.
-    private static void SacarHabilidad()
-    {
-        foreach (PlayerAbility habilidad in Object.FindObjectsByType<PlayerAbility>(FindObjectsInactive.Include, FindObjectsSortMode.None))
-        {
-            var campos = new SerializedObject(habilidad);
-            campos.FindProperty("ability").objectReferenceValue = null;
-            campos.FindProperty("useSelectedCharacter").boolValue = false;
-            campos.ApplyModifiedPropertiesWithoutUndo();
-        }
     }
 
     // US 119: el CampoDePractica (todas las armas gratis) y la tienda, que es donde se eligen. Si ya están, no se tocan.
