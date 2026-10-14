@@ -67,7 +67,8 @@ public void IrAlEscenario2()
     // carga (US 196) como las partidas. Se vuelve con la pausa (CA3).
     public void IrAlCampoDePractica()
     {
-        PantallaDeCarga.Cargar(escenaPractica, "Campo de práctica", "Mapa de práctica");
+        // La captura del mapa está en Resources/Carga (así no hay que asignarla en la escena del menú).
+        PantallaDeCarga.Cargar(escenaPractica, "Campo de práctica", "Mapa de práctica", Resources.Load<Sprite>("Carga/MapaPractica"));
     }
 
     public void MostrarMenuPrincipal()
