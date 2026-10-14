@@ -536,24 +536,24 @@
     "since": "2026-09-23T17:31:19.317741+00:00"
   },
   "PVTI_lAHOCikQ8M4Bj9Nyzg8XnvI": {
-    "status": "Todo",
-    "since": "2026-09-23T17:31:19.317741+00:00"
+    "status": "In Progress",
+    "since": "2026-10-14T20:40:22.031933+00:00"
   },
   "PVTI_lAHOCikQ8M4Bj9Nyzg8XnvQ": {
-    "status": "Blocked",
-    "since": "2026-09-23T17:31:19.317741+00:00"
+    "status": "LPR",
+    "since": "2026-10-14T20:40:22.031933+00:00"
   },
   "PVTI_lAHOCikQ8M4Bj9Nyzg8XnvU": {
     "status": "Blocked",
     "since": "2026-09-23T17:31:19.317741+00:00"
   },
   "PVTI_lAHOCikQ8M4Bj9Nyzg8XnvY": {
-    "status": "Blocked",
-    "since": "2026-09-23T17:31:19.317741+00:00"
+    "status": "LPR",
+    "since": "2026-10-14T20:40:22.031933+00:00"
   },
   "PVTI_lAHOCikQ8M4Bj9Nyzg8Xnvk": {
-    "status": "Blocked",
-    "since": "2026-09-23T17:31:19.317741+00:00"
+    "status": "LPR",
+    "since": "2026-10-14T20:40:22.031933+00:00"
   },
   "PVTI_lAHOCikQ8M4Bj9Nyzg8Xn6I": {
     "status": "Blocked",
@@ -620,8 +620,8 @@
     "since": "2026-10-11T06:18:12.680771+00:00"
   },
   "PVTI_lAHOCikQ8M4Bj9Nyzg81qJ4": {
-    "status": "LPR",
-    "since": "2026-10-05T23:12:31.591868+00:00"
+    "status": "TESTING",
+    "since": "2026-10-14T20:40:22.031933+00:00"
   },
   "PVTI_lAHOCikQ8M4Bj9Nyzg81qMs": {
     "status": "LPR",

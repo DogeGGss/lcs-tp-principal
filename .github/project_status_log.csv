@@ -653,3 +653,8 @@ fecha_utc,us_numero,us_titulo,estado_anterior,estado_nuevo,tiempo_en_estado_ante
 2026-10-12T18:17:46.186700+00:00,43,US 063. Espacios del inventario,LPR,Done,5d 17h 28m,494880,https://github.com/DogeGGss/lcs-tp-principal/issues/43
 2026-10-12T18:17:46.186700+00:00,230,US 164. Elegir nombre de jugador,LPR,Done,5d 17h 28m,494880,https://github.com/DogeGGss/lcs-tp-principal/issues/230
 2026-10-14T17:07:46.235260+00:00,420,US 224. Minimapa en Deathmatch,Todo,LPR,2d 1h 30m,178201,https://github.com/DogeGGss/lcs-tp-principal/issues/420
+2026-10-14T20:40:22.031933+00:00,196,US 136. Iniciar partida Deathmatch,LPR,TESTING,8d 21h 27m,768470,https://github.com/DogeGGss/lcs-tp-principal/issues/196
+2026-10-14T20:40:22.031933+00:00,163,US 118. Mapa de práctica (Shooting Range),Todo,In Progress,21d 3h 9m,1825742,https://github.com/DogeGGss/lcs-tp-principal/issues/163
+2026-10-14T20:40:22.031933+00:00,164,US 119. Probar armas en el shooting range,Blocked,LPR,21d 3h 9m,1825742,https://github.com/DogeGGss/lcs-tp-principal/issues/164
+2026-10-14T20:40:22.031933+00:00,166,US 121. Munición y vida infinitas en el shooting range,Blocked,LPR,21d 3h 9m,1825742,https://github.com/DogeGGss/lcs-tp-principal/issues/166
+2026-10-14T20:40:22.031933+00:00,167,US 122. Acceder al shooting range desde el menú principal,Blocked,LPR,21d 3h 9m,1825742,https://github.com/DogeGGss/lcs-tp-principal/issues/167
