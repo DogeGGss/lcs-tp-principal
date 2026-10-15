@@ -331,21 +331,22 @@ public static class MapaDePractica
     // Cambia cada blanco redondo de la zona de blancos por un lugar de bot y pone el panel. Si el panel ya está colgado de
     // la pared, no hace nada (así no se pisan los lugares movidos a mano). Si es el de la primera versión (con mesa), lo
     // cambia por el de la pared y le pasa los mismos lugares.
-    private const string NombrePanel = "Panel de práctica (pared, 3 botones)";
+    private const string NombrePanel = "Panel de práctica (pared, grande)";
+    private const float EscalaPanel = 1.5f; // el panel se arma a 1 y se agranda, con su centro a la misma altura
 
     private static void BotsYPanel(Transform mapa)
     {
-        Transform[] lugares, lugaresDistancia = null;
+        Transform[] lugares;
         PanelDePractica viejo = mapa.GetComponentInChildren<PanelDePractica>(true);
         if (viejo != null)
         {
             if (viejo.name == NombrePanel)
             {
                 LimitesDeBots(viejo, mapa);
+                viejo.lugaresDistancia = MunecosDeDistancias(mapa);
                 return;
             }
             lugares = viejo.lugares;
-            lugaresDistancia = viejo.lugaresDistancia;
             Object.DestroyImmediate(viejo.gameObject);
         }
         else
@@ -368,12 +369,13 @@ public static class MapaDePractica
         // queda hacia -x; el 0 de z es la cara de la pared.
         Transform salida = mapa.Find("Zona de salida") ?? mapa;
         Transform p = Grupo(NombrePanel, salida);
-        p.SetPositionAndRotation(new Vector3(CaraParedDerecha(mapa), 0f, -2f), Quaternion.Euler(0f, 90f, 0f));
+        p.SetPositionAndRotation(new Vector3(CaraParedDerecha(mapa), -1.55f * (EscalaPanel - 1f), -2f), Quaternion.Euler(0f, 90f, 0f));
+        p.localScale = Vector3.one * EscalaPanel;
         PanelDePractica panel = p.gameObject.AddComponent<PanelDePractica>();
         panel.munieco = AssetDatabase.LoadAssetAtPath<GameObject>(Munieco);
         if (panel.munieco == null) Debug.LogWarning($"Mapa de práctica: no se encontró {Munieco} (el panel queda sin bots).");
         panel.lugares = lugares;
-        panel.lugaresDistancia = lugaresDistancia != null && lugaresDistancia.Length > 0 ? lugaresDistancia : MunecosDeDistancias(mapa);
+        panel.lugaresDistancia = MunecosDeDistancias(mapa);
         LimitesDeBots(panel, mapa);
 
         const float ancho = 2.2f, alto = 1.2f, centroY = 1.55f, marco = 0.06f;
@@ -390,14 +392,21 @@ public static class MapaDePractica
         Boton(p, "Botón reiniciar", BotonDePractica.Accion.Reiniciar, "REINICIAR", 0.72f);
     }
 
+    // Más muñecos en la zona de distancias, además del de cada carril: x y metros. Corridos dentro del carril para que
+    // el de adelante no tape al de atrás.
+    private static readonly Vector2[] MasMunecos =
+    {
+        new Vector2(-5.2f, 15f), new Vector2(-8.2f, 20f), new Vector2(-3.8f, 30f), new Vector2(-9.6f, 35f), new Vector2(-2.2f, 40f),
+    };
+
     // Zona de distancias: cada blanco redondo (y su cartel de metros) pasa a ser el lugar de un muñeco quieto, que
-    // muestra arriba los metros y el daño de cada tiro (PanelDePractica).
+    // muestra arriba los metros y el daño de cada tiro (PanelDePractica), y se suman los de MasMunecos que falten.
+    // Devuelve todos los lugares.
     private static Transform[] MunecosDeDistancias(Transform mapa)
     {
         Transform zona = mapa.Find("Zona de distancias");
         if (zona == null) return new Transform[0];
         Transform grupo = zona.Find("Lugares de muñecos") ?? Grupo("Lugares de muñecos", zona);
-        var lista = new List<Transform>();
         foreach (Transform hijo in zona.Cast<Transform>().ToList())
         {
             if (hijo.name.StartsWith("Cartel ") && hijo.name.EndsWith(" m"))
@@ -408,10 +417,14 @@ public static class MapaDePractica
             if (!hijo.name.StartsWith("Blanco a ")) continue;
             Transform lugar = Grupo(hijo.name.Replace("Blanco", "Muñeco"), grupo);
             lugar.position = hijo.position;
-            lista.Add(lugar);
             Object.DestroyImmediate(hijo.gameObject);
         }
-        return lista.ToArray();
+        foreach (Vector2 m in MasMunecos)
+        {
+            string nombre = $"Muñeco a {m.y:0} m";
+            if (grupo.Find(nombre) == null) Grupo(nombre, grupo).position = new Vector3(m.x, 0f, m.y);
+        }
+        return grupo.Cast<Transform>().ToArray();
     }
 
     // Entre qué x caminan los bots: la zona de blancos, sin meterse en el relieve de la pared derecha del kit. (Además,

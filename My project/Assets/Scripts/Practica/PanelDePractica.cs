@@ -6,9 +6,10 @@ using UnityEngine;
 // - Pone un bot (BotDePractica, el muñeco de Scenes/Pruebas_Armas) en cada lugar de "lugares": los de la zona de blancos.
 // - Zona de distancias: un muñeco quieto en cada lugar de "lugaresDistancia", con un cartel arriba que dice a cuántos
 //   metros está, cuánto daño le hizo el último tiro y a qué zona (cabeza, cuerpo o piernas), y cuánta vida le queda.
+//   El cartel es más grande cuanto más lejos, así se lee igual desde la línea de tiro.
 // - Botones (mirarlos de cerca y apretar E, la tecla de Plantar, o pegarles un tiro):
 //   * "Mover bots" / "Detener bots": los bots del piso caminan de costado o se quedan quietos.
-//   * "Reacción": se esconden todos los muñecos y aparecen de a uno, en un lugar al azar, 10 veces. Se mide cuánto se
+//   * "Reacción": se esconden los bots de la zona de blancos y aparecen de a uno, en un lugar al azar, 10 veces. Se mide cuánto se
 //     tarda en pegarle a cada uno (si en 3 s no le pegó, cuenta como fallo). Al terminar, el marcador muestra el
 //     promedio y el mejor tiempo. Apretarlo de nuevo lo corta.
 //   * "Reiniciar" (CA2): levanta a todos los muñecos en su lugar, borra las marcas de bala (CA4) y pone el marcador en 0.
@@ -47,7 +48,7 @@ public class PanelDePractica : MonoBehaviour
 
     private readonly List<BotDePractica> bots = new List<BotDePractica>();
     private readonly List<Distancia> distancias = new List<Distancia>();
-    private readonly List<BotDePractica> todos = new List<BotDePractica>();
+    private readonly List<BotDePractica> todos = new List<BotDePractica>(); // los bots y los muñecos de distancias
     private Camera camara;
     private BotonDePractica[] botones;
     private BotonDePractica mirado;
@@ -102,14 +103,12 @@ public class PanelDePractica : MonoBehaviour
         go.transform.SetParent(transform.parent, false);
         go.transform.SetPositionAndRotation(pie + Vector3.up * 2.05f, Quaternion.identity);
         TextMeshPro t = go.AddComponent<TextMeshPro>();
-        float tamano = 1.5f + metros * 0.09f;
         t.rectTransform.pivot = new Vector2(0.5f, 0f);
-        t.rectTransform.sizeDelta = new Vector2(2.9f, 3f);
+        t.rectTransform.sizeDelta = new Vector2(4f, 1f);
         t.alignment = TextAlignmentOptions.Bottom;
         t.textWrappingMode = TextWrappingModes.NoWrap;
-        t.enableAutoSizing = true;
-        t.fontSizeMin = 1f;
-        t.fontSizeMax = tamano;
+        t.overflowMode = TextOverflowModes.Overflow;
+        t.fontSize = 1.5f + metros * 0.25f;
         t.fontStyle = FontStyles.Bold;
         return t;
     }
@@ -230,9 +229,9 @@ public class PanelDePractica : MonoBehaviour
 
     private void EmpezarReaccion()
     {
-        if (todos.Count == 0) return;
+        if (bots.Count == 0) return;
         moverse = false;
-        foreach (BotDePractica bot in todos)
+        foreach (BotDePractica bot in bots)
         {
             if (bot == null) continue;
             bot.Moverse = false;
@@ -266,8 +265,8 @@ public class PanelDePractica : MonoBehaviour
         // Uno al azar, que no sea el de recién.
         BotDePractica elegido;
         int intentos = 0;
-        do elegido = todos[Random.Range(0, todos.Count)];
-        while ((elegido == null || elegido == anterior) && todos.Count > 1 && ++intentos < 20);
+        do elegido = bots[Random.Range(0, bots.Count)];
+        while ((elegido == null || elegido == anterior) && bots.Count > 1 && ++intentos < 20);
         if (elegido == null) return;
         elegido.gameObject.SetActive(true);
         elegido.Revivir(true);
