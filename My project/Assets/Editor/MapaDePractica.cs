@@ -338,7 +338,11 @@ public static class MapaDePractica
         PanelDePractica viejo = mapa.GetComponentInChildren<PanelDePractica>(true);
         if (viejo != null)
         {
-            if (viejo.name == NombrePanel) return;
+            if (viejo.name == NombrePanel)
+            {
+                LimitesDeBots(viejo, mapa);
+                return;
+            }
             lugares = viejo.lugares;
             Object.DestroyImmediate(viejo.gameObject);
         }
@@ -367,8 +371,7 @@ public static class MapaDePractica
         panel.munieco = AssetDatabase.LoadAssetAtPath<GameObject>(Munieco);
         if (panel.munieco == null) Debug.LogWarning($"Mapa de práctica: no se encontró {Munieco} (el panel queda sin bots).");
         panel.lugares = lugares;
-        panel.x0 = BlancosX0 + 0.6f;
-        panel.x1 = BlancosX1 - 0.6f;
+        LimitesDeBots(panel, mapa);
 
         const float ancho = 2.2f, alto = 1.2f, centroY = 1.55f, marco = 0.06f;
         Caja("Pantalla", p, new Vector3(0f, centroY, -0.04f), new Vector3(ancho, alto, 0.08f), cartel);
@@ -381,6 +384,15 @@ public static class MapaDePractica
         panel.ayuda = TextoDelPanel("Ayuda", p, "Mirá un botón y apretá E", new Vector3(0f, 1.15f, -0.085f), new Vector2(ancho - 0.3f, 0.13f), Color.white);
         Boton(p, "Botón mover bots", BotonDePractica.Accion.MoverBots, "MOVER BOTS", -0.55f);
         Boton(p, "Botón reiniciar", BotonDePractica.Accion.Reiniciar, "REINICIAR", 0.55f);
+    }
+
+    // Entre qué x caminan los bots: la zona de blancos, sin meterse en el relieve de la pared derecha del kit. (Además,
+    // cada bot frena en lo primero sólido que tenga al costado: BotDePractica.)
+    private static void LimitesDeBots(PanelDePractica panel, Transform mapa)
+    {
+        panel.x0 = BlancosX0 + 0.6f;
+        panel.x1 = Mathf.Min(BlancosX1 - 0.6f, CaraParedDerecha(mapa) - 0.6f);
+        EditorUtility.SetDirty(panel);
     }
 
     // Dónde termina, hacia adentro, la pared derecha del kit (sus piezas tienen relieve). Sin piezas, la cara del cubo.

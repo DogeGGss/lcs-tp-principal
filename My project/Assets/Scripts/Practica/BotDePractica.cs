@@ -57,9 +57,38 @@ public class BotDePractica : MonoBehaviour
         bot.puedeMoverse = puedeMoverse;
         bot.x0 = Mathf.Min(x0, x1);
         bot.x1 = Mathf.Max(x0, x1);
+        bot.Topes(pie);
         if (bot.animator != null && contorno != null)
             ContornoRival.Crear(m, bot.animator.transform, contorno, () => bot != null && !bot.muerto);
         return bot;
+    }
+
+    // Que no camine a través de las paredes (las del kit tienen relieve) ni de la baranda: a cada costado, hasta lo
+    // primero sólido que encuentra a la altura del pecho, dejando lugar para su cuerpo.
+    private const float Margen = 0.5f;
+    private static readonly RaycastHit[] golpes = new RaycastHit[16];
+
+    private void Topes(Vector3 pie)
+    {
+        Vector3 pecho = pie + Vector3.up * 1f;
+        x0 = Mathf.Max(x0, pecho.x - Libre(pecho, Vector3.left) + Margen);
+        x1 = Mathf.Min(x1, pecho.x + Libre(pecho, Vector3.right) - Margen);
+        if (x0 > x1) x0 = x1 = transform.position.x; // no hay lugar: se queda quieto
+    }
+
+    // Cuántos metros libres hay desde "desde" hacia "hacia" (sin contar personajes: él mismo, el jugador, otros bots).
+    private float Libre(Vector3 desde, Vector3 hacia)
+    {
+        const float lejos = 50f;
+        float libre = lejos;
+        int cantidad = Physics.RaycastNonAlloc(desde, hacia, golpes, lejos, Physics.DefaultRaycastLayers, QueryTriggerInteraction.Ignore);
+        for (int i = 0; i < cantidad; i++)
+        {
+            Collider c = golpes[i].collider;
+            if (c.transform.IsChildOf(transform) || c.GetComponentInParent<HealthSystem>() != null) continue;
+            libre = Mathf.Min(libre, golpes[i].distance);
+        }
+        return libre;
     }
 
     private void Awake()
