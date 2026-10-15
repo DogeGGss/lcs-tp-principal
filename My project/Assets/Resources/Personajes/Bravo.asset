@@ -15,8 +15,9 @@ MonoBehaviour:
   order: 1
   displayName: Bravo
   role: Iniciador
-  portrait: {fileID: 0}
+  portrait: {fileID: 21300000, guid: 6317dd54868f5844fb32c65e17f76bac, type: 3}
   color: {r: 0.3000, g: 0.9000, b: 0.4000, a: 1}
   description: 
   ability: {fileID: 11400000, guid: 467e45042b4b4988acd152079033eb75, type: 2}
-  provisional: 1
+  modelo: {fileID: 919132149155446097, guid: 0caddd56c9a1d7b4cb708738a7850286, type: 3}
+  provisional: 0
