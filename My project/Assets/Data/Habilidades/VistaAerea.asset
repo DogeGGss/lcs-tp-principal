@@ -18,4 +18,4 @@ MonoBehaviour:
   cooldown: 45
   cargas: 1
   efecto: 3
-  description: 'Durante 4 s ves todo el mapa desde arriba y los rivales se marcan en rojo. Mientras tanto te quedás quieto, unos ojos verdes en el cielo te delatan y, si te pegan, se corta. Se recarga en 45 s.'
+  description: 'Durante 4 s ves desde arriba 30 m a la redonda y los rivales se marcan en rojo. Mientras tanto te quedás quieto, unos ojos verdes en el cielo te delatan y, si te pegan, se corta. Se recarga en 45 s.'

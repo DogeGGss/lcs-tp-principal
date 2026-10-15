@@ -68,7 +68,7 @@ public class RivalesVistos : MonoBehaviour
         if (local.Vivo && (camara != null || aerea))
             foreach (JugadorEnRed j in partida.Jugadores)
                 if (j != null && j != local && j.Vivo && !EquiposTacticos.SonAliados(local.Actor, j.Actor) &&
-                    (aerea ? DesdeArriba(j) : LoVeo(camara, j)))
+                    (aerea ? DesdeArriba(local, j) : LoVeo(camara, j)))
                     veo.Add(j.Actor);
         veo.Sort();
         Publicar(veo.ToArray());
@@ -128,9 +128,10 @@ public class RivalesVistos : MonoBehaviour
         return tope.collider.transform.IsChildOf(rival.transform); // lo primero que se toca es el propio rival
     }
 
-    // US 021, CA2: desde arriba se ve a todos, salvo a los que tapa el humo.
-    private static bool DesdeArriba(JugadorEnRed rival)
+    // US 021, CA2: desde arriba se ve a todos los que están a 30 m, salvo a los que tapa el humo.
+    private static bool DesdeArriba(JugadorEnRed yo, JugadorEnRed rival)
     {
+        if (!HabilidadVistaAerea.EnElRadio(yo.transform.position, rival.transform.position)) return false;
         Vector3 pecho = rival.transform.position + Vector3.up * 1.1f;
         return !HumoGranada.TapaVista(pecho + Vector3.up * 30f, pecho) && HumoGranada.GrisEn(pecho) <= 0.5f;
     }
