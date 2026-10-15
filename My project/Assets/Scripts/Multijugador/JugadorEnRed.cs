@@ -139,6 +139,7 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
         Grenade1.Exploded += AlExplotarGranada;
         HabilidadTrasbordo.Usado += AlTrasbordar;
         HabilidadBarrera.Levantada += AlLevantarBarrera;
+        HabilidadVistaAerea.Cambio += AlCambiarVistaAerea;
         Barrera.EnviarDanio = AlDaniarBarrera; // US 020, CA11
     }
 
@@ -150,6 +151,8 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
         Grenade1.Exploded -= AlExplotarGranada;
         HabilidadTrasbordo.Usado -= AlTrasbordar;
         HabilidadBarrera.Levantada -= AlLevantarBarrera;
+        HabilidadVistaAerea.Cambio -= AlCambiarVistaAerea;
+        if (observando) { OjosEnElCielo.Mostrar(transform, false); MatchHud.ClearWarn(TextoObservado); }
         if (Barrera.EnviarDanio == (System.Action<Barrera, int, Vector3>)AlDaniarBarrera) Barrera.EnviarDanio = null;
         SoltarArmas.Soltada -= AlSoltarArma;
         SoltarArmas.Pedida -= AlPedirArma;
@@ -1216,6 +1219,33 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
     {
         Barrera barrera = Barrera.Buscar(actor, id);
         if (barrera != null) barrera.AplicarDanio(danio, punto);
+    }
+
+    // US 021, CA6, CA7 y CA11: la Vista aérea se avisa a los demás: todos ven los ojos en el cielo arriba de este
+    // jugador y los rivales ven el aviso "Te están observando" y oyen un sonido mientras dura.
+    private const string TextoObservado = "Te están observando";
+    private bool observando;
+
+    private void AlCambiarVistaAerea(Transform jugador, bool activa)
+    {
+        if (jugador != transform) return;
+        photonView.RPC(nameof(RpcVistaAerea), RpcTarget.Others, activa);
+    }
+
+    [PunRPC]
+    private void RpcVistaAerea(bool activa)
+    {
+        if (photonView.IsMine || activa == observando) return;
+        observando = activa;
+        OjosEnElCielo.Mostrar(transform, activa);
+        JugadorEnRed yo = partida != null ? partida.Local : (PartidaEnRed.Actual != null ? PartidaEnRed.Actual.Local : null);
+        bool soyRival = yo != null && yo.Vivo && MatchSettings.Mode != GameMode.Zombie && EquiposTacticos.EsRival(Actor);
+        if (activa && soyRival)
+        {
+            MatchHud.Warn(TextoObservado, HabilidadVistaAerea.Duracion + 0.3f);
+            SonidoVistaAerea.Observado();
+        }
+        else if (!activa) MatchHud.ClearWarn(TextoObservado);
     }
 
     // US 030, CA3 y CA5: aparece en el punto que eligió el dueño, sin deslizarse desde donde murió.

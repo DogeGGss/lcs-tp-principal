@@ -13,6 +13,8 @@ using UnityEngine;
 public class RivalesVistos : MonoBehaviour
 {
     private const string Prop = "mm.v";  // propiedad del jugador: los rivales (número de actor) que está viendo
+    private const string PropAerea = "mm.a"; // US 021: está en la Vista aérea (lo que publica lo vio desde arriba)
+    private const float DuracionAerea = 3f;  // US 021, CA5: lo visto desde arriba queda 3 s en el minimapa
     private const float Cada = 0.2f;     // segundos entre una mirada y la siguiente
     private const float Duracion = 2f;   // CA4: cuánto queda el punto después de que dejan de verlo
     private const float DistanciaMaxima = 120f;
@@ -32,9 +34,10 @@ public class RivalesVistos : MonoBehaviour
     private PartidaEnRed partida;
     private float proxima;
     private int[] publicado = Nadie;
+    private bool aereaPublicada;
     private readonly Dictionary<int, Marca> marcas = new Dictionary<int, Marca>();
     private readonly List<int> veo = new List<int>(), vencidas = new List<int>();
-    private readonly HashSet<int> vistos = new HashSet<int>();
+    private readonly HashSet<int> vistos = new HashSet<int>(), desdeArriba = new HashSet<int>();
 
     public void Iniciar(PartidaEnRed partida)
     {
@@ -61,23 +64,29 @@ public class RivalesVistos : MonoBehaviour
         // Lo que ve este jugador (muerto no ve a nadie).
         veo.Clear();
         Camera camara = Camera.main;
-        if (local.Vivo && camara != null)
+        bool aerea = local.Vivo && HabilidadVistaAerea.Activa;
+        if (local.Vivo && (camara != null || aerea))
             foreach (JugadorEnRed j in partida.Jugadores)
-                if (j != null && j != local && j.Vivo && !EquiposTacticos.SonAliados(local.Actor, j.Actor) && LoVeo(camara, j))
+                if (j != null && j != local && j.Vivo && !EquiposTacticos.SonAliados(local.Actor, j.Actor) &&
+                    (aerea ? DesdeArriba(j) : LoVeo(camara, j)))
                     veo.Add(j.Actor);
         veo.Sort();
         Publicar(veo.ToArray());
+        PublicarAerea(aerea);
 
-        // Lo que ve el equipo: lo propio más lo que publicó cada compañero vivo.
+        // Lo que ve el equipo: lo propio más lo que publicó cada compañero vivo. Lo visto desde la Vista aérea (US 021)
+        // queda más tiempo.
         vistos.Clear();
-        foreach (int actor in veo) vistos.Add(actor);
+        desdeArriba.Clear();
+        foreach (int actor in veo) { vistos.Add(actor); if (aerea) desdeArriba.Add(actor); }
         foreach (Player p in PhotonNetwork.PlayerList)
         {
             if (p.IsLocal || !EquiposTacticos.SonAliados(local.Actor, p.ActorNumber)) continue;
             JugadorEnRed companero = partida.Buscar(p.ActorNumber);
             if (companero == null || !companero.Vivo) continue;
+            bool suAerea = p.CustomProperties.TryGetValue(PropAerea, out object a) && a is bool b && b;
             if (p.CustomProperties.TryGetValue(Prop, out object v) && v is int[] lista)
-                foreach (int actor in lista) vistos.Add(actor);
+                foreach (int actor in lista) { vistos.Add(actor); if (suAerea) desdeArriba.Add(actor); }
         }
 
         // CA4: mientras lo ven, el punto lo sigue; después queda donde estaba y vence a los 2 s.
@@ -88,7 +97,7 @@ public class RivalesVistos : MonoBehaviour
             if (rival == null || !rival.Vivo || EquiposTacticos.SonAliados(local.Actor, actor)) continue;
             if (!marcas.TryGetValue(actor, out Marca marca)) marcas[actor] = marca = new Marca();
             marca.lugar = rival.transform.position;
-            marca.hasta = ahora + Duracion;
+            marca.hasta = Mathf.Max(marca.hasta, ahora + (desdeArriba.Contains(actor) ? DuracionAerea : Duracion));
         }
         vencidas.Clear();
         foreach (KeyValuePair<int, Marca> par in marcas)
@@ -117,6 +126,20 @@ public class RivalesVistos : MonoBehaviour
         if (enPantalla.z <= 0f || enPantalla.x < 0f || enPantalla.x > 1f || enPantalla.y < 0f || enPantalla.y > 1f) return false;
         if (!Physics.Linecast(desde, punto, out RaycastHit tope, Physics.DefaultRaycastLayers, QueryTriggerInteraction.Ignore)) return true;
         return tope.collider.transform.IsChildOf(rival.transform); // lo primero que se toca es el propio rival
+    }
+
+    // US 021, CA2: desde arriba se ve a todos, salvo a los que tapa el humo.
+    private static bool DesdeArriba(JugadorEnRed rival)
+    {
+        Vector3 pecho = rival.transform.position + Vector3.up * 1.1f;
+        return !HumoGranada.TapaVista(pecho + Vector3.up * 30f, pecho) && HumoGranada.GrisEn(pecho) <= 0.5f;
+    }
+
+    private void PublicarAerea(bool aerea)
+    {
+        if (aerea == aereaPublicada || PhotonNetwork.LocalPlayer == null || !PhotonNetwork.InRoom) return;
+        aereaPublicada = aerea;
+        PhotonNetwork.LocalPlayer.SetCustomProperties(new Hashtable { { PropAerea, aerea } });
     }
 
     // Solo se manda por la red cuando cambia.

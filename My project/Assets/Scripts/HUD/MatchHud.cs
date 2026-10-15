@@ -605,6 +605,13 @@ public class MatchHud : MonoBehaviour
         Instance.ShowWarning(text, seconds);
     }
 
+    /// <summary>Saca el aviso rojo si sigue mostrando ese texto (por ejemplo, terminó lo que avisaba).</summary>
+    public static void ClearWarn(string text)
+    {
+        if (Instance == null || Instance.warningText == null || Instance.warningText.text != text) return;
+        Instance.warningEnd = 0f;
+    }
+
     private void BuildBanner(string eyebrow, string title, Color color, string sub, IList<string> chips, float seconds, string footer)
     {
         if (banner != null) Destroy(banner.gameObject);

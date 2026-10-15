@@ -13,6 +13,7 @@ public abstract class EfectoHabilidad : MonoBehaviour
         {
             case AbilityData.Efecto.Trasbordo: return typeof(HabilidadTrasbordo);
             case AbilityData.Efecto.Barrera: return typeof(HabilidadBarrera);
+            case AbilityData.Efecto.VistaAerea: return typeof(HabilidadVistaAerea);
             default: return null;
         }
     }
