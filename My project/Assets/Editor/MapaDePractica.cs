@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using TMPro;
@@ -18,6 +19,9 @@ using UnityEngine.SceneManagement;
 // - CA4: tiene el jugador (con la pausa, que vuelve al menú) y el HUD, sin sala ni rondas: no necesita una partida.
 // - US 119: la tienda (B) y el CampoDePractica, que hace que en esta escena todas las armas se elijan gratis.
 //   El jugador va sin habilidad (el mapa es para practicar con las armas): lo hace el CampoDePractica.
+// - US 120: los blancos de la zona de blancos pasan a ser bots (el muñeco de Pruebas_Armas): cada blanco redondo se
+//   cambia por un "lugar de bot". Al lado de la línea de tiro, el panel (PanelDePractica) con los botones para mover
+//   los bots y reiniciar. Los blancos de la zona de distancias quedan como están (ahí se estudia el patrón).
 // Medidas en metros. El 0 es la línea de tiro: hacia adelante (+z) los blancos, hacia atrás la zona de salida.
 // Piso, paredes y cajas son piezas del kit Sci-fi (las mismas del mapa táctico). Debajo de cada pared y del piso queda
 // un cubo invisible que es el que choca, así la sala queda cerrada aunque las piezas del kit tengan huecos. Las medidas
@@ -33,6 +37,7 @@ public static class MapaDePractica
     private const string Jugador = "Assets/Prefabs/Player.prefab";
     private const string Hud = "Assets/UI/HUD/HUDCombate.prefab";
     private const string Tienda = "Assets/UI/Tienda/Tienda.prefab"; // US 119: con ella se eligen las armas, gratis
+    private const string Munieco = "Assets/Prefabs/MuniecoPrueba.prefab"; // US 120: el bot
     private const string Kit = "Assets/Creepy_Cat/3D Scifi Kit Starter Kit_HD/Prefabs";
     private const string KitPiso = Kit + "/Floors/Floor_Squared_01_6x6.prefab";
     private const string KitPared = Kit + "/Walls/Wall_Cube_01_Long.prefab";
@@ -66,6 +71,7 @@ public static class MapaDePractica
         ZonaDeSalida(mapa);
         ZonaDeDistancias(mapa);
         ZonaDeBlancos(mapa);
+        BotsYPanel(mapa);
         Luz();
         if (Prefab(Jugador, new Vector3(0f, AlturaJugador, -8f)) == null || Prefab(Hud, Vector3.zero) == null) return;
         if (!ArmasDePractica()) return;
@@ -76,7 +82,7 @@ public static class MapaDePractica
     }
 
     // Para una escena ya armada y retocada a mano: le pone los carteles con marco y le
-    // suma la tienda y el CampoDePractica (US 119) si no los tiene, sin tocar nada más. Hay que tener abierta
+    // suma la tienda y el CampoDePractica (US 119) y los bots con su panel (US 120) si no los tiene, sin tocar nada más. Hay que tener abierta
     // Scenes/Mapa_practica.
     [MenuItem(MenuActualizar)]
     private static void Actualizar()
@@ -93,9 +99,10 @@ public static class MapaDePractica
         CambiarCartel(raiz.transform.Find("Zona de distancias"), "ZONA DE DISTANCIAS", DistanciasX0, DistanciasX1);
         CambiarCartel(raiz.transform.Find("Zona de blancos"), "ZONA DE BLANCOS", BlancosX0, BlancosX1);
         if (!ArmasDePractica()) return;
+        BotsYPanel(raiz.transform);
         EditorSceneManager.MarkSceneDirty(escena);
         EditorSceneManager.SaveScene(escena);
-        Debug.Log("Mapa de práctica: escena actualizada (carteles, tienda y campo de práctica).");
+        Debug.Log("Mapa de práctica: escena actualizada (carteles, tienda, campo de práctica, bots y panel).");
     }
 
     // Saca el cartel viejo (solo el texto) y pone el nuevo. Si la zona ya tiene el nuevo (con tablero), no hace nada.
@@ -314,6 +321,76 @@ public static class MapaDePractica
         Blanco("Blanco alto 24 m", zona, new Vector3(4.5f, arriba, 24f), 1.5f);
         arriba = CajasDelKit("Cajas", zona, new Vector3(9f, 0f, 16f), 1.5f);
         Blanco("Blanco alto 16 m", zona, new Vector3(9f, arriba, 16f), 1.5f);
+    }
+
+    // =====================================================================
+    // US 120: bots y panel
+    // =====================================================================
+
+    // Cambia cada blanco redondo de la zona de blancos por un lugar de bot y pone el panel. Si el panel ya está, no hace
+    // nada (así no se pisan los lugares movidos a mano).
+    private static void BotsYPanel(Transform mapa)
+    {
+        if (mapa.GetComponentInChildren<PanelDePractica>(true) != null) return;
+        Transform zona = mapa.Find("Zona de blancos");
+        if (zona == null) return;
+
+        Transform grupo = Grupo("Lugares de bots", zona);
+        var lugares = new List<Transform>();
+        foreach (Transform blanco in zona.Cast<Transform>().Where(t => t.name.StartsWith("Blanco")).ToList())
+        {
+            Transform lugar = Grupo(blanco.name.Replace("Blanco", "Bot"), grupo);
+            lugar.position = blanco.position; // el pie del poste: en el piso o arriba de una caja
+            lugares.Add(lugar);
+            Object.DestroyImmediate(blanco.gameObject);
+        }
+
+        // El panel, adelante a la derecha de donde aparece el jugador, de frente a él.
+        Transform salida = mapa.Find("Zona de salida") ?? mapa;
+        Transform p = Grupo("Panel de práctica", salida);
+        p.position = new Vector3((BlancosX0 + BlancosX1) * 0.5f, 0f, -5f);
+        PanelDePractica panel = p.gameObject.AddComponent<PanelDePractica>();
+        panel.munieco = AssetDatabase.LoadAssetAtPath<GameObject>(Munieco);
+        if (panel.munieco == null) Debug.LogWarning($"Mapa de práctica: no se encontró {Munieco} (el panel queda sin bots).");
+        panel.lugares = lugares.ToArray();
+        panel.x0 = BlancosX0 + 0.6f;
+        panel.x1 = BlancosX1 - 0.6f;
+
+        const float ancho = 2.2f;
+        Caja("Mesa", p, new Vector3(0f, 0.5f, 0f), new Vector3(ancho, 1f, 0.5f), poste);
+        Caja("Pantalla", p, new Vector3(0f, 1.6f, 0.2f), new Vector3(ancho, 1f, 0.08f), cartel);
+        Caja("Marco", p, new Vector3(0f, 2.1f, 0.2f), new Vector3(ancho, 0.06f, 0.1f), linea, false);
+        TextoDelPanel("Título", p, "CAMPO DE PRÁCTICA", new Vector3(0f, 1.95f, 0.15f), new Vector2(ancho - 0.3f, 0.2f), Amarillo);
+        panel.marcador = TextoDelPanel("Marcador", p, "Bajas: 0", new Vector3(0f, 1.7f, 0.15f), new Vector2(ancho - 0.3f, 0.18f), Color.white);
+        panel.ayuda = TextoDelPanel("Ayuda", p, "Mirá un botón y apretá E", new Vector3(0f, 0.8f, -0.26f), new Vector2(ancho - 0.3f, 0.16f), Color.white);
+        Boton(p, "Botón mover bots", BotonDePractica.Accion.MoverBots, "MOVER BOTS", -0.55f);
+        Boton(p, "Botón reiniciar", BotonDePractica.Accion.Reiniciar, "REINICIAR", 0.55f);
+    }
+
+    // Un botón amarillo sobre la pantalla del panel, que se ilumina al mirarlo. No es estático: cambia de material.
+    private static void Boton(Transform panel, string nombre, BotonDePractica.Accion accion, string texto, float x)
+    {
+        GameObject go = Pieza(PrimitiveType.Cube, nombre, panel, new Vector3(x, 1.33f, 0.13f), Quaternion.identity,
+            new Vector3(0.95f, 0.3f, 0.08f), linea, true);
+        GameObjectUtility.SetStaticEditorFlags(go, 0);
+        BotonDePractica boton = go.AddComponent<BotonDePractica>();
+        boton.accion = accion;
+        boton.normal = linea;
+        boton.resaltado = raya;
+        boton.texto = TextoDelPanel("Texto " + nombre, panel, texto, new Vector3(x, 1.33f, 0.085f), new Vector2(0.85f, 0.2f),
+            new Color(0.07f, 0.09f, 0.13f));
+    }
+
+    // Texto del panel que se achica solo para entrar en su recuadro (en metros).
+    private static TextMeshPro TextoDelPanel(string nombre, Transform padre, string texto, Vector3 lugar, Vector2 recuadro, Color color)
+    {
+        TextMeshPro t = Texto(nombre, padre, texto, lugar, 2f, color, false);
+        t.rectTransform.sizeDelta = recuadro;
+        t.textWrappingMode = TextWrappingModes.NoWrap;
+        t.enableAutoSizing = true;
+        t.fontSizeMin = 0.5f;
+        t.fontSizeMax = 2f;
+        return t;
     }
 
     // El cartel con el nombre de la zona: un tablero oscuro con marco amarillo, sobre dos postes, a lo ancho de la zona
