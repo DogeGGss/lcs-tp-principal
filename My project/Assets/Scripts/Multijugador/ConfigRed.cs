@@ -87,6 +87,13 @@ public class ConfigRed : ScriptableObject
     public AudioClip sonidoBarreraRompe;
     public AudioClip sonidoBarreraApaga;
     [Range(0f, 1f)] public float volumenBarrera = 0.8f;
+    [Tooltip("Vista aérea (US 021, CA12): al activarla. Sin clip, suena uno generado.")]
+    public AudioClip sonidoVistaAerea;
+    [Tooltip("Vista aérea (US 021, CA13): al terminar.")]
+    public AudioClip sonidoVistaAereaFin;
+    [Tooltip("Vista aérea (US 021, CA7): el aviso a los rivales de que los están observando.")]
+    public AudioClip sonidoObservado;
+    [Range(0f, 1f)] public float volumenVistaAerea = 0.8f;
 
     [Tooltip("Música del Modo Deathmatch (US 136, CA6). Suena en loop por el grupo Música. Sin clip, no suena nada.")]
     public AudioClip musicaDeathmatch;

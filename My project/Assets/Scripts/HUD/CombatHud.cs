@@ -204,7 +204,7 @@ public class CombatHud : MonoBehaviour
         // La mira se ve con cualquier arma menos los francotiradores: sin la mira telescópica se tira a ojo, como el AWP
         // de CS (US 068), y con ella puesta la lente tiene su propia retícula (US 009). Con la pausa abierta se oculta
         // (con la tienda ya se oculta todo el HUD).
-        crosshair.gameObject.SetActive(!PauseMenu.IsPaused && MiraTelescopica.EnMano == null);
+        crosshair.gameObject.SetActive(!PauseMenu.IsPaused && MiraTelescopica.EnMano == null && !HabilidadVistaAerea.Activa);
         UpdateCrosshair();
         float center = MiraTelescopica.Puesta ? 0f : 1f;
         foreach (CanvasGroup part in hiddenWhenScoped) part.alpha = center;
