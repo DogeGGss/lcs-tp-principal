@@ -14,9 +14,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::CharacterData
   order: 0
   displayName: Alfa
-  role: Iniciador
+  role: Centinela
   portrait: {fileID: 0}
-  color: {r: 0.9490, g: 0.6039, b: 0.2196, a: 1}
+  color: {r: 1.0000, g: 0.7800, b: 0.1200, a: 1}
   description: 
-  ability: {fileID: 11400000, guid: c4bdc8ecaf38a3c499e064d472fb97a3, type: 2}
+  ability: {fileID: 11400000, guid: 7653c73771644ebb90dbd7f221131c57, type: 2}
   provisional: 1
