@@ -36,9 +36,9 @@ public class MenuUIController : MonoBehaviour
     {
         OcultarTodosLosPaneles();
 
+        // El menú principal lo dibuja MenuRiftwalker (con la versión y "Volver a la partida"); este panel queda vacío y
+        // marca que se está en el menú.
         panelMenuPrincipal.SetActive(true);
-        VersionDelJuego.MostrarEnMenu(panelMenuPrincipal.transform);
-        VolverALaPartida.MostrarEnMenu(panelMenuPrincipal.transform); // US 195, CA2
 
         overlayTransicion.alpha = 0f;
         overlayTransicion.blocksRaycasts = false;

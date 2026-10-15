@@ -1,5 +1,4 @@
 using System;
-using System.Collections;
 using TMPro;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -8,12 +7,17 @@ using static ShopUIKit;
 using static PerfilUI;
 using Img = UnityEngine.UI.Image;
 
-// PRUEBA DEL MENÚ (rama prueba/menu-perfil-capsulas): menú principal nuevo, con el Perfil, la Estación del Rift
-// (cápsulas), la tienda de cristales y el formulario de opinión. Todo con datos fijos (PerfilDatos): es para probar
-// cómo se ve y se usa antes de escribir y refinar las historias.
+// Menú principal del juego: JUGAR, la lista (Opciones, Logros, Créditos, Salir), la credencial del jugador con el
+// Perfil, la Estación del Rift (cápsulas), la tienda de cristales, el formulario de opinión y "Volver a la partida".
+// El Perfil, las monedas, la colección, las estadísticas y los logros todavía son datos fijos (PerfilDatos y
+// PantallaLogros): falta guardarlos de verdad.
 //
-// Va en un objeto de la escena MenuPrincipal. No cambia MenuUIController: arma su propio Canvas encima del menú,
-// esconde la columna de botones vieja y llama a los mismos métodos (Jugar, Opciones, Logros, Créditos, Salir, Pruebas).
+// Va en un objeto de la escena MenuPrincipal y arma dos lienzos por código:
+// - MenuRiftwalkerFondo, debajo del Canvas de la escena: las imágenes de fondo. Así Opciones, Créditos y la selección
+//   de modo (los paneles de MenuUIController, que se siguen usando) se ven sobre el mismo fondo.
+// - MenuRiftwalkerCanvas, encima: el menú, sus pantallas y las ventanas emergentes.
+// PanelMenuPrincipal queda vacío: es el estado "en el menú" de MenuUIController (y lo miran la nota para el PO y el
+// nombre del jugador), pero sus botones viejos y el fondo viejo de la escena se apagan al arrancar.
 public class MenuRiftwalker : MonoBehaviour
 {
     [Header("Tipografías (las mismas de la tienda)")]
@@ -34,14 +38,16 @@ public class MenuRiftwalker : MonoBehaviour
     [SerializeField] private UnityEngine.Audio.AudioMixerGroup grupoInterfaz;
 
     private const float Fundido = 0.22f, AnchoTarjeta = 580f;
+    public const float Afuera = 2000f; // cuánto siguen los fondos de las pantallas fuera del 16:9 (pantallas más anchas o más altas)
     private const float DuracionFondo = 9f, FundidoFondo = 2.2f; // cada imagen de fondo y el cruce entre dos
 
     public PantallaPerfil Perfil { get; private set; }
     public PantallaEstacion Estacion { get; private set; }
     public PantallaTienda Tienda { get; private set; }
+    public PantallaLogros Logros { get; private set; }
 
     private PantallaBase actual, saliendo;
-    private RectTransform canvasRoot, root, capaMenu, capaPantallas, capaModal, panelModal;
+    private RectTransform canvasRoot, root, rootFondo, capaMenu, capaPantallas, capaModal, panelModal;
     private CanvasGroup grupoMenu, grupoModal;
     private GameObject panelPrincipal;
     private CanvasGroup overlay;
@@ -60,7 +66,15 @@ public class MenuRiftwalker : MonoBehaviour
     private TextMeshProUGUI nombreMenu, tituloMenu, nuevosMenu, subEstacion;
     private RectTransform chipNuevos;
     private Monedas monedasMenu;
+
+    // Volver a la partida (US 195, CA2)
+    private const float DuracionErrorVolver = 6f;
     private RectTransform tarjetaVolver;
+    private TextMeshProUGUI rotuloVolver, salaVolver, detalleVolver;
+    private Boton botonVolver;
+    private bool volviendo, escuchandoRed;
+    private string errorVolver;
+    private float errorVolverHasta, proximoVolver;
 
     // =====================================================================
     // Ciclo de vida
@@ -73,17 +87,16 @@ public class MenuRiftwalker : MonoBehaviour
         SonidoInterfaz.Configurar(sonidoPasar, grupoInterfaz);
         PlayerNameScreen.ChipOculto = true; // la credencial nueva muestra el nombre y abre el Perfil
         Armar();
+        ApagarMenuViejo();
     }
 
     private void Start()
     {
         menuUI = FindAnyObjectByType<MenuUIController>();
-        panelPrincipal = BuscarEnEscena("PanelMenuPrincipal");
         GameObject o = BuscarEnEscena("OverlayTransicion");
         if (o != null) overlay = o.GetComponent<CanvasGroup>();
         PerfilDatos.Cambio += RefrescarTodo;
         PlayerProfile.NameChanged += NombreCambiado;
-        StartCoroutine(EsconderMenuViejo());
         RefrescarTodo();
     }
 
@@ -92,39 +105,39 @@ public class MenuRiftwalker : MonoBehaviour
         PerfilDatos.Cambio -= RefrescarTodo;
         PlayerProfile.NameChanged -= NombreCambiado;
         PlayerNameScreen.ChipOculto = false;
+        if (escuchandoRed && Multijugador.Existe) Multijugador.Instancia.Error -= AlFallarVolver;
     }
 
     private void NombreCambiado(string _) => RefrescarTodo();
 
-    // MenuUIController arma "Volver a la partida" en su Start copiando el botón JUGAR: se esconde la columna vieja
-    // un cuadro después, así la copia queda bien, y la tarjeta se lleva a la columna nueva.
-    private IEnumerator EsconderMenuViejo()
+    // Del menú viejo queda PanelMenuPrincipal, vacío y transparente (ver el comentario de la clase). Se apaga en Awake,
+    // antes del primer cuadro, así sus botones no llegan a verse. También se apaga el fondo viejo de la escena: el
+    // nuevo está en el lienzo de abajo.
+    private void ApagarMenuViejo()
     {
-        yield return null;
-        if (panelPrincipal == null) yield break;
-        foreach (string nombre in new[] { "BtnJugar", "BtnOpciones", "BtnLogros", "BtnCreditos", "BtnSalir", "BtnPrueba", "BtnPrueba2", "Text (TMP)" })
+        panelPrincipal = BuscarEnEscena("PanelMenuPrincipal");
+        if (panelPrincipal != null)
         {
-            Transform t = panelPrincipal.transform.Find(nombre);
-            if (t != null) t.gameObject.SetActive(false);
+            foreach (UnityEngine.UI.Graphic g in panelPrincipal.GetComponents<UnityEngine.UI.Graphic>()) g.enabled = false;
+            foreach (Transform hijo in panelPrincipal.transform) hijo.gameObject.SetActive(false);
         }
-        Transform volver = panelPrincipal.transform.Find("TarjetaVolverALaPartida");
-        if (volver != null)
-        {
-            tarjetaVolver = (RectTransform)volver;
-            tarjetaVolver.anchoredPosition = new Vector2(120f + tarjetaVolver.sizeDelta.x / 2f - 960f, 540f - 802f);
-        }
+        GameObject imagen = BuscarEnEscena("ImagFondo");
+        if (imagen == null) return;
+        imagen.SetActive(false);
+        foreach (UnityEngine.UI.Graphic g in imagen.transform.parent.GetComponents<UnityEngine.UI.Graphic>()) g.enabled = false;
     }
 
     private void Update()
     {
         Encajar();
+        AnimarFondos(); // se ven en el menú y detrás de Opciones (y de los otros paneles transparentes)
         bool enMenu = panelPrincipal != null && panelPrincipal.activeInHierarchy && actual == null;
         if (capaMenu.gameObject.activeSelf != enMenu) capaMenu.gameObject.SetActive(enMenu);
         if (enMenu)
         {
             grupoMenu.alpha = overlay != null ? 1f - overlay.alpha : 1f;
             grupoMenu.blocksRaycasts = overlay == null || overlay.alpha < 0.5f;
-            AnimarFondos();
+            ActualizarVolver();
         }
 
         AnimarPantallas();
@@ -147,6 +160,7 @@ public class MenuRiftwalker : MonoBehaviour
         Vector2 size = canvasRoot.rect.size;
         if (size.x <= 0f || size.y <= 0f) return;
         root.localScale = Vector3.one * Mathf.Min(size.x / 1920f, size.y / 1080f);
+        rootFondo.localScale = Vector3.one * Mathf.Max(size.x / 1920f, size.y / 1080f); // el fondo cubre toda la pantalla
     }
 
     private static GameObject BuscarEnEscena(string nombre)
@@ -255,28 +269,21 @@ public class MenuRiftwalker : MonoBehaviour
         CrearBoton(p, 720f - 48f - 290f, 400f - 48f - 64f, 290f, 64f, aceptar, true, () => { CerrarModal(); alAceptar?.Invoke(); }, 26f);
     }
 
+    // "Salir" pregunta con una ventana de este menú: el panel PanelDeseaSalir de la escena queda debajo de este lienzo.
+    private void ConfirmarSalir() =>
+        Confirmar("Salir", "¿Salir del juego?", "Se cierra Project Riftwalker.", "Salir", () => menuUI?.ConfirmarSalida());
+
     // =====================================================================
     // Armado
     // =====================================================================
 
     private void Armar()
     {
-        var go = new GameObject("MenuRiftwalkerCanvas", typeof(RectTransform), typeof(Canvas),
-            typeof(UnityEngine.UI.CanvasScaler), typeof(UnityEngine.UI.GraphicRaycaster));
-        go.layer = 5;
-        go.transform.SetParent(transform, false);
-        var canvas = go.GetComponent<Canvas>();
-        canvas.renderMode = RenderMode.ScreenSpaceOverlay;
-        canvas.sortingOrder = 95; // arriba del menú; abajo del nombre de jugador (100) y la nota para el PO (110)
-        var scaler = go.GetComponent<UnityEngine.UI.CanvasScaler>();
-        scaler.uiScaleMode = UnityEngine.UI.CanvasScaler.ScaleMode.ScaleWithScreenSize;
-        scaler.referenceResolution = new Vector2(1920f, 1080f);
-        scaler.screenMatchMode = UnityEngine.UI.CanvasScaler.ScreenMatchMode.Expand;
-        canvasRoot = (RectTransform)go.transform;
-
-        root = Node("Contenido", canvasRoot);
-        root.anchorMin = root.anchorMax = root.pivot = new Vector2(0.5f, 0.5f);
-        root.sizeDelta = new Vector2(1920f, 1080f);
+        // Debajo del Canvas de la escena (orden 0), con los paneles de MenuUIController.
+        rootFondo = Lienzo("MenuRiftwalkerFondo", -10, false, out _);
+        ArmarFondo();
+        // Arriba del Canvas de la escena; abajo del nombre de jugador (100) y la nota para el PO (110).
+        root = Lienzo("MenuRiftwalkerCanvas", 95, true, out canvasRoot);
 
         capaMenu = Place(Node("MenuPrincipal", root), 0f, 0f, 1920f, 1080f);
         grupoMenu = capaMenu.gameObject.AddComponent<CanvasGroup>();
@@ -286,11 +293,13 @@ public class MenuRiftwalker : MonoBehaviour
         Perfil = new PantallaPerfil(this, capaPantallas);
         Estacion = new PantallaEstacion(this, capaPantallas);
         Tienda = new PantallaTienda(this, capaPantallas);
-        foreach (PantallaBase p in new PantallaBase[] { Perfil, Estacion, Tienda }) p.rect.gameObject.SetActive(false);
+        Logros = new PantallaLogros(this, capaPantallas);
+        foreach (PantallaBase p in new PantallaBase[] { Perfil, Estacion, Tienda, Logros }) p.rect.gameObject.SetActive(false);
 
         capaModal = Place(Node("Ventana", root), 0f, 0f, 1920f, 1080f);
         grupoModal = capaModal.gameObject.AddComponent<CanvasGroup>();
-        Image(Stretch(Node("Oscurecido", capaModal)), null, new Color(0f, 0f, 0f, DarkAlpha(0.72f)), 0f, true);
+        Image(Place(Node("Oscurecido", capaModal), -Afuera, -Afuera, 1920f + 2f * Afuera, 1080f + 2f * Afuera), null,
+            new Color(0f, 0f, 0f, DarkAlpha(0.72f)), 0f, true);
         panelModal = Place(Node("Panel", capaModal), 0f, 0f, 600f, 400f);
         capaModal.gameObject.SetActive(false);
         grupoModal.alpha = 0f;
@@ -299,27 +308,55 @@ public class MenuRiftwalker : MonoBehaviour
         aviso = new Aviso(root);
     }
 
-    private void ArmarMenu()
+    /// <summary>Lienzo de pantalla completa con su raíz de 1920 x 1080 al centro (Encajar le da la escala).</summary>
+    private RectTransform Lienzo(string nombre, int orden, bool clics, out RectTransform lienzo)
     {
-        // ----- Fondo: las imágenes de Resources/Perfil/Fondos, por orden de nombre -----
-        // Ocupan toda la pantalla (los personajes están a la derecha y el lado izquierdo queda oscuro para el menú).
-        // Cambian cada tantos segundos con un fundido lento, y cada una se acerca y se corre un poco mientras se ve.
+        var go = new GameObject(nombre, typeof(RectTransform), typeof(Canvas), typeof(UnityEngine.UI.CanvasScaler));
+        if (clics) go.AddComponent<UnityEngine.UI.GraphicRaycaster>();
+        go.layer = 5;
+        go.transform.SetParent(transform, false);
+        var canvas = go.GetComponent<Canvas>();
+        canvas.renderMode = RenderMode.ScreenSpaceOverlay;
+        canvas.sortingOrder = orden;
+        var scaler = go.GetComponent<UnityEngine.UI.CanvasScaler>();
+        scaler.uiScaleMode = UnityEngine.UI.CanvasScaler.ScaleMode.ScaleWithScreenSize;
+        scaler.referenceResolution = new Vector2(1920f, 1080f);
+        scaler.screenMatchMode = UnityEngine.UI.CanvasScaler.ScreenMatchMode.Expand;
+        lienzo = (RectTransform)go.transform;
+
+        RectTransform contenido = Node("Contenido", lienzo);
+        contenido.anchorMin = contenido.anchorMax = contenido.pivot = new Vector2(0.5f, 0.5f);
+        contenido.sizeDelta = new Vector2(1920f, 1080f);
+        return contenido;
+    }
+
+    // Las imágenes de Resources/Perfil/Fondos, por orden de nombre. Cubren toda la pantalla (los personajes están a la
+    // derecha y el lado izquierdo queda oscuro para el menú). Cambian cada tantos segundos con un fundido lento, y cada
+    // una se acerca y se corre un poco mientras se ve.
+    private void ArmarFondo()
+    {
         fondos = Resources.LoadAll<Sprite>("Perfil/Fondos");
         Array.Sort(fondos, (a, b) => string.CompareOrdinal(a.name, b.name));
-        RectTransform vitrina = Place(Node("Fondos", capaMenu), 0f, 0f, 1920f, 1080f);
-        if (fondos.Length > 0)
-        {
-            fondoA = Cubrir(vitrina, fondos[0]);
-            fondoB = Cubrir(vitrina, fondos[0]);
-            fondoB.color = new Color(1f, 1f, 1f, 0f);
-            fondoFrente = fondoA;
-            inicioA = Time.unscaledTime;
-            proximoFondo = Time.unscaledTime + DuracionFondo;
-        }
+        if (fondos.Length == 0) return;
+        fondoA = Cubrir(rootFondo, fondos[0]);
+        fondoB = Cubrir(rootFondo, fondos[0]);
+        fondoB.color = new Color(1f, 1f, 1f, 0f);
+        fondoFrente = fondoA;
+        inicioA = Time.unscaledTime;
+        proximoFondo = Time.unscaledTime + DuracionFondo;
+    }
+
+    private void ArmarMenu()
+    {
         // Sombras para leer el menú: a la izquierda (JUGAR y la lista), abajo (las tarjetas) y arriba (las monedas).
-        Image(Place(Node("SombraIzquierda", vitrina), 0f, 0f, 1150f, 1080f), Degrade(true, 0.9f, 0f), Color.white);
-        Image(Place(Node("SombraAbajo", vitrina), 0f, 690f, 1920f, 390f), Degrade(false, 0.88f, 0f), Color.white);
-        Image(Place(Node("SombraArriba", vitrina), 0f, 0f, 1920f, 190f), Degrade(false, 0f, 0.65f), Color.white);
+        // Siguen afuera del 16:9 (pantallas más anchas o más altas), como el fondo.
+        Color negro = Color.black;
+        Image(Place(Node("SombraIzquierda", capaMenu), 0f, -Afuera, 1150f, 1080f + 2f * Afuera), Degrade(true, 0.9f, 0f), Color.white);
+        Image(Place(Node("SombraIzquierdaAfuera", capaMenu), -Afuera, -Afuera, Afuera, 1080f + 2f * Afuera), null, WithAlpha(negro, 0.9f));
+        Image(Place(Node("SombraAbajo", capaMenu), -Afuera, 690f, 1920f + 2f * Afuera, 390f), Degrade(false, 0.88f, 0f), Color.white);
+        Image(Place(Node("SombraAbajoAfuera", capaMenu), -Afuera, 1080f, 1920f + 2f * Afuera, Afuera), null, WithAlpha(negro, 0.88f));
+        Image(Place(Node("SombraArriba", capaMenu), -Afuera, 0f, 1920f + 2f * Afuera, 190f), Degrade(false, 0f, 0.65f), Color.white);
+        Image(Place(Node("SombraArribaAfuera", capaMenu), -Afuera, -Afuera, 1920f + 2f * Afuera, Afuera), null, WithAlpha(negro, 0.65f));
 
 
         // ----- Marca -----
@@ -377,7 +414,7 @@ public class MenuRiftwalker : MonoBehaviour
         string[] opciones = { "Opciones", "Logros", "Créditos", "Salir" };
         Action[] acciones =
         {
-            () => menuUI?.MostrarOpciones(), () => menuUI?.MostrarLogros(), () => menuUI?.MostrarCreditos(), () => menuUI?.SalirJuego(),
+            () => menuUI?.MostrarOpciones(), () => Abrir(Logros), () => menuUI?.MostrarCreditos(), ConfirmarSalir,
         };
         for (int i = 0; i < opciones.Length; i++)
         {
@@ -413,9 +450,9 @@ public class MenuRiftwalker : MonoBehaviour
         // El Perfil se abre desde la credencial de arriba a la derecha y la Tienda desde el + de los cristales.
         subEstacion = Tarjeta(80f, "01 / Cápsulas", "Estación del Rift", () => Abrir(Estacion), out RectTransform tEstacion);
         DibujarCapsula(tEstacion, 64f, 66f, 0.34f);
+        ArmarVolver(80f + AnchoTarjeta + 24f);
 
-        // Versión del juego abajo a la derecha, chiquita y en gris (US 204, CA1): la del menú viejo queda tapada por el
-        // fondo nuevo. Va debajo de la tarjeta "Nota para el PO".
+        // Versión del juego abajo a la derecha, chiquita y en gris (US 204, CA1). Va debajo de la tarjeta "Nota para el PO".
         T(capaMenu, "Version", 1920f - 28f - 300f, 1080f - 12f - 24f, 300f, 24f, FTexto, 16f, Mute, "v" + Application.version,
             TextAlignmentOptions.BottomRight);
     }
@@ -437,6 +474,89 @@ public class MenuRiftwalker : MonoBehaviour
         tarjeta.pivot = new Vector2(0.5f, 0.5f);
         tarjeta.anchoredPosition += new Vector2(AnchoTarjeta / 2f, -66f);
         return sub;
+    }
+
+    // =====================================================================
+    // Volver a la partida (US 195, CA2)
+    // =====================================================================
+
+    // Tarjeta al lado de la Estación del Rift. Aparece solo si hay una partida online a la que todavía se puede volver:
+    // se cortó la conexión o se cerró el juego hace menos de 2 minutos (lo anota Reconexion). Muestra la sala, el tiempo
+    // que queda y "Volver", que entra a esa partida en el mismo equipo. Si no se puede, lo explica ahí mismo un rato.
+    private void ArmarVolver(float x)
+    {
+        tarjetaVolver = Place(Node("Tarjeta Volver a la partida", capaMenu), x, 900f, AnchoTarjeta, 132f);
+        Image(tarjetaVolver, Rounded, PanelColor, 8f, true);
+        Borde(tarjetaVolver, 8f, WithAlpha(Accent, 0.6f));
+        Image(Place(Node("Linea", tarjetaVolver), 0f, 0f, AnchoTarjeta, 3f), null, WithAlpha(Accent, 0.8f));
+        Circulo(tarjetaVolver, 64f, 66f, 34f, Accent);
+        T(tarjetaVolver, "Flecha", 30f, 30f, 68f, 68f, FTitulo, 46f, AccentInk, "«", TextAlignmentOptions.Center);
+        rotuloVolver = T(tarjetaVolver, "Rotulo", 128f, 18f, 420f, 20f, FRotulo, 16f, Accent, "", TextAlignmentOptions.MidlineLeft, 12f, true);
+        salaVolver = T(tarjetaVolver, "Sala", 126f, 38f, 260f, 46f, FTitulo, 42f, Ink, "", TextAlignmentOptions.MidlineLeft, 3f, true);
+        salaVolver.enableAutoSizing = true; // un error largo se achica para entrar
+        salaVolver.fontSizeMin = 20f;
+        salaVolver.fontSizeMax = 42f;
+        detalleVolver = T(tarjetaVolver, "Detalle", 128f, 86f, 420f, 26f, FTexto, 19f, Mute, "");
+        botonVolver = CrearBoton(tarjetaVolver, AnchoTarjeta - 28f - 150f, 34f, 150f, 64f, "Volver", true, VolverALaPartida, 28f);
+        tarjetaVolver.gameObject.SetActive(false);
+    }
+
+    private void ActualizarVolver()
+    {
+        if (Time.unscaledTime < proximoVolver) return;
+        proximoVolver = Time.unscaledTime + 0.2f;
+        bool hay = Reconexion.HayPartida(out Reconexion.Partida partida);
+        bool conError = errorVolver != null && Time.unscaledTime < errorVolverHasta;
+        if (!conError) errorVolver = null;
+
+        bool visible = hay || volviendo || conError;
+        if (tarjetaVolver.gameObject.activeSelf != visible) tarjetaVolver.gameObject.SetActive(visible);
+        if (!visible) return;
+        bool boton = hay && !volviendo;
+        botonVolver.rect.gameObject.SetActive(boton);
+        salaVolver.rectTransform.sizeDelta = new Vector2(boton ? 260f : 420f, 46f);
+
+        if (conError)
+        {
+            rotuloVolver.text = "No se pudo volver";
+            rotuloVolver.color = Bad;
+            salaVolver.text = errorVolver;
+            salaVolver.color = Bad;
+            detalleVolver.text = "";
+            return;
+        }
+        rotuloVolver.text = "Partida en curso";
+        rotuloVolver.color = Accent;
+        salaVolver.color = Ink;
+        if (volviendo)
+        {
+            salaVolver.text = "Volviendo…";
+            detalleVolver.text = "";
+            return;
+        }
+        int s = Mathf.CeilToInt(partida.restante);
+        salaVolver.text = "Sala " + partida.sala;
+        detalleVolver.text = $"Podés volver durante {s / 60}:{s % 60:00}";
+    }
+
+    private void VolverALaPartida()
+    {
+        if (volviendo) return;
+        volviendo = true;
+        errorVolver = null;
+        Multijugador red = Multijugador.Instancia;
+        if (!escuchandoRed) { red.Error += AlFallarVolver; escuchandoRed = true; }
+        red.VolverALaPartida();
+        proximoVolver = 0f;
+    }
+
+    private void AlFallarVolver(string mensaje)
+    {
+        if (!volviendo) return;
+        volviendo = false;
+        errorVolver = mensaje;
+        errorVolverHasta = Time.unscaledTime + DuracionErrorVolver;
+        proximoVolver = 0f;
     }
 
     /// <summary>Cápsula chica (para la tarjeta del menú); la grande de la estación se arma allá.</summary>

@@ -8,7 +8,7 @@ using Tipo = PerfilDatos.Tipo;
 using Rareza = PerfilDatos.Rareza;
 using Cosmetico = PerfilDatos.Cosmetico;
 
-// PRUEBA DEL MENÚ: Estación del Rift. Con un boleto se abre una cápsula que trae un avatar, un banner, un título o un marco.
+// Estación del Rift (menú principal). Con un boleto se abre una cápsula que trae un avatar, un banner, un título o un marco.
 // La cápsula tiembla, toma el color de la rareza (si es épica o legendaria primero amaga con azul), se abre la grieta,
 // hay un destello y aparece el premio. Probabilidades, garantía y canjes son de ejemplo (PerfilDatos).
 public class PantallaEstacion : PantallaBase

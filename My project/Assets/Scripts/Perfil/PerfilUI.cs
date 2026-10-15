@@ -7,7 +7,7 @@ using static ShopUIKit;
 using Img = UnityEngine.UI.Image;
 using Rareza = PerfilDatos.Rareza;
 
-// PRUEBA DEL MENÚ: piezas comunes del menú nuevo, el Perfil, la Estación del Rift y la tienda.
+// Piezas comunes del menú principal, el Perfil, la Estación del Rift, la tienda y los logros.
 // Se arman por código sobre ShopUIKit, con la pantalla de referencia de 1920 x 1080 (coordenadas desde arriba a la izquierda).
 public static class PerfilUI
 {
@@ -298,6 +298,14 @@ public static class PerfilUI
         b.rect.anchoredPosition += new Vector2(size2.x / 2f, -size2.y / 2f);
         b.Pintar();
         return b;
+    }
+
+    /// <summary>Cabecera de las pantallas del menú (arriba a la izquierda): "« Menú", el rótulo y el título.</summary>
+    public static void Cabecera(RectTransform parent, string rotulo, string titulo, UnityAction alVolver)
+    {
+        CrearBoton(parent, 60f, 34f, 150f, 52f, "« Menú", false, alVolver, 24f);
+        T(parent, "Rotulo", 240f, 32f, 700f, 22f, FRotulo, 18f, Accent, rotulo, TextAlignmentOptions.MidlineLeft, 16f, true);
+        T(parent, "Titulo", 238f, 50f, 900f, 50f, FTitulo, 46f, Ink, titulo, TextAlignmentOptions.MidlineLeft, 4f, true);
     }
 
     /// <summary>Zona clickeable invisible (tarjetas, filas, la credencial del jugador).</summary>
