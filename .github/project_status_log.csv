@@ -665,3 +665,12 @@ fecha_utc,us_numero,us_titulo,estado_anterior,estado_nuevo,tiempo_en_estado_ante
 2026-10-15T20:07:20.539274+00:00,166,US 121. Munición infinita en el shooting range,LPR,R2D,23h 26m,84418,https://github.com/DogeGGss/lcs-tp-principal/issues/166
 2026-10-15T20:07:20.539274+00:00,285,US 183. Diseño de los personajes,Todo,In Progress,15d 18h 2m,1360928,https://github.com/DogeGGss/lcs-tp-principal/issues/285
 2026-10-15T20:07:20.539274+00:00,70,US 020. Habilidad 2 · Barrera,Blocked,In Progress,22d 2h 36m,1910161,https://github.com/DogeGGss/lcs-tp-principal/issues/70
+2026-10-15T23:03:43.246071+00:00,70,US 020. Habilidad 2 · Barrera,In Progress,LPR,2h 56m,10582,https://github.com/DogeGGss/lcs-tp-principal/issues/70
+2026-10-15T23:03:43.246071+00:00,4,F01. Movimiento del jugador,Todo,Done,22d 23h 39m,1985962,https://github.com/DogeGGss/lcs-tp-principal/issues/4
+2026-10-15T23:03:43.246071+00:00,6,F03. Inventario,Todo,Done,22d 23h 39m,1985962,https://github.com/DogeGGss/lcs-tp-principal/issues/6
+2026-10-15T23:03:43.246071+00:00,11,F05. Sistema de vida y escudo,Todo,Done,22d 23h 39m,1985962,https://github.com/DogeGGss/lcs-tp-principal/issues/11
+2026-10-15T23:03:43.246071+00:00,7,F06. Multijugador,Todo,Done,15d 23h 56m,1382198,https://github.com/DogeGGss/lcs-tp-principal/issues/7
+2026-10-15T23:03:43.246071+00:00,9,F07. Modo táctico,Todo,Done,22d 23h 39m,1985962,https://github.com/DogeGGss/lcs-tp-principal/issues/9
+2026-10-15T23:03:43.246071+00:00,19,F15. HUD de partida,Todo,Done,22d 23h 39m,1985962,https://github.com/DogeGGss/lcs-tp-principal/issues/19
+2026-10-15T23:03:43.246071+00:00,50,F20. Sistema de tienda y economía,Todo,Done,22d 23h 39m,1985962,https://github.com/DogeGGss/lcs-tp-principal/issues/50
+2026-10-15T23:03:43.246071+00:00,436,US 225. Modelos y brazos de los personajes,Todo,In Progress,21h 19m,76792,https://github.com/DogeGGss/lcs-tp-principal/issues/436
