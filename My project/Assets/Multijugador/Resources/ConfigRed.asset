@@ -48,10 +48,19 @@ MonoBehaviour:
   invulnerabilidad: 2
   sonidoReaparicion: {fileID: 8300000, guid: f13e4bbf71874fa4ea6309e860a13d2e, type: 3}
   volumenReaparicion: 0.6
+  sonidoTrasbordo: {fileID: 0}
+  volumenTrasbordo: 0.8
+  materialBarrera: {fileID: 2100000, guid: 52c9420f3cd44a8bac0cf9bb7d463efb, type: 2}
+  colorLucesBarrera: {r: 1, g: 0.78, b: 0.12, a: 1}
+  materialLucesBarrera: {fileID: 0}
+  sonidoBarreraSube: {fileID: 0}
+  sonidoBarreraGolpe: {fileID: 0}
+  sonidoBarreraGrieta: {fileID: 0}
+  sonidoBarreraRompe: {fileID: 0}
+  sonidoBarreraApaga: {fileID: 0}
+  volumenBarrera: 0.8
   musicaDeathmatch: {fileID: 8300000, guid: 7d3c4a44088ab004a8f7971b5ed4b23e, type: 3}
   ambienteDeathmatch: {fileID: 0}
-  musicaTactico: {fileID: 8300000, guid: 51d8b945ae6fb2e429d9e477307b4818, type: 3}
-  ambienteTactico: {fileID: 8300000, guid: 4445e2a7ab87349b58d1d84896d24e86, type: 3}
   grupoMusica: {fileID: -3878677901696022068, guid: ddda7e32a2420c4489fcc2a1c31e1976, type: 2}
   volumenMusica: 0.35
   volumenAmbiente: 0.5

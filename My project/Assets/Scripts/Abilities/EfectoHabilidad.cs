@@ -12,6 +12,8 @@ public abstract class EfectoHabilidad : MonoBehaviour
         switch (efecto)
         {
             case AbilityData.Efecto.Trasbordo: return typeof(HabilidadTrasbordo);
+            case AbilityData.Efecto.Barrera: return typeof(HabilidadBarrera);
+            case AbilityData.Efecto.VistaAerea: return typeof(HabilidadVistaAerea);
             default: return null;
         }
     }
@@ -33,4 +35,15 @@ public abstract class EfectoHabilidad : MonoBehaviour
 
     /// <summary>Hace el efecto. Devuelve false si no se pudo (y entonces no se gasta la carga).</summary>
     public abstract bool Aplicar();
+
+    /// <summary>US 020: la habilidad se apunta antes de usarse (se mantiene la tecla y se suelta). El efecto lee la tecla
+    /// y, cuando se usa, llama a PlayerAbility.Usar. PlayerAbility no lo activa al apretar.</summary>
+    public virtual bool ApuntaAntes => false;
+
+    /// <summary>US 020, CA8: la recarga empieza cuando termina el efecto (PlayerAbility.TerminoEfecto), no al usarla.</summary>
+    public virtual bool RecargaAlTerminar => false;
+
+    /// <summary>Mientras el efecto está activo, qué mostrar en el reloj del HUD: de 0 a 1 (o -1 si no hay nada).</summary>
+    public virtual float ProgresoActivo => -1f;
+    public virtual string TextoActivo => null;
 }

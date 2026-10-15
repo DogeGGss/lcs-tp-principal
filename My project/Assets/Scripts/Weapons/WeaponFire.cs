@@ -66,8 +66,15 @@ public static class WeaponFire
 
             if (target == null)
             {
+                // US 020, CA5: la Barrera frena la bala; si el que tira es rival, le hace el daño de cuerpo.
+                Barrera barrera = Barrera.De(hit.collider);
+                if (barrera != null)
+                {
+                    barrera.Chispas(hit.point, hit.normal);
+                    barrera.PedirDanio(weapon.HitDamage(BodyZone.Body, hit.distance), shooter, hit.point);
+                }
                 // US 120: los botones del panel del campo de práctica también se aprietan de un tiro.
-                if (!BotonDePractica.Disparar(hit.collider)) ImpactMarks.Spawn(hit);
+                else if (!BotonDePractica.Disparar(hit.collider)) ImpactMarks.Spawn(hit);
                 continue;
             }
 
@@ -120,7 +127,13 @@ public static class WeaponFire
     {
         if (!Trace(origin, direction, range, shooter, out RaycastHit hit, out HealthSystem target, out BodyZone _))
             return origin + direction * range;
-        if (target == null) ImpactMarks.Spawn(hit);
+        if (target == null)
+        {
+            // US 020, CA7: en la Barrera, chispas en vez de marca (el daño lo manda quien disparó).
+            Barrera barrera = Barrera.De(hit.collider);
+            if (barrera != null) barrera.Chispas(hit.point, hit.normal);
+            else ImpactMarks.Spawn(hit);
+        }
         return hit.point;
     }
 

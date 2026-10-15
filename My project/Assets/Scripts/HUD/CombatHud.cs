@@ -153,6 +153,7 @@ public class CombatHud : MonoBehaviour
     // Lo último que se dibujó, para tocar la interfaz solo cuando algo cambia.
     private int lastHp = int.MinValue, lastShield, lastMaxHp, lastMaxShield;
     private int lastSkillState = int.MinValue;
+    private string lastSkillText = "";
     private string lastAmmoState;
 
     private void Awake()
@@ -203,7 +204,7 @@ public class CombatHud : MonoBehaviour
         // La mira se ve con cualquier arma menos los francotiradores: sin la mira telescópica se tira a ojo, como el AWP
         // de CS (US 068), y con ella puesta la lente tiene su propia retícula (US 009). Con la pausa abierta se oculta
         // (con la tienda ya se oculta todo el HUD).
-        crosshair.gameObject.SetActive(!PauseMenu.IsPaused && MiraTelescopica.EnMano == null);
+        crosshair.gameObject.SetActive(!PauseMenu.IsPaused && MiraTelescopica.EnMano == null && !HabilidadVistaAerea.Activa);
         UpdateCrosshair();
         float center = MiraTelescopica.Puesta ? 0f : 1f;
         foreach (CanvasGroup part in hiddenWhenScoped) part.alpha = center;
@@ -436,28 +437,34 @@ public class CombatHud : MonoBehaviour
         // US 016: en el Táctico el personaje (y su habilidad) se elige con la partida ya cargada.
         if (ability.Ability != shownSkill) SetupSkill(ability.Ability);
 
-        float progress = ability.Progress;
+        // US 020, CA10: con el efecto en pie (la Barrera), el aro y el número muestran su vida en vez de la recarga.
+        float active = ability.ProgresoActivo;
+        bool inUse = active >= 0f;
+        float progress = inUse ? Mathf.Clamp01(active) : ability.Progress;
         bool ready = ability.IsReady, used = Time.time - usedAt < 0.4f;
         int lit = Mathf.FloorToInt(progress * 12f + 0.0001f);
         // US 019, CA7: con cargas, los segundos son los que faltan para la próxima aunque quede alguna para usar.
-        int seconds = ability.Recargando ? Mathf.CeilToInt(ability.CooldownLeft) : 0;
+        int seconds = ability.Recargando && !inUse ? Mathf.CeilToInt(ability.CooldownLeft) : 0;
         int left = ability.Cargas;
         ringFill.fillAmount = progress;
+        string text = inUse ? ability.TextoActivo ?? "" : seconds > 0 ? seconds.ToString() : "";
 
-        int state = lit + seconds * 16 + (ready ? 1 << 20 : 0) + (used ? 1 << 21 : 0) + (left << 22);
-        if (state == lastSkillState) return;
+        int state = lit + seconds * 16 + (ready ? 1 << 20 : 0) + (used ? 1 << 21 : 0) + (left << 22) + (inUse ? 1 << 27 : 0);
+        if (state == lastSkillState && text == lastSkillText) return;
         lastSkillState = state;
+        lastSkillText = text;
 
         Color line = used ? Accent : Ink, dim = White(FadeAlpha(0.22f));
         ringFill.color = line;
         for (int i = 0; i < ticks.Length; i++) ticks[i].color = i < lit ? line : dim;
         icon.color = used ? Accent : ready ? Ink : dim;
-        cooldownText.text = seconds > 0 ? seconds.ToString() : "";
+        cooldownText.text = text;
         keyChip.color = ready ? Ink : White(FadeAlpha(0.14f));
         keyText.color = ready ? KeyInk : Ink;
         nameText.color = ready ? Ink : Mute;
         for (int i = 0; i < charges.Length; i++) charges[i].color = i < left ? (used && i == left - 1 ? Accent : Ink) : dim;
         if (charges.Length > 0) cooldownText.color = ready ? Mute : Color.white;
+        if (inUse) { ringFill.color = Accent; cooldownText.color = Color.white; }
     }
 
     // Marcas cortas centradas debajo del aro, como los vagones de una formación.

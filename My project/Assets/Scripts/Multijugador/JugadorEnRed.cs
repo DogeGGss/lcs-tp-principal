@@ -138,6 +138,9 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
         GrenadeThrower.Thrown += AlLanzarGranada;
         Grenade1.Exploded += AlExplotarGranada;
         HabilidadTrasbordo.Usado += AlTrasbordar;
+        HabilidadBarrera.Levantada += AlLevantarBarrera;
+        HabilidadVistaAerea.Cambio += AlCambiarVistaAerea;
+        Barrera.EnviarDanio = AlDaniarBarrera; // US 020, CA11
     }
 
     private void OnDestroy()
@@ -147,6 +150,10 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
         GrenadeThrower.Thrown -= AlLanzarGranada;
         Grenade1.Exploded -= AlExplotarGranada;
         HabilidadTrasbordo.Usado -= AlTrasbordar;
+        HabilidadBarrera.Levantada -= AlLevantarBarrera;
+        HabilidadVistaAerea.Cambio -= AlCambiarVistaAerea;
+        if (observando) { OjosEnElCielo.Mostrar(transform, false); MatchHud.ClearWarn(TextoObservado); }
+        if (Barrera.EnviarDanio == (System.Action<Barrera, int, Vector3>)AlDaniarBarrera) Barrera.EnviarDanio = null;
         SoltarArmas.Soltada -= AlSoltarArma;
         SoltarArmas.Pedida -= AlPedirArma;
         ArmaEnPiso.Quieta -= AlQuedarQuieta;
@@ -807,6 +814,7 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
         Quitar<ArmaDeFuego>(go);
         Quitar<MeleeAttack>(go);
         Quitar<PlayerAbility>(go);
+        Quitar<EfectoHabilidad>(go); // el Trasbordo o la Barrera de su dueño llegan por la red
         Quitar<GrenadeThrower>(go); // la copia no tira granadas: las que tiró su dueño llegan por RpcGranada (US 073)
         Quitar<SoltarArmas>(go);    // ni suelta armas: las que soltó su dueño llegan por RpcArmaSoltada (US 184)
         PlayerLoadout carga = go.GetComponentInChildren<PlayerLoadout>(true);
@@ -1183,6 +1191,61 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
         tiempoRed = info.SentServerTime;
         tiempoTrasbordo = info.SentServerTime;
         EfectosTrasbordo.Reproducir(origen, destino, transform, false, sonido != null ? sonido.outputAudioMixerGroup : null);
+    }
+
+    // US 020, CA11: la Barrera se levanta igual en las demás computadoras, como de la copia de su dueño.
+    private void AlLevantarBarrera(Transform jugador, int id, Vector3 lugar, float yaw)
+    {
+        if (jugador != transform) return;
+        photonView.RPC(nameof(RpcBarreraLevantada), RpcTarget.Others, id, lugar, yaw);
+    }
+
+    [PunRPC]
+    private void RpcBarreraLevantada(int id, Vector3 lugar, float yaw)
+    {
+        if (photonView.IsMine) return;
+        Barrera.Crear(transform, Actor, id, lugar, yaw, null, sonido != null ? sonido.outputAudioMixerGroup : null);
+    }
+
+    // El daño a una Barrera va a todas las computadoras (también a esta) pasando por el servidor: así todas lo aplican
+    // en el mismo orden y la vida da igual en todas.
+    private void AlDaniarBarrera(Barrera barrera, int danio, Vector3 punto)
+    {
+        photonView.RPC(nameof(RpcDanioBarrera), RpcTarget.AllViaServer, barrera.Actor, barrera.Id, danio, punto);
+    }
+
+    [PunRPC]
+    private void RpcDanioBarrera(int actor, int id, int danio, Vector3 punto)
+    {
+        Barrera barrera = Barrera.Buscar(actor, id);
+        if (barrera != null) barrera.AplicarDanio(danio, punto);
+    }
+
+    // US 021, CA6, CA7 y CA11: la Vista aérea se avisa a los demás: todos ven los ojos en el cielo arriba de este
+    // jugador y los rivales ven el aviso "Te están observando" y oyen un sonido mientras dura.
+    private const string TextoObservado = "Te están observando";
+    private bool observando;
+
+    private void AlCambiarVistaAerea(Transform jugador, bool activa)
+    {
+        if (jugador != transform) return;
+        photonView.RPC(nameof(RpcVistaAerea), RpcTarget.Others, activa);
+    }
+
+    [PunRPC]
+    private void RpcVistaAerea(bool activa)
+    {
+        if (photonView.IsMine || activa == observando) return;
+        observando = activa;
+        OjosEnElCielo.Mostrar(transform, activa);
+        JugadorEnRed yo = partida != null ? partida.Local : (PartidaEnRed.Actual != null ? PartidaEnRed.Actual.Local : null);
+        bool soyRival = yo != null && yo.Vivo && MatchSettings.Mode != GameMode.Zombie && EquiposTacticos.EsRival(Actor);
+        if (activa && soyRival)
+        {
+            MatchHud.Warn(TextoObservado, HabilidadVistaAerea.Duracion + 0.3f);
+            SonidoVistaAerea.Observado();
+        }
+        else if (!activa) MatchHud.ClearWarn(TextoObservado);
     }
 
     // US 030, CA3 y CA5: aparece en el punto que eligió el dueño, sin deslizarse desde donde murió.

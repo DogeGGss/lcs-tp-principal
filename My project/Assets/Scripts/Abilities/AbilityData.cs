@@ -6,7 +6,7 @@ using UnityEngine;
 public class AbilityData : ScriptableObject
 {
     // Qué hace la habilidad. Ninguno: solo se gasta y se recarga (las que todavía no tienen efecto).
-    public enum Efecto { Ninguno, Trasbordo }
+    public enum Efecto { Ninguno, Trasbordo, Barrera, VistaAerea }
 
     public string displayName = "Habilidad";
     public Sprite icon;
