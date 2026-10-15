@@ -517,6 +517,7 @@ public class RondasTacticas : MonoBehaviour
     private void EmpezarRonda(int ronda)
     {
         HumoGranada.DisiparTodas(); // US 074: el humo de la ronda anterior no pasa a la nueva
+        Barrera.QuitarTodas();      // US 020: ni las barreras
         JugadorEnRed local = partida != null ? partida.Local : null;
         if (local == null) return;
         local.EmpezarRonda(partida.PuntoDeBase());

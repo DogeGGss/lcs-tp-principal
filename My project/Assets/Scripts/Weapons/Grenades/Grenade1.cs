@@ -221,10 +221,22 @@ public class Grenade1 : MonoBehaviour
         // Distancia más corta de cada personaje al centro, mirando solo las partes que la explosión "ve".
         var reached = new Dictionary<HealthSystem, float>();
         var pushed = new HashSet<Rigidbody>();
+        var walls = new Dictionary<Barrera, float>(); // US 020, CA5: la Barrera también recibe daño, según la distancia
 
         foreach (Collider part in parts)
         {
             if (part.transform.IsChildOf(transform)) continue;
+
+            Barrera wall = Barrera.De(part);
+            if (wall != null)
+            {
+                if (!wall.Activa || part.isTrigger) continue;
+                Vector3 near = ClosestPoint(part, center);
+                float d = Vector3.Distance(center, near);
+                if (d <= radius && !Blocked(center, near, wall.transform) && (!walls.TryGetValue(wall, out float prev) || d < prev))
+                    walls[wall] = d;
+                continue;
+            }
 
             HealthSystem health = part.GetComponentInParent<HealthSystem>();
             if (health != null && (health.currentHealth <= 0 || EquiposTacticos.SonAliados(thrower, health))) continue; // CA7
@@ -242,6 +254,9 @@ public class Grenade1 : MonoBehaviour
             if (rb != null && rb != body && pushed.Add(rb))
                 rb.AddExplosionForce(explosionForce * 10, center, radius);
         }
+
+        foreach (KeyValuePair<Barrera, float> entry in walls)
+            entry.Key.PedirDanio(DamageAt(entry.Value), thrower, center);
 
         // El daño se aplica una sola vez por personaje, aunque tenga varios colliders (CA4).
         foreach (KeyValuePair<HealthSystem, float> entry in reached)

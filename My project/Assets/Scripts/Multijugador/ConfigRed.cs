@@ -74,6 +74,19 @@ public class ConfigRed : ScriptableObject
     [Tooltip("Trasbordo (US 019, CA10): suena donde estaba el jugador y se escucha a unos 25 m. Sin clip, suena uno generado.")]
     public AudioClip sonidoTrasbordo;
     [Range(0f, 1f)] public float volumenTrasbordo = 0.8f;
+    [Tooltip("Barrera (US 020): el material de la pared. Sin material, se usa uno gris generado.")]
+    public Material materialBarrera;
+    [Tooltip("Barrera (US 020): el color de sus tiras de luz (el del personaje). Se usa si no hay material de luces.")]
+    public Color colorLucesBarrera = new Color(1f, 0.78f, 0.12f);
+    [Tooltip("Barrera (US 020): material propio para las tiras de luz (por ejemplo, uno con emisión).")]
+    public Material materialLucesBarrera;
+    [Tooltip("Barrera (US 020, CA12 y CA13): se escuchan a unos 25 m. Sin clip, suena uno generado.")]
+    public AudioClip sonidoBarreraSube;
+    public AudioClip sonidoBarreraGolpe;
+    public AudioClip sonidoBarreraGrieta;
+    public AudioClip sonidoBarreraRompe;
+    public AudioClip sonidoBarreraApaga;
+    [Range(0f, 1f)] public float volumenBarrera = 0.8f;
 
     [Tooltip("Música del Modo Deathmatch (US 136, CA6). Suena en loop por el grupo Música. Sin clip, no suena nada.")]
     public AudioClip musicaDeathmatch;
