@@ -24,7 +24,8 @@ public class Barrera : MonoBehaviour
     public static System.Action<Barrera, int, Vector3> EnviarDanio;
 
     private static readonly Dictionary<long, Barrera> activas = new Dictionary<long, Barrera>();
-    private static Material material, materialLineas;
+    private static Material material, materialLineas, materialLuces;
+    private const float Luz = 0.06f; // ancho de las tiras de luz
     private static Mesh cubo;
     private static AudioClip clipSube, clipGolpe, clipGrieta, clipRompe, clipApaga;
 
@@ -42,6 +43,7 @@ public class Barrera : MonoBehaviour
     private ParticleSystem chispas, pedazos;
     private float creada, finHundida = -1f, proximoGolpe;
     private int grietas;
+    private readonly List<Renderer> luces = new List<Renderer>();
 
     // ---------- Crear y buscar ----------
 
@@ -96,6 +98,7 @@ public class Barrera : MonoBehaviour
         bloque.transform.localScale = new Vector3(Ancho, Alto, Grosor);
         bloque.AddComponent<MeshFilter>().sharedMesh = Cubo();
         bloque.AddComponent<MeshRenderer>().sharedMaterial = MaterialPared();
+        Luces();
 
         chispas = Particulas("Chispas", false);
         pedazos = Particulas("Pedazos", true);
@@ -221,6 +224,12 @@ public class Barrera : MonoBehaviour
             if (edad < Subida) Alturar(1f - Mathf.Pow(1f - edad / Subida, 3f));
             else if (caja.size.y < Alto) Alturar(1f);
             if (edad >= Duracion) Apagar();
+            // Muy dañada (menos del 33 %), las luces titilan.
+            if (grietas >= 2)
+            {
+                bool prendida = Mathf.PerlinNoise(Time.time * 9f, Id) > 0.35f;
+                foreach (Renderer luz in luces) luz.enabled = prendida;
+            }
         }
         else if (finHundida > 0f && pared != null)
         {
@@ -358,6 +367,48 @@ public class Barrera : MonoBehaviour
             if (material.HasProperty("_Metallic")) material.SetFloat("_Metallic", 0.2f);
         }
         return material;
+    }
+
+    // Las tiras de luz del color del personaje (amarillo): el borde de arriba y los dos costados, en las dos caras.
+    private void Luces()
+    {
+        float cara = Grosor * 0.5f + 0.005f;
+        for (int lado = -1; lado <= 1; lado += 2)
+        {
+            Tira(new Vector3(0f, Alto - Luz * 0.5f, lado * cara), new Vector3(Ancho, Luz, 0.012f));
+            Tira(new Vector3(-Ancho * 0.5f + Luz * 0.5f, Alto * 0.5f, lado * cara), new Vector3(Luz, Alto, 0.012f));
+            Tira(new Vector3(Ancho * 0.5f - Luz * 0.5f, Alto * 0.5f, lado * cara), new Vector3(Luz, Alto, 0.012f));
+        }
+    }
+
+    private void Tira(Vector3 centro, Vector3 tamanio)
+    {
+        var go = new GameObject("Luz");
+        go.transform.SetParent(pared, false);
+        go.transform.localPosition = centro;
+        go.transform.localScale = tamanio;
+        go.AddComponent<MeshFilter>().sharedMesh = Cubo();
+        MeshRenderer malla = go.AddComponent<MeshRenderer>();
+        malla.sharedMaterial = MaterialLuces();
+        malla.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
+        malla.receiveShadows = false;
+        luces.Add(malla);
+    }
+
+    // Sin iluminación y con un color más fuerte que 1: con el Bloom del Volume, brilla.
+    private static Material MaterialLuces()
+    {
+        ConfigRed config = ConfigRed.Actual;
+        if (config != null && config.materialLucesBarrera != null) return config.materialLucesBarrera;
+        if (materialLuces == null)
+        {
+            Color color = (config != null ? config.colorLucesBarrera : new Color(1f, 0.78f, 0.12f)) * 2.5f;
+            Shader shader = Shader.Find("Universal Render Pipeline/Unlit");
+            if (shader == null) shader = Shader.Find("Sprites/Default");
+            materialLuces = new Material(shader) { name = "Barrera (luces)", color = color };
+            if (materialLuces.HasProperty("_BaseColor")) materialLuces.SetColor("_BaseColor", color);
+        }
+        return materialLuces;
     }
 
     private static Material MaterialLineas()
