@@ -20,6 +20,8 @@ public class BotDePractica : MonoBehaviour
 
     public bool Moverse { get; set; }
 
+    public HealthSystem Vida => vida;
+
     private HealthSystem vida;
     private Collider[] colliders;
     private Animator animator;

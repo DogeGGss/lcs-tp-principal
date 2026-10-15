@@ -21,7 +21,8 @@ using UnityEngine.SceneManagement;
 //   El jugador va sin habilidad (el mapa es para practicar con las armas): lo hace el CampoDePractica.
 // - US 120: los blancos de la zona de blancos pasan a ser bots (el muñeco de Pruebas_Armas): cada blanco redondo se
 //   cambia por un "lugar de bot". En la pared derecha, al lado de la línea de tiro, el panel (PanelDePractica) con los
-//   botones para mover los bots y reiniciar. Los blancos de la zona de distancias quedan como están (ahí se estudia el patrón).
+//   botones para mover los bots, la prueba de reacción y reiniciar. En la zona de distancias, cada blanco pasa a ser un
+//   muñeco quieto que muestra el daño de cada tiro a esa distancia.
 // Medidas en metros. El 0 es la línea de tiro: hacia adelante (+z) los blancos, hacia atrás la zona de salida.
 // Piso, paredes y cajas son piezas del kit Sci-fi (las mismas del mapa táctico). Debajo de cada pared y del piso queda
 // un cubo invisible que es el que choca, así la sala queda cerrada aunque las piezas del kit tengan huecos. Las medidas
@@ -330,11 +331,11 @@ public static class MapaDePractica
     // Cambia cada blanco redondo de la zona de blancos por un lugar de bot y pone el panel. Si el panel ya está colgado de
     // la pared, no hace nada (así no se pisan los lugares movidos a mano). Si es el de la primera versión (con mesa), lo
     // cambia por el de la pared y le pasa los mismos lugares.
-    private const string NombrePanel = "Panel de práctica (pared)";
+    private const string NombrePanel = "Panel de práctica (pared, 3 botones)";
 
     private static void BotsYPanel(Transform mapa)
     {
-        Transform[] lugares;
+        Transform[] lugares, lugaresDistancia = null;
         PanelDePractica viejo = mapa.GetComponentInChildren<PanelDePractica>(true);
         if (viejo != null)
         {
@@ -344,6 +345,7 @@ public static class MapaDePractica
                 return;
             }
             lugares = viejo.lugares;
+            lugaresDistancia = viejo.lugaresDistancia;
             Object.DestroyImmediate(viejo.gameObject);
         }
         else
@@ -371,6 +373,7 @@ public static class MapaDePractica
         panel.munieco = AssetDatabase.LoadAssetAtPath<GameObject>(Munieco);
         if (panel.munieco == null) Debug.LogWarning($"Mapa de práctica: no se encontró {Munieco} (el panel queda sin bots).");
         panel.lugares = lugares;
+        panel.lugaresDistancia = lugaresDistancia != null && lugaresDistancia.Length > 0 ? lugaresDistancia : MunecosDeDistancias(mapa);
         LimitesDeBots(panel, mapa);
 
         const float ancho = 2.2f, alto = 1.2f, centroY = 1.55f, marco = 0.06f;
@@ -382,8 +385,33 @@ public static class MapaDePractica
         TextoDelPanel("Título", p, "CAMPO DE PRÁCTICA", new Vector3(0f, 1.98f, -0.085f), new Vector2(ancho - 0.3f, 0.2f), Amarillo);
         panel.marcador = TextoDelPanel("Marcador", p, "Bajas: 0", new Vector3(0f, 1.76f, -0.085f), new Vector2(ancho - 0.3f, 0.16f), Color.white);
         panel.ayuda = TextoDelPanel("Ayuda", p, "Mirá un botón y apretá E", new Vector3(0f, 1.15f, -0.085f), new Vector2(ancho - 0.3f, 0.13f), Color.white);
-        Boton(p, "Botón mover bots", BotonDePractica.Accion.MoverBots, "MOVER BOTS", -0.55f);
-        Boton(p, "Botón reiniciar", BotonDePractica.Accion.Reiniciar, "REINICIAR", 0.55f);
+        Boton(p, "Botón mover bots", BotonDePractica.Accion.MoverBots, "MOVER BOTS", -0.72f);
+        Boton(p, "Botón reacción", BotonDePractica.Accion.Reaccion, "REACCIÓN", 0f);
+        Boton(p, "Botón reiniciar", BotonDePractica.Accion.Reiniciar, "REINICIAR", 0.72f);
+    }
+
+    // Zona de distancias: cada blanco redondo (y su cartel de metros) pasa a ser el lugar de un muñeco quieto, que
+    // muestra arriba los metros y el daño de cada tiro (PanelDePractica).
+    private static Transform[] MunecosDeDistancias(Transform mapa)
+    {
+        Transform zona = mapa.Find("Zona de distancias");
+        if (zona == null) return new Transform[0];
+        Transform grupo = zona.Find("Lugares de muñecos") ?? Grupo("Lugares de muñecos", zona);
+        var lista = new List<Transform>();
+        foreach (Transform hijo in zona.Cast<Transform>().ToList())
+        {
+            if (hijo.name.StartsWith("Cartel ") && hijo.name.EndsWith(" m"))
+            {
+                Object.DestroyImmediate(hijo.gameObject);
+                continue;
+            }
+            if (!hijo.name.StartsWith("Blanco a ")) continue;
+            Transform lugar = Grupo(hijo.name.Replace("Blanco", "Muñeco"), grupo);
+            lugar.position = hijo.position;
+            lista.Add(lugar);
+            Object.DestroyImmediate(hijo.gameObject);
+        }
+        return lista.ToArray();
     }
 
     // Entre qué x caminan los bots: la zona de blancos, sin meterse en el relieve de la pared derecha del kit. (Además,
@@ -410,13 +438,13 @@ public static class MapaDePractica
     private static void Boton(Transform panel, string nombre, BotonDePractica.Accion accion, string texto, float x)
     {
         GameObject go = Pieza(PrimitiveType.Cube, nombre, panel, new Vector3(x, 1.43f, -0.11f), Quaternion.identity,
-            new Vector3(0.95f, 0.3f, 0.06f), linea, true);
+            new Vector3(0.66f, 0.3f, 0.06f), linea, true);
         GameObjectUtility.SetStaticEditorFlags(go, 0);
         BotonDePractica boton = go.AddComponent<BotonDePractica>();
         boton.accion = accion;
         boton.normal = linea;
         boton.resaltado = raya;
-        boton.texto = TextoDelPanel("Texto " + nombre, panel, texto, new Vector3(x, 1.43f, -0.145f), new Vector2(0.85f, 0.2f),
+        boton.texto = TextoDelPanel("Texto " + nombre, panel, texto, new Vector3(x, 1.43f, -0.145f), new Vector2(0.58f, 0.18f),
             new Color(0.07f, 0.09f, 0.13f));
     }
 

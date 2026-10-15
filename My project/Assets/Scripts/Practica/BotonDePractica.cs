@@ -5,7 +5,7 @@ using UnityEngine;
 // Plantar (E), o pegándole un tiro (WeaponFire). Mientras se lo mira se ilumina.
 public class BotonDePractica : MonoBehaviour
 {
-    public enum Accion { MoverBots, Reiniciar }
+    public enum Accion { MoverBots, Reiniciar, Reaccion } // al final los nuevos: la escena guarda el número
 
     public Accion accion;
     public TextMeshPro texto;

@@ -16,6 +16,10 @@ public static class WeaponFire
     // Cada baja de un disparo, y si fue a la cabeza: sin conexión, el aviso de baja sale de acá (US 057, CA4).
     public static event System.Action<bool> Killed;
 
+    // Cada perdigón que pega en un personaje, con el daño y la zona, justo antes de hacerle el daño (el campo de
+    // práctica lo muestra arriba de sus muñecos, US 120).
+    public static event System.Action<HealthSystem, int, BodyZone> Impacto;
+
     // Cada disparo, con quién tiró, desde dónde y la dirección de cada perdigón. El multijugador lo repite
     // en las demás computadoras (US 028).
     public static event System.Action<Transform, Vector3, Vector3[]> Fired;
@@ -73,6 +77,7 @@ public static class WeaponFire
             // Se mira antes de aplicar el daño: a un jugador de otra computadora el daño le llega después (US 029).
             int damage = weapon.HitDamage(zone, hit.distance);
             bool lethal = target.WouldDie(damage);
+            Impacto?.Invoke(target, damage, zone);
             HealthSystem.DamageOrigin = camera.transform.position; // US 192: desde dónde le dispararon
             target.TakeDamage(damage, zone == BodyZone.Head);
             anyHit = true;
