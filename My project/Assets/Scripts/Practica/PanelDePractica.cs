@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 
-// US 120 · Panel del campo de práctica, al lado de la línea de tiro (lo pone el menú Riftwalker > Mapa de práctica).
+// US 120 · Panel del campo de práctica, en la pared derecha al lado de la línea de tiro (lo pone el menú Riftwalker > Mapa de práctica).
 // - Pone un bot (BotDePractica, el muñeco de Scenes/Pruebas_Armas) en cada lugar de "lugares": los de la zona de blancos.
 // - Botones (mirarlos de cerca y apretar E, la tecla de Plantar, o pegarles un tiro):
 //   * "Mover bots" / "Detener bots": los bots del piso caminan de costado o se quedan quietos.

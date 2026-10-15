@@ -20,8 +20,8 @@ using UnityEngine.SceneManagement;
 // - US 119: la tienda (B) y el CampoDePractica, que hace que en esta escena todas las armas se elijan gratis.
 //   El jugador va sin habilidad (el mapa es para practicar con las armas): lo hace el CampoDePractica.
 // - US 120: los blancos de la zona de blancos pasan a ser bots (el muñeco de Pruebas_Armas): cada blanco redondo se
-//   cambia por un "lugar de bot". Al lado de la línea de tiro, el panel (PanelDePractica) con los botones para mover
-//   los bots y reiniciar. Los blancos de la zona de distancias quedan como están (ahí se estudia el patrón).
+//   cambia por un "lugar de bot". En la pared derecha, al lado de la línea de tiro, el panel (PanelDePractica) con los
+//   botones para mover los bots y reiniciar. Los blancos de la zona de distancias quedan como están (ahí se estudia el patrón).
 // Medidas en metros. El 0 es la línea de tiro: hacia adelante (+z) los blancos, hacia atrás la zona de salida.
 // Piso, paredes y cajas son piezas del kit Sci-fi (las mismas del mapa táctico). Debajo de cada pared y del piso queda
 // un cubo invisible que es el que choca, así la sala queda cerrada aunque las piezas del kit tengan huecos. Las medidas
@@ -327,57 +327,84 @@ public static class MapaDePractica
     // US 120: bots y panel
     // =====================================================================
 
-    // Cambia cada blanco redondo de la zona de blancos por un lugar de bot y pone el panel. Si el panel ya está, no hace
-    // nada (así no se pisan los lugares movidos a mano).
+    // Cambia cada blanco redondo de la zona de blancos por un lugar de bot y pone el panel. Si el panel ya está colgado de
+    // la pared, no hace nada (así no se pisan los lugares movidos a mano). Si es el de la primera versión (con mesa), lo
+    // cambia por el de la pared y le pasa los mismos lugares.
+    private const string NombrePanel = "Panel de práctica (pared)";
+
     private static void BotsYPanel(Transform mapa)
     {
-        if (mapa.GetComponentInChildren<PanelDePractica>(true) != null) return;
-        Transform zona = mapa.Find("Zona de blancos");
-        if (zona == null) return;
-
-        Transform grupo = Grupo("Lugares de bots", zona);
-        var lugares = new List<Transform>();
-        foreach (Transform blanco in zona.Cast<Transform>().Where(t => t.name.StartsWith("Blanco")).ToList())
+        Transform[] lugares;
+        PanelDePractica viejo = mapa.GetComponentInChildren<PanelDePractica>(true);
+        if (viejo != null)
         {
-            Transform lugar = Grupo(blanco.name.Replace("Blanco", "Bot"), grupo);
-            lugar.position = blanco.position; // el pie del poste: en el piso o arriba de una caja
-            lugares.Add(lugar);
-            Object.DestroyImmediate(blanco.gameObject);
+            if (viejo.name == NombrePanel) return;
+            lugares = viejo.lugares;
+            Object.DestroyImmediate(viejo.gameObject);
+        }
+        else
+        {
+            Transform zona = mapa.Find("Zona de blancos");
+            if (zona == null) return;
+            Transform grupo = Grupo("Lugares de bots", zona);
+            var lista = new List<Transform>();
+            foreach (Transform blanco in zona.Cast<Transform>().Where(t => t.name.StartsWith("Blanco")).ToList())
+            {
+                Transform lugar = Grupo(blanco.name.Replace("Blanco", "Bot"), grupo);
+                lugar.position = blanco.position; // el pie del poste: en el piso o arriba de una caja
+                lista.Add(lugar);
+                Object.DestroyImmediate(blanco.gameObject);
+            }
+            lugares = lista.ToArray();
         }
 
-        // El panel, adelante a la derecha de donde aparece el jugador, de frente a él.
+        // Colgado de la pared derecha, al lado de la línea de tiro, mirando hacia adentro de la sala. Su -z (el frente)
+        // queda hacia -x; el 0 de z es la cara de la pared.
         Transform salida = mapa.Find("Zona de salida") ?? mapa;
-        Transform p = Grupo("Panel de práctica", salida);
-        p.position = new Vector3((BlancosX0 + BlancosX1) * 0.5f, 0f, -5f);
+        Transform p = Grupo(NombrePanel, salida);
+        p.SetPositionAndRotation(new Vector3(CaraParedDerecha(mapa), 0f, -2f), Quaternion.Euler(0f, 90f, 0f));
         PanelDePractica panel = p.gameObject.AddComponent<PanelDePractica>();
         panel.munieco = AssetDatabase.LoadAssetAtPath<GameObject>(Munieco);
         if (panel.munieco == null) Debug.LogWarning($"Mapa de práctica: no se encontró {Munieco} (el panel queda sin bots).");
-        panel.lugares = lugares.ToArray();
+        panel.lugares = lugares;
         panel.x0 = BlancosX0 + 0.6f;
         panel.x1 = BlancosX1 - 0.6f;
 
-        const float ancho = 2.2f;
-        Caja("Mesa", p, new Vector3(0f, 0.5f, 0f), new Vector3(ancho, 1f, 0.5f), poste);
-        Caja("Pantalla", p, new Vector3(0f, 1.6f, 0.2f), new Vector3(ancho, 1f, 0.08f), cartel);
-        Caja("Marco", p, new Vector3(0f, 2.1f, 0.2f), new Vector3(ancho, 0.06f, 0.1f), linea, false);
-        TextoDelPanel("Título", p, "CAMPO DE PRÁCTICA", new Vector3(0f, 1.95f, 0.15f), new Vector2(ancho - 0.3f, 0.2f), Amarillo);
-        panel.marcador = TextoDelPanel("Marcador", p, "Bajas: 0", new Vector3(0f, 1.7f, 0.15f), new Vector2(ancho - 0.3f, 0.18f), Color.white);
-        panel.ayuda = TextoDelPanel("Ayuda", p, "Mirá un botón y apretá E", new Vector3(0f, 0.8f, -0.26f), new Vector2(ancho - 0.3f, 0.16f), Color.white);
+        const float ancho = 2.2f, alto = 1.2f, centroY = 1.55f, marco = 0.06f;
+        Caja("Pantalla", p, new Vector3(0f, centroY, -0.04f), new Vector3(ancho, alto, 0.08f), cartel);
+        Caja("Marco", p, new Vector3(0f, centroY + (alto - marco) * 0.5f, -0.1f), new Vector3(ancho, marco, 0.04f), linea, false);
+        Caja("Marco", p, new Vector3(0f, centroY - (alto - marco) * 0.5f, -0.1f), new Vector3(ancho, marco, 0.04f), linea, false);
+        Caja("Marco", p, new Vector3(-(ancho - marco) * 0.5f, centroY, -0.1f), new Vector3(marco, alto, 0.04f), linea, false);
+        Caja("Marco", p, new Vector3((ancho - marco) * 0.5f, centroY, -0.1f), new Vector3(marco, alto, 0.04f), linea, false);
+        TextoDelPanel("Título", p, "CAMPO DE PRÁCTICA", new Vector3(0f, 1.98f, -0.085f), new Vector2(ancho - 0.3f, 0.2f), Amarillo);
+        panel.marcador = TextoDelPanel("Marcador", p, "Bajas: 0", new Vector3(0f, 1.76f, -0.085f), new Vector2(ancho - 0.3f, 0.16f), Color.white);
+        panel.ayuda = TextoDelPanel("Ayuda", p, "Mirá un botón y apretá E", new Vector3(0f, 1.15f, -0.085f), new Vector2(ancho - 0.3f, 0.13f), Color.white);
         Boton(p, "Botón mover bots", BotonDePractica.Accion.MoverBots, "MOVER BOTS", -0.55f);
         Boton(p, "Botón reiniciar", BotonDePractica.Accion.Reiniciar, "REINICIAR", 0.55f);
+    }
+
+    // Dónde termina, hacia adentro, la pared derecha del kit (sus piezas tienen relieve). Sin piezas, la cara del cubo.
+    private static float CaraParedDerecha(Transform mapa)
+    {
+        Transform kit = mapa.Find("Sala/Kit Sci-fi/Pared derecha (kit)");
+        float x = Ancho * 0.5f;
+        if (kit != null)
+            foreach (MeshRenderer r in kit.GetComponentsInChildren<MeshRenderer>())
+                x = Mathf.Min(x, r.bounds.min.x);
+        return x;
     }
 
     // Un botón amarillo sobre la pantalla del panel, que se ilumina al mirarlo. No es estático: cambia de material.
     private static void Boton(Transform panel, string nombre, BotonDePractica.Accion accion, string texto, float x)
     {
-        GameObject go = Pieza(PrimitiveType.Cube, nombre, panel, new Vector3(x, 1.33f, 0.13f), Quaternion.identity,
-            new Vector3(0.95f, 0.3f, 0.08f), linea, true);
+        GameObject go = Pieza(PrimitiveType.Cube, nombre, panel, new Vector3(x, 1.43f, -0.11f), Quaternion.identity,
+            new Vector3(0.95f, 0.3f, 0.06f), linea, true);
         GameObjectUtility.SetStaticEditorFlags(go, 0);
         BotonDePractica boton = go.AddComponent<BotonDePractica>();
         boton.accion = accion;
         boton.normal = linea;
         boton.resaltado = raya;
-        boton.texto = TextoDelPanel("Texto " + nombre, panel, texto, new Vector3(x, 1.33f, 0.085f), new Vector2(0.85f, 0.2f),
+        boton.texto = TextoDelPanel("Texto " + nombre, panel, texto, new Vector3(x, 1.43f, -0.145f), new Vector2(0.85f, 0.2f),
             new Color(0.07f, 0.09f, 0.13f));
     }
 
