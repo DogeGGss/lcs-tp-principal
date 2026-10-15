@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: VistaAerea
   m_EditorClassIdentifier: Assembly-CSharp::AbilityData
   displayName: Vista aérea
-  icon: {fileID: 0}
+  icon: {fileID: 21300000, guid: 6fad1d8638f2479e98038bf4cb27196b, type: 3}
   key: 113
   cooldown: 45
   cargas: 1
