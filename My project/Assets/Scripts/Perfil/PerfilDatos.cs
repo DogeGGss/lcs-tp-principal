@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
 
-// PRUEBA DEL MENÚ (rama prueba/menu-perfil-capsulas): datos fijos para probar el Perfil, la Estación del Rift
+// Datos fijos del menú principal para el Perfil, la Estación del Rift
 // (cápsulas) y la tienda de cristales. Todavía no hay historias refinadas: catálogo, rarezas, probabilidades, precios y
 // estadísticas son de ejemplo. Se guarda en PlayerPrefs ("Perfil.Prueba") para que no se pierda entre una prueba y otra.
 //

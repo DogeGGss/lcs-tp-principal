@@ -42,6 +42,9 @@ public class OpcionesPantalla : MonoBehaviour
     private float avisoHasta;
     private System.Action alAceptar, alCancelar;
 
+    // Cabecera como la de las pantallas del menú principal ("« Menú", rótulo y título)
+    private RectTransform cabecera;
+
     public static bool DialogoAbierto { get; private set; }
 
     /// <summary>La pantalla de opciones que contiene a este objeto, o null si está fuera de ella (por ejemplo, en la pausa).</summary>
@@ -118,8 +121,124 @@ public class OpcionesPantalla : MonoBehaviour
     private void OnEnable()
     {
         Iniciar();
+        ArmarCabecera();
         // Al abrir la pantalla se muestra la primera pestaña si no hay ninguna activa.
         if (PestañaActual() < 0 && pestañas.Count > 0) MostrarPestaña(0);
+    }
+
+    // En lugar del "Volver" y el título del prefab, la cabecera de las pantallas del menú principal (PerfilUI), en un
+    // marco de 1920 x 1080 al centro del panel que se escala para entrar (este lienzo usa otra escala). Y en lugar de
+    // los botones de las pestañas, una barra con el mismo estilo (ArmarPestañas).
+    // Las tipografías de PerfilUI las carga MenuRiftwalker: si todavía no están, se arma la próxima vez que se abre.
+    private void ArmarCabecera()
+    {
+        if (cabecera != null || PerfilUI.FTitulo == null) return;
+        foreach (string nombre in new[] { "BtnVolver", "Titulo" })
+        {
+            Transform viejo = Buscar(transform, nombre);
+            if (viejo != null) viejo.gameObject.SetActive(false);
+        }
+        cabecera = Node("Cabecera", transform);
+        cabecera.anchorMin = cabecera.anchorMax = cabecera.pivot = new Vector2(0.5f, 0.5f);
+        cabecera.sizeDelta = new Vector2(1920f, 1080f);
+        PerfilUI.Cabecera(cabecera, "Ajustes del juego", "Opciones", Volver);
+        EncajarCabecera();
+        ArmarPestañas();
+    }
+
+    private void EncajarCabecera()
+    {
+        if (cabecera == null) return;
+        Vector2 tam = ((RectTransform)transform).rect.size;
+        if (tam.x > 0f && tam.y > 0f) cabecera.localScale = Vector3.one * Mathf.Min(tam.x / 1920f, tam.y / 1080f);
+    }
+
+    // =====================================================================
+    // Barra de pestañas
+    // =====================================================================
+
+    // Barra oscura justo arriba del panel de cada pestaña (que ocupa 1452 x 698 desde (234, 224) en 1920 x 1080; va
+    // anclada al centro, como ese panel). A los costados, las teclas Q y E, que también cambian de pestaña (CA2).
+    // Cada pestaña "aprieta" su botón del prefab (escondido), que es el que cambia el panel (MenuUIController).
+    private const float XBarra = 234f, YBarra = 152f, AnchoBarra = 1452f, AltoBarra = 60f, MargenTeclas = 64f;
+    private readonly List<(Img fondo, Img linea, TextMeshProUGUI texto)> celdas = new List<(Img, Img, TextMeshProUGUI)>();
+    private int pestañaPintada = -2, pestañaEncima = -1;
+
+    private void ArmarPestañas()
+    {
+        RectTransform barra = Node("Pestañas", transform);
+        barra.anchorMin = barra.anchorMax = new Vector2(0.5f, 0.5f);
+        barra.pivot = new Vector2(0f, 1f);
+        barra.anchoredPosition = new Vector2(XBarra - 960f, 540f - YBarra);
+        barra.sizeDelta = new Vector2(AnchoBarra, AltoBarra);
+        Image(barra, PerfilUI.Rounded, PanelColor, 8f, true);
+        PerfilUI.Borde(barra, 8f, White(0.08f));
+        Tecla(barra, 16f, "Q", () => CambiarPestaña(-1));
+        Tecla(barra, AnchoBarra - 16f - 32f, "E", () => CambiarPestaña(1));
+
+        float w = (AnchoBarra - 2f * MargenTeclas) / Mathf.Max(1, pestañas.Count), h = AltoBarra - 12f;
+        for (int i = 0; i < pestañas.Count; i++)
+        {
+            int k = i;
+            if (pestañas[i] != null) pestañas[i].gameObject.SetActive(false);
+            RectTransform celda = Place(Node("Pestaña " + i, barra), MargenTeclas + i * w + 4f, 6f, w - 8f, h);
+            Img fondo = Image(celda, PerfilUI.Rounded, Color.clear, 6f, true);
+            string nombre = NombrePestaña(i);
+            TextMeshProUGUI texto = Text(Stretch(Node("Texto", celda)), PerfilUI.FTitulo, 28f, Mute, TextAlignmentOptions.Center, 6f, true);
+            texto.text = nombre;
+            float ancho = Width(texto, nombre.ToUpperInvariant());
+            Img linea = Image(Place(Node("Linea", celda), (w - 8f - ancho) / 2f, h - 9f, ancho, 3f), null, Accent);
+            ShopPointerTarget puntero = celda.gameObject.AddComponent<ShopPointerTarget>();
+            puntero.Clicked = () => MostrarPestaña(k);
+            puntero.Hovered = () => { pestañaEncima = k; pestañaPintada = -2; };
+            puntero.Exited = () => { if (pestañaEncima == k) pestañaEncima = -1; pestañaPintada = -2; };
+            celda.gameObject.AddComponent<SonidoAlPasar>();
+            celdas.Add((fondo, linea, texto));
+        }
+        PintarPestañas();
+    }
+
+    private string NombrePestaña(int i)
+    {
+        UnityEngine.UI.Button b = pestañas[i];
+        switch (b != null ? b.name : "")
+        {
+            case "BtnGraficos": return "Gráficos";
+            case "BtnControles": return "Controles";
+            case "BtnSonido": return "Sonido";
+            case "BtnMira": return "Mira";
+        }
+        TMP_Text t = b != null ? b.GetComponentInChildren<TMP_Text>(true) : null;
+        return t != null ? t.text : "";
+    }
+
+    private void Tecla(RectTransform barra, float x, string tecla, System.Action alHacerClic)
+    {
+        RectTransform rect = Place(Node("Tecla " + tecla, barra), x, (AltoBarra - 32f) / 2f, 32f, 32f);
+        Img fondo = Image(rect, PerfilUI.Rounded, ChipColor, 6f, true);
+        PerfilUI.Borde(rect, 6f, White(0.16f));
+        // Mono: en la Barlow Condensed, a este tamaño, la Q parece un 0.
+        Text(Stretch(Node("Texto", rect)), PerfilUI.FMono != null ? PerfilUI.FMono : PerfilUI.FRotulo, 18f, Soft, TextAlignmentOptions.Center).text = tecla;
+        ShopPointerTarget puntero = rect.gameObject.AddComponent<ShopPointerTarget>();
+        puntero.Clicked = alHacerClic;
+        puntero.Hovered = () => fondo.color = ChipDim;
+        puntero.Exited = () => fondo.color = ChipColor;
+        rect.gameObject.AddComponent<SonidoAlPasar>();
+    }
+
+    // La activa con un fondo apenas naranja, letra blanca y subrayada; la que está bajo el mouse, un poco más clara.
+    private void PintarPestañas()
+    {
+        int activa = PestañaActual();
+        if (activa == pestañaPintada) return;
+        pestañaPintada = activa;
+        for (int i = 0; i < celdas.Count; i++)
+        {
+            bool esActiva = i == activa, encima = i == pestañaEncima && !esActiva;
+            celdas[i].fondo.color = esActiva ? SelectedColor : encima ? HoverColor : Color.clear;
+            celdas[i].texto.color = esActiva ? Ink : encima ? Soft : Mute;
+            celdas[i].linea.enabled = esActiva;
+        }
     }
 
     private void OnDisable()
@@ -137,6 +256,8 @@ public class OpcionesPantalla : MonoBehaviour
 
     private void Update()
     {
+        EncajarCabecera();
+        PintarPestañas();
         if (aviso != null)
         {
             aviso.alpha = Time.unscaledTime < avisoHasta ? 1f : 0f;

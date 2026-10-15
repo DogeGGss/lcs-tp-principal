@@ -4,7 +4,7 @@ using static ShopUIKit;
 using static PerfilUI;
 using Img = UnityEngine.UI.Image;
 
-// PRUEBA DEL MENÚ: "Danos tu opinión". Tipo (opinión, sugerencia o error), valoración opcional de 1 a 5 y un
+// "Danos tu opinión", del menú principal. Tipo (opinión, sugerencia o error), valoración opcional de 1 a 5 y un
 // comentario de hasta 500 caracteres. Es una simulación: se guarda en un archivo de la PC y no se envía.
 public class VentanaFeedback
 {

@@ -216,13 +216,58 @@ public class OpcionesKit
     // Pie
     // ---------------------------------------------------------------------
 
-    /// <summary>Aplicar (naranja) y Restablecer, alineados como en Controles.</summary>
+    /// <summary>Aplicar (naranja) y Restablecer: en las opciones del menú principal, centrados al pie (PieCentrado);
+    /// en la pausa, alineados a la izquierda como en Controles.</summary>
     public void Pie(ref float y, System.Action aplicar, System.Action restablecer)
     {
+        if (OpcionesPantalla.De(root) != null)
+        {
+            y = PieCentrado(root, y, displayFont, rounded, aplicar, restablecer, out _);
+            return;
+        }
         y += 12f;
         Boton(left, y, 150f, 40f, "Aplicar", true, aplicar);
         Boton(left + 166f, y, 170f, 40f, "Restablecer", false, restablecer);
         y += 40f;
+    }
+
+    /// <summary>
+    /// Pie de las pestañas de las opciones del menú principal: una línea y "Restablecer" y "Aplicar" centrados, a la
+    /// misma altura en todas las pestañas (no se mueven al cambiar de una a otra). Las medidas son las de Gráficos y
+    /// Sonido (600 de alto); en un panel más alto, como Controles, se agrandan para verse iguales en pantalla.
+    /// Devuelve dónde termina el pie; "derecha" es el borde derecho de Aplicar.
+    /// </summary>
+    public static float PieCentrado(RectTransform root, float y, TMP_FontAsset fuente, Sprite redondeado,
+        System.Action aplicar, System.Action restablecer, out float derecha)
+    {
+        float ancho = root.rect.width, alto = root.rect.height;
+        float f = alto > 0f ? alto / AltoPestana : 1f;
+        float w = 200f * f, h = 44f * f, separacion = 16f * f;
+        float yBotones = Mathf.Max(y + 14f * f, alto - 58f * f); // la línea, 12 más arriba, queda debajo de lo último
+        Image(Place(Node("LineaPie", root), Pad, yBotones - 12f * f, ancho - 2f * Pad, f), null, White(0.08f));
+        float x = (ancho - 2f * w - separacion) / 2f;
+        BotonPie(root, x, yBotones, w, h, f, "Restablecer", false, fuente, redondeado, restablecer);
+        BotonPie(root, x + w + separacion, yBotones, w, h, f, "Aplicar", true, fuente, redondeado, aplicar);
+        derecha = x + 2f * w + separacion;
+        return yBotones + h;
+    }
+
+    private static void BotonPie(RectTransform root, float x, float y, float w, float h, float f, string etiqueta, bool principal,
+        TMP_FontAsset fuente, Sprite redondeado, System.Action alHacerClic)
+    {
+        RectTransform rect = Place(Node(etiqueta, root), x, y, w, h);
+        Color normal = principal ? Accent : ChipColor, borde = White(0.16f);
+        Img fondo = Image(rect, redondeado, normal, 6f, true);
+        Img linea = principal ? null : PerfilUI.Borde(rect, 6f, borde);
+        Text(Stretch(Node("Texto", rect)), fuente, 19f * f, principal ? AccentInk : Ink, TextAlignmentOptions.Center, 10f, true).text = etiqueta;
+        ShopPointerTarget puntero = rect.gameObject.AddComponent<ShopPointerTarget>();
+        puntero.Hovered = () => { fondo.color = principal ? Hot : ChipDim; if (linea != null) linea.color = Accent; };
+        puntero.Exited = () => { fondo.color = normal; if (linea != null) linea.color = borde; };
+        puntero.Clicked = alHacerClic;
+        // Crece un poco al pasar el mouse (con el sonido del menú) desde el centro.
+        rect.gameObject.AddComponent<ButtonHoverAnimation>();
+        rect.pivot = new Vector2(0.5f, 0.5f);
+        rect.anchoredPosition += new Vector2(w / 2f, -h / 2f);
     }
 
     public void Boton(float x, float y, float w, float h, string etiqueta, bool principal, System.Action alHacerClic)

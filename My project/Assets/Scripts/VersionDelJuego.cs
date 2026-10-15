@@ -1,7 +1,6 @@
 using System;
 using System.Collections;
 using Riftwalker.Releases;
-using TMPro;
 using UnityEngine;
 using UnityEngine.Networking;
 
@@ -101,20 +100,4 @@ public static class VersionDelJuego
     }
     private static string Aviso() => versionNueva == null ? null :
         "Hay una versión nueva (" + versionNueva + "). Actualizá el juego desde el launcher para jugar online.";
-
-    public static void MostrarEnMenu(Transform panel)
-    {
-        if (panel == null || panel.Find("Version del juego") != null) return;
-        var existing = panel.GetComponentInChildren<TMP_Text>(true);
-        var go = new GameObject("Version del juego", typeof(RectTransform), typeof(TextMeshProUGUI));
-        go.transform.SetParent(panel, false);
-        var rect = (RectTransform)go.transform;
-        rect.anchorMin = rect.anchorMax = rect.pivot = new Vector2(1, 0);
-        rect.anchoredPosition = new Vector2(-28, 18); rect.sizeDelta = new Vector2(300, 32);
-        var text = go.GetComponent<TextMeshProUGUI>();
-        if (existing != null) text.font = existing.font;
-        text.text = "v" + Application.version; text.fontSize = 20;
-        text.alignment = TextAlignmentOptions.BottomRight;
-        text.color = new Color32(142, 150, 163, 255); text.raycastTarget = false;
-    }
 }

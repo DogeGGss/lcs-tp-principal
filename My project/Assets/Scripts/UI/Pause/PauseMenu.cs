@@ -501,9 +501,9 @@ public class PauseMenu : MonoBehaviour
     {
         screenMode = mode;
         PlayerPrefs.SetInt(KeyScreenMode, mode);
-        Screen.fullScreenMode = mode == 0 ? FullScreenMode.Windowed
-            : mode == 1 ? FullScreenMode.FullScreenWindow
-            : FullScreenMode.ExclusiveFullScreen;
+        // Igual que en las opciones: respeta la resolución guardada, "Sin bordes" y las barras negras con 16:9 o 4:3
+        // en un monitor de otra forma.
+        GraficosUIController.AplicarPantalla();
         Render();
     }
 

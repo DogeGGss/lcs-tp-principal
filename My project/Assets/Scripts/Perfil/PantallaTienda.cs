@@ -5,7 +5,7 @@ using static PerfilUI;
 using Img = UnityEngine.UI.Image;
 using Pack = PerfilDatos.Pack;
 
-// PRUEBA DEL MENÚ: tienda de cristales (la moneda "de pago"). Es una SIMULACIÓN de negocio para el TP:
+// Tienda de cristales del menú principal (la moneda "de pago"). Es una SIMULACIÓN de negocio para el TP:
 // "comprar" pide confirmación, suma los cristales y anota la compra, pero no se cobra nada.
 public class PantallaTienda : PantallaBase
 {

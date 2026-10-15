@@ -82,13 +82,12 @@ public class MiraUIController : MonoBehaviour, OpcionesPantalla.ISeccion
         // Con lugar (menú principal) van dos columnas: controles a la izquierda y vista previa a la derecha.
         // En la pausa la columna es angosta: la vista previa va arriba y todo lo demás abajo.
         bool ancho = kit.width >= 1000f;
-        float y = 114f;
+        float y = 114f, yDerecha = y;
 
         if (ancho)
         {
             float mitad = (kit.width - OpcionesKit.Pad * 2f - 48f) / 2f;
             kit.Columna(OpcionesKit.Pad + mitad + 48f, mitad);
-            float yDerecha = y;
             VistaPrevia(kit, ref yDerecha, 200f);
             yDerecha += 10f;
             kit.Grupo("Color propio", ref yDerecha);
@@ -116,6 +115,7 @@ public class MiraUIController : MonoBehaviour, OpcionesPantalla.ISeccion
         segDinamica = kit.FilaSegmentos("Dispersión", ref y, FijaAbre, i => { pendiente.dinamica = i == 1; Mostrar(); });
 
         float yPie = y + 12f;
+        y = Mathf.Max(y, yDerecha); // el pie va debajo de la columna más larga
         kit.Pie(ref y, AplicarConfiguracion, RestablecerConfiguracion);
         if (alVolver != null) kit.Boton(kit.Left + 352f, yPie, 130f, 40f, "Volver", false, alVolver);
     }

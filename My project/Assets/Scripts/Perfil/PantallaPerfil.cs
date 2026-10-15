@@ -7,7 +7,7 @@ using Img = UnityEngine.UI.Image;
 using Tipo = PerfilDatos.Tipo;
 using Cosmetico = PerfilDatos.Cosmetico;
 
-// PRUEBA DEL MENÚ: Perfil del jugador. Arriba, la cabecera con el banner, el avatar, el nombre, el título y un
+// Perfil del jugador (menú principal). Arriba, la cabecera con el banner, el avatar, el nombre, el título y un
 // resumen; abajo, dos pestañas: Estadísticas (datos de ejemplo) y Personalización (avatares, banners, títulos y marcos).
 public class PantallaPerfil : PantallaBase
 {
