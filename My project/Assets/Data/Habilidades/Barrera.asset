@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Barrera
   m_EditorClassIdentifier: Assembly-CSharp::AbilityData
   displayName: Barrera
-  icon: {fileID: 0}
+  icon: {fileID: 21300000, guid: 126d27efa31b44bfb3f47c9e5106e389, type: 3}
   key: 113
   cooldown: 40
   cargas: 1
