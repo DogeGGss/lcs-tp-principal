@@ -2,10 +2,10 @@ using TMPro;
 using UnityEngine;
 
 // US 120 · Un botón del panel del campo de práctica (PanelDePractica): se usa mirándolo de cerca y apretando la tecla de
-// Plantar (E), o pegándole un tiro (WeaponFire). Mientras se lo mira se ilumina.
+// Plantar (E), o pegándole un tiro (WeaponFire). Se ilumina mientras se lo mira y si es el modo elegido.
 public class BotonDePractica : MonoBehaviour
 {
-    public enum Accion { MoverBots, Reiniciar, Reaccion } // al final los nuevos: la escena guarda el número
+    public enum Accion { Quietos, Movimiento, Distancias, Reaccion, Reiniciar }
 
     public Accion accion;
     public TextMeshPro texto;

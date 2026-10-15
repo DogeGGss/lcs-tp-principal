@@ -2,12 +2,12 @@ using System.Collections;
 using UnityEngine;
 
 // US 120 · Bot del campo de práctica: el mismo muñeco de Scenes/Pruebas_Armas (MuniecoPrueba: el modelo del jugador,
-// con sus zonas de impacto y el contorno rojo de rival), sin la persecución. Lo crea el PanelDePractica en cada lugar
-// de bot de la zona de blancos, de frente a la línea de tiro.
+// con sus zonas de impacto y el contorno rojo de rival), sin la persecución. Lo crea el PanelDePractica en la zona de
+// tiro, según el modo elegido, de frente a la línea de tiro.
 // - Recibe el daño de verdad del arma (por zona y distancia, US 165) y muestra el marcador de impacto como un rival.
 // - CA1: al morir cae hacia atrás, como los rivales en el online, y a los 3 s se levanta solo con la vida completa.
-// - Con "Mover bots" (panel) camina de costado, para un lado y para el otro, con frenadas y cambios de lado al azar.
-//   Los que están arriba de una caja no se mueven.
+// - En el modo "En movimiento" (panel) camina de costado, para un lado y para el otro, con frenadas y cambios de lado
+//   al azar, sin pasar a través de paredes ni cajas.
 // - CA3: no ataca ni empuja: no le hace nada al jugador.
 public class BotDePractica : MonoBehaviour
 {

@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using TMPro;
@@ -10,25 +9,24 @@ using UnityEngine.SceneManagement;
 // US 118 · Mapa de práctica (Shooting Range). Arma la escena Scenes/Mapa_practica desde el menú de Unity:
 // Riftwalker > Crear mapa de práctica. Después es una escena común: se abre y se retoca a mano (luces, decoración).
 // Se puede volver a correr: pregunta antes de reemplazar la escena. Para no perder lo retocado a mano, el otro menú
-// (Riftwalker > Mapa de práctica: actualizar escena) le suma a la escena abierta solo lo que le falte: los carteles,
-// y lo de la US 119 (la tienda y el CampoDePractica).
+// (Riftwalker > Mapa de práctica: actualizar escena) le cambia o le suma a la escena abierta solo lo de abajo que le
+// falte, sin tocar el resto.
 // - CA1: una escena aparte de los mapas de partida, solo para practicar (se suma sola al Build Settings).
-// - CA2: zona de distancias a la izquierda: tres carriles con rayas en el piso cada 5 m hasta 50 m y un blanco a 10,
-//   25 y 50 m, cada uno con su cartel.
-// - CA3: zona de blancos a la derecha: blancos a distintas distancias, alturas y costados.
+// - Una sola zona de tiro adelante de la línea de tiro, a todo el ancho: rayas en el piso cada 5 m hasta 50 m con los
+//   metros a los dos costados, y cajas para que haya muñecos a distintas alturas. (Antes eran dos zonas, de distancias
+//   y de blancos: el menú de actualizar las saca.)
 // - CA4: tiene el jugador (con la pausa, que vuelve al menú) y el HUD, sin sala ni rondas: no necesita una partida.
 // - US 119: la tienda (B) y el CampoDePractica, que hace que en esta escena todas las armas se elijan gratis.
 //   El jugador va sin habilidad (el mapa es para practicar con las armas): lo hace el CampoDePractica.
-// - US 120: los blancos de la zona de blancos pasan a ser bots (el muñeco de Pruebas_Armas): cada blanco redondo se
-//   cambia por un "lugar de bot". En la pared derecha, al lado de la línea de tiro, el panel (PanelDePractica) con los
-//   botones para mover los bots, la prueba de reacción y reiniciar. En la zona de distancias, cada blanco pasa a ser un
-//   muñeco quieto que muestra el daño de cada tiro a esa distancia.
-// Medidas en metros. El 0 es la línea de tiro: hacia adelante (+z) los blancos, hacia atrás la zona de salida.
+// - US 120: en la pared derecha, al lado de la línea de tiro, el panel (PanelDePractica) con los modos (bots quietos,
+//   en movimiento, distancias y reacción) y reiniciar: pone los muñecos en la zona de tiro. En la línea de tiro, una
+//   barrera: un mostrador bajo y, arriba, una pared invisible que frena al jugador pero no a las balas (está en la
+//   capa Ignore Raycast, que los disparos no miran).
+// Medidas en metros. El 0 es la línea de tiro: hacia adelante (+z) la zona de tiro, hacia atrás la zona de salida.
 // Piso, paredes y cajas son piezas del kit Sci-fi (las mismas del mapa táctico). Debajo de cada pared y del piso queda
 // un cubo invisible que es el que choca, así la sala queda cerrada aunque las piezas del kit tengan huecos. Las medidas
 // de cada pieza se toman de la pieza misma al armar el mapa (no hace falta saber dónde tiene el centro). Si una pieza
-// no está, queda el cubo con su color. Los blancos y las rayas son cubos y cilindros con materiales de color (en
-// Scenes/Mapa_practica/).
+// no está, queda el cubo con su color. Las rayas y el panel son cubos con materiales de color (en Scenes/Mapa_practica/).
 public static class MapaDePractica
 {
     private const string Menu = "Riftwalker/Crear mapa de práctica";
@@ -46,12 +44,9 @@ public static class MapaDePractica
 
     private const float Ancho = 24f, Atras = 12f, Adelante = 58f, Alto = 6f, Grosor = 0.5f;
     private const float AlturaJugador = 1.15f; // la misma que en Pruebas_Armas: pies en el piso
-    private static readonly float[] Carriles = { -9f, -6f, -3f };
-    private static readonly int[] DistanciasCarriles = { 10, 25, 50 };
     private const int Largo = 50, CadaRaya = 5;
-    private static float DistanciasX0 => Carriles[0] - 1.5f;
-    private static float DistanciasX1 => Carriles[Carriles.Length - 1] + 1.5f;
-    private const float BlancosX0 = 1.5f, BlancosX1 = 11.5f, ZCarteles = 1.5f;
+    private const float ZCarteles = 1.5f;
+    private const int CapaSinDisparos = 2; // Ignore Raycast: los disparos (Physics.DefaultRaycastLayers) no la ven
 
     private static Material piso, pared, linea, raya, blanco, rojo, poste, caja, cartel;
 
@@ -70,9 +65,9 @@ public static class MapaDePractica
         Transform mapa = new GameObject("Mapa de práctica").transform;
         Sala(mapa);
         ZonaDeSalida(mapa);
-        ZonaDeDistancias(mapa);
-        ZonaDeBlancos(mapa);
-        BotsYPanel(mapa);
+        ZonaDeTiro(mapa);
+        Barrera(mapa);
+        Panel(mapa);
         Luz();
         if (Prefab(Jugador, new Vector3(0f, AlturaJugador, -8f)) == null || Prefab(Hud, Vector3.zero) == null) return;
         if (!ArmasDePractica()) return;
@@ -82,9 +77,10 @@ public static class MapaDePractica
         Debug.Log($"Mapa de práctica: escena guardada en {Ruta} y sumada al Build Settings.");
     }
 
-    // Para una escena ya armada y retocada a mano: le pone los carteles con marco y le
-    // suma la tienda y el CampoDePractica (US 119) y los bots con su panel (US 120) si no los tiene, sin tocar nada más. Hay que tener abierta
-    // Scenes/Mapa_practica.
+    // Para una escena ya armada y retocada a mano: cambia las dos zonas viejas (distancias y blancos) por la zona de
+    // tiro, y le suma la barrera, el panel (US 120), la tienda y el CampoDePractica (US 119) si no los tiene. Lo que se
+    // agregó a mano en las zonas viejas (por ejemplo, una pared en el medio) no lo conoce: hay que sacarlo a mano. Hay
+    // que tener abierta Scenes/Mapa_practica.
     [MenuItem(MenuActualizar)]
     private static void Actualizar()
     {
@@ -97,23 +93,19 @@ public static class MapaDePractica
             return;
         }
         Materiales();
-        CambiarCartel(raiz.transform.Find("Zona de distancias"), "ZONA DE DISTANCIAS", DistanciasX0, DistanciasX1);
-        CambiarCartel(raiz.transform.Find("Zona de blancos"), "ZONA DE BLANCOS", BlancosX0, BlancosX1);
+        Transform mapa = raiz.transform;
+        foreach (string vieja in new[] { "Zona de distancias", "Zona de blancos" })
+        {
+            Transform zona = mapa.Find(vieja);
+            if (zona != null) Object.DestroyImmediate(zona.gameObject);
+        }
+        if (mapa.Find("Zona de tiro") == null) ZonaDeTiro(mapa);
+        if (mapa.Find("Barrera") == null) Barrera(mapa);
+        Panel(mapa);
         if (!ArmasDePractica()) return;
-        BotsYPanel(raiz.transform);
         EditorSceneManager.MarkSceneDirty(escena);
         EditorSceneManager.SaveScene(escena);
-        Debug.Log("Mapa de práctica: escena actualizada (carteles, tienda, campo de práctica, bots y panel).");
-    }
-
-    // Saca el cartel viejo (solo el texto) y pone el nuevo. Si la zona ya tiene el nuevo (con tablero), no hace nada.
-    private static void CambiarCartel(Transform zona, string texto, float x0, float x1)
-    {
-        if (zona == null) return;
-        Transform viejo = zona.Find("Cartel");
-        if (viejo != null && viejo.Find("Tablero") != null) return;
-        if (viejo != null) Object.DestroyImmediate(viejo.gameObject);
-        Cartel(zona, texto, x0, x1, ZCarteles);
+        Debug.Log("Mapa de práctica: escena actualizada (zona de tiro, barrera, panel, tienda y campo de práctica).");
     }
 
     // US 119: el CampoDePractica (todas las armas gratis) y la tienda, que es donde se eligen. Si ya están, no se tocan.
@@ -260,113 +252,74 @@ public static class MapaDePractica
     }
 
     // =====================================================================
-    // Zona de distancias (CA2)
+    // Zona de tiro
     // =====================================================================
 
-    private static void ZonaDeDistancias(Transform mapa)
+    // Cajas de la zona de tiro (x, z y alto): así hay muñecos a distintas alturas (PanelDePractica los pone arriba).
+    private static readonly Vector3[] CajasDeTiro =
     {
-        Transform zona = Grupo("Zona de distancias", mapa);
-        float izquierda = DistanciasX0, derecha = DistanciasX1;
-        float ancho = derecha - izquierda, centro = (izquierda + derecha) * 0.5f;
-        Cartel(zona, "ZONA DE DISTANCIAS", izquierda, derecha, ZCarteles);
+        new Vector3(-6f, 18f, 1.5f), new Vector3(5f, 24f, 2f), new Vector3(-2f, 32f, 1f), new Vector3(8f, 12.5f, 1.5f),
+    };
 
-        // Una raya cada 5 m a lo ancho de los carriles, con los metros escritos en el piso.
+    private static void ZonaDeTiro(Transform mapa)
+    {
+        Transform zona = Grupo("Zona de tiro", mapa);
+        float x0 = -Ancho * 0.5f + 1.5f, x1 = Ancho * 0.5f - 1.5f;
+        Cartel(zona, "ZONA DE TIRO", -8f, 8f, ZCarteles);
+
+        // Una raya cada 5 m a todo el ancho, con los metros escritos en el piso a los dos costados.
         for (int m = CadaRaya; m <= Largo; m += CadaRaya)
         {
             bool diez = m % 10 == 0;
-            Caja($"{m} m", zona, new Vector3(centro, 0.005f, m), new Vector3(ancho, 0.01f, diez ? 0.15f : 0.08f), diez ? linea : raya, false);
-            Texto($"{m} m", zona, $"{m} m", new Vector3(izquierda - 0.9f, 0.02f, m), 4f, diez ? Amarillo : Color.white, true);
+            Caja($"{m} m", zona, new Vector3(0f, 0.005f, m), new Vector3(x1 - x0, 0.01f, diez ? 0.15f : 0.08f), diez ? linea : raya, false);
+            foreach (float x in new[] { x0 - 0.6f, x1 + 0.6f })
+                Texto($"{m} m", zona, $"{m} m", new Vector3(x, 0.02f, m), 4f, diez ? Amarillo : Color.white, true);
         }
-        // Los bordes de los carriles.
-        for (int i = 0; i <= Carriles.Length; i++)
-        {
-            float x = izquierda + i * (ancho / Carriles.Length);
-            Caja("Borde de carril", zona, new Vector3(x, 0.005f, Largo * 0.5f), new Vector3(0.06f, 0.01f, Largo), raya, false);
-        }
-        // Un blanco por carril, cada uno a su distancia, así no se tapan entre sí.
-        for (int i = 0; i < Carriles.Length; i++)
-        {
-            int metros = DistanciasCarriles[i];
-            Blanco($"Blanco a {metros} m", zona, new Vector3(Carriles[i], 0f, metros), 1.5f);
-            Texto($"Cartel {metros} m", zona, $"{metros} m", new Vector3(Carriles[i], 2.6f, metros), 6f, Amarillo, false);
-        }
+        foreach (Vector3 c in CajasDeTiro) CajasDelKit("Cajas", zona, new Vector3(c.x, 0f, c.y), c.z);
+    }
+
+    // En la línea de tiro: un mostrador bajo y, arriba, una pared invisible que frena al jugador. Las dos dejan pasar
+    // las balas que van por arriba del mostrador (la pared está en la capa que los disparos no miran).
+    private static void Barrera(Transform mapa)
+    {
+        Transform b = Grupo("Barrera", mapa);
+        Caja("Mostrador", b, new Vector3(0f, 0.45f, 0.35f), new Vector3(Ancho, 0.9f, 0.4f), poste);
+        Caja("Borde del mostrador", b, new Vector3(0f, 0.92f, 0.35f), new Vector3(Ancho, 0.04f, 0.42f), linea, false);
+        GameObject invisible = GameObject.CreatePrimitive(PrimitiveType.Cube);
+        invisible.name = "Pared invisible";
+        invisible.layer = CapaSinDisparos;
+        Object.DestroyImmediate(invisible.GetComponent<MeshRenderer>());
+        Object.DestroyImmediate(invisible.GetComponent<MeshFilter>());
+        invisible.transform.SetParent(b, false);
+        invisible.transform.localPosition = new Vector3(0f, (0.9f + Alto) * 0.5f, 0.35f);
+        invisible.transform.localScale = new Vector3(Ancho, Alto - 0.9f, 0.4f);
     }
 
     // =====================================================================
-    // Zona de blancos (CA3)
+    // US 120: panel
     // =====================================================================
 
-    private static void ZonaDeBlancos(Transform mapa)
+    // El panel de los modos, colgado de la pared derecha al lado de la línea de tiro. Si ya está el de esta versión,
+    // solo se ajusta hasta dónde puede haber muñecos; si es uno viejo (o no hay), se arma de nuevo.
+    private const string NombrePanel = "Panel de práctica (modos)";
+    private const float EscalaPanel = 1.3f; // el panel se arma a 1 y se agranda, con su centro a la misma altura
+
+    private static void Panel(Transform mapa)
     {
-        Transform zona = Grupo("Zona de blancos", mapa);
-        // Separada de la de distancias por una baranda baja.
-        Caja("Baranda", zona, new Vector3(0f, 0.6f, 15f), new Vector3(0.3f, 1.2f, 30f), pared);
-        // Contorno de la zona en el piso.
-        const float x0 = BlancosX0, x1 = BlancosX1, z0 = 4f, z1 = 30f;
-        Cartel(zona, "ZONA DE BLANCOS", x0, x1, ZCarteles);
-        Caja("Borde", zona, new Vector3((x0 + x1) * 0.5f, 0.005f, z0), new Vector3(x1 - x0, 0.01f, 0.1f), linea, false);
-        Caja("Borde", zona, new Vector3((x0 + x1) * 0.5f, 0.005f, z1), new Vector3(x1 - x0, 0.01f, 0.1f), linea, false);
-        Caja("Borde", zona, new Vector3(x0, 0.005f, (z0 + z1) * 0.5f), new Vector3(0.1f, 0.01f, z1 - z0), linea, false);
-        Caja("Borde", zona, new Vector3(x1, 0.005f, (z0 + z1) * 0.5f), new Vector3(0.1f, 0.01f, z1 - z0), linea, false);
-
-        // Blancos a distintas distancias, alturas y costados: x, z y altura del centro del blanco.
-        Vector3[] lugares =
-        {
-            new Vector3(3.5f, 8f, 1.5f), new Vector3(9.5f, 10f, 1.1f), new Vector3(6.5f, 14f, 1.8f),
-            new Vector3(3f, 19f, 1.3f), new Vector3(10f, 22f, 1.6f), new Vector3(6.5f, 27f, 1.5f),
-        };
-        foreach (Vector3 l in lugares) Blanco($"Blanco {l.y:0} m", zona, new Vector3(l.x, 0f, l.y), l.z);
-
-        // Dos blancos arriba de cajas, para apuntar más alto.
-        float arriba = CajasDelKit("Cajas", zona, new Vector3(4.5f, 0f, 24f), 2f);
-        Blanco("Blanco alto 24 m", zona, new Vector3(4.5f, arriba, 24f), 1.5f);
-        arriba = CajasDelKit("Cajas", zona, new Vector3(9f, 0f, 16f), 1.5f);
-        Blanco("Blanco alto 16 m", zona, new Vector3(9f, arriba, 16f), 1.5f);
-    }
-
-    // =====================================================================
-    // US 120: bots y panel
-    // =====================================================================
-
-    // Cambia cada blanco redondo de la zona de blancos por un lugar de bot y pone el panel. Si el panel ya está colgado de
-    // la pared, no hace nada (así no se pisan los lugares movidos a mano). Si es el de la primera versión (con mesa), lo
-    // cambia por el de la pared y le pasa los mismos lugares.
-    private const string NombrePanel = "Panel de práctica (pared, grande)";
-    private const float EscalaPanel = 1.5f; // el panel se arma a 1 y se agranda, con su centro a la misma altura
-
-    private static void BotsYPanel(Transform mapa)
-    {
-        Transform[] lugares;
         PanelDePractica viejo = mapa.GetComponentInChildren<PanelDePractica>(true);
-        if (viejo != null)
+        if (viejo != null && viejo.name == NombrePanel)
         {
-            if (viejo.name == NombrePanel)
-            {
-                LimitesDeBots(viejo, mapa);
-                viejo.lugaresDistancia = MunecosDeDistancias(mapa);
-                return;
-            }
-            lugares = viejo.lugares;
-            Object.DestroyImmediate(viejo.gameObject);
+            Limites(viejo, mapa);
+            return;
         }
-        else
+        if (viejo != null) Object.DestroyImmediate(viejo.gameObject);
+        foreach (string nombre in new[] { "Bots de práctica", "Lugares de bots", "Lugares de muñecos" })
         {
-            Transform zona = mapa.Find("Zona de blancos");
-            if (zona == null) return;
-            Transform grupo = Grupo("Lugares de bots", zona);
-            var lista = new List<Transform>();
-            foreach (Transform blanco in zona.Cast<Transform>().Where(t => t.name.StartsWith("Blanco")).ToList())
-            {
-                Transform lugar = Grupo(blanco.name.Replace("Blanco", "Bot"), grupo);
-                lugar.position = blanco.position; // el pie del poste: en el piso o arriba de una caja
-                lista.Add(lugar);
-                Object.DestroyImmediate(blanco.gameObject);
-            }
-            lugares = lista.ToArray();
+            Transform resto = mapa.Find(nombre);
+            if (resto != null) Object.DestroyImmediate(resto.gameObject);
         }
 
-        // Colgado de la pared derecha, al lado de la línea de tiro, mirando hacia adentro de la sala. Su -z (el frente)
-        // queda hacia -x; el 0 de z es la cara de la pared.
+        // Su -z (el frente) queda hacia -x, hacia adentro de la sala; el 0 de z es la cara de la pared.
         Transform salida = mapa.Find("Zona de salida") ?? mapa;
         Transform p = Grupo(NombrePanel, salida);
         p.SetPositionAndRotation(new Vector3(CaraParedDerecha(mapa), -1.55f * (EscalaPanel - 1f), -2f), Quaternion.Euler(0f, 90f, 0f));
@@ -374,69 +327,35 @@ public static class MapaDePractica
         PanelDePractica panel = p.gameObject.AddComponent<PanelDePractica>();
         panel.munieco = AssetDatabase.LoadAssetAtPath<GameObject>(Munieco);
         if (panel.munieco == null) Debug.LogWarning($"Mapa de práctica: no se encontró {Munieco} (el panel queda sin bots).");
-        panel.lugares = lugares;
-        panel.lugaresDistancia = MunecosDeDistancias(mapa);
-        LimitesDeBots(panel, mapa);
+        Limites(panel, mapa);
 
-        const float ancho = 2.2f, alto = 1.2f, centroY = 1.55f, marco = 0.06f;
+        const float ancho = 2.6f, alto = 1.5f, centroY = 1.55f, marco = 0.06f;
         Caja("Pantalla", p, new Vector3(0f, centroY, -0.04f), new Vector3(ancho, alto, 0.08f), cartel);
         Caja("Marco", p, new Vector3(0f, centroY + (alto - marco) * 0.5f, -0.1f), new Vector3(ancho, marco, 0.04f), linea, false);
         Caja("Marco", p, new Vector3(0f, centroY - (alto - marco) * 0.5f, -0.1f), new Vector3(ancho, marco, 0.04f), linea, false);
         Caja("Marco", p, new Vector3(-(ancho - marco) * 0.5f, centroY, -0.1f), new Vector3(marco, alto, 0.04f), linea, false);
         Caja("Marco", p, new Vector3((ancho - marco) * 0.5f, centroY, -0.1f), new Vector3(marco, alto, 0.04f), linea, false);
-        TextoDelPanel("Título", p, "CAMPO DE PRÁCTICA", new Vector3(0f, 1.98f, -0.085f), new Vector2(ancho - 0.3f, 0.2f), Amarillo);
-        panel.marcador = TextoDelPanel("Marcador", p, "Bajas: 0", new Vector3(0f, 1.76f, -0.085f), new Vector2(ancho - 0.3f, 0.16f), Color.white);
-        panel.ayuda = TextoDelPanel("Ayuda", p, "Mirá un botón y apretá E", new Vector3(0f, 1.15f, -0.085f), new Vector2(ancho - 0.3f, 0.13f), Color.white);
-        Boton(p, "Botón mover bots", BotonDePractica.Accion.MoverBots, "MOVER BOTS", -0.72f);
-        Boton(p, "Botón reacción", BotonDePractica.Accion.Reaccion, "REACCIÓN", 0f);
-        Boton(p, "Botón reiniciar", BotonDePractica.Accion.Reiniciar, "REINICIAR", 0.72f);
+        TextoDelPanel("Título", p, "CAMPO DE PRÁCTICA", new Vector3(0f, 2.13f, -0.085f), new Vector2(ancho - 0.3f, 0.2f), Amarillo);
+        panel.marcador = TextoDelPanel("Marcador", p, "Bajas: 0", new Vector3(0f, 1.92f, -0.085f), new Vector2(ancho - 0.3f, 0.15f), Color.white);
+        Boton(p, "Botón quietos", BotonDePractica.Accion.Quietos, -0.86f, 1.62f);
+        Boton(p, "Botón en movimiento", BotonDePractica.Accion.Movimiento, 0f, 1.62f);
+        Boton(p, "Botón distancias", BotonDePractica.Accion.Distancias, 0.86f, 1.62f);
+        Boton(p, "Botón reacción", BotonDePractica.Accion.Reaccion, -0.43f, 1.24f);
+        Boton(p, "Botón reiniciar", BotonDePractica.Accion.Reiniciar, 0.43f, 1.24f);
+        panel.ayuda = TextoDelPanel("Ayuda", p, "Elegí un modo", new Vector3(0f, 0.95f, -0.085f), new Vector2(ancho - 0.3f, 0.12f), Color.white);
     }
 
-    // Más muñecos en la zona de distancias, además del de cada carril: x y metros. Corridos dentro del carril para que
-    // el de adelante no tape al de atrás.
-    private static readonly Vector2[] MasMunecos =
+    // Entre qué x puede haber muñecos: de pared a pared, sin meterse en el relieve de las paredes del kit. (Además,
+    // los que caminan frenan en lo primero sólido que tengan al costado: BotDePractica.)
+    private static void Limites(PanelDePractica panel, Transform mapa)
     {
-        new Vector2(-5.2f, 15f), new Vector2(-8.2f, 20f), new Vector2(-3.8f, 30f), new Vector2(-9.6f, 35f), new Vector2(-2.2f, 40f),
-    };
-
-    // Zona de distancias: cada blanco redondo (y su cartel de metros) pasa a ser el lugar de un muñeco quieto, que
-    // muestra arriba los metros y el daño de cada tiro (PanelDePractica), y se suman los de MasMunecos que falten.
-    // Devuelve todos los lugares.
-    private static Transform[] MunecosDeDistancias(Transform mapa)
-    {
-        Transform zona = mapa.Find("Zona de distancias");
-        if (zona == null) return new Transform[0];
-        Transform grupo = zona.Find("Lugares de muñecos") ?? Grupo("Lugares de muñecos", zona);
-        foreach (Transform hijo in zona.Cast<Transform>().ToList())
-        {
-            if (hijo.name.StartsWith("Cartel ") && hijo.name.EndsWith(" m"))
-            {
-                Object.DestroyImmediate(hijo.gameObject);
-                continue;
-            }
-            if (!hijo.name.StartsWith("Blanco a ")) continue;
-            Transform lugar = Grupo(hijo.name.Replace("Blanco", "Muñeco"), grupo);
-            lugar.position = hijo.position;
-            Object.DestroyImmediate(hijo.gameObject);
-        }
-        foreach (Vector2 m in MasMunecos)
-        {
-            string nombre = $"Muñeco a {m.y:0} m";
-            if (grupo.Find(nombre) == null) Grupo(nombre, grupo).position = new Vector3(m.x, 0f, m.y);
-        }
-        return grupo.Cast<Transform>().ToArray();
-    }
-
-    // Entre qué x caminan los bots: la zona de blancos, sin meterse en el relieve de la pared derecha del kit. (Además,
-    // cada bot frena en lo primero sólido que tenga al costado: BotDePractica.)
-    private static void LimitesDeBots(PanelDePractica panel, Transform mapa)
-    {
-        panel.x0 = BlancosX0 + 0.6f;
-        panel.x1 = Mathf.Min(BlancosX1 - 0.6f, CaraParedDerecha(mapa) - 0.6f);
+        panel.x0 = -CaraParedDerecha(mapa) + 1f;
+        panel.x1 = CaraParedDerecha(mapa) - 1f;
         EditorUtility.SetDirty(panel);
     }
 
     // Dónde termina, hacia adentro, la pared derecha del kit (sus piezas tienen relieve). Sin piezas, la cara del cubo.
+    // La izquierda es igual, del otro lado.
     private static float CaraParedDerecha(Transform mapa)
     {
         Transform kit = mapa.Find("Sala/Kit Sci-fi/Pared derecha (kit)");
@@ -447,17 +366,18 @@ public static class MapaDePractica
         return x;
     }
 
-    // Un botón amarillo sobre la pantalla del panel, que se ilumina al mirarlo. No es estático: cambia de material.
-    private static void Boton(Transform panel, string nombre, BotonDePractica.Accion accion, string texto, float x)
+    // Un botón amarillo sobre la pantalla del panel, que se ilumina al mirarlo y si es el modo elegido. No es estático:
+    // cambia de material. El texto lo pone el panel.
+    private static void Boton(Transform panel, string nombre, BotonDePractica.Accion accion, float x, float y)
     {
-        GameObject go = Pieza(PrimitiveType.Cube, nombre, panel, new Vector3(x, 1.43f, -0.11f), Quaternion.identity,
-            new Vector3(0.66f, 0.3f, 0.06f), linea, true);
+        GameObject go = Pieza(PrimitiveType.Cube, nombre, panel, new Vector3(x, y, -0.11f), Quaternion.identity,
+            new Vector3(0.8f, 0.3f, 0.06f), linea, true);
         GameObjectUtility.SetStaticEditorFlags(go, 0);
         BotonDePractica boton = go.AddComponent<BotonDePractica>();
         boton.accion = accion;
         boton.normal = linea;
         boton.resaltado = raya;
-        boton.texto = TextoDelPanel("Texto " + nombre, panel, texto, new Vector3(x, 1.43f, -0.145f), new Vector2(0.58f, 0.18f),
+        boton.texto = TextoDelPanel("Texto " + nombre, panel, "", new Vector3(x, y, -0.145f), new Vector2(0.72f, 0.17f),
             new Color(0.07f, 0.09f, 0.13f));
     }
 
@@ -498,20 +418,6 @@ public static class MapaDePractica
         t.enableAutoSizing = true;
         t.fontSizeMin = 2f;
         t.fontSizeMax = 8f;
-    }
-
-    // Un blanco redondo sobre un poste, de frente a la línea de tiro (los aros del lado de -z, el poste atrás). "pie"
-    // es dónde se apoya el poste y "altura", a cuánto de ahí queda el centro. Solo el tablero tiene colisión (ahí
-    // pegan las balas); los aros son el dibujo.
-    private static void Blanco(string nombre, Transform padre, Vector3 pie, float altura)
-    {
-        Transform b = Grupo(nombre, padre);
-        b.localPosition = pie;
-        Caja("Poste", b, new Vector3(0f, altura * 0.5f, 0.06f), new Vector3(0.08f, altura, 0.08f), poste);
-        Caja("Tablero", b, new Vector3(0f, altura, 0f), new Vector3(1f, 1f, 0.06f), blanco);
-        float[] aros = { 0.9f, 0.6f, 0.3f };
-        for (int i = 0; i < aros.Length; i++)
-            Disco($"Aro {i + 1}", b, new Vector3(0f, altura, -0.035f - i * 0.006f), aros[i], i % 2 == 0 ? rojo : blanco);
     }
 
     // =====================================================================
@@ -595,13 +501,6 @@ public static class MapaDePractica
     {
         GameObject go = Pieza(PrimitiveType.Cube, nombre, padre, lugar, Quaternion.identity, tamano, material, conColision);
         go.GetComponent<Renderer>().enabled = visible;
-    }
-
-    // Un cilindro aplastado y parado, de frente a -z (como el tablero).
-    private static void Disco(string nombre, Transform padre, Vector3 lugar, float diametro, Material material)
-    {
-        Pieza(PrimitiveType.Cylinder, nombre, padre, lugar, Quaternion.Euler(90f, 0f, 0f),
-            new Vector3(diametro, 0.002f, diametro), material, false);
     }
 
     private static GameObject Pieza(PrimitiveType tipo, string nombre, Transform padre, Vector3 lugar, Quaternion giro,
