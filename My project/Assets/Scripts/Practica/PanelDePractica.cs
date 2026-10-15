@@ -4,7 +4,7 @@ using UnityEngine;
 
 // US 120 · Panel del campo de práctica, al lado de la línea de tiro (lo pone el menú Riftwalker > Mapa de práctica).
 // - Pone un bot (BotDePractica, el muñeco de Scenes/Pruebas_Armas) en cada lugar de "lugares": los de la zona de blancos.
-// - Botones (mirarlos de cerca y apretar E, la tecla de Plantar):
+// - Botones (mirarlos de cerca y apretar E, la tecla de Plantar, o pegarles un tiro):
 //   * "Mover bots" / "Detener bots": los bots del piso caminan de costado o se quedan quietos.
 //   * "Reiniciar" (CA2): levanta a todos los bots en su lugar, borra las marcas de bala (CA4) y pone el marcador en 0.
 // - Marcador: cuántos bots bajó el jugador y cuántos con un tiro a la cabeza.
@@ -22,7 +22,12 @@ public class PanelDePractica : MonoBehaviour
 
     private static readonly Color Amarillo = new Color(1f, 0.82f, 0.1f);
 
+    private static readonly RaycastHit[] golpes = new RaycastHit[16];
+    private static readonly IComparer<RaycastHit> porDistancia =
+        Comparer<RaycastHit>.Create((a, b) => a.distance.CompareTo(b.distance));
+
     private readonly List<BotDePractica> bots = new List<BotDePractica>();
+    private Camera camara;
     private BotonDePractica[] botones;
     private BotonDePractica mirado;
     private bool moverse;
@@ -51,18 +56,38 @@ public class PanelDePractica : MonoBehaviour
     private void Update()
     {
         Mirar();
-        if (mirado != null && KeyBindings.Down(GameAction.Plantar)) Presionar(mirado.accion);
+        if (mirado != null && KeyBindings.Down(GameAction.Plantar)) mirado.Presionar();
     }
 
-    // El botón que el jugador tiene en la mira, de cerca.
+    // La cámara del jugador (la misma con la que apunta el arma).
+    private Camera Camara()
+    {
+        if (camara != null && camara.isActiveAndEnabled) return camara;
+        PlayerMovement jugador = FindAnyObjectByType<PlayerMovement>();
+        camara = jugador != null ? jugador.GetComponentInChildren<Camera>() : null;
+        if (camara == null) camara = Camera.main;
+        return camara;
+    }
+
+    // El botón que el jugador tiene en la mira, de cerca. Se saltea lo del propio jugador (su cuerpo, sus armas), como
+    // los disparos (WeaponFire).
     private void Mirar()
     {
         BotonDePractica nuevo = null;
-        Camera cam = Camera.main;
-        if (cam != null && !PauseMenu.IsPaused && !ShopUI.IsOpen &&
-            Physics.Raycast(cam.transform.position, cam.transform.forward, out RaycastHit hit, alcance,
-                Physics.DefaultRaycastLayers, QueryTriggerInteraction.Ignore))
-            nuevo = hit.collider.GetComponentInParent<BotonDePractica>();
+        Camera cam = Camara();
+        if (cam != null && !PauseMenu.IsPaused && !ShopUI.IsOpen)
+        {
+            Transform jugador = cam.transform.root;
+            int cantidad = Physics.RaycastNonAlloc(cam.transform.position, cam.transform.forward, golpes, alcance,
+                Physics.DefaultRaycastLayers, QueryTriggerInteraction.Ignore);
+            System.Array.Sort(golpes, 0, cantidad, porDistancia);
+            for (int i = 0; i < cantidad; i++)
+            {
+                if (golpes[i].collider.transform.IsChildOf(jugador)) continue;
+                nuevo = golpes[i].collider.GetComponentInParent<BotonDePractica>();
+                break;
+            }
+        }
         if (nuevo == mirado) return;
         if (mirado != null) mirado.Resaltar(false);
         mirado = nuevo;
@@ -70,7 +95,7 @@ public class PanelDePractica : MonoBehaviour
         Mostrar();
     }
 
-    private void Presionar(BotonDePractica.Accion accion)
+    public void Presionar(BotonDePractica.Accion accion)
     {
         if (accion == BotonDePractica.Accion.MoverBots)
         {

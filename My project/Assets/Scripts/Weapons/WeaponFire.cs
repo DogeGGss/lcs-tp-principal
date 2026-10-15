@@ -62,7 +62,8 @@ public static class WeaponFire
 
             if (target == null)
             {
-                ImpactMarks.Spawn(hit);
+                // US 120: los botones del panel del campo de práctica también se aprietan de un tiro.
+                if (!BotonDePractica.Disparar(hit.collider)) ImpactMarks.Spawn(hit);
                 continue;
             }
 
