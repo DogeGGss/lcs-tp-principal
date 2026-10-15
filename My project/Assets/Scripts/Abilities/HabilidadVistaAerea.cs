@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-// US 021 · Vista aérea: la cámara sube y muestra desde arriba, sin los techos, 30 m a la redonda del jugador durante 4 s
+// US 021 · Vista aérea: la cámara sube y muestra desde arriba, sin los techos, 30 m a la redonda del jugador durante 6 s
 // (CA1 y CA3). Afuera de ese círculo la imagen se oscurece. Los rivales vivos que están adentro se marcan en rojo en
 // tiempo real, salvo los que están en el humo (CA2). Mientras tanto el personaje
 // se queda quieto: no se mueve, no mira, no dispara ni cambia de arma (CA1). Termina antes con la Q o el clic derecho
@@ -14,7 +14,7 @@ using UnityEngine.UI;
 // los pies del jugador.
 public class HabilidadVistaAerea : EfectoHabilidad
 {
-    public const float Duracion = 4f;       // CA3
+    public const float Duracion = 6f;       // CA3
     private const float Subida = 0.4f;      // lo que tarda la cámara en subir
     private const float AlturaDeCorte = 2.6f;
     private const float Campo = 50f;        // grados verticales de la cámara de arriba
