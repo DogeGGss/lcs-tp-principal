@@ -156,6 +156,16 @@ public class MeleeAttack : MonoBehaviour
             WeaponFire.ReportMelee(lethal);
             Debug.Log($"Golpe cuerpo a cuerpo a {best.name}. Daño: {data.damage}");
         }
+        // US 020, CA5: sin nadie a tiro, el cuchillo le pega a la Barrera que tenga adelante (si es de un rival).
+        else if (Physics.Raycast(origin, forward, out RaycastHit pared, data.range, Physics.DefaultRaycastLayers, QueryTriggerInteraction.Ignore))
+        {
+            Barrera barrera = Barrera.De(pared.collider);
+            if (barrera != null)
+            {
+                barrera.Chispas(pared.point, pared.normal);
+                barrera.PedirDanio(data.damage, this, pared.point);
+            }
+        }
     }
 
     // ClosestPoint solo sirve con cajas, esferas, cápsulas y mallas convexas; para el resto alcanza con su caja.
