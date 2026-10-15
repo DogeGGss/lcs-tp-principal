@@ -27,7 +27,7 @@ public class HabilidadVistaAerea : EfectoHabilidad
     public static bool Activa { get; private set; }
 
     private static Sprite circulo;
-    private static int escenaLimites = -1;
+    private static UnityEngine.SceneManagement.Scene escenaLimites;
     private static Bounds limitesCache;
     private static bool hayLimites;
 
@@ -217,7 +217,7 @@ public class HabilidadVistaAerea : EfectoHabilidad
     // por escena; un piso enorme se recorta alrededor del jugador.
     private static Bounds Limites(Vector3 centro)
     {
-        int escena = UnityEngine.SceneManagement.SceneManager.GetActiveScene().handle;
+        UnityEngine.SceneManagement.Scene escena = UnityEngine.SceneManagement.SceneManager.GetActiveScene();
         if (escena != escenaLimites)
         {
             escenaLimites = escena;
