@@ -674,3 +674,9 @@ fecha_utc,us_numero,us_titulo,estado_anterior,estado_nuevo,tiempo_en_estado_ante
 2026-10-15T23:03:43.246071+00:00,19,F15. HUD de partida,Todo,Done,22d 23h 39m,1985962,https://github.com/DogeGGss/lcs-tp-principal/issues/19
 2026-10-15T23:03:43.246071+00:00,50,F20. Sistema de tienda y economía,Todo,Done,22d 23h 39m,1985962,https://github.com/DogeGGss/lcs-tp-principal/issues/50
 2026-10-15T23:03:43.246071+00:00,436,US 225. Modelos y brazos de los personajes,Todo,In Progress,21h 19m,76792,https://github.com/DogeGGss/lcs-tp-principal/issues/436
+2026-10-16T01:15:10.874144+00:00,338,US 201. Buscar actualizaciones,LPR,Rehacer,10d 16h 54m,924865,https://github.com/DogeGGss/lcs-tp-principal/issues/338
+2026-10-16T01:15:10.874144+00:00,71,US 021. Habilidad 3 · Vista aérea,Blocked,In Progress,22d 7h 43m,1928631,https://github.com/DogeGGss/lcs-tp-principal/issues/71
+2026-10-16T01:15:10.874144+00:00,72,US 022. Habilidad 4 · Callejero,Blocked,In Progress,22d 7h 43m,1928631,https://github.com/DogeGGss/lcs-tp-principal/issues/72
+2026-10-16T01:15:10.874144+00:00,163,US 118. Mapa de práctica (Shooting Range),In Progress,LPR,1d 4h 34m,102888,https://github.com/DogeGGss/lcs-tp-principal/issues/163
+2026-10-16T01:15:10.874144+00:00,165,US 120. Blancos de práctica,In Progress,LPR,1d 1h 47m,92846,https://github.com/DogeGGss/lcs-tp-principal/issues/165
+2026-10-16T01:15:10.874144+00:00,232,US 166. Guía de controles y objetivos en el campo de práctica,Blocked,In Progress,19d 19h 43m,1712591,https://github.com/DogeGGss/lcs-tp-principal/issues/232
