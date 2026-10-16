@@ -13,6 +13,10 @@ public class BuyZone : MonoBehaviour
     [Tooltip("De qué lado es la zona de compra. Cualquiera: la puede usar todo el mundo.")]
     [SerializeField] private LadoTactico lado = LadoTactico.Cualquiera;
 
+    [Tooltip("El borde de esta zona ya está cerrado por el mapa (por ejemplo, un balcón con baranda): \"Generar muros\" " +
+             "(MurosDeBase) no le pone paredes, así no tapan la vista. Igual cuenta como parte de la base.")]
+    [SerializeField] private bool sinMuros;
+
     private void Awake()
     {
         area = GetComponent<Collider>();
@@ -21,6 +25,9 @@ public class BuyZone : MonoBehaviour
 
     /// <summary>De qué lado es la zona (US 190: los muros de la base se arman por zona).</summary>
     public LadoTactico Lado => lado;
+
+    /// <summary>MurosDeBase no le arma paredes: su borde ya está cerrado por el mapa.</summary>
+    public bool SinMuros => sinMuros;
 
     private void OnEnable() => zones.Add(this);
     private void OnDisable() => zones.Remove(this);
@@ -40,8 +47,8 @@ public class BuyZone : MonoBehaviour
         return false;
     }
 
-    // La base de un lado: todas sus zonas juntas (si no tiene, las que sirven para todos). Los pájaros del minijuego
-    // vuelan sobre la base del equipo (F21, US 156).
+    // La base de un lado: todas sus zonas juntas (si no tiene, las que sirven para todos). Si el mapa no tiene un
+    // MiradorCometas, los cometas del minijuego pasan frente a la base del equipo (F21, US 156).
     public static bool Area(LadoTactico lado, out Bounds limites)
     {
         limites = default;
