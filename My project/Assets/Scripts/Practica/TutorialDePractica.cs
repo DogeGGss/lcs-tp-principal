@@ -21,7 +21,9 @@ using Img = UnityEngine.UI.Image;
 //   3. Apuntar con la mira del francotirador y pegarle en la cabeza a un blanco. Al llegar a este paso se le da el
 //      francotirador (en el campo de práctica las armas son gratis).
 //   4. Cambiar de arma: principal, secundaria y cuchillo.
-//   5. Abrir "Cambiar arma" (la tienda del campo) y elegir otra arma.
+//   5. Abrir la tienda y elegir otra arma. Mientras corre el tutorial se llama "Tienda"; sin tutorial, en el campo de
+//      práctica se llama "Cambiar arma" (ShopUI).
+// - CA3: al acercarse a un panel de modo (PanelDeModo), su explicación también sale en pantalla, a la derecha.
 // Se arma por código con las medidas de una pantalla de 1920 x 1080, como la nota para el PO y la tienda.
 public class TutorialDePractica : MonoBehaviour
 {
@@ -38,6 +40,9 @@ public class TutorialDePractica : MonoBehaviour
     public static TutorialDePractica Actual { get; private set; }
 
     public bool Abierto => paso >= 0;
+
+    /// <summary>El tutorial está mostrando un paso (ShopUI llama "Tienda" a "Cambiar arma" mientras tanto).</summary>
+    public static bool EnCurso => Actual != null && Actual.Abierto;
 
     private const float MantenerParaSaltearTodo = 1f; // s con Tab apretado
     private const float DuracionFinal = 4f;
@@ -74,6 +79,11 @@ public class TutorialDePractica : MonoBehaviour
     private RectTransform caja, fila, saltear, barraTab;
     private TextMeshProUGUI ceja, titulo, textoSaltear;
     private CanvasGroup grupo;
+
+    // CA3: la explicación del modo en pantalla.
+    private RectTransform tarjeta;
+    private TextMeshProUGUI tarjetaTitulo, tarjetaTexto;
+    private PanelDeModo modoMostrado;
 
     private void Awake() => Actual = this;
 
@@ -145,10 +155,10 @@ public class TutorialDePractica : MonoBehaviour
             },
             new Paso
             {
-                titulo = "Cambiar arma",
+                titulo = "Tienda",
                 partes = new[]
                 {
-                    P("Abrir \"Cambiar arma\"", GameAction.Tienda),
+                    P("Abrir la tienda", GameAction.Tienda),
                     new Parte { teclas = () => new[] { KeyBindings.Label(GameAction.Disparar) }, frase = "Elegí otra arma" },
                 },
                 alEmpezar = () =>
@@ -186,7 +196,7 @@ public class TutorialDePractica : MonoBehaviour
     {
         if (grupo == null) return;
         bool pausa = PauseMenu.IsPaused;
-        grupo.alpha = (Abierto || finHasta > 0f) && !pausa && !ShopUI.IsOpen ? 1f : 0f;
+        grupo.alpha = !pausa && !ShopUI.IsOpen ? 1f : 0f;
 
         if (finHasta > 0f && Time.time >= finHasta) { finHasta = -1f; caja.gameObject.SetActive(false); }
         if (!Abierto || pausa) { tabDesde = -1f; return; }
@@ -361,6 +371,50 @@ public class TutorialDePractica : MonoBehaviour
         barraTab = Place(Node("Mantener Tab", saltear), 0f, 22f, 0f, 3f);
         Image(barraTab, null, Accent);
         caja.gameObject.SetActive(false);
+
+        // CA3: a la derecha, a media altura.
+        tarjeta = Node("Modo", lienzo.transform);
+        tarjeta.anchorMin = tarjeta.anchorMax = new Vector2(1f, 0.5f);
+        tarjeta.pivot = new Vector2(1f, 0.5f);
+        tarjeta.anchoredPosition = new Vector2(-48f, 40f);
+        Image(tarjeta, rounded, HudColor, 10f);
+        Img bordeModo = Image(Node("Borde", tarjeta), null, Accent);
+        bordeModo.rectTransform.anchorMin = Vector2.zero;
+        bordeModo.rectTransform.anchorMax = new Vector2(0f, 1f);
+        bordeModo.rectTransform.pivot = new Vector2(0f, 0.5f);
+        bordeModo.rectTransform.offsetMin = bordeModo.rectTransform.offsetMax = Vector2.zero;
+        bordeModo.rectTransform.sizeDelta = new Vector2(4f, 0f);
+        Text(Place(Node("Ceja", tarjeta), Margen, 22f, AnchoTarjeta - Margen * 2f, 20f), labelFont, 17f, Accent,
+            TextAlignmentOptions.MidlineLeft, 12f, true).text = "Modo de juego";
+        tarjetaTitulo = Text(Place(Node("Título", tarjeta), Margen, 44f, AnchoTarjeta - Margen * 2f, 40f), displayFont, 36f, Ink,
+            TextAlignmentOptions.MidlineLeft, 0f, true);
+        tarjetaTexto = Text(Place(Node("Texto", tarjeta), Margen, 96f, AnchoTarjeta - Margen * 2f, 100f), bodyFont, 20f, Soft,
+            TextAlignmentOptions.TopLeft);
+        tarjetaTexto.textWrappingMode = TextWrappingModes.Normal;
+        tarjetaTexto.lineSpacing = 4f;
+        tarjeta.gameObject.SetActive(false);
+    }
+
+    private const float AnchoTarjeta = 540f;
+
+    /// <summary>CA3: el jugador está cerca de un panel de modo: su explicación sale en pantalla.</summary>
+    public void MostrarModo(PanelDeModo panel, string nombre, string texto)
+    {
+        if (tarjeta == null) return;
+        modoMostrado = panel;
+        tarjetaTitulo.text = nombre;
+        tarjetaTexto.text = texto;
+        float alto = Mathf.Ceil(tarjetaTexto.GetPreferredValues(texto, AnchoTarjeta - Margen * 2f, 0f).y);
+        tarjetaTexto.rectTransform.sizeDelta = new Vector2(AnchoTarjeta - Margen * 2f, alto);
+        tarjeta.sizeDelta = new Vector2(AnchoTarjeta, 96f + alto + Margen);
+        tarjeta.gameObject.SetActive(true);
+    }
+
+    public void OcultarModo(PanelDeModo panel)
+    {
+        if (tarjeta == null || modoMostrado != panel) return;
+        modoMostrado = null;
+        tarjeta.gameObject.SetActive(false);
     }
 
     private void Limpiar()

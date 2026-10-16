@@ -229,6 +229,9 @@ public class ShopUI : MonoBehaviour
             if (loadout == null) return;
         }
 
+        // US 166: en el campo de práctica el aviso dice "Tienda" mientras corre el tutorial y "Cambiar arma" después.
+        if (CampoDePractica.Activo && hudHintText != null && hudHintText.text != NombrePractica) SetHint(NombrePractica);
+
         if (KeyBindings.Down(GameAction.Tienda))
         {
             // US 138, CA5: en Deathmatch solo se abre muerto, en la cuenta inicial o recién reaparecido.
@@ -258,8 +261,8 @@ public class ShopUI : MonoBehaviour
         categories.AddRange(catalog.ActiveCategories());
         // US 138, CA2: en Deathmatch no hay escudos ni granadas.
         if (Dm) categories.RemoveAll(c => c == ShopCategory.Shields || c == ShopCategory.Grenades);
-        // US 119: en el campo de práctica no es una tienda, es donde se cambia de arma.
-        if (CampoDePractica.Activo) SetHint("Cambiar arma");
+        // US 119: en el campo de práctica no es una tienda, es donde se cambia de arma (US 166: salvo en el tutorial).
+        if (CampoDePractica.Activo) SetHint(NombrePractica);
         BuildCategoryRows();
         lastAccess = loadout.CheckAccess();
         Render();
@@ -605,9 +608,12 @@ public class ShopUI : MonoBehaviour
         RenderTeam();
     }
 
+    // US 166: mientras corre el tutorial del campo de práctica se la nombra "Tienda", como en las partidas.
+    private static string NombrePractica => TutorialDePractica.EnCurso ? "Tienda" : "Cambiar arma";
+
     private void RenderBar()
     {
-        barTitle.text = CampoDePractica.Activo ? "Cambiar arma" : Dm ? "Elegí tu equipo" : "Tienda";
+        barTitle.text = CampoDePractica.Activo ? NombrePractica : Dm ? "Elegí tu equipo" : "Tienda";
         if (Dm)
         {
             // US 138, CA1: sin plata ni precios.
