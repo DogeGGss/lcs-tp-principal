@@ -20,7 +20,7 @@ using static ShopUIKit;
 // En las partidas locales la pausa congela el juego (Time.timeScale = 0). En las online (Táctico y Deathmatch
 // en una sala) se marca isMultiplayer: el menú se ve solo en esta pantalla y la partida sigue (CA4).
 //
-// La configuración usa las mismas claves de PlayerPrefs y los mismos parámetros del AudioMixer que las
+// La configuración usa las mismas claves del guardado (Guardado) y los mismos parámetros del AudioMixer que las
 // opciones del menú principal (SonidoUIController, SensibilidadUIController y GraficosUIController),
 // así lo que se cambia en un lado aparece en el otro.
 //
@@ -137,10 +137,10 @@ public class PauseMenu : MonoBehaviour
             new GameObject("EventSystem", typeof(EventSystem), typeof(StandaloneInputModule));
 
         // El AudioMixer solo acepta SetFloat desde Start: se aplica el volumen guardado desde el primer frame.
-        ApplyVolume(KeyGeneral, PlayerPrefs.GetFloat(KeyGeneral, DefaultVolume));
-        ApplyVolume(KeyMusic, PlayerPrefs.GetFloat(KeyMusic, DefaultVolume));
-        ApplyVolume(KeyEffects, PlayerPrefs.GetFloat(KeyEffects, DefaultVolume));
-        ApplyVolume(KeyInterface, PlayerPrefs.GetFloat(KeyInterface, DefaultVolume)); // US 154: se ajusta en el menú principal
+        ApplyVolume(KeyGeneral, Guardado.GetFloat(KeyGeneral, DefaultVolume));
+        ApplyVolume(KeyMusic, Guardado.GetFloat(KeyMusic, DefaultVolume));
+        ApplyVolume(KeyEffects, Guardado.GetFloat(KeyEffects, DefaultVolume));
+        ApplyVolume(KeyInterface, Guardado.GetFloat(KeyInterface, DefaultVolume)); // US 154: se ajusta en el menú principal
     }
 
     private void OnDestroy()
@@ -270,7 +270,7 @@ public class PauseMenu : MonoBehaviour
             AudioListener.pause = false;
         }
 
-        PlayerPrefs.Save();
+        Guardado.Save();
         Show(Panel.None);
         root.gameObject.SetActive(false);
         RestorePlayerControls();
@@ -283,7 +283,7 @@ public class PauseMenu : MonoBehaviour
         // Los gráficos se usan al apretar Aplicar: lo que quedó sin aplicar se descarta al volver.
         if (Current == Panel.Graphics) { if (graphics != null) graphics.Descartar(); Show(Panel.Settings); return; }
         if (Current == Panel.Crosshair) { if (crosshairPanel != null) crosshairPanel.Descartar(); Show(Panel.Settings); return; }
-        if (Current == Panel.Settings) PlayerPrefs.Save();
+        if (Current == Panel.Settings) Guardado.Save();
         Show(Panel.Main);
     }
 
@@ -292,7 +292,7 @@ public class PauseMenu : MonoBehaviour
         IsPaused = false;
         Time.timeScale = 1f;          // si no, el menú principal arranca congelado
         AudioListener.pause = false;
-        PlayerPrefs.Save();
+        Guardado.Save();
         Cursor.lockState = CursorLockMode.None;
         Cursor.visible = true;
 
@@ -313,7 +313,7 @@ public class PauseMenu : MonoBehaviour
         IsPaused = false;
         Time.timeScale = 1f;
         AudioListener.pause = false;
-        PlayerPrefs.Save();
+        Guardado.Save();
 
         Scene scene = SceneManager.GetActiveScene();
         if (scene.buildIndex >= 0)
@@ -475,19 +475,19 @@ public class PauseMenu : MonoBehaviour
     private void SetVolume(string key, float value, TextMeshProUGUI label)
     {
         ApplyVolume(key, value);
-        PlayerPrefs.SetFloat(key, value);
+        Guardado.SetFloat(key, value);
         label.text = Mathf.RoundToInt(value * 100f) + " %";
     }
 
     private void SetSensitivity(float value, TextMeshProUGUI label)
     {
-        PlayerPrefs.SetFloat(KeySensitivity, value);
+        Guardado.SetFloat(KeySensitivity, value);
         label.text = Number(value);
     }
 
     private void SetFov(float value, TextMeshProUGUI label)
     {
-        PlayerPrefs.SetFloat(KeyFov, value);
+        Guardado.SetFloat(KeyFov, value);
         label.text = Mathf.RoundToInt(value) + "°";
         // Se ve el cambio al instante aunque CameraLook esté apagada durante la pausa.
         foreach (CameraLook look in FindObjectsByType<CameraLook>())
@@ -500,7 +500,7 @@ public class PauseMenu : MonoBehaviour
     private void SetScreenMode(int mode)
     {
         screenMode = mode;
-        PlayerPrefs.SetInt(KeyScreenMode, mode);
+        Guardado.SetInt(KeyScreenMode, mode);
         // Igual que en las opciones: respeta la resolución guardada, "Sin bordes" y las barras negras con 16:9 o 4:3
         // en un monitor de otra forma.
         GraficosUIController.AplicarPantalla();
@@ -509,13 +509,13 @@ public class PauseMenu : MonoBehaviour
 
     private void LoadSettingsIntoUI()
     {
-        settingRows[0].slider.SetValueWithoutNotify(PlayerPrefs.GetFloat(KeyGeneral, DefaultVolume));
-        settingRows[1].slider.SetValueWithoutNotify(PlayerPrefs.GetFloat(KeyMusic, DefaultVolume));
-        settingRows[2].slider.SetValueWithoutNotify(PlayerPrefs.GetFloat(KeyEffects, DefaultVolume));
-        settingRows[3].slider.SetValueWithoutNotify(PlayerPrefs.GetFloat(KeyInterface, DefaultVolume));
-        settingRows[4].slider.SetValueWithoutNotify(PlayerPrefs.GetFloat(KeySensitivity, DefaultSensitivity));
-        settingRows[5].slider.SetValueWithoutNotify(PlayerPrefs.GetFloat(KeyFov, DefaultFov));
-        screenMode = PlayerPrefs.GetInt(KeyScreenMode, DefaultScreenMode);
+        settingRows[0].slider.SetValueWithoutNotify(Guardado.GetFloat(KeyGeneral, DefaultVolume));
+        settingRows[1].slider.SetValueWithoutNotify(Guardado.GetFloat(KeyMusic, DefaultVolume));
+        settingRows[2].slider.SetValueWithoutNotify(Guardado.GetFloat(KeyEffects, DefaultVolume));
+        settingRows[3].slider.SetValueWithoutNotify(Guardado.GetFloat(KeyInterface, DefaultVolume));
+        settingRows[4].slider.SetValueWithoutNotify(Guardado.GetFloat(KeySensitivity, DefaultSensitivity));
+        settingRows[5].slider.SetValueWithoutNotify(Guardado.GetFloat(KeyFov, DefaultFov));
+        screenMode = Guardado.GetInt(KeyScreenMode, DefaultScreenMode);
 
         for (int i = 0; i < 4; i++) settingRows[i].value.text = Mathf.RoundToInt(settingRows[i].slider.value * 100f) + " %";
         settingRows[4].value.text = Number(settingRows[4].slider.value);
@@ -532,7 +532,7 @@ public class PauseMenu : MonoBehaviour
         settingRows[4].slider.value = DefaultSensitivity;
         settingRows[5].slider.value = DefaultFov;
         // Los gráficos (resolución, modo, calidad…) se restablecen desde su propia pantalla.
-        PlayerPrefs.Save();
+        Guardado.Save();
         FlashSaved();
     }
 

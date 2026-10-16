@@ -59,7 +59,7 @@ public class PantallaLogros : PantallaBase
         var datos = Servicio?.Datos;
         T(resumen, "Puesto", 28, 592, 384, 40, FTitulo, 29, Ink, datos?.me == null ? "PUESTO GLOBAL: —" : "PUESTO GLOBAL: #" + datos.me.rank);
         string estado = Servicio == null ? "El progreso se guarda en esta PC." : Servicio.Estado;
-        if (datos != null) estado += "\n" + datos.population + " jugadores registrados · " + datos.fetched_at;
+        if (datos != null) estado += "\n" + (datos.population == 1 ? "1 jugador registrado" : datos.population + " jugadores registrados") + Fecha(datos.fetched_at);
         if (!string.IsNullOrEmpty(LogrosCometas.AvisoGuardado)) estado += "\n" + LogrosCometas.AvisoGuardado;
         var texto = T(resumen, "Conexión", 28, 650, 384, 176, FTexto, 20, Mute, estado);
         texto.textWrappingMode = TextWrappingModes.Normal;
@@ -118,6 +118,11 @@ public class PantallaLogros : PantallaBase
         for (int k = 0; k < 9; k++) { var d = LogrosCometas.Catalogo[k]; Image(Place(Node(d.id, r), 670 + k * 40, 34, 28, 28), Rounded, p.Tiene(d.id) ? Cometa.ColorDe((TipoCometa)d.tipo) : White(.08f), 3); }
         CrearBoton(r, 1100, 27, 210, 46, "Ver logros", false, () => { seleccionado = p; Dibujar(true); }, 20);
     }
+    // La fecha del último ranking, en la hora de la PC ("16/10 07:03").
+    static string Fecha(string iso) =>
+        DateTime.TryParse(iso, System.Globalization.CultureInfo.InvariantCulture, System.Globalization.DateTimeStyles.RoundtripKind, out DateTime d)
+            ? " · " + d.ToLocalTime().ToString("dd/MM HH:mm") : "";
+
     static void Barra(RectTransform parent, float x, float y, float w, float parte, Color c)
     {
         Image(Place(Node("Barra", parent), x, y, w, 6), Rounded, TrackColor, 3);

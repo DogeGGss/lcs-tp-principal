@@ -36,7 +36,7 @@ public class CameraLook : MonoBehaviour
         // SENSIBILIDAD
         // =========================
 
-        mouseSensivility = PlayerPrefs.GetFloat(
+        mouseSensivility = Guardado.GetFloat(
             CLAVE_SENSIBILIDAD,
             SENSIBILIDAD_POR_DEFECTO
         );
@@ -49,7 +49,7 @@ public class CameraLook : MonoBehaviour
         // CAMPO DE VISIÓN
         // =========================
 
-        float fovGuardado = PlayerPrefs.GetFloat(
+        float fovGuardado = Guardado.GetFloat(
             CLAVE_FOV,
             FOV_POR_DEFECTO
         );

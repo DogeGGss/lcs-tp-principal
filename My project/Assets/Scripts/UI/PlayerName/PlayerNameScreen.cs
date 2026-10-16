@@ -9,7 +9,7 @@ using Img = UnityEngine.UI.Image;
 // - CA1: si no hay nombre guardado, al abrir el juego aparece "¿Cómo te llamás?" antes del menú.
 // - CA2: de 3 a 16 caracteres (letras, números, espacio, guion y guion bajo); si no cumple, dice qué falta.
 // - CA3: arriba a la derecha del menú principal se ve el nombre; al hacer clic se cambia con la misma ventana.
-// - CA4: se guarda con PlayerProfile (hoy PlayerPrefs; después, el guardado de la US 162).
+// - CA4: se guarda con PlayerProfile (con el guardado de la US 162).
 // Se arma por código con las medidas de una pantalla de 1920 x 1080, como la tienda y la pausa.
 public class PlayerNameScreen : MonoBehaviour
 {

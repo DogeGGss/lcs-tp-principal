@@ -11,6 +11,8 @@ using UnityEngine;
 //   menú principal muestra "Volver a la partida" hasta que pasan los 2 minutos (CA2, MenuRiftwalker).
 // - Salir desde la pausa o que la partida termine borra lo anotado: ahí no se ofrece volver (CA7).
 // Lo agrega PartidaEnRed al empezar una partida online.
+// Lo anotado queda en PlayerPrefs a propósito, no en el guardado del jugador (Guardado, US 162): dura 2 minutos y no
+// es progreso.
 public class Reconexion : MonoBehaviour
 {
     public const int SegundosParaVolver = 120; // CA2

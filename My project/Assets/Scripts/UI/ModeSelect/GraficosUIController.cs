@@ -198,16 +198,16 @@ public class GraficosUIController : MonoBehaviour, OpcionesPantalla.ISeccion
         if (resoluciones.Length > 0)
         {
             Resolution r = resoluciones[Mathf.Clamp(pendiente.resolucion, 0, resoluciones.Length - 1)];
-            PlayerPrefs.SetInt(CLAVE_RESOLUCION_ANCHO, r.width);
-            PlayerPrefs.SetInt(CLAVE_RESOLUCION_ALTO, r.height);
+            Guardado.SetInt(CLAVE_RESOLUCION_ANCHO, r.width);
+            Guardado.SetInt(CLAVE_RESOLUCION_ALTO, r.height);
         }
-        PlayerPrefs.SetString(CLAVE_CALIDAD, NivelesCalidad[Mathf.Clamp(pendiente.calidad, 0, NivelesCalidad.Length - 1)]);
-        PlayerPrefs.SetInt(CLAVE_MODO_PANTALLA, pendiente.modo);
-        PlayerPrefs.SetInt(CLAVE_VSYNC, pendiente.vsync);
-        PlayerPrefs.SetInt(CLAVE_FPS, OpcionesFPS[Mathf.Clamp(pendiente.fps, 0, OpcionesFPS.Length - 1)]);
-        PlayerPrefs.SetFloat(CLAVE_FOV, pendiente.fov);
+        Guardado.SetString(CLAVE_CALIDAD, NivelesCalidad[Mathf.Clamp(pendiente.calidad, 0, NivelesCalidad.Length - 1)]);
+        Guardado.SetInt(CLAVE_MODO_PANTALLA, pendiente.modo);
+        Guardado.SetInt(CLAVE_VSYNC, pendiente.vsync);
+        Guardado.SetInt(CLAVE_FPS, OpcionesFPS[Mathf.Clamp(pendiente.fps, 0, OpcionesFPS.Length - 1)]);
+        Guardado.SetFloat(CLAVE_FOV, pendiente.fov);
         IndicadorRendimiento.Activo = pendiente.indicador; // US 197, CA5
-        PlayerPrefs.Save();
+        Guardado.Save();
 
         AplicarGuardado();
         // En partida, el campo de visión se ve al instante (CameraLook lo lee solo al empezar).
@@ -263,20 +263,20 @@ public class GraficosUIController : MonoBehaviour, OpcionesPantalla.ISeccion
     private Estado LeerGuardado()
     {
         // Si había guardado otro nivel (por ejemplo "PC"), se muestra Media.
-        int calidad = System.Array.IndexOf(NivelesCalidad, PlayerPrefs.GetString(CLAVE_CALIDAD, CALIDAD_DEFECTO));
+        int calidad = System.Array.IndexOf(NivelesCalidad, Guardado.GetString(CLAVE_CALIDAD, CALIDAD_DEFECTO));
         if (calidad < 0) calidad = System.Array.IndexOf(NivelesCalidad, CALIDAD_DEFECTO);
-        int fps = System.Array.IndexOf(OpcionesFPS, PlayerPrefs.GetInt(CLAVE_FPS, FPS_DEFECTO));
+        int fps = System.Array.IndexOf(OpcionesFPS, Guardado.GetInt(CLAVE_FPS, FPS_DEFECTO));
 
         return new Estado
         {
             resolucion = BuscarResolucion(resoluciones,
-                PlayerPrefs.GetInt(CLAVE_RESOLUCION_ANCHO, RESOLUCION_ANCHO_DEFECTO),
-                PlayerPrefs.GetInt(CLAVE_RESOLUCION_ALTO, RESOLUCION_ALTO_DEFECTO)),
+                Guardado.GetInt(CLAVE_RESOLUCION_ANCHO, RESOLUCION_ANCHO_DEFECTO),
+                Guardado.GetInt(CLAVE_RESOLUCION_ALTO, RESOLUCION_ALTO_DEFECTO)),
             calidad = calidad < 0 ? 0 : calidad,
-            modo = Mathf.Clamp(PlayerPrefs.GetInt(CLAVE_MODO_PANTALLA, MODO_PANTALLA_DEFECTO), 0, 2),
-            vsync = PlayerPrefs.GetInt(CLAVE_VSYNC, VSYNC_DEFECTO) == 1 ? 1 : 0,
+            modo = Mathf.Clamp(Guardado.GetInt(CLAVE_MODO_PANTALLA, MODO_PANTALLA_DEFECTO), 0, 2),
+            vsync = Guardado.GetInt(CLAVE_VSYNC, VSYNC_DEFECTO) == 1 ? 1 : 0,
             fps = fps < 0 ? System.Array.IndexOf(OpcionesFPS, FPS_DEFECTO) : fps,
-            fov = Mathf.Clamp(PlayerPrefs.GetFloat(CLAVE_FOV, FOV_POR_DEFECTO), FOV_MINIMO, FOV_MAXIMO),
+            fov = Mathf.Clamp(Guardado.GetFloat(CLAVE_FOV, FOV_POR_DEFECTO), FOV_MINIMO, FOV_MAXIMO),
             indicador = IndicadorRendimiento.Activo
         };
     }
@@ -289,7 +289,7 @@ public class GraficosUIController : MonoBehaviour, OpcionesPantalla.ISeccion
     {
         AplicarPantalla();
 
-        int calidad = System.Array.IndexOf(QualitySettings.names, PlayerPrefs.GetString(CLAVE_CALIDAD, CALIDAD_DEFECTO));
+        int calidad = System.Array.IndexOf(QualitySettings.names, Guardado.GetString(CLAVE_CALIDAD, CALIDAD_DEFECTO));
         if (calidad < 0) calidad = System.Array.IndexOf(QualitySettings.names, CALIDAD_DEFECTO);
         if (calidad < 0) calidad = 0;
         QualitySettings.SetQualityLevel(calidad, true);
@@ -297,8 +297,8 @@ public class GraficosUIController : MonoBehaviour, OpcionesPantalla.ISeccion
         CalidadGrafica.Aplicar(QualitySettings.names.Length > 0 ? QualitySettings.names[calidad] : CALIDAD_DEFECTO);
 
         // Después de la calidad: cada nivel de calidad trae su propio VSync.
-        QualitySettings.vSyncCount = PlayerPrefs.GetInt(CLAVE_VSYNC, VSYNC_DEFECTO) == 1 ? 1 : 0;
-        Application.targetFrameRate = PlayerPrefs.GetInt(CLAVE_FPS, FPS_DEFECTO);
+        QualitySettings.vSyncCount = Guardado.GetInt(CLAVE_VSYNC, VSYNC_DEFECTO) == 1 ? 1 : 0;
+        Application.targetFrameRate = Guardado.GetInt(CLAVE_FPS, FPS_DEFECTO);
     }
 
     /// <summary>
@@ -307,13 +307,13 @@ public class GraficosUIController : MonoBehaviour, OpcionesPantalla.ISeccion
     public static void AplicarPantalla()
     {
         Resolution[] lista = Unicas(Screen.resolutions);
-        int indiceModo = Mathf.Clamp(PlayerPrefs.GetInt(CLAVE_MODO_PANTALLA, MODO_PANTALLA_DEFECTO), 0, 2);
+        int indiceModo = Mathf.Clamp(Guardado.GetInt(CLAVE_MODO_PANTALLA, MODO_PANTALLA_DEFECTO), 0, 2);
         FullScreenMode modo = ModoPantalla(indiceModo);
         if (lista.Length > 0)
         {
             Resolution r = lista[BuscarResolucion(lista,
-                PlayerPrefs.GetInt(CLAVE_RESOLUCION_ANCHO, RESOLUCION_ANCHO_DEFECTO),
-                PlayerPrefs.GetInt(CLAVE_RESOLUCION_ALTO, RESOLUCION_ALTO_DEFECTO))];
+                Guardado.GetInt(CLAVE_RESOLUCION_ANCHO, RESOLUCION_ANCHO_DEFECTO),
+                Guardado.GetInt(CLAVE_RESOLUCION_ALTO, RESOLUCION_ALTO_DEFECTO))];
             // Pantalla completa con otra forma que el monitor (por ejemplo 16:9 o 4:3 en un ultrawide): se usa la
             // pantalla completa en ventana, que Unity escala con barras negras a los costados. La exclusiva cambia la
             // resolución del monitor y muchos la estiran.

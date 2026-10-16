@@ -98,6 +98,8 @@ public class MenuRiftwalker : MonoBehaviour
         PerfilDatos.Cambio += RefrescarTodo;
         PlayerProfile.NameChanged += NombreCambiado;
         RefrescarTodo();
+        // US 163, CA3 y CA4: si el guardado se recuperó del respaldo, estaba dañado o es de una versión más nueva.
+        if (Guardado.Aviso != null) Avisar(Guardado.Aviso);
     }
 
     private void OnDestroy()

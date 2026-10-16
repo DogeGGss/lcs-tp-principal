@@ -9,7 +9,7 @@ using Slider = UnityEngine.UI.Slider;
 // - CA2: blanco, verde, amarillo, celeste, rojo o un color propio (rojo, verde y azul).
 // - CA3: mientras se cambia, la mira se ve de muestra sobre un fondo claro y uno oscuro, al tamaño del juego.
 // - CA4: "Se abre con la dispersión": la mira se separa según la dispersión del arma (lo hace CombatHud).
-// - CA5: se guarda con "Aplicar" (MiraConfig, en PlayerPrefs) y se usa al volver a entrar al juego.
+// - CA5: se guarda con "Aplicar" (MiraConfig, con las opciones) y se usa al volver a entrar al juego.
 // - CA6: "Restablecer" vuelve a la mira por defecto.
 // En el menú principal la crea OpcionesPantalla (pestaña nueva, sin tocar la escena); en la pausa, PauseMenu (Setup).
 public class MiraUIController : MonoBehaviour, OpcionesPantalla.ISeccion
