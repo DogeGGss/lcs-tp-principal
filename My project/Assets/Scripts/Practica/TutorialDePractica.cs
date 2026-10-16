@@ -14,14 +14,14 @@ using Img = UnityEngine.UI.Image;
 //   cambia desde la pausa.
 // - CA6: al terminar (o saltear) el tutorial queda guardado (Guardado, US 162): la próxima vez no aparece solo. Se
 //   vuelve a abrir con el botón "Tutorial" del panel del campo de práctica (PanelDePractica).
-// Los pasos (ajustados con Luka: en el campo de práctica no hay granadas ni habilidad, se explican en los paneles de los
-// modos, PanelDeModo):
-//   1. Moverse, mirar, saltar, agacharse y correr.
+// Los pasos (en el campo de práctica hay habilidad y granadas infinitas para practicarlas: PlayerAbility, PlayerLoadout):
+//   1. Moverse, mirar, saltar, agacharse y correr (en el Táctico, Shift camina despacio en vez de correr: US 198).
 //   2. Pegarle a un blanco y recargar.
 //   3. Apuntar con la mira del francotirador y pegarle en la cabeza a un blanco. Al llegar a este paso se le da el
 //      francotirador (en el campo de práctica las armas son gratis).
-//   4. Cambiar de arma: principal, secundaria y cuchillo.
-//   5. Abrir la tienda y elegir otra arma. Mientras corre el tutorial se llama "Tienda"; sin tutorial, en el campo de
+//   4. Cambiar de arma (principal, secundaria y cuchillo), sacar una granada y tirarla.
+//   5. Usar la habilidad del personaje.
+//   6. Abrir la tienda y elegir otra arma. Mientras corre el tutorial se llama "Tienda"; sin tutorial, en el campo de
 //      práctica se llama "Cambiar arma" (ShopUI).
 // - CA3: al acercarse a un panel de modo (PanelDeModo), su explicación también sale en pantalla, a la derecha.
 // Se arma por código con las medidas de una pantalla de 1920 x 1080, como la nota para el PO y la tienda.
@@ -76,6 +76,7 @@ public class TutorialDePractica : MonoBehaviour
     private ShopItem armaAlEmpezar, secundariaAlEmpezar;
 
     private PlayerLoadout equipo;
+    private PlayerAbility habilidad;
     private RectTransform caja, fila, saltear, barraTab;
     private TextMeshProUGUI ceja, titulo, textoSaltear;
     private CanvasGroup grupo;
@@ -95,18 +96,24 @@ public class TutorialDePractica : MonoBehaviour
     private void OnEnable()
     {
         WeaponFire.Impacto += AlImpactar;
+        GrenadeThrower.Thrown += AlTirarGranada;
         KeyBindings.Changed += Redibujar;
     }
 
     private void OnDisable()
     {
         WeaponFire.Impacto -= AlImpactar;
+        GrenadeThrower.Thrown -= AlTirarGranada;
+        if (habilidad != null) habilidad.Used -= AlUsarHabilidad;
         KeyBindings.Changed -= Redibujar;
     }
 
     private void Start()
     {
         equipo = FindAnyObjectByType<PlayerLoadout>();
+        habilidad = equipo != null ? equipo.GetComponentInChildren<PlayerAbility>() : null;
+        if (habilidad == null) habilidad = FindAnyObjectByType<PlayerAbility>();
+        if (habilidad != null) habilidad.Used += AlUsarHabilidad;
         ArmarPasos();
         Armar();
         // CA6: si ya lo terminó, no aparece solo (queda el botón "Tutorial" del panel).
@@ -134,7 +141,7 @@ public class TutorialDePractica : MonoBehaviour
                     new Parte { teclas = () => new[] { "Mouse" }, frase = "Mirar" },
                     P("Saltar", GameAction.Saltar),
                     P("Agacharse", GameAction.Agacharse),
-                    P("Correr", GameAction.Correr),
+                    P("Correr (en Táctico, caminar despacio)", GameAction.Correr),
                 },
             },
             new Paso
@@ -151,7 +158,18 @@ public class TutorialDePractica : MonoBehaviour
             new Paso
             {
                 titulo = "Cambiar de arma",
-                partes = new[] { P("Principal", GameAction.ArmaPrincipal), P("Secundaria", GameAction.ArmaSecundaria), P("Cuchillo", GameAction.Cuchillo) },
+                partes = new[]
+                {
+                    P("Principal", GameAction.ArmaPrincipal), P("Secundaria", GameAction.ArmaSecundaria), P("Cuchillo", GameAction.Cuchillo),
+                    P("Granada", GameAction.Granadas), P("Tirarla", GameAction.Disparar),
+                },
+            },
+            new Paso
+            {
+                titulo = "Habilidad",
+                partes = new[] { P("Usar la habilidad de tu personaje", GameAction.Habilidad) },
+                // Sin personaje con habilidad no hay nada que practicar: se da por hecho.
+                alEmpezar = () => { if (habilidad == null || habilidad.Ability == null) Hecha(0); },
             },
             new Paso
             {
@@ -236,8 +254,9 @@ public class TutorialDePractica : MonoBehaviour
                 if (KeyBindings.Down(GameAction.ArmaPrincipal)) Hecha(0);
                 if (KeyBindings.Down(GameAction.ArmaSecundaria)) Hecha(1);
                 if (KeyBindings.Down(GameAction.Cuchillo)) Hecha(2);
+                if (KeyBindings.Down(GameAction.Granadas)) Hecha(3);
                 break;
-            case 4:
+            case 5:
                 if (ShopUI.IsOpen) Hecha(0);
                 if (equipo != null && (equipo.Primary != armaAlEmpezar || equipo.Secondary != secundariaAlEmpezar)) Hecha(1);
                 break;
@@ -253,6 +272,18 @@ public class TutorialDePractica : MonoBehaviour
         if (paso == 1) Hecha(0);
         // Con la mira: el francotirador sale de la mira al disparar (el cerrojo), así que vale si ya apuntó antes.
         if (paso == 2 && zona == BodyZone.Head && apunto) Hecha(1);
+    }
+
+    // Paso 4: la granada que tiró el jugador.
+    private void AlTirarGranada(Transform quien, Grenade1 granada)
+    {
+        if (Abierto && paso == 3) Hecha(4);
+    }
+
+    // Paso 5.
+    private void AlUsarHabilidad()
+    {
+        if (Abierto && paso == 4) Hecha(0);
     }
 
     // CA4: Tab saltea el paso; mantenido, saltea todo el tutorial.

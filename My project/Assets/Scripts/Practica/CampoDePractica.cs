@@ -7,7 +7,8 @@ using UnityEngine;
 // - CA2 y CA3: el cambio de arma y las armas son los mismos de una partida (WeaponSwitcher, ArmaDeFuego): no se
 //   tocan.
 // - Las armas no se sueltan con G (SoltarArmas): acá se cambian con la tienda.
-// - Sin habilidad (PlayerAbility) ni fase de compra (BuyPhase).
+// - Sin fase de compra (BuyPhase). US 166: con la habilidad del personaje elegido (PlayerAbility) y todas las
+//   granadas, que no se gastan (PlayerLoadout), para practicarlas en el tutorial.
 // - US 121: munición infinita (al recargar no se gasta la reserva: ArmaDeFuego, Mitre y Pistola) y el jugador no pierde
 //   vida ni muere (invulnerable). Solo acá: en las partidas no cambia nada (CA3).
 // - US 120, CA4: las marcas de bala no se desvanecen hasta que se reinicia con el panel (PanelDePractica).

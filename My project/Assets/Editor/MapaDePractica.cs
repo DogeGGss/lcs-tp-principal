@@ -17,7 +17,7 @@ using UnityEngine.SceneManagement;
 //   y de blancos: el menú de actualizar las saca.)
 // - CA4: tiene el jugador (con la pausa, que vuelve al menú) y el HUD, sin sala ni rondas: no necesita una partida.
 // - US 119: la tienda (B) y el CampoDePractica, que hace que en esta escena todas las armas se elijan gratis.
-//   El jugador va sin habilidad (el mapa es para practicar con las armas): lo hace el CampoDePractica.
+//   (US 166: el jugador tiene la habilidad de su personaje y todas las granadas, que no se gastan.)
 // - US 120: en la pared derecha, al lado de la línea de tiro, el panel (PanelDePractica) con los modos (bots quietos,
 //   en movimiento, distancias y reacción) y reiniciar: pone los muñecos en la zona de tiro. En la línea de tiro, una
 //   barrera: un mostrador bajo y, arriba, una pared invisible que frena al jugador pero no a las balas (está en la
@@ -455,11 +455,11 @@ public static class MapaDePractica
     private static readonly (string modo, string objetivo, string gana, string pierde)[] Modos =
     {
         ("TÁCTICO",
-         "4 contra 4 por rondas, sin reaparecer. Los atacantes plantan el dispositivo en A o B ({Plantar}) y los defensores lo defienden o lo desactivan. Las granadas y la habilidad del personaje ({Habilidad}) se compran y se usan en la partida.",
+         "4 contra 4 por rondas, sin reaparecer. Los atacantes plantan el dispositivo en A o B ({Plantar}) y los defensores lo defienden o lo desactivan. {Correr} camina despacio y sin hacer ruido (no se corre). Las granadas se compran en la fase de compra.",
          "Ganás la ronda si el dispositivo explota, si lo desactivás o si eliminás a todo el otro equipo (si se acaba el tiempo sin plantar, ganan los defensores). Gana la partida el primer equipo en llegar a 7 rondas.",
          "Pierde el equipo que no llega a 7 rondas. Si morís, mirás a un compañero hasta la ronda siguiente."),
         ("DEATHMATCH",
-         "Todos contra todos, hasta 8 jugadores. Elegís tus armas gratis ({Tienda}), cada baja te cura 50 y reaparecés a los 3 s. Tu habilidad ({Habilidad}) también se usa.",
+         "Todos contra todos, hasta 8 jugadores. Elegís tus armas gratis ({Tienda}), cada baja te cura 50 y reaparecés a los 3 s. No hay escudos ni granadas.",
          "Gana el primero en llegar a 25 bajas, o el que más bajas tenga cuando se terminan los 8 minutos.",
          "Perdés si otro llega antes a 25 bajas o tiene más bajas que vos al terminar el reloj."),
         ("ZOMBIE",
@@ -468,12 +468,26 @@ public static class MapaDePractica
          "Perdés si los zombis te matan."),
     };
 
-    // CA3: un panel por modo, colgados de la pared izquierda de la zona de salida, de frente a la sala. Si ya están, no
-    // se tocan (así no se pierden los textos cambiados a mano).
+    // CA3: un panel por modo, colgados de la pared izquierda de la zona de salida, de frente a la sala. Si ya están, solo
+    // se les ponen los textos de arriba (lo cambiado a mano en el Inspector se pisa).
     private static void PanelesDeModos(Transform mapa)
     {
         Transform salida = mapa.Find("Zona de salida") ?? mapa;
-        if (salida.Find(NombrePanelesDeModos) != null) return;
+        Transform hechos = salida.Find(NombrePanelesDeModos);
+        if (hechos != null)
+        {
+            for (int i = 0; i < Modos.Length; i++)
+            {
+                Transform t = hechos.Find("Panel " + Modos[i].modo.ToLowerInvariant());
+                PanelDeModo hecho = t != null ? t.GetComponent<PanelDeModo>() : null;
+                if (hecho == null) continue;
+                hecho.objetivo = Modos[i].objetivo;
+                hecho.comoSeGana = Modos[i].gana;
+                hecho.comoSePierde = Modos[i].pierde;
+                EditorUtility.SetDirty(hecho);
+            }
+            return;
+        }
         Transform grupo = Grupo(NombrePanelesDeModos, salida);
         float pared = -CaraParedDerecha(mapa); // la sala es pareja: la izquierda está del otro lado
         float[] zs = { -7f, -4.3f, -1.6f };
