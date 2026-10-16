@@ -36,7 +36,7 @@ public class PlayerAbility : MonoBehaviour
     private void Awake()
     {
         // US 119: en el campo de práctica se practica con las armas, sin habilidad (la Q no hace nada y el HUD no la
-        // muestra).
+        // muestra). US 166: el tutorial presta una durante su paso (Prestar).
         if (CampoDePractica.Activo)
         {
             ability = null;
@@ -56,6 +56,13 @@ public class PlayerAbility : MonoBehaviour
     {
         if (!useSelectedCharacter || CampoDePractica.Activo || character == null || character.ability == null) return;
         ability = character.ability;
+        Preparar();
+    }
+
+    /// <summary>US 166: el tutorial del campo de práctica presta una habilidad durante su paso (null la saca).</summary>
+    public void Prestar(AbilityData datos)
+    {
+        ability = datos;
         Preparar();
     }
 

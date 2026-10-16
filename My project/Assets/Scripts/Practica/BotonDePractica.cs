@@ -5,7 +5,7 @@ using UnityEngine;
 // Plantar (E), o pegándole un tiro (WeaponFire). Se ilumina mientras se lo mira y si es el modo elegido.
 public class BotonDePractica : MonoBehaviour
 {
-    public enum Accion { Quietos, Movimiento, Distancias, Reaccion, Reiniciar }
+    public enum Accion { Quietos, Movimiento, Distancias, Reaccion, Reiniciar, Tutorial } // Tutorial: US 166
 
     public Accion accion;
     public TextMeshPro texto;

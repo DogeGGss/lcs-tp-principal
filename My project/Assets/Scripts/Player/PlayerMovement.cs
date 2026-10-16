@@ -175,8 +175,9 @@ public class PlayerMovement : MonoBehaviour
         }
         else if (!SinControles && KeyBindings.Held(GameAction.Correr))
         {
-            // US 198: en el Táctico no se corre; Shift camina despacio y sin ruido.
-            if (MatchSettings.Mode == GameMode.Tactico)
+            // US 198: en el Táctico no se corre; Shift camina despacio y sin ruido. En el campo de práctica (que no es
+            // ningún modo, aunque quede elegido el último) se corre (US 166).
+            if (MatchSettings.Mode == GameMode.Tactico && !CampoDePractica.Activo)
             {
                 currentSpeed = slowWalkSpeed;
                 despacio = true;
