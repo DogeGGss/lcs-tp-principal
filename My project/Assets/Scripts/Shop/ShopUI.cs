@@ -508,7 +508,9 @@ public class ShopUI : MonoBehaviour
 
         // Con marcador (US 057) el tiempo de la compra ya está en su centro: este reloj quedaba abajo, asomándose.
         hudClock.SetActive(!open && !Dm && phase != null && phase.IsActive && MatchHud.Instance == null);
-        hudHint.SetActive(!open && (phaseActive || Dm) && access == ShopResult.Ok && !PantallaDeCarga.Visible);
+        // US 166: durante el tutorial del campo de práctica, solo en su paso (el de la tienda).
+        hudHint.SetActive(!open && (phaseActive || Dm) && access == ShopResult.Ok && !PantallaDeCarga.Visible &&
+                          !TutorialDePractica.OcultaAvisoTienda);
         hudMoney.gameObject.SetActive(!open && !Dm); // US 138, CA1: sin plata
         if (Spectated != null || showedSpectated)
         {

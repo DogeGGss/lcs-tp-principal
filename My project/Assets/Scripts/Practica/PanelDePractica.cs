@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 
-// US 120 · Panel del campo de práctica, en la pared derecha al lado de la línea de tiro (lo pone el menú Riftwalker > Mapa de
+// US 120 · Panel del campo de práctica, en el medio de la pared derecha de la zona de salida (lo pone el menú Riftwalker > Mapa de
 // práctica). Hay una sola zona de tiro: el panel elige qué se practica y pone ahí los muñecos (BotDePractica, el muñeco de
 // Scenes/Pruebas_Armas). Al cambiar de modo se sacan los del modo anterior.
 // - Botones (mirarlos de cerca y apretar E, la tecla de Plantar, o pegarles un tiro):

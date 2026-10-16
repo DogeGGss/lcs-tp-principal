@@ -52,6 +52,11 @@ public class TutorialDePractica : MonoBehaviour
     /// <summary>El tutorial está mostrando un paso (ShopUI llama "Tienda" a "Cambiar arma" mientras tanto).</summary>
     public static bool EnCurso => Actual != null && Actual.Abierto;
 
+    /// <summary>Durante el tutorial el aviso de la tienda ("B · Tienda") sale solo en su paso, el último.</summary>
+    public static bool OcultaAvisoTienda => EnCurso && Actual.paso != PasoTienda;
+
+    private const int PasoTienda = 5;
+
     private const float MantenerParaSaltearTodo = 1f; // s con Tab apretado
     private const float DuracionFinal = 4f;
     private const float MovimientoNecesario = 0.6f, MouseNecesario = 12f, CorrerNecesario = 0.4f;

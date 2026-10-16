@@ -18,7 +18,7 @@ using UnityEngine.SceneManagement;
 // - CA4: tiene el jugador (con la pausa, que vuelve al menú) y el HUD, sin sala ni rondas: no necesita una partida.
 // - US 119: la tienda (B) y el CampoDePractica, que hace que en esta escena todas las armas se elijan gratis.
 //   El jugador va sin habilidad (el tutorial presta el Trasbordo durante su paso) y con todas las granadas (US 166).
-// - US 120: en la pared derecha, al lado de la línea de tiro, el panel (PanelDePractica) con los modos (bots quietos,
+// - US 120: en el medio de la pared derecha de la zona de salida (US 166), el panel (PanelDePractica) con los modos (bots quietos,
 //   en movimiento, distancias y reacción) y reiniciar: pone los muñecos en la zona de tiro. En la línea de tiro, una
 //   barrera: un mostrador bajo y, arriba, una pared invisible que frena al jugador pero no a las balas (está en la
 //   capa Ignore Raycast, que los disparos no miran).
@@ -306,10 +306,11 @@ public static class MapaDePractica
     // US 120: panel
     // =====================================================================
 
-    // El panel de los modos, colgado de la pared derecha al lado de la línea de tiro. Si ya está el de esta versión,
-    // solo se ajusta hasta dónde puede haber muñecos; si es uno viejo (o no hay), se arma de nuevo.
+    // El panel de los modos, en el medio de la pared derecha de la zona de salida. Si ya está el de esta versión,
+    // solo se ubica y se ajusta hasta dónde puede haber muñecos; si es uno viejo (o no hay), se arma de nuevo.
     private const string NombrePanel = "Panel de práctica (modos)";
-    private const float EscalaPanel = 1.3f; // el panel se arma a 1 y se agranda, con su centro a la misma altura
+    private const float EscalaPanel = 2f; // el panel se arma a 1 y se agranda, con su centro a la misma altura
+    private const float ZPanel = -6f;     // US 166: en el medio de la pared derecha de la zona de salida
 
     private static void Panel(Transform mapa)
     {
@@ -318,6 +319,7 @@ public static class MapaDePractica
         bool conTutorial = viejo != null && viejo.GetComponentsInChildren<BotonDePractica>(true).Any(b => b.accion == BotonDePractica.Accion.Tutorial);
         if (viejo != null && viejo.name == NombrePanel && conTutorial)
         {
+            Ubicar(viejo.transform, mapa);
             Limites(viejo, mapa);
             return;
         }
@@ -331,8 +333,7 @@ public static class MapaDePractica
         // Su -z (el frente) queda hacia -x, hacia adentro de la sala; el 0 de z es la cara de la pared.
         Transform salida = mapa.Find("Zona de salida") ?? mapa;
         Transform p = Grupo(NombrePanel, salida);
-        p.SetPositionAndRotation(new Vector3(CaraParedDerecha(mapa), -1.55f * (EscalaPanel - 1f), -2f), Quaternion.Euler(0f, 90f, 0f));
-        p.localScale = Vector3.one * EscalaPanel;
+        Ubicar(p, mapa);
         PanelDePractica panel = p.gameObject.AddComponent<PanelDePractica>();
         panel.munieco = AssetDatabase.LoadAssetAtPath<GameObject>(Munieco);
         if (panel.munieco == null) Debug.LogWarning($"Mapa de práctica: no se encontró {Munieco} (el panel queda sin bots).");
@@ -353,6 +354,14 @@ public static class MapaDePractica
         Boton(p, "Botón reiniciar", BotonDePractica.Accion.Reiniciar, 0f, 1.24f);
         Boton(p, "Botón tutorial", BotonDePractica.Accion.Tutorial, 0.86f, 1.24f); // US 166
         panel.ayuda = TextoDelPanel("Ayuda", p, "Elegí un modo", new Vector3(0f, 0.95f, -0.085f), new Vector2(ancho - 0.3f, 0.12f), Color.white);
+    }
+
+    // Colgado en el medio de la pared derecha de la zona de salida, grande para leerlo desde lejos (US 166).
+    private static void Ubicar(Transform p, Transform mapa)
+    {
+        p.SetPositionAndRotation(new Vector3(CaraParedDerecha(mapa), -1.55f * (EscalaPanel - 1f), ZPanel), Quaternion.Euler(0f, 90f, 0f));
+        p.localScale = Vector3.one * EscalaPanel;
+        EditorUtility.SetDirty(p);
     }
 
     // Entre qué x puede haber muñecos: de pared a pared, sin meterse en el relieve de las paredes del kit. (Además,
