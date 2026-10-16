@@ -16,7 +16,7 @@ MonoBehaviour:
   displayName: Charlie
   role: Explorador
   portrait: {fileID: 0}
-  color: {r: 0.4902, g: 0.8784, b: 0.3529, a: 1}
+  color: {r: 1.0000, g: 0.5500, b: 0.1200, a: 1}
   description: 
   ability: {fileID: 11400000, guid: 017fe02b6ab143d0817790d28f4799d8, type: 2}
   provisional: 1
