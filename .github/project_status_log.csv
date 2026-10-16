@@ -685,3 +685,18 @@ fecha_utc,us_numero,us_titulo,estado_anterior,estado_nuevo,tiempo_en_estado_ante
 2026-10-16T05:55:53.718600+00:00,71,US 021. Habilidad 3 · Vista aérea,In Progress,LPR,4h 40m,16842,https://github.com/DogeGGss/lcs-tp-principal/issues/71
 2026-10-16T05:55:53.718600+00:00,72,US 022. Habilidad 4 · Callejero,In Progress,LPR,4h 40m,16842,https://github.com/DogeGGss/lcs-tp-principal/issues/72
 2026-10-16T05:55:53.718600+00:00,436,US 225. Modelos y brazos de los personajes,In Progress,LPR,6h 52m,24730,https://github.com/DogeGGss/lcs-tp-principal/issues/436
+2026-10-16T10:52:01.349564+00:00,94,US 040. Definir logros,Todo,LPR,23d 11h 27m,2028460,https://github.com/DogeGGss/lcs-tp-principal/issues/94
+2026-10-16T10:52:01.349564+00:00,95,US 041. Detectar cumplimiento de logros,Blocked,LPR,22d 17h 20m,1963242,https://github.com/DogeGGss/lcs-tp-principal/issues/95
+2026-10-16T10:52:01.349564+00:00,96,US 042. Desbloquear logro,Blocked,LPR,22d 17h 20m,1963242,https://github.com/DogeGGss/lcs-tp-principal/issues/96
+2026-10-16T10:52:01.349564+00:00,97,US 043. Notificar logro desbloqueado,Blocked,LPR,22d 17h 20m,1963242,https://github.com/DogeGGss/lcs-tp-principal/issues/97
+2026-10-16T10:52:01.349564+00:00,98,US 044.  Consultar logros,Blocked,LPR,22d 17h 20m,1963242,https://github.com/DogeGGss/lcs-tp-principal/issues/98
+2026-10-16T10:52:01.349564+00:00,99,US 045. Guardar progreso de logros,Blocked,LPR,22d 17h 20m,1963242,https://github.com/DogeGGss/lcs-tp-principal/issues/99
+2026-10-16T10:52:01.349564+00:00,221,US 159. Estadísticas del minijuego,Blocked,LPR,20d 10h 10m,1764658,https://github.com/DogeGGss/lcs-tp-principal/issues/221
+2026-10-16T10:52:01.349564+00:00,222,US 160. Logros del minijuego,Blocked,LPR,20d 10h 10m,1764658,https://github.com/DogeGGss/lcs-tp-principal/issues/222
+2026-10-16T10:52:01.349564+00:00,228,US 162. Guardar el progreso del jugador,Todo,LPR,20d 5h 20m,1747202,https://github.com/DogeGGss/lcs-tp-principal/issues/228
+2026-10-16T10:52:01.349564+00:00,229,US 163. Cargar el progreso al iniciar,Blocked,LPR,20d 5h 20m,1747202,https://github.com/DogeGGss/lcs-tp-principal/issues/229
+2026-10-16T10:52:01.349564+00:00,424,US 217. Consultar el perfil del jugador,Todo,LPR,3d 7h 26m,286012,https://github.com/DogeGGss/lcs-tp-principal/issues/424
+2026-10-16T10:52:01.349564+00:00,425,US 218. Elegir el título del perfil,Todo,LPR,3d 7h 26m,286012,https://github.com/DogeGGss/lcs-tp-principal/issues/425
+2026-10-16T10:52:01.349564+00:00,426,US 219. Elegir el avatar del perfil,Todo,LPR,3d 7h 26m,286012,https://github.com/DogeGGss/lcs-tp-principal/issues/426
+2026-10-16T10:52:01.349564+00:00,427,US 220. Elegir el banner del perfil,Todo,LPR,3d 7h 26m,286012,https://github.com/DogeGGss/lcs-tp-principal/issues/427
+2026-10-16T10:52:01.349564+00:00,428,US 221. Consultar las estadísticas desde el perfil,Todo,Blocked,3d 7h 26m,286012,https://github.com/DogeGGss/lcs-tp-principal/issues/428
