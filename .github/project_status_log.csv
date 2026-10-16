@@ -711,3 +711,9 @@ fecha_utc,us_numero,us_titulo,estado_anterior,estado_nuevo,tiempo_en_estado_ante
 2026-10-16T18:46:57.506643+00:00,201,US 141. Mostrar marcador de Deathmatch,R2D,Done,3h 41m,13300,https://github.com/DogeGGss/lcs-tp-principal/issues/201
 2026-10-16T18:46:57.506643+00:00,451,US 228. Opciones con el diseño del menú nuevo,LPR,TESTING,7h 54m,28496,https://github.com/DogeGGss/lcs-tp-principal/issues/451
 2026-10-16T18:46:57.506643+00:00,232,US 166. Guía de controles y objetivos en el campo de práctica,In Progress,LPR,17h 31m,63106,https://github.com/DogeGGss/lcs-tp-principal/issues/232
+2026-10-16T21:47:10.799900+00:00,453,US 230. Sonido al pasar el mouse por los botones,R2D,Done,3h,10813,https://github.com/DogeGGss/lcs-tp-principal/issues/453
+2026-10-16T21:47:10.799900+00:00,454,US 231. Enviar una opinión desde el menú,R2D,Done,3h,10813,https://github.com/DogeGGss/lcs-tp-principal/issues/454
+2026-10-16T21:47:10.799900+00:00,451,US 228. Opciones con el diseño del menú nuevo,TESTING,Done,3h,10813,https://github.com/DogeGGss/lcs-tp-principal/issues/451
+2026-10-16T21:47:10.799900+00:00,450,US 227. Menú principal con el diseño nuevo,LPR,Done,10h 55m,39309,https://github.com/DogeGGss/lcs-tp-principal/issues/450
+2026-10-16T21:47:10.799900+00:00,455,US 232. Elegir el marco del perfil,LPR,Done,10h 55m,39309,https://github.com/DogeGGss/lcs-tp-principal/issues/455
+2026-10-16T21:47:10.799900+00:00,424,US 217. Consultar el perfil del jugador,LPR,TESTING,10h 55m,39309,https://github.com/DogeGGss/lcs-tp-principal/issues/424
