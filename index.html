@@ -811,7 +811,7 @@ body.capture,body.capture-ms,body.capture-cr{padding-left:0!important}
     <a href="#tienda"><div class="pn">Parte 2</div><div class="pt">Pantallas</div><div class="ps">Tienda, HUD, selección de modo, créditos, el launcher y el resto de los menús.</div></a>
     <a href="#danio"><div class="pn">Parte 3</div><div class="pt">Combate</div><div class="ps">Daño, retroceso, arsenal, calculadora y cómo sumar un arma.</div></a>
     <a href="#eco"><div class="pn">Parte 4</div><div class="pt">Economía</div><div class="ps">Plata, puntos, escudos y granadas en cada modo.</div></a>
-    <a href="#personajes"><div class="pn">Parte 5</div><div class="pt">Personajes</div><div class="ps">Astra y el Trasbordo, los tres provisorios y qué tiene que definir su diseño.</div></a>
+    <a href="#personajes"><div class="pn">Parte 5</div><div class="pt">Personajes</div><div class="ps">Los cuatro personajes y sus habilidades: Barrera, Vista aérea, Callejero y Trasbordo.</div></a>
     <a href="#mapas"><div class="pn">Parte 6</div><div class="pt">Mapas</div><div class="ps">La estación espacial del Táctico y la universidad del Zombie.</div></a>
     <a href="#pendientes"><div class="pn">Parte 7</div><div class="pt">Decisiones y pendientes</div><div class="ps">Lo que ya se decidió y lo que falta diseñar o terminar.</div></a>
   </nav>
@@ -1609,7 +1609,7 @@ body.capture,body.capture-ms,body.capture-cr{padding-left:0!important}
     <tr id="pantalla-nota-po"><td><b>Nota para el PO</b></td><td>Panel de 1320 px sobre el menú: saludo a Amin y dos columnas, "Lo que funciona" y "Lo que todavía falta". Se vuelve a abrir con un botón abajo a la derecha.</td><td><code>NotaPO</code> (textos en el prefab)</td><td>US 180</td><td><span class="st st-ok">En el juego</span></td></tr>
     <tr id="pantalla-opciones"><td><b>Opciones</b></td><td>Pestañas Gráficos, Controles, Sonido y <a href="#mira-personalizable">Mira</a> (<span class="kbd">Q</span> y <span class="kbd">E</span>). Panel oscuro, título con la línea naranja, filas de 44 unidades, sliders con forma de vía y "Aplicar" y "Restablecer" al pie. Gráficos suma la opción "FPS y ping" (US 197) y Sonido, el volumen de Interfaz.</td><td><code>OpcionesPantalla</code>, <code>OpcionesKit</code>, <code>ControlsPanel</code>, <code>GraficosUIController</code>, <code>SonidoUIController</code>, <code>MiraUIController</code></td><td>US 048, US 153, US 154, US 155, US 172, US 197</td><td><span class="st st-ok">En el juego</span></td></tr>
     <tr id="pantalla-pausa"><td><b>Pausa</b></td><td>Reanudar, Opciones y Salir de la partida, con confirmación; en Zombie, también Reiniciar. En una partida online no congela el juego. En Configuración están las mismas pestañas de Gráficos y Mira que en el menú.</td><td><code>PauseMenu</code></td><td>US 051, US 049, US 052</td><td><span class="st st-ok">En el juego</span></td></tr>
-    <tr id="pantalla-personaje"><td><b>Selección de personaje</b></td><td>Una tarjeta por personaje con retrato, nombre, rol y habilidad (tecla y recarga). Se elige con clic, con los números o con las flechas. En Táctico hay 20 s antes de la ronda 1, y el personaje que confirma un compañero queda bloqueado con "Elegido por [nombre]". Astra tiene su retrato; los otros tres son provisorios y lo dicen en su tarjeta.</td><td><code>CharacterSelectScreen</code>, <code>CharacterRoster</code>, <code>PersonajesTacticos</code></td><td>US 015, US 016</td><td><span class="st st-mid">A medias</span></td></tr>
+    <tr id="pantalla-personaje"><td><b>Selección de personaje</b></td><td>Una tarjeta por personaje con retrato, nombre, rol y habilidad (tecla y recarga). Se elige con clic, con los números o con las flechas. En Táctico hay 20 s antes de la ronda 1, y el personaje que confirma un compañero queda bloqueado con "Elegido por [nombre]". Los cuatro personajes tienen su retrato y el color de su tarjeta.</td><td><code>CharacterSelectScreen</code>, <code>CharacterRoster</code>, <code>PersonajesTacticos</code></td><td>US 015, US 016</td><td><span class="st st-ok">En el juego</span></td></tr>
     <tr id="pantalla-sala"><td><b>Sala online</b></td><td>El código de la sala en grande con botón para copiarlo, los 8 lugares, el mapa (lo cambia el anfitrión) e "Iniciar partida" desde 2 jugadores.</td><td><code>ModeSelectScreen</code>, <code>Multijugador</code></td><td>US 026, US 027</td><td><span class="st st-ok">En el juego</span></td></tr>
     <tr id="pantalla-contorno"><td><b>Contorno de los rivales</b></td><td>Contorno rojo fino (2 px, el rojo de rivales) alrededor de cada rival, como en Valorant: solo la silueta, sin rayas por dentro. Los compañeros no tienen contorno, y no se ve a través de las paredes ni en los muertos. Nadie tiene nombre ni vida arriba de la cabeza.</td><td><code>ContornoRival</code></td><td>US 031</td><td><span class="st st-ok">En el juego</span></td></tr>
     <tr id="pantalla-aviso-muerte"><td><b>Aviso de muerte (online)</b></td><td>En el centro, "Te eliminó [nombre]" en grande (64 px) y debajo "Reaparecés en 3", que cuenta hacia atrás. En Táctico dice "Reaparecés en la ronda siguiente". Si se cayó del mapa, el título es "Te caíste del mapa" y nadie suma la baja (US 006).</td><td><code>PartidaEnRed.Aviso</code>, <code>JugadorEnRed</code></td><td>US 030, US 137</td><td><span class="st st-ok">En el juego</span></td></tr>
@@ -1871,12 +1871,50 @@ body.capture,body.capture-ms,body.capture-cr{padding-left:0!important}
 </section>
 
 <!-- ===================== PARTE 5 · PERSONAJES ===================== -->
-<div class="part"><span class="pn">5</span><div><h2>Personajes</h2><p>Astra es la primera terminada; los otros tres siguen siendo provisorios. El diseño es US 183.</p></div></div>
+<div class="part"><span class="pn">5</span><div><h2>Personajes</h2><p>Los cuatro personajes están terminados: modelo, retrato, brazos, color y habilidad. El diseño es US 183.</p></div></div>
 
 <section id="personajes">
-  <div class="sec-head"><h2>Personajes y habilidades</h2><span class="sub">US 183 · US 019</span> <span class="st st-mid">A medias</span></div>
-  <p>Hay cuatro personajes en la selección (US 015). <b>Astra</b> es la primera terminada: tiene su modelo, su retrato, sus brazos en primera persona y su habilidad, el <b>Trasbordo</b> (US 019). Los otros tres (Alfa, Bravo y Charlie) son de prueba, para que funcionen la selección, la habilidad con <span class="kbd">Q</span> (US 014 y US 017) y el reloj del HUD: sus nombres, roles y habilidades son provisorios y sus habilidades todavía no hacen nada.</p>
+  <div class="sec-head"><h2>Personajes y habilidades</h2><span class="sub">US 183 · US 019 a US 022 · US 225</span> <span class="st st-ok">En el juego</span></div>
+  <p>Hay cuatro personajes en la selección (US 015), cada uno con un rol, un color característico y una habilidad que se usa con la <span class="kbd">Q</span> (US 014 y US 017). Todos tienen su modelo, su retrato y sus brazos en primera persona (US 225). El color se ve en su tarjeta y en los efectos de su habilidad.</p>
   <div class="grid2" id="pjList"></div>
+  <h3 id="barrera">Barrera, la habilidad de Alfa</h3>
+  <p>Una pared que se pone donde se apunta, como el muro de Sage (Valorant), más chica y más corta para que un rival decidido la pueda romper.</p>
+  <div class="table-wrap"><table>
+    <tr><th>Qué</th><th>Cómo es</th><th>CA de US 020</th></tr>
+    <tr><td>Apuntar</td><td>Mientras se mantiene la <span class="kbd">Q</span> se ve dónde va a quedar, hasta 6 m: verde si se puede, roja si no. Al soltar se levanta; el clic derecho cancela sin gastar la carga.</td><td>CA1, CA2</td></tr>
+    <tr><td>Dónde va</td><td>Solo sobre piso o rampa caminable, no en el aire ni donde haya un jugador, una pared o un muro de la base.</td><td>CA2</td></tr>
+    <tr><td>La pared</td><td>Sube en 0,5 s hasta 4 × 2,2 m y frena desde que empieza a subir. Frena balas, granadas (rebotan) y jugadores de los dos equipos. Es un panel metálico con luces amarillas en los bordes.</td><td>CA3, CA4</td></tr>
+    <tr><td>Vida</td><td>800. Las balas y el cuchillo de los rivales le sacan el daño de cuerpo; la granada, su daño por distancia. Las propias y las de los compañeros la frenan sin dañarla.</td><td>CA5</td></tr>
+    <tr><td>Duración y daño a la vista</td><td>15 s. Chispas en cada impacto, grietas al 66 % y al 33 % (y las luces titilan), se hace pedazos al romperse y se hunde al terminar.</td><td>CA6, CA7</td></tr>
+    <tr><td>Carga</td><td>1 carga; los 40 s de recarga empiezan cuando la pared cae. En el Táctico cada ronda arranca con la carga y sin las barreras de la anterior.</td><td>CA8</td></tr>
+    <tr><td>HUD</td><td>Mientras está en pie, el reloj de la habilidad muestra su vida.</td><td>CA10</td></tr>
+  </table></div>
+
+  <h3 id="vista-aerea">Vista aérea, la habilidad de Bravo</h3>
+  <p>Información a cambio de quedar expuesto: se ve desde arriba lo que pasa cerca, pero el personaje queda quieto y unos ojos en el cielo lo delatan.</p>
+  <div class="table-wrap"><table>
+    <tr><th>Qué</th><th>Cómo es</th><th>CA de US 021</th></tr>
+    <tr><td>La vista</td><td>La cámara sube y muestra desde arriba 30 m a la redonda, sin techos; afuera del círculo se oscurece. El personaje no se mueve, no mira, no dispara ni cambia de arma.</td><td>CA1</td></tr>
+    <tr><td>Rivales</td><td>Los rivales vivos dentro de los 30 m se marcan en rojo en tiempo real, salvo los que están en el humo.</td><td>CA2</td></tr>
+    <tr><td>Duración</td><td>6 s. Termina antes con la <span class="kbd">Q</span>, el clic derecho o al recibir daño.</td><td>CA3, CA4</td></tr>
+    <tr><td>Para el equipo</td><td>Los rivales vistos aparecen en el minimapa de los compañeros y quedan marcados 3 s al terminar.</td><td>CA5</td></tr>
+    <tr><td>Lo que ven los demás</td><td>Unos ojos verdes 16 m arriba del personaje, a la vista de todos. Los rivales ven "Te están observando" y oyen un aviso.</td><td>CA6, CA7</td></tr>
+    <tr><td>Carga</td><td>1 carga; los 45 s de recarga empiezan al terminar. Durante la vista, el reloj muestra el tiempo que queda.</td><td>CA8, CA10</td></tr>
+  </table></div>
+
+  <h3 id="callejero">Callejero, la habilidad de Charlie</h3>
+  <p>Un lobo espectral que busca al rival más cercano, como el Merodeador de Fade (Valorant). Es un guiño a los perros de las estaciones de tren.</p>
+  <div class="table-wrap"><table>
+    <tr><th>Qué</th><th>Cómo es</th><th>CA de US 022</th></tr>
+    <tr><td>Salida</td><td>Aparece delante del personaje y corre a 8 m/s hacia el rival vivo más cercano dentro de 25 m, siguiéndolo si se mueve.</td><td>CA1, CA5</td></tr>
+    <tr><td>Recorrido</td><td>Sigue pasillos, puertas, escaleras y rampas sin atravesar paredes, por un NavMesh que el juego arma solo al empezar la partida.</td><td>CA5</td></tr>
+    <tr><td>Aspecto</td><td>El lobo de "Realistic Furry Wolf" como holograma: semitransparente, con bordes brillantes, líneas de escaneo y un rastro. Naranja para su equipo y rojo para los rivales.</td><td>CA2, CA3</td></tr>
+    <tr><td>Mordida</td><td>No saca vida: el rival ve oscuro y solo lo cercano durante 2,5 s, y queda marcado 3 s a través de las paredes para el equipo del dueño.</td><td>CA7, CA8</td></tr>
+    <tr><td>Sin rivales</td><td>Corre 10 m, se sienta y espera 5 s; si aparece un rival a 25 m, va a buscarlo. Si no alcanza a nadie, desaparece.</td><td>CA6, CA10</td></tr>
+    <tr><td>Vida</td><td>60: lo matan las balas, el cuchillo y las granadas de los rivales. Gruñe y ladra mientras corre; se lo oye a 20 m.</td><td>CA9, CA11</td></tr>
+    <tr><td>Carga</td><td>1 carga; los 35 s de recarga empiezan al soltarlo.</td><td>CA12</td></tr>
+  </table></div>
+
   <h3 id="trasbordo">Trasbordo, la habilidad de Astra</h3>
   <p>Un salto corto como el de Tracer (Overwatch), con cargas y valores pensados para un juego táctico. Las cifras se ajustan jugando.</p>
   <div class="table-wrap"><table>
@@ -1890,13 +1928,12 @@ body.capture,body.capture-ms,body.capture-cr{padding-left:0!important}
     <tr><td>Se ve y se escucha</td><td>Los demás ven un destello donde salió y otro donde llegó, y la ven aparecer de golpe. Su sonido se escucha hasta unos 25 m, desde donde salió.</td><td>CA8 a CA10</td></tr>
   </table></div>
   <div class="dev">
-    <h3>Qué tiene que definir el diseño</h3>
+    <h3>Dónde está cada cosa</h3>
     <ul>
-      <li><b>Quiénes son:</b> nombre, rol y una descripción corta, con la identidad del juego (trenes y universidad).</li>
-      <li><b>Cómo se ven:</b> que se distingan a la distancia por la silueta o los colores, y un retrato para la tarjeta de selección.</li>
-      <li><b>Su habilidad:</b> qué hace, cuánto dura, su alcance y su recarga, sin romper el balance de las armas (parte 3).</li>
-      <li><b>Su ícono:</b> que se entienda dentro del aro de 112 px del HUD, con un dibujo de unos 46 px.</li>
-      <li><b>Dónde se carga:</b> cada personaje es un <code>CharacterData</code> en <code>Resources/Personajes</code> y cada habilidad, un <code>AbilityData</code> en <code>Assets/Data/Habilidades</code>. Con el diseño se completan US 020 a US 022 (la de Astra, US 019, ya está).</li>
+      <li><b>Personajes:</b> un <code>CharacterData</code> por personaje en <code>Resources/Personajes</code>, con nombre, rol, color, retrato, modelo y habilidad. El modelo y el retrato de cada uno están en <code>Personajes/&lt;nombre&gt;</code>.</li>
+      <li><b>Habilidades:</b> un <code>AbilityData</code> en <code>Assets/Data/Habilidades</code> (tecla, recarga, cargas e ícono) y un <code>EfectoHabilidad</code> con lo que hace: <code>HabilidadBarrera</code>, <code>HabilidadVistaAerea</code>, <code>HabilidadCallejero</code> y <code>HabilidadTrasbordo</code>.</li>
+      <li><b>Sonidos y materiales:</b> en <code>ConfigRed</code>, sección Habilidades. Sin clip, cada habilidad usa un sonido generado.</li>
+      <li><b>Íconos:</b> en <code>UI/HUD/Iconos</code>, blancos sobre transparente, de 128 × 128.</li>
     </ul>
   </div>
 </section>
@@ -2072,7 +2109,6 @@ body.capture,body.capture-ms,body.capture-cr{padding-left:0!important}
   <h3 id="falta">Lo que falta diseñar o terminar</h3>
   <div class="table-wrap"><table>
     <tr><th>Qué</th><th>Historias</th><th>Estado</th></tr>
-    <tr><td>Los otros tres personajes y sus habilidades (Astra y el Trasbordo ya están)</td><td>US 183, US 020 a US 022</td><td><span class="st st-todo">Falta diseñar</span></td></tr>
     <tr><td>Modo Zombie: oleadas, tipos de zombi, jefe, puntos, tienda, marcador (diseño listo) y resultado con récord</td><td>US 143 a US 151</td><td><span class="st st-todo">Falta hacerlo</span></td></tr>
     <tr><td>Mapa 3: la noche, lo que necesitan los zombis, los recorridos y el rendimiento</td><td>US 186 a US 189</td><td><span class="st st-mid">A medias</span></td></tr>
     <tr><td>Mapa 2: revisar la línea de tiro de 139 m del pasillo norte (desde una base no se tiene que ver la otra)</td><td>US 213</td><td><span class="st st-mid">A revisar</span></td></tr>
@@ -2263,11 +2299,14 @@ const GR_EST = { metralla: ['st-ok', 'En el juego'], humo: ['st-ok', 'En el jueg
 
 /* ---------- personajes (Resources/Personajes y Assets/Data/Habilidades) ---------- */
 const PERSONAJES = [
-  { nombre: 'Astra', rol: 'Duelista', color: '#B48CFF', hab: 'Trasbordo', recarga: 10, cargas: 2, retrato: 'img/astra.png', icono: 'img/trasbordo.png',
-    efecto: 'Desaparece y aparece 9 m más allá, hacia donde camina (o hacia adelante si está quieta). No atraviesa paredes ni jugadores.' },
-  { nombre: 'Alfa', rol: 'Iniciador', color: '#F29A38', hab: 'Silbato', recarga: 20, efecto: 'Aturde 1,5 s a los rivales en un cono de 8 m. Es el ejemplo del HUD.' },
-  { nombre: 'Bravo', rol: 'Centinela', color: '#4CC3FF', hab: 'Barrera', recarga: 30, efecto: 'Levanta una pared de energía de 4 m que frena las balas durante 6 s.' },
-  { nombre: 'Charlie', rol: 'Explorador', color: '#7DE05A', hab: 'Pulso', recarga: 25, efecto: 'Revela a los rivales que estén a menos de 15 m durante 3 s.' }
+  { nombre: 'Alfa', rol: 'Centinela', color: '#FFC71F', hab: 'Barrera', recarga: 40, retrato: 'img/alfa.png', icono: 'img/barrera.png',
+    efecto: 'Levanta una pared metálica de 4 × 2,2 m que frena balas, granadas y jugadores. Aguanta 800 de daño y dura 15 s.' },
+  { nombre: 'Bravo', rol: 'Iniciador', color: '#4DE666', hab: 'Vista aérea', recarga: 45, retrato: 'img/bravo.png', icono: 'img/vista-aerea.png',
+    efecto: 'Ve desde arriba 30 m a la redonda durante 6 s y marca a los rivales. Queda quieto y unos ojos en el cielo lo delatan.' },
+  { nombre: 'Charlie', rol: 'Explorador', color: '#FF8C1F', hab: 'Callejero', recarga: 35, retrato: 'img/charlie.png', icono: 'img/callejero.png',
+    efecto: 'Suelta un lobo espectral que busca al rival más cercano: le nubla la vista y lo marca para el equipo.' },
+  { nombre: 'Astra', rol: 'Duelista', color: '#73D9FF', hab: 'Trasbordo', recarga: 10, cargas: 2, retrato: 'img/astra.png', icono: 'img/trasbordo.png',
+    efecto: 'Desaparece y aparece 9 m más allá, hacia donde camina (o hacia adelante si está quieta). No atraviesa paredes ni jugadores.' }
 ];
 /* ---------- plano del mapa táctico: nivel y capas ---------- */
 function initMapaTactico() {
@@ -3813,7 +3852,7 @@ renderRules(); renderOneShot(); renderArsenal(); renderCalcOptions(); renderCalc
       { id: 'nueva-arma', t: 'Cómo sumar un arma', i: 'plus' }] },
     { g: 'Economía', p: 'Parte 4 · Economía', items: [
       { id: 'eco', t: 'Economía', i: 'coins', subs: [['eco-tactico', 'Táctico'], ['eco-zombie', 'Zombie'], ['eco-deathmatch', 'Deathmatch'], ['escudos-granadas', 'Escudos y granadas']] }] },
-    { g: 'Personajes', p: 'Parte 5 · Personajes', items: [{ id: 'personajes', t: 'Personajes y habilidades', i: 'users', subs: [['trasbordo', 'Trasbordo']] }] },
+    { g: 'Personajes', p: 'Parte 5 · Personajes', items: [{ id: 'personajes', t: 'Personajes y habilidades', i: 'users', subs: [['barrera', 'Barrera'], ['vista-aerea', 'Vista aérea'], ['callejero', 'Callejero'], ['trasbordo', 'Trasbordo']] }] },
     { g: 'Mapas', p: 'Parte 6 · Mapas', items: [
       { id: 'mapas', t: 'Mapa 2 · Estación espacial', i: 'map', subs: [['mapa-tactico-plano', 'Plano'], ['mapa-tactico-zonas', 'Bases, zonas y sitios'], ['mapa-tactico-recorridos', 'Recorridos y líneas de tiro'], ['mapa-tactico-assets', 'Por qué el kit'], ['mapa-tactico-armado', 'Cómo se armó'], ['mapa-tactico-reglas', 'Para cambiar el mapa'], ['mapa-tactico-codigo', 'Dónde está']] },
       { id: 'mapa-universidad', t: 'Mapa 3 · Universidad', i: 'map' }] },
