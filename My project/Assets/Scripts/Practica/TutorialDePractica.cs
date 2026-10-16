@@ -340,11 +340,11 @@ public class TutorialDePractica : MonoBehaviour
         grupo.blocksRaycasts = false;
         grupo.interactable = false;
 
-        // CA1: arriba al centro.
+        // CA1: arriba al centro, debajo del aviso de la tienda ("B · Cambiar arma", que ShopUI pone a 150 px del borde).
         caja = Node("Cartel", lienzo.transform);
         caja.anchorMin = caja.anchorMax = new Vector2(0.5f, 1f);
         caja.pivot = new Vector2(0.5f, 1f);
-        caja.anchoredPosition = new Vector2(0f, -36f);
+        caja.anchoredPosition = new Vector2(0f, -216f);
         Image(caja, rounded, HudColor, 10f);
         Img borde = Image(Place(Node("Borde", caja), 0f, 0f, 4f, 0f), null, Accent);
         borde.rectTransform.anchorMax = new Vector2(0f, 1f);
