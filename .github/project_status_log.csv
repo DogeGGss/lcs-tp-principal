@@ -680,3 +680,8 @@ fecha_utc,us_numero,us_titulo,estado_anterior,estado_nuevo,tiempo_en_estado_ante
 2026-10-16T01:15:10.874144+00:00,163,US 118. Mapa de práctica (Shooting Range),In Progress,LPR,1d 4h 34m,102888,https://github.com/DogeGGss/lcs-tp-principal/issues/163
 2026-10-16T01:15:10.874144+00:00,165,US 120. Blancos de práctica,In Progress,LPR,1d 1h 47m,92846,https://github.com/DogeGGss/lcs-tp-principal/issues/165
 2026-10-16T01:15:10.874144+00:00,232,US 166. Guía de controles y objetivos en el campo de práctica,Blocked,In Progress,19d 19h 43m,1712591,https://github.com/DogeGGss/lcs-tp-principal/issues/232
+2026-10-16T05:55:53.718600+00:00,420,US 224. Minimapa en Deathmatch,LPR,TESTING,1d 12h 48m,132487,https://github.com/DogeGGss/lcs-tp-principal/issues/420
+2026-10-16T05:55:53.718600+00:00,285,US 183. Diseño de los personajes,In Progress,LPR,9h 48m,35313,https://github.com/DogeGGss/lcs-tp-principal/issues/285
+2026-10-16T05:55:53.718600+00:00,71,US 021. Habilidad 3 · Vista aérea,In Progress,LPR,4h 40m,16842,https://github.com/DogeGGss/lcs-tp-principal/issues/71
+2026-10-16T05:55:53.718600+00:00,72,US 022. Habilidad 4 · Callejero,In Progress,LPR,4h 40m,16842,https://github.com/DogeGGss/lcs-tp-principal/issues/72
+2026-10-16T05:55:53.718600+00:00,436,US 225. Modelos y brazos de los personajes,In Progress,LPR,6h 52m,24730,https://github.com/DogeGGss/lcs-tp-principal/issues/436
