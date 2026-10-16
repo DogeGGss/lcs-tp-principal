@@ -7,7 +7,7 @@ TerrainLayer:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: Terreno_MusgoAlien
-  m_DiffuseTexture: {fileID: 2800000, guid: d2e78050d34c4255ac4b9a668744b740, type: 3}
+  m_DiffuseTexture: {fileID: 2800000, guid: 3eedaebeab2f48a5ac8f14795e1e664c, type: 3}
   m_NormalMapTexture: {fileID: 2800000, guid: 3d1514aa70b14cd9bc7dab1d9ee0d377, type: 3}
   m_MaskMapTexture: {fileID: 2800000, guid: 1c8696d02dad4863bb2c694c59a620ae, type: 3}
   m_TileSize: {x: 5, y: 5}
@@ -17,6 +17,6 @@ TerrainLayer:
   m_Smoothness: 0
   m_NormalScale: 1
   m_DiffuseRemapMin: {x: 0, y: 0, z: 0, w: 0}
-  m_DiffuseRemapMax: {x: 0.35, y: 0.95, z: 0.85, w: 1}
+  m_DiffuseRemapMax: {x: 1, y: 1, z: 1, w: 1}
   m_MaskMapRemapMin: {x: 0, y: 0, z: 0, w: 0}
   m_MaskMapRemapMax: {x: 1, y: 1, z: 1, w: 1}
