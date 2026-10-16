@@ -8,8 +8,8 @@ using UnityEngine;
 // - CA2 y CA3: el cambio de arma y las armas son los mismos de una partida (WeaponSwitcher, ArmaDeFuego): no se
 //   tocan.
 // - Las armas no se sueltan con G (SoltarArmas): acá se cambian con la tienda.
-// - Sin fase de compra (BuyPhase). US 166: con la habilidad del personaje elegido (PlayerAbility) y todas las
-//   granadas, que no se gastan (PlayerLoadout), para practicarlas en el tutorial. Las granadas atraviesan la pared
+// - Sin habilidad (PlayerAbility; US 166: el tutorial presta el Trasbordo durante su paso) ni fase de compra
+//   (BuyPhase). US 166: con todas las granadas, que no se gastan (PlayerLoadout), para practicarlas en el tutorial. Las granadas atraviesan la pared
 //   invisible de la línea de tiro (la que frena al jugador), así llegan a los bots.
 // - US 121: munición infinita (al recargar no se gasta la reserva: ArmaDeFuego, Mitre y Pistola) y el jugador no pierde
 //   vida ni muere (invulnerable). Solo acá: en las partidas no cambia nada (CA3).

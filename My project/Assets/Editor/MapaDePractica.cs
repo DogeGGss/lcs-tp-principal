@@ -17,7 +17,7 @@ using UnityEngine.SceneManagement;
 //   y de blancos: el menú de actualizar las saca.)
 // - CA4: tiene el jugador (con la pausa, que vuelve al menú) y el HUD, sin sala ni rondas: no necesita una partida.
 // - US 119: la tienda (B) y el CampoDePractica, que hace que en esta escena todas las armas se elijan gratis.
-//   (US 166: el jugador tiene la habilidad de su personaje y todas las granadas, que no se gastan.)
+//   El jugador va sin habilidad (el tutorial presta el Trasbordo durante su paso) y con todas las granadas (US 166).
 // - US 120: en la pared derecha, al lado de la línea de tiro, el panel (PanelDePractica) con los modos (bots quietos,
 //   en movimiento, distancias y reacción) y reiniciar: pone los muñecos en la zona de tiro. En la línea de tiro, una
 //   barrera: un mostrador bajo y, arriba, una pared invisible que frena al jugador pero no a las balas (está en la
@@ -436,6 +436,7 @@ public static class MapaDePractica
 
     private const string Fuentes = "Assets/UI/Fuentes";
     private const string Redondeado = "Assets/UI/Tienda/Sprites/Redondeado.png";
+    private const string HabilidadDePrueba = "Assets/Data/Habilidades/Trasbordo.asset"; // la que presta el paso de la Q
 
     // Los carteles de los pasos (se arman en pantalla al jugar). Si ya está, solo se le ponen las tipografías.
     private static void Tutorial()
@@ -446,6 +447,7 @@ public static class MapaDePractica
         t.labelFont = AssetDatabase.LoadAssetAtPath<TMP_FontAsset>($"{Fuentes}/BarlowCondensed-SemiBold SDF.asset");
         t.bodyFont = AssetDatabase.LoadAssetAtPath<TMP_FontAsset>($"{Fuentes}/Barlow-Regular SDF.asset");
         t.rounded = AssetDatabase.LoadAssetAtPath<Sprite>(Redondeado);
+        t.habilidadDePrueba = AssetDatabase.LoadAssetAtPath<AbilityData>(HabilidadDePrueba);
         EditorUtility.SetDirty(t);
     }
 

@@ -35,7 +35,14 @@ public class PlayerAbility : MonoBehaviour
     // US 015, CA6: el jugador empieza la partida con la habilidad del personaje que eligió.
     private void Awake()
     {
-        // US 166: en el campo de práctica también se usa la del personaje elegido (el tutorial enseña la Q).
+        // US 119: en el campo de práctica se practica con las armas, sin habilidad (la Q no hace nada y el HUD no la
+        // muestra). US 166: el tutorial presta una durante su paso (Prestar).
+        if (CampoDePractica.Activo)
+        {
+            ability = null;
+            Preparar();
+            return;
+        }
         if (useSelectedCharacter)
         {
             CharacterData character = CharacterRoster.Selected;
@@ -47,8 +54,15 @@ public class PlayerAbility : MonoBehaviour
     /// <summary>US 016: el personaje se eligió con la partida ya cargada (Modo Táctico): se usa su habilidad.</summary>
     public void UsarPersonaje(CharacterData character)
     {
-        if (!useSelectedCharacter || character == null || character.ability == null) return;
+        if (!useSelectedCharacter || CampoDePractica.Activo || character == null || character.ability == null) return;
         ability = character.ability;
+        Preparar();
+    }
+
+    /// <summary>US 166: el tutorial del campo de práctica presta una habilidad durante su paso (null la saca).</summary>
+    public void Prestar(AbilityData datos)
+    {
+        ability = datos;
         Preparar();
     }
 

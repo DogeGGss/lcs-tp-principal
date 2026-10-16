@@ -14,13 +14,13 @@ using Img = UnityEngine.UI.Image;
 //   cambia desde la pausa.
 // - CA6: al terminar (o saltear) el tutorial queda guardado (Guardado, US 162): la próxima vez no aparece solo. Se
 //   vuelve a abrir con el botón "Tutorial" del panel del campo de práctica (PanelDePractica).
-// Los pasos (en el campo de práctica hay habilidad y granadas infinitas para practicarlas: PlayerAbility, PlayerLoadout):
+// Los pasos (en el campo de práctica hay granadas infinitas para practicarlas: PlayerLoadout):
 //   1. Moverse, mirar, saltar, agacharse y correr (en el Táctico, Shift camina despacio en vez de correr: US 198).
 //   2. Pegarle a un blanco y recargar.
 //   3. Apuntar con la mira del francotirador y pegarle en la cabeza a un blanco. Al llegar a este paso se le da el
 //      francotirador (en el campo de práctica las armas son gratis).
 //   4. Cambiar de arma (principal, secundaria y cuchillo), sacar una granada y tirarla.
-//   5. Usar la habilidad del personaje.
+//   5. Usar la habilidad: como en el campo de práctica no hay, se presta el Trasbordo solo durante este paso.
 //   6. Abrir la tienda y elegir otra arma. Mientras corre el tutorial se llama "Tienda"; sin tutorial, en el campo de
 //      práctica se llama "Cambiar arma" (ShopUI).
 // - CA3: al acercarse a un panel de modo (PanelDeModo), su explicación también sale en pantalla, a la derecha.
@@ -36,6 +36,11 @@ public class TutorialDePractica : MonoBehaviour
 
     [Header("Sprites")]
     public Sprite rounded;
+
+    [Header("Paso de la habilidad")]
+    [Tooltip("La habilidad que se presta durante el paso de la Q (en el campo de práctica no hay). Vacío: la del personaje elegido.")]
+    public AbilityData habilidadDePrueba; // Data/Habilidades/Trasbordo
+
 
     public static TutorialDePractica Actual { get; private set; }
 
@@ -165,10 +170,9 @@ public class TutorialDePractica : MonoBehaviour
             new Paso
             {
                 titulo = "Habilidad",
-                partes = new[] { P("Usar la habilidad de tu personaje", GameAction.Habilidad) },
-                // Se vuelve a buscar por si el jugador apareció después del tutorial. Si no tiene habilidad, el paso
-                // queda igual a la vista (se saltea con Tab) en vez de pasar solo.
-                alEmpezar = BuscarHabilidad,
+                partes = new[] { P("Usar la habilidad", GameAction.Habilidad) },
+                // En el campo de práctica no hay habilidad: se presta solo durante este paso (y se saca al salir).
+                alEmpezar = PrestarHabilidad,
             },
             new Paso
             {
@@ -255,9 +259,6 @@ public class TutorialDePractica : MonoBehaviour
                 if (KeyBindings.Down(GameAction.Cuchillo)) Hecha(2);
                 if (KeyBindings.Down(GameAction.Granadas)) Hecha(3);
                 break;
-            case 4:
-                if (libre && KeyBindings.Down(GameAction.Habilidad)) Hecha(0);
-                break;
             case 5:
                 if (ShopUI.IsOpen) Hecha(0);
                 if (equipo != null && (equipo.Primary != armaAlEmpezar || equipo.Secondary != secundariaAlEmpezar)) Hecha(1);
@@ -292,7 +293,29 @@ public class TutorialDePractica : MonoBehaviour
         if (habilidad != null) habilidad.Used += AlUsarHabilidad;
     }
 
-    // Paso 5: también vale apretar la tecla (por si el efecto no se pudo hacer ahí, por ejemplo contra una pared).
+    private bool prestada;
+
+    // Paso 5: le da la habilidad de prueba (el Trasbordo) con la carga lista.
+    private void PrestarHabilidad()
+    {
+        BuscarHabilidad();
+        AbilityData datos = habilidadDePrueba != null ? habilidadDePrueba : CharacterRoster.Selected?.ability;
+        Parte parte = pasos[4].partes[0];
+        parte.frase = datos != null ? $"Usar la habilidad: {datos.displayName}" : "Usar la habilidad";
+        if (habilidad == null || datos == null || !CampoDePractica.Activo) return;
+        habilidad.Prestar(datos);
+        prestada = true;
+    }
+
+    // Al salir del paso 5 (o cerrar el tutorial) se la saca: el campo de práctica vuelve a quedar sin habilidad.
+    private void DevolverHabilidad()
+    {
+        if (!prestada) return;
+        prestada = false;
+        if (habilidad != null) habilidad.Prestar(null);
+    }
+
+    // Paso 5: la usó de verdad (el Trasbordo no se hace mirando una pared pegada: ahí no se gasta).
     private void AlUsarHabilidad()
     {
         if (Abierto && paso == 4) Hecha(0);
@@ -331,6 +354,7 @@ public class TutorialDePractica : MonoBehaviour
 
     private void Ir(int nuevo)
     {
+        DevolverHabilidad();
         paso = nuevo;
         movido = mouse = corrido = 0f;
         apunto = false;
@@ -362,6 +386,7 @@ public class TutorialDePractica : MonoBehaviour
     // Lo oculta y, si "guardar", lo marca como hecho para que no aparezca solo la próxima vez.
     private void Cerrar(bool guardar)
     {
+        DevolverHabilidad();
         paso = -1;
         tabDesde = -1f;
         if (caja != null) caja.gameObject.SetActive(false);

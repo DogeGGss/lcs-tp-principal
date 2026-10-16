@@ -433,7 +433,10 @@ public class CombatHud : MonoBehaviour
 
     private void UpdateSkill()
     {
-        if (ability == null || ability.Ability == null) return;
+        // US 166: en el campo de práctica la habilidad aparece y se va con el paso del tutorial.
+        bool hasAbility = ability != null && ability.Ability != null;
+        if (skill.activeSelf != hasAbility) skill.SetActive(hasAbility);
+        if (!hasAbility) return;
         // US 016: en el Táctico el personaje (y su habilidad) se elige con la partida ya cargada.
         if (ability.Ability != shownSkill) SetupSkill(ability.Ability);
 
