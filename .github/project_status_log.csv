@@ -717,3 +717,4 @@ fecha_utc,us_numero,us_titulo,estado_anterior,estado_nuevo,tiempo_en_estado_ante
 2026-10-16T21:47:10.799900+00:00,450,US 227. Menú principal con el diseño nuevo,LPR,Done,10h 55m,39309,https://github.com/DogeGGss/lcs-tp-principal/issues/450
 2026-10-16T21:47:10.799900+00:00,455,US 232. Elegir el marco del perfil,LPR,Done,10h 55m,39309,https://github.com/DogeGGss/lcs-tp-principal/issues/455
 2026-10-16T21:47:10.799900+00:00,424,US 217. Consultar el perfil del jugador,LPR,TESTING,10h 55m,39309,https://github.com/DogeGGss/lcs-tp-principal/issues/424
+2026-10-16T23:58:43.272125+00:00,200,US 140. Puntuación y victoria en Deathmatch,LPR,TESTING,11d 46m,953171,https://github.com/DogeGGss/lcs-tp-principal/issues/200
