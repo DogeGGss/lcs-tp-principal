@@ -99,7 +99,7 @@ public class Pistola : MonoBehaviour, IHudWeapon
             return;
         }
 
-        if (!MinijuegoPajaros.Activo) currentAmmo--; // US 157, CA2: en la compra los disparos no gastan balas
+        if (!MinijuegoCometas.Activo) currentAmmo--; // US 157, CA2: en la compra los disparos no gastan balas
 
         Debug.Log(
             "¡PUM! Balas en cargador: " +

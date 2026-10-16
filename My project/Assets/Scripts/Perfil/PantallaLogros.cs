@@ -1,199 +1,126 @@
+using System;
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 using static ShopUIKit;
 using static PerfilUI;
 
-// Pantalla de logros del menú principal (US 044): PLANTILLA DE PRUEBA. Los logros todavía no se detectan ni se
-// guardan (US 041 y US 045), así que la lista, el progreso y las fechas son de ejemplo, sacados de las US 040 y 160.
-// A la izquierda, el progreso total y por categoría; a la derecha, la lista con pestañas Todos, Obtenidos y Pendientes.
 public class PantallaLogros : PantallaBase
 {
-    private const float XLista = 530f, AnchoLista = 1330f, AltoFila = 104f, Separacion = 12f;
-
-    private struct Logro
-    {
-        public string categoria, nombre, descripcion, fecha; // fecha == null: todavía no se obtuvo
-        public int progreso, meta;                           // meta > 0: logro con contador
-        public bool secreto;
-        public bool Obtenido => fecha != null;
-    }
-
-    private static Logro L(string categoria, string nombre, string descripcion, string fecha = null, int progreso = 0, int meta = 0,
-        bool secreto = false) =>
-        new Logro { categoria = categoria, nombre = nombre, descripcion = descripcion, fecha = fecha, progreso = progreso, meta = meta, secreto = secreto };
-
-    private static readonly string[] Categorias = { "General", "Táctico", "Deathmatch", "Zombie", "Minijuego", "Secreto" };
-
-    private static readonly Logro[] Logros =
-    {
-        L("General", "Bienvenido al andén", "Elegir tu nombre de jugador.", "02/10/2026"),
-        L("General", "Primera partida", "Terminar una partida online.", "03/10/2026"),
-        L("General", "Coleccionista", "Conseguir 25 cosméticos para el Perfil.", progreso: 12, meta: 25),
-        L("Táctico", "Victoria táctica", "Ganar una partida del modo táctico.", "05/10/2026"),
-        L("Táctico", "Desactivador", "Desactivar la bomba 5 veces.", progreso: 2, meta: 5),
-        L("Deathmatch", "Primera sangre", "Hacer la primera eliminación de una partida.", "07/10/2026"),
-        L("Deathmatch", "Imparable", "Conseguir 100 eliminaciones.", progreso: 37, meta: 100),
-        L("Deathmatch", "En racha", "Eliminar a 5 rivales seguidos sin morir."),
-        L("Zombie", "Exterminador", "Eliminar 10 zombies.", "09/10/2026"),
-        L("Zombie", "Última oleada", "Sobrevivir hasta la oleada 20.", progreso: 8, meta: 20),
-        L("Minijuego", "Primer vuelo", "Acertarle al primer pájaro.", "10/10/2026"),
-        L("Minijuego", "Ojo de halcón", "Acertarle a 10 pájaros en una sola fase de compra."),
-        L("Minijuego", "Golondrina veloz", "Acertarle a 25 golondrinas en total.", progreso: 12, meta: 25),
-        L("Minijuego", "Sin fallar", "Acertarle a 5 pájaros seguidos sin errar un disparo."),
-        L("Minijuego", "Cazador", "Acertarle a 500 pájaros en total.", progreso: 61, meta: 500),
-        L("Secreto", "Easter egg", "Seguí explorando los mapas para descubrirlo.", secreto: true),
-    };
-
-    private readonly TextMeshProUGUI[] pestanas = new TextMeshProUGUI[3];
-    private TextMeshProUGUI infoPestana;
-    private UnityEngine.UI.Image subrayado;
-    private UnityEngine.UI.ScrollRect scroll;
-    private RectTransform lista;
-    private int pestana;
+    readonly RectTransform resumen, lista, acciones;
+    readonly ScrollRect scroll;
+    readonly TextMeshProUGUI titulo;
+    readonly Boton[] tabs = new Boton[2];
+    int seccion, pagina, local = -1, online = -1;
+    string filtro = "";
+    float siguiente;
+    LogrosOnline.Jugador seleccionado;
+    LogrosOnline Servicio => LogrosOnline.Instancia;
 
     public PantallaLogros(MenuRiftwalker menu, RectTransform parent) : base(menu, parent, "Logros")
     {
-        BarraSuperior("Plantilla de prueba · datos de ejemplo", "Logros");
-        ArmarResumen();
-        ArmarPestanas();
-        scroll = Scroll(rect, XLista, 204f, AnchoLista, 836f, out lista);
-        ElegirPestana(0);
+        BarraSuperior("Cometas · Progreso acumulado", "Logros y ranking");
+        resumen = Place(Node("Resumen", rect), 60, 130, 440, 910);
+        Image(resumen, Rounded, PanelColor, 8);
+        for (int i = 0; i < 2; i++) { int k = i; tabs[i] = CrearBoton(rect, 530 + i * 246, 130, 230, 56, i == 0 ? "Logros" : "Ranking", i == 0, () => Cambiar(k)); }
+        titulo = T(rect, "Título lista", 530, 206, 1330, 36, FTitulo, 28, Ink, "");
+        titulo.richText = false;
+        scroll = Scroll(rect, 530, 252, 1330, 706, out lista);
+        acciones = Place(Node("Acciones", rect), 530, 976, 1330, 54);
+        Dibujar(true);
     }
-
-    // ================= Resumen =================
-
-    private void ArmarResumen()
+    public override void Refrescar() { base.Refrescar(); Consultar(); Dibujar(); }
+    public override void Tick()
     {
-        int total = Logros.Length, obtenidos = Contar(null, true);
-        RectTransform r = Place(Node("Resumen", rect), 60f, 130f, 440f, 910f);
-        Image(r, Rounded, PanelColor, 8f);
-        Borde(r, 8f, White(0.06f));
-        T(r, "Rotulo", 28f, 26f, 384f, 22f, FRotulo, 17f, Accent, "Progreso", TextAlignmentOptions.MidlineLeft, 16f, true);
-        T(r, "Cuenta", 24f, 50f, 384f, 120f, FTitulo, 116f, Ink, $"{obtenidos}<size=50%><color={Rich(Mute)}> / {total}</color></size>",
-            TextAlignmentOptions.MidlineLeft, 2f);
-        T(r, "Obtenidos", 28f, 168f, 250f, 28f, FTexto, 22f, Mute, "logros obtenidos");
-        T(r, "Porcentaje", 212f, 168f, 200f, 28f, FTitulo, 26f, Soft, Mathf.RoundToInt(100f * obtenidos / total) + " %", TextAlignmentOptions.MidlineRight);
-        Barra(r, 28f, 206f, 384f, 10f, (float)obtenidos / total);
-
-        T(r, "PorCategoria", 28f, 258f, 384f, 22f, FRotulo, 17f, Accent, "Por categoría", TextAlignmentOptions.MidlineLeft, 16f, true);
-        for (int i = 0; i < Categorias.Length; i++)
+        if (Time.unscaledTime >= siguiente) Consultar();
+        if (local != LogrosCometas.Revision || online != (Servicio == null ? -1 : Servicio.Revision)) Dibujar();
+    }
+    void Consultar() { siguiente = Time.unscaledTime + 60; Servicio?.Solicitar(pagina, filtro); }
+    void Cambiar(int n) { seccion = n; pagina = 0; filtro = ""; seleccionado = null; Consultar(); Dibujar(true); }
+    void Propietarios(string id) { seccion = 1; pagina = 0; filtro = id; seleccionado = null; Consultar(); Dibujar(true); }
+    public override bool Escape() { if (seleccionado == null) return false; seleccionado = null; Dibujar(true); return true; }
+    void Dibujar(bool arriba = false)
+    {
+        float pos = scroll.verticalNormalizedPosition;
+        local = LogrosCometas.Revision; online = Servicio == null ? -1 : Servicio.Revision;
+        BorrarHijos(resumen); BorrarHijos(lista); BorrarHijos(acciones);
+        for (int i = 0; i < 2; i++) { tabs[i].primario = i == seccion; tabs[i].Pintar(); }
+        T(resumen, "Tu progreso", 28, 26, 384, 30, FRotulo, 20, Accent, "TU PROGRESO");
+        T(resumen, "Cuenta", 24, 68, 384, 116, FTitulo, 100, Ink, LogrosCometas.Cantidad + "<size=50%> / 9</size>");
+        T(resumen, "Obtenidos", 28, 190, 384, 35, FTexto, 24, Mute, "logros obtenidos");
+        Barra(resumen, 28, 240, 384, LogrosCometas.Cantidad / 9f, Accent);
+        for (int i = 0; i < 3; i++)
         {
-            float y = 292f + i * 62f;
-            int tiene = Contar(Categorias[i], true), de = Contar(Categorias[i], null);
-            T(r, Categorias[i], 28f, y, 250f, 40f, FTitulo, 30f, Soft, Categorias[i], TextAlignmentOptions.MidlineLeft, 3f, true);
-            T(r, "Cuenta " + Categorias[i], 232f, y, 180f, 40f, FTitulo, 30f, Ink, $"{tiene}<color={Rich(Mute)}> / {de}</color>",
-                TextAlignmentOptions.MidlineRight, 2f);
-            Barra(r, 28f, y + 42f, 384f, 4f, (float)tiene / de);
+            int n = 0; foreach (var d in LogrosCometas.Catalogo) if (d.tipo == i && LogrosCometas.Datos.aciertos[i] >= d.meta) n++;
+            var c = Cometa.ColorDe((TipoCometa)i);
+            T(resumen, "Color", 28, 286 + i * 92, 384, 36, FTitulo, 29, c, new[] { "AZULES", "VERDES", "DORADOS" }[i] + "   " + n + " / 3");
+            T(resumen, "Aciertos", 28, 326 + i * 92, 384, 28, FTexto, 21, Soft, LogrosCometas.Datos.aciertos[i] + " destruidos");
         }
-
-        TextMeshProUGUI nota = T(r, "Nota", 28f, 690f, 384f, 190f, FTexto, 19f, Mute,
-            "Plantilla de prueba: los logros todavía no se detectan ni se guardan (US 041 y US 045). La lista y el progreso " +
-            "son de ejemplo, para ver cómo se van a consultar (US 044).", TextAlignmentOptions.BottomLeft);
-        nota.textWrappingMode = TextWrappingModes.Normal;
-    }
-
-    private static void Barra(RectTransform parent, float x, float y, float w, float h, float parte)
-    {
-        Image(Place(Node("Barra", parent), x, y, w, h), Rounded, TrackColor, h / 2f);
-        if (parte > 0f) Image(Place(Node("Lleno", parent), x, y, Mathf.Max(h, w * Mathf.Clamp01(parte)), h), Rounded, Accent, h / 2f);
-    }
-
-    /// <summary>Cuántos logros hay de una categoría (null: todas) que estén obtenidos (true), pendientes (false) o ambos (null).</summary>
-    private static int Contar(string categoria, bool? obtenido)
-    {
-        int n = 0;
-        foreach (Logro l in Logros)
-            if ((categoria == null || l.categoria == categoria) && (obtenido == null || l.Obtenido == obtenido.Value)) n++;
-        return n;
-    }
-
-    // ================= Pestañas y lista =================
-
-    private void ArmarPestanas()
-    {
-        string[] nombres = { "Todos", "Obtenidos", "Pendientes" };
-        float x = XLista;
-        for (int i = 0; i < nombres.Length; i++)
+        var datos = Servicio?.Datos;
+        T(resumen, "Puesto", 28, 592, 384, 40, FTitulo, 29, Ink, datos?.me == null ? "PUESTO GLOBAL: —" : "PUESTO GLOBAL: #" + datos.me.rank);
+        string estado = Servicio == null ? "El progreso se guarda en esta PC." : Servicio.Estado;
+        if (datos != null) estado += "\n" + datos.population + " jugadores registrados · " + datos.fetched_at;
+        if (!string.IsNullOrEmpty(LogrosCometas.AvisoGuardado)) estado += "\n" + LogrosCometas.AvisoGuardado;
+        var texto = T(resumen, "Conexión", 28, 650, 384, 176, FTexto, 20, Mute, estado);
+        texto.textWrappingMode = TextWrappingModes.Normal;
+        CrearBoton(resumen, 28, 838, 384, 46, "Actualizar", false, Consultar, 22);
+        int filas;
+        if (seccion == 0 || seleccionado != null)
         {
-            int k = i;
-            pestanas[i] = T(rect, nombres[i], x, 128f, 300f, 50f, FTitulo, 36f, Mute, nombres[i], TextAlignmentOptions.MidlineLeft, 6f, true);
-            float w = Width(pestanas[i], nombres[i].ToUpperInvariant());
-            pestanas[i].rectTransform.sizeDelta = new Vector2(w, 50f);
-            pestanas[i].raycastTarget = true;
-            var p = pestanas[i].gameObject.AddComponent<ShopPointerTarget>();
-            p.Clicked = () => ElegirPestana(k);
-            p.Hovered = () => { if (pestana != k) pestanas[k].color = Soft; };
-            p.Exited = () => { if (pestana != k) pestanas[k].color = Mute; };
-            pestanas[i].gameObject.AddComponent<SonidoAlPasar>();
-            x += w + 56f;
-        }
-        Image(Place(Node("Linea", rect), XLista, 184f, AnchoLista, 1f), null, White(0.1f));
-        subrayado = Image(Place(Node("Subrayado", rect), XLista, 180f, 100f, 4f), null, Accent);
-        infoPestana = T(rect, "Info", XLista + AnchoLista - 600f, 138f, 600f, 34f, FRotulo, 20f, Mute, "", TextAlignmentOptions.MidlineRight, 10f, true);
-    }
-
-    private void ElegirPestana(int i)
-    {
-        pestana = i;
-        for (int k = 0; k < pestanas.Length; k++) pestanas[k].color = k == i ? Ink : Mute;
-        RectTransform t = pestanas[i].rectTransform;
-        subrayado.rectTransform.anchoredPosition = new Vector2(t.anchoredPosition.x, -180f);
-        subrayado.rectTransform.sizeDelta = new Vector2(t.sizeDelta.x, 4f);
-
-        BorrarHijos(lista);
-        int n = 0;
-        foreach (Logro l in Logros)
-        {
-            if ((i == 1 && !l.Obtenido) || (i == 2 && l.Obtenido)) continue;
-            Fila(l, n * (AltoFila + Separacion));
-            n++;
-        }
-        lista.sizeDelta = new Vector2(AnchoLista, Mathf.Max(0f, n * (AltoFila + Separacion) - Separacion));
-        scroll.verticalNormalizedPosition = 1f;
-        infoPestana.text = n == 1 ? "1 logro" : $"{n} logros";
-    }
-
-    private void Fila(Logro l, float y)
-    {
-        bool ok = l.Obtenido;
-        RectTransform f = Place(Node(l.nombre, lista), 0f, y, AnchoLista, AltoFila);
-        Image(f, Rounded, ok ? PanelColor : WithAlpha(PanelBase, 0.55f), 8f);
-        Borde(f, 8f, ok ? WithAlpha(Accent, 0.45f) : White(0.06f));
-        if (ok) Image(Place(Node("Marca", f), 0f, 18f, 4f, AltoFila - 36f), null, Accent);
-
-        // Ícono: obtenido, una medalla con tilde; pendiente, un candado (o un signo de pregunta si es secreto).
-        float cx = 66f, cy = AltoFila / 2f;
-        if (ok)
-        {
-            Circulo(f, cx, cy, 30f, Accent);
-            Poligono(f, "Tilde", AccentInk,
-                new Vector2(cx - 14f, cy + 1f), new Vector2(cx - 9f, cy - 4f), new Vector2(cx - 4f, cy + 1f),
-                new Vector2(cx + 9f, cy - 12f), new Vector2(cx + 14f, cy - 7f), new Vector2(cx - 4f, cy + 11f));
+            titulo.text = seleccionado == null ? "Metas acumuladas · 10, 50 y 100 de cada color" : "Logros de " + seleccionado.display_name;
+            filas = 9;
+            for (int i = 0; i < 9; i++) FilaLogro(LogrosCometas.Catalogo[i], i);
+            if (seleccionado != null) CrearBoton(acciones, 0, 0, 300, 48, "Volver al ranking", false, () => { seleccionado = null; Dibujar(true); }, 22);
+            else T(acciones, "Nota", 0, 0, 1330, 48, FTexto, 20, Mute, "Los porcentajes corresponden a los jugadores registrados en el servicio online.");
         }
         else
         {
-            Circulo(f, cx, cy, 30f, White(0.16f), 3f);
-            if (l.secreto) T(f, "Signo", cx - 30f, cy - 30f, 60f, 60f, FTitulo, 40f, Mute, "?", TextAlignmentOptions.Center);
-            else Candado(f, cx, cy, 30f, Mute);
+            var definicion = Array.Find(LogrosCometas.Catalogo, d => d.id == filtro);
+            titulo.text = definicion == null ? "Ranking global · empates comparten puesto" : "Quiénes consiguieron: " + definicion.nombre;
+            bool coincide = datos != null && datos.offset == pagina && (datos.filter ?? "") == filtro;
+            filas = coincide && datos.players != null ? datos.players.Length : 0;
+            for (int i = 0; i < filas; i++) FilaJugador(datos.players[i], i);
+            if (filas == 0) { var t = T(lista, "Vacío", 26, 30, 1200, 140, FTexto, 28, Mute, Servicio == null || !Servicio.Configurado ? "El ranking estará disponible al conectar el servicio online." : Servicio.Ocupado ? "Consultando jugadores…" : coincide ? "Todavía no hay jugadores en esta lista." : "No hay datos disponibles. Probá actualizar."); t.textWrappingMode = TextWrappingModes.Normal; }
+            var anterior = CrearBoton(acciones, 0, 0, 210, 48, "Anterior", false, () => { pagina = Mathf.Max(0, pagina - 50); Consultar(); Dibujar(true); }, 22);
+            anterior.button.interactable = pagina > 0;
+            var proximo = CrearBoton(acciones, 226, 0, 210, 48, "Siguiente", false, () => { pagina += 50; Consultar(); Dibujar(true); }, 22);
+            proximo.button.interactable = coincide && datos.has_more;
+            if (filtro != "") CrearBoton(acciones, 456, 0, 300, 48, "Todos los jugadores", false, () => Cambiar(1), 22);
+            T(acciones, "Página", 1000, 0, 330, 48, FTexto, 23, Soft, "Página " + (pagina / 50 + 1), TextAlignmentOptions.MidlineRight);
         }
-
-        T(f, "Categoria", 124f, 16f, 600f, 20f, FRotulo, 15f, ok ? Accent : Mute, l.categoria, TextAlignmentOptions.MidlineLeft, 14f, true);
-        T(f, "Nombre", 122f, 34f, 760f, 38f, FTitulo, 34f, ok ? Ink : Soft, l.secreto && !ok ? "???" : l.nombre, TextAlignmentOptions.MidlineLeft, 3f, true);
-        T(f, "Descripcion", 124f, 70f, 800f, 24f, FTexto, 20f, Mute, l.descripcion);
-
-        // A la derecha: la fecha si se obtuvo; si no, el progreso (los que tienen contador) o "Pendiente".
-        float xd = AnchoLista - 32f;
-        if (ok)
-        {
-            T(f, "Estado", xd - 300f, 26f, 300f, 22f, FRotulo, 17f, Accent, "Obtenido", TextAlignmentOptions.MidlineRight, 14f, true);
-            T(f, "Fecha", xd - 300f, 52f, 300f, 26f, FMono, 18f, Mute, l.fecha, TextAlignmentOptions.MidlineRight);
-        }
-        else if (l.meta > 0)
-        {
-            T(f, "Progreso", xd - 300f, 18f, 300f, 36f, FTitulo, 32f, Ink, $"{l.progreso}<color={Rich(Mute)}> / {l.meta}</color>",
-                TextAlignmentOptions.MidlineRight, 2f);
-            Barra(f, xd - 300f, 64f, 300f, 8f, (float)l.progreso / l.meta);
-        }
-        else T(f, "Estado", xd - 300f, 40f, 300f, 24f, FRotulo, 17f, Mute, "Pendiente", TextAlignmentOptions.MidlineRight, 14f, true);
+        lista.sizeDelta = new Vector2(1330, Mathf.Max(180, filas * 112));
+        scroll.verticalNormalizedPosition = arriba ? 1 : pos;
+    }
+    void FilaLogro(LogrosCometas.Definicion d, int i)
+    {
+        bool obtenido = seleccionado == null ? LogrosCometas.Datos.aciertos[d.tipo] >= d.meta : seleccionado.Tiene(d.id);
+        Color c = Cometa.ColorDe((TipoCometa)d.tipo);
+        var r = Place(Node(d.id, lista), 0, i * 112, 1330, 100);
+        Image(r, Rounded, PanelColor, 6); Borde(r, 6, obtenido ? WithAlpha(c, .6f) : White(.08f));
+        Image(Place(Node("Color", r), 0, 16, 5, 68), Rounded, c, 0);
+        T(r, "Nombre", 22, 12, 630, 36, FTitulo, 29, obtenido ? Ink : Soft, d.nombre);
+        T(r, "Descripción", 24, 53, 630, 30, FTexto, 21, Mute, "Destruí " + d.meta + " cometas " + d.color + " en total.");
+        int cuenta = LogrosCometas.Datos.aciertos[d.tipo];
+        T(r, "Progreso", 670, 12, 190, 34, FTitulo, 26, obtenido ? c : Soft, seleccionado == null ? Mathf.Min(cuenta, d.meta) + " / " + d.meta : obtenido ? "Obtenido" : "Pendiente");
+        Barra(r, 670, 64, 190, seleccionado == null ? (float)cuenta / d.meta : obtenido ? 1 : 0, c);
+        var stats = Servicio?.Datos?.stats;
+        var p = stats == null ? null : Array.Find(stats, s => s.achievement_id == d.id);
+        T(r, "Porcentaje", 885, 18, 190, 30, FTitulo, 25, Ink, p == null ? "— %" : p.percent.ToString("0.#") + " %");
+        T(r, "Global", 885, 52, 190, 25, FTexto, 18, Mute, "de jugadores");
+        CrearBoton(r, 1100, 27, 210, 46, "Ver jugadores", false, () => Propietarios(d.id), 20);
+    }
+    void FilaJugador(LogrosOnline.Jugador p, int i)
+    {
+        var r = Place(Node("Jugador", lista), 0, i * 112, 1330, 100); Image(r, Rounded, PanelColor, 6);
+        T(r, "Puesto", 20, 20, 110, 50, FTitulo, 38, Accent, "#" + p.rank);
+        T(r, "Nombre", 150, 15, 490, 38, FTitulo, 30, Ink, p.display_name).richText = false;
+        T(r, "Cantidad", 150, 57, 490, 28, FTexto, 22, Mute, p.total + " / 9 logros obtenidos");
+        for (int k = 0; k < 9; k++) { var d = LogrosCometas.Catalogo[k]; Image(Place(Node(d.id, r), 670 + k * 40, 34, 28, 28), Rounded, p.Tiene(d.id) ? Cometa.ColorDe((TipoCometa)d.tipo) : White(.08f), 3); }
+        CrearBoton(r, 1100, 27, 210, 46, "Ver logros", false, () => { seleccionado = p; Dibujar(true); }, 20);
+    }
+    static void Barra(RectTransform parent, float x, float y, float w, float parte, Color c)
+    {
+        Image(Place(Node("Barra", parent), x, y, w, 6), Rounded, TrackColor, 3);
+        if (parte > 0) Image(Place(Node("Lleno", parent), x, y, Mathf.Max(6, w * Mathf.Clamp01(parte)), 6), Rounded, c, 3);
     }
 }

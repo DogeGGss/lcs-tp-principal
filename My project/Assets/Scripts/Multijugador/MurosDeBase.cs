@@ -142,7 +142,7 @@ public class MurosDeBase : MonoBehaviour
         foreach (BuyZone zona in zonas)
         {
             Collider area = zona.GetComponent<Collider>();
-            if (area == null || zona.Lado == LadoTactico.Cualquiera) continue;
+            if (area == null || zona.Lado == LadoTactico.Cualquiera || zona.SinMuros) continue;
             Bounds b = area.bounds;
             Vector3[] esquinas =
             {

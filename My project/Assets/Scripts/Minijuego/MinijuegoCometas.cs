@@ -2,40 +2,43 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 
-// Minijuego de los pájaros (F21): durante la fase de compra del Táctico cruzan pájaros por el cielo y el jugador les
-// puede disparar, como un aim lab. Lo agrega RondasTacticas y lo prende y apaga en cada cambio de fase.
-// - US 156: los pájaros (Pajaro). Solo en la compra (CA1); entran por un borde y cruzan sobre la base del equipo, entre
-//   15 y 40 m de altura (CA2); uno o una bandada de 3 a 5 palomas o gorriones cada 1 a 2 s (CA3); las golondrinas son
-//   1 de cada 6 (CA4). Son de cada jugador: no pasan por la red (CA6). 3 s antes del combate dejan de salir y los que
-//   quedan se van, así el cielo está despejado cuando empieza la ronda y no distraen.
-// - US 157: mientras está activo, WeaponFire solo le pega a los pájaros y las armas no gastan balas. Las granadas las
+// Minijuego de los cometas (F21): durante la fase de compra del Táctico pasan cometas a lo lejos, frente a la base, y
+// el jugador les puede disparar, como un aim lab. Lo agrega RondasTacticas y lo prende y apaga en cada cambio de fase.
+// - US 156: los cometas (Cometa). Solo en la compra (CA1); entran por un costado de la vista y cruzan en línea recta
+//   frente al mirador de la base (MiradorCometas), a 150-300 m y a la altura de la vista (CA2); uno o una lluvia de 3 a
+//   5 comunes o raros cada 1 a 2 s (CA3); los épicos son 1 de cada 6 (CA4). Son de cada jugador: no pasan por la red
+//   (CA6). 3 s antes del combate dejan de salir y los que quedan se alejan, así no distraen cuando empieza la ronda.
+// - US 157: mientras está activo, WeaponFire solo le pega a los cometas y las armas no gastan balas. Las granadas las
 //   traba RondasTacticas y el cuchillo no hace daño (MeleeAttack).
-// - US 158: cada acierto muestra "+puntos" en el lugar del impacto (blanco; la golondrina en naranja), que sube y se
+// - US 158: cada acierto muestra "+puntos" en el lugar del impacto (blanco; el épico en naranja), que sube y se
 //   desvanece en 0,8 s, con la marca de impacto de la mira y un sonido propio. No hay contador en el HUD.
 // Los resultados se van sumando mientras el juego está abierto (Sesion y EstaFase), pero todavía no se guardan ni se
 // muestran: eso es de la US 159, y los logros de la US 160.
-public class MinijuegoPajaros : MonoBehaviour
+public class MinijuegoCometas : MonoBehaviour
 {
-    private const float Radio = 50f;                              // m de la base al borde por donde entran (CA2)
-    private const float Desvio = 20f;                             // m a los costados de la base
-    private const float AlturaMinima = 15f, AlturaMaxima = 40f;   // m sobre el piso de la base (CA2)
-    private const float ProbabilidadBandada = 0.3f;
-    private const float CieloDespejado = 3f;                      // s antes del combate en que se van todos
-    private const float AlcanceMinimo = 150f;                     // m: con cualquier arma se llega a los pájaros
+    private const float DistanciaMinima = 150f, DistanciaMaxima = 300f; // m del mirador (CA2)
+    private const float AlturaMinima = -10f, AlturaMaxima = 25f;        // m respecto del piso del mirador (CA2)
+    // Grados a cada lado del frente por donde entran y salen. Los cometas se encienden y se apagan en las puntas del
+    // recorrido (Cometa): bien encendidos se ven más o menos entre -45° y 45°, y aparecen y desaparecen más afuera y lejos.
+    private const float Abertura = 60f;
+    private const float ProbabilidadLluvia = 0.3f;
+    private const float ProbabilidadAzul = 0.75f; // Entre comunes y raros, tanto solos como en lluvias.
+    private const float Despejar = 3f;                                  // s antes del combate en que se van todos
+    private const float AlcanceMinimo = 600f;                           // m: con cualquier arma se llega a los cometas
     private const float DuracionPuntaje = 0.8f, SubidaPuntaje = 46f, TamanoPuntaje = 40f; // US 158, CA2
 
     /// <summary>Lo que se registra del minijuego (US 159, CA1). Todavía no se guarda.</summary>
     public sealed class Resultados
     {
         public int disparos, puntos;
-        public readonly int[] aciertos = new int[3]; // por tipo de pájaro
+        public readonly int[] aciertos = new int[3]; // por tipo de cometa
         public float reaccionTotal, mejorReaccion = float.PositiveInfinity;
 
         public int Aciertos => aciertos[0] + aciertos[1] + aciertos[2];
         public float Precision => disparos > 0 ? (float)Aciertos / disparos : 0f;
         public float ReaccionPromedio => Aciertos > 0 ? reaccionTotal / Aciertos : 0f;
 
-        internal void Sumar(TipoPajaro tipo, int puntos, float reaccion)
+        internal void Sumar(TipoCometa tipo, int puntos, float reaccion)
         {
             aciertos[(int)tipo]++;
             this.puntos += puntos;
@@ -49,9 +52,9 @@ public class MinijuegoPajaros : MonoBehaviour
     /// <summary>Lo de la fase de compra actual, o de la última.</summary>
     public static Resultados EstaFase { get; private set; } = new Resultados();
 
-    /// <summary>Hay pájaros: es la fase de compra del Táctico (US 157).</summary>
+    /// <summary>Hay cometas: es la fase de compra del Táctico (US 157).</summary>
     public static bool Activo => actual != null && actual.activo;
-    private static MinijuegoPajaros actual;
+    private static MinijuegoCometas actual;
 
     private static readonly RaycastHit[] golpes = new RaycastHit[32];
 
@@ -66,8 +69,8 @@ public class MinijuegoPajaros : MonoBehaviour
     private PartidaEnRed partida;
     private bool activo, despejando;
     private float proximo;
-    private int soltados, golondrinas;
-    private readonly List<Pajaro> pajaros = new List<Pajaro>();
+    private int soltados, epicos;
+    private readonly List<Cometa> cometas = new List<Cometa>();
     private readonly List<Puntaje> puntajes = new List<Puntaje>();
     private RectTransform lienzo;
     private AudioSource fuente;
@@ -84,7 +87,7 @@ public class MinijuegoPajaros : MonoBehaviour
         if (actual == this) actual = null;
     }
 
-    /// <summary>Lo llama RondasTacticas en cada cambio de fase: solo hay pájaros durante la compra (US 156, CA1).</summary>
+    /// <summary>Lo llama RondasTacticas en cada cambio de fase: solo hay cometas durante la compra (US 156, CA1).</summary>
     public void Cambiar(bool compra)
     {
         if (compra == activo) return;
@@ -96,22 +99,22 @@ public class MinijuegoPajaros : MonoBehaviour
             despejando = false;
             return;
         }
-        foreach (Pajaro pajaro in pajaros) if (pajaro != null) pajaro.Irse();
-        pajaros.Clear();
+        foreach (Cometa cometa in cometas) if (cometa != null) cometa.Irse();
+        cometas.Clear();
         if (EstaFase.disparos > 0)
-            Debug.Log($"Minijuego: {EstaFase.Aciertos} pájaros, {EstaFase.puntos} puntos, precisión {EstaFase.Precision:P0} " +
-                      $"(en total: {Sesion.Aciertos} pájaros, {Sesion.puntos} puntos).");
+            Debug.Log($"Minijuego: {EstaFase.Aciertos} cometas, {EstaFase.puntos} puntos, precisión {EstaFase.Precision:P0} " +
+                      $"(en total: {Sesion.Aciertos} cometas, {Sesion.puntos} puntos).");
     }
 
     private void Update()
     {
         if (!activo) return;
-        pajaros.RemoveAll(p => p == null);
-        // Los últimos segundos de la compra: no salen más y los que quedan se van.
+        cometas.RemoveAll(c => c == null);
+        // Los últimos segundos de la compra: no salen más y los que quedan se alejan.
         float restante = RondasTacticas.Actual != null ? RondasTacticas.Actual.Restante : 0f;
-        if (restante > 0f && restante <= CieloDespejado)
+        if (restante > 0f && restante <= Despejar)
         {
-            if (!despejando) foreach (Pajaro pajaro in pajaros) pajaro.Irse();
+            if (!despejando) foreach (Cometa cometa in cometas) cometa.Irse();
             despejando = true;
             return;
         }
@@ -122,64 +125,81 @@ public class MinijuegoPajaros : MonoBehaviour
 
     private void LateUpdate() => MoverPuntajes();
 
-    // ---------- Pájaros (US 156) ----------
+    // ---------- Cometas (US 156) ----------
 
     private void Soltar()
     {
-        if (!Base(out Vector3 centro, out float piso)) return;
-        float angulo = Random.value * Mathf.PI * 2f;
-        var direccion = new Vector3(Mathf.Cos(angulo), 0f, Mathf.Sin(angulo));
-        var costado = new Vector3(-direccion.z, 0f, direccion.x);
-        Vector3 desde = centro - direccion * Radio + costado * Random.Range(-Desvio, Desvio);
-        desde.y = piso + Random.Range(AlturaMinima, AlturaMaxima);
+        if (!Mirador(out Vector3 origen, out Vector3 frente)) return;
 
-        // CA3: una bandada de 3 a 5 palomas o gorriones, en V detrás del primero.
-        if (Random.value < ProbabilidadBandada)
+        // CA2: cruza de un costado al otro de la vista, a una distancia y una altura al azar, con una leve inclinación.
+        float distancia = Random.Range(DistanciaMinima, DistanciaMaxima);
+        var costado = Vector3.Cross(Vector3.up, frente).normalized;
+        float ancho = distancia * Mathf.Tan(Abertura * Mathf.Deg2Rad);
+        float lado = Random.value < 0.5f ? 1f : -1f;
+        Vector3 centro = origen + frente * distancia;
+        centro.y = origen.y + Random.Range(AlturaMinima, AlturaMaxima);
+        Vector3 desde = centro - costado * (ancho * lado) + frente * Random.Range(-40f, 40f);
+        Vector3 hasta = centro + costado * (ancho * lado) + frente * Random.Range(-40f, 40f) + Vector3.up * Random.Range(-10f, 10f);
+        Vector3 direccion = (hasta - desde).normalized;
+        float recorrido = Vector3.Distance(desde, hasta);
+
+        // CA3: una lluvia de 3 a 5 comunes o raros, uno detrás del otro y un poco corridos.
+        if (Random.value < ProbabilidadLluvia)
         {
-            TipoPajaro tipo = Random.value < 0.5f ? TipoPajaro.Paloma : TipoPajaro.Gorrion;
+            TipoCometa tipo = Random.value < ProbabilidadAzul ? TipoCometa.Comun : TipoCometa.Raro;
             int cantidad = Random.Range(3, 6);
-            float separacion = Pajaro.EnvergaduraDe(tipo) * 1.6f;
+            float separacion = Cometa.DiametroDe(tipo) * 4f;
+            Vector3 arriba = Vector3.Cross(direccion, costado).normalized;
             for (int i = 0; i < cantidad; i++)
             {
-                int fila = (i + 1) / 2;
-                float lado = i % 2 == 0 ? 1f : -1f;
-                Nuevo(tipo, desde - direccion * (fila * separacion) + costado * (lado * fila * separacion)
-                            + Vector3.up * Random.Range(-0.4f, 0.4f), direccion);
+                float atras = i * separacion + Random.Range(0f, separacion * 0.5f);
+                Vector3 corrimiento = arriba * Random.Range(-separacion, separacion) + frente * Random.Range(-separacion, separacion);
+                Nuevo(tipo, desde - direccion * atras + corrimiento, direccion, recorrido + atras);
             }
             return;
         }
 
-        // CA4: las golondrinas van solas y son 1 de cada 6 pájaros.
-        TipoPajaro solo = (golondrinas + 1) * 6 <= soltados + 1 ? TipoPajaro.Golondrina
-            : Random.value < 0.5f ? TipoPajaro.Paloma : TipoPajaro.Gorrion;
-        Nuevo(solo, desde, direccion);
+        // CA4: los épicos van solos y son 1 de cada 6 cometas.
+        TipoCometa solo = (epicos + 1) * 6 <= soltados + 1 ? TipoCometa.Epico
+            : Random.value < ProbabilidadAzul ? TipoCometa.Comun : TipoCometa.Raro;
+        Nuevo(solo, desde, direccion, recorrido);
     }
 
-    private void Nuevo(TipoPajaro tipo, Vector3 desde, Vector3 direccion)
+    private void Nuevo(TipoCometa tipo, Vector3 desde, Vector3 direccion, float recorrido)
     {
-        pajaros.Add(Pajaro.Crear(tipo, desde, direccion, Radio * 2f + 10f, transform));
+        cometas.Add(Cometa.Crear(tipo, desde, direccion, recorrido, transform));
         soltados++;
-        if (tipo == TipoPajaro.Golondrina) golondrinas++;
+        if (tipo == TipoCometa.Epico) epicos++;
     }
 
-    // La base del equipo de este jugador; si el mapa no tiene zonas de compra, donde está el jugador.
-    private bool Base(out Vector3 centro, out float piso)
+    // Desde dónde se mira: el mirador de la base de este jugador. Si el mapa no tiene, el centro de su base mirando
+    // hacia afuera del mapa; y si tampoco tiene zonas de compra, donde está el jugador, mirando hacia adelante.
+    private bool Mirador(out Vector3 origen, out Vector3 frente)
     {
+        MiradorCometas mirador = MiradorCometas.De(EquiposTacticos.LadoLocal);
+        if (mirador != null)
+        {
+            origen = mirador.transform.position;
+            frente = mirador.Frente;
+            return true;
+        }
         if (BuyZone.Area(EquiposTacticos.LadoLocal, out Bounds zona))
         {
-            centro = zona.center;
-            piso = zona.min.y;
+            origen = new Vector3(zona.center.x, zona.min.y, zona.center.z);
+            frente = new Vector3(origen.x, 0f, origen.z);
+            frente = frente.sqrMagnitude > 0.01f ? frente.normalized : Vector3.forward;
             return true;
         }
         Transform local = partida != null && partida.Local != null ? partida.Local.transform : null;
-        centro = local != null ? local.position : Vector3.zero;
-        piso = centro.y;
+        origen = local != null ? local.position : Vector3.zero;
+        frente = local != null ? Vector3.ProjectOnPlane(local.forward, Vector3.up).normalized : Vector3.forward;
+        if (frente.sqrMagnitude < 0.01f) frente = Vector3.forward;
         return local != null;
     }
 
     // ---------- Disparos (US 157; los llama WeaponFire) ----------
 
-    /// <summary>Hasta dónde llega el disparo: cualquier arma llega a los pájaros.</summary>
+    /// <summary>Hasta dónde llega el disparo: cualquier arma llega a los cometas.</summary>
     public static float Alcance(float alcance) => Mathf.Max(alcance, AlcanceMinimo);
 
     public static void ContarDisparo()
@@ -189,52 +209,53 @@ public class MinijuegoPajaros : MonoBehaviour
         EstaFase.disparos++;
     }
 
-    /// <summary>CA4: el pájaro más cercano en la línea del disparo. Las paredes y los jugadores no frenan la bala.</summary>
-    public static Pajaro Buscar(Vector3 origen, Vector3 direccion, float alcance, out Vector3 punto)
+    /// <summary>CA4: el cometa más cercano en la línea del disparo. Las paredes y los jugadores no frenan la bala.</summary>
+    public static Cometa Buscar(Vector3 origen, Vector3 direccion, float alcance, out Vector3 punto)
     {
         punto = default;
-        Pajaro mejor = null;
+        Cometa mejor = null;
         float cerca = float.MaxValue;
         int cantidad = Physics.RaycastNonAlloc(origen, direccion, golpes, alcance, Physics.DefaultRaycastLayers, QueryTriggerInteraction.Collide);
         for (int i = 0; i < cantidad; i++)
         {
-            Pajaro pajaro = golpes[i].collider.GetComponent<Pajaro>();
-            if (pajaro == null || pajaro.Cayendo || golpes[i].distance >= cerca) continue;
-            mejor = pajaro;
+            Cometa cometa = golpes[i].collider.GetComponent<Cometa>();
+            if (cometa == null || cometa.Estallo || golpes[i].distance >= cerca) continue;
+            mejor = cometa;
             cerca = golpes[i].distance;
             punto = golpes[i].point;
         }
         return mejor;
     }
 
-    /// <summary>Le pegó a un pájaro: cae, suma y muestra su puntaje. Devuelve false si ya estaba cayendo.</summary>
-    public static bool Acertar(Pajaro pajaro, Vector3 punto)
+    /// <summary>Le pegó a un cometa: estalla, suma y muestra su puntaje. Devuelve false si ya había estallado.</summary>
+    public static bool Acertar(Cometa cometa, Vector3 punto)
     {
-        if (!Activo || pajaro == null || pajaro.Cayendo) return false;
-        float reaccion = Time.time - pajaro.Aparecio; // US 159, CA1: desde que apareció hasta que le pegó
-        Sesion.Sumar(pajaro.Tipo, pajaro.Puntos, reaccion);
-        EstaFase.Sumar(pajaro.Tipo, pajaro.Puntos, reaccion);
-        pajaro.Acertado(punto);
-        actual.MostrarPuntaje(pajaro.Tipo, punto);
-        actual.Sonar(pajaro.Tipo);
+        if (!Activo || cometa == null || cometa.Estallo) return false;
+        float reaccion = Time.time - cometa.Aparecio; // US 159, CA1: desde que apareció hasta que le pegó
+        Sesion.Sumar(cometa.Tipo, cometa.Puntos, reaccion);
+        EstaFase.Sumar(cometa.Tipo, cometa.Puntos, reaccion);
+        cometa.Acertado(punto);
+        LogrosCometas.Registrar(cometa.Tipo);
+        actual.MostrarPuntaje(cometa.Tipo, punto);
+        actual.Sonar(cometa.Tipo);
         return true;
     }
 
     // ---------- Puntaje en pantalla (US 158) ----------
 
-    private void MostrarPuntaje(TipoPajaro tipo, Vector3 punto)
+    private void MostrarPuntaje(TipoCometa tipo, Vector3 punto)
     {
         if (lienzo == null) ArmarLienzo();
         TMP_FontAsset letra = MatchHud.Instance != null ? MatchHud.Instance.DisplayFont : null;
-        string texto = "+" + Pajaro.PuntosDe(tipo);
+        string texto = "+" + Cometa.PuntosDe(tipo);
 
         var rect = new GameObject(texto, typeof(RectTransform), typeof(CanvasGroup)).GetComponent<RectTransform>();
         rect.SetParent(lienzo, false);
         rect.anchorMin = rect.anchorMax = rect.pivot = new Vector2(0.5f, 0.5f);
         rect.sizeDelta = new Vector2(200f, 60f);
-        // CA3: blanco; el de la golondrina, naranja. Con una sombra para que se lea contra el cielo.
+        // CA3: blanco; el del épico, naranja. Con una sombra para que se lea contra el espacio.
         Texto(rect, "Sombra", letra, texto, new Color(0f, 0f, 0f, 0.55f), new Vector2(2f, -2f));
-        Texto(rect, "Numero", letra, texto, tipo == TipoPajaro.Golondrina ? ShopUIKit.Accent : Color.white, Vector2.zero);
+        Texto(rect, "Numero", letra, texto, tipo == TipoCometa.Epico ? ShopUIKit.Accent : Color.white, Vector2.zero);
         puntajes.Add(new Puntaje { rect = rect, grupo = rect.GetComponent<CanvasGroup>(), punto = punto, desde = Time.time });
     }
 
@@ -290,8 +311,8 @@ public class MinijuegoPajaros : MonoBehaviour
 
     // ---------- Sonido (US 158, CA6) ----------
 
-    // Un "plin" corto y propio del minijuego, más agudo cuanto más chico el pájaro. Va por el canal de efectos.
-    private void Sonar(TipoPajaro tipo)
+    // Un "plin" corto y propio del minijuego, más agudo cuanto más raro el cometa. Va por el canal de efectos.
+    private void Sonar(TipoCometa tipo)
     {
         if (fuente == null)
         {
@@ -302,7 +323,7 @@ public class MinijuegoPajaros : MonoBehaviour
             if (pistola != null) fuente.outputAudioMixerGroup = pistola.sfxGroup;
         }
         int i = (int)tipo;
-        if (sonidos[i] == null) sonidos[i] = Plin(tipo == TipoPajaro.Paloma ? 880f : tipo == TipoPajaro.Gorrion ? 1175f : 1568f);
+        if (sonidos[i] == null) sonidos[i] = Plin(tipo == TipoCometa.Comun ? 880f : tipo == TipoCometa.Raro ? 1175f : 1568f);
         fuente.PlayOneShot(sonidos[i], 0.55f);
     }
 

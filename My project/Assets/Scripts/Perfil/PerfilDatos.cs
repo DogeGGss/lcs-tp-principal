@@ -170,7 +170,7 @@ public static class PerfilDatos
             "El del clutch", "Último en pie", "Sin cobertura", "Fuego cruzado", "Recargando…", "Apunté sin querer", "Una ronda más",
             "Pesadilla de la horda", "No era un rasguño", "Sobreviví de pedo", "Coleccionista de cabezas", "Otra vez los zombies",
             "Hasta la última oleada", "El que quedó atrás", "Todavía respiro", "Entre dimensiones", "Error en la realidad",
-            "Del otro lado", "Grieta viviente", "Perdido en el tiempo", "No debí cruzar", "Cazador de pájaros",
+            "Del otro lado", "Grieta viviente", "Perdido en el tiempo", "No debí cruzar", "Cazador de cometas",
             "Mala puntería, buena actitud", "Vine por la cursada", "Final pendiente", "Era lag", "Claramente era hacker",
             "Lo tenía calculado", "Disparo de advertencia", "MVP del equipo contrario", "Especialista en reaparecer",
             "Cobertura decorativa", "Estoy calentando", "Mi mouse no anda", "Casi le pego", "Estrategia cuestionable", "Vine a mirar",

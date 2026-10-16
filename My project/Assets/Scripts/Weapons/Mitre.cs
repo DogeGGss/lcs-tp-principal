@@ -150,7 +150,7 @@ public class Mitre : MonoBehaviour, IHudWeapon
             return;
         }
 
-        if (!MinijuegoPajaros.Activo) currentAmmo--; // US 157, CA2: en la compra los disparos no gastan balas
+        if (!MinijuegoCometas.Activo) currentAmmo--; // US 157, CA2: en la compra los disparos no gastan balas
 
         if (shootSound != null)
         {

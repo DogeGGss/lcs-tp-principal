@@ -8,7 +8,7 @@ using UnityEngine;
 // compra de 20 s (encerrados en la base), combate de 1:40 y un cartel de 5 s con el ganador.
 // - CA1: la ronda 1 arranca con los equipos formados (US 031), cada uno en su base con $ 800 y la pistola.
 // - CA2: en la compra cada uno queda dentro de la zona de compra de su lado y no le puede hacer daño a nadie: solo
-//   le dispara a los pájaros del minijuego (F21), sin gastar balas, y no puede tirar granadas.
+//   le dispara a los cometas del minijuego (F21), sin gastar balas, y no puede tirar granadas.
 // - CA3: al terminar la compra se abre la base y corre el reloj del combate (lo muestra MarcadorTactico).
 // - CA4: al terminar la ronda, cartel con el ganador 5 s; después todos vuelven a su base (los muertos reviven).
 // - CA5: desde la ronda 7 los lados se intercambian, con cartel; la plata vuelve a $ 800 y las armas a la pistola.
@@ -136,7 +136,7 @@ public class RondasTacticas : MonoBehaviour
     private int dispositivoVisto;
     private Vector3? ultimoDentro;
     private readonly List<Behaviour> armasBloqueadas = new List<Behaviour>();
-    private MinijuegoPajaros minijuego;
+    private MinijuegoCometas minijuego;
 
     // =====================================================================
     // Inicio
@@ -155,7 +155,7 @@ public class RondasTacticas : MonoBehaviour
         gameObject.AddComponent<PersonajesTacticos>().Iniciar(partida); // US 016
         gameObject.AddComponent<Espectador>().Iniciar(partida);         // US 133
         gameObject.AddComponent<DispositivoTactico>().Iniciar(partida, this); // US 130 a US 132
-        minijuego = gameObject.AddComponent<MinijuegoPajaros>();             // F21: pájaros en la compra
+        minijuego = gameObject.AddComponent<MinijuegoCometas>();             // F21: cometas en la compra
         minijuego.Iniciar(partida);
         // US 032, CA8: el Táctico no tiene música; el sonido de fondo lo pone el mapa (AmbienteDelMapa, US 083 CA1).
         if (PruebaSolo.Activa)
@@ -435,7 +435,7 @@ public class RondasTacticas : MonoBehaviour
             if (partida != null && partida.Local != null) partida.Local.VolverAlInicio(partida.PuntoDeBase());
         }
 
-        // F21 (US 156, CA1): los pájaros del minijuego aparecen solo durante la compra.
+        // F21 (US 156, CA1): los cometas del minijuego aparecen solo durante la compra.
         if (minijuego != null) minijuego.Cambiar(fase == Fase.Compra);
 
         switch (fase)
@@ -679,8 +679,8 @@ public class RondasTacticas : MonoBehaviour
         MatchHud.Warn("No podés salir de la base durante la compra");
     }
 
-    // No se dispara, no se acuchilla ni se tiran granadas durante la compra (los pájaros del minijuego son de la US 157).
-    // soloGranadas: en la compra solo se traban las granadas. Con las demás armas se le dispara a los pájaros del
+    // No se dispara, no se acuchilla ni se tiran granadas durante la compra (los cometas del minijuego son de la US 157).
+    // soloGranadas: en la compra solo se traban las granadas. Con las demás armas se le dispara a los cometas del
     // minijuego (F21, US 157), que no gastan balas ni hacen daño.
     private void BloquearArmas(bool bloquear, bool soloGranadas = false)
     {
