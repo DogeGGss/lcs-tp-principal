@@ -67,6 +67,7 @@ MonoBehaviour:
   animacionesPerro: {fileID: 9100000, guid: b10a654061f0c894281eac17211f9546, type: 2}
   estadoPerroCorrer: Running_New
   estadoPerroAtacar: AttackR
+  estadoPerroSentado: sitingIdle__New
   colorPerro: {r: 1, g: 0.55, b: 0.12, a: 1}
   sonidoPerroSoltar: {fileID: 0}
   sonidoPerroLadrido: {fileID: 0}

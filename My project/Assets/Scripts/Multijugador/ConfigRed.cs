@@ -101,6 +101,7 @@ public class ConfigRed : ScriptableObject
     [Tooltip("Callejero (US 022, CA4): el estado del Animator para correr y para atacar.")]
     public string estadoPerroCorrer = "Running_New";
     public string estadoPerroAtacar = "AttackR";
+    public string estadoPerroSentado = "sitingIdle__New";
     [Tooltip("Callejero (US 022, CA3): el color del perro para su dueño y sus compañeros. Los rivales lo ven rojo.")]
     public Color colorPerro = new Color(1f, 0.55f, 0.12f);
     [Tooltip("Callejero (US 022, CA11, CA16 y CA17). Sin clip, suena uno generado.")]

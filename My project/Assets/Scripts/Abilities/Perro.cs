@@ -19,6 +19,8 @@ public class Perro : MonoBehaviour
     public const float Alcance = 25f;       // CA1
     public const float SinRival = 10f;      // CA6
     public const float Duracion = 6f;       // CA10
+    public const float Espera = 5f;         // CA6: sentado esperando a que aparezca un rival
+    public const float Persecucion = 4f;    // lo que tiene para alcanzar a uno que apareció mientras esperaba
     public const int VidaMax = 60;          // CA9
     public const float Nublado = 2.5f;      // CA7
     public const float Marca = 3f;          // CA8
@@ -60,7 +62,9 @@ public class Perro : MonoBehaviour
     private AudioSource grunido;
     private TrailRenderer rastro;
     private Vector3 lunge; // el salto de la mordida, en el perro hecho a mano
-    private bool corriendo;
+    private bool corriendo, sentadoVista;
+    private float limite;    // cuándo desaparece si no mordió a nadie
+    private bool esperando;  // CA6: llegó a los 10 m sin rivales y espera sentado
 
     // =====================================================================
     // Crear y buscar
@@ -184,10 +188,27 @@ public class Perro : MonoBehaviour
 
     private void Simular()
     {
-        if (Time.time - creado >= Duracion) { Terminar(Fin.Desaparecio, -1, null, true); return; } // CA10
+        if (limite <= 0f) limite = creado + Duracion;
+        if (Time.time >= limite) { Terminar(Fin.Desaparecio, -1, null, true); return; } // CA6 y CA10
 
         if (Time.time >= proximaBusqueda) Buscar();
         if (objetivo != null && (objetivo == null || objetivo.currentHealth <= 0)) objetivo = null;
+        // Esperando sentado aparece un rival: se levanta y sale a buscarlo, con un rato para alcanzarlo.
+        if (esperando && objetivo != null)
+        {
+            esperando = false;
+            limite = Mathf.Max(limite, Time.time + Persecucion);
+            if (agente != null && agente.isOnNavMesh) agente.isStopped = false;
+        }
+        if (esperando)
+        {
+            if (Time.time >= proximoEnvio)
+            {
+                proximoEnvio = Time.time + 0.25f;
+                EnviarPosicion?.Invoke(this, transform.position, transform.eulerAngles.y);
+            }
+            return;
+        }
 
         Vector3 destino = objetivo != null ? objetivo.transform.position : destinoSinRival;
         if (agente != null && agente.isOnNavMesh)
@@ -221,7 +242,15 @@ public class Perro : MonoBehaviour
         else
         {
             Vector3 d = destinoSinRival - transform.position;
-            if (new Vector2(d.x, d.z).magnitude < 0.6f) { Terminar(Fin.Desaparecio, -1, null, true); return; } // CA6
+            if (new Vector2(d.x, d.z).magnitude < 0.6f)
+            {
+                // CA6: llegó a los 10 m sin rivales: se sienta y espera 5 s. Si aparece uno a 25 m, va a buscarlo.
+                esperando = true;
+                limite = Time.time + Espera;
+                if (agente != null && agente.isOnNavMesh) { agente.isStopped = true; agente.velocity = Vector3.zero; }
+                EnviarPosicion?.Invoke(this, transform.position, transform.eulerAngles.y);
+                return;
+            }
         }
 
         if (Time.time >= proximoEnvio)
@@ -503,8 +532,22 @@ public class Perro : MonoBehaviour
         float v = Time.deltaTime > 0f ? new Vector2(mov.x, mov.z).magnitude / Time.deltaTime : 0f;
         velocidadVista = Mathf.Lerp(velocidadVista, v, 1f - Mathf.Exp(-10f * Time.deltaTime));
 
-        if (patas.Count == 4)
+        // Quieto un rato (esperando sentado): se sienta. En las demás computadoras se ve igual, por la posición.
+        bool sentado = Activo && velocidadVista < 0.4f && Time.time - creado > 0.6f;
+        if (sentado != sentadoVista && animador != null && Activo)
+            Estado(sentado ? (System.Func<ConfigRed, string>)(c => c.estadoPerroSentado) : c => c.estadoPerroCorrer);
+        sentadoVista = sentado;
+
+        if (patas.Count == 4 && sentado && cuerpo != null)
         {
+            // El hecho a mano: la cola abajo y el pecho arriba, con las patas quietas.
+            cuerpo.localRotation = Quaternion.Slerp(cuerpo.localRotation, Quaternion.Euler(-28f, 0f, 0f), 10f * Time.deltaTime);
+            cuerpo.localPosition = Vector3.Lerp(cuerpo.localPosition, new Vector3(0f, -0.12f, 0f), 10f * Time.deltaTime);
+            for (int i = 0; i < 4; i++) patas[i].localRotation = Quaternion.Euler(i < 2 ? 28f : 70f, 0f, 0f);
+        }
+        else if (patas.Count == 4)
+        {
+            if (cuerpo != null) cuerpo.localRotation = Quaternion.Slerp(cuerpo.localRotation, Quaternion.identity, 10f * Time.deltaTime);
             // Galope: las patas de adelante y las de atrás van alternadas.
             float t = Time.time * 14f, amplitud = Mathf.Clamp01(velocidadVista / Velocidad) * 40f;
             for (int i = 0; i < 4; i++)
