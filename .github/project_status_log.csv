@@ -702,3 +702,12 @@ fecha_utc,us_numero,us_titulo,estado_anterior,estado_nuevo,tiempo_en_estado_ante
 2026-10-16T10:52:01.349564+00:00,428,US 221. Consultar las estadísticas desde el perfil,Todo,Blocked,3d 7h 26m,286012,https://github.com/DogeGGss/lcs-tp-principal/issues/428
 2026-10-16T15:05:16.906779+00:00,201,US 141. Mostrar marcador de Deathmatch,LPR,R2D,10d 15h 52m,921165,https://github.com/DogeGGss/lcs-tp-principal/issues/201
 2026-10-16T15:05:16.906779+00:00,202,US 142. Mostrar resultado de Deathmatch,LPR,TESTING,10d 12h 3m,907406,https://github.com/DogeGGss/lcs-tp-principal/issues/202
+2026-10-16T18:46:57.506643+00:00,453,US 230. Sonido al pasar el mouse por los botones,LPR,R2D,7h 54m,28496,https://github.com/DogeGGss/lcs-tp-principal/issues/453
+2026-10-16T18:46:57.506643+00:00,454,US 231. Enviar una opinión desde el menú,LPR,R2D,7h 54m,28496,https://github.com/DogeGGss/lcs-tp-principal/issues/454
+2026-10-16T18:46:57.506643+00:00,198,US 138. Elegir armamento en Deathmatch,R2D,Done,1d 12h 15m,130527,https://github.com/DogeGGss/lcs-tp-principal/issues/198
+2026-10-16T18:46:57.506643+00:00,199,US 139. Curación por baja,R2D,Done,1d 1h 55m,93330,https://github.com/DogeGGss/lcs-tp-principal/issues/199
+2026-10-16T18:46:57.506643+00:00,164,US 119. Probar armas en el shooting range,R2D,Done,22h 39m,81576,https://github.com/DogeGGss/lcs-tp-principal/issues/164
+2026-10-16T18:46:57.506643+00:00,166,US 121. Munición infinita en el shooting range,R2D,Done,22h 39m,81576,https://github.com/DogeGGss/lcs-tp-principal/issues/166
+2026-10-16T18:46:57.506643+00:00,201,US 141. Mostrar marcador de Deathmatch,R2D,Done,3h 41m,13300,https://github.com/DogeGGss/lcs-tp-principal/issues/201
+2026-10-16T18:46:57.506643+00:00,451,US 228. Opciones con el diseño del menú nuevo,LPR,TESTING,7h 54m,28496,https://github.com/DogeGGss/lcs-tp-principal/issues/451
+2026-10-16T18:46:57.506643+00:00,232,US 166. Guía de controles y objetivos en el campo de práctica,In Progress,LPR,17h 31m,63106,https://github.com/DogeGGss/lcs-tp-principal/issues/232
