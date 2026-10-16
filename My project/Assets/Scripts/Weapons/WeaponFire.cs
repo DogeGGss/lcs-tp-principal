@@ -73,6 +73,11 @@ public static class WeaponFire
                     barrera.Chispas(hit.point, hit.normal);
                     barrera.PedirDanio(weapon.HitDamage(BodyZone.Body, hit.distance), shooter, hit.point);
                 }
+                // US 022, CA9: el perro del Callejero de un rival recibe el daño de cuerpo.
+                else if (Perro.De(hit.collider) != null)
+                {
+                    if (Perro.De(hit.collider).PedirDanio(weapon.HitDamage(BodyZone.Body, hit.distance), shooter, hit.point)) anyHit = true;
+                }
                 // US 120: los botones del panel del campo de práctica también se aprietan de un tiro.
                 else if (!BotonDePractica.Disparar(hit.collider)) ImpactMarks.Spawn(hit);
                 continue;
@@ -132,7 +137,7 @@ public static class WeaponFire
             // US 020, CA7: en la Barrera, chispas en vez de marca (el daño lo manda quien disparó).
             Barrera barrera = Barrera.De(hit.collider);
             if (barrera != null) barrera.Chispas(hit.point, hit.normal);
-            else ImpactMarks.Spawn(hit);
+            else if (Perro.De(hit.collider) == null) ImpactMarks.Spawn(hit);
         }
         return hit.point;
     }

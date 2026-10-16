@@ -518,6 +518,7 @@ public class RondasTacticas : MonoBehaviour
     {
         HumoGranada.DisiparTodas(); // US 074: el humo de la ronda anterior no pasa a la nueva
         Barrera.QuitarTodas();      // US 020: ni las barreras
+        Perro.QuitarTodos();        // US 022: ni los perros del Callejero
         JugadorEnRed local = partida != null ? partida.Local : null;
         if (local == null) return;
         local.EmpezarRonda(partida.PuntoDeBase());

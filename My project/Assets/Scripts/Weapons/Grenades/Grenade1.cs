@@ -222,6 +222,7 @@ public class Grenade1 : MonoBehaviour
         var reached = new Dictionary<HealthSystem, float>();
         var pushed = new HashSet<Rigidbody>();
         var walls = new Dictionary<Barrera, float>(); // US 020, CA5: la Barrera también recibe daño, según la distancia
+        var dogs = new Dictionary<Perro, float>();    // US 022, CA9: y el perro del Callejero
 
         foreach (Collider part in parts)
         {
@@ -235,6 +236,17 @@ public class Grenade1 : MonoBehaviour
                 float d = Vector3.Distance(center, near);
                 if (d <= radius && !Blocked(center, near, wall.transform) && (!walls.TryGetValue(wall, out float prev) || d < prev))
                     walls[wall] = d;
+                continue;
+            }
+
+            Perro dog = Perro.De(part);
+            if (dog != null)
+            {
+                if (!dog.Activo) continue;
+                Vector3 near = ClosestPoint(part, center);
+                float d = Vector3.Distance(center, near);
+                if (d <= radius && !Blocked(center, near, dog.transform) && (!dogs.TryGetValue(dog, out float prev) || d < prev))
+                    dogs[dog] = d;
                 continue;
             }
 
@@ -256,6 +268,8 @@ public class Grenade1 : MonoBehaviour
         }
 
         foreach (KeyValuePair<Barrera, float> entry in walls)
+            entry.Key.PedirDanio(DamageAt(entry.Value), thrower, center);
+        foreach (KeyValuePair<Perro, float> entry in dogs)
             entry.Key.PedirDanio(DamageAt(entry.Value), thrower, center);
 
         // El daño se aplica una sola vez por personaje, aunque tenga varios colliders (CA4).
@@ -360,6 +374,7 @@ public class Grenade1 : MonoBehaviour
             if (other.IsChildOf(target)) continue;
             if (hit.collider.GetComponentInParent<HealthSystem>() != null) continue;
             if (hit.collider.GetComponentInParent<ArmaEnPiso>() != null) continue; // un arma tirada no es pared
+            if (hit.collider.GetComponentInParent<Perro>() != null) continue;      // el perro del Callejero tampoco
             return true;
         }
         return false;

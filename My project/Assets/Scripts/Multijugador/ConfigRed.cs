@@ -94,6 +94,19 @@ public class ConfigRed : ScriptableObject
     [Tooltip("Vista aérea (US 021, CA7): el aviso a los rivales de que los están observando.")]
     public AudioClip sonidoObservado;
     [Range(0f, 1f)] public float volumenVistaAerea = 0.8f;
+    [Tooltip("Callejero (US 022, CA2): el modelo del perro (el lobo de \"Realistic Furry Wolf\"). Se le pone el material holográfico y se ajusta a 80 cm de alto. Vacío: un perro armado con formas simples.")]
+    public GameObject modeloPerro;
+    [Tooltip("Callejero (US 022, CA4): el estado del Animator del modelo para correr y para atacar.")]
+    public string estadoPerroCorrer = "Run";
+    public string estadoPerroAtacar = "Attack";
+    [Tooltip("Callejero (US 022, CA11, CA16 y CA17). Sin clip, suena uno generado.")]
+    public AudioClip sonidoPerroSoltar;
+    public AudioClip sonidoPerroLadrido;
+    public AudioClip sonidoPerroGrunido;
+    public AudioClip sonidoPerroMordida;
+    public AudioClip sonidoPerroMuerte;
+    public AudioClip sonidoPerroDesaparece;
+    [Range(0f, 1f)] public float volumenPerro = 0.8f;
 
     [Tooltip("Música del Modo Deathmatch (US 136, CA6). Suena en loop por el grupo Música. Sin clip, no suena nada.")]
     public AudioClip musicaDeathmatch;
