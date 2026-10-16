@@ -433,7 +433,13 @@ public class CombatHud : MonoBehaviour
 
     private void UpdateSkill()
     {
-        // US 166: en el campo de práctica la habilidad aparece y se va con el paso del tutorial.
+        // US 166: en el campo de práctica la habilidad aparece y se va con el paso del tutorial (y el componente puede
+        // agregarse después de que el HUD encontró al jugador).
+        if (ability == null && health != null)
+        {
+            ability = health.GetComponent<PlayerAbility>();
+            if (ability != null) ability.Used += OnAbilityUsed;
+        }
         bool hasAbility = ability != null && ability.Ability != null;
         if (skill.activeSelf != hasAbility) skill.SetActive(hasAbility);
         if (!hasAbility) return;

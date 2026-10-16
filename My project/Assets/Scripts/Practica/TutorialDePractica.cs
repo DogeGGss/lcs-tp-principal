@@ -299,6 +299,13 @@ public class TutorialDePractica : MonoBehaviour
     private void PrestarHabilidad()
     {
         BuscarHabilidad();
+        // La copia del jugador de la escena Mapa_practica no tiene PlayerAbility (se la sacaron a mano en la US 119):
+        // se le agrega al vuelo, sin habilidad hasta que se le presta.
+        if (habilidad == null && equipo != null && CampoDePractica.Activo)
+        {
+            equipo.gameObject.AddComponent<PlayerAbility>();
+            BuscarHabilidad();
+        }
         AbilityData datos = habilidadDePrueba != null ? habilidadDePrueba : CharacterRoster.Selected?.ability;
         Parte parte = pasos[4].partes[0];
         parte.frase = datos != null ? $"Usar la habilidad: {datos.displayName}" : "Usar la habilidad";
