@@ -50,7 +50,7 @@ public class PanelDeModo : MonoBehaviour
         if (acercate != null) acercate.gameObject.SetActive(!si);
         TutorialDePractica pantalla = TutorialDePractica.Actual;
         if (pantalla == null) return;
-        if (si) pantalla.MostrarModo(this, titulo != null ? titulo.text : name, Explicacion());
+        if (si) pantalla.MostrarModo(this, Nombre, Explicacion());
         else pantalla.OcultarModo(this);
     }
 
@@ -58,10 +58,12 @@ public class PanelDeModo : MonoBehaviour
     {
         if (detalle != null) detalle.text = Explicacion();
         if (cerca && TutorialDePractica.Actual != null)
-            TutorialDePractica.Actual.MostrarModo(this, titulo != null ? titulo.text : name, Explicacion());
+            TutorialDePractica.Actual.MostrarModo(this, Nombre, Explicacion());
     }
 
-    private string Explicacion()
+    public string Nombre => titulo != null ? titulo.text : name;
+
+    public string Explicacion()
     {
         string amarillo = ColorUtility.ToHtmlStringRGB(Amarillo);
         return $"<color=#{amarillo}>OBJETIVO</color>\n{Teclas(objetivo)}\n\n" +

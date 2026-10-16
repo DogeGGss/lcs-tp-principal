@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using TMPro;
 using UnityEngine;
 using static ShopUIKit;
@@ -23,6 +24,8 @@ using Img = UnityEngine.UI.Image;
 //   5. Usar la habilidad: como en el campo de práctica no hay, se presta el Trasbordo solo durante este paso.
 //   6. Abrir la tienda y elegir otra arma. Mientras corre el tutorial se llama "Tienda"; sin tutorial, en el campo de
 //      práctica se llama "Cambiar arma" (ShopUI).
+// - CA3: después de los pasos, la explicación de cada modo (la de los paneles, PanelDeModo) sale en pantalla de a uno,
+//   y Tab pasa al siguiente.
 // - CA3: al acercarse a un panel de modo (PanelDeModo), su explicación también sale en pantalla, a la derecha.
 // Se arma por código con las medidas de una pantalla de 1920 x 1080, como la nota para el PO y la tienda.
 public class TutorialDePractica : MonoBehaviour
@@ -44,7 +47,7 @@ public class TutorialDePractica : MonoBehaviour
 
     public static TutorialDePractica Actual { get; private set; }
 
-    public bool Abierto => paso >= 0;
+    public bool Abierto => paso >= 0 || modo >= 0;
 
     /// <summary>El tutorial está mostrando un paso (ShopUI llama "Tienda" a "Cambiar arma" mientras tanto).</summary>
     public static bool EnCurso => Actual != null && Actual.Abierto;
@@ -72,6 +75,8 @@ public class TutorialDePractica : MonoBehaviour
 
     private Paso[] pasos;
     private int paso = -1;
+    private int modo = -1; // repaso de los modos, después de los pasos
+    private List<PanelDeModo> modos = new List<PanelDeModo>();
     private float finHasta = -1f;
 
     // Lo que se va juntando para las partes que no son de un solo toque.
@@ -222,7 +227,7 @@ public class TutorialDePractica : MonoBehaviour
         if (finHasta > 0f && Time.time >= finHasta) { finHasta = -1f; caja.gameObject.SetActive(false); }
         if (!Abierto || pausa) { tabDesde = -1f; return; }
 
-        Detectar();
+        if (paso >= 0) Detectar();
         Tab();
     }
 
@@ -355,13 +360,59 @@ public class TutorialDePractica : MonoBehaviour
 
     private void Siguiente()
     {
-        if (paso + 1 < pasos.Length) Ir(paso + 1);
-        else Terminar();
+        if (modo >= 0) Repaso(modo + 1);
+        else if (paso + 1 < pasos.Length) Ir(paso + 1);
+        else EmpezarRepaso();
+    }
+
+    // CA3: terminados los pasos, los modos de a uno en pantalla (en el orden de los paneles en la pared).
+    private void EmpezarRepaso()
+    {
+        DevolverHabilidad();
+        paso = -1;
+        modos = FindObjectsByType<PanelDeModo>(FindObjectsSortMode.None).OrderBy(m => m.transform.position.z).ToList();
+        if (modos.Count == 0) Terminar();
+        else Repaso(0);
+    }
+
+    private void Repaso(int i)
+    {
+        if (modo >= 0 && modo < modos.Count) OcultarModo(modos[modo]);
+        if (i >= modos.Count)
+        {
+            modo = -1;
+            Terminar();
+            return;
+        }
+        modo = i;
+        tabDesde = -1f;
+        caja.gameObject.SetActive(true);
+        saltear.gameObject.SetActive(true);
+        ceja.text = $"Tutorial · Modos de juego · {i + 1} de {modos.Count}";
+        titulo.text = modos[i].Nombre;
+        Limpiar();
+
+        RectTransform tecla = Node("Tecla", fila);
+        TextMeshProUGUI letra = Text(Stretch(Node("Letra", tecla)), displayFont, 22f, KeyInk, TextAlignmentOptions.Center);
+        letra.text = "Tab";
+        float anchoTecla = Mathf.Max(AltoTecla, Width(letra, "Tab") + 20f);
+        Place(tecla, 0f, 0f, anchoTecla, AltoTecla);
+        Image(tecla, rounded, Ink, 6f);
+        TextMeshProUGUI frase = Text(Node("Frase", fila), bodyFont, 22f, Soft);
+        frase.text = "· " + (i + 1 < modos.Count ? "Siguiente modo" : "Terminar");
+        float anchoFrase = Width(frase, frase.text) + 4f;
+        Place(frase.rectTransform, anchoTecla + 8f, 0f, anchoFrase, AltoTecla);
+        textoSaltear.text = $"<color=#{ColorUtility.ToHtmlStringRGB(Soft)}>Mantené Tab</color>  Saltear tutorial";
+        Ajustar(anchoTecla + 8f + anchoFrase);
+
+        MostrarModo(modos[i], modos[i].Nombre, modos[i].Explicacion());
     }
 
     private void Ir(int nuevo)
     {
         DevolverHabilidad();
+        if (modo >= 0 && modo < modos.Count) OcultarModo(modos[modo]);
+        modo = -1;
         paso = nuevo;
         movido = mouse = corrido = 0f;
         apunto = false;
@@ -383,7 +434,7 @@ public class TutorialDePractica : MonoBehaviour
         titulo.text = "¡Listo! Ya sabés lo básico";
         Limpiar();
         TextMeshProUGUI t = Text(Node("Final", fila), bodyFont, 22f, Soft, TextAlignmentOptions.Center);
-        t.text = "Mirá los paneles de los modos para saber cómo se gana. El tutorial se vuelve a abrir desde el panel.";
+        t.text = "Los paneles de los modos están en la pared izquierda. El tutorial se vuelve a abrir desde el panel.";
         float ancho = Width(t, t.text) + 4f;
         Place(t.rectTransform, 0f, 0f, ancho, AltoTecla);
         Ajustar(ancho);
@@ -394,6 +445,8 @@ public class TutorialDePractica : MonoBehaviour
     private void Cerrar(bool guardar)
     {
         DevolverHabilidad();
+        if (modo >= 0 && modo < modos.Count) OcultarModo(modos[modo]);
+        modo = -1;
         paso = -1;
         tabDesde = -1f;
         if (caja != null) caja.gameObject.SetActive(false);
@@ -501,6 +554,7 @@ public class TutorialDePractica : MonoBehaviour
     private void Redibujar()
     {
         if (!Abierto || caja == null) return;
+        if (paso < 0) { Repaso(modo); return; }
         Paso p = pasos[paso];
         ceja.text = $"Tutorial · Paso {paso + 1} de {pasos.Length}";
         titulo.text = p.titulo;
