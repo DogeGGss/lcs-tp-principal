@@ -640,12 +640,12 @@
     "since": "2026-10-05T23:12:31.591868+00:00"
   },
   "PVTI_lAHOCikQ8M4Bj9Nyzg81qTE": {
-    "status": "LPR",
-    "since": "2026-10-05T23:12:31.591868+00:00"
+    "status": "R2D",
+    "since": "2026-10-16T15:05:16.906779+00:00"
   },
   "PVTI_lAHOCikQ8M4Bj9Nyzg81qVs": {
-    "status": "LPR",
-    "since": "2026-10-06T03:01:50.601869+00:00"
+    "status": "TESTING",
+    "since": "2026-10-16T15:05:16.906779+00:00"
   },
   "PVTI_lAHOCikQ8M4Bj9Nyzg81vj0": {
     "status": "Todo",

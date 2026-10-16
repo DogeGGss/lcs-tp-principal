@@ -700,3 +700,5 @@ fecha_utc,us_numero,us_titulo,estado_anterior,estado_nuevo,tiempo_en_estado_ante
 2026-10-16T10:52:01.349564+00:00,426,US 219. Elegir el avatar del perfil,Todo,LPR,3d 7h 26m,286012,https://github.com/DogeGGss/lcs-tp-principal/issues/426
 2026-10-16T10:52:01.349564+00:00,427,US 220. Elegir el banner del perfil,Todo,LPR,3d 7h 26m,286012,https://github.com/DogeGGss/lcs-tp-principal/issues/427
 2026-10-16T10:52:01.349564+00:00,428,US 221. Consultar las estadísticas desde el perfil,Todo,Blocked,3d 7h 26m,286012,https://github.com/DogeGGss/lcs-tp-principal/issues/428
+2026-10-16T15:05:16.906779+00:00,201,US 141. Mostrar marcador de Deathmatch,LPR,R2D,10d 15h 52m,921165,https://github.com/DogeGGss/lcs-tp-principal/issues/201
+2026-10-16T15:05:16.906779+00:00,202,US 142. Mostrar resultado de Deathmatch,LPR,TESTING,10d 12h 3m,907406,https://github.com/DogeGGss/lcs-tp-principal/issues/202
