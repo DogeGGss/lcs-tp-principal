@@ -165,6 +165,9 @@ public class MeleeAttack : MonoBehaviour
                 barrera.Chispas(pared.point, pared.normal);
                 barrera.PedirDanio(data.damage, this, pared.point);
             }
+            // US 022, CA9: también al perro del Callejero de un rival.
+            Perro perro = Perro.De(pared.collider);
+            if (perro != null && perro.PedirDanio(data.damage, this, pared.point)) WeaponFire.ReportMelee(false);
         }
     }
 

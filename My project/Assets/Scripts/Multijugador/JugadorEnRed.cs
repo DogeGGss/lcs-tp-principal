@@ -140,6 +140,10 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
         HabilidadTrasbordo.Usado += AlTrasbordar;
         HabilidadBarrera.Levantada += AlLevantarBarrera;
         HabilidadVistaAerea.Cambio += AlCambiarVistaAerea;
+        HabilidadCallejero.Soltado += AlSoltarPerro;   // US 022, CA15
+        Perro.EnviarPosicion = AlMoverPerro;
+        Perro.EnviarDanio = AlDaniarPerro;
+        Perro.EnviarFin = AlTerminarPerro;
         Barrera.EnviarDanio = AlDaniarBarrera; // US 020, CA11
     }
 
@@ -152,6 +156,10 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
         HabilidadTrasbordo.Usado -= AlTrasbordar;
         HabilidadBarrera.Levantada -= AlLevantarBarrera;
         HabilidadVistaAerea.Cambio -= AlCambiarVistaAerea;
+        HabilidadCallejero.Soltado -= AlSoltarPerro;
+        if (Perro.EnviarPosicion == (System.Action<Perro, Vector3, float>)AlMoverPerro) Perro.EnviarPosicion = null;
+        if (Perro.EnviarDanio == (System.Action<Perro, int, Vector3>)AlDaniarPerro) Perro.EnviarDanio = null;
+        if (Perro.EnviarFin == (System.Action<Perro, Perro.Fin, int>)AlTerminarPerro) Perro.EnviarFin = null;
         if (observando) { OjosEnElCielo.Mostrar(transform, false); MatchHud.ClearWarn(TextoObservado); }
         if (Barrera.EnviarDanio == (System.Action<Barrera, int, Vector3>)AlDaniarBarrera) Barrera.EnviarDanio = null;
         SoltarArmas.Soltada -= AlSoltarArma;
@@ -1246,6 +1254,62 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
             SonidoVistaAerea.Observado();
         }
         else if (!activa) MatchHud.ClearWarn(TextoObservado);
+    }
+
+    // US 022, CA15: el perro del Callejero se mueve en la computadora del dueño; las demás tienen una copia que sigue
+    // sus posiciones. La mordida y el fin los decide el dueño; el daño va a todas por el servidor, en el mismo orden.
+    private void AlSoltarPerro(Transform jugador, int id, Vector3 lugar, float yaw)
+    {
+        if (jugador != transform) return;
+        photonView.RPC(nameof(RpcPerroSoltado), RpcTarget.Others, id, lugar, yaw);
+    }
+
+    [PunRPC]
+    private void RpcPerroSoltado(int id, Vector3 lugar, float yaw)
+    {
+        if (photonView.IsMine) return;
+        Perro.Crear(transform, Actor, id, lugar, yaw, false, sonido != null ? sonido.outputAudioMixerGroup : null);
+    }
+
+    private void AlMoverPerro(Perro perro, Vector3 lugar, float yaw)
+    {
+        if (perro.Duenio != transform) return;
+        photonView.RPC(nameof(RpcPerroPosicion), RpcTarget.Others, perro.Id, lugar, yaw);
+    }
+
+    [PunRPC]
+    private void RpcPerroPosicion(int id, Vector3 lugar, float yaw)
+    {
+        Perro perro = Perro.Buscar(Actor, id);
+        if (perro != null) perro.PosicionRed(lugar, yaw);
+    }
+
+    private void AlDaniarPerro(Perro perro, int danio, Vector3 punto)
+    {
+        photonView.RPC(nameof(RpcDanioPerro), RpcTarget.AllViaServer, perro.Actor, perro.Id, danio, punto);
+    }
+
+    [PunRPC]
+    private void RpcDanioPerro(int actor, int id, int danio, Vector3 punto)
+    {
+        Perro perro = Perro.Buscar(actor, id);
+        if (perro != null) perro.AplicarDanio(danio, punto);
+    }
+
+    private void AlTerminarPerro(Perro perro, Perro.Fin fin, int victima)
+    {
+        if (perro.Duenio != transform) return;
+        photonView.RPC(nameof(RpcPerroFin), RpcTarget.Others, perro.Id, (byte)fin, victima);
+    }
+
+    [PunRPC]
+    private void RpcPerroFin(int id, byte fin, int victima)
+    {
+        Perro perro = Perro.Buscar(Actor, id);
+        if (perro == null) return;
+        PartidaEnRed p = partida != null ? partida : PartidaEnRed.Actual;
+        JugadorEnRed mordido = victima >= 0 && p != null ? p.Buscar(victima) : null;
+        perro.Terminar((Perro.Fin)fin, victima, mordido != null ? mordido.transform : null, false);
     }
 
     // US 030, CA3 y CA5: aparece en el punto que eligió el dueño, sin deslizarse desde donde murió.
