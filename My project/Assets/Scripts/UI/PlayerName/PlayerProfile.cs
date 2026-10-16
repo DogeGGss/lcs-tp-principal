@@ -5,8 +5,8 @@ using UnityEngine;
 // Nombre del jugador (US 164). Lo leen el menú, y más adelante las salas, la tabla con Tab,
 // los avisos de bajas y Photon (US 026, US 027, US 057, F06).
 //
-// Por ahora se guarda en PlayerPrefs. Cuando exista el guardado del progreso (US 162),
-// alcanza con cambiar Load/Save de esta clase: el resto del juego usa solo PlayerProfile.Name.
+// Se guarda con el progreso del jugador (Guardado, US 162) y sube a la nube con los logros (LogrosOnline).
+// El resto del juego usa solo PlayerProfile.Name.
 public static class PlayerProfile
 {
     public const int MinLength = 3;
@@ -18,7 +18,7 @@ public static class PlayerProfile
     public static event Action<string> NameChanged;
 
     /// <summary>El nombre guardado, o vacío si todavía no eligió uno.</summary>
-    public static string Name => PlayerPrefs.GetString(Key, "");
+    public static string Name => Guardado.GetString(Key, "");
 
     public static bool HasName => !string.IsNullOrEmpty(Name);
 
@@ -60,8 +60,8 @@ public static class PlayerProfile
         if (error != null) return false;
 
         string name = Clean(raw);
-        PlayerPrefs.SetString(Key, name);
-        PlayerPrefs.Save();
+        Guardado.SetString(Key, name);
+        Guardado.Save();
         NameChanged?.Invoke(name);
         return true;
     }

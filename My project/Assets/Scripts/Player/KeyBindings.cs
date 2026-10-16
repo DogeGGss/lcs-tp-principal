@@ -15,7 +15,7 @@ public enum GameAction
 
 // Teclas del jugador (US 155). Sigue usando el Input clásico: los scripts preguntan
 // KeyBindings.Down(GameAction.Recargar) en lugar de Input.GetKeyDown(KeyCode.R).
-// Las teclas y las opciones del mouse se guardan en PlayerPrefs (US 048).
+// Las teclas y las opciones del mouse se guardan con las opciones (Guardado, US 048 y US 162).
 // Esc no se puede reasignar: abre la pausa y cancela los cambios de tecla.
 public static class KeyBindings
 {
@@ -79,21 +79,21 @@ public static class KeyBindings
 
     public static float Sensitivity
     {
-        get => PlayerPrefs.GetFloat(SensitivityKey, DefaultSensitivity);
-        set { PlayerPrefs.SetFloat(SensitivityKey, Mathf.Clamp(value, MinSensitivity, MaxSensitivity)); Changed?.Invoke(); }
+        get => Guardado.GetFloat(SensitivityKey, DefaultSensitivity);
+        set { Guardado.SetFloat(SensitivityKey, Mathf.Clamp(value, MinSensitivity, MaxSensitivity)); Changed?.Invoke(); }
     }
 
     /// <summary>Multiplica la sensibilidad mientras se apunta con mira.</summary>
     public static float AimSensitivity
     {
-        get => PlayerPrefs.GetFloat(AimSensitivityKey, DefaultAimSensitivity);
-        set { PlayerPrefs.SetFloat(AimSensitivityKey, Mathf.Clamp(value, MinAimSensitivity, MaxAimSensitivity)); Changed?.Invoke(); }
+        get => Guardado.GetFloat(AimSensitivityKey, DefaultAimSensitivity);
+        set { Guardado.SetFloat(AimSensitivityKey, Mathf.Clamp(value, MinAimSensitivity, MaxAimSensitivity)); Changed?.Invoke(); }
     }
 
     public static bool InvertY
     {
-        get => PlayerPrefs.GetInt(InvertYKey, 0) == 1;
-        set { PlayerPrefs.SetInt(InvertYKey, value ? 1 : 0); Changed?.Invoke(); }
+        get => Guardado.GetInt(InvertYKey, 0) == 1;
+        set { Guardado.SetInt(InvertYKey, value ? 1 : 0); Changed?.Invoke(); }
     }
 
     /// <summary>Avisa cuando cambia una tecla o una opción del mouse.</summary>
@@ -104,7 +104,7 @@ public static class KeyBindings
     // ---------- Consultas para los scripts del juego ----------
 
     public static KeyCode Key(GameAction action) =>
-        (KeyCode)PlayerPrefs.GetInt(PrefKey(action), (int)Defaults[action]);
+        (KeyCode)Guardado.GetInt(PrefKey(action), (int)Defaults[action]);
 
     public static bool Down(GameAction action) => Input.GetKeyDown(Key(action));
     public static bool Held(GameAction action) => Input.GetKey(Key(action));
@@ -159,7 +159,7 @@ public static class KeyBindings
 
     public static void Set(GameAction action, KeyCode key)
     {
-        PlayerPrefs.SetInt(PrefKey(action), (int)key);
+        Guardado.SetInt(PrefKey(action), (int)key);
         Changed?.Invoke();
     }
 
@@ -167,22 +167,22 @@ public static class KeyBindings
     public static void Swap(GameAction action, GameAction other)
     {
         KeyCode a = Key(action), b = Key(other);
-        PlayerPrefs.SetInt(PrefKey(action), (int)b);
-        PlayerPrefs.SetInt(PrefKey(other), (int)a);
+        Guardado.SetInt(PrefKey(action), (int)b);
+        Guardado.SetInt(PrefKey(other), (int)a);
         Changed?.Invoke();
     }
 
     public static void ResetDefaults()
     {
-        foreach (GameAction action in All) PlayerPrefs.DeleteKey(PrefKey(action));
-        PlayerPrefs.SetFloat(SensitivityKey, DefaultSensitivity);
-        PlayerPrefs.DeleteKey(AimSensitivityKey);
-        PlayerPrefs.DeleteKey(InvertYKey);
+        foreach (GameAction action in All) Guardado.DeleteKey(PrefKey(action));
+        Guardado.SetFloat(SensitivityKey, DefaultSensitivity);
+        Guardado.DeleteKey(AimSensitivityKey);
+        Guardado.DeleteKey(InvertYKey);
         Save();
         Changed?.Invoke();
     }
 
-    public static void Save() => PlayerPrefs.Save();
+    public static void Save() => Guardado.Save();
 
     /// <summary>Teclas que se pueden asignar: todo menos Esc (cancela) y los joysticks.</summary>
     public static bool CanAssign(KeyCode key) =>

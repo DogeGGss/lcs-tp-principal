@@ -5,7 +5,8 @@ using UnityEngine;
 
 // Datos fijos del menú principal para el Perfil, la Estación del Rift
 // (cápsulas) y la tienda de cristales. Todavía no hay historias refinadas: catálogo, rarezas, probabilidades, precios y
-// estadísticas son de ejemplo. Se guarda en PlayerPrefs ("Perfil.Prueba") para que no se pierda entre una prueba y otra.
+// estadísticas son de ejemplo. Se guarda con el progreso del jugador (Guardado, clave "Perfil.Prueba", US 162); los
+// cosméticos obtenidos y equipados también van a la nube (ProgresoNube), las monedas no.
 //
 // Las tres monedas simulan el negocio de un juego gratuito; no se cobra nada:
 // - Créditos: se ganan jugando (al terminar una partida). Se cambian por boletos.
@@ -62,7 +63,7 @@ public static class PerfilDatos
         public List<string> packsUsados = new List<string>();
     }
 
-    private const string Key = "Perfil.Prueba";
+    public const string Clave = "Perfil.Prueba"; // la misma que en PlayerPrefs: así se migra solo (Guardado)
 
     // ----- Reglas de ejemplo -----
     public static readonly int[] Probabilidad = { 0, 55, 30, 12, 3 }; // por Rareza (Inicial no sale)
@@ -199,11 +200,12 @@ public static class PerfilDatos
         get
         {
             if (e != null) return e;
-            string json = PlayerPrefs.GetString(Key, "");
+            string json = Guardado.GetString(Clave, "");
             if (!string.IsNullOrEmpty(json))
             {
                 try { e = JsonUtility.FromJson<Estado>(json); } catch { e = null; }
             }
+            guardadoAlCargar = e != null;
             if (e == null)
             {
                 e = new Estado();
@@ -220,17 +222,81 @@ public static class PerfilDatos
 
     private static void Guardar()
     {
-        PlayerPrefs.SetString(Key, JsonUtility.ToJson(E));
-        PlayerPrefs.Save();
+        Guardado.SetString(Clave, JsonUtility.ToJson(E));
+        Guardado.Save();
         Cambio?.Invoke();
     }
 
     /// <summary>Vuelve todo a como arranca la prueba.</summary>
     public static void Reiniciar()
     {
-        PlayerPrefs.DeleteKey(Key);
+        Guardado.DeleteKey(Clave);
         e = null;
         Guardar();
+    }
+
+    /// <summary>Vuelve a leer lo guardado (lo cambió otro juego abierto en esta PC).</summary>
+    public static void Recargar()
+    {
+        e = null;
+        Cambio?.Invoke();
+    }
+
+    // ---------- Nube (ProgresoNube, US 162 y US 163) ----------
+
+    // Si al cargar no había nada guardado, lo equipado que vuelve de la nube reemplaza a lo de entrada.
+    private static bool guardadoAlCargar;
+
+    [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+    private static void ReiniciarSesion()
+    {
+        e = null; // se vuelve a leer del guardado en cada Play (el editor no recarga el dominio)
+        guardadoAlCargar = false;
+    }
+
+    /// <summary>Claves de los cosméticos obtenidos ("av:...", "bn:...", "ti:...", "mc:...").</summary>
+    public static IEnumerable<string> ObtenidosIds => E.obtenidos;
+
+    /// <summary>Lo equipado de cada tipo: avatar, banner, título y marco.</summary>
+    public static IEnumerable<(string tipo, string id)> Equipados
+    {
+        get
+        {
+            yield return ("avatar", E.avatar);
+            yield return ("banner", E.banner);
+            yield return ("titulo", E.titulo);
+            yield return ("marco", E.marco);
+        }
+    }
+
+    /// <summary>
+    /// Junta lo que vuelve de la nube: suma los cosméticos obtenidos que falten y, si esta PC no tenía nada guardado,
+    /// equipa lo de la nube (solo lo que el jugador tiene). Nunca quita nada.
+    /// </summary>
+    public static void FusionarNube(IEnumerable<string> obtenidos, IReadOnlyDictionary<string, string> equipados)
+    {
+        Estado s = E;
+        bool cambio = false;
+        foreach (string clave in obtenidos)
+            if (!string.IsNullOrEmpty(clave) && DesdeClave(clave) != null && !s.obtenidos.Contains(clave)) { s.obtenidos.Add(clave); cambio = true; }
+        if (!guardadoAlCargar)
+        {
+            cambio |= Equipar(Tipo.Avatar, equipados, "avatar", ref s.avatar);
+            cambio |= Equipar(Tipo.Banner, equipados, "banner", ref s.banner);
+            cambio |= Equipar(Tipo.Titulo, equipados, "titulo", ref s.titulo);
+            cambio |= Equipar(Tipo.Marco, equipados, "marco", ref s.marco);
+            guardadoAlCargar = true;
+        }
+        if (cambio) Guardar();
+    }
+
+    private static bool Equipar(Tipo tipo, IReadOnlyDictionary<string, string> equipados, string nombre, ref string actualId)
+    {
+        if (!equipados.TryGetValue(nombre, out string id) || id == actualId) return false;
+        Cosmetico c = Buscar(tipo, id);
+        if (c == null || !Tiene(c)) return false; // US 163: no se equipa lo que no está en el catálogo o no se tiene
+        actualId = id;
+        return true;
     }
 
     public static int Creditos => E.creditos;

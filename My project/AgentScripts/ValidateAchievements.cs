@@ -32,7 +32,7 @@ public static class ValidateAchievements {
  Check(LogrosCometas.Juntar(mine,theirs) && mine.aciertos[0]==15 && mine.aciertos[1]==9 && mine.fechas[0]=="t","merge keeps maximum");
  Check(!LogrosCometas.Juntar(mine,theirs),"merge is idempotent");
  var folder=Path.Combine(Path.GetTempPath(),"riftwalker-achievements-"+Guid.NewGuid());
- try { var path=Path.Combine(folder,"test.json"); LogrosCometas.EscribirAtomico(path,"first"); LogrosCometas.EscribirAtomico(path,"second"); Check(File.ReadAllText(path)=="second" && File.ReadAllText(path+".bak")=="first","atomic backup"); }
+ try { var path=Path.Combine(folder,"test.json"); Guardado.EscribirAtomico(path,"first"); Guardado.EscribirAtomico(path,"second"); Check(File.ReadAllText(path)=="second" && File.ReadAllText(path+".bak")=="first","atomic backup"); }
  finally { if(Directory.Exists(folder))Directory.Delete(folder,true); }
  var config=ScriptableObject.CreateInstance<LogrosOnlineConfig>(); config.habilitado=true;config.url="https://example.supabase.co";config.clavePublica="sb_secret_fake";
  Check(!config.Valido,"secret key rejected");config.clavePublica="eyJ.legacy.jwt";Check(!config.Valido,"unverified JWT rejected");config.clavePublica="sb_publishable_example";Check(config.Valido,"publishable accepted");UnityEngine.Object.DestroyImmediate(config);

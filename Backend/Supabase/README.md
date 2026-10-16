@@ -1,10 +1,10 @@
-# Logros de cometas y ranking
+# Logros, ranking y progreso del jugador
 
 ## Activación (por el dueño del proyecto)
 
 1. Crear cuenta en https://supabase.com/dashboard/sign-up y crear un proyecto.
 2. En Authentication, habilitar Anonymous Sign-Ins. El juego crea una identidad anónima por instalación y conserva su sesión; no pide correo al jugador.
-3. En SQL Editor ejecutar el contenido completo de `Backend/Supabase/logros.sql`.
+3. En SQL Editor ejecutar el contenido completo de `Backend/Supabase/logros.sql`. **Cada vez que cambie** (por ejemplo, al sumarse `rw_sync_progress` para el resto del progreso, US 162) hay que volver a ejecutarlo: es reejecutable y no borra nada. Mientras no se ejecute, el juego sigue sincronizando los logros y avisa en la pantalla de Logros que falta actualizar la base.
 4. En los ajustes de conexión del proyecto copiar **Project URL** y la **publishable key** (`sb_publishable_...`). Nunca usar la contraseña de la base, `service_role` ni `sb_secret_` en Unity.
 5. En Unity seleccionar `Assets/Resources/LogrosOnline.asset`, completar `Url` y `Clave Publica`, activar `Habilitado` y generar una nueva build. No necesita modificaciones manuales a escenas.
 6. Entrar con un nombre de jugador y abrir Logros. Verificar conexión, progreso, ranking y listado de propietarios desde dos instalaciones. El SQL de pruebas opcional `logros.test.sql` se ejecuta en SQL Editor y revierte sus datos al terminar.
@@ -22,11 +22,13 @@ Nueve logros: destruir **10, 50 y 100** cometas de cada color (azul, verde, dora
 
 ## Guardado y conexión
 
-El archivo `logros-cometas.json` vive en `Application.persistentDataPath`, con respaldo `.bak`, guardado atómico y versión de formato. Se conserva entre builds si no cambia Company Name / Product Name ni se borra esa carpeta. Un archivo inválido se recupera del respaldo; si ambos fallan se conservan sin sobrescribir.
+Todo el progreso del jugador se guarda en un solo archivo, `jugador.json` (`jugador-editor.json` en el editor), en `Application.persistentDataPath`, con respaldo `.bak`, guardado atómico y versión de formato (`Guardado`, US 162 y US 163). Los logros van ahí, en la clave `Logros.Cometas`; la primera vez se migra lo que había en `logros-cometas.json`, que no se borra. Se conserva entre builds si no cambia Company Name / Product Name ni se borra esa carpeta. Un archivo dañado se recupera del respaldo; si ambos fallan, el juego arranca de cero, lo avisa y deja el dañado aparte.
 
 Los logros nuevos se agregan siempre **al final** de `LogrosCometas.Catalogo`: las fechas del guardado van en ese orden. Un guardado de una versión con menos (o más) logros se sigue leyendo; sus fechas se ajustan al catálogo actual.
 
-**Dos juegos abiertos en la misma PC** (el editor y un build, o dos builds, como se prueba el online) comparten esa carpeta. Antes de guardar, cada uno junta su progreso con el del archivo (el máximo de cada color), así ninguno pisa al otro; los aciertos que hagan al mismo tiempo no se suman entre sí. Las pruebas desde el editor también cuentan para el ranking.
+**Dos juegos abiertos en la misma PC** (dos builds) comparten el archivo. Antes de guardar, cada uno junta su progreso con el del archivo (el máximo de cada color y de cada estadística del minijuego), así ninguno pisa al otro; los aciertos que hagan al mismo tiempo no se suman entre sí. El editor usa su propio archivo, pero comparte la sesión online con los builds: sus pruebas también cuentan para el ranking.
+
+**Resto del progreso en la nube** (`rw_sync_progress`, tabla `rw_player_progress`): estadísticas del minijuego (US 159), récords de Zombie y cosméticos del Perfil. El juego manda listas `{clave, valor}` y la base junta: contadores con el máximo, mejores tiempos con el mínimo, cosméticos obtenidos con la unión y equipados con lo último. Las opciones y las monedas no se suben: las monedas bajan al gastarse y juntarlas con el máximo devolvería lo gastado (con cuentas, US 237, el saldo lo tiene que manejar la base).
 
 La sesión anónima y la última consulta del ranking se guardan por dominio del proyecto en esa misma carpeta. No compartir esos archivos de sesión. El JSON local no es una copia portable de una cuenta: borrar la sesión crea otra identidad, y no hay recuperación por correo ni fusión de cuentas en esta entrega.
 

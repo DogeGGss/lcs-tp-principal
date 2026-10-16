@@ -27,4 +27,25 @@ begin
  if (select count(*) from public.rw_achievement_players where player_id in ('00000000-0000-4000-8000-000000000901','00000000-0000-4000-8000-000000000902'))<>2 then raise exception 'Identity isolation failed'; end if;
  raise notice 'Achievement backend checks passed';
 end $$;
+-- Resto del progreso (rw_sync_progress): maximo, minimo, union y ultimo valor.
+select set_config('request.jwt.claim.sub','00000000-0000-4000-8000-000000000901',true);
+do $$
+declare a jsonb;
+begin
+ a := public.rw_sync_progress('{"contadores":[{"clave":"minijuego.disparos","valor":10}],"minimos":[{"clave":"minijuego.mejor_reaccion_ms","valor":900}],"conjuntos":[{"clave":"perfil.obtenidos","elementos":["av:a","ti:t1"]}],"valores":[{"clave":"perfil.avatar","valor":"a"}]}');
+ a := public.rw_sync_progress('{"contadores":[{"clave":"minijuego.disparos","valor":4}],"minimos":[{"clave":"minijuego.mejor_reaccion_ms","valor":1200}],"conjuntos":[{"clave":"perfil.obtenidos","elementos":["bn:b","av:a"]}],"valores":[{"clave":"perfil.avatar","valor":"c"}]}');
+ if (select (x->>'valor')::int from jsonb_array_elements(a->'contadores') x where x->>'clave'='minijuego.disparos') <> 10 then raise exception 'Counter regressed'; end if;
+ if (select (x->>'valor')::int from jsonb_array_elements(a->'minimos') x where x->>'clave'='minijuego.mejor_reaccion_ms') <> 900 then raise exception 'Best time regressed'; end if;
+ if (select jsonb_array_length(x->'elementos') from jsonb_array_elements(a->'conjuntos') x where x->>'clave'='perfil.obtenidos') <> 3 then raise exception 'Union failed'; end if;
+ if (select x->>'valor' from jsonb_array_elements(a->'valores') x where x->>'clave'='perfil.avatar') <> 'c' then raise exception 'Last value not kept'; end if;
+ begin
+  perform public.rw_sync_progress('{"contadores":[{"clave":"Mal Clave","valor":1}]}');
+  raise exception 'Invalid key accepted';
+ exception when others then
+  if sqlerrm <> 'Invalid progress' then raise; end if;
+ end;
+ if has_function_privilege('anon','public.rw_sync_progress(jsonb)','execute') then raise exception 'Anonymous role has progress access'; end if;
+ if has_table_privilege('authenticated','public.rw_player_progress','select') then raise exception 'Direct read exposed'; end if;
+ raise notice 'Progress backend checks passed';
+end $$;
 rollback;

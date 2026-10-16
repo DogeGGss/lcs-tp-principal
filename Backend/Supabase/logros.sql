@@ -88,4 +88,76 @@ revoke all on function public.rw_sync_comets(text,integer,integer,integer) from 
 revoke all on function public.rw_achievement_board(integer,text) from public,anon;
 grant execute on function public.rw_sync_comets(text,integer,integer,integer) to authenticated;
 grant execute on function public.rw_achievement_board(integer,text) to authenticated;
+-- Resto del progreso del jugador (F18, US 162 y US 163): estadisticas del minijuego, records y cosmeticos.
+-- El juego manda listas {clave, valor}; la base junta: contadores con el maximo, minimos con el minimo,
+-- conjuntos con la union y valores con lo ultimo que mando el juego. Devuelve todo en el mismo formato.
+create table if not exists public.rw_player_progress (
+ player_id uuid primary key references auth.users(id) on delete cascade,
+ contadores jsonb not null default '{}'::jsonb,
+ minimos jsonb not null default '{}'::jsonb,
+ conjuntos jsonb not null default '{}'::jsonb,
+ valores jsonb not null default '{}'::jsonb,
+ updated_at timestamptz not null default now()
+);
+alter table public.rw_player_progress enable row level security;
+revoke all on public.rw_player_progress from anon, authenticated;
+
+create or replace function public.rw_sync_progress(p jsonb)
+returns jsonb language plpgsql security definer set search_path = '' as $$
+declare
+ uid uuid := auth.uid();
+ r public.rw_player_progress;
+ c_in jsonb := '{}'::jsonb; m_in jsonb := '{}'::jsonb; s_in jsonb := '{}'::jsonb; v_in jsonb := '{}'::jsonb;
+ e jsonb;
+begin
+ if uid is null then raise exception 'Authentication required' using errcode='28000'; end if;
+ if p is null or jsonb_typeof(p) <> 'object' or octet_length(p::text) > 65536 then raise exception 'Invalid progress'; end if;
+ -- Claves cortas y simples; numeros enteros no negativos; textos y elementos de hasta 64 caracteres.
+ for e in select * from jsonb_array_elements(coalesce(p->'contadores','[]'::jsonb)) loop
+  if coalesce(e->>'clave','') !~ '^[a-z0-9_.-]{1,64}$' or jsonb_typeof(e->'valor') <> 'number' or (e->>'valor')::numeric < 0
+  then raise exception 'Invalid progress'; end if;
+  c_in := c_in || jsonb_build_object(e->>'clave', trunc((e->>'valor')::numeric));
+ end loop;
+ for e in select * from jsonb_array_elements(coalesce(p->'minimos','[]'::jsonb)) loop
+  if coalesce(e->>'clave','') !~ '^[a-z0-9_.-]{1,64}$' or jsonb_typeof(e->'valor') <> 'number' or (e->>'valor')::numeric <= 0
+  then raise exception 'Invalid progress'; end if;
+  m_in := m_in || jsonb_build_object(e->>'clave', trunc((e->>'valor')::numeric));
+ end loop;
+ for e in select * from jsonb_array_elements(coalesce(p->'conjuntos','[]'::jsonb)) loop
+  if coalesce(e->>'clave','') !~ '^[a-z0-9_.-]{1,64}$' or jsonb_typeof(e->'elementos') <> 'array'
+     or jsonb_array_length(e->'elementos') > 1000
+     or exists(select 1 from jsonb_array_elements(e->'elementos') x where jsonb_typeof(x) <> 'string' or char_length(x #>> '{}') > 64)
+  then raise exception 'Invalid progress'; end if;
+  s_in := s_in || jsonb_build_object(e->>'clave', e->'elementos');
+ end loop;
+ for e in select * from jsonb_array_elements(coalesce(p->'valores','[]'::jsonb)) loop
+  if coalesce(e->>'clave','') !~ '^[a-z0-9_.-]{1,64}$' or jsonb_typeof(e->'valor') <> 'string' or char_length(e->>'valor') > 64
+  then raise exception 'Invalid progress'; end if;
+  v_in := v_in || jsonb_build_object(e->>'clave', e->>'valor');
+ end loop;
+
+ insert into public.rw_player_progress(player_id) values (uid) on conflict (player_id) do nothing;
+ select * into r from public.rw_player_progress where player_id = uid for update;
+ update public.rw_player_progress set
+  contadores = (select coalesce(jsonb_object_agg(k, greatest(coalesce((r.contadores->>k)::numeric, 0), coalesce((c_in->>k)::numeric, 0))), '{}'::jsonb)
+   from (select jsonb_object_keys(r.contadores) k union select jsonb_object_keys(c_in)) t),
+  minimos = (select coalesce(jsonb_object_agg(k, least(coalesce((r.minimos->>k)::numeric, (m_in->>k)::numeric), coalesce((m_in->>k)::numeric, (r.minimos->>k)::numeric))), '{}'::jsonb)
+   from (select jsonb_object_keys(r.minimos) k union select jsonb_object_keys(m_in)) t),
+  conjuntos = (select coalesce(jsonb_object_agg(k, (select coalesce(jsonb_agg(distinct x order by x), '[]'::jsonb)
+     from (select jsonb_array_elements_text(coalesce(r.conjuntos->k, '[]'::jsonb)) x
+           union select jsonb_array_elements_text(coalesce(s_in->k, '[]'::jsonb))) u)), '{}'::jsonb)
+   from (select jsonb_object_keys(r.conjuntos) k union select jsonb_object_keys(s_in)) t),
+  valores = r.valores || v_in,
+  updated_at = now()
+ where player_id = uid
+ returning * into r;
+
+ return jsonb_build_object(
+  'contadores', coalesce((select jsonb_agg(jsonb_build_object('clave', key, 'valor', value) order by key) from jsonb_each(r.contadores)), '[]'::jsonb),
+  'minimos', coalesce((select jsonb_agg(jsonb_build_object('clave', key, 'valor', value) order by key) from jsonb_each(r.minimos)), '[]'::jsonb),
+  'conjuntos', coalesce((select jsonb_agg(jsonb_build_object('clave', key, 'elementos', value) order by key) from jsonb_each(r.conjuntos)), '[]'::jsonb),
+  'valores', coalesce((select jsonb_agg(jsonb_build_object('clave', key, 'valor', value) order by key) from jsonb_each(r.valores)), '[]'::jsonb));
+end $$;
+revoke all on function public.rw_sync_progress(jsonb) from public, anon;
+grant execute on function public.rw_sync_progress(jsonb) to authenticated;
 commit;

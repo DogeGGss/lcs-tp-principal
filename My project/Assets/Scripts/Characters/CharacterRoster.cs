@@ -23,25 +23,25 @@ public static class CharacterRoster
     }
 
     /// <summary>true si el jugador ya eligió alguna vez (y el personaje sigue existiendo).</summary>
-    public static bool HasSelection => IndexOf(PlayerPrefs.GetString(SelectedKey, "")) >= 0;
+    public static bool HasSelection => IndexOf(Guardado.GetString(SelectedKey, "")) >= 0;
 
     /// <summary>El último personaje elegido; si nunca eligió, el primero de la lista.</summary>
     public static CharacterData Selected
     {
         get
         {
-            int i = IndexOf(PlayerPrefs.GetString(SelectedKey, ""));
+            int i = IndexOf(Guardado.GetString(SelectedKey, ""));
             return i >= 0 ? All[i] : All.Count > 0 ? All[0] : null;
         }
         set
         {
             if (value == null) return;
-            PlayerPrefs.SetString(SelectedKey, value.name);
-            PlayerPrefs.Save();
+            Guardado.SetString(SelectedKey, value.name);
+            Guardado.Save();
         }
     }
 
-    public static int SelectedIndex => IndexOf(PlayerPrefs.GetString(SelectedKey, ""));
+    public static int SelectedIndex => IndexOf(Guardado.GetString(SelectedKey, ""));
 
     private static int IndexOf(string assetName)
     {

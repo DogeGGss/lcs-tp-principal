@@ -21,6 +21,8 @@ public class PantallaPerfil : PantallaBase
     private readonly TextMeshProUGUI[] pestanas = new TextMeshProUGUI[2];
     private Img subrayado;
     private RectTransform panelEstad, panelPers, grilla, vista;
+    private RectTransform cuerpoMinijuego;
+    private float anchoTarjeta;
     private UnityEngine.UI.ScrollRect scroll;
     private int pestana;
 
@@ -143,10 +145,21 @@ public class PantallaPerfil : PantallaBase
             T(general, "Nombre" + i, 30f + i * paso, 112f, paso - 10f, 22f, FRotulo, 15f, Mute, datos[i].nombre, TextAlignmentOptions.MidlineLeft, 12f, true);
         }
 
-        // Un panel por modo.
-        float w = (1800f - 3f * 20f) / 4f;
+        // Un panel por modo. El del minijuego tiene datos reales (US 159): se arma en RefrescarMinijuego.
+        float w = anchoTarjeta = (1800f - 3f * 20f) / 4f;
         for (int g = 1; g < grupos.Length; g++)
         {
+            if (grupos[g].grupo == "Minijuego")
+            {
+                ColorUtility.TryParseHtmlString(grupos[g].color, out Color cm);
+                RectTransform minijuego = Place(Node("Minijuego", panelEstad), (g - 1) * (w + 20f), 188f, w, 300f);
+                Image(minijuego, Rounded, PanelColor, 8f);
+                Borde(minijuego, 8f, White(0.06f));
+                Image(Place(Node("Color", minijuego), 0f, 0f, w, 4f), null, cm);
+                T(minijuego, "Titulo", 24f, 16f, w - 48f, 40f, FTitulo, 34f, cm, "Minijuego: cometas", TextAlignmentOptions.MidlineLeft, 4f, true);
+                cuerpoMinijuego = Place(Node("Datos", minijuego), 0f, 60f, w, 236f);
+                continue;
+            }
             ColorUtility.TryParseHtmlString(grupos[g].color, out Color c);
             RectTransform tarjeta = Place(Node(grupos[g].grupo, panelEstad), (g - 1) * (w + 20f), 188f, w, 300f);
             Image(tarjeta, Rounded, PanelColor, 8f);
@@ -163,8 +176,43 @@ public class PantallaPerfil : PantallaBase
             }
         }
         TextMeshProUGUI nota = T(panelEstad, "Nota", 0f, 504f, 1800f, 26f, FTexto, 18f, Mute,
-            "* KDA provisoria: (bajas + asistencias) ÷ muertes. Son datos de ejemplo: las estadísticas todavía no se registran (F24).");
+            "* KDA provisoria: (bajas + asistencias) ÷ muertes. Salvo el minijuego, son datos de ejemplo: las demás estadísticas todavía no se registran (F24).");
         nota.textWrappingMode = TextWrappingModes.Normal;
+    }
+
+    // US 159, CA3 y CA4: lo guardado del minijuego de cometas (EstadisticasMinijuego).
+    private void RefrescarMinijuego()
+    {
+        if (cuerpoMinijuego == null) return;
+        BorrarHijos(cuerpoMinijuego);
+        float w = anchoTarjeta;
+        EstadisticasMinijuego.Totales m = EstadisticasMinijuego.Datos;
+        if (m.SinDatos)
+        {
+            TextMeshProUGUI vacio = T(cuerpoMinijuego, "SinDatos", 24f, 20f, w - 48f, 120f, FTexto, 22f, Mute,
+                "Todavía no le disparaste a ningún cometa.", TextAlignmentOptions.TopLeft);
+            vacio.textWrappingMode = TextWrappingModes.Normal;
+            return;
+        }
+        string Pintado(TipoCometa tipo, int n) => $"<color=#{ColorUtility.ToHtmlStringRGB(Cometa.ColorDe(tipo))}>{PerfilDatos.Numero(n)}</color>";
+        string Segundos(float s) => s.ToString("0.0", System.Globalization.CultureInfo.InvariantCulture).Replace('.', ',') + " s";
+        (string nombre, string valor)[] filas =
+        {
+            ("Destruidos", PerfilDatos.Numero(m.Aciertos)),
+            ("Azules · verdes · dorados", $"{Pintado(TipoCometa.Comun, m.aciertos[0])} · {Pintado(TipoCometa.Raro, m.aciertos[1])} · {Pintado(TipoCometa.Epico, m.aciertos[2])}"),
+            ("Precisión", Mathf.RoundToInt(m.Precision * 100f) + " %"),
+            ("Puntos", PerfilDatos.Numero(m.puntos)),
+            ("Reacción promedio", m.Aciertos > 0 ? Segundos(m.ReaccionPromedio) : "—"),
+            ("Récord en una fase", $"{m.recordCometas} · {PerfilDatos.Numero(m.recordPuntos)} pts"),
+            ("Mejor reacción", m.mejorReaccionMs > 0 ? Segundos(m.mejorReaccionMs / 1000f) : "—"),
+        };
+        for (int j = 0; j < filas.Length; j++)
+        {
+            float y = 4f + j * 32f;
+            T(cuerpoMinijuego, "Dato" + j, 24f, y, w - 220f, 30f, FTexto, 19f, Soft, filas[j].nombre);
+            T(cuerpoMinijuego, "Valor" + j, w - 224f, y, 200f, 30f, FTitulo, 24f, Ink, filas[j].valor, TextAlignmentOptions.MidlineRight);
+            if (j < filas.Length - 1) Image(Place(Node("Linea" + j, cuerpoMinijuego), 24f, y + 31f, w - 48f, 1f), null, White(0.06f));
+        }
     }
 
     // ================= Personalización =================
@@ -385,6 +433,7 @@ public class PantallaPerfil : PantallaBase
         resumen[1].text = general[1].valor;
         resumen[2].text = general[6].valor;
         resumen[3].text = PerfilDatos.Estadisticas[3].datos[1].valor;
+        RefrescarMinijuego();
         RefrescarInfo();
         RefrescarChips();
         RefrescarGrilla();

@@ -12,8 +12,9 @@ using UnityEngine;
 //   traba RondasTacticas y el cuchillo no hace daño (MeleeAttack).
 // - US 158: cada acierto muestra "+puntos" en el lugar del impacto (blanco; el épico en naranja), que sube y se
 //   desvanece en 0,8 s, con la marca de impacto de la mira y un sonido propio. No hay contador en el HUD.
-// Los resultados se van sumando mientras el juego está abierto (Sesion y EstaFase), pero todavía no se guardan ni se
-// muestran: eso es de la US 159, y los logros de la US 160.
+// - US 159: los resultados de cada fase (EstaFase) se suman a las estadísticas guardadas al terminar la fase
+//   (EstadisticasMinijuego), y se ven en el Perfil. Sesion suma lo de mientras el juego está abierto.
+// - US 160: cada cometa destruido cuenta para los logros (LogrosCometas).
 public class MinijuegoCometas : MonoBehaviour
 {
     private const float DistanciaMinima = 150f, DistanciaMaxima = 300f; // m del mirador (CA2)
@@ -27,7 +28,7 @@ public class MinijuegoCometas : MonoBehaviour
     private const float AlcanceMinimo = 600f;                           // m: con cualquier arma se llega a los cometas
     private const float DuracionPuntaje = 0.8f, SubidaPuntaje = 46f, TamanoPuntaje = 40f; // US 158, CA2
 
-    /// <summary>Lo que se registra del minijuego (US 159, CA1). Todavía no se guarda.</summary>
+    /// <summary>Lo que se registra del minijuego en una fase (US 159, CA1).</summary>
     public sealed class Resultados
     {
         public int disparos, puntos;
@@ -84,6 +85,8 @@ public class MinijuegoCometas : MonoBehaviour
 
     private void OnDestroy()
     {
+        // Si la partida termina en medio de la compra (se sale o se corta), lo de esta fase también cuenta (US 159).
+        if (activo) EstadisticasMinijuego.SumarFase(EstaFase);
         if (actual == this) actual = null;
     }
 
@@ -101,6 +104,7 @@ public class MinijuegoCometas : MonoBehaviour
         }
         foreach (Cometa cometa in cometas) if (cometa != null) cometa.Irse();
         cometas.Clear();
+        EstadisticasMinijuego.SumarFase(EstaFase); // US 159, CA1
         if (EstaFase.disparos > 0)
             Debug.Log($"Minijuego: {EstaFase.Aciertos} cometas, {EstaFase.puntos} puntos, precisión {EstaFase.Precision:P0} " +
                       $"(en total: {Sesion.Aciertos} cometas, {Sesion.puntos} puntos).");

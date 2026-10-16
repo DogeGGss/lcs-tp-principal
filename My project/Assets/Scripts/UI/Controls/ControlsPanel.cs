@@ -12,7 +12,7 @@ using Slider = UnityEngine.UI.Slider;
 // - CA3: todas las acciones con su tecla actual.
 // - CA4: clic en una acción y se aprieta la tecla nueva; Esc cancela.
 // - CA5: si la tecla ya la usa otra acción, avisa y pregunta si se intercambian.
-// - CA6: se guarda en PlayerPrefs y el juego lee las teclas desde KeyBindings.
+// - CA6: se guarda con las opciones (Guardado) y el juego lee las teclas desde KeyBindings.
 // Dentro de las opciones del menú principal (US 048) los cambios quedan pendientes hasta "Aplicar", y
 // "Restablecer" pide confirmación. En la pausa se guardan al instante, como antes.
 public class ControlsPanel : MonoBehaviour, OpcionesPantalla.ISeccion

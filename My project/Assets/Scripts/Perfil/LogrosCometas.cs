@@ -4,6 +4,8 @@ using System.IO;
 using UnityEngine;
 
 // Catálogo y progreso real. Independiente de la UI y del servicio online.
+// Se guarda con el progreso del jugador (Guardado, clave "Logros.Cometas", US 045 y US 162). La primera vez se trae lo
+// que haya en el archivo anterior, logros-cometas.json, que no se borra.
 public static class LogrosCometas
 {
     public sealed class Definicion
@@ -31,13 +33,16 @@ public static class LogrosCometas
         public int[] aciertos = new int[3];
         public string[] fechas = new string[Catalogo.Length];
     }
-    private const string NoSePudoGuardar = "No se pudo guardar el progreso; se volverá a intentar.";
+    public const string Clave = "Logros.Cometas";
     private static Progreso datos;
-    private static bool pendiente, soloLectura;
+    private static bool soloLectura;
+    private static string aviso;
     public static int Revision { get; private set; }
-    public static string AvisoGuardado { get; private set; }
+    /// <summary>Lo que el jugador tiene que saber del guardado de los logros (o del archivo del jugador), o null.</summary>
+    public static string AvisoGuardado => aviso ?? Guardado.Aviso;
     public static event Action<Definicion> Desbloqueado;
-    public static string Ruta => Path.Combine(Application.persistentDataPath, "logros-cometas.json");
+    /// <summary>Donde se guardaba antes (hasta la US 162): solo se lee para migrar.</summary>
+    public static string RutaAnterior => Path.Combine(Application.persistentDataPath, "logros-cometas.json");
     public static Progreso Datos { get { if (datos == null) Cargar(); return datos; } }
     public static int Cantidad { get { int n = 0; foreach (var d in Catalogo) if (Datos.aciertos[d.tipo] >= d.meta) n++; return n; } }
 
@@ -58,8 +63,9 @@ public static class LogrosCometas
         if (soloLectura) return;
         int i = (int)tipo;
         var nuevos = Aplicar(p, i, p.aciertos[i] < int.MaxValue ? p.aciertos[i] + 1 : int.MaxValue, DateTime.UtcNow.ToString("O"));
-        pendiente = true; Revision++;
-        if (nuevos.Count > 0) Guardar();
+        Revision++;
+        Guardar();
+        if (nuevos.Count > 0) Guardado.Save(); // un logro nuevo se escribe ya, sin esperar
         foreach (var logro in nuevos) Desbloqueado?.Invoke(logro);
     }
     public static void Fusionar(int azul, int verde, int dorado)
@@ -68,9 +74,25 @@ public static class LogrosCometas
         int[] valores = { azul, verde, dorado }; bool cambio = false;
         for (int i = 0; i < 3; i++) if (valores[i] > p.aciertos[i])
         { Aplicar(p, i, valores[i], DateTime.UtcNow.ToString("O")); cambio = true; }
-        if (cambio) { pendiente = true; Revision++; Guardar(); }
+        if (cambio) { Revision++; Guardar(); }
     }
     private static Progreso Leer(string ruta) => Validar(JsonUtility.FromJson<Progreso>(File.ReadAllText(ruta)));
+
+    /// <summary>Para Guardado.RegistrarUnion: junta lo de este juego con lo del archivo (el máximo de cada color).</summary>
+    public static string JuntarJson(string mio, string otro)
+    {
+        Progreso a, b;
+        try { a = Validar(JsonUtility.FromJson<Progreso>(mio)); } catch { return otro; }
+        try { b = Validar(JsonUtility.FromJson<Progreso>(otro)); } catch { return mio; }
+        return Juntar(a, b) ? JsonUtility.ToJson(a) : mio;
+    }
+
+    /// <summary>Vuelve a leer lo guardado (lo cambió otro juego abierto en esta PC).</summary>
+    public static void Recargar()
+    {
+        datos = null;
+        Revision++;
+    }
 
     /// <summary>
     /// Revisa un progreso leído. Acepta otra cantidad de fechas que la del catálogo (de una versión con menos o más
@@ -100,39 +122,38 @@ public static class LogrosCometas
     }
     private static void Cargar()
     {
-        if (!File.Exists(Ruta) && !File.Exists(Ruta + ".bak")) { datos = new Progreso(); return; }
-        try { datos = Leer(Ruta); }
-        catch
+        string json = Guardado.GetString(Clave, "");
+        if (!string.IsNullOrEmpty(json))
         {
-            try { datos = Leer(Ruta + ".bak"); AvisoGuardado = "Progreso recuperado desde el respaldo."; }
-            catch { datos = new Progreso(); soloLectura = true; AvisoGuardado = "No se pudo cargar el progreso. Se conservaron los archivos originales."; }
+            try { datos = Validar(JsonUtility.FromJson<Progreso>(json)); }
+            catch
+            {
+                // Una parte dañada del archivo no se pisa: se juega sin contar logros hasta que se arregle.
+                datos = new Progreso(); soloLectura = true;
+                aviso = "No se pudo leer el progreso de los logros. Se conservó tal como estaba.";
+            }
+            if (datos.version > 1) { soloLectura = true; aviso = "Este progreso de logros requiere una versión más reciente del juego."; }
+            return;
         }
-        if (datos.version > 1) { soloLectura = true; AvisoGuardado = "Este progreso requiere una versión más reciente del juego."; }
-    }
-    public static void Guardar()
-    {
-        if (!pendiente || soloLectura || datos == null) return;
-        try
+        // Migración (US 162): lo que había en logros-cometas.json (o en su respaldo) pasa al archivo del jugador.
+        datos = null;
+        foreach (string ruta in new[] { RutaAnterior, RutaAnterior + ".bak" })
         {
-            // Con dos juegos abiertos en esta PC (el editor y un build comparten la carpeta), el otro pudo guardar
-            // después de que este cargó: se junta con lo que hay en el archivo, así no se pisa su progreso.
-            Progreso enArchivo = null;
-            try { if (File.Exists(Ruta)) enArchivo = Leer(Ruta); } catch { }
-            if (enArchivo != null && enArchivo.version <= datos.version && Juntar(datos, enArchivo)) Revision++;
-            EscribirAtomico(Ruta, JsonUtility.ToJson(datos, true));
-            pendiente = false;
-            if (AvisoGuardado == NoSePudoGuardar) AvisoGuardado = null;
+            if (!File.Exists(ruta)) continue;
+            try { datos = Leer(ruta); break; } catch { }
         }
-        catch (Exception) { AvisoGuardado = NoSePudoGuardar; }
+        if (datos == null) { datos = new Progreso(); return; }
+        if (datos.version > 1) { soloLectura = true; aviso = "Este progreso de logros requiere una versión más reciente del juego."; return; }
+        Guardar();
     }
-    public static void EscribirAtomico(string ruta, string json)
+
+    private static void Guardar()
     {
-        Directory.CreateDirectory(Path.GetDirectoryName(ruta));
-        File.WriteAllText(ruta + ".tmp", json);
-        if (File.Exists(ruta)) File.Replace(ruta + ".tmp", ruta, ruta + ".bak");
-        else File.Move(ruta + ".tmp", ruta);
+        if (soloLectura || datos == null) return;
+        Guardado.SetString(Clave, JsonUtility.ToJson(datos));
     }
+
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
     private static void ReiniciarSesion()
-    { datos = null; pendiente = soloLectura = false; Revision = 0; AvisoGuardado = null; Desbloqueado = null; }
+    { datos = null; soloLectura = false; Revision = 0; aviso = null; Desbloqueado = null; }
 }
