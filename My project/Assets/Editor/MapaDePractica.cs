@@ -22,6 +22,9 @@ using UnityEngine.SceneManagement;
 //   en movimiento, distancias y reacción) y reiniciar: pone los muñecos en la zona de tiro. En la línea de tiro, una
 //   barrera: un mostrador bajo y, arriba, una pared invisible que frena al jugador pero no a las balas (está en la
 //   capa Ignore Raycast, que los disparos no miran).
+// - US 166: la guía de controles (TutorialDePractica: carteles de pasos en pantalla, con un botón "Tutorial" en el
+//   panel para volver a abrirla) y, en la pared izquierda de la zona de salida, un panel por modo (PanelDeModo) con el
+//   objetivo, cómo se gana y cómo se pierde.
 // Medidas en metros. El 0 es la línea de tiro: hacia adelante (+z) la zona de tiro, hacia atrás la zona de salida.
 // Piso, paredes y cajas son piezas del kit Sci-fi (las mismas del mapa táctico). Debajo de cada pared y del piso queda
 // un cubo invisible que es el que choca, así la sala queda cerrada aunque las piezas del kit tengan huecos. Las medidas
@@ -68,9 +71,11 @@ public static class MapaDePractica
         ZonaDeTiro(mapa);
         Barrera(mapa);
         Panel(mapa);
+        PanelesDeModos(mapa);
         Luz();
         if (Prefab(Jugador, new Vector3(0f, AlturaJugador, -8f)) == null || Prefab(Hud, Vector3.zero) == null) return;
         if (!ArmasDePractica()) return;
+        Tutorial();
 
         EditorSceneManager.SaveScene(escena, Ruta);
         SumarAlBuild();
@@ -102,10 +107,12 @@ public static class MapaDePractica
         if (mapa.Find("Zona de tiro") == null) ZonaDeTiro(mapa);
         if (mapa.Find("Barrera") == null) Barrera(mapa);
         Panel(mapa);
+        PanelesDeModos(mapa);
         if (!ArmasDePractica()) return;
+        Tutorial();
         EditorSceneManager.MarkSceneDirty(escena);
         EditorSceneManager.SaveScene(escena);
-        Debug.Log("Mapa de práctica: escena actualizada (zona de tiro, barrera, panel, tienda y campo de práctica).");
+        Debug.Log("Mapa de práctica: escena actualizada (zona de tiro, barrera, panel, tienda, campo de práctica, tutorial y paneles de los modos).");
     }
 
     // US 119: el CampoDePractica (todas las armas gratis) y la tienda, que es donde se eligen. Si ya están, no se tocan.
@@ -307,7 +314,9 @@ public static class MapaDePractica
     private static void Panel(Transform mapa)
     {
         PanelDePractica viejo = mapa.GetComponentInChildren<PanelDePractica>(true);
-        if (viejo != null && viejo.name == NombrePanel)
+        // US 166: el de antes de la guía de controles no tiene el botón "Tutorial": se arma de nuevo.
+        bool conTutorial = viejo != null && viejo.GetComponentsInChildren<BotonDePractica>(true).Any(b => b.accion == BotonDePractica.Accion.Tutorial);
+        if (viejo != null && viejo.name == NombrePanel && conTutorial)
         {
             Limites(viejo, mapa);
             return;
@@ -340,8 +349,9 @@ public static class MapaDePractica
         Boton(p, "Botón quietos", BotonDePractica.Accion.Quietos, -0.86f, 1.62f);
         Boton(p, "Botón en movimiento", BotonDePractica.Accion.Movimiento, 0f, 1.62f);
         Boton(p, "Botón distancias", BotonDePractica.Accion.Distancias, 0.86f, 1.62f);
-        Boton(p, "Botón reacción", BotonDePractica.Accion.Reaccion, -0.43f, 1.24f);
-        Boton(p, "Botón reiniciar", BotonDePractica.Accion.Reiniciar, 0.43f, 1.24f);
+        Boton(p, "Botón reacción", BotonDePractica.Accion.Reaccion, -0.86f, 1.24f);
+        Boton(p, "Botón reiniciar", BotonDePractica.Accion.Reiniciar, 0f, 1.24f);
+        Boton(p, "Botón tutorial", BotonDePractica.Accion.Tutorial, 0.86f, 1.24f); // US 166
         panel.ayuda = TextoDelPanel("Ayuda", p, "Elegí un modo", new Vector3(0f, 0.95f, -0.085f), new Vector2(ancho - 0.3f, 0.12f), Color.white);
     }
 
@@ -418,6 +428,86 @@ public static class MapaDePractica
         t.enableAutoSizing = true;
         t.fontSizeMin = 2f;
         t.fontSizeMax = 8f;
+    }
+
+    // =====================================================================
+    // US 166: guía de controles y paneles de los modos
+    // =====================================================================
+
+    private const string Fuentes = "Assets/UI/Fuentes";
+    private const string Redondeado = "Assets/UI/Tienda/Sprites/Redondeado.png";
+
+    // Los carteles de los pasos (se arman en pantalla al jugar). Si ya está, solo se le ponen las tipografías.
+    private static void Tutorial()
+    {
+        TutorialDePractica t = Object.FindAnyObjectByType<TutorialDePractica>(FindObjectsInactive.Include);
+        if (t == null) t = new GameObject("Tutorial (guía de controles)").AddComponent<TutorialDePractica>();
+        t.displayFont = AssetDatabase.LoadAssetAtPath<TMP_FontAsset>($"{Fuentes}/BarlowCondensed-Bold SDF.asset");
+        t.labelFont = AssetDatabase.LoadAssetAtPath<TMP_FontAsset>($"{Fuentes}/BarlowCondensed-SemiBold SDF.asset");
+        t.bodyFont = AssetDatabase.LoadAssetAtPath<TMP_FontAsset>($"{Fuentes}/Barlow-Regular SDF.asset");
+        t.rounded = AssetDatabase.LoadAssetAtPath<Sprite>(Redondeado);
+        EditorUtility.SetDirty(t);
+    }
+
+    private const string NombrePanelesDeModos = "Paneles de los modos";
+
+    // CA3: lo que dice cada panel. Se puede cambiar después en el Inspector de cada uno (PanelDeModo).
+    private static readonly (string modo, string objetivo, string gana, string pierde)[] Modos =
+    {
+        ("TÁCTICO",
+         "4 contra 4 por rondas, sin reaparecer. Los atacantes plantan el dispositivo en A o B ({Plantar}) y los defensores lo defienden o lo desactivan. Las granadas y la habilidad del personaje ({Habilidad}) se compran y se usan en la partida.",
+         "Ganás la ronda si el dispositivo explota, si lo desactivás o si eliminás a todo el otro equipo (si se acaba el tiempo sin plantar, ganan los defensores). Gana la partida el primer equipo en llegar a 7 rondas.",
+         "Pierde el equipo que no llega a 7 rondas. Si morís, mirás a un compañero hasta la ronda siguiente."),
+        ("DEATHMATCH",
+         "Todos contra todos, hasta 8 jugadores. Elegís tus armas gratis ({Tienda}), cada baja te cura 50 y reaparecés a los 3 s. Tu habilidad ({Habilidad}) también se usa.",
+         "Gana el primero en llegar a 25 bajas, o el que más bajas tenga cuando se terminan los 8 minutos.",
+         "Perdés si otro llega antes a 25 bajas o tiene más bajas que vos al terminar el reloj."),
+        ("ZOMBIE",
+         "Vos solo contra la horda en la universidad, durante 10 oleadas. En la oleada 10 aparece el jefe. Con los puntos que ganás comprás armas, granadas y munición entre oleadas.",
+         "Ganás si sobrevivís a las 10 oleadas. Después podés seguir en el modo infinito para hacer récord.",
+         "Perdés si los zombis te matan."),
+    };
+
+    // CA3: un panel por modo, colgados de la pared izquierda de la zona de salida, de frente a la sala. Si ya están, no
+    // se tocan (así no se pierden los textos cambiados a mano).
+    private static void PanelesDeModos(Transform mapa)
+    {
+        Transform salida = mapa.Find("Zona de salida") ?? mapa;
+        if (salida.Find(NombrePanelesDeModos) != null) return;
+        Transform grupo = Grupo(NombrePanelesDeModos, salida);
+        float pared = -CaraParedDerecha(mapa); // la sala es pareja: la izquierda está del otro lado
+        float[] zs = { -7f, -4.3f, -1.6f };
+        for (int i = 0; i < Modos.Length; i++)
+        {
+            // Su -z (el frente) queda hacia +x, hacia adentro de la sala.
+            Transform p = Grupo("Panel " + Modos[i].modo.ToLowerInvariant(), grupo);
+            p.SetPositionAndRotation(new Vector3(pared, 0f, zs[i]), Quaternion.Euler(0f, -90f, 0f));
+            PanelDeModo panel = p.gameObject.AddComponent<PanelDeModo>();
+            panel.objetivo = Modos[i].objetivo;
+            panel.comoSeGana = Modos[i].gana;
+            panel.comoSePierde = Modos[i].pierde;
+
+            const float ancho = 2.4f, alto = 2.7f, centroY = 1.85f, marco = 0.06f;
+            Caja("Pantalla", p, new Vector3(0f, centroY, -0.04f), new Vector3(ancho, alto, 0.08f), cartel);
+            Caja("Marco", p, new Vector3(0f, centroY + (alto - marco) * 0.5f, -0.1f), new Vector3(ancho, marco, 0.04f), linea, false);
+            Caja("Marco", p, new Vector3(0f, centroY - (alto - marco) * 0.5f, -0.1f), new Vector3(ancho, marco, 0.04f), linea, false);
+            Caja("Marco", p, new Vector3(-(ancho - marco) * 0.5f, centroY, -0.1f), new Vector3(marco, alto, 0.04f), linea, false);
+            Caja("Marco", p, new Vector3((ancho - marco) * 0.5f, centroY, -0.1f), new Vector3(marco, alto, 0.04f), linea, false);
+            panel.titulo = TextoDelPanel("Título", p, Modos[i].modo, new Vector3(0f, 2.95f, -0.085f), new Vector2(ancho - 0.3f, 0.3f), Amarillo);
+            panel.acercate = TextoDelPanel("Acercate", p, "Acercate para ver el objetivo", new Vector3(0f, 1.85f, -0.085f),
+                new Vector2(ancho - 0.4f, 0.14f), Color.white);
+
+            // El detalle: varios renglones, arriba a la izquierda, achicándose solo para entrar.
+            TextMeshPro d = Texto("Detalle", p, "", new Vector3(0f, 1.72f, -0.085f), 1f, Color.white, false);
+            d.rectTransform.sizeDelta = new Vector2(ancho - 0.3f, 2.1f);
+            d.fontStyle = FontStyles.Normal;
+            d.alignment = TextAlignmentOptions.TopLeft;
+            d.textWrappingMode = TextWrappingModes.Normal;
+            d.enableAutoSizing = true;
+            d.fontSizeMin = 0.4f;
+            d.fontSizeMax = 1.2f;
+            panel.detalle = d;
+        }
     }
 
     // =====================================================================

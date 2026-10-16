@@ -13,6 +13,7 @@ using UnityEngine;
 //     es más grande cuanto más lejos, así se lee igual desde la línea de tiro.
 //   * "Reacción": aparece un bot a la vez, en un lugar al azar, 10 veces. Se mide cuánto se tarda en pegarle a cada uno
 //     (si en 3 s no le pegó, cuenta como fallo). Al terminar, el marcador muestra el promedio y el mejor tiempo.
+//   * "Tutorial" (US 166, CA6): vuelve a abrir la guía de controles (TutorialDePractica) desde el primer paso.
 //   * "Reiniciar" (CA2): levanta los muñecos del modo en su lugar (o vuelve a empezar la reacción), borra las marcas de
 //     bala (CA4) y pone el marcador en 0.
 // - Marcador: cuántos bots bajó el jugador y cuántos con un tiro a la cabeza (o el resultado de la reacción).
@@ -102,6 +103,8 @@ public class PanelDePractica : MonoBehaviour
             case BotonDePractica.Accion.Distancias: Empezar(Modo.Distancias); break;
             case BotonDePractica.Accion.Reaccion: Empezar(Modo.Reaccion); break;
             case BotonDePractica.Accion.Reiniciar: Empezar(modo); break;
+            // US 166, CA6: vuelve a abrir la guía de controles desde el primer paso.
+            case BotonDePractica.Accion.Tutorial: if (TutorialDePractica.Actual != null) TutorialDePractica.Actual.Empezar(); break;
         }
     }
 
@@ -329,6 +332,7 @@ public class PanelDePractica : MonoBehaviour
             case BotonDePractica.Accion.Distancias: return "Distancias";
             case BotonDePractica.Accion.Reaccion: return "Reacción";
             case BotonDePractica.Accion.Reiniciar: return "Reiniciar";
+            case BotonDePractica.Accion.Tutorial: return "Tutorial";
             default: return "Quietos";
         }
     }

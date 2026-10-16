@@ -800,7 +800,8 @@ public class MatchHud : MonoBehaviour
 
     private void UpdateTable()
     {
-        bool held = Input.GetKey(KeyCode.Tab) && !PauseMenu.IsPaused;
+        // En el campo de práctica no hay tabla: ahí Tab saltea los pasos del tutorial (US 166, CA4).
+        bool held = Input.GetKey(KeyCode.Tab) && !PauseMenu.IsPaused && !CampoDePractica.Activo;
         if (table.gameObject.activeSelf != held) { table.gameObject.SetActive(held); nextTableRefresh = 0f; }
         if (!held || Time.unscaledTime < nextTableRefresh) return;
         nextTableRefresh = Time.unscaledTime + 0.25f;
