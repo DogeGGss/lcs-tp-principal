@@ -111,9 +111,7 @@ public class TutorialDePractica : MonoBehaviour
     private void Start()
     {
         equipo = FindAnyObjectByType<PlayerLoadout>();
-        habilidad = equipo != null ? equipo.GetComponentInChildren<PlayerAbility>() : null;
-        if (habilidad == null) habilidad = FindAnyObjectByType<PlayerAbility>();
-        if (habilidad != null) habilidad.Used += AlUsarHabilidad;
+        BuscarHabilidad();
         ArmarPasos();
         Armar();
         // CA6: si ya lo terminó, no aparece solo (queda el botón "Tutorial" del panel).
@@ -168,8 +166,9 @@ public class TutorialDePractica : MonoBehaviour
             {
                 titulo = "Habilidad",
                 partes = new[] { P("Usar la habilidad de tu personaje", GameAction.Habilidad) },
-                // Sin personaje con habilidad no hay nada que practicar: se da por hecho.
-                alEmpezar = () => { if (habilidad == null || habilidad.Ability == null) Hecha(0); },
+                // Se vuelve a buscar por si el jugador apareció después del tutorial. Si no tiene habilidad, el paso
+                // queda igual a la vista (se saltea con Tab) en vez de pasar solo.
+                alEmpezar = BuscarHabilidad,
             },
             new Paso
             {
@@ -256,6 +255,9 @@ public class TutorialDePractica : MonoBehaviour
                 if (KeyBindings.Down(GameAction.Cuchillo)) Hecha(2);
                 if (KeyBindings.Down(GameAction.Granadas)) Hecha(3);
                 break;
+            case 4:
+                if (libre && KeyBindings.Down(GameAction.Habilidad)) Hecha(0);
+                break;
             case 5:
                 if (ShopUI.IsOpen) Hecha(0);
                 if (equipo != null && (equipo.Primary != armaAlEmpezar || equipo.Secondary != secundariaAlEmpezar)) Hecha(1);
@@ -280,7 +282,17 @@ public class TutorialDePractica : MonoBehaviour
         if (Abierto && paso == 3) Hecha(4);
     }
 
-    // Paso 5.
+    private void BuscarHabilidad()
+    {
+        PlayerAbility nueva = equipo != null ? equipo.GetComponentInChildren<PlayerAbility>() : null;
+        if (nueva == null) nueva = FindAnyObjectByType<PlayerAbility>();
+        if (nueva == habilidad) return;
+        if (habilidad != null) habilidad.Used -= AlUsarHabilidad;
+        habilidad = nueva;
+        if (habilidad != null) habilidad.Used += AlUsarHabilidad;
+    }
+
+    // Paso 5: también vale apretar la tecla (por si el efecto no se pudo hacer ahí, por ejemplo contra una pared).
     private void AlUsarHabilidad()
     {
         if (Abierto && paso == 4) Hecha(0);

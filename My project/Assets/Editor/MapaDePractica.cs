@@ -455,11 +455,11 @@ public static class MapaDePractica
     private static readonly (string modo, string objetivo, string gana, string pierde)[] Modos =
     {
         ("TÁCTICO",
-         "4 contra 4 por rondas, sin reaparecer. Los atacantes plantan el dispositivo en A o B ({Plantar}) y los defensores lo defienden o lo desactivan. {Correr} camina despacio y sin hacer ruido (no se corre). Las granadas se compran en la fase de compra.",
+         "4 contra 4 por rondas, sin reaparecer. Los atacantes plantan el dispositivo en A o B ({Plantar}) y los defensores lo defienden o lo desactivan. {Correr} camina despacio y sin hacer ruido (no se corre). La habilidad de tu personaje se usa con {Habilidad} y las granadas se compran en la fase de compra.",
          "Ganás la ronda si el dispositivo explota, si lo desactivás o si eliminás a todo el otro equipo (si se acaba el tiempo sin plantar, ganan los defensores). Gana la partida el primer equipo en llegar a 7 rondas.",
          "Pierde el equipo que no llega a 7 rondas. Si morís, mirás a un compañero hasta la ronda siguiente."),
         ("DEATHMATCH",
-         "Todos contra todos, hasta 8 jugadores. Elegís tus armas gratis ({Tienda}), cada baja te cura 50 y reaparecés a los 3 s. No hay escudos ni granadas.",
+         "Todos contra todos, hasta 8 jugadores. Elegís tus armas gratis ({Tienda}), cada baja te cura 50 y reaparecés a los 3 s. Tu habilidad se usa con {Habilidad}. No hay escudos ni granadas.",
          "Gana el primero en llegar a 25 bajas, o el que más bajas tenga cuando se terminan los 8 minutos.",
          "Perdés si otro llega antes a 25 bajas o tiene más bajas que vos al terminar el reloj."),
         ("ZOMBIE",
