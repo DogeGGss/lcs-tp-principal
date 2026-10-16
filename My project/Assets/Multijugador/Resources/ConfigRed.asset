@@ -59,6 +59,22 @@ MonoBehaviour:
   sonidoBarreraRompe: {fileID: 0}
   sonidoBarreraApaga: {fileID: 0}
   volumenBarrera: 0.8
+  sonidoVistaAerea: {fileID: 0}
+  sonidoVistaAereaFin: {fileID: 0}
+  sonidoObservado: {fileID: 0}
+  volumenVistaAerea: 0.8
+  modeloPerro: {fileID: 919132149155446097, guid: 2a9979b14acae404f8d4cd863daf1b34, type: 3}
+  animacionesPerro: {fileID: 9100000, guid: b10a654061f0c894281eac17211f9546, type: 2}
+  estadoPerroCorrer: Running_New
+  estadoPerroAtacar: AttackR
+  colorPerro: {r: 1, g: 0.55, b: 0.12, a: 1}
+  sonidoPerroSoltar: {fileID: 0}
+  sonidoPerroLadrido: {fileID: 0}
+  sonidoPerroGrunido: {fileID: 0}
+  sonidoPerroMordida: {fileID: 0}
+  sonidoPerroMuerte: {fileID: 0}
+  sonidoPerroDesaparece: {fileID: 0}
+  volumenPerro: 0.8
   musicaDeathmatch: {fileID: 8300000, guid: 7d3c4a44088ab004a8f7971b5ed4b23e, type: 3}
   ambienteDeathmatch: {fileID: 0}
   grupoMusica: {fileID: -3878677901696022068, guid: ddda7e32a2420c4489fcc2a1c31e1976, type: 2}

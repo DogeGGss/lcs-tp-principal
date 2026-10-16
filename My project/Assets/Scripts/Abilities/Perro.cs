@@ -9,7 +9,7 @@ using UnityEngine.Audio;
 // desaparece (CA6). Al alcanzar al rival lo muerde y desaparece: la mordida no saca vida, le nubla la vista 2,5 s y lo
 // marca 3 s a través de las paredes para el equipo del dueño (CA7 y CA8). Tiene 60 de vida: los disparos, el cuchillo y
 // las granadas de los rivales lo pueden matar (CA9). Si en 6 s no alcanzó a nadie, desaparece (CA10).
-// Se ve como un holograma (CA2): del color de compañero para el equipo del dueño y rojo para los rivales (CA3).
+// Se ve como un holograma (CA2): naranja, espectral, para el dueño y su equipo, y rojo para los rivales (CA3).
 // En línea (CA15), el perro se mueve en la computadora del dueño, que manda dónde está y si mordió o desapareció
 // (JugadorEnRed); en las demás es una copia que sigue esas posiciones. El daño llega a todas por el servidor, en el
 // mismo orden, así la vida y la muerte dan igual en todas.
@@ -60,6 +60,7 @@ public class Perro : MonoBehaviour
     private AudioSource grunido;
     private TrailRenderer rastro;
     private Vector3 lunge; // el salto de la mordida, en el perro hecho a mano
+    private bool corriendo;
 
     // =====================================================================
     // Crear y buscar
@@ -167,6 +168,7 @@ public class Perro : MonoBehaviour
             return;
         }
         if (!Activo) return;
+        if (!corriendo && animador != null) { corriendo = true; Estado(config => config.estadoPerroCorrer); }
 
         if (propio) Simular();
         else Seguir();
@@ -370,14 +372,16 @@ public class Perro : MonoBehaviour
     // Dibujo (CA2, CA3 y CA4)
     // =====================================================================
 
-    // CA3: el equipo del dueño lo ve del color de compañero; los rivales, rojo.
+    // CA3: el dueño y su equipo lo ven naranja, espectral; los rivales, rojo.
     private Color ColorParaMi()
     {
-        if (propio || Actor < 0) return MatchHud.TeamColor;
+        ConfigRed config = ConfigRed.Actual;
+        Color propioColor = config != null ? config.colorPerro : new Color(1f, 0.55f, 0.12f);
+        if (propio || Actor < 0) return propioColor;
         JugadorEnRed yo = PartidaEnRed.Actual != null ? PartidaEnRed.Actual.Local : null;
-        if (yo == null) return MatchHud.TeamColor;
+        if (yo == null) return propioColor;
         bool rival = yo.Actor != Actor && !EquiposTacticos.SonAliados(yo.Actor, Actor);
-        return rival ? MatchHud.RivalColor : MatchHud.TeamColor;
+        return rival ? MatchHud.RivalColor : propioColor;
     }
 
     private void ArmarDibujo()
@@ -417,6 +421,8 @@ public class Perro : MonoBehaviour
         bool hay = false;
         foreach (Renderer r in partes)
         {
+            // El pelo del lobo son láminas con transparencia: con el holograma se verían como placas. Se ocultan.
+            if (EsPelo(r)) { r.enabled = false; continue; }
             if (!hay) { b = r.bounds; hay = true; } else b.Encapsulate(r.bounds);
             var mats = new Material[r.sharedMaterials.Length];
             for (int i = 0; i < mats.Length; i++) mats[i] = holo;
@@ -426,8 +432,22 @@ public class Perro : MonoBehaviour
         }
         if (hay && b.size.y > 0.01f) m.transform.localScale *= Altura / b.size.y;
         animador = m.GetComponentInChildren<Animator>();
-        if (animador != null) { animador.applyRootMotion = false; Estado(config => config.estadoPerroCorrer); }
+        if (animador == null) animador = m.AddComponent<Animator>();
+        ConfigRed cfg = ConfigRed.Actual;
+        if (animador.runtimeAnimatorController == null && cfg != null) animador.runtimeAnimatorController = cfg.animacionesPerro;
+        animador.applyRootMotion = false;
+        animador.cullingMode = AnimatorCullingMode.AlwaysAnimate;
+        Estado(config => config.estadoPerroCorrer);
         cuerpo = m.transform;
+    }
+
+    private static bool EsPelo(Renderer r)
+    {
+        string n = r.gameObject.name.ToLowerInvariant();
+        if (n.Contains("fur") || n.Contains("hair")) return true;
+        foreach (Material m in r.sharedMaterials)
+            if (m != null && (m.name.ToLowerInvariant().Contains("fur") || m.name.ToLowerInvariant().Contains("hair"))) return true;
+        return false;
     }
 
     private void Estado(System.Func<ConfigRed, string> nombre)
