@@ -15,7 +15,7 @@ MonoBehaviour:
   displayName: Callejero
   icon: {fileID: 21300000, guid: 1c0202cbcfd74e45a18498a3408b3bef, type: 3}
   key: 113
-  cooldown: 35
+  cooldown: 25
   cargas: 1
   efecto: 4
-  description: 'Soltás un perro espectral que corre hacia el rival más cercano (hasta 25 m). Si lo alcanza, lo muerde: le nubla la vista 2,5 s y tu equipo lo ve a través de las paredes 3 s. Los rivales lo oyen venir y lo pueden matar. Se recarga en 35 s.'
+  description: 'Soltás un perro espectral que corre hacia el rival más cercano, esté donde esté. Si lo alcanza, lo muerde: le nubla la vista 2,5 s y tu equipo lo ve a través de las paredes 3 s. Los rivales lo oyen venir y lo pueden matar. Se recarga en 25 s.'

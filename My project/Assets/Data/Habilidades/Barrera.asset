@@ -15,7 +15,7 @@ MonoBehaviour:
   displayName: Barrera
   icon: {fileID: 21300000, guid: 126d27efa31b44bfb3f47c9e5106e389, type: 3}
   key: 113
-  cooldown: 40
+  cooldown: 20
   cargas: 1
   efecto: 2
-  description: 'Mantené la tecla para apuntar y soltala para levantar una pared de 4 m que frena balas, granadas y jugadores. Aguanta 800 de daño y dura 15 s. Se recarga en 40 s después de que cae.'
+  description: 'Mantené la tecla para apuntar y soltala para levantar una pared de 4 m que frena balas, granadas y jugadores. Aguanta 800 de daño y dura 15 s. Se recarga en 20 s después de que cae.'

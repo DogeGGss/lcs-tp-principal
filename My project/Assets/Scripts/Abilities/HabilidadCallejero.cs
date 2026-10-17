@@ -29,8 +29,8 @@ public class HabilidadCallejero : EfectoHabilidad
         Vector3 lugar = pies + adelante * 1f;
         if (Physics.Raycast(pies + Vector3.up * 0.5f, adelante, 1.3f, Physics.DefaultRaycastLayers, QueryTriggerInteraction.Ignore))
             lugar = pies;
-        if (Physics.Raycast(lugar + Vector3.up * 1f, Vector3.down, out RaycastHit piso, 3f, Physics.DefaultRaycastLayers, QueryTriggerInteraction.Ignore))
-            lugar.y = piso.point.y;
+        // En el piso aunque lo suelte saltando o desde un balcón (antes quedaba volando).
+        if (Perro.Piso(lugar, transform, out float suelo)) lugar.y = suelo;
 
         float yaw = Quaternion.LookRotation(adelante).eulerAngles.y;
         JugadorEnRed red = GetComponent<JugadorEnRed>();
