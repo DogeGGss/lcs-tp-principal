@@ -540,7 +540,7 @@ public static class PerfilDatos
 
     public const int DebugCreditos = 1000, DebugBoletos = 10, DebugCristales = 500;
 
-    /// <summary>DEBUG (F9 o el botón del menú): suma de las tres monedas para probar sin jugar ni comprar.</summary>
+    /// <summary>DEBUG (F9 en el menú): suma de las tres monedas para probar sin jugar ni comprar.</summary>
     public static void SumarDebug()
     {
         E.creditos += DebugCreditos;

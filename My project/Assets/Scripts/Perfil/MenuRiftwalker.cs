@@ -220,7 +220,7 @@ public class MenuRiftwalker : MonoBehaviour
 
     public void Avisar(string mensaje) => aviso.Mostrar(mensaje);
 
-    /// <summary>DEBUG (F9): suma de las tres monedas.</summary>
+    /// <summary>DEBUG (F9, en el menú y en sus pantallas): suma de las tres monedas. No tiene botón a la vista.</summary>
     public void SumarDebug()
     {
         PerfilDatos.SumarDebug();
@@ -441,14 +441,6 @@ public class MenuRiftwalker : MonoBehaviour
             p.Hovered = () => t.color = Accent;
             p.Exited = () => t.color = Soft;
         }
-        // DEBUG: suma de las tres monedas (también con F9, en el menú y en sus pantallas).
-        RectTransform debug = Place(Node("Debug", capaMenu), 120f, 752f, 226f, 36f);
-        Img fondoDebug = Image(debug, Rounded, WithAlpha(ColorCristales, 0.16f), 6f, true);
-        Borde(debug, 6f, WithAlpha(ColorCristales, 0.6f));
-        T(debug, "Texto", 0f, 0f, 226f, 36f, FRotulo, 16f, ColorCristales, "Debug: +monedas (F9)", TextAlignmentOptions.Center, 10f, true);
-        var pd = Clickeable(debug, SumarDebug);
-        pd.Hovered = () => fondoDebug.color = WithAlpha(ColorCristales, 0.32f);
-        pd.Exited = () => fondoDebug.color = WithAlpha(ColorCristales, 0.16f);
 
         // ----- Tarjetas de abajo -----
         // El Perfil se abre desde la credencial de arriba a la derecha y la Tienda desde el + de los cristales.
