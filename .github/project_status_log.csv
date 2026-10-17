@@ -725,3 +725,4 @@ fecha_utc,us_numero,us_titulo,estado_anterior,estado_nuevo,tiempo_en_estado_ante
 2026-10-17T04:09:02.466057+00:00,424,US 217. Consultar el perfil del jugador,TESTING,Done,6h 21m,22911,https://github.com/DogeGGss/lcs-tp-principal/issues/424
 2026-10-17T04:09:02.466057+00:00,426,US 219. Elegir el avatar del perfil,LPR,Done,17h 17m,62221,https://github.com/DogeGGss/lcs-tp-principal/issues/426
 2026-10-17T04:09:02.466057+00:00,427,US 220. Elegir el banner del perfil,LPR,TESTING,17h 17m,62221,https://github.com/DogeGGss/lcs-tp-principal/issues/427
+2026-10-17T08:33:04.811115+00:00,350,US 209. Ventana propia del launcher,LPR,TESTING,12d 12m,1037539,https://github.com/DogeGGss/lcs-tp-principal/issues/350
