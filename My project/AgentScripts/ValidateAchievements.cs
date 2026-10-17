@@ -7,7 +7,7 @@ public static class ValidateAchievements {
  static void Check(bool ok,string message) { checks++; if(!ok)throw new Exception(message); }
  public static string Main() {
  var p=new LogrosCometas.Progreso();
- Check(LogrosCometas.Catalogo.Length==9,"catalog count");
+ Check(LogrosCometas.Catalogo.Length==25 && Array.FindAll(LogrosCometas.Catalogo,d=>d.EsCometa).Length==9,"catalog count (9 comets + 16 combat)");
  Check(LogrosCometas.Aplicar(p,0,9,"a").Count==0,"early unlock");
  Check(LogrosCometas.Aplicar(p,0,10,"b").Count==1,"first threshold");
  Check(LogrosCometas.Aplicar(p,0,10,"c").Count==0 && p.fechas[0]=="b","duplicate unlock");
@@ -38,6 +38,21 @@ public static class ValidateAchievements {
  Check(!config.Valido,"secret key rejected");config.clavePublica="eyJ.legacy.jwt";Check(!config.Valido,"unverified JWT rejected");config.clavePublica="sb_publishable_example";Check(config.Valido,"publishable accepted");UnityEngine.Object.DestroyImmediate(config);
  const string asset="Assets/Resources/LogrosOnline.asset";
  if(AssetDatabase.LoadAssetAtPath<LogrosOnlineConfig>(asset)==null){Directory.CreateDirectory("Assets/Resources");AssetDatabase.CreateAsset(ScriptableObject.CreateInstance<LogrosOnlineConfig>(),asset);AssetDatabase.SaveAssets();}
+ // Logros de combate (F13): salen de las estadisticas del jugador y no de los cometas.
+ var q=new LogrosCometas.Progreso();
+ Check(LogrosCometas.Aplicar(q,2,1000,"z").TrueForAll(d=>d.EsCometa),"comets never unlock combat");
+ var e=new EstadisticasJugador.Totales();
+ e.tactico.bajas=6; e.deathmatch.bajas=4; e.tactico.cabezas=10; e.mejorRacha=5;
+ var nuevos=LogrosCometas.AplicarEstadisticas(q,e,"k");
+ Check(nuevos.Exists(d=>d.id=="bajas_10") && nuevos.Exists(d=>d.id=="cabezas_10") && nuevos.Exists(d=>d.id=="racha_5") && nuevos.Count==3,"combat thresholds across modes");
+ Check(LogrosCometas.AplicarEstadisticas(q,e,"l").Count==0,"combat unlock only once");
+ e.tactico.victorias=1; e.mvp=1;
+ Check(LogrosCometas.AplicarEstadisticas(q,e,"m").Count==2,"first win and first MVP");
+ string sql=File.ReadAllText(Path.Combine(Application.dataPath,"../../Backend/Supabase/logros.sql"));
+ foreach(var d in LogrosCometas.Catalogo){
+  Check(sql.Contains("('"+d.id+"',"),"achievement missing in logros.sql: "+d.id);
+  if(!d.EsCometa){ LogrosCometas.ValorEstadistica(d.estadistica,e); Check(sql.Contains("when '"+d.estadistica+"' then"),"stat missing in rw_stat_value: "+d.estadistica); }
+ }
  return checks+" checks passed. Configuration asset ready; real player data untouched.";
  }
 }

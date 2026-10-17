@@ -27,6 +27,7 @@ public static class CategoriasRanking
         C("bajas", "General", "Bajas"),
         C("muertes", "General", "Muertes"),
         C("asistencias", "General", "Asistencias"),
+        C("cabezas", "General", "Bajas a la cabeza"),
         C("kda", "General", "KDA", Formato.Decimal, CincoPartidas),
         C("tiros_cabeza", "General", "Tiros a la cabeza", Formato.Porcentaje, CincoPartidas),
         C("horas", "General", "Horas jugadas", Formato.Horas),
