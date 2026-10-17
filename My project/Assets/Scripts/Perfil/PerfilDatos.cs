@@ -306,44 +306,91 @@ public static class PerfilDatos
     public static Cosmetico Titulo => Buscar(Tipo.Titulo, E.titulo) ?? Buscar(Tipo.Titulo, "");
     public static Cosmetico Marco => Buscar(Tipo.Marco, E.marco) ?? Buscar(Tipo.Marco, "anden-riftwalker");
 
+    /// <summary>Ancho de las imágenes originales de los marcos (3840 × 1280). Las medidas de abajo están en píxeles de esas
+    /// imágenes; Unity las importa a 2048 y PerfilUI las escala al tamaño importado.</summary>
+    public const float AnchoMarcos = 3840f;
+
     /// <summary>
     /// Distancia desde cada borde de la imagen del marco hasta el centro de su riel (izquierda, arriba, derecha, abajo),
-    /// en píxeles: ese centro se apoya sobre el borde de la cabecera. Medido en filas y columnas lisas de cada imagen.
+    /// en píxeles de la imagen original: ese centro se apoya sobre el borde de la cabecera. Medido en la parte opaca de los
+    /// tramos lisos de cada imagen (17/10/2026); hacia afuera ninguno sale más de 25 px en 1080p.
     /// </summary>
     public static readonly Dictionary<string, Vector4> RielesMarco = new Dictionary<string, Vector4>
     {
-        { "anden-riftwalker", new Vector4(28f, 24f, 27f, 24f) },
-        { "umbral-celeste", new Vector4(23f, 39f, 23f, 39f) },
-        { "forja-ambar", new Vector4(29f, 32f, 28f, 27f) },
-        { "pulso-carmesi", new Vector4(28f, 24f, 25f, 24f) },
-        { "velo-esmeralda", new Vector4(28f, 23f, 28f, 21f) },
-        { "ultima-oleada", new Vector4(27f, 32f, 25f, 42f) },
-        { "nucleo-del-rift", new Vector4(35f, 31f, 35f, 28f) },
-        { "pesado-realista", new Vector4(26f, 25f, 25f, 25f) },
-        { "guerrero-synthwave", new Vector4(27f, 26f, 28f, 25f) },
-        { "sigiloso-manga", new Vector4(39f, 53f, 38f, 67f) },
-        { "astra-pop", new Vector4(21f, 20f, 21f, 19f) },
-        { "guerrero-fauve", new Vector4(30f, 38f, 31f, 35f) },
-        { "sigiloso-tinta", new Vector4(33f, 44f, 36f, 61f) },
-        { "astra-nouveau", new Vector4(39f, 44f, 39f, 27f) },
-        { "pesado-cubista", new Vector4(23f, 23f, 22f, 22f) },
-        { "sigiloso-8bit", new Vector4(80f, 80f, 79f, 79f) },
-        { "astra-acuarela", new Vector4(76f, 83f, 78f, 85f) },
-        { "pesado-tinta-china", new Vector4(63f, 137f, 78f, 120f) },
-        { "guerrero-puntillismo", new Vector4(50f, 66f, 50f, 59f) },
+        { "anden-riftwalker", new Vector4(56f, 67f, 55f, 68f) },
+        { "umbral-celeste", new Vector4(45f, 90f, 45f, 89f) },
+        { "forja-ambar", new Vector4(67f, 95f, 67f, 98f) },
+        { "pulso-carmesi", new Vector4(57f, 78f, 58f, 76f) },
+        { "velo-esmeralda", new Vector4(64f, 82f, 65f, 81f) },
+        { "ultima-oleada", new Vector4(64f, 85f, 63f, 86f) },
+        { "nucleo-del-rift", new Vector4(51f, 57f, 50f, 57f) },
+        { "pesado-realista", new Vector4(57f, 71f, 58f, 72f) },
+        { "guerrero-synthwave", new Vector4(57f, 81f, 58f, 72f) },
+        { "sigiloso-manga", new Vector4(77f, 113f, 77f, 114f) },
+        { "astra-pop", new Vector4(54f, 67f, 53f, 68f) },
+        { "guerrero-fauve", new Vector4(62f, 63f, 62f, 63f) },
+        { "sigiloso-tinta", new Vector4(56f, 104f, 54f, 78f) },
+        { "astra-nouveau", new Vector4(46f, 100f, 47f, 66f) },
+        { "pesado-cubista", new Vector4(46f, 61f, 48f, 60f) },
+        { "sigiloso-8bit", new Vector4(65f, 75f, 65f, 74f) },
+        { "astra-acuarela", new Vector4(40f, 47f, 40f, 47f) },
+        { "pesado-tinta-china", new Vector4(72f, 92f, 72f, 90f) },
+        { "guerrero-puntillismo", new Vector4(69f, 82f, 69f, 81f) },
     };
 
     /// <summary>
-    /// Cómo se estira cada marco en sus dos mitades (píxeles de su imagen): ancho de las esquinas y medio ancho del adorno
-    /// del centro, que no se deforman, y si los tramos del riel se repiten en vez de estirarse (así los puntos siguen redondos).
-    /// Los que no están: esquinas de 300 px, sin adorno al centro y estirados.
+    /// Distancia desde cada borde de la imagen del marco hasta el borde INTERIOR de la parte opaca de su riel (izquierda, arriba, derecha,
+    /// abajo), en píxeles de la imagen original. Hasta ahí llega el banner cuando hay marco (PerfilUI.InteriorMarco).
+    /// </summary>
+    public static readonly Dictionary<string, Vector4> InterioresMarco = new Dictionary<string, Vector4>
+    {
+        { "anden-riftwalker", new Vector4(81f, 100f, 80f, 101f) },
+        { "umbral-celeste", new Vector4(63f, 114f, 63f, 113f) },
+        { "forja-ambar", new Vector4(92f, 130f, 92f, 132f) },
+        { "pulso-carmesi", new Vector4(81f, 110f, 83f, 108f) },
+        { "velo-esmeralda", new Vector4(84f, 115f, 85f, 115f) },
+        { "ultima-oleada", new Vector4(93f, 124f, 92f, 125f) },
+        { "nucleo-del-rift", new Vector4(75f, 86f, 73f, 85f) },
+        { "pesado-realista", new Vector4(86f, 105f, 87f, 106f) },
+        { "guerrero-synthwave", new Vector4(88f, 125f, 88f, 116f) },
+        { "sigiloso-manga", new Vector4(95f, 137f, 96f, 139f) },
+        { "astra-pop", new Vector4(78f, 101f, 78f, 103f) },
+        { "guerrero-fauve", new Vector4(96f, 95f, 96f, 96f) },
+        { "sigiloso-tinta", new Vector4(75f, 129f, 73f, 103f) },
+        { "astra-nouveau", new Vector4(62f, 121f, 63f, 86f) },
+        { "pesado-cubista", new Vector4(64f, 86f, 66f, 86f) },
+        { "sigiloso-8bit", new Vector4(92f, 107f, 92f, 107f) },
+        { "astra-acuarela", new Vector4(54f, 67f, 54f, 67f) },
+        { "pesado-tinta-china", new Vector4(87f, 113f, 87f, 111f) },
+        { "guerrero-puntillismo", new Vector4(98f, 116f, 97f, 115f) },
+    };
+
+    /// <summary>
+    /// Cómo se estira cada marco en sus dos mitades (píxeles de la imagen original): ancho de las esquinas y medio ancho del
+    /// adorno del centro, que no se deforman, y si los tramos del riel se repiten en vez de estirarse (así los durmientes,
+    /// los puntos y las rayas no se alargan).
     /// </summary>
     public static readonly Dictionary<string, (float esquina, float centro, bool repetir)> CortesMarco = new Dictionary<string, (float, float, bool)>
     {
-        { "sigiloso-8bit", (580f, 150f, false) },
-        { "astra-acuarela", (600f, 100f, false) },
-        { "pesado-tinta-china", (400f, 0f, false) },
-        { "guerrero-puntillismo", (400f, 260f, true) },
+        { "anden-riftwalker", (230f, 211f, true) },
+        { "umbral-celeste", (192f, 173f, false) },
+        { "forja-ambar", (307f, 326f, false) },
+        { "pulso-carmesi", (192f, 173f, false) },
+        { "velo-esmeralda", (307f, 192f, true) },
+        { "ultima-oleada", (250f, 422f, true) },
+        { "nucleo-del-rift", (211f, 0f, false) },
+        { "pesado-realista", (192f, 307f, false) },
+        { "guerrero-synthwave", (192f, 134f, false) },
+        { "sigiloso-manga", (269f, 211f, false) },
+        { "astra-pop", (154f, 0f, true) },
+        { "guerrero-fauve", (154f, 0f, true) },
+        { "sigiloso-tinta", (192f, 154f, false) },
+        { "astra-nouveau", (307f, 422f, false) },
+        { "pesado-cubista", (192f, 0f, true) },
+        { "sigiloso-8bit", (192f, 0f, false) },
+        { "astra-acuarela", (192f, 0f, false) },
+        { "pesado-tinta-china", (230f, 230f, false) },
+        { "guerrero-puntillismo", (154f, 0f, true) },
     };
 
     public static (float esquina, float centro, bool repetir) Cortes(string id) =>

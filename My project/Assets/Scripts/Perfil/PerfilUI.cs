@@ -121,6 +121,8 @@ public static class PerfilUI
         marco.gameObject.SetActive(true);
         marco.SetAsLastSibling();
         if (encimaDe != null) marco.SetSiblingIndex(encimaDe.GetSiblingIndex() + 1);
+        // Las medidas están en píxeles de la imagen original; Unity la importa más chica.
+        riel *= sprite.rect.width / PerfilDatos.AnchoMarcos;
         // Escala: el alto del recuadro manda (el riel queda del mismo grosor arriba y a los costados).
         if (adentro) riel = Vector4.zero;
         float s = h / (sprite.rect.height - riel.y - riel.w);
@@ -139,19 +141,43 @@ public static class PerfilUI
         return marco;
     }
 
+    /// <summary>
+    /// Cuánto hay desde cada borde del recuadro (izquierda, arriba, derecha, abajo) hasta el borde interior del riel, con el
+    /// marco puesto como lo pone Enmarcar. Ahí termina el banner: así nunca asoma por fuera del marco (en las esquinas
+    /// redondeadas, por ejemplo). Sin marco, cero.
+    /// </summary>
+    public static Vector4 InteriorMarco(PerfilDatos.Cosmetico c, float h, bool adentro = false)
+    {
+        Sprite sprite = c != null ? PerfilDatos.Imagen(c) : null;
+        if (sprite == null || !PerfilDatos.RielesMarco.TryGetValue(c.id, out Vector4 riel)
+            || !PerfilDatos.InterioresMarco.TryGetValue(c.id, out Vector4 interior)) return Vector4.zero;
+        float k = sprite.rect.width / PerfilDatos.AnchoMarcos;
+        riel *= k;
+        interior *= k;
+        if (adentro) riel = Vector4.zero;
+        float s = h / (sprite.rect.height - riel.y - riel.w);
+        // Dos unidades menos: el banner termina debajo del riel, no justo en su borde.
+        return Vector4.Max((interior - riel) * s - new Vector4(2f, 2f, 2f, 2f), Vector4.zero);
+    }
+
     /// <summary>Las dos mitades del marco, con sus bordes: la esquina afuera y medio adorno del centro adentro.</summary>
     private static Sprite[] Mitades(string id, Sprite sprite)
     {
         if (mitadesMarco.TryGetValue(id, out Sprite[] mitades) && mitades[0] != null) return mitades;
         var (esquina, centro, _) = PerfilDatos.Cortes(id);
         Rect r = sprite.rect;
+        float k = r.width / PerfilDatos.AnchoMarcos; // de píxeles de la imagen original a los del sprite importado
+        esquina *= k; centro *= k;
+        // 100 píxeles por unidad, como supone Enmarcar. Si Unity achica la textura al importarla, el sprite original trae
+        // menos (para conservar su tamaño) y las esquinas y los bordes se dibujarían más grandes.
+        const float ppu = 100f;
         float medio = Mathf.Floor(r.width / 2f), arriba = sprite.border.w, abajo = sprite.border.y;
         Vector2 pivote = new Vector2(0.5f, 0.5f);
         mitades = new[]
         {
-            Sprite.Create(sprite.texture, new Rect(r.x, r.y, medio, r.height), pivote, sprite.pixelsPerUnit, 0,
+            Sprite.Create(sprite.texture, new Rect(r.x, r.y, medio, r.height), pivote, ppu, 0,
                 SpriteMeshType.FullRect, new Vector4(esquina, abajo, centro, arriba)),
-            Sprite.Create(sprite.texture, new Rect(r.x + medio, r.y, r.width - medio, r.height), pivote, sprite.pixelsPerUnit, 0,
+            Sprite.Create(sprite.texture, new Rect(r.x + medio, r.y, r.width - medio, r.height), pivote, ppu, 0,
                 SpriteMeshType.FullRect, new Vector4(centro, abajo, esquina, arriba)),
         };
         mitadesMarco[id] = mitades;
