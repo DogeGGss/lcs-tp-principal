@@ -109,7 +109,7 @@ public class PlayerAbility : MonoBehaviour
         }
         // US 020: las que se apuntan antes leen la tecla en su efecto, que después llama a Usar.
         bool apunta = efecto != null && efecto.ApuntaAntes;
-        if (ability != null && !apunta && !ShopUI.IsOpen && KeyBindings.Down(GameAction.Habilidad)) TryUse();
+        if (ability != null && !apunta && !ShopUI.IsOpen && !PauseMenu.IsPaused && KeyBindings.Down(GameAction.Habilidad)) TryUse();
     }
 
     public bool TryUse()

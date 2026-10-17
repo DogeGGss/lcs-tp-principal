@@ -15,7 +15,7 @@ MonoBehaviour:
   displayName: Vista aérea
   icon: {fileID: 21300000, guid: 6fad1d8638f2479e98038bf4cb27196b, type: 3}
   key: 113
-  cooldown: 45
+  cooldown: 30
   cargas: 1
   efecto: 3
-  description: 'Durante 6 s ves desde arriba 30 m a la redonda y los rivales se marcan en rojo. Mientras tanto te quedás quieto, unos ojos verdes en el cielo te delatan y, si te pegan, se corta. Se recarga en 45 s.'
+  description: 'Durante 6 s ves desde arriba 45 m a la redonda y los rivales se marcan en rojo. Mientras tanto te quedás quieto, unos ojos verdes en el cielo te delatan y, si te pegan, se corta. Se recarga en 30 s.'

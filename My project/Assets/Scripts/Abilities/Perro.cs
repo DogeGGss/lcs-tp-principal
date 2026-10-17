@@ -4,7 +4,7 @@ using UnityEngine.AI;
 using UnityEngine.Audio;
 
 // US 022 · El perro espectral del Callejero. Lo suelta HabilidadCallejero y sale corriendo a 8 m/s hacia el rival vivo
-// más cercano dentro de 25 m, siguiéndolo si se mueve (CA1 y CA5). Corre por el NavMesh que arma NavMeshEnVivo: sigue
+// más cercano, esté a la distancia que esté, siguiéndolo si se mueve (CA1 y CA5). Corre por el NavMesh que arma NavMeshEnVivo: sigue
 // pasillos, puertas, escaleras y rampas y no atraviesa paredes. Si no hay rivales, corre 10 m hacia adelante y
 // desaparece (CA6). Al alcanzar al rival lo muerde y desaparece: la mordida no saca vida, le nubla la vista 2,5 s y lo
 // marca 3 s a través de las paredes para el equipo del dueño (CA7 y CA8). Tiene 60 de vida: los disparos, el cuchillo y
@@ -16,7 +16,6 @@ using UnityEngine.Audio;
 public class Perro : MonoBehaviour
 {
     public const float Velocidad = 8f;      // CA5
-    public const float Alcance = 25f;       // CA1
     public const float SinRival = 10f;      // CA6
     public const float Duracion = 6f;       // CA10
     public const float Espera = 5f;         // CA6: sentado esperando a que aparezca un rival
@@ -65,6 +64,7 @@ public class Perro : MonoBehaviour
     private bool corriendo, sentadoVista;
     private float limite;    // cuándo desaparece si no mordió a nadie
     private bool esperando;  // CA6: llegó a los 10 m sin rivales y espera sentado
+    private float caida;     // sin NavMesh: velocidad con la que cae si quedó en el aire
 
     // =====================================================================
     // Crear y buscar
@@ -83,6 +83,24 @@ public class Perro : MonoBehaviour
 
     public static Perro Buscar(int actor, int id) => activos.TryGetValue(Clave(actor, id), out Perro p) ? p : null;
     public static Perro De(Collider c) => c != null ? c.GetComponentInParent<Perro>() : null;
+
+    /// <summary>La altura del piso debajo de ese lugar (hasta 60 m), sin contar perros, personajes ni lo que se ignora.
+    /// Así, si se suelta saltando, el perro cae al piso en vez de quedar en el aire.</summary>
+    public static bool Piso(Vector3 lugar, Transform ignorar, out float altura)
+    {
+        altura = lugar.y;
+        RaycastHit[] golpes = Physics.RaycastAll(lugar + Vector3.up * 0.8f, Vector3.down, 60f, Physics.DefaultRaycastLayers,
+            QueryTriggerInteraction.Ignore);
+        float mejor = float.PositiveInfinity;
+        foreach (RaycastHit g in golpes)
+        {
+            Collider c = g.collider;
+            if (De(c) != null || c is CharacterController || c.GetComponentInParent<HealthSystem>() != null) continue;
+            if (ignorar != null && c.transform.IsChildOf(ignorar)) continue;
+            if (g.distance < mejor) { mejor = g.distance; altura = g.point.y; }
+        }
+        return !float.IsPositiveInfinity(mejor);
+    }
     private static long Clave(int actor, int id) => ((long)actor << 32) | (uint)id;
 
     /// <summary>Quita todos sin efectos (por ejemplo, al empezar una ronda del Táctico).</summary>
@@ -125,6 +143,8 @@ public class Perro : MonoBehaviour
 
         if (propio)
         {
+            if (Piso(transform.position, duenio, out float suelo) && suelo < transform.position.y)
+                transform.position = new Vector3(transform.position.x, suelo, transform.position.z);
             destinoSinRival = transform.position + adelante * SinRival;
             if (NavMeshEnVivo.Listo &&
                 NavMesh.SamplePosition(transform.position, out NavMeshHit piso, 2.5f, Filtro()))
@@ -229,9 +249,14 @@ public class Perro : MonoBehaviour
                     transform.position += dir * paso;
                 transform.rotation = Quaternion.RotateTowards(transform.rotation, Quaternion.LookRotation(dir), 900f * Time.deltaTime);
             }
-            if (Physics.Raycast(transform.position + Vector3.up * 0.8f, Vector3.down, out RaycastHit piso, 3f,
-                    Physics.DefaultRaycastLayers, QueryTriggerInteraction.Ignore) && De(piso.collider) == null)
-                transform.position = new Vector3(transform.position.x, piso.point.y, transform.position.z);
+            // Pegado al piso: sube escalones y, si quedó en el aire, cae.
+            if (Piso(transform.position, Duenio, out float suelo))
+            {
+                float y = transform.position.y;
+                if (suelo >= y - 0.05f || suelo > y - 0.6f && caida <= 0f) { y = suelo; caida = 0f; }
+                else { caida += 25f * Time.deltaTime; y = Mathf.Max(suelo, y - caida * Time.deltaTime); }
+                transform.position = new Vector3(transform.position.x, y, transform.position.z);
+            }
         }
 
         if (objetivo != null)
@@ -244,7 +269,7 @@ public class Perro : MonoBehaviour
             Vector3 d = destinoSinRival - transform.position;
             if (new Vector2(d.x, d.z).magnitude < 0.6f)
             {
-                // CA6: llegó a los 10 m sin rivales: se sienta y espera 5 s. Si aparece uno a 25 m, va a buscarlo.
+                // CA6: llegó a los 10 m sin rivales: se sienta y espera 5 s. Si aparece uno, va a buscarlo.
                 esperando = true;
                 limite = Time.time + Espera;
                 if (agente != null && agente.isOnNavMesh) { agente.isStopped = true; agente.velocity = Vector3.zero; }
@@ -260,13 +285,13 @@ public class Perro : MonoBehaviour
         }
     }
 
-    // CA1 y CA5: el rival vivo más cercano dentro de 25 m (lo sigue aunque se aleje, mientras siga vivo).
+    // CA1 y CA5: el rival vivo más cercano, sin límite de distancia (lo sigue aunque se aleje, mientras siga vivo).
     private void Buscar()
     {
         proximaBusqueda = Time.time + 0.25f;
         HealthSystem mejor = objetivo;
-        float cerca = mejor != null ? Vector3.Distance(transform.position, mejor.transform.position) : Alcance;
-        if (mejor != null) cerca = Mathf.Min(cerca, Alcance * 2f) - 2f; // cambia solo si otro está bastante más cerca
+        float cerca = mejor != null ? Vector3.Distance(transform.position, mejor.transform.position) - 2f : float.PositiveInfinity;
+        // Con uno elegido, cambia solo si otro está bastante más cerca.
         foreach (HealthSystem h in FindObjectsByType<HealthSystem>(FindObjectsSortMode.None))
         {
             if (!EsRival(h)) continue;

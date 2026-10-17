@@ -395,7 +395,7 @@ public class PauseMenu : MonoBehaviour
         Block(FindObjectsByType<Mitre>());
         Block(FindObjectsByType<ArmaDeFuego>());
         Block(FindObjectsByType<WeaponSwitcher>());
-        Block(FindObjectsByType<PlayerAbility>());
+        // La habilidad no se apaga (online su recarga tiene que seguir bajando): deja de leer la tecla con la pausa.
         Block(FindObjectsByType<ShopUI>());
         Cursor.lockState = CursorLockMode.None;
         Cursor.visible = true;
@@ -426,7 +426,7 @@ public class PauseMenu : MonoBehaviour
             return true;
         }
         if (!(component is CameraLook || component is MeleeAttack || component is Pistola || component is Mitre ||
-              component is ArmaDeFuego || component is WeaponSwitcher || component is PlayerAbility || component is ShopUI))
+              component is ArmaDeFuego || component is WeaponSwitcher || component is ShopUI))
             return false;
         component.enabled = false;
         if (!Instance.blocked.Contains(component)) Instance.blocked.Add(component);

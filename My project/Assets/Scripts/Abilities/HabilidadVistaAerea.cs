@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-// US 021 · Vista aérea: la cámara sube y muestra desde arriba, sin los techos, 30 m a la redonda del jugador durante 6 s
+// US 021 · Vista aérea: la cámara sube y muestra desde arriba, sin los techos, 45 m a la redonda del jugador durante 6 s
 // (CA1 y CA3). Afuera de ese círculo la imagen se oscurece. Los rivales vivos que están adentro se marcan en rojo en
 // tiempo real, salvo los que están en el humo (CA2). Mientras tanto el personaje
 // se queda quieto: no se mueve, no mira, no dispara ni cambia de arma (CA1). Termina antes con la Q o el clic derecho
@@ -19,7 +19,7 @@ public class HabilidadVistaAerea : EfectoHabilidad
     private const float AlturaDeCorte = 2.6f;
     private const float Campo = 50f;        // grados verticales de la cámara de arriba
     /// <summary>Metros a la redonda del jugador que se ven y en los que se marcan los rivales.</summary>
-    public const float Radio = 30f;
+    public const float Radio = 45f;
     private static readonly Color ColorRival = new Color(1f, 0.36f, 0.36f);
 
     /// <summary>CA6, CA7 y CA11: el jugador que la usa y si empezó (true) o terminó (false).</summary>
@@ -119,7 +119,7 @@ public class HabilidadVistaAerea : EfectoHabilidad
         if (cuerpo != null) pies = transform.TransformPoint(cuerpo.center).y - cuerpo.height * 0.5f * transform.lossyScale.y;
         corte = pies + AlturaDeCorte;
         float yaw = transform.eulerAngles.y;
-        // El círculo de 30 m entra entero en la pantalla, con un poco de margen.
+        // El círculo de 45 m entra entero en la pantalla, con un poco de margen.
         float t = Mathf.Tan(Campo * 0.5f * Mathf.Deg2Rad), aspecto = Mathf.Max(0.5f, (float)Screen.width / Mathf.Max(1, Screen.height));
         float distancia = Radio * 1.15f / (t * Mathf.Min(1f, aspecto));
         desdeLugar = ojo.position;
@@ -267,7 +267,7 @@ public class HabilidadVistaAerea : EfectoHabilidad
         for (int i = usadas; i < marcas.Count; i++) marcas[i].enabled = false;
         Poner(propia, transform.position + Vector3.up * 1.1f);
 
-        // El círculo, centrado en el jugador y del tamaño de 30 m en pantalla (la imagen es 3 veces el círculo).
+        // El círculo, centrado en el jugador y del tamaño de 45 m en pantalla (la imagen es 3 veces el círculo).
         Vector3 centro = aerea.WorldToScreenPoint(transform.position);
         Vector3 borde = aerea.WorldToScreenPoint(transform.position + aerea.transform.right * Radio);
         float radioPx = Vector2.Distance(centro, borde);
@@ -302,7 +302,7 @@ public class HabilidadVistaAerea : EfectoHabilidad
         return jugador.Vivo && EquiposTacticos.EsRival(jugador.Actor);
     }
 
-    /// <summary>Si ese lugar está dentro de los 30 m (sin contar la altura).</summary>
+    /// <summary>Si ese lugar está dentro de los 45 m (sin contar la altura).</summary>
     public static bool EnElRadio(Vector3 jugador, Vector3 lugar)
     {
         Vector2 d = new Vector2(lugar.x - jugador.x, lugar.z - jugador.z);
