@@ -11,7 +11,7 @@ do $$
 declare a jsonb; b jsonb; n integer;
 begin
  select count(*) into n from public.rw_achievement_catalog;
- if n<>9 then raise exception 'Expected 9 achievements'; end if;
+ if n<>25 then raise exception 'Expected 25 achievements (9 comets, 16 combat)'; end if;
  select count(*) into n from public.rw_achievement_unlocks where player_id='00000000-0000-4000-8000-000000000901';
  if n<>5 then raise exception 'Duplicate unlock or incorrect thresholds'; end if;
  if (select blue from public.rw_achievement_players where player_id='00000000-0000-4000-8000-000000000901')<>100 then raise exception 'Progress regressed'; end if;
@@ -76,6 +76,11 @@ begin
  end;
  if has_function_privilege('anon','public.rw_stat_board(text,integer)','execute') then raise exception 'Anonymous role has board access'; end if;
  if has_function_privilege('authenticated','public.rw_num(jsonb,text)','execute') then raise exception 'Helper exposed'; end if;
+ -- Logros de combate: salen de las estadisticas (rw_sync_progress), no de los cometas.
+ if not exists(select 1 from public.rw_achievement_unlocks where player_id='00000000-0000-4000-8000-000000000901' and achievement_id='bajas_10') then raise exception 'Combat achievement not unlocked'; end if;
+ if exists(select 1 from public.rw_achievement_unlocks where player_id='00000000-0000-4000-8000-000000000901' and achievement_id in ('bajas_100','victorias_1')) then raise exception 'Combat achievement unlocked too early'; end if;
+ if not exists(select 1 from public.rw_achievement_unlocks where player_id='00000000-0000-4000-8000-000000000902' and achievement_id='bajas_10') then raise exception 'Deathmatch kills not counted'; end if;
+ if has_function_privilege('authenticated','public.rw_stat_value(text,jsonb,jsonb,integer,integer,integer)','execute') then raise exception 'Stat helper exposed'; end if;
  raise notice 'Stat board checks passed';
 end $$;
 rollback;

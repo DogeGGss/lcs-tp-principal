@@ -9,6 +9,17 @@ insert into public.rw_achievement_catalog values
  ('verde_10',1,10),('verde_50',1,50),('verde_100',1,100),
  ('dorado_10',2,10),('dorado_50',2,50),('dorado_100',2,100)
 on conflict (id) do update set color=excluded.color, target=excluded.target;
+-- Logros de combate (F13): en vez de color tienen la estadistica del jugador (F24) que los desbloquea, con los mismos
+-- nombres que rw_stat_value. Se agregan siempre al final, como en LogrosCometas.Catalogo.
+alter table public.rw_achievement_catalog alter column color drop not null;
+alter table public.rw_achievement_catalog add column if not exists stat text;
+insert into public.rw_achievement_catalog(id,color,target,stat) values
+ ('bajas_10',null,10,'bajas'),('bajas_100',null,100,'bajas'),('bajas_500',null,500,'bajas'),
+ ('cabezas_10',null,10,'cabezas'),('cabezas_50',null,50,'cabezas'),('cabezas_200',null,200,'cabezas'),
+ ('asistencias_50',null,50,'asistencias'),('victorias_1',null,1,'victorias'),('victorias_25',null,25,'victorias'),
+ ('mvp_1',null,1,'mvp'),('mvp_10',null,10,'mvp'),('racha_5',null,5,'mejor_racha'),('racha_10',null,10,'mejor_racha'),
+ ('plantados_10',null,10,'plantados'),('desactivados_10',null,10,'desactivados'),('partidas_50',null,50,'partidas')
+on conflict (id) do update set color=excluded.color, target=excluded.target, stat=excluded.stat;
 create table if not exists public.rw_achievement_players (
  player_id uuid primary key references auth.users(id) on delete cascade,
  display_name text not null check (char_length(display_name) between 3 and 16),
@@ -47,7 +58,7 @@ begin
  returning * into p;
  insert into public.rw_achievement_unlocks(player_id,achievement_id)
  select uid,c.id from public.rw_achievement_catalog c
- where (case c.color when 0 then p.blue when 1 then p.green else p.gold end)>=c.target
+ where c.color is not null and (case c.color when 0 then p.blue when 1 then p.green else p.gold end)>=c.target
  on conflict do nothing;
  return jsonb_build_object('player_id',uid,'display_name',p.display_name,'blue',p.blue,'green',p.green,'gold',p.gold);
 end $$;
@@ -151,6 +162,12 @@ begin
   updated_at = now()
  where player_id = uid
  returning * into r;
+ -- Logros de combate (F13): con las estadisticas recien guardadas. Hace falta que el jugador ya este en el ranking
+ -- (rw_sync_comets va antes en cada sincronizacion).
+ insert into public.rw_achievement_unlocks(player_id, achievement_id)
+ select uid, c.id from public.rw_achievement_catalog c join public.rw_achievement_players a on a.player_id = uid
+ where c.stat is not null and public.rw_stat_value(c.stat, r.contadores, r.minimos, a.blue, a.green, a.gold) >= c.target
+ on conflict do nothing;
 
  return jsonb_build_object(
   'contadores', coalesce((select jsonb_agg(jsonb_build_object('clave', key, 'valor', value) order by key) from jsonb_each(r.contadores)), '[]'::jsonb),
@@ -170,6 +187,46 @@ create or replace function public.rw_both(j jsonb, k text) returns numeric
 language sql immutable set search_path = '' as $$
  select public.rw_num(j, 'estadisticas.tactico.' || k) + public.rw_num(j, 'estadisticas.deathmatch.' || k) $$;
 
+-- El valor de cada estadistica de un jugador (para el ranking y para los logros de combate). null: no llega al minimo.
+create or replace function public.rw_stat_value(p_stat text, c jsonb, m jsonb, p_blue integer, p_green integer, p_gold integer)
+returns numeric language sql immutable set search_path = '' as $$
+ select case p_stat
+  when 'partidas' then public.rw_both(c,'partidas')
+  when 'victorias' then public.rw_both(c,'victorias')
+  when 'porcentaje_victorias' then case when public.rw_both(c,'partidas')>=5
+    then 100*public.rw_both(c,'victorias')/public.rw_both(c,'partidas') end
+  when 'bajas' then public.rw_both(c,'bajas')
+  when 'muertes' then public.rw_both(c,'muertes')
+  when 'asistencias' then public.rw_both(c,'asistencias')
+  when 'cabezas' then public.rw_both(c,'cabezas')
+  when 'kda' then case when public.rw_both(c,'partidas')>=5
+    then (public.rw_both(c,'bajas')+public.rw_both(c,'asistencias'))/greatest(1,public.rw_both(c,'muertes')) end
+  when 'tiros_cabeza' then case when public.rw_both(c,'partidas')>=5 and public.rw_both(c,'bajas')>0
+    then 100*public.rw_both(c,'cabezas')/public.rw_both(c,'bajas') end
+  when 'horas' then public.rw_both(c,'segundos')/3600
+  when 'tactico_partidas' then public.rw_num(c,'estadisticas.tactico.partidas')
+  when 'tactico_victorias' then public.rw_num(c,'estadisticas.tactico.victorias')
+  when 'rondas_ganadas' then public.rw_num(c,'estadisticas.tactico.rondas_ganadas')
+  when 'plantados' then public.rw_num(c,'estadisticas.tactico.plantados')
+  when 'desactivados' then public.rw_num(c,'estadisticas.tactico.desactivados')
+  when 'mvp' then public.rw_num(c,'estadisticas.tactico.mvp')
+  when 'deathmatch_partidas' then public.rw_num(c,'estadisticas.deathmatch.partidas')
+  when 'primer_puesto' then public.rw_num(c,'estadisticas.deathmatch.victorias')
+  when 'deathmatch_bajas' then public.rw_num(c,'estadisticas.deathmatch.bajas')
+  when 'mejor_racha' then public.rw_num(c,'estadisticas.deathmatch.mejor_racha')
+  when 'cometas' then (p_blue+p_green+p_gold)::numeric
+  when 'cometas_azules' then p_blue::numeric
+  when 'cometas_verdes' then p_green::numeric
+  when 'cometas_dorados' then p_gold::numeric
+  when 'minijuego_puntos' then public.rw_num(c,'minijuego.puntos')
+  when 'record_puntos' then public.rw_num(c,'minijuego.record_puntos')
+  when 'precision' then case when public.rw_num(c,'minijuego.disparos')>=50
+    then 100*(public.rw_num(c,'minijuego.aciertos.comun')+public.rw_num(c,'minijuego.aciertos.raro')
+      +public.rw_num(c,'minijuego.aciertos.epico'))/public.rw_num(c,'minijuego.disparos') end
+  when 'mejor_reaccion' then case when public.rw_num(c,'minijuego.disparos')>=50
+    then public.rw_num(m,'minijuego.mejor_reaccion_ms') end
+ end $$;
+
 create or replace function public.rw_stat_board(p_stat text, p_offset integer default 0)
 returns jsonb language plpgsql security definer set search_path = '' as $$
 declare result jsonb; menor boolean := p_stat = 'mejor_reaccion';
@@ -178,48 +235,14 @@ begin
  if p_offset is null or p_offset<0 or p_offset>100000 then raise exception 'Invalid offset'; end if;
  if p_stat is null or p_stat not in ('partidas','victorias','porcentaje_victorias','bajas','muertes','asistencias','kda',
     'tiros_cabeza','horas','tactico_partidas','tactico_victorias','rondas_ganadas','plantados','desactivados','mvp',
-    'deathmatch_partidas','primer_puesto','deathmatch_bajas','mejor_racha','cometas','cometas_azules','cometas_verdes',
+    'deathmatch_partidas','primer_puesto','deathmatch_bajas','mejor_racha','cabezas','cometas','cometas_azules','cometas_verdes',
     'cometas_dorados','minijuego_puntos','record_puntos','precision','mejor_reaccion') then raise exception 'Unknown stat'; end if;
  with base as (
    select p.player_id, p.display_name, p.blue, p.green, p.gold,
      coalesce(r.contadores, '{}'::jsonb) c, coalesce(r.minimos, '{}'::jsonb) m
    from public.rw_achievement_players p left join public.rw_player_progress r using(player_id)
  ), valores as (
-   select player_id, display_name, case p_stat
-     when 'partidas' then public.rw_both(c,'partidas')
-     when 'victorias' then public.rw_both(c,'victorias')
-     when 'porcentaje_victorias' then case when public.rw_both(c,'partidas')>=5
-       then 100*public.rw_both(c,'victorias')/public.rw_both(c,'partidas') end
-     when 'bajas' then public.rw_both(c,'bajas')
-     when 'muertes' then public.rw_both(c,'muertes')
-     when 'asistencias' then public.rw_both(c,'asistencias')
-     when 'kda' then case when public.rw_both(c,'partidas')>=5
-       then (public.rw_both(c,'bajas')+public.rw_both(c,'asistencias'))/greatest(1,public.rw_both(c,'muertes')) end
-     when 'tiros_cabeza' then case when public.rw_both(c,'partidas')>=5 and public.rw_both(c,'bajas')>0
-       then 100*public.rw_both(c,'cabezas')/public.rw_both(c,'bajas') end
-     when 'horas' then public.rw_both(c,'segundos')/3600
-     when 'tactico_partidas' then public.rw_num(c,'estadisticas.tactico.partidas')
-     when 'tactico_victorias' then public.rw_num(c,'estadisticas.tactico.victorias')
-     when 'rondas_ganadas' then public.rw_num(c,'estadisticas.tactico.rondas_ganadas')
-     when 'plantados' then public.rw_num(c,'estadisticas.tactico.plantados')
-     when 'desactivados' then public.rw_num(c,'estadisticas.tactico.desactivados')
-     when 'mvp' then public.rw_num(c,'estadisticas.tactico.mvp')
-     when 'deathmatch_partidas' then public.rw_num(c,'estadisticas.deathmatch.partidas')
-     when 'primer_puesto' then public.rw_num(c,'estadisticas.deathmatch.victorias')
-     when 'deathmatch_bajas' then public.rw_num(c,'estadisticas.deathmatch.bajas')
-     when 'mejor_racha' then public.rw_num(c,'estadisticas.deathmatch.mejor_racha')
-     when 'cometas' then (blue+green+gold)::numeric
-     when 'cometas_azules' then blue::numeric
-     when 'cometas_verdes' then green::numeric
-     when 'cometas_dorados' then gold::numeric
-     when 'minijuego_puntos' then public.rw_num(c,'minijuego.puntos')
-     when 'record_puntos' then public.rw_num(c,'minijuego.record_puntos')
-     when 'precision' then case when public.rw_num(c,'minijuego.disparos')>=50
-       then 100*(public.rw_num(c,'minijuego.aciertos.comun')+public.rw_num(c,'minijuego.aciertos.raro')
-         +public.rw_num(c,'minijuego.aciertos.epico'))/public.rw_num(c,'minijuego.disparos') end
-     when 'mejor_reaccion' then case when public.rw_num(c,'minijuego.disparos')>=50
-       then public.rw_num(m,'minijuego.mejor_reaccion_ms') end
-   end as value
+   select player_id, display_name, public.rw_stat_value(p_stat, c, m, blue, green, gold) as value
    from base
  ), ranked as (
    select player_id, display_name, value,
@@ -240,6 +263,7 @@ begin
 end $$;
 revoke all on function public.rw_num(jsonb,text) from public, anon, authenticated;
 revoke all on function public.rw_both(jsonb,text) from public, anon, authenticated;
+revoke all on function public.rw_stat_value(text,jsonb,jsonb,integer,integer,integer) from public, anon, authenticated;
 revoke all on function public.rw_stat_board(text,integer) from public, anon;
 grant execute on function public.rw_stat_board(text,integer) to authenticated;
 commit;

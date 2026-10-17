@@ -6,8 +6,8 @@ using static ShopUIKit;
 using static PerfilUI;
 using Categoria = CategoriasRanking.Categoria;
 
-// Logros y ranking (US 044 y US 226). Pestaña Logros: los nueve logros con el progreso y el porcentaje de jugadores que
-// tiene cada uno. Pestaña Ranking: todos los jugadores ordenados por la categoría elegida (CategoriasRanking): un dato
+// Logros y ranking (US 044 y US 226). Pestaña Logros: los logros de cometas y de combate, con el progreso y el
+// porcentaje de jugadores que tiene cada uno. Pestaña Ranking: todos los jugadores ordenados por la categoría elegida (CategoriasRanking): un dato
 // de las estadísticas, del minijuego o la cantidad de logros.
 public class PantallaLogros : PantallaBase
 {
@@ -53,15 +53,20 @@ public class PantallaLogros : PantallaBase
         BorrarHijos(resumen); BorrarHijos(lista); BorrarHijos(acciones); BorrarHijos(filtros);
         for (int i = 0; i < 2; i++) { tabs[i].primario = i == seccion; tabs[i].Pintar(); }
         T(resumen, "Tu progreso", 28, 26, 384, 30, FRotulo, 20, Accent, "TU PROGRESO");
-        T(resumen, "Cuenta", 24, 68, 384, 116, FTitulo, 100, Ink, LogrosCometas.Cantidad + "<size=50%> / 9</size>");
+        int total = LogrosCometas.Catalogo.Length;
+        T(resumen, "Cuenta", 24, 68, 384, 116, FTitulo, 100, Ink, LogrosCometas.Cantidad + "<size=50%> / " + total + "</size>");
         T(resumen, "Obtenidos", 28, 190, 384, 35, FTexto, 24, Mute, "logros obtenidos");
-        Barra(resumen, 28, 240, 384, LogrosCometas.Cantidad / 9f, Accent);
-        for (int i = 0; i < 3; i++)
+        Barra(resumen, 28, 240, 384, LogrosCometas.Cantidad / (float)total, Accent);
+        // Un renglón por color de cometa y uno para los de combate (tipo -1).
+        EstadisticasJugador.Totales e = EstadisticasJugador.Datos;
+        for (int i = 0; i < 4; i++)
         {
-            int n = 0; foreach (var d in LogrosCometas.Catalogo) if (d.tipo == i && LogrosCometas.Datos.aciertos[i] >= d.meta) n++;
-            var c = Cometa.ColorDe((TipoCometa)i);
-            T(resumen, "Color", 28, 286 + i * 92, 384, 36, FTitulo, 29, c, new[] { "AZULES", "VERDES", "DORADOS" }[i] + "   " + n + " / 3");
-            T(resumen, "Aciertos", 28, 326 + i * 92, 384, 28, FTexto, 21, Soft, LogrosCometas.Datos.aciertos[i] + " destruidos");
+            int tipo = i < 3 ? i : -1, n = 0, de = 0;
+            foreach (var d in LogrosCometas.Catalogo) if (d.tipo == tipo) { de++; if (LogrosCometas.Tiene(d)) n++; }
+            Color c = i < 3 ? Cometa.ColorDe((TipoCometa)i) : Accent;
+            T(resumen, "Grupo", 28, 280 + i * 72, 384, 36, FTitulo, 29, c, new[] { "AZULES", "VERDES", "DORADOS", "COMBATE" }[i] + "   " + n + " / " + de);
+            T(resumen, "Detalle", 28, 316 + i * 72, 384, 28, FTexto, 21, Soft, i < 3 ? LogrosCometas.Datos.aciertos[i] + " destruidos"
+                : PerfilDatos.Numero(e.Bajas) + " bajas · " + PerfilDatos.Numero(e.Cabezas) + " a la cabeza");
         }
         var datos = Servicio?.Datos;
         T(resumen, "Puesto", 28, 592, 384, 40, FTitulo, 29, Ink, datos?.me == null ? "PUESTO EN LOGROS: —" : "PUESTO EN LOGROS: #" + datos.me.rank);
@@ -81,9 +86,9 @@ public class PantallaLogros : PantallaBase
         if (PorEstadistica) filas = DibujarEstadistica(out paso);
         else if (seccion == 0 || seleccionado != null)
         {
-            titulo.text = seleccionado == null ? "Metas acumuladas · 10, 50 y 100 de cada color" : "Logros de " + seleccionado.display_name;
-            filas = 9;
-            for (int i = 0; i < 9; i++) FilaLogro(LogrosCometas.Catalogo[i], i);
+            titulo.text = seleccionado == null ? "Cometas de cada color y combate en Táctico y Deathmatch" : "Logros de " + seleccionado.display_name;
+            filas = LogrosCometas.Catalogo.Length;
+            for (int i = 0; i < filas; i++) FilaLogro(LogrosCometas.Catalogo[i], i);
             if (seleccionado != null) CrearBoton(acciones, 0, 0, 300, 48, "Volver al ranking", false, () => { seleccionado = null; Dibujar(true); }, 22);
             else T(acciones, "Nota", 0, 0, 1330, 48, FTexto, 20, Mute, "Los porcentajes corresponden a los jugadores registrados en el servicio online.");
         }
@@ -182,14 +187,14 @@ public class PantallaLogros : PantallaBase
     }
     void FilaLogro(LogrosCometas.Definicion d, int i)
     {
-        bool obtenido = seleccionado == null ? LogrosCometas.Datos.aciertos[d.tipo] >= d.meta : seleccionado.Tiene(d.id);
-        Color c = Cometa.ColorDe((TipoCometa)d.tipo);
+        bool obtenido = seleccionado == null ? LogrosCometas.Tiene(d) : seleccionado.Tiene(d.id);
+        Color c = ColorDe(d);
         var r = Place(Node(d.id, lista), 0, i * 112, 1330, 100);
         Image(r, Rounded, PanelColor, 6); Borde(r, 6, obtenido ? WithAlpha(c, .6f) : White(.08f));
         Image(Place(Node("Color", r), 0, 16, 5, 68), Rounded, c, 0);
         T(r, "Nombre", 22, 12, 630, 36, FTitulo, 29, obtenido ? Ink : Soft, d.nombre);
-        T(r, "Descripción", 24, 53, 630, 30, FTexto, 21, Mute, "Destruí " + d.meta + " cometas " + d.color + " en total.");
-        int cuenta = LogrosCometas.Datos.aciertos[d.tipo];
+        T(r, "Descripción", 24, 53, 630, 30, FTexto, 21, Mute, d.descripcion);
+        int cuenta = LogrosCometas.Valor(d);
         T(r, "Progreso", 670, 12, 190, 34, FTitulo, 26, obtenido ? c : Soft, seleccionado == null ? Mathf.Min(cuenta, d.meta) + " / " + d.meta : obtenido ? "Obtenido" : "Pendiente");
         Barra(r, 670, 64, 190, seleccionado == null ? (float)cuenta / d.meta : obtenido ? 1 : 0, c);
         var stats = Servicio?.Datos?.stats;
@@ -203,10 +208,17 @@ public class PantallaLogros : PantallaBase
         var r = Place(Node("Jugador", lista), 0, i * 112, 1330, 100); Image(r, Rounded, PanelColor, 6);
         T(r, "Puesto", 20, 20, 110, 50, FTitulo, 38, Accent, "#" + p.rank);
         T(r, "Nombre", 150, 15, 490, 38, FTitulo, 30, Ink, p.display_name).richText = false;
-        T(r, "Cantidad", 150, 57, 490, 28, FTexto, 22, Mute, p.total + " / 9 logros obtenidos");
-        for (int k = 0; k < 9; k++) { var d = LogrosCometas.Catalogo[k]; Image(Place(Node(d.id, r), 670 + k * 40, 34, 28, 28), Rounded, p.Tiene(d.id) ? Cometa.ColorDe((TipoCometa)d.tipo) : White(.08f), 3); }
+        var catalogo = LogrosCometas.Catalogo;
+        T(r, "Cantidad", 150, 57, 490, 28, FTexto, 22, Mute, p.total + " / " + catalogo.Length + " logros obtenidos");
+        // Un cuadradito por logro, en el orden del catálogo: entran entre el nombre y el botón.
+        float paso = Mathf.Min(40, 425f / catalogo.Length), lado = Mathf.Round(paso * 0.75f);
+        for (int k = 0; k < catalogo.Length; k++)
+        { var d = catalogo[k]; Image(Place(Node(d.id, r), 670 + k * paso, 50 - lado / 2, lado, lado), Rounded, p.Tiene(d.id) ? ColorDe(d) : White(.08f), 3); }
         CrearBoton(r, 1100, 27, 210, 46, "Ver logros", false, () => { seleccionado = p; Dibujar(true); }, 20);
     }
+    // El color de cada logro: el de su cometa o, los de combate, el del juego.
+    static Color ColorDe(LogrosCometas.Definicion d) => d.EsCometa ? Cometa.ColorDe((TipoCometa)d.tipo) : Accent;
+
     // La fecha del último ranking, en la hora de la PC ("16/10 07:03").
     static string Fecha(string iso) =>
         DateTime.TryParse(iso, System.Globalization.CultureInfo.InvariantCulture, System.Globalization.DateTimeStyles.RoundtripKind, out DateTime d)

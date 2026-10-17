@@ -3,7 +3,11 @@ using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
 
-// Catálogo y progreso real. Independiente de la UI y del servicio online.
+// Catálogo y progreso real de los logros. Independiente de la UI y del servicio online.
+// - De cometas (US 160): 10, 50 y 100 cometas de cada color, contados acá.
+// - De combate (F13): salen de las estadísticas del jugador (EstadisticasJugador, F24): bajas, tiros a la cabeza,
+//   victorias, MVP, rachas... Se revisan cada vez que cambian (al terminar una partida o al llegar lo de la nube).
+//   En la base los desbloquea rw_sync_progress con las mismas estadísticas.
 // Se guarda con el progreso del jugador (Guardado, clave "Logros.Cometas", US 045 y US 162). La primera vez se trae lo
 // que haya en el archivo anterior, logros-cometas.json, que no se borra.
 public static class LogrosCometas
@@ -12,8 +16,17 @@ public static class LogrosCometas
     {
         public readonly string id, nombre, color;
         public readonly int tipo, meta;
+        /// <summary>De combate: la estadística que lo desbloquea (los mismos nombres que rw_stat_value); null en los de cometas.</summary>
+        public readonly string estadistica;
+        public readonly string descripcion;
+        public bool EsCometa => estadistica == null;
         public Definicion(string id, string nombre, string color, int tipo, int meta)
-        { this.id = id; this.nombre = nombre; this.color = color; this.tipo = tipo; this.meta = meta; }
+        {
+            this.id = id; this.nombre = nombre; this.color = color; this.tipo = tipo; this.meta = meta;
+            descripcion = "Destruí " + meta + " cometas " + color + " en total.";
+        }
+        public Definicion(string id, string nombre, string estadistica, int meta, string descripcion)
+        { this.id = id; this.nombre = nombre; this.estadistica = estadistica; tipo = -1; this.meta = meta; this.descripcion = descripcion; }
     }
     // Los logros nuevos se agregan siempre AL FINAL: las fechas del guardado van en este mismo orden.
     public static readonly Definicion[] Catalogo = {
@@ -25,7 +38,24 @@ public static class LogrosCometas
         new Definicion("verde_100", "Dominio verde", "verdes", 1, 100),
         new Definicion("dorado_10", "Polvo de oro", "dorados", 2, 10),
         new Definicion("dorado_50", "Fiebre del oro", "dorados", 2, 50),
-        new Definicion("dorado_100", "Dominio dorado", "dorados", 2, 100)
+        new Definicion("dorado_100", "Dominio dorado", "dorados", 2, 100),
+        // De combate: partidas terminadas de Táctico y Deathmatch (F24).
+        new Definicion("bajas_10", "Boleto picado", "bajas", 10, "Hacé 10 bajas."),
+        new Definicion("bajas_100", "Hora pico", "bajas", 100, "Hacé 100 bajas."),
+        new Definicion("bajas_500", "Locomotora", "bajas", 500, "Hacé 500 bajas."),
+        new Definicion("cabezas_10", "Cabeza de línea", "cabezas", 10, "Hacé 10 bajas con tiros a la cabeza."),
+        new Definicion("cabezas_50", "Ojo de halcón", "cabezas", 50, "Hacé 50 bajas con tiros a la cabeza."),
+        new Definicion("cabezas_200", "Francotirador del andén", "cabezas", 200, "Hacé 200 bajas con tiros a la cabeza."),
+        new Definicion("asistencias_50", "Compañero de vagón", "asistencias", 50, "Conseguí 50 asistencias."),
+        new Definicion("victorias_1", "Primera estación", "victorias", 1, "Ganá tu primera partida."),
+        new Definicion("victorias_25", "Dueño de la línea", "victorias", 25, "Ganá 25 partidas."),
+        new Definicion("mvp_1", "Maquinista", "mvp", 1, "Terminá una partida de Táctico como MVP."),
+        new Definicion("mvp_10", "Jefe de estación", "mvp", 10, "Terminá 10 partidas de Táctico como MVP."),
+        new Definicion("racha_5", "Sin escalas", "mejor_racha", 5, "Hacé 5 bajas seguidas sin morir en una partida de Deathmatch."),
+        new Definicion("racha_10", "Tren bala", "mejor_racha", 10, "Hacé 10 bajas seguidas sin morir en una partida de Deathmatch."),
+        new Definicion("plantados_10", "Paquete sospechoso", "plantados", 10, "Plantá el dispositivo 10 veces."),
+        new Definicion("desactivados_10", "Servicio restablecido", "desactivados", 10, "Desactivá el dispositivo 10 veces."),
+        new Definicion("partidas_50", "Viajero frecuente", "partidas", 50, "Terminá 50 partidas."),
     };
     [Serializable] public sealed class Progreso
     {
@@ -44,7 +74,29 @@ public static class LogrosCometas
     /// <summary>Donde se guardaba antes (hasta la US 162): solo se lee para migrar.</summary>
     public static string RutaAnterior => Path.Combine(Application.persistentDataPath, "logros-cometas.json");
     public static Progreso Datos { get { if (datos == null) Cargar(); return datos; } }
-    public static int Cantidad { get { int n = 0; foreach (var d in Catalogo) if (Datos.aciertos[d.tipo] >= d.meta) n++; return n; } }
+    public static int Cantidad { get { int n = 0; foreach (var d in Catalogo) if (Tiene(d)) n++; return n; } }
+
+    /// <summary>Por dónde va el jugador en ese logro: cometas de su color o el valor de su estadística.</summary>
+    public static int Valor(Definicion d) => d.EsCometa ? Datos.aciertos[d.tipo] : ValorEstadistica(d.estadistica, EstadisticasJugador.Datos);
+    public static bool Tiene(Definicion d) => Valor(d) >= d.meta;
+
+    /// <summary>El valor de una estadística de combate (F24), con los mismos nombres que rw_stat_value en la base.</summary>
+    public static int ValorEstadistica(string estadistica, EstadisticasJugador.Totales e)
+    {
+        switch (estadistica)
+        {
+            case "bajas": return e.Bajas;
+            case "cabezas": return e.Cabezas;
+            case "asistencias": return e.Asistencias;
+            case "victorias": return e.Victorias;
+            case "partidas": return e.Partidas;
+            case "mvp": return e.mvp;
+            case "mejor_racha": return e.mejorRacha;
+            case "plantados": return e.plantados;
+            case "desactivados": return e.desactivados;
+            default: throw new ArgumentException("Estadística desconocida: " + estadistica);
+        }
+    }
 
     // Función pura: permite probar saltos de metas, tipos y ausencia de duplicados sin tocar el guardado real.
     public static List<Definicion> Aplicar(Progreso p, int tipo, int total, string fecha)
@@ -53,9 +105,35 @@ public static class LogrosCometas
         p.aciertos[tipo] = Math.Max(p.aciertos[tipo], Math.Max(0, total));
         var nuevos = new List<Definicion>();
         for (int i = 0; i < Catalogo.Length; i++)
-            if (p.aciertos[Catalogo[i].tipo] >= Catalogo[i].meta && string.IsNullOrEmpty(p.fechas[i]))
+            if (Catalogo[i].EsCometa && p.aciertos[Catalogo[i].tipo] >= Catalogo[i].meta && string.IsNullOrEmpty(p.fechas[i]))
             { p.fechas[i] = fecha; nuevos.Add(Catalogo[i]); }
         return nuevos;
+    }
+
+    /// <summary>Función pura: los logros de combate que alcanzan esas estadísticas y todavía no tenían fecha.</summary>
+    public static List<Definicion> AplicarEstadisticas(Progreso p, EstadisticasJugador.Totales e, string fecha)
+    {
+        var nuevos = new List<Definicion>();
+        for (int i = 0; i < Catalogo.Length; i++)
+            if (!Catalogo[i].EsCometa && ValorEstadistica(Catalogo[i].estadistica, e) >= Catalogo[i].meta && string.IsNullOrEmpty(p.fechas[i]))
+            { p.fechas[i] = fecha; nuevos.Add(Catalogo[i]); }
+        return nuevos;
+    }
+
+    // Los de combate se revisan cada vez que cambian las estadísticas del jugador.
+    [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
+    private static void EscucharEstadisticas() => EstadisticasJugador.Cambio += RevisarEstadisticas;
+
+    private static void RevisarEstadisticas()
+    {
+        var p = Datos;
+        if (soloLectura) return;
+        var nuevos = AplicarEstadisticas(p, EstadisticasJugador.Datos, DateTime.UtcNow.ToString("O"));
+        if (nuevos.Count == 0) return;
+        Revision++;
+        Guardar();
+        Guardado.Save(); // un logro nuevo se escribe ya, sin esperar
+        foreach (var logro in nuevos) Desbloqueado?.Invoke(logro);
     }
     public static void Registrar(TipoCometa tipo)
     {
