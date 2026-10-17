@@ -45,6 +45,7 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
     private int ultimoAtacante;
     private string ultimaArma = "";   // con qué lo dañaron por última vez, si no fue el arma en la mano (una granada)
     private byte ultimoCodigo = ArmaDesconocida; // el arma en la mano del que lo dañó por última vez, al hacer el daño
+    private readonly Dictionary<int, float> danos = new Dictionary<int, float>(); // F24: quién lo dañó y cuándo (asistencias)
     private ShopCatalog catalogo;      // qué granada es (US 073): la tienda está en el mismo orden en todas las computadoras
     private int ultimaGranada;
     private readonly Dictionary<int, Grenade1> granadasRemotas = new Dictionary<int, Grenade1>();
@@ -280,6 +281,7 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
     {
         if (!photonView.IsMine || muerto || vida == null) return;
         if (EquiposTacticos.SonAliados(atacante, Actor)) return; // US 031, CA6: por las dudas, también acá
+        if (atacante > 0 && atacante != Actor) danos[atacante] = Time.unscaledTime;
         ultimoAtacante = atacante;
         ultimaArma = arma ?? "";
         ultimoCodigo = codigo;
@@ -293,11 +295,12 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
         if (muerto) return;
         muerto = true;
         bool cabeza = vida != null && vida.KilledByHeadshot;
-        photonView.RPC(nameof(RpcMurio), RpcTarget.Others, ultimoAtacante, cabeza, ultimaArma, ultimoCodigo);
+        int[] asistentes = Asistentes(ultimoAtacante);
+        photonView.RPC(nameof(RpcMurio), RpcTarget.Others, ultimoAtacante, cabeza, ultimaArma, ultimoCodigo, asistentes);
         // Si murió con la tienda abierta se cierra antes de trabar: al cerrarse después devolvería las armas a un muerto.
         if (MatchSettings.Mode == GameMode.Deathmatch) ShopUI.Cerrar();
         Bloquear(true);
-        AvisarBaja(ultimoAtacante, cabeza, ultimaArma, ultimoCodigo); // US 057, CA4
+        AvisarBaja(ultimoAtacante, cabeza, ultimaArma, ultimoCodigo, asistentes); // US 057, CA4
 
         Player asesino = ultimoAtacante != 0 && PhotonNetwork.CurrentRoom != null ? PhotonNetwork.CurrentRoom.GetPlayer(ultimoAtacante) : null;
         string titulo = asesino != null ? $"Te eliminó {asesino.NickName}" : ultimaArma == Caida ? "Te caíste del mapa" : "Te eliminaron";
@@ -336,6 +339,7 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
         ultimoAtacante = 0;
         ultimaArma = "";
         ultimoCodigo = ArmaDesconocida;
+        danos.Clear();
         Bloquear(false);
         AbrirVentanaDeEquipo();
 
@@ -384,6 +388,7 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
         ultimoAtacante = 0;
         ultimaArma = "";
         ultimoCodigo = ArmaDesconocida;
+        danos.Clear();
         Bloquear(false);
         vida.Invulnerable = false;
         photonView.RPC(nameof(RpcReaparecio), RpcTarget.Others, punto.position, punto.rotation.eulerAngles.y);
@@ -534,10 +539,11 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
     // con la marca de tiro a la cabeza si el golpe que lo mató fue a la cabeza. arma: con qué lo mató, si no fue el arma
     // que el asesino tiene en la mano (por ejemplo, una granada, US 073); vacío, el arma en la mano.
     // codigo: el arma que tenía en la mano el asesino al hacer el daño (si no se sabe, la que tiene ahora).
-    private void AvisarBaja(int atacante, bool cabeza, string arma, byte codigo)
+    // asistentes: los que lo habían dañado en los últimos 10 s, sin contar al que lo mató (F24, asistencias).
+    private void AvisarBaja(int atacante, bool cabeza, string arma, byte codigo, int[] asistentes)
     {
-        RondasTacticas.ContarBaja(atacante, photonView.OwnerActorNr); // US 135, CA2: $ 200 al que mató
-        PartidaDeathmatch.ContarBaja(atacante, photonView.OwnerActorNr, cabeza); // US 140, CA1 y CA2
+        RondasTacticas.ContarBaja(atacante, photonView.OwnerActorNr, cabeza, asistentes); // US 135, CA2: $ 200 al que mató
+        PartidaDeathmatch.ContarBaja(atacante, photonView.OwnerActorNr, cabeza, asistentes); // US 140, CA1 y CA2
         CurarPorBaja(atacante);
         Player asesino = atacante != 0 && PhotonNetwork.CurrentRoom != null ? PhotonNetwork.CurrentRoom.GetPlayer(atacante) : null;
         JugadorEnRed tirador = partida != null ? partida.Buscar(atacante) : null;
@@ -547,6 +553,18 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
         Sprite icono = otraArma ? IconoDe(arma) : tirador != null ? tirador.IconoDeArma(usada) : null;
         MatchHud.ReportKill(asesino != null ? asesino.NickName : "", nombreArma, Nombre,
             ColorDe(atacante), ColorDe(photonView.OwnerActorNr), cabeza, icono);
+    }
+
+    // F24: los que lo dañaron en los últimos 10 s y no son el que lo mató. Sin alguien que lo haya matado (se cayó, su
+    // propia granada) no hay asistencias. Después se olvida todo: la vida siguiente empieza de cero.
+    private int[] Asistentes(int asesino)
+    {
+        var lista = new List<int>();
+        if (asesino > 0 && asesino != Actor)
+            foreach (KeyValuePair<int, float> d in danos)
+                if (d.Key != asesino && Time.unscaledTime - d.Value <= EstadisticasJugador.VentanaAsistencia) lista.Add(d.Key);
+        danos.Clear();
+        return lista.ToArray();
     }
 
     // US 139: en Deathmatch, cada baja le devuelve vida al que la hizo.
@@ -1169,11 +1187,11 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
 
     // US 030, CA1 y CA2: el cuerpo cae y ya no recibe disparos.
     [PunRPC]
-    private void RpcMurio(int atacante, bool cabeza, string arma, byte codigo)
+    private void RpcMurio(int atacante, bool cabeza, string arma, byte codigo, int[] asistentes)
     {
         if (photonView.IsMine) return;
         muerto = true;
-        AvisarBaja(atacante, cabeza, arma, codigo); // US 057, CA4
+        AvisarBaja(atacante, cabeza, arma, codigo, asistentes); // US 057, CA4
         if (vida != null) vida.SetState(0, 0);
         foreach (Collider c in colisiones) if (c != null) c.enabled = false;
         MostrarArma(SinArma);

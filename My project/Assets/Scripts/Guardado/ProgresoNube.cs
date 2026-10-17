@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 
 // El progreso del jugador que se guarda también en la nube (F18, US 162, CA3, y US 163, CA2), además de los logros, que
-// van con el ranking (LogrosOnline, rw_sync_comets): las estadísticas del minijuego (US 159), los récords de Zombie y los
-// cosméticos del Perfil. Arma el documento que sube LogrosOnline (rw_sync_progress) y junta el que vuelve:
+// van con el ranking (LogrosOnline, rw_sync_comets): las estadísticas del minijuego (US 159) y las del jugador (F24), los
+// récords de Zombie y los cosméticos del Perfil. Arma el documento que sube LogrosOnline (rw_sync_progress) y junta el que vuelve:
 // - contadores que solo suben: el máximo; mejores tiempos: el mínimo;
 // - cosméticos obtenidos: la unión; equipados: los de la PC (la nube solo los devuelve si la PC no los tiene).
 // Las opciones y las monedas no se suben (las monedas bajan al gastarlas: juntarlas con el máximo devolvería lo gastado).
@@ -26,6 +26,7 @@ public static class ProgresoNube
     }
 
     private const string Minijuego = "minijuego.", Zombie = "zombie.record.", Perfil = "perfil.";
+    private const string Tactico = "estadisticas.tactico.", Deathmatch = "estadisticas.deathmatch.";
     private static readonly string[] Tipos = { "comun", "raro", "epico" };
 
     // Antes de la primera escena: qué claves del archivo se juntan con las de otro juego abierto, y quién vuelve a
@@ -35,11 +36,13 @@ public static class ProgresoNube
     {
         Guardado.RegistrarUnion(LogrosCometas.Clave, LogrosCometas.JuntarJson);
         Guardado.RegistrarUnion(EstadisticasMinijuego.Clave, EstadisticasMinijuego.Juntar);
+        Guardado.RegistrarUnion(EstadisticasJugador.Clave, EstadisticasJugador.Juntar);
         Guardado.RegistrarMaximo(MatchSettings.ZombieRecordPrefix);
         Guardado.Juntado += clave =>
         {
             if (clave == LogrosCometas.Clave) LogrosCometas.Recargar();
             else if (clave == EstadisticasMinijuego.Clave) EstadisticasMinijuego.Recargar();
+            else if (clave == EstadisticasJugador.Clave) EstadisticasJugador.Recargar();
             else if (clave == PerfilDatos.Clave) PerfilDatos.Recargar();
         };
     }
@@ -59,6 +62,15 @@ public static class ProgresoNube
         Sumar(d.contadores, Minijuego + "record_puntos", m.recordPuntos);
         if (m.mejorReaccionMs > 0) d.minimos.Add(new Numero { clave = Minijuego + "mejor_reaccion_ms", valor = m.mejorReaccionMs });
 
+        EstadisticasJugador.Totales e = EstadisticasJugador.Datos;
+        SumarModo(d.contadores, Tactico, e.tactico);
+        SumarModo(d.contadores, Deathmatch, e.deathmatch);
+        Sumar(d.contadores, Tactico + "rondas_ganadas", e.rondasGanadas);
+        Sumar(d.contadores, Tactico + "plantados", e.plantados);
+        Sumar(d.contadores, Tactico + "desactivados", e.desactivados);
+        Sumar(d.contadores, Tactico + "mvp", e.mvp);
+        Sumar(d.contadores, Deathmatch + "mejor_racha", e.mejorRacha);
+
         foreach (ZombieDifficulty z in Enum.GetValues(typeof(ZombieDifficulty)))
             Sumar(d.contadores, Zombie + z.ToString().ToLowerInvariant(), MatchSettings.ZombieRecord(z));
 
@@ -74,6 +86,17 @@ public static class ProgresoNube
     private static void Sumar(List<Numero> lista, string clave, long valor)
     {
         if (valor > 0) lista.Add(new Numero { clave = clave, valor = valor });
+    }
+
+    private static void SumarModo(List<Numero> lista, string prefijo, EstadisticasJugador.Modo m)
+    {
+        Sumar(lista, prefijo + "partidas", m.partidas);
+        Sumar(lista, prefijo + "victorias", m.victorias);
+        Sumar(lista, prefijo + "bajas", m.bajas);
+        Sumar(lista, prefijo + "muertes", m.muertes);
+        Sumar(lista, prefijo + "asistencias", m.asistencias);
+        Sumar(lista, prefijo + "cabezas", m.cabezas);
+        Sumar(lista, prefijo + "segundos", m.segundos);
     }
 
     // ---------- Juntar lo que vuelve ----------
@@ -100,6 +123,28 @@ public static class ProgresoNube
             foreach (Numero n in nube.minimos)
                 if (n != null && n.clave == Minijuego + "mejor_reaccion_ms") m.mejorReaccionMs = n.valor;
         EstadisticasMinijuego.UnirNube(m);
+
+        // Estadísticas del jugador (F24)
+        EstadisticasJugador.Modo LeerModo(string prefijo) => new EstadisticasJugador.Modo
+        {
+            partidas = (int)Leer(prefijo + "partidas"),
+            victorias = (int)Leer(prefijo + "victorias"),
+            bajas = (int)Leer(prefijo + "bajas"),
+            muertes = (int)Leer(prefijo + "muertes"),
+            asistencias = (int)Leer(prefijo + "asistencias"),
+            cabezas = (int)Leer(prefijo + "cabezas"),
+            segundos = Leer(prefijo + "segundos"),
+        };
+        EstadisticasJugador.UnirNube(new EstadisticasJugador.Totales
+        {
+            tactico = LeerModo(Tactico),
+            deathmatch = LeerModo(Deathmatch),
+            rondasGanadas = (int)Leer(Tactico + "rondas_ganadas"),
+            plantados = (int)Leer(Tactico + "plantados"),
+            desactivados = (int)Leer(Tactico + "desactivados"),
+            mvp = (int)Leer(Tactico + "mvp"),
+            mejorRacha = (int)Leer(Deathmatch + "mejor_racha"),
+        });
 
         // Récords de Zombie
         foreach (ZombieDifficulty z in Enum.GetValues(typeof(ZombieDifficulty)))

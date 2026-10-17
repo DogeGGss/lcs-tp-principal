@@ -160,4 +160,86 @@ begin
 end $$;
 revoke all on function public.rw_sync_progress(jsonb) from public, anon;
 grant execute on function public.rw_sync_progress(jsonb) to authenticated;
+-- Ranking global por estadistica (US 226): ordena a todos los jugadores por el dato elegido. Usa lo que ya sube cada
+-- juego: los cometas de cada color (rw_sync_comets) y el resto del progreso (rw_sync_progress, F24 y US 159).
+-- Los porcentajes y promedios piden un minimo (5 partidas terminadas; 50 disparos en el minijuego) y solo aparecen
+-- los jugadores con un valor mayor que 0. La mejor reaccion gana con el menor tiempo. Empates: mismo puesto.
+create or replace function public.rw_num(j jsonb, k text) returns numeric
+language sql immutable set search_path = '' as $$ select coalesce((j->>k)::numeric, 0) $$;
+create or replace function public.rw_both(j jsonb, k text) returns numeric
+language sql immutable set search_path = '' as $$
+ select public.rw_num(j, 'estadisticas.tactico.' || k) + public.rw_num(j, 'estadisticas.deathmatch.' || k) $$;
+
+create or replace function public.rw_stat_board(p_stat text, p_offset integer default 0)
+returns jsonb language plpgsql security definer set search_path = '' as $$
+declare result jsonb; menor boolean := p_stat = 'mejor_reaccion';
+begin
+ if auth.uid() is null then raise exception 'Authentication required' using errcode='28000'; end if;
+ if p_offset is null or p_offset<0 or p_offset>100000 then raise exception 'Invalid offset'; end if;
+ if p_stat is null or p_stat not in ('partidas','victorias','porcentaje_victorias','bajas','muertes','asistencias','kda',
+    'tiros_cabeza','horas','tactico_partidas','tactico_victorias','rondas_ganadas','plantados','desactivados','mvp',
+    'deathmatch_partidas','primer_puesto','deathmatch_bajas','mejor_racha','cometas','cometas_azules','cometas_verdes',
+    'cometas_dorados','minijuego_puntos','record_puntos','precision','mejor_reaccion') then raise exception 'Unknown stat'; end if;
+ with base as (
+   select p.player_id, p.display_name, p.blue, p.green, p.gold,
+     coalesce(r.contadores, '{}'::jsonb) c, coalesce(r.minimos, '{}'::jsonb) m
+   from public.rw_achievement_players p left join public.rw_player_progress r using(player_id)
+ ), valores as (
+   select player_id, display_name, case p_stat
+     when 'partidas' then public.rw_both(c,'partidas')
+     when 'victorias' then public.rw_both(c,'victorias')
+     when 'porcentaje_victorias' then case when public.rw_both(c,'partidas')>=5
+       then 100*public.rw_both(c,'victorias')/public.rw_both(c,'partidas') end
+     when 'bajas' then public.rw_both(c,'bajas')
+     when 'muertes' then public.rw_both(c,'muertes')
+     when 'asistencias' then public.rw_both(c,'asistencias')
+     when 'kda' then case when public.rw_both(c,'partidas')>=5
+       then (public.rw_both(c,'bajas')+public.rw_both(c,'asistencias'))/greatest(1,public.rw_both(c,'muertes')) end
+     when 'tiros_cabeza' then case when public.rw_both(c,'partidas')>=5 and public.rw_both(c,'bajas')>0
+       then 100*public.rw_both(c,'cabezas')/public.rw_both(c,'bajas') end
+     when 'horas' then public.rw_both(c,'segundos')/3600
+     when 'tactico_partidas' then public.rw_num(c,'estadisticas.tactico.partidas')
+     when 'tactico_victorias' then public.rw_num(c,'estadisticas.tactico.victorias')
+     when 'rondas_ganadas' then public.rw_num(c,'estadisticas.tactico.rondas_ganadas')
+     when 'plantados' then public.rw_num(c,'estadisticas.tactico.plantados')
+     when 'desactivados' then public.rw_num(c,'estadisticas.tactico.desactivados')
+     when 'mvp' then public.rw_num(c,'estadisticas.tactico.mvp')
+     when 'deathmatch_partidas' then public.rw_num(c,'estadisticas.deathmatch.partidas')
+     when 'primer_puesto' then public.rw_num(c,'estadisticas.deathmatch.victorias')
+     when 'deathmatch_bajas' then public.rw_num(c,'estadisticas.deathmatch.bajas')
+     when 'mejor_racha' then public.rw_num(c,'estadisticas.deathmatch.mejor_racha')
+     when 'cometas' then (blue+green+gold)::numeric
+     when 'cometas_azules' then blue::numeric
+     when 'cometas_verdes' then green::numeric
+     when 'cometas_dorados' then gold::numeric
+     when 'minijuego_puntos' then public.rw_num(c,'minijuego.puntos')
+     when 'record_puntos' then public.rw_num(c,'minijuego.record_puntos')
+     when 'precision' then case when public.rw_num(c,'minijuego.disparos')>=50
+       then 100*(public.rw_num(c,'minijuego.aciertos.comun')+public.rw_num(c,'minijuego.aciertos.raro')
+         +public.rw_num(c,'minijuego.aciertos.epico'))/public.rw_num(c,'minijuego.disparos') end
+     when 'mejor_reaccion' then case when public.rw_num(c,'minijuego.disparos')>=50
+       then public.rw_num(m,'minijuego.mejor_reaccion_ms') end
+   end as value
+   from base
+ ), ranked as (
+   select player_id, display_name, value,
+     dense_rank() over(order by case when menor then value else -value end)::integer rank
+   from valores where value is not null and value>0
+ ), page as (
+   select * from ranked order by rank, display_name, player_id limit 50 offset p_offset
+ ) select jsonb_build_object(
+   'stat', p_stat,
+   'players', coalesce((select jsonb_agg(jsonb_build_object('player_id',player_id,'display_name',display_name,
+       'value',round(value,2),'rank',rank) order by rank,display_name,player_id) from page),'[]'::jsonb),
+   'me', (select jsonb_build_object('player_id',player_id,'display_name',display_name,'value',round(value,2),'rank',rank)
+       from ranked where player_id=auth.uid()),
+   'population', (select count(*) from ranked),
+   'has_more', (select count(*) from ranked)>p_offset+50
+ ) into result;
+ return result;
+end $$;
+revoke all on function public.rw_num(jsonb,text) from public, anon, authenticated;
+revoke all on function public.rw_both(jsonb,text) from public, anon, authenticated;
+revoke all on function public.rw_stat_board(text,integer) from public, anon;
+grant execute on function public.rw_stat_board(text,integer) to authenticated;
 commit;

@@ -60,12 +60,15 @@ public class RondasTacticas : MonoBehaviour
         PropMotivo = "rt.mot", PropRondas0 = "rt.e0", PropRondas1 = "rt.e1", PropSubita = "rt.sub",
         PropDispositivo = "rt.disp", PropLugar = "rt.lugar", PropDesactivado = "rt.desact",
         PropPlantador = "rt.plantador", PropDesactivador = "rt.desactivador",
-        PropRacha0 = "rt.racha0", PropRacha1 = "rt.racha1"; // derrotas seguidas de cada equipo (US 135, CA4)
+        PropRacha0 = "rt.racha0", PropRacha1 = "rt.racha1", // derrotas seguidas de cada equipo (US 135, CA4)
+        PropInicio = "rt.ini"; // F24: hora del servidor en que empezó la partida (la identifica y mide cuánto duró)
 
     /// <summary>US 034: estadísticas que cada jugador publica de sí mismo (plantadas y desactivaciones).</summary>
     public const string PropPlantadas = "st.pl", PropDesactivaciones = "st.des";
     /// <summary>US 195, CA3: bajas y muertes, también publicadas por cada jugador.</summary>
     public const string PropBajas = "st.k", PropMuertes = "st.m";
+    /// <summary>F24 (US 222): asistencias y bajas a la cabeza, también publicadas por cada jugador.</summary>
+    public const string PropAsistencias = "st.as", PropCabezas = "st.c";
 
     /// <summary>Bajas de ese jugador en esta partida (para la tabla y el resultado).</summary>
     public static int BajasDe(Player p) => Estadistica(p, PropBajas);
@@ -73,6 +76,16 @@ public class RondasTacticas : MonoBehaviour
     public static int MuertesDe(Player p) => Estadistica(p, PropMuertes);
     public static int Estadistica(Player p, string clave) =>
         p != null && p.CustomProperties.TryGetValue(clave, out object v) && v is int n ? n : 0;
+
+    /// <summary>
+    /// F24: una estadística del jugador local, contando lo que anotó y todavía no volvió del servidor (al terminar la
+    /// partida, la última baja puede estar en camino).
+    /// </summary>
+    public static int Propia(string clave) =>
+        Mathf.Max(Estadistica(PhotonNetwork.LocalPlayer, clave), anotado.TryGetValue(clave, out int n) ? n : 0);
+
+    /// <summary>F24: hora del servidor en que empezó la partida; null si el anfitrión no la publicó.</summary>
+    public static int? Inicio => Sala != null && Sala.CustomProperties.TryGetValue(PropInicio, out object v) && v is int n ? n : (int?)null;
 
     /// <summary>
     /// US 195: la ronda en juego ya está en combate (o terminando), según lo que publicó el anfitrión. Se puede leer
@@ -185,7 +198,7 @@ public class RondasTacticas : MonoBehaviour
         Publicar(new Hashtable
         {
             // US 016: antes de la ronda 1, 20 s para elegir personaje.
-            { PropRonda, 1 }, { PropFase, (int)Fase.Seleccion }, { PropFin, Ahora + Ms(DuracionSeleccion) },
+            { PropRonda, 1 }, { PropFase, (int)Fase.Seleccion }, { PropFin, Ahora + Ms(DuracionSeleccion) }, { PropInicio, Ahora },
             { PropRondas0, 0 }, { PropRondas1, 0 }, { PropGanador, -1 }, { PropDispositivo, 0 }, { PropDesactivado, 0 }
         });
     }
@@ -567,15 +580,19 @@ public class RondasTacticas : MonoBehaviour
     /// CA2: lo llama JugadorEnRed en cada baja (en todas las computadoras). Cobra solo el que mató, si el muerto
     /// es un rival y la ronda está en combate.
     /// </summary>
-    public static void ContarBaja(int atacante, int muerto)
+    public static void ContarBaja(int atacante, int muerto, bool cabeza, int[] asistentes)
     {
         RondasTacticas r = Actual;
         if (r == null || PhotonNetwork.LocalPlayer == null) return;
         int yo = PhotonNetwork.LocalPlayer.ActorNumber;
         // US 195, CA3: cada uno anota en la sala sus propias muertes y bajas (las mismas que cuenta el aviso de bajas).
         if (muerto == yo) Sumar(PropMuertes);
+        // F24 (US 222): y sus asistencias, si lo había dañado hace poco y lo eliminó otro.
+        if (atacante > 0 && atacante != muerto && atacante != yo && asistentes != null && System.Array.IndexOf(asistentes, yo) >= 0)
+            Sumar(PropAsistencias);
         if (atacante != yo || atacante == muerto) return;
         Sumar(PropBajas);
+        if (cabeza) Sumar(PropCabezas);
         if (r.FaseActual != Fase.Combate || EquiposTacticos.SonAliados(atacante, muerto)) return;
         r.Cobrar(PremioBaja);
     }

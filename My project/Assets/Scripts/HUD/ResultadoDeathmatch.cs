@@ -93,6 +93,7 @@ public class ResultadoDeathmatch : MonoBehaviour
         bool gane = PartidaDeathmatch.Actual != null && Photon.Pun.PhotonNetwork.LocalPlayer != null &&
                     PartidaDeathmatch.Actual.Ganador == Photon.Pun.PhotonNetwork.LocalPlayer.ActorNumber;
         int creditos = PerfilDatos.GanarPorPartida(gane);
+        RegistroDePartida.Deathmatch(gane); // F24: estadísticas del jugador
         Text(Place(Node("Creditos", root), 1420f, 40f, 460f, 34f), labelFont, 24f, Accent, TextAlignmentOptions.MidlineRight, 12f, true).text =
             $"+{creditos} créditos";
 
