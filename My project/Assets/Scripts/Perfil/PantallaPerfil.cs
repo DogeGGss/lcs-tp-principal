@@ -8,7 +8,8 @@ using Tipo = PerfilDatos.Tipo;
 using Cosmetico = PerfilDatos.Cosmetico;
 
 // Perfil del jugador (menú principal). Arriba, la cabecera con el banner, el avatar, el nombre, el título y un
-// resumen; abajo, dos pestañas: Estadísticas (datos de ejemplo) y Personalización (avatares, banners, títulos y marcos).
+// resumen; abajo, dos pestañas: Estadísticas (US 221: las del jugador, F24, y las del minijuego, US 159) y Personalización
+// (avatares, banners, títulos y marcos).
 public class PantallaPerfil : PantallaBase
 {
     private const float Y0 = 520f, AnchoGrilla = 1260f;
@@ -116,7 +117,7 @@ public class PantallaPerfil : PantallaBase
 
     private void RefrescarInfo()
     {
-        if (pestana == 0) infoPestana.text = "Datos de ejemplo";
+        if (pestana == 0) infoPestana.text = $"Partidas terminadas  <color=#F3F4F6>{N(EstadisticasJugador.Datos.Partidas)}</color>";
         else
         {
             int tiene = PerfilDatos.Obtenidos(Tipo.Avatar) + PerfilDatos.Obtenidos(Tipo.Banner) + PerfilDatos.Obtenidos(Tipo.Titulo) + PerfilDatos.Obtenidos(Tipo.Marco);
@@ -127,57 +128,114 @@ public class PantallaPerfil : PantallaBase
 
     // ================= Estadísticas =================
 
+    private const string SinDatos = "Sin datos";
+    private static readonly System.Globalization.CultureInfo Cultura = System.Globalization.CultureInfo.InvariantCulture;
+
     private void ArmarEstadisticas()
     {
         panelEstad = Place(Node("Estadisticas", rect), 60f, Y0, 1800f, 540f);
-        var grupos = PerfilDatos.Estadisticas;
+    }
 
-        // General: una fila con todo.
+    // US 221: se arma de nuevo cada vez que se abre la pantalla o cambian los datos (CA5), así refleja la última partida.
+    // Solo lee: abrirla no suma nada.
+    private void RefrescarEstadisticas()
+    {
+        BorrarHijos(panelEstad);
+        EstadisticasJugador.Totales e = EstadisticasJugador.Datos;
+
+        // General: Táctico y Deathmatch juntos (CA1). Sin partidas, los contadores en 0 y los indicadores "Sin datos" (CA4).
         RectTransform general = Place(Node("General", panelEstad), 0f, 0f, 1800f, 168f);
         Image(general, Rounded, PanelColor, 8f);
         Borde(general, 8f, White(0.06f));
-        T(general, "Rotulo", 28f, 16f, 400f, 22f, FRotulo, 18f, Accent, grupos[0].grupo, TextAlignmentOptions.MidlineLeft, 16f, true);
-        var datos = grupos[0].datos;
+        T(general, "Rotulo", 28f, 16f, 700f, 22f, FRotulo, 18f, Accent, "General · Táctico y Deathmatch", TextAlignmentOptions.MidlineLeft, 16f, true);
+        if (e.SinDatos)
+            T(general, "SinPartidas", 900f, 16f, 872f, 22f, FTexto, 18f, Mute, "Todavía no terminaste ninguna partida de Táctico o Deathmatch.", TextAlignmentOptions.MidlineRight);
+        (string nombre, string valor)[] datos =
+        {
+            ("Partidas", N(e.Partidas)),
+            ("Victorias", N(e.Victorias)),
+            ("% de victorias", Porcentaje(e.Victorias, e.Partidas)),
+            ("Bajas", N(e.Bajas)),
+            ("Muertes", N(e.Muertes)),
+            ("Asistencias", N(e.Asistencias)),
+            ("KDA*", e.SinDatos ? SinDatos : Kda(e)),
+            ("Tiros a la cabeza", Porcentaje(e.Cabezas, e.Bajas)),
+            ("Horas jugadas", Horas(e.Segundos)),
+        };
         float paso = 1744f / datos.Length;
         for (int i = 0; i < datos.Length; i++)
         {
-            T(general, "Valor" + i, 28f + i * paso, 48f, paso - 10f, 58f, FTitulo, 54f, Ink, datos[i].valor);
+            bool vacio = datos[i].valor == SinDatos;
+            T(general, "Valor" + i, 28f + i * paso, 48f, paso - 10f, 58f, FTitulo, vacio ? 30f : 54f, vacio ? Mute : Ink, datos[i].valor);
             T(general, "Nombre" + i, 30f + i * paso, 112f, paso - 10f, 22f, FRotulo, 15f, Mute, datos[i].nombre, TextAlignmentOptions.MidlineLeft, 12f, true);
         }
 
-        // Un panel por modo. El del minijuego tiene datos reales (US 159): se arma en RefrescarMinijuego.
+        // Un panel por modo (CA2). El del minijuego lo llena RefrescarMinijuego (CA3).
         float w = anchoTarjeta = (1800f - 3f * 20f) / 4f;
-        for (int g = 1; g < grupos.Length; g++)
+        Tarjeta(0, "Táctico", "#F29A38", e.tactico.partidas == 0 ? "Todavía no terminaste ninguna partida de Táctico." : null, new[]
         {
-            if (grupos[g].grupo == "Minijuego")
-            {
-                ColorUtility.TryParseHtmlString(grupos[g].color, out Color cm);
-                RectTransform minijuego = Place(Node("Minijuego", panelEstad), (g - 1) * (w + 20f), 188f, w, 300f);
-                Image(minijuego, Rounded, PanelColor, 8f);
-                Borde(minijuego, 8f, White(0.06f));
-                Image(Place(Node("Color", minijuego), 0f, 0f, w, 4f), null, cm);
-                T(minijuego, "Titulo", 24f, 16f, w - 48f, 40f, FTitulo, 34f, cm, "Minijuego: cometas", TextAlignmentOptions.MidlineLeft, 4f, true);
-                cuerpoMinijuego = Place(Node("Datos", minijuego), 0f, 60f, w, 236f);
-                continue;
-            }
-            ColorUtility.TryParseHtmlString(grupos[g].color, out Color c);
-            RectTransform tarjeta = Place(Node(grupos[g].grupo, panelEstad), (g - 1) * (w + 20f), 188f, w, 300f);
-            Image(tarjeta, Rounded, PanelColor, 8f);
-            Borde(tarjeta, 8f, White(0.06f));
-            Image(Place(Node("Color", tarjeta), 0f, 0f, w, 4f), null, c);
-            T(tarjeta, "Titulo", 24f, 16f, w - 48f, 40f, FTitulo, 34f, c, grupos[g].grupo, TextAlignmentOptions.MidlineLeft, 4f, true);
-            var filas = grupos[g].datos;
-            for (int j = 0; j < filas.Length; j++)
-            {
-                float y = 66f + j * 37f;
-                T(tarjeta, "Dato" + j, 24f, y, w - 140f, 32f, FTexto, 21f, Soft, filas[j].nombre);
-                T(tarjeta, "Valor" + j, w - 164f, y, 140f, 32f, FTitulo, 28f, Ink, filas[j].valor, TextAlignmentOptions.MidlineRight);
-                if (j < filas.Length - 1) Image(Place(Node("Linea" + j, tarjeta), 24f, y + 34f, w - 48f, 1f), null, White(0.06f));
-            }
-        }
+            ("Partidas", N(e.tactico.partidas)),
+            ("Victorias", N(e.tactico.victorias)),
+            ("Rondas ganadas", N(e.rondasGanadas)),
+            ("Plantados", N(e.plantados)),
+            ("Desactivados", N(e.desactivados)),
+            ("MVP", N(e.mvp)),
+        });
+        Tarjeta(1, "Deathmatch", "#FF4B4B", e.deathmatch.partidas == 0 ? "Todavía no terminaste ninguna partida de Deathmatch." : null, new[]
+        {
+            ("Partidas", N(e.deathmatch.partidas)),
+            ("Primer puesto", N(e.deathmatch.victorias)),
+            ("Bajas", N(e.deathmatch.bajas)),
+            ("Mejor racha", N(e.mejorRacha)),
+        });
+        // El Zombie todavía no tiene final: se va a registrar con la US 151.
+        Tarjeta(2, "Zombie", "#7DE05A", SinDatos + ". Las partidas Zombie se van a registrar cuando el modo tenga final.", null);
+        RectTransform minijuego = Tarjeta(3, "Minijuego: cometas", "#4CC3FF", null, null);
+        cuerpoMinijuego = Place(Node("Datos", minijuego), 0f, 60f, w, 236f);
+        RefrescarMinijuego();
+
         TextMeshProUGUI nota = T(panelEstad, "Nota", 0f, 504f, 1800f, 26f, FTexto, 18f, Mute,
-            "* KDA provisoria: (bajas + asistencias) ÷ muertes. Salvo el minijuego, son datos de ejemplo: las demás estadísticas todavía no se registran (F24).");
+            "* KDA = (bajas + asistencias) ÷ muertes; sin muertes, ÷ 1. Asistencia: dañaste a un rival que otro eliminó en los 10 s siguientes. " +
+            "Cuentan las partidas terminadas.");
         nota.textWrappingMode = TextWrappingModes.Normal;
+    }
+
+    // Tarjeta de un modo: con las filas o, si no hay datos, con el mensaje (CA4).
+    private RectTransform Tarjeta(int columna, string nombre, string color, string vacio, (string nombre, string valor)[] filas)
+    {
+        float w = anchoTarjeta;
+        ColorUtility.TryParseHtmlString(color, out Color c);
+        RectTransform tarjeta = Place(Node(nombre, panelEstad), columna * (w + 20f), 188f, w, 300f);
+        Image(tarjeta, Rounded, PanelColor, 8f);
+        Borde(tarjeta, 8f, White(0.06f));
+        Image(Place(Node("Color", tarjeta), 0f, 0f, w, 4f), null, c);
+        T(tarjeta, "Titulo", 24f, 16f, w - 48f, 40f, FTitulo, 34f, c, nombre, TextAlignmentOptions.MidlineLeft, 4f, true);
+        if (vacio != null)
+        {
+            TextMeshProUGUI t = T(tarjeta, "SinDatos", 24f, 80f, w - 48f, 120f, FTexto, 22f, Mute, vacio, TextAlignmentOptions.TopLeft);
+            t.textWrappingMode = TextWrappingModes.Normal;
+            return tarjeta;
+        }
+        if (filas == null) return tarjeta;
+        for (int j = 0; j < filas.Length; j++)
+        {
+            float y = 66f + j * 37f;
+            T(tarjeta, "Dato" + j, 24f, y, w - 140f, 32f, FTexto, 21f, Soft, filas[j].nombre);
+            T(tarjeta, "Valor" + j, w - 164f, y, 140f, 32f, FTitulo, 28f, Ink, filas[j].valor, TextAlignmentOptions.MidlineRight);
+            if (j < filas.Length - 1) Image(Place(Node("Linea" + j, tarjeta), 24f, y + 34f, w - 48f, 1f), null, White(0.06f));
+        }
+        return tarjeta;
+    }
+
+    private static string N(long n) => PerfilDatos.Numero((int)Mathf.Min(n, int.MaxValue));
+    private static string Porcentaje(int parte, int total) => total > 0 ? Mathf.RoundToInt(100f * parte / total) + " %" : SinDatos;
+    // US 223, CA4: se calcula con los totales y solo se redondea para mostrarlo ("1,79").
+    private static string Kda(EstadisticasJugador.Totales e) => e.Kda.ToString("0.00", Cultura).Replace(".", ",");
+    private static string Horas(long segundos)
+    {
+        if (segundos < 3600) return (segundos / 60) + " min";
+        float h = segundos / 3600f;
+        return h < 10f ? h.ToString("0.0", Cultura).Replace(".", ",") + " h" : Mathf.FloorToInt(h) + " h";
     }
 
     // US 159, CA3 y CA4: lo guardado del minijuego de cometas (EstadisticasMinijuego).
@@ -428,12 +486,12 @@ public class PantallaPerfil : PantallaBase
         bool sinTitulo = string.IsNullOrEmpty(ti.id);
         titulo.text = sinTitulo ? "Sin título" : ti.nombre;
         titulo.color = sinTitulo ? Mute : Ink;
-        var general = PerfilDatos.Estadisticas[0].datos;
-        resumen[0].text = general[0].valor;
-        resumen[1].text = general[1].valor;
-        resumen[2].text = general[6].valor;
-        resumen[3].text = PerfilDatos.Estadisticas[3].datos[1].valor;
-        RefrescarMinijuego();
+        EstadisticasJugador.Totales e = EstadisticasJugador.Datos;
+        resumen[0].text = N(e.Partidas);
+        resumen[1].text = N(e.Victorias);
+        resumen[2].text = e.SinDatos ? "—" : Kda(e);
+        resumen[3].text = "—"; // el Zombie todavía no registra la oleada récord (US 151)
+        RefrescarEstadisticas();
         RefrescarInfo();
         RefrescarChips();
         RefrescarGrilla();

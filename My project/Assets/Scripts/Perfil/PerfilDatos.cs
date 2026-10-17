@@ -92,18 +92,6 @@ public static class PerfilDatos
         new Pack { id = "c2500", nombre = "Bóveda de cristales", cristales = 2500, bonus = 500, precio = 29900 },
     };
 
-    // Estadísticas de ejemplo (todavía no se registran: F24).
-    public static readonly (string grupo, string color, (string nombre, string valor)[] datos)[] Estadisticas =
-    {
-        ("General", "#F3F4F6", new[] { ("Partidas", "128"), ("Victorias", "71"), ("% de victorias", "55 %"), ("Bajas", "1.204"),
-            ("Muertes", "846"), ("Asistencias", "312"), ("KDA*", "1,79"), ("Tiros a la cabeza", "18 %"), ("Horas jugadas", "46 h") }),
-        ("Táctico", "#F29A38", new[] { ("Partidas", "84"), ("Victorias", "49"), ("Rondas ganadas", "512"), ("Plantados", "63"),
-            ("Desactivados", "41"), ("MVP", "17") }),
-        ("Deathmatch", "#FF4B4B", new[] { ("Partidas", "29"), ("Primer puesto", "6"), ("Bajas", "486"), ("Mejor racha", "11") }),
-        ("Zombie", "#7DE05A", new[] { ("Partidas", "15"), ("Oleada récord", "14"), ("Zombis eliminados", "2.315") }),
-        ("Minijuego", "#4CC3FF", new[] { ("Récord", "42"), ("Partidas", "37") }),
-    };
-
     public static event Action Cambio;
 
     private static Estado e;

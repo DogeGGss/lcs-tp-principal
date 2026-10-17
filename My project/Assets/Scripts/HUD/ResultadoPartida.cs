@@ -93,6 +93,7 @@ public class ResultadoPartida : MonoBehaviour
 
         // Prueba del menú (Perfil y cápsulas): los créditos se ganan jugando.
         int creditos = PerfilDatos.GanarPorPartida(gane);
+        RegistroDePartida.Tactico(rondas, gane); // F24: estadísticas del jugador
         Text(Place(Node("Creditos", root), 1420f, 40f, 460f, 34f), labelFont, 24f, Accent, TextAlignmentOptions.MidlineRight, 12f, true).text =
             $"+{creditos} créditos";
 

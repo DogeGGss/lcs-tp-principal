@@ -96,6 +96,7 @@ public class MenuRiftwalker : MonoBehaviour
         GameObject o = BuscarEnEscena("OverlayTransicion");
         if (o != null) overlay = o.GetComponent<CanvasGroup>();
         PerfilDatos.Cambio += RefrescarTodo;
+        EstadisticasJugador.Cambio += RefrescarTodo; // F24: lo que trae la nube
         PlayerProfile.NameChanged += NombreCambiado;
         RefrescarTodo();
         // US 163, CA3 y CA4: si el guardado se recuperó del respaldo, estaba dañado o es de una versión más nueva.
@@ -105,6 +106,7 @@ public class MenuRiftwalker : MonoBehaviour
     private void OnDestroy()
     {
         PerfilDatos.Cambio -= RefrescarTodo;
+        EstadisticasJugador.Cambio -= RefrescarTodo;
         PlayerProfile.NameChanged -= NombreCambiado;
         PlayerNameScreen.ChipOculto = false;
         if (escuchandoRed && Multijugador.Existe) Multijugador.Instancia.Error -= AlFallarVolver;

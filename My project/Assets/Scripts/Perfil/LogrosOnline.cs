@@ -7,7 +7,8 @@ using UnityEngine.Networking;
 
 // REST de Supabase sin SDK adicional. Un único pedido a la vez y lecturas solamente bajo demanda del menú.
 // Sincroniza los logros con el ranking (rw_sync_comets) y el resto del progreso del jugador (rw_sync_progress,
-// ProgresoNube, US 162 y US 163). El guardado en la PC lo hace Guardado.
+// ProgresoNube, US 162 y US 163). El guardado en la PC lo hace Guardado. El ranking (US 226) es por logros
+// (rw_achievement_board) o por cualquier otra estadística (rw_stat_board, CategoriasRanking).
 public sealed class LogrosOnline : MonoBehaviour
 {
     [Serializable] public sealed class Jugador
@@ -28,15 +29,32 @@ public sealed class LogrosOnline : MonoBehaviour
         public int offset;
         public string filter, fetched_at;
     }
+    // Ranking por estadística (US 226): el puesto y el valor de cada jugador en la categoría pedida.
+    [Serializable] public sealed class Fila { public string player_id, display_name; public double value; public int rank; }
+    [Serializable] public sealed class Tabla
+    {
+        public string stat, fetched_at;
+        public Fila[] players = Array.Empty<Fila>();
+        public Fila me;
+        public int population, offset;
+        public bool has_more;
+        /// <summary>El jugador local, si aparece en esta categoría (JsonUtility no deja el null: se mira el id).</summary>
+        public Fila Propia => me != null && !string.IsNullOrEmpty(me.player_id) ? me : null;
+    }
     [Serializable] private sealed class Usuario { public string id; }
     [Serializable] private sealed class Sesion
     { public string access_token, refresh_token; public long expires_at; public int expires_in; public Usuario user; }
     [Serializable] private sealed class Renovar { public string refresh_token; }
     [Serializable] private sealed class Sincronizar { public string p_name; public int p_blue, p_green, p_gold; }
     [Serializable] private sealed class Consulta { public int p_offset; public string p_achievement; }
+    [Serializable] private sealed class ConsultaEstadistica { public string p_stat; public int p_offset; }
 
     public static LogrosOnline Instancia { get; private set; }
     public Resumen Datos { get; private set; }
+    /// <summary>El último ranking por estadística que llegó (o el de la caché, sin internet).</summary>
+    public Tabla Estadistica { get; private set; }
+    /// <summary>false si la base todavía no tiene rw_stat_board (falta volver a correr logros.sql).</summary>
+    public bool RankingDisponible { get; private set; } = true;
     public string Estado { get; private set; } = "Ranking online sin configurar. El progreso se guarda en esta PC.";
     public bool Ocupado { get; private set; }
     public int Revision { get; private set; }
@@ -50,11 +68,12 @@ public sealed class LogrosOnline : MonoBehaviour
     private string progresoEnviado;
     private int revisionProgreso = -1;
     private int offset, enviado = -1, fallos;
-    private string filtro = "", nombreEnviado, respuesta, error;
+    private string filtro = "", categoria = "", nombreEnviado, respuesta, error;
     private long codigo;
     private float intentar;
     private string RutaSesion => Path.Combine(Application.persistentDataPath, "logros-sesion-" + new Uri(config.url).Host + ".json");
     private string RutaCache => Path.Combine(Application.persistentDataPath, "logros-ranking-" + new Uri(config.url).Host + ".json");
+    private string RutaCacheEstadistica => Path.Combine(Application.persistentDataPath, "logros-estadistica-" + new Uri(config.url).Host + ".json");
 
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
     private static void ResetStatic() => Instancia = null;
@@ -79,6 +98,7 @@ public sealed class LogrosOnline : MonoBehaviour
             catch { identidadDanada = true; }
         }
         try { if (File.Exists(RutaCache)) Datos = JsonUtility.FromJson<Resumen>(File.ReadAllText(RutaCache)); } catch { }
+        try { if (File.Exists(RutaCacheEstadistica)) Estadistica = JsonUtility.FromJson<Tabla>(File.ReadAllText(RutaCacheEstadistica)); } catch { }
     }
     private void Update()
     {
@@ -92,9 +112,10 @@ public sealed class LogrosOnline : MonoBehaviour
         if (pedir || enviado != LogrosCometas.Revision || nombreEnviado != PlayerProfile.Name || (progresoDisponible && progresoCambio))
             StartCoroutine(Trabajar());
     }
-    public void Solicitar(int pagina = 0, string logro = "")
+    /// <summary>Pide una página del ranking: por logros (estadistica vacía) o por una categoría de CategoriasRanking.</summary>
+    public void Solicitar(int pagina = 0, string logro = "", string estadistica = "")
     {
-        offset = Mathf.Max(0, pagina); filtro = logro ?? ""; pedir = true;
+        offset = Mathf.Max(0, pagina); filtro = logro ?? ""; categoria = estadistica ?? ""; pedir = true;
         // Los errores respetan el backoff aunque se pulse repetidamente.
         if (fallos == 0) intentar = Time.unscaledTime;
     }
@@ -168,6 +189,25 @@ public sealed class LogrosOnline : MonoBehaviour
                     progresoCambio = false;
                 }
             }
+            if (pedir && categoria != "")
+            {
+                int pagina = offset; string stat = categoria; pedir = false;
+                yield return Post("/rest/v1/rpc/rw_stat_board", JsonUtility.ToJson(new ConsultaEstadistica { p_stat = stat, p_offset = pagina }), true);
+                if (error != null)
+                {
+                    if (codigo != 404) { Fallar(error); yield break; }
+                    RankingDisponible = false; // falta actualizar la base: los logros y el progreso siguen igual
+                }
+                else
+                {
+                    Tabla nueva = null;
+                    try { nueva = JsonUtility.FromJson<Tabla>(respuesta); } catch { }
+                    if (nueva == null || nueva.players == null) { Fallar("Respuesta del ranking inválida."); yield break; }
+                    nueva.stat = stat; nueva.offset = pagina; nueva.fetched_at = DateTime.UtcNow.ToString("O");
+                    Estadistica = nueva; RankingDisponible = true;
+                    try { Guardado.EscribirAtomico(RutaCacheEstadistica, JsonUtility.ToJson(nueva)); } catch { }
+                }
+            }
             if (pedir)
             {
                 int pagina = offset; string logro = filtro; pedir = false;
@@ -182,6 +222,7 @@ public sealed class LogrosOnline : MonoBehaviour
             }
             fallos = 0; intentar = Time.unscaledTime + 15f;
             if (!progresoDisponible) aviso += " · falta actualizar la base para guardar el resto del progreso en la nube";
+            else if (!RankingDisponible) aviso += " · falta actualizar la base para el ranking por estadísticas";
             Estado = "Conectado · actualizado " + DateTime.Now.ToString("HH:mm") + aviso; Revision++;
         }
         finally { Ocupado = false; }

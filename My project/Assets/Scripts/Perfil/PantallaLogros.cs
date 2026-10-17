@@ -4,22 +4,26 @@ using UnityEngine;
 using UnityEngine.UI;
 using static ShopUIKit;
 using static PerfilUI;
+using Categoria = CategoriasRanking.Categoria;
 
+// Logros y ranking (US 044 y US 226). Pestaña Logros: los nueve logros con el progreso y el porcentaje de jugadores que
+// tiene cada uno. Pestaña Ranking: todos los jugadores ordenados por la categoría elegida (CategoriasRanking): un dato
+// de las estadísticas, del minijuego o la cantidad de logros.
 public class PantallaLogros : PantallaBase
 {
-    readonly RectTransform resumen, lista, acciones;
+    readonly RectTransform resumen, lista, acciones, filtros;
     readonly ScrollRect scroll;
     readonly TextMeshProUGUI titulo;
     readonly Boton[] tabs = new Boton[2];
     int seccion, pagina, local = -1, online = -1;
-    string filtro = "";
+    string filtro = "", categoria = "bajas";
     float siguiente;
     LogrosOnline.Jugador seleccionado;
     LogrosOnline Servicio => LogrosOnline.Instancia;
 
     public PantallaLogros(MenuRiftwalker menu, RectTransform parent) : base(menu, parent, "Logros")
     {
-        BarraSuperior("Cometas · Progreso acumulado", "Logros y ranking");
+        BarraSuperior("Progreso acumulado · Ranking global", "Logros y ranking");
         resumen = Place(Node("Resumen", rect), 60, 130, 440, 910);
         Image(resumen, Rounded, PanelColor, 8);
         for (int i = 0; i < 2; i++) { int k = i; tabs[i] = CrearBoton(rect, 530 + i * 246, 130, 230, 56, i == 0 ? "Logros" : "Ranking", i == 0, () => Cambiar(k)); }
@@ -27,6 +31,7 @@ public class PantallaLogros : PantallaBase
         titulo.richText = false;
         scroll = Scroll(rect, 530, 252, 1330, 706, out lista);
         acciones = Place(Node("Acciones", rect), 530, 976, 1330, 54);
+        filtros = Place(Node("Categorias", rect), 530, 206, 1330, 100);
         Dibujar(true);
     }
     public override void Refrescar() { base.Refrescar(); Consultar(); Dibujar(); }
@@ -35,15 +40,17 @@ public class PantallaLogros : PantallaBase
         if (Time.unscaledTime >= siguiente) Consultar();
         if (local != LogrosCometas.Revision || online != (Servicio == null ? -1 : Servicio.Revision)) Dibujar();
     }
-    void Consultar() { siguiente = Time.unscaledTime + 60; Servicio?.Solicitar(pagina, filtro); }
+    bool PorEstadistica => seccion == 1 && seleccionado == null && categoria != CategoriasRanking.Logros;
+    void Consultar() { siguiente = Time.unscaledTime + 60; Servicio?.Solicitar(pagina, filtro, PorEstadistica ? categoria : ""); }
     void Cambiar(int n) { seccion = n; pagina = 0; filtro = ""; seleccionado = null; Consultar(); Dibujar(true); }
-    void Propietarios(string id) { seccion = 1; pagina = 0; filtro = id; seleccionado = null; Consultar(); Dibujar(true); }
+    void Propietarios(string id) { seccion = 1; categoria = CategoriasRanking.Logros; pagina = 0; filtro = id; seleccionado = null; Consultar(); Dibujar(true); }
+    void Elegir(string id) { categoria = id; pagina = 0; filtro = ""; seleccionado = null; Consultar(); Dibujar(true); }
     public override bool Escape() { if (seleccionado == null) return false; seleccionado = null; Dibujar(true); return true; }
-    void Dibujar(bool arriba = false)
+    void Dibujar(bool alInicio = false)
     {
         float pos = scroll.verticalNormalizedPosition;
         local = LogrosCometas.Revision; online = Servicio == null ? -1 : Servicio.Revision;
-        BorrarHijos(resumen); BorrarHijos(lista); BorrarHijos(acciones);
+        BorrarHijos(resumen); BorrarHijos(lista); BorrarHijos(acciones); BorrarHijos(filtros);
         for (int i = 0; i < 2; i++) { tabs[i].primario = i == seccion; tabs[i].Pintar(); }
         T(resumen, "Tu progreso", 28, 26, 384, 30, FRotulo, 20, Accent, "TU PROGRESO");
         T(resumen, "Cuenta", 24, 68, 384, 116, FTitulo, 100, Ink, LogrosCometas.Cantidad + "<size=50%> / 9</size>");
@@ -57,15 +64,22 @@ public class PantallaLogros : PantallaBase
             T(resumen, "Aciertos", 28, 326 + i * 92, 384, 28, FTexto, 21, Soft, LogrosCometas.Datos.aciertos[i] + " destruidos");
         }
         var datos = Servicio?.Datos;
-        T(resumen, "Puesto", 28, 592, 384, 40, FTitulo, 29, Ink, datos?.me == null ? "PUESTO GLOBAL: —" : "PUESTO GLOBAL: #" + datos.me.rank);
+        T(resumen, "Puesto", 28, 592, 384, 40, FTitulo, 29, Ink, datos?.me == null ? "PUESTO EN LOGROS: —" : "PUESTO EN LOGROS: #" + datos.me.rank);
         string estado = Servicio == null ? "El progreso se guarda en esta PC." : Servicio.Estado;
         if (datos != null) estado += "\n" + (datos.population == 1 ? "1 jugador registrado" : datos.population + " jugadores registrados") + Fecha(datos.fetched_at);
         if (!string.IsNullOrEmpty(LogrosCometas.AvisoGuardado)) estado += "\n" + LogrosCometas.AvisoGuardado;
         var texto = T(resumen, "Conexión", 28, 650, 384, 176, FTexto, 20, Mute, estado);
         texto.textWrappingMode = TextWrappingModes.Normal;
         CrearBoton(resumen, 28, 838, 384, 46, "Actualizar", false, Consultar, 22);
+
+        // En el ranking, arriba van los grupos y las categorías; la lista empieza debajo.
+        float arriba = seccion == 1 && seleccionado == null ? DibujarCategorias() : 206;
+        Place(titulo.rectTransform, 530, arriba, 1330, 36);
+        Place((RectTransform)scroll.transform, 530, arriba + 46, 1330, 958 - (arriba + 46));
         int filas;
-        if (seccion == 0 || seleccionado != null)
+        float paso = 112;
+        if (PorEstadistica) filas = DibujarEstadistica(out paso);
+        else if (seccion == 0 || seleccionado != null)
         {
             titulo.text = seleccionado == null ? "Metas acumuladas · 10, 50 y 100 de cada color" : "Logros de " + seleccionado.display_name;
             filas = 9;
@@ -76,7 +90,7 @@ public class PantallaLogros : PantallaBase
         else
         {
             var definicion = Array.Find(LogrosCometas.Catalogo, d => d.id == filtro);
-            titulo.text = definicion == null ? "Ranking global · empates comparten puesto" : "Quiénes consiguieron: " + definicion.nombre;
+            titulo.text = definicion == null ? "Logros obtenidos · empates comparten puesto" : "Quiénes consiguieron: " + definicion.nombre;
             bool coincide = datos != null && datos.offset == pagina && (datos.filter ?? "") == filtro;
             filas = coincide && datos.players != null ? datos.players.Length : 0;
             for (int i = 0; i < filas; i++) FilaJugador(datos.players[i], i);
@@ -88,8 +102,83 @@ public class PantallaLogros : PantallaBase
             if (filtro != "") CrearBoton(acciones, 456, 0, 300, 48, "Todos los jugadores", false, () => Cambiar(1), 22);
             T(acciones, "Página", 1000, 0, 330, 48, FTexto, 23, Soft, "Página " + (pagina / 50 + 1), TextAlignmentOptions.MidlineRight);
         }
-        lista.sizeDelta = new Vector2(1330, Mathf.Max(180, filas * 112));
-        scroll.verticalNormalizedPosition = arriba ? 1 : pos;
+        lista.sizeDelta = new Vector2(1330, Mathf.Max(180, filas * paso));
+        scroll.verticalNormalizedPosition = alInicio ? 1 : pos;
+    }
+
+    // Los grupos (General, Táctico, Deathmatch, Minijuego, Logros) y las categorías del grupo elegido, que bajan de
+    // renglón si no entran. Devuelve dónde empieza la lista.
+    float DibujarCategorias()
+    {
+        Categoria actual = CategoriasRanking.Buscar(categoria) ?? CategoriasRanking.Todas[0];
+        string[] grupos = CategoriasRanking.Grupos;
+        for (int i = 0; i < grupos.Length; i++)
+        {
+            string g = grupos[i];
+            CrearBoton(filtros, i * 212, 0, 200, 44, g, g == actual.grupo, () => Elegir(CategoriasRanking.Primera(g).id), 22);
+        }
+        float alto = 44;
+        if (actual.grupo != "Logros")
+        {
+            float x = 0, y = 56;
+            foreach (Categoria c in CategoriasRanking.Todas)
+            {
+                if (c.grupo != actual.grupo) continue;
+                string id = c.id;
+                Boton b = CrearBoton(filtros, x, y, 100, 38, c.nombre, id == categoria, () => Elegir(id), 18);
+                float w = Mathf.Ceil(b.texto.GetPreferredValues(b.texto.text).x) + 36;
+                if (x > 0 && x + w > 1330) { x = 0; y += 48; }
+                b.rect.sizeDelta = new Vector2(w, 38);
+                b.rect.anchoredPosition = new Vector2(x + w / 2, -(y + 19)); // el botón crece desde el centro
+                x += w + 10;
+            }
+            alto = y + 38;
+        }
+        Place(filtros, 530, 206, 1330, alto);
+        return 206 + alto + 22;
+    }
+
+    // Ranking por estadística: puesto, nombre y valor; el jugador local, resaltado.
+    int DibujarEstadistica(out float paso)
+    {
+        paso = 80;
+        Categoria cat = CategoriasRanking.Buscar(categoria);
+        LogrosOnline.Tabla tabla = Servicio?.Estadistica;
+        titulo.text = cat.grupo + ": " + cat.nombre + " · " + (cat.requisito ?? "empates comparten puesto");
+        bool coincide = tabla != null && tabla.stat == categoria && tabla.offset == pagina && tabla.players != null;
+        int filas = coincide ? tabla.players.Length : 0;
+        string yo = coincide ? tabla.Propia?.player_id : null;
+        for (int i = 0; i < filas; i++) FilaEstadistica(tabla.players[i], i, cat, yo);
+        if (filas == 0)
+        {
+            string vacio = Servicio == null || !Servicio.Configurado ? "El ranking estará disponible al conectar el servicio online."
+                : !Servicio.RankingDisponible ? "Este ranking todavía no está disponible: falta actualizar el servicio online."
+                : Servicio.Ocupado ? "Consultando jugadores…"
+                : coincide ? "Todavía no hay jugadores en esta categoría." : "No hay datos disponibles. Probá actualizar.";
+            var t = T(lista, "Vacío", 26, 30, 1200, 140, FTexto, 28, Mute, vacio);
+            t.textWrappingMode = TextWrappingModes.Normal;
+        }
+        var anterior = CrearBoton(acciones, 0, 0, 210, 48, "Anterior", false, () => { pagina = Mathf.Max(0, pagina - 50); Consultar(); Dibujar(true); }, 22);
+        anterior.button.interactable = pagina > 0;
+        var proximo = CrearBoton(acciones, 226, 0, 210, 48, "Siguiente", false, () => { pagina += 50; Consultar(); Dibujar(true); }, 22);
+        proximo.button.interactable = coincide && tabla.has_more;
+        LogrosOnline.Fila mio = coincide ? tabla.Propia : null;
+        string puesto = !coincide ? "" : mio != null ? $"Tu puesto: <color=#F3F4F6>#{mio.rank}</color> · {CategoriasRanking.Mostrar(cat, mio.value)}"
+            : "Todavía no aparecés en esta categoría.";
+        T(acciones, "Puesto", 456, 0, 520, 48, FTexto, 23, Soft, puesto + (coincide ? Fecha(tabla.fetched_at) : ""));
+        T(acciones, "Página", 1000, 0, 330, 48, FTexto, 23, Soft, "Página " + (pagina / 50 + 1), TextAlignmentOptions.MidlineRight);
+        return filas;
+    }
+
+    void FilaEstadistica(LogrosOnline.Fila p, int i, Categoria cat, string yo)
+    {
+        bool mio = yo != null && p.player_id == yo;
+        var r = Place(Node("Jugador", lista), 0, i * 80, 1330, 72);
+        Image(r, Rounded, mio ? Over(WithAlpha(Accent, .16f), PanelColor) : PanelColor, 6);
+        if (mio) Borde(r, 6, WithAlpha(Accent, .6f));
+        T(r, "Puesto", 22, 0, 110, 72, FTitulo, 34, p.rank <= 3 ? Accent : Soft, "#" + p.rank);
+        T(r, "Nombre", 150, 0, 800, 72, FTitulo, 30, Ink, mio ? p.display_name + " (vos)" : p.display_name).richText = false;
+        T(r, "Valor", 960, 0, 346, 72, FTitulo, 36, Ink, CategoriasRanking.Mostrar(cat, p.value), TextAlignmentOptions.MidlineRight);
     }
     void FilaLogro(LogrosCometas.Definicion d, int i)
     {
