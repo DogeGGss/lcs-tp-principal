@@ -742,3 +742,7 @@ fecha_utc,us_numero,us_titulo,estado_anterior,estado_nuevo,tiempo_en_estado_ante
 2026-10-17T20:28:59.523853+00:00,456,US 233. Ganar créditos al terminar una partida,R2D,Done,2h 29m,8984,https://github.com/DogeGGss/lcs-tp-principal/issues/456
 2026-10-17T20:28:59.523853+00:00,218,US 156. Cometas en la fase de compra,TESTING,Done,2h 29m,8984,https://github.com/DogeGGss/lcs-tp-principal/issues/218
 2026-10-17T20:28:59.523853+00:00,219,US 157. Disparar sin gastar balas en la fase de compra,LPR,TESTING,12d 12h 8m,1080494,https://github.com/DogeGGss/lcs-tp-principal/issues/219
+2026-10-17T22:35:42.379294+00:00,350,US 209. Ventana propia del launcher,TESTING,R2D,14h 2m,50557,https://github.com/DogeGGss/lcs-tp-principal/issues/350
+2026-10-17T22:35:42.379294+00:00,338,US 201. Buscar actualizaciones,LPR,R2D,2h 6m,7602,https://github.com/DogeGGss/lcs-tp-principal/issues/338
+2026-10-17T22:35:42.379294+00:00,219,US 157. Disparar sin gastar balas en la fase de compra,TESTING,R2D,2h 6m,7602,https://github.com/DogeGGss/lcs-tp-principal/issues/219
+2026-10-17T22:35:42.379294+00:00,220,US 158. Mostrar puntaje al acertar un cometa,LPR,TESTING,12d 14h 14m,1088097,https://github.com/DogeGGss/lcs-tp-principal/issues/220
