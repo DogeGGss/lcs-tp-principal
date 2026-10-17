@@ -718,3 +718,10 @@ fecha_utc,us_numero,us_titulo,estado_anterior,estado_nuevo,tiempo_en_estado_ante
 2026-10-16T21:47:10.799900+00:00,455,US 232. Elegir el marco del perfil,LPR,Done,10h 55m,39309,https://github.com/DogeGGss/lcs-tp-principal/issues/455
 2026-10-16T21:47:10.799900+00:00,424,US 217. Consultar el perfil del jugador,LPR,TESTING,10h 55m,39309,https://github.com/DogeGGss/lcs-tp-principal/issues/424
 2026-10-16T23:58:43.272125+00:00,200,US 140. Puntuación y victoria en Deathmatch,LPR,TESTING,11d 46m,953171,https://github.com/DogeGGss/lcs-tp-principal/issues/200
+2026-10-17T04:09:02.466057+00:00,197,US 137. Reaparecer en Deathmatch,LPR,TESTING,10d 3h 19m,875957,https://github.com/DogeGGss/lcs-tp-principal/issues/197
+2026-10-17T04:09:02.466057+00:00,163,US 118. Mapa de práctica (Shooting Range),LPR,R2D,1d 2h 53m,96831,https://github.com/DogeGGss/lcs-tp-principal/issues/163
+2026-10-17T04:09:02.466057+00:00,420,US 224. Minimapa en Deathmatch,TESTING,R2D,22h 13m,79988,https://github.com/DogeGGss/lcs-tp-principal/issues/420
+2026-10-17T04:09:02.466057+00:00,425,US 218. Elegir el título del perfil,LPR,Done,17h 17m,62221,https://github.com/DogeGGss/lcs-tp-principal/issues/425
+2026-10-17T04:09:02.466057+00:00,424,US 217. Consultar el perfil del jugador,TESTING,Done,6h 21m,22911,https://github.com/DogeGGss/lcs-tp-principal/issues/424
+2026-10-17T04:09:02.466057+00:00,426,US 219. Elegir el avatar del perfil,LPR,Done,17h 17m,62221,https://github.com/DogeGGss/lcs-tp-principal/issues/426
+2026-10-17T04:09:02.466057+00:00,427,US 220. Elegir el banner del perfil,LPR,TESTING,17h 17m,62221,https://github.com/DogeGGss/lcs-tp-principal/issues/427
