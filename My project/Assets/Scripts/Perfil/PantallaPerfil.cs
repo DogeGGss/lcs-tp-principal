@@ -15,7 +15,8 @@ public class PantallaPerfil : PantallaBase
     private const float Y0 = 520f, AnchoGrilla = 1260f;
 
     private Img banner, avatar, marcoAvatar;
-    private RectTransform cabecera, marcoCabecera;
+    private RectTransform cabecera, marcoCabecera, cajaBanner;
+    private Img fondoCabecera, bordeCabecera;
     private Transform bajoMarco;
     private TextMeshProUGUI nombre, titulo, infoPestana;
     private readonly TextMeshProUGUI[] resumen = new TextMeshProUGUI[4];
@@ -48,13 +49,15 @@ public class PantallaPerfil : PantallaBase
     private void ArmarCabecera()
     {
         RectTransform cab = cabecera = Place(Node("Cabecera", rect), 60f, 120f, 1800f, 300f);
-        Image(cab, Rounded, PanelColor, 10f);
-        banner = Cubrir(Place(Node("Banner", cab), 0f, 0f, 1800f, 300f), null);
-        Image(Place(Node("Sombra", cab), 0f, 0f, 1150f, 300f), Degrade(true, 0.9f, 0f), Color.white);
-        Img sombra = Image(Place(Node("SombraAbajo", cab), 0f, 140f, 1800f, 160f), Degrade(false, 0.55f, 0f), Color.white);
-        Img borde = Borde(cab, 8f, White(0.08f));
+        fondoCabecera = Image(cab, Rounded, PanelColor, 10f);
+        cajaBanner = Place(Node("Banner", cab), 0f, 0f, 1800f, 300f);
+        banner = Cubrir(cajaBanner, null);
+        // Las sombras van dentro del banner: con marco se recortan con él.
+        Image(Place(Node("Sombra", cajaBanner), 0f, 0f, 1150f, 300f), Degrade(true, 0.9f, 0f), Color.white);
+        Image(Place(Node("SombraAbajo", cajaBanner), 0f, 140f, 1800f, 160f), Degrade(false, 0.55f, 0f), Color.white);
+        Img borde = bordeCabecera = Borde(cab, 8f, White(0.08f));
         // El marco va sobre el banner, pero detrás del avatar, los textos y el botón.
-        bajoMarco = borde != null ? borde.transform : sombra.transform;
+        bajoMarco = borde != null ? borde.transform : cajaBanner;
 
         // Centrados en alto dentro del marco y corridos hacia adentro, así no tapan sus esquinas.
         // Borde blanco como el nombre: la rareza se ve en la colección, no en la cabecera.
@@ -370,8 +373,11 @@ public class PantallaPerfil : PantallaBase
         {
             float ih = c.tipo == Tipo.Avatar ? w : c.tipo == Tipo.Marco ? w / 5.4f : w / 3f;
             RectTransform caja = Place(Node("Imagen", carta), 0f, 0f, w, ih);
-            // Los marcos se muestran sobre el banner equipado, como quedan en la cabecera.
-            Img img = Cubrir(caja, PerfilDatos.Imagen(c.tipo == Tipo.Marco ? PerfilDatos.Banner : c));
+            // Los marcos se muestran sobre el banner equipado, como quedan en la cabecera: el banner llega hasta el
+            // borde interior del riel.
+            Vector4 d = c.tipo == Tipo.Marco ? InteriorMarco(c, ih, true) : Vector4.zero;
+            RectTransform arte = c.tipo == Tipo.Marco ? Place(Node("Arte", caja), d.x, d.y, w - d.x - d.z, ih - d.y - d.w) : caja;
+            Img img = Cubrir(arte, PerfilDatos.Imagen(c.tipo == Tipo.Marco ? PerfilDatos.Banner : c));
             if (c.tipo == Tipo.Marco) { RectTransform m = null; Enmarcar(ref m, caja, 0f, 0f, w, ih, c, true); }
             if (!tiene)
             {
@@ -423,8 +429,8 @@ public class PantallaPerfil : PantallaBase
             // Cómo queda la cabecera con ese banner o ese título.
             RectTransform mini = Place(Node("Cabecera", vista), 24f, 60f, 452f, 296f);
             Image(mini, Rounded, Hex(0x11141B), 8f);
-            RectTransform cajaBanner = Place(Node("Banner", mini), 0f, 0f, 452f, 151f);
-            Cubrir(cajaBanner, PerfilDatos.Imagen(c.tipo == Tipo.Banner ? c : PerfilDatos.Banner));
+            RectTransform cajaMini = Place(Node("Banner", mini), 0f, 0f, 452f, 151f);
+            Img bannerMini = Cubrir(cajaMini, PerfilDatos.Imagen(c.tipo == Tipo.Banner ? c : PerfilDatos.Banner));
             Img sombraMini = Image(Place(Node("Sombra", mini), 0f, 0f, 300f, 151f), Degrade(true, 0.9f, 0f), Color.white);
             PerfilDatos.Cosmetico av = PerfilDatos.Avatar;
             Image(Place(Node("MarcoAvatar", mini), 34f, 29.5f, 92f, 92f), Rounded, Ink, 6f);
@@ -435,7 +441,13 @@ public class PantallaPerfil : PantallaBase
                 string.IsNullOrEmpty(ti.id) ? Mute : Ink, string.IsNullOrEmpty(ti.id) ? "Sin título" : ti.nombre);
             tt.overflowMode = TextOverflowModes.Ellipsis;
             RectTransform mm = null;
-            Enmarcar(ref mm, mini, 0f, 0f, 452f, 151f, c.tipo == Tipo.Marco ? c : PerfilDatos.Marco, false, sombraMini.transform);
+            Cosmetico marcoMini = c.tipo == Tipo.Marco ? c : PerfilDatos.Marco;
+            Enmarcar(ref mm, mini, 0f, 0f, 452f, 151f, marcoMini, false, sombraMini.transform);
+            // Con marco, el banner y su sombra terminan en el borde interior del riel, como en la cabecera.
+            Vector4 dm = InteriorMarco(marcoMini, 151f);
+            Place(cajaMini, dm.x, dm.y, 452f - dm.x - dm.z, 151f - dm.y - dm.w);
+            AjustarCubrir(bannerMini, cajaMini);
+            Place(sombraMini.rectTransform, dm.x, dm.y, 300f - dm.x, 151f - dm.y - dm.w);
             if (c.tipo == Tipo.Titulo)
             {
                 TextMeshProUGUI grande = T(mini, "Grande", 20f, 170f, 412f, 110f, FTitulo, 44f, colorR, c.nombre, TextAlignmentOptions.Center, 2f, true);
@@ -477,11 +489,18 @@ public class PantallaPerfil : PantallaBase
         base.Refrescar();
         PerfilDatos.Cosmetico av = PerfilDatos.Avatar, bn = PerfilDatos.Banner, ti = PerfilDatos.Titulo;
         banner.sprite = PerfilDatos.Imagen(bn);
-        AjustarCubrir(banner, (RectTransform)banner.rectTransform.parent);
         avatar.sprite = PerfilDatos.Imagen(av);
         AjustarCubrir(avatar, (RectTransform)avatar.rectTransform.parent);
         marcoAvatar.color = Ink;
         Enmarcar(ref marcoCabecera, cabecera, 0f, 0f, 1800f, 300f, PerfilDatos.Marco, false, bajoMarco);
+        // Con marco, el banner llega hasta el borde interior del riel y la cabecera no tiene fondo ni contorno propios:
+        // así nada asoma por fuera del marco (en las esquinas redondeadas, por ejemplo).
+        Vector4 d = InteriorMarco(PerfilDatos.Marco, 300f);
+        bool conMarco = d != Vector4.zero;
+        Place(cajaBanner, d.x, d.y, 1800f - d.x - d.z, 300f - d.y - d.w);
+        AjustarCubrir(banner, cajaBanner);
+        fondoCabecera.enabled = !conMarco;
+        if (bordeCabecera != null) bordeCabecera.enabled = !conMarco;
         nombre.text = PlayerProfile.HasName ? PlayerProfile.Name : "Jugador";
         bool sinTitulo = string.IsNullOrEmpty(ti.id);
         titulo.text = sinTitulo ? "Sin título" : ti.nombre;

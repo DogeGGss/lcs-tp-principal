@@ -391,7 +391,9 @@ public class PantallaEstacion : PantallaBase
             // Sobre el banner que tenés equipado, como queda en la cabecera del Perfil.
             Image(Place(Node("Fondo", carta), x, y, lado, lado), Rounded, Hex(0x151922), 6f);
             float alto = lado / 3f;
-            RectTransform caja = Place(Node("Arte", carta), x, y + (lado - alto) / 2f, lado, alto);
+            // El banner llega hasta el borde interior del riel: no asoma por fuera del marco.
+            Vector4 d = InteriorMarco(c, alto, true);
+            RectTransform caja = Place(Node("Arte", carta), x + d.x, y + (lado - alto) / 2f + d.y, lado - d.x - d.z, alto - d.y - d.w);
             Cubrir(caja, PerfilDatos.Imagen(PerfilDatos.Banner));
             RectTransform marco = null;
             Enmarcar(ref marco, carta, x, y + (lado - alto) / 2f, lado, alto, c, true);
