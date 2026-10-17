@@ -729,3 +729,5 @@ fecha_utc,us_numero,us_titulo,estado_anterior,estado_nuevo,tiempo_en_estado_ante
 2026-10-17T12:23:35.874645+00:00,428,US 221. Consultar las estadísticas desde el perfil,Blocked,LPR,1d 1h 31m,91894,https://github.com/DogeGGss/lcs-tp-principal/issues/428
 2026-10-17T12:23:35.874645+00:00,429,US 222. Registrar estadísticas acumuladas del jugador,Todo,LPR,4d 8h 58m,377907,https://github.com/DogeGGss/lcs-tp-principal/issues/429
 2026-10-17T12:23:35.874645+00:00,430,US 223. Calcular el KDA personal,Todo,LPR,4d 8h 58m,377907,https://github.com/DogeGGss/lcs-tp-principal/issues/430
+2026-10-17T15:48:20.140180+00:00,427,US 220. Elegir el banner del perfil,TESTING,R2D,11h 39m,41957,https://github.com/DogeGGss/lcs-tp-principal/issues/427
+2026-10-17T15:48:20.140180+00:00,452,US 229. Elegir resoluciones 16:9 y 4:3,LPR,TESTING,1d 4h 56m,104178,https://github.com/DogeGGss/lcs-tp-principal/issues/452
