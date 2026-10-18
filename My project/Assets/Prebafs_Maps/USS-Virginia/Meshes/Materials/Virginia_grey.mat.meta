@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 7fd14bcd1eb072f4e81e1ff30883d7a8
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 185390
+  packageName: USS Virginia BattleShip
+  packageVersion: 1.0
+  assetPath: Assets/USS-Virginia/Meshes/Materials/Virginia_grey.mat
+  uploadId: 407253

@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 63bf076b80875da47bab348431bde819
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 185390
+  packageName: USS Virginia BattleShip
+  packageVersion: 1.0
+  assetPath: Assets/USS-Virginia/Meshes/Materials/Virginia_weapons.mat
+  uploadId: 407253

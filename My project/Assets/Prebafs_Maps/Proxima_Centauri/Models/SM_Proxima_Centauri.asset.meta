@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 5a640da5540326b4cb0842ddbcdd2e29
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 4300000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 416838
+  packageName: Proxima Centauri
+  packageVersion: 1.0
+  assetPath: Assets/Proxima_Centauri/Models/SM_Proxima_Centauri.asset
+  uploadId: 1019220
