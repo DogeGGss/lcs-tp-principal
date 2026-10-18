@@ -1,0 +1,16 @@
+fileFormatVersion: 2
+guid: aa928f0759e6bea45aa850a4de257ee1
+ShaderImporter:
+  externalObjects: {}
+  defaultTextures: []
+  nonModifiableTextures: []
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 416838
+  packageName: Proxima Centauri
+  packageVersion: 1.0
+  assetPath: Assets/Proxima_Centauri/Shaders/ProximaPlasma.shader
+  uploadId: 1019220
