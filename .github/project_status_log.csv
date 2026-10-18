@@ -760,3 +760,14 @@ fecha_utc,us_numero,us_titulo,estado_anterior,estado_nuevo,tiempo_en_estado_ante
 2026-10-18T00:16:37.428322+00:00,202,US 142. Mostrar resultado de Deathmatch,R2D,Done,6h 17m,22642,https://github.com/DogeGGss/lcs-tp-principal/issues/202
 2026-10-18T00:16:37.428322+00:00,98,US 044.  Consultar logros,LPR,TESTING,1d 13h 24m,134676,https://github.com/DogeGGss/lcs-tp-principal/issues/98
 2026-10-18T00:16:37.428322+00:00,285,US 183. Diseño de los personajes,LPR,TESTING,1d 18h 20m,152443,https://github.com/DogeGGss/lcs-tp-principal/issues/285
+2026-10-18T04:45:25.559357+00:00,341,US 204. Jugar online solo con la misma versión,LPR,R2D,12d 20h 24m,1110280,https://github.com/DogeGGss/lcs-tp-principal/issues/341
+2026-10-18T04:45:25.559357+00:00,95,US 041. Detectar cumplimiento de logros,LPR,R2D,1d 17h 53m,150804,https://github.com/DogeGGss/lcs-tp-principal/issues/95
+2026-10-18T04:45:25.559357+00:00,345,US 208. Probar versiones experimentales desde el launcher,TESTING,R2D,4h 28m,16128,https://github.com/DogeGGss/lcs-tp-principal/issues/345
+2026-10-18T04:45:25.559357+00:00,222,US 160. Logros del minijuego,R2D,Done,4h 28m,16128,https://github.com/DogeGGss/lcs-tp-principal/issues/222
+2026-10-18T04:45:25.559357+00:00,221,US 159. Estadísticas del minijuego,R2D,Done,4h 28m,16128,https://github.com/DogeGGss/lcs-tp-principal/issues/221
+2026-10-18T04:45:25.559357+00:00,98,US 044.  Consultar logros,TESTING,Rehacer,4h 28m,16128,https://github.com/DogeGGss/lcs-tp-principal/issues/98
+2026-10-18T04:45:25.559357+00:00,350,US 209. Ventana propia del launcher,R2D,Done,6h 9m,22183,https://github.com/DogeGGss/lcs-tp-principal/issues/350
+2026-10-18T04:45:25.559357+00:00,338,US 201. Buscar actualizaciones,R2D,Done,6h 9m,22183,https://github.com/DogeGGss/lcs-tp-principal/issues/338
+2026-10-18T04:45:25.559357+00:00,285,US 183. Diseño de los personajes,TESTING,Done,4h 28m,16128,https://github.com/DogeGGss/lcs-tp-principal/issues/285
+2026-10-18T04:45:25.559357+00:00,167,US 122. Acceder al shooting range desde el menú principal,LPR,Done,3d 8h 5m,288303,https://github.com/DogeGGss/lcs-tp-principal/issues/167
+2026-10-18T04:45:25.559357+00:00,232,US 166. Guía de controles y objetivos en el campo de práctica,LPR,TESTING,1d 9h 58m,122308,https://github.com/DogeGGss/lcs-tp-principal/issues/232
