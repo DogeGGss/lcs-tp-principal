@@ -24,6 +24,11 @@ MonoBehaviour:
     tactico: 0
     deathmatch: 1
     imagen: {fileID: 0}
+  - nombre: Mapa deathmatch
+    escena: Mapa_deathmatch
+    tactico: 0
+    deathmatch: 1
+    imagen: {fileID: 0}
   - nombre: Mapa de pruebas
     escena: MapaPruebasV1
     tactico: 1
