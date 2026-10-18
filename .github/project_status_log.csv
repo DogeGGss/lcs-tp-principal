@@ -746,3 +746,17 @@ fecha_utc,us_numero,us_titulo,estado_anterior,estado_nuevo,tiempo_en_estado_ante
 2026-10-17T22:35:42.379294+00:00,338,US 201. Buscar actualizaciones,LPR,R2D,2h 6m,7602,https://github.com/DogeGGss/lcs-tp-principal/issues/338
 2026-10-17T22:35:42.379294+00:00,219,US 157. Disparar sin gastar balas en la fase de compra,TESTING,R2D,2h 6m,7602,https://github.com/DogeGGss/lcs-tp-principal/issues/219
 2026-10-17T22:35:42.379294+00:00,220,US 158. Mostrar puntaje al acertar un cometa,LPR,TESTING,12d 14h 14m,1088097,https://github.com/DogeGGss/lcs-tp-principal/issues/220
+2026-10-18T00:16:37.428322+00:00,222,US 160. Logros del minijuego,TESTING,R2D,3h 47m,13657,https://github.com/DogeGGss/lcs-tp-principal/issues/222
+2026-10-18T00:16:37.428322+00:00,345,US 208. Probar versiones experimentales desde el launcher,LPR,TESTING,12d 15h 55m,1094152,https://github.com/DogeGGss/lcs-tp-principal/issues/345
+2026-10-18T00:16:37.428322+00:00,337,US 200. Abrir el juego desde el launcher,LPR,TESTING,12d 15h 55m,1094152,https://github.com/DogeGGss/lcs-tp-principal/issues/337
+2026-10-18T00:16:37.428322+00:00,221,US 159. Estadísticas del minijuego,LPR,R2D,1d 13h 24m,134676,https://github.com/DogeGGss/lcs-tp-principal/issues/221
+2026-10-18T00:16:37.428322+00:00,420,US 224. Minimapa en Deathmatch,R2D,Done,20h 7m,72454,https://github.com/DogeGGss/lcs-tp-principal/issues/420
+2026-10-18T00:16:37.428322+00:00,163,US 118. Mapa de práctica (Shooting Range),R2D,Done,20h 7m,72454,https://github.com/DogeGGss/lcs-tp-principal/issues/163
+2026-10-18T00:16:37.428322+00:00,219,US 157. Disparar sin gastar balas en la fase de compra,R2D,Done,1h 40m,6055,https://github.com/DogeGGss/lcs-tp-principal/issues/219
+2026-10-18T00:16:37.428322+00:00,220,US 158. Mostrar puntaje al acertar un cometa,TESTING,Done,1h 40m,6055,https://github.com/DogeGGss/lcs-tp-principal/issues/220
+2026-10-18T00:16:37.428322+00:00,457,US 234. Abrir cápsulas en la Estación del Rift,LPR,Done,1d 13h 24m,134676,https://github.com/DogeGGss/lcs-tp-principal/issues/457
+2026-10-18T00:16:37.428322+00:00,458,US 235. Canjear créditos o cristales por boletos,LPR,Done,1d 13h 24m,134676,https://github.com/DogeGGss/lcs-tp-principal/issues/458
+2026-10-18T00:16:37.428322+00:00,459,US 236. Comprar cristales en la tienda,LPR,Done,1d 13h 24m,134676,https://github.com/DogeGGss/lcs-tp-principal/issues/459
+2026-10-18T00:16:37.428322+00:00,202,US 142. Mostrar resultado de Deathmatch,R2D,Done,6h 17m,22642,https://github.com/DogeGGss/lcs-tp-principal/issues/202
+2026-10-18T00:16:37.428322+00:00,98,US 044.  Consultar logros,LPR,TESTING,1d 13h 24m,134676,https://github.com/DogeGGss/lcs-tp-principal/issues/98
+2026-10-18T00:16:37.428322+00:00,285,US 183. Diseño de los personajes,LPR,TESTING,1d 18h 20m,152443,https://github.com/DogeGGss/lcs-tp-principal/issues/285
