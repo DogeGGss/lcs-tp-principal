@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 14fd638ca7cccca4aac274eb143ad0ce
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 2100000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 398182
+  packageName: Wind VFX - URP
+  packageVersion: 1.0
+  assetPath: Assets/Vefects/Wind VFX URP/VFX/Materials/M_VFX_URP_Wind_Soft_Particle_01.mat
+  uploadId: 972086
