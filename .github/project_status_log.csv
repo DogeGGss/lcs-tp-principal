@@ -772,3 +772,7 @@ fecha_utc,us_numero,us_titulo,estado_anterior,estado_nuevo,tiempo_en_estado_ante
 2026-10-18T04:45:25.559357+00:00,167,US 122. Acceder al shooting range desde el menú principal,LPR,Done,3d 8h 5m,288303,https://github.com/DogeGGss/lcs-tp-principal/issues/167
 2026-10-18T04:45:25.559357+00:00,232,US 166. Guía de controles y objetivos en el campo de práctica,LPR,TESTING,1d 9h 58m,122308,https://github.com/DogeGGss/lcs-tp-principal/issues/232
 2026-10-18T16:36:34.840373+00:00,232,US 166. Guía de controles y objetivos en el campo de práctica,TESTING,R2D,11h 51m,42669,https://github.com/DogeGGss/lcs-tp-principal/issues/232
+2026-10-18T21:18:09.481612+00:00,232,US 166. Guía de controles y objetivos en el campo de práctica,R2D,Done,4h 41m,16894,https://github.com/DogeGGss/lcs-tp-principal/issues/232
+2026-10-18T21:18:09.481612+00:00,345,US 208. Probar versiones experimentales desde el launcher,R2D,Done,16h 32m,59563,https://github.com/DogeGGss/lcs-tp-principal/issues/345
+2026-10-18T21:18:09.481612+00:00,95,US 041. Detectar cumplimiento de logros,R2D,Done,16h 32m,59563,https://github.com/DogeGGss/lcs-tp-principal/issues/95
+2026-10-18T21:18:09.481612+00:00,341,US 204. Jugar online solo con la misma versión,R2D,Done,16h 32m,59563,https://github.com/DogeGGss/lcs-tp-principal/issues/341
