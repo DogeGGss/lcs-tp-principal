@@ -73,6 +73,6 @@ No se modificaron economías, recompensas, cosméticos ni otros tipos de logro. 
 
 ## Validación
 
-`My project/AgentScripts/ValidateAchievements.cs` prueba los límites, saltos de metas, independencia por color, ausencia de duplicados, monotonía, JSON, guardados de versiones con otra cantidad de logros, la unión de dos progresos (dos juegos en la misma PC), respaldo atómico y rechazo de claves secretas sin modificar el progreso del usuario. Ejecutar con Unity CLI `run_script`, entrada `ValidateAchievements.Main`.
+Los tests automáticos de EditMode (`My project/Assets/Tests/EditMode`, ver `Assets/Tests/LEEME.md`) prueban los límites, saltos de metas, independencia por color, ausencia de duplicados, monotonía, JSON, guardados de versiones con otra cantidad de logros, la unión de dos progresos (dos juegos en la misma PC), respaldo atómico y rechazo de claves secretas sin modificar el progreso del usuario. También comprueban que cada logro, estadística y categoría del ranking del juego exista en `logros.sql`. Se corren desde *Window > General > Test Runner*, pestaña EditMode.
 
 La prueba real entre jugadores requiere completar la configuración anterior. `Assets/Resources/LogrosOnline.asset` ya tiene la URL del proyecto y la clave publicable, y está habilitado: esa clave es pública por diseño (las tablas están protegidas por RLS y solo se usan las RPC). Nunca poner ahí `service_role` ni `sb_secret_` (el juego las rechaza).
