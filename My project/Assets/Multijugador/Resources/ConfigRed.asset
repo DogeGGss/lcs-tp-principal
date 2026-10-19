@@ -75,9 +75,19 @@ MonoBehaviour:
   estadoPerroSentado: sitingIdle__New
   colorPerro: {r: 1, g: 0.55, b: 0.12, a: 1}
   sonidoPerroSoltar: {fileID: 0}
-  sonidoPerroLadrido: {fileID: 0}
+  sonidoPerroLadrido: {fileID: 8300000, guid: 8c2ecbab1b0df4bc9bba331782a2f4b6, type: 3}
+  ladridosPerro:
+  - {fileID: 8300000, guid: 8c2ecbab1b0df4bc9bba331782a2f4b6, type: 3}
+  - {fileID: 8300000, guid: 25563be172fda491cb5a053d77574981, type: 3}
+  - {fileID: 8300000, guid: 886bb3a37c69a4cffbbd61861977a166, type: 3}
+  - {fileID: 8300000, guid: 30caf41edd75048a49992f32542aaac3, type: 3}
+  - {fileID: 8300000, guid: 15e5eb746948a4c25891a81627f5cdaa, type: 3}
+  - {fileID: 8300000, guid: a815dfb2421104087a603bdbfdfc0e48, type: 3}
+  - {fileID: 8300000, guid: 00f7f525aa3b94d2cb6b83e4815ae16a, type: 3}
+  - {fileID: 8300000, guid: bcbcb5c7ba25f4c0aad329732681cb29, type: 3}
+  - {fileID: 8300000, guid: abec201653784462dbb233cd7b9d99f1, type: 3}
   sonidoPerroGrunido: {fileID: 0}
-  sonidoPerroMordida: {fileID: 0}
+  sonidoPerroMordida: {fileID: 8300000, guid: 1a7a097418f0f439dbb8d294fea99e44, type: 3}
   sonidoPerroMuerte: {fileID: 0}
   sonidoPerroDesaparece: {fileID: 0}
   volumenPerro: 0.8

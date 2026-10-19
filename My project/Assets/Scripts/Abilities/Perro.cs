@@ -134,11 +134,14 @@ public class Perro : MonoBehaviour
 
         ArmarDibujo();
 
-        // CA11: gruñe mientras corre y ladra de a ratos; se oye a 20 m.
+        // CA11: ladra de a ratos mientras corre (y, si no hay ladridos cargados, gruñe de fondo); se oye a 20 m.
         grunido = SonidoPerro.Fuente(gameObject, this.grupo, false);
-        grunido.clip = SonidoPerro.Clip(SonidoPerro.Tipo.Grunido);
-        grunido.loop = true;
-        grunido.Play();
+        if (!SonidoPerro.HayLadridos)
+        {
+            grunido.clip = SonidoPerro.Clip(SonidoPerro.Tipo.Grunido);
+            grunido.loop = true;
+            grunido.Play();
+        }
         proximoLadrido = Time.time + 0.6f;
 
         if (propio)
@@ -200,7 +203,7 @@ public class Perro : MonoBehaviour
         if (Time.time >= proximoLadrido)
         {
             proximoLadrido = Time.time + Random.Range(0.9f, 1.6f);
-            AudioClip ladrido = SonidoPerro.Clip(SonidoPerro.Tipo.Ladrido);
+            AudioClip ladrido = SonidoPerro.Ladrido();
             if (grunido != null && ladrido != null) grunido.PlayOneShot(ladrido);
         }
         Animar();
