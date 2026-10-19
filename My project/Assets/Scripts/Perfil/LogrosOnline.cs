@@ -8,7 +8,8 @@ using UnityEngine.Networking;
 // REST de Supabase sin SDK adicional. Un único pedido a la vez y lecturas solamente bajo demanda del menú.
 // Sincroniza los logros con el ranking (rw_sync_comets) y el resto del progreso del jugador (rw_sync_progress,
 // ProgresoNube, US 162 y US 163). El guardado en la PC lo hace Guardado. El ranking (US 226) es por logros
-// (rw_achievement_board) o por cualquier otra estadística (rw_stat_board, CategoriasRanking).
+// (rw_achievement_board) o por cualquier otra estadística (rw_stat_board, CategoriasRanking). También manda las
+// opiniones de "Danos tu opinión" que esperan en Opiniones (rw_send_feedback, que avisa a Discord).
 public sealed class LogrosOnline : MonoBehaviour
 {
     [Serializable] public sealed class Jugador
@@ -48,6 +49,7 @@ public sealed class LogrosOnline : MonoBehaviour
     [Serializable] private sealed class Sincronizar { public string p_name; public int p_blue, p_green, p_gold; }
     [Serializable] private sealed class Consulta { public int p_offset; public string p_achievement; }
     [Serializable] private sealed class ConsultaEstadistica { public string p_stat; public int p_offset; }
+    [Serializable] private sealed class OpinionRpc { public string p_id, p_kind, p_message, p_version, p_name; public int p_rating; }
 
     public static LogrosOnline Instancia { get; private set; }
     public Resumen Datos { get; private set; }
@@ -67,8 +69,11 @@ public sealed class LogrosOnline : MonoBehaviour
     private bool progresoDisponible = true, progresoCambio = true;
     private string progresoEnviado;
     private int revisionProgreso = -1;
+    // Opiniones: si la base todavía no tiene rw_send_feedback (falta correr opiniones.sql), quedan guardadas en la PC.
+    private bool opinionesDisponible = true;
+    private string opinionPorAvisar; // la recién enviada desde la ventana: se avisa si llegó o si quedó pendiente
     private int offset, enviado = -1, fallos;
-    private string filtro = "", categoria = "", nombreEnviado, respuesta, error;
+    private string filtro = "", categoria = "", nombreEnviado, respuesta, error, cuerpoError;
     private long codigo;
     private float intentar;
     private string RutaSesion => Path.Combine(Application.persistentDataPath, "logros-sesion-" + new Uri(config.url).Host + ".json");
@@ -109,8 +114,15 @@ public sealed class LogrosOnline : MonoBehaviour
             revisionProgreso = Guardado.Revision;
             progresoCambio = ProgresoNube.Json() != progresoEnviado;
         }
-        if (pedir || enviado != LogrosCometas.Revision || nombreEnviado != PlayerProfile.Name || (progresoDisponible && progresoCambio))
+        if (pedir || enviado != LogrosCometas.Revision || nombreEnviado != PlayerProfile.Name || (progresoDisponible && progresoCambio)
+            || (opinionesDisponible && Opiniones.Pendientes > 0))
             StartCoroutine(Trabajar());
+    }
+    /// <summary>Manda enseguida la opinión que acaba de guardar la ventana y avisa en el menú cómo le fue.</summary>
+    public void EnviarOpinion(string id)
+    {
+        opinionPorAvisar = id; opinionesDisponible = true;
+        intentar = Time.unscaledTime;
     }
     /// <summary>Pide una página del ranking: por logros (estadistica vacía) o por una categoría de CategoriasRanking.</summary>
     public void Solicitar(int pagina = 0, string logro = "", string estadistica = "")
@@ -155,6 +167,39 @@ public sealed class LogrosOnline : MonoBehaviour
                 catch { identidadDanada = true; Fallar("No se pudo guardar la identidad online. Revisá los permisos de la carpeta de progreso."); yield break; }
             }
             if (Vencida()) { Fallar("No se pudo autenticar."); yield break; }
+
+            // Opiniones: una por vuelta y antes que lo demás, así llegan aunque falle otra cosa. Cada una lleva su id:
+            // si se reenvía (por un corte), la base no la duplica ni vuelve a avisar a Discord.
+            Opiniones.Opinion op = opinionesDisponible ? Opiniones.Primera : null;
+            if (op != null)
+            {
+                yield return Post("/rest/v1/rpc/rw_send_feedback", JsonUtility.ToJson(new OpinionRpc {
+                    p_id = op.id, p_kind = op.tipo, p_rating = op.valoracion, p_message = op.texto, p_version = op.version,
+                    p_name = PlayerProfile.Name }), true);
+                bool rechazada = cuerpoError != null && cuerpoError.Contains("Invalid feedback");
+                bool muchas = cuerpoError != null && cuerpoError.Contains("Too many feedback");
+                if (error == null || rechazada)
+                {
+                    Opiniones.Quitar(op.id);
+                    if (op.id == opinionPorAvisar)
+                        AvisarEnMenu(rechazada ? "No se pudo enviar tu opinión." : "¡Gracias! Tu opinión le llegó al equipo.");
+                }
+                else if (codigo == 404)
+                {
+                    opinionesDisponible = false; // falta correr opiniones.sql: queda en la PC
+                    if (op.id == opinionPorAvisar)
+                        AvisarEnMenu("Tu opinión quedó en la PC: falta actualizar el servicio online.");
+                    opinionPorAvisar = null;
+                }
+                else if (muchas)
+                {
+                    // Mandó varias seguidas: la base pide esperar. Queda en la cola y sale en la próxima vuelta.
+                    if (op.id == opinionPorAvisar) AvisarEnMenu("¡Gracias! Tu opinión se envía en un momento.");
+                }
+                else { Fallar(error); yield break; }
+                if (op.id == opinionPorAvisar && (error == null || rechazada || muchas)) opinionPorAvisar = null;
+            }
+
             int revision = LogrosCometas.Revision;
             string nombre = PlayerProfile.Name;
             var p = LogrosCometas.Datos;
@@ -243,7 +288,7 @@ public sealed class LogrosOnline : MonoBehaviour
 
     private IEnumerator Post(string ruta, string json, bool autenticado)
     {
-        respuesta = error = null; codigo = 0;
+        respuesta = error = cuerpoError = null; codigo = 0;
         using (var req = new UnityWebRequest(config.url.TrimEnd('/') + ruta, "POST"))
         {
             req.uploadHandler = new UploadHandlerRaw(Encoding.UTF8.GetBytes(json));
@@ -255,7 +300,7 @@ public sealed class LogrosOnline : MonoBehaviour
             if (req.result != UnityWebRequest.Result.Success)
             {
                 if (autenticado && codigo == 401) sesion.expires_at = 0;
-                string cuerpo = req.downloadHandler != null ? req.downloadHandler.text : null;
+                string cuerpo = cuerpoError = req.downloadHandler != null ? req.downloadHandler.text : null;
                 error = codigo == 0 ? "Sin conexión. Se conserva el progreso local y el último ranking disponible."
                     : cuerpo != null && cuerpo.Contains("anonymous_provider_disabled")
                         ? "El proyecto de Supabase no permite jugadores anónimos: hay que activar Anonymous Sign-Ins (ver Backend/Supabase/README.md)."
@@ -267,7 +312,20 @@ public sealed class LogrosOnline : MonoBehaviour
         }
     }
     private void Fallar(string mensaje)
-    { Estado = mensaje; fallos++; intentar = Time.unscaledTime + Mathf.Min(120, 10 * Mathf.Pow(2, Mathf.Min(fallos - 1, 4))); Revision++; }
+    {
+        Estado = mensaje; fallos++; intentar = Time.unscaledTime + Mathf.Min(120, 10 * Mathf.Pow(2, Mathf.Min(fallos - 1, 4))); Revision++;
+        // La opinión recién enviada no salió (sin conexión, por ejemplo): queda en la PC y se manda después.
+        if (opinionPorAvisar != null && opinionesDisponible)
+        {
+            opinionPorAvisar = null;
+            AvisarEnMenu(codigo == 0 ? "Sin conexión: tu opinión se envía cuando vuelva." : "No se pudo enviar ahora: tu opinión se manda más tarde.");
+        }
+    }
+    private static void AvisarEnMenu(string mensaje)
+    {
+        var menu = FindAnyObjectByType<MenuRiftwalker>();
+        if (menu != null) menu.Avisar(mensaje);
+    }
     private void Avisar(LogrosCometas.Definicion logro)
     {
         var menu = FindAnyObjectByType<MenuRiftwalker>();

@@ -1,4 +1,4 @@
-# Logros, ranking y progreso del jugador
+# Logros, ranking, progreso del jugador y opiniones
 
 ## Activación (por el dueño del proyecto)
 
@@ -10,6 +10,28 @@
 6. Entrar con un nombre de jugador y abrir Logros. Verificar conexión, progreso, ranking y listado de propietarios desde dos instalaciones. El SQL de pruebas opcional `logros.test.sql` se ejecuta en SQL Editor y revierte sus datos al terminar.
 
 Documentación oficial: https://supabase.com/docs/guides/auth/auth-anonymous
+
+## Opiniones y aviso en Discord
+
+"Danos tu opinión" (menú principal) guarda cada opinión en la tabla `rw_feedback` con la RPC `rw_send_feedback`, y la base avisa en un canal de Discord por cada una nueva.
+
+1. En SQL Editor ejecutar `Backend/Supabase/opiniones.sql` (después de `logros.sql`). Es reejecutable. Activa `pg_net`, la extensión con la que la base le manda el aviso a Discord.
+2. En Discord: Configuración del canal → Integraciones → Webhooks → Nuevo webhook (se puede poner de nombre "Riftwalker" y el logo de avatar). Copiar su URL.
+3. Guardar esa URL **en el Vault de Supabase**, nunca en el juego ni en el repositorio: con ella cualquiera puede escribir en el canal. En SQL Editor, una sola vez:
+
+   ```sql
+   select vault.create_secret('PEGAR_ACA_LA_URL_DEL_WEBHOOK', 'discord_feedback_webhook', 'Webhook de Discord para las opiniones del juego');
+   ```
+
+   Para cambiarla más adelante: `select vault.update_secret((select id from vault.secrets where name = 'discord_feedback_webhook'), 'NUEVA_URL');`
+4. Probar mandando una opinión desde el juego: tiene que aparecer en Table Editor → `rw_feedback` y en el canal. Opcional: `opiniones.test.sql` prueba la RPC sin dejar datos ni avisar.
+
+Cómo funciona:
+
+- El juego guarda la opinión en `opiniones-pendientes.json` (en `Application.persistentDataPath`) y `LogrosOnline` la manda con la sesión anónima del jugador. Sin conexión queda ahí y se envía cuando vuelve. Cada opinión lleva un id generado por el juego: si se reenvía, la base no la duplica ni avisa dos veces.
+- La base valida el tipo (opinión, sugerencia o error), la valoración (0 a 5) y el texto (1 a 500 caracteres), y acepta como máximo una cada 10 s y 20 por día por jugador. Se guardan el nombre del jugador (el del ranking) y la versión del juego.
+- El aviso lo manda un trigger con `pg_net` después de guardar, así un problema con Discord nunca hace perder la opinión. Va como mensaje con el tipo, el texto, la valoración, el jugador y la versión. No hace menciones aunque el texto tenga "@everyone".
+- Si falta el webhook en el Vault, las opiniones se guardan igual y no se avisa. Si falta correr `opiniones.sql`, el juego las deja en la PC y lo dice al enviar.
 
 ## Alcance
 
