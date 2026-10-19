@@ -787,3 +787,13 @@ fecha_utc,us_numero,us_titulo,estado_anterior,estado_nuevo,tiempo_en_estado_ante
 2026-10-19T19:47:51.185315+00:00,343,US 206. Instalar el launcher,LPR,R2D,14d 11h 27m,1250826,https://github.com/DogeGGss/lcs-tp-principal/issues/343
 2026-10-19T19:47:51.185315+00:00,352,US 211. Proteger las descargas y la instalación,LPR,R2D,14d 11h 27m,1250826,https://github.com/DogeGGss/lcs-tp-principal/issues/352
 2026-10-19T19:47:51.185315+00:00,71,US 021. Habilidad 3 · Vista aérea,LPR,TESTING,3d 13h 51m,309117,https://github.com/DogeGGss/lcs-tp-principal/issues/71
+2026-10-19T23:09:15.799655+00:00,71,US 021. Habilidad 3 · Vista aérea,TESTING,Done,3h 21m,12084,https://github.com/DogeGGss/lcs-tp-principal/issues/71
+2026-10-19T23:09:15.799655+00:00,96,US 042. Desbloquear logro,LPR,Done,3d 12h 17m,303434,https://github.com/DogeGGss/lcs-tp-principal/issues/96
+2026-10-19T23:09:15.799655+00:00,99,US 045. Guardar progreso de logros,LPR,Done,3d 12h 17m,303434,https://github.com/DogeGGss/lcs-tp-principal/issues/99
+2026-10-19T23:09:15.799655+00:00,352,US 211. Proteger las descargas y la instalación,R2D,Done,3h 21m,12084,https://github.com/DogeGGss/lcs-tp-principal/issues/352
+2026-10-19T23:09:15.799655+00:00,343,US 206. Instalar el launcher,R2D,Done,3h 21m,12084,https://github.com/DogeGGss/lcs-tp-principal/issues/343
+2026-10-19T23:09:15.799655+00:00,31,US 082. Mapa 1 · Planeta alienígena,In Progress,LPR,24d 4h 3m,2088184,https://github.com/DogeGGss/lcs-tp-principal/issues/31
+2026-10-19T23:09:15.799655+00:00,428,US 221. Consultar las estadísticas desde el perfil,LPR,TESTING,2d 10h 45m,211539,https://github.com/DogeGGss/lcs-tp-principal/issues/428
+2026-10-19T23:09:15.799655+00:00,476,US 239. Mapa 1 · Preparado para el modo Deathmatch,In Progress,LPR,16h 26m,59169,https://github.com/DogeGGss/lcs-tp-principal/issues/476
+2026-10-19T23:09:15.799655+00:00,477,US 240. Mapa 1 · Recorridos y límites,In Progress,LPR,16h 26m,59169,https://github.com/DogeGGss/lcs-tp-principal/issues/477
+2026-10-19T23:09:15.799655+00:00,478,US 241. Mapa 1 · Rendimiento,In Progress,LPR,16h 26m,59169,https://github.com/DogeGGss/lcs-tp-principal/issues/478
