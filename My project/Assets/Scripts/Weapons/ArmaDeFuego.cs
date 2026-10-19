@@ -183,7 +183,7 @@ public class ArmaDeFuego : MonoBehaviour, IHudWeapon
 
         int load = Mathf.Min(MagazineSize - currentAmmo, reserveAmmo);
         currentAmmo += load;
-        if (!CampoDePractica.Activo) reserveAmmo -= load; // US 121, CA1: en el campo de práctica la reserva no se gasta
+        if (!Municion.ReservaInfinita) reserveAmmo -= load; // US 121, CA1 y Deathmatch: la reserva no se gasta
         reloading = false;
     }
 
@@ -196,7 +196,7 @@ public class ArmaDeFuego : MonoBehaviour, IHudWeapon
             reloadDuration = Mathf.Max(0.01f, shopItem.reloadTime);
             yield return new WaitForSeconds(shopItem.reloadTime);
             currentAmmo++;
-            if (!CampoDePractica.Activo) reserveAmmo--; // US 121, CA1: en el campo de práctica la reserva no se gasta
+            if (!Municion.ReservaInfinita) reserveAmmo--; // US 121, CA1 y Deathmatch: la reserva no se gasta
             AudioClip shell = shellSound != null ? shellSound : reloadSound;
             if (shell != null) audioSource.PlayOneShot(shell);
         }
