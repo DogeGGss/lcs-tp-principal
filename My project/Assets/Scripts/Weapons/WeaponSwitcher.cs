@@ -212,6 +212,8 @@ public class WeaponSwitcher : MonoBehaviour
         if (fuego != null) fuego.Refill();
         Mitre mitre = arma.GetComponent<Mitre>();
         if (mitre != null) mitre.Refill();
+        Pistola pistola = arma.GetComponent<Pistola>();
+        if (pistola != null) pistola.Refill();
     }
 
     void CambiarA(Pendiente arma)

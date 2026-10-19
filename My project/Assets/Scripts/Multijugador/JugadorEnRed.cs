@@ -332,7 +332,7 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
         Pose punto = partida.PuntoDeReaparicion();
         Teletransportar(transform, punto.position, punto.rotation);
         vida.Revive();
-        foreach (Pistola arma in GetComponentsInChildren<Pistola>(true)) arma.currentAmmo = arma.maxAmmo;
+        foreach (Pistola arma in GetComponentsInChildren<Pistola>(true)) arma.Refill();
         foreach (Mitre arma in GetComponentsInChildren<Mitre>(true)) arma.Refill();
         foreach (ArmaDeFuego arma in GetComponentsInChildren<ArmaDeFuego>(true)) arma.Refill();
         muerto = false;
@@ -381,7 +381,7 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
         Teletransportar(transform, punto.position, punto.rotation);
         if (muerto) vida.Revive();
         else vida.SetState(vida.maxHealth, vida.currentShield);
-        foreach (Pistola arma in GetComponentsInChildren<Pistola>(true)) arma.currentAmmo = arma.maxAmmo;
+        foreach (Pistola arma in GetComponentsInChildren<Pistola>(true)) arma.Refill();
         foreach (Mitre arma in GetComponentsInChildren<Mitre>(true)) arma.Refill();
         foreach (ArmaDeFuego arma in GetComponentsInChildren<ArmaDeFuego>(true)) arma.Refill();
         muerto = false;
