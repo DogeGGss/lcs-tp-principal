@@ -6,7 +6,9 @@ using UnityEngine.TestTools;
 
 // Tests que abren escenas reales. Las escenas tienen que estar en File > Build Profiles > Scene List.
 // Unity hace fallar el test si aparece un Debug.LogError o una excepción: eso es lo que busca el "smoke test".
+// PruebasAisladas hace que el juego no toque el guardado real ni el servicio online mientras corren.
 
+[PrebuildSetup(typeof(PruebasAisladas)), PostBuildCleanup(typeof(PruebasAisladas))]
 public class EscenasTests
 {
     [UnityTest, Category("Smoke"), Description("Regresión: la escena abre y queda 2 s andando sin errores en consola")]
@@ -19,7 +21,7 @@ public class EscenasTests
         Assert.AreEqual(escena, SceneManager.GetActiveScene().name);
     }
 
-    [UnityTest, Category("US 119"), Description("TC 873: en el campo de práctica todo es gratis y el jugador es invulnerable (US 121)")]
+    [UnityTest, Category("US 119"), Description("TC-873: en el campo de práctica todo es gratis y el jugador es invulnerable (US 121)")]
     public IEnumerator Campo_de_practica_armas_gratis_y_jugador_invulnerable()
     {
         if (!Application.CanStreamedLevelBeLoaded("Mapa_practica"))

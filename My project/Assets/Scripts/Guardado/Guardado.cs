@@ -17,13 +17,17 @@ using UnityEngine;
 // - Dos juegos abiertos en esta PC: antes de escribir se junta con el archivo. De lo que este juego no cambió gana lo
 //   del archivo, y las claves de progreso registradas (RegistrarUnion, ProgresoNube) se juntan sin perder nada.
 // En el editor usa otro archivo (jugador-editor.json): como con PlayerPrefs, las pruebas en el editor no se mezclan
-// con lo del juego instalado. Los datos temporales de "Volver a la partida" (Reconexion) siguen en PlayerPrefs.
+// con lo del juego instalado. Con los tests automáticos (ModoPruebas) usa uno temporal que arranca vacío.
+// Los datos temporales de "Volver a la partida" (Reconexion) siguen en PlayerPrefs.
 public static class Guardado
 {
     public const int VersionFormato = 1;
     private const float Demora = 1f; // s desde el último cambio hasta escribir
 
-    public static string Ruta => Path.Combine(Application.persistentDataPath, Application.isEditor ? "jugador-editor.json" : "jugador.json");
+    public static string Ruta => ModoPruebas.Activo ? RutaPruebas
+        : Path.Combine(Application.persistentDataPath, Application.isEditor ? "jugador-editor.json" : "jugador.json");
+    /// <summary>El archivo de los tests automáticos: en la carpeta temporal, nunca el progreso real.</summary>
+    public static string RutaPruebas => Path.Combine(Application.temporaryCachePath, "jugador-pruebas.json");
 
     /// <summary>Lo que el jugador tiene que saber del guardado (archivo recuperado, dañado, de otra versión), o null.</summary>
     public static string Aviso => Actual.Aviso;
@@ -43,7 +47,8 @@ public static class Guardado
         get
         {
             if (actual != null) return actual;
-            actual = new Almacen(Ruta, true);
+            // En los tests no se migra nada de PlayerPrefs: el jugador de prueba arranca de cero.
+            actual = new Almacen(Ruta, !ModoPruebas.Activo);
             actual.Cargar();
             return actual;
         }
