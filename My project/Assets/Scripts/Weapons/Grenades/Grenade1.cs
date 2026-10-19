@@ -177,6 +177,9 @@ public class Grenade1 : MonoBehaviour
                 foreach (Collider theirs in thrower.GetComponentsInChildren<Collider>())
                     Physics.IgnoreCollision(mine, theirs);
 
+        // Las paredes invisibles de los bordes frenan solo a los jugadores: la granada pasa por encima de la valla.
+        ParedSoloJugadores.Atravesar(gameObject);
+
         if (body == null) return;
         body.AddForce(direction * throwForce, ForceMode.Impulse);
         body.AddForce(inherited, ForceMode.VelocityChange);

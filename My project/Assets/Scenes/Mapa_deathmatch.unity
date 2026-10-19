@@ -5120,6 +5120,7 @@ GameObject:
   m_Component:
   - component: {fileID: 96497420}
   - component: {fileID: 96497421}
+  - component: {fileID: 1599838820}
   m_Layer: 2
   m_Name: "Colisi\xF3n"
   m_TagString: Untagged
@@ -5316,6 +5317,7 @@ GameObject:
   m_Component:
   - component: {fileID: 100986050}
   - component: {fileID: 100986051}
+  - component: {fileID: 183925540}
   m_Layer: 2
   m_Name: "Colisi\xF3n"
   m_TagString: Untagged
@@ -6890,6 +6892,7 @@ GameObject:
   m_Component:
   - component: {fileID: 127838803}
   - component: {fileID: 127838804}
+  - component: {fileID: 1161174693}
   m_Layer: 2
   m_Name: "Colisi\xF3n"
   m_TagString: Untagged
@@ -6943,6 +6946,7 @@ GameObject:
   m_Component:
   - component: {fileID: 128649548}
   - component: {fileID: 128649549}
+  - component: {fileID: 829244346}
   m_Layer: 2
   m_Name: "Colisi\xF3n"
   m_TagString: Untagged
@@ -7087,6 +7091,7 @@ GameObject:
   m_Component:
   - component: {fileID: 129659187}
   - component: {fileID: 129659188}
+  - component: {fileID: 386013749}
   m_Layer: 2
   m_Name: "Colisi\xF3n"
   m_TagString: Untagged
@@ -7793,6 +7798,7 @@ GameObject:
   m_Component:
   - component: {fileID: 140892320}
   - component: {fileID: 140892321}
+  - component: {fileID: 716868230}
   m_Layer: 2
   m_Name: "Colisi\xF3n"
   m_TagString: Untagged
@@ -8060,6 +8066,7 @@ GameObject:
   m_Component:
   - component: {fileID: 143371850}
   - component: {fileID: 143371851}
+  - component: {fileID: 1833402179}
   m_Layer: 2
   m_Name: "Colisi\xF3n"
   m_TagString: Untagged
@@ -8693,6 +8700,7 @@ GameObject:
   m_Component:
   - component: {fileID: 150253767}
   - component: {fileID: 150253768}
+  - component: {fileID: 1586642695}
   m_Layer: 2
   m_Name: "Colisi\xF3n"
   m_TagString: Untagged
@@ -9979,6 +9987,7 @@ GameObject:
   m_Component:
   - component: {fileID: 178219806}
   - component: {fileID: 178219807}
+  - component: {fileID: 925297234}
   m_Layer: 2
   m_Name: "Colisi\xF3n"
   m_TagString: Untagged
@@ -15067,6 +15076,7 @@ GameObject:
   m_Component:
   - component: {fileID: 251748606}
   - component: {fileID: 251748607}
+  - component: {fileID: 1879004674}
   m_Layer: 2
   m_Name: "Colisi\xF3n"
   m_TagString: Untagged
@@ -15784,6 +15794,7 @@ GameObject:
   m_Component:
   - component: {fileID: 264036679}
   - component: {fileID: 264036680}
+  - component: {fileID: 1973980574}
   m_Layer: 2
   m_Name: "Colisi\xF3n"
   m_TagString: Untagged
@@ -19322,6 +19333,7 @@ GameObject:
   m_Component:
   - component: {fileID: 325661876}
   - component: {fileID: 325661877}
+  - component: {fileID: 1412343782}
   m_Layer: 2
   m_Name: "Colisi\xF3n"
   m_TagString: Untagged
@@ -20750,6 +20762,7 @@ GameObject:
   m_Component:
   - component: {fileID: 352782555}
   - component: {fileID: 352782556}
+  - component: {fileID: 1013735605}
   m_Layer: 2
   m_Name: "Colisi\xF3n"
   m_TagString: Untagged
@@ -25232,6 +25245,7 @@ GameObject:
   m_Component:
   - component: {fileID: 414655820}
   - component: {fileID: 414655821}
+  - component: {fileID: 1307501326}
   m_Layer: 2
   m_Name: "Colisi\xF3n"
   m_TagString: Untagged
@@ -25847,6 +25861,7 @@ GameObject:
   m_Component:
   - component: {fileID: 422351295}
   - component: {fileID: 422351296}
+  - component: {fileID: 991549486}
   m_Layer: 2
   m_Name: "Colisi\xF3n"
   m_TagString: Untagged
@@ -27776,6 +27791,7 @@ GameObject:
   m_Component:
   - component: {fileID: 453722146}
   - component: {fileID: 453722147}
+  - component: {fileID: 1618835624}
   m_Layer: 2
   m_Name: "Colisi\xF3n"
   m_TagString: Untagged
@@ -29186,6 +29202,7 @@ GameObject:
   m_Component:
   - component: {fileID: 476671217}
   - component: {fileID: 476671218}
+  - component: {fileID: 1390129841}
   m_Layer: 2
   m_Name: "Colisi\xF3n"
   m_TagString: Untagged
@@ -30218,6 +30235,7 @@ GameObject:
   m_Component:
   - component: {fileID: 498002770}
   - component: {fileID: 498002771}
+  - component: {fileID: 315086961}
   m_Layer: 2
   m_Name: "Colisi\xF3n"
   m_TagString: Untagged
@@ -31350,6 +31368,7 @@ GameObject:
   m_Component:
   - component: {fileID: 514987592}
   - component: {fileID: 514987593}
+  - component: {fileID: 1231414328}
   m_Layer: 2
   m_Name: "Colisi\xF3n"
   m_TagString: Untagged
@@ -44078,6 +44097,7 @@ GameObject:
   m_Component:
   - component: {fileID: 728129096}
   - component: {fileID: 728129097}
+  - component: {fileID: 1174993655}
   m_Layer: 2
   m_Name: "Colisi\xF3n"
   m_TagString: Untagged
@@ -53020,6 +53040,7 @@ GameObject:
   m_Component:
   - component: {fileID: 843593473}
   - component: {fileID: 843593474}
+  - component: {fileID: 1889254137}
   m_Layer: 2
   m_Name: "Colisi\xF3n"
   m_TagString: Untagged
@@ -56916,6 +56937,7 @@ GameObject:
   m_Component:
   - component: {fileID: 900485415}
   - component: {fileID: 900485416}
+  - component: {fileID: 1412865565}
   m_Layer: 2
   m_Name: "Colisi\xF3n"
   m_TagString: Untagged
@@ -57247,6 +57269,7 @@ GameObject:
   m_Component:
   - component: {fileID: 905933085}
   - component: {fileID: 905933086}
+  - component: {fileID: 1935972118}
   m_Layer: 2
   m_Name: "Colisi\xF3n"
   m_TagString: Untagged
@@ -61292,6 +61315,7 @@ GameObject:
   m_Component:
   - component: {fileID: 971341945}
   - component: {fileID: 971341946}
+  - component: {fileID: 320180723}
   m_Layer: 2
   m_Name: "Colisi\xF3n"
   m_TagString: Untagged
@@ -61638,6 +61662,7 @@ GameObject:
   m_Component:
   - component: {fileID: 980047670}
   - component: {fileID: 980047671}
+  - component: {fileID: 1982966998}
   m_Layer: 2
   m_Name: "Colisi\xF3n"
   m_TagString: Untagged
@@ -65369,6 +65394,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1034728431}
   - component: {fileID: 1034728432}
+  - component: {fileID: 1940812892}
   m_Layer: 2
   m_Name: "Colisi\xF3n"
   m_TagString: Untagged
@@ -69565,6 +69591,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1095297490}
   - component: {fileID: 1095297491}
+  - component: {fileID: 1726933793}
   m_Layer: 2
   m_Name: "Colisi\xF3n"
   m_TagString: Untagged
@@ -71059,6 +71086,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1113543694}
   - component: {fileID: 1113543695}
+  - component: {fileID: 585833310}
   m_Layer: 2
   m_Name: "Colisi\xF3n"
   m_TagString: Untagged
@@ -73319,6 +73347,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1155530773}
   - component: {fileID: 1155530774}
+  - component: {fileID: 428088145}
   m_Layer: 2
   m_Name: "Colisi\xF3n"
   m_TagString: Untagged
@@ -73544,6 +73573,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1160226837}
   - component: {fileID: 1160226838}
+  - component: {fileID: 1778421014}
   m_Layer: 2
   m_Name: "Colisi\xF3n"
   m_TagString: Untagged
@@ -77628,6 +77658,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1225469694}
   - component: {fileID: 1225469695}
+  - component: {fileID: 122966352}
   m_Layer: 2
   m_Name: "Colisi\xF3n"
   m_TagString: Untagged
@@ -79146,6 +79177,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1253650367}
   - component: {fileID: 1253650368}
+  - component: {fileID: 203950391}
   m_Layer: 2
   m_Name: "Colisi\xF3n"
   m_TagString: Untagged
@@ -83152,6 +83184,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1310223757}
   - component: {fileID: 1310223758}
+  - component: {fileID: 176623096}
   m_Layer: 2
   m_Name: "Colisi\xF3n"
   m_TagString: Untagged
@@ -83856,6 +83889,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1318350177}
   - component: {fileID: 1318350178}
+  - component: {fileID: 1370889326}
   m_Layer: 2
   m_Name: "Colisi\xF3n"
   m_TagString: Untagged
@@ -84097,6 +84131,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1319963544}
   - component: {fileID: 1319963545}
+  - component: {fileID: 1730735453}
   m_Layer: 2
   m_Name: "Colisi\xF3n"
   m_TagString: Untagged
@@ -84571,6 +84606,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1322533963}
   - component: {fileID: 1322533964}
+  - component: {fileID: 1634387018}
   m_Layer: 2
   m_Name: "Colisi\xF3n"
   m_TagString: Untagged
@@ -88871,6 +88907,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1383057929}
   - component: {fileID: 1383057930}
+  - component: {fileID: 1277231901}
   m_Layer: 2
   m_Name: "Colisi\xF3n"
   m_TagString: Untagged
@@ -89675,6 +89712,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1394640287}
   - component: {fileID: 1394640288}
+  - component: {fileID: 1449766897}
   m_Layer: 2
   m_Name: "Colisi\xF3n"
   m_TagString: Untagged
@@ -96111,6 +96149,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1498420383}
   - component: {fileID: 1498420384}
+  - component: {fileID: 141111624}
   m_Layer: 2
   m_Name: "Colisi\xF3n"
   m_TagString: Untagged
@@ -96486,6 +96525,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1500944408}
   - component: {fileID: 1500944409}
+  - component: {fileID: 937427997}
   m_Layer: 2
   m_Name: "Colisi\xF3n"
   m_TagString: Untagged
@@ -97498,6 +97538,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1526135490}
   - component: {fileID: 1526135491}
+  - component: {fileID: 591981806}
   m_Layer: 2
   m_Name: "Colisi\xF3n"
   m_TagString: Untagged
@@ -99556,6 +99597,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1563985583}
   - component: {fileID: 1563985584}
+  - component: {fileID: 1944894657}
   m_Layer: 2
   m_Name: "Colisi\xF3n"
   m_TagString: Untagged
@@ -101001,6 +101043,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1578847763}
   - component: {fileID: 1578847764}
+  - component: {fileID: 1358592276}
   m_Layer: 2
   m_Name: "Colisi\xF3n"
   m_TagString: Untagged
@@ -108168,6 +108211,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1697425317}
   - component: {fileID: 1697425318}
+  - component: {fileID: 1980142260}
   m_Layer: 2
   m_Name: "Colisi\xF3n"
   m_TagString: Untagged
@@ -108494,6 +108538,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1700872388}
   - component: {fileID: 1700872389}
+  - component: {fileID: 677718785}
   m_Layer: 2
   m_Name: "Colisi\xF3n"
   m_TagString: Untagged
@@ -109491,6 +109536,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1723582605}
   - component: {fileID: 1723582606}
+  - component: {fileID: 421392091}
   m_Layer: 2
   m_Name: "Colisi\xF3n"
   m_TagString: Untagged
@@ -110454,6 +110500,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1738186447}
   - component: {fileID: 1738186448}
+  - component: {fileID: 1438801472}
   m_Layer: 2
   m_Name: "Colisi\xF3n"
   m_TagString: Untagged
@@ -111171,6 +111218,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1751435677}
   - component: {fileID: 1751435678}
+  - component: {fileID: 708548758}
   m_Layer: 2
   m_Name: "Colisi\xF3n"
   m_TagString: Untagged
@@ -113976,6 +114024,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1791464803}
   - component: {fileID: 1791464804}
+  - component: {fileID: 1379146279}
   m_Layer: 2
   m_Name: "Colisi\xF3n"
   m_TagString: Untagged
@@ -115320,6 +115369,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1818732910}
   - component: {fileID: 1818732911}
+  - component: {fileID: 489788193}
   m_Layer: 2
   m_Name: "Colisi\xF3n"
   m_TagString: Untagged
@@ -115995,6 +116045,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1829940143}
   - component: {fileID: 1829940144}
+  - component: {fileID: 1320692607}
   m_Layer: 2
   m_Name: "Colisi\xF3n"
   m_TagString: Untagged
@@ -124648,6 +124699,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1967032719}
   - component: {fileID: 1967032720}
+  - component: {fileID: 219761196}
   m_Layer: 2
   m_Name: "Colisi\xF3n"
   m_TagString: Untagged
@@ -124701,6 +124753,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1968832461}
   - component: {fileID: 1968832462}
+  - component: {fileID: 1484473109}
   m_Layer: 2
   m_Name: "Colisi\xF3n"
   m_TagString: Untagged
@@ -126192,6 +126245,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1989585061}
   - component: {fileID: 1989585062}
+  - component: {fileID: 380164870}
   m_Layer: 2
   m_Name: "Colisi\xF3n"
   m_TagString: Untagged
@@ -126867,6 +126921,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2004920476}
   - component: {fileID: 2004920477}
+  - component: {fileID: 958737721}
   m_Layer: 2
   m_Name: "Colisi\xF3n"
   m_TagString: Untagged
@@ -128296,6 +128351,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2031167324}
   - component: {fileID: 2031167325}
+  - component: {fileID: 1119812556}
   m_Layer: 2
   m_Name: "Colisi\xF3n"
   m_TagString: Untagged
@@ -129572,6 +129628,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2045226500}
   - component: {fileID: 2045226501}
+  - component: {fileID: 1463919623}
   m_Layer: 2
   m_Name: "Colisi\xF3n"
   m_TagString: Untagged
@@ -130362,6 +130419,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2056449014}
   - component: {fileID: 2056449015}
+  - component: {fileID: 622944758}
   m_Layer: 2
   m_Name: "Colisi\xF3n"
   m_TagString: Untagged
@@ -131170,6 +131228,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2071094686}
   - component: {fileID: 2071094687}
+  - component: {fileID: 810813318}
   m_Layer: 2
   m_Name: "Colisi\xF3n"
   m_TagString: Untagged
@@ -133471,6 +133530,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2108902910}
   - component: {fileID: 2108902911}
+  - component: {fileID: 202193078}
   m_Layer: 2
   m_Name: "Colisi\xF3n"
   m_TagString: Untagged
@@ -135240,6 +135300,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2145054688}
   - component: {fileID: 2145054689}
+  - component: {fileID: 766457771}
   m_Layer: 2
   m_Name: "Colisi\xF3n"
   m_TagString: Untagged
@@ -160806,3 +160867,735 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &1599838820
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 96497419}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2b5485aea0fc4b92b27689a4855cb3ae, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ParedSoloJugadores
+--- !u!114 &183925540
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 100986049}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2b5485aea0fc4b92b27689a4855cb3ae, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ParedSoloJugadores
+--- !u!114 &1161174693
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 127838802}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2b5485aea0fc4b92b27689a4855cb3ae, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ParedSoloJugadores
+--- !u!114 &829244346
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 128649547}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2b5485aea0fc4b92b27689a4855cb3ae, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ParedSoloJugadores
+--- !u!114 &386013749
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 129659186}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2b5485aea0fc4b92b27689a4855cb3ae, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ParedSoloJugadores
+--- !u!114 &716868230
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 140892319}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2b5485aea0fc4b92b27689a4855cb3ae, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ParedSoloJugadores
+--- !u!114 &1833402179
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 143371849}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2b5485aea0fc4b92b27689a4855cb3ae, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ParedSoloJugadores
+--- !u!114 &1586642695
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 150253766}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2b5485aea0fc4b92b27689a4855cb3ae, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ParedSoloJugadores
+--- !u!114 &925297234
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 178219805}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2b5485aea0fc4b92b27689a4855cb3ae, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ParedSoloJugadores
+--- !u!114 &1879004674
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 251748605}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2b5485aea0fc4b92b27689a4855cb3ae, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ParedSoloJugadores
+--- !u!114 &1973980574
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 264036678}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2b5485aea0fc4b92b27689a4855cb3ae, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ParedSoloJugadores
+--- !u!114 &1412343782
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 325661875}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2b5485aea0fc4b92b27689a4855cb3ae, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ParedSoloJugadores
+--- !u!114 &1013735605
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 352782554}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2b5485aea0fc4b92b27689a4855cb3ae, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ParedSoloJugadores
+--- !u!114 &1307501326
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 414655819}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2b5485aea0fc4b92b27689a4855cb3ae, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ParedSoloJugadores
+--- !u!114 &991549486
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 422351294}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2b5485aea0fc4b92b27689a4855cb3ae, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ParedSoloJugadores
+--- !u!114 &1618835624
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 453722145}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2b5485aea0fc4b92b27689a4855cb3ae, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ParedSoloJugadores
+--- !u!114 &1390129841
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 476671216}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2b5485aea0fc4b92b27689a4855cb3ae, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ParedSoloJugadores
+--- !u!114 &315086961
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 498002769}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2b5485aea0fc4b92b27689a4855cb3ae, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ParedSoloJugadores
+--- !u!114 &1231414328
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 514987591}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2b5485aea0fc4b92b27689a4855cb3ae, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ParedSoloJugadores
+--- !u!114 &1174993655
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 728129095}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2b5485aea0fc4b92b27689a4855cb3ae, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ParedSoloJugadores
+--- !u!114 &1889254137
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 843593472}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2b5485aea0fc4b92b27689a4855cb3ae, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ParedSoloJugadores
+--- !u!114 &1412865565
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 900485414}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2b5485aea0fc4b92b27689a4855cb3ae, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ParedSoloJugadores
+--- !u!114 &1935972118
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 905933084}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2b5485aea0fc4b92b27689a4855cb3ae, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ParedSoloJugadores
+--- !u!114 &320180723
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 971341944}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2b5485aea0fc4b92b27689a4855cb3ae, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ParedSoloJugadores
+--- !u!114 &1982966998
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 980047669}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2b5485aea0fc4b92b27689a4855cb3ae, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ParedSoloJugadores
+--- !u!114 &1940812892
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1034728430}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2b5485aea0fc4b92b27689a4855cb3ae, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ParedSoloJugadores
+--- !u!114 &1726933793
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1095297489}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2b5485aea0fc4b92b27689a4855cb3ae, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ParedSoloJugadores
+--- !u!114 &585833310
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1113543693}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2b5485aea0fc4b92b27689a4855cb3ae, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ParedSoloJugadores
+--- !u!114 &428088145
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1155530772}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2b5485aea0fc4b92b27689a4855cb3ae, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ParedSoloJugadores
+--- !u!114 &1778421014
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1160226836}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2b5485aea0fc4b92b27689a4855cb3ae, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ParedSoloJugadores
+--- !u!114 &122966352
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1225469693}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2b5485aea0fc4b92b27689a4855cb3ae, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ParedSoloJugadores
+--- !u!114 &203950391
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1253650366}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2b5485aea0fc4b92b27689a4855cb3ae, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ParedSoloJugadores
+--- !u!114 &176623096
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1310223756}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2b5485aea0fc4b92b27689a4855cb3ae, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ParedSoloJugadores
+--- !u!114 &1370889326
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1318350176}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2b5485aea0fc4b92b27689a4855cb3ae, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ParedSoloJugadores
+--- !u!114 &1730735453
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1319963543}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2b5485aea0fc4b92b27689a4855cb3ae, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ParedSoloJugadores
+--- !u!114 &1634387018
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1322533962}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2b5485aea0fc4b92b27689a4855cb3ae, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ParedSoloJugadores
+--- !u!114 &1277231901
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1383057928}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2b5485aea0fc4b92b27689a4855cb3ae, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ParedSoloJugadores
+--- !u!114 &1449766897
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1394640286}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2b5485aea0fc4b92b27689a4855cb3ae, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ParedSoloJugadores
+--- !u!114 &141111624
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1498420382}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2b5485aea0fc4b92b27689a4855cb3ae, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ParedSoloJugadores
+--- !u!114 &937427997
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1500944407}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2b5485aea0fc4b92b27689a4855cb3ae, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ParedSoloJugadores
+--- !u!114 &591981806
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1526135489}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2b5485aea0fc4b92b27689a4855cb3ae, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ParedSoloJugadores
+--- !u!114 &1944894657
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1563985582}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2b5485aea0fc4b92b27689a4855cb3ae, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ParedSoloJugadores
+--- !u!114 &1358592276
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1578847762}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2b5485aea0fc4b92b27689a4855cb3ae, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ParedSoloJugadores
+--- !u!114 &1980142260
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1697425316}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2b5485aea0fc4b92b27689a4855cb3ae, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ParedSoloJugadores
+--- !u!114 &677718785
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1700872387}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2b5485aea0fc4b92b27689a4855cb3ae, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ParedSoloJugadores
+--- !u!114 &421392091
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1723582604}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2b5485aea0fc4b92b27689a4855cb3ae, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ParedSoloJugadores
+--- !u!114 &1438801472
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1738186446}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2b5485aea0fc4b92b27689a4855cb3ae, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ParedSoloJugadores
+--- !u!114 &708548758
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1751435676}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2b5485aea0fc4b92b27689a4855cb3ae, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ParedSoloJugadores
+--- !u!114 &1379146279
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1791464802}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2b5485aea0fc4b92b27689a4855cb3ae, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ParedSoloJugadores
+--- !u!114 &489788193
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1818732909}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2b5485aea0fc4b92b27689a4855cb3ae, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ParedSoloJugadores
+--- !u!114 &1320692607
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1829940142}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2b5485aea0fc4b92b27689a4855cb3ae, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ParedSoloJugadores
+--- !u!114 &219761196
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1967032718}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2b5485aea0fc4b92b27689a4855cb3ae, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ParedSoloJugadores
+--- !u!114 &1484473109
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1968832460}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2b5485aea0fc4b92b27689a4855cb3ae, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ParedSoloJugadores
+--- !u!114 &380164870
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1989585060}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2b5485aea0fc4b92b27689a4855cb3ae, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ParedSoloJugadores
+--- !u!114 &958737721
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2004920475}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2b5485aea0fc4b92b27689a4855cb3ae, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ParedSoloJugadores
+--- !u!114 &1119812556
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2031167323}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2b5485aea0fc4b92b27689a4855cb3ae, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ParedSoloJugadores
+--- !u!114 &1463919623
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2045226499}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2b5485aea0fc4b92b27689a4855cb3ae, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ParedSoloJugadores
+--- !u!114 &622944758
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2056449013}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2b5485aea0fc4b92b27689a4855cb3ae, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ParedSoloJugadores
+--- !u!114 &810813318
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2071094685}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2b5485aea0fc4b92b27689a4855cb3ae, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ParedSoloJugadores
+--- !u!114 &202193078
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2108902909}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2b5485aea0fc4b92b27689a4855cb3ae, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ParedSoloJugadores
+--- !u!114 &766457771
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2145054687}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2b5485aea0fc4b92b27689a4855cb3ae, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ParedSoloJugadores
