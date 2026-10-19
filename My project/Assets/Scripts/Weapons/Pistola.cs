@@ -165,7 +165,7 @@ public class Pistola : MonoBehaviour, IHudWeapon
         int ammoToLoad = Mathf.Min(neededAmmo, reserveAmmo);
 
         currentAmmo += ammoToLoad;
-        if (!CampoDePractica.Activo) reserveAmmo -= ammoToLoad; // US 121, CA1: en el campo de práctica la reserva no se gasta
+        if (!Municion.ReservaInfinita) reserveAmmo -= ammoToLoad; // US 121, CA1 y Deathmatch: la reserva no se gasta
 
         isReloading = false;
 
