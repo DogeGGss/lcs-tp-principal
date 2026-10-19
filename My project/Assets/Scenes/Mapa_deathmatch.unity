@@ -132368,6 +132368,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1669983185}
+  - component: {fileID: 1624111202}
   m_Layer: 0
   m_Name: Vallas (bordes)
   m_TagString: Untagged
@@ -168072,3 +168073,15 @@ SceneRoots:
   - {fileID: 1582160921}
   - {fileID: 673405659}
   - {fileID: 1341909030}
+--- !u!114 &1624111202
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1669983184}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 281bc8a2babf4e74a861e3776cd1e847, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::VallaElectrica

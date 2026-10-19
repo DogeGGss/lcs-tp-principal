@@ -303,7 +303,8 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
         AvisarBaja(ultimoAtacante, cabeza, ultimaArma, ultimoCodigo, asistentes); // US 057, CA4
 
         Player asesino = ultimoAtacante != 0 && PhotonNetwork.CurrentRoom != null ? PhotonNetwork.CurrentRoom.GetPlayer(ultimoAtacante) : null;
-        string titulo = asesino != null ? $"Te eliminó {asesino.NickName}" : ultimaArma == Caida ? "Te caíste del mapa" : "Te eliminaron";
+        string titulo = asesino != null ? $"Te eliminó {asesino.NickName}" : ultimaArma == Caida ? "Te caíste del mapa"
+            : ultimaArma == VallaElectrica.Causa ? "Te electrocutó la valla" : "Te eliminaron";
 
         if (MatchSettings.Mode == GameMode.Deathmatch)
             StartCoroutine(Reaparecer(titulo, ConfigRed.Actual != null ? ConfigRed.Actual.reaparicion : 3f));
@@ -482,6 +483,26 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
     /// US 033: lo elimina la explosión del dispositivo (también lo usa la prueba solo). US 006: o se cayó del mapa
     /// (causa = Caida). Nadie suma la baja.
     /// </summary>
+    /// <summary>
+    /// US 240, CA6: tocó la valla eléctrica. Los demás ven las chispas y él pierde esa vida. Si lo termina de matar y
+    /// nadie lo había dañado antes, nadie suma la baja. Devuelve si le hizo daño (es el de esta computadora y está vivo).
+    /// </summary>
+    public bool Electrocutar(int danio, Vector3 punto)
+    {
+        if (photonView == null || !photonView.IsMine || muerto || vida == null) return false;
+        photonView.RPC(nameof(RpcElectrocutado), RpcTarget.Others, punto);
+        if (ultimoAtacante == 0) { ultimaArma = VallaElectrica.Causa; ultimoCodigo = ArmaDesconocida; }
+        HealthSystem.DamageOrigin = punto;
+        vida.TakeDamage(danio);
+        return true;
+    }
+
+    [PunRPC]
+    private void RpcElectrocutado(Vector3 punto)
+    {
+        if (!photonView.IsMine) VallaElectrica.Efecto(punto, transform, false);
+    }
+
     public void Eliminar(string causa = "")
     {
         if (photonView == null || !photonView.IsMine || muerto || vida == null) return;
