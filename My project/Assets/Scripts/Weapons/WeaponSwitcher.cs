@@ -441,7 +441,7 @@ public class WeaponSwitcher : MonoBehaviour
 
         // Aplica el multiplicador definido en el cuchillo
         float knifeSpeed = (meleeScript != null && meleeScript.CurrentWeapon != null)
-            ? meleeScript.CurrentWeapon.moveSpeedMultiplier
+            ? meleeScript.CurrentWeapon.MoveSpeedMultiplier // en el Deathmatch, sin el bonus
             : 1.0f;
 
         ApplySpeedMultiplier(knifeSpeed);
