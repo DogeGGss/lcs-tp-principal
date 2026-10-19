@@ -5,7 +5,9 @@ using UnityEngine.TestTools;
 
 // Tests que crean objetos de Unity (jugador, billetera, tienda) en una escena vacía.
 // [UnityTest] con "yield return null" espera un cuadro: ahí corre el Start() de cada componente.
+// PruebasAisladas hace que el juego no toque el guardado real ni el servicio online mientras corren.
 
+[PrebuildSetup(typeof(PruebasAisladas)), PostBuildCleanup(typeof(PruebasAisladas))]
 public class BilleteraTests
 {
     private GameObject go;
@@ -41,7 +43,7 @@ public class BilleteraTests
     [Test, Category("US 135")]
     public void Gastar_resta_y_avisa()
     {
-        int avisado =  1;
+        int avisado = -1;
         w.MoneyChanged += m => avisado = m;
         Assert.IsTrue(w.Spend(300));
         Assert.AreEqual(500, w.Money);
@@ -53,11 +55,12 @@ public class BilleteraTests
     {
         w.Set(5000);
         Assert.AreEqual(5000, w.Money);
-        w.Set( 5);
-        Assert.AreEqual(0, w.Money);
+        w.Set(-5);
+        Assert.AreEqual(0, w.Money, "nunca queda en negativo");
     }
 }
 
+[PrebuildSetup(typeof(PruebasAisladas)), PostBuildCleanup(typeof(PruebasAisladas))]
 public class VidaTests
 {
     private GameObject go;
@@ -109,7 +112,7 @@ public class VidaTests
         Assert.IsTrue(murio);
     }
 
-    [Test, Category("US 137"), Description("TC 818 CA3: invulnerable no recibe daño")]
+    [Test, Category("US 137"), Description("TC-818 CA3: invulnerable no recibe daño")]
     public void Invulnerable_no_recibe_danio()
     {
         h.Invulnerable = true;
@@ -138,6 +141,7 @@ public class VidaTests
     }
 }
 
+[PrebuildSetup(typeof(PruebasAisladas)), PostBuildCleanup(typeof(PruebasAisladas))]
 public class TiendaTests
 {
     private GameObject go;

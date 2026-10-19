@@ -1,36 +1,41 @@
 using System.Collections.Generic;
 using NUnit.Framework;
 using Riftwalker.Releases;
+using UnityEditor;
 using UnityEngine;
 
-// Tests de lógica "pura": no necesitan escena. Cada test dice en [Description] a qué TC / CA corresponde,
-// así la planilla del plan de pruebas puede apuntar al nombre del test.
+// Tests de lógica "pura" (EditMode): no necesitan escena ni entrar en Play. Cada test dice en [Category] la historia
+// y en [Description] el caso de prueba (TC-xxx) o el CA, así la planilla del plan de pruebas puede apuntar al test.
 
 public class VersionesTests
 {
-    [Test, Category("US 201"), Description("TC 843 CA3: comparar versiones por número, no por texto")]
+    [Test, Category("US 201"), Description("TC-843 CA3: comparar versiones por número, no por texto")]
     public void Compara_por_numero_y_no_por_texto()
     {
         Assert.Greater(ReleaseVersion.Parse("0.1.10").CompareTo(ReleaseVersion.Parse("0.1.9")), 0);
     }
 
-    [Test, Category("US 201")]
+    [Test, Category("US 201"), Description("TC-843 CA3: 0.2.0 es más nueva que 0.2.0-exp.10")]
     public void Una_estable_es_mayor_que_su_experimental()
     {
-        Assert.Greater(ReleaseVersion.Parse("0.2.0").CompareTo(ReleaseVersion.Parse("0.2.0 exp.10")), 0);
+        Assert.Greater(ReleaseVersion.Parse("0.2.0").CompareTo(ReleaseVersion.Parse("0.2.0-exp.10")), 0);
     }
 
-    [Test, Category("US 201")]
+    [Test, Category("US 201"), Description("TC-843 CA3")]
     public void Experimental_2_es_menor_que_experimental_10()
     {
-        Assert.Less(ReleaseVersion.Parse("0.2.0 exp.2").CompareTo(ReleaseVersion.Parse("0.2.0 exp.10")), 0);
+        Assert.Less(ReleaseVersion.Parse("0.2.0-exp.2").CompareTo(ReleaseVersion.Parse("0.2.0-exp.10")), 0);
     }
 
-    [TestCase("sprint 1")]
-    [TestCase("experimental 1")]
+    // Los releases viejos (sprint-1, experimental-*) y el del launcher no son versiones del juego.
+    [TestCase("sprint-1")]
+    [TestCase("experimental-1")]
+    [TestCase("launcher")]
     [TestCase("1.0")]
+    [TestCase("0.2.0-exp.01")]
+    [TestCase("0.2.0 exp.10")]
     [TestCase("")]
-    [Category("US 201")]
+    [Category("US 201"), Description("TC-843 CA3: solo cuentan los releases con el formato del launcher")]
     public void Los_formatos_invalidos_se_rechazan(string texto)
     {
         Assert.IsFalse(ReleaseVersion.TryParse(texto, out _));
@@ -39,9 +44,11 @@ public class VersionesTests
     [Test, Category("US 201")]
     public void Acepta_la_v_adelante_y_detecta_experimental()
     {
-        Assert.IsTrue(ReleaseVersion.TryParse("v0.3.0 exp.1", out ReleaseVersion v));
+        Assert.IsTrue(ReleaseVersion.TryParse("v0.3.0-exp.1", out ReleaseVersion v));
         Assert.IsTrue(v.IsExperimental);
-        Assert.AreEqual("0.3.0 exp.1", v.ToString());
+        Assert.AreEqual("0.3.0-exp.1", v.ToString());
+        Assert.IsTrue(ReleaseVersion.TryParse("0.2.0", out ReleaseVersion estable));
+        Assert.IsFalse(estable.IsExperimental);
     }
 }
 
@@ -295,7 +302,7 @@ public class ReglasDelJuegoTests
         Assert.AreEqual(60f, PartidaDeathmatch.SegundosDeAviso);
     }
 
-    [Test, Category("US 139"), Description("TC 823: cada baja cura 50")]
+    [Test, Category("US 139"), Description("TC-823: cada baja cura 50")]
     public void Cada_baja_cura_50_en_deathmatch()
     {
         Assert.AreEqual(50, JugadorEnRed.VidaPorBaja);
@@ -306,13 +313,31 @@ public class ReglasDelJuegoTests
     {
         Assert.AreEqual(9f, HabilidadTrasbordo.Distancia);
         Assert.AreEqual(1f, HabilidadTrasbordo.Minimo);
+        Assert.AreEqual(6f, HabilidadBarrera.Alcance);
         Assert.AreEqual(800, Barrera.VidaMax);
         Assert.AreEqual(15f, Barrera.Duracion);
         Assert.AreEqual(4f, Barrera.Ancho);
         Assert.AreEqual(2.2f, Barrera.Alto);
         Assert.AreEqual(6f, HabilidadVistaAerea.Duracion);
-        Assert.AreEqual(30f, HabilidadVistaAerea.Radio);
+        Assert.AreEqual(45f, HabilidadVistaAerea.Radio); // 30 → 45 en el PR #467 (balance)
         Assert.AreEqual(60, Perro.VidaMax);
+        Assert.AreEqual(15f, Perro.Duracion); // 6 → 15 en el PR #482: tiempo para alcanzar a alguien
+        Assert.AreEqual(12f, Perro.Velocidad); // más que los 8 m/s de un jugador corriendo
+        Assert.AreEqual(20f, SonidoPerro.Alcance);
+    }
+
+    // Las recargas y las cargas no son constantes del código: están en los assets de Assets/Data/Habilidades.
+    [TestCase("Trasbordo", 10f, 2, Category = "US 019")]
+    [TestCase("Barrera", 20f, 1, Category = "US 020")]
+    [TestCase("VistaAerea", 30f, 1, Category = "US 021")]
+    [TestCase("Callejero", 25f, 1, Category = "US 022")]
+    [Description("Recarga en segundos y cargas de cada habilidad (balance del PR #467)")]
+    public void Recarga_y_cargas_de_cada_habilidad(string habilidad, float recarga, int cargas)
+    {
+        var datos = AssetDatabase.LoadAssetAtPath<AbilityData>($"Assets/Data/Habilidades/{habilidad}.asset");
+        Assert.IsNotNull(datos, $"No está Assets/Data/Habilidades/{habilidad}.asset");
+        Assert.AreEqual(recarga, datos.cooldown, "recarga de " + habilidad);
+        Assert.AreEqual(cargas, datos.cargas, "cargas de " + habilidad);
     }
 
     [Test, Category("US 074"), Category("US 075")]

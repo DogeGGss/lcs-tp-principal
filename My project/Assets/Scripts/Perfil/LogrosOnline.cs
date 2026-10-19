@@ -79,7 +79,10 @@ public sealed class LogrosOnline : MonoBehaviour
     private static void ResetStatic() => Instancia = null;
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
     private static void Arrancar()
-    { if (Instancia == null) new GameObject("Logros online").AddComponent<LogrosOnline>(); }
+    {
+        // Con los tests automáticos no se conecta: no suben progreso ni opiniones de prueba (ModoPruebas).
+        if (Instancia == null && !ModoPruebas.Activo) new GameObject("Logros online").AddComponent<LogrosOnline>();
+    }
     private void Awake()
     {
         if (Instancia != null) { Destroy(gameObject); return; }
