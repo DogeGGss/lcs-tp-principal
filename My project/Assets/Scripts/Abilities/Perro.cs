@@ -1,30 +1,33 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
+using UnityEngine.Animations;
+using UnityEngine.Playables;
 using UnityEngine.Audio;
 
-// US 022 · El perro espectral del Callejero. Lo suelta HabilidadCallejero y sale corriendo a 8 m/s hacia el rival vivo
+// US 022 · El perro espectral del Callejero. Lo suelta HabilidadCallejero y sale corriendo a 12 m/s (más rápido que un jugador corriendo) hacia el rival vivo
 // más cercano, esté a la distancia que esté, siguiéndolo si se mueve (CA1 y CA5). Corre por el NavMesh que arma NavMeshEnVivo: sigue
 // pasillos, puertas, escaleras y rampas y no atraviesa paredes. Si no hay rivales, corre 10 m hacia adelante y
 // desaparece (CA6). Al alcanzar al rival lo muerde y desaparece: la mordida no saca vida, le nubla la vista 2,5 s y lo
 // marca 3 s a través de las paredes para el equipo del dueño (CA7 y CA8). Tiene 60 de vida: los disparos, el cuchillo y
-// las granadas de los rivales lo pueden matar (CA9). Si en 6 s no alcanzó a nadie, desaparece (CA10).
+// las granadas de los rivales lo pueden matar (CA9). Si en 15 s no alcanzó a nadie, desaparece (CA10).
 // Se ve como un holograma (CA2): naranja, espectral, para el dueño y su equipo, y rojo para los rivales (CA3).
 // En línea (CA15), el perro se mueve en la computadora del dueño, que manda dónde está y si mordió o desapareció
 // (JugadorEnRed); en las demás es una copia que sigue esas posiciones. El daño llega a todas por el servidor, en el
 // mismo orden, así la vida y la muerte dan igual en todas.
 public class Perro : MonoBehaviour
 {
-    public const float Velocidad = 8f;      // CA5
+    public const float Velocidad = 12f;     // CA5: más que los 8 m/s de un jugador corriendo, así lo alcanza
     public const float SinRival = 10f;      // CA6
-    public const float Duracion = 6f;       // CA10
+    public const float Duracion = 15f;      // CA10: lo que tiene para alcanzar a alguien
     public const float Espera = 5f;         // CA6: sentado esperando a que aparezca un rival
-    public const float Persecucion = 4f;    // lo que tiene para alcanzar a uno que apareció mientras esperaba
+    public const float Persecucion = Duracion; // lo que tiene para alcanzar a uno que apareció mientras esperaba
     public const int VidaMax = 60;          // CA9
     public const float Nublado = 2.5f;      // CA7
     public const float Marca = 3f;          // CA8
     private const float Llegar = 1.1f;      // m al rival para morderlo
     private const float Altura = 0.8f;      // alto del perro
+    private const float PasoCorrer = 8f;    // m/s a los que la animación de correr se ve a su velocidad normal
 
     public enum Fin { Mordio, Murio, Desaparecio }
 
@@ -65,6 +68,17 @@ public class Perro : MonoBehaviour
     private float limite;    // cuándo desaparece si no mordió a nadie
     private bool esperando;  // CA6: llegó a los 10 m sin rivales y espera sentado
     private float caida;     // sin NavMesh: velocidad con la que cae si quedó en el aire
+    private float lentoDesde = -1f; // desde cuándo está casi quieto (las copias se sientan después de un rato quietas)
+
+    // CA4: las animaciones del lobo, sin el controlador de demostración del asset (encadenaba correr, sentarse,
+    // caminar, atacar y morir solas). Se mezclan acá: correr y sentado se repiten, atacar se ve una vez.
+    private const int Correr = 0, Sentado = 1, Morder_ = 2;
+    private PlayableGraph grafo;
+    private AnimationMixerPlayable mezcla;
+    private readonly AnimationClipPlayable[] clips = new AnimationClipPlayable[3];
+    private readonly bool[] hayClip = new bool[3];
+    private bool hayGrafo;
+    private int pose = Correr;
 
     // =====================================================================
     // Crear y buscar
@@ -195,7 +209,7 @@ public class Perro : MonoBehaviour
             return;
         }
         if (!Activo) return;
-        if (!corriendo && animador != null) { corriendo = true; Estado(config => config.estadoPerroCorrer); }
+        if (!corriendo && animador != null) { corriendo = true; Pose(Correr); }
 
         if (propio) Simular();
         else Seguir();
@@ -406,6 +420,7 @@ public class Perro : MonoBehaviour
     {
         if (activos.TryGetValue(Clave(Actor, Id), out Perro p) && p == this) activos.Remove(Clave(Actor, Id));
         if (holo != null) Destroy(holo);
+        if (hayGrafo && grafo.IsValid()) grafo.Destroy();
     }
 
     /// <summary>CA7 y CA8, en esta computadora: si el mordido es el jugador de acá, se le nubla la vista; si el jugador de
@@ -494,7 +509,8 @@ public class Perro : MonoBehaviour
         if (animador.runtimeAnimatorController == null && cfg != null) animador.runtimeAnimatorController = cfg.animacionesPerro;
         animador.applyRootMotion = false;
         animador.cullingMode = AnimatorCullingMode.AlwaysAnimate;
-        Estado(config => config.estadoPerroCorrer);
+        ArmarAnimaciones(cfg);
+        Pose(Correr);
         cuerpo = m.transform;
     }
 
@@ -505,6 +521,82 @@ public class Perro : MonoBehaviour
         foreach (Material m in r.sharedMaterials)
             if (m != null && (m.name.ToLowerInvariant().Contains("fur") || m.name.ToLowerInvariant().Contains("hair"))) return true;
         return false;
+    }
+
+    // Toma los clips de correr, sentado y atacar del controlador del lobo y los reproduce con un PlayableGraph propio.
+    private void ArmarAnimaciones(ConfigRed cfg)
+    {
+        RuntimeAnimatorController controlador = animador.runtimeAnimatorController;
+        if (controlador == null || cfg == null) return;
+        AnimationClip[] todos = controlador.animationClips;
+        AnimationClip[] elegidos = { Clip(todos, cfg.estadoPerroCorrer), Clip(todos, cfg.estadoPerroSentado), Clip(todos, cfg.estadoPerroAtacar) };
+        if (elegidos[Correr] == null) return; // sin el de correr queda el controlador, como antes
+
+        grafo = PlayableGraph.Create("Perro");
+        grafo.SetTimeUpdateMode(DirectorUpdateMode.GameTime);
+        mezcla = AnimationMixerPlayable.Create(grafo, 3);
+        for (int i = 0; i < 3; i++)
+        {
+            if (elegidos[i] == null) continue;
+            clips[i] = AnimationClipPlayable.Create(grafo, elegidos[i]);
+            clips[i].SetApplyFootIK(false);
+            grafo.Connect(clips[i], 0, mezcla, i);
+            hayClip[i] = true;
+        }
+        mezcla.SetInputWeight(Correr, 1f);
+        AnimationPlayableOutput salida = AnimationPlayableOutput.Create(grafo, "Perro", animador);
+        salida.SetSourcePlayable(mezcla);
+        animador.runtimeAnimatorController = null;
+        grafo.Play();
+        hayGrafo = true;
+    }
+
+    // El clip de ese estado: los del lobo se llaman como el estado más un número ("Running_New (1)").
+    private static AnimationClip Clip(AnimationClip[] todos, string estado)
+    {
+        if (string.IsNullOrEmpty(estado) || todos == null) return null;
+        string buscado = SoloLetras(estado);
+        foreach (AnimationClip c in todos)
+            if (c != null && SoloLetras(c.name).StartsWith(buscado)) return c;
+        return null;
+    }
+
+    private static string SoloLetras(string texto)
+    {
+        var sb = new System.Text.StringBuilder(texto.Length);
+        foreach (char ch in texto) if (char.IsLetterOrDigit(ch)) sb.Append(char.ToLowerInvariant(ch));
+        return sb.ToString();
+    }
+
+    // Cambia de animación: con el grafo, la mezcla pasa a esa pose (atacar y sentarse arrancan desde el principio).
+    private void Pose(int nueva)
+    {
+        if (!hayGrafo)
+        {
+            if (nueva == Correr) Estado(c => c.estadoPerroCorrer);
+            else if (nueva == Sentado) Estado(c => c.estadoPerroSentado);
+            else Estado(c => c.estadoPerroAtacar);
+            return;
+        }
+        if (nueva != pose && nueva != Correr && hayClip[nueva]) clips[nueva].SetTime(0);
+        pose = hayClip[nueva] ? nueva : Correr;
+    }
+
+    // Cada cuadro: la mezcla va hacia la pose en 0,12 s, correr y sentado se repiten, y correr acompaña la velocidad.
+    private void MezclarAnimaciones()
+    {
+        if (!hayGrafo || !grafo.IsValid()) return;
+        float paso = Time.deltaTime / 0.12f;
+        for (int i = 0; i < 3; i++)
+        {
+            if (!hayClip[i]) continue;
+            float w = Mathf.MoveTowards(mezcla.GetInputWeight(i), i == pose ? 1f : 0f, paso);
+            mezcla.SetInputWeight(i, w);
+            if (i == Morder_) continue;
+            double largo = clips[i].GetAnimationClip().length;
+            if (largo > 0.01 && clips[i].GetTime() >= largo) clips[i].SetTime(clips[i].GetTime() % largo);
+        }
+        clips[Correr].SetSpeed(Activo ? Mathf.Clamp(velocidadVista / PasoCorrer, 0.7f, 1.8f) : 1f);
     }
 
     private void Estado(System.Func<ConfigRed, string> nombre)
@@ -560,11 +652,15 @@ public class Perro : MonoBehaviour
         float v = Time.deltaTime > 0f ? new Vector2(mov.x, mov.z).magnitude / Time.deltaTime : 0f;
         velocidadVista = Mathf.Lerp(velocidadVista, v, 1f - Mathf.Exp(-10f * Time.deltaTime));
 
-        // Quieto un rato (esperando sentado): se sienta. En las demás computadoras se ve igual, por la posición.
-        bool sentado = Activo && velocidadVista < 0.4f && Time.time - creado > 0.6f;
-        if (sentado != sentadoVista && animador != null && Activo)
-            Estado(sentado ? (System.Func<ConfigRed, string>)(c => c.estadoPerroSentado) : c => c.estadoPerroCorrer);
+        // Esperando sentado (CA6): se sienta. El dueño lo sabe; las demás computadoras lo deducen de que quedó quieto un
+        // rato (no por frenar un instante en una esquina, que lo hacía sentarse y pararse).
+        if (velocidadVista < 0.4f) { if (lentoDesde < 0f) lentoDesde = Time.time; }
+        else lentoDesde = -1f;
+        bool quieto = lentoDesde >= 0f && Time.time - lentoDesde > 0.35f;
+        bool sentado = Activo && Time.time - creado > 0.6f && (propio ? esperando : quieto);
+        if (sentado != sentadoVista && animador != null && Activo) Pose(sentado ? Sentado : Correr);
         sentadoVista = sentado;
+        MezclarAnimaciones();
 
         if (patas.Count == 4 && sentado && cuerpo != null)
         {
@@ -593,7 +689,7 @@ public class Perro : MonoBehaviour
             hacia.y = 0f;
             if (hacia.sqrMagnitude > 0.01f) transform.rotation = Quaternion.LookRotation(hacia);
         }
-        if (animador != null) Estado(config => config.estadoPerroAtacar);
+        if (animador != null) Pose(Morder_);
         else lunge = new Vector3(0f, 0.25f, 0.45f);
     }
 

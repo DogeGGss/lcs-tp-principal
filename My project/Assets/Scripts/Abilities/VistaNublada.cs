@@ -1,14 +1,15 @@
 using UnityEngine;
 using UnityEngine.UI;
 
-// US 022, CA7: el rival mordido por el perro del Callejero ve la pantalla oscurecida durante 2,5 s y solo distingue lo
-// que tiene a unos pocos metros. Se hace con niebla oscura muy cerrada (lo lejano desaparece) y una capa oscura sobre la
+// US 022, CA7: el rival mordido por el perro del Callejero ve la pantalla casi negra durante 2,5 s y solo distingue lo
+// que tiene a 1 o 2 metros. Se hace con niebla oscura muy cerrada (lo lejano desaparece) y una capa oscura sobre la
 // pantalla que deja ver un círculo en el centro. Al terminar vuelve de a poco a como estaba.
 public class VistaNublada : MonoBehaviour
 {
     private const float Entrada = 0.15f, Salida = 0.6f;
-    private const float Claro = 2f, Oscuro = 7f; // m: hasta dónde se ve bien y desde dónde ya no se ve nada
-    private static readonly Color Niebla = new Color(0.02f, 0.025f, 0.035f);
+    private const float Claro = 1f, Oscuro = 4f; // m: hasta dónde se ve bien y desde dónde ya no se ve nada
+    private static readonly Color Niebla = new Color(0.008f, 0.01f, 0.014f);
+    private const float Velo = 0.7f; // lo oscura que queda toda la pantalla, además de la viñeta
 
     private static VistaNublada actual;
     private static Sprite vineta;
@@ -81,7 +82,7 @@ public class VistaNublada : MonoBehaviour
         r.anchorMin = r.anchorMax = new Vector2(0.5f, 0.5f);
         r.sizeDelta = new Vector2(lado, lado);
         centro.color = new Color(1f, 1f, 1f, k);
-        capa.color = new Color(Niebla.r, Niebla.g, Niebla.b, 0.35f * k);
+        capa.color = new Color(Niebla.r, Niebla.g, Niebla.b, Velo * k);
     }
 
     private void OnDestroy()
@@ -107,8 +108,8 @@ public class VistaNublada : MonoBehaviour
             for (int x = 0; x < n; x++)
             {
                 float d = Mathf.Sqrt((x - c) * (x - c) + (y - c) * (y - c)) / c; // 0 al centro, 1 en el borde
-                float a = Mathf.SmoothStep(0f, 1f, Mathf.InverseLerp(0.12f, 0.45f, d)) * 0.93f;
-                pixeles[y * n + x] = new Color32(5, 6, 9, (byte)(a * 255f));
+                float a = Mathf.SmoothStep(0f, 1f, Mathf.InverseLerp(0.06f, 0.32f, d)) * 0.99f;
+                pixeles[y * n + x] = new Color32(2, 3, 4, (byte)(a * 255f));
             }
         tex.SetPixels32(pixeles);
         tex.Apply();
