@@ -374,6 +374,7 @@ public class PlayerMovement : MonoBehaviour
     // (o cualquier cosa con vida, como un bot), no cuenta como piso.
     private void OnControllerColliderHit(ControllerColliderHit golpe)
     {
+        VallaElectrica.Tocar(transform, golpe.collider, golpe.point); // US 240, CA6: la valla del borde electrocuta
         // Cualquier apoyo que empuje un poco hacia arriba: también el borde del hombro, donde el piso es casi vertical.
         if (golpe.normal.y < 0.05f || golpe.collider == null) return; // de costado, no lo tiene debajo
         HealthSystem otro = golpe.collider.GetComponentInParent<HealthSystem>();
