@@ -321,7 +321,8 @@ public class ReglasDelJuegoTests
         Assert.AreEqual(6f, HabilidadVistaAerea.Duracion);
         Assert.AreEqual(45f, HabilidadVistaAerea.Radio); // 30 → 45 en el PR #467 (balance)
         Assert.AreEqual(60, Perro.VidaMax);
-        Assert.AreEqual(6f, Perro.Duracion);
+        Assert.AreEqual(15f, Perro.Duracion); // 6 → 15 en el PR #482: tiempo para alcanzar a alguien
+        Assert.AreEqual(12f, Perro.Velocidad); // más que los 8 m/s de un jugador corriendo
         Assert.AreEqual(20f, SonidoPerro.Alcance);
     }
 
