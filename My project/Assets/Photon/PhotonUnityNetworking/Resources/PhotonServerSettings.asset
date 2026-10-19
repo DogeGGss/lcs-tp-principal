@@ -45,6 +45,20 @@ MonoBehaviour:
   - RpcDisparo
   - RpcMurio
   - RpcReaparecio
+  - RpcArmaLevantada
+  - RpcArmaQuieta
+  - RpcArmaSoltada
+  - RpcBarreraLevantada
+  - RpcDanioBarrera
+  - RpcDanioPerro
+  - RpcExplosionGranada
+  - RpcGranada
+  - RpcPedirArma
+  - RpcPerroFin
+  - RpcPerroPosicion
+  - RpcPerroSoltado
+  - RpcTrasbordo
+  - RpcVistaAerea
   DisableAutoOpenWizard: 1
   ShowSettings: 0
   DevRegionSetOnce: 0
