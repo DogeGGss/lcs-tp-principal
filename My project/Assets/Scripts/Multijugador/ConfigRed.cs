@@ -107,6 +107,8 @@ public class ConfigRed : ScriptableObject
     [Tooltip("Callejero (US 022, CA11, CA16 y CA17). Sin clip, suena uno generado.")]
     public AudioClip sonidoPerroSoltar;
     public AudioClip sonidoPerroLadrido;
+    [Tooltip("Callejero (US 022, CA11): ladridos que el perro va alternando mientras corre. Con alguno cargado, ya no gruñe de fondo. Vacío: usa Sonido Perro Ladrido.")]
+    public AudioClip[] ladridosPerro = new AudioClip[0];
     public AudioClip sonidoPerroGrunido;
     public AudioClip sonidoPerroMordida;
     public AudioClip sonidoPerroMuerte;

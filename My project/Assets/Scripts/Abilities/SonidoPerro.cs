@@ -9,6 +9,31 @@ public static class SonidoPerro
     public enum Tipo { Soltar, Ladrido, Grunido, Mordida, Muerte, Desaparece }
 
     private static readonly AudioClip[] generados = new AudioClip[6];
+    private static int ultimoLadrido = -1;
+
+    /// <summary>Si hay ladridos cargados en ConfigRed para alternar mientras corre (entonces no gruñe de fondo).</summary>
+    public static bool HayLadridos => Ladridos() > 0;
+
+    private static int Ladridos()
+    {
+        ConfigRed c = ConfigRed.Actual;
+        return c != null && c.ladridosPerro != null ? c.ladridosPerro.Length : 0;
+    }
+
+    /// <summary>Un ladrido de la lista, sin repetir el anterior; sin lista, el de siempre.</summary>
+    public static AudioClip Ladrido()
+    {
+        int n = Ladridos();
+        if (n > 0)
+        {
+            int i = Random.Range(0, n);
+            if (n > 1 && i == ultimoLadrido) i = (i + 1 + Random.Range(0, n - 1)) % n;
+            ultimoLadrido = i;
+            AudioClip clip = ConfigRed.Actual.ladridosPerro[i];
+            if (clip != null) return clip;
+        }
+        return Clip(Tipo.Ladrido);
+    }
 
     public static AudioClip Clip(Tipo tipo)
     {
