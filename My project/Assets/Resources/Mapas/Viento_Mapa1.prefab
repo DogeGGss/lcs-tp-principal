@@ -47,7 +47,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::AmbienteDelMapa
   efectos: {fileID: -490443676671801125, guid: ddda7e32a2420c4489fcc2a1c31e1976, type: 2}
   fondo: {fileID: 8300000, guid: 1c27f3017b620224588fc52e67eaecbf, type: 3}
-  volumenFondo: 0.35
+  volumenFondo: 0.05
   consola: {fileID: 0}
   maquina: {fileID: 8300000, guid: 284c97ab4ab954a0d9c8de221d392040, type: 3}
   volumenEquipos: 0.6
