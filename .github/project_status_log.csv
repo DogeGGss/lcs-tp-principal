@@ -779,3 +779,6 @@ fecha_utc,us_numero,us_titulo,estado_anterior,estado_nuevo,tiempo_en_estado_ante
 2026-10-18T23:23:10.522907+00:00,97,US 043. Notificar logro desbloqueado,LPR,TESTING,2d 12h 31m,217869,https://github.com/DogeGGss/lcs-tp-principal/issues/97
 2026-10-18T23:23:10.522907+00:00,165,US 120. Blancos de práctica,LPR,TESTING,2d 22h 7m,252479,https://github.com/DogeGGss/lcs-tp-principal/issues/165
 2026-10-19T01:28:45.930619+00:00,165,US 120. Blancos de práctica,TESTING,R2D,2h 5m,7535,https://github.com/DogeGGss/lcs-tp-principal/issues/165
+2026-10-19T06:43:05.935596+00:00,340,US 203. Ver las notas del parche,LPR,Done,13d 22h 22m,1203740,https://github.com/DogeGGss/lcs-tp-principal/issues/340
+2026-10-19T06:43:05.935596+00:00,165,US 120. Blancos de práctica,R2D,Done,5h 14m,18860,https://github.com/DogeGGss/lcs-tp-principal/issues/165
+2026-10-19T06:43:05.935596+00:00,94,US 040. Definir logros,LPR,Done,2d 19h 51m,244264,https://github.com/DogeGGss/lcs-tp-principal/issues/94
