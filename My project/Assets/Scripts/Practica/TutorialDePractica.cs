@@ -69,6 +69,7 @@ public class TutorialDePractica : MonoBehaviour
         public bool hecha;
         public Img[] capas;
         public TextMeshProUGUI texto;
+        public GameObject tilde;
     }
 
     private class Paso
@@ -582,7 +583,8 @@ public class TutorialDePractica : MonoBehaviour
             }
             parte.texto = Text(Node("Frase", fila), bodyFont, 22f, Soft);
             parte.texto.text = "· " + parte.frase;
-            float anchoFrase = Width(parte.texto, "✓ " + parte.frase) + 4f;
+            parte.tilde = Tilde(parte.texto.rectTransform);
+            float anchoFrase = Mathf.Max(Width(parte.texto, "· " + parte.frase), Width(parte.texto, LugarTilde + parte.frase)) + 4f;
             Place(parte.texto.rectTransform, x + 2f, 0f, anchoFrase, AltoTecla);
             x += anchoFrase + Separacion;
         }
@@ -600,8 +602,22 @@ public class TutorialDePractica : MonoBehaviour
             if (parte.capas == null || parte.texto == null) continue;
             foreach (Img capa in parte.capas) capa.color = parte.hecha ? Ok : Ink;
             parte.texto.color = parte.hecha ? Ok : Soft;
-            parte.texto.text = (parte.hecha ? "✓ " : "· ") + parte.frase;
+            parte.texto.text = (parte.hecha ? LugarTilde : "· ") + parte.frase;
+            if (parte.tilde != null) parte.tilde.SetActive(parte.hecha);
         }
+    }
+
+    // Ninguna fuente del juego tiene el carácter ✓ (se veía un cuadrado), así que la tilde se dibuja con dos trazos
+    // delante de la frase, en el lugar que le deja LugarTilde.
+    private const string LugarTilde = "<space=20>";
+
+    private static GameObject Tilde(RectTransform frase)
+    {
+        RectTransform tilde = Place(Node("Tilde", frase), 0f, 0f, 16f, AltoTecla);
+        Segment(tilde, new Vector2(1f, 19f), new Vector2(6f, 24f), 3f, Ok);
+        Segment(tilde, new Vector2(5f, 24.5f), new Vector2(15f, 13f), 3f, Ok);
+        tilde.gameObject.SetActive(false);
+        return tilde.gameObject;
     }
 
     // El cartel toma el ancho de la fila.
