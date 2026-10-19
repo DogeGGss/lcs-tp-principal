@@ -15,6 +15,10 @@ public class MeleeWeaponData : ScriptableObject
     [Range(0f, 180f)] public float attackAngle = 60f;
     [Tooltip("Multiplicador de velocidad mientras esta equipada (1 = sin bonus)")]
     public float moveSpeedMultiplier = 1.15f;
+
+    /// <summary>El multiplicador que se usa en la partida: en el Deathmatch el cuchillo no da velocidad extra (se mueve
+    /// a la velocidad normal, 1×), así nadie cruza el mapa con el cuchillo en la mano para llegar antes.</summary>
+    public float MoveSpeedMultiplier => MatchSettings.Mode == GameMode.Deathmatch ? Mathf.Min(1f, moveSpeedMultiplier) : moveSpeedMultiplier;
     [Tooltip("Sonido al sacar el arma con su tecla (US 114)")]
     public AudioClip drawSound;
 }
