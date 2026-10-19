@@ -161,7 +161,7 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
         if (Perro.EnviarPosicion == (System.Action<Perro, Vector3, float>)AlMoverPerro) Perro.EnviarPosicion = null;
         if (Perro.EnviarDanio == (System.Action<Perro, int, Vector3>)AlDaniarPerro) Perro.EnviarDanio = null;
         if (Perro.EnviarFin == (System.Action<Perro, Perro.Fin, int>)AlTerminarPerro) Perro.EnviarFin = null;
-        if (observando) { OjosEnElCielo.Mostrar(transform, false); MatchHud.ClearWarn(TextoObservado); }
+        if (observando) { OjosEnElCielo.Mostrar(transform, false); OjosBrillantes.Mostrar(transform, false); MatchHud.ClearWarn(TextoObservado); }
         if (Barrera.EnviarDanio == (System.Action<Barrera, int, Vector3>)AlDaniarBarrera) Barrera.EnviarDanio = null;
         SoltarArmas.Soltada -= AlSoltarArma;
         SoltarArmas.Pedida -= AlPedirArma;
@@ -1248,7 +1248,7 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
     }
 
     // US 021, CA6, CA7 y CA11: la Vista aérea se avisa a los demás: todos ven los ojos en el cielo arriba de este
-    // jugador y los rivales ven el aviso "Te están observando" y oyen un sonido mientras dura.
+    // jugador y los ojos verdes brillando en su personaje, y los rivales ven el aviso "Te están observando" y oyen un sonido mientras dura.
     private const string TextoObservado = "Te están observando";
     private bool observando;
 
@@ -1264,6 +1264,7 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
         if (photonView.IsMine || activa == observando) return;
         observando = activa;
         OjosEnElCielo.Mostrar(transform, activa);
+        OjosBrillantes.Mostrar(transform, activa); // y le brillan los ojos de verde al personaje
         JugadorEnRed yo = partida != null ? partida.Local : (PartidaEnRed.Actual != null ? PartidaEnRed.Actual.Local : null);
         bool soyRival = yo != null && yo.Vivo && MatchSettings.Mode != GameMode.Zombie && EquiposTacticos.EsRival(Actor);
         if (activa && soyRival)
