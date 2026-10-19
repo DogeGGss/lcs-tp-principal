@@ -356,6 +356,8 @@ public class PantallaPerfil : PantallaBase
     private void Carta(Cosmetico c, float x, float y, float w, float h)
     {
         bool tiene = PerfilDatos.Tiene(c), equipado = PerfilDatos.Equipado(c), elegido = seleccionado == c;
+        bool nuevo = PerfilDatos.EsNuevo(c);
+        const float AnchoNuevo = 64f;
         Color colorR = ColorRareza(c.rareza);
         RectTransform carta = Place(Node(c.nombre, grilla), x, y, w, h);
         Image(carta, Rounded, PanelColor, 8f, true);
@@ -364,7 +366,8 @@ public class PantallaPerfil : PantallaBase
         if (c.tipo == Tipo.Titulo)
         {
             Image(Place(Node("Rareza", carta), 0f, 0f, 6f, h), null, colorR);
-            TextMeshProUGUI t = T(carta, "Nombre", 22f, 4f, w - 40f, 42f, FTitulo, 27f, tiene ? Ink : Mute, c.nombre);
+            // Con la etiqueta "Nuevo" arriba a la derecha, el nombre termina antes para no quedar debajo.
+            TextMeshProUGUI t = T(carta, "Nombre", 22f, 4f, w - 40f - (nuevo ? AnchoNuevo : 0f), 42f, FTitulo, 27f, tiene ? Ink : Mute, c.nombre);
             t.overflowMode = TextOverflowModes.Ellipsis;
             textoY = 44f;
             if (!tiene) Candado(carta, w - 26f, 26f, 22f, Mute);
@@ -396,11 +399,11 @@ public class PantallaPerfil : PantallaBase
         float sx = c.tipo == Tipo.Titulo ? 22f : 12f;
         T(carta, "Estado", sx, textoY, w - 24f, 20f, FRotulo, 15f, colorEstado, estado, TextAlignmentOptions.MidlineLeft, 14f, true);
 
-        if (PerfilDatos.EsNuevo(c))
+        if (nuevo)
         {
-            RectTransform nuevo = Place(Node("Nuevo", carta), 8f, 8f, 64f, 24f);
-            Image(nuevo, Rounded, Accent, 5f);
-            T(nuevo, "T", 0f, 0f, 64f, 24f, FRotulo, 14f, AccentInk, "Nuevo", TextAlignmentOptions.Center, 12f, true);
+            RectTransform etiqueta = Place(Node("Nuevo", carta), w - AnchoNuevo - 8f, 8f, AnchoNuevo, 24f);
+            Image(etiqueta, Rounded, Accent, 5f);
+            T(etiqueta, "T", 0f, 0f, AnchoNuevo, 24f, FRotulo, 14f, AccentInk, "Nuevo", TextAlignmentOptions.Center, 12f, true);
         }
 
         Img borde = Borde(carta, 8f, elegido ? Accent : White(0.08f));
