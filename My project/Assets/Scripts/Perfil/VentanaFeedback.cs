@@ -5,10 +5,11 @@ using static PerfilUI;
 using Img = UnityEngine.UI.Image;
 
 // "Danos tu opinión", del menú principal. Tipo (opinión, sugerencia o error), valoración opcional de 1 a 5 y un
-// comentario de hasta 500 caracteres. Es una simulación: se guarda en un archivo de la PC y no se envía.
+// comentario de hasta 500 caracteres. Se envía a la base online (Opiniones y LogrosOnline), que avisa al equipo por
+// Discord; sin conexión queda guardada en la PC y se manda cuando vuelve.
 public class VentanaFeedback
 {
-    private const int Maximo = 500;
+    private const int Maximo = Opiniones.Maximo;
     private static readonly string[] Tipos = { "Opinión", "Sugerencia", "Error" };
     private static readonly string[] Valoraciones = { "Muy mala", "Mala", "Regular", "Buena", "Muy buena" };
 
@@ -57,7 +58,7 @@ public class VentanaFeedback
         pregunta = T(p, "PreguntaTexto", 48f, 388f, 680f, 28f, FTexto, 22f, Soft, "");
         campo = Campo(p, 48f, 424f, 684f, 170f);
         contador = T(p, "Contador", 532f, 600f, 200f, 22f, FMono, 16f, Mute, "", TextAlignmentOptions.MidlineRight);
-        T(p, "Nota", 48f, 600f, 480f, 22f, FTexto, 16f, Mute, "Simulación: se guarda en tu PC y no se envía. Sin datos personales, por favor.");
+        T(p, "Nota", 48f, 600f, 480f, 22f, FTexto, 16f, Mute, "Le llega al equipo con tu nombre y la versión. Sin datos personales, por favor.");
 
         CrearBoton(p, 780f - 48f - 290f - 16f - 190f, 760f - 48f - 64f, 190f, 64f, "Cancelar", false, menu.CerrarModal, 26f);
         enviar = CrearBoton(p, 780f - 48f - 290f, 760f - 48f - 64f, 290f, 64f, "Enviar opinión", true, Enviar, 26f);
@@ -122,8 +123,15 @@ public class VentanaFeedback
     private void Enviar()
     {
         if (campo == null || campo.text.Trim().Length == 0) return;
-        PerfilDatos.GuardarFeedback(Tipos[tipo], valoracion, campo.text.Trim());
+        Opiniones.Opinion opinion = Opiniones.Encolar(tipo, valoracion, campo.text);
         menu.CerrarModal();
-        menu.Avisar("¡Gracias! Tu opinión quedó guardada (simulado)");
+        LogrosOnline online = LogrosOnline.Instancia;
+        if (online != null && online.Configurado)
+        {
+            // Cómo le fue (llegó, quedó pendiente sin conexión...) lo avisa LogrosOnline cuando termina.
+            online.EnviarOpinion(opinion.id);
+            menu.Avisar("Enviando tu opinión…");
+        }
+        else menu.Avisar("¡Gracias! Tu opinión quedó guardada en esta PC.");
     }
 }

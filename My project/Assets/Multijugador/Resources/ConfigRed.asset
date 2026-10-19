@@ -19,19 +19,9 @@ MonoBehaviour:
     tactico: 1
     deathmatch: 0
     imagen: {fileID: 21300000, guid: 318f34202fcb442f962163fb2928f756, type: 3}
-  - nombre: Mapa 1
-    escena: Example_01 1
-    tactico: 0
-    deathmatch: 1
-    imagen: {fileID: 0}
   - nombre: Mapa deathmatch
     escena: Mapa_deathmatch
     tactico: 0
-    deathmatch: 1
-    imagen: {fileID: 0}
-  - nombre: Mapa de pruebas
-    escena: MapaPruebasV1
-    tactico: 1
     deathmatch: 1
     imagen: {fileID: 0}
   trazadora: {fileID: 2100000, guid: 01dc322130393b24d97d92fa78f81228, type: 2}

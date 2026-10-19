@@ -558,17 +558,6 @@ public static class PerfilDatos
         return creditos;
     }
 
-    // ================= Feedback =================
-
-    /// <summary>Guarda la opinión en un archivo de la PC (simulación: no se envía a ningún lado).</summary>
-    public static string GuardarFeedback(string tipo, int valoracion, string texto)
-    {
-        string ruta = Path.Combine(Application.persistentDataPath, "feedback-prueba.txt");
-        string linea = $"{DateTime.Now:yyyy-MM-dd HH:mm} | {tipo} | {(valoracion > 0 ? valoracion + "/5" : "sin valorar")} | {PlayerProfile.Name} | {texto.Replace('\n', ' ')}";
-        try { File.AppendAllText(ruta, linea + Environment.NewLine); } catch (Exception ex) { Debug.LogWarning("Feedback: " + ex.Message); }
-        return ruta;
-    }
-
     public static string Pesos(int monto) => "$ " + monto.ToString("N0", System.Globalization.CultureInfo.InvariantCulture).Replace(",", ".");
     public static string Numero(int n) => n.ToString("N0", System.Globalization.CultureInfo.InvariantCulture).Replace(",", ".");
 }
