@@ -61,8 +61,9 @@ public class AnimacionPrimeraPersona : MonoBehaviour
     public float respiracionRitmo = 0.35f;
     public float balanceoAlto = 0.012f;
     public float balanceoAncho = 0.008f;
-    [Tooltip("Pasos por segundo del balanceo caminando a velocidad normal.")]
-    public float balanceoRitmo = 1.8f;
+    [Tooltip("Vueltas por segundo del balanceo caminando a velocidad normal. Cada vuelta son dos pasos (izquierdo y\n" +
+             "derecho): 1 = 2 pasos por segundo.")]
+    public float balanceoRitmo = 1f;
     [Tooltip("Velocidad de caminar (m/s): corriendo más rápido el balanceo es más grande.")]
     public float velocidadCaminando = 5f;
     [Tooltip("Cuánto baja el arma al despegar de un salto (metros).")]
@@ -267,7 +268,8 @@ public class AnimacionPrimeraPersona : MonoBehaviour
         // Quieto: respira. Caminando se balancea; corriendo, más.
         float rapidez = new Vector2(vel.x, vel.z).magnitude;
         float intensidad = apoyado ? Mathf.Clamp(rapidez / Mathf.Max(0.1f, velocidadCaminando), 0f, 1.6f) : 0f;
-        fase += dt * balanceoRitmo * Mathf.PI * 2f * Mathf.Clamp(rapidez / Mathf.Max(0.1f, velocidadCaminando), 0.5f, 1.6f);
+        // Corriendo los pasos son un poco más rápidos, no en proporción a la velocidad (a 8 m/s, 2,5 pasos por segundo).
+        fase += dt * balanceoRitmo * Mathf.PI * 2f * Mathf.Clamp(Mathf.Sqrt(rapidez / Mathf.Max(0.1f, velocidadCaminando)), 0.6f, 1.3f);
         mover += new Vector3(Mathf.Sin(fase) * balanceoAncho, -Mathf.Abs(Mathf.Cos(fase)) * balanceoAlto, 0f) * intensidad;
         respira += dt * respiracionRitmo * Mathf.PI * 2f;
         float quieto = 1f - Mathf.Clamp01(intensidad);
