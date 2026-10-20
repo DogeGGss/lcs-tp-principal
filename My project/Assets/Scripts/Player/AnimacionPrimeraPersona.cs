@@ -14,7 +14,8 @@ using UnityEngine;
 //   una rayita por bala (PiezasDeLaTrochita, US 244).
 // Por ahora con las dos pistolas, La Porteña y La Trochita (la secundaria de categoría Pistolas con ArmaDeFuego), y el
 // Urquiza (la principal de categoría Subfusiles, US 246): su cargador cae al recargar (PiezasDelUrquiza) y al final
-// tira de la palanca de carga. Y el cuchillo (US 256): quieto, caminando, al sacarlo y al mirar como las demás, y el
+// tira de la palanca de carga. La Roca (escopeta, US 248): bombea después de cada tiro (PiezasDeLaRoca, con la mano
+// izquierda) y carga de a un cartucho con el arma inclinada. Y el cuchillo (US 256): quieto, caminando, al sacarlo y al mirar como las demás, y el
 // corte de costado al atacar, que mueve solo el cuchillo y el brazo derecho.
 // Cada una tiene su fuerza de retroceso y su tiempo para sacarla. Se apaga con "Activa" en el Inspector, para comparar.
 // El movimiento se suma al final del cuadro (después de BrazosEnCamara) y se saca al empezar el siguiente
@@ -55,6 +56,17 @@ public class AnimacionPrimeraPersona : MonoBehaviour
     public float urquizaResorte = 300f;
     [Tooltip("Al final de la recarga tira de la palanca de carga: el arma da un tirón hacia atrás (metros).")]
     public float urquizaPalanca = 0.03f;
+
+    [Header("Roca (escopeta, US 248)")]
+    public float rocaAtras = 0.075f;
+    public float rocaArriba = 14f;
+    public float rocaCostado = 3f;
+    [Tooltip("Recarga: cuánto se inclina el arma para mostrar por dónde entran los cartuchos (grados).")]
+    public float rocaRecargaInclinacion = 30f;
+    [Tooltip("Recarga: cuánto va la mano izquierda hacia atrás, del guardamanos a la boca de carga (metros).")]
+    public float rocaManoAtras = 0.11f;
+    [Tooltip("Recarga: cuánto baja la mano izquierda a buscar cada cartucho (metros).")]
+    public float rocaManoAbajo = 0.05f;
 
     [Header("Recarga")]
     public float recargaAbajo = 0.11f;
@@ -136,6 +148,7 @@ public class AnimacionPrimeraPersona : MonoBehaviour
     private bool apoyadoAntes = true;
     private float caidaAntes;
     private float sacarDesde = -10f;
+    private float recargaRoca;            // 0 a 1: cuánto está inclinada la Roca para cargar cartuchos
     private float fase, respira;
     private Quaternion giroAnterior;
     private Vector2 retraso;
@@ -172,6 +185,7 @@ public class AnimacionPrimeraPersona : MonoBehaviour
 
     private static bool EsTrochita(GameObject arma) => EsDe(arma, ShopCategory.Pistols);
     private static bool EsUrquiza(GameObject arma) => EsDe(arma, ShopCategory.SMGs);
+    private static bool EsRoca(GameObject arma) => EsDe(arma, ShopCategory.Shotguns);
 
     // El arma de la mano, si es una de las que tienen animación.
     private GameObject Animable()
@@ -180,7 +194,7 @@ public class AnimacionPrimeraPersona : MonoBehaviour
         GameObject arma = switcher.HeldSecondary;
         if (EsPortena(arma) || EsTrochita(arma)) return arma;
         arma = switcher.HeldPrimary;
-        if (EsUrquiza(arma)) return arma;
+        if (EsUrquiza(arma) || EsRoca(arma)) return arma;
         if (arma != null) return null;
         // US 256: el cuchillo.
         GameObject cuchillo = switcher.meleeScript != null ? switcher.meleeScript.CurrentViewModel : null;
@@ -232,6 +246,7 @@ public class AnimacionPrimeraPersona : MonoBehaviour
         {
             p = EsTrochita(arma) ? new PiezasDeLaTrochita(arma, transform)
               : EsUrquiza(arma) ? new PiezasDelUrquiza(arma, transform)
+              : EsRoca(arma) ? new PiezasDeLaRoca(arma, transform)
               : (IPiezasDelArma)new PiezasDeLaPistola(arma, transform);
             piezas[arma] = p;
         }
@@ -250,10 +265,10 @@ public class AnimacionPrimeraPersona : MonoBehaviour
         if (!activa || tirador != jugador) return;
         GameObject arma = Animable();
         if (arma == null) return;
-        bool trochita = EsTrochita(arma), urquiza = EsUrquiza(arma);
-        float arriba = trochita ? trochitaArriba : urquiza ? urquizaArriba : retrocesoArriba;
-        float costado = trochita ? trochitaCostado : urquiza ? urquizaCostado : retrocesoCostado;
-        float atras = trochita ? trochitaAtras : urquiza ? urquizaAtras : retrocesoAtras;
+        bool trochita = EsTrochita(arma), urquiza = EsUrquiza(arma), roca = EsRoca(arma);
+        float arriba = trochita ? trochitaArriba : urquiza ? urquizaArriba : roca ? rocaArriba : retrocesoArriba;
+        float costado = trochita ? trochitaCostado : urquiza ? urquizaCostado : roca ? rocaCostado : retrocesoCostado;
+        float atras = trochita ? trochitaAtras : urquiza ? urquizaAtras : roca ? rocaAtras : retrocesoAtras;
         golpeVel += new Vector3(-arriba, Random.Range(-costado, costado), atras) * 22f;
         if (detalles)
         {
@@ -352,6 +367,24 @@ public class AnimacionPrimeraPersona : MonoBehaviour
             girar += new Vector3(-trochitaRecargaPunta, -trochitaRecargaCostado, trochitaRecargaInclinacion) * arriba +
                      new Vector3(Random.Range(-1f, 1f), Random.Range(-1f, 1f), 0f) * temblor;
         }
+        Vector3 moverIzquierdaExtra = Vector3.zero;
+        if (EsRoca(arma))
+        {
+            // Roca (US 248): carga de a un cartucho y cada cartucho es una recarga corta, así que la inclinación sigue
+            // si está recargando (y no si el avance de la recarga vuelve a 0 con cada cartucho). La mano izquierda va
+            // del guardamanos a la boca de carga y con cada cartucho baja a buscarlo y lo empuja para adentro.
+            ArmaDeFuego fuego = arma.GetComponent<ArmaDeFuego>();
+            bool cargando = fuego != null && fuego.Recargando;
+            recargaRoca = Mathf.MoveTowards(recargaRoca, cargando ? 1f : 0f, dt / 0.18f);
+            float r = Mathf.SmoothStep(0f, 1f, recargaRoca);
+            float cartucho = cargando && recarga >= 0f ? recarga : 1f;
+            float busca = Mathf.Sin(Mathf.Clamp01(cartucho / 0.6f) * Mathf.PI);       // baja y vuelve a subir
+            float empuja = Mathf.Exp(-Mathf.Pow((cartucho - 0.75f) / 0.07f, 2f));    // lo mete
+            mover += new Vector3(-0.01f, 0.02f + 0.006f * empuja, 0f) * r;
+            girar += new Vector3(-6f, 8f, rocaRecargaInclinacion + 3f * empuja) * r;
+            Vector3 haciaAtras = transform.InverseTransformDirection(arma.transform.TransformDirection(Vector3.right)).normalized;
+            moverIzquierdaExtra += (haciaAtras * rocaManoAtras + Vector3.down * (rocaManoAbajo * busca) + Vector3.up * (0.01f * empuja)) * r;
+        }
         else if (recarga >= 0f)
         {
             float bajada = Mathf.SmoothStep(0f, 1f, Mathf.InverseLerp(0f, 0.2f, recarga)) *
@@ -394,10 +427,15 @@ public class AnimacionPrimeraPersona : MonoBehaviour
         Vector3 moverDerecha = Vector3.zero;
         Quaternion girarDerecha = Quaternion.identity;
         if (EsCuchillo(arma)) Corte(out moverDerecha, out girarDerecha); // el cuchillo no tiene piezas
-        else if (detalles) Piezas(arma).Actualizar(recarga, municion != null ? municion.Ammo : 1);
+        else if (detalles)
+        {
+            IPiezasDelArma p = Piezas(arma);
+            p.Actualizar(recarga, municion != null ? municion.Ammo : 1);
+            if (p is PiezasDeLaRoca roca) moverIzquierdaExtra += roca.ManoIzquierda(transform); // acompaña el bombeo
+        }
         else if (piezas.TryGetValue(arma, out IPiezasDelArma sinDetalles)) sinDetalles.Quieta();
 
-        Aplicar(arma.transform, mover, Quaternion.Euler(girar), sueltaIzquierda, moverDerecha, girarDerecha);
+        Aplicar(arma.transform, mover, Quaternion.Euler(girar), sueltaIzquierda, moverDerecha, girarDerecha, moverIzquierdaExtra);
         estado = "Animando " + arma.name + (foto != null ? " con sus brazos" : " (sin encontrar la foto de los brazos)") +
                  $" | corrida {mover.magnitude * 100f:0.0} cm, girada {girar.magnitude:0.0}°";
     }
@@ -406,8 +444,9 @@ public class AnimacionPrimeraPersona : MonoBehaviour
     // "sueltaIzquierda" (0 a 1): la mano izquierda suelta el arma y baja fuera de la pantalla; el arma queda solo en la
     // mano derecha (la foto tiene el brazo derecho aparte, como hijo, y ese sigue al arma).
     // "moverDerecha" y "girarDerecha": lo que se mueven además solo el arma y el brazo derecho (el corte del cuchillo).
+    // "moverIzquierdaExtra": lo que se corre además solo el brazo izquierdo (el bombeo y la carga de la Roca).
     private void Aplicar(Transform arma, Vector3 mover, Quaternion girar, float sueltaIzquierda,
-                         Vector3 moverDerecha, Quaternion girarDerecha)
+                         Vector3 moverDerecha, Quaternion girarDerecha, Vector3 moverIzquierdaExtra)
     {
         Vector3 pivote = agarre != null ? transform.InverseTransformPoint(agarre.position) : arma.localPosition;
         cuantos = 0;
@@ -415,7 +454,8 @@ public class AnimacionPrimeraPersona : MonoBehaviour
         Vector3 moverArma = mover + moverDerecha;
         Mover(arma, pivote, moverArma, girarArma);
         if (foto == null) return;
-        bool aparte = sueltaIzquierda > 0.001f || moverDerecha != Vector3.zero || girarDerecha != Quaternion.identity;
+        bool aparte = sueltaIzquierda > 0.001f || moverDerecha != Vector3.zero || girarDerecha != Quaternion.identity ||
+                      moverIzquierdaExtra != Vector3.zero;
         Transform derecho = aparte ? foto.Find("Brazo derecho") : null;
         if (derecho == null) { Mover(foto, pivote, moverArma, girarArma); return; }
 
@@ -429,7 +469,8 @@ public class AnimacionPrimeraPersona : MonoBehaviour
         float separa = Mathf.Sin(Mathf.Min(1f, s * 1.6f) * Mathf.PI * 0.5f); // se separa enseguida
         float baja = s * s;                                                  // baja después
         Vector3 moverIzquierdo = Vector3.Lerp(mover, Vector3.zero, s) +
-                                 new Vector3(-0.025f * separa, -trochitaManoIzquierdaAbajo * baja, -0.035f * separa);
+                                 new Vector3(-0.025f * separa, -trochitaManoIzquierdaAbajo * baja, -0.035f * separa) +
+                                 moverIzquierdaExtra;
         Mover(foto, pivote, moverIzquierdo, girarIzquierdo);
         Guardar(derecho);
         derecho.SetPositionAndRotation(transform.TransformPoint(lugarDerecho), transform.rotation * giroDerecho);

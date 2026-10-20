@@ -113,7 +113,8 @@ MonoBehaviour:
   reloadSound: {fileID: 0}
   shellSound: {fileID: 8300000, guid: 7b299b51f999a4a4fba4812add4c86ef, type: 3}
   pumpSound: {fileID: 8300000, guid: d209899fb10eb2046a8055f7f43c29ad, type: 3}
-  pumpDelay: 0.35
+  pumpDelay: 0
+  pumpSkip: 0.37
   sfxGroup: {fileID: -490443676671801125, guid: ddda7e32a2420c4489fcc2a1c31e1976, type: 2}
   currentAmmo: 0
   reserveAmmo: 0
