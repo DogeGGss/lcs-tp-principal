@@ -15,7 +15,7 @@ using UnityEngine;
 // Por ahora con las dos pistolas, La Porteña y La Trochita (la secundaria de categoría Pistolas con ArmaDeFuego), y el
 // Urquiza (la principal de categoría Subfusiles, US 246): su cargador cae al recargar (PiezasDelUrquiza) y al final
 // tira de la palanca de carga. Y el cuchillo (US 256): quieto, caminando, al sacarlo y al mirar como las demás, y el
-// puñalada en curva al atacar, que mueve solo el cuchillo y el brazo derecho.
+// corte de costado al atacar, que mueve solo el cuchillo y el brazo derecho.
 // Cada una tiene su fuerza de retroceso y su tiempo para sacarla. Se apaga con "Activa" en el Inspector, para comparar.
 // El movimiento se suma al final del cuadro (después de BrazosEnCamara) y se saca al empezar el siguiente
 // (RestaurarPrimeraPersona), así ningún otro script ve el arma corrida.
@@ -75,15 +75,13 @@ public class AnimacionPrimeraPersona : MonoBehaviour
     [Tooltip("Mientras recarga suelta la mano izquierda, que baja y sale de la pantalla (metros hacia abajo).")]
     public float trochitaManoIzquierdaAbajo = 0.18f;
 
-    [Header("Puñalada del cuchillo (US 256): en curva, entrando por la derecha")]
-    [Tooltip("Hasta dónde llega hacia adelante (metros).")]
-    public float punaladaLargo = 0.26f;
-    [Tooltip("Cuánto se abre hacia la derecha en la curva (metros).")]
-    public float punaladaCurva = 0.14f;
-    [Tooltip("Dónde termina, corrido hacia el centro de la pantalla (metros).")]
-    public float punaladaAlCentro = 0.05f;
-    [Tooltip("Cuánto se echa para atrás y a la derecha al prepararla (metros).")]
-    public float punaladaAtras = 0.05f;
+    [Header("Corte del cuchillo (US 256)")]
+    [Tooltip("Cuánto cruza de un lado al otro (metros).")]
+    public float corteAncho = 0.16f;
+    [Tooltip("Cuánto sube al prepararse (metros).")]
+    public float corteAlto = 0.05f;
+    [Tooltip("Cuánto gira la punta hacia cada lado (grados).")]
+    public float corteGiro = 40f;
 
     [Header("Sacar el arma")]
     [Tooltip("La Porteña. Las demás tardan lo que dice su ficha (tiempo para estar lista).")]
@@ -192,18 +190,10 @@ public class AnimacionPrimeraPersona : MonoBehaviour
     private bool EsCuchillo(GameObject arma) =>
         arma != null && switcher != null && switcher.meleeScript != null && arma == switcher.meleeScript.CurrentViewModel;
 
-    // US 256: la puñalada del cuchillo, según cuánto avanzó (MeleeAttack.AvanceDelCorte): la mano lo echa atrás y a la
-    // derecha, lo clava en curva entrando por la derecha hasta adelante y al centro, con la punta siempre hacia donde va
-    // (el golpe es en la mitad), y vuelve. Solo se mueven el cuchillo
-    // y el brazo derecho; el izquierdo queda donde está.
+    // US 256: el corte de costado del cuchillo, según cuánto avanzó (MeleeAttack.AvanceDelCorte): la mano lo lleva
+    // atrás y a la derecha, cruza de derecha a izquierda (el golpe es en la mitad) y vuelve. Solo se mueven el cuchillo y
+    // el brazo derecho; el izquierdo queda donde está.
     private MeleeAttack ataque;
-    // Giro para que la punta (que en reposo mira hacia adelante) mire hacia "direccion"; "inclinacion", el giro de la hoja.
-    private static Vector3 Apuntar(Vector3 direccion, float inclinacion)
-    {
-        float plano = new Vector2(direccion.x, direccion.z).magnitude;
-        return new Vector3(-Mathf.Atan2(direccion.y, plano) * Mathf.Rad2Deg, Mathf.Atan2(direccion.x, direccion.z) * Mathf.Rad2Deg, inclinacion);
-    }
-
     private void Corte(out Vector3 mover, out Quaternion girar)
     {
         mover = Vector3.zero;
@@ -212,33 +202,24 @@ public class AnimacionPrimeraPersona : MonoBehaviour
         float avance = ataque != null ? ataque.AvanceDelCorte : -1f;
         if (avance < 0f) return;
         float t = avance * MeleeAttack.Total;
-
-        // Camino: se prepara atrás y a la derecha (W); después entra en curva, abriéndose por la derecha (C), hasta
-        // adelante y al centro (E). La punta del cuchillo mira siempre hacia donde va (la tangente de la curva).
-        Vector3 w = new Vector3(punaladaAtras * 1.6f, -0.01f, -punaladaAtras);
-        Vector3 c = new Vector3(punaladaCurva, 0.02f, punaladaLargo * 0.55f);
-        Vector3 e = new Vector3(-punaladaAlCentro, 0.02f, punaladaLargo);
-        Vector3 giroPreparado = Apuntar(c - w, 10f);
-        Vector3 giroFinal = Apuntar(e - c, -10f);
+        Vector3 atrasPos = new Vector3(corteAncho * 0.45f, corteAlto, -0.02f), finPos = new Vector3(-corteAncho * 0.55f, -corteAlto * 0.6f, 0.05f);
+        Vector3 atrasGiro = new Vector3(-15f, corteGiro, -35f), finGiro = new Vector3(10f, -corteGiro * 1.1f, -60f);
         Vector3 pos, giro;
         if (t < MeleeAttack.Preparacion)
         {
             float f = Mathf.SmoothStep(0f, 1f, t / MeleeAttack.Preparacion);
-            pos = w * f; giro = giroPreparado * f;
+            pos = atrasPos * f; giro = atrasGiro * f;
         }
         else if (t < MeleeAttack.Preparacion + MeleeAttack.Corte)
         {
-            float u = (t - MeleeAttack.Preparacion) / MeleeAttack.Corte;
-            u = 1f - (1f - u) * (1f - u); // sale rápido y frena al clavar
-            float v = 1f - u;
-            pos = v * v * w + 2f * v * u * c + u * u * e;           // curva (Bézier)
-            Vector3 tangente = 2f * v * (c - w) + 2f * u * (e - c);
-            giro = Apuntar(tangente, Mathf.Lerp(10f, -10f, u));
+            float f = (t - MeleeAttack.Preparacion) / MeleeAttack.Corte;
+            f = f * f * (3f - 2f * f);
+            pos = Vector3.Lerp(atrasPos, finPos, f); giro = Vector3.Lerp(atrasGiro, finGiro, f);
         }
         else
         {
             float f = Mathf.SmoothStep(0f, 1f, (t - MeleeAttack.Preparacion - MeleeAttack.Corte) / MeleeAttack.Vuelta);
-            pos = e * (1f - f); giro = giroFinal * (1f - f);
+            pos = finPos * (1f - f); giro = finGiro * (1f - f);
         }
         mover = pos;
         girar = Quaternion.Euler(giro);

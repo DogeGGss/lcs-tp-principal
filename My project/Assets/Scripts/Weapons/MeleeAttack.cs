@@ -16,11 +16,11 @@ public class MeleeAttack : MonoBehaviour
     public static event System.Action<MeleeAttack> Swung;
     public AudioClip SwingSound => swingSound;
 
-    // US 256: la puñalada (estocada). La dibuja AnimacionPrimeraPersona con el avance (AvanceDelCorte); acá solo se mide
-    // el tiempo: el golpe llega en la mitad de la estocada y todo termina antes de que se pueda volver a atacar (0,75 s).
-    public const float Preparacion = 0.12f; // la mano echa el cuchillo atrás y a la derecha
-    public const float Corte = 0.13f;       // lo clava en curva, entrando por la derecha; el golpe, en la mitad
-    public const float Vuelta = 0.25f;      // vuelve a su lugar
+    // US 256: el corte de costado. Lo dibuja AnimacionPrimeraPersona con el avance (AvanceDelCorte); acá solo se mide el
+    // tiempo: el golpe llega en la mitad del corte y todo termina antes de que se pueda volver a atacar (0,75 s).
+    public const float Preparacion = 0.12f; // la mano lleva el cuchillo hacia atrás y a la derecha
+    public const float Corte = 0.12f;       // el corte cruza de derecha a izquierda; el golpe, en la mitad
+    public const float Vuelta = 0.30f;      // vuelve a su lugar
     public const float Total = Preparacion + Corte + Vuelta;
     private float inicioDelCorte;
 
@@ -80,7 +80,7 @@ public class MeleeAttack : MonoBehaviour
         GameObject viewModel = weaponHolder.CurrentViewModel;
         inicioDelCorte = Time.time;
 
-        // CA3 (US 256): el golpe, en la mitad de la estocada. CA4: si cambió de arma antes, se interrumpe sin golpe.
+        // CA3 (US 256): el golpe, en la mitad del corte. CA4: si cambió de arma antes, el corte se interrumpe sin golpe.
         yield return new WaitForSeconds(Preparacion + Corte * 0.5f);
         if (viewModel == null || !viewModel.activeInHierarchy) { isAttacking = false; yield break; }
         ExecuteHitCheck(data);
