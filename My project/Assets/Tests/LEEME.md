@@ -4,8 +4,8 @@ Se corren desde **Window > General > Test Runner**.
 
 | Pestaña | Carpeta | Qué prueba | Tarda |
 |---|---|---|---|
-| **EditMode** | `Tests/EditMode` | Reglas puras: versiones, partida, habilidades, estadísticas, ranking, logros y guardado | Menos de 1 s |
-| **PlayMode** | `Tests` | Componentes en una escena vacía (billetera, vida, tienda) y escenas reales (smoke test y práctica) | Cerca de 1 min |
+| **EditMode** | `Tests/EditMode` | Reglas puras: versiones, partida, Deathmatch, habilidades, estadísticas, ranking, logros y guardado | Menos de 1 s |
+| **PlayMode** | `Tests` | Componentes en una escena vacía (billetera, vida, tienda), zonas de daño de cada personaje, lo que se sube a la nube y escenas reales (smoke test y práctica) | Cerca de 1 min |
 
 ## Convenciones
 

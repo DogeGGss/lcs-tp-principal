@@ -326,6 +326,26 @@ public class ReglasDelJuegoTests
         Assert.AreEqual(20f, SonidoPerro.Alcance);
     }
 
+    [Test, Category("US 022"), Description("TC-972 CA6, TC-973 CA7 y TC-974 CA8: tiempos y distancias del perro")]
+    public void Callejero_sin_rivales_mordida_y_marca()
+    {
+        Assert.AreEqual(10f, Perro.SinRival, "CA6: corre 10 m hacia adelante");
+        Assert.AreEqual(5f, Perro.Espera, "CA6: espera sentado 5 s");
+        Assert.AreEqual(15f, Perro.Persecucion, "CA6: tiene 15 s para alcanzar al que aparece");
+        Assert.AreEqual(2.5f, Perro.Nublado, "CA7: la vista queda casi negra 2,5 s");
+        Assert.AreEqual(1f, VistaNublada.Claro, "CA7: se ve bien hasta 1 m");
+        Assert.AreEqual(4f, VistaNublada.Oscuro, "CA7: a 4 m ya no se ve nada");
+        Assert.AreEqual(3f, Perro.Marca, "CA8: el mordido queda marcado 3 s");
+    }
+
+    [Test, Category("US 137"), Description("TC-818 CA3: al reaparecer, 2 s sin recibir daño")]
+    public void Proteccion_al_reaparecer()
+    {
+        ConfigRed config = Resources.Load<ConfigRed>("ConfigRed");
+        Assert.IsNotNull(config, "Falta Resources/ConfigRed");
+        Assert.AreEqual(2f, config.invulnerabilidad);
+    }
+
     // Las recargas y las cargas no son constantes del código: están en los assets de Assets/Data/Habilidades.
     [TestCase("Trasbordo", 10f, 2, Category = "US 019")]
     [TestCase("Barrera", 20f, 1, Category = "US 020")]

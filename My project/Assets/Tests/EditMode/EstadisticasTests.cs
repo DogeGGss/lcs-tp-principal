@@ -144,6 +144,20 @@ public class EstadisticasTests
         foreach (string g in CategoriasRanking.Grupos) Assert.IsNotNull(CategoriasRanking.Primera(g), "grupo vacío: " + g);
     }
 
+    [Test, Category("US 226"), Description("TC-1009 CA1: los cinco grupos y el orden de cada categoría")]
+    public void Grupos_y_orden_del_ranking()
+    {
+        CollectionAssert.AreEqual(new[] { "General", "Táctico", "Deathmatch", "Minijuego", "Logros" }, CategoriasRanking.Grupos);
+        foreach (string g in CategoriasRanking.Grupos)
+            Assert.IsNotNull(CategoriasRanking.Primera(g), "grupo sin categorías: " + g);
+
+        // La base ordena de mayor a menor, salvo la mejor reacción, que gana el menor tiempo.
+        string sql = File.ReadAllText(Path.Combine(Application.dataPath, "../../Backend/Supabase/logros.sql"));
+        StringAssert.Contains("menor boolean := p_stat = 'mejor_reaccion'", sql);
+        StringAssert.Contains("order by case when menor then value else -value end", sql);
+        StringAssert.Contains("gana el menor tiempo", CategoriasRanking.Buscar("mejor_reaccion").requisito, "la pantalla lo avisa");
+    }
+
     [TestCase("bajas", 1204, "1.204")]
     [TestCase("kda", 1.789, "1,79")]
     [TestCase("precision", 55.55, "55,6 %")]
