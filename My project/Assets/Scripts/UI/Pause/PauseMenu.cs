@@ -155,7 +155,9 @@ public class PauseMenu : MonoBehaviour
 
     private void OnApplicationFocus(bool hasFocus)
     {
-        if (!hasFocus && pauseOnFocusLoss && !IsPaused && AllowPause && !ShopUI.IsOpen) Pause();
+        // Con los tests automáticos (ModoPruebas) no se pausa: si el editor pierde el foco mientras corren, el juego
+        // quedaría congelado y los tests que esperan unos segundos no terminarían nunca.
+        if (!hasFocus && pauseOnFocusLoss && !IsPaused && AllowPause && !ShopUI.IsOpen && !ModoPruebas.Activo) Pause();
     }
 
     // =====================================================================
