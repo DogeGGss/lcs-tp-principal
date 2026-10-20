@@ -121,7 +121,27 @@ public static class AjusteDeManos
         }
         cambio |= Poner(derecho, a.derecho, a.derechoGiro);
         cambio |= Poner(izquierdo, a.izquierdo, a.izquierdoGiro);
+        cambio |= PonerDedos(arma, a);
         return cambio;
+    }
+
+    // US 244: los dedos de esa arma (DedosDelArma). Si no se tocaron (todo en 0) y el arma no tenía, no se agrega.
+    private static bool PonerDedos(Transform arma, BrazosEnCamara.Agarres a)
+    {
+        if (string.IsNullOrEmpty(a.dedos)) return false;
+        DedosDelArma dedos = arma.GetComponent<DedosDelArma>();
+        if (dedos == null)
+        {
+            DedosDelArma prueba = new GameObject("Dedos (prueba)").AddComponent<DedosDelArma>();
+            JsonUtility.FromJsonOverwrite(a.dedos, prueba);
+            bool algo = prueba.TieneAjuste;
+            Object.DestroyImmediate(prueba.gameObject);
+            if (!algo) return false;
+            dedos = arma.gameObject.AddComponent<DedosDelArma>();
+        }
+        string antes = JsonUtility.ToJson(dedos);
+        JsonUtility.FromJsonOverwrite(a.dedos, dedos);
+        return JsonUtility.ToJson(dedos) != antes;
     }
 
     // Solo toca lo que cambió, así las armas que no se movieron no ensucian el prefab.
