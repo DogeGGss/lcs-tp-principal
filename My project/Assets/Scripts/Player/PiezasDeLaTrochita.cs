@@ -12,7 +12,8 @@ public interface IPiezasDelArma
 
 // Los detalles de La Trochita en primera persona (US 244): el tambor de arriba gira un sexto de vuelta con cada tiro
 // (el arma tiene 6 balas) y da una vuelta entera al terminar de recargar, y el cargador cae de la empuñadura y entra
-// uno nuevo al recargar. Lo maneja AnimacionPrimeraPersona.
+// uno nuevo al recargar. Como el tambor es liso, tiene 6 marcas en cada cara, una por bala: naranjas las cargadas y
+// oscuras las vacías; así se ve el giro y cuántas balas quedan. Lo maneja AnimacionPrimeraPersona.
 // El modelo (Pistol_1.fbx) es una sola malla hecha de piezas sueltas: el tambor se separa en otra malla para poder
 // girarlo. Las medidas de abajo están en las coordenadas del modelo (x hacia la boca, z hacia arriba, y hacia la
 // izquierda); Unity da vuelta la x al importarlo, así que en la malla un punto (x, y, z) del modelo está en
@@ -38,6 +39,14 @@ public class PiezasDeLaTrochita : IPiezasDelArma
     private Vector3 ejeDelTambor = Vector3.up;
     private float anguloDesde, anguloHasta, giroDesde = -10f;
     private bool vueltaDeRecarga;
+
+    // Marcas de las balas en las dos caras del tambor: una por bala (6), naranjas las cargadas y oscuras las vacías.
+    // La de arriba es la que dispara: con cada tiro se apaga y el tambor la lleva hacia atrás, así se ve que gira.
+    private const int Balas = 6;
+    private MeshRenderer[] marcas;       // cara izquierda (0 a 5) y derecha (6 a 11)
+    private int disparos;                // tiros desde que se armó: qué marca está arriba
+    private int balasAlRecargar;
+    private static Material cargada, vacia;
 
     private Transform cargador;
     private MeshRenderer cargadorVista;
@@ -176,13 +185,82 @@ public class PiezasDeLaTrochita : IPiezasDelArma
         vista.sharedMaterials = render.sharedMaterials;
         vista.shadowCastingMode = render.shadowCastingMode;
         vista.receiveShadows = render.receiveShadows;
+        CrearMarcas(tam);
         return true;
+    }
+
+    // Las 6 marcas de cada cara, en círculo a 6/10 del radio del tambor. La marca s queda a -60° * s: después de s
+    // tiros (s sextos de vuelta) está arriba.
+    private void CrearMarcas(Vector3 tam)
+    {
+        Vector3 eje = ejeDelTambor;
+        Vector3 u = eje == Vector3.up ? Vector3.forward : Vector3.up;   // "arriba" en la cara del tambor
+        Vector3 w = Vector3.Cross(eje, u);
+        float grosor = Vector3.Scale(tam, eje).magnitude;
+        float radio = (tam.x + tam.y + tam.z - grosor) * 0.25f;          // la mitad del promedio de los otros dos lados
+        float diametro = radio * 0.26f;
+        Mesh disco = Disco();
+        marcas = new MeshRenderer[Balas * 2];
+        for (int cara = 0; cara < 2; cara++)
+            for (int s = 0; s < Balas; s++)
+            {
+                float a = -s * GiroPorTiro * Mathf.Deg2Rad;
+                Vector3 lugar = (u * Mathf.Cos(a) + w * Mathf.Sin(a)) * (radio * 0.6f) + eje * ((cara == 0 ? 1f : -1f) * grosor * 0.5f);
+                var go = new GameObject("Marca de bala " + (s + 1));
+                go.layer = Capa;
+                go.transform.SetParent(tambor, false);
+                go.transform.localPosition = lugar;
+                go.transform.localRotation = Quaternion.FromToRotation(Vector3.up, eje);
+                go.transform.localScale = new Vector3(diametro, grosor * 0.03f, diametro);
+                go.AddComponent<MeshFilter>().sharedMesh = disco;
+                MeshRenderer r = go.AddComponent<MeshRenderer>();
+                r.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
+                r.receiveShadows = false;
+                marcas[cara * Balas + s] = r;
+            }
+    }
+
+    private static Mesh disco;
+    private static Mesh Disco()
+    {
+        if (disco != null) return disco;
+        GameObject temporal = GameObject.CreatePrimitive(PrimitiveType.Cylinder);
+        disco = temporal.GetComponent<MeshFilter>().sharedMesh;
+        Object.Destroy(temporal);
+        return disco;
+    }
+
+    private static Material MaterialDeMarca(bool encendida)
+    {
+        if (encendida ? cargada != null : vacia != null) return encendida ? cargada : vacia;
+        Shader shader = Shader.Find("Universal Render Pipeline/Unlit");
+        if (shader == null) shader = Shader.Find("Sprites/Default");
+        // Naranja más fuerte que 1, como los detalles del arma: con el Bloom brilla. Vacía: casi negra.
+        UnityEngine.Color c = encendida ? new UnityEngine.Color(1f, 0.5f, 0.12f) * 3f : new UnityEngine.Color(0.06f, 0.06f, 0.07f);
+        var m = new Material(shader) { name = encendida ? "Bala cargada (La Trochita)" : "Bala vacía (La Trochita)", color = c };
+        if (m.HasProperty("_BaseColor")) m.SetColor("_BaseColor", c);
+        if (encendida) cargada = m; else vacia = m;
+        return m;
+    }
+
+    // Prende las "cuantas" marcas que siguen a la de arriba (la de arriba incluida).
+    private void Marcas(int cuantas)
+    {
+        if (marcas == null) return;
+        for (int i = 0; i < marcas.Length; i++)
+        {
+            int s = i % Balas;
+            bool encendida = ((s - disparos) % Balas + Balas) % Balas < cuantas;
+            Material m = MaterialDeMarca(encendida);
+            if (marcas[i] != null && marcas[i].sharedMaterial != m) marcas[i].sharedMaterial = m;
+        }
     }
 
     /// <summary>Un tiro: el tambor gira un sexto de vuelta.</summary>
     public void Disparo(int balasQueQuedan)
     {
         if (!Armar()) return;
+        disparos++;
         Girar(GiroPorTiro, TiempoDeGiro);
     }
 
@@ -203,9 +281,18 @@ public class PiezasDeLaTrochita : IPiezasDelArma
         if (Armar() && tambor != null)
         {
             // Al final de la recarga (0,65), el tambor da una vuelta entera: el arma queda armada.
-            if (recarga >= 0.65f && !vueltaDeRecarga) { vueltaDeRecarga = true; Girar(360f, 0.3f); }
+            if (recarga >= 0.65f && !vueltaDeRecarga) { vueltaDeRecarga = true; balasAlRecargar = balas; Girar(360f, 0.3f); }
             if (recarga < 0f) vueltaDeRecarga = false;
             tambor.localRotation = Quaternion.AngleAxis(Angulo(), ejeDelTambor);
+
+            // Mientras da la vuelta de la recarga, las marcas se van prendiendo de a una; si no, las balas que tiene.
+            int encendidas = balas;
+            if (vueltaDeRecarga && recarga >= 0f)
+            {
+                float vuelta = Mathf.Clamp01((Time.time - giroDesde) / duracionGiro);
+                encendidas = Mathf.Max(balasAlRecargar, Mathf.CeilToInt(vuelta * Balas));
+            }
+            Marcas(Mathf.Clamp(encendidas, 0, Balas));
             if (tambor.gameObject.layer != Capa) foreach (Transform t in tambor.GetComponentsInChildren<Transform>(true)) t.gameObject.layer = Capa;
         }
         Cargador(recarga);
