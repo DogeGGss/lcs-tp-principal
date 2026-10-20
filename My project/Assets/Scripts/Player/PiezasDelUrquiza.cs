@@ -7,7 +7,7 @@ using UnityEngine;
 // que se mueve entero, sin separar mallas. Las medidas están en las coordenadas del modelo (x hacia la boca, z hacia
 // arriba); Unity da vuelta la x al importarlo: en la malla un punto (x, y, z) del modelo está en (-x, y, z) * escala.
 // El Belgrano Sur (US 252) está armado igual (el hijo "Cargador", con la malla Magazine del AR_4.fbx): usa esta misma
-// clase con sus medidas (PiezasDelUrquiza.BelgranoSur).
+// clase con sus medidas (PiezasDelUrquiza.BelgranoSur), y el Último Tren (US 254) también (PiezasDelUrquiza.UltimoTren).
 public class PiezasDelUrquiza : IPiezasDelArma
 {
     private readonly float LargoModelo = 1.549f;  // de punta a punta en x (de -0.721 a 0.828)
@@ -21,10 +21,15 @@ public class PiezasDelUrquiza : IPiezasDelArma
     private readonly Vector3 lugarCargador;
     private float escala = -1f;
     private bool soltado;
+    private bool oculto; // lo escondió esta clase (no la mira telescópica, que esconde el arma entera)
     private float recargaAnterior = -1f;
 
     private struct Suelta { public Transform t; public Vector3 velocidad, eje; public float giro, hasta; }
     private readonly List<Suelta> sueltas = new List<Suelta>();
+
+    /// <summary>El Último Tren (US 254): Sniper_3 mide 2,260 de punta a punta (de -0.747 a 1.513) y el cargador 0,22.</summary>
+    public static PiezasDelUrquiza UltimoTren(GameObject arma, Transform camara) =>
+        new PiezasDelUrquiza(arma, camara, 2.260f, 0.27f, new Vector3(-0.039f, 0f, -1f));
 
     /// <summary>El Belgrano Sur: AR_4 mide 1,792 de punta a punta (de -0.897 a 0.895) y el cargador 0,31, casi derecho.</summary>
     public static PiezasDelUrquiza BelgranoSur(GameObject arma, Transform camara) =>
@@ -89,7 +94,8 @@ public class PiezasDelUrquiza : IPiezasDelArma
 
     private void Mostrar(bool si)
     {
-        if (vistas == null) return;
+        if (vistas == null || oculto == !si) return;
+        oculto = !si;
         foreach (Renderer r in vistas) if (r != null && r.enabled != si) r.enabled = si;
     }
 
