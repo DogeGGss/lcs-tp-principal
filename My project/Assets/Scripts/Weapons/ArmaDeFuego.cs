@@ -28,6 +28,9 @@ public class ArmaDeFuego : MonoBehaviour, IHudWeapon
     public AudioClip pumpSound;
     [Tooltip("Segundos entre el disparo y el sonido del bombeo.")]
     public float pumpDelay = 0.35f;
+    [Tooltip("Segundos del principio del sonido del bombeo que se saltean (si el archivo empieza con silencio). Así el " +
+             "ruido coincide con el guardamanos en la animación (US 248).")]
+    public float pumpSkip = 0f;
     [Tooltip("Canal del mixer (SFX), así respeta el volumen de efectos de Opciones.")]
     public AudioMixerGroup sfxGroup;
 
@@ -93,6 +96,7 @@ public class ArmaDeFuego : MonoBehaviour, IHudWeapon
     {
         // Al guardarla (o al abrir la pausa o la tienda) se corta la recarga, como con la pistola.
         StopAllCoroutines();
+        if (pumpSource != null) pumpSource.Stop();
         reloading = false;
         bursting = false;
         equipping = false;
@@ -128,15 +132,28 @@ public class ArmaDeFuego : MonoBehaviour, IHudWeapon
         // Con la mira telescópica puesta la dispersión es la de apuntar (US 167, CA5).
         bool conMira = mira != null && mira.Nivel > 0;
         WeaponFire.Fire(shopItem, playerCamera, shooter, conMira, alcance);
-        if (pumpSound != null && currentAmmo > 0) StartCoroutine(PlayLater(pumpSound, pumpDelay));
+        if (pumpSound != null && currentAmmo > 0) StartCoroutine(PlayLater(pumpSound, pumpDelay, pumpSkip));
         // Cerrojo: sale de la mira y vuelve sola cuando se puede volver a disparar (US 068, CA3).
         if (mira != null) mira.AlDisparar(1f / Mathf.Max(0.01f, shopItem.fireRate));
     }
 
-    private IEnumerator PlayLater(AudioClip clip, float delay)
+    private AudioSource pumpSource;
+
+    private IEnumerator PlayLater(AudioClip clip, float delay, float skip = 0f)
     {
-        yield return new WaitForSeconds(delay);
-        audioSource.PlayOneShot(clip);
+        if (delay > 0f) yield return new WaitForSeconds(delay);
+        if (skip <= 0f || skip >= clip.length) { audioSource.PlayOneShot(clip); yield break; }
+        // Desde la mitad del archivo: con una fuente aparte (PlayOneShot siempre empieza del principio).
+        if (pumpSource == null)
+        {
+            pumpSource = gameObject.AddComponent<AudioSource>();
+            pumpSource.playOnAwake = false;
+            pumpSource.outputAudioMixerGroup = audioSource.outputAudioMixerGroup;
+            pumpSource.spatialBlend = audioSource.spatialBlend;
+        }
+        pumpSource.clip = clip;
+        pumpSource.time = skip;
+        pumpSource.Play();
     }
 
     // US 069, CA1 y CA3: la ráfaga tira sus balas seguidas; si quedan menos, las que queden.
@@ -194,11 +211,12 @@ public class ArmaDeFuego : MonoBehaviour, IHudWeapon
         {
             reloadStart = Time.time;
             reloadDuration = Mathf.Max(0.01f, shopItem.reloadTime);
+            // El sonido arranca con el cartucho: su golpe (a los 0,3 s del archivo) cae cuando la mano lo mete (US 248).
+            AudioClip shell = shellSound != null ? shellSound : reloadSound;
+            if (shell != null) audioSource.PlayOneShot(shell);
             yield return new WaitForSeconds(shopItem.reloadTime);
             currentAmmo++;
             if (!Municion.ReservaInfinita) reserveAmmo--; // US 121, CA1 y Deathmatch: la reserva no se gasta
-            AudioClip shell = shellSound != null ? shellSound : reloadSound;
-            if (shell != null) audioSource.PlayOneShot(shell);
         }
         reloading = false;
     }
