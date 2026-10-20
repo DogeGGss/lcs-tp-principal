@@ -458,9 +458,8 @@ public class BrazosEnCamara : MonoBehaviour
         public string arma;
         public Vector3 lugar, escala, derecho, izquierdo;
         public Quaternion giro, derechoGiro, izquierdoGiro;
-        // US 244: los dedos (DedosDelArma), si el arma tiene.
-        public bool conDedos;
-        public float dedosDerecha, indiceDerecho, pulgarDerecho, dedosIzquierda, indiceIzquierdo, pulgarIzquierdo;
+        // US 244: los dedos (DedosDelArma, en JSON), si el arma tiene.
+        public string dedos;
     }
 
     [System.Serializable]
@@ -496,13 +495,7 @@ public class BrazosEnCamara : MonoBehaviour
                 izquierdoGiro = prestado ? izquierdoGiro : izquierdo.localRotation
             });
             DedosDelArma dedos = arma.GetComponent<DedosDelArma>();
-            if (dedos != null)
-            {
-                Agarres a = ajuste.armas[ajuste.armas.Count - 1];
-                a.conDedos = true;
-                a.dedosDerecha = dedos.dedosDerecha; a.indiceDerecho = dedos.indiceDerecho; a.pulgarDerecho = dedos.pulgarDerecho;
-                a.dedosIzquierda = dedos.dedosIzquierda; a.indiceIzquierdo = dedos.indiceIzquierdo; a.pulgarIzquierdo = dedos.pulgarIzquierdo;
-            }
+            if (dedos != null) ajuste.armas[ajuste.armas.Count - 1].dedos = JsonUtility.ToJson(dedos);
         }
         string json = JsonUtility.ToJson(ajuste, true);
         if (json == ultimoGuardado) return;

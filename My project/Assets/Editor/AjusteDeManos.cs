@@ -128,21 +128,20 @@ public static class AjusteDeManos
     // US 244: los dedos de esa arma (DedosDelArma). Si no se tocaron (todo en 0) y el arma no tenía, no se agrega.
     private static bool PonerDedos(Transform arma, BrazosEnCamara.Agarres a)
     {
-        if (!a.conDedos) return false;
+        if (string.IsNullOrEmpty(a.dedos)) return false;
         DedosDelArma dedos = arma.GetComponent<DedosDelArma>();
-        bool algo = a.dedosDerecha != 0f || a.indiceDerecho != 0f || a.pulgarDerecho != 0f ||
-                    a.dedosIzquierda != 0f || a.indiceIzquierdo != 0f || a.pulgarIzquierdo != 0f;
         if (dedos == null)
         {
+            DedosDelArma prueba = new GameObject("Dedos (prueba)").AddComponent<DedosDelArma>();
+            JsonUtility.FromJsonOverwrite(a.dedos, prueba);
+            bool algo = prueba.TieneAjuste;
+            Object.DestroyImmediate(prueba.gameObject);
             if (!algo) return false;
             dedos = arma.gameObject.AddComponent<DedosDelArma>();
         }
-        bool cambio = dedos.dedosDerecha != a.dedosDerecha || dedos.indiceDerecho != a.indiceDerecho ||
-                      dedos.pulgarDerecho != a.pulgarDerecho || dedos.dedosIzquierda != a.dedosIzquierda ||
-                      dedos.indiceIzquierdo != a.indiceIzquierdo || dedos.pulgarIzquierdo != a.pulgarIzquierdo;
-        dedos.dedosDerecha = a.dedosDerecha; dedos.indiceDerecho = a.indiceDerecho; dedos.pulgarDerecho = a.pulgarDerecho;
-        dedos.dedosIzquierda = a.dedosIzquierda; dedos.indiceIzquierdo = a.indiceIzquierdo; dedos.pulgarIzquierdo = a.pulgarIzquierdo;
-        return cambio;
+        string antes = JsonUtility.ToJson(dedos);
+        JsonUtility.FromJsonOverwrite(a.dedos, dedos);
+        return JsonUtility.ToJson(dedos) != antes;
     }
 
     // Solo toca lo que cambió, así las armas que no se movieron no ensucian el prefab.
