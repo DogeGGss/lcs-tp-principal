@@ -220,8 +220,8 @@
     "since": "2026-10-12T06:38:56.871263+00:00"
   },
   "PVTI_lAHOCikQ8M4Bj9Nyzg7rc5U": {
-    "status": "TESTING",
-    "since": "2026-10-19T19:47:51.185315+00:00"
+    "status": "Done",
+    "since": "2026-10-20T20:45:11.478423+00:00"
   },
   "PVTI_lAHOCikQ8M4Bj9Nyzg7rc_0": {
     "status": "Done",
@@ -324,8 +324,8 @@
     "since": "2026-10-19T23:09:15.799655+00:00"
   },
   "PVTI_lAHOCikQ8M4Bj9Nyzg7sLmw": {
-    "status": "TESTING",
-    "since": "2026-10-18T23:23:10.522907+00:00"
+    "status": "Rehacer",
+    "since": "2026-10-20T20:45:11.478423+00:00"
   },
   "PVTI_lAHOCikQ8M4Bj9Nyzg7sLwo": {
     "status": "Rehacer",
@@ -620,8 +620,8 @@
     "since": "2026-10-11T06:18:12.680771+00:00"
   },
   "PVTI_lAHOCikQ8M4Bj9Nyzg81qJ4": {
-    "status": "TESTING",
-    "since": "2026-10-14T20:40:22.031933+00:00"
+    "status": "Done",
+    "since": "2026-10-20T20:45:11.478423+00:00"
   },
   "PVTI_lAHOCikQ8M4Bj9Nyzg81qMs": {
     "status": "TESTING",
@@ -992,8 +992,8 @@
     "since": "2026-10-17T17:59:14.751508+00:00"
   },
   "PVTI_lAHOCikQ8M4Bj9NyzhAUr7U": {
-    "status": "R2D",
-    "since": "2026-10-20T17:21:24.525894+00:00"
+    "status": "Done",
+    "since": "2026-10-20T20:45:11.478423+00:00"
   },
   "PVTI_lAHOCikQ8M4Bj9NyzhAUr7c": {
     "status": "LPR",
@@ -1004,12 +1004,12 @@
     "since": "2026-10-17T12:23:35.874645+00:00"
   },
   "PVTI_lAHOCikQ8M4Bj9NyzhA2ZmE": {
-    "status": "TESTING",
-    "since": "2026-10-20T17:21:24.525894+00:00"
+    "status": "Done",
+    "since": "2026-10-20T20:45:11.478423+00:00"
   },
   "PVTI_lAHOCikQ8M4Bj9NyzhBNjrQ": {
-    "status": "LPR",
-    "since": "2026-10-16T10:52:01.349564+00:00"
+    "status": "Done",
+    "since": "2026-10-20T20:45:11.478423+00:00"
   },
   "PVTI_lAHOCikQ8M4Bj9NyzhBNjuo": {
     "status": "Done",

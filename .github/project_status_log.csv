@@ -806,3 +806,9 @@ fecha_utc,us_numero,us_titulo,estado_anterior,estado_nuevo,tiempo_en_estado_ante
 2026-10-20T06:44:33.761777+00:00,509,US 258. Granadas · Animaciones en primera persona,Todo,In Progress,4h 55m,17700,https://github.com/DogeGGss/lcs-tp-principal/issues/509
 2026-10-20T17:21:24.525894+00:00,428,US 221. Consultar las estadísticas desde el perfil,TESTING,R2D,18h 12m,65528,https://github.com/DogeGGss/lcs-tp-principal/issues/428
 2026-10-20T17:21:24.525894+00:00,436,US 225. Modelos y brazos de los personajes,LPR,TESTING,4d 11h 25m,386730,https://github.com/DogeGGss/lcs-tp-principal/issues/436
+2026-10-20T20:45:11.478423+00:00,449,US 226. Ranking global,LPR,Done,4d 9h 53m,381190,https://github.com/DogeGGss/lcs-tp-principal/issues/449
+2026-10-20T20:45:11.478423+00:00,436,US 225. Modelos y brazos de los personajes,TESTING,Done,3h 23m,12226,https://github.com/DogeGGss/lcs-tp-principal/issues/436
+2026-10-20T20:45:11.478423+00:00,196,US 136. Iniciar partida Deathmatch,TESTING,Done,6d 4m,518689,https://github.com/DogeGGss/lcs-tp-principal/issues/196
+2026-10-20T20:45:11.478423+00:00,428,US 221. Consultar las estadísticas desde el perfil,R2D,Done,3h 23m,12226,https://github.com/DogeGGss/lcs-tp-principal/issues/428
+2026-10-20T20:45:11.478423+00:00,70,US 020. Habilidad 2 · Barrera,TESTING,Done,1d 57m,89840,https://github.com/DogeGGss/lcs-tp-principal/issues/70
+2026-10-20T20:45:11.478423+00:00,97,US 043. Notificar logro desbloqueado,TESTING,Rehacer,1d 21h 22m,163320,https://github.com/DogeGGss/lcs-tp-principal/issues/97
