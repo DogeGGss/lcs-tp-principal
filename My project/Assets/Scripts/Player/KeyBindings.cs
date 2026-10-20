@@ -106,9 +106,41 @@ public static class KeyBindings
     public static KeyCode Key(GameAction action) =>
         (KeyCode)Guardado.GetInt(PrefKey(action), (int)Defaults[action]);
 
-    public static bool Down(GameAction action) => Input.GetKeyDown(Key(action));
-    public static bool Held(GameAction action) => Input.GetKey(Key(action));
-    public static bool Up(GameAction action) => Input.GetKeyUp(Key(action));
+    public static bool Down(GameAction action) => Input.GetKeyDown(Key(action)) || SimuladaDown(action);
+    public static bool Held(GameAction action) => Input.GetKey(Key(action)) || SimuladaHeld(action);
+    public static bool Up(GameAction action) => Input.GetKeyUp(Key(action)) || SimuladaUp(action);
+
+    // ---------- Tests de regresión ----------
+
+    // Los tests automáticos (ModoPruebas) aprietan y sueltan acciones como el jugador, así el juego pasa por el mismo
+    // camino que con una tecla: desde el cuadro siguiente la acción está apretada (Down solo ese cuadro) hasta que se
+    // suelta (Up el cuadro siguiente). Fuera de los tests no hace nada.
+    private static readonly Dictionary<GameAction, int> apretadaDesde = new Dictionary<GameAction, int>();
+    private static readonly Dictionary<GameAction, int> soltadaEn = new Dictionary<GameAction, int>();
+
+    public static void Apretar(GameAction action)
+    {
+        if (!ModoPruebas.Activo) return;
+        apretadaDesde[action] = Time.frameCount + 1;
+        soltadaEn.Remove(action);
+    }
+
+    public static void Soltar(GameAction action)
+    {
+        if (!apretadaDesde.Remove(action)) return;
+        soltadaEn[action] = Time.frameCount + 1;
+    }
+
+    /// <summary>Suelta todo lo que quedó apretado (al terminar cada test).</summary>
+    public static void SoltarTodo()
+    {
+        apretadaDesde.Clear();
+        soltadaEn.Clear();
+    }
+
+    private static bool SimuladaDown(GameAction a) => apretadaDesde.Count > 0 && apretadaDesde.TryGetValue(a, out int f) && Time.frameCount == f;
+    private static bool SimuladaHeld(GameAction a) => apretadaDesde.Count > 0 && apretadaDesde.TryGetValue(a, out int f) && Time.frameCount >= f;
+    private static bool SimuladaUp(GameAction a) => soltadaEn.Count > 0 && soltadaEn.TryGetValue(a, out int f) && Time.frameCount == f;
 
     /// <summary>-1, 0 o 1 según qué tecla esté apretada (como Input.GetAxisRaw).</summary>
     public static float Axis(GameAction negative, GameAction positive) =>

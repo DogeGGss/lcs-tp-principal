@@ -6,6 +6,15 @@ Se corren desde **Window > General > Test Runner**.
 |---|---|---|---|
 | **EditMode** | `Tests/EditMode` | Reglas puras: versiones, partida, Deathmatch, habilidades, estadísticas, ranking, logros y guardado | Menos de 1 s |
 | **PlayMode** | `Tests` | Componentes en una escena vacía (billetera, vida, tienda), zonas de daño de cada personaje, lo que se sube a la nube y escenas reales (smoke test y práctica) | Cerca de 1 min |
+| **PlayMode**, categoría "Regresión de sonidos" | `Tests/Sonidos` | Que cada acción del jugador siga sonando, por su canal del mezclador y con su alcance, y que con cada volumen de Opciones en 0 su canal no se escuche (RS-01 a RS-32) | Cerca de 2 min |
+
+## Regresión de sonidos
+
+Cada test hace la acción como si la hiciera el jugador: `KeyBindings.Apretar(GameAction.Disparar)` aprieta la acción
+por el mismo camino que una tecla (solo funciona con `ModoPruebas`). `Oido` junta las fuentes de audio que empiezan a
+sonar después y el test comprueba el canal (SFX, Interfaz o Musica) y, si la historia lo pide, el alcance. Corren en
+el campo de práctica (sin red) y en el menú. Los resultados se anotan en la pestaña "Regresión automática" del plan
+de pruebas. Para agregar uno, copiá uno parecido de `RegresionSonidosTests` y sumá su fila con el número siguiente.
 
 ## Convenciones
 
