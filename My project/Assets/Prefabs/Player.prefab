@@ -1704,8 +1704,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7402932654352827754}
   serializedVersion: 2
-  m_LocalRotation: {x: -0.09937385, y: 0.04188856, z: 0.9793366, w: 0.17108507}
-  m_LocalPosition: {x: -0.00383, y: 0.00154, z: -0.0006}
+  m_LocalRotation: {x: -0.10301336, y: 0.03190746, z: 0.9577505, w: 0.26661626}
+  m_LocalPosition: {x: -0.00342, y: 0.00168, z: -0.0007}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -2047,8 +2047,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8915054239589079785}
   serializedVersion: 2
-  m_LocalRotation: {x: -0.5099939, y: 0.40175083, z: 0.5168562, w: 0.5579984}
-  m_LocalPosition: {x: 0.001122, y: -0.000265, z: -0.000071}
+  m_LocalRotation: {x: -0.49973172, y: 0.41444626, z: 0.5307222, w: 0.5448271}
+  m_LocalPosition: {x: 0.0019, y: -0.00061, z: -0.00029}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -2229,15 +2229,15 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 4660273559479906091, guid: 0079d41ae8b478a41ae7c791acb1b258, type: 3}
       propertyPath: m_LocalScale.x
-      value: 50
+      value: 42.36095
       objectReference: {fileID: 0}
     - target: {fileID: 4660273559479906091, guid: 0079d41ae8b478a41ae7c791acb1b258, type: 3}
       propertyPath: m_LocalScale.y
-      value: 50
+      value: 42.36095
       objectReference: {fileID: 0}
     - target: {fileID: 4660273559479906091, guid: 0079d41ae8b478a41ae7c791acb1b258, type: 3}
       propertyPath: m_LocalScale.z
-      value: 50
+      value: 42.36095
       objectReference: {fileID: 0}
     - target: {fileID: 4660273559479906091, guid: 0079d41ae8b478a41ae7c791acb1b258, type: 3}
       propertyPath: m_LocalPosition.x
@@ -2296,13 +2296,76 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 4660273559479906091, guid: 0079d41ae8b478a41ae7c791acb1b258, type: 3}
       insertIndex: -1
       addedObject: {fileID: 6891270157902656178}
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 5469426794283251089, guid: 0079d41ae8b478a41ae7c791acb1b258, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 5969171408814849972}
   m_SourcePrefab: {fileID: 100100000, guid: 0079d41ae8b478a41ae7c791acb1b258, type: 3}
 --- !u!1 &5907278758831612595 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 5469426794283251089, guid: 0079d41ae8b478a41ae7c791acb1b258, type: 3}
   m_PrefabInstance: {fileID: 1881818597423044386}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &5969171408814849972
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5907278758831612595}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f8fe9436db594eb3a3c105abe90fc757, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Riftwalker::DedosDelArma
+  manoDerecha:
+    pulgar:
+      abrir: 0
+      separar: 0
+      girar: 0
+    indice:
+      abrir: 0
+      separar: 0
+      girar: 0
+    mayor:
+      abrir: 30
+      separar: 0
+      girar: 0
+    anular:
+      abrir: 24
+      separar: 0
+      girar: 0
+    menique:
+      abrir: 11
+      separar: 0
+      girar: 0
+  manoIzquierda:
+    pulgar:
+      abrir: -10
+      separar: 0
+      girar: 0
+    indice:
+      abrir: 17
+      separar: 0
+      girar: 0
+    mayor:
+      abrir: 19
+      separar: 0
+      girar: 0
+    anular:
+      abrir: 26
+      separar: 0
+      girar: 0
+    menique:
+      abrir: 31
+      separar: 0
+      girar: 0
+  dedosDerecha: 0
+  indiceDerecho: 0
+  pulgarDerecho: 0
+  dedosIzquierda: 0
+  indiceIzquierdo: 0
+  pulgarIzquierdo: 0
 --- !u!4 &6535020027109586953 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 4660273559479906091, guid: 0079d41ae8b478a41ae7c791acb1b258, type: 3}
