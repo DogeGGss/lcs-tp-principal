@@ -12,7 +12,9 @@ using UnityEngine;
 // - Mirar: un leve retraso del arma al girar la cámara.
 // - Detalles: La Porteña mueve la corredera y cambia el cargador (PiezasDeLaPistola); La Trochita gira el tambor, con
 //   una rayita por bala (PiezasDeLaTrochita, US 244).
-// Por ahora con las dos pistolas: La Porteña y La Trochita (la secundaria de categoría Pistolas con ArmaDeFuego).
+// Por ahora con las dos pistolas, La Porteña y La Trochita (la secundaria de categoría Pistolas con ArmaDeFuego), y el
+// Urquiza (la principal de categoría Subfusiles, US 246): su cargador cae al recargar (PiezasDelUrquiza) y al final
+// tira de la palanca de carga.
 // Cada una tiene su fuerza de retroceso y su tiempo para sacarla. Se apaga con "Activa" en el Inspector, para comparar.
 // El movimiento se suma al final del cuadro (después de BrazosEnCamara) y se saca al empezar el siguiente
 // (RestaurarPrimeraPersona), así ningún otro script ve el arma corrida.
@@ -43,6 +45,15 @@ public class AnimacionPrimeraPersona : MonoBehaviour
     public float trochitaAtras = 0.065f;
     public float trochitaArriba = 12f;
     public float trochitaCostado = 2.5f;
+
+    [Header("Disparo (Urquiza): automático, golpes chicos y un resorte más duro")]
+    public float urquizaAtras = 0.012f;
+    public float urquizaArriba = 2.2f;
+    public float urquizaCostado = 1f;
+    [Tooltip("Qué tan rápido vuelve a su lugar al soltar el disparo (más alto, más rápido).")]
+    public float urquizaResorte = 300f;
+    [Tooltip("Al final de la recarga tira de la palanca de carga: el arma da un tirón hacia atrás (metros).")]
+    public float urquizaPalanca = 0.03f;
 
     [Header("Recarga")]
     public float recargaAbajo = 0.11f;
@@ -143,26 +154,33 @@ public class AnimacionPrimeraPersona : MonoBehaviour
 
     private bool EsPortena(GameObject arma) => switcher != null && arma != null && arma == switcher.pistolObj;
 
-    private static bool EsTrochita(GameObject arma)
+    private static bool EsDe(GameObject arma, ShopCategory categoria)
     {
         if (arma == null) return false;
         ArmaDeFuego fuego = arma.GetComponent<ArmaDeFuego>();
-        return fuego != null && fuego.shopItem != null && fuego.shopItem.category == ShopCategory.Pistols;
+        return fuego != null && fuego.shopItem != null && fuego.shopItem.category == categoria;
     }
+
+    private static bool EsTrochita(GameObject arma) => EsDe(arma, ShopCategory.Pistols);
+    private static bool EsUrquiza(GameObject arma) => EsDe(arma, ShopCategory.SMGs);
 
     // El arma de la mano, si es una de las que tienen animación.
     private GameObject Animable()
     {
         if (switcher == null) return null;
         GameObject arma = switcher.HeldSecondary;
-        return EsPortena(arma) || EsTrochita(arma) ? arma : null;
+        if (EsPortena(arma) || EsTrochita(arma)) return arma;
+        arma = switcher.HeldPrimary;
+        return EsUrquiza(arma) ? arma : null;
     }
 
     private IPiezasDelArma Piezas(GameObject arma)
     {
         if (!piezas.TryGetValue(arma, out IPiezasDelArma p))
         {
-            p = EsTrochita(arma) ? new PiezasDeLaTrochita(arma, transform) : (IPiezasDelArma)new PiezasDeLaPistola(arma, transform);
+            p = EsTrochita(arma) ? new PiezasDeLaTrochita(arma, transform)
+              : EsUrquiza(arma) ? new PiezasDelUrquiza(arma, transform)
+              : (IPiezasDelArma)new PiezasDeLaPistola(arma, transform);
             piezas[arma] = p;
         }
         return p;
@@ -180,10 +198,10 @@ public class AnimacionPrimeraPersona : MonoBehaviour
         if (!activa || tirador != jugador) return;
         GameObject arma = Animable();
         if (arma == null) return;
-        bool trochita = EsTrochita(arma);
-        float arriba = trochita ? trochitaArriba : retrocesoArriba;
-        float costado = trochita ? trochitaCostado : retrocesoCostado;
-        float atras = trochita ? trochitaAtras : retrocesoAtras;
+        bool trochita = EsTrochita(arma), urquiza = EsUrquiza(arma);
+        float arriba = trochita ? trochitaArriba : urquiza ? urquizaArriba : retrocesoArriba;
+        float costado = trochita ? trochitaCostado : urquiza ? urquizaCostado : retrocesoCostado;
+        float atras = trochita ? trochitaAtras : urquiza ? urquizaAtras : retrocesoAtras;
         golpeVel += new Vector3(-arriba, Random.Range(-costado, costado), atras) * 22f;
         if (detalles)
         {
@@ -214,8 +232,9 @@ public class AnimacionPrimeraPersona : MonoBehaviour
         retraso = Vector2.Lerp(retraso, Vector2.zero, 1f - Mathf.Exp(-10f * dt));
 
         // Resorte del disparo (amortiguado): vuelve a cero.
-        float w = Mathf.Sqrt(resorte);
-        golpeVel += (-resorte * golpePos - 2f * amortiguacion * w * golpeVel) * dt;
+        float k = arma != null && EsUrquiza(arma) ? urquizaResorte : resorte;
+        float w = Mathf.Sqrt(k);
+        golpeVel += (-k * golpePos - 2f * amortiguacion * w * golpeVel) * dt;
         golpePos += golpeVel * dt;
 
         // Salto: al despegar y al caer el arma baja un poco y vuelve con un resorte más blando.
@@ -288,6 +307,13 @@ public class AnimacionPrimeraPersona : MonoBehaviour
             float empujon = Mathf.Exp(-Mathf.Pow((recarga - 0.6f) / 0.05f, 2f));
             mover += new Vector3(0f, -recargaAbajo * bajada + 0.015f * empujon, 0f);
             girar += new Vector3(recargaInclinacion * bajada * 0.4f, recargaGiro * bajada, recargaInclinacion * bajada);
+            // Urquiza (US 246): al final tira de la palanca de carga, un tirón hacia atrás y un poco de giro.
+            if (EsUrquiza(arma))
+            {
+                float palanca = Mathf.Exp(-Mathf.Pow((recarga - 0.78f) / 0.04f, 2f));
+                mover += new Vector3(0f, 0f, -urquizaPalanca * palanca);
+                girar += new Vector3(-3f * palanca, 0f, -6f * palanca);
+            }
         }
 
         // Sacar el arma: sube desde abajo, durante lo que tarda en estar lista.
