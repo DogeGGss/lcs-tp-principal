@@ -8,7 +8,7 @@ using UnityEngine;
 // malla para poder moverlas. Las medidas de abajo están en las coordenadas del modelo en Blender (x hacia la boca,
 // z hacia arriba, y hacia la izquierda); Unity da vuelta la x al importarlo, así que en la malla un punto (x, y, z) del
 // modelo está en (-x, y, z) * escala. Para separar las piezas el modelo tiene que tener Read/Write prendido.
-public class PiezasDeLaPistola
+public class PiezasDeLaPistola : IPiezasDelArma
 {
     private const float LargoModelo = 0.990f; // de punta a punta en x (de -0.167 a 0.823)
     private static readonly Vector3 Boca = new Vector3(0.823f, 0f, 0.195f);
