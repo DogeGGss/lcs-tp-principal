@@ -118,20 +118,41 @@ public class PartidaDeathmatch : MonoBehaviour
     {
         var lista = new List<Player>(PhotonNetwork.PlayerList);
         int ahora = Ahora;
-        lista.Sort((a, b) =>
-        {
-            int c = Bajas(b.ActorNumber).CompareTo(Bajas(a.ActorNumber));
-            if (c != 0) return c;
-            c = Muertes(a.ActorNumber).CompareTo(Muertes(b.ActorNumber));
-            if (c != 0) return c;
-            // Hace cuánto llegó cada uno a sus bajas: el que lleva más tiempo llegó primero.
-            int haceA = unchecked(ahora - Leer(PropCuando + a.ActorNumber, ahora));
-            int haceB = unchecked(ahora - Leer(PropCuando + b.ActorNumber, ahora));
-            c = haceB.CompareTo(haceA);
-            return c != 0 ? c : a.ActorNumber.CompareTo(b.ActorNumber);
-        });
+        lista.Sort((a, b) => CompararPuestos(Marca(a.ActorNumber, ahora), Marca(b.ActorNumber, ahora)));
         return lista;
     }
+
+    /// <summary>Lo que decide el puesto de un jugador. hace: ms desde que llegó a sus bajas actuales.</summary>
+    public struct Puesto
+    {
+        public int actor, bajas, muertes, hace;
+    }
+
+    private static Puesto Marca(int actor, int ahora) => new Puesto
+    {
+        actor = actor, bajas = Bajas(actor), muertes = Muertes(actor),
+        hace = unchecked(ahora - Leer(PropCuando + actor, ahora)),
+    };
+
+    /// <summary>
+    /// Negativo si a va antes que b (US 140, CA2): más bajas; con las mismas, menos muertes; después, el que llegó antes a
+    /// esas bajas (el que lleva más tiempo con ellas) y, si todo es igual, el que entró primero a la sala.
+    /// </summary>
+    public static int CompararPuestos(Puesto a, Puesto b)
+    {
+        int c = b.bajas.CompareTo(a.bajas);
+        if (c != 0) return c;
+        c = a.muertes.CompareTo(b.muertes);
+        if (c != 0) return c;
+        c = b.hace.CompareTo(a.hace);
+        return c != 0 ? c : a.actor.CompareTo(b.actor);
+    }
+
+    /// <summary>US 140, CA1: la baja la suma otro jugador; caerse del mapa (atacante 0) o matarse solo no suma.</summary>
+    public static bool SumaBaja(int atacante, int muerto) => atacante > 0 && atacante != muerto;
+
+    /// <summary>US 140, CA2: llegar a 25 bajas gana y termina la partida en ese momento.</summary>
+    public static bool GanaPorBajas(int bajas) => bajas >= BajasParaGanar;
 
     // =====================================================================
     // Ciclo de vida
@@ -309,7 +330,7 @@ public class PartidaDeathmatch : MonoBehaviour
             // F24: la racha del que murió vuelve a empezar desde las bajas que tiene ahora.
             cambios[PropBajasAlMorir + muerto] = Anotar(PropBajasAlMorir + muerto, Valor(PropBajas + muerto));
         }
-        if (atacante > 0 && atacante != muerto)
+        if (SumaBaja(atacante, muerto))
         {
             int bajas = Sumar(PropBajas + atacante);
             cambios[PropBajas + atacante] = bajas;
@@ -322,7 +343,7 @@ public class PartidaDeathmatch : MonoBehaviour
                 foreach (int a in asistentes)
                     if (a > 0 && a != atacante && a != muerto) cambios[PropAsistencias + a] = Sumar(PropAsistencias + a);
             // CA3: llegó a 25, gana y se termina en este momento.
-            if (bajas >= BajasParaGanar)
+            if (GanaPorBajas(bajas))
             {
                 cambios[PropFase] = (int)Fase.Terminada;
                 cambios[PropGanador] = atacante;

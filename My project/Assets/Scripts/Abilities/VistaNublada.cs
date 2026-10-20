@@ -7,7 +7,7 @@ using UnityEngine.UI;
 public class VistaNublada : MonoBehaviour
 {
     private const float Entrada = 0.15f, Salida = 0.6f;
-    private const float Claro = 1f, Oscuro = 4f; // m: hasta dónde se ve bien y desde dónde ya no se ve nada
+    public const float Claro = 1f, Oscuro = 4f; // m: hasta dónde se ve bien y desde dónde ya no se ve nada (US 022, CA7)
     private static readonly Color Niebla = new Color(0.008f, 0.01f, 0.014f);
     private const float Velo = 0.7f; // lo oscura que queda toda la pantalla, además de la viñeta
 
