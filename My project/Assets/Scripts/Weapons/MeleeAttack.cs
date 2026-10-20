@@ -16,10 +16,16 @@ public class MeleeAttack : MonoBehaviour
     public static event System.Action<MeleeAttack> Swung;
     public AudioClip SwingSound => swingSound;
 
-    // Parámetros de movimiento del cuchiloo para animación rápida por código
-    private float stabDistance = 0.3f;
-    private float stabDuration = 0.08f;
-    private float returnDuration = 0.12f;
+    // US 256: el corte de costado. Lo dibuja AnimacionPrimeraPersona con el avance (AvanceDelCorte); acá solo se mide el
+    // tiempo: el golpe llega en la mitad del corte y todo termina antes de que se pueda volver a atacar (0,75 s).
+    public const float Preparacion = 0.12f; // la mano lleva el cuchillo hacia atrás y hacia adentro
+    public const float Corte = 0.12f;       // el corte cruza de adentro hacia afuera; el golpe, en la mitad
+    public const float Vuelta = 0.30f;      // vuelve a su lugar
+    public const float Total = Preparacion + Corte + Vuelta;
+    private float inicioDelCorte;
+
+    /// <summary>De 0 a 1 mientras corta, o -1.</summary>
+    public float AvanceDelCorte => isAttacking ? Mathf.Clamp01((Time.time - inicioDelCorte) / Total) : -1f;
 
     private void Start()
     {
@@ -72,42 +78,19 @@ public class MeleeAttack : MonoBehaviour
             audioSource.PlayOneShot(swingSound);
 
         GameObject viewModel = weaponHolder.CurrentViewModel;
-        Vector3 initialPos = Vector3.zero;
+        inicioDelCorte = Time.time;
 
-        // CA6: Animación procedural en el prefab visual instanciado
-        if (viewModel != null)
-        {
-            initialPos = viewModel.transform.localPosition;
-            Vector3 targetPos = initialPos + Vector3.forward * stabDistance;
-
-            float elapsed = 0f;
-            while (elapsed < stabDuration)
-            {
-                if (viewModel == null) yield break;
-                viewModel.transform.localPosition = Vector3.Lerp(initialPos, targetPos, elapsed / stabDuration);
-                elapsed += Time.deltaTime;
-                yield return null;
-            }
-        }
-
-        // Detección de impacto
+        // CA3 (US 256): el golpe, en la mitad del corte. CA4: si cambió de arma antes, el corte se interrumpe sin golpe.
+        yield return new WaitForSeconds(Preparacion + Corte * 0.5f);
+        if (viewModel == null || !viewModel.activeInHierarchy) { isAttacking = false; yield break; }
         ExecuteHitCheck(data);
 
-        // Regreso del arma a su posición
-        if (viewModel != null)
+        // El resto del corte y la vuelta (también se corta si guarda el cuchillo).
+        while (Time.time - inicioDelCorte < Total)
         {
-            Vector3 targetPos = initialPos + Vector3.forward * stabDistance;
-            float elapsed = 0f;
-            while (elapsed < returnDuration)
-            {
-                if (viewModel == null) yield break;
-                viewModel.transform.localPosition = Vector3.Lerp(targetPos, initialPos, elapsed / returnDuration);
-                elapsed += Time.deltaTime;
-                yield return null;
-            }
-            viewModel.transform.localPosition = initialPos;
+            if (viewModel == null || !viewModel.activeInHierarchy) break;
+            yield return null;
         }
-
         isAttacking = false;
     }
 
