@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<test-run modo="playmode" unity="6000.6.2f1" version-juego="0.3.0-exp.6" inicio="2026-10-20 21:24:02" fin="2026-10-20 21:26:54" pasaron="33" fallaron="0" ignorados="0" duracion="172.115">
+  <test-case fullname="BilleteraTests.Cobrar_suma" resultado="Passed" duracion="0.001" inicio="2026-10-20 21:24:02" asserts="0" />
+  <test-case fullname="BilleteraTests.Empieza_con_800" resultado="Passed" duracion="0.000" inicio="2026-10-20 21:24:02" asserts="0" />
+  <test-case fullname="BilleteraTests.Gastar_resta_y_avisa" resultado="Passed" duracion="0.000" inicio="2026-10-20 21:24:02" asserts="0" />
+  <test-case fullname="BilleteraTests.No_se_puede_gastar_mas_de_lo_que_se_tiene" resultado="Passed" duracion="0.000" inicio="2026-10-20 21:24:02" asserts="0" />
+  <test-case fullname="BilleteraTests.Set_deja_la_plata_en_un_monto_fijo" resultado="Passed" duracion="0.000" inicio="2026-10-20 21:24:02" asserts="0" />
+  <test-case fullname="BilleteraTests.Tope_de_9000" resultado="Passed" duracion="0.000" inicio="2026-10-20 21:24:02" asserts="0" />
+  <test-case fullname="EscenasTests.Campo_de_practica_armas_gratis_y_jugador_invulnerable" resultado="Passed" duracion="45.684" inicio="2026-10-20 21:24:02" asserts="0" />
+  <test-case fullname="EscenasTests.La_escena_abre_sin_errores(&quot;MenuPrincipal&quot;)" resultado="Passed" duracion="5.328" inicio="2026-10-20 21:24:48" asserts="0" />
+  <test-case fullname="EscenasTests.La_escena_abre_sin_errores(&quot;Mapa_modo_tactico&quot;)" resultado="Passed" duracion="48.919" inicio="2026-10-20 21:24:53" asserts="0" />
+  <test-case fullname="EscenasTests.La_escena_abre_sin_errores(&quot;Mapa_deathmatch&quot;)" resultado="Passed" duracion="62.053" inicio="2026-10-20 21:25:42" asserts="0" />
+  <test-case fullname="ModelosTests.Las_zonas_de_danio_siguen_al_modelo(&quot;Alfa&quot;)" resultado="Passed" duracion="2.673" inicio="2026-10-20 21:26:44" asserts="0" />
+  <test-case fullname="ModelosTests.Las_zonas_de_danio_siguen_al_modelo(&quot;Bravo&quot;)" resultado="Passed" duracion="2.951" inicio="2026-10-20 21:26:47" asserts="0" />
+  <test-case fullname="ModelosTests.Las_zonas_de_danio_siguen_al_modelo(&quot;Charlie&quot;)" resultado="Passed" duracion="0.104" inicio="2026-10-20 21:26:50" asserts="0" />
+  <test-case fullname="ModelosTests.Las_zonas_de_danio_siguen_al_modelo(&quot;Delta&quot;)" resultado="Passed" duracion="0.335" inicio="2026-10-20 21:26:50" asserts="0" />
+  <test-case fullname="NubeTests.Opciones_y_monedas_no_se_suben" resultado="Passed" duracion="0.096" inicio="2026-10-20 21:26:52" asserts="0" />
+  <test-case fullname="TiendaTests.Al_morir_pierde_el_equipo_y_conserva_la_plata" resultado="Passed" duracion="0.425" inicio="2026-10-20 21:26:52" asserts="0" />
+  <test-case fullname="TiendaTests.Cambiar_de_arma_reembolsa_la_anterior" resultado="Passed" duracion="0.013" inicio="2026-10-20 21:26:53" asserts="0" />
+  <test-case fullname="TiendaTests.Compra_un_arma_si_alcanza_la_plata" resultado="Passed" duracion="0.020" inicio="2026-10-20 21:26:53" asserts="0" />
+  <test-case fullname="TiendaTests.Deshacer_devuelve_todo" resultado="Passed" duracion="0.012" inicio="2026-10-20 21:26:53" asserts="0" />
+  <test-case fullname="TiendaTests.El_escudo_se_pone_y_no_se_compra_si_ya_esta_lleno" resultado="Passed" duracion="0.021" inicio="2026-10-20 21:26:53" asserts="0" />
+  <test-case fullname="TiendaTests.En_deathmatch_las_armas_son_gratis_y_no_hay_escudos" resultado="Passed" duracion="0.033" inicio="2026-10-20 21:26:53" asserts="0" />
+  <test-case fullname="TiendaTests.Granadas_respetan_el_maximo" resultado="Passed" duracion="0.053" inicio="2026-10-20 21:26:53" asserts="0" />
+  <test-case fullname="TiendaTests.No_se_compra_dos_veces_la_misma_arma" resultado="Passed" duracion="0.041" inicio="2026-10-20 21:26:53" asserts="0" />
+  <test-case fullname="TiendaTests.Sin_plata_no_compra_y_no_pierde_nada" resultado="Passed" duracion="0.315" inicio="2026-10-20 21:26:53" asserts="0" />
+  <test-case fullname="TiendaTests.Terminada_la_fase_de_compra_no_se_compra" resultado="Passed" duracion="0.113" inicio="2026-10-20 21:26:53" asserts="0" />
+  <test-case fullname="TiendaTests.Vender_devuelve_la_plata" resultado="Passed" duracion="0.136" inicio="2026-10-20 21:26:53" asserts="0" />
+  <test-case fullname="VidaTests.Arranca_con_100_de_vida_y_sin_escudo" resultado="Passed" duracion="0.013" inicio="2026-10-20 21:26:54" asserts="0" />
+  <test-case fullname="VidaTests.El_danio_baja_la_vida" resultado="Passed" duracion="0.021" inicio="2026-10-20 21:26:54" asserts="0" />
+  <test-case fullname="VidaTests.El_escudo_absorbe_primero" resultado="Passed" duracion="0.014" inicio="2026-10-20 21:26:54" asserts="0" />
+  <test-case fullname="VidaTests.Invulnerable_no_recibe_danio" resultado="Passed" duracion="0.013" inicio="2026-10-20 21:26:54" asserts="0" />
+  <test-case fullname="VidaTests.La_vida_no_baja_de_cero_y_avisa_la_muerte" resultado="Passed" duracion="0.022" inicio="2026-10-20 21:26:54" asserts="0" />
+  <test-case fullname="VidaTests.Revive_deja_vida_completa_y_sin_escudo" resultado="Passed" duracion="0.013" inicio="2026-10-20 21:26:54" asserts="0" />
+  <test-case fullname="VidaTests.WouldDie_avisa_si_el_golpe_mata" resultado="Passed" duracion="0.018" inicio="2026-10-20 21:26:54" asserts="0" />
+</test-run>
