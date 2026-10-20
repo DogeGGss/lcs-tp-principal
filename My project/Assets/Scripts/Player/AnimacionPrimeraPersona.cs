@@ -4,13 +4,14 @@ using UnityEngine;
 // Animación del arma en primera persona, hecha por código (sin Animator): el arma y los brazos (la "foto" de
 // BrazosEnCamara) se mueven juntos, como una sola pieza, alrededor de la mano que agarra el arma.
 // - Disparo: un golpe hacia atrás y arriba que vuelve con un resorte.
-// - Recarga: el arma baja y se inclina, queda abajo mientras se cambia el cargador y vuelve.
+// - Recarga: el arma baja y se inclina, queda abajo mientras se cambia el cargador y vuelve. La Trochita, en cambio,
+//   sube de costado mostrando el tambor, que gira y va frenando, como un arma que se enfría.
 // - Sacar el arma: sube desde abajo de la pantalla.
 // - Quieto, caminar, correr y saltar: respira apenas quieto, se balancea al caminar (más al correr) y baja un poco al
 //   despegar y al caer de un salto.
 // - Mirar: un leve retraso del arma al girar la cámara.
-// - Detalles: La Porteña mueve la corredera y cambia el cargador (PiezasDeLaPistola); La Trochita gira el tambor y
-//   cambia el cargador (PiezasDeLaTrochita, US 244).
+// - Detalles: La Porteña mueve la corredera y cambia el cargador (PiezasDeLaPistola); La Trochita gira el tambor, con
+//   una rayita por bala (PiezasDeLaTrochita, US 244).
 // Por ahora con las dos pistolas: La Porteña y La Trochita (la secundaria de categoría Pistolas con ArmaDeFuego).
 // Cada una tiene su fuerza de retroceso y su tiempo para sacarla. Se apaga con "Activa" en el Inspector, para comparar.
 // El movimiento se suma al final del cuadro (después de BrazosEnCamara) y se saca al empezar el siguiente
@@ -47,6 +48,18 @@ public class AnimacionPrimeraPersona : MonoBehaviour
     public float recargaAbajo = 0.11f;
     public float recargaInclinacion = 28f;
     public float recargaGiro = 14f;
+
+    [Header("Recarga (La Trochita): sube de costado mostrando el tambor")]
+    [Tooltip("Cuánto sube el arma (metros).")]
+    public float trochitaRecargaArriba = 0.05f;
+    [Tooltip("Cuánto se corre hacia el centro de la pantalla (metros).")]
+    public float trochitaRecargaAdentro = 0.035f;
+    [Tooltip("Cuánto gira la punta hacia el centro, mostrando el costado con el tambor (grados).")]
+    public float trochitaRecargaCostado = 35f;
+    [Tooltip("Cuánto levanta la punta (grados).")]
+    public float trochitaRecargaPunta = 10f;
+    [Tooltip("Cuánto se inclina hacia la cámara (grados).")]
+    public float trochitaRecargaInclinacion = 15f;
 
     [Header("Sacar el arma")]
     [Tooltip("La Porteña. Las demás tardan lo que dice su ficha (tiempo para estar lista).")]
@@ -249,8 +262,19 @@ public class AnimacionPrimeraPersona : MonoBehaviour
         mover += new Vector3(0f, -golpePos.x * 0.002f, -golpePos.z);
 
         // Recarga: baja (0 a 0,2), queda abajo y vuelve (0,8 a 1); un empujón al meter el cargador (0,6).
+        // La Trochita no: sube de costado mostrando el tambor, que se enfría girando (US 244).
         float recarga = municion != null ? municion.ReloadProgress : -1f;
-        if (recarga >= 0f)
+        if (recarga >= 0f && EsTrochita(arma))
+        {
+            float arriba = Mathf.SmoothStep(0f, 1f, Mathf.InverseLerp(0f, 0.12f, recarga)) *
+                           (1f - Mathf.SmoothStep(0f, 1f, Mathf.InverseLerp(0.85f, 1f, recarga)));
+            // Tiembla mientras el tambor gira rápido y se va calmando a medida que frena.
+            float temblor = arriba * Mathf.Clamp01(1f - Mathf.InverseLerp(0.12f, 0.85f, recarga)) * 0.6f;
+            mover += new Vector3(-trochitaRecargaAdentro, trochitaRecargaArriba, 0f) * arriba;
+            girar += new Vector3(-trochitaRecargaPunta, -trochitaRecargaCostado, trochitaRecargaInclinacion) * arriba +
+                     new Vector3(Random.Range(-1f, 1f), Random.Range(-1f, 1f), 0f) * temblor;
+        }
+        else if (recarga >= 0f)
         {
             float bajada = Mathf.SmoothStep(0f, 1f, Mathf.InverseLerp(0f, 0.2f, recarga)) *
                            (1f - Mathf.SmoothStep(0f, 1f, Mathf.InverseLerp(0.8f, 1f, recarga)));

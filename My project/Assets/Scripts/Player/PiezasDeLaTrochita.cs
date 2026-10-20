@@ -11,9 +11,10 @@ public interface IPiezasDelArma
 }
 
 // Los detalles de La Trochita en primera persona (US 244): el tambor de arriba gira un sexto de vuelta con cada tiro
-// (el arma tiene 6 balas) y da una vuelta entera al terminar de recargar, y el cargador cae de la empuñadura y entra
-// uno nuevo al recargar. Como el tambor es liso, tiene 6 rayitas en cada cara que apuntan al centro, una por bala: naranjas las cargadas y
-// oscuras las vacías; así se ve el giro y cuántas balas quedan. Lo maneja AnimacionPrimeraPersona.
+// (el arma tiene 6 balas). Como el tambor es liso, tiene 6 rayitas en cada cara que apuntan al centro, una por bala:
+// naranjas las cargadas y oscuras las vacías; así se ve el giro y cuántas balas quedan. La recarga es como el
+// enfriamiento de un arma que se recalienta: AnimacionPrimeraPersona levanta el arma de costado mostrando el tambor, que
+// gira rápido y va frenando (3 vueltas) mientras las rayitas se prenden de a una. Lo maneja AnimacionPrimeraPersona.
 // El modelo (Pistol_1.fbx) es una sola malla hecha de piezas sueltas: el tambor se separa en otra malla para poder
 // girarlo. Las medidas de abajo están en las coordenadas del modelo (x hacia la boca, z hacia arriba, y hacia la
 // izquierda); Unity da vuelta la x al importarlo, así que en la malla un punto (x, y, z) del modelo está en
@@ -21,16 +22,12 @@ public interface IPiezasDelArma
 public class PiezasDeLaTrochita : IPiezasDelArma
 {
     private const float LargoModelo = 0.934f; // de punta a punta en x (de -0.119 a 0.815)
-    private static readonly Vector3 Boca = new Vector3(0.815f, 0f, 0.33f);
-    private static readonly Vector3 Atras = new Vector3(-0.119f, 0f, 0.33f);
-    private static readonly Vector3 PieDelCargador = new Vector3(-0.045f, 0f, -0.125f); // abajo de la empuñadura
-    private static readonly Vector3 EjeDelCargador = new Vector3(-0.57f, 0f, -0.82f);  // a lo largo de la empuñadura, hacia abajo
-    private static readonly Vector3 TamanoCargador = new Vector3(0.06f, 0.2f, 0.07f);  // ancho, largo, grosor
     private const float GiroPorTiro = 60f;      // grados: 6 balas por vuelta
     private const float TiempoDeGiro = 0.12f;   // s que tarda el tambor en girar después de un tiro
+    private const int VueltasDeRecarga = 3;     // vueltas enteras: las rayitas quedan en el mismo lugar
+    private const float EmpiezaGiro = 0.12f, TerminaGiro = 0.85f; // parte de la recarga en que gira el tambor
 
     private readonly Transform arma;     // la que tiene la malla
-    private readonly Transform camara;
     private readonly MeshRenderer render;
     private float escala;                // de las medidas del modelo a la malla
     private bool armada, sinPiezas;
@@ -38,7 +35,8 @@ public class PiezasDeLaTrochita : IPiezasDelArma
     private Transform tambor;
     private Vector3 ejeDelTambor = Vector3.up;
     private float anguloDesde, anguloHasta, giroDesde = -10f;
-    private bool vueltaDeRecarga;
+    private float anguloAlRecargar;
+    private bool recargando;
 
     // Marcas de las balas en las dos caras del tambor: una por bala (6), naranjas las cargadas y oscuras las vacías.
     // La de arriba es la que dispara: con cada tiro se apaga y el tambor la lleva hacia atrás, así se ve que gira.
@@ -48,17 +46,8 @@ public class PiezasDeLaTrochita : IPiezasDelArma
     private int balasAlRecargar;
     private static Material cargada, vacia;
 
-    private Transform cargador;
-    private MeshRenderer cargadorVista;
-    private bool soltado;
-    private float recargaAnterior = -1f;
-
-    private struct Suelta { public Transform t; public Vector3 velocidad, eje; public float giro, hasta; }
-    private readonly List<Suelta> sueltas = new List<Suelta>();
-
     public PiezasDeLaTrochita(GameObject trochita, Transform camara)
     {
-        this.camara = camara;
         MeshFilter filtro = trochita.GetComponent<MeshFilter>();
         if (filtro == null) filtro = trochita.GetComponentInChildren<MeshFilter>(true);
         arma = filtro != null ? filtro.transform : trochita.transform;
@@ -69,14 +58,9 @@ public class PiezasDeLaTrochita : IPiezasDelArma
     private int Raiz(int a) { while (padre[a] != a) { padre[a] = padre[padre[a]]; a = padre[a]; } return a; }
     private void Unir(int a, int b) { a = Raiz(a); b = Raiz(b); if (a != b) padre[a] = b; }
 
-    private Vector3 Punto(Vector3 p) => new Vector3(-p.x, p.y, p.z) * escala;
-    private static Vector3 Direccion(Vector3 d) => new Vector3(-d.x, d.y, d.z).normalized;
     private int Capa => arma.gameObject.layer;
 
-    private float Largo => (camara.InverseTransformPoint(arma.TransformPoint(Punto(Boca))) -
-                            camara.InverseTransformPoint(arma.TransformPoint(Punto(Atras)))).magnitude;
-
-    // Separa el tambor de la malla (una sola vez). Sin Read/Write en el modelo, solo se ve el cargador.
+    // Separa el tambor de la malla (una sola vez). Sin Read/Write en el modelo, el arma se anima sin el tambor.
     private bool Armar()
     {
         if (armada) return !sinPiezas;
@@ -280,142 +264,50 @@ public class PiezasDeLaTrochita : IPiezasDelArma
     /// <summary>Cada cuadro, con La Trochita en la mano. "recarga" es el avance de la recarga (de 0 a 1), o -1.</summary>
     public void Actualizar(float recarga, int balas)
     {
-        if (Armar() && tambor != null)
-        {
-            // Al final de la recarga (0,65), el tambor da una vuelta entera: el arma queda armada.
-            if (recarga >= 0.65f && !vueltaDeRecarga) { vueltaDeRecarga = true; balasAlRecargar = balas; Girar(360f, 0.3f); }
-            if (recarga < 0f) vueltaDeRecarga = false;
-            tambor.localRotation = Quaternion.AngleAxis(Angulo(), ejeDelTambor);
+        if (!Armar() || tambor == null) return;
 
-            // Mientras da la vuelta de la recarga, las marcas se van prendiendo de a una; si no, las balas que tiene.
-            int encendidas = balas;
-            if (vueltaDeRecarga && recarga >= 0f)
+        int encendidas = balas;
+        if (recarga >= 0f)
+        {
+            // Recarga: el tambor gira rápido y va frenando, como enfriándose; las rayitas se prenden de a una.
+            if (!recargando)
             {
-                float vuelta = Mathf.Clamp01((Time.time - giroDesde) / duracionGiro);
-                encendidas = Mathf.Max(balasAlRecargar, Mathf.CeilToInt(vuelta * Balas));
+                recargando = true;
+                anguloAlRecargar = Angulo();
+                balasAlRecargar = balas;
             }
-            Marcas(Mathf.Clamp(encendidas, 0, Balas));
-            if (tambor.gameObject.layer != Capa) foreach (Transform t in tambor.GetComponentsInChildren<Transform>(true)) t.gameObject.layer = Capa;
+            float avance = Mathf.InverseLerp(EmpiezaGiro, TerminaGiro, recarga);
+            float frenando = 1f - (1f - avance) * (1f - avance) * (1f - avance); // rápido al principio, lento al final
+            float angulo = anguloAlRecargar + 360f * VueltasDeRecarga * frenando;
+            anguloDesde = anguloHasta = anguloAlRecargar;
+            tambor.localRotation = Quaternion.AngleAxis(angulo, ejeDelTambor);
+            encendidas = Mathf.Max(balasAlRecargar, Mathf.FloorToInt(avance * Balas + 0.0001f));
         }
-        Cargador(recarga);
+        else
+        {
+            if (recargando) TerminarRecarga();
+            tambor.localRotation = Quaternion.AngleAxis(Angulo(), ejeDelTambor);
+        }
+        Marcas(Mathf.Clamp(encendidas, 0, Balas));
+        if (tambor.gameObject.layer != Capa) foreach (Transform t in tambor.GetComponentsInChildren<Transform>(true)) t.gameObject.layer = Capa;
     }
 
-    /// <summary>Sin La Trochita en la mano: el tambor termina su giro y el cargador vuelve adentro.</summary>
+    // Terminó (o se cortó) la recarga: el tambor vuelve a donde estaba (dio vueltas enteras, las rayitas no cambian).
+    private void TerminarRecarga()
+    {
+        recargando = false;
+        anguloDesde = anguloHasta = anguloAlRecargar;
+        giroDesde = -10f;
+    }
+
+    /// <summary>Sin La Trochita en la mano: el tambor termina su giro.</summary>
     public void Quieta()
     {
+        if (recargando) TerminarRecarga();
         anguloDesde = anguloHasta;
         if (tambor != null) tambor.localRotation = Quaternion.AngleAxis(anguloHasta, ejeDelTambor);
-        if (cargadorVista != null) cargadorVista.enabled = false;
-        recargaAnterior = -1f;
-        soltado = false;
-        vueltaDeRecarga = false;
     }
 
-    /// <summary>El cargador vacío que se soltó: cae y se borra. Cada cuadro, haya o no arma en la mano.</summary>
-    public void ActualizarSueltas(float dt)
-    {
-        if (sueltas.Count == 0) return;
-        float largo = escala > 0f ? Largo : 0.3f;
-        for (int i = sueltas.Count - 1; i >= 0; i--)
-        {
-            Suelta s = sueltas[i];
-            if (s.t == null || Time.time >= s.hasta)
-            {
-                if (s.t != null) Object.Destroy(s.t.gameObject);
-                sueltas.RemoveAt(i);
-                continue;
-            }
-            s.velocidad += camara.InverseTransformDirection(Vector3.down) * (14f * largo * dt);
-            s.t.localPosition += s.velocidad * dt;
-            s.t.Rotate(s.eje, s.giro * dt, Space.Self);
-            sueltas[i] = s;
-        }
-    }
-
-    // ---------- Cargador ----------
-
-    // Sale (de 0,12 a 0,30 de la recarga), se suelta y cae; entra uno nuevo (de 0,40 a 0,60, cuando el arma da el
-    // empujón). Escondido adentro de la empuñadura no se ve.
-    private void Cargador(float recarga)
-    {
-        if (recarga < 0f || recarga < recargaAnterior) soltado = false; // terminó, o empezó otra
-        recargaAnterior = recarga;
-        if (recarga < 0f || escala <= 0f)
-        {
-            if (cargadorVista != null) cargadorVista.enabled = false;
-            if (escala <= 0f) EscalaSinPiezas();
-            return;
-        }
-        if (cargador == null && !CrearCargador()) return;
-
-        float largoCargador = TamanoCargador.y * escala;
-        float fuera = 0f;
-        if (recarga >= 0.12f && recarga < 0.30f) fuera = Mathf.SmoothStep(0f, 1f, (recarga - 0.12f) / 0.18f);
-        else if (recarga >= 0.30f && !soltado)
-        {
-            soltado = true;
-            UbicarCargador(largoCargador);
-            Soltar();
-        }
-        if (recarga >= 0.40f && recarga < 0.60f) fuera = 1f - Mathf.SmoothStep(0f, 1f, (recarga - 0.40f) / 0.20f);
-
-        UbicarCargador(largoCargador * fuera);
-        cargadorVista.enabled = fuera > 0.02f;
-        if (cargador.gameObject.layer != Capa) cargador.gameObject.layer = Capa;
-    }
-
-    // Sin poder separar el tambor igual hace falta la escala para el cargador.
-    private void EscalaSinPiezas()
-    {
-        MeshFilter filtro = arma.GetComponent<MeshFilter>();
-        if (filtro != null && filtro.sharedMesh != null) escala = filtro.sharedMesh.bounds.size.x / LargoModelo;
-    }
-
-    private bool CrearCargador()
-    {
-        if (render == null) return false;
-        GameObject go = GameObject.CreatePrimitive(PrimitiveType.Cube);
-        Object.Destroy(go.GetComponent<Collider>());
-        go.name = "Cargador";
-        go.layer = Capa;
-        cargadorVista = go.GetComponent<MeshRenderer>();
-        Material oscuro = render.sharedMaterial;
-        foreach (Material m in render.sharedMaterials)
-            if (m != null && (m.name.ToLowerInvariant().Contains("black") || m.name.ToLowerInvariant().Contains("dark"))) { oscuro = m; break; }
-        cargadorVista.sharedMaterial = oscuro;
-        cargadorVista.enabled = false;
-        cargador = go.transform;
-        cargador.SetParent(arma, false);
-        Vector3 abajo = Direccion(EjeDelCargador);
-        cargador.localRotation = Quaternion.LookRotation(Vector3.up, -abajo); // largo a lo largo de la empuñadura
-        cargador.localScale = TamanoCargador * escala;
-        return true;
-    }
-
-    // "fuera": cuánto asoma por abajo de la empuñadura (0 = adentro).
-    private void UbicarCargador(float fuera)
-    {
-        Vector3 abajo = Direccion(EjeDelCargador);
-        cargador.localPosition = Punto(PieDelCargador) - abajo * (TamanoCargador.y * escala * 0.5f) + abajo * fuera;
-    }
-
-    private void Soltar()
-    {
-        GameObject vacio = Object.Instantiate(cargador.gameObject, cargador.position, cargador.rotation);
-        vacio.name = "Cargador vacío";
-        Transform t = vacio.transform;
-        t.localScale = cargador.lossyScale;
-        t.SetParent(camara, true);
-        vacio.GetComponent<MeshRenderer>().enabled = true;
-        float largo = Largo;
-        Vector3 caida = camara.InverseTransformDirection(arma.TransformDirection(Direccion(EjeDelCargador)));
-        sueltas.Add(new Suelta
-        {
-            t = t,
-            velocidad = caida * (1.2f * largo),
-            eje = Vector3.right,
-            giro = Random.Range(-120f, 120f),
-            hasta = Time.time + 0.7f,
-        });
-    }
+    /// <summary>La Trochita no suelta nada (no tiene cargador que se caiga).</summary>
+    public void ActualizarSueltas(float dt) { }
 }
