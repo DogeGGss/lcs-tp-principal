@@ -120,6 +120,8 @@ public class PiezasDeLaTrochita : IPiezasDelArma
         resto.name = malla.name + " (sin tambor)";
         soloTambor.name = malla.name + " (tambor)";
         int enTambor = 0;
+        bool hayCaja = false;
+        Bounds caja = default;
         var queda = new List<int>();
         var gira = new List<int>();
         for (int s = 0; s < malla.subMeshCount; s++)
@@ -129,8 +131,16 @@ public class PiezasDeLaTrochita : IPiezasDelArma
             gira.Clear();
             for (int i = 0; i < t.Length; i += 3)
             {
-                List<int> lista = EsTambor(t[i]) ? gira : queda;
+                bool delTambor = EsTambor(t[i]);
+                List<int> lista = delTambor ? gira : queda;
                 lista.Add(t[i]); lista.Add(t[i + 1]); lista.Add(t[i + 2]);
+                // Caja del tambor, solo con sus vértices (la malla copiada guarda todos los del arma).
+                if (delTambor)
+                    for (int k = 0; k < 3; k++)
+                    {
+                        if (!hayCaja) { caja = new Bounds(v[t[i + k]], Vector3.zero); hayCaja = true; }
+                        else caja.Encapsulate(v[t[i + k]]);
+                    }
             }
             enTambor += gira.Count;
             resto.SetTriangles(queda, s);
@@ -149,7 +159,6 @@ public class PiezasDeLaTrochita : IPiezasDelArma
         filtro.sharedMesh = resto;
 
         // El tambor gira alrededor de su centro, sobre su lado más corto (es una rueda).
-        Bounds caja = soloTambor.bounds;
         Vector3 tam = caja.size;
         ejeDelTambor = tam.x <= tam.y && tam.x <= tam.z ? Vector3.right : tam.y <= tam.z ? Vector3.up : Vector3.forward;
 
