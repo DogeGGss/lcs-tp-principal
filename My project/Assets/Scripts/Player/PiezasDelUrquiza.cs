@@ -6,11 +6,13 @@ using UnityEngine;
 // El cargador ya es una pieza aparte en el prefab (el hijo "Cargador", con la malla Magazine_AR_2 del AR_3.fbx), así
 // que se mueve entero, sin separar mallas. Las medidas están en las coordenadas del modelo (x hacia la boca, z hacia
 // arriba); Unity da vuelta la x al importarlo: en la malla un punto (x, y, z) del modelo está en (-x, y, z) * escala.
+// El Belgrano Sur (US 252) está armado igual (el hijo "Cargador", con la malla Magazine del AR_4.fbx): usa esta misma
+// clase con sus medidas (PiezasDelUrquiza.BelgranoSur).
 public class PiezasDelUrquiza : IPiezasDelArma
 {
-    private const float LargoModelo = 1.549f;  // de punta a punta en x (de -0.721 a 0.828)
-    private const float Recorrido = 0.42f;     // cuánto baja el cargador para salir entero (mide 0,37)
-    private static readonly Vector3 EjeDelCargador = new Vector3(-0.033f, 0f, -1f); // hacia abajo, casi derecho
+    private readonly float LargoModelo = 1.549f;  // de punta a punta en x (de -0.721 a 0.828)
+    private readonly float Recorrido = 0.42f;     // cuánto baja el cargador para salir entero (mide 0,37)
+    private readonly Vector3 EjeDelCargador = new Vector3(-0.033f, 0f, -1f); // hacia abajo, casi derecho
 
     private readonly Transform arma;
     private readonly Transform camara;
@@ -23,6 +25,18 @@ public class PiezasDelUrquiza : IPiezasDelArma
 
     private struct Suelta { public Transform t; public Vector3 velocidad, eje; public float giro, hasta; }
     private readonly List<Suelta> sueltas = new List<Suelta>();
+
+    /// <summary>El Belgrano Sur: AR_4 mide 1,792 de punta a punta (de -0.897 a 0.895) y el cargador 0,31, casi derecho.</summary>
+    public static PiezasDelUrquiza BelgranoSur(GameObject arma, Transform camara) =>
+        new PiezasDelUrquiza(arma, camara, 1.792f, 0.36f, new Vector3(-0.039f, 0f, -1f));
+
+    public PiezasDelUrquiza(GameObject arma, Transform camara, float largoModelo, float recorrido, Vector3 ejeDelCargador)
+        : this(arma, camara)
+    {
+        LargoModelo = largoModelo;
+        Recorrido = recorrido;
+        EjeDelCargador = ejeDelCargador;
+    }
 
     public PiezasDelUrquiza(GameObject urquiza, Transform camara)
     {
