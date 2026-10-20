@@ -16,7 +16,8 @@ using UnityEngine;
 // Urquiza (la principal de categoría Subfusiles, US 246): su cargador cae al recargar (PiezasDelUrquiza) y al final
 // tira de la palanca de carga. La Roca (escopeta, US 248): bombea después de cada tiro (PiezasDeLaRoca, con la mano
 // izquierda) y carga de a un cartucho con el arma inclinada. El Mitre (fusil, US 250): automático como el Urquiza; al
-// recargar la mano izquierda saca el cargador, lo suelta, trae otro y al final tira de la palanca (PiezasDelMitre). Y el cuchillo (US 256): quieto, caminando, al sacarlo y al mirar como las demás, y el
+// recargar la mano izquierda saca el cargador, lo suelta, trae otro y al final tira de la palanca (PiezasDelMitre). El
+// Belgrano Sur (fusil de ráfaga, US 252): un golpe por bala de la ráfaga y la recarga del Urquiza, con su cargador. Y el cuchillo (US 256): quieto, caminando, al sacarlo y al mirar como las demás, y el
 // corte de costado al atacar, que mueve solo el cuchillo y el brazo derecho.
 // Cada una tiene su fuerza de retroceso y su tiempo para sacarla. Se apaga con "Activa" en el Inspector, para comparar.
 // El movimiento se suma al final del cuadro (después de BrazosEnCamara) y se saca al empezar el siguiente
@@ -66,6 +67,15 @@ public class AnimacionPrimeraPersona : MonoBehaviour
     public float mitreResorte = 300f;
     [Tooltip("Al final de la recarga tira de la palanca de carga: el arma da un tirón hacia atrás (metros).")]
     public float mitrePalanca = 0.03f;
+
+    [Header("Disparo (Belgrano Sur, US 252): ráfagas de 3, un golpe por bala")]
+    public float belgranoAtras = 0.02f;
+    public float belgranoArriba = 3.2f;
+    public float belgranoCostado = 0.9f;
+    [Tooltip("Qué tan rápido vuelve a su lugar después de la ráfaga (más alto, más rápido).")]
+    public float belgranoResorte = 300f;
+    [Tooltip("Al final de la recarga tira de la palanca de carga: el arma da un tirón hacia atrás (metros).")]
+    public float belgranoPalanca = 0.03f;
 
     [Header("Roca (escopeta, US 248)")]
     public float rocaAtras = 0.075f;
@@ -196,6 +206,8 @@ public class AnimacionPrimeraPersona : MonoBehaviour
     private static bool EsTrochita(GameObject arma) => EsDe(arma, ShopCategory.Pistols);
     private static bool EsUrquiza(GameObject arma) => EsDe(arma, ShopCategory.SMGs);
     private static bool EsRoca(GameObject arma) => EsDe(arma, ShopCategory.Shotguns);
+    // Con ArmaDeFuego y categoría Fusiles: el Belgrano Sur (el Mitre es Fusiles pero tiene su propio script).
+    private static bool EsBelgrano(GameObject arma) => EsDe(arma, ShopCategory.Rifles);
     // El Mitre no es un ArmaDeFuego (tiene su propio script, Mitre): es el del WeaponSwitcher.
     private bool EsMitre(GameObject arma) => switcher != null && arma != null && arma == switcher.mitreObj;
 
@@ -206,7 +218,7 @@ public class AnimacionPrimeraPersona : MonoBehaviour
         GameObject arma = switcher.HeldSecondary;
         if (EsPortena(arma) || EsTrochita(arma)) return arma;
         arma = switcher.HeldPrimary;
-        if (EsUrquiza(arma) || EsRoca(arma) || EsMitre(arma)) return arma;
+        if (EsUrquiza(arma) || EsRoca(arma) || EsMitre(arma) || EsBelgrano(arma)) return arma;
         if (arma != null) return null;
         // US 256: el cuchillo.
         GameObject cuchillo = switcher.meleeScript != null ? switcher.meleeScript.CurrentViewModel : null;
@@ -260,6 +272,7 @@ public class AnimacionPrimeraPersona : MonoBehaviour
               : EsUrquiza(arma) ? new PiezasDelUrquiza(arma, transform)
               : EsRoca(arma) ? new PiezasDeLaRoca(arma, transform)
               : EsMitre(arma) ? new PiezasDelMitre(arma, transform)
+              : EsBelgrano(arma) ? PiezasDelUrquiza.BelgranoSur(arma, transform)
               : (IPiezasDelArma)new PiezasDeLaPistola(arma, transform);
             piezas[arma] = p;
         }
@@ -279,9 +292,13 @@ public class AnimacionPrimeraPersona : MonoBehaviour
         GameObject arma = Animable();
         if (arma == null) return;
         bool trochita = EsTrochita(arma), urquiza = EsUrquiza(arma), roca = EsRoca(arma), mitre = EsMitre(arma);
-        float arriba = trochita ? trochitaArriba : urquiza ? urquizaArriba : roca ? rocaArriba : mitre ? mitreArriba : retrocesoArriba;
-        float costado = trochita ? trochitaCostado : urquiza ? urquizaCostado : roca ? rocaCostado : mitre ? mitreCostado : retrocesoCostado;
-        float atras = trochita ? trochitaAtras : urquiza ? urquizaAtras : roca ? rocaAtras : mitre ? mitreAtras : retrocesoAtras;
+        bool belgrano = EsBelgrano(arma);
+        float arriba = trochita ? trochitaArriba : urquiza ? urquizaArriba : roca ? rocaArriba : mitre ? mitreArriba
+                     : belgrano ? belgranoArriba : retrocesoArriba;
+        float costado = trochita ? trochitaCostado : urquiza ? urquizaCostado : roca ? rocaCostado : mitre ? mitreCostado
+                      : belgrano ? belgranoCostado : retrocesoCostado;
+        float atras = trochita ? trochitaAtras : urquiza ? urquizaAtras : roca ? rocaAtras : mitre ? mitreAtras
+                    : belgrano ? belgranoAtras : retrocesoAtras;
         golpeVel += new Vector3(-arriba, Random.Range(-costado, costado), atras) * 22f;
         if (detalles)
         {
@@ -312,7 +329,8 @@ public class AnimacionPrimeraPersona : MonoBehaviour
         retraso = Vector2.Lerp(retraso, Vector2.zero, 1f - Mathf.Exp(-10f * dt));
 
         // Resorte del disparo (amortiguado): vuelve a cero.
-        float k = arma != null && EsUrquiza(arma) ? urquizaResorte : arma != null && EsMitre(arma) ? mitreResorte : resorte;
+        float k = arma == null ? resorte : EsUrquiza(arma) ? urquizaResorte : EsMitre(arma) ? mitreResorte
+                : EsBelgrano(arma) ? belgranoResorte : resorte;
         float w = Mathf.Sqrt(k);
         golpeVel += (-k * golpePos - 2f * amortiguacion * w * golpeVel) * dt;
         golpePos += golpeVel * dt;
@@ -405,11 +423,12 @@ public class AnimacionPrimeraPersona : MonoBehaviour
             float empujon = Mathf.Exp(-Mathf.Pow((recarga - 0.6f) / 0.05f, 2f));
             mover += new Vector3(0f, -recargaAbajo * bajada + 0.015f * empujon, 0f);
             girar += new Vector3(recargaInclinacion * bajada * 0.4f, recargaGiro * bajada, recargaInclinacion * bajada);
-            // Urquiza (US 246): al final tira de la palanca de carga, un tirón hacia atrás y un poco de giro.
-            if (EsUrquiza(arma))
+            // Urquiza (US 246) y Belgrano Sur (US 252): al final tira de la palanca de carga, un tirón hacia atrás y un
+            // poco de giro.
+            if (EsUrquiza(arma) || EsBelgrano(arma))
             {
                 float palanca = Mathf.Exp(-Mathf.Pow((recarga - 0.78f) / 0.04f, 2f));
-                mover += new Vector3(0f, 0f, -urquizaPalanca * palanca);
+                mover += new Vector3(0f, 0f, -(EsBelgrano(arma) ? belgranoPalanca : urquizaPalanca) * palanca);
                 girar += new Vector3(-3f * palanca, 0f, -6f * palanca);
             }
             // Mitre (US 250): igual, cuando PiezasDelMitre corre la palanca de carga.
