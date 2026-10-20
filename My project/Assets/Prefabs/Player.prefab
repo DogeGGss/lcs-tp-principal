@@ -210,8 +210,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 675083821748740151}
   serializedVersion: 2
-  m_LocalRotation: {x: -0.4828699, y: 0.4213301, z: 0.57843125, w: 0.5047127}
-  m_LocalPosition: {x: 0.00114, y: -0.00067, z: -0.00001}
+  m_LocalRotation: {x: -0.41137296, y: 0.49715492, z: 0.5025099, w: 0.5754069}
+  m_LocalPosition: {x: 0.00284, y: -0.00145, z: -0.00056}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -718,8 +718,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1528051168243428667}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.000000014901158, y: -0.00000019371505, z: 0.9882002, w: 0.15316767}
-  m_LocalPosition: {x: -0.003294, y: 0.001327, z: -0.00045}
+  m_LocalRotation: {x: -0.0050192173, y: 0.0007778107, z: 0.98818755, w: 0.15316568}
+  m_LocalPosition: {x: 0.00096, y: 0.0012, z: -0.00239}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -1275,7 +1275,7 @@ Transform:
   m_GameObject: {fileID: 5910685345772132526}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0.0000002533197, z: 0.9882002, w: 0.15316765}
-  m_LocalPosition: {x: 0.0003, y: 0.0012, z: -0.0009}
+  m_LocalPosition: {x: 0.00069, y: 0.00108, z: -0.00283}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -1374,8 +1374,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6183525251346454676}
   serializedVersion: 2
-  m_LocalRotation: {x: -0.48286992, y: 0.4213301, z: 0.57843125, w: 0.50471276}
-  m_LocalPosition: {x: 0.00134, y: -0.00044, z: -0.00012}
+  m_LocalRotation: {x: -0.51118356, y: 0.38648906, z: 0.5416755, w: 0.5439717}
+  m_LocalPosition: {x: 0.00178, y: -0.00036, z: -0.00018}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -2558,15 +2558,15 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: -8679921383154817045, guid: b6850ddfbb71bac42adc4da0872aaad2, type: 3}
       propertyPath: m_LocalScale.x
-      value: 50
+      value: 42.42464
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: b6850ddfbb71bac42adc4da0872aaad2, type: 3}
       propertyPath: m_LocalScale.y
-      value: 50
+      value: 42.42464
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: b6850ddfbb71bac42adc4da0872aaad2, type: 3}
       propertyPath: m_LocalScale.z
-      value: 50
+      value: 42.42464
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: b6850ddfbb71bac42adc4da0872aaad2, type: 3}
       propertyPath: m_LocalPosition.x
@@ -2625,6 +2625,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: b6850ddfbb71bac42adc4da0872aaad2, type: 3}
       insertIndex: -1
       addedObject: {fileID: 8849234132866986464}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: b6850ddfbb71bac42adc4da0872aaad2, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 2946800206518405474}
   m_SourcePrefab: {fileID: 100100000, guid: b6850ddfbb71bac42adc4da0872aaad2, type: 3}
 --- !u!4 &5023781027772916345 stripped
 Transform:
@@ -2658,6 +2661,66 @@ MonoBehaviour:
   shootSound: {fileID: 8300000, guid: 000e8fc4d47011c44bc72c8defaa0ef4, type: 3}
   reloadSound: {fileID: 8300000, guid: bf08fc09eb13397498157272c41dfade, type: 3}
   sfxGroup: {fileID: -490443676671801125, guid: ddda7e32a2420c4489fcc2a1c31e1976, type: 2}
+--- !u!114 &2946800206518405474
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5689135493874202819}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f8fe9436db594eb3a3c105abe90fc757, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Riftwalker::DedosDelArma
+  manoDerecha:
+    pulgar:
+      abrir: 6
+      separar: 21.2
+      girar: 1
+    indice:
+      abrir: -9
+      separar: 0
+      girar: 0
+    mayor:
+      abrir: 24
+      separar: -16.8
+      girar: -20
+    anular:
+      abrir: 15
+      separar: 27.4
+      girar: -36
+    menique:
+      abrir: 2
+      separar: 27.4
+      girar: -35
+  manoIzquierda:
+    pulgar:
+      abrir: 0
+      separar: 0
+      girar: 0
+    indice:
+      abrir: 0
+      separar: 0
+      girar: 0
+    mayor:
+      abrir: 0
+      separar: 0
+      girar: 0
+    anular:
+      abrir: 0
+      separar: 0
+      girar: 0
+    menique:
+      abrir: 0
+      separar: 0
+      girar: 0
+  dedosDerecha: 0
+  indiceDerecho: 0
+  pulgarDerecho: 0
+  dedosIzquierda: 0
+  indiceIzquierdo: 0
+  pulgarIzquierdo: 0
 --- !u!1001 &5423434040041620847
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -2765,15 +2828,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4611207783168776692, guid: e247f609b3799334a8c5e328573dde07, type: 3}
       propertyPath: m_LocalScale.x
-      value: 50
+      value: 29.489754
       objectReference: {fileID: 0}
     - target: {fileID: 4611207783168776692, guid: e247f609b3799334a8c5e328573dde07, type: 3}
       propertyPath: m_LocalScale.y
-      value: 50
+      value: 29.489754
       objectReference: {fileID: 0}
     - target: {fileID: 4611207783168776692, guid: e247f609b3799334a8c5e328573dde07, type: 3}
       propertyPath: m_LocalScale.z
-      value: 50
+      value: 29.489754
       objectReference: {fileID: 0}
     - target: {fileID: 4611207783168776692, guid: e247f609b3799334a8c5e328573dde07, type: 3}
       propertyPath: m_LocalPosition.x
@@ -2824,13 +2887,76 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 4611207783168776692, guid: e247f609b3799334a8c5e328573dde07, type: 3}
       insertIndex: -1
       addedObject: {fileID: 7645997288758943402}
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 4441242746916862449, guid: e247f609b3799334a8c5e328573dde07, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 3846609111589190599}
   m_SourcePrefab: {fileID: 100100000, guid: e247f609b3799334a8c5e328573dde07, type: 3}
 --- !u!1 &8154313495179340350 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 4441242746916862449, guid: e247f609b3799334a8c5e328573dde07, type: 3}
   m_PrefabInstance: {fileID: 5515649867203269583}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &3846609111589190599
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8154313495179340350}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f8fe9436db594eb3a3c105abe90fc757, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Riftwalker::DedosDelArma
+  manoDerecha:
+    pulgar:
+      abrir: -1
+      separar: 0
+      girar: 0
+    indice:
+      abrir: 1
+      separar: 0
+      girar: 0
+    mayor:
+      abrir: 27
+      separar: 0
+      girar: 0
+    anular:
+      abrir: 27
+      separar: 0
+      girar: 0
+    menique:
+      abrir: 27
+      separar: 0
+      girar: 0
+  manoIzquierda:
+    pulgar:
+      abrir: 0
+      separar: 0
+      girar: 0
+    indice:
+      abrir: 0
+      separar: 0
+      girar: 0
+    mayor:
+      abrir: 0
+      separar: 0
+      girar: 0
+    anular:
+      abrir: 0
+      separar: 0
+      girar: 0
+    menique:
+      abrir: 0
+      separar: 0
+      girar: 0
+  dedosDerecha: 0
+  indiceDerecho: 0
+  pulgarDerecho: 0
+  dedosIzquierda: 0
+  indiceIzquierdo: 0
+  pulgarIzquierdo: 0
 --- !u!4 &8319779469436799547 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 4611207783168776692, guid: e247f609b3799334a8c5e328573dde07, type: 3}
