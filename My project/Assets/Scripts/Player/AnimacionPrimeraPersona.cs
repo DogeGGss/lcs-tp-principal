@@ -60,6 +60,8 @@ public class AnimacionPrimeraPersona : MonoBehaviour
     public float trochitaRecargaPunta = 10f;
     [Tooltip("Cuánto se inclina hacia la cámara (grados).")]
     public float trochitaRecargaInclinacion = 15f;
+    [Tooltip("Mientras recarga suelta la mano izquierda, que baja y sale de la pantalla (metros hacia abajo).")]
+    public float trochitaManoIzquierdaAbajo = 0.18f;
 
     [Header("Sacar el arma")]
     [Tooltip("La Porteña. Las demás tardan lo que dice su ficha (tiempo para estar lista).")]
@@ -103,9 +105,9 @@ public class AnimacionPrimeraPersona : MonoBehaviour
     private readonly Dictionary<GameObject, IPiezasDelArma> piezas = new Dictionary<GameObject, IPiezasDelArma>();
 
     // Lo que se le sumó en este cuadro, para sacarlo al empezar el siguiente.
-    private Transform[] movidos = new Transform[2];
-    private Vector3[] lugarBase = new Vector3[2];
-    private Quaternion[] giroBase = new Quaternion[2];
+    private Transform[] movidos = new Transform[3];
+    private Vector3[] lugarBase = new Vector3[3];
+    private Quaternion[] giroBase = new Quaternion[3];
     private int cuantos;
 
     // Estado de cada animación
@@ -264,6 +266,7 @@ public class AnimacionPrimeraPersona : MonoBehaviour
         // Recarga: baja (0 a 0,2), queda abajo y vuelve (0,8 a 1); un empujón al meter el cargador (0,6).
         // La Trochita no: sube de costado mostrando el tambor, que se enfría girando (US 244).
         float recarga = municion != null ? municion.ReloadProgress : -1f;
+        float sueltaIzquierda = 0f;
         if (recarga >= 0f && EsTrochita(arma))
         {
             float arriba = Mathf.SmoothStep(0f, 1f, Mathf.InverseLerp(0f, 0.12f, recarga)) *
@@ -271,6 +274,9 @@ public class AnimacionPrimeraPersona : MonoBehaviour
             // Tiembla mientras el tambor gira rápido y se va calmando a medida que frena.
             float temblor = arriba * Mathf.Clamp01(1f - Mathf.InverseLerp(0.12f, 0.85f, recarga)) * 0.6f;
             mover += new Vector3(-trochitaRecargaAdentro, trochitaRecargaArriba, 0f) * arriba;
+            // La mano izquierda suelta el arma un poco antes de que suba y la vuelve a agarrar cuando ya bajó.
+            sueltaIzquierda = Mathf.SmoothStep(0f, 1f, Mathf.InverseLerp(0f, 0.08f, recarga)) *
+                              (1f - Mathf.SmoothStep(0f, 1f, Mathf.InverseLerp(0.9f, 1f, recarga)));
             girar += new Vector3(-trochitaRecargaPunta, -trochitaRecargaCostado, trochitaRecargaInclinacion) * arriba +
                      new Vector3(Random.Range(-1f, 1f), Random.Range(-1f, 1f), 0f) * temblor;
         }
@@ -309,26 +315,47 @@ public class AnimacionPrimeraPersona : MonoBehaviour
         if (detalles) Piezas(arma).Actualizar(recarga, municion != null ? municion.Ammo : 1);
         else if (piezas.TryGetValue(arma, out IPiezasDelArma sinDetalles)) sinDetalles.Quieta();
 
-        Aplicar(arma.transform, mover, Quaternion.Euler(girar));
+        Aplicar(arma.transform, mover, Quaternion.Euler(girar), sueltaIzquierda);
         estado = "Animando " + arma.name + (foto != null ? " con sus brazos" : " (sin encontrar la foto de los brazos)") +
                  $" | corrida {mover.magnitude * 100f:0.0} cm, girada {girar.magnitude:0.0}°";
     }
 
     // Mueve el arma y la foto de los brazos como una sola pieza, girando alrededor de la mano derecha.
-    private void Aplicar(Transform arma, Vector3 mover, Quaternion girar)
+    // "sueltaIzquierda" (0 a 1): la mano izquierda suelta el arma y baja fuera de la pantalla; el arma queda solo en la
+    // mano derecha (la foto tiene el brazo derecho aparte, como hijo, y ese sigue al arma).
+    private void Aplicar(Transform arma, Vector3 mover, Quaternion girar, float sueltaIzquierda = 0f)
     {
         Vector3 pivote = agarre != null ? transform.InverseTransformPoint(agarre.position) : arma.localPosition;
         cuantos = 0;
         Mover(arma, pivote, mover, girar);
-        if (foto != null) Mover(foto, pivote, mover, girar);
+        if (foto == null) return;
+        Transform derecho = sueltaIzquierda > 0.001f ? foto.Find("Brazo derecho") : null;
+        if (derecho == null) { Mover(foto, pivote, mover, girar); return; }
+
+        // Dónde iría la foto entera con el arma: ahí va el brazo derecho.
+        Vector3 lugarDerecho = pivote + girar * (foto.localPosition - pivote) + mover;
+        Quaternion giroDerecho = girar * foto.localRotation;
+        // El izquierdo deja de seguir al arma y baja.
+        Quaternion girarIzquierdo = Quaternion.Slerp(girar, Quaternion.identity, sueltaIzquierda);
+        Vector3 moverIzquierdo = Vector3.Lerp(mover, Vector3.zero, sueltaIzquierda) +
+                                 new Vector3(0.02f, -trochitaManoIzquierdaAbajo, -0.04f) * sueltaIzquierda;
+        Mover(foto, pivote, moverIzquierdo, girarIzquierdo);
+        Guardar(derecho);
+        derecho.SetPositionAndRotation(transform.TransformPoint(lugarDerecho), transform.rotation * giroDerecho);
     }
 
-    private void Mover(Transform t, Vector3 pivote, Vector3 mover, Quaternion girar)
+    // Anota dónde estaba, para dejarlo igual al empezar el cuadro siguiente.
+    private void Guardar(Transform t)
     {
         movidos[cuantos] = t;
         lugarBase[cuantos] = t.localPosition;
         giroBase[cuantos] = t.localRotation;
         cuantos++;
+    }
+
+    private void Mover(Transform t, Vector3 pivote, Vector3 mover, Quaternion girar)
+    {
+        Guardar(t);
         t.SetLocalPositionAndRotation(pivote + girar * (t.localPosition - pivote) + mover, girar * t.localRotation);
     }
 }
