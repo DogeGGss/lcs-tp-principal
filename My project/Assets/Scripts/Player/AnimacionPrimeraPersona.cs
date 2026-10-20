@@ -191,7 +191,7 @@ public class AnimacionPrimeraPersona : MonoBehaviour
         arma != null && switcher != null && switcher.meleeScript != null && arma == switcher.meleeScript.CurrentViewModel;
 
     // US 256: el corte de costado del cuchillo, según cuánto avanzó (MeleeAttack.AvanceDelCorte): la mano lo lleva
-    // atrás y a la derecha, cruza de derecha a izquierda (el golpe es en la mitad) y vuelve. Solo se mueven el cuchillo y
+    // atrás y hacia adentro (el centro de la pantalla), cruza de adentro hacia afuera (el golpe es en la mitad) y vuelve. Solo se mueven el cuchillo y
     // el brazo derecho; el izquierdo queda donde está.
     private MeleeAttack ataque;
     private void Corte(out Vector3 mover, out Quaternion girar)
@@ -202,8 +202,9 @@ public class AnimacionPrimeraPersona : MonoBehaviour
         float avance = ataque != null ? ataque.AvanceDelCorte : -1f;
         if (avance < 0f) return;
         float t = avance * MeleeAttack.Total;
-        Vector3 atrasPos = new Vector3(corteAncho * 0.45f, corteAlto, -0.02f), finPos = new Vector3(-corteAncho * 0.55f, -corteAlto * 0.6f, 0.05f);
-        Vector3 atrasGiro = new Vector3(-15f, corteGiro, -35f), finGiro = new Vector3(10f, -corteGiro * 1.1f, -60f);
+        // De adentro para afuera: arranca hacia el centro de la pantalla (izquierda) y cruza hacia la derecha.
+        Vector3 atrasPos = new Vector3(-corteAncho * 0.45f, corteAlto, -0.02f), finPos = new Vector3(corteAncho * 0.55f, -corteAlto * 0.6f, 0.05f);
+        Vector3 atrasGiro = new Vector3(-15f, -corteGiro, 35f), finGiro = new Vector3(10f, corteGiro * 1.1f, 60f);
         Vector3 pos, giro;
         if (t < MeleeAttack.Preparacion)
         {

@@ -18,8 +18,8 @@ public class MeleeAttack : MonoBehaviour
 
     // US 256: el corte de costado. Lo dibuja AnimacionPrimeraPersona con el avance (AvanceDelCorte); acá solo se mide el
     // tiempo: el golpe llega en la mitad del corte y todo termina antes de que se pueda volver a atacar (0,75 s).
-    public const float Preparacion = 0.12f; // la mano lleva el cuchillo hacia atrás y a la derecha
-    public const float Corte = 0.12f;       // el corte cruza de derecha a izquierda; el golpe, en la mitad
+    public const float Preparacion = 0.12f; // la mano lleva el cuchillo hacia atrás y hacia adentro
+    public const float Corte = 0.12f;       // el corte cruza de adentro hacia afuera; el golpe, en la mitad
     public const float Vuelta = 0.30f;      // vuelve a su lugar
     public const float Total = Preparacion + Corte + Vuelta;
     private float inicioDelCorte;
