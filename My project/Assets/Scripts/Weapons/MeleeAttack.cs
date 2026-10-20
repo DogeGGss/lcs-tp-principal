@@ -18,8 +18,8 @@ public class MeleeAttack : MonoBehaviour
 
     // US 256: la puñalada (estocada). La dibuja AnimacionPrimeraPersona con el avance (AvanceDelCorte); acá solo se mide
     // el tiempo: el golpe llega en la mitad de la estocada y todo termina antes de que se pueda volver a atacar (0,75 s).
-    public const float Preparacion = 0.10f; // la mano echa el cuchillo para atrás
-    public const float Corte = 0.10f;       // lo clava hacia adelante; el golpe, en la mitad
+    public const float Preparacion = 0.12f; // la mano echa el cuchillo atrás y a la derecha
+    public const float Corte = 0.13f;       // lo clava en curva, entrando por la derecha; el golpe, en la mitad
     public const float Vuelta = 0.25f;      // vuelve a su lugar
     public const float Total = Preparacion + Corte + Vuelta;
     private float inicioDelCorte;
