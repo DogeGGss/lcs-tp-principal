@@ -75,15 +75,15 @@ public class AnimacionPrimeraPersona : MonoBehaviour
 
     [Header("Recarga (La Trochita): sube de costado mostrando el tambor")]
     [Tooltip("Cuánto sube el arma (metros).")]
-    public float trochitaRecargaArriba = 0.05f;
+    public float trochitaRecargaArriba = 0.09f;
     [Tooltip("Cuánto se corre hacia el centro de la pantalla (metros).")]
-    public float trochitaRecargaAdentro = 0.035f;
+    public float trochitaRecargaAdentro = 0.06f;
     [Tooltip("Cuánto gira la punta hacia el centro, mostrando el costado con el tambor (grados).")]
-    public float trochitaRecargaCostado = 10f;
+    public float trochitaRecargaCostado = 25f;
     [Tooltip("Cuánto levanta la punta (grados).")]
     public float trochitaRecargaPunta = 50f;
     [Tooltip("Cuánto se inclina hacia la cámara (grados).")]
-    public float trochitaRecargaInclinacion = 15f;
+    public float trochitaRecargaInclinacion = 25f;
     [Tooltip("Mientras recarga suelta la mano izquierda, que baja y sale de la pantalla (metros hacia abajo).")]
     public float trochitaManoIzquierdaAbajo = 0.18f;
 

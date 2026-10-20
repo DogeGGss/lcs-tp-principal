@@ -14,7 +14,7 @@ public interface IPiezasDelArma
 // (el arma tiene 6 balas). Como el tambor es liso, tiene 6 rayitas en cada cara que apuntan al centro, una por bala:
 // naranjas las cargadas y oscuras las vacías; así se ve el giro y cuántas balas quedan. La recarga es como el
 // enfriamiento de un arma que se recalienta: AnimacionPrimeraPersona levanta el arma de costado mostrando el tambor, que
-// gira rápido y va frenando (3 vueltas) mientras las rayitas se prenden de a una. Lo maneja AnimacionPrimeraPersona.
+// gira rápido y va frenando (2 vueltas) mientras las rayitas se prenden de a una. Lo maneja AnimacionPrimeraPersona.
 // El modelo (Pistol_1.fbx) es una sola malla hecha de piezas sueltas: el tambor se separa en otra malla para poder
 // girarlo. Las medidas de abajo están en las coordenadas del modelo (x hacia la boca, z hacia arriba, y hacia la
 // izquierda); Unity da vuelta la x al importarlo, así que en la malla un punto (x, y, z) del modelo está en
@@ -24,7 +24,7 @@ public class PiezasDeLaTrochita : IPiezasDelArma
     private const float LargoModelo = 0.934f; // de punta a punta en x (de -0.119 a 0.815)
     private const float GiroPorTiro = 60f;      // grados: 6 balas por vuelta
     private const float TiempoDeGiro = 0.12f;   // s que tarda el tambor en girar después de un tiro
-    private const int VueltasDeRecarga = 3;     // vueltas enteras: las rayitas quedan en el mismo lugar
+    private const int VueltasDeRecarga = 2;     // vueltas enteras: las rayitas quedan en el mismo lugar
     private const float EmpiezaGiro = 0.12f, TerminaGiro = 0.85f; // parte de la recarga en que gira el tambor
 
     private readonly Transform arma;     // la que tiene la malla
@@ -182,7 +182,7 @@ public class PiezasDeLaTrochita : IPiezasDelArma
         Vector3 w = Vector3.Cross(eje, u);
         float grosor = Vector3.Scale(tam, eje).magnitude;
         float radio = (tam.x + tam.y + tam.z - grosor) * 0.25f;          // la mitad del promedio de los otros dos lados
-        float largo = radio * 0.38f, ancho = radio * 0.09f;  // rayitas que apuntan al centro
+        float largo = radio * 0.5f, ancho = radio * 0.12f;  // rayitas que apuntan al centro
         Mesh barra = Barra();
         marcas = new MeshRenderer[Balas * 2];
         for (int cara = 0; cara < 2; cara++)
