@@ -32,7 +32,7 @@ public class RegresionSonidosTests
     // Armas
     // =====================================================================
 
-    [UnityTest, Category("Regresión de sonidos"), Category("US 012"), Description("RS-01: disparo del Mitre, por SFX")]
+    [UnityTest, Category("Regresión de sonidos"), Category("US 086"), Description("RS-01: disparo del Mitre, por SFX")]
     public IEnumerator RS01_Disparo_del_Mitre()
     {
         yield return Practica();
@@ -41,7 +41,7 @@ public class RegresionSonidosTests
         SinDireccion(Sono("SFX"));
     }
 
-    [UnityTest, Category("Regresión de sonidos"), Category("US 011"), Description("RS-02: recarga del Mitre, por SFX")]
+    [UnityTest, Category("Regresión de sonidos"), Category("US 086"), Description("RS-02: recarga del Mitre, por SFX")]
     public IEnumerator RS02_Recarga_del_Mitre()
     {
         yield return Practica();
@@ -52,7 +52,7 @@ public class RegresionSonidosTests
         SinDireccion(Sono("SFX"));
     }
 
-    [UnityTest, Category("Regresión de sonidos"), Category("US 055"), Description("RS-03: sacar otra arma, por SFX")]
+    [UnityTest, Category("Regresión de sonidos"), Category("US 114"), Description("RS-03: sacar otra arma, por SFX")]
     public IEnumerator RS03_Cambiar_de_arma()
     {
         yield return Practica();
@@ -61,7 +61,7 @@ public class RegresionSonidosTests
         SinDireccion(Sono("SFX"));
     }
 
-    [UnityTest, Category("Regresión de sonidos"), Category("US 010"), Description("RS-04: disparo de La Porteña, por SFX")]
+    [UnityTest, Category("Regresión de sonidos"), Category("US 091"), Description("RS-04: disparo de La Porteña, por SFX")]
     public IEnumerator RS04_Disparo_de_La_Porteña()
     {
         yield return Practica();
@@ -70,7 +70,7 @@ public class RegresionSonidosTests
         SinDireccion(Sono("SFX"));
     }
 
-    [UnityTest, Category("Regresión de sonidos"), Category("US 256"), Description("RS-05: sacar el cuchillo, por SFX")]
+    [UnityTest, Category("Regresión de sonidos"), Category("US 114"), Description("RS-05: sacar el cuchillo, por SFX")]
     public IEnumerator RS05_Sacar_el_cuchillo()
     {
         yield return Practica();
@@ -79,7 +79,7 @@ public class RegresionSonidosTests
         SinDireccion(Sono("SFX"));
     }
 
-    [UnityTest, Category("Regresión de sonidos"), Category("US 256"), Description("RS-06: ataque con el cuchillo, por SFX")]
+    [UnityTest, Category("Regresión de sonidos"), Category("US 096"), Description("RS-06: ataque con el cuchillo, por SFX")]
     public IEnumerator RS06_Ataque_con_el_cuchillo()
     {
         yield return Practica();
@@ -88,7 +88,7 @@ public class RegresionSonidosTests
         Sono("SFX");
     }
 
-    [UnityTest, Category("Regresión de sonidos"), Category("US 070"), Description("RS-07: disparo de la Roca (escopeta), por SFX")]
+    [UnityTest, Category("Regresión de sonidos"), Category("US 090"), Description("RS-07: disparo de la Roca (escopeta), por SFX")]
     public IEnumerator RS07_Disparo_de_la_Roca()
     {
         yield return Practica();
@@ -98,7 +98,7 @@ public class RegresionSonidosTests
         SinDireccion(Sono("SFX"));
     }
 
-    [UnityTest, Category("Regresión de sonidos"), Category("US 246"), Description("RS-08: disparo del Urquiza, por SFX")]
+    [UnityTest, Category("Regresión de sonidos"), Category("US 087"), Description("RS-08: disparo del Urquiza, por SFX")]
     public IEnumerator RS08_Disparo_del_Urquiza()
     {
         yield return Practica();
@@ -108,7 +108,7 @@ public class RegresionSonidosTests
         SinDireccion(Sono("SFX"));
     }
 
-    [UnityTest, Category("Regresión de sonidos"), Category("US 073"), Description("RS-09: tirar una granada, por SFX y hasta 40 m")]
+    [UnityTest, Category("Regresión de sonidos"), Category("US 093"), Description("RS-09: tirar una granada, por SFX y hasta 40 m")]
     public IEnumerator RS09_Tirar_una_granada()
     {
         yield return Practica();
@@ -117,7 +117,7 @@ public class RegresionSonidosTests
         SeEscuchaHasta(Sono("SFX", s => s.alcance < 100f), 40f);
     }
 
-    [UnityTest, Category("Regresión de sonidos"), Category("US 073"), Description("RS-10: explosión de la granada, por SFX y hasta 120 m")]
+    [UnityTest, Category("Regresión de sonidos"), Category("US 093"), Description("RS-10: explosión de la granada, por SFX y hasta 120 m")]
     public IEnumerator RS10_Explosion_de_la_granada()
     {
         yield return Practica();
@@ -130,7 +130,7 @@ public class RegresionSonidosTests
     // Jugador
     // =====================================================================
 
-    [UnityTest, Category("Regresión de sonidos"), Category("US 001"), Description("RS-11: pasos al caminar, por SFX")]
+    [UnityTest, Category("Regresión de sonidos"), Category("US 097"), Description("RS-11: pasos al caminar, por SFX")]
     public IEnumerator RS11_Pasos()
     {
         yield return Practica();
@@ -139,7 +139,7 @@ public class RegresionSonidosTests
         SinDireccion(Sono("SFX"));
     }
 
-    [UnityTest, Category("Regresión de sonidos"), Category("US 003"), Description("RS-12: salto, por SFX")]
+    [UnityTest, Category("Regresión de sonidos"), Category("US 098"), Description("RS-12: salto, por SFX")]
     public IEnumerator RS12_Salto()
     {
         yield return Practica();
@@ -275,7 +275,7 @@ public class RegresionSonidosTests
     // Interfaz y música
     // =====================================================================
 
-    [UnityTest, Category("Regresión de sonidos"), Category("US 076"), Description("RS-25: abrir la tienda, por Interfaz")]
+    [UnityTest, Category("Regresión de sonidos"), Category("US 117"), Description("RS-25: abrir la tienda, por Interfaz")]
     public IEnumerator RS25_Tienda_al_abrir()
     {
         yield return Practica();
@@ -302,7 +302,7 @@ public class RegresionSonidosTests
         SinDireccion(Sono("Interfaz"));
     }
 
-    [UnityTest, Category("Regresión de sonidos"), Category("US 154"), Description("RS-28: la música del menú, por Musica")]
+    [UnityTest, Category("Regresión de sonidos"), Category("US 112"), Description("RS-28: la música del menú, por Musica")]
     public IEnumerator RS28_Musica_del_menu()
     {
         yield return Menu();
