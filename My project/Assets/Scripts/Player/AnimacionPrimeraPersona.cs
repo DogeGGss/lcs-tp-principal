@@ -14,7 +14,8 @@ using UnityEngine;
 //   una rayita por bala (PiezasDeLaTrochita, US 244).
 // Por ahora con las dos pistolas, La Porteña y La Trochita (la secundaria de categoría Pistolas con ArmaDeFuego), y el
 // Urquiza (la principal de categoría Subfusiles, US 246): su cargador cae al recargar (PiezasDelUrquiza) y al final
-// tira de la palanca de carga.
+// tira de la palanca de carga. Y el cuchillo (US 256): quieto, caminando, al sacarlo y al mirar como las demás, y el
+// corte de costado al atacar, que mueve solo el cuchillo y el brazo derecho.
 // Cada una tiene su fuerza de retroceso y su tiempo para sacarla. Se apaga con "Activa" en el Inspector, para comparar.
 // El movimiento se suma al final del cuadro (después de BrazosEnCamara) y se saca al empezar el siguiente
 // (RestaurarPrimeraPersona), así ningún otro script ve el arma corrida.
@@ -73,6 +74,14 @@ public class AnimacionPrimeraPersona : MonoBehaviour
     public float trochitaRecargaInclinacion = 15f;
     [Tooltip("Mientras recarga suelta la mano izquierda, que baja y sale de la pantalla (metros hacia abajo).")]
     public float trochitaManoIzquierdaAbajo = 0.18f;
+
+    [Header("Corte del cuchillo (US 256)")]
+    [Tooltip("Cuánto cruza de un lado al otro (metros).")]
+    public float corteAncho = 0.16f;
+    [Tooltip("Cuánto sube al prepararse (metros).")]
+    public float corteAlto = 0.05f;
+    [Tooltip("Cuánto gira la punta hacia cada lado (grados).")]
+    public float corteGiro = 40f;
 
     [Header("Sacar el arma")]
     [Tooltip("La Porteña. Las demás tardan lo que dice su ficha (tiempo para estar lista).")]
@@ -171,7 +180,49 @@ public class AnimacionPrimeraPersona : MonoBehaviour
         GameObject arma = switcher.HeldSecondary;
         if (EsPortena(arma) || EsTrochita(arma)) return arma;
         arma = switcher.HeldPrimary;
-        return EsUrquiza(arma) ? arma : null;
+        if (EsUrquiza(arma)) return arma;
+        if (arma != null) return null;
+        // US 256: el cuchillo.
+        GameObject cuchillo = switcher.meleeScript != null ? switcher.meleeScript.CurrentViewModel : null;
+        return cuchillo != null && cuchillo.activeInHierarchy ? cuchillo : null;
+    }
+
+    private bool EsCuchillo(GameObject arma) =>
+        arma != null && switcher != null && switcher.meleeScript != null && arma == switcher.meleeScript.CurrentViewModel;
+
+    // US 256: el corte de costado del cuchillo, según cuánto avanzó (MeleeAttack.AvanceDelCorte): la mano lo lleva
+    // atrás y a la derecha, cruza de derecha a izquierda (el golpe es en la mitad) y vuelve. Solo se mueven el cuchillo y
+    // el brazo derecho; el izquierdo queda donde está.
+    private MeleeAttack ataque;
+    private void Corte(out Vector3 mover, out Quaternion girar)
+    {
+        mover = Vector3.zero;
+        girar = Quaternion.identity;
+        if (ataque == null) ataque = jugador.GetComponentInChildren<MeleeAttack>(true);
+        float avance = ataque != null ? ataque.AvanceDelCorte : -1f;
+        if (avance < 0f) return;
+        float t = avance * MeleeAttack.Total;
+        Vector3 atrasPos = new Vector3(corteAncho * 0.45f, corteAlto, -0.02f), finPos = new Vector3(-corteAncho * 0.55f, -corteAlto * 0.6f, 0.05f);
+        Vector3 atrasGiro = new Vector3(-15f, corteGiro, -35f), finGiro = new Vector3(10f, -corteGiro * 1.1f, -60f);
+        Vector3 pos, giro;
+        if (t < MeleeAttack.Preparacion)
+        {
+            float f = Mathf.SmoothStep(0f, 1f, t / MeleeAttack.Preparacion);
+            pos = atrasPos * f; giro = atrasGiro * f;
+        }
+        else if (t < MeleeAttack.Preparacion + MeleeAttack.Corte)
+        {
+            float f = (t - MeleeAttack.Preparacion) / MeleeAttack.Corte;
+            f = f * f * (3f - 2f * f);
+            pos = Vector3.Lerp(atrasPos, finPos, f); giro = Vector3.Lerp(atrasGiro, finGiro, f);
+        }
+        else
+        {
+            float f = Mathf.SmoothStep(0f, 1f, (t - MeleeAttack.Preparacion - MeleeAttack.Corte) / MeleeAttack.Vuelta);
+            pos = finPos * (1f - f); giro = finGiro * (1f - f);
+        }
+        mover = pos;
+        girar = Quaternion.Euler(giro);
     }
 
     private IPiezasDelArma Piezas(GameObject arma)
@@ -339,10 +390,13 @@ public class AnimacionPrimeraPersona : MonoBehaviour
         // Mirar
         girar += new Vector3(retraso.x, retraso.y, -retraso.y * 0.5f);
 
-        if (detalles) Piezas(arma).Actualizar(recarga, municion != null ? municion.Ammo : 1);
+        Vector3 moverDerecha = Vector3.zero;
+        Quaternion girarDerecha = Quaternion.identity;
+        if (EsCuchillo(arma)) Corte(out moverDerecha, out girarDerecha); // el cuchillo no tiene piezas
+        else if (detalles) Piezas(arma).Actualizar(recarga, municion != null ? municion.Ammo : 1);
         else if (piezas.TryGetValue(arma, out IPiezasDelArma sinDetalles)) sinDetalles.Quieta();
 
-        Aplicar(arma.transform, mover, Quaternion.Euler(girar), sueltaIzquierda);
+        Aplicar(arma.transform, mover, Quaternion.Euler(girar), sueltaIzquierda, moverDerecha, girarDerecha);
         estado = "Animando " + arma.name + (foto != null ? " con sus brazos" : " (sin encontrar la foto de los brazos)") +
                  $" | corrida {mover.magnitude * 100f:0.0} cm, girada {girar.magnitude:0.0}°";
     }
@@ -350,18 +404,23 @@ public class AnimacionPrimeraPersona : MonoBehaviour
     // Mueve el arma y la foto de los brazos como una sola pieza, girando alrededor de la mano derecha.
     // "sueltaIzquierda" (0 a 1): la mano izquierda suelta el arma y baja fuera de la pantalla; el arma queda solo en la
     // mano derecha (la foto tiene el brazo derecho aparte, como hijo, y ese sigue al arma).
-    private void Aplicar(Transform arma, Vector3 mover, Quaternion girar, float sueltaIzquierda = 0f)
+    // "moverDerecha" y "girarDerecha": lo que se mueven además solo el arma y el brazo derecho (el corte del cuchillo).
+    private void Aplicar(Transform arma, Vector3 mover, Quaternion girar, float sueltaIzquierda,
+                         Vector3 moverDerecha, Quaternion girarDerecha)
     {
         Vector3 pivote = agarre != null ? transform.InverseTransformPoint(agarre.position) : arma.localPosition;
         cuantos = 0;
-        Mover(arma, pivote, mover, girar);
+        Quaternion girarArma = girarDerecha * girar;
+        Vector3 moverArma = mover + moverDerecha;
+        Mover(arma, pivote, moverArma, girarArma);
         if (foto == null) return;
-        Transform derecho = sueltaIzquierda > 0.001f ? foto.Find("Brazo derecho") : null;
-        if (derecho == null) { Mover(foto, pivote, mover, girar); return; }
+        bool aparte = sueltaIzquierda > 0.001f || moverDerecha != Vector3.zero || girarDerecha != Quaternion.identity;
+        Transform derecho = aparte ? foto.Find("Brazo derecho") : null;
+        if (derecho == null) { Mover(foto, pivote, moverArma, girarArma); return; }
 
         // Dónde iría la foto entera con el arma: ahí va el brazo derecho.
-        Vector3 lugarDerecho = pivote + girar * (foto.localPosition - pivote) + mover;
-        Quaternion giroDerecho = girar * foto.localRotation;
+        Vector3 lugarDerecho = pivote + girarArma * (foto.localPosition - pivote) + moverArma;
+        Quaternion giroDerecho = girarArma * foto.localRotation;
         // El izquierdo deja de seguir al arma de a poco y hace un arco: primero se separa del arma (a la izquierda y un
         // poco hacia atrás) y después baja, cada vez más rápido, hasta salir de la pantalla. Al volver hace lo mismo al revés.
         float s = sueltaIzquierda;
