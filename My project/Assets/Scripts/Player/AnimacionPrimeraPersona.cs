@@ -55,9 +55,9 @@ public class AnimacionPrimeraPersona : MonoBehaviour
     [Tooltip("Cuánto se corre hacia el centro de la pantalla (metros).")]
     public float trochitaRecargaAdentro = 0.035f;
     [Tooltip("Cuánto gira la punta hacia el centro, mostrando el costado con el tambor (grados).")]
-    public float trochitaRecargaCostado = 35f;
+    public float trochitaRecargaCostado = 10f;
     [Tooltip("Cuánto levanta la punta (grados).")]
-    public float trochitaRecargaPunta = 10f;
+    public float trochitaRecargaPunta = 50f;
     [Tooltip("Cuánto se inclina hacia la cámara (grados).")]
     public float trochitaRecargaInclinacion = 15f;
     [Tooltip("Mientras recarga suelta la mano izquierda, que baja y sale de la pantalla (metros hacia abajo).")]
@@ -275,8 +275,9 @@ public class AnimacionPrimeraPersona : MonoBehaviour
             float temblor = arriba * Mathf.Clamp01(1f - Mathf.InverseLerp(0.12f, 0.85f, recarga)) * 0.6f;
             mover += new Vector3(-trochitaRecargaAdentro, trochitaRecargaArriba, 0f) * arriba;
             // La mano izquierda suelta el arma un poco antes de que suba y la vuelve a agarrar cuando ya bajó.
-            sueltaIzquierda = Mathf.SmoothStep(0f, 1f, Mathf.InverseLerp(0f, 0.08f, recarga)) *
-                              (1f - Mathf.SmoothStep(0f, 1f, Mathf.InverseLerp(0.9f, 1f, recarga)));
+            // Tarda un cuarto de la recarga en irse y otro en volver (más de medio segundo cada vez), con una curva
+            // que arranca y frena despacio.
+            sueltaIzquierda = Suave(Mathf.InverseLerp(0f, 0.25f, recarga)) * (1f - Suave(Mathf.InverseLerp(0.75f, 1f, recarga)));
             girar += new Vector3(-trochitaRecargaPunta, -trochitaRecargaCostado, trochitaRecargaInclinacion) * arriba +
                      new Vector3(Random.Range(-1f, 1f), Random.Range(-1f, 1f), 0f) * temblor;
         }
@@ -335,13 +336,24 @@ public class AnimacionPrimeraPersona : MonoBehaviour
         // Dónde iría la foto entera con el arma: ahí va el brazo derecho.
         Vector3 lugarDerecho = pivote + girar * (foto.localPosition - pivote) + mover;
         Quaternion giroDerecho = girar * foto.localRotation;
-        // El izquierdo deja de seguir al arma y baja.
-        Quaternion girarIzquierdo = Quaternion.Slerp(girar, Quaternion.identity, sueltaIzquierda);
-        Vector3 moverIzquierdo = Vector3.Lerp(mover, Vector3.zero, sueltaIzquierda) +
-                                 new Vector3(0.02f, -trochitaManoIzquierdaAbajo, -0.04f) * sueltaIzquierda;
+        // El izquierdo deja de seguir al arma de a poco y hace un arco: primero se separa del arma (a la izquierda y un
+        // poco hacia atrás) y después baja, cada vez más rápido, hasta salir de la pantalla. Al volver hace lo mismo al revés.
+        float s = sueltaIzquierda;
+        Quaternion girarIzquierdo = Quaternion.Slerp(girar, Quaternion.identity, s);
+        float separa = Mathf.Sin(Mathf.Min(1f, s * 1.6f) * Mathf.PI * 0.5f); // se separa enseguida
+        float baja = s * s;                                                  // baja después
+        Vector3 moverIzquierdo = Vector3.Lerp(mover, Vector3.zero, s) +
+                                 new Vector3(-0.025f * separa, -trochitaManoIzquierdaAbajo * baja, -0.035f * separa);
         Mover(foto, pivote, moverIzquierdo, girarIzquierdo);
         Guardar(derecho);
         derecho.SetPositionAndRotation(transform.TransformPoint(lugarDerecho), transform.rotation * giroDerecho);
+    }
+
+    // Curva que arranca y frena despacio (de 0 a 1).
+    private static float Suave(float t)
+    {
+        t = Mathf.Clamp01(t);
+        return t * t * t * (t * (t * 6f - 15f) + 10f);
     }
 
     // Anota dónde estaba, para dejarlo igual al empezar el cuadro siguiente.
