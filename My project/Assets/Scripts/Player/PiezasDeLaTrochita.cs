@@ -12,7 +12,7 @@ public interface IPiezasDelArma
 
 // Los detalles de La Trochita en primera persona (US 244): el tambor de arriba gira un sexto de vuelta con cada tiro
 // (el arma tiene 6 balas) y da una vuelta entera al terminar de recargar, y el cargador cae de la empuñadura y entra
-// uno nuevo al recargar. Como el tambor es liso, tiene 6 marcas en cada cara, una por bala: naranjas las cargadas y
+// uno nuevo al recargar. Como el tambor es liso, tiene 6 rayitas en cada cara que apuntan al centro, una por bala: naranjas las cargadas y
 // oscuras las vacías; así se ve el giro y cuántas balas quedan. Lo maneja AnimacionPrimeraPersona.
 // El modelo (Pistol_1.fbx) es una sola malla hecha de piezas sueltas: el tambor se separa en otra malla para poder
 // girarlo. Las medidas de abajo están en las coordenadas del modelo (x hacia la boca, z hacia arriba, y hacia la
@@ -189,7 +189,7 @@ public class PiezasDeLaTrochita : IPiezasDelArma
         return true;
     }
 
-    // Las 6 marcas de cada cara, en círculo a 6/10 del radio del tambor. La marca s queda a -60° * s: después de s
+    // Las 6 marcas de cada cara: rayitas que apuntan al centro, repartidas en círculo. La marca s queda a -60° * s: después de s
     // tiros (s sextos de vuelta) está arriba.
     private void CrearMarcas(Vector3 tam)
     {
@@ -198,21 +198,23 @@ public class PiezasDeLaTrochita : IPiezasDelArma
         Vector3 w = Vector3.Cross(eje, u);
         float grosor = Vector3.Scale(tam, eje).magnitude;
         float radio = (tam.x + tam.y + tam.z - grosor) * 0.25f;          // la mitad del promedio de los otros dos lados
-        float diametro = radio * 0.26f;
-        Mesh disco = Disco();
+        float largo = radio * 0.38f, ancho = radio * 0.09f;  // rayitas que apuntan al centro
+        Mesh barra = Barra();
         marcas = new MeshRenderer[Balas * 2];
         for (int cara = 0; cara < 2; cara++)
             for (int s = 0; s < Balas; s++)
             {
                 float a = -s * GiroPorTiro * Mathf.Deg2Rad;
-                Vector3 lugar = (u * Mathf.Cos(a) + w * Mathf.Sin(a)) * (radio * 0.6f) + eje * ((cara == 0 ? 1f : -1f) * grosor * 0.5f);
+                Vector3 haciaAfuera = u * Mathf.Cos(a) + w * Mathf.Sin(a);
+                Vector3 lugar = haciaAfuera * (radio * 0.62f) + eje * ((cara == 0 ? 1f : -1f) * grosor * 0.5f);
                 var go = new GameObject("Marca de bala " + (s + 1));
                 go.layer = Capa;
                 go.transform.SetParent(tambor, false);
                 go.transform.localPosition = lugar;
-                go.transform.localRotation = Quaternion.FromToRotation(Vector3.up, eje);
-                go.transform.localScale = new Vector3(diametro, grosor * 0.03f, diametro);
-                go.AddComponent<MeshFilter>().sharedMesh = disco;
+                // El largo (z del cubo) va del centro hacia el borde; el grosor (y), a lo largo del eje del tambor.
+                go.transform.localRotation = Quaternion.LookRotation(haciaAfuera, eje);
+                go.transform.localScale = new Vector3(ancho, grosor * 0.03f, largo);
+                go.AddComponent<MeshFilter>().sharedMesh = barra;
                 MeshRenderer r = go.AddComponent<MeshRenderer>();
                 r.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
                 r.receiveShadows = false;
@@ -220,14 +222,14 @@ public class PiezasDeLaTrochita : IPiezasDelArma
             }
     }
 
-    private static Mesh disco;
-    private static Mesh Disco()
+    private static Mesh barra;
+    private static Mesh Barra()
     {
-        if (disco != null) return disco;
-        GameObject temporal = GameObject.CreatePrimitive(PrimitiveType.Cylinder);
-        disco = temporal.GetComponent<MeshFilter>().sharedMesh;
+        if (barra != null) return barra;
+        GameObject temporal = GameObject.CreatePrimitive(PrimitiveType.Cube);
+        barra = temporal.GetComponent<MeshFilter>().sharedMesh;
         Object.Destroy(temporal);
-        return disco;
+        return barra;
     }
 
     private static Material MaterialDeMarca(bool encendida)
