@@ -15,7 +15,7 @@ using UnityEngine;
 // Por ahora con las dos pistolas, La Porteña y La Trochita (la secundaria de categoría Pistolas con ArmaDeFuego), y el
 // Urquiza (la principal de categoría Subfusiles, US 246): su cargador cae al recargar (PiezasDelUrquiza) y al final
 // tira de la palanca de carga. Y el cuchillo (US 256): quieto, caminando, al sacarlo y al mirar como las demás, y el
-// corte de costado al atacar, que mueve solo el cuchillo y el brazo derecho.
+// puñalada (estocada) al atacar, que mueve solo el cuchillo y el brazo derecho.
 // Cada una tiene su fuerza de retroceso y su tiempo para sacarla. Se apaga con "Activa" en el Inspector, para comparar.
 // El movimiento se suma al final del cuadro (después de BrazosEnCamara) y se saca al empezar el siguiente
 // (RestaurarPrimeraPersona), así ningún otro script ve el arma corrida.
@@ -75,13 +75,13 @@ public class AnimacionPrimeraPersona : MonoBehaviour
     [Tooltip("Mientras recarga suelta la mano izquierda, que baja y sale de la pantalla (metros hacia abajo).")]
     public float trochitaManoIzquierdaAbajo = 0.18f;
 
-    [Header("Corte del cuchillo (US 256)")]
-    [Tooltip("Cuánto cruza de un lado al otro (metros).")]
-    public float corteAncho = 0.16f;
-    [Tooltip("Cuánto sube al prepararse (metros).")]
-    public float corteAlto = 0.05f;
-    [Tooltip("Cuánto gira la punta hacia cada lado (grados).")]
-    public float corteGiro = 40f;
+    [Header("Puñalada del cuchillo (US 256)")]
+    [Tooltip("Cuánto va hacia adelante en la estocada (metros).")]
+    public float punaladaLargo = 0.28f;
+    [Tooltip("Cuánto se echa para atrás al prepararla (metros).")]
+    public float punaladaAtras = 0.05f;
+    [Tooltip("Cuánto se corre hacia el centro de la pantalla en la estocada (metros).")]
+    public float punaladaAlCentro = 0.05f;
 
     [Header("Sacar el arma")]
     [Tooltip("La Porteña. Las demás tardan lo que dice su ficha (tiempo para estar lista).")]
@@ -190,9 +190,9 @@ public class AnimacionPrimeraPersona : MonoBehaviour
     private bool EsCuchillo(GameObject arma) =>
         arma != null && switcher != null && switcher.meleeScript != null && arma == switcher.meleeScript.CurrentViewModel;
 
-    // US 256: el corte de costado del cuchillo, según cuánto avanzó (MeleeAttack.AvanceDelCorte): la mano lo lleva
-    // atrás y a la derecha, cruza de derecha a izquierda (el golpe es en la mitad) y vuelve. Solo se mueven el cuchillo y
-    // el brazo derecho; el izquierdo queda donde está.
+    // US 256: la puñalada del cuchillo, según cuánto avanzó (MeleeAttack.AvanceDelCorte): la mano lo echa para atrás,
+    // lo clava hacia adelante y al centro (el golpe es en la mitad de la estocada) y vuelve. Solo se mueven el cuchillo
+    // y el brazo derecho; el izquierdo queda donde está.
     private MeleeAttack ataque;
     private void Corte(out Vector3 mover, out Quaternion girar)
     {
@@ -202,8 +202,9 @@ public class AnimacionPrimeraPersona : MonoBehaviour
         float avance = ataque != null ? ataque.AvanceDelCorte : -1f;
         if (avance < 0f) return;
         float t = avance * MeleeAttack.Total;
-        Vector3 atrasPos = new Vector3(corteAncho * 0.45f, corteAlto, -0.02f), finPos = new Vector3(-corteAncho * 0.55f, -corteAlto * 0.6f, 0.05f);
-        Vector3 atrasGiro = new Vector3(-15f, corteGiro, -35f), finGiro = new Vector3(10f, -corteGiro * 1.1f, -60f);
+        // Preparada: atrás, un poco abajo y con la punta levantada. Clavada: adelante, al centro y con la punta derecha.
+        Vector3 atrasPos = new Vector3(0.01f, -0.015f, -punaladaAtras), finPos = new Vector3(-punaladaAlCentro, 0.015f, punaladaLargo);
+        Vector3 atrasGiro = new Vector3(-12f, 4f, 6f), finGiro = new Vector3(6f, -8f, -4f);
         Vector3 pos, giro;
         if (t < MeleeAttack.Preparacion)
         {
@@ -213,7 +214,7 @@ public class AnimacionPrimeraPersona : MonoBehaviour
         else if (t < MeleeAttack.Preparacion + MeleeAttack.Corte)
         {
             float f = (t - MeleeAttack.Preparacion) / MeleeAttack.Corte;
-            f = f * f * (3f - 2f * f);
+            f = 1f - (1f - f) * (1f - f); // sale rápido y frena al llegar
             pos = Vector3.Lerp(atrasPos, finPos, f); giro = Vector3.Lerp(atrasGiro, finGiro, f);
         }
         else
