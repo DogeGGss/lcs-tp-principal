@@ -110,6 +110,8 @@ public class PartidaDeathmatch : MonoBehaviour
     public static int Asistencias(int actor) => Leer(PropAsistencias + actor, 0);
     /// <summary>F24: más bajas seguidas sin morir en esta partida.</summary>
     public static int MejorRacha(int actor) => Leer(PropMejorRacha + actor, 0);
+    /// <summary>Bajas seguidas sin morir que lleva ahora (el centro del HUD en Deathmatch).</summary>
+    public static int Racha(int actor) => Mathf.Max(0, Bajas(actor) - Leer(PropBajasAlMorir + actor, 0));
     /// <summary>F24: hora del servidor en que empezó la partida; null si el anfitrión no la publicó.</summary>
     public static int? Inicio => Sala != null && Sala.CustomProperties.TryGetValue(PropInicio, out object v) && v is int n ? n : (int?)null;
 
