@@ -121,6 +121,27 @@ public static class AjusteDeManos
         }
         cambio |= Poner(derecho, a.derecho, a.derechoGiro);
         cambio |= Poner(izquierdo, a.izquierdo, a.izquierdoGiro);
+        cambio |= PonerDedos(arma, a);
+        return cambio;
+    }
+
+    // US 244: los dedos de esa arma (DedosDelArma). Si no se tocaron (todo en 0) y el arma no tenía, no se agrega.
+    private static bool PonerDedos(Transform arma, BrazosEnCamara.Agarres a)
+    {
+        if (!a.conDedos) return false;
+        DedosDelArma dedos = arma.GetComponent<DedosDelArma>();
+        bool algo = a.dedosDerecha != 0f || a.indiceDerecho != 0f || a.pulgarDerecho != 0f ||
+                    a.dedosIzquierda != 0f || a.indiceIzquierdo != 0f || a.pulgarIzquierdo != 0f;
+        if (dedos == null)
+        {
+            if (!algo) return false;
+            dedos = arma.gameObject.AddComponent<DedosDelArma>();
+        }
+        bool cambio = dedos.dedosDerecha != a.dedosDerecha || dedos.indiceDerecho != a.indiceDerecho ||
+                      dedos.pulgarDerecho != a.pulgarDerecho || dedos.dedosIzquierda != a.dedosIzquierda ||
+                      dedos.indiceIzquierdo != a.indiceIzquierdo || dedos.pulgarIzquierdo != a.pulgarIzquierdo;
+        dedos.dedosDerecha = a.dedosDerecha; dedos.indiceDerecho = a.indiceDerecho; dedos.pulgarDerecho = a.pulgarDerecho;
+        dedos.dedosIzquierda = a.dedosIzquierda; dedos.indiceIzquierdo = a.indiceIzquierdo; dedos.pulgarIzquierdo = a.pulgarIzquierdo;
         return cambio;
     }
 
