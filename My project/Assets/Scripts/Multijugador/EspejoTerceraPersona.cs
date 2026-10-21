@@ -7,6 +7,11 @@ using UnityEngine;
 // todos lados). En el Inspector de este componente: "Mirar arriba o abajo" lo hace mirar arriba o abajo, "Copiar
 // movimientos" lo hace caminar, saltar, agacharse y mirar como el jugador, y "Traer adelante" lo vuelve a poner
 // adelante del jugador.
+// Manijas: con "Ajustar con manijas" aparecen, en la vista Scene, tres manijas (hijas del muñeco): "Arma", "Mano
+// derecha" y "Mano izquierda". Se seleccionan (en la jerarquía o haciendo clic en la bolita) y se mueven y giran con
+// las herramientas de siempre (W y E); la del arma también se escala (R) para cambiar el tamaño. Lo que se mueva pasa
+// al ajuste de esa arma (lugar, giro, escala y las manos) y queda guardado. Un arma sin ajuste se agrega con "Agregar
+// el arma en la mano".
 // Se prende y apaga con Riftwalker > Muñeco espejo (tercera persona). Con el juego andando, los ajustes de cada arma
 // se cambian en el asset Resources/AgarresTerceraPersona (el campo "Agarres" de este componente lo muestra): se ven al
 // momento en el muñeco y quedan guardados.
@@ -24,6 +29,15 @@ public class EspejoTerceraPersona : MonoBehaviour
     public bool copiarMovimientos;
     [Tooltip("Lo vuelve a poner adelante del jugador, mirándolo.")]
     public bool traerAdelante;
+    [Tooltip("Muestra las manijas del arma y de las manos para moverlas en la vista Scene.")]
+    public bool ajustarConManijas = true;
+    [Tooltip("Agrega a los ajustes el arma que tiene en la mano, si todavía no tiene (empieza como La Porteña).")]
+    public bool agregarArmaEnMano;
+
+    private ManijaDeAjuste manijaArma, manijaDerecha, manijaIzquierda;
+    private Vector3[] ultimoLugar = new Vector3[3];
+    private Quaternion[] ultimoGiro = new Quaternion[3];
+    private Vector3 ultimaEscala;
 
     private Transform jugador;
     private Camera camara;
@@ -168,6 +182,9 @@ public class EspejoTerceraPersona : MonoBehaviour
             }
         }
 
+        if (agregarArmaEnMano) { agregarArmaEnMano = false; AgregarArma(); }
+        LeerManijas();
+
         // La misma arma en la mano.
         GameObject ahora = switcher.HeldPrimary != null ? switcher.HeldPrimary : switcher.HeldSecondary;
         if (ahora != enMano)
@@ -183,10 +200,100 @@ public class EspejoTerceraPersona : MonoBehaviour
     // Un arma sin ajuste todavía: como la ven hoy los demás, en la mano derecha y apuntando hacia donde mira.
     private void LateUpdate()
     {
+        PonerManijas();
         if (arma == null || arma.Manejando || modeloEnMano == null) return;
         Transform mano = copia.GetBoneTransform(HumanBodyBones.RightHand);
         if (mano != null) soporte.position = mano.position;
         soporte.rotation = ojos.rotation;
+    }
+
+    // ---------- Manijas ----------
+
+    private ManijaDeAjuste Manija(string nombre, Color color, float tamano)
+    {
+        var go = new GameObject(nombre);
+        go.transform.SetParent(raiz, false);
+        ManijaDeAjuste m = go.AddComponent<ManijaDeAjuste>();
+        m.color = color;
+        m.tamano = tamano;
+        return m;
+    }
+
+    // Lo que se movió con las manijas desde el cuadro anterior pasa al ajuste del arma.
+    private void LeerManijas()
+    {
+        if (manijaArma == null || arma == null || !arma.Manejando) return;
+        Transform a = manijaArma.transform, d = manijaDerecha.transform, i = manijaIzquierda.transform;
+        bool movioArma = Movida(a, 0) || (a.localScale - ultimaEscala).sqrMagnitude > 1e-8f;
+        bool movioDer = Movida(d, 1), movioIzq = Movida(i, 2);
+        if (!movioArma && !movioDer && !movioIzq) return;
+        arma.DesdeManijas(a, d, i, movioArma, movioDer, movioIzq);
+#if UNITY_EDITOR
+        UnityEditor.EditorUtility.SetDirty(AgarresTerceraPersona.Actual); // así queda guardado en el asset
+#endif
+    }
+
+    private bool Movida(Transform t, int cual) =>
+        (t.position - ultimoLugar[cual]).sqrMagnitude > 1e-8f || Quaternion.Angle(t.rotation, ultimoGiro[cual]) > 0.01f;
+
+    // Las manijas van donde está el arma quieta y las manos, según el ajuste (también si se cambió en el Inspector).
+    private void PonerManijas()
+    {
+        bool mostrar = ajustarConManijas && arma != null && arma.Manejando;
+        if (!mostrar)
+        {
+            if (manijaArma != null)
+            {
+                Destroy(manijaArma.gameObject);
+                Destroy(manijaDerecha.gameObject);
+                Destroy(manijaIzquierda.gameObject);
+                manijaArma = manijaDerecha = manijaIzquierda = null;
+            }
+            return;
+        }
+        bool nuevas = manijaArma == null;
+        if (nuevas)
+        {
+            manijaArma = Manija("Manija: Arma", Color.yellow, 0.05f);
+            manijaDerecha = Manija("Manija: Mano derecha", Color.cyan, 0.035f);
+            manijaIzquierda = Manija("Manija: Mano izquierda", Color.magenta, 0.035f);
+        }
+        if (!arma.PoseQuieta(out Vector3 p, out Quaternion g, out float escala, out Vector3 dp, out Quaternion dg,
+                out Vector3 ip, out Quaternion ig)) return;
+        Fijar(manijaArma.transform, 0, p, g);
+        manijaArma.transform.localScale = ultimaEscala = Vector3.one * escala;
+        Fijar(manijaDerecha.transform, 1, dp, dg);
+        Fijar(manijaIzquierda.transform, 2, ip, ig);
+#if UNITY_EDITOR
+        if (nuevas) UnityEditor.Selection.activeGameObject = manijaArma.gameObject;
+#endif
+    }
+
+    private void Fijar(Transform t, int cual, Vector3 lugar, Quaternion giro)
+    {
+        t.SetPositionAndRotation(lugar, giro);
+        ultimoLugar[cual] = lugar;
+        ultimoGiro[cual] = giro;
+    }
+
+    // Agrega el arma en la mano a los ajustes, con los valores de la Porteña (o los de siempre).
+    private void AgregarArma()
+    {
+        if (enMano == null) return;
+        AgarresTerceraPersona lista = AgarresTerceraPersona.Actual;
+        if (lista.Buscar(enMano) != null) return;
+        AgarresTerceraPersona.Agarre molde = lista.armas.Count > 0 ? lista.armas[0] : null;
+        var nuevo = molde != null ? JsonUtility.FromJson<AgarresTerceraPersona.Agarre>(JsonUtility.ToJson(molde))
+                                  : new AgarresTerceraPersona.Agarre();
+        nuevo.arma = enMano.name;
+        nuevo.nombre = enMano.name;
+        nuevo.manoDerecha = nuevo.manoIzquierda = nuevo.giroManoDerecha = nuevo.giroManoIzquierda = Vector3.zero;
+        lista.armas.Add(nuevo);
+#if UNITY_EDITOR
+        UnityEditor.EditorUtility.SetDirty(lista);
+#endif
+        GameObject sale = enMano;
+        arma.Cambiar(() => Mostrar(sale)); // la vuelve a poner, ahora con su ajuste
     }
 
     private void Mostrar(GameObject primeraPersona)

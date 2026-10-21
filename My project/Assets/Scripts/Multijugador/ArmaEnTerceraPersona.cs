@@ -272,6 +272,66 @@ public class ArmaEnTerceraPersona : MonoBehaviour
         objetivoIzquierdo.SetPositionAndRotation(izq, izqGiro);
     }
 
+    // ---------- Ajuste con manijas (EspejoTerceraPersona) ----------
+
+    /// <summary>El ajuste del arma que tiene en la mano (null si no tiene).</summary>
+    public AgarresTerceraPersona.Agarre Ajuste => Manejando ? ajuste : null;
+
+    // Dónde va el arma quieta (sin disparo, recarga ni sacar), según el ajuste.
+    private void PoseDelArma(out Vector3 punto, out Quaternion giroArma)
+    {
+        Vector3 pecho = ojos.position - transform.up * ajuste.alturaPecho;
+        giroArma = ojos.rotation * Quaternion.Euler(ajuste.giro);
+        punto = pecho + ojos.rotation * ajuste.lugar;
+    }
+
+    /// <summary>Dónde van el arma y las manos con el arma quieta, según el ajuste (para poner las manijas).</summary>
+    public bool PoseQuieta(out Vector3 arma, out Quaternion giroArma, out float escala,
+                           out Vector3 der, out Quaternion derGiro, out Vector3 izq, out Quaternion izqGiro)
+    {
+        arma = der = izq = Vector3.zero;
+        giroArma = derGiro = izqGiro = Quaternion.identity;
+        escala = 1f;
+        if (!Manejando || ojos == null) return false;
+        PoseDelArma(out arma, out giroArma);
+        escala = ajuste.escala;
+        der = arma + giroArma * ((derechaLocal + ajuste.manoDerecha) * escala);
+        derGiro = giroArma * derechaGiro * Quaternion.Euler(ajuste.giroManoDerecha);
+        izq = arma + giroArma * ((izquierdaLocal + ajuste.manoIzquierda) * escala);
+        izqGiro = giroArma * izquierdaGiro * Quaternion.Euler(ajuste.giroManoIzquierda);
+        return true;
+    }
+
+    /// <summary>Pasa al ajuste lo que se movió con las manijas: el arma (lugar, giro y tamaño) y cada mano.</summary>
+    public void DesdeManijas(Transform arma, Transform der, Transform izq, bool movioArma, bool movioDer, bool movioIzq)
+    {
+        if (!Manejando || ojos == null) return;
+        Quaternion mirada = ojos.rotation;
+        if (movioArma && arma != null)
+        {
+            Vector3 pecho = ojos.position - transform.up * ajuste.alturaPecho;
+            ajuste.lugar = Quaternion.Inverse(mirada) * (arma.position - pecho);
+            ajuste.giro = Grados((Quaternion.Inverse(mirada) * arma.rotation).eulerAngles);
+            ajuste.escala = Mathf.Clamp(arma.lossyScale.x, 0.5f, 1.5f);
+        }
+        PoseDelArma(out Vector3 punto, out Quaternion giroArma);
+        float escala = Mathf.Max(0.01f, ajuste.escala);
+        if (movioDer && der != null)
+        {
+            ajuste.manoDerecha = Quaternion.Inverse(giroArma) * (der.position - punto) / escala - derechaLocal;
+            ajuste.giroManoDerecha = Grados((Quaternion.Inverse(giroArma * derechaGiro) * der.rotation).eulerAngles);
+        }
+        if (movioIzq && izq != null)
+        {
+            ajuste.manoIzquierda = Quaternion.Inverse(giroArma) * (izq.position - punto) / escala - izquierdaLocal;
+            ajuste.giroManoIzquierda = Grados((Quaternion.Inverse(giroArma * izquierdaGiro) * izq.rotation).eulerAngles);
+        }
+    }
+
+    // De 0..360 a -180..180, más fácil de leer en el Inspector.
+    private static Vector3 Grados(Vector3 e) =>
+        new Vector3(Mathf.DeltaAngle(0f, e.x), Mathf.DeltaAngle(0f, e.y), Mathf.DeltaAngle(0f, e.z));
+
     private static float Suave(float t)
     {
         t = Mathf.Clamp01(t);
