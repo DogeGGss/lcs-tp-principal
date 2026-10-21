@@ -109,7 +109,8 @@ public class BrazosEnCamara : MonoBehaviour
 
         foreach (KeyValuePair<GameObject, MeshRenderer> foto in fotos)
         {
-            bool ver = foto.Key == enMano;
+            // Con la mira telescópica puesta (US 254) el arma se esconde: los brazos también.
+            bool ver = foto.Key == enMano && !MiraTelescopica.Puesta;
             if (foto.Value != null) foto.Value.enabled = ver;
             if (brazoDerecho.TryGetValue(foto.Key, out MeshRenderer derecho) && derecho != null) derecho.enabled = ver;
         }
