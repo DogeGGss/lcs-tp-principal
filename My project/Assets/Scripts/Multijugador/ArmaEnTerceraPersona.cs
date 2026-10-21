@@ -179,7 +179,7 @@ public class ArmaEnTerceraPersona : MonoBehaviour
         if (Manejando && ajuste.recarga == AgarresTerceraPersona.TipoDeRecarga.Tambor)
         {
             if (!piezasPorModelo.TryGetValue(modelo, out piezas) || piezas == null)
-                piezasPorModelo[modelo] = piezas = new PiezasDeLaTrochita(modelo, null);
+                piezasPorModelo[modelo] = piezas = new PiezasDeLaTrochita(modelo, null, 2.5f); // rayitas más gruesas: se ven de lejos
         }
     }
 
