@@ -347,7 +347,7 @@ public class ArmaEnTerceraPersona : MonoBehaviour
             // otro, lo mete (el arma da un empujón), va a la palanca de carga, tira hacia atrás y vuelve al guardamanos.
             // Dónde agarra el cargador y la palanca: del ajuste (se mueven con las manijas del muñeco espejo).
             PuntosDeRecarga(out Vector3 cargador, out Quaternion giroCargador, out Vector3 palanca, out Quaternion giroPalanca);
-            palanca -= m.forward * (0.07f * tiron);
+            palanca -= m.forward * (0.07f * ajuste.escala * tiron);
             Vector3 bolsillo = cargador + Vector3.down * 0.25f - transform.forward * 0.05f;
             float aCargador = Suave(Mathf.InverseLerp(0.1f, 0.22f, r)) * (1f - Suave(Mathf.InverseLerp(0.65f, 0.75f, r)));
             float aBolsillo = Suave(Mathf.InverseLerp(0.28f, 0.4f, r)) * (1f - Suave(Mathf.InverseLerp(0.5f, 0.6f, r)));
@@ -427,15 +427,16 @@ public class ArmaEnTerceraPersona : MonoBehaviour
         }
     }
 
-    // Dónde agarra la mano izquierda el cargador y la palanca, con el arma como está ahora (respecto de la mano derecha).
+    // Dónde agarra la mano izquierda el cargador y la palanca, con el arma como está ahora (respecto de la mano derecha,
+    // en el espacio del arma: si se cambia el tamaño del arma, los puntos se agrandan o achican con ella).
     private void PuntosDeRecarga(out Vector3 cargador, out Quaternion giroCargador, out Vector3 palanca, out Quaternion giroPalanca)
     {
         Transform m = modelo.transform;
-        Vector3 der = m.TransformPoint(derechaLocal + ajuste.manoDerecha);
+        Vector3 der = derechaLocal + ajuste.manoDerecha;
         Quaternion agarre = m.rotation * izquierdaGiro * Quaternion.Euler(ajuste.giroManoIzquierda);
-        cargador = der + m.rotation * ajuste.cargador;
+        cargador = m.TransformPoint(der + ajuste.cargador);
         giroCargador = agarre * Quaternion.Euler(ajuste.giroCargador);
-        palanca = der + m.rotation * ajuste.palancaLugar;
+        palanca = m.TransformPoint(der + ajuste.palancaLugar);
         giroPalanca = agarre * Quaternion.Euler(ajuste.giroPalanca);
     }
 
@@ -457,16 +458,16 @@ public class ArmaEnTerceraPersona : MonoBehaviour
     {
         if (!Manejando) return;
         Transform m = modelo.transform;
-        Vector3 der = m.TransformPoint(derechaLocal + ajuste.manoDerecha);
+        Vector3 der = derechaLocal + ajuste.manoDerecha;
         Quaternion agarre = m.rotation * izquierdaGiro * Quaternion.Euler(ajuste.giroManoIzquierda);
         if (movioCargador && cargador != null)
         {
-            ajuste.cargador = Quaternion.Inverse(m.rotation) * (cargador.position - der);
+            ajuste.cargador = m.InverseTransformPoint(cargador.position) - der;
             ajuste.giroCargador = Grados((Quaternion.Inverse(agarre) * cargador.rotation).eulerAngles);
         }
         if (movioPalanca && palanca != null)
         {
-            ajuste.palancaLugar = Quaternion.Inverse(m.rotation) * (palanca.position - der);
+            ajuste.palancaLugar = m.InverseTransformPoint(palanca.position) - der;
             ajuste.giroPalanca = Grados((Quaternion.Inverse(agarre) * palanca.rotation).eulerAngles);
         }
     }
