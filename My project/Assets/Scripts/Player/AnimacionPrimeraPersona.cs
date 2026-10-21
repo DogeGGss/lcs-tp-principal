@@ -20,7 +20,8 @@ using UnityEngine;
 // Belgrano Sur (fusil de ráfaga, US 252): un golpe por bala de la ráfaga y la recarga del Urquiza, con su cargador. El
 // Último Tren (francotirador, US 254): un golpe fuerte y después la mano derecha hace el cerrojo; al apuntar con la mira
 // sube hasta el ojo antes de que aparezca la lente (MiraTelescopica.Subida). El modelo no tiene manija de cerrojo:
-// se la agrega PiezasDelTren. Y el cuchillo (US 256): quieto, caminando, al sacarlo y al mirar como las demás, y el
+// se la agrega PiezasDelTren. Las granadas (US 258): el brazo derecho la lleva atrás, la arroja (sale de la mano al
+// final, GrenadeThrower) y baja; si quedan, saca la siguiente desde abajo. Y el cuchillo (US 256): quieto, caminando, al sacarlo y al mirar como las demás, y el
 // corte de costado al atacar, que mueve solo el cuchillo y el brazo derecho.
 // Cada una tiene su fuerza de retroceso y su tiempo para sacarla. Se apaga con "Activa" en el Inspector, para comparar.
 // El movimiento se suma al final del cuadro (después de BrazosEnCamara) y se saca al empezar el siguiente
@@ -141,6 +142,17 @@ public class AnimacionPrimeraPersona : MonoBehaviour
     [Tooltip("Cuánto gira la punta hacia cada lado (grados).")]
     public float corteGiro = 40f;
 
+    [Header("Granadas (US 258)")]
+    [Tooltip("Cuánto tarda la mano en traer la granada desde abajo (s).")]
+    public float granadaSacar = 0.35f;
+    [Tooltip("Hasta dónde va la mano al prepararse: atrás, arriba y un poco afuera (metros).")]
+    public Vector3 granadaAtras = new Vector3(0.04f, 0.08f, -0.12f);
+    [Tooltip("Giro de la mano al prepararse (grados: x negativo levanta la punta, z inclina).")]
+    public Vector3 granadaAtrasGiro = new Vector3(-35f, -10f, -20f);
+    [Tooltip("Hasta dónde llega la mano al arrojarla, cuando la suelta (metros).")]
+    public Vector3 granadaAdelante = new Vector3(-0.04f, 0.01f, 0.2f);
+    public Vector3 granadaAdelanteGiro = new Vector3(30f, 8f, 10f);
+
     [Header("Sacar el arma")]
     [Tooltip("La Porteña. Las demás tardan lo que dice su ficha (tiempo para estar lista).")]
     public float sacarDuracion = 0.3f;
@@ -248,9 +260,49 @@ public class AnimacionPrimeraPersona : MonoBehaviour
         arma = switcher.HeldPrimary;
         if (EsUrquiza(arma) || EsRoca(arma) || EsMitre(arma) || EsBelgrano(arma) || EsTren(arma)) return arma;
         if (arma != null) return null;
+        // US 258: la granada (el lugar de la cámara donde se arma, con sus agarres).
+        if (switcher.Granadas != null && switcher.Granadas.IsHolding)
+        {
+            Transform mano = transform.Find(GrenadeThrower.NombreMano);
+            return mano != null ? mano.gameObject : null;
+        }
         // US 256: el cuchillo.
         GameObject cuchillo = switcher.meleeScript != null ? switcher.meleeScript.CurrentViewModel : null;
         return cuchillo != null && cuchillo.activeInHierarchy ? cuchillo : null;
+    }
+
+    private bool EsGranada(GameObject arma) =>
+        arma != null && switcher != null && switcher.Granadas != null && arma.name == GrenadeThrower.NombreMano &&
+        arma.transform.parent == transform;
+
+    // US 258: el lanzamiento (GrenadeThrower.AvanceDelLanzamiento): la mano va hacia atrás y arriba, la arroja hacia
+    // adelante (la suelta al final) y baja fuera de la pantalla. Solo se mueven la granada y el brazo derecho.
+    private void Lanzamiento(out Vector3 mover, out Quaternion girar)
+    {
+        mover = Vector3.zero;
+        girar = Quaternion.identity;
+        float t = switcher.Granadas.AvanceDelLanzamiento;
+        if (t < 0f) return;
+        Vector3 pos, giro;
+        Vector3 abajo = new Vector3(0f, -sacarAbajo, 0.05f), abajoGiro = new Vector3(sacarInclinacion, 0f, 0f);
+        if (t < GrenadeThrower.Preparacion)
+        {
+            float f = Mathf.SmoothStep(0f, 1f, t / GrenadeThrower.Preparacion);
+            pos = granadaAtras * f; giro = granadaAtrasGiro * f;
+        }
+        else if (t < GrenadeThrower.Suelta)
+        {
+            float f = (t - GrenadeThrower.Preparacion) / GrenadeThrower.Arrojar;
+            f *= f; // cada vez más rápido, hasta soltarla
+            pos = Vector3.Lerp(granadaAtras, granadaAdelante, f); giro = Vector3.Lerp(granadaAtrasGiro, granadaAdelanteGiro, f);
+        }
+        else
+        {
+            float f = Mathf.SmoothStep(0f, 1f, Mathf.Clamp01((t - GrenadeThrower.Suelta) / GrenadeThrower.Despues));
+            pos = Vector3.Lerp(granadaAdelante, abajo, f); giro = Vector3.Lerp(granadaAdelanteGiro, abajoGiro, f);
+        }
+        mover = pos;
+        girar = Quaternion.Euler(giro);
     }
 
     private bool EsCuchillo(GameObject arma) =>
@@ -311,6 +363,7 @@ public class AnimacionPrimeraPersona : MonoBehaviour
     private float Sacar(GameObject arma)
     {
         if (EsPortena(arma)) return sacarDuracion;
+        if (EsGranada(arma)) return granadaSacar;
         ShopItem ficha = WeaponSwitcher.FichaDe(arma);
         return ficha != null && ficha.equipTime > 0f ? ficha.equipTime : sacarDuracion;
     }
@@ -409,6 +462,8 @@ public class AnimacionPrimeraPersona : MonoBehaviour
             sacarDesde = Time.time;
         }
         if (foto == null) foto = transform.Find(string.Format(NombreFoto, arma.name)); // la foto sale unos cuadros después
+        // Granada: la saca al elegirla y otra vez después de lanzar, si le quedan (US 258).
+        if (EsGranada(arma)) sacarDesde = switcher.Granadas.SacadaDesde;
 
         // ---------- Pose de este cuadro, en el espacio de la cámara ----------
         Vector3 mover = Vector3.zero;
@@ -530,6 +585,7 @@ public class AnimacionPrimeraPersona : MonoBehaviour
         Vector3 moverDerecha = Vector3.zero;
         Quaternion girarDerecha = Quaternion.identity;
         if (EsCuchillo(arma)) Corte(out moverDerecha, out girarDerecha); // el cuchillo no tiene piezas
+        else if (EsGranada(arma)) Lanzamiento(out moverDerecha, out girarDerecha); // la granada tampoco
         else if (detalles)
         {
             IPiezasDelArma p = Piezas(arma);
