@@ -40,6 +40,7 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
     private byte saltos, aterrizajes;
     private float finInvulnerable;
     private Semitransparente transparencia; // US 137: en la copia, mientras es invulnerable
+    private ArmaEnTerceraPersona terceraPersona; // F26 (US 243): el arma y las manos que ven los demás
     private bool cuerpoPropio;              // la copia ya tiene el modelo de su personaje (CharacterData.modelo)
     private float proximoCuerpo;
     private int ultimoAtacante;
@@ -967,6 +968,7 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
         // US 031, CA5: a los rivales se los reconoce por el contorno rojo, como en Valorant. No se ve su nombre ni su vida.
         CrearContorno();
         transparencia = Semitransparente.Crear(gameObject, modelo); // US 137
+        terceraPersona = ArmaEnTerceraPersona.Crear(gameObject, animador, camara); // F26: cómo tiene el arma
     }
 
     private void CrearContorno()
@@ -1055,6 +1057,7 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
         }
 
         MostrarArma(muerto ? SinArma : armaRed);
+        if (terceraPersona != null) terceraPersona.Recarga = muerto || recargaRed == SinRecarga ? -1f : recargaRed / 200f;
     }
 
     // US 182, CA1 y CA2: en la mano se ve el arma a tamaño real que tiene el jugador (o ninguna).
@@ -1087,9 +1090,41 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
             ultimaArmaVista = armaVista;
             ultimaArmaVistaEn = Time.time;
         }
+        byte anterior = armaVista;
         armaVista = arma;
+        // F26, CA5: de un arma a otra, la que tiene baja y se guarda antes de que salga la nueva.
+        if (terceraPersona != null && !muerto && anterior != 255 && anterior != SinArma && arma != SinArma)
+            terceraPersona.Cambiar(() => Ver(arma, true));
+        else Ver(arma, false);
+    }
+
+    // Muestra esa arma en la mano (y ninguna otra). "sacandola": sube desde abajo, durante lo que tarda en estar lista.
+    private void Ver(byte arma, bool sacandola)
+    {
         foreach (KeyValuePair<byte, ModeloEnMano> modelo in enLaMano)
             if (modelo.Value.go != null) modelo.Value.go.SetActive(modelo.Key == arma);
+        if (terceraPersona == null) return;
+        GameObject real = enLaMano.TryGetValue(arma, out ModeloEnMano enMano) ? enMano.go : null;
+        ShopItem ficha = FichaDeCodigo(arma);
+        float sacar = !sacandola ? 0f : ficha != null && ficha.equipTime > 0f ? Mathf.Min(ficha.equipTime, 0.6f) : 0.3f;
+        terceraPersona.Poner(real, PrimeraPersona(arma), sacar);
+    }
+
+    // El arma de primera persona de ese código (de la que sale el modelo a tamaño real), o null.
+    private GameObject PrimeraPersona(byte arma)
+    {
+        if (arma == ArmaPistola) return pistola;
+        if (arma >= PrimeraPrincipal && arma - PrimeraPrincipal < principales.Count) return principales[arma - PrimeraPrincipal];
+        if (EsSecundaria(arma)) return secundarias[arma - PrimeraSecundaria];
+        return null;
+    }
+
+    private ShopItem FichaDeCodigo(byte arma)
+    {
+        if (arma == ArmaPistola) return fichaPistola;
+        if (arma >= PrimeraPrincipal && arma - PrimeraPrincipal < fichasPrincipales.Count) return fichasPrincipales[arma - PrimeraPrincipal];
+        if (EsSecundaria(arma) && arma - PrimeraSecundaria < fichasSecundarias.Count) return fichasSecundarias[arma - PrimeraSecundaria];
+        return null;
     }
 
     private const float LargoCuchillo = 0.3f, LargoGranada = 0.12f, LargoDispositivo = 0.3f;
@@ -1124,6 +1159,7 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
         if (soporteMano == null || photonView == null || photonView.IsMine) return;
         // El hueso se busca ya con la copia prendida (con el personaje apagado, el Animator no lo da).
         if (manoDerecha == null && animador != null && animador.isHuman) manoDerecha = animador.GetBoneTransform(HumanBodyBones.RightHand);
+        if (terceraPersona != null && terceraPersona.Manejando) return; // F26: el arma la pone ArmaEnTerceraPersona
         if (manoDerecha != null) soporteMano.position = manoDerecha.position;
         if (camara != null) soporteMano.rotation = camara.rotation;
     }
@@ -1144,6 +1180,7 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
         armaRed = arma;
         MostrarArma(arma);
         Disparo?.Invoke();
+        if (terceraPersona != null) terceraPersona.Disparo(); // F26, CA3: el retroceso en los brazos
         int principal = arma - PrimeraPrincipal;
         bool esPrincipal = principal >= 0 && principal < principales.Count;
         int secundaria = arma - PrimeraSecundaria;
