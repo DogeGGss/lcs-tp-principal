@@ -610,8 +610,15 @@ public class AnimacionPrimeraPersona : MonoBehaviour
         // Sacar el arma: sube desde abajo, durante lo que tarda en estar lista.
         float sacar = Mathf.Clamp01((Time.time - sacarDesde) / Mathf.Max(0.01f, Sacar(arma)));
         float falta = 1f - Mathf.SmoothStep(0f, 1f, sacar);
-        mover += new Vector3(0f, -sacarAbajo * falta, 0f);
-        girar += new Vector3(sacarInclinacion * falta, 0f, -sacarInclinacion * 0.3f * falta);
+        // Granada (US 258): la siguiente, después de lanzar, la trae solo la mano derecha; la izquierda no se mueve.
+        bool soloDerecha = EsGranada(arma) && switcher.Granadas.SacadaTrasLanzar;
+        Vector3 sacarMover = new Vector3(0f, -sacarAbajo * falta, 0f);
+        Vector3 sacarGiro = new Vector3(sacarInclinacion * falta, 0f, -sacarInclinacion * 0.3f * falta);
+        if (!soloDerecha)
+        {
+            mover += sacarMover;
+            girar += sacarGiro;
+        }
 
         // Quieto: respira. Caminando se balancea; corriendo, más.
         float rapidez = new Vector2(vel.x, vel.z).magnitude;
@@ -663,6 +670,11 @@ public class AnimacionPrimeraPersona : MonoBehaviour
         {
             Lanzamiento(out moverDerecha, out girarDerecha, out Vector3 izquierdaGranada);
             moverIzquierdaExtra += izquierdaGranada;
+            if (soloDerecha && falta > 0f)
+            {
+                moverDerecha += sacarMover;
+                girarDerecha = Quaternion.Euler(sacarGiro) * girarDerecha;
+            }
         }
         else if (detalles)
         {

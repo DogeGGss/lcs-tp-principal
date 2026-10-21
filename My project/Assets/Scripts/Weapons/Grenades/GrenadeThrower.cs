@@ -42,6 +42,8 @@ public class GrenadeThrower : MonoBehaviour
     public float AvanceDelLanzamiento => lanzando ? Time.time - lanzaDesde : -1f;
     /// <summary>Cuándo empezó a sacar la granada que tiene en la mano (al elegirla o después de lanzar la anterior).</summary>
     public float SacadaDesde { get; private set; } = -10f;
+    /// <summary>La que tiene en la mano la sacó después de lanzar otra (no al elegirla): solo vuelve la mano derecha.</summary>
+    public bool SacadaTrasLanzar { get; private set; }
 
     private PlayerLoadout loadout;
     private Transform owner;
@@ -128,6 +130,7 @@ public class GrenadeThrower : MonoBehaviour
         {
             lanzando = false;
             SacadaDesde = Time.time;
+            SacadaTrasLanzar = true;
             if (heldModel != null) heldModel.SetActive(true);
         }
     }
@@ -184,6 +187,7 @@ public class GrenadeThrower : MonoBehaviour
         selected = item;
         lanzando = false;
         SacadaDesde = Time.time;
+        SacadaTrasLanzar = false;
         DestroyHeldModel();
         if (item == null) return;
         UltimaElegida = item;
