@@ -88,6 +88,10 @@ public class AnimacionPrimeraPersona : MonoBehaviour
     public float cerrojoArriba = 0.025f;
     [Tooltip("Cerrojo sin la manija (detalles apagados): cuánto va la mano derecha hacia atrás (metros).")]
     public float cerrojoAtras = 0.07f;
+    [Tooltip("Cerrojo: cuánto más afuera de la punta de la manija queda la mano (metros). Más, si la atraviesa.")]
+    public float cerrojoAfuera = 0.02f;
+    [Tooltip("Cerrojo: cuánto se abre la mano hacia la derecha al ir y volver de la manija, para no atravesar el arma (metros).")]
+    public float cerrojoRodeo = 0.05f;
     [Tooltip("Cerrojo: cuánto se inclina el arma hacia la mano mientras lo hace (grados).")]
     public float cerrojoInclinacion = 10f;
     [Tooltip("Cerrojo: cuándo empieza después del tiro y cuánto dura (s). Termina antes del próximo tiro (1,33 s).")]
@@ -591,7 +595,8 @@ public class AnimacionPrimeraPersona : MonoBehaviour
 
     // El cerrojo (avance de 0 a 1): la mano derecha suelta la empuñadura y va a la manija, la levanta, la tira hacia
     // atrás, la empuja hacia adelante, la baja y vuelve a la empuñadura. "inclina": cuánto se inclina el arma (0 a 1).
-    // La manija la agrega PiezasDelTren y se mueve de verdad; la mano va a su bolita y la sigue.
+    // La manija la agrega PiezasDelTren y se mueve de verdad; la mano va a su punta y la sigue. Para no atravesar el
+    // arma, la mano va y vuelve por afuera (hacia la derecha) y agarra la punta desde afuera.
     private void Cerrojo(GameObject arma, float avance, out Vector3 mover, out float inclina)
     {
         Vector3 mano = agarre != null ? transform.InverseTransformPoint(agarre.position) : transform.InverseTransformPoint(arma.transform.position);
@@ -600,11 +605,15 @@ public class AnimacionPrimeraPersona : MonoBehaviour
         if (piezasTren != null)
         {
             piezasTren.Poner(avance);
-            if (piezasTren.Manija(transform, out Vector3 bolita))
+            if (piezasTren.Manija(transform, out Vector3 punta, out Vector3 afuera))
             {
                 float va = Suave(Mathf.InverseLerp(0f, PiezasDelTren.Agarra, avance)) *
                            (1f - Suave(Mathf.InverseLerp(PiezasDelTren.Baja, 1f, avance)));
-                mover = (bolita - mano) * va;
+                // Agarra la punta desde afuera, con la palma un poco abajo.
+                Vector3 agarra = punta + afuera * cerrojoAfuera + Vector3.down * 0.01f;
+                // En el camino (ida y vuelta) se abre hacia la derecha: más en el medio, nada al llegar.
+                float camino = Mathf.Sin(va * Mathf.PI);
+                mover = (agarra - mano) * va + Vector3.right * (cerrojoRodeo * camino);
                 return;
             }
         }

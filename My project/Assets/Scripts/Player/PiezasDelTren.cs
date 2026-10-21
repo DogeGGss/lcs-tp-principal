@@ -1,9 +1,9 @@
 using UnityEngine;
 
 // Los detalles del Último Tren (francotirador) en primera persona (US 254): el cargador sale y entra como en el Urquiza
-// (PiezasDelUrquiza), y el cerrojo. El modelo (Sniper_3.fbx) no trae manija de cerrojo: acá se le agrega una, una
-// varilla con una bolita en la punta, al costado del cajón y del lado de la mano derecha. En el cerrojo la manija gira
-// hacia arriba, va hacia atrás, vuelve y baja; AnimacionPrimeraPersona lleva la mano derecha a la bolita (Manija).
+// (PiezasDelUrquiza), y el cerrojo. El modelo (Sniper_3.fbx) no trae manija de cerrojo: acá se le agrega una, un
+// palito al costado del cajón y del lado de la mano derecha. En el cerrojo la manija gira hacia arriba, va hacia atrás,
+// vuelve y baja; AnimacionPrimeraPersona lleva la mano derecha a la punta del palito (Manija).
 // Las medidas están en las coordenadas del modelo (x hacia la boca, z hacia arriba); Unity da vuelta la x al
 // importarlo: en la malla un punto (x, y, z) del modelo está en (-x, y, z) * escala.
 public class PiezasDelTren : IPiezasDelArma
@@ -11,7 +11,7 @@ public class PiezasDelTren : IPiezasDelArma
     private const float LargoModelo = 2.260f;   // de punta a punta en x (de -0.747 a 1.513)
     private const float EjeX = 0.06f, EjeZ = 0.235f; // donde está el cerrojo: arriba del cajón, sobre el gatillo
     private const float Ancho = 0.047f;          // el cajón mide 0,094 de ancho
-    private const float LargoVarilla = 0.07f, GruesoVarilla = 0.022f, Bolita = 0.05f;
+    private const float LargoVarilla = 0.08f, GruesoVarilla = 0.02f;
     private const float Recorrido = 0.12f;       // cuánto va hacia atrás
     private const float Giro = 70f;              // cuánto gira hacia arriba
 
@@ -22,7 +22,7 @@ public class PiezasDelTren : IPiezasDelArma
     private readonly Transform arma;     // la que tiene la malla
     private readonly Transform camara;
     private readonly MeshRenderer render;
-    private Transform eje, bolita;
+    private Transform eje, punta;
     private Renderer[] vistas;
     private Vector3 lugarEje;
     private float escala;
@@ -62,9 +62,9 @@ public class PiezasDelTren : IPiezasDelArma
         Transform varilla = Pieza(PrimitiveType.Cylinder, "Manija");
         varilla.localPosition = new Vector3(0f, lado * (Ancho + LargoVarilla * 0.5f), 0f) * escala;
         varilla.localScale = new Vector3(GruesoVarilla, LargoVarilla * 0.5f, GruesoVarilla) * escala;
-        bolita = Pieza(PrimitiveType.Sphere, "Bolita");
-        bolita.localPosition = new Vector3(0f, lado * (Ancho + LargoVarilla), 0f) * escala;
-        bolita.localScale = Vector3.one * (Bolita * escala);
+        punta = new GameObject("Punta").transform;
+        punta.SetParent(eje, false);
+        punta.localPosition = new Vector3(0f, lado * (Ancho + LargoVarilla), 0f) * escala;
         vistas = eje.GetComponentsInChildren<Renderer>(true);
         return true;
     }
@@ -108,12 +108,14 @@ public class PiezasDelTren : IPiezasDelArma
         }
     }
 
-    /// <summary>Dónde está ahora la bolita de la manija, en el espacio de esa cámara.</summary>
-    public bool Manija(Transform camara, out Vector3 lugar)
+    /// <summary>Dónde está ahora la punta de la manija y hacia dónde apunta (hacia afuera del arma), en el espacio de
+    /// esa cámara.</summary>
+    public bool Manija(Transform camara, out Vector3 lugar, out Vector3 afuera)
     {
-        lugar = Vector3.zero;
-        if (!Armar() || bolita == null) return false;
-        lugar = camara.InverseTransformPoint(bolita.position);
+        lugar = afuera = Vector3.zero;
+        if (!Armar() || punta == null) return false;
+        lugar = camara.InverseTransformPoint(punta.position);
+        afuera = (lugar - camara.InverseTransformPoint(eje.position)).normalized;
         return true;
     }
 
