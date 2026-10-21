@@ -1,0 +1,29 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3dd5d490054849dba98719b635954e46, type: 3}
+  m_Name: AgarresTerceraPersona
+  m_EditorClassIdentifier: Riftwalker::AgarresTerceraPersona
+  armas:
+  - arma: Pistol_2
+    nombre: La Porteña
+    alturaPecho: 0.3
+    lugar: {x: 0.17208043, y: 0.039722618, z: 0.47568792}
+    minimoAdelante: 0.3
+    seguirCuerpo: 1
+    giro: {x: -2.4825134, y: 0.0001343817, z: 0.00008834357}
+    escala: 1.3261741
+    manoDerecha: {x: -0.000087493565, y: 0.00007709861, z: -0.00014306605}
+    giroManoDerecha: {x: -0.000091552734, y: 0, z: -0.008972168}
+    manoIzquierda: {x: -0.00010017678, y: 0.00013056397, z: -0.00015242398}
+    giroManoIzquierda: {x: 0.00020755969, y: 0.007463835, z: 0.0000000840392}
+    retrocesoArriba: 10
+    retrocesoAtras: 0.06
