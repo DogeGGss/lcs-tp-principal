@@ -47,3 +47,47 @@ MonoBehaviour:
     tamborGiro: {x: -50, y: -50, z: -5}
     retrocesoArriba: 14
     retrocesoAtras: 0.08
+  - arma: Mitre
+    nombre: Mitre
+    alturaPecho: 0.3
+    lugar: {x: 0.15003607, y: -0.03487362, z: 0.3574348}
+    minimoAdelante: 0.2
+    seguirCuerpo: 1
+    giro: {x: 18.457003, y: 0.00014456699, z: 0.000073276635}
+    escala: 1.0003927
+    manoDerecha: {x: 0, y: 0, z: 0}
+    giroManoDerecha: {x: 0, y: 0, z: 0}
+    manoIzquierda: {x: 0, y: 0, z: 0}
+    giroManoIzquierda: {x: 0, y: 0, z: 0}
+    recarga: 0
+    tamborArriba: 0.15
+    tamborGiro: {x: -50, y: -50, z: -5}
+    cargadorAdelante: 0.12
+    cargadorAbajo: 0.1
+    palanca: 1
+    palancaAdelante: 0
+    palancaArriba: 0.08
+    retrocesoArriba: 4
+    retrocesoAtras: 0.03
+  - arma: BelgranoSur
+    nombre: Belgrano Sur
+    alturaPecho: 0.3
+    lugar: {x: 0.15000558, y: -0.011434295, z: 0.35885397}
+    minimoAdelante: 0.2
+    seguirCuerpo: 1
+    giro: {x: 14.70009, y: 0.000012525554, z: 0.000012242559}
+    escala: 1.0000253
+    manoDerecha: {x: 0, y: 0, z: 0}
+    giroManoDerecha: {x: 0, y: 0, z: 0}
+    manoIzquierda: {x: 0, y: 0, z: 0}
+    giroManoIzquierda: {x: 0, y: 0, z: 0}
+    recarga: 0
+    tamborArriba: 0.15
+    tamborGiro: {x: -50, y: -50, z: -5}
+    cargadorAdelante: 0.12
+    cargadorAbajo: 0.1
+    palanca: 1
+    palancaAdelante: 0
+    palancaArriba: 0.08
+    retrocesoArriba: 5
+    retrocesoAtras: 0.035

@@ -54,6 +54,14 @@ public class AgarresTerceraPersona : ScriptableObject
         public float tamborArriba = 0.15f;
         [Tooltip("Tambor: giro del arma al subir (grados: x negativo levanta la punta, y la gira hacia el centro, z la inclina).")]
         public Vector3 tamborGiro = new Vector3(-50f, -50f, -5f);
+        [Tooltip("Cargador: dónde está el cargador respecto de la mano derecha (metros): cuánto más adelante (hacia el caño; 0 en las pistolas, que lo tienen en la empuñadura) y cuánto más abajo.")]
+        public float cargadorAdelante = 0f;
+        public float cargadorAbajo = 0.12f;
+        [Tooltip("Cargador: al final la mano izquierda tira de la palanca de carga (fusiles, US 251 y 253).")]
+        public bool palanca;
+        [Tooltip("Dónde está la palanca de carga respecto de la mano derecha (metros): adelante (hacia el caño) y arriba.")]
+        public float palancaAdelante = 0f;
+        public float palancaArriba = 0.08f;
 
         [Header("Disparo")]
         [Tooltip("Cuánto se levanta la punta con cada disparo (grados).")]

@@ -9,7 +9,8 @@ using UnityEngine.Animations.Rigging;
 // - CA2: el arma sigue hacia dónde mira el jugador (arriba o abajo) y los brazos con ella.
 // - CA3: cada disparo da un golpe hacia atrás y arriba que vuelve con un resorte (Disparo).
 // - CA4: al recargar, el arma se inclina y la mano izquierda va a sacar el cargador, baja a buscar otro, lo pone y
-//   vuelve a agarrar el arma (Recarga, el avance que llega por la red).
+//   vuelve a agarrar el arma (Recarga, el avance que llega por la red). En los fusiles (US 251 y 253) el cargador está
+//   adelante del gatillo y al final tira de la palanca de carga; en La Trochita (US 245) sube mostrando el tambor.
 // - CA5: al cambiar de arma, la que tiene baja y se guarda y la nueva sube desde abajo (Cambiar y Poner).
 // Las armas sin ajuste quedan como antes: el arma en la mano derecha y los brazos hacia los agarres de primera persona.
 // Lo usan las copias de los jugadores remotos (JugadorEnRed) y el muñeco espejo para ajustarlo (EspejoTerceraPersona).
@@ -286,6 +287,10 @@ public class ArmaEnTerceraPersona : MonoBehaviour
         float subida = !tambor || r < 0f ? 0f : Suave(Mathf.InverseLerp(0f, 0.12f, r)) * (1f - Suave(Mathf.InverseLerp(0.85f, 1f, r)));
         float suelta = !tambor || r < 0f ? 0f : Suave(Mathf.InverseLerp(0f, 0.25f, r)) * (1f - Suave(Mathf.InverseLerp(0.75f, 1f, r)));
         float inclinada = tambor || r < 0f ? 0f : Suave(Mathf.InverseLerp(0f, 0.15f, r)) * (1f - Suave(Mathf.InverseLerp(0.85f, 1f, r)));
+        // Fusiles: el empujón al meter el cargador nuevo y el tirón de la palanca de carga.
+        bool conPalanca = !tambor && r >= 0f && ajuste.palanca;
+        float empujon = conPalanca ? Mathf.Exp(-Mathf.Pow((r - 0.62f) / 0.03f, 2f)) : 0f;
+        float tiron = conPalanca ? Suave(Mathf.InverseLerp(0.75f, 0.82f, r)) * (1f - Suave(Mathf.InverseLerp(0.85f, 0.9f, r))) : 0f;
 
         // Sacar (sube desde abajo) y guardar (baja): 1 = abajo del todo.
         float abajo = 0f;
@@ -293,7 +298,8 @@ public class ArmaEnTerceraPersona : MonoBehaviour
         if (pendiente != null) abajo = Mathf.Max(abajo, Suave(Mathf.Clamp01((Time.time - guardarDesde) / Guardar)));
 
         // Dónde va el arma: respecto de los ojos, con el retroceso, la recarga y el sacar/guardar.
-        Vector3 lugar = ajuste.lugar + new Vector3(-0.06f * inclinada, 0.03f * inclinada - 0.25f * abajo, -golpe.y - 0.05f * abajo);
+        Vector3 lugar = ajuste.lugar + new Vector3(-0.06f * inclinada, 0.03f * inclinada - 0.25f * abajo + 0.015f * empujon,
+                                                   -golpe.y - 0.05f * abajo - 0.02f * tiron);
         Vector3 giro = ajuste.giro + new Vector3(-golpe.x - 20f * inclinada + 45f * abajo, -15f * inclinada, -25f * inclinada);
         Quaternion giroArma = ojos.rotation * Quaternion.Euler(giro);
         // Gira alrededor del pecho (no de los ojos): mirando abajo, girando alrededor de los ojos se metía en el pecho.
@@ -335,9 +341,22 @@ public class ArmaEnTerceraPersona : MonoBehaviour
             Vector3 costado = transform.TransformPoint(transform.InverseTransformPoint(ojos.position) + new Vector3(-0.18f, -0.55f, 0.2f));
             izq = Vector3.Lerp(izq, costado, suelta);
         }
+        else if (conPalanca)
+        {
+            // Fusiles (US 251 y 253): la mano izquierda va al cargador (adelante del gatillo), lo saca para abajo, busca
+            // otro, lo mete (el arma da un empujón), va a la palanca de carga, tira hacia atrás y vuelve al guardamanos.
+            Vector3 cargador = der + m.forward * ajuste.cargadorAdelante - m.up * ajuste.cargadorAbajo;
+            Vector3 bolsillo = cargador + Vector3.down * 0.25f - transform.forward * 0.05f;
+            Vector3 palanca = der + m.forward * (ajuste.palancaAdelante - 0.07f * tiron) + m.up * ajuste.palancaArriba;
+            float aCargador = Suave(Mathf.InverseLerp(0.1f, 0.22f, r)) * (1f - Suave(Mathf.InverseLerp(0.65f, 0.75f, r)));
+            float aBolsillo = Suave(Mathf.InverseLerp(0.28f, 0.4f, r)) * (1f - Suave(Mathf.InverseLerp(0.5f, 0.6f, r)));
+            float aPalanca = Suave(Mathf.InverseLerp(0.65f, 0.75f, r)) * (1f - Suave(Mathf.InverseLerp(0.86f, 0.97f, r)));
+            Vector3 enCargador = Vector3.Lerp(izq, Vector3.Lerp(cargador, bolsillo, aBolsillo), aCargador);
+            izq = Vector3.Lerp(enCargador, palanca, aPalanca);
+        }
         else if (!tambor && r >= 0f)
         {
-            Vector3 cargador = der - m.up * 0.12f;
+            Vector3 cargador = der + m.forward * ajuste.cargadorAdelante - m.up * ajuste.cargadorAbajo;
             Vector3 bolsillo = cargador + Vector3.down * 0.25f - transform.forward * 0.05f;
             float aCargador = Suave(Mathf.InverseLerp(0.1f, 0.25f, r)) * (1f - Suave(Mathf.InverseLerp(0.8f, 0.95f, r)));
             float aBolsillo = Suave(Mathf.InverseLerp(0.3f, 0.45f, r)) * (1f - Suave(Mathf.InverseLerp(0.55f, 0.7f, r)));
