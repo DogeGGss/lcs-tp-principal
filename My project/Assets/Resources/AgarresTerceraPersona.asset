@@ -27,3 +27,20 @@ MonoBehaviour:
     giroManoIzquierda: {x: 0.00020755969, y: 0.007463835, z: 0.0000000840392}
     retrocesoArriba: 10
     retrocesoAtras: 0.06
+  - arma: LineaH
+    nombre: La Trochita
+    alturaPecho: 0.3
+    lugar: {x: 0.17, y: 0.04, z: 0.47}
+    minimoAdelante: 0.3
+    seguirCuerpo: 1
+    giro: {x: -2.5, y: 0, z: 0}
+    escala: 1
+    manoDerecha: {x: 0, y: 0, z: 0}
+    giroManoDerecha: {x: 0, y: 0, z: 0}
+    manoIzquierda: {x: 0, y: 0, z: 0}
+    giroManoIzquierda: {x: 0, y: 0, z: 0}
+    recarga: 1
+    tamborArriba: 0.15
+    tamborGiro: {x: -50, y: -50, z: -5}
+    retrocesoArriba: 14
+    retrocesoAtras: 0.08

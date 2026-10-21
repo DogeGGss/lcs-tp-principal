@@ -266,7 +266,12 @@ public class ArmaEnTerceraPersona : MonoBehaviour
         else recargaVista = recargaVista < 0f || Recarga < recargaVista - 0.3f ? Recarga
                           : Mathf.Lerp(recargaVista, Recarga, 1f - Mathf.Exp(-12f * dt));
         float r = recargaVista;
-        float inclinada = r < 0f ? 0f : Suave(Mathf.InverseLerp(0f, 0.15f, r)) * (1f - Suave(Mathf.InverseLerp(0.85f, 1f, r)));
+        // Tambor (US 245): el arma sube de costado mostrando el tambor, sostenida solo por la derecha (como en primera
+        // persona); la izquierda la suelta antes y la vuelve a agarrar cuando ya bajó. Cargador: se inclina.
+        bool tambor = ajuste.recarga == AgarresTerceraPersona.TipoDeRecarga.Tambor;
+        float subida = !tambor || r < 0f ? 0f : Suave(Mathf.InverseLerp(0f, 0.12f, r)) * (1f - Suave(Mathf.InverseLerp(0.85f, 1f, r)));
+        float suelta = !tambor || r < 0f ? 0f : Suave(Mathf.InverseLerp(0f, 0.25f, r)) * (1f - Suave(Mathf.InverseLerp(0.75f, 1f, r)));
+        float inclinada = tambor || r < 0f ? 0f : Suave(Mathf.InverseLerp(0f, 0.15f, r)) * (1f - Suave(Mathf.InverseLerp(0.85f, 1f, r)));
 
         // Sacar (sube desde abajo) y guardar (baja): 1 = abajo del todo.
         float abajo = 0f;
@@ -274,8 +279,10 @@ public class ArmaEnTerceraPersona : MonoBehaviour
         if (pendiente != null) abajo = Mathf.Max(abajo, Suave(Mathf.Clamp01((Time.time - guardarDesde) / Guardar)));
 
         // Dónde va el arma: respecto de los ojos, con el retroceso, la recarga y el sacar/guardar.
-        Vector3 lugar = ajuste.lugar + new Vector3(-0.06f * inclinada, 0.03f * inclinada - 0.25f * abajo, -golpe.y - 0.05f * abajo);
-        Vector3 giro = ajuste.giro + new Vector3(-golpe.x - 20f * inclinada + 45f * abajo, -15f * inclinada, -25f * inclinada);
+        Vector3 lugar = ajuste.lugar + new Vector3(-0.06f * inclinada, 0.03f * inclinada - 0.25f * abajo + ajuste.tamborArriba * subida,
+                                                   -golpe.y - 0.05f * abajo);
+        Vector3 giro = ajuste.giro + new Vector3(-golpe.x - 20f * inclinada + 45f * abajo, -15f * inclinada, -25f * inclinada) +
+                       ajuste.tamborGiro * subida;
         Quaternion giroArma = ojos.rotation * Quaternion.Euler(giro);
         // Gira alrededor del pecho (no de los ojos): mirando abajo, girando alrededor de los ojos se metía en el pecho.
         Vector3 pecho = ojos.position - transform.up * ajuste.alturaPecho;
@@ -301,7 +308,13 @@ public class ArmaEnTerceraPersona : MonoBehaviour
         Quaternion izqGiro = m.rotation * izquierdaGiro * Quaternion.Euler(ajuste.giroManoIzquierda);
 
         // CA4: la mano izquierda saca el cargador (por abajo de la empuñadura), baja a buscar otro, lo pone y vuelve.
-        if (r >= 0f)
+        if (tambor && suelta > 0f)
+        {
+            // La mano izquierda suelta el arma: se separa a la izquierda y baja al costado del cuerpo.
+            Vector3 costado = transform.TransformPoint(transform.InverseTransformPoint(ojos.position) + new Vector3(-0.22f, -0.75f, 0.08f));
+            izq = Vector3.Lerp(izq, costado, suelta);
+        }
+        else if (!tambor && r >= 0f)
         {
             Vector3 cargador = der - m.up * 0.12f;
             Vector3 bolsillo = cargador + Vector3.down * 0.25f - transform.forward * 0.05f;

@@ -11,6 +11,14 @@ using UnityEngine;
 [CreateAssetMenu(menuName = "Riftwalker/Agarres en tercera persona")]
 public class AgarresTerceraPersona : ScriptableObject
 {
+    public enum TipoDeRecarga
+    {
+        [Tooltip("Cambia el cargador: el arma se inclina y la mano izquierda va al cargador, baja a buscar otro y lo pone.")]
+        Cargador,
+        [Tooltip("Revólver (La Trochita, US 245): el arma sube de costado mostrando el tambor y la mano izquierda la suelta y baja; la sostiene la derecha.")]
+        Tambor,
+    }
+
     [System.Serializable]
     public class Agarre
     {
@@ -39,6 +47,13 @@ public class AgarresTerceraPersona : ScriptableObject
         public Vector3 giroManoDerecha = Vector3.zero;
         public Vector3 manoIzquierda = Vector3.zero;
         public Vector3 giroManoIzquierda = Vector3.zero;
+
+        [Header("Recarga")]
+        public TipoDeRecarga recarga = TipoDeRecarga.Cargador;
+        [Tooltip("Tambor: cuánto sube el arma (metros).")]
+        public float tamborArriba = 0.15f;
+        [Tooltip("Tambor: giro del arma al subir (grados: x negativo levanta la punta, y la gira hacia el centro, z la inclina).")]
+        public Vector3 tamborGiro = new Vector3(-50f, -50f, -5f);
 
         [Header("Disparo")]
         [Tooltip("Cuánto se levanta la punta con cada disparo (grados).")]
