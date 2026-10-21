@@ -19,7 +19,8 @@ using UnityEngine;
 // recargar la mano izquierda saca el cargador, lo suelta, trae otro y al final tira de la palanca (PiezasDelMitre). El
 // Belgrano Sur (fusil de ráfaga, US 252): un golpe por bala de la ráfaga y la recarga del Urquiza, con su cargador. El
 // Último Tren (francotirador, US 254): un golpe fuerte y después la mano derecha hace el cerrojo; al apuntar con la mira
-// sube hasta el ojo antes de que aparezca la lente (MiraTelescopica.Subida). Y el cuchillo (US 256): quieto, caminando, al sacarlo y al mirar como las demás, y el
+// sube hasta el ojo antes de que aparezca la lente (MiraTelescopica.Subida). El modelo no tiene manija de cerrojo:
+// se la agrega PiezasDelTren. Y el cuchillo (US 256): quieto, caminando, al sacarlo y al mirar como las demás, y el
 // corte de costado al atacar, que mueve solo el cuchillo y el brazo derecho.
 // Cada una tiene su fuerza de retroceso y su tiempo para sacarla. Se apaga con "Activa" en el Inspector, para comparar.
 // El movimiento se suma al final del cuadro (después de BrazosEnCamara) y se saca al empezar el siguiente
@@ -83,9 +84,9 @@ public class AnimacionPrimeraPersona : MonoBehaviour
     public float trenAtras = 0.09f;
     public float trenArriba = 16f;
     public float trenCostado = 2f;
-    [Tooltip("Cerrojo: cuánto sube la mano derecha al levantar la manija (metros).")]
+    [Tooltip("Cerrojo sin la manija (detalles apagados): cuánto sube la mano derecha (metros).")]
     public float cerrojoArriba = 0.025f;
-    [Tooltip("Cerrojo: cuánto va la mano derecha hacia atrás al abrirlo (metros).")]
+    [Tooltip("Cerrojo sin la manija (detalles apagados): cuánto va la mano derecha hacia atrás (metros).")]
     public float cerrojoAtras = 0.07f;
     [Tooltip("Cerrojo: cuánto se inclina el arma hacia la mano mientras lo hace (grados).")]
     public float cerrojoInclinacion = 10f;
@@ -292,7 +293,7 @@ public class AnimacionPrimeraPersona : MonoBehaviour
               : EsRoca(arma) ? new PiezasDeLaRoca(arma, transform)
               : EsMitre(arma) ? new PiezasDelMitre(arma, transform)
               : EsBelgrano(arma) ? PiezasDelUrquiza.BelgranoSur(arma, transform)
-              : EsTren(arma) ? PiezasDelUrquiza.UltimoTren(arma, transform)
+              : EsTren(arma) ? new PiezasDelTren(arma, transform)
               : (IPiezasDelArma)new PiezasDeLaPistola(arma, transform);
             piezas[arma] = p;
         }
@@ -501,11 +502,15 @@ public class AnimacionPrimeraPersona : MonoBehaviour
             if (desdeTiro >= cerrojoEmpieza && desdeTiro < cerrojoEmpieza + cerrojoDura)
                 cerrojo = (desdeTiro - cerrojoEmpieza) / cerrojoDura;
             else if (recarga >= 0.68f && recarga < 0.95f) cerrojo = (recarga - 0.68f) / 0.27f; // tira de la palanca
+            float inclina = 0f;
             if (cerrojo >= 0f)
             {
-                Cerrojo(arma, cerrojo, out moverSoloDerecha, out float inclina);
+                Cerrojo(arma, cerrojo, out moverSoloDerecha, out inclina);
                 girar += new Vector3(-2f, 0f, cerrojoInclinacion) * inclina;
             }
+            else if (detalles && Piezas(arma) is PiezasDelTren cerrado) cerrado.Poner(0f);
+            // La mano sigue a la manija con el arma inclinada.
+            moverSoloDerecha = Quaternion.Euler(girar) * moverSoloDerecha;
             if (alOjo > 0f)
             {
                 // Lleva la parte de arriba del arma, sobre la mano, al centro de la pantalla. Lo demás se calma.
@@ -586,9 +591,24 @@ public class AnimacionPrimeraPersona : MonoBehaviour
 
     // El cerrojo (avance de 0 a 1): la mano derecha suelta la empuñadura y va a la manija, la levanta, la tira hacia
     // atrás, la empuja hacia adelante, la baja y vuelve a la empuñadura. "inclina": cuánto se inclina el arma (0 a 1).
+    // La manija la agrega PiezasDelTren y se mueve de verdad; la mano va a su bolita y la sigue.
     private void Cerrojo(GameObject arma, float avance, out Vector3 mover, out float inclina)
     {
         Vector3 mano = agarre != null ? transform.InverseTransformPoint(agarre.position) : transform.InverseTransformPoint(arma.transform.position);
+        inclina = Suave(Mathf.InverseLerp(0f, 0.2f, avance)) * (1f - Suave(Mathf.InverseLerp(0.84f, 1f, avance)));
+        PiezasDelTren piezasTren = detalles ? Piezas(arma) as PiezasDelTren : null;
+        if (piezasTren != null)
+        {
+            piezasTren.Poner(avance);
+            if (piezasTren.Manija(transform, out Vector3 bolita))
+            {
+                float va = Suave(Mathf.InverseLerp(0f, PiezasDelTren.Agarra, avance)) *
+                           (1f - Suave(Mathf.InverseLerp(PiezasDelTren.Baja, 1f, avance)));
+                mover = (bolita - mano) * va;
+                return;
+            }
+        }
+        // Sin la manija (detalles apagados): el mismo gesto, en el aire.
         // La manija: arriba del cajón, justo atrás de la mira, del lado de la mano.
         Vector3 manija = PuntoDelTren(arma, 0.05f, 0.24f) + new Vector3(0.025f, 0f, 0f) - mano;
         Vector3 arriba = manija + Vector3.up * cerrojoArriba;
@@ -602,7 +622,6 @@ public class AnimacionPrimeraPersona : MonoBehaviour
             mover = Vector3.Lerp(lugares[i], lugares[i + 1], Mathf.SmoothStep(0f, 1f, Mathf.InverseLerp(tiempos[i], tiempos[i + 1], avance)));
             break;
         }
-        inclina = Suave(Mathf.InverseLerp(0f, 0.2f, avance)) * (1f - Suave(Mathf.InverseLerp(0.84f, 1f, avance)));
     }
 
     // Cuánto hay que correr el arma para que la parte de arriba (sobre la mano) quede en el centro, frente al ojo.
