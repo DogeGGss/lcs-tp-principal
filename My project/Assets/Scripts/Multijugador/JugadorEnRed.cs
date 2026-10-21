@@ -68,6 +68,11 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
     private readonly List<AudioClip> sonidosPrincipales = new List<AudioClip>();
     private readonly List<AudioClip> sonidosSecundarias = new List<AudioClip>();
     private Coroutine caida;
+    // US 260: el cuerpo caído (ragdoll) que ven los demás mientras está muerto; el modelo de verdad queda escondido.
+    private CuerpoCaido cuerpoCaido;
+    private bool modeloEscondido;
+    private byte ultimaArmaVista = SinArma;  // la última que se vio en la mano, por si al morir ya llegó "sin arma"
+    private float ultimaArmaVistaEn = -10f;
     private Pasos pasos; // US 001 y US 198: sus pasos se escuchan desde donde está (salvo agachado o despacio)
 
     // US 182: el arma a tamaño real en la mano derecha, una por código de arma (las de primera persona no se ven).
@@ -296,7 +301,10 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
         muerto = true;
         bool cabeza = vida != null && vida.KilledByHeadshot;
         int[] asistentes = Asistentes(ultimoAtacante);
-        photonView.RPC(nameof(RpcMurio), RpcTarget.Others, ultimoAtacante, cabeza, ultimaArma, ultimoCodigo, asistentes);
+        // US 260: desde dónde vino el golpe que lo mató, para que todos empujen el cuerpo hacia el mismo lado.
+        Vector3? golpe = vida != null ? vida.LastDamageOrigin : null;
+        photonView.RPC(nameof(RpcMurio), RpcTarget.Others, ultimoAtacante, cabeza, ultimaArma, ultimoCodigo, asistentes,
+            golpe.HasValue, golpe ?? Vector3.zero);
         // Si murió con la tienda abierta se cierra antes de trabar: al cerrarse después devolvería las armas a un muerto.
         if (MatchSettings.Mode == GameMode.Deathmatch) ShopUI.Cerrar();
         Bloquear(true);
@@ -1074,6 +1082,11 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
         if (arma == ArmaDispositivo && !enLaMano.ContainsKey(arma) && ConfigRed.Actual != null && ConfigRed.Actual.modeloDispositivo != null)
             ArmarEnMano(arma, ConfigRed.Actual.modeloDispositivo, null, LargoDispositivo);
         if (arma == armaVista) return;
+        if (arma == SinArma && armaVista != SinArma && armaVista != 255)
+        {
+            ultimaArmaVista = armaVista;
+            ultimaArmaVistaEn = Time.time;
+        }
         armaVista = arma;
         foreach (KeyValuePair<byte, ModeloEnMano> modelo in enLaMano)
             if (modelo.Value.go != null) modelo.Value.go.SetActive(modelo.Key == arma);
@@ -1208,16 +1221,53 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
 
     // US 030, CA1 y CA2: el cuerpo cae y ya no recibe disparos.
     [PunRPC]
-    private void RpcMurio(int atacante, bool cabeza, string arma, byte codigo, int[] asistentes)
+    private void RpcMurio(int atacante, bool cabeza, string arma, byte codigo, int[] asistentes, bool conGolpe, Vector3 golpe)
     {
         if (photonView.IsMine) return;
         muerto = true;
         AvisarBaja(atacante, cabeza, arma, codigo, asistentes); // US 057, CA4
         if (vida != null) vida.SetState(0, 0);
         foreach (Collider c in colisiones) if (c != null) c.enabled = false;
+        GameObject armaQueCae = ArmaQueCae();
         MostrarArma(SinArma);
         if (caida != null) StopCoroutine(caida);
-        caida = StartCoroutine(Caer(true));
+        // US 260: cae con física (ragdoll), empujado desde donde vino el golpe. Si el modelo no es humanoide, cae como antes.
+        if (cuerpoCaido != null) cuerpoCaido.Irse(true);
+        cuerpoCaido = modelo != null && modelo.gameObject.activeInHierarchy
+            ? CuerpoCaido.Crear(modelo, Empujon(conGolpe, golpe, arma, codigo), armaQueCae) : null;
+        if (cuerpoCaido != null)
+        {
+            modelo.gameObject.SetActive(false);
+            modeloEscondido = true;
+        }
+        else caida = StartCoroutine(Caer(true));
+    }
+
+    // US 260, CA2: hacia dónde sale el cuerpo: lejos del golpe (del que disparó, de la granada), con la velocidad que
+    // traía. Una granada empuja más fuerte y más hacia arriba; sin saber de dónde vino (una caída), casi nada.
+    private Vector3 Empujon(bool conGolpe, Vector3 golpe, string arma, byte codigo)
+    {
+        if (arma == Caida) conGolpe = false; // se cayó del mapa: el último golpe puede ser de antes
+        Vector3 centro = transform.position + Vector3.up;
+        Vector3 lejos = conGolpe ? centro - golpe : -transform.forward;
+        lejos.y = 0f;
+        lejos = lejos.sqrMagnitude > 0.0001f ? lejos.normalized : -transform.forward;
+        bool explosion = !string.IsNullOrEmpty(arma) && arma != Caida && arma != VallaElectrica.Causa;
+        float fuerza = !conGolpe ? 0.5f : explosion ? 10f : codigo == ArmaCuchillo ? 4.5f : 6f;
+        float arriba = explosion ? 4f : 1.2f;
+        return lejos * fuerza + Vector3.up * arriba + new Vector3(velocidadRed.x, 0f, velocidadRed.z);
+    }
+
+    // US 260, CA3: el arma que tenía en la mano, para que se suelte y caiga. En el Táctico las armas de fuego ya caen al
+    // piso para levantarlas (US 184, CA8): ahí solo cae la que no se levanta (el cuchillo o una granada).
+    private GameObject ArmaQueCae()
+    {
+        byte enMano = armaVista != SinArma && armaVista != 255 ? armaVista
+            : Time.time - ultimaArmaVistaEn < 1f ? ultimaArmaVista : SinArma;
+        if (enMano == SinArma || enMano == ArmaDispositivo) return null;
+        bool deFuego = enMano == ArmaPistola || (enMano >= PrimeraSecundaria && enMano < PrimeraGranada && enMano != ArmaCuchillo);
+        if (deFuego && MatchSettings.Mode != GameMode.Deathmatch) return null;
+        return enLaMano.TryGetValue(enMano, out ModeloEnMano m) && m.go != null ? m.go : null;
     }
 
     // US 019, CA9: el Trasbordo se avisa aparte de la posición, para que los demás lo vean aparecer de golpe y con el efecto.
@@ -1359,6 +1409,9 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
         if (photonView.IsMine) return;
         muerto = false;
         if (afuera) { afuera = false; if (modelo != null) modelo.gameObject.SetActive(true); }
+        // US 260, CA5: reapareció: el cuerpo caído se va enseguida y vuelve su modelo.
+        if (cuerpoCaido != null) { cuerpoCaido.Irse(true); cuerpoCaido = null; }
+        if (modeloEscondido) { modeloEscondido = false; if (modelo != null) modelo.gameObject.SetActive(true); }
         transform.SetPositionAndRotation(posicion, Quaternion.Euler(0f, yaw, 0f));
         posicionRed = posicion;
         velocidadRed = Vector3.zero;
