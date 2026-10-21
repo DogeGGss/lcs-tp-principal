@@ -26,6 +26,8 @@ public class AgarresTerceraPersona : ScriptableObject
         public Vector3 lugar = new Vector3(0.04f, 0.02f, 0.45f);
         [Tooltip("Lo mínimo que el arma queda adelante del pecho, mire donde mire (metros): así no se mete en el cuerpo.")]
         public float minimoAdelante = 0.3f;
+        [Tooltip("Cuánto acompaña el arma el movimiento del cuerpo de la animación (respirar quieto, el balanceo al caminar): 0 queda fija, 1 se mueve con el pecho.")]
+        [Range(0f, 1.5f)] public float seguirCuerpo = 1f;
         [Tooltip("Giro del arma respecto de hacia dónde mira (grados).")]
         public Vector3 giro = Vector3.zero;
         [Tooltip("Tamaño del arma (1 = el largo real de su ficha).")]

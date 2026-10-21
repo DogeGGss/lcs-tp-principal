@@ -201,6 +201,44 @@ public class ArmaEnTerceraPersona : MonoBehaviour
         golpeVel += new Vector2(ajuste.retrocesoArriba, ajuste.retrocesoAtras) * 22f;
     }
 
+    // ---------- Seguir el cuerpo ----------
+    // El arma va respecto de los ojos, que no se mueven con la animación: quieta en el aire mientras el cuerpo respira o
+    // se balancea al caminar. Se le suma el movimiento del pecho de la animación: cuánto se corrió y giró el hueso del
+    // pecho respecto de su lugar de siempre (un promedio lento), visto desde el cuerpo. Se mide después de la animación
+    // (LateUpdate) y se usa en el cuadro siguiente.
+    private Transform huesoPecho;
+    private Vector3 pechoAhora, pechoPromedio;
+    private Quaternion pechoGiroAhora = Quaternion.identity, pechoGiroPromedio = Quaternion.identity;
+    private bool pechoMedido;
+
+    private void LateUpdate()
+    {
+        if (huesoPecho == null && animador != null)
+        {
+            huesoPecho = animador.GetBoneTransform(HumanBodyBones.UpperChest);
+            if (huesoPecho == null) huesoPecho = animador.GetBoneTransform(HumanBodyBones.Chest);
+            if (huesoPecho == null) huesoPecho = animador.GetBoneTransform(HumanBodyBones.Spine);
+        }
+        if (huesoPecho == null) return;
+        pechoAhora = transform.InverseTransformPoint(huesoPecho.position);
+        pechoGiroAhora = Quaternion.Inverse(transform.rotation) * huesoPecho.rotation;
+        if (!pechoMedido) { pechoPromedio = pechoAhora; pechoGiroPromedio = pechoGiroAhora; pechoMedido = true; }
+        float k = 1f - Mathf.Exp(-Time.deltaTime / 1.5f); // el lugar de siempre se acomoda en un segundo y medio
+        pechoPromedio = Vector3.Lerp(pechoPromedio, pechoAhora, k);
+        pechoGiroPromedio = Quaternion.Slerp(pechoGiroPromedio, pechoGiroAhora, k);
+    }
+
+    // Cuánto se movió el pecho por la animación, en el mundo (corrimiento y giro), por "cuanto".
+    private void MovimientoDelPecho(float cuanto, out Vector3 corrido, out Quaternion girado)
+    {
+        corrido = Vector3.zero;
+        girado = Quaternion.identity;
+        if (!pechoMedido || cuanto <= 0f) return;
+        corrido = transform.TransformVector(pechoAhora - pechoPromedio) * cuanto;
+        Quaternion delta = pechoGiroAhora * Quaternion.Inverse(pechoGiroPromedio); // en el espacio del cuerpo
+        girado = Quaternion.Slerp(Quaternion.identity, transform.rotation * delta * Quaternion.Inverse(transform.rotation), cuanto);
+    }
+
     private void OnDisable()
     {
         if (capa != null && originalDerecho == null) capa.weight = 0f;
@@ -242,6 +280,10 @@ public class ArmaEnTerceraPersona : MonoBehaviour
         // Gira alrededor del pecho (no de los ojos): mirando abajo, girando alrededor de los ojos se metía en el pecho.
         Vector3 pecho = ojos.position - transform.up * ajuste.alturaPecho;
         Vector3 puntoArma = pecho + ojos.rotation * lugar;
+        // Con el movimiento del cuerpo de la animación (respirar, el balanceo al caminar).
+        MovimientoDelPecho(ajuste.seguirCuerpo, out Vector3 corrido, out Quaternion girado);
+        puntoArma = pecho + corrido + girado * (puntoArma - pecho);
+        giroArma = girado * giroArma;
         // Y nunca más atrás que el frente del pecho.
         Vector3 enCuerpo = transform.InverseTransformPoint(puntoArma);
         float frente = transform.InverseTransformPoint(pecho).z + ajuste.minimoAdelante;

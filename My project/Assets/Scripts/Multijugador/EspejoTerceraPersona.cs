@@ -78,6 +78,11 @@ public class EspejoTerceraPersona : MonoBehaviour
 
     private void OnDestroy()
     {
+#if UNITY_EDITOR
+        // Lo ajustado queda escrito en el asset al salir de Play (si no, Unity lo guarda recién al guardar el proyecto).
+        AgarresTerceraPersona lista = AgarresTerceraPersona.Actual;
+        if (lista != null && UnityEditor.EditorUtility.IsDirty(lista)) UnityEditor.AssetDatabase.SaveAssetIfDirty(lista);
+#endif
         WeaponFire.Fired -= AlDisparar;
         if (raiz != null) Destroy(raiz.gameObject);
         if (modeloEnMano != null) Destroy(modeloEnMano);
