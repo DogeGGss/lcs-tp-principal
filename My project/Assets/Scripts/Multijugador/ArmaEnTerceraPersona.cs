@@ -179,7 +179,7 @@ public class ArmaEnTerceraPersona : MonoBehaviour
         if (Manejando && ajuste.recarga == AgarresTerceraPersona.TipoDeRecarga.Tambor)
         {
             if (!piezasPorModelo.TryGetValue(modelo, out piezas) || piezas == null)
-                piezasPorModelo[modelo] = piezas = new PiezasDeLaTrochita(modelo, null, 2.5f); // rayitas más gruesas: se ven de lejos
+                piezasPorModelo[modelo] = piezas = new PiezasDeLaTrochita(modelo, null);
         }
     }
 
@@ -330,8 +330,9 @@ public class ArmaEnTerceraPersona : MonoBehaviour
         // CA4: la mano izquierda saca el cargador (por abajo de la empuñadura), baja a buscar otro, lo pone y vuelve.
         if (tambor && suelta > 0f)
         {
-            // La mano izquierda suelta el arma: se separa a la izquierda y baja al costado del cuerpo.
-            Vector3 costado = transform.TransformPoint(transform.InverseTransformPoint(ojos.position) + new Vector3(-0.22f, -0.75f, 0.08f));
+            // La mano izquierda suelta el arma y baja, relajada, un poco adelante de la cadera (más atrás estira el brazo
+            // de más y se rompe el modelo).
+            Vector3 costado = transform.TransformPoint(transform.InverseTransformPoint(ojos.position) + new Vector3(-0.18f, -0.55f, 0.2f));
             izq = Vector3.Lerp(izq, costado, suelta);
         }
         else if (!tambor && r >= 0f)

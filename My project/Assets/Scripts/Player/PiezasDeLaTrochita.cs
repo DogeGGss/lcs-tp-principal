@@ -46,15 +46,6 @@ public class PiezasDeLaTrochita : IPiezasDelArma
     private int balasAlRecargar;
     private static Material cargada, vacia;
 
-    // Tamaño de las rayitas (1 = el de primera persona). En tercera persona (ArmaEnTerceraPersona) van más gruesas: el
-    // arma se ve de lejos y si no, no se distinguen.
-    private readonly float tamanoMarcas = 1f;
-
-    public PiezasDeLaTrochita(GameObject trochita, Transform camara, float tamanoMarcas) : this(trochita, camara)
-    {
-        this.tamanoMarcas = Mathf.Max(0.1f, tamanoMarcas);
-    }
-
     public PiezasDeLaTrochita(GameObject trochita, Transform camara)
     {
         MeshFilter filtro = trochita.GetComponent<MeshFilter>();
@@ -191,8 +182,7 @@ public class PiezasDeLaTrochita : IPiezasDelArma
         Vector3 w = Vector3.Cross(eje, u);
         float grosor = Vector3.Scale(tam, eje).magnitude;
         float radio = (tam.x + tam.y + tam.z - grosor) * 0.25f;          // la mitad del promedio de los otros dos lados
-        // Rayitas que apuntan al centro (más gruesas si tamanoMarcas > 1, sin pasarse del borde).
-        float largo = radio * Mathf.Min(0.5f * tamanoMarcas, 0.7f), ancho = radio * 0.12f * tamanoMarcas;
+        float largo = radio * 0.5f, ancho = radio * 0.12f;  // rayitas que apuntan al centro
         Mesh barra = Barra();
         marcas = new MeshRenderer[Balas * 2];
         for (int cara = 0; cara < 2; cara++)
@@ -207,7 +197,7 @@ public class PiezasDeLaTrochita : IPiezasDelArma
                 go.transform.localPosition = lugar;
                 // El largo (z del cubo) va del centro hacia el borde; el grosor (y), a lo largo del eje del tambor.
                 go.transform.localRotation = Quaternion.LookRotation(haciaAfuera, eje);
-                go.transform.localScale = new Vector3(ancho, grosor * 0.03f * tamanoMarcas, largo);
+                go.transform.localScale = new Vector3(ancho, grosor * 0.03f, largo);
                 go.AddComponent<MeshFilter>().sharedMesh = barra;
                 MeshRenderer r = go.AddComponent<MeshRenderer>();
                 r.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
