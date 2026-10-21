@@ -144,30 +144,27 @@ public class AnimacionPrimeraPersona : MonoBehaviour
 
     public enum EstiloDeLanzamiento
     {
-        [Tooltip("Por encima del hombro: el brazo derecho se va bien atrás, pasa por arriba en un arco y cruza hacia abajo; la mano izquierda apunta adelante.")]
-        PorArriba,
-        [Tooltip("Corto: atrás y adelante en línea, sin mover la mano izquierda.")]
+        [Tooltip("Desde el hombro: el brazo gira entero alrededor del hombro (no se ve dónde se corta): se echa atrás, la arroja y baja.")]
+        DesdeElHombro,
+        [Tooltip("Corto: atrás y adelante en línea (la primera versión).")]
         Corto,
     }
 
     [Header("Granadas (US 258)")]
-    [Tooltip("Cómo se lanza: por encima del hombro, con la mano izquierda apuntando, o el corto (la primera versión).")]
-    public EstiloDeLanzamiento estiloGranada = EstiloDeLanzamiento.PorArriba;
+    [Tooltip("Cómo se lanza: girando el brazo desde el hombro, o el corto (la primera versión).")]
+    public EstiloDeLanzamiento estiloGranada = EstiloDeLanzamiento.DesdeElHombro;
     [Tooltip("Cuánto tarda la mano en traer la granada desde abajo (s).")]
     public float granadaSacar = 0.35f;
-    [Header("Granadas: por encima del hombro")]
-    [Tooltip("Hasta dónde se va la mano hacia atrás, a la derecha y arriba, al prepararse (metros).")]
-    public Vector3 hombroAtras = new Vector3(0.1f, 0.1f, -0.2f);
-    public Vector3 hombroAtrasGiro = new Vector3(-60f, -25f, -30f);
-    [Tooltip("Por dónde pasa el arco al arrojarla: arriba del hombro (metros).")]
-    public Vector3 hombroArriba = new Vector3(0.06f, 0.22f, 0.04f);
-    [Tooltip("Dónde la suelta: adelante y hacia el centro (metros).")]
-    public Vector3 hombroSuelta = new Vector3(-0.05f, 0.04f, 0.24f);
-    public Vector3 hombroSueltaGiro = new Vector3(40f, 10f, 15f);
-    [Tooltip("Después de soltarla la mano sigue cruzando hacia abajo y a la izquierda (metros).")]
-    public Vector3 hombroCruza = new Vector3(-0.14f, -0.2f, 0.1f);
-    [Tooltip("La mano izquierda apunta hacia adelante mientras prepara el tiro (metros).")]
-    public Vector3 hombroManoIzquierda = new Vector3(-0.02f, 0.07f, 0.12f);
+    [Header("Granadas: desde el hombro")]
+    [Tooltip("Dónde está el hombro respecto de la mano, en la cámara (metros): el brazo gira alrededor de ese punto, así " +
+             "la punta cortada del brazo queda quieta, fuera de la pantalla.")]
+    public Vector3 hombro = new Vector3(0.12f, -0.25f, -0.35f);
+    [Tooltip("Giro del brazo al echarse atrás (grados: x negativo sube la mano, y hacia afuera, z inclina).")]
+    public Vector3 hombroAtrasGiro = new Vector3(-28f, 10f, -8f);
+    [Tooltip("Giro del brazo cuando la suelta (grados: x positivo la lleva adelante y abajo).")]
+    public Vector3 hombroSueltaGiro = new Vector3(22f, -8f, 5f);
+    [Tooltip("Giro del brazo al terminar, con la mano abajo, fuera de la pantalla (grados).")]
+    public Vector3 hombroFinGiro = new Vector3(65f, -12f, 10f);
 
     [Header("Granadas: corto")]
     [Tooltip("Hasta dónde va la mano al prepararse: atrás, arriba y un poco afuera (metros).")]
@@ -309,7 +306,7 @@ public class AnimacionPrimeraPersona : MonoBehaviour
         izquierda = Vector3.zero;
         float t = switcher.Granadas.AvanceDelLanzamiento;
         if (t < 0f) return;
-        if (estiloGranada == EstiloDeLanzamiento.PorArriba) { PorArriba(t, out mover, out girar, out izquierda); return; }
+        if (estiloGranada == EstiloDeLanzamiento.DesdeElHombro) { DesdeElHombro(t, out mover, out girar); return; }
         Vector3 pos, giro;
         Vector3 abajo = new Vector3(0f, -sacarAbajo, 0.05f), abajoGiro = new Vector3(sacarInclinacion, 0f, 0f);
         if (t < GrenadeThrower.Preparacion)
@@ -332,38 +329,33 @@ public class AnimacionPrimeraPersona : MonoBehaviour
         girar = Quaternion.Euler(giro);
     }
 
-    // Por encima del hombro: la mano se va atrás, a la derecha y arriba (la izquierda apunta adelante), pasa por arriba
-    // del hombro en un arco cada vez más rápido, la suelta adelante, hacia el centro, y sigue cruzando hacia abajo y a la
-    // izquierda hasta salir de la pantalla.
-    private void PorArriba(float t, out Vector3 mover, out Quaternion girar, out Vector3 izquierda)
+    // Desde el hombro: el brazo gira entero alrededor del hombro (que está fuera de la pantalla, abajo y atrás), así no
+    // se ve dónde se corta. Se echa atrás y arriba, la arroja girando hacia adelante cada vez más rápido (la suelta
+    // adelante) y sigue hasta que la mano sale por abajo. La granada y la mano son parte de la misma foto que el brazo:
+    // no hay giro de muñeca aparte (movería la punta cortada).
+    private void DesdeElHombro(float t, out Vector3 mover, out Quaternion girar)
     {
-        Vector3 pos, giro;
-        float apunta;
-        Vector3 cruzaGiro = new Vector3(70f, 20f, 25f);
+        Vector3 giro;
         if (t < GrenadeThrower.Preparacion)
         {
             float f = Mathf.SmoothStep(0f, 1f, t / GrenadeThrower.Preparacion);
-            pos = hombroAtras * f; giro = hombroAtrasGiro * f;
-            apunta = f;
+            giro = hombroAtrasGiro * f;
         }
         else if (t < GrenadeThrower.Suelta)
         {
             float f = (t - GrenadeThrower.Preparacion) / GrenadeThrower.Arrojar;
             f *= f;
-            // Curva (Bézier) de atrás a la suelta pasando cerca de arriba del hombro.
-            pos = (1f - f) * (1f - f) * hombroAtras + 2f * (1f - f) * f * hombroArriba + f * f * hombroSuelta;
             giro = Vector3.Lerp(hombroAtrasGiro, hombroSueltaGiro, f);
-            apunta = 1f - 0.5f * f;
         }
         else
         {
             float f = Mathf.SmoothStep(0f, 1f, Mathf.Clamp01((t - GrenadeThrower.Suelta) / GrenadeThrower.Despues));
-            pos = Vector3.Lerp(hombroSuelta, hombroCruza, f); giro = Vector3.Lerp(hombroSueltaGiro, cruzaGiro, f);
-            apunta = 0.5f * (1f - f);
+            giro = Vector3.Lerp(hombroSueltaGiro, hombroFinGiro, f);
         }
-        mover = pos;
-        girar = Quaternion.Euler(giro);
-        izquierda = hombroManoIzquierda * apunta;
+        Quaternion brazo = Quaternion.Euler(giro);
+        // Girar alrededor del hombro = girar alrededor de la mano y correrla: la mano va de "-hombro" a "brazo * -hombro".
+        mover = hombro - brazo * hombro;
+        girar = brazo;
     }
 
     private bool EsCuchillo(GameObject arma) =>
