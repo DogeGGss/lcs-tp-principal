@@ -15,7 +15,9 @@ MonoBehaviour:
   armas:
   - arma: Pistol_2
     nombre: La Porteña
-    lugar: {x: 0.04, y: -0.3, z: 0.4}
+    alturaPecho: 0.3
+    lugar: {x: 0.04, y: 0.02, z: 0.45}
+    minimoAdelante: 0.3
     giro: {x: 0, y: 0, z: 0}
     escala: 1
     manoDerecha: {x: 0, y: 0, z: 0}

@@ -1,9 +1,12 @@
 using UnityEngine;
 
 // Muñeco espejo (solo en el editor, para ajustar F26 sin otro jugador): una copia del cuerpo del jugador de esta
-// computadora, parada a 2,5 m adelante y mirándolo, que hace lo mismo que él como lo verían los demás jugadores:
-// camina, salta y se agacha igual, mira arriba y abajo igual, tiene la misma arma en la mano (ArmaEnTerceraPersona) y
-// la dispara y recarga igual.
+// computadora como la verían los demás jugadores, con la misma arma en la mano (ArmaEnTerceraPersona), que la dispara,
+// la recarga y la cambia igual que él.
+// Aparece a 2,5 m adelante del jugador, mirándolo, y queda quieto ahí, mirando fijo (para recorrerlo y verlo desde
+// todos lados). En el Inspector de este componente: "Mirar arriba o abajo" lo hace mirar arriba o abajo, "Copiar
+// movimientos" lo hace caminar, saltar, agacharse y mirar como el jugador, y "Traer adelante" lo vuelve a poner
+// adelante del jugador.
 // Se prende y apaga con Riftwalker > Muñeco espejo (tercera persona). Con el juego andando, los ajustes de cada arma
 // se cambian en el asset Resources/AgarresTerceraPersona (el campo "Agarres" de este componente lo muestra): se ven al
 // momento en el muñeco y quedan guardados.
@@ -15,6 +18,12 @@ public class EspejoTerceraPersona : MonoBehaviour
 
     [Tooltip("Los ajustes de cada arma en tercera persona: se cambian acá con el juego andando y quedan guardados.")]
     public AgarresTerceraPersona agarres;
+    [Tooltip("Hacia dónde mira el muñeco quieto (grados: negativo arriba, positivo abajo).")]
+    [Range(-80f, 80f)] public float mirarArribaOAbajo = 0f;
+    [Tooltip("Prendido, camina, salta, se agacha y mira como el jugador (y lo sigue a 2,5 m).")]
+    public bool copiarMovimientos;
+    [Tooltip("Lo vuelve a poner adelante del jugador, mirándolo.")]
+    public bool traerAdelante;
 
     private Transform jugador;
     private Camera camara;
@@ -133,17 +142,30 @@ public class EspejoTerceraPersona : MonoBehaviour
             Armar();
         }
         if (jugador == null || original == null) { Destroy(gameObject); return; }
-        Ubicar();
+        if (traerAdelante) { traerAdelante = false; Ubicar(); }
 
-        // Mira arriba o abajo como el jugador.
-        float pitch = Mathf.DeltaAngle(0f, camara.transform.localEulerAngles.x);
-        ojos.localRotation = Quaternion.Euler(pitch, 0f, 0f);
-
-        // Camina, corre, salta y se agacha como él.
-        foreach (AnimatorControllerParameter p in original.parameters)
+        if (copiarMovimientos)
         {
-            if (p.type == AnimatorControllerParameterType.Float) copia.SetFloat(p.nameHash, original.GetFloat(p.nameHash));
-            else if (p.type == AnimatorControllerParameterType.Bool) copia.SetBool(p.nameHash, original.GetBool(p.nameHash));
+            Ubicar();
+            // Mira arriba o abajo como el jugador.
+            float pitch = Mathf.DeltaAngle(0f, camara.transform.localEulerAngles.x);
+            ojos.localRotation = Quaternion.Euler(pitch, 0f, 0f);
+            // Camina, corre, salta y se agacha como él.
+            foreach (AnimatorControllerParameter p in original.parameters)
+            {
+                if (p.type == AnimatorControllerParameterType.Float) copia.SetFloat(p.nameHash, original.GetFloat(p.nameHash));
+                else if (p.type == AnimatorControllerParameterType.Bool) copia.SetBool(p.nameHash, original.GetBool(p.nameHash));
+            }
+        }
+        else
+        {
+            // Quieto, mirando fijo.
+            ojos.localRotation = Quaternion.Euler(mirarArribaOAbajo, 0f, 0f);
+            foreach (AnimatorControllerParameter p in copia.parameters)
+            {
+                if (p.type == AnimatorControllerParameterType.Float) copia.SetFloat(p.nameHash, 0f);
+                else if (p.type == AnimatorControllerParameterType.Bool) copia.SetBool(p.nameHash, false);
+            }
         }
 
         // La misma arma en la mano.

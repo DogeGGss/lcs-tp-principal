@@ -239,7 +239,13 @@ public class ArmaEnTerceraPersona : MonoBehaviour
         Vector3 lugar = ajuste.lugar + new Vector3(-0.06f * inclinada, 0.03f * inclinada - 0.25f * abajo, -golpe.y - 0.05f * abajo);
         Vector3 giro = ajuste.giro + new Vector3(-golpe.x - 20f * inclinada + 45f * abajo, -15f * inclinada, -25f * inclinada);
         Quaternion giroArma = ojos.rotation * Quaternion.Euler(giro);
-        Vector3 puntoArma = ojos.TransformPoint(lugar);
+        // Gira alrededor del pecho (no de los ojos): mirando abajo, girando alrededor de los ojos se metía en el pecho.
+        Vector3 pecho = ojos.position - transform.up * ajuste.alturaPecho;
+        Vector3 puntoArma = pecho + ojos.rotation * lugar;
+        // Y nunca más atrás que el frente del pecho.
+        Vector3 enCuerpo = transform.InverseTransformPoint(puntoArma);
+        float frente = transform.InverseTransformPoint(pecho).z + ajuste.minimoAdelante;
+        if (enCuerpo.z < frente) { enCuerpo.z = frente; puntoArma = transform.TransformPoint(enCuerpo); }
 
         modelo.transform.localScale = Vector3.one * ajuste.escala;
         // El soporte (padre del modelo) se mueve para que el modelo quede justo ahí.

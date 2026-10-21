@@ -2,8 +2,8 @@ using System.Collections.Generic;
 using UnityEngine;
 
 // Cómo tiene cada arma el personaje que ven los demás jugadores (tercera persona, F26: US 243 y las que siguen).
-// El arma a tamaño real (ModeloReal) va en un lugar fijo respecto de los ojos del personaje (y sube y baja con hacia
-// dónde mira), y las manos la agarran con el IK de los brazos en los mismos agarres que en primera persona
+// El arma a tamaño real (ModeloReal) va en un lugar fijo respecto del pecho del personaje (y gira alrededor del
+// pecho con hacia dónde mira, así no se mete en el cuerpo al mirar abajo), y las manos la agarran con el IK de los brazos en los mismos agarres que en primera persona
 // (Gun_ref_rightHand y Gun_ref_leftHand, los de "Ajustar a mano", US 173): si el agarre se ajusta en primera persona,
 // se ve igual desde afuera. Acá se ajusta lo demás, por arma.
 // Es un asset (Resources/AgarresTerceraPersona): lo que se cambie en el Inspector con el juego andando queda guardado.
@@ -20,8 +20,12 @@ public class AgarresTerceraPersona : ScriptableObject
         public string nombre = "";
 
         [Header("Dónde va el arma")]
-        [Tooltip("Respecto de los ojos del personaje, mirando derecho (metros): x a la derecha, y arriba, z adelante.")]
-        public Vector3 lugar = new Vector3(0.06f, -0.3f, 0.42f);
+        [Tooltip("Cuánto más abajo de los ojos está el pecho, el punto alrededor del que gira el arma al mirar arriba o abajo (metros).")]
+        public float alturaPecho = 0.3f;
+        [Tooltip("Respecto del pecho, mirando derecho (metros): x a la derecha, y arriba, z adelante.")]
+        public Vector3 lugar = new Vector3(0.04f, 0.02f, 0.45f);
+        [Tooltip("Lo mínimo que el arma queda adelante del pecho, mire donde mire (metros): así no se mete en el cuerpo.")]
+        public float minimoAdelante = 0.3f;
         [Tooltip("Giro del arma respecto de hacia dónde mira (grados).")]
         public Vector3 giro = Vector3.zero;
         [Tooltip("Tamaño del arma (1 = el largo real de su ficha).")]
