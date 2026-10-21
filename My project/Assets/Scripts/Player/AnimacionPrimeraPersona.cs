@@ -91,9 +91,9 @@ public class AnimacionPrimeraPersona : MonoBehaviour
     [Tooltip("Cerrojo: cuánto más afuera de la punta de la manija queda la mano (metros). Más, si la atraviesa.")]
     public float cerrojoAfuera = 0.04f;
     [Tooltip("Cerrojo: cuánto se abre la mano hacia la derecha al ir y volver de la manija, para no atravesar el arma (metros).")]
-    public float cerrojoRodeo = 0.05f;
+    public float cerrojoRodeo = 0.08f;
     [Tooltip("Cerrojo: cuánto más abajo de la punta de la manija queda la mano (metros).")]
-    public float cerrojoAbajo = 0.06f;
+    public float cerrojoAbajo = 0.1f;
     [Tooltip("Cerrojo: cuánto más atrás (hacia la cámara) de la punta de la manija queda la mano (metros).")]
     public float cerrojoAtrasMano = 0.03f;
     [Tooltip("Cerrojo: cuánto se inclina el arma hacia la mano mientras lo hace (grados).")]
