@@ -156,7 +156,7 @@ public class CuerpoCaido : MonoBehaviour
             if (cuello == null && cabeza != null) puntosTorso.Add(cabeza.position);
             rbTorso = Pieza(torso, rbCadera, 15f);
             Caja(torso, puntosTorso);
-            Articulacion(torso, rbCadera, 20f, 25f);
+            Articulacion(torso, rbCadera, 10f, 10f);
         }
         Rigidbody arriba = rbTorso != null ? rbTorso : rbCadera;
 
@@ -170,18 +170,18 @@ public class CuerpoCaido : MonoBehaviour
             esfera.radius = radioMundo / Escala(cabeza);
             esfera.center = cabeza.InverseTransformPoint(cabeza.position + Vector3.up * radioMundo * 0.7f);
             choques.Add(esfera);
-            Articulacion(cabeza, arriba, 30f, 40f);
+            Articulacion(cabeza, arriba, 20f, 20f);
         }
 
         // Brazos y piernas: cápsulas de cada hueso al siguiente.
-        Miembro(h, HumanBodyBones.LeftUpperArm, HumanBodyBones.LeftLowerArm, arriba, 3f, 0.2f, 70f, 50f, out Rigidbody brazoIzq);
-        Miembro(h, HumanBodyBones.LeftLowerArm, HumanBodyBones.LeftHand, brazoIzq, 2f, 0.18f, 80f, 15f, out _);
-        Miembro(h, HumanBodyBones.RightUpperArm, HumanBodyBones.RightLowerArm, arriba, 3f, 0.2f, 70f, 50f, out Rigidbody brazoDer);
-        Miembro(h, HumanBodyBones.RightLowerArm, HumanBodyBones.RightHand, brazoDer, 2f, 0.18f, 80f, 15f, out _);
-        Miembro(h, HumanBodyBones.LeftUpperLeg, HumanBodyBones.LeftLowerLeg, rbCadera, 7f, 0.2f, 50f, 30f, out Rigidbody piernaIzq);
-        Miembro(h, HumanBodyBones.LeftLowerLeg, HumanBodyBones.LeftFoot, piernaIzq, 4f, 0.16f, 70f, 10f, out _);
-        Miembro(h, HumanBodyBones.RightUpperLeg, HumanBodyBones.RightLowerLeg, rbCadera, 7f, 0.2f, 50f, 30f, out Rigidbody piernaDer);
-        Miembro(h, HumanBodyBones.RightLowerLeg, HumanBodyBones.RightFoot, piernaDer, 4f, 0.16f, 70f, 10f, out _);
+        Miembro(h, HumanBodyBones.LeftUpperArm, HumanBodyBones.LeftLowerArm, arriba, 3f, 0.2f, 40f, 35f, out Rigidbody brazoIzq);
+        Miembro(h, HumanBodyBones.LeftLowerArm, HumanBodyBones.LeftHand, brazoIzq, 2f, 0.18f, 40f, 10f, out _);
+        Miembro(h, HumanBodyBones.RightUpperArm, HumanBodyBones.RightLowerArm, arriba, 3f, 0.2f, 40f, 35f, out Rigidbody brazoDer);
+        Miembro(h, HumanBodyBones.RightLowerArm, HumanBodyBones.RightHand, brazoDer, 2f, 0.18f, 40f, 10f, out _);
+        Miembro(h, HumanBodyBones.LeftUpperLeg, HumanBodyBones.LeftLowerLeg, rbCadera, 7f, 0.2f, 30f, 20f, out Rigidbody piernaIzq);
+        Miembro(h, HumanBodyBones.LeftLowerLeg, HumanBodyBones.LeftFoot, piernaIzq, 4f, 0.16f, 30f, 5f, out _);
+        Miembro(h, HumanBodyBones.RightUpperLeg, HumanBodyBones.RightLowerLeg, rbCadera, 7f, 0.2f, 30f, 20f, out Rigidbody piernaDer);
+        Miembro(h, HumanBodyBones.RightLowerLeg, HumanBodyBones.RightFoot, piernaDer, 4f, 0.16f, 30f, 5f, out _);
 
         // Las piezas pegadas no chocan entre sí (se trabarían).
         for (int i = 0; i < choques.Count; i++)
@@ -207,11 +207,12 @@ public class CuerpoCaido : MonoBehaviour
     {
         var rb = t.gameObject.AddComponent<Rigidbody>();
         rb.mass = masa;
-        rb.linearDamping = 0.05f;
-        rb.angularDamping = 0.6f;
+        rb.linearDamping = 0.1f;
+        rb.angularDamping = 3f; // frena los giros: sin esto las piezas se sacuden como gelatina
         rb.interpolation = RigidbodyInterpolation.Interpolate;
         rb.collisionDetectionMode = CollisionDetectionMode.ContinuousSpeculative;
-        rb.solverIterations = 12;
+        rb.solverIterations = 25;
+        rb.solverVelocityIterations = 10;
         partes.Add(rb);
         return rb;
     }
@@ -256,6 +257,8 @@ public class CuerpoCaido : MonoBehaviour
         var j = t.gameObject.AddComponent<CharacterJoint>();
         j.connectedBody = padre;
         j.enableProjection = true;
+        j.projectionDistance = 0.02f;
+        j.projectionAngle = 5f;
         j.enablePreprocessing = false;
         Vector3 largo = eje ?? Vector3.up;
         Vector3 otro = Mathf.Abs(Vector3.Dot(largo, Vector3.right)) < 0.9f ? Vector3.right : Vector3.forward;

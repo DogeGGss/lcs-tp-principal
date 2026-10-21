@@ -167,7 +167,7 @@ public class BotDePractica : MonoBehaviour
             Vector3 lejos = golpe.HasValue ? transform.position + Vector3.up - golpe.Value : -transform.forward;
             lejos.y = 0f;
             lejos = lejos.sqrMagnitude > 0.0001f ? lejos.normalized : -transform.forward;
-            cuerpo = CuerpoCaido.Crear(modelo, lejos * 3.5f + Vector3.up * 0.6f);
+            cuerpo = CuerpoCaido.Crear(modelo, lejos * 6f + Vector3.up * 1.2f);
             if (cuerpo != null) modelo.gameObject.SetActive(false);
         }
         if (cuerpo != null)

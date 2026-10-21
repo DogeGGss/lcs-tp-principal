@@ -1253,8 +1253,8 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
         lejos.y = 0f;
         lejos = lejos.sqrMagnitude > 0.0001f ? lejos.normalized : -transform.forward;
         bool explosion = !string.IsNullOrEmpty(arma) && arma != Caida && arma != VallaElectrica.Causa;
-        float fuerza = !conGolpe ? 0.5f : explosion ? 6f : codigo == ArmaCuchillo ? 2.5f : 3.5f;
-        float arriba = explosion ? 2.5f : 0.6f;
+        float fuerza = !conGolpe ? 0.5f : explosion ? 10f : codigo == ArmaCuchillo ? 4.5f : 6f;
+        float arriba = explosion ? 4f : 1.2f;
         return lejos * fuerza + Vector3.up * arriba + new Vector3(velocidadRed.x, 0f, velocidadRed.z);
     }
 
