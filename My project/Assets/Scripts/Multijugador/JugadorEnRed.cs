@@ -1110,15 +1110,6 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
         terceraPersona.Poner(real, PrimeraPersona(arma), sacar);
     }
 
-    // El arma de primera persona de ese código (de la que sale el modelo a tamaño real), o null.
-    private GameObject PrimeraPersona(byte arma)
-    {
-        if (arma == ArmaPistola) return pistola;
-        if (arma >= PrimeraPrincipal && arma - PrimeraPrincipal < principales.Count) return principales[arma - PrimeraPrincipal];
-        if (EsSecundaria(arma)) return secundarias[arma - PrimeraSecundaria];
-        return null;
-    }
-
     private ShopItem FichaDeCodigo(byte arma)
     {
         if (arma == ArmaPistola) return fichaPistola;
