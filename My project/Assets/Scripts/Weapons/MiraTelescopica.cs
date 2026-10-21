@@ -6,10 +6,14 @@ using UnityEngine;
 // lente (MiraTelescopicaHud), el arma y la mira del HUD se ocultan, la cámara se acerca y el mouse se mueve más lento
 // en proporción al zoom. Al disparar se sale de la mira durante el cerrojo y, al terminar, vuelve sola al mismo zoom
 // (como el AWP de CS). Recargar, guardar el arma, pausar o abrir la tienda la sacan.
+// US 254: antes de que aparezca la lente el arma sube hasta el ojo (Subida, la usa AnimacionPrimeraPersona) y al salir
+// baja. Si se apunta en medio del cerrojo, primero termina el cerrojo.
 public class MiraTelescopica : MonoBehaviour
 {
     [Tooltip("Segundos que tarda la cámara en llegar al zoom.")]
     public float tiempoZoom = 0.12f;
+    [Tooltip("Segundos que tarda el arma en subir hasta el ojo antes de que aparezca la lente (y en bajar al salir).")]
+    public float tiempoSubida = 0.18f;
     [Tooltip("Hasta dónde mide la distancia que muestra la lente, en metros.")]
     public float distanciaMaxima = 500f;
 
@@ -35,11 +39,18 @@ public class MiraTelescopica : MonoBehaviour
     private int nivel;              // 0 = sin mira, 1 = primer zoom, 2 = segundo zoom
     private int nivelAlVolver;      // zoom al que vuelve después del cerrojo
     private float volverEn = -1f;
+    private float cerrojoHasta = -1f; // hasta cuándo dura el cerrojo del último disparo
+    private float subida;            // 0 abajo, 1 en el ojo
+    private bool lente;              // la lente se ve (el arma ya llegó al ojo)
     private readonly RaycastHit[] impactos = new RaycastHit[16];
 
     public int Nivel => nivel;
     public float ZoomActual => nivel == 2 ? Ficha.zoom2 : nivel == 1 ? Ficha.zoom : 1f;
     public Camera Camara => camara;
+    /// <summary>Cuánto subió el arma hacia el ojo (0 a 1).</summary>
+    public float Subida => subida;
+    /// <summary>La lente se ve: se apunta de verdad (la dispersión es la de apuntar).</summary>
+    public bool ConLente => lente;
 
     private ShopItem Ficha => arma.shopItem;
     private int Niveles => Ficha == null || Ficha.zoom <= 1f ? 0 : Ficha.zoom2 > 1f ? 2 : 1;
@@ -57,6 +68,9 @@ public class MiraTelescopica : MonoBehaviour
         fovCambiado = false;
         nivel = 0;
         volverEn = -1f;
+        cerrojoHasta = -1f;
+        subida = 0f;
+        lente = false;
         EnMano = this;
     }
 
@@ -79,6 +93,7 @@ public class MiraTelescopica : MonoBehaviour
 
         if (KeyBindings.Down(GameAction.Apuntar)) Cambiar();
         if (volverEn >= 0f && Time.time >= volverEn) Volver();
+        Subir();
         AplicarZoom();
     }
 
@@ -94,6 +109,13 @@ public class MiraTelescopica : MonoBehaviour
             nivelAlVolver = 0;
             return;
         }
+        // En medio del cerrojo (sin la mira puesta): apunta cuando termina.
+        if (nivel == 0 && Time.time < cerrojoHasta)
+        {
+            nivelAlVolver = 1;
+            volverEn = cerrojoHasta;
+            return;
+        }
 
         nivel = (nivel + 1) % (Niveles + 1);
         Mostrar();
@@ -102,6 +124,7 @@ public class MiraTelescopica : MonoBehaviour
     // Lo llama el arma después de cada disparo: sale de la mira y vuelve cuando termina el cerrojo.
     public void AlDisparar(float cerrojo)
     {
+        cerrojoHasta = Time.time + cerrojo;
         if (nivel == 0) return;
         nivelAlVolver = nivel;
         nivel = 0;
@@ -135,14 +158,25 @@ public class MiraTelescopica : MonoBehaviour
         nivel = 0;
         nivelAlVolver = 0;
         volverEn = -1f;
+        subida = 0f;
         Mostrar();
         if (fovCambiado && camara != null) camara.fieldOfView = fovNormal;
         fovCambiado = false;
     }
 
+    // El arma sube hacia el ojo mientras se apunta y baja si no; la lente aparece cuando llega y se va enseguida al salir.
+    private void Subir()
+    {
+        subida = Mathf.MoveTowards(subida, nivel > 0 ? 1f : 0f, Time.deltaTime / Mathf.Max(0.01f, tiempoSubida));
+        bool conLente = nivel > 0 && subida >= 1f;
+        if (conLente != lente) Mostrar();
+    }
+
     private void Mostrar()
     {
-        bool puesta = nivel > 0;
+        if (nivel == 0) lente = false;
+        else lente = subida >= 1f;
+        bool puesta = lente;
         foreach (Renderer parte in partes)
             if (parte != null) parte.enabled = !puesta;
 
@@ -161,16 +195,16 @@ public class MiraTelescopica : MonoBehaviour
     // La cámara llega al zoom en tiempoZoom y vuelve igual al salir.
     private void AplicarZoom()
     {
-        if (nivel == 0 && !fovCambiado)
+        if (!lente && !fovCambiado)
         {
             fovNormal = camara.fieldOfView; // sigue los cambios de Opciones (US 153)
             return;
         }
 
         fovCambiado = true;
-        float objetivo = fovNormal / ZoomActual;
+        float objetivo = fovNormal / (lente ? ZoomActual : 1f);
         camara.fieldOfView = Mathf.Lerp(camara.fieldOfView, objetivo, 1f - Mathf.Exp(-3f * Time.deltaTime / Mathf.Max(0.01f, tiempoZoom)));
-        if (nivel == 0 && Mathf.Abs(camara.fieldOfView - fovNormal) < 0.05f)
+        if (!lente && Mathf.Abs(camara.fieldOfView - fovNormal) < 0.05f)
         {
             camara.fieldOfView = fovNormal;
             fovCambiado = false;

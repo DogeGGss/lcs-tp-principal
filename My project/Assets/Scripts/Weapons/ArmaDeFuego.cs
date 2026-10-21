@@ -130,7 +130,7 @@ public class ArmaDeFuego : MonoBehaviour, IHudWeapon
         if (shootSound != null) audioSource.PlayOneShot(shootSound);
         // Cada perdigón hace su daño por separado; los perdigones y el cono salen de la ficha (US 070, CA1).
         // Con la mira telescópica puesta la dispersión es la de apuntar (US 167, CA5).
-        bool conMira = mira != null && mira.Nivel > 0;
+        bool conMira = mira != null && mira.ConLente;
         WeaponFire.Fire(shopItem, playerCamera, shooter, conMira, alcance);
         if (pumpSound != null && currentAmmo > 0) StartCoroutine(PlayLater(pumpSound, pumpDelay, pumpSkip));
         // Cerrojo: sale de la mira y vuelve sola cuando se puede volver a disparar (US 068, CA3).

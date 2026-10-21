@@ -17,7 +17,10 @@ using UnityEngine;
 // tira de la palanca de carga. La Roca (escopeta, US 248): bombea después de cada tiro (PiezasDeLaRoca, con la mano
 // izquierda) y carga de a un cartucho con el arma inclinada. El Mitre (fusil, US 250): automático como el Urquiza; al
 // recargar la mano izquierda saca el cargador, lo suelta, trae otro y al final tira de la palanca (PiezasDelMitre). El
-// Belgrano Sur (fusil de ráfaga, US 252): un golpe por bala de la ráfaga y la recarga del Urquiza, con su cargador. Y el cuchillo (US 256): quieto, caminando, al sacarlo y al mirar como las demás, y el
+// Belgrano Sur (fusil de ráfaga, US 252): un golpe por bala de la ráfaga y la recarga del Urquiza, con su cargador. El
+// Último Tren (francotirador, US 254): un golpe fuerte y después la mano derecha hace el cerrojo; al apuntar con la mira
+// sube hasta el ojo antes de que aparezca la lente (MiraTelescopica.Subida). El modelo no tiene manija de cerrojo:
+// se la agrega PiezasDelTren. Y el cuchillo (US 256): quieto, caminando, al sacarlo y al mirar como las demás, y el
 // corte de costado al atacar, que mueve solo el cuchillo y el brazo derecho.
 // Cada una tiene su fuerza de retroceso y su tiempo para sacarla. Se apaga con "Activa" en el Inspector, para comparar.
 // El movimiento se suma al final del cuadro (después de BrazosEnCamara) y se saca al empezar el siguiente
@@ -76,6 +79,29 @@ public class AnimacionPrimeraPersona : MonoBehaviour
     public float belgranoResorte = 300f;
     [Tooltip("Al final de la recarga tira de la palanca de carga: el arma da un tirón hacia atrás (metros).")]
     public float belgranoPalanca = 0.03f;
+
+    [Header("Último Tren (francotirador, US 254)")]
+    public float trenAtras = 0.09f;
+    public float trenArriba = 16f;
+    public float trenCostado = 2f;
+    [Tooltip("Cerrojo sin la manija (detalles apagados): cuánto sube la mano derecha (metros).")]
+    public float cerrojoArriba = 0.025f;
+    [Tooltip("Cerrojo sin la manija (detalles apagados): cuánto va la mano derecha hacia atrás (metros).")]
+    public float cerrojoAtras = 0.07f;
+    [Tooltip("Cerrojo: cuánto más afuera de la punta de la manija queda la mano (metros). Más, si la atraviesa.")]
+    public float cerrojoAfuera = 0.04f;
+    [Tooltip("Cerrojo: cuánto se abre la mano hacia la derecha al ir y volver de la manija, para no atravesar el arma (metros).")]
+    public float cerrojoRodeo = 0.08f;
+    [Tooltip("Cerrojo: cuánto más abajo de la punta de la manija queda la mano (metros).")]
+    public float cerrojoAbajo = 0.1f;
+    [Tooltip("Cerrojo: cuánto más atrás (hacia la cámara) de la punta de la manija queda la mano (metros).")]
+    public float cerrojoAtrasMano = 0.03f;
+    [Tooltip("Cerrojo: cuánto se inclina el arma hacia la mano mientras lo hace (grados).")]
+    public float cerrojoInclinacion = 10f;
+    [Tooltip("Cerrojo: cuándo empieza después del tiro y cuánto dura (s). Termina antes del próximo tiro (1,33 s).")]
+    public float cerrojoEmpieza = 0.3f, cerrojoDura = 0.85f;
+    [Tooltip("Mira: cuánto más cerca de la cara queda el arma en el ojo (metros).")]
+    public float miraAdelante = 0.04f;
 
     [Header("Roca (escopeta, US 248)")]
     public float rocaAtras = 0.075f;
@@ -169,6 +195,7 @@ public class AnimacionPrimeraPersona : MonoBehaviour
     private float caidaAntes;
     private float sacarDesde = -10f;
     private float recargaRoca;            // 0 a 1: cuánto está inclinada la Roca para cargar cartuchos
+    private float tiroTren = -10f;        // el último tiro del Último Tren que tiene cerrojo
     private float fase, respira;
     private Quaternion giroAnterior;
     private Vector2 retraso;
@@ -208,6 +235,7 @@ public class AnimacionPrimeraPersona : MonoBehaviour
     private static bool EsRoca(GameObject arma) => EsDe(arma, ShopCategory.Shotguns);
     // Con ArmaDeFuego y categoría Fusiles: el Belgrano Sur (el Mitre es Fusiles pero tiene su propio script).
     private static bool EsBelgrano(GameObject arma) => EsDe(arma, ShopCategory.Rifles);
+    private static bool EsTren(GameObject arma) => EsDe(arma, ShopCategory.Snipers);
     // El Mitre no es un ArmaDeFuego (tiene su propio script, Mitre): es el del WeaponSwitcher.
     private bool EsMitre(GameObject arma) => switcher != null && arma != null && arma == switcher.mitreObj;
 
@@ -218,7 +246,7 @@ public class AnimacionPrimeraPersona : MonoBehaviour
         GameObject arma = switcher.HeldSecondary;
         if (EsPortena(arma) || EsTrochita(arma)) return arma;
         arma = switcher.HeldPrimary;
-        if (EsUrquiza(arma) || EsRoca(arma) || EsMitre(arma) || EsBelgrano(arma)) return arma;
+        if (EsUrquiza(arma) || EsRoca(arma) || EsMitre(arma) || EsBelgrano(arma) || EsTren(arma)) return arma;
         if (arma != null) return null;
         // US 256: el cuchillo.
         GameObject cuchillo = switcher.meleeScript != null ? switcher.meleeScript.CurrentViewModel : null;
@@ -273,6 +301,7 @@ public class AnimacionPrimeraPersona : MonoBehaviour
               : EsRoca(arma) ? new PiezasDeLaRoca(arma, transform)
               : EsMitre(arma) ? new PiezasDelMitre(arma, transform)
               : EsBelgrano(arma) ? PiezasDelUrquiza.BelgranoSur(arma, transform)
+              : EsTren(arma) ? new PiezasDelTren(arma, transform)
               : (IPiezasDelArma)new PiezasDeLaPistola(arma, transform);
             piezas[arma] = p;
         }
@@ -292,14 +321,20 @@ public class AnimacionPrimeraPersona : MonoBehaviour
         GameObject arma = Animable();
         if (arma == null) return;
         bool trochita = EsTrochita(arma), urquiza = EsUrquiza(arma), roca = EsRoca(arma), mitre = EsMitre(arma);
-        bool belgrano = EsBelgrano(arma);
+        bool belgrano = EsBelgrano(arma), tren = EsTren(arma);
         float arriba = trochita ? trochitaArriba : urquiza ? urquizaArriba : roca ? rocaArriba : mitre ? mitreArriba
-                     : belgrano ? belgranoArriba : retrocesoArriba;
+                     : belgrano ? belgranoArriba : tren ? trenArriba : retrocesoArriba;
         float costado = trochita ? trochitaCostado : urquiza ? urquizaCostado : roca ? rocaCostado : mitre ? mitreCostado
-                      : belgrano ? belgranoCostado : retrocesoCostado;
+                      : belgrano ? belgranoCostado : tren ? trenCostado : retrocesoCostado;
         float atras = trochita ? trochitaAtras : urquiza ? urquizaAtras : roca ? rocaAtras : mitre ? mitreAtras
-                    : belgrano ? belgranoAtras : retrocesoAtras;
+                    : belgrano ? belgranoAtras : tren ? trenAtras : retrocesoAtras;
         golpeVel += new Vector3(-arriba, Random.Range(-costado, costado), atras) * 22f;
+        // Último Tren: si le quedan balas, después del golpe hace el cerrojo (como el sonido de ArmaDeFuego).
+        if (tren)
+        {
+            IHudWeapon balas = arma.GetComponent<IHudWeapon>();
+            if (balas == null || balas.Ammo > 0) tiroTren = Time.time;
+        }
         if (detalles)
         {
             IHudWeapon hud = arma.GetComponent<IHudWeapon>();
@@ -331,6 +366,9 @@ public class AnimacionPrimeraPersona : MonoBehaviour
         // Resorte del disparo (amortiguado): vuelve a cero.
         float k = arma == null ? resorte : EsUrquiza(arma) ? urquizaResorte : EsMitre(arma) ? mitreResorte
                 : EsBelgrano(arma) ? belgranoResorte : resorte;
+        // Último Tren (US 254): apuntando con la mira, el arma sube hasta el ojo y no se atrasa al mirar.
+        MiraTelescopica mira = arma != null && EsTren(arma) ? arma.GetComponent<MiraTelescopica>() : null;
+        float alOjo = mira != null && mira.isActiveAndEnabled ? Suave(mira.Subida) : 0f;
         float w = Mathf.Sqrt(k);
         golpeVel += (-k * golpePos - 2f * amortiguacion * w * golpeVel) * dt;
         golpePos += golpeVel * dt;
@@ -460,8 +498,34 @@ public class AnimacionPrimeraPersona : MonoBehaviour
         // Salto
         mover += new Vector3(0f, -saltoPos, 0f);
 
-        // Mirar
-        girar += new Vector3(retraso.x, retraso.y, -retraso.y * 0.5f);
+        // Mirar (con la mira puesta, sin retraso)
+        girar += new Vector3(retraso.x, retraso.y, -retraso.y * 0.5f) * (1f - alOjo);
+
+        // Último Tren: el cerrojo (después de cada tiro y al final de la recarga) y la mira.
+        Vector3 moverSoloDerecha = Vector3.zero;
+        if (EsTren(arma))
+        {
+            float cerrojo = -1f;
+            float desdeTiro = Time.time - tiroTren;
+            if (desdeTiro >= cerrojoEmpieza && desdeTiro < cerrojoEmpieza + cerrojoDura)
+                cerrojo = (desdeTiro - cerrojoEmpieza) / cerrojoDura;
+            else if (recarga >= 0.68f && recarga < 0.95f) cerrojo = (recarga - 0.68f) / 0.27f; // tira de la palanca
+            float inclina = 0f;
+            if (cerrojo >= 0f)
+            {
+                Cerrojo(arma, cerrojo, out moverSoloDerecha, out inclina);
+                girar += new Vector3(-2f, 0f, cerrojoInclinacion) * inclina;
+            }
+            else if (detalles && Piezas(arma) is PiezasDelTren cerrado) cerrado.Poner(0f);
+            // La mano sigue a la manija con el arma inclinada.
+            moverSoloDerecha = Quaternion.Euler(girar) * moverSoloDerecha;
+            if (alOjo > 0f)
+            {
+                // Lleva la parte de arriba del arma, sobre la mano, al centro de la pantalla. Lo demás se calma.
+                mover = Vector3.Lerp(mover, AlOjo(arma), alOjo);
+                girar = Vector3.Lerp(girar, new Vector3(golpePos.x, golpePos.y, 0f), alOjo);
+            }
+        }
 
         Vector3 moverDerecha = Vector3.zero;
         Quaternion girarDerecha = Quaternion.identity;
@@ -475,7 +539,8 @@ public class AnimacionPrimeraPersona : MonoBehaviour
         }
         else if (piezas.TryGetValue(arma, out IPiezasDelArma sinDetalles)) sinDetalles.Quieta();
 
-        Aplicar(arma.transform, mover, Quaternion.Euler(girar), sueltaIzquierda, moverDerecha, girarDerecha, moverIzquierdaExtra);
+        Aplicar(arma.transform, mover, Quaternion.Euler(girar), sueltaIzquierda, moverDerecha, girarDerecha, moverIzquierdaExtra,
+                moverSoloDerecha);
         estado = "Animando " + arma.name + (foto != null ? " con sus brazos" : " (sin encontrar la foto de los brazos)") +
                  $" | corrida {mover.magnitude * 100f:0.0} cm, girada {girar.magnitude:0.0}°";
     }
@@ -486,8 +551,9 @@ public class AnimacionPrimeraPersona : MonoBehaviour
     // "moverDerecha" y "girarDerecha": lo que se mueven además solo el arma y el brazo derecho (el corte del cuchillo).
     // "moverIzquierdaExtra": lo que se corre además solo el brazo izquierdo (el bombeo y la carga de la Roca, el cargador
     // del Mitre).
+    // "moverSoloDerecha": lo que se corre solo el brazo derecho, sin el arma (el cerrojo del Último Tren).
     private void Aplicar(Transform arma, Vector3 mover, Quaternion girar, float sueltaIzquierda,
-                         Vector3 moverDerecha, Quaternion girarDerecha, Vector3 moverIzquierdaExtra)
+                         Vector3 moverDerecha, Quaternion girarDerecha, Vector3 moverIzquierdaExtra, Vector3 moverSoloDerecha)
     {
         Vector3 pivote = agarre != null ? transform.InverseTransformPoint(agarre.position) : arma.localPosition;
         cuantos = 0;
@@ -496,12 +562,12 @@ public class AnimacionPrimeraPersona : MonoBehaviour
         Mover(arma, pivote, moverArma, girarArma);
         if (foto == null) return;
         bool aparte = sueltaIzquierda > 0.001f || moverDerecha != Vector3.zero || girarDerecha != Quaternion.identity ||
-                      moverIzquierdaExtra != Vector3.zero;
+                      moverIzquierdaExtra != Vector3.zero || moverSoloDerecha != Vector3.zero;
         Transform derecho = aparte ? foto.Find("Brazo derecho") : null;
         if (derecho == null) { Mover(foto, pivote, moverArma, girarArma); return; }
 
         // Dónde iría la foto entera con el arma: ahí va el brazo derecho.
-        Vector3 lugarDerecho = pivote + girarArma * (foto.localPosition - pivote) + moverArma;
+        Vector3 lugarDerecho = pivote + girarArma * (foto.localPosition - pivote) + moverArma + moverSoloDerecha;
         Quaternion giroDerecho = girarArma * foto.localRotation;
         // El izquierdo deja de seguir al arma de a poco y hace un arco: primero se separa del arma (a la izquierda y un
         // poco hacia atrás) y después baja, cada vez más rápido, hasta salir de la pantalla. Al volver hace lo mismo al revés.
@@ -515,6 +581,70 @@ public class AnimacionPrimeraPersona : MonoBehaviour
         Mover(foto, pivote, moverIzquierdo, girarIzquierdo);
         Guardar(derecho);
         derecho.SetPositionAndRotation(transform.TransformPoint(lugarDerecho), transform.rotation * giroDerecho);
+    }
+
+    // ---------- Último Tren (US 254) ----------
+
+    private const float LargoTren = 2.260f; // Sniper_3, de punta a punta en x (de -0.747 a 1.513)
+
+    // Un punto del modelo del Último Tren (x hacia la boca, z hacia arriba), en el espacio de la cámara.
+    private Vector3 PuntoDelTren(GameObject arma, float x, float z)
+    {
+        MeshFilter filtro = arma.GetComponent<MeshFilter>();
+        if (filtro == null) filtro = arma.GetComponentInChildren<MeshFilter>();
+        if (filtro == null || filtro.sharedMesh == null) return transform.InverseTransformPoint(arma.transform.position);
+        float escala = filtro.sharedMesh.bounds.size.x / LargoTren;
+        return transform.InverseTransformPoint(filtro.transform.TransformPoint(new Vector3(-x, 0f, z) * escala));
+    }
+
+    // El cerrojo (avance de 0 a 1): la mano derecha suelta la empuñadura y va a la manija, la levanta, la tira hacia
+    // atrás, la empuja hacia adelante, la baja y vuelve a la empuñadura. "inclina": cuánto se inclina el arma (0 a 1).
+    // La manija la agrega PiezasDelTren y se mueve de verdad; la mano va a su punta y la sigue. Para no atravesar el
+    // arma, la mano va y vuelve por afuera (hacia la derecha) y agarra la punta desde afuera.
+    private void Cerrojo(GameObject arma, float avance, out Vector3 mover, out float inclina)
+    {
+        Vector3 mano = agarre != null ? transform.InverseTransformPoint(agarre.position) : transform.InverseTransformPoint(arma.transform.position);
+        inclina = Suave(Mathf.InverseLerp(0f, 0.2f, avance)) * (1f - Suave(Mathf.InverseLerp(0.84f, 1f, avance)));
+        PiezasDelTren piezasTren = detalles ? Piezas(arma) as PiezasDelTren : null;
+        if (piezasTren != null)
+        {
+            piezasTren.Poner(avance);
+            if (piezasTren.Manija(transform, out Vector3 punta, out Vector3 afuera))
+            {
+                float va = Suave(Mathf.InverseLerp(0f, PiezasDelTren.Agarra, avance)) *
+                           (1f - Suave(Mathf.InverseLerp(PiezasDelTren.Baja, 1f, avance)));
+                // Agarra la punta desde afuera, con la palma abajo y un poco atrás.
+                Vector3 agarra = punta + afuera * cerrojoAfuera + Vector3.down * cerrojoAbajo + Vector3.back * cerrojoAtrasMano;
+                // En el camino (ida y vuelta) se abre hacia la derecha: más en el medio, nada al llegar.
+                float camino = Mathf.Sin(va * Mathf.PI);
+                mover = (agarra - mano) * va + Vector3.right * (cerrojoRodeo * camino);
+                return;
+            }
+        }
+        // Sin la manija (detalles apagados): el mismo gesto, en el aire.
+        // La manija: arriba del cajón, justo atrás de la mira, del lado de la mano.
+        Vector3 manija = PuntoDelTren(arma, 0.05f, 0.24f) + new Vector3(0.025f, 0f, 0f) - mano;
+        Vector3 arriba = manija + Vector3.up * cerrojoArriba;
+        Vector3 atras = arriba + Vector3.back * cerrojoAtras;
+        float[] tiempos = { 0f, 0.2f, 0.33f, 0.52f, 0.72f, 0.84f, 1f };
+        Vector3[] lugares = { Vector3.zero, manija, arriba, atras, arriba, manija, Vector3.zero };
+        mover = Vector3.zero;
+        for (int i = 0; i < tiempos.Length - 1; i++)
+        {
+            if (avance > tiempos[i + 1]) continue;
+            mover = Vector3.Lerp(lugares[i], lugares[i + 1], Mathf.SmoothStep(0f, 1f, Mathf.InverseLerp(tiempos[i], tiempos[i + 1], avance)));
+            break;
+        }
+    }
+
+    // Cuánto hay que correr el arma para que el ojo quede en el centro de la mira (o, sin la mira de PiezasDelTren, la
+    // parte de arriba del arma, sobre la mano, en el centro de la pantalla).
+    private Vector3 AlOjo(GameObject arma)
+    {
+        if (detalles && Piezas(arma) is PiezasDelTren piezasTren && piezasTren.CentroDeLaMira(transform, out Vector3 centro))
+            return new Vector3(-centro.x, -centro.y, -miraAdelante);
+        Vector3 arriba = PuntoDelTren(arma, 0.05f, 0.33f);
+        return new Vector3(-arriba.x, -0.015f - arriba.y, -miraAdelante);
     }
 
     // Curva que arranca y frena despacio (de 0 a 1).
