@@ -142,26 +142,12 @@ public class AnimacionPrimeraPersona : MonoBehaviour
     [Tooltip("Cuánto gira la punta hacia cada lado (grados).")]
     public float corteGiro = 40f;
 
-    public enum EstiloDeLanzamiento
-    {
-        [Tooltip("Como una piedra: la mano se va atrás, al lado de la cabeza, y la tira hacia adelante y arriba, con el brazo estirado, y baja.")]
-        Piedra,
-        [Tooltip("Desde el hombro: el brazo gira entero alrededor del hombro (no se ve dónde se corta): se echa atrás, la arroja y baja.")]
-        DesdeElHombro,
-        [Tooltip("Corto: atrás y adelante en línea (la primera versión).")]
-        Corto,
-    }
-
-    [Header("Granadas (US 258)")]
-    [Tooltip("Cómo se lanza: como una piedra, girando el brazo desde el hombro, o el corto (la primera versión).")]
-    public EstiloDeLanzamiento estiloGranada = EstiloDeLanzamiento.Piedra;
+    [Header("Granadas (US 258): como una piedra")]
     [Tooltip("Cuánto tarda la mano en traer la granada desde abajo (s).")]
     public float granadaSacar = 0.35f;
-    [Tooltip("Dónde está el hombro respecto de la mano, en la cámara (metros): en \"Piedra\" y \"Desde el hombro\" el " +
-             "brazo gira alrededor de ese punto, así la punta cortada del brazo queda quieta, fuera de la pantalla.")]
+    [Tooltip("Dónde está el hombro respecto de la mano, en la cámara (metros): el brazo gira alrededor de ese punto, así " +
+             "la punta cortada del brazo queda quieta, fuera de la pantalla.")]
     public Vector3 hombro = new Vector3(0.12f, -0.25f, -0.35f);
-
-    [Header("Granadas: como una piedra")]
     [Tooltip("Giro del brazo al llevar la mano atrás, al lado de la cabeza (grados: x negativo la sube y la lleva atrás, " +
              "y la abre hacia afuera, z la inclina).")]
     public Vector3 piedraAtrasGiro = new Vector3(-55f, 25f, -20f);
@@ -169,23 +155,6 @@ public class AnimacionPrimeraPersona : MonoBehaviour
     public Vector3 piedraSueltaGiro = new Vector3(-12f, -6f, 6f);
     [Tooltip("Giro del brazo al terminar, con la mano abajo, fuera de la pantalla (grados).")]
     public Vector3 piedraFinGiro = new Vector3(60f, -15f, 12f);
-
-    [Header("Granadas: desde el hombro")]
-    [Tooltip("Giro del brazo al echarse atrás (grados: x negativo sube la mano, y hacia afuera, z inclina).")]
-    public Vector3 hombroAtrasGiro = new Vector3(-28f, 10f, -8f);
-    [Tooltip("Giro del brazo cuando la suelta (grados: x positivo la lleva adelante y abajo).")]
-    public Vector3 hombroSueltaGiro = new Vector3(22f, -8f, 5f);
-    [Tooltip("Giro del brazo al terminar, con la mano abajo, fuera de la pantalla (grados).")]
-    public Vector3 hombroFinGiro = new Vector3(65f, -12f, 10f);
-
-    [Header("Granadas: corto")]
-    [Tooltip("Hasta dónde va la mano al prepararse: atrás, arriba y un poco afuera (metros).")]
-    public Vector3 granadaAtras = new Vector3(0.04f, 0.08f, -0.12f);
-    [Tooltip("Giro de la mano al prepararse (grados: x negativo levanta la punta, z inclina).")]
-    public Vector3 granadaAtrasGiro = new Vector3(-35f, -10f, -20f);
-    [Tooltip("Hasta dónde llega la mano al arrojarla, cuando la suelta (metros).")]
-    public Vector3 granadaAdelante = new Vector3(-0.04f, 0.01f, 0.2f);
-    public Vector3 granadaAdelanteGiro = new Vector3(30f, 8f, 10f);
 
     [Header("Sacar el arma")]
     [Tooltip("La Porteña. Las demás tardan lo que dice su ficha (tiempo para estar lista).")]
@@ -309,69 +278,32 @@ public class AnimacionPrimeraPersona : MonoBehaviour
         arma != null && switcher != null && switcher.Granadas != null && arma.name == GrenadeThrower.NombreMano &&
         arma.transform.parent == transform;
 
-    // US 258: el lanzamiento (GrenadeThrower.AvanceDelLanzamiento): la mano va hacia atrás y arriba, la arroja hacia
-    // adelante (la suelta al final) y baja fuera de la pantalla. Solo se mueven la granada y el brazo derecho.
-    private void Lanzamiento(out Vector3 mover, out Quaternion girar, out Vector3 izquierda)
+    // US 258: el lanzamiento (GrenadeThrower.AvanceDelLanzamiento), como una piedra. El brazo gira entero alrededor del
+    // hombro (que está fuera de la pantalla, abajo y atrás), así no se ve dónde se corta: la mano se va atrás, al lado de
+    // la cabeza, la tira hacia adelante cada vez más rápido y la suelta adelante y un poco arriba, con el brazo estirado,
+    // y sigue hasta que la mano sale por abajo. Solo se mueven la granada y el brazo derecho.
+    private void Lanzamiento(out Vector3 mover, out Quaternion girar)
     {
         mover = Vector3.zero;
         girar = Quaternion.identity;
-        izquierda = Vector3.zero;
         float t = switcher.Granadas.AvanceDelLanzamiento;
         if (t < 0f) return;
-        if (estiloGranada == EstiloDeLanzamiento.Piedra) { Piedra(t, out mover, out girar); return; }
-        if (estiloGranada == EstiloDeLanzamiento.DesdeElHombro) { DesdeElHombro(t, out mover, out girar); return; }
-        Vector3 pos, giro;
-        Vector3 abajo = new Vector3(0f, -sacarAbajo, 0.05f), abajoGiro = new Vector3(sacarInclinacion, 0f, 0f);
+        Vector3 giro;
         if (t < GrenadeThrower.Preparacion)
         {
             float f = Mathf.SmoothStep(0f, 1f, t / GrenadeThrower.Preparacion);
-            pos = granadaAtras * f; giro = granadaAtrasGiro * f;
+            giro = piedraAtrasGiro * f;
         }
         else if (t < GrenadeThrower.Suelta)
         {
             float f = (t - GrenadeThrower.Preparacion) / GrenadeThrower.Arrojar;
             f *= f; // cada vez más rápido, hasta soltarla
-            pos = Vector3.Lerp(granadaAtras, granadaAdelante, f); giro = Vector3.Lerp(granadaAtrasGiro, granadaAdelanteGiro, f);
+            giro = Vector3.Lerp(piedraAtrasGiro, piedraSueltaGiro, f);
         }
         else
         {
             float f = Mathf.SmoothStep(0f, 1f, Mathf.Clamp01((t - GrenadeThrower.Suelta) / GrenadeThrower.Despues));
-            pos = Vector3.Lerp(granadaAdelante, abajo, f); giro = Vector3.Lerp(granadaAdelanteGiro, abajoGiro, f);
-        }
-        mover = pos;
-        girar = Quaternion.Euler(giro);
-    }
-
-    // Desde el hombro: el brazo gira entero alrededor del hombro (que está fuera de la pantalla, abajo y atrás), así no
-    // se ve dónde se corta. Se echa atrás y arriba, la arroja girando hacia adelante cada vez más rápido (la suelta
-    // adelante) y sigue hasta que la mano sale por abajo. La granada y la mano son parte de la misma foto que el brazo:
-    // no hay giro de muñeca aparte (movería la punta cortada).
-    private void DesdeElHombro(float t, out Vector3 mover, out Quaternion girar) =>
-        GiroDelHombro(t, hombroAtrasGiro, hombroSueltaGiro, hombroFinGiro, out mover, out girar);
-
-    // Como una piedra: igual, girando alrededor del hombro, pero la mano se va mucho más atrás, al lado de la cabeza, y
-    // la suelta adelante y arriba, con el brazo estirado.
-    private void Piedra(float t, out Vector3 mover, out Quaternion girar) =>
-        GiroDelHombro(t, piedraAtrasGiro, piedraSueltaGiro, piedraFinGiro, out mover, out girar);
-
-    private void GiroDelHombro(float t, Vector3 atrasGiro, Vector3 sueltaGiro, Vector3 finGiro, out Vector3 mover, out Quaternion girar)
-    {
-        Vector3 giro;
-        if (t < GrenadeThrower.Preparacion)
-        {
-            float f = Mathf.SmoothStep(0f, 1f, t / GrenadeThrower.Preparacion);
-            giro = atrasGiro * f;
-        }
-        else if (t < GrenadeThrower.Suelta)
-        {
-            float f = (t - GrenadeThrower.Preparacion) / GrenadeThrower.Arrojar;
-            f *= f;
-            giro = Vector3.Lerp(atrasGiro, sueltaGiro, f);
-        }
-        else
-        {
-            float f = Mathf.SmoothStep(0f, 1f, Mathf.Clamp01((t - GrenadeThrower.Suelta) / GrenadeThrower.Despues));
-            giro = Vector3.Lerp(sueltaGiro, finGiro, f);
+            giro = Vector3.Lerp(piedraSueltaGiro, piedraFinGiro, f);
         }
         Quaternion brazo = Quaternion.Euler(giro);
         // Girar alrededor del hombro = girar alrededor de la mano y correrla: la mano va de "-hombro" a "brazo * -hombro".
@@ -668,8 +600,7 @@ public class AnimacionPrimeraPersona : MonoBehaviour
         if (EsCuchillo(arma)) Corte(out moverDerecha, out girarDerecha); // el cuchillo no tiene piezas
         else if (EsGranada(arma)) // la granada tampoco
         {
-            Lanzamiento(out moverDerecha, out girarDerecha, out Vector3 izquierdaGranada);
-            moverIzquierdaExtra += izquierdaGranada;
+            Lanzamiento(out moverDerecha, out girarDerecha);
             if (soloDerecha && falta > 0f)
             {
                 moverDerecha += sacarMover;
