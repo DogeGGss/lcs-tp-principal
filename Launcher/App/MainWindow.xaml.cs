@@ -52,6 +52,7 @@ public partial class MainWindow : Window
     private async void OnLoaded(object sender, RoutedEventArgs e)
     {
         Raiz.BeginAnimation(OpacityProperty, new DoubleAnimation(0, 1, TimeSpan.FromMilliseconds(350)));
+        StartPlatform();
         if (App.Preview)
         {
             StateTitle.Text = "TU EQUIPO TE ESPERA"; InstalledText.Text = "Vista previa del diseño";
