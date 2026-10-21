@@ -637,9 +637,12 @@ public class AnimacionPrimeraPersona : MonoBehaviour
         }
     }
 
-    // Cuánto hay que correr el arma para que la parte de arriba (sobre la mano) quede en el centro, frente al ojo.
+    // Cuánto hay que correr el arma para que el ojo quede en el centro de la mira (o, sin la mira de PiezasDelTren, la
+    // parte de arriba del arma, sobre la mano, en el centro de la pantalla).
     private Vector3 AlOjo(GameObject arma)
     {
+        if (detalles && Piezas(arma) is PiezasDelTren piezasTren && piezasTren.CentroDeLaMira(transform, out Vector3 centro))
+            return new Vector3(-centro.x, -centro.y, -miraAdelante);
         Vector3 arriba = PuntoDelTren(arma, 0.05f, 0.33f);
         return new Vector3(-arriba.x, -0.015f - arriba.y, -miraAdelante);
     }

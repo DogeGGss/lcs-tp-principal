@@ -4,6 +4,9 @@ using UnityEngine;
 // (PiezasDelUrquiza), y el cerrojo. El modelo (Sniper_3.fbx) no trae manija de cerrojo: acá se le agrega una, un
 // palito al costado del cajón y del lado de la mano derecha. En el cerrojo la manija gira hacia arriba, va hacia atrás,
 // vuelve y baja; AnimacionPrimeraPersona lleva la mano derecha a la punta del palito (Manija).
+// Tampoco trae mira, aunque tiene mira telescópica: se le agrega una arriba, sobre el riel (tubo, ocular, objetivo con
+// su vidrio y dos soportes), de un gris oscuro. AnimacionPrimeraPersona sube el arma hasta que el ojo queda en el
+// centro del tubo (CentroDeLaMira).
 // Las medidas están en las coordenadas del modelo (x hacia la boca, z hacia arriba); Unity da vuelta la x al
 // importarlo: en la malla un punto (x, y, z) del modelo está en (-x, y, z) * escala.
 public class PiezasDelTren : IPiezasDelArma
@@ -15,6 +18,13 @@ public class PiezasDelTren : IPiezasDelArma
     private const float Recorrido = 0.12f;       // cuánto va hacia atrás
     private const float Giro = 70f;              // cuánto gira hacia arriba
 
+    // La mira, sobre el riel (x de 0,33 a 0,6; arriba en z 0,34).
+    public const float MiraZ = 0.43f;              // el centro del tubo
+    private const float MiraDesde = 0.12f, MiraHasta = 0.74f, MiraRadio = 0.035f;
+    private const float OcularLargo = 0.1f, OcularRadio = 0.045f, ObjetivoLargo = 0.14f, ObjetivoRadio = 0.06f;
+    private static readonly float[] Soportes = { 0.38f, 0.56f };
+    private const float RielZ = 0.335f;
+
     // Momentos del cerrojo (avance de 0 a 1), los mismos que usa la mano en AnimacionPrimeraPersona.
     public const float Agarra = 0.2f, Levantada = 0.33f, Atras = 0.52f, Adelante = 0.72f, Baja = 0.84f;
 
@@ -22,8 +32,9 @@ public class PiezasDelTren : IPiezasDelArma
     private readonly Transform arma;     // la que tiene la malla
     private readonly Transform camara;
     private readonly MeshRenderer render;
-    private Transform eje, punta;
+    private Transform eje, punta, mira;
     private Renderer[] vistas;
+    private Material gris, vidrio;
     private Vector3 lugarEje;
     private float escala;
     private bool armada;
@@ -65,22 +76,86 @@ public class PiezasDelTren : IPiezasDelArma
         punta = new GameObject("Punta").transform;
         punta.SetParent(eje, false);
         punta.localPosition = new Vector3(0f, lado * (Ancho + LargoVarilla), 0f) * escala;
-        vistas = eje.GetComponentsInChildren<Renderer>(true);
+
+        ArmarMira();
+        var lista = new System.Collections.Generic.List<Renderer>(eje.GetComponentsInChildren<Renderer>(true));
+        lista.AddRange(mira.GetComponentsInChildren<Renderer>(true));
+        vistas = lista.ToArray();
         return true;
     }
 
     private float ladoManija = 1f;
 
-    private Transform Pieza(PrimitiveType tipo, string nombre)
+    // La mira: un tubo a lo largo del arma con el ocular atrás, el objetivo adelante (con un vidrio oscuro en cada
+    // punta) y dos soportes que la unen al riel.
+    private void ArmarMira()
+    {
+        gris = Liso(new Color(0.16f, 0.17f, 0.18f), 0.45f);
+        vidrio = Liso(new Color(0.05f, 0.09f, 0.14f), 0.9f);
+        var go = new GameObject("Mira");
+        go.layer = arma.gameObject.layer;
+        mira = go.transform;
+        mira.SetParent(arma, false);
+
+        Tubo("Tubo", MiraDesde, MiraHasta, MiraRadio, gris);
+        Tubo("Ocular", MiraDesde - 0.02f, MiraDesde - 0.02f + OcularLargo, OcularRadio, gris);
+        Tubo("Objetivo", MiraHasta - ObjetivoLargo + 0.03f, MiraHasta + 0.03f, ObjetivoRadio, gris);
+        Tubo("Vidrio atrás", MiraDesde - 0.025f, MiraDesde - 0.02f, OcularRadio * 0.8f, vidrio);
+        Tubo("Vidrio adelante", MiraHasta + 0.03f, MiraHasta + 0.035f, ObjetivoRadio * 0.85f, vidrio);
+        foreach (float x in Soportes)
+        {
+            Transform soporte = Pieza(PrimitiveType.Cube, "Soporte", mira, gris);
+            float alto = MiraZ - RielZ;
+            soporte.localPosition = new Vector3(-x, 0f, RielZ + alto * 0.5f) * escala;
+            soporte.localScale = new Vector3(0.035f, 0.03f, alto) * escala;
+        }
+    }
+
+    // Un cilindro a lo largo del arma (en x del modelo), de "desde" a "hasta", a la altura de la mira.
+    private void Tubo(string nombre, float desde, float hasta, float radio, Material material)
+    {
+        Transform t = Pieza(PrimitiveType.Cylinder, nombre, mira, material);
+        t.localPosition = new Vector3(-(desde + hasta) * 0.5f, 0f, MiraZ) * escala;
+        t.localRotation = Quaternion.Euler(0f, 0f, 90f); // el cilindro va en y: lo acuesta en x
+        t.localScale = new Vector3(radio * 2f, (hasta - desde) * 0.5f, radio * 2f) * escala;
+    }
+
+    // Un material liso de ese color, a partir del del arma (así usa el mismo shader).
+    private Material Liso(Color color, float brillo)
+    {
+        var m = new Material(render.sharedMaterial);
+        m.name = "Mira del Último Tren";
+        if (m.HasProperty("_BaseMap")) m.SetTexture("_BaseMap", null);
+        if (m.HasProperty("_MainTex")) m.SetTexture("_MainTex", null);
+        if (m.HasProperty("_BaseColor")) m.SetColor("_BaseColor", color);
+        if (m.HasProperty("_Color")) m.SetColor("_Color", color);
+        if (m.HasProperty("_Smoothness")) m.SetFloat("_Smoothness", brillo);
+        if (m.HasProperty("_Metallic")) m.SetFloat("_Metallic", 0.6f);
+        return m;
+    }
+
+    /// <summary>El centro del tubo de la mira, donde va el ojo al apuntar, en el espacio de esa cámara.</summary>
+    public bool CentroDeLaMira(Transform camara, out Vector3 lugar)
+    {
+        lugar = Vector3.zero;
+        if (!Armar()) return false;
+        lugar = camara.InverseTransformPoint(arma.TransformPoint(new Vector3(-(MiraDesde + 0.05f), 0f, MiraZ) * escala));
+        return true;
+    }
+
+    private Transform Pieza(PrimitiveType tipo, string nombre) =>
+        Pieza(tipo, nombre, eje, render.sharedMaterials.Length > 0 ? render.sharedMaterials[0] : null);
+
+    private Transform Pieza(PrimitiveType tipo, string nombre, Transform padre, Material material)
     {
         GameObject go = GameObject.CreatePrimitive(tipo);
         go.name = nombre;
         Collider choque = go.GetComponent<Collider>();
         if (choque != null) Object.Destroy(choque);
         go.layer = arma.gameObject.layer;
-        go.transform.SetParent(eje, false);
+        go.transform.SetParent(padre, false);
         MeshRenderer vista = go.GetComponent<MeshRenderer>();
-        vista.sharedMaterials = render.sharedMaterials.Length > 0 ? new[] { render.sharedMaterials[0] } : render.sharedMaterials;
+        if (material != null) vista.sharedMaterial = material;
         vista.shadowCastingMode = render.shadowCastingMode;
         vista.receiveShadows = render.receiveShadows;
         return go.transform;
