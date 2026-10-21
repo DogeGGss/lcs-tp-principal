@@ -214,6 +214,7 @@ public class EspejoTerceraPersona : MonoBehaviour
         }
         IHudWeapon datos = enMano != null ? enMano.GetComponentInChildren<IHudWeapon>() : null;
         arma.Recarga = datos != null ? datos.ReloadProgress : -1f;
+        arma.Balas = datos != null ? datos.Ammo : 6;
     }
 
     // Un arma sin ajuste todavía: como la ven hoy los demás, en la mano derecha y apuntando hacia donde mira.
@@ -315,6 +316,32 @@ public class EspejoTerceraPersona : MonoBehaviour
         arma.Cambiar(() => Mostrar(sale)); // la vuelve a poner, ahora con su ajuste
     }
 
+    // El arma de primera persona como viene del prefab, en el mismo lugar: la de la mano puede tener piezas ya separadas
+    // por la animación de primera persona (el tambor de La Trochita), y la copia del muñeco las separa de nuevo.
+    // "borrar": lo que hay que borrar después de copiarla (null si se usa la misma).
+    private static GameObject Original(GameObject primeraPersona, out GameObject borrar)
+    {
+        borrar = null;
+#if UNITY_EDITOR
+        GameObject molde = UnityEditor.PrefabUtility.GetCorrespondingObjectFromSource(primeraPersona);
+        Transform padre = primeraPersona.transform.parent;
+        if (molde == null || padre == null) return primeraPersona;
+        var apagado = new GameObject("(copiando arma)");
+        apagado.SetActive(false); // así no arranca ningún script de la copia
+        apagado.transform.SetParent(padre, false);
+        GameObject copia = Instantiate(molde, apagado.transform);
+        copia.name = primeraPersona.name;
+        Transform t = primeraPersona.transform;
+        copia.transform.localPosition = t.localPosition;
+        copia.transform.localRotation = t.localRotation;
+        copia.transform.localScale = t.localScale;
+        borrar = apagado;
+        return copia;
+#else
+        return primeraPersona;
+#endif
+    }
+
     private void Mostrar(GameObject primeraPersona)
     {
         if (modeloEnMano != null) Destroy(modeloEnMano);
@@ -323,7 +350,8 @@ public class EspejoTerceraPersona : MonoBehaviour
         {
             ShopItem ficha = WeaponSwitcher.FichaDe(primeraPersona);
             float largo = ficha != null && ficha.realLength > 0f ? ficha.realLength : ModeloReal.LargoSinFicha;
-            modeloEnMano = ModeloReal.Crear(primeraPersona, largo, out Bounds _, primeraPersona.name + " (espejo)");
+            modeloEnMano = ModeloReal.Crear(Original(primeraPersona, out GameObject borrar), largo, out Bounds _, primeraPersona.name + " (espejo)");
+            if (borrar != null) Destroy(borrar);
             modeloEnMano.transform.SetParent(soporte, false);
             foreach (Transform t in modeloEnMano.GetComponentsInChildren<Transform>(true)) t.gameObject.layer = 0;
         }

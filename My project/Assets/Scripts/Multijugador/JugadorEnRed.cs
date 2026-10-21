@@ -1057,7 +1057,11 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
         }
 
         MostrarArma(muerto ? SinArma : armaRed);
-        if (terceraPersona != null) terceraPersona.Recarga = muerto || recargaRed == SinRecarga ? -1f : recargaRed / 200f;
+        if (terceraPersona != null)
+        {
+            terceraPersona.Recarga = muerto || recargaRed == SinRecarga ? -1f : recargaRed / 200f;
+            terceraPersona.Balas = tamanoRed > 0 ? cargadorRed : 6; // US 245: las rayitas del tambor
+        }
     }
 
     // US 182, CA1 y CA2: en la mano se ve el arma a tamaño real que tiene el jugador (o ninguna).

@@ -16,14 +16,34 @@ MonoBehaviour:
   - arma: Pistol_2
     nombre: La Porteña
     alturaPecho: 0.3
-    lugar: {x: 0.17208043, y: 0.039722618, z: 0.47568792}
+    lugar: {x: 0.17208065, y: -0.033933833, z: 0.47613654}
     minimoAdelante: 0.3
     seguirCuerpo: 1
-    giro: {x: -2.4825134, y: 0.0001343817, z: 0.00008834357}
-    escala: 1.3261741
-    manoDerecha: {x: -0.000087493565, y: 0.00007709861, z: -0.00014306605}
-    giroManoDerecha: {x: -0.000091552734, y: 0, z: -0.008972168}
-    manoIzquierda: {x: -0.00010017678, y: 0.00013056397, z: -0.00015242398}
-    giroManoIzquierda: {x: 0.00020755969, y: 0.007463835, z: 0.0000000840392}
+    giro: {x: 6.3674846, y: 0.0001348724, z: 0.00010930214}
+    escala: 1.326175
+    manoDerecha: {x: -0.00008750055, y: 0.00007710047, z: -0.00014321506}
+    giroManoDerecha: {x: -0.000091552734, y: 0.000000040818495, z: -0.008972168}
+    manoIzquierda: {x: -0.00010018796, y: 0.00013077259, z: -0.00015239418}
+    giroManoIzquierda: {x: 0.00019532409, y: 0.0074611832, z: 0}
+    recarga: 0
+    tamborArriba: 0.15
+    tamborGiro: {x: -50, y: -50, z: -5}
     retrocesoArriba: 10
     retrocesoAtras: 0.06
+  - arma: LineaH
+    nombre: La Trochita
+    alturaPecho: 0.3
+    lugar: {x: 0.1701278, y: 0.26774234, z: 0.38862416}
+    minimoAdelante: 0.3
+    seguirCuerpo: 1
+    giro: {x: -32.29126, y: 0.0001511563, z: 0.00018339766}
+    escala: 1.0005115
+    manoDerecha: {x: -0.0006791651, y: 0.009851702, z: 0.015410408}
+    giroManoDerecha: {x: -0.015319824, y: -0.010375977, z: -0.08996582}
+    manoIzquierda: {x: -0.031895526, y: 0.019607589, z: -0.025781408}
+    giroManoIzquierda: {x: -0.024291992, y: 0.08969773, z: 0.000056283174}
+    recarga: 1
+    tamborArriba: 0.15
+    tamborGiro: {x: -50, y: -50, z: -5}
+    retrocesoArriba: 14
+    retrocesoAtras: 0.08

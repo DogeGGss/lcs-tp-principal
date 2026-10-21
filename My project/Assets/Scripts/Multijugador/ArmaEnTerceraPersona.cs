@@ -41,6 +41,11 @@ public class ArmaEnTerceraPersona : MonoBehaviour
 
     /// <summary>El avance de la recarga (0 a 1), o -1 si no está recargando. Lo pone el que maneja la copia.</summary>
     public float Recarga { get; set; } = -1f;
+    /// <summary>Las balas en el cargador del arma en la mano (para las rayitas del tambor de La Trochita).</summary>
+    public int Balas { get; set; } = 6;
+    // Las piezas que se mueven del arma (el tambor de La Trochita con sus rayitas, como en primera persona), por modelo.
+    private readonly Dictionary<GameObject, IPiezasDelArma> piezasPorModelo = new Dictionary<GameObject, IPiezasDelArma>();
+    private IPiezasDelArma piezas;
 
     /// <summary>Tiene un arma con ajuste en la mano: el arma y las manos las pone este script.</summary>
     public bool Manejando => modelo != null && ajuste != null;
@@ -159,6 +164,8 @@ public class ArmaEnTerceraPersona : MonoBehaviour
     public void Poner(GameObject modeloReal, GameObject primeraPersona, float sacar)
     {
         pendiente = null;
+        if (piezas != null) piezas.Quieta();
+        piezas = null;
         modelo = modeloReal;
         soporte = modelo != null ? modelo.transform.parent : null;
         ajuste = modelo != null && soporte != null ? AgarresTerceraPersona.Actual.Buscar(primeraPersona) : null;
@@ -168,6 +175,12 @@ public class ArmaEnTerceraPersona : MonoBehaviour
         sacarDesde = sacar > 0f ? Time.time : -10f;
         if (ajuste != null) Agarres(primeraPersona);
         if (!Manejando) CopiarOriginales();
+        // US 245: el tambor de La Trochita gira con cada tiro y en la recarga, con sus rayitas (una por bala).
+        if (Manejando && ajuste.recarga == AgarresTerceraPersona.TipoDeRecarga.Tambor)
+        {
+            if (!piezasPorModelo.TryGetValue(modelo, out piezas) || piezas == null)
+                piezasPorModelo[modelo] = piezas = new PiezasDeLaTrochita(modelo, null);
+        }
     }
 
     // Los agarres de primera persona del arma, pasados al modelo a tamaño real (que sale del mismo arma, ubicada en el
@@ -199,6 +212,7 @@ public class ArmaEnTerceraPersona : MonoBehaviour
     {
         if (!Manejando) return;
         golpeVel += new Vector2(ajuste.retrocesoArriba, ajuste.retrocesoAtras) * 22f;
+        if (piezas != null) piezas.Disparo(Mathf.Max(0, Balas - 1));
     }
 
     // ---------- Seguir el cuerpo ----------
@@ -266,7 +280,12 @@ public class ArmaEnTerceraPersona : MonoBehaviour
         else recargaVista = recargaVista < 0f || Recarga < recargaVista - 0.3f ? Recarga
                           : Mathf.Lerp(recargaVista, Recarga, 1f - Mathf.Exp(-12f * dt));
         float r = recargaVista;
-        float inclinada = r < 0f ? 0f : Suave(Mathf.InverseLerp(0f, 0.15f, r)) * (1f - Suave(Mathf.InverseLerp(0.85f, 1f, r)));
+        // Tambor (US 245): el arma sube de costado mostrando el tambor, sostenida solo por la derecha (como en primera
+        // persona); la izquierda la suelta antes y la vuelve a agarrar cuando ya bajó. Cargador: se inclina.
+        bool tambor = ajuste.recarga == AgarresTerceraPersona.TipoDeRecarga.Tambor;
+        float subida = !tambor || r < 0f ? 0f : Suave(Mathf.InverseLerp(0f, 0.12f, r)) * (1f - Suave(Mathf.InverseLerp(0.85f, 1f, r)));
+        float suelta = !tambor || r < 0f ? 0f : Suave(Mathf.InverseLerp(0f, 0.25f, r)) * (1f - Suave(Mathf.InverseLerp(0.75f, 1f, r)));
+        float inclinada = tambor || r < 0f ? 0f : Suave(Mathf.InverseLerp(0f, 0.15f, r)) * (1f - Suave(Mathf.InverseLerp(0.85f, 1f, r)));
 
         // Sacar (sube desde abajo) y guardar (baja): 1 = abajo del todo.
         float abajo = 0f;
@@ -288,6 +307,14 @@ public class ArmaEnTerceraPersona : MonoBehaviour
         Vector3 enCuerpo = transform.InverseTransformPoint(puntoArma);
         float frente = transform.InverseTransformPoint(pecho).z + ajuste.minimoAdelante;
         if (enCuerpo.z < frente) { enCuerpo.z = frente; puntoArma = transform.TransformPoint(enCuerpo); }
+        // Tambor: sube y gira alrededor de la mano derecha (no del centro del arma), así no se le sale de la mano.
+        if (subida > 0f)
+        {
+            Vector3 mano = puntoArma + giroArma * ((derechaLocal + ajuste.manoDerecha) * ajuste.escala);
+            Quaternion vuelta = ojos.rotation * Quaternion.Euler(ajuste.tamborGiro * subida) * Quaternion.Inverse(ojos.rotation);
+            puntoArma = mano + vuelta * (puntoArma - mano) + transform.up * (ajuste.tamborArriba * subida);
+            giroArma = vuelta * giroArma;
+        }
 
         modelo.transform.localScale = Vector3.one * ajuste.escala;
         // El soporte (padre del modelo) se mueve para que el modelo quede justo ahí.
@@ -301,7 +328,14 @@ public class ArmaEnTerceraPersona : MonoBehaviour
         Quaternion izqGiro = m.rotation * izquierdaGiro * Quaternion.Euler(ajuste.giroManoIzquierda);
 
         // CA4: la mano izquierda saca el cargador (por abajo de la empuñadura), baja a buscar otro, lo pone y vuelve.
-        if (r >= 0f)
+        if (tambor && suelta > 0f)
+        {
+            // La mano izquierda suelta el arma y baja, relajada, un poco adelante de la cadera (más atrás estira el brazo
+            // de más y se rompe el modelo).
+            Vector3 costado = transform.TransformPoint(transform.InverseTransformPoint(ojos.position) + new Vector3(-0.18f, -0.55f, 0.2f));
+            izq = Vector3.Lerp(izq, costado, suelta);
+        }
+        else if (!tambor && r >= 0f)
         {
             Vector3 cargador = der - m.up * 0.12f;
             Vector3 bolsillo = cargador + Vector3.down * 0.25f - transform.forward * 0.05f;
@@ -312,6 +346,7 @@ public class ArmaEnTerceraPersona : MonoBehaviour
 
         objetivoDerecho.SetPositionAndRotation(der, derGiro);
         objetivoIzquierdo.SetPositionAndRotation(izq, izqGiro);
+        if (piezas != null) piezas.Actualizar(recargaVista, Balas);
     }
 
     // ---------- Ajuste con manijas (EspejoTerceraPersona) ----------
