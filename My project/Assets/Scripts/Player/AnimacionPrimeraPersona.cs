@@ -89,11 +89,13 @@ public class AnimacionPrimeraPersona : MonoBehaviour
     [Tooltip("Cerrojo sin la manija (detalles apagados): cuánto va la mano derecha hacia atrás (metros).")]
     public float cerrojoAtras = 0.07f;
     [Tooltip("Cerrojo: cuánto más afuera de la punta de la manija queda la mano (metros). Más, si la atraviesa.")]
-    public float cerrojoAfuera = 0.02f;
+    public float cerrojoAfuera = 0.04f;
     [Tooltip("Cerrojo: cuánto se abre la mano hacia la derecha al ir y volver de la manija, para no atravesar el arma (metros).")]
     public float cerrojoRodeo = 0.05f;
     [Tooltip("Cerrojo: cuánto más abajo de la punta de la manija queda la mano (metros).")]
-    public float cerrojoAbajo = 0.04f;
+    public float cerrojoAbajo = 0.06f;
+    [Tooltip("Cerrojo: cuánto más atrás (hacia la cámara) de la punta de la manija queda la mano (metros).")]
+    public float cerrojoAtrasMano = 0.03f;
     [Tooltip("Cerrojo: cuánto se inclina el arma hacia la mano mientras lo hace (grados).")]
     public float cerrojoInclinacion = 10f;
     [Tooltip("Cerrojo: cuándo empieza después del tiro y cuánto dura (s). Termina antes del próximo tiro (1,33 s).")]
@@ -611,8 +613,8 @@ public class AnimacionPrimeraPersona : MonoBehaviour
             {
                 float va = Suave(Mathf.InverseLerp(0f, PiezasDelTren.Agarra, avance)) *
                            (1f - Suave(Mathf.InverseLerp(PiezasDelTren.Baja, 1f, avance)));
-                // Agarra la punta desde afuera, con la palma abajo.
-                Vector3 agarra = punta + afuera * cerrojoAfuera + Vector3.down * cerrojoAbajo;
+                // Agarra la punta desde afuera, con la palma abajo y un poco atrás.
+                Vector3 agarra = punta + afuera * cerrojoAfuera + Vector3.down * cerrojoAbajo + Vector3.back * cerrojoAtrasMano;
                 // En el camino (ida y vuelta) se abre hacia la derecha: más en el medio, nada al llegar.
                 float camino = Mathf.Sin(va * Mathf.PI);
                 mover = (agarra - mano) * va + Vector3.right * (cerrojoRodeo * camino);
