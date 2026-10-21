@@ -3,10 +3,11 @@ using UnityEngine;
 // Muñeco espejo (solo en el editor, para ajustar F26 sin otro jugador): una copia del cuerpo del jugador de esta
 // computadora como la verían los demás jugadores, con la misma arma en la mano (ArmaEnTerceraPersona), que la dispara,
 // la recarga y la cambia igual que él.
-// Aparece a 2,5 m adelante del jugador, mirándolo, y queda quieto ahí, mirando fijo (para recorrerlo y verlo desde
-// todos lados). En el Inspector de este componente: "Mirar arriba o abajo" lo hace mirar arriba o abajo, "Copiar
-// movimientos" lo hace caminar, saltar, agacharse y mirar como el jugador, y "Traer adelante" lo vuelve a poner
-// adelante del jugador.
+// Aparece a 2,5 m adelante del jugador, mirándolo, y queda parado ahí (para recorrerlo y verlo desde todos lados),
+// pero apunta como el jugador: si él mira arriba o abajo, el muñeco también, y si gira a un costado, el muñeco gira
+// hacia el mismo lado. En el Inspector de este componente: sin "Seguir la mira" queda mirando fijo ("Mirar arriba o
+// abajo" lo inclina), "Copiar movimientos" además lo hace caminar, saltar y agacharse siguiendo al jugador, y "Traer
+// adelante" lo vuelve a poner adelante del jugador.
 // Manijas: con "Ajustar con manijas" aparecen, en la vista Scene, tres manijas (hijas del muñeco): "Arma", "Mano
 // derecha" y "Mano izquierda". Se seleccionan (en la jerarquía o haciendo clic en la bolita) y se mueven y giran con
 // las herramientas de siempre (W y E); la del arma también se escala (R) para cambiar el tamaño. Lo que se mueva pasa
@@ -23,7 +24,9 @@ public class EspejoTerceraPersona : MonoBehaviour
 
     [Tooltip("Los ajustes de cada arma en tercera persona: se cambian acá con el juego andando y quedan guardados.")]
     public AgarresTerceraPersona agarres;
-    [Tooltip("Hacia dónde mira el muñeco quieto (grados: negativo arriba, positivo abajo).")]
+    [Tooltip("Apunta como el jugador (arriba, abajo y a los costados), sin moverse de su lugar.")]
+    public bool seguirLaMira = true;
+    [Tooltip("Sin seguir la mira: hacia dónde mira el muñeco (grados: negativo arriba, positivo abajo).")]
     [Range(-80f, 80f)] public float mirarArribaOAbajo = 0f;
     [Tooltip("Prendido, camina, salta, se agacha y mira como el jugador (y lo sigue a 2,5 m).")]
     public bool copiarMovimientos;
@@ -140,12 +143,16 @@ public class EspejoTerceraPersona : MonoBehaviour
         Ubicar();
     }
 
+    private float giroInicialJugador, giroInicialMunieco;
+
     private void Ubicar()
     {
         Vector3 adelante = jugador.forward;
         adelante.y = 0f;
         adelante = adelante.sqrMagnitude > 0.001f ? adelante.normalized : Vector3.forward;
         raiz.SetPositionAndRotation(jugador.position + adelante * Distancia, Quaternion.LookRotation(-adelante));
+        giroInicialJugador = jugador.eulerAngles.y;
+        giroInicialMunieco = raiz.eulerAngles.y;
     }
 
     private void Update()
@@ -173,8 +180,15 @@ public class EspejoTerceraPersona : MonoBehaviour
         }
         else
         {
+            if (seguirLaMira)
+            {
+                // Parado en su lugar, pero apunta como el jugador: gira a los costados lo mismo que él y mira arriba o abajo igual.
+                float giro = Mathf.DeltaAngle(giroInicialJugador, jugador.eulerAngles.y);
+                raiz.rotation = Quaternion.Euler(0f, giroInicialMunieco + giro, 0f);
+                ojos.localRotation = Quaternion.Euler(Mathf.DeltaAngle(0f, camara.transform.localEulerAngles.x), 0f, 0f);
+            }
             // Quieto, mirando fijo.
-            ojos.localRotation = Quaternion.Euler(mirarArribaOAbajo, 0f, 0f);
+            else ojos.localRotation = Quaternion.Euler(mirarArribaOAbajo, 0f, 0f);
             foreach (AnimatorControllerParameter p in copia.parameters)
             {
                 if (p.type == AnimatorControllerParameterType.Float) copia.SetFloat(p.nameHash, 0f);
