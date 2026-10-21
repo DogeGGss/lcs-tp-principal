@@ -5,7 +5,7 @@ using UnityEngine;
 // con sus zonas de impacto y el contorno rojo de rival), sin la persecución. Lo crea el PanelDePractica en la zona de
 // tiro, según el modo elegido, de frente a la línea de tiro.
 // - Recibe el daño de verdad del arma (por zona y distancia, US 165) y muestra el marcador de impacto como un rival.
-// - CA1: al morir cae hacia atrás, como los rivales en el online, y a los 3 s se levanta solo con la vida completa.
+// - CA1: al morir cae como los rivales en el online (con física, US 260) y a los 3 s se levanta solo con la vida completa.
 // - En el modo "En movimiento" (panel) camina de costado, para un lado y para el otro, con frenadas y cambios de lado
 //   al azar, sin pasar a través de paredes ni cajas.
 // - CA3: no ataca ni empuja: no le hace nada al jugador.
@@ -27,6 +27,7 @@ public class BotDePractica : MonoBehaviour
     private Animator animator;
     private Transform modelo;
     private Quaternion giroModelo;
+    private CuerpoCaido cuerpo; // US 260: el cuerpo caído mientras está muerto; el modelo queda escondido
     private Vector3 lugar;
     private bool puedeMoverse;
     private float x0, x1;
@@ -156,9 +157,25 @@ public class BotDePractica : MonoBehaviour
         Murio?.Invoke(this, vida.KilledByHeadshot);
     }
 
-    // Cae hacia atrás como los rivales en el online (como EnemyChaser) y a los 3 s se levanta.
+    // Cae como los rivales en el online: con física (US 260), empujado desde donde le dispararon; si el modelo no es
+    // humanoide, hacia atrás como antes. A los 3 s se levanta.
     private IEnumerator CaerYVolver()
     {
+        if (modelo != null && modelo.gameObject.activeInHierarchy)
+        {
+            Vector3? golpe = vida != null ? vida.LastDamageOrigin : null;
+            Vector3 lejos = golpe.HasValue ? transform.position + Vector3.up - golpe.Value : -transform.forward;
+            lejos.y = 0f;
+            lejos = lejos.sqrMagnitude > 0.0001f ? lejos.normalized : -transform.forward;
+            cuerpo = CuerpoCaido.Crear(modelo, lejos * 3.5f + Vector3.up * 0.6f);
+            if (cuerpo != null) modelo.gameObject.SetActive(false);
+        }
+        if (cuerpo != null)
+        {
+            yield return new WaitForSeconds(VuelveEn);
+            Revivir(false);
+            yield break;
+        }
         if (modelo != null)
         {
             Quaternion desde = modelo.localRotation, hasta = Quaternion.Euler(-90f, 0f, 0f);
@@ -179,6 +196,12 @@ public class BotDePractica : MonoBehaviour
     {
         StopAllCoroutines();
         muerto = false;
+        if (cuerpo != null)
+        {
+            cuerpo.Irse(true);
+            cuerpo = null;
+            if (modelo != null) modelo.gameObject.SetActive(true);
+        }
         if (modelo != null) modelo.localRotation = giroModelo;
         foreach (Collider c in colliders) if (c != null) c.enabled = true;
         if (vida != null) vida.Revive();
