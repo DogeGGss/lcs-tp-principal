@@ -62,6 +62,9 @@ public class AgarresTerceraPersona : ScriptableObject
         [Tooltip("Dónde está la palanca de carga respecto de la mano derecha (metros): adelante (hacia el caño) y arriba.")]
         public float palancaAdelante = 0f;
         public float palancaArriba = 0.08f;
+        [Tooltip("Cuánto más a la izquierda del arma van la mano en la palanca y en el cargador (metros): la mano los agarra desde el costado, no desde adentro del arma.")]
+        public float palancaCostado = 0.07f;
+        public float cargadorCostado = 0.04f;
 
         [Header("Disparo")]
         [Tooltip("Cuánto se levanta la punta con cada disparo (grados).")]

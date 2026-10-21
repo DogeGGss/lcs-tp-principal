@@ -345,9 +345,11 @@ public class ArmaEnTerceraPersona : MonoBehaviour
         {
             // Fusiles (US 251 y 253): la mano izquierda va al cargador (adelante del gatillo), lo saca para abajo, busca
             // otro, lo mete (el arma da un empujón), va a la palanca de carga, tira hacia atrás y vuelve al guardamanos.
-            Vector3 cargador = der + m.forward * ajuste.cargadorAdelante - m.up * ajuste.cargadorAbajo;
+            // Desde el costado izquierdo del arma (si no, la mano se metía adentro).
+            Vector3 cargador = der + m.forward * ajuste.cargadorAdelante - m.up * ajuste.cargadorAbajo - m.right * ajuste.cargadorCostado;
             Vector3 bolsillo = cargador + Vector3.down * 0.25f - transform.forward * 0.05f;
-            Vector3 palanca = der + m.forward * (ajuste.palancaAdelante - 0.07f * tiron) + m.up * ajuste.palancaArriba;
+            Vector3 palanca = der + m.forward * (ajuste.palancaAdelante - 0.07f * tiron) + m.up * ajuste.palancaArriba -
+                              m.right * ajuste.palancaCostado;
             float aCargador = Suave(Mathf.InverseLerp(0.1f, 0.22f, r)) * (1f - Suave(Mathf.InverseLerp(0.65f, 0.75f, r)));
             float aBolsillo = Suave(Mathf.InverseLerp(0.28f, 0.4f, r)) * (1f - Suave(Mathf.InverseLerp(0.5f, 0.6f, r)));
             float aPalanca = Suave(Mathf.InverseLerp(0.65f, 0.75f, r)) * (1f - Suave(Mathf.InverseLerp(0.86f, 0.97f, r)));

@@ -54,7 +54,7 @@ MonoBehaviour:
     minimoAdelante: 0.2
     seguirCuerpo: 1
     giro: {x: 18.457003, y: 0.00014456699, z: 0.000073276635}
-    escala: 1.0003927
+    escala: 0.8841
     manoDerecha: {x: 0, y: 0, z: 0}
     giroManoDerecha: {x: 0, y: 0, z: 0}
     manoIzquierda: {x: 0, y: 0, z: 0}
@@ -67,6 +67,8 @@ MonoBehaviour:
     palanca: 1
     palancaAdelante: 0
     palancaArriba: 0.08
+    palancaCostado: 0.07
+    cargadorCostado: 0.04
     retrocesoArriba: 4
     retrocesoAtras: 0.03
   - arma: BelgranoSur
@@ -89,5 +91,7 @@ MonoBehaviour:
     palanca: 1
     palancaAdelante: 0
     palancaArriba: 0.08
+    palancaCostado: 0.07
+    cargadorCostado: 0.04
     retrocesoArriba: 5
     retrocesoAtras: 0.035
