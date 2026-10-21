@@ -301,8 +301,8 @@ public class EspejoTerceraPersona : MonoBehaviour
         Fijar(manijaIzquierda.transform, 2, ip, ig);
 
         // Las de la recarga, mientras se la prueba: dónde agarra la mano izquierda el cargador y la palanca.
-        bool hayRecarga = probarLaRecarga && arma.PoseDeRecarga(out Vector3 cp, out Quaternion cg, out Vector3 pp,
-            out Quaternion pg, out bool conPalanca);
+        bool hayRecarga = arma.PoseDeRecarga(out Vector3 cp, out Quaternion cg, out Vector3 pp,
+            out Quaternion pg, out bool conPalanca) && probarLaRecarga;
         if (hayRecarga && manijaCargador == null) manijaCargador = Manija("Manija: Cargador", new Color(1f, 0.5f, 0.1f), 0.03f);
         if (!hayRecarga && manijaCargador != null) { Destroy(manijaCargador.gameObject); manijaCargador = null; }
         bool palancaVisible = hayRecarga && conPalanca;
