@@ -19,9 +19,9 @@ public class PiezasDelTren : IPiezasDelArma
     private const float Giro = 70f;              // cuánto gira hacia arriba
 
     // La mira, sobre el riel (x de 0,33 a 0,6; arriba en z 0,34).
-    public const float MiraZ = 0.43f;              // el centro del tubo
+    public const float MiraZ = 0.385f;             // el centro del tubo
     private const float MiraDesde = 0.12f, MiraHasta = 0.74f, MiraRadio = 0.035f;
-    private const float OcularLargo = 0.1f, OcularRadio = 0.045f, ObjetivoLargo = 0.14f, ObjetivoRadio = 0.06f;
+    private const float OcularLargo = 0.1f, OcularRadio = 0.045f, ObjetivoLargo = 0.14f, ObjetivoRadio = 0.05f;
     private static readonly float[] Soportes = { 0.38f, 0.56f };
     private const float RielZ = 0.335f;
 
