@@ -16,13 +16,14 @@ MonoBehaviour:
   - arma: Pistol_2
     nombre: La Porteña
     alturaPecho: 0.3
-    lugar: {x: 0.04, y: 0.02, z: 0.45}
+    lugar: {x: 0.17208043, y: 0.039722618, z: 0.47568792}
     minimoAdelante: 0.3
-    giro: {x: 0, y: 0, z: 0}
-    escala: 1.32472
-    manoDerecha: {x: 0, y: 0, z: 0}
-    giroManoDerecha: {x: 0, y: 0, z: 0}
-    manoIzquierda: {x: 0, y: 0, z: 0}
-    giroManoIzquierda: {x: 0, y: 0, z: 0}
+    seguirCuerpo: 1
+    giro: {x: -2.4825134, y: 0.0001343817, z: 0.00008834357}
+    escala: 1.3261741
+    manoDerecha: {x: -0.000087493565, y: 0.00007709861, z: -0.00014306605}
+    giroManoDerecha: {x: -0.000091552734, y: 0, z: -0.008972168}
+    manoIzquierda: {x: -0.00010017678, y: 0.00013056397, z: -0.00015242398}
+    giroManoIzquierda: {x: 0.00020755969, y: 0.007463835, z: 0.0000000840392}
     retrocesoArriba: 10
     retrocesoAtras: 0.06
