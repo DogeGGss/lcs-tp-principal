@@ -41,6 +41,11 @@ public class ArmaEnTerceraPersona : MonoBehaviour
 
     /// <summary>El avance de la recarga (0 a 1), o -1 si no está recargando. Lo pone el que maneja la copia.</summary>
     public float Recarga { get; set; } = -1f;
+    /// <summary>Las balas en el cargador del arma en la mano (para las rayitas del tambor de La Trochita).</summary>
+    public int Balas { get; set; } = 6;
+    // Las piezas que se mueven del arma (el tambor de La Trochita con sus rayitas, como en primera persona), por modelo.
+    private readonly Dictionary<GameObject, IPiezasDelArma> piezasPorModelo = new Dictionary<GameObject, IPiezasDelArma>();
+    private IPiezasDelArma piezas;
 
     /// <summary>Tiene un arma con ajuste en la mano: el arma y las manos las pone este script.</summary>
     public bool Manejando => modelo != null && ajuste != null;
@@ -159,6 +164,8 @@ public class ArmaEnTerceraPersona : MonoBehaviour
     public void Poner(GameObject modeloReal, GameObject primeraPersona, float sacar)
     {
         pendiente = null;
+        if (piezas != null) piezas.Quieta();
+        piezas = null;
         modelo = modeloReal;
         soporte = modelo != null ? modelo.transform.parent : null;
         ajuste = modelo != null && soporte != null ? AgarresTerceraPersona.Actual.Buscar(primeraPersona) : null;
@@ -168,6 +175,12 @@ public class ArmaEnTerceraPersona : MonoBehaviour
         sacarDesde = sacar > 0f ? Time.time : -10f;
         if (ajuste != null) Agarres(primeraPersona);
         if (!Manejando) CopiarOriginales();
+        // US 245: el tambor de La Trochita gira con cada tiro y en la recarga, con sus rayitas (una por bala).
+        if (Manejando && ajuste.recarga == AgarresTerceraPersona.TipoDeRecarga.Tambor)
+        {
+            if (!piezasPorModelo.TryGetValue(modelo, out piezas) || piezas == null)
+                piezasPorModelo[modelo] = piezas = new PiezasDeLaTrochita(modelo, null);
+        }
     }
 
     // Los agarres de primera persona del arma, pasados al modelo a tamaño real (que sale del mismo arma, ubicada en el
@@ -199,6 +212,7 @@ public class ArmaEnTerceraPersona : MonoBehaviour
     {
         if (!Manejando) return;
         golpeVel += new Vector2(ajuste.retrocesoArriba, ajuste.retrocesoAtras) * 22f;
+        if (piezas != null) piezas.Disparo(Mathf.Max(0, Balas - 1));
     }
 
     // ---------- Seguir el cuerpo ----------
@@ -279,10 +293,8 @@ public class ArmaEnTerceraPersona : MonoBehaviour
         if (pendiente != null) abajo = Mathf.Max(abajo, Suave(Mathf.Clamp01((Time.time - guardarDesde) / Guardar)));
 
         // Dónde va el arma: respecto de los ojos, con el retroceso, la recarga y el sacar/guardar.
-        Vector3 lugar = ajuste.lugar + new Vector3(-0.06f * inclinada, 0.03f * inclinada - 0.25f * abajo + ajuste.tamborArriba * subida,
-                                                   -golpe.y - 0.05f * abajo);
-        Vector3 giro = ajuste.giro + new Vector3(-golpe.x - 20f * inclinada + 45f * abajo, -15f * inclinada, -25f * inclinada) +
-                       ajuste.tamborGiro * subida;
+        Vector3 lugar = ajuste.lugar + new Vector3(-0.06f * inclinada, 0.03f * inclinada - 0.25f * abajo, -golpe.y - 0.05f * abajo);
+        Vector3 giro = ajuste.giro + new Vector3(-golpe.x - 20f * inclinada + 45f * abajo, -15f * inclinada, -25f * inclinada);
         Quaternion giroArma = ojos.rotation * Quaternion.Euler(giro);
         // Gira alrededor del pecho (no de los ojos): mirando abajo, girando alrededor de los ojos se metía en el pecho.
         Vector3 pecho = ojos.position - transform.up * ajuste.alturaPecho;
@@ -295,6 +307,14 @@ public class ArmaEnTerceraPersona : MonoBehaviour
         Vector3 enCuerpo = transform.InverseTransformPoint(puntoArma);
         float frente = transform.InverseTransformPoint(pecho).z + ajuste.minimoAdelante;
         if (enCuerpo.z < frente) { enCuerpo.z = frente; puntoArma = transform.TransformPoint(enCuerpo); }
+        // Tambor: sube y gira alrededor de la mano derecha (no del centro del arma), así no se le sale de la mano.
+        if (subida > 0f)
+        {
+            Vector3 mano = puntoArma + giroArma * ((derechaLocal + ajuste.manoDerecha) * ajuste.escala);
+            Quaternion vuelta = ojos.rotation * Quaternion.Euler(ajuste.tamborGiro * subida) * Quaternion.Inverse(ojos.rotation);
+            puntoArma = mano + vuelta * (puntoArma - mano) + transform.up * (ajuste.tamborArriba * subida);
+            giroArma = vuelta * giroArma;
+        }
 
         modelo.transform.localScale = Vector3.one * ajuste.escala;
         // El soporte (padre del modelo) se mueve para que el modelo quede justo ahí.
@@ -325,6 +345,7 @@ public class ArmaEnTerceraPersona : MonoBehaviour
 
         objetivoDerecho.SetPositionAndRotation(der, derGiro);
         objetivoIzquierdo.SetPositionAndRotation(izq, izqGiro);
+        if (piezas != null) piezas.Actualizar(recargaVista, Balas);
     }
 
     // ---------- Ajuste con manijas (EspejoTerceraPersona) ----------
