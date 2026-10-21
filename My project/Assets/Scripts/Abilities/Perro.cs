@@ -214,7 +214,8 @@ public class Perro : MonoBehaviour
 
     private static NavMeshQueryFilter Filtro() => new NavMeshQueryFilter { agentTypeID = NavMeshEnVivo.Tipo, areaMask = NavMesh.AllAreas };
 
-    private static AudioMixerGroup Grupo(Transform jugador)
+    /// <summary>El canal de efectos (SFX) del jugador, el de sus armas: así lo regulan General y Efectos de Opciones.</summary>
+    public static AudioMixerGroup Grupo(Transform jugador)
     {
         if (jugador == null) return null;
         Pistola pistola = jugador.GetComponentInChildren<Pistola>(true);

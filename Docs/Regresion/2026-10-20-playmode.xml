@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<test-run modo="playmode" unity="6000.6.2f1" version-juego="0.3.0-exp.6" inicio="2026-10-20 23:20:33" fin="2026-10-20 23:24:20" pasaron="64" fallaron="1" ignorados="0" duracion="226.600">
+  <test-case fullname="BilleteraTests.Cobrar_suma" resultado="Passed" duracion="0.001" inicio="2026-10-20 23:20:33" />
+  <test-case fullname="BilleteraTests.Empieza_con_800" resultado="Passed" duracion="0.000" inicio="2026-10-20 23:20:33" />
+  <test-case fullname="BilleteraTests.Gastar_resta_y_avisa" resultado="Passed" duracion="0.000" inicio="2026-10-20 23:20:33" />
+  <test-case fullname="BilleteraTests.No_se_puede_gastar_mas_de_lo_que_se_tiene" resultado="Passed" duracion="0.000" inicio="2026-10-20 23:20:33" />
+  <test-case fullname="BilleteraTests.Set_deja_la_plata_en_un_monto_fijo" resultado="Passed" duracion="0.000" inicio="2026-10-20 23:20:33" />
+  <test-case fullname="BilleteraTests.Tope_de_9000" resultado="Passed" duracion="0.000" inicio="2026-10-20 23:20:33" />
+  <test-case fullname="EscenasTests.Campo_de_practica_armas_gratis_y_jugador_invulnerable" resultado="Passed" duracion="5.960" inicio="2026-10-20 23:20:33" />
+  <test-case fullname="EscenasTests.La_escena_abre_sin_errores(&quot;MenuPrincipal&quot;)" resultado="Passed" duracion="3.221" inicio="2026-10-20 23:20:39" />
+  <test-case fullname="EscenasTests.La_escena_abre_sin_errores(&quot;Mapa_modo_tactico&quot;)" resultado="Passed" duracion="50.546" inicio="2026-10-20 23:20:42" />
+  <test-case fullname="EscenasTests.La_escena_abre_sin_errores(&quot;Mapa_deathmatch&quot;)" resultado="Passed" duracion="30.983" inicio="2026-10-20 23:21:33" />
+  <test-case fullname="ModelosTests.Las_zonas_de_danio_siguen_al_modelo(&quot;Alfa&quot;)" resultado="Passed" duracion="1.007" inicio="2026-10-20 23:22:04" />
+  <test-case fullname="ModelosTests.Las_zonas_de_danio_siguen_al_modelo(&quot;Bravo&quot;)" resultado="Passed" duracion="0.884" inicio="2026-10-20 23:22:05" />
+  <test-case fullname="ModelosTests.Las_zonas_de_danio_siguen_al_modelo(&quot;Charlie&quot;)" resultado="Passed" duracion="0.452" inicio="2026-10-20 23:22:06" />
+  <test-case fullname="ModelosTests.Las_zonas_de_danio_siguen_al_modelo(&quot;Delta&quot;)" resultado="Passed" duracion="0.120" inicio="2026-10-20 23:22:06" />
+  <test-case fullname="NubeTests.Opciones_y_monedas_no_se_suben" resultado="Passed" duracion="0.006" inicio="2026-10-20 23:22:06" />
+  <test-case fullname="RegresionSonidosTests.RS01_Disparo_del_Mitre" resultado="Passed" duracion="4.784" inicio="2026-10-20 23:22:06" />
+  <test-case fullname="RegresionSonidosTests.RS02_Recarga_del_Mitre" resultado="Passed" duracion="4.804" inicio="2026-10-20 23:22:11" />
+  <test-case fullname="RegresionSonidosTests.RS03_Cambiar_de_arma" resultado="Passed" duracion="3.890" inicio="2026-10-20 23:22:16" />
+  <test-case fullname="RegresionSonidosTests.RS04_Disparo_de_La_Porteña" resultado="Passed" duracion="3.866" inicio="2026-10-20 23:22:20" />
+  <test-case fullname="RegresionSonidosTests.RS05_Sacar_el_cuchillo" resultado="Passed" duracion="3.866" inicio="2026-10-20 23:22:24" />
+  <test-case fullname="RegresionSonidosTests.RS06_Ataque_con_el_cuchillo" resultado="Failed" duracion="3.879" inicio="2026-10-20 23:22:28">
+    <mensaje>  No sonó nada por el canal SFX. Sonó: no sonó nada
+  Expected: not null
+  But was:  null
+</mensaje>
+  </test-case>
+  <test-case fullname="RegresionSonidosTests.RS07_Disparo_de_la_Roca" resultado="Passed" duracion="4.402" inicio="2026-10-20 23:22:32" />
+  <test-case fullname="RegresionSonidosTests.RS08_Disparo_del_Urquiza" resultado="Passed" duracion="4.399" inicio="2026-10-20 23:22:36" />
+  <test-case fullname="RegresionSonidosTests.RS09_Tirar_una_granada" resultado="Passed" duracion="3.695" inicio="2026-10-20 23:22:40" />
+  <test-case fullname="RegresionSonidosTests.RS10_Explosion_de_la_granada" resultado="Passed" duracion="9.224" inicio="2026-10-20 23:22:44" />
+  <test-case fullname="RegresionSonidosTests.RS11_Pasos" resultado="Passed" duracion="3.294" inicio="2026-10-20 23:22:53" />
+  <test-case fullname="RegresionSonidosTests.RS12_Salto" resultado="Passed" duracion="2.309" inicio="2026-10-20 23:22:57" />
+  <test-case fullname="RegresionSonidosTests.RS13_Trasbordo_propio" resultado="Passed" duracion="2.311" inicio="2026-10-20 23:22:59" />
+  <test-case fullname="RegresionSonidosTests.RS14_Trasbordo_para_los_demas" resultado="Passed" duracion="2.310" inicio="2026-10-20 23:23:01" />
+  <test-case fullname="RegresionSonidosTests.RS15_Barrera_al_levantarse" resultado="Passed" duracion="2.553" inicio="2026-10-20 23:23:04" />
+  <test-case fullname="RegresionSonidosTests.RS16_Barrera_al_romperse" resultado="Passed" duracion="4.608" inicio="2026-10-20 23:23:06" />
+  <test-case fullname="RegresionSonidosTests.RS17_Barrera_al_terminar" resultado="Passed" duracion="20.077" inicio="2026-10-20 23:23:11" />
+  <test-case fullname="RegresionSonidosTests.RS18_Vista_aerea_al_activar" resultado="Passed" duracion="2.298" inicio="2026-10-20 23:23:31" />
+  <test-case fullname="RegresionSonidosTests.RS19_Vista_aerea_al_terminar" resultado="Passed" duracion="3.865" inicio="2026-10-20 23:23:33" />
+  <test-case fullname="RegresionSonidosTests.RS20_Vista_aerea_aviso_a_los_rivales" resultado="Passed" duracion="2.318" inicio="2026-10-20 23:23:37" />
+  <test-case fullname="RegresionSonidosTests.RS21_Callejero_al_soltarlo" resultado="Passed" duracion="2.311" inicio="2026-10-20 23:23:39" />
+  <test-case fullname="RegresionSonidosTests.RS22_Callejero_ladridos" resultado="Passed" duracion="4.815" inicio="2026-10-20 23:23:42" />
+  <test-case fullname="RegresionSonidosTests.RS23_Callejero_mordida" resultado="Passed" duracion="2.312" inicio="2026-10-20 23:23:46" />
+  <test-case fullname="RegresionSonidosTests.RS24_Callejero_al_desaparecer" resultado="Passed" duracion="20.870" inicio="2026-10-20 23:23:49" />
+  <test-case fullname="RegresionSonidosTests.RS25_Tienda_al_abrir" resultado="Passed" duracion="2.358" inicio="2026-10-20 23:24:10" />
+  <test-case fullname="RegresionSonidosTests.RS26_Boton_al_pasar_el_mouse" resultado="Passed" duracion="2.423" inicio="2026-10-20 23:24:12" />
+  <test-case fullname="RegresionSonidosTests.RS27_Logro_desbloqueado" resultado="Passed" duracion="1.854" inicio="2026-10-20 23:24:14" />
+  <test-case fullname="RegresionSonidosTests.RS28_Musica_del_menu" resultado="Passed" duracion="1.342" inicio="2026-10-20 23:24:16" />
+  <test-case fullname="TiendaTests.Al_morir_pierde_el_equipo_y_conserva_la_plata" resultado="Passed" duracion="0.019" inicio="2026-10-20 23:24:18" />
+  <test-case fullname="TiendaTests.Cambiar_de_arma_reembolsa_la_anterior" resultado="Passed" duracion="0.015" inicio="2026-10-20 23:24:18" />
+  <test-case fullname="TiendaTests.Compra_un_arma_si_alcanza_la_plata" resultado="Passed" duracion="0.016" inicio="2026-10-20 23:24:18" />
+  <test-case fullname="TiendaTests.Deshacer_devuelve_todo" resultado="Passed" duracion="0.017" inicio="2026-10-20 23:24:18" />
+  <test-case fullname="TiendaTests.El_escudo_se_pone_y_no_se_compra_si_ya_esta_lleno" resultado="Passed" duracion="0.017" inicio="2026-10-20 23:24:18" />
+  <test-case fullname="TiendaTests.En_deathmatch_las_armas_son_gratis_y_no_hay_escudos" resultado="Passed" duracion="0.016" inicio="2026-10-20 23:24:18" />
+  <test-case fullname="TiendaTests.Granadas_respetan_el_maximo" resultado="Passed" duracion="0.017" inicio="2026-10-20 23:24:18" />
+  <test-case fullname="TiendaTests.No_se_compra_dos_veces_la_misma_arma" resultado="Passed" duracion="0.017" inicio="2026-10-20 23:24:18" />
+  <test-case fullname="TiendaTests.Sin_plata_no_compra_y_no_pierde_nada" resultado="Passed" duracion="0.016" inicio="2026-10-20 23:24:18" />
+  <test-case fullname="TiendaTests.Terminada_la_fase_de_compra_no_se_compra" resultado="Passed" duracion="0.067" inicio="2026-10-20 23:24:18" />
+  <test-case fullname="TiendaTests.Vender_devuelve_la_plata" resultado="Passed" duracion="0.027" inicio="2026-10-20 23:24:18" />
+  <test-case fullname="VidaTests.Arranca_con_100_de_vida_y_sin_escudo" resultado="Passed" duracion="0.021" inicio="2026-10-20 23:24:18" />
+  <test-case fullname="VidaTests.El_danio_baja_la_vida" resultado="Passed" duracion="0.017" inicio="2026-10-20 23:24:18" />
+  <test-case fullname="VidaTests.El_escudo_absorbe_primero" resultado="Passed" duracion="0.017" inicio="2026-10-20 23:24:18" />
+  <test-case fullname="VidaTests.Invulnerable_no_recibe_danio" resultado="Passed" duracion="0.016" inicio="2026-10-20 23:24:18" />
+  <test-case fullname="VidaTests.La_vida_no_baja_de_cero_y_avisa_la_muerte" resultado="Passed" duracion="0.017" inicio="2026-10-20 23:24:18" />
+  <test-case fullname="VidaTests.Revive_deja_vida_completa_y_sin_escudo" resultado="Passed" duracion="0.017" inicio="2026-10-20 23:24:18" />
+  <test-case fullname="VidaTests.WouldDie_avisa_si_el_golpe_mata" resultado="Passed" duracion="0.016" inicio="2026-10-20 23:24:18" />
+  <test-case fullname="VolumenesTests.RS29_Efectos_en_0" resultado="Passed" duracion="0.502" inicio="2026-10-20 23:24:18" />
+  <test-case fullname="VolumenesTests.RS30_Interfaz_en_0" resultado="Passed" duracion="0.466" inicio="2026-10-20 23:24:18" />
+  <test-case fullname="VolumenesTests.RS31_Musica_en_0" resultado="Passed" duracion="0.467" inicio="2026-10-20 23:24:19" />
+  <test-case fullname="VolumenesTests.RS32_General_en_0" resultado="Passed" duracion="0.450" inicio="2026-10-20 23:24:19" />
+</test-run>

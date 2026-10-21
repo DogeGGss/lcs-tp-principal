@@ -75,8 +75,10 @@ public class HabilidadVistaAerea : EfectoHabilidad
         return true;
     }
 
-    private void OnDisable() { if (activa) Terminar(); }
-    private void OnDestroy() { if (activa) Terminar(); }
+    // Si se apaga porque se va el jugador o la escena (por ejemplo, al salir de la partida), termina sin el sonido:
+    // crear su fuente mientras se cierra la escena deja un objeto suelto y Unity lo marca como error.
+    private void OnDisable() { if (activa) Terminar(false); }
+    private void OnDestroy() { if (activa) Terminar(false); }
 
     private void Update()
     {
@@ -167,7 +169,7 @@ public class HabilidadVistaAerea : EfectoHabilidad
         Cambio?.Invoke(transform, true);
     }
 
-    private void Terminar()
+    private void Terminar(bool sonar = true)
     {
         if (!activa) return;
         activa = Activa = false;
@@ -193,7 +195,7 @@ public class HabilidadVistaAerea : EfectoHabilidad
         marcas.Clear();
         objetivos.Clear();
 
-        SonidoVistaAerea.Terminar();
+        if (sonar) SonidoVistaAerea.Terminar();
         Cambio?.Invoke(transform, false);
         if (habilidad != null) habilidad.TerminoEfecto(); // CA8
     }

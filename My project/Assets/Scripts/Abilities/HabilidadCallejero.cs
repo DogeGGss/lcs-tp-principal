@@ -36,8 +36,9 @@ public class HabilidadCallejero : EfectoHabilidad
         JugadorEnRed red = GetComponent<JugadorEnRed>();
         int id = siguienteId++;
         Perro perro = Perro.Crear(transform, red != null ? red.Actor : -1, id, lugar, yaw, true, null);
-        // CA16: el sonido de soltarlo, para el que lo usa sin distancia.
-        SonidoPerro.Tocar(SonidoPerro.Tipo.Soltar, lugar, null, true);
+        // CA16: el sonido de soltarlo, para el que lo usa sin distancia, por el canal de efectos (antes salía sin canal y
+        // no lo regulaban los volúmenes de Opciones).
+        SonidoPerro.Tocar(SonidoPerro.Tipo.Soltar, lugar, Perro.Grupo(transform), true);
         Soltado?.Invoke(transform, id, lugar, yaw);
         return perro != null;
     }
