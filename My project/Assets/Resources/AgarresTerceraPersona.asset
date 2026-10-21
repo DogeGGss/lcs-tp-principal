@@ -62,13 +62,11 @@ MonoBehaviour:
     recarga: 0
     tamborArriba: 0.15
     tamborGiro: {x: -50, y: -50, z: -5}
-    cargadorAdelante: 0.12
-    cargadorAbajo: 0.1
+    cargador: {x: -0.04, y: -0.1, z: 0.12}
+    giroCargador: {x: 0, y: 0, z: 0}
     palanca: 1
-    palancaAdelante: 0
-    palancaArriba: 0.08
-    palancaCostado: 0.07
-    cargadorCostado: 0.04
+    palancaLugar: {x: -0.07, y: 0.08, z: 0}
+    giroPalanca: {x: 0, y: 0, z: 0}
     retrocesoArriba: 4
     retrocesoAtras: 0.03
   - arma: BelgranoSur
@@ -86,12 +84,10 @@ MonoBehaviour:
     recarga: 0
     tamborArriba: 0.15
     tamborGiro: {x: -50, y: -50, z: -5}
-    cargadorAdelante: 0.12
-    cargadorAbajo: 0.1
+    cargador: {x: -0.04, y: -0.1, z: 0.12}
+    giroCargador: {x: 0, y: 0, z: 0}
     palanca: 1
-    palancaAdelante: 0
-    palancaArriba: 0.08
-    palancaCostado: 0.07
-    cargadorCostado: 0.04
+    palancaLugar: {x: -0.07, y: 0.08, z: 0}
+    giroPalanca: {x: 0, y: 0, z: 0}
     retrocesoArriba: 5
     retrocesoAtras: 0.035

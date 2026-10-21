@@ -13,6 +13,8 @@ using UnityEngine;
 // las herramientas de siempre (W y E); la del arma también se escala (R) para cambiar el tamaño. Lo que se mueva pasa
 // al ajuste de esa arma (lugar, giro, escala y las manos) y queda guardado. Un arma sin ajuste se agrega con "Agregar
 // el arma en la mano".
+// Recarga: con "Probar la recarga" el muñeco queda quieto en un momento de la recarga ("Momento de la recarga") y
+// aparecen las manijas "Cargador" y "Palanca" (fusiles): dónde agarra la mano izquierda el cargador y la palanca.
 // Se prende y apaga con Riftwalker > Muñeco espejo (tercera persona). Con el juego andando, los ajustes de cada arma
 // se cambian en el asset Resources/AgarresTerceraPersona (el campo "Agarres" de este componente lo muestra): se ven al
 // momento en el muñeco y quedan guardados.
@@ -37,9 +39,15 @@ public class EspejoTerceraPersona : MonoBehaviour
     [Tooltip("Agrega a los ajustes el arma que tiene en la mano, si todavía no tiene (empieza como La Porteña).")]
     public bool agregarArmaEnMano;
 
-    private ManijaDeAjuste manijaArma, manijaDerecha, manijaIzquierda;
-    private Vector3[] ultimoLugar = new Vector3[3];
-    private Quaternion[] ultimoGiro = new Quaternion[3];
+    [Tooltip("Deja el muñeco quieto en un momento de la recarga (\"Momento de la recarga\") para ajustar con las manijas " +
+             "\"Cargador\" y \"Palanca\" dónde agarra la mano izquierda.")]
+    public bool probarLaRecarga;
+    [Tooltip("En qué momento de la recarga queda (0 a 1): en los fusiles, el cargador está agarrado entre 0,22 y 0,28 y la palanca entre 0,75 y 0,85.")]
+    [Range(0f, 1f)] public float momentoDeLaRecarga = 0.25f;
+
+    private ManijaDeAjuste manijaArma, manijaDerecha, manijaIzquierda, manijaCargador, manijaPalanca;
+    private Vector3[] ultimoLugar = new Vector3[5];
+    private Quaternion[] ultimoGiro = new Quaternion[5];
     private Vector3 ultimaEscala;
 
     private Transform jugador;
@@ -213,7 +221,7 @@ public class EspejoTerceraPersona : MonoBehaviour
             arma.Cambiar(() => Mostrar(sale));
         }
         IHudWeapon datos = enMano != null ? enMano.GetComponentInChildren<IHudWeapon>() : null;
-        arma.Recarga = datos != null ? datos.ReloadProgress : -1f;
+        arma.Recarga = probarLaRecarga ? momentoDeLaRecarga : datos != null ? datos.ReloadProgress : -1f;
         arma.Balas = datos != null ? datos.Ammo : 6;
     }
 
@@ -246,8 +254,13 @@ public class EspejoTerceraPersona : MonoBehaviour
         Transform a = manijaArma.transform, d = manijaDerecha.transform, i = manijaIzquierda.transform;
         bool movioArma = Movida(a, 0) || (a.localScale - ultimaEscala).sqrMagnitude > 1e-8f;
         bool movioDer = Movida(d, 1), movioIzq = Movida(i, 2);
-        if (!movioArma && !movioDer && !movioIzq) return;
-        arma.DesdeManijas(a, d, i, movioArma, movioDer, movioIzq);
+        bool movioCargador = manijaCargador != null && Movida(manijaCargador.transform, 3);
+        bool movioPalanca = manijaPalanca != null && Movida(manijaPalanca.transform, 4);
+        if (!movioArma && !movioDer && !movioIzq && !movioCargador && !movioPalanca) return;
+        // Probando la recarga, el arma no está quieta: se mueven solo las manijas de la recarga.
+        if (!probarLaRecarga) arma.DesdeManijas(a, d, i, movioArma, movioDer, movioIzq);
+        arma.DesdeManijasDeRecarga(manijaCargador != null ? manijaCargador.transform : null,
+            manijaPalanca != null ? manijaPalanca.transform : null, movioCargador, movioPalanca);
 #if UNITY_EDITOR
         UnityEditor.EditorUtility.SetDirty(AgarresTerceraPersona.Actual); // así queda guardado en el asset
 #endif
@@ -267,7 +280,9 @@ public class EspejoTerceraPersona : MonoBehaviour
                 Destroy(manijaArma.gameObject);
                 Destroy(manijaDerecha.gameObject);
                 Destroy(manijaIzquierda.gameObject);
-                manijaArma = manijaDerecha = manijaIzquierda = null;
+                if (manijaCargador != null) Destroy(manijaCargador.gameObject);
+                if (manijaPalanca != null) Destroy(manijaPalanca.gameObject);
+                manijaArma = manijaDerecha = manijaIzquierda = manijaCargador = manijaPalanca = null;
             }
             return;
         }
@@ -284,6 +299,17 @@ public class EspejoTerceraPersona : MonoBehaviour
         manijaArma.transform.localScale = ultimaEscala = Vector3.one * escala;
         Fijar(manijaDerecha.transform, 1, dp, dg);
         Fijar(manijaIzquierda.transform, 2, ip, ig);
+
+        // Las de la recarga, mientras se la prueba: dónde agarra la mano izquierda el cargador y la palanca.
+        bool hayRecarga = probarLaRecarga && arma.PoseDeRecarga(out Vector3 cp, out Quaternion cg, out Vector3 pp,
+            out Quaternion pg, out bool conPalanca);
+        if (hayRecarga && manijaCargador == null) manijaCargador = Manija("Manija: Cargador", new Color(1f, 0.5f, 0.1f), 0.03f);
+        if (!hayRecarga && manijaCargador != null) { Destroy(manijaCargador.gameObject); manijaCargador = null; }
+        bool palancaVisible = hayRecarga && conPalanca;
+        if (palancaVisible && manijaPalanca == null) manijaPalanca = Manija("Manija: Palanca", Color.green, 0.03f);
+        if (!palancaVisible && manijaPalanca != null) { Destroy(manijaPalanca.gameObject); manijaPalanca = null; }
+        if (manijaCargador != null) Fijar(manijaCargador.transform, 3, cp, cg);
+        if (manijaPalanca != null) Fijar(manijaPalanca.transform, 4, pp, pg);
 #if UNITY_EDITOR
         if (nuevas) UnityEditor.Selection.activeGameObject = manijaArma.gameObject;
 #endif

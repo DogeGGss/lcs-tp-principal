@@ -345,24 +345,25 @@ public class ArmaEnTerceraPersona : MonoBehaviour
         {
             // Fusiles (US 251 y 253): la mano izquierda va al cargador (adelante del gatillo), lo saca para abajo, busca
             // otro, lo mete (el arma da un empujón), va a la palanca de carga, tira hacia atrás y vuelve al guardamanos.
-            // Desde el costado izquierdo del arma (si no, la mano se metía adentro).
-            Vector3 cargador = der + m.forward * ajuste.cargadorAdelante - m.up * ajuste.cargadorAbajo - m.right * ajuste.cargadorCostado;
+            // Dónde agarra el cargador y la palanca: del ajuste (se mueven con las manijas del muñeco espejo).
+            PuntosDeRecarga(out Vector3 cargador, out Quaternion giroCargador, out Vector3 palanca, out Quaternion giroPalanca);
+            palanca -= m.forward * (0.07f * tiron);
             Vector3 bolsillo = cargador + Vector3.down * 0.25f - transform.forward * 0.05f;
-            Vector3 palanca = der + m.forward * (ajuste.palancaAdelante - 0.07f * tiron) + m.up * ajuste.palancaArriba -
-                              m.right * ajuste.palancaCostado;
             float aCargador = Suave(Mathf.InverseLerp(0.1f, 0.22f, r)) * (1f - Suave(Mathf.InverseLerp(0.65f, 0.75f, r)));
             float aBolsillo = Suave(Mathf.InverseLerp(0.28f, 0.4f, r)) * (1f - Suave(Mathf.InverseLerp(0.5f, 0.6f, r)));
             float aPalanca = Suave(Mathf.InverseLerp(0.65f, 0.75f, r)) * (1f - Suave(Mathf.InverseLerp(0.86f, 0.97f, r)));
             Vector3 enCargador = Vector3.Lerp(izq, Vector3.Lerp(cargador, bolsillo, aBolsillo), aCargador);
             izq = Vector3.Lerp(enCargador, palanca, aPalanca);
+            izqGiro = Quaternion.Slerp(Quaternion.Slerp(izqGiro, giroCargador, aCargador), giroPalanca, aPalanca);
         }
         else if (!tambor && r >= 0f)
         {
-            Vector3 cargador = der + m.forward * ajuste.cargadorAdelante - m.up * ajuste.cargadorAbajo;
+            PuntosDeRecarga(out Vector3 cargador, out Quaternion giroCargador, out _, out _);
             Vector3 bolsillo = cargador + Vector3.down * 0.25f - transform.forward * 0.05f;
             float aCargador = Suave(Mathf.InverseLerp(0.1f, 0.25f, r)) * (1f - Suave(Mathf.InverseLerp(0.8f, 0.95f, r)));
             float aBolsillo = Suave(Mathf.InverseLerp(0.3f, 0.45f, r)) * (1f - Suave(Mathf.InverseLerp(0.55f, 0.7f, r)));
             izq = Vector3.Lerp(izq, Vector3.Lerp(cargador, bolsillo, aBolsillo), aCargador);
+            izqGiro = Quaternion.Slerp(izqGiro, giroCargador, aCargador);
         }
 
         objetivoDerecho.SetPositionAndRotation(der, derGiro);
@@ -423,6 +424,50 @@ public class ArmaEnTerceraPersona : MonoBehaviour
         {
             ajuste.manoIzquierda = Quaternion.Inverse(giroArma) * (izq.position - punto) / escala - izquierdaLocal;
             ajuste.giroManoIzquierda = Grados((Quaternion.Inverse(giroArma * izquierdaGiro) * izq.rotation).eulerAngles);
+        }
+    }
+
+    // Dónde agarra la mano izquierda el cargador y la palanca, con el arma como está ahora (respecto de la mano derecha).
+    private void PuntosDeRecarga(out Vector3 cargador, out Quaternion giroCargador, out Vector3 palanca, out Quaternion giroPalanca)
+    {
+        Transform m = modelo.transform;
+        Vector3 der = m.TransformPoint(derechaLocal + ajuste.manoDerecha);
+        Quaternion agarre = m.rotation * izquierdaGiro * Quaternion.Euler(ajuste.giroManoIzquierda);
+        cargador = der + m.rotation * ajuste.cargador;
+        giroCargador = agarre * Quaternion.Euler(ajuste.giroCargador);
+        palanca = der + m.rotation * ajuste.palancaLugar;
+        giroPalanca = agarre * Quaternion.Euler(ajuste.giroPalanca);
+    }
+
+    /// <summary>Dónde van ahora la mano en el cargador y en la palanca (para las manijas de la recarga).</summary>
+    public bool PoseDeRecarga(out Vector3 cargador, out Quaternion giroCargador, out Vector3 palanca, out Quaternion giroPalanca,
+                              out bool conPalanca)
+    {
+        cargador = palanca = Vector3.zero;
+        giroCargador = giroPalanca = Quaternion.identity;
+        conPalanca = false;
+        if (!Manejando || ajuste.recarga != AgarresTerceraPersona.TipoDeRecarga.Cargador) return false;
+        PuntosDeRecarga(out cargador, out giroCargador, out palanca, out giroPalanca);
+        conPalanca = ajuste.palanca;
+        return true;
+    }
+
+    /// <summary>Pasa al ajuste lo que se movió con las manijas de la recarga (el cargador y la palanca).</summary>
+    public void DesdeManijasDeRecarga(Transform cargador, Transform palanca, bool movioCargador, bool movioPalanca)
+    {
+        if (!Manejando) return;
+        Transform m = modelo.transform;
+        Vector3 der = m.TransformPoint(derechaLocal + ajuste.manoDerecha);
+        Quaternion agarre = m.rotation * izquierdaGiro * Quaternion.Euler(ajuste.giroManoIzquierda);
+        if (movioCargador && cargador != null)
+        {
+            ajuste.cargador = Quaternion.Inverse(m.rotation) * (cargador.position - der);
+            ajuste.giroCargador = Grados((Quaternion.Inverse(agarre) * cargador.rotation).eulerAngles);
+        }
+        if (movioPalanca && palanca != null)
+        {
+            ajuste.palancaLugar = Quaternion.Inverse(m.rotation) * (palanca.position - der);
+            ajuste.giroPalanca = Grados((Quaternion.Inverse(agarre) * palanca.rotation).eulerAngles);
         }
     }
 
