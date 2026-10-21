@@ -15,6 +15,16 @@ using UnityEngine.Audio;
 // En línea (CA15), el perro se mueve en la computadora del dueño, que manda dónde está y si mordió o desapareció
 // (JugadorEnRed); en las demás es una copia que sigue esas posiciones. El daño llega a todas por el servidor, en el
 // mismo orden, así la vida y la muerte dan igual en todas.
+// Revisión (testers: a veces no seguía o no atacaba bien al rival):
+// - Si el NavMesh no estaba listo al soltarlo, corría derecho para siempre y se trababa contra las paredes: ahora se
+//   sube al NavMesh en cuanto está listo, y vuelve a subirse si se sale.
+// - Pedía el camino de nuevo en cada cuadro y, con un rival lejos, a veces no llegaba a calcularlo y se quedaba
+//   dudando: ahora lo pide cuando el rival se movió o cada un ratito.
+// - Elegía al rival más cercano en línea recta, aunque estuviera detrás de una pared y otro estuviera más cerca
+//   caminando, y cambiaba de uno a otro: ahora mide por el camino que tiene que hacer y solo cambia si el otro está
+//   bastante más cerca.
+// - Si el rival estaba arriba de algo sin camino (una caja, un escalón alto), se quedaba abajo sin morder: ahora, si
+//   está cerca, a la vista y no puede acercarse más, salta y lo muerde.
 public class Perro : MonoBehaviour
 {
     public const float Velocidad = 12f;     // CA5: más que los 8 m/s de un jugador corriendo, así lo alcanza
@@ -28,6 +38,8 @@ public class Perro : MonoBehaviour
     private const float Llegar = 1.1f;      // m al rival para morderlo
     private const float Altura = 0.8f;      // alto del perro
     private const float PasoCorrer = 8f;    // m/s a los que la animación de correr se ve a su velocidad normal
+    private const float Salto = 2.4f;       // m al rival para saltarle encima si no puede acercarse más
+    private const float CadaCamino = 0.15f; // s entre pedidos de camino (o antes, si el rival se movió)
 
     public enum Fin { Mordio, Murio, Desaparecio }
 
@@ -69,6 +81,11 @@ public class Perro : MonoBehaviour
     private bool esperando;  // CA6: llegó a los 10 m sin rivales y espera sentado
     private float caida;     // sin NavMesh: velocidad con la que cae si quedó en el aire
     private float lentoDesde = -1f; // desde cuándo está casi quieto (las copias se sientan después de un rato quietas)
+    private float proximoAgente;    // cuándo vuelve a probar subirse al NavMesh
+    private float proximoCamino;    // cuándo vuelve a pedir el camino
+    private Vector3 destinoPedido = new Vector3(float.NaN, 0f, 0f);
+    private float trabadoDesde = -1f; // desde cuándo casi no avanza yendo hacia el rival
+    private static NavMeshPath caminoPrueba;
 
     // CA4: las animaciones del lobo, sin el controlador de demostración del asset (encadenaba correr, sentarse,
     // caminar, atacar y morir solas). Se mezclan acá: correr y sentado se repiten, atacar se ve una vez.
@@ -163,25 +180,36 @@ public class Perro : MonoBehaviour
             if (Piso(transform.position, duenio, out float suelo) && suelo < transform.position.y)
                 transform.position = new Vector3(transform.position.x, suelo, transform.position.z);
             destinoSinRival = transform.position + adelante * SinRival;
-            if (NavMeshEnVivo.Listo &&
-                NavMesh.SamplePosition(transform.position, out NavMeshHit piso, 2.5f, Filtro()))
-            {
-                transform.position = piso.position;
-                agente = gameObject.AddComponent<NavMeshAgent>();
-                agente.agentTypeID = NavMeshEnVivo.Tipo;
-                agente.speed = Velocidad;
-                agente.acceleration = 60f;
-                agente.angularSpeed = 900f;
-                agente.radius = 0.3f;
-                agente.height = 0.9f;
-                agente.baseOffset = 0f;
-                agente.stoppingDistance = 0f;
-                agente.autoBraking = false;
-                agente.obstacleAvoidanceType = ObstacleAvoidanceType.NoObstacleAvoidance;
-                if (NavMesh.SamplePosition(destinoSinRival, out NavMeshHit lejos, 3f, Filtro())) destinoSinRival = lejos.position;
-            }
+            SubirAlNavMesh();
             Buscar();
         }
+    }
+
+    // Lo pone a correr por el NavMesh (si ya está armado). Si no está listo todavía, o se salió de él, lo vuelve a probar
+    // cada medio segundo desde Simular: antes, si lo soltaban antes de que estuviera, corría derecho todo el tiempo.
+    private void SubirAlNavMesh()
+    {
+        proximoAgente = Time.time + 0.5f;
+        if (!NavMeshEnVivo.Listo) return;
+        if (!NavMesh.SamplePosition(transform.position, out NavMeshHit piso, 2.5f, Filtro())) return;
+        if (agente == null)
+        {
+            transform.position = piso.position;
+            agente = gameObject.AddComponent<NavMeshAgent>();
+            agente.agentTypeID = NavMeshEnVivo.Tipo;
+            agente.speed = Velocidad;
+            agente.acceleration = 60f;
+            agente.angularSpeed = 900f;
+            agente.radius = 0.3f;
+            agente.height = 0.9f;
+            agente.baseOffset = 0f;
+            agente.stoppingDistance = 0f;
+            agente.autoBraking = false;
+            agente.obstacleAvoidanceType = ObstacleAvoidanceType.NoObstacleAvoidance;
+            if (NavMesh.SamplePosition(destinoSinRival, out NavMeshHit lejos, 3f, Filtro())) destinoSinRival = lejos.position;
+        }
+        else if (!agente.isOnNavMesh) agente.Warp(piso.position);
+        destinoPedido = new Vector3(float.NaN, 0f, 0f); // pide el camino de nuevo
     }
 
     private static NavMeshQueryFilter Filtro() => new NavMeshQueryFilter { agentTypeID = NavMeshEnVivo.Tipo, areaMask = NavMesh.AllAreas };
@@ -228,8 +256,9 @@ public class Perro : MonoBehaviour
         if (limite <= 0f) limite = creado + Duracion;
         if (Time.time >= limite) { Terminar(Fin.Desaparecio, -1, null, true); return; } // CA6 y CA10
 
+        if ((agente == null || !agente.isOnNavMesh) && Time.time >= proximoAgente) SubirAlNavMesh();
+        if (objetivo != null && !EsRival(objetivo)) { objetivo = null; Buscar(); } // murió: va enseguida por otro
         if (Time.time >= proximaBusqueda) Buscar();
-        if (objetivo != null && (objetivo == null || objetivo.currentHealth <= 0)) objetivo = null;
         // Esperando sentado aparece un rival: se levanta y sale a buscarlo, con un rato para alcanzarlo.
         if (esperando && objetivo != null)
         {
@@ -250,7 +279,15 @@ public class Perro : MonoBehaviour
         Vector3 destino = objetivo != null ? objetivo.transform.position : destinoSinRival;
         if (agente != null && agente.isOnNavMesh)
         {
-            agente.SetDestination(destino);
+            // El camino se pide cuando el rival se movió o cada un ratito, no en cada cuadro: calcularlo lleva más de un
+            // cuadro y, pidiéndolo siempre de nuevo, a veces no terminaba y el perro se quedaba dudando.
+            bool movido = float.IsNaN(destinoPedido.x) || (destino - destinoPedido).sqrMagnitude > 0.5f * 0.5f;
+            if (movido && Time.time >= proximoCamino || Time.time >= proximoCamino + 0.5f)
+            {
+                proximoCamino = Time.time + CadaCamino;
+                destinoPedido = destino;
+                agente.SetDestination(destino);
+            }
         }
         else
         {
@@ -279,7 +316,17 @@ public class Perro : MonoBehaviour
         if (objetivo != null)
         {
             Vector3 d = objetivo.transform.position - transform.position;
-            if (new Vector2(d.x, d.z).magnitude <= Llegar && Mathf.Abs(d.y) < 1.8f) { Morder(objetivo); return; }
+            float plano = new Vector2(d.x, d.z).magnitude;
+            if (plano <= Llegar && Mathf.Abs(d.y) < 1.8f) { Morder(objetivo); return; }
+            // Cerca pero sin poder acercarse más (arriba de una caja, del otro lado de un escalón alto): salta y lo muerde,
+            // si lo tiene a la vista.
+            bool avanzando = velocidadVista > 2f;
+            if (avanzando || plano > Salto) trabadoDesde = -1f;
+            else if (trabadoDesde < 0f) trabadoDesde = Time.time;
+            bool sinCamino = agente != null && agente.isOnNavMesh && !agente.pathPending &&
+                             agente.pathStatus != NavMeshPathStatus.PathComplete;
+            if (plano <= Salto && Mathf.Abs(d.y) < 2.5f && (sinCamino || trabadoDesde >= 0f && Time.time - trabadoDesde > 0.3f) &&
+                ALaVista(objetivo)) { Morder(objetivo); return; }
         }
         else
         {
@@ -303,19 +350,55 @@ public class Perro : MonoBehaviour
     }
 
     // CA1 y CA5: el rival vivo más cercano, sin límite de distancia (lo sigue aunque se aleje, mientras siga vivo).
+    // "Más cercano" es por el camino que tiene que correr (por el NavMesh), no en línea recta: uno detrás de una pared
+    // puede estar mucho más lejos. Con uno elegido, cambia solo si otro está bastante más cerca (si no, iba y venía).
     private void Buscar()
     {
         proximaBusqueda = Time.time + 0.25f;
-        HealthSystem mejor = objetivo;
-        float cerca = mejor != null ? Vector3.Distance(transform.position, mejor.transform.position) - 2f : float.PositiveInfinity;
-        // Con uno elegido, cambia solo si otro está bastante más cerca.
+        HealthSystem mejor = objetivo != null && EsRival(objetivo) ? objetivo : null;
+        float cerca = mejor != null ? Distancia(mejor) * 0.7f - 1f : float.PositiveInfinity;
         foreach (HealthSystem h in FindObjectsByType<HealthSystem>(FindObjectsSortMode.None))
         {
-            if (!EsRival(h)) continue;
-            float d = Vector3.Distance(transform.position, h.transform.position);
+            if (h == mejor || !EsRival(h)) continue;
+            float d = Distancia(h);
             if (d < cerca) { cerca = d; mejor = h; }
         }
         objetivo = mejor;
+    }
+
+    // Cuánto tiene que correr hasta ese rival: el largo del camino por el NavMesh. Si no hay camino completo, lo que
+    // falta en línea recta cuenta el triple (seguramente hay que dar la vuelta); sin NavMesh, la línea recta.
+    private float Distancia(HealthSystem h)
+    {
+        Vector3 desde = transform.position, hasta = h.transform.position;
+        float recta = Vector3.Distance(desde, hasta);
+        if (agente == null || !agente.isOnNavMesh || !NavMeshEnVivo.Listo) return recta;
+        if (!NavMesh.SamplePosition(hasta, out NavMeshHit piso, 2.5f, Filtro())) return recta * 3f;
+        if (caminoPrueba == null) caminoPrueba = new NavMeshPath();
+        if (!NavMesh.CalculatePath(desde, piso.position, Filtro(), caminoPrueba) || caminoPrueba.status == NavMeshPathStatus.PathInvalid)
+            return recta * 3f;
+        Vector3[] esquinas = caminoPrueba.corners;
+        float largo = 0f;
+        for (int i = 1; i < esquinas.Length; i++) largo += Vector3.Distance(esquinas[i - 1], esquinas[i]);
+        if (caminoPrueba.status == NavMeshPathStatus.PathPartial && esquinas.Length > 0)
+            largo += Vector3.Distance(esquinas[esquinas.Length - 1], hasta) * 3f;
+        return largo;
+    }
+
+    // Lo ve sin una pared en el medio (de la cabeza del perro al pecho del rival).
+    private bool ALaVista(HealthSystem h)
+    {
+        Vector3 desde = transform.position + Vector3.up * 0.6f, hasta = h.transform.position + Vector3.up * 0.9f;
+        Vector3 hacia = hasta - desde;
+        foreach (RaycastHit g in Physics.RaycastAll(desde, hacia.normalized, hacia.magnitude, Physics.DefaultRaycastLayers,
+                     QueryTriggerInteraction.Ignore))
+        {
+            Collider c = g.collider;
+            if (De(c) != null || c is CharacterController || c.GetComponentInParent<HealthSystem>() != null) continue;
+            if (Duenio != null && c.transform.IsChildOf(Duenio)) continue;
+            return false;
+        }
+        return true;
     }
 
     private bool EsRival(HealthSystem h)
