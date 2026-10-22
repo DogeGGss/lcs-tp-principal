@@ -123,3 +123,24 @@ MonoBehaviour:
     giroPalanca: {x: 0, y: 0, z: 0}
     retrocesoArriba: 3
     retrocesoAtras: 0.025
+  granadaAlturaPecho: 0.3
+  granadaDerecha: {x: 0.29007626, y: -0.15613346, z: 0.14001861}
+  granadaIzquierda: {x: 0.00599911, y: -0.33309966, z: 0.1979624}
+  granadaAtras: {x: 0.36790004, y: 0.012418892, z: -0.1785311}
+  granadaSuelta: {x: 0.38200024, y: 0.25372705, z: 0.15571295}
+  granadaArco: 0.12
+  granadaEnvion: {x: 0.35100007, y: -0.15791254, z: 0.25553605}
+  granadaApunta: {x: 0.043199923, y: -0.11943553, z: 0.38327307}
+  granadaSigueMira: 0.3
+  granadaCodo: {x: 0.25, y: -0.25, z: -0.3}
+  granadaLejosDelCuerpo: 0.22
+  granadaIzquierdaMueve: 0.35
+  granadaGiroDerecha: {x: 29.958473, y: 0.00017320635, z: 0.00008707603}
+  granadaGiroIzquierda: {x: 29.958473, y: 0.00017320635, z: 0.00008707603}
+  granadaGiroAtras: {x: 0, y: 0, z: 0}
+  granadaGiroSuelta: {x: 0, y: 0, z: 0}
+  granadaGiroEnvion: {x: 0, y: 0, z: 0}
+  granadaGiroApunta: {x: 0, y: 0, z: 0}
+  granadaLugar: {x: -0.019943597, y: 0.110610075, z: 0.024627173}
+  granadaGiro: {x: -0.0015869141, y: 101.00841, z: 0.000011075608}
+  granadaEscala: 1
