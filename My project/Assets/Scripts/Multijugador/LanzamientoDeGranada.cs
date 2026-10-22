@@ -146,12 +146,35 @@ public class LanzamientoDeGranada : MonoBehaviour
         Girar(arma.Animador.GetBoneTransform(HumanBodyBones.LeftHand), giro, giroIzq);
     }
 
-    // El giro "enMarco" (respecto de hacia dónde mira) aplicado a la mano, por el peso.
+    // La muñeca derecha, como en la pose de base del personaje (la T: la mano en línea con el antebrazo), y encima el
+    // giro "enMarco" (respecto de hacia dónde mira), por el peso. La de la animación de base no sirve: es la de agarrar
+    // un rifle, y con el brazo en otra posición queda doblada como rota.
     private void Girar(Transform mano, Quaternion marco, Quaternion enMarco)
     {
         if (mano == null) return;
+        if (Reposo(mano, out Quaternion reposo))
+            mano.localRotation = Quaternion.Slerp(mano.localRotation, reposo, pesoVisto);
         Quaternion mundo = marco * enMarco * Quaternion.Inverse(marco);
         mano.rotation = Quaternion.Slerp(Quaternion.identity, mundo, pesoVisto) * mano.rotation;
+    }
+
+    // El giro de ese hueso en la pose de base del avatar (cambia si cambia el cuerpo del personaje).
+    private Avatar avatarVisto;
+    private readonly System.Collections.Generic.Dictionary<string, Quaternion> reposos =
+        new System.Collections.Generic.Dictionary<string, Quaternion>();
+
+    private bool Reposo(Transform hueso, out Quaternion giro)
+    {
+        Avatar avatar = arma.Animador.avatar;
+        if (avatar != avatarVisto)
+        {
+            avatarVisto = avatar;
+            reposos.Clear();
+            if (avatar != null && avatar.isHuman)
+                foreach (SkeletonBone b in avatar.humanDescription.skeleton)
+                    if (!string.IsNullOrEmpty(b.name)) reposos[b.name] = b.rotation;
+        }
+        return reposos.TryGetValue(hueso.name, out giro);
     }
 
     private static Vector3 Bezier(Vector3 a, Vector3 b, Vector3 c, float t)
