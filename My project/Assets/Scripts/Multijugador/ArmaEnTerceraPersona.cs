@@ -72,7 +72,9 @@ public class ArmaEnTerceraPersona : MonoBehaviour
     // Lleva las manos hacia los puntos de la granada (después de CopiarOriginales).
     private void ManosConGranada()
     {
-        float giro = 1f - granadaPeso;
+        bool hay = originalDerecho != null && originalIzquierdo != null;
+        // Sin agarres de antes (el muñeco), el giro del objetivo es el del arma anterior: no se usa nada de él.
+        float giro = granadaPeso <= 0f ? 1f : hay ? 1f - granadaPeso : 0f;
         if (!Mathf.Approximately(giro, rotacionVista))
         {
             rotacionVista = giro;
@@ -80,7 +82,6 @@ public class ArmaEnTerceraPersona : MonoBehaviour
             PesoDelGiro(ikIzquierdo, giro);
         }
         if (granadaPeso <= 0f) return;
-        bool hay = originalDerecho != null && originalIzquierdo != null;
         objetivoDerecho.position = hay ? Vector3.Lerp(objetivoDerecho.position, granadaDerecha, granadaPeso) : granadaDerecha;
         objetivoIzquierdo.position = hay ? Vector3.Lerp(objetivoIzquierdo.position, granadaIzquierda, granadaPeso) : granadaIzquierda;
         if (capa != null) capa.weight = hay ? 1f : granadaPeso;
