@@ -74,6 +74,66 @@ public class AgarresTerceraPersona : ScriptableObject
 
     public List<Agarre> armas = new List<Agarre>();
 
+    [Header("Granadas (US 259): las manos")]
+    [Tooltip("Los puntos de las manos van respecto del pecho (este tanto más abajo que los ojos, metros) y de hacia dónde mira: x a la derecha, y arriba, z adelante.")]
+    public float granadaAlturaPecho = 0.3f;
+    [Tooltip("Sosteniéndola: la mano derecha (con la granada). Manija \"Granada: Mano derecha\" del muñeco espejo.")]
+    public Vector3 granadaDerecha = new Vector3(0.2f, 0.02f, 0.3f);
+    [Tooltip("Sosteniéndola: la mano izquierda. Manija \"Granada: Mano izquierda\".")]
+    public Vector3 granadaIzquierda = new Vector3(-0.12f, -0.08f, 0.3f);
+    [Tooltip("Lanzando: la mano derecha atrás, por arriba del hombro (a los 0,22 s). Con \"Probar el lanzamiento\": manija \"Granada: Atrás\".")]
+    public Vector3 granadaAtras = new Vector3(0.25f, 0.2f, -0.1f);
+    [Tooltip("Lanzando: donde la suelta, adelante y arriba (a los 0,34 s). Manija \"Granada: Suelta\".")]
+    public Vector3 granadaSuelta = new Vector3(0.15f, 0.28f, 0.48f);
+    [Tooltip("Lanzando: cuánto sube el arco de la mano entre atrás y la suelta (metros).")]
+    public float granadaArco = 0.12f;
+    [Tooltip("Lanzando: hasta dónde sigue la mano después de soltarla (a los 0,52 s). Manija \"Granada: Envión\".")]
+    public Vector3 granadaEnvion = new Vector3(0.05f, -0.1f, 0.42f);
+    [Tooltip("Lanzando: la mano izquierda estirada adelante, apuntando. Manija \"Granada: Izquierda apuntando\".")]
+    public Vector3 granadaApunta = new Vector3(-0.15f, 0.12f, 0.45f);
+    [Tooltip("Cuánto siguen las manos a la mira cuando mira arriba o abajo: 0, nada (solo giran con el cuerpo); 1, todo.")]
+    [Range(0f, 1f)] public float granadaSigueMira = 0.3f;
+    [Tooltip("Hacia dónde apuntan los codos, respecto de cada hombro (metros; el izquierdo, espejado): x afuera, y arriba, z adelante.")]
+    public Vector3 granadaCodo = new Vector3(0.25f, -0.25f, -0.3f);
+    [Tooltip("Las manos nunca más cerca que esto del centro del cuerpo (metros), así no se meten adentro.")]
+    public float granadaLejosDelCuerpo = 0.22f;
+    [Tooltip("Cuánto se mueve la mano izquierda al lanzar, de 0 (queda donde la sostiene) a 1 (va hasta \"Izquierda apuntando\").")]
+    [Range(0f, 1f)] public float granadaIzquierdaMueve = 0.35f;
+
+    [Header("Granadas (US 259): las muñecas")]
+    [Tooltip("Cuánto se gira cada mano en cada punto (grados, respecto de hacia dónde mira). Con el muñeco espejo: girando la manija del punto (E).")]
+    public Vector3 granadaGiroDerecha = Vector3.zero;
+    public Vector3 granadaGiroIzquierda = Vector3.zero;
+    public Vector3 granadaGiroAtras = Vector3.zero;
+    public Vector3 granadaGiroSuelta = Vector3.zero;
+    public Vector3 granadaGiroEnvion = Vector3.zero;
+    public Vector3 granadaGiroApunta = Vector3.zero;
+
+    [Header("Granadas (US 259): la granada")]
+    [Tooltip("Dónde va la granada respecto de la mano derecha, en el espacio del hueso de la mano (metros). Con el muñeco espejo: la manija \"Granada\".")]
+    public Vector3 granadaLugar = new Vector3(0f, 0.08f, 0.03f);
+    [Tooltip("Giro de la granada respecto de la mano (grados).")]
+    public Vector3 granadaGiro = Vector3.zero;
+    [Tooltip("Tamaño de la granada (1 = el de siempre, 12 cm).")]
+    [Range(0.5f, 2f)] public float granadaEscala = 1f;
+
+    /// <summary>US 259: dónde va la granada con la mano derecha ahí (sigue a la mano también al lanzar).</summary>
+    public void PoseDeGranada(Transform mano, out Vector3 lugar, out Quaternion giro)
+    {
+        lugar = mano.position + mano.rotation * granadaLugar;
+        giro = mano.rotation * Quaternion.Euler(granadaGiro);
+    }
+
+    /// <summary>Pasa al ajuste dónde quedó la manija de la granada (muñeco espejo).</summary>
+    public void GranadaDesde(Transform mano, Transform manija)
+    {
+        Quaternion inversa = Quaternion.Inverse(mano.rotation);
+        granadaLugar = inversa * (manija.position - mano.position);
+        Vector3 e = (inversa * manija.rotation).eulerAngles;
+        granadaGiro = new Vector3(Mathf.DeltaAngle(0f, e.x), Mathf.DeltaAngle(0f, e.y), Mathf.DeltaAngle(0f, e.z));
+        granadaEscala = Mathf.Clamp(manija.localScale.x, 0.5f, 2f);
+    }
+
     private static AgarresTerceraPersona actual;
 
     /// <summary>El asset de Resources (o uno con los valores de siempre, si falta).</summary>
