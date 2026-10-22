@@ -56,6 +56,8 @@ public class AgarresTerceraPersona : ScriptableObject
         public float tamborArriba = 0.15f;
         [Tooltip("Tambor: giro del arma al subir (grados: x negativo levanta la punta, y la gira hacia el centro, z la inclina).")]
         public Vector3 tamborGiro = new Vector3(-50f, -50f, -5f);
+        [Tooltip("Después de cada tiro (si le quedan balas) y al final de la recarga, la mano derecha hace el cerrojo (francotirador, el Último Tren, US 255).")]
+        public bool cerrojo;
         [Tooltip("Cartuchos: cuánto se inclina el arma mientras carga (grados: x levanta la punta, y la gira, z la vuelca de costado).")]
         public Vector3 cartuchosGiro = new Vector3(-6f, 8f, -30f);
         [Tooltip("Cargador: dónde va la mano izquierda a agarrar el cargador (en Cartuchos: la boca de carga, donde mete cada cartucho), respecto de la mano derecha, en el espacio del arma (metros: x derecha, y arriba, z hacia el caño). Con el muñeco espejo: \"Probar la recarga\" y la manija \"Cargador\".")]
@@ -120,6 +122,43 @@ public class AgarresTerceraPersona : ScriptableObject
     public Vector3 granadaGiro = Vector3.zero;
     [Tooltip("Tamaño de la granada (1 = el de siempre, 12 cm).")]
     [Range(0.5f, 2f)] public float granadaEscala = 1f;
+
+    [Header("Cuchillo (US 257): las manos y el cuchillo")]
+    [Tooltip("Con el cuchillo: la mano derecha (con el cuchillo), en el mismo marco que las granadas. Manija \"Cuchillo: Mano derecha\".")]
+    public Vector3 cuchilloDerecha = new Vector3(0.22f, -0.12f, 0.35f);
+    [Tooltip("Con el cuchillo: la mano izquierda, en guardia. Manija \"Cuchillo: Mano izquierda\".")]
+    public Vector3 cuchilloIzquierda = new Vector3(-0.12f, -0.02f, 0.3f);
+    [Tooltip("Atacando: la mano derecha atrás y hacia adentro (a los 0,12 s). Con \"Probar el ataque\": manija \"Cuchillo: Atrás\".")]
+    public Vector3 cuchilloAtras = new Vector3(0f, 0.1f, 0.2f);
+    [Tooltip("Atacando: donde termina el corte, afuera (a los 0,24 s). Manija \"Cuchillo: Corte\".")]
+    public Vector3 cuchilloCorte = new Vector3(0.42f, -0.08f, 0.38f);
+    [Tooltip("Atacando: cuánto pasa el corte por adelante (metros).")]
+    public float cuchilloArco = 0.15f;
+    public Vector3 cuchilloGiroDerecha = Vector3.zero;
+    public Vector3 cuchilloGiroIzquierda = Vector3.zero;
+    public Vector3 cuchilloGiroAtras = Vector3.zero;
+    public Vector3 cuchilloGiroCorte = Vector3.zero;
+    [Tooltip("Dónde va el cuchillo respecto de la mano derecha (metros, en el espacio del hueso de la mano). Manija \"Cuchillo\".")]
+    public Vector3 cuchilloLugar = new Vector3(0f, 0.08f, 0.03f);
+    public Vector3 cuchilloGiro = Vector3.zero;
+    [Range(0.5f, 2f)] public float cuchilloEscala = 1f;
+
+    /// <summary>US 257: dónde va el cuchillo con la mano derecha ahí.</summary>
+    public void PoseDeCuchillo(Transform mano, out Vector3 lugar, out Quaternion giro)
+    {
+        lugar = mano.position + mano.rotation * cuchilloLugar;
+        giro = mano.rotation * Quaternion.Euler(cuchilloGiro);
+    }
+
+    /// <summary>Pasa al ajuste dónde quedó la manija del cuchillo (muñeco espejo).</summary>
+    public void CuchilloDesde(Transform mano, Transform manija)
+    {
+        Quaternion inversa = Quaternion.Inverse(mano.rotation);
+        cuchilloLugar = inversa * (manija.position - mano.position);
+        Vector3 e = (inversa * manija.rotation).eulerAngles;
+        cuchilloGiro = new Vector3(Mathf.DeltaAngle(0f, e.x), Mathf.DeltaAngle(0f, e.y), Mathf.DeltaAngle(0f, e.z));
+        cuchilloEscala = Mathf.Clamp(manija.localScale.x, 0.5f, 2f);
+    }
 
     /// <summary>US 259: dónde va la granada con la mano derecha ahí (sigue a la mano también al lanzar).</summary>
     public void PoseDeGranada(Transform mano, out Vector3 lugar, out Quaternion giro)

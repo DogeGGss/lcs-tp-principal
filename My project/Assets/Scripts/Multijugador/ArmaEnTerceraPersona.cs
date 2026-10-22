@@ -52,6 +52,7 @@ public class ArmaEnTerceraPersona : MonoBehaviour
 
     // US 259: las manos con la granada (LanzamientoDeGranada): cuánto (0 a 1) y adónde van.
     private float granadaPeso;
+    private int manosEn = -1;
     private Vector3 granadaDerecha, granadaIzquierda, granadaCodoDerecho, granadaCodoIzquierdo;
     private float rotacionVista = 1f;
 
@@ -70,7 +71,11 @@ public class ArmaEnTerceraPersona : MonoBehaviour
     /// <summary>Lo mismo, con hacia dónde apuntan los codos.</summary>
     public void ManosDeGranada(float peso, Vector3 derecha, Vector3 izquierda, Vector3 codoDer, Vector3 codoIzq)
     {
-        granadaPeso = Mathf.Clamp01(peso);
+        // Lo piden la granada y el cuchillo (ManosPorCodigo): en cada cuadro manda el que tiene más peso.
+        peso = Mathf.Clamp01(peso);
+        if (manosEn == Time.frameCount && peso <= granadaPeso) return;
+        manosEn = Time.frameCount;
+        granadaPeso = peso;
         granadaDerecha = derecha;
         granadaIzquierda = izquierda;
         granadaCodoDerecho = codoDer;
@@ -270,6 +275,13 @@ public class ArmaEnTerceraPersona : MonoBehaviour
             if (!piezasPorModelo.TryGetValue(modelo, out piezas) || piezas == null)
                 piezasPorModelo[modelo] = piezas = new PiezasDeLaTrochita(modelo, null);
         }
+        // US 255: el Último Tren tiene cerrojo (con su manija), mira y el cargador que sale y cae, como en primera persona.
+        if (Manejando && ajuste.cerrojo)
+        {
+            if (!piezasPorModelo.TryGetValue(modelo, out piezas) || piezas == null)
+                piezasPorModelo[modelo] = piezas = new PiezasDelTren(modelo, ojos);
+        }
+        tiroCerrojo = -10f;
         // US 249: el guardamanos de la Roca va hacia atrás y vuelve después de cada tiro (el bombeo).
         if (Manejando && ajuste.recarga == AgarresTerceraPersona.TipoDeRecarga.Cartuchos)
         {
@@ -309,6 +321,23 @@ public class ArmaEnTerceraPersona : MonoBehaviour
         if (!Manejando) return;
         golpeVel += new Vector2(ajuste.retrocesoArriba, ajuste.retrocesoAtras) * 22f;
         if (piezas != null) piezas.Disparo(Mathf.Max(0, Balas - 1));
+        // US 255: si le quedan balas, después del golpe hace el cerrojo.
+        if (ajuste.cerrojo && Balas - 1 > 0) tiroCerrojo = Time.time;
+    }
+
+    // US 255: el cerrojo del Último Tren (como en primera persona, AnimacionPrimeraPersona: empieza 0,3 s después del
+    // tiro y dura 0,85 s; al final de la recarga también).
+    private const float CerrojoEmpieza = 0.3f, CerrojoDura = 0.85f;
+    private float tiroCerrojo = -10f;
+
+    // Cuánto avanzó el cerrojo (0 a 1), o -1 si no lo está haciendo.
+    private float AvanceDelCerrojo(float recarga)
+    {
+        if (!ajuste.cerrojo) return -1f;
+        float desdeTiro = Time.time - tiroCerrojo;
+        if (desdeTiro >= CerrojoEmpieza && desdeTiro < CerrojoEmpieza + CerrojoDura) return (desdeTiro - CerrojoEmpieza) / CerrojoDura;
+        if (recarga >= 0.68f && recarga < 0.95f) return (recarga - 0.68f) / 0.27f; // tira de la palanca al final de la recarga
+        return -1f;
     }
 
     // ---------- Seguir el cuerpo ----------
@@ -407,8 +436,14 @@ public class ArmaEnTerceraPersona : MonoBehaviour
         Vector3 lugar = ajuste.lugar + new Vector3(-0.06f * inclinada, 0.03f * inclinada - 0.25f * abajo + 0.015f * empujon,
                                                    -golpe.y - 0.05f * abajo - 0.02f * tiron)
                        + new Vector3(-0.02f, 0.03f + 0.006f * empuja, 0f) * cargando;
+        // Cerrojo (US 255): la mano derecha suelta la empuñadura, va a la manija, la levanta, tira, empuja y baja; el arma
+        // se inclina un poco hacia la mano.
+        float cerrojo = AvanceDelCerrojo(r);
+        float enManija = cerrojo < 0f ? 0f
+            : Suave(Mathf.InverseLerp(0f, PiezasDelTren.Agarra, cerrojo)) * (1f - Suave(Mathf.InverseLerp(PiezasDelTren.Baja, 1f, cerrojo)));
         Vector3 giro = ajuste.giro + new Vector3(-golpe.x - 20f * inclinada + 45f * abajo, -15f * inclinada, -25f * inclinada)
-                     + (ajuste.cartuchosGiro + new Vector3(0f, 0f, -3f * empuja)) * cargando;
+                     + (ajuste.cartuchosGiro + new Vector3(0f, 0f, -3f * empuja)) * cargando
+                     + new Vector3(-2f, 0f, -10f) * enManija;
         Quaternion giroArma = ojos.rotation * Quaternion.Euler(giro);
         // Gira alrededor del pecho (no de los ojos): mirando abajo, girando alrededor de los ojos se metía en el pecho.
         Vector3 pecho = ojos.position - transform.up * ajuste.alturaPecho;
@@ -440,6 +475,18 @@ public class ArmaEnTerceraPersona : MonoBehaviour
         Quaternion derGiro = m.rotation * derechaGiro * Quaternion.Euler(ajuste.giroManoDerecha);
         Vector3 izq = m.TransformPoint(izquierdaLocal + ajuste.manoIzquierda);
         Quaternion izqGiro = m.rotation * izquierdaGiro * Quaternion.Euler(ajuste.giroManoIzquierda);
+
+        // US 255: el cerrojo se mueve y la mano derecha va a la punta de su manija (un poco afuera, para no atravesarla).
+        if (piezas is PiezasDelTren tren)
+        {
+            tren.Poner(cerrojo >= 0f ? cerrojo : 0f);
+            if (enManija > 0f && tren.Manija(ojos, out Vector3 punta, out Vector3 afuera))
+            {
+                Vector3 manija = ojos.TransformPoint(punta) + ojos.TransformDirection(afuera) * (0.03f * ajuste.escala)
+                               - transform.up * (0.02f * ajuste.escala);
+                der = Vector3.Lerp(der, manija, enManija);
+            }
+        }
 
         // CA4: la mano izquierda saca el cargador (por abajo de la empuñadura), baja a buscar otro, lo pone y vuelve.
         if (tambor && suelta > 0f)
@@ -492,7 +539,11 @@ public class ArmaEnTerceraPersona : MonoBehaviour
 
         objetivoDerecho.SetPositionAndRotation(der, derGiro);
         objetivoIzquierdo.SetPositionAndRotation(izq, izqGiro);
-        if (piezas != null) piezas.Actualizar(recargaVista, Balas);
+        if (piezas != null)
+        {
+            piezas.Actualizar(recargaVista, Balas);
+            piezas.ActualizarSueltas(dt); // el cargador vacío que cae (Último Tren)
+        }
     }
 
     // ---------- Ajuste con manijas (EspejoTerceraPersona) ----------

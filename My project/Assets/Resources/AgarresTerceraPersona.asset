@@ -151,6 +151,30 @@ MonoBehaviour:
     giroPalanca: {x: 0, y: 0, z: 0}
     retrocesoArriba: 12
     retrocesoAtras: 0.07
+  - arma: UltimoTren
+    nombre: "\xDAltimo Tren"
+    alturaPecho: 0.3
+    lugar: {x: 0.15, y: 0.12, z: 0.33}
+    minimoAdelante: 0.2
+    seguirCuerpo: 1
+    giro: {x: 0, y: 0, z: 0}
+    escala: 1
+    manoDerecha: {x: 0, y: 0, z: 0}
+    giroManoDerecha: {x: 0, y: 0, z: 0}
+    manoIzquierda: {x: 0, y: 0, z: 0}
+    giroManoIzquierda: {x: 0, y: 0, z: 0}
+    recarga: 0
+    tamborArriba: 0.15
+    tamborGiro: {x: -50, y: -50, z: -5}
+    cerrojo: 1
+    cartuchosGiro: {x: -6, y: 8, z: -30}
+    cargador: {x: -0.03, y: -0.1, z: 0.1}
+    giroCargador: {x: 0, y: 0, z: 0}
+    palanca: 0
+    palancaLugar: {x: -0.07, y: 0.08, z: 0}
+    giroPalanca: {x: 0, y: 0, z: 0}
+    retrocesoArriba: 16
+    retrocesoAtras: 0.09
   granadaAlturaPecho: 0.3
   granadaDerecha: {x: 0.29007626, y: -0.15613346, z: 0.14001861}
   granadaIzquierda: {x: 0.00599911, y: -0.33309966, z: 0.1979624}
