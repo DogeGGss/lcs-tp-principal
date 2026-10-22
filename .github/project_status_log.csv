@@ -846,3 +846,10 @@ fecha_utc,us_numero,us_titulo,estado_anterior,estado_nuevo,tiempo_en_estado_ante
 2026-10-22T00:03:11.896112+00:00,344,US 207. Actualizar el launcher solo,LPR,TESTING,16d 15h 42m,1438946,https://github.com/DogeGGss/lcs-tp-principal/issues/344
 2026-10-22T00:03:11.896112+00:00,502,US 251. Mitre · Animaciones que ven los demás jugadores,In Progress,LPR,2h 45m,9953,https://github.com/DogeGGss/lcs-tp-principal/issues/502
 2026-10-22T00:03:11.896112+00:00,504,US 253. Belgrano Sur · Animaciones que ven los demás jugadores,In Progress,LPR,2h 45m,9953,https://github.com/DogeGGss/lcs-tp-principal/issues/504
+2026-10-22T04:33:39.525804+00:00,477,US 240. Mapa 1 · Recorridos y límites,LPR,R2D,2d 5h 24m,192263,https://github.com/DogeGGss/lcs-tp-principal/issues/477
+2026-10-22T04:33:39.525804+00:00,344,US 207. Actualizar el launcher solo,TESTING,R2D,4h 30m,16227,https://github.com/DogeGGss/lcs-tp-principal/issues/344
+2026-10-22T04:33:39.525804+00:00,476,US 239. Mapa 1 · Preparado para el modo Deathmatch,TESTING,R2D,10h 38m,38292,https://github.com/DogeGGss/lcs-tp-principal/issues/476
+2026-10-22T04:33:39.525804+00:00,430,US 223. Calcular el KDA personal,LPR,TESTING,4d 16h 10m,403803,https://github.com/DogeGGss/lcs-tp-principal/issues/430
+2026-10-22T04:33:39.525804+00:00,498,US 247. Urquiza · Animaciones que ven los demás jugadores,In Progress,LPR,7h 16m,26180,https://github.com/DogeGGss/lcs-tp-principal/issues/498
+2026-10-22T04:33:39.525804+00:00,500,US 249. Roca · Animaciones que ven los demás jugadores,In Progress,LPR,7h 16m,26180,https://github.com/DogeGGss/lcs-tp-principal/issues/500
+2026-10-22T04:33:39.525804+00:00,510,US 259. Granadas · Animaciones que ven los demás jugadores,In Progress,LPR,7h 16m,26180,https://github.com/DogeGGss/lcs-tp-principal/issues/510
