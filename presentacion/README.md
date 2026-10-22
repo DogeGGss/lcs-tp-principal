@@ -5,7 +5,7 @@ Abrir `/presentacion/` desde el enlace independiente de la guía. El recorrido s
 ## Para exponer
 
 - Anterior / Siguiente: ubicación fija y botones grandes. Flechas o Page Up / Page Down también funcionan cuando el foco está en la diapositiva.
-- Índice: saltar a cualquiera de los diez bloques.
+- Índice: saltar a cualquiera de los doce bloques.
 - Proyector: fondo claro con texto oscuro para salas iluminadas.
 - Pantalla completa: ocultar el navegador; F11 es alternativa.
 - Oscurecer / B: pausar visualmente; Esc o el botón permiten volver.
@@ -15,7 +15,7 @@ Abrir `/presentacion/` desde el enlace independiente de la guía. El recorrido s
 
 ## Actualización por etapas
 
-Editar `content.js`: títulos, tiempos, guion, acuerdos, decisiones, métricas y propuesta comercial. Mantener los diez tiempos sumando 20 minutos. Las métricas desconocidas usan `null`, no cero. Los datos S1 son una foto histórica y nunca deben sobrescribirse con S3.
+Editar `content.js`: títulos, tiempos, guion, acuerdos, decisiones, métricas, propuesta comercial y números económicos. Mantener los tiempos de los doce bloques sumando 20 minutos. Las métricas desconocidas usan `null`, no cero. Los datos S1 son una foto histórica y nunca deben sobrescribirse con S3.
 
 `metrics.s3` se completa con el corte final del Sprint 3. Hasta entonces aparece Pendiente. Fuente histórica: InformeSprint1.docx facilitado por el equipo, cierre 28/09/2026. No se publica el documento completo.
 
@@ -23,7 +23,7 @@ Para videos, copiar MP4 a `media/` y completar `clips[].src` con una ruta como `
 
 `arsenal.js` es una instantánea de las siete armas marcadas En el juego por la guía al 05/10/2026. No equivale a validar una build. Al actualizar el balance, regenerar o ajustar esa instantánea y su fecha. La pistola usa la recarga de 1,5 s indicada por EXTRA en la guía.
 
-La monetización es una propuesta sin implementar: juego gratuito, skins, pase y lootboxes a evaluar. Catálogo, precios, temporadas, probabilidades, duplicados y criterio de no vender ventajas requieren definición del equipo. No se agregan ingresos ni cifras de mercado inventadas.
+La propuesta comercial y los bloques Números e Inversión (antes del cierre) salen de la sección Modelo de negocio de la guía: juego gratuito en Steam con cristales de pago, solo cosméticos. `business` tiene los productos y precios propuestos; el pase y la tienda directa todavía no están en el juego. `economics` tiene los números del simulador de la guía: los tres escenarios (pesimista, promedio y optimista), con y sin las mejoras del plan, y la inversión de los 5 sprints. Son simulaciones con supuestos, no resultados ni cifras de mercado. Al cambiar un supuesto en la guía, volver a copiar los números.
 
 ## Pendientes para el ensayo final
 
@@ -32,10 +32,14 @@ La monetización es una propuesta sin implementar: juego gratuito, skins, pase y
 - Confirmar modos y reglas: el informe S1 dice oleadas infinitas y la guía habla de diez oleadas.
 - Actualizar disponibilidad/balance de armas contra el ejecutable que se mostrará.
 - Cargar clips y ensayar la demo real con respaldo.
-- Resolver el alcance de monetización propuesto.
+- Confirmar con el equipo los precios y las mejoras del plan (pase y tienda directa, bienvenida a US$ 0,99, juego en inglés y Photon a 10 envíos por segundo).
 - Probar en el proyector real, resolución y conexión disponibles.
 
 Las fuentes tipográficas y las imágenes se sirven localmente. La presentación principal no solicita métricas a GitHub durante la exposición. Las maquetas reutilizan la guía y sus dependencias; para una sesión sin internet, servir una copia completa del sitio localmente y comprobarla antes.
+
+## Verificación de la parte económica (22/10/2026)
+
+Se sumaron los bloques Números e Inversión antes del cierre, y equipo, métricas, decisiones y la demo de interfaz bajaron un minuto cada uno para seguir en 20 minutos. Los doce bloques quedan por encima de los controles a 1280 × 720 y 1024 × 768, sin desbordes. Probados los botones Con el plan y Sin el plan, las cuatro pestañas de la propuesta comercial y el enlace al simulador de la guía, sin errores de JavaScript.
 
 ## Verificación de esta versión (05/10/2026)
 
