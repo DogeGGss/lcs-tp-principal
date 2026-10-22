@@ -63,8 +63,13 @@ public class LanzamientoDeGranada : MonoBehaviour
         origen = Vector3.zero;
         giro = Quaternion.identity;
         if (arma == null || arma.Ojos == null) return false;
-        giro = arma.Ojos.rotation;
-        origen = arma.Ojos.position - transform.up * AgarresTerceraPersona.Actual.granadaAlturaPecho;
+        AgarresTerceraPersona a = AgarresTerceraPersona.Actual;
+        // Gira con el cuerpo (a los costados) y sigue solo una parte de la mira arriba o abajo: con las manos abajo del
+        // pecho, girar todo con la mira las llevaba al revés (mirando arriba, las manos se iban adelante y abajo).
+        Vector3 adelante = Vector3.ProjectOnPlane(arma.Ojos.forward, transform.up);
+        Quaternion cuerpo = adelante.sqrMagnitude > 1e-4f ? Quaternion.LookRotation(adelante, transform.up) : transform.rotation;
+        giro = Quaternion.Slerp(cuerpo, arma.Ojos.rotation, a.granadaSigueMira);
+        origen = arma.Ojos.position - transform.up * a.granadaAlturaPecho;
         return true;
     }
 
@@ -128,7 +133,28 @@ public class LanzamientoDeGranada : MonoBehaviour
         }
         giroDer = dg;
         giroIzq = ig;
-        arma.ManosDeGranada(pesoVisto, origen + giro * der, origen + giro * izq);
+        arma.ManosDeGranada(pesoVisto, FueraDelCuerpo(origen + giro * der, origen, a), FueraDelCuerpo(origen + giro * izq, origen, a),
+            Codo(HumanBodyBones.RightUpperArm, 1f, a), Codo(HumanBodyBones.LeftUpperArm, -1f, a));
+    }
+
+    // Una mano nunca adentro del cuerpo: si quedó más cerca del eje del cuerpo (la vertical del pecho) que
+    // granadaLejosDelCuerpo, sale hacia afuera (de costado o adelante, por donde esté más cerca).
+    private Vector3 FueraDelCuerpo(Vector3 mano, Vector3 pecho, AgarresTerceraPersona a)
+    {
+        Vector3 desdeEje = Vector3.ProjectOnPlane(mano - pecho, transform.up);
+        float lejos = desdeEje.magnitude;
+        if (lejos >= a.granadaLejosDelCuerpo) return mano;
+        Vector3 hacia = lejos > 1e-3f ? desdeEje / lejos : transform.forward;
+        return mano + hacia * (a.granadaLejosDelCuerpo - lejos);
+    }
+
+    // Adónde apunta el codo: respecto del hombro, hacia afuera, abajo y atrás (lado: 1 derecho, -1 izquierdo).
+    private Vector3 Codo(HumanBodyBones hombro, float lado, AgarresTerceraPersona a)
+    {
+        Transform hueso = arma.Animador != null ? arma.Animador.GetBoneTransform(hombro) : null;
+        Vector3 desde = hueso != null ? hueso.position : transform.position + transform.up * 1.4f;
+        Vector3 c = a.granadaCodo;
+        return desde + transform.right * (c.x * lado) + transform.up * c.y + transform.forward * c.z;
     }
 
     private void LateUpdate() => Munecas();

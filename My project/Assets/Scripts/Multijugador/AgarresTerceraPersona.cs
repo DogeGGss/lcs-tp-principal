@@ -91,6 +91,12 @@ public class AgarresTerceraPersona : ScriptableObject
     public Vector3 granadaEnvion = new Vector3(0.05f, -0.1f, 0.42f);
     [Tooltip("Lanzando: la mano izquierda estirada adelante, apuntando. Manija \"Granada: Izquierda apuntando\".")]
     public Vector3 granadaApunta = new Vector3(-0.15f, 0.12f, 0.45f);
+    [Tooltip("Cuánto siguen las manos a la mira cuando mira arriba o abajo: 0, nada (solo giran con el cuerpo); 1, todo.")]
+    [Range(0f, 1f)] public float granadaSigueMira = 0.3f;
+    [Tooltip("Hacia dónde apuntan los codos, respecto de cada hombro (metros; el izquierdo, espejado): x afuera, y arriba, z adelante.")]
+    public Vector3 granadaCodo = new Vector3(0.25f, -0.25f, -0.3f);
+    [Tooltip("Las manos nunca más cerca que esto del centro del cuerpo (metros), así no se meten adentro.")]
+    public float granadaLejosDelCuerpo = 0.22f;
     [Tooltip("Cuánto se mueve la mano izquierda al lanzar, de 0 (queda donde la sostiene) a 1 (va hasta \"Izquierda apuntando\").")]
     [Range(0f, 1f)] public float granadaIzquierdaMueve = 0.35f;
 

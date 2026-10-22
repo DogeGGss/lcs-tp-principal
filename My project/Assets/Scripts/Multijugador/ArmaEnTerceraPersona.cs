@@ -27,6 +27,7 @@ public class ArmaEnTerceraPersona : MonoBehaviour
     private TwoBoneIKConstraint ikDerecho, ikIzquierdo;
     private Transform objetivoDerecho, objetivoIzquierdo;   // los de acá
     private Transform originalDerecho, originalIzquierdo;   // los de antes (agarres de primera persona de la Línea A)
+    private Transform codoDerecho, codoIzquierdo;           // US 259: hacia dónde apuntan los codos (solo con la granada)
 
     // El arma en la mano
     private GameObject modelo;
@@ -50,7 +51,7 @@ public class ArmaEnTerceraPersona : MonoBehaviour
 
     // US 259: las manos con la granada (LanzamientoDeGranada): cuánto (0 a 1) y adónde van.
     private float granadaPeso;
-    private Vector3 granadaDerecha, granadaIzquierda;
+    private Vector3 granadaDerecha, granadaIzquierda, granadaCodoDerecho, granadaCodoIzquierdo;
     private float rotacionVista = 1f;
 
     /// <summary>Lo que gira hacia dónde mira (los ojos de la copia).</summary>
@@ -62,11 +63,17 @@ public class ArmaEnTerceraPersona : MonoBehaviour
     /// US 259: sin un arma con ajuste (con una granada), las manos van a esos puntos, por "peso" (0: como antes). Solo
     /// la posición: el giro de las manos queda el de la animación.
     /// </summary>
-    public void ManosDeGranada(float peso, Vector3 derecha, Vector3 izquierda)
+    public void ManosDeGranada(float peso, Vector3 derecha, Vector3 izquierda) =>
+        ManosDeGranada(peso, derecha, izquierda, Vector3.zero, Vector3.zero);
+
+    /// <summary>Lo mismo, con hacia dónde apuntan los codos.</summary>
+    public void ManosDeGranada(float peso, Vector3 derecha, Vector3 izquierda, Vector3 codoDer, Vector3 codoIzq)
     {
         granadaPeso = Mathf.Clamp01(peso);
         granadaDerecha = derecha;
         granadaIzquierda = izquierda;
+        granadaCodoDerecho = codoDer;
+        granadaCodoIzquierdo = codoIzq;
     }
 
     // Lleva las manos hacia los puntos de la granada (después de CopiarOriginales).
@@ -81,7 +88,15 @@ public class ArmaEnTerceraPersona : MonoBehaviour
             PesoDelGiro(ikDerecho, giro);
             PesoDelGiro(ikIzquierdo, giro);
         }
+        bool codos = granadaPeso > 0f && granadaCodoDerecho != Vector3.zero;
+        PesoDelCodo(ikDerecho, codoDerecho, codos ? granadaPeso : 0f);
+        PesoDelCodo(ikIzquierdo, codoIzquierdo, codos ? granadaPeso : 0f);
         if (granadaPeso <= 0f) return;
+        if (codos)
+        {
+            if (codoDerecho != null) codoDerecho.position = granadaCodoDerecho;
+            if (codoIzquierdo != null) codoIzquierdo.position = granadaCodoIzquierdo;
+        }
         objetivoDerecho.position = hay ? Vector3.Lerp(objetivoDerecho.position, granadaDerecha, granadaPeso) : granadaDerecha;
         objetivoIzquierdo.position = hay ? Vector3.Lerp(objetivoIzquierdo.position, granadaIzquierda, granadaPeso) : granadaIzquierda;
         if (capa != null) capa.weight = hay ? 1f : granadaPeso;
@@ -150,6 +165,8 @@ public class ArmaEnTerceraPersona : MonoBehaviour
         }
         Apuntar(ikDerecho, objetivoDerecho);
         Apuntar(ikIzquierdo, objetivoIzquierdo);
+        codoDerecho = Codo(ikDerecho, "Codo derecho (tercera persona)");
+        codoIzquierdo = Codo(ikIzquierdo, "Codo izquierdo (tercera persona)");
         CopiarOriginales();
         rig.Build();
     }
@@ -169,6 +186,29 @@ public class ArmaEnTerceraPersona : MonoBehaviour
         ik.data = d;
         ik.weight = 1f;
         return ik;
+    }
+
+    // US 259: un objetivo para el codo (hint), apagado (peso 0) salvo con la granada. Si el IK ya tenía uno, ese queda.
+    private Transform Codo(TwoBoneIKConstraint ik, string nombre)
+    {
+        if (ik == null) return null;
+        TwoBoneIKConstraintData d = ik.data;
+        if (d.hint != null) return null;
+        var codo = new GameObject(nombre).transform;
+        codo.SetParent(transform, false);
+        d.hint = codo;
+        d.hintWeight = 0f;
+        ik.data = d;
+        return codo;
+    }
+
+    private static void PesoDelCodo(TwoBoneIKConstraint ik, Transform codo, float peso)
+    {
+        if (ik == null || codo == null) return;
+        TwoBoneIKConstraintData d = ik.data;
+        if (Mathf.Approximately(d.hintWeight, peso)) return;
+        d.hintWeight = peso;
+        ik.data = d;
     }
 
     private static void Apuntar(TwoBoneIKConstraint ik, Transform objetivo)
@@ -318,6 +358,8 @@ public class ArmaEnTerceraPersona : MonoBehaviour
         if (!Manejando || ojos == null) { CopiarOriginales(); ManosConGranada(); return; }
         if (capa != null) capa.weight = 1f;
         if (rotacionVista < 1f) { rotacionVista = 1f; PesoDelGiro(ikDerecho, 1f); PesoDelGiro(ikIzquierdo, 1f); }
+        PesoDelCodo(ikDerecho, codoDerecho, 0f);
+        PesoDelCodo(ikIzquierdo, codoIzquierdo, 0f);
 
         // Retroceso: un resorte que vuelve a cero.
         float w = Mathf.Sqrt(Resorte);
