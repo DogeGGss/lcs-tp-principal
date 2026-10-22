@@ -91,6 +91,17 @@ public class AgarresTerceraPersona : ScriptableObject
     public Vector3 granadaEnvion = new Vector3(0.05f, -0.1f, 0.42f);
     [Tooltip("Lanzando: la mano izquierda estirada adelante, apuntando. Manija \"Granada: Izquierda apuntando\".")]
     public Vector3 granadaApunta = new Vector3(-0.15f, 0.12f, 0.45f);
+    [Tooltip("Cuánto se mueve la mano izquierda al lanzar, de 0 (queda donde la sostiene) a 1 (va hasta \"Izquierda apuntando\").")]
+    [Range(0f, 1f)] public float granadaIzquierdaMueve = 0.35f;
+
+    [Header("Granadas (US 259): las muñecas")]
+    [Tooltip("Cuánto se gira cada mano en cada punto (grados, respecto de hacia dónde mira). Con el muñeco espejo: girando la manija del punto (E).")]
+    public Vector3 granadaGiroDerecha = Vector3.zero;
+    public Vector3 granadaGiroIzquierda = Vector3.zero;
+    public Vector3 granadaGiroAtras = Vector3.zero;
+    public Vector3 granadaGiroSuelta = Vector3.zero;
+    public Vector3 granadaGiroEnvion = Vector3.zero;
+    public Vector3 granadaGiroApunta = Vector3.zero;
 
     [Header("Granadas (US 259): la granada")]
     [Tooltip("Dónde va la granada respecto de la mano derecha, en el espacio del hueso de la mano (metros). Con el muñeco espejo: la manija \"Granada\".")]

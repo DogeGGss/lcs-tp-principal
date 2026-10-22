@@ -55,6 +55,8 @@ public class ArmaEnTerceraPersona : MonoBehaviour
 
     /// <summary>Lo que gira hacia dónde mira (los ojos de la copia).</summary>
     public Transform Ojos => ojos;
+    /// <summary>El Animator del personaje.</summary>
+    public Animator Animador => animador;
 
     /// <summary>
     /// US 259: sin un arma con ajuste (con una granada), las manos van a esos puntos, por "peso" (0: como antes). Solo

@@ -1186,6 +1186,7 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
         {
             // US 259: la granada, en la mano según su ajuste (AgarresTerceraPersona), también mientras la lanza.
             AgarresTerceraPersona agarres = AgarresTerceraPersona.Actual;
+            if (lanzamiento != null) lanzamiento.Munecas(); // la muñeca ya girada: la granada gira con ella
             agarres.PoseDeGranada(manoDerecha, out Vector3 lugar, out Quaternion giro);
             soporteMano.SetPositionAndRotation(lugar, giro);
             soporteMano.localScale = Vector3.one * agarres.granadaEscala;

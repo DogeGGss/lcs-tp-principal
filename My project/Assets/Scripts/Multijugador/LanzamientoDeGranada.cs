@@ -9,6 +9,8 @@ using UnityEngine;
 //   hombro, y vuelve en un arco hacia adelante y arriba, donde la suelta; la izquierda se estira adelante, apuntando.
 //   Los tiempos son los de primera persona (GrenadeThrower): la suelta a los 0,34 s del clic, igual que el dueño, y la
 //   granada de muestra que llega por la red sale en ese momento (FaltaParaSoltar). Después baja y saca la siguiente.
+// Las muñecas: cada punto tiene además un giro de la mano (los "granadaGiro..." del ajuste), que se aplica sobre la
+// mano de la animación después del IK (Munecas), así la granada (que va respecto de la mano) gira con ella.
 // Lo usan las copias de los jugadores remotos (JugadorEnRed) y el muñeco espejo (EspejoTerceraPersona), que puede
 // dejarlo quieto en un momento del lanzamiento (Probar) para ajustar los puntos con manijas.
 [DefaultExecutionOrder(45)] // después de que se mueven el cuerpo y los ojos, antes de ArmaEnTerceraPersona
@@ -25,7 +27,9 @@ public class LanzamientoDeGranada : MonoBehaviour
 
     private ArmaEnTerceraPersona arma;
     private float desde = -10f;
-    private float peso;
+    private float peso, pesoVisto;
+    private Quaternion giroDer = Quaternion.identity, giroIzq = Quaternion.identity; // en el marco (hacia dónde mira)
+    private int munecasEn = -1;
 
     /// <summary>Tiene una granada en la mano (lo pone el que maneja la copia).</summary>
     public bool ConGranada { get; set; }
@@ -71,10 +75,14 @@ public class LanzamientoDeGranada : MonoBehaviour
         bool lanzando = t < Dura;
         bool prendida = ConGranada || (lanzando && t < Envion);
         peso = Mathf.MoveTowards(peso, prendida ? 1f : 0f, Time.deltaTime / (prendida ? Entrar : Salir));
+        pesoVisto = Suave(peso);
         if (peso <= 0f || !Marco(out Vector3 origen, out Quaternion giro)) { arma.ManosDeGranada(0f, Vector3.zero, Vector3.zero); return; }
 
         AgarresTerceraPersona a = AgarresTerceraPersona.Actual;
         Vector3 der = a.granadaDerecha, izq = a.granadaIzquierda;
+        Quaternion dg = Quaternion.Euler(a.granadaGiroDerecha), ig = Quaternion.Euler(a.granadaGiroIzquierda);
+        Quaternion atrasG = Quaternion.Euler(a.granadaGiroAtras), sueltaG = Quaternion.Euler(a.granadaGiroSuelta);
+        Quaternion envionG = Quaternion.Euler(a.granadaGiroEnvion), apuntaG = Quaternion.Euler(a.granadaGiroApunta);
         if (lanzando)
         {
             if (t < Atras)
@@ -82,7 +90,9 @@ public class LanzamientoDeGranada : MonoBehaviour
                 // Lleva el brazo atrás, por arriba del hombro; la izquierda se estira adelante.
                 float k = Suave(t / Atras);
                 der = Vector3.Lerp(a.granadaDerecha, a.granadaAtras, k);
+                dg = Quaternion.Slerp(dg, atrasG, k);
                 izq = Vector3.Lerp(a.granadaIzquierda, a.granadaApunta, k);
+                ig = Quaternion.Slerp(ig, apuntaG, k);
             }
             else if (t < Suelta)
             {
@@ -90,23 +100,56 @@ public class LanzamientoDeGranada : MonoBehaviour
                 float k = 1f - Mathf.Pow(1f - (t - Atras) / (Suelta - Atras), 2f);
                 Vector3 medio = (a.granadaAtras + a.granadaSuelta) * 0.5f + Vector3.up * a.granadaArco;
                 der = Bezier(a.granadaAtras, medio, a.granadaSuelta, k);
+                dg = Quaternion.Slerp(atrasG, sueltaG, k);
                 izq = a.granadaApunta;
+                ig = apuntaG;
             }
             else if (t < Envion)
             {
                 // Sigue de largo hacia abajo y adelante.
                 float k = Suave((t - Suelta) / (Envion - Suelta));
                 der = Vector3.Lerp(a.granadaSuelta, a.granadaEnvion, k);
+                dg = Quaternion.Slerp(sueltaG, envionG, k);
                 izq = Vector3.Lerp(a.granadaApunta, a.granadaIzquierda, k);
+                ig = Quaternion.Slerp(apuntaG, ig, k);
             }
             else
             {
                 // Vuelve a sostener la siguiente.
                 float k = Suave((t - Envion) / (Vuelve - Envion));
                 der = Vector3.Lerp(a.granadaEnvion, a.granadaDerecha, k);
+                dg = Quaternion.Slerp(envionG, dg, k);
             }
+            // La izquierda se mueve menos: solo una parte del camino desde donde la sostiene.
+            izq = Vector3.Lerp(a.granadaIzquierda, izq, a.granadaIzquierdaMueve);
+            ig = Quaternion.Slerp(Quaternion.Euler(a.granadaGiroIzquierda), ig, a.granadaIzquierdaMueve);
         }
-        arma.ManosDeGranada(Suave(peso), origen + giro * der, origen + giro * izq);
+        giroDer = dg;
+        giroIzq = ig;
+        arma.ManosDeGranada(pesoVisto, origen + giro * der, origen + giro * izq);
+    }
+
+    private void LateUpdate() => Munecas();
+
+    /// <summary>
+    /// Gira las muñecas (una vez por cuadro, después de la animación y del IK). Lo llama también el que pone la granada
+    /// en la mano, antes de ponerla, así la granada gira con la mano.
+    /// </summary>
+    public void Munecas()
+    {
+        if (munecasEn == Time.frameCount) return;
+        munecasEn = Time.frameCount;
+        if (pesoVisto <= 0f || arma == null || arma.Animador == null || !Marco(out _, out Quaternion giro)) return;
+        Girar(arma.Animador.GetBoneTransform(HumanBodyBones.RightHand), giro, giroDer);
+        Girar(arma.Animador.GetBoneTransform(HumanBodyBones.LeftHand), giro, giroIzq);
+    }
+
+    // El giro "enMarco" (respecto de hacia dónde mira) aplicado a la mano, por el peso.
+    private void Girar(Transform mano, Quaternion marco, Quaternion enMarco)
+    {
+        if (mano == null) return;
+        Quaternion mundo = marco * enMarco * Quaternion.Inverse(marco);
+        mano.rotation = Quaternion.Slerp(Quaternion.identity, mundo, pesoVisto) * mano.rotation;
     }
 
     private static Vector3 Bezier(Vector3 a, Vector3 b, Vector3 c, float t)

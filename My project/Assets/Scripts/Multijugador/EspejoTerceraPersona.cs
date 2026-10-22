@@ -13,7 +13,9 @@ using UnityEngine;
 // las herramientas de siempre (W y E); la del arma también se escala (R) para cambiar el tamaño. Lo que se mueva pasa
 // al ajuste de esa arma (lugar, giro, escala y las manos) y queda guardado. Un arma sin ajuste se agrega con "Agregar
 // el arma en la mano".
-// Granadas (US 259): con una granada en la mano aparece la manija "Granada" (dónde va respecto de la mano derecha).
+// Granadas (US 259): con una granada en la mano aparecen la manija "Granada" (dónde va respecto de la mano derecha) y
+// las de las manos ("Granada: Mano derecha"...): se mueven (W) y giran la muñeca (E). Con "Probar el lanzamiento",
+// también las de los puntos del lanzamiento.
 // Recarga: con "Probar la recarga" el muñeco queda quieto en un momento de la recarga ("Momento de la recarga") y
 // aparecen las manijas "Cargador" y "Palanca" (fusiles): dónde agarra la mano izquierda el cargador y la palanca.
 // Se prende y apaga con Riftwalker > Muñeco espejo (tercera persona). Con el juego andando, los ajustes de cada arma
@@ -264,6 +266,7 @@ public class EspejoTerceraPersona : MonoBehaviour
         }
         if (lanzamiento != null && modeloEnMano != null && conGranada) modeloEnMano.SetActive(!lanzamiento.ManoVacia);
         Transform mano = copia != null ? copia.GetBoneTransform(HumanBodyBones.RightHand) : null;
+        if (lanzamiento != null) lanzamiento.Munecas(); // las muñecas ya giradas: la granada y su manija giran con la mano
         PonerManijaDeGranada(conGranada && modeloEnMano != null ? mano : null);
         PonerManijasDeLasManos(conGranada && modeloEnMano != null && ajustarConManijas);
         if (arma == null || arma.Manejando || modeloEnMano == null) return;
@@ -323,20 +326,27 @@ public class EspejoTerceraPersona : MonoBehaviour
         public string nombre;
         public Color color;
         public bool soloProbando;
-        public System.Func<AgarresTerceraPersona, Vector3> leer;
-        public System.Action<AgarresTerceraPersona, Vector3> escribir;
+        public System.Func<AgarresTerceraPersona, Vector3> leer, leerGiro;
+        public System.Action<AgarresTerceraPersona, Vector3> escribir, escribirGiro;
         public ManijaDeAjuste manija;
         public Vector3 ultimo;
+        public Quaternion ultimoGiro;
     }
 
     private readonly PuntoDeGranada[] puntosDeGranada =
     {
-        new PuntoDeGranada { nombre = "Granada: Mano derecha", color = Color.cyan, leer = a => a.granadaDerecha, escribir = (a, v) => a.granadaDerecha = v },
-        new PuntoDeGranada { nombre = "Granada: Mano izquierda", color = Color.magenta, leer = a => a.granadaIzquierda, escribir = (a, v) => a.granadaIzquierda = v },
-        new PuntoDeGranada { nombre = "Granada: Atrás", color = new Color(1f, 0.5f, 0.1f), soloProbando = true, leer = a => a.granadaAtras, escribir = (a, v) => a.granadaAtras = v },
-        new PuntoDeGranada { nombre = "Granada: Suelta", color = Color.red, soloProbando = true, leer = a => a.granadaSuelta, escribir = (a, v) => a.granadaSuelta = v },
-        new PuntoDeGranada { nombre = "Granada: Envión", color = Color.yellow, soloProbando = true, leer = a => a.granadaEnvion, escribir = (a, v) => a.granadaEnvion = v },
-        new PuntoDeGranada { nombre = "Granada: Izquierda apuntando", color = new Color(0.8f, 0.4f, 1f), soloProbando = true, leer = a => a.granadaApunta, escribir = (a, v) => a.granadaApunta = v },
+        new PuntoDeGranada { nombre = "Granada: Mano derecha", color = Color.cyan, leer = a => a.granadaDerecha, escribir = (a, v) => a.granadaDerecha = v,
+            leerGiro = a => a.granadaGiroDerecha, escribirGiro = (a, v) => a.granadaGiroDerecha = v },
+        new PuntoDeGranada { nombre = "Granada: Mano izquierda", color = Color.magenta, leer = a => a.granadaIzquierda, escribir = (a, v) => a.granadaIzquierda = v,
+            leerGiro = a => a.granadaGiroIzquierda, escribirGiro = (a, v) => a.granadaGiroIzquierda = v },
+        new PuntoDeGranada { nombre = "Granada: Atrás", color = new Color(1f, 0.5f, 0.1f), soloProbando = true, leer = a => a.granadaAtras, escribir = (a, v) => a.granadaAtras = v,
+            leerGiro = a => a.granadaGiroAtras, escribirGiro = (a, v) => a.granadaGiroAtras = v },
+        new PuntoDeGranada { nombre = "Granada: Suelta", color = Color.red, soloProbando = true, leer = a => a.granadaSuelta, escribir = (a, v) => a.granadaSuelta = v,
+            leerGiro = a => a.granadaGiroSuelta, escribirGiro = (a, v) => a.granadaGiroSuelta = v },
+        new PuntoDeGranada { nombre = "Granada: Envión", color = Color.yellow, soloProbando = true, leer = a => a.granadaEnvion, escribir = (a, v) => a.granadaEnvion = v,
+            leerGiro = a => a.granadaGiroEnvion, escribirGiro = (a, v) => a.granadaGiroEnvion = v },
+        new PuntoDeGranada { nombre = "Granada: Izquierda apuntando", color = new Color(0.8f, 0.4f, 1f), soloProbando = true, leer = a => a.granadaApunta, escribir = (a, v) => a.granadaApunta = v,
+            leerGiro = a => a.granadaGiroApunta, escribirGiro = (a, v) => a.granadaGiroApunta = v },
     };
 
     private void PonerManijasDeLasManos(bool mostrar)
@@ -353,7 +363,7 @@ public class EspejoTerceraPersona : MonoBehaviour
             }
             if (p.manija == null) p.manija = Manija(p.nombre, p.color, 0.03f);
             lanzamiento.Marco(out origen, out giro);
-            p.manija.transform.position = p.ultimo = origen + giro * p.leer(a);
+            p.manija.transform.SetPositionAndRotation(p.ultimo = origen + giro * p.leer(a), p.ultimoGiro = giro * Quaternion.Euler(p.leerGiro(a)));
         }
     }
 
@@ -364,9 +374,20 @@ public class EspejoTerceraPersona : MonoBehaviour
         bool cambio = false;
         foreach (PuntoDeGranada p in puntosDeGranada)
         {
-            if (p.manija == null || (p.manija.transform.position - p.ultimo).sqrMagnitude <= 1e-8f) continue;
-            p.escribir(a, Quaternion.Inverse(giro) * (p.manija.transform.position - origen));
-            cambio = true;
+            if (p.manija == null) continue;
+            Transform t = p.manija.transform;
+            if ((t.position - p.ultimo).sqrMagnitude > 1e-8f)
+            {
+                p.escribir(a, Quaternion.Inverse(giro) * (t.position - origen));
+                cambio = true;
+            }
+            if (Quaternion.Angle(t.rotation, p.ultimoGiro) > 0.01f)
+            {
+                // La muñeca: el giro de la manija respecto de hacia dónde mira.
+                Vector3 e = (Quaternion.Inverse(giro) * t.rotation).eulerAngles;
+                p.escribirGiro(a, new Vector3(Mathf.DeltaAngle(0f, e.x), Mathf.DeltaAngle(0f, e.y), Mathf.DeltaAngle(0f, e.z)));
+                cambio = true;
+            }
         }
 #if UNITY_EDITOR
         if (cambio) UnityEditor.EditorUtility.SetDirty(a); // así queda guardado en el asset
