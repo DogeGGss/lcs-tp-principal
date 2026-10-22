@@ -39,7 +39,7 @@ Las fuentes tipográficas y las imágenes se sirven localmente. La presentación
 
 ## Verificación de la parte económica (22/10/2026)
 
-Se sumaron los bloques Números e Inversión antes del cierre, y equipo, métricas, decisiones y la demo de interfaz bajaron un minuto cada uno para seguir en 20 minutos. Los doce bloques quedan por encima de los controles a 1280 × 720 y 1024 × 768, sin desbordes. Probadas las cuatro pestañas de la propuesta comercial y el enlace al simulador de la guía, sin errores de JavaScript.
+Se sumaron los bloques Números e Inversión antes del cierre, y equipo, métricas, decisiones y la demo de interfaz bajaron un minuto cada uno para seguir en 20 minutos. Los doce bloques quedan por encima de los controles a 1280 × 720 y 1024 × 768, sin desbordes. Probadas las cuatro pestañas de la propuesta comercial, sin errores de JavaScript. Las diapositivas no muestran los minutos de cada bloque ni la aclaración de que los números son simulados; los minutos quedan en el índice para ensayar.
 
 ## Verificación de esta versión (05/10/2026)
 

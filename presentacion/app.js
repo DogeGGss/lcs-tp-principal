@@ -8,7 +8,7 @@ const thousands=n=>n>=1e6?n.toLocaleString('es-AR',{maximumFractionDigits:1})+' 
 // Números del simulador de la guía: los tres escenarios lado a lado.
 function scenarios(){
  const L=D.economics.scenarios,mid=L[1];
- return `<div class="grid">${L.map(x=>`<article class="card scenario"><p class="eyebrow">${esc(x.name)}</p><div class="result ${x.result>=0?'pos':'neg'}">${money(x.result,true)}<small> por mes</small></div><dl class="facts"><div><dt>Jugadores por mes</dt><dd>${num(x.players)}</dd></div><div><dt>Pagan</dt><dd>${num(x.payers)} · ${x.conv.toLocaleString('es-AR')} %</dd></div><div><dt>Pagan los jugadores</dt><dd>${money(x.gross)}</dd></div><div><dt>Cuesta</dt><dd>${money(x.costs)}</dd></div><div><dt>Recupero</dt><dd>${x.payback?'mes '+x.payback:'no se recupera'}</dd></div></dl></article>`).join('')}</div><p class="lead">El promedio deja de perder plata desde ${thousands(mid.breakEven)} jugadores por mes.</p><p class="footnote">Simulación con supuestos, no resultados reales · <a href="../index.html#negocio">Supuestos, fuentes y simulador en la guía</a></p>`;
+ return `<div class="grid">${L.map(x=>`<article class="card scenario"><p class="eyebrow">${esc(x.name)}</p><div class="result ${x.result>=0?'pos':'neg'}">${money(x.result,true)}<small> por mes</small></div><dl class="facts"><div><dt>Jugadores por mes</dt><dd>${num(x.players)}</dd></div><div><dt>Pagan</dt><dd>${num(x.payers)} · ${x.conv.toLocaleString('es-AR')} %</dd></div><div><dt>Pagan los jugadores</dt><dd>${money(x.gross)}</dd></div><div><dt>Cuesta</dt><dd>${money(x.costs)}</dd></div><div><dt>Recupero</dt><dd>${x.payback?'mes '+x.payback:'no se recupera'}</dd></div></dl></article>`).join('')}</div><p class="lead">El promedio deja de perder plata desde ${thousands(mid.breakEven)} jugadores por mes.</p>`;
 }
 // Cuánto se invierte, en qué y qué vuelve.
 function investment(){
@@ -17,7 +17,7 @@ function investment(){
 }
 const tag=(text,pending=false)=>`<span class="tag ${pending?'pending':''}">${esc(text)}</span>`;
 const card=(title,text)=>`<article class="card"><h3>${esc(title)}</h3><p>${esc(text)}</p></article>`;
-const head=s=>`<div class="head"><p class="eyebrow">${String(current+1).padStart(2,'0')} / ${esc(s.label)} · ${s.minutes} min</p><h2>${esc(s.title)}</h2></div>`;
+const head=s=>`<div class="head"><p class="eyebrow">${String(current+1).padStart(2,'0')} / ${esc(s.label)}</p><h2>${esc(s.title)}</h2></div>`;
 const buttons=(items,active,attribute)=>`<div class="tabs">${items.map((x,i)=>`<button ${attribute}="${i}" aria-pressed="${i===active}">${esc(x.name)}</button>`).join('')}</div>`;
 function metrics(){
  const m=D.metrics[metric];
