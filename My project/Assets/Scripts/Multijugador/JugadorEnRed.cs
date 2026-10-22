@@ -41,6 +41,8 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
     private float finInvulnerable;
     private Semitransparente transparencia; // US 137: en la copia, mientras es invulnerable
     private ArmaEnTerceraPersona terceraPersona; // F26 (US 243): el arma y las manos que ven los demás
+    private LanzamientoDeGranada lanzamiento;    // US 259: el brazo que lanza la granada
+    private readonly HashSet<int> granadasExplotadas = new HashSet<int>();
     private bool cuerpoPropio;              // la copia ya tiene el modelo de su personaje (CharacterData.modelo)
     private float proximoCuerpo;
     private int ultimoAtacante;
@@ -143,6 +145,7 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
         WeaponFire.Fired += AlDisparar;
         MeleeAttack.Swung += AlAcuchillar;
         GrenadeThrower.Thrown += AlLanzarGranada;
+        GrenadeThrower.Started += AlEmpezarGranada;
         Grenade1.Exploded += AlExplotarGranada;
         HabilidadTrasbordo.Usado += AlTrasbordar;
         HabilidadBarrera.Levantada += AlLevantarBarrera;
@@ -159,6 +162,7 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
         WeaponFire.Fired -= AlDisparar;
         MeleeAttack.Swung -= AlAcuchillar;
         GrenadeThrower.Thrown -= AlLanzarGranada;
+        GrenadeThrower.Started -= AlEmpezarGranada;
         Grenade1.Exploded -= AlExplotarGranada;
         HabilidadTrasbordo.Usado -= AlTrasbordar;
         HabilidadBarrera.Levantada -= AlLevantarBarrera;
@@ -198,6 +202,21 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
         if (vida != null) vida.Invulnerable = false;
         atacoDesdeReaparicion = true;
         photonView.RPC(nameof(RpcCuchillo), RpcTarget.Others);
+    }
+
+    // US 259, CA2: este jugador empezó a lanzar una granada (el clic); en las demás computadoras su brazo va hacia atrás y
+    // la arroja (RpcLanzandoGranada). La granada sale después, con RpcGranada.
+    private void AlEmpezarGranada(Transform tirador)
+    {
+        if (tirador != transform || muerto) return;
+        photonView.RPC(nameof(RpcLanzandoGranada), RpcTarget.Others);
+    }
+
+    [PunRPC]
+    private void RpcLanzandoGranada()
+    {
+        if (photonView.IsMine || muerto) return;
+        if (lanzamiento != null) lanzamiento.Lanzar();
     }
 
     // US 073: este jugador tiró una granada; en las demás computadoras se ve una igual (RpcGranada).
@@ -969,6 +988,7 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
         CrearContorno();
         transparencia = Semitransparente.Crear(gameObject, modelo); // US 137
         terceraPersona = ArmaEnTerceraPersona.Crear(gameObject, animador, camara); // F26: cómo tiene el arma
+        lanzamiento = LanzamientoDeGranada.Crear(gameObject, animador, terceraPersona); // US 259
     }
 
     private void CrearContorno()
@@ -1154,6 +1174,11 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
         if (soporteMano == null || photonView == null || photonView.IsMine) return;
         // El hueso se busca ya con la copia prendida (con el personaje apagado, el Animator no lo da).
         if (manoDerecha == null && animador != null && animador.isHuman) manoDerecha = animador.GetBoneTransform(HumanBodyBones.RightHand);
+        // US 259, CA2: la granada sale de la mano al final del lanzamiento; la siguiente aparece cuando la saca.
+        if (lanzamiento != null && armaVista >= PrimeraGranada && armaVista != 255 &&
+            enLaMano.TryGetValue(armaVista, out ModeloEnMano granadaEnMano) && granadaEnMano.go != null &&
+            granadaEnMano.go.activeSelf == lanzamiento.ManoVacia)
+            granadaEnMano.go.SetActive(!lanzamiento.ManoVacia);
         if (terceraPersona != null && terceraPersona.Manejando) return; // F26: el arma la pone ArmaEnTerceraPersona
         if (manoDerecha != null) soporteMano.position = manoDerecha.position;
         if (camara != null) soporteMano.rotation = camara.rotation;
@@ -1211,6 +1236,20 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
     private void RpcGranada(int id, byte indice, Vector3 origen, Vector3 direccion, Vector3 heredada)
     {
         if (photonView.IsMine) return;
+        // US 259, CA2: sale de la mano al final del movimiento del brazo (empezó con RpcLanzandoGranada).
+        float espera = lanzamiento != null ? lanzamiento.FaltaParaSoltar : 0f;
+        if (espera > 0f) StartCoroutine(GranadaDespues(espera, id, indice, origen, direccion, heredada));
+        else SoltarGranada(id, indice, origen, direccion, heredada);
+    }
+
+    private System.Collections.IEnumerator GranadaDespues(float espera, int id, byte indice, Vector3 origen, Vector3 direccion, Vector3 heredada)
+    {
+        yield return new WaitForSeconds(espera);
+        if (!granadasExplotadas.Remove(id)) SoltarGranada(id, indice, origen, direccion, heredada);
+    }
+
+    private void SoltarGranada(int id, byte indice, Vector3 origen, Vector3 direccion, Vector3 heredada)
+    {
         ShopItem item = FichaDe(indice);
         if (item == null || item.grenadePrefab == null) return;
         GameObject go = Instantiate(item.grenadePrefab, origen, Quaternion.identity);
@@ -1232,6 +1271,7 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
         if (granadasRemotas.TryGetValue(id, out Grenade1 granada) && granada != null) granada.ExplodeAt(centro);
         else
         {
+            granadasExplotadas.Add(id); // si todavía no salió de la mano (US 259), ya no sale
             ShopItem item = FichaDe(indice);
             Grenade1.PlayExplosion(item != null && item.grenadePrefab != null ? item.grenadePrefab.GetComponent<Grenade1>() : null, centro, item);
         }

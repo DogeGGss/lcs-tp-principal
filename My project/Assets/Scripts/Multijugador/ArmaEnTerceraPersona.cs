@@ -48,6 +48,12 @@ public class ArmaEnTerceraPersona : MonoBehaviour
     private readonly Dictionary<GameObject, IPiezasDelArma> piezasPorModelo = new Dictionary<GameObject, IPiezasDelArma>();
     private IPiezasDelArma piezas;
 
+    /// <summary>
+    /// US 259: cuánto se sueltan las manos del IK (0 a 1) para que las mueva la animación (el lanzamiento de la granada,
+    /// LanzamientoDeGranada).
+    /// </summary>
+    public float ManosLibres { get; set; }
+
     /// <summary>Tiene un arma con ajuste en la mano: el arma y las manos las pone este script.</summary>
     public bool Manejando => modelo != null && ajuste != null;
 
@@ -141,7 +147,7 @@ public class ArmaEnTerceraPersona : MonoBehaviour
             objetivoDerecho.SetPositionAndRotation(originalDerecho.position, originalDerecho.rotation);
             objetivoIzquierdo.SetPositionAndRotation(originalIzquierdo.position, originalIzquierdo.rotation);
         }
-        if (capa != null) capa.weight = hay || Manejando ? 1f : 0f;
+        if (capa != null) capa.weight = (hay || Manejando ? 1f : 0f) * (1f - ManosLibres);
     }
 
     // ---------- El arma ----------
@@ -269,7 +275,7 @@ public class ArmaEnTerceraPersona : MonoBehaviour
             mostrar();
         }
         if (!Manejando || ojos == null) { CopiarOriginales(); return; }
-        if (capa != null) capa.weight = 1f;
+        if (capa != null) capa.weight = 1f - ManosLibres;
 
         // Retroceso: un resorte que vuelve a cero.
         float w = Mathf.Sqrt(Resorte);

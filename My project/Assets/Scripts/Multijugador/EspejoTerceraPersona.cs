@@ -57,6 +57,7 @@ public class EspejoTerceraPersona : MonoBehaviour
     private Transform raiz, ojos, soporte;
     private Animator copia;
     private ArmaEnTerceraPersona arma;
+    private LanzamientoDeGranada lanzamiento;
     private GameObject enMano, modeloEnMano;
     private float listoEn;
 
@@ -82,6 +83,7 @@ public class EspejoTerceraPersona : MonoBehaviour
         agarres = AgarresTerceraPersona.Actual;
         listoEn = Time.time + 1f; // que el jugador ya tenga el cuerpo de su personaje
         WeaponFire.Fired += AlDisparar;
+        GrenadeThrower.Started += AlEmpezarGranada;
     }
 
     private void OnDestroy()
@@ -92,6 +94,7 @@ public class EspejoTerceraPersona : MonoBehaviour
         if (lista != null && UnityEditor.EditorUtility.IsDirty(lista)) UnityEditor.AssetDatabase.SaveAssetIfDirty(lista);
 #endif
         WeaponFire.Fired -= AlDisparar;
+        GrenadeThrower.Started -= AlEmpezarGranada;
         if (raiz != null) Destroy(raiz.gameObject);
         if (modeloEnMano != null) Destroy(modeloEnMano);
     }
@@ -99,6 +102,12 @@ public class EspejoTerceraPersona : MonoBehaviour
     private void AlDisparar(Transform tirador, Vector3 origen, Vector3[] direcciones)
     {
         if (arma != null && tirador == jugador) arma.Disparo();
+    }
+
+    // US 259: lanza la granada como el jugador.
+    private void AlEmpezarGranada(Transform tirador)
+    {
+        if (lanzamiento != null && tirador == jugador) lanzamiento.Lanzar();
     }
 
     private bool BuscarJugador()
@@ -153,6 +162,7 @@ public class EspejoTerceraPersona : MonoBehaviour
         copia.applyRootMotion = false;
         copia.cullingMode = AnimatorCullingMode.AlwaysAnimate;
         arma = ArmaEnTerceraPersona.Crear(raiz.gameObject, copia, ojos);
+        lanzamiento = LanzamientoDeGranada.Crear(raiz.gameObject, copia, arma);
         Ubicar();
     }
 
@@ -214,6 +224,13 @@ public class EspejoTerceraPersona : MonoBehaviour
 
         // La misma arma en la mano.
         GameObject ahora = switcher.HeldPrimary != null ? switcher.HeldPrimary : switcher.HeldSecondary;
+        if (ahora == null && switcher.Granadas != null && switcher.Granadas.IsHolding)
+        {
+            // US 259: la granada en la mano (la de primera persona, que cambia con cada granada que saca).
+            Transform granada = camara.transform.Find(GrenadeThrower.NombreMano + "/GranadaEnMano");
+            if (granada != null && (granada.gameObject.activeInHierarchy || enMano == granada.gameObject)) ahora = granada.gameObject;
+            else ahora = enMano;
+        }
         if (ahora != enMano)
         {
             enMano = ahora;
@@ -229,6 +246,9 @@ public class EspejoTerceraPersona : MonoBehaviour
     private void LateUpdate()
     {
         PonerManijas();
+        // US 259: la granada sale de la mano al final del lanzamiento.
+        if (lanzamiento != null && modeloEnMano != null && enMano != null && enMano.name == "GranadaEnMano")
+            modeloEnMano.SetActive(!lanzamiento.ManoVacia);
         if (arma == null || arma.Manejando || modeloEnMano == null) return;
         Transform mano = copia.GetBoneTransform(HumanBodyBones.RightHand);
         if (mano != null) soporte.position = mano.position;
@@ -375,7 +395,8 @@ public class EspejoTerceraPersona : MonoBehaviour
         if (primeraPersona != null)
         {
             ShopItem ficha = WeaponSwitcher.FichaDe(primeraPersona);
-            float largo = ficha != null && ficha.realLength > 0f ? ficha.realLength : ModeloReal.LargoSinFicha;
+            float largo = ficha != null && ficha.realLength > 0f ? ficha.realLength
+                        : primeraPersona.name == "GranadaEnMano" ? 0.12f : ModeloReal.LargoSinFicha;
             modeloEnMano = ModeloReal.Crear(Original(primeraPersona, out GameObject borrar), largo, out Bounds _, primeraPersona.name + " (espejo)");
             if (borrar != null) Destroy(borrar);
             modeloEnMano.transform.SetParent(soporte, false);
