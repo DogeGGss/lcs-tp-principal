@@ -452,6 +452,15 @@ public class Minimapa : MonoBehaviour
     {
         if (jugador == null || chico == null) return;
 
+        // Con la pantalla de resultado no se dibuja: se encimaba con la tabla.
+        bool oculto = MatchHud.ResultadoVisible;
+        if (chico.caja.gameObject.activeSelf == oculto) { chico.caja.gameObject.SetActive(!oculto); ayuda.gameObject.SetActive(!oculto); }
+        if (oculto)
+        {
+            if (grande.caja.parent.gameObject.activeSelf) grande.caja.parent.gameObject.SetActive(false);
+            return;
+        }
+
         string tecla = KeyBindings.Label(GameAction.Mapa);
         if (tecla != teclaMostrada)
         {

@@ -55,6 +55,7 @@ public class ResultadoPartida : MonoBehaviour
         displayFont = hud != null ? hud.DisplayFont : null;
         labelFont = hud != null ? hud.LabelFont : null;
         rounded = hud != null ? hud.Rounded : null;
+        MatchHud.OcultarParaResultado();
 
         var canvas = GetComponent<Canvas>();
         canvas.renderMode = RenderMode.ScreenSpaceOverlay;

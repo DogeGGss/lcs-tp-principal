@@ -85,6 +85,11 @@ public class MatchHud : MonoBehaviour
     private GameObject deviceIcon; // US 134, CA3: ícono del dispositivo plantado
     private TextMeshProUGUI centerLabel, clock, centerSub;
     private bool modeSetCenter;
+    /// <summary>
+    /// Pantalla de resultado a la vista: el marcador y el minimapa se ocultan, porque se veían a través de la sombra
+    /// y se encimaban con "FIN DE LA PARTIDA".
+    /// </summary>
+    public static bool ResultadoVisible { get; private set; }
 
     // Lados: 0 izquierda, 1 derecha
     private readonly TextMeshProUGUI[] sideTitle = new TextMeshProUGUI[2], sideValue = new TextMeshProUGUI[2];
@@ -130,6 +135,7 @@ public class MatchHud : MonoBehaviour
     public void Setup(RectTransform root, TMP_FontAsset display, TMP_FontAsset label, Sprite roundedSprite, CombatHud hud)
     {
         Instance = this;
+        ResultadoVisible = false;
         displayFont = display;
         labelFont = label;
         rounded = roundedSprite;
@@ -330,7 +336,8 @@ public class MatchHud : MonoBehaviour
 
     private void ShowCenter(string label, float? seconds, string sub, bool red, string counter, bool alert)
     {
-        marker.gameObject.SetActive(true);
+        marker.gameObject.SetActive(!ResultadoVisible);
+        if (ResultadoVisible) return;
         centerLabel.text = label;
         centerLabel.color = alert ? RivalColor : Accent;
         centerSub.text = sub;
@@ -563,6 +570,13 @@ public class MatchHud : MonoBehaviour
     {
         if (Instance == null) return;
         Instance.BuildBanner(eyebrow, title, color, sub, chips, seconds, footer);
+    }
+
+    /// <summary>La llaman las pantallas de resultado al aparecer.</summary>
+    public static void OcultarParaResultado()
+    {
+        ResultadoVisible = true;
+        if (Instance != null && Instance.marker != null) Instance.marker.gameObject.SetActive(false);
     }
 
     public static void HideBanner()

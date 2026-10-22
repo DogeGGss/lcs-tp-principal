@@ -65,6 +65,7 @@ public class ResultadoDeathmatch : MonoBehaviour
         rounded = hud != null ? hud.Rounded : null;
         MatchHud.HideBanner();
         MatchHud.SetHint(null);
+        MatchHud.OcultarParaResultado();
         ShopUI.Cerrar();
 
         var canvas = GetComponent<Canvas>();
