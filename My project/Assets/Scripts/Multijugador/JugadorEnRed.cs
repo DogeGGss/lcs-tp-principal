@@ -1174,7 +1174,9 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
         if (soporteMano == null || photonView == null || photonView.IsMine) return;
         // El hueso se busca ya con la copia prendida (con el personaje apagado, el Animator no lo da).
         if (manoDerecha == null && animador != null && animador.isHuman) manoDerecha = animador.GetBoneTransform(HumanBodyBones.RightHand);
-        // US 259, CA2: la granada sale de la mano al final del lanzamiento; la siguiente aparece cuando la saca.
+        // US 259, CA1: con una granada en la mano, la pose de sostenerla (no la de rifle).
+        if (lanzamiento != null) lanzamiento.ConGranada = !muerto && armaVista >= PrimeraGranada && armaVista != ArmaDesconocida;
+        // CA2: la granada sale de la mano al final del lanzamiento; la siguiente aparece cuando la saca.
         if (lanzamiento != null && armaVista >= PrimeraGranada && armaVista != 255 &&
             enLaMano.TryGetValue(armaVista, out ModeloEnMano granadaEnMano) && granadaEnMano.go != null &&
             granadaEnMano.go.activeSelf == lanzamiento.ManoVacia)

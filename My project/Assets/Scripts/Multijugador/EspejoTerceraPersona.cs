@@ -246,9 +246,10 @@ public class EspejoTerceraPersona : MonoBehaviour
     private void LateUpdate()
     {
         PonerManijas();
-        // US 259: la granada sale de la mano al final del lanzamiento.
-        if (lanzamiento != null && modeloEnMano != null && enMano != null && enMano.name == "GranadaEnMano")
-            modeloEnMano.SetActive(!lanzamiento.ManoVacia);
+        // US 259: con la granada en la mano, la pose de sostenerla; sale de la mano al final del lanzamiento.
+        bool conGranada = enMano != null && enMano.name == "GranadaEnMano";
+        if (lanzamiento != null) lanzamiento.ConGranada = conGranada;
+        if (lanzamiento != null && modeloEnMano != null && conGranada) modeloEnMano.SetActive(!lanzamiento.ManoVacia);
         if (arma == null || arma.Manejando || modeloEnMano == null) return;
         Transform mano = copia.GetBoneTransform(HumanBodyBones.RightHand);
         if (mano != null) soporte.position = mano.position;

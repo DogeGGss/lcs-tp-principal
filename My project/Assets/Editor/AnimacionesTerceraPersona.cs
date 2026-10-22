@@ -101,6 +101,15 @@ public class AnimacionesTerceraPersona : AssetPostprocessor
     [InitializeOnLoadMethod]
     private static void AlCargar() => EditorApplication.delayCall += ArmarCapaDeGranada;
 
+    // Con la granada en la mano: la pose del principio de la animación (la granada a la altura del pecho), quieta.
+    private static void Sostener(AnimatorStateMachine maquina, AnimationClip clip)
+    {
+        AnimatorState sostener = maquina.AddState(LanzamientoDeGranada.Sostener);
+        sostener.motion = clip;
+        sostener.speed = 0f;
+        sostener.writeDefaultValues = false;
+    }
+
     [MenuItem("Riftwalker/Armar la capa de la granada (tercera persona)")]
     public static void ArmarCapaDeGranada()
     {
@@ -114,14 +123,24 @@ public class AnimacionesTerceraPersona : AssetPostprocessor
         AnimatorControllerLayer capa = controlador.layers.FirstOrDefault(c => c.name == LanzamientoDeGranada.Capa);
         if (capa != null)
         {
-            // Ya está: que tenga la velocidad de ahora.
+            // Ya está: que tenga la velocidad de ahora y el estado para sostenerla (versiones anteriores).
+            bool cambia = false;
             foreach (ChildAnimatorState s in capa.stateMachine.states)
                 if (s.state.name == LanzamientoDeGranada.Estado && !Mathf.Approximately(s.state.speed, LanzamientoDeGranada.Velocidad))
                 {
                     s.state.speed = LanzamientoDeGranada.Velocidad;
-                    EditorUtility.SetDirty(controlador);
-                    AssetDatabase.SaveAssets();
+                    cambia = true;
                 }
+            if (!capa.stateMachine.states.Any(s => s.state.name == LanzamientoDeGranada.Sostener))
+            {
+                Sostener(capa.stateMachine, clip);
+                cambia = true;
+            }
+            if (cambia)
+            {
+                EditorUtility.SetDirty(controlador);
+                AssetDatabase.SaveAssets();
+            }
             return;
         }
 
@@ -142,6 +161,7 @@ public class AnimacionesTerceraPersona : AssetPostprocessor
         lanzar.motion = clip;
         lanzar.speed = LanzamientoDeGranada.Velocidad;
         lanzar.writeDefaultValues = false;
+        Sostener(maquina, clip);
         maquina.defaultState = nada;
         controlador.AddLayer(new AnimatorControllerLayer
         {
