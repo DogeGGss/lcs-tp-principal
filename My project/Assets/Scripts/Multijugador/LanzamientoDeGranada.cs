@@ -2,8 +2,8 @@ using UnityEngine;
 
 // US 259, CA2: el lanzamiento de la granada que ven los demás jugadores. El brazo va hacia atrás y la arroja con la
 // animación de Mixamo "LanzarGranada" (Personajes/Animaciones), en la capa "Granada" del Animator del personaje: una
-// capa que solo mueve los brazos (máscara BrazosGranada) y que está apagada (peso 0) salvo mientras lanza. La capa y la
-// máscara las arma el editor solo (AnimacionesTerceraPersona) cuando está la animación.
+// capa que mueve el torso, la cabeza y los brazos, no las piernas (máscara BrazosGranada), y que está apagada (peso 0)
+// salvo mientras lanza. La capa y la máscara las arma el editor solo (AnimacionesTerceraPersona) cuando está la animación.
 // Mientras lanza, el IK de los brazos de ArmaEnTerceraPersona se suelta (ManosLibres) para que mande la animación.
 // Empieza cuando el dueño hace clic (RpcLanzandoGranada) y suelta la granada al final del movimiento hacia adelante:
 // la granada de muestra que llega por la red (que el dueño suelta a los 0,34 s) espera a ese momento (FaltaParaSoltar).
