@@ -374,6 +374,62 @@ tr:last-child td{border-bottom:none}
 .chart text{fill:var(--ink-2);font-family:var(--display);font-size:13px;letter-spacing:.04em}
 .chart .dot{stroke:var(--paper);stroke-width:2}
 .chart .lbl{fill:var(--ink);font-family:var(--display);font-weight:600;font-size:13px}
+
+/* ---------- Modelo de negocio: simulador (controles a la izquierda, resultados a la derecha) ---------- */
+.neg{display:grid;grid-template-columns:minmax(260px,330px) minmax(0,1fr);gap:16px;align-items:start}
+@media (max-width:900px){.neg{grid-template-columns:minmax(0,1fr)}}
+.neg-ctl{display:grid;gap:14px;min-width:0}
+.neg-ctl .grupo{display:grid;gap:10px;padding-bottom:14px;border-bottom:1px solid var(--line)}
+.neg-ctl .grupo:last-child{border-bottom:0;padding-bottom:0}
+.neg-ctl .gt{font:600 13px/1.2 var(--display);letter-spacing:.12em;text-transform:uppercase;color:var(--ink-2)}
+.neg-ctl .control{display:grid;gap:2px}
+.neg-ctl .fila{display:flex;justify-content:space-between;gap:10px;align-items:baseline}
+.neg-ctl label{font:600 14px/1.3 var(--body)}
+.neg-ctl output{font:600 13px var(--mono);white-space:nowrap}
+.neg-ctl .ayuda{font-size:13px;color:var(--ink-2);line-height:1.35;margin:0}
+.neg-ctl input[type=range]{width:100%;accent-color:var(--accent);margin:2px 0}
+.neg-ctl .seg{display:flex}
+.neg-ctl .seg button{flex:1}
+.neg-fijo{list-style:none;margin:0;padding:0;display:grid;gap:6px;font-size:14px;line-height:1.4;color:var(--ink-2)}
+.neg-fijo li{display:grid;grid-template-columns:84px minmax(0,1fr);gap:8px}
+.neg-fijo b{font:600 12px/1.7 var(--display);letter-spacing:.08em;text-transform:uppercase;color:var(--ink)}
+.neg-switch{display:grid;grid-template-columns:auto minmax(0,1fr);gap:2px 10px;align-items:center;cursor:pointer}
+.neg-switch input{appearance:none;width:38px;height:22px;border-radius:999px;background:var(--mono-bg);border:1px solid var(--line);position:relative;cursor:pointer;margin:0}
+.neg-switch input::after{content:"";position:absolute;top:2px;left:2px;width:16px;height:16px;border-radius:50%;background:var(--ink-2);transition:transform .15s}
+.neg-switch input:checked{background:var(--accent);border-color:var(--accent)}
+.neg-switch input:checked::after{transform:translateX(16px);background:var(--paper)}
+.neg-switch input:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.neg-switch small{grid-column:2;color:var(--ink-2);font-size:13px;line-height:1.35}
+.neg-res{display:grid;gap:14px;min-width:0}
+.neg-kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:1px;background:var(--line);border:1px solid var(--line);border-radius:10px;overflow:hidden}
+.neg-kpi{background:var(--paper);padding:12px 14px;display:grid;gap:3px;align-content:start;min-width:0}
+.neg-kpi .et{font:600 12px/1.2 var(--display);letter-spacing:.1em;text-transform:uppercase;color:var(--ink-2)}
+.neg-kpi .val{font:700 30px/1.05 var(--display);font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
+.neg-kpi .sub{font-size:13px;color:var(--ink-2)}
+.callout.neg-gana{border-left-color:var(--ok)} .callout.neg-gana b{color:var(--ok)}
+.callout.neg-pierde{border-left-color:var(--bad)} .callout.neg-pierde b{color:var(--bad)}
+.neg-fig{position:relative;min-width:0}
+.neg-fig .t{font:700 19px/1.1 var(--display);text-transform:uppercase;letter-spacing:.03em}
+.neg-fig .b{font-size:14px;color:var(--ink-2);margin:3px 0 8px;max-width:72ch}
+.neg-ley{display:flex;flex-wrap:wrap;gap:4px 16px;font-size:13px;color:var(--ink-2);margin:0 0 6px}
+.neg-ley span{display:inline-flex;align-items:center;gap:7px}
+.neg-ley i{width:22px;height:0;border-top:2px solid;display:inline-block}
+.neg-fig svg{width:100%;height:auto;display:block;overflow:visible;touch-action:pan-y}
+.neg-fig .eje{fill:var(--ink-2);font:500 12px var(--mono)}
+.neg-fig .eje-f{fill:var(--ink);font:600 12px var(--mono)}
+.neg-fig .rot{font:600 13px var(--body)}
+.neg-tip{position:absolute;pointer-events:none;background:var(--paper);border:1px solid var(--line);border-radius:8px;padding:8px 10px;font-size:13px;line-height:1.45;color:var(--ink-2);min-width:170px;box-shadow:0 6px 18px rgba(0,0,0,.18);z-index:2}
+.neg-tip b,.neg-tip .num{color:var(--ink)}
+.neg-mejoras{list-style:none;margin:6px 0 0;padding:0;display:grid;gap:10px}
+.neg-mejoras li{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:2px 12px;font-size:14px}
+.neg-mejoras .barra{grid-column:1/-1;height:6px;background:var(--mono-bg);border-radius:3px;overflow:hidden}
+.neg-mejoras .barra span{display:block;height:100%;border-radius:3px}
+.neg-mejoras .nota{grid-column:1/-1;color:var(--ink-2);font-size:13px}
+.neg-mejoras .total{border-top:1px solid var(--line);padding-top:10px;font-weight:600}
+#neg-comparar td,#neg-comparar th{white-space:nowrap}
+#neg-comparar .neg-activo{background:var(--accent-soft)}
+#neg-comparar th.neg-activo{color:var(--accent)}
+#neg-comparar .chico{display:block;color:var(--ink-2);font-size:12px}
 footer{margin-top:48px;padding-top:14px;border-top:1px solid var(--line);font-size:13px;color:var(--ink-2)}
 body.capture{padding:0;background:#000}
 body.capture .wrap{max-width:none}
@@ -810,7 +866,7 @@ body.capture,body.capture-ms,body.capture-cr{padding-left:0!important}
     <a href="#estilo"><div class="pn">Parte 1</div><div class="pt">Identidad</div><div class="ps">Colores, tipografías, medidas, piezas y reglas para el código.</div></a>
     <a href="#tienda"><div class="pn">Parte 2</div><div class="pt">Pantallas</div><div class="ps">Tienda, HUD, selección de modo, créditos, el launcher y el resto de los menús.</div></a>
     <a href="#danio"><div class="pn">Parte 3</div><div class="pt">Combate</div><div class="ps">Daño, retroceso, arsenal, calculadora y cómo sumar un arma.</div></a>
-    <a href="#eco"><div class="pn">Parte 4</div><div class="pt">Economía</div><div class="ps">Plata, puntos, escudos y granadas en cada modo.</div></a>
+    <a href="#eco"><div class="pn">Parte 4</div><div class="pt">Economía</div><div class="ps">Plata, puntos, escudos y granadas en cada modo, y el modelo de negocio.</div></a>
     <a href="#personajes"><div class="pn">Parte 5</div><div class="pt">Personajes</div><div class="ps">Los cuatro personajes y sus habilidades: Barrera, Vista aérea, Callejero y Trasbordo.</div></a>
     <a href="#mapas"><div class="pn">Parte 6</div><div class="pt">Mapas</div><div class="ps">La estación espacial del Táctico y la universidad del Zombie.</div></a>
     <a href="#pendientes"><div class="pn">Parte 7</div><div class="pt">Decisiones y pendientes</div><div class="ps">Lo que ya se decidió y lo que falta diseñar o terminar.</div></a>
@@ -1842,7 +1898,7 @@ body.capture,body.capture-ms,body.capture-cr{padding-left:0!important}
 </section>
 
 <!-- ===================== PARTE 4 · ECONOMÍA ===================== -->
-<div class="part"><span class="pn">4</span><div><h2>Economía</h2><p>Plata, puntos y límites de cada modo. Historias: US 135, US 147 y US 138.</p></div></div>
+<div class="part"><span class="pn">4</span><div><h2>Economía</h2><p>Plata, puntos y límites de cada modo (historias: US 135, US 147 y US 138), y el modelo de negocio del juego.</p></div></div>
 
 <section id="eco">
   <div class="sec-head"><h2>Economía</h2><span class="sub">Plata, puntos y límites</span> <span class="st st-mid">A medias</span></div>
@@ -1868,6 +1924,134 @@ body.capture,body.capture-ms,body.capture-cr{padding-left:0!important}
     <tr><td>Granada de humo</td><td class="num">$ 200</td><td class="num">1</td></tr>
     <tr><td>Granada flash</td><td class="num">$ 200</td><td class="num">2</td></tr>
   </table></div>
+</section>
+
+<section id="negocio">
+  <div class="sec-head"><h2>Modelo de negocio</h2><span class="sub">Simulador · gratis en Steam</span> <span class="st st-idea">Solo diseño</span></div>
+  <p class="soft">Qué pasa si al terminar el sprint 5 lanzamos el juego en Steam, gratis y con cristales de pago. El juego no se va a publicar: el simulador sirve para decidir los precios con números. Lo decidido no cambia (7 personas con el sueldo promedio, los 5 sprints de desarrollo y el producto como queda en el sprint 5); lo que cambia es cuántos juegan y cuánto pagan. Son montos por mes, con el dólar oficial a $ 1.550 (22/10/2026).</p>
+
+  <h3 id="negocio-simulador">Simulador</h3>
+  <div class="neg">
+    <div class="card neg-ctl" id="neg-controles" aria-label="Supuestos del simulador"></div>
+    <div class="neg-res">
+      <div class="neg-kpis" id="neg-kpis"></div>
+      <div class="callout" id="neg-veredicto"></div>
+      <div class="card neg-fig" id="neg-fig-escala">
+        <div class="t">Ingresos y costos según los jugadores</div>
+        <p class="b">Donde la línea del ingreso pasa por encima de la de costos, el juego deja de perder plata. La línea vertical marca los jugadores del escenario.</p>
+        <div class="neg-ley"><span><i style="border-color:var(--shield)"></i>Ingreso neto (después de Steam y retenciones)</span><span><i style="border-color:var(--accent);border-top-style:dashed"></i>Costos totales</span></div>
+        <svg id="neg-g-escala" viewBox="0 0 760 300" role="img" aria-label="Ingresos y costos según la cantidad de jugadores"></svg>
+        <div class="neg-tip" id="neg-tip-escala" hidden></div>
+      </div>
+      <div class="grid2">
+        <div class="card neg-fig">
+          <div class="t">En qué se va la plata</div>
+          <p class="b" id="neg-bajada-costos">Costos del mes en el escenario.</p>
+          <svg id="neg-g-costos" viewBox="0 0 420 210" role="img" aria-label="Costos del mes por rubro"></svg>
+        </div>
+        <div class="card neg-fig">
+          <div class="t">Qué suma cada mejora</div>
+          <p class="b">Las mejoras del plan, por separado y las cuatro juntas, en el escenario que estás mirando.</p>
+          <ul class="neg-mejoras" id="neg-mejoras"></ul>
+        </div>
+      </div>
+      <div class="card neg-fig" id="neg-fig-caja">
+        <div class="t">Caja acumulada en los primeros tres años</div>
+        <p class="b" id="neg-bajada-caja">Arranca en negativo por lo que cuestan los 5 sprints y el lanzamiento.</p>
+        <div class="neg-ley"><span><i style="border-color:var(--bad);border-top-width:8px"></i>Todavía no se recuperaron los 5 sprints</span><span><i style="border-color:var(--ok);border-top-width:8px"></i>Ya se recuperaron</span></div>
+        <svg id="neg-g-caja" viewBox="0 0 760 260" role="img" aria-label="Caja acumulada por mes"></svg>
+        <div class="neg-tip" id="neg-tip-caja" hidden></div>
+      </div>
+    </div>
+  </div>
+
+  <h3 id="negocio-escenarios">Los tres escenarios</h3>
+  <p class="soft" id="neg-bajada-comparar">Con lo ya decidido: 7 personas, 5 sprints de desarrollo y el producto del sprint 5.</p>
+  <div class="table-wrap"><table id="neg-comparar"></table></div>
+  <p class="soft">Pesimista: 25.000 jugadores por mes, paga el 1,5 % y gasta US$ 3 en Latinoamérica y US$ 10 en el resto. Promedio: 100.000, el 2,5 %, US$ 5 y US$ 15. Optimista: 250.000, el 3,5 %, US$ 6 y US$ 18.</p>
+
+  <h3 id="negocio-mejoras">Mejoras del plan</h3>
+  <p class="soft">Cuatro decisiones nuestras que suben los números en cualquier escenario. Tienen que entrar en los sprints 4 y 5, porque al terminar el sprint 5 sale el producto como esté.</p>
+  <div class="table-wrap"><table>
+    <tr><th>Mejora</th><th>Qué hay que hacer</th><th>Qué cambia</th><th>En el promedio</th></tr>
+    <tr><td>Pase de temporada y tienda directa</td><td>El pase de 40 niveles y la tienda de cosméticos a elección, con los precios de abajo</td><td>Gasto por pagador × 1,3 en Latinoamérica y × 1,2 en el resto</td><td class="num ok">+US$ 2.160</td></tr>
+    <tr><td>Oferta de bienvenida a US$ 0,99</td><td>Ya existe: queda a US$ 0,99 en Latinoamérica y US$ 1,99 en el resto</td><td>Medio punto más de jugadores que pagan</td><td class="num ok">+US$ 1.660</td></tr>
+    <tr><td>Juego en inglés</td><td>Traducir los textos del juego y la página de Steam</td><td>15 puntos menos de jugadores de Latinoamérica y 5 más de ventas en EE.UU.</td><td class="num ok">+US$ 880</td></tr>
+    <tr><td>Photon a 10 envíos por segundo</td><td>Bajar los envíos de la partida de 15 a 10 por segundo y probar que se siga sintiendo bien</td><td>30 % menos de tráfico</td><td class="num ok">+US$ 800</td></tr>
+    <tr><td><b>Las cuatro juntas</b></td><td></td><td></td><td class="num">de <span class="bad">−US$ 4.540</span> a <span class="ok">+US$ 5.190</span></td></tr>
+  </table></div>
+
+  <h3 id="negocio-precios">Precios de los cristales</h3>
+  <p class="soft">Hoy hay tres monedas: créditos (150 por victoria y 75 por derrota), boletos (abren una cápsula; uno cuesta 600 créditos o 100 cristales) y cristales, la moneda de pago. Las cápsulas dan avatares y banners con 55 % común, 30 % raro, 12 % épico y 3 % legendario, y un épico asegurado cada 10 (<code>PerfilDatos.cs</code>).</p>
+  <div class="pairs">
+    <div class="card"><div class="neg-fig"><div class="t">Hoy (en pesos)</div></div>
+      <div class="table-wrap" style="margin:8px 0 0"><table>
+        <tr><th>Paquete</th><th>Cristales</th><th>Precio</th><th>Cada 100</th></tr>
+        <tr><td>Bienvenida (una vez)</td><td class="num">200 + 5 boletos</td><td class="num">$ 1.990</td><td class="num">—</td></tr>
+        <tr><td>Bolsa</td><td class="num">80</td><td class="num">$ 1.200</td><td class="num">US$ 0,97</td></tr>
+        <tr><td>Cofre</td><td class="num">400 + 40</td><td class="num">$ 5.500</td><td class="num">US$ 0,81</td></tr>
+        <tr><td>Caja</td><td class="num">1.000 + 150</td><td class="num">$ 12.900</td><td class="num">US$ 0,72</td></tr>
+        <tr><td>Bóveda</td><td class="num">2.500 + 500</td><td class="num">$ 29.900</td><td class="num">US$ 0,64</td></tr>
+      </table></div></div>
+    <div class="card"><div class="neg-fig"><div class="t">Propuesta (en Steam)</div></div>
+      <div class="table-wrap" style="margin:8px 0 0"><table>
+        <tr><th>Producto</th><th>Qué trae</th><th>Resto</th><th>Latinoamérica</th></tr>
+        <tr><td>Bienvenida (una vez)</td><td class="num">500 + 5 boletos</td><td class="num">US$ 1,99</td><td class="num">US$ 0,99</td></tr>
+        <tr><td>Cristales chico</td><td class="num">500</td><td class="num">US$ 4,99</td><td class="num">US$ 2,49</td></tr>
+        <tr><td>Cristales mediano</td><td class="num">1.000 + 100</td><td class="num">US$ 9,99</td><td class="num">US$ 4,99</td></tr>
+        <tr><td>Cristales grande</td><td class="num">2.000 + 300</td><td class="num">US$ 19,99</td><td class="num">US$ 9,99</td></tr>
+        <tr><td>Cristales enorme</td><td class="num">5.000 + 1.000</td><td class="num">US$ 49,99</td><td class="num">US$ 24,99</td></tr>
+        <tr><td>Pase de temporada (8 semanas)</td><td class="num">950 cristales</td><td class="num">≈ US$ 9,50</td><td class="num">≈ US$ 4,75</td></tr>
+      </table></div></div>
+  </div>
+  <ul>
+    <li><b>Precios en dólares:</b> Steam no cobra en pesos desde 2023. Argentina está en la región «LATAM-USD», con un precio regional de alrededor de la mitad del de EE.UU.</li>
+    <li><b>Cápsula:</b> sigue a 100 cristales, y 10 a 900. Con los precios nuevos vale unos US$ 0,95 fuera de Latinoamérica y US$ 0,47 en Latinoamérica.</li>
+    <li><b>Tienda directa, sin azar:</b> el cosmético que elijas por 400 (común), 800 (raro), 1.600 (épico) o 3.200 cristales (legendario). Un épico elegido cuesta el doble que uno al azar; un legendario elegido, lo mismo que uno al azar (sale cada 33 cápsulas, en promedio). Sirve donde las cajas al azar están restringidas.</li>
+    <li><b>Pase de temporada:</b> 40 niveles con cosméticos exclusivos. El camino gratis da créditos y boletos; el pago devuelve 500 cristales a lo largo de la temporada.</li>
+    <li><b>Lo gratis se mantiene:</b> 150 y 75 créditos por partida, más la primera victoria del día (+300), con un tope semanal de 6.000 créditos (10 cápsulas). Hoy, con unas 4 partidas por hora, se ganan 3 cápsulas cada 4 horas.</li>
+    <li><b>Así se llega al gasto del promedio:</b> un pagador de Latinoamérica que compra el pase y un paquete chico por mes gasta unos US$ 5; uno del resto, con el pase y un paquete mediano, unos US$ 15.</li>
+  </ul>
+
+  <h3 id="negocio-servidores">Servidores: Photon o Steam</h3>
+  <p>Publicar en Steam no obliga a dejar Photon: muchos juegos de Steam lo usan. Steam no pone servidores para correr las partidas. Lo que ofrece es la búsqueda de partida (lobbies) y la conexión entre jugadores por la red de Valve (Steam Datagram Relay): la partida corre en la PC de un jugador, el anfitrión, y los demás se conectan a él. Hoy ya pasa algo parecido: el anfitrión es un jugador (el que anota las bajas y maneja las rondas) y Photon reenvía los mensajes.</p>
+  <div class="table-wrap"><table>
+    <tr><th></th><th>Photon (hoy)</th><th>Red de Steam</th></tr>
+    <tr><td>Quién reenvía el tráfico</td><td>Photon</td><td>La red de Valve</td></tr>
+    <tr><td>Costo</td><td>US$ 1.850 por mes en el promedio con las mejoras y US$ 6.400 en el optimista</td><td>No se paga aparte (hay que confirmarlo en los términos de Steamworks)</td></tr>
+    <tr><td>Quién puede jugar</td><td>Cualquiera, con el launcher</td><td>Solo los que tienen Steam</td></tr>
+    <tr><td>Si el anfitrión se va</td><td>Photon pasa la partida a otro jugador</td><td>Hay que programar el traspaso</td></tr>
+    <tr><td>Trabajo</td><td>Ya está hecho y probado</td><td>Reescribir el multijugador: Photon está en 20 scripts, con unas 200 llamadas (salas, RPC, propiedades de la sala, reconexión)</td></tr>
+  </table></div>
+  <div class="callout"><b>Recomendación:</b> lanzar con Photon. La red de Steam queda para después del lanzamiento, cuando el tráfico de Photon sea el costo de servidores más grande (en el optimista ya lo es).</div>
+
+  <h3 id="negocio-conclusiones">Conclusiones</h3>
+  <ul>
+    <li><b>Promedio:</b> con las mejoras gana US$ 5.200 por mes antes de impuestos (US$ 3.600 después); sin ellas pierde US$ 4.500. Juegan 100.000, pagan 3.000 y cada uno gasta US$ 12,80 en promedio. El punto de equilibrio baja de 149.000 a 77.000 jugadores, y los 5 sprints se recuperan en el mes 24.</li>
+    <li><b>Pesimista:</b> pierde US$ 14.900 por mes con las mejoras y US$ 16.100 sin ellas. Con 25.000 jugadores, lo que entra no llega al 15 % de los costos.</li>
+    <li><b>Optimista:</b> gana US$ 83.300 por mes con las mejoras y US$ 41.000 sin ellas. Los 5 sprints se recuperan en el mes 3 (en el mes 4 sin las mejoras).</li>
+    <li><b>Los 5 sprints y el lanzamiento cuestan US$ 38.500.</b> Los sueldos de los 7 son entre el 55 % y el 90 % del costo de cada mes, según el escenario.</li>
+    <li><b>Servidores:</b> Supabase Pro (US$ 25 más la máquina) alcanza en los tres escenarios. Photon pasa al plan Premium en el promedio y el optimista.</li>
+    <li><b>Lo que más suma</b> es el pase con la tienda directa y la oferta de bienvenida: juntas llevan el promedio de perder a ganar plata.</li>
+  </ul>
+
+  <h3 id="negocio-fuentes">Supuestos y fuentes</h3>
+  <div class="table-wrap"><table>
+    <tr><th>Qué</th><th>Valor</th><th>Fuente</th></tr>
+    <tr><td>Desarrollo</td><td>5 sprints, del 21/09 al 24/11/2026 (9 semanas). Sale el producto del sprint 5</td><td><a href="https://github.com/users/DogeGGss/projects/2" target="_blank" rel="noopener">Tablero del proyecto</a></td></tr>
+    <tr><td>Sueldo</td><td>US$ 1.600 brutos (≈ $ 2.480.000) para los 7, en relación de dependencia (× 1,38 con aguinaldo, contribuciones y ART). La mediana de un desarrollador semi senior es $ 2.500.000 (Sysarmy 2026.1)</td><td><a href="https://www.developargentina.com/blog/cuanto-gana-programador-argentina-2026" target="_blank" rel="noopener">Develop Argentina</a>, <a href="https://yo-facturo.com/blog/cargas-sociales-en-argentina-2026/" target="_blank" rel="noopener">Yo Facturo</a></td></tr>
+    <tr><td>Photon PUN</td><td>Gratis hasta 20 · US$ 95 por 100 (un año) · US$ 95, 185 y 370 por mes hasta 500, 1.000 y 2.000 simultáneos · Premium US$ 0,29 por simultáneo (mínimo US$ 580) · 3 GB incluidos por simultáneo · GB de más US$ 0,10 en Sudamérica</td><td><a href="https://www.photonengine.com/pun/pricing" target="_blank" rel="noopener">photonengine.com</a></td></tr>
+    <tr><td>Tráfico de Photon</td><td>35, 30 y 25 MB por jugador por hora según el escenario: salas de 8 jugadores con 15 envíos por segundo (<code>Multijugador.cs</code>)</td><td>Estimado del juego</td></tr>
+    <tr><td>Supabase</td><td>Pro US$ 25 con 100.000 jugadores, 8 GB de base y 250 GB de salida · jugador de más US$ 0,00325 · máquinas de US$ 15 a 210 por mes</td><td><a href="https://supabase.com/pricing" target="_blank" rel="noopener">supabase.com</a></td></tr>
+    <tr><td>Steam</td><td>30 % hasta US$ 10 M al año, 25 % hasta US$ 50 M y 20 % después · Steam Direct US$ 100 · EE.UU. retiene el 30 % de sus ventas (Argentina no tiene convenio)</td><td><a href="https://techcrunch.com/?p=1753729" target="_blank" rel="noopener">TechCrunch</a>, <a href="https://partner.steamgames.com/doc/finance/taxfaq" target="_blank" rel="noopener">Steamworks</a></td></tr>
+    <tr><td>Steam en Argentina</td><td>Precios en dólares, región LATAM-USD desde noviembre de 2023</td><td><a href="https://gameworldobserver.com/2023/10/25/steam-turkey-argentina-usd-convert-regional-pricing-abandoned" target="_blank" rel="noopener">Game World Observer</a></td></tr>
+    <tr><td>Red de Steam</td><td>Lobbies y conexión entre jugadores por Steam Datagram Relay</td><td><a href="https://partner.steamgames.com/doc/features/multiplayer/networking" target="_blank" rel="noopener">Steamworks</a></td></tr>
+    <tr><td>Unity</td><td>Personal gratis hasta US$ 200.000 al año · Pro US$ 2.310 por puesto al año</td><td><a href="https://unity.com/products/pricing-updates" target="_blank" rel="noopener">unity.com</a></td></tr>
+    <tr><td>Conversión y gasto</td><td>Lo común es que pague el 1 a 2 %; en juegos sanos, 3 a 6 %. En celulares se gastan US$ 7 a 11 en 90 días</td><td><a href="https://www.gamesbrief.com/2012/07/whats-an-impressive-conversion-rate-and-other-stats-updates/" target="_blank" rel="noopener">GamesBrief</a>, <a href="https://gamedevreports.substack.com/p/weekly-gaming-reports-recap-june-e95" target="_blank" rel="noopener">Game Dev Reports</a></td></tr>
+    <tr><td>Juegan en un día</td><td>15, 20 y 25 % de los del mes según el escenario; por encima de 20 % se considera un juego sano</td><td><a href="https://www.gameskinny.com/jvwmp/how-do-i-know-i-have-a-healthy-game" target="_blank" rel="noopener">GameSkinny</a></td></tr>
+    <tr><td>Otros</td><td>Marketing US$ 1.000 por mes y US$ 5.000 en el lanzamiento · otros gastos US$ 400 por mes · ganancias 30 % · dólar $ 1.550 (oficial, 22/10/2026)</td><td><a href="https://dolarapi.com" target="_blank" rel="noopener">DolarApi</a></td></tr>
+  </table></div>
+  <p class="soft">No incluye el IVA de cada país (lo cobra y paga Steam), los cambios del dólar ni los costos legales.</p>
 </section>
 
 <!-- ===================== PARTE 5 · PERSONAJES ===================== -->
@@ -3802,6 +3986,460 @@ renderRules(); renderOneShot(); renderArsenal(); renderCalcOptions(); renderCalc
 </script>
 
 <script>
+/* ===== Modelo de negocio: simulador de ingresos y costos de un lanzamiento hipotético en Steam (dólares por mes) ===== */
+(() => {
+  if (!document.getElementById('negocio')) return;
+
+  // ---------- Modelo ----------
+  // Photon PUN (octubre de 2026): el plan sale del pico de jugadores a la vez; el tráfico de más se cobra por GB.
+  function photon(pico, promedio, mbHora, gbPrecio) {
+    let plan, base, incluidoGB;
+    if (pico <= 20) { plan = 'Development (gratis)'; base = 0; incluidoGB = 60; }
+    else if (pico <= 100) { plan = 'Launch 100'; base = 95 / 12; incluidoGB = 300; }
+    else if (pico <= 500) { plan = 'Public 500'; base = 95; incluidoGB = 1500; }
+    else if (pico <= 1000) { plan = 'Public 1000'; base = 185; incluidoGB = 3000; }
+    else if (pico <= 2000) { plan = 'Public 2000'; base = 370; incluidoGB = 6000; }
+    else { plan = pico <= 50000 ? 'Premium' : 'Premium (a negociar)'; base = Math.max(580, 0.29 * pico); incluidoGB = Math.max(6000, 3 * pico); }
+    const gb = promedio * 730 * mbHora / 1024;
+    return { plan, total: base + Math.max(0, gb - incluidoGB) * gbPrecio };
+  }
+  // Supabase Pro: la máquina crece con los jugadores; jugadores, salida de datos y base de más se cobran aparte
+  // (3 MB de salida y 50 KB de datos por jugador al mes).
+  function supabase(mau) {
+    const maquinas = [[10000, 'Micro', 10], [50000, 'Small', 15], [150000, 'Medium', 60], [500000, 'Large', 110], [Infinity, 'XL', 210]];
+    const [, maquina, precio] = maquinas.find(m => mau <= m[0]);
+    const extra = Math.max(0, mau - 100000) * 0.00325 + Math.max(0, mau * 3 / 1024 - 250) * 0.09 + Math.max(0, mau * 50 / 1048576 - 8) * 0.125;
+    return { plan: 'Pro + ' + maquina, total: 25 + (precio - 10) + extra };
+  }
+  // Steam se queda con el 30 % hasta US$ 10 M al año, 25 % hasta US$ 50 M y 20 % después.
+  function comisionSteam(brutoMes) {
+    const a = brutoMes * 12;
+    return (0.30 * Math.min(a, 10e6) + 0.25 * Math.min(Math.max(a - 10e6, 0), 40e6) + 0.20 * Math.max(a - 50e6, 0)) / 12;
+  }
+  function mes(mau, p) {
+    const promedio = mau * p.dauMau * p.horas / 24;
+    const pico = promedio * p.pico;
+    const pagan = mau * p.conv;
+    const arppu = p.latam * p.arppuLatam + (1 - p.latam) * p.arppuGlobal;
+    const bruto = pagan * arppu;
+    const steam = comisionSteam(bruto);
+    const neto = bruto - steam - (bruto - steam) * p.eeuu * 0.30; // EE.UU. retiene el 30 % de sus ventas
+    const sueldos = p.personas * p.sueldo * p.factor;
+    const ph = photon(pico, promedio, p.mbHora, p.gbPrecio);
+    const sb = supabase(mau);
+    const unity = neto * 12 > 200000 ? p.personas * 2310 / 12 : 0; // Unity Pro por puesto, pasando US$ 200.000 al año
+    const costos = sueldos + ph.total + sb.total + unity + p.marketing + p.otros;
+    const antes = neto - costos;
+    return { mau, pico, pagan, arppu, bruto, neto, sueldos, photon: ph, supabase: sb, unity, marketing: p.marketing, otros: p.otros,
+      costos, antes, despues: antes > 0 ? antes * (1 - p.ganancias) : antes };
+  }
+  // Desde cuántos jugadores (de 100 a 10 millones) deja de perder plata, o null.
+  function equilibrio(p) {
+    const f = m => mes(m, p).antes;
+    let previo = 100;
+    if (f(previo) >= 0) return previo;
+    for (let i = 1; i <= 600; i++) {
+      const m = 100 * Math.pow(10, 5 * i / 600);
+      if (f(m) >= 0) {
+        let lo = previo, hi = m;
+        for (let k = 0; k < 40; k++) { const mid = Math.sqrt(lo * hi); if (f(mid) >= 0) hi = mid; else lo = mid; }
+        return hi;
+      }
+      previo = m;
+    }
+    return null;
+  }
+  const inversion = p => p.devMeses * (p.personas * p.sueldo * p.factor + p.otros) + p.lanzMkt + 100;
+  // Caja mes a mes: los jugadores crecen hasta los del escenario en "rampa" meses y después se mantienen.
+  function caja(p) {
+    const inv = inversion(p);
+    let acumulado = -inv, recupero = null;
+    const filas = [{ mes: 0, mau: 0, resultado: -inv, acumulado }];
+    for (let t = 1; t <= 36; t++) {
+      const mau = p.mau * Math.min(1, t / p.rampa);
+      const r = mes(mau, p).despues;
+      acumulado += r;
+      if (recupero === null && acumulado >= 0) recupero = t;
+      filas.push({ mes: t, mau, resultado: r, acumulado });
+    }
+    return { inversion: inv, filas, recupero, rampa: p.rampa };
+  }
+
+  // ---------- Lo decidido, los escenarios y las mejoras ----------
+  // 7 personas con el sueldo promedio, los 5 sprints (21/09 al 24/11/2026, 64 días), servidores en Sudamérica.
+  const FIJO = { personas: 7, sueldo: 1600, factor: 1.38, marketing: 1000, otros: 400, gbPrecio: 0.10, devMeses: 64 / 30.4, lanzMkt: 5000, ganancias: 0.30 };
+  // En las unidades de los controles (los porcentajes, de 0 a 100).
+  const ESCENARIOS = {
+    pesimista: { nombre: 'Pesimista', mau: 25000, dauMau: 15, horas: 1, pico: 2.5, rampa: 9, conv: 1.5, latam: 80, arppuLatam: 3, arppuGlobal: 10, eeuu: 10, mbHora: 35 },
+    promedio: { nombre: 'Promedio', mau: 100000, dauMau: 20, horas: 1.5, pico: 2, rampa: 6, conv: 2.5, latam: 60, arppuLatam: 5, arppuGlobal: 15, eeuu: 15, mbHora: 30 },
+    optimista: { nombre: 'Optimista', mau: 250000, dauMau: 25, horas: 2, pico: 2, rampa: 4, conv: 3.5, latam: 50, arppuLatam: 6, arppuGlobal: 18, eeuu: 20, mbHora: 25 },
+  };
+  // Decisiones nuestras para los sprints 4 y 5, que se suman a cualquier escenario.
+  const MEJORAS = [
+    { nombre: 'Pase de temporada y tienda directa', detalle: 'Gasto por pagador × 1,3 en Latinoamérica y × 1,2 en el resto.',
+      aplicar: p => ({ ...p, arppuLatam: p.arppuLatam * 1.3, arppuGlobal: p.arppuGlobal * 1.2 }) },
+    { nombre: 'Oferta de bienvenida a US$ 0,99', detalle: 'Medio punto más de jugadores que pagan.', aplicar: p => ({ ...p, conv: p.conv + 0.005 }) },
+    { nombre: 'Juego en inglés', detalle: '15 puntos menos de jugadores de Latinoamérica y 5 más de ventas en EE.UU.',
+      aplicar: p => ({ ...p, latam: Math.max(0, p.latam - 0.15), eeuu: Math.min(1, p.eeuu + 0.05) }) },
+    { nombre: 'Photon a 10 envíos por segundo', detalle: '30 % menos de tráfico.', aplicar: p => ({ ...p, mbHora: p.mbHora * 0.7 }) },
+  ];
+  const conLasMejoras = p => MEJORAS.reduce((q, m) => m.aplicar(q), p);
+  let escenario = 'promedio', conMejoras = true, moneda = 'USD';
+
+  // ---------- Formato ----------
+  const DOLAR = 1550;
+  const n0 = new Intl.NumberFormat('es-AR', { maximumFractionDigits: 0 });
+  const n1 = new Intl.NumberFormat('es-AR', { maximumFractionDigits: 1 });
+  const n2 = new Intl.NumberFormat('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  const compacto = a => a >= 1e9 ? n1.format(a / 1e9) + ' mil M' : a >= 1e6 ? n1.format(a / 1e6) + ' M' : a >= 1e4 ? n0.format(Math.round(a / 1e3)) + ' mil' : n0.format(a);
+  function plata(usd, o = {}) {
+    const v = moneda === 'USD' ? usd : usd * DOLAR, a = Math.abs(v);
+    const cuerpo = o.compacto || (moneda === 'ARS' && a >= 1e6) ? compacto(a) : o.centavos ? n2.format(a) : n0.format(Math.round(a));
+    return (v < -0.5 ? '−' : o.signo && v > 0.5 ? '+' : '') + (moneda === 'USD' ? 'US$ ' : '$ ') + cuerpo;
+  }
+  const jugadores = m => m >= 1e6 ? n1.format(m / 1e6) + (m >= 2e6 ? ' millones' : ' millón') : n0.format(Math.round(m));
+  const jugadoresCorto = m => m >= 1e6 ? n1.format(m / 1e6) + ' M' : m >= 1e3 ? n0.format(Math.round(m / 1e3)) + ' mil' : n0.format(m);
+  const pct = (v, d = 1) => (d ? n1 : n0).format(v * 100) + ' %';
+  const id = x => document.getElementById(x);
+
+  // ---------- Controles ----------
+  const CONTROLES = [
+    { grupo: 'Jugadores', items: [
+      { id: 'mau', etiqueta: 'Jugadores activos por mes', tipo: 'log', min: 1000, max: 1000000, fmt: v => jugadores(v), ayuda: 'Los que juegan al menos una vez en el mes.' },
+      { id: 'dauMau', etiqueta: 'Juegan en un día cualquiera', min: 5, max: 50, paso: 1, escala: 0.01, fmt: v => v + ' %', ayuda: 'Del total del mes. En un juego sano ronda el 20 %.' },
+      { id: 'horas', etiqueta: 'Horas por día de los que juegan', min: 0.5, max: 4, paso: 0.25, fmt: v => n2.format(v) + ' h' },
+      { id: 'pico', etiqueta: 'La hora pico contra el promedio', min: 1.2, max: 3, paso: 0.1, fmt: v => '× ' + n1.format(v), ayuda: 'Photon cobra por el pico de jugadores a la vez.' },
+      { id: 'rampa', etiqueta: 'Meses hasta llegar a esos jugadores', min: 1, max: 18, paso: 1, fmt: v => v + (v === 1 ? ' mes' : ' meses') },
+    ] },
+    { grupo: 'Lo que pagan', items: [
+      { id: 'conv', etiqueta: 'Pagan algo en el mes', min: 0.5, max: 8, paso: 0.1, escala: 0.01, fmt: v => n1.format(v) + ' %', ayuda: 'Lo común es 1 a 2 %; en juegos sanos, 3 a 6 %.' },
+      { id: 'latam', etiqueta: 'Jugadores de Latinoamérica', min: 0, max: 100, paso: 5, escala: 0.01, fmt: v => v + ' %' },
+      { id: 'arppuLatam', etiqueta: 'Gasto por pagador en Latinoamérica', min: 1, max: 20, paso: 0.5, fmt: v => plata(v, { centavos: moneda === 'USD' }) + ' /mes' },
+      { id: 'arppuGlobal', etiqueta: 'Gasto por pagador en el resto', min: 3, max: 40, paso: 1, fmt: v => plata(v) + ' /mes' },
+      { id: 'eeuu', etiqueta: 'Ventas en EE.UU.', min: 0, max: 50, paso: 5, escala: 0.01, fmt: v => v + ' %', ayuda: 'EE.UU. retiene el 30 % de esas ventas.' },
+    ] },
+    { grupo: 'Servidores', items: [
+      { id: 'mbHora', etiqueta: 'Tráfico de Photon por jugador', min: 5, max: 80, paso: 1, fmt: v => v + ' MB/h', ayuda: 'Salas de 8 jugadores con 15 envíos por segundo.' },
+    ] },
+  ];
+  const TODOS = CONTROLES.flatMap(g => g.items);
+  const LOG = 1000;
+  const aLog = (m, c) => Math.round((Math.log10(m) - Math.log10(c.min)) / (Math.log10(c.max) - Math.log10(c.min)) * LOG);
+  const deLog = (v, c) => {
+    const m = Math.pow(10, Math.log10(c.min) + v / LOG * (Math.log10(c.max) - Math.log10(c.min)));
+    const paso = m >= 100000 ? 5000 : m >= 10000 ? 1000 : 100;
+    return Math.round(m / paso) * paso;
+  };
+
+  function armarControles() {
+    const caja = id('neg-controles');
+    let html = `<div class="grupo"><span class="gt">Escenario</span>
+      <div class="seg" role="group" aria-label="Escenario">${Object.entries(ESCENARIOS).map(([k, e]) => `<button type="button" id="neg-esc-${k}" data-escenario="${k}" aria-pressed="false">${e.nombre}</button>`).join('')}</div>
+      <p class="ayuda" id="neg-ajustado" hidden>Ajustado a mano. Elegí un escenario para volver a sus valores.</p>
+      <label class="neg-switch" for="neg-mejoras-on"><input type="checkbox" id="neg-mejoras-on" role="switch" checked><span>Con las mejoras del plan</span>
+        <small>Pase de temporada, tienda directa, bienvenida a US$ 0,99, juego en inglés y Photon a 10 envíos por segundo.</small></label>
+      <div class="seg" role="group" aria-label="Moneda"><button type="button" id="neg-usd" aria-pressed="true">Dólares</button><button type="button" id="neg-ars" aria-pressed="false">Pesos</button></div></div>
+      <div class="grupo"><span class="gt">Ya decidido</span><ul class="neg-fijo">
+        <li><b>Equipo</b><span>7 personas, con el sueldo promedio de un desarrollador semi senior: US$ 1.600 brutos, en relación de dependencia.</span></li>
+        <li><b>Desarrollo</b><span>Los 5 sprints, del 21/09 al 24/11/2026. Sale el producto tal como queda en el sprint 5.</span></li>
+        <li><b>Inversión</b><span id="neg-inversion"></span></li>
+        <li><b>Venta</b><span>Steam, gratis, con cristales de pago y los precios de la propuesta. Servidores en Sudamérica.</span></li>
+        <li><b>Gastos</b><span>Marketing US$ 1.000 por mes y US$ 5.000 en el lanzamiento; otros US$ 400 por mes; ganancias 30 %.</span></li></ul></div>`;
+    for (const g of CONTROLES) {
+      html += `<div class="grupo"><span class="gt">${g.grupo}</span>`;
+      for (const c of g.items) {
+        const log = c.tipo === 'log';
+        html += `<div class="control"><div class="fila"><label for="neg-c-${c.id}">${c.etiqueta}</label><output id="neg-o-${c.id}" for="neg-c-${c.id}"></output></div>
+          <input type="range" id="neg-c-${c.id}" min="${log ? 0 : c.min}" max="${log ? LOG : c.max}" step="${log ? 1 : c.paso}"${c.ayuda ? ` aria-describedby="neg-a-${c.id}"` : ''}>
+          ${c.ayuda ? `<p class="ayuda" id="neg-a-${c.id}">${c.ayuda}</p>` : ''}</div>`;
+      }
+      html += '</div>';
+    }
+    caja.innerHTML = html;
+    caja.addEventListener('click', e => {
+      const b = e.target.closest('[data-escenario]');
+      if (b) aplicarEscenario(b.dataset.escenario);
+      if (e.target.id === 'neg-usd' || e.target.id === 'neg-ars') {
+        moneda = e.target.id === 'neg-usd' ? 'USD' : 'ARS';
+        id('neg-usd').setAttribute('aria-pressed', String(moneda === 'USD'));
+        id('neg-ars').setAttribute('aria-pressed', String(moneda === 'ARS'));
+        actualizar();
+      }
+    });
+    id('neg-mejoras-on').addEventListener('change', e => { conMejoras = e.target.checked; actualizar(); });
+    caja.addEventListener('input', e => {
+      const c = TODOS.find(x => e.target.id === 'neg-c-' + x.id);
+      if (!c) return;
+      c.forzado = null;
+      escenario = null;
+      actualizar();
+    });
+  }
+
+  function aplicarEscenario(k) {
+    const e = ESCENARIOS[k];
+    for (const c of TODOS) {
+      const control = id('neg-c-' + c.id);
+      if (c.tipo === 'log') { control.value = aLog(e[c.id], c); c.forzado = e[c.id]; } else control.value = e[c.id];
+    }
+    escenario = k;
+    actualizar();
+  }
+  // Los parámetros del modelo para un escenario, sin las mejoras.
+  function parametros(e) {
+    const p = { ...FIJO };
+    for (const c of TODOS) p[c.id] = e[c.id] * (c.escala || 1);
+    return p;
+  }
+  function leer() {
+    const p = { ...FIJO };
+    for (const c of TODOS) {
+      let v = parseFloat(id('neg-c-' + c.id).value);
+      if (c.tipo === 'log') v = c.forzado || deLog(v, c);
+      c.actual = v;
+      p[c.id] = v * (c.escala || 1);
+    }
+    return p;
+  }
+  function mostrarValores() {
+    for (const c of TODOS) id('neg-o-' + c.id).textContent = c.fmt(c.actual);
+    for (const k of Object.keys(ESCENARIOS)) id('neg-esc-' + k).setAttribute('aria-pressed', String(k === escenario));
+    id('neg-ajustado').hidden = escenario !== null;
+    id('neg-inversion').textContent = `${plata(inversion(FIJO))}: los sueldos de los 5 sprints, el marketing de lanzamiento y Steam Direct.`;
+  }
+
+  // ---------- Dibujos ----------
+  const NS = 'http://www.w3.org/2000/svg';
+  function el(tag, attrs = {}, texto) {
+    const e = document.createElementNS(NS, tag);
+    for (const [k, v] of Object.entries(attrs)) e.setAttribute(k, v);
+    if (texto !== undefined) e.textContent = texto;
+    return e;
+  }
+  function techo(v) {
+    if (v <= 0) return 1;
+    const p = Math.pow(10, Math.floor(Math.log10(v)));
+    for (const f of [1, 1.5, 2, 2.5, 3, 4, 5, 6, 8, 10]) if (f * p >= v) return f * p;
+    return 10 * p;
+  }
+  // El dibujo mide lo que su lugar en la pantalla (entre 420 y 760), así los textos no se achican en el teléfono.
+  const ancho = svg => Math.round(Math.min(760, Math.max(420, svg.parentElement.clientWidth - 36)));
+  function puntoSvg(svg, e) {
+    const pt = svg.createSVGPoint();
+    pt.x = e.clientX; pt.y = e.clientY;
+    return pt.matrixTransform(svg.getScreenCTM().inverse());
+  }
+  function ubicarTip(tip, fig, e) {
+    const r = fig.getBoundingClientRect();
+    let x = e.clientX - r.left + 14, y = e.clientY - r.top + 14;
+    tip.hidden = false;
+    if (x + tip.offsetWidth > r.width - 8) x = e.clientX - r.left - tip.offsetWidth - 14;
+    if (y + tip.offsetHeight > r.height - 8) y = e.clientY - r.top - tip.offsetHeight - 14;
+    tip.style.left = Math.max(8, x) + 'px'; tip.style.top = Math.max(8, y) + 'px';
+  }
+
+  // Ingresos y costos de 1.000 a 1 millón de jugadores (eje logarítmico).
+  function graficoEscala(p, eq) {
+    const svg = id('neg-g-escala');
+    svg.replaceChildren();
+    const W = ancho(svg), H = W < 560 ? 280 : 300, L = 84, R = 96, T = 16, B = 36;
+    svg.setAttribute('viewBox', `0 0 ${W} ${H}`);
+    const datos = [];
+    for (let i = 0; i <= 150; i++) { const x = 1000 * Math.pow(10, 3 * i / 150); const r = mes(x, p); datos.push({ x, neto: r.neto, costos: r.costos }); }
+    const f = moneda === 'USD' ? 1 : DOLAR; // marcas redondas en la moneda que se muestra
+    const ymax = techo(Math.max(...datos.map(d => Math.max(d.neto, d.costos))) * f / 4) * 4 / f;
+    const X = v => L + (Math.log10(v) - 3) / 3 * (W - L - R);
+    const Y = v => T + (1 - v / ymax) * (H - T - B);
+    for (let i = 0; i <= 4; i++) {
+      const v = ymax * i / 4;
+      svg.appendChild(el('line', { x1: L, x2: W - R, y1: Y(v), y2: Y(v), stroke: 'var(--line)', 'stroke-width': 1 }));
+      svg.appendChild(el('text', { x: L - 8, y: Y(v) + 4, 'text-anchor': 'end', class: 'eje' }, plata(v, { compacto: true })));
+    }
+    const corto = W < 560; // en el teléfono las etiquetas largas se pisan
+    for (const [v, t, c] of [[1e3, '1.000', '1 mil'], [1e4, '10.000', '10 mil'], [1e5, '100.000', '100 mil'], [1e6, '1 millón', '1 M']])
+      svg.appendChild(el('text', { x: X(v), y: H - 12, 'text-anchor': v === 1e3 ? 'start' : v === 1e6 ? 'end' : 'middle', class: 'eje' }, corto ? c : t));
+    const linea = k => datos.map((d, i) => (i ? 'L' : 'M') + X(d.x).toFixed(1) + ',' + Y(d[k]).toFixed(1)).join('');
+    if (eq && eq >= 1000 && eq <= 1e6) {
+      svg.appendChild(el('line', { x1: X(eq), x2: X(eq), y1: T, y2: H - B, stroke: 'var(--ink-2)', 'stroke-width': 1, 'stroke-dasharray': '3 4' }));
+      svg.appendChild(el('text', { x: X(eq) + 6, y: T + 12, class: 'eje-f' }, 'equilibrio: ' + jugadoresCorto(eq)));
+    }
+    svg.appendChild(el('path', { d: linea('costos'), fill: 'none', stroke: 'var(--accent)', 'stroke-width': 2, 'stroke-dasharray': '7 5', 'stroke-linejoin': 'round' }));
+    svg.appendChild(el('path', { d: linea('neto'), fill: 'none', stroke: 'var(--shield)', 'stroke-width': 2, 'stroke-linejoin': 'round' }));
+    const fin = datos[datos.length - 1];
+    let yN = Y(fin.neto), yC = Y(fin.costos);
+    if (Math.abs(yN - yC) < 16) { if (yN < yC) { yN -= 8; yC += 8; } else { yN += 8; yC -= 8; } }
+    svg.appendChild(el('text', { x: W - R + 8, y: yN + 4, class: 'rot', fill: 'var(--shield)' }, 'Ingreso neto'));
+    svg.appendChild(el('text', { x: W - R + 8, y: yC + 4, class: 'rot', fill: 'var(--accent)' }, 'Costos'));
+    const r = mes(p.mau, p);
+    svg.appendChild(el('line', { x1: X(p.mau), x2: X(p.mau), y1: T, y2: H - B, stroke: 'var(--ink)', 'stroke-width': 1.5, opacity: 0.5 }));
+    svg.appendChild(el('circle', { cx: X(p.mau), cy: Y(r.costos), r: 5, fill: 'var(--accent)', stroke: 'var(--paper)', 'stroke-width': 2 }));
+    svg.appendChild(el('circle', { cx: X(p.mau), cy: Y(r.neto), r: 5, fill: 'var(--shield)', stroke: 'var(--paper)', 'stroke-width': 2 }));
+    const guia = el('line', { y1: T, y2: H - B, stroke: 'var(--ink-2)', 'stroke-width': 1, visibility: 'hidden' });
+    svg.appendChild(guia);
+    const zona = el('rect', { x: L, y: T, width: W - L - R, height: H - T - B, fill: 'transparent' });
+    svg.appendChild(zona);
+    const tip = id('neg-tip-escala'), fig = id('neg-fig-escala');
+    zona.addEventListener('pointermove', e => {
+      const q = puntoSvg(svg, e);
+      const m = Math.pow(10, 3 + Math.min(Math.max((q.x - L) / (W - L - R), 0), 1) * 3);
+      const v = mes(m, p);
+      guia.setAttribute('x1', X(m)); guia.setAttribute('x2', X(m)); guia.setAttribute('visibility', 'visible');
+      tip.innerHTML = `<b>${jugadores(m)} jugadores</b><br>Ingreso neto: <span class="num">${plata(v.neto)}</span><br>Costos: <span class="num">${plata(v.costos)}</span><br>Resultado: <span class="num ${v.antes >= 0 ? 'ok' : 'bad'}">${plata(v.antes, { signo: true })}</span>`;
+      ubicarTip(tip, fig, e);
+    });
+    zona.addEventListener('pointerleave', () => { tip.hidden = true; guia.setAttribute('visibility', 'hidden'); });
+  }
+
+  // Costos del mes por rubro, de mayor a menor.
+  function graficoCostos(r) {
+    const svg = id('neg-g-costos');
+    svg.replaceChildren();
+    const items = [['Sueldos', r.sueldos], ['Photon', r.photon.total], ['Supabase', r.supabase.total], ['Unity Pro', r.unity], ['Marketing', r.marketing], ['Otros', r.otros]]
+      .sort((a, b) => b[1] - a[1]);
+    const W = 420, L = 86, R = 112, fila = 33, T = 6;
+    svg.setAttribute('viewBox', `0 0 ${W} ${T * 2 + fila * items.length}`);
+    const max = Math.max(...items.map(i => i[1]), 1);
+    items.forEach(([nombre, v], i) => {
+      const y = T + i * fila;
+      svg.appendChild(el('text', { x: 0, y: y + 19, class: 'rot', fill: 'var(--ink)' }, nombre));
+      svg.appendChild(el('rect', { x: L, y: y + 7, width: W - L - R, height: 16, rx: 3, fill: 'var(--mono-bg)' }));
+      if (v > 0) svg.appendChild(el('rect', { x: L, y: y + 7, width: Math.max(3, (W - L - R) * v / max), height: 16, rx: 3, fill: 'var(--accent)', opacity: i === 0 ? 1 : 0.75 }));
+      svg.appendChild(el('text', { x: W - R + 8, y: y + 19, class: 'eje-f' }, v > 0 ? plata(v) : '—'));
+      svg.appendChild(el('text', { x: W, y: y + 19, 'text-anchor': 'end', class: 'eje' }, v <= 0 ? '' : v / r.costos < 0.01 ? '<1 %' : pct(v / r.costos, 0)));
+    });
+    id('neg-bajada-costos').textContent = `Costos del mes con ${jugadores(r.mau)} jugadores: ${plata(r.costos)}. Photon: plan ${r.photon.plan}; Supabase: ${r.supabase.plan}.`;
+  }
+
+  // Qué suma cada mejora al escenario sin mejoras, por separado y las cuatro juntas.
+  function listaMejoras(base) {
+    const ul = id('neg-mejoras');
+    const r0 = mes(base.mau, base);
+    const lista = MEJORAS.map(m => { const q = m.aplicar(base), r = mes(q.mau, q); return { ...m, valor: r.antes - r0.antes, unity: r.unity !== r0.unity }; });
+    const max = Math.max(...lista.map(d => Math.abs(d.valor)), 1);
+    const todas = conLasMejoras(base), rt = mes(todas.mau, todas);
+    ul.innerHTML = lista.map(d => `<li><span>${d.nombre}${d.unity ? ' *' : ''}</span><span class="num ${d.valor >= 0 ? 'ok' : 'bad'}">${plata(d.valor, { signo: true })}</span>
+      <div class="barra" aria-hidden="true"><span style="width:${(Math.abs(d.valor) / max * 100).toFixed(1)}%;background:var(--${d.valor >= 0 ? 'ok' : 'bad'})"></span></div>
+      <span class="nota">${d.detalle}</span></li>`).join('') +
+      `<li class="total"><span>Las cuatro juntas</span><span class="num ${rt.antes - r0.antes >= 0 ? 'ok' : 'bad'}">${plata(rt.antes - r0.antes, { signo: true })}</span>
+      <span class="nota">El resultado del mes pasa de ${plata(r0.antes, { signo: true })} a ${plata(rt.antes, { signo: true })}.${lista.some(d => d.unity) || rt.unity !== r0.unity
+        ? ' * Con esa mejora se superan los US$ 200.000 al año y hay que pagar Unity Pro; ya está descontado.' : ''}</span></li>`;
+  }
+
+  // Caja acumulada mes a mes.
+  function graficoCaja(c) {
+    const svg = id('neg-g-caja');
+    svg.replaceChildren();
+    const W = ancho(svg), H = 260, L = 84, R = 16, T = 18, B = 34;
+    svg.setAttribute('viewBox', `0 0 ${W} ${H}`);
+    const f = moneda === 'USD' ? 1 : DOLAR;
+    const vals = c.filas.map(x => x.acumulado * f);
+    let lo = Math.min(0, ...vals), hi = Math.max(0, ...vals);
+    const paso = techo((hi - lo) / 4) / 2 || 1;
+    lo = Math.floor(lo / paso) * paso; hi = Math.ceil(hi / paso) * paso;
+    if (hi === lo) hi = lo + paso;
+    const banda = (W - L - R) / c.filas.length;
+    const Y = usd => T + (hi - usd * f) / (hi - lo) * (H - T - B);
+    for (let v = lo; v <= hi + 1e-6 * paso; v += paso) {
+      const marca = Math.abs(v) < paso / 2 ? 0 : v;
+      svg.appendChild(el('line', { x1: L, x2: W - R, y1: Y(marca / f), y2: Y(marca / f), stroke: marca === 0 ? 'var(--ink-2)' : 'var(--line)', 'stroke-width': marca === 0 ? 1.2 : 1 }));
+      svg.appendChild(el('text', { x: L - 8, y: Y(marca / f) + 4, 'text-anchor': 'end', class: 'eje' }, plata(marca / f, { compacto: true })));
+    }
+    c.filas.forEach((x, i) => {
+      const px = L + i * banda + 1, y0 = Y(0), y1 = Y(x.acumulado);
+      svg.appendChild(el('rect', { x: px, y: Math.min(y0, y1), width: Math.max(1, banda - 2), height: Math.max(1, Math.abs(y1 - y0)), rx: 2,
+        fill: x.acumulado >= 0 ? 'var(--ok)' : 'var(--bad)', opacity: 0.85 }));
+      if (i % 6 === 0) svg.appendChild(el('text', { x: px + banda / 2, y: H - 12, 'text-anchor': 'middle', class: 'eje' }, i === 0 ? 'lanzamiento' : 'mes ' + i));
+    });
+    if (c.recupero) {
+      const x = L + c.recupero * banda + banda / 2;
+      svg.appendChild(el('text', { x: Math.min(x, W - R - 4), y: T - 4, 'text-anchor': x > W - R - 120 ? 'end' : 'middle', class: 'eje-f' }, 'recupero: mes ' + c.recupero));
+    }
+    const zona = el('rect', { x: L, y: T, width: W - L - R, height: H - T - B, fill: 'transparent' });
+    svg.appendChild(zona);
+    const tip = id('neg-tip-caja'), fig = id('neg-fig-caja');
+    zona.addEventListener('pointermove', e => {
+      const q = puntoSvg(svg, e);
+      const i = Math.min(c.filas.length - 1, Math.max(0, Math.floor((q.x - L) / banda)));
+      const x = c.filas[i];
+      tip.innerHTML = i === 0
+        ? `<b>Lanzamiento</b><br>Los 5 sprints y el lanzamiento: <span class="num">${plata(c.inversion)}</span>`
+        : `<b>Mes ${x.mes}</b> · ${jugadores(x.mau)} jugadores<br>Resultado del mes: <span class="num ${x.resultado >= 0 ? 'ok' : 'bad'}">${plata(x.resultado, { signo: true })}</span><br>Acumulado: <span class="num ${x.acumulado >= 0 ? 'ok' : 'bad'}">${plata(x.acumulado, { signo: true })}</span>`;
+      ubicarTip(tip, fig, e);
+    });
+    zona.addEventListener('pointerleave', () => { tip.hidden = true; });
+    id('neg-bajada-caja').textContent = `Arranca en ${plata(-c.inversion)}: los sueldos de los 5 sprints, el marketing de lanzamiento y Steam Direct. Los jugadores llegan a los del escenario en ${c.rampa} ${c.rampa === 1 ? 'mes' : 'meses'} y después se mantienen.`;
+  }
+
+  // Los tres escenarios lado a lado (y el ajustado a mano, si lo hay).
+  function tablaComparar(pActual) {
+    const columnas = Object.entries(ESCENARIOS).map(([k, e]) => ({ k, nombre: e.nombre, p: conMejoras ? conLasMejoras(parametros(e)) : parametros(e) }));
+    if (escenario === null) columnas.push({ k: null, nombre: 'Ajustado', p: pActual });
+    const datos = columnas.map(col => ({ ...col, r: mes(col.p.mau, col.p), eq: equilibrio(col.p), c: caja(col.p) }));
+    const filas = [
+      ['Jugadores por mes', d => jugadores(d.p.mau)],
+      ['Pagan en el mes', d => `${n0.format(Math.round(d.r.pagan))} <span class="chico">${pct(d.p.conv)}</span>`],
+      ['Gasto por pagador', d => plata(d.r.arppu, { centavos: moneda === 'USD' })],
+      ['Pagan los jugadores', d => plata(d.r.bruto)],
+      ['Queda después de Steam', d => plata(d.r.neto)],
+      ['Costos', d => plata(d.r.costos)],
+      ['Resultado del mes', d => `<span class="${d.r.antes >= 0 ? 'ok' : 'bad'}">${plata(d.r.antes, { signo: true })}</span>`],
+      ['Punto de equilibrio', d => d.eq === null ? 'más de 10 M' : jugadoresCorto(d.eq) + ' jugadores'],
+      ['Recupero de los 5 sprints', d => d.c.recupero ? 'mes ' + d.c.recupero : 'no se recuperan'],
+      ['Caja a los 3 años', d => `<span class="${d.c.filas[36].acumulado >= 0 ? 'ok' : 'bad'}">${plata(d.c.filas[36].acumulado, { signo: true })}</span>`],
+    ];
+    const activo = d => d.k === escenario ? ' class="num neg-activo"' : ' class="num"';
+    let html = '<tr><th></th>' + datos.map(d => `<th${d.k === escenario ? ' class="neg-activo"' : ''}>${d.nombre}</th>`).join('') + '</tr>';
+    for (const [nombre, fx] of filas) html += `<tr><td>${nombre}</td>${datos.map(d => `<td${activo(d)}>${fx(d)}</td>`).join('')}</tr>`;
+    id('neg-comparar').innerHTML = html;
+    id('neg-bajada-comparar').textContent = (conMejoras ? 'Con las mejoras del plan. ' : 'Sin las mejoras del plan. ') +
+      'Y con lo ya decidido: 7 personas, 5 sprints de desarrollo y el producto del sprint 5. La columna resaltada es la que estás mirando en el simulador.';
+  }
+
+  function resumen(p, r, eq, c) {
+    const gana = r.antes >= 0;
+    const kpi = (et, val, sub, clase = '') => `<div class="neg-kpi"><span class="et">${et}</span><span class="val ${clase}">${val}</span><span class="sub">${sub}</span></div>`;
+    id('neg-kpis').innerHTML = [
+      kpi('Pagan en el mes', n0.format(Math.round(r.pagan)), `de ${jugadores(p.mau)} jugadores`),
+      kpi('Pagan los jugadores', plata(r.bruto), `Queda ${plata(r.neto)} después de Steam`),
+      kpi('Costos', plata(r.costos), `Sueldos: ${pct(r.sueldos / r.costos, 0)}`),
+      kpi('Resultado del mes', plata(r.antes, { signo: true }), gana ? `Después de impuestos: ${plata(r.despues, { signo: true })}` : 'Antes de impuestos', gana ? 'ok' : 'bad'),
+      kpi('Punto de equilibrio', eq === null ? 'más de 10 M' : jugadoresCorto(eq), 'jugadores por mes para no perder'),
+      kpi('Recupero de los 5 sprints', c.recupero ? 'mes ' + c.recupero : 'no se recuperan', `Costaron ${plata(c.inversion)}`),
+    ].join('');
+    const v = id('neg-veredicto');
+    const cual = (escenario ? `En el escenario ${ESCENARIOS[escenario].nombre.toLowerCase()}` : 'Con estos valores') + (conMejoras ? ' con las mejoras del plan' : ' sin las mejoras del plan');
+    v.className = 'callout ' + (gana ? 'neg-gana' : 'neg-pierde');
+    v.innerHTML = gana
+      ? `<b>Gana plata.</b> ${cual}, el juego gana <b>${plata(r.antes)} por mes</b> antes de impuestos (${plata(r.despues)} después) con ${jugadores(p.mau)} jugadores: paga los 7 sueldos y sobra el ${pct(r.antes / r.neto, 0)} de lo que entra. ${c.recupero ? `Los 5 sprints se recuperan en el mes ${c.recupero}.` : 'Los 5 sprints no se recuperan en los primeros tres años.'}`
+      : `<b>Pierde plata.</b> ${cual}, el juego pierde <b>${plata(-r.antes)} por mes</b> con ${jugadores(p.mau)} jugadores: lo que entra cubre el ${pct(Math.max(0, r.neto) / r.costos, 0)} de los costos, así que los 5 sprints no se recuperan. ${eq === null ? 'Ninguna cantidad de jugadores alcanza con estos valores.' : `El punto de equilibrio está en ${jugadoresCorto(eq)} jugadores.`}`;
+  }
+
+  function actualizar() {
+    const base = leer(); // el escenario, sin las mejoras
+    mostrarValores();
+    const p = conMejoras ? conLasMejoras(base) : base;
+    const r = mes(p.mau, p), eq = equilibrio(p), c = caja(p);
+    resumen(p, r, eq, c);
+    tablaComparar(p);
+    graficoEscala(p, eq);
+    graficoCostos(r);
+    listaMejoras(base);
+    graficoCaja(c);
+  }
+
+  armarControles();
+  aplicarEscenario('promedio');
+  let espera = null, anchoAntes = innerWidth;
+  addEventListener('resize', () => {
+    if (innerWidth === anchoAntes) return;
+    anchoAntes = innerWidth;
+    clearTimeout(espera);
+    espera = setTimeout(actualizar, 150);
+  });
+})();
+</script>
+
+<script>
 /* ===== Barra lateral: secciones por parte, sección actual resaltada, buscador y ruta ===== */
 (() => {
   const ICON = {
@@ -3818,6 +4456,7 @@ renderRules(); renderOneShot(); renderArsenal(); renderCalcOptions(); renderCalc
     calc: '<rect x="5" y="3" width="14" height="18" rx="2"/><path d="M8 7h8M8 12h.01M12 12h.01M16 12h.01M8 16h.01M12 16h.01M16 16h.01"/>',
     plus: '<circle cx="12" cy="12" r="9"/><path d="M12 8v8M8 12h8"/>',
     coins: '<ellipse cx="12" cy="6" rx="7" ry="3"/><path d="M5 6v6c0 1.7 3.1 3 7 3s7-1.3 7-3V6M5 12v6c0 1.7 3.1 3 7 3s7-1.3 7-3v-6"/>',
+    chart: '<path d="M3 20h18M6 16v-4M11 16V8M16 16v-6M20 5l-5 4-4-2-5 4"/>',
     users: '<circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c.8-3.5 3.4-5.5 6.5-5.5s5.7 2 6.5 5.5"/><circle cx="17" cy="9" r="2.5"/><path d="M16 14.5c2.6 0 4.6 1.7 5.5 4.5"/>',
     flag: '<path d="M5 21V4M5 4h11l-2 4 2 4H5"/>',
     board: '<rect x="3" y="4" width="18" height="16" rx="2"/><path d="M9 4v16M15 4v16"/>',
@@ -3851,7 +4490,8 @@ renderRules(); renderOneShot(); renderArsenal(); renderCalcOptions(); renderCalc
       { id: 'calc', t: 'Calculadora', i: 'calc' },
       { id: 'nueva-arma', t: 'Cómo sumar un arma', i: 'plus' }] },
     { g: 'Economía', p: 'Parte 4 · Economía', items: [
-      { id: 'eco', t: 'Economía', i: 'coins', subs: [['eco-tactico', 'Táctico'], ['eco-zombie', 'Zombie'], ['eco-deathmatch', 'Deathmatch'], ['escudos-granadas', 'Escudos y granadas']] }] },
+      { id: 'eco', t: 'Economía', i: 'coins', subs: [['eco-tactico', 'Táctico'], ['eco-zombie', 'Zombie'], ['eco-deathmatch', 'Deathmatch'], ['escudos-granadas', 'Escudos y granadas']] },
+      { id: 'negocio', t: 'Modelo de negocio', i: 'chart', subs: [['negocio-simulador', 'Simulador'], ['negocio-escenarios', 'Los tres escenarios'], ['negocio-mejoras', 'Mejoras del plan'], ['negocio-precios', 'Precios de los cristales'], ['negocio-servidores', 'Servidores: Photon o Steam'], ['negocio-conclusiones', 'Conclusiones'], ['negocio-fuentes', 'Supuestos y fuentes']] }] },
     { g: 'Personajes', p: 'Parte 5 · Personajes', items: [{ id: 'personajes', t: 'Personajes y habilidades', i: 'users', subs: [['barrera', 'Barrera'], ['vista-aerea', 'Vista aérea'], ['callejero', 'Callejero'], ['trasbordo', 'Trasbordo']] }] },
     { g: 'Mapas', p: 'Parte 6 · Mapas', items: [
       { id: 'mapas', t: 'Mapa 2 · Estación espacial', i: 'map', subs: [['mapa-tactico-plano', 'Plano'], ['mapa-tactico-zonas', 'Bases, zonas y sitios'], ['mapa-tactico-recorridos', 'Recorridos y líneas de tiro'], ['mapa-tactico-assets', 'Por qué el kit'], ['mapa-tactico-armado', 'Cómo se armó'], ['mapa-tactico-reglas', 'Para cambiar el mapa'], ['mapa-tactico-codigo', 'Dónde está']] },
