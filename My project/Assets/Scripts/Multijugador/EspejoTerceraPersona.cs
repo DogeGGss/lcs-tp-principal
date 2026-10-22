@@ -61,6 +61,16 @@ public class EspejoTerceraPersona : MonoBehaviour
     [Tooltip("En qué momento del ataque queda (0 a 1): atrás en 0,22, el final del corte en 0,44.")]
     [Range(0f, 1f)] public float momentoDelAtaque = 0.22f;
 
+    [Header("Emotes (F27, para probar hasta que esté la rueda)")]
+    [Tooltip("El número del baile en el catálogo (Resources/Emotes): 0 es el primero.")]
+    [Min(0)] public int baileDePrueba;
+    [Tooltip("El jugador hace ese baile (lo ven los demás y este muñeco). Se corta como siempre: moviéndose, disparando...")]
+    public bool bailar;
+    [Tooltip("Corta el baile.")]
+    public bool cortarElBaile;
+    [Tooltip("Los bailes que hay, en orden (solo para ver).")]
+    [TextArea(1, 6)] public string bailesQueHay;
+
     private ManijaDeAjuste manijaArma, manijaDerecha, manijaIzquierda, manijaCargador, manijaPalanca;
     private Vector3[] ultimoLugar = new Vector3[5];
     private Quaternion[] ultimoGiro = new Quaternion[5];
@@ -75,6 +85,7 @@ public class EspejoTerceraPersona : MonoBehaviour
     private ArmaEnTerceraPersona arma;
     private LanzamientoDeGranada lanzamiento;
     private CuchilloEnTerceraPersona cuchillo;
+    private BaileEnTerceraPersona baile;
     private GameObject enMano, modeloEnMano;
     private float listoEn;
 
@@ -189,6 +200,7 @@ public class EspejoTerceraPersona : MonoBehaviour
         arma = ArmaEnTerceraPersona.Crear(raiz.gameObject, copia, ojos);
         lanzamiento = LanzamientoDeGranada.Crear(raiz.gameObject, arma);
         cuchillo = CuchilloEnTerceraPersona.Crear(raiz.gameObject, arma);
+        baile = BaileEnTerceraPersona.Crear(raiz.gameObject, copia, arma);
         Ubicar();
     }
 
@@ -246,6 +258,16 @@ public class EspejoTerceraPersona : MonoBehaviour
         }
 
         if (agregarArmaEnMano) { agregarArmaEnMano = false; AgregarArma(); }
+        // US 262: baila lo mismo que el jugador (y, para probar, se lo hace bailar desde acá).
+        if (bailar)
+        {
+            bailar = false;
+            if (!Emotes.Hacer(baileDePrueba)) Debug.LogWarning("Muñeco espejo: no se pudo hacer el baile " + baileDePrueba + " (¿existe en el catálogo?).");
+        }
+        if (cortarElBaile) { cortarElBaile = false; Emotes.Cortar(); }
+        var lista = CatalogoDeEmotes.Actual.emotes;
+        bailesQueHay = string.Join("\n", lista.ConvertAll(e => lista.IndexOf(e) + ": " + e.nombre));
+        if (baile != null) baile.Baile = Emotes.Actual;
         LeerManijas();
         LeerManijaDeGranada();
         LeerManijasDeLasManos();
@@ -275,6 +297,8 @@ public class EspejoTerceraPersona : MonoBehaviour
     private void LateUpdate()
     {
         PonerManijas();
+        // US 262, CA3: bailando, el arma no se ve.
+        if (baile != null && soporte != null && soporte.gameObject.activeSelf == baile.Bailando) soporte.gameObject.SetActive(!baile.Bailando);
         // US 259: con la granada en la mano, la pose de sostenerla; sale de la mano al final del lanzamiento.
         bool conGranada = ConGranada;
         if (lanzamiento != null)
