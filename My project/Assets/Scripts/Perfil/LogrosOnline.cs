@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using UnityEngine;
@@ -76,6 +77,11 @@ public sealed class LogrosOnline : MonoBehaviour
     private string filtro = "", categoria = "", nombreEnviado, respuesta, error, cuerpoError;
     private long codigo;
     private float intentar;
+    // Avisos de logros en fila: si una partida o un cometa desbloquea varios a la vez, cada aviso tapaba al anterior
+    // y solo se veía el último. Ahora salen de a uno, cada uno con su sonido.
+    private const float SegundosPorAviso = 2.6f;
+    private readonly Queue<string> avisosPendientes = new Queue<string>();
+    private float proximoAviso;
     private string RutaSesion => Path.Combine(Application.persistentDataPath, "logros-sesion-" + new Uri(config.url).Host + ".json");
     private string RutaCache => Path.Combine(Application.persistentDataPath, "logros-ranking-" + new Uri(config.url).Host + ".json");
     private string RutaCacheEstadistica => Path.Combine(Application.persistentDataPath, "logros-estadistica-" + new Uri(config.url).Host + ".json");
@@ -110,6 +116,7 @@ public sealed class LogrosOnline : MonoBehaviour
     }
     private void Update()
     {
+        MostrarAvisoPendiente();
         if (!Configurado || Ocupado || Time.unscaledTime < intentar || !PlayerProfile.HasName) return;
         // El documento del progreso se rearma solo cuando cambia algo guardado.
         if (progresoDisponible && revisionProgreso != Guardado.Revision)
@@ -331,10 +338,18 @@ public sealed class LogrosOnline : MonoBehaviour
     }
     private void Avisar(LogrosCometas.Definicion logro)
     {
+        avisosPendientes.Enqueue("Logro desbloqueado: " + logro.nombre);
+        MostrarAvisoPendiente();
+    }
+    private void MostrarAvisoPendiente()
+    {
+        if (avisosPendientes.Count == 0 || Time.unscaledTime < proximoAviso) return;
+        string mensaje = avisosPendientes.Dequeue();
         var menu = FindAnyObjectByType<MenuRiftwalker>();
-        if (menu != null) menu.Avisar("Logro desbloqueado: " + logro.nombre);
-        else MatchHud.Warn("Logro desbloqueado: " + logro.nombre);
+        if (menu != null) menu.Avisar(mensaje);
+        else MatchHud.Warn(mensaje, SegundosPorAviso);
         SonidoInterfaz.Logro();
+        proximoAviso = Time.unscaledTime + SegundosPorAviso;
     }
 
     private void OnDestroy()
