@@ -63,6 +63,8 @@ public class GrenadeThrower : MonoBehaviour
 
     // Cada granada que se lanza, con quién la tiró: el multijugador la repite en las demás computadoras.
     public static event System.Action<Transform, Grenade1> Thrown;
+    // US 259: empezó a lanzar una (el clic): los demás jugadores ven el brazo ir hacia atrás antes de que salga.
+    public static event System.Action<Transform> Started;
 
     void Awake()
     {
@@ -112,6 +114,7 @@ public class GrenadeThrower : MonoBehaviour
             lanzando = true;
             soltada = false;
             lanzaDesde = Time.time;
+            Started?.Invoke(owner);
         }
     }
 

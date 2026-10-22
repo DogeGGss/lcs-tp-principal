@@ -9,7 +9,8 @@ using UnityEngine.Animations.Rigging;
 // - CA2: el arma sigue hacia dónde mira el jugador (arriba o abajo) y los brazos con ella.
 // - CA3: cada disparo da un golpe hacia atrás y arriba que vuelve con un resorte (Disparo).
 // - CA4: al recargar, el arma se inclina y la mano izquierda va a sacar el cargador, baja a buscar otro, lo pone y
-//   vuelve a agarrar el arma (Recarga, el avance que llega por la red).
+//   vuelve a agarrar el arma (Recarga, el avance que llega por la red). En los fusiles (US 251 y 253) el cargador está
+//   adelante del gatillo y al final tira de la palanca de carga; en La Trochita (US 245) sube mostrando el tambor.
 // - CA5: al cambiar de arma, la que tiene baja y se guarda y la nueva sube desde abajo (Cambiar y Poner).
 // Las armas sin ajuste quedan como antes: el arma en la mano derecha y los brazos hacia los agarres de primera persona.
 // Lo usan las copias de los jugadores remotos (JugadorEnRed) y el muñeco espejo para ajustarlo (EspejoTerceraPersona).
@@ -26,6 +27,7 @@ public class ArmaEnTerceraPersona : MonoBehaviour
     private TwoBoneIKConstraint ikDerecho, ikIzquierdo;
     private Transform objetivoDerecho, objetivoIzquierdo;   // los de acá
     private Transform originalDerecho, originalIzquierdo;   // los de antes (agarres de primera persona de la Línea A)
+    private Transform codoDerecho, codoIzquierdo;           // US 259: hacia dónde apuntan los codos (solo con la granada)
 
     // El arma en la mano
     private GameObject modelo;
@@ -38,6 +40,7 @@ public class ArmaEnTerceraPersona : MonoBehaviour
     private float guardarDesde = -10f;
     private Vector2 golpe, golpeVel;     // x: grados hacia arriba, y: metros hacia atrás
     private float recargaVista = -1f;
+    private float cargandoCartuchos;     // US 249: 0 a 1, cuánto está inclinada la escopeta para cargar
 
     /// <summary>El avance de la recarga (0 a 1), o -1 si no está recargando. Lo pone el que maneja la copia.</summary>
     public float Recarga { get; set; } = -1f;
@@ -46,6 +49,67 @@ public class ArmaEnTerceraPersona : MonoBehaviour
     // Las piezas que se mueven del arma (el tambor de La Trochita con sus rayitas, como en primera persona), por modelo.
     private readonly Dictionary<GameObject, IPiezasDelArma> piezasPorModelo = new Dictionary<GameObject, IPiezasDelArma>();
     private IPiezasDelArma piezas;
+
+    // US 259: las manos con la granada (LanzamientoDeGranada): cuánto (0 a 1) y adónde van.
+    private float granadaPeso;
+    private Vector3 granadaDerecha, granadaIzquierda, granadaCodoDerecho, granadaCodoIzquierdo;
+    private float rotacionVista = 1f;
+
+    /// <summary>Lo que gira hacia dónde mira (los ojos de la copia).</summary>
+    public Transform Ojos => ojos;
+    /// <summary>El Animator del personaje.</summary>
+    public Animator Animador => animador;
+
+    /// <summary>
+    /// US 259: sin un arma con ajuste (con una granada), las manos van a esos puntos, por "peso" (0: como antes). Solo
+    /// la posición: el giro de las manos queda el de la animación.
+    /// </summary>
+    public void ManosDeGranada(float peso, Vector3 derecha, Vector3 izquierda) =>
+        ManosDeGranada(peso, derecha, izquierda, Vector3.zero, Vector3.zero);
+
+    /// <summary>Lo mismo, con hacia dónde apuntan los codos.</summary>
+    public void ManosDeGranada(float peso, Vector3 derecha, Vector3 izquierda, Vector3 codoDer, Vector3 codoIzq)
+    {
+        granadaPeso = Mathf.Clamp01(peso);
+        granadaDerecha = derecha;
+        granadaIzquierda = izquierda;
+        granadaCodoDerecho = codoDer;
+        granadaCodoIzquierdo = codoIzq;
+    }
+
+    // Lleva las manos hacia los puntos de la granada (después de CopiarOriginales).
+    private void ManosConGranada()
+    {
+        bool hay = originalDerecho != null && originalIzquierdo != null;
+        // Sin agarres de antes (el muñeco), el giro del objetivo es el del arma anterior: no se usa nada de él.
+        float giro = granadaPeso <= 0f ? 1f : hay ? 1f - granadaPeso : 0f;
+        if (!Mathf.Approximately(giro, rotacionVista))
+        {
+            rotacionVista = giro;
+            PesoDelGiro(ikDerecho, giro);
+            PesoDelGiro(ikIzquierdo, giro);
+        }
+        bool codos = granadaPeso > 0f && granadaCodoDerecho != Vector3.zero;
+        PesoDelCodo(ikDerecho, codoDerecho, codos ? granadaPeso : 0f);
+        PesoDelCodo(ikIzquierdo, codoIzquierdo, codos ? granadaPeso : 0f);
+        if (granadaPeso <= 0f) return;
+        if (codos)
+        {
+            if (codoDerecho != null) codoDerecho.position = granadaCodoDerecho;
+            if (codoIzquierdo != null) codoIzquierdo.position = granadaCodoIzquierdo;
+        }
+        objetivoDerecho.position = hay ? Vector3.Lerp(objetivoDerecho.position, granadaDerecha, granadaPeso) : granadaDerecha;
+        objetivoIzquierdo.position = hay ? Vector3.Lerp(objetivoIzquierdo.position, granadaIzquierda, granadaPeso) : granadaIzquierda;
+        if (capa != null) capa.weight = hay ? 1f : granadaPeso;
+    }
+
+    private static void PesoDelGiro(TwoBoneIKConstraint ik, float peso)
+    {
+        if (ik == null) return;
+        TwoBoneIKConstraintData d = ik.data;
+        d.targetRotationWeight = peso;
+        ik.data = d;
+    }
 
     /// <summary>Tiene un arma con ajuste en la mano: el arma y las manos las pone este script.</summary>
     public bool Manejando => modelo != null && ajuste != null;
@@ -102,6 +166,8 @@ public class ArmaEnTerceraPersona : MonoBehaviour
         }
         Apuntar(ikDerecho, objetivoDerecho);
         Apuntar(ikIzquierdo, objetivoIzquierdo);
+        codoDerecho = Codo(ikDerecho, "Codo derecho (tercera persona)");
+        codoIzquierdo = Codo(ikIzquierdo, "Codo izquierdo (tercera persona)");
         CopiarOriginales();
         rig.Build();
     }
@@ -121,6 +187,29 @@ public class ArmaEnTerceraPersona : MonoBehaviour
         ik.data = d;
         ik.weight = 1f;
         return ik;
+    }
+
+    // US 259: un objetivo para el codo (hint), apagado (peso 0) salvo con la granada. Si el IK ya tenía uno, ese queda.
+    private Transform Codo(TwoBoneIKConstraint ik, string nombre)
+    {
+        if (ik == null) return null;
+        TwoBoneIKConstraintData d = ik.data;
+        if (d.hint != null) return null;
+        var codo = new GameObject(nombre).transform;
+        codo.SetParent(transform, false);
+        d.hint = codo;
+        d.hintWeight = 0f;
+        ik.data = d;
+        return codo;
+    }
+
+    private static void PesoDelCodo(TwoBoneIKConstraint ik, Transform codo, float peso)
+    {
+        if (ik == null || codo == null) return;
+        TwoBoneIKConstraintData d = ik.data;
+        if (Mathf.Approximately(d.hintWeight, peso)) return;
+        d.hintWeight = peso;
+        ik.data = d;
     }
 
     private static void Apuntar(TwoBoneIKConstraint ik, Transform objetivo)
@@ -181,6 +270,13 @@ public class ArmaEnTerceraPersona : MonoBehaviour
             if (!piezasPorModelo.TryGetValue(modelo, out piezas) || piezas == null)
                 piezasPorModelo[modelo] = piezas = new PiezasDeLaTrochita(modelo, null);
         }
+        // US 249: el guardamanos de la Roca va hacia atrás y vuelve después de cada tiro (el bombeo).
+        if (Manejando && ajuste.recarga == AgarresTerceraPersona.TipoDeRecarga.Cartuchos)
+        {
+            if (!piezasPorModelo.TryGetValue(modelo, out piezas) || piezas == null)
+                piezasPorModelo[modelo] = piezas = new PiezasDeLaRoca(modelo, null);
+        }
+        cargandoCartuchos = 0f;
     }
 
     // Los agarres de primera persona del arma, pasados al modelo a tamaño real (que sale del mismo arma, ubicada en el
@@ -267,8 +363,11 @@ public class ArmaEnTerceraPersona : MonoBehaviour
             pendiente = null;
             mostrar();
         }
-        if (!Manejando || ojos == null) { CopiarOriginales(); return; }
+        if (!Manejando || ojos == null) { CopiarOriginales(); ManosConGranada(); return; }
         if (capa != null) capa.weight = 1f;
+        if (rotacionVista < 1f) { rotacionVista = 1f; PesoDelGiro(ikDerecho, 1f); PesoDelGiro(ikIzquierdo, 1f); }
+        PesoDelCodo(ikDerecho, codoDerecho, 0f);
+        PesoDelCodo(ikIzquierdo, codoIzquierdo, 0f);
 
         // Retroceso: un resorte que vuelve a cero.
         float w = Mathf.Sqrt(Resorte);
@@ -285,7 +384,19 @@ public class ArmaEnTerceraPersona : MonoBehaviour
         bool tambor = ajuste.recarga == AgarresTerceraPersona.TipoDeRecarga.Tambor;
         float subida = !tambor || r < 0f ? 0f : Suave(Mathf.InverseLerp(0f, 0.12f, r)) * (1f - Suave(Mathf.InverseLerp(0.85f, 1f, r)));
         float suelta = !tambor || r < 0f ? 0f : Suave(Mathf.InverseLerp(0f, 0.25f, r)) * (1f - Suave(Mathf.InverseLerp(0.75f, 1f, r)));
-        float inclinada = tambor || r < 0f ? 0f : Suave(Mathf.InverseLerp(0f, 0.15f, r)) * (1f - Suave(Mathf.InverseLerp(0.85f, 1f, r)));
+        // Cartuchos (US 249): cada cartucho es una recarga corta (el avance vuelve a 0 con cada uno): la inclinación sigue
+        // mientras esté recargando y entra y sale suave.
+        bool cartuchos = ajuste.recarga == AgarresTerceraPersona.TipoDeRecarga.Cartuchos;
+        cargandoCartuchos = Mathf.MoveTowards(cargandoCartuchos, cartuchos && r >= 0f ? 1f : 0f, dt / 0.18f);
+        float cargando = Suave(cargandoCartuchos);
+        float cartucho = cartuchos && r >= 0f ? r : 1f;
+        float busca = Mathf.Sin(Mathf.Clamp01(cartucho / 0.6f) * Mathf.PI);   // baja a buscar el cartucho y vuelve a subir
+        float empuja = Mathf.Exp(-Mathf.Pow((cartucho - 0.75f) / 0.07f, 2f));  // lo mete
+        float inclinada = tambor || cartuchos || r < 0f ? 0f : Suave(Mathf.InverseLerp(0f, 0.15f, r)) * (1f - Suave(Mathf.InverseLerp(0.85f, 1f, r)));
+        // Fusiles: el empujón al meter el cargador nuevo y el tirón de la palanca de carga.
+        bool conPalanca = !tambor && !cartuchos && r >= 0f && ajuste.palanca;
+        float empujon = conPalanca ? Mathf.Exp(-Mathf.Pow((r - 0.62f) / 0.03f, 2f)) : 0f;
+        float tiron = conPalanca ? Suave(Mathf.InverseLerp(0.75f, 0.82f, r)) * (1f - Suave(Mathf.InverseLerp(0.85f, 0.9f, r))) : 0f;
 
         // Sacar (sube desde abajo) y guardar (baja): 1 = abajo del todo.
         float abajo = 0f;
@@ -293,8 +404,11 @@ public class ArmaEnTerceraPersona : MonoBehaviour
         if (pendiente != null) abajo = Mathf.Max(abajo, Suave(Mathf.Clamp01((Time.time - guardarDesde) / Guardar)));
 
         // Dónde va el arma: respecto de los ojos, con el retroceso, la recarga y el sacar/guardar.
-        Vector3 lugar = ajuste.lugar + new Vector3(-0.06f * inclinada, 0.03f * inclinada - 0.25f * abajo, -golpe.y - 0.05f * abajo);
-        Vector3 giro = ajuste.giro + new Vector3(-golpe.x - 20f * inclinada + 45f * abajo, -15f * inclinada, -25f * inclinada);
+        Vector3 lugar = ajuste.lugar + new Vector3(-0.06f * inclinada, 0.03f * inclinada - 0.25f * abajo + 0.015f * empujon,
+                                                   -golpe.y - 0.05f * abajo - 0.02f * tiron)
+                       + new Vector3(-0.02f, 0.03f + 0.006f * empuja, 0f) * cargando;
+        Vector3 giro = ajuste.giro + new Vector3(-golpe.x - 20f * inclinada + 45f * abajo, -15f * inclinada, -25f * inclinada)
+                     + (ajuste.cartuchosGiro + new Vector3(0f, 0f, -3f * empuja)) * cargando;
         Quaternion giroArma = ojos.rotation * Quaternion.Euler(giro);
         // Gira alrededor del pecho (no de los ojos): mirando abajo, girando alrededor de los ojos se metía en el pecho.
         Vector3 pecho = ojos.position - transform.up * ajuste.alturaPecho;
@@ -335,14 +449,46 @@ public class ArmaEnTerceraPersona : MonoBehaviour
             Vector3 costado = transform.TransformPoint(transform.InverseTransformPoint(ojos.position) + new Vector3(-0.18f, -0.55f, 0.2f));
             izq = Vector3.Lerp(izq, costado, suelta);
         }
+        else if (conPalanca)
+        {
+            // Fusiles (US 251 y 253): la mano izquierda va al cargador (adelante del gatillo), lo saca para abajo, busca
+            // otro, lo mete (el arma da un empujón), va a la palanca de carga, tira hacia atrás y vuelve al guardamanos.
+            // Dónde agarra el cargador y la palanca: del ajuste (se mueven con las manijas del muñeco espejo).
+            PuntosDeRecarga(out Vector3 cargador, out Quaternion giroCargador, out Vector3 palanca, out Quaternion giroPalanca);
+            palanca -= m.forward * (0.07f * ajuste.escala * tiron);
+            Vector3 bolsillo = cargador + Vector3.down * 0.25f - transform.forward * 0.05f;
+            float aCargador = Suave(Mathf.InverseLerp(0.1f, 0.22f, r)) * (1f - Suave(Mathf.InverseLerp(0.65f, 0.75f, r)));
+            float aBolsillo = Suave(Mathf.InverseLerp(0.28f, 0.4f, r)) * (1f - Suave(Mathf.InverseLerp(0.5f, 0.6f, r)));
+            float aPalanca = Suave(Mathf.InverseLerp(0.65f, 0.75f, r)) * (1f - Suave(Mathf.InverseLerp(0.86f, 0.97f, r)));
+            Vector3 enCargador = Vector3.Lerp(izq, Vector3.Lerp(cargador, bolsillo, aBolsillo), aCargador);
+            izq = Vector3.Lerp(enCargador, palanca, aPalanca);
+            izqGiro = Quaternion.Slerp(Quaternion.Slerp(izqGiro, giroCargador, aCargador), giroPalanca, aPalanca);
+        }
+        else if (cartuchos)
+        {
+            // Roca (US 249): la mano izquierda va del guardamanos a la boca de carga y, con cada cartucho, baja a
+            // buscarlo y lo empuja para adentro. La boca de carga es el punto "cargador" del ajuste.
+            if (cargando > 0f)
+            {
+                PuntosDeRecarga(out Vector3 boca, out Quaternion giroBoca, out _, out _);
+                Vector3 bolsillo = boca + Vector3.down * 0.22f - transform.forward * 0.05f;
+                Vector3 mano = Vector3.Lerp(boca + m.up * (0.015f * empuja * ajuste.escala), bolsillo, busca);
+                izq = Vector3.Lerp(izq, mano, cargando);
+                izqGiro = Quaternion.Slerp(izqGiro, giroBoca, cargando);
+            }
+        }
         else if (!tambor && r >= 0f)
         {
-            Vector3 cargador = der - m.up * 0.12f;
+            PuntosDeRecarga(out Vector3 cargador, out Quaternion giroCargador, out _, out _);
             Vector3 bolsillo = cargador + Vector3.down * 0.25f - transform.forward * 0.05f;
             float aCargador = Suave(Mathf.InverseLerp(0.1f, 0.25f, r)) * (1f - Suave(Mathf.InverseLerp(0.8f, 0.95f, r)));
             float aBolsillo = Suave(Mathf.InverseLerp(0.3f, 0.45f, r)) * (1f - Suave(Mathf.InverseLerp(0.55f, 0.7f, r)));
             izq = Vector3.Lerp(izq, Vector3.Lerp(cargador, bolsillo, aBolsillo), aCargador);
+            izqGiro = Quaternion.Slerp(izqGiro, giroCargador, aCargador);
         }
+
+        // CA3 (US 249): después de cada tiro, la mano izquierda acompaña el bombeo del guardamanos.
+        if (piezas is PiezasDeLaRoca roca) izq += roca.Corrimiento() * (1f - cargando);
 
         objetivoDerecho.SetPositionAndRotation(der, derGiro);
         objetivoIzquierdo.SetPositionAndRotation(izq, izqGiro);
@@ -402,6 +548,51 @@ public class ArmaEnTerceraPersona : MonoBehaviour
         {
             ajuste.manoIzquierda = Quaternion.Inverse(giroArma) * (izq.position - punto) / escala - izquierdaLocal;
             ajuste.giroManoIzquierda = Grados((Quaternion.Inverse(giroArma * izquierdaGiro) * izq.rotation).eulerAngles);
+        }
+    }
+
+    // Dónde agarra la mano izquierda el cargador y la palanca, con el arma como está ahora (respecto de la mano derecha,
+    // en el espacio del arma: si se cambia el tamaño del arma, los puntos se agrandan o achican con ella).
+    private void PuntosDeRecarga(out Vector3 cargador, out Quaternion giroCargador, out Vector3 palanca, out Quaternion giroPalanca)
+    {
+        Transform m = modelo.transform;
+        Vector3 der = derechaLocal + ajuste.manoDerecha;
+        Quaternion agarre = m.rotation * izquierdaGiro * Quaternion.Euler(ajuste.giroManoIzquierda);
+        cargador = m.TransformPoint(der + ajuste.cargador);
+        giroCargador = agarre * Quaternion.Euler(ajuste.giroCargador);
+        palanca = m.TransformPoint(der + ajuste.palancaLugar);
+        giroPalanca = agarre * Quaternion.Euler(ajuste.giroPalanca);
+    }
+
+    /// <summary>Dónde van ahora la mano en el cargador y en la palanca (para las manijas de la recarga).</summary>
+    public bool PoseDeRecarga(out Vector3 cargador, out Quaternion giroCargador, out Vector3 palanca, out Quaternion giroPalanca,
+                              out bool conPalanca)
+    {
+        cargador = palanca = Vector3.zero;
+        giroCargador = giroPalanca = Quaternion.identity;
+        conPalanca = false;
+        if (!Manejando || ajuste.recarga == AgarresTerceraPersona.TipoDeRecarga.Tambor) return false;
+        PuntosDeRecarga(out cargador, out giroCargador, out palanca, out giroPalanca);
+        conPalanca = ajuste.palanca;
+        return true;
+    }
+
+    /// <summary>Pasa al ajuste lo que se movió con las manijas de la recarga (el cargador y la palanca).</summary>
+    public void DesdeManijasDeRecarga(Transform cargador, Transform palanca, bool movioCargador, bool movioPalanca)
+    {
+        if (!Manejando) return;
+        Transform m = modelo.transform;
+        Vector3 der = derechaLocal + ajuste.manoDerecha;
+        Quaternion agarre = m.rotation * izquierdaGiro * Quaternion.Euler(ajuste.giroManoIzquierda);
+        if (movioCargador && cargador != null)
+        {
+            ajuste.cargador = m.InverseTransformPoint(cargador.position) - der;
+            ajuste.giroCargador = Grados((Quaternion.Inverse(agarre) * cargador.rotation).eulerAngles);
+        }
+        if (movioPalanca && palanca != null)
+        {
+            ajuste.palancaLugar = m.InverseTransformPoint(palanca.position) - der;
+            ajuste.giroPalanca = Grados((Quaternion.Inverse(agarre) * palanca.rotation).eulerAngles);
         }
     }
 
