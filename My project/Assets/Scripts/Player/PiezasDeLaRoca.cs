@@ -20,6 +20,11 @@ public class PiezasDeLaRoca : IPiezasDelArma
     private float escala;
     private bool armada, sinPiezas;
     private Transform guardamanos;
+    // Tercera persona (US 249): si el modelo es copia de una Roca ya separada (su guardamanos es otra pieza), se mueve
+    // esa pieza desde donde está.
+    private readonly Transform raiz;
+    private bool copiado;
+    private Vector3 lugarCopiado;
     private float ultimoTiro = -10f;
     private bool bombea;
 
@@ -29,6 +34,7 @@ public class PiezasDeLaRoca : IPiezasDelArma
         if (filtro == null) filtro = roca.GetComponentInChildren<MeshFilter>(true);
         arma = filtro != null ? filtro.transform : roca.transform;
         render = filtro != null ? filtro.GetComponent<MeshRenderer>() : null;
+        raiz = roca.transform;
     }
 
     private int[] padre;
@@ -82,6 +88,16 @@ public class PiezasDeLaRoca : IPiezasDelArma
         Mesh malla = filtro != null ? filtro.sharedMesh : null;
         if (malla == null || render == null) { sinPiezas = true; return false; }
         Escala();
+        // Copia de un arma que ya tenía el guardamanos separado (el modelo de tercera persona sale del de primera persona,
+        // que puede estar ya separado): se usa esa pieza.
+        foreach (Transform t in raiz.GetComponentsInChildren<Transform>(true))
+            if (t != arma && t.name == "Guardamanos" && t.GetComponent<MeshFilter>() != null)
+            {
+                guardamanos = t;
+                copiado = t.parent != arma;
+                lugarCopiado = t.localPosition;
+                return true;
+            }
         if (!malla.isReadable)
         {
             Debug.LogWarning("PiezasDeLaRoca: el modelo de la Roca no tiene Read/Write prendido, el guardamanos no se mueve.");
@@ -179,14 +195,16 @@ public class PiezasDeLaRoca : IPiezasDelArma
     public void Actualizar(float recarga, int balas)
     {
         if (!Armar() || guardamanos == null) return;
-        guardamanos.localPosition = Vector3.right * (Recorrido * escala * Bombeo);
+        Vector3 corrido = Vector3.right * (Recorrido * escala * Bombeo);
+        guardamanos.localPosition = !copiado ? corrido
+            : lugarCopiado + guardamanos.parent.InverseTransformVector(arma.TransformVector(corrido));
         if (guardamanos.gameObject.layer != arma.gameObject.layer) guardamanos.gameObject.layer = arma.gameObject.layer;
     }
 
     public void Quieta()
     {
         bombea = false;
-        if (guardamanos != null) guardamanos.localPosition = Vector3.zero;
+        if (guardamanos != null) guardamanos.localPosition = copiado ? lugarCopiado : Vector3.zero;
     }
 
     public void ActualizarSueltas(float dt) { }
