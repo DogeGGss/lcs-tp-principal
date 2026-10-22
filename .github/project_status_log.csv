@@ -857,3 +857,8 @@ fecha_utc,us_numero,us_titulo,estado_anterior,estado_nuevo,tiempo_en_estado_ante
 2026-10-22T14:40:46.477361+00:00,344,US 207. Actualizar el launcher solo,R2D,Done,10h 7m,36426,https://github.com/DogeGGss/lcs-tp-principal/issues/344
 2026-10-22T14:40:46.477361+00:00,476,US 239. Mapa 1 · Preparado para el modo Deathmatch,R2D,Done,10h 7m,36426,https://github.com/DogeGGss/lcs-tp-principal/issues/476
 2026-10-22T18:50:25.006245+00:00,98,US 044.  Consultar logros,Rehacer,Done,4d 14h 4m,396299,https://github.com/DogeGGss/lcs-tp-principal/issues/98
+2026-10-22T21:58:11.160507+00:00,200,US 140. Puntuación y victoria en Deathmatch,TESTING,Done,5d 21h 59m,511167,https://github.com/DogeGGss/lcs-tp-principal/issues/200
+2026-10-22T21:58:11.160507+00:00,97,US 043. Notificar logro desbloqueado,Rehacer,Done,2d 1h 12m,177179,https://github.com/DogeGGss/lcs-tp-principal/issues/97
+2026-10-22T21:58:11.160507+00:00,506,US 255. Último Tren · Animaciones que ven los demás jugadores,In Progress,LPR,1d 40m,88852,https://github.com/DogeGGss/lcs-tp-principal/issues/506
+2026-10-22T21:58:11.160507+00:00,508,US 257. Cuchillo · Animaciones que ven los demás jugadores,In Progress,LPR,1d 40m,88852,https://github.com/DogeGGss/lcs-tp-principal/issues/508
+2026-10-22T21:58:11.160507+00:00,511,F26. Animaciones,In Progress,LPR,2d 20h 8m,245317,https://github.com/DogeGGss/lcs-tp-principal/issues/511
