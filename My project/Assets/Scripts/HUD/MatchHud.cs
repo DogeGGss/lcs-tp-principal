@@ -774,6 +774,11 @@ public class MatchHud : MonoBehaviour
             warning = Node("AvisoRojo", hudRoot);
             warning.anchorMin = warning.anchorMax = warning.pivot = new Vector2(0.5f, 0.5f);
             warning.anchoredPosition = new Vector2(0f, -120f);
+            // Canvas propio por encima de la pantalla de resultado (orden 200): el aviso de un logro que se
+            // desbloquea al terminar la partida quedaba tapado por la tabla.
+            var capa = warning.gameObject.AddComponent<Canvas>();
+            capa.overrideSorting = true;
+            capa.sortingOrder = 210;
             Image(Stretch(Node("Borde", warning)), rounded, RivalColor, 6f);
             Image(Place(Node("Fondo", warning), 2f, 2f, 10f, 10f), rounded, Over(WithAlpha(RivalColor, 0.18f), Rgb(10, 12, 17)), 5f);
             warningText = Text(Stretch(Node("Texto", warning)), labelFont, 24f, Ink, TextAlignmentOptions.Center, 10f, true);
