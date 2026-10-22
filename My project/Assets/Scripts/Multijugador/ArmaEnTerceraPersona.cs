@@ -48,11 +48,49 @@ public class ArmaEnTerceraPersona : MonoBehaviour
     private readonly Dictionary<GameObject, IPiezasDelArma> piezasPorModelo = new Dictionary<GameObject, IPiezasDelArma>();
     private IPiezasDelArma piezas;
 
+    // US 259: las manos con la granada (LanzamientoDeGranada): cuánto (0 a 1) y adónde van.
+    private float granadaPeso;
+    private Vector3 granadaDerecha, granadaIzquierda;
+    private float rotacionVista = 1f;
+
+    /// <summary>Lo que gira hacia dónde mira (los ojos de la copia).</summary>
+    public Transform Ojos => ojos;
+
     /// <summary>
-    /// US 259: cuánto se sueltan las manos del IK (0 a 1) para que las mueva la animación (el lanzamiento de la granada,
-    /// LanzamientoDeGranada).
+    /// US 259: sin un arma con ajuste (con una granada), las manos van a esos puntos, por "peso" (0: como antes). Solo
+    /// la posición: el giro de las manos queda el de la animación.
     /// </summary>
-    public float ManosLibres { get; set; }
+    public void ManosDeGranada(float peso, Vector3 derecha, Vector3 izquierda)
+    {
+        granadaPeso = Mathf.Clamp01(peso);
+        granadaDerecha = derecha;
+        granadaIzquierda = izquierda;
+    }
+
+    // Lleva las manos hacia los puntos de la granada (después de CopiarOriginales).
+    private void ManosConGranada()
+    {
+        float giro = 1f - granadaPeso;
+        if (!Mathf.Approximately(giro, rotacionVista))
+        {
+            rotacionVista = giro;
+            PesoDelGiro(ikDerecho, giro);
+            PesoDelGiro(ikIzquierdo, giro);
+        }
+        if (granadaPeso <= 0f) return;
+        bool hay = originalDerecho != null && originalIzquierdo != null;
+        objetivoDerecho.position = hay ? Vector3.Lerp(objetivoDerecho.position, granadaDerecha, granadaPeso) : granadaDerecha;
+        objetivoIzquierdo.position = hay ? Vector3.Lerp(objetivoIzquierdo.position, granadaIzquierda, granadaPeso) : granadaIzquierda;
+        if (capa != null) capa.weight = hay ? 1f : granadaPeso;
+    }
+
+    private static void PesoDelGiro(TwoBoneIKConstraint ik, float peso)
+    {
+        if (ik == null) return;
+        TwoBoneIKConstraintData d = ik.data;
+        d.targetRotationWeight = peso;
+        ik.data = d;
+    }
 
     /// <summary>Tiene un arma con ajuste en la mano: el arma y las manos las pone este script.</summary>
     public bool Manejando => modelo != null && ajuste != null;
@@ -147,7 +185,7 @@ public class ArmaEnTerceraPersona : MonoBehaviour
             objetivoDerecho.SetPositionAndRotation(originalDerecho.position, originalDerecho.rotation);
             objetivoIzquierdo.SetPositionAndRotation(originalIzquierdo.position, originalIzquierdo.rotation);
         }
-        if (capa != null) capa.weight = (hay || Manejando ? 1f : 0f) * (1f - ManosLibres);
+        if (capa != null) capa.weight = hay || Manejando ? 1f : 0f;
     }
 
     // ---------- El arma ----------
@@ -274,8 +312,9 @@ public class ArmaEnTerceraPersona : MonoBehaviour
             pendiente = null;
             mostrar();
         }
-        if (!Manejando || ojos == null) { CopiarOriginales(); return; }
-        if (capa != null) capa.weight = 1f - ManosLibres;
+        if (!Manejando || ojos == null) { CopiarOriginales(); ManosConGranada(); return; }
+        if (capa != null) capa.weight = 1f;
+        if (rotacionVista < 1f) { rotacionVista = 1f; PesoDelGiro(ikDerecho, 1f); PesoDelGiro(ikIzquierdo, 1f); }
 
         // Retroceso: un resorte que vuelve a cero.
         float w = Mathf.Sqrt(Resorte);

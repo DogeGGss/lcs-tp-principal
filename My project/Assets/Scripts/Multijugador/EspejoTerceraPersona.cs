@@ -46,6 +46,12 @@ public class EspejoTerceraPersona : MonoBehaviour
     [Tooltip("En qué momento de la recarga queda (0 a 1): en los fusiles, el cargador está agarrado entre 0,22 y 0,28 y la palanca entre 0,75 y 0,85.")]
     [Range(0f, 1f)] public float momentoDeLaRecarga = 0.25f;
 
+    [Tooltip("Con una granada en la mano: deja el muñeco quieto en un momento del lanzamiento (\"Momento del lanzamiento\") " +
+             "y muestra las manijas Atrás, Suelta, Envión e Izquierda apuntando.")]
+    public bool probarElLanzamiento;
+    [Tooltip("En qué momento del lanzamiento queda (0 a 1): atrás en 0,29, la suelta en 0,44, el envión en 0,68.")]
+    [Range(0f, 1f)] public float momentoDelLanzamiento = 0.29f;
+
     private ManijaDeAjuste manijaArma, manijaDerecha, manijaIzquierda, manijaCargador, manijaPalanca;
     private Vector3[] ultimoLugar = new Vector3[5];
     private Quaternion[] ultimoGiro = new Quaternion[5];
@@ -163,7 +169,7 @@ public class EspejoTerceraPersona : MonoBehaviour
         copia.applyRootMotion = false;
         copia.cullingMode = AnimatorCullingMode.AlwaysAnimate;
         arma = ArmaEnTerceraPersona.Crear(raiz.gameObject, copia, ojos);
-        lanzamiento = LanzamientoDeGranada.Crear(raiz.gameObject, copia, arma);
+        lanzamiento = LanzamientoDeGranada.Crear(raiz.gameObject, arma);
         Ubicar();
     }
 
@@ -223,6 +229,7 @@ public class EspejoTerceraPersona : MonoBehaviour
         if (agregarArmaEnMano) { agregarArmaEnMano = false; AgregarArma(); }
         LeerManijas();
         LeerManijaDeGranada();
+        LeerManijasDeLasManos();
 
         // La misma arma en la mano.
         GameObject ahora = switcher.HeldPrimary != null ? switcher.HeldPrimary : switcher.HeldSecondary;
@@ -250,10 +257,15 @@ public class EspejoTerceraPersona : MonoBehaviour
         PonerManijas();
         // US 259: con la granada en la mano, la pose de sostenerla; sale de la mano al final del lanzamiento.
         bool conGranada = ConGranada;
-        if (lanzamiento != null) lanzamiento.ConGranada = conGranada;
+        if (lanzamiento != null)
+        {
+            lanzamiento.ConGranada = conGranada;
+            lanzamiento.Probar = probarElLanzamiento && conGranada ? momentoDelLanzamiento : -1f;
+        }
         if (lanzamiento != null && modeloEnMano != null && conGranada) modeloEnMano.SetActive(!lanzamiento.ManoVacia);
         Transform mano = copia != null ? copia.GetBoneTransform(HumanBodyBones.RightHand) : null;
         PonerManijaDeGranada(conGranada && modeloEnMano != null ? mano : null);
+        PonerManijasDeLasManos(conGranada && modeloEnMano != null && ajustarConManijas);
         if (arma == null || arma.Manejando || modeloEnMano == null) return;
         if (conGranada && mano != null)
         {
@@ -301,6 +313,63 @@ public class EspejoTerceraPersona : MonoBehaviour
         granadaUltimaEscala = t.localScale;
 #if UNITY_EDITOR
         if (nueva) UnityEditor.Selection.activeGameObject = manijaGranada.gameObject;
+#endif
+    }
+
+    // Las manijas de las manos con la granada (puntos del ajuste respecto del pecho y de hacia dónde mira): sosteniéndola,
+    // siempre; las del lanzamiento, mientras se lo prueba.
+    private class PuntoDeGranada
+    {
+        public string nombre;
+        public Color color;
+        public bool soloProbando;
+        public System.Func<AgarresTerceraPersona, Vector3> leer;
+        public System.Action<AgarresTerceraPersona, Vector3> escribir;
+        public ManijaDeAjuste manija;
+        public Vector3 ultimo;
+    }
+
+    private readonly PuntoDeGranada[] puntosDeGranada =
+    {
+        new PuntoDeGranada { nombre = "Granada: Mano derecha", color = Color.cyan, leer = a => a.granadaDerecha, escribir = (a, v) => a.granadaDerecha = v },
+        new PuntoDeGranada { nombre = "Granada: Mano izquierda", color = Color.magenta, leer = a => a.granadaIzquierda, escribir = (a, v) => a.granadaIzquierda = v },
+        new PuntoDeGranada { nombre = "Granada: Atrás", color = new Color(1f, 0.5f, 0.1f), soloProbando = true, leer = a => a.granadaAtras, escribir = (a, v) => a.granadaAtras = v },
+        new PuntoDeGranada { nombre = "Granada: Suelta", color = Color.red, soloProbando = true, leer = a => a.granadaSuelta, escribir = (a, v) => a.granadaSuelta = v },
+        new PuntoDeGranada { nombre = "Granada: Envión", color = Color.yellow, soloProbando = true, leer = a => a.granadaEnvion, escribir = (a, v) => a.granadaEnvion = v },
+        new PuntoDeGranada { nombre = "Granada: Izquierda apuntando", color = new Color(0.8f, 0.4f, 1f), soloProbando = true, leer = a => a.granadaApunta, escribir = (a, v) => a.granadaApunta = v },
+    };
+
+    private void PonerManijasDeLasManos(bool mostrar)
+    {
+        bool hayMarco = lanzamiento != null && lanzamiento.Marco(out Vector3 origen, out Quaternion giro);
+        AgarresTerceraPersona a = AgarresTerceraPersona.Actual;
+        foreach (PuntoDeGranada p in puntosDeGranada)
+        {
+            bool ver = mostrar && hayMarco && (!p.soloProbando || probarElLanzamiento);
+            if (!ver)
+            {
+                if (p.manija != null) { Destroy(p.manija.gameObject); p.manija = null; }
+                continue;
+            }
+            if (p.manija == null) p.manija = Manija(p.nombre, p.color, 0.03f);
+            lanzamiento.Marco(out origen, out giro);
+            p.manija.transform.position = p.ultimo = origen + giro * p.leer(a);
+        }
+    }
+
+    private void LeerManijasDeLasManos()
+    {
+        if (lanzamiento == null || !lanzamiento.Marco(out Vector3 origen, out Quaternion giro)) return;
+        AgarresTerceraPersona a = AgarresTerceraPersona.Actual;
+        bool cambio = false;
+        foreach (PuntoDeGranada p in puntosDeGranada)
+        {
+            if (p.manija == null || (p.manija.transform.position - p.ultimo).sqrMagnitude <= 1e-8f) continue;
+            p.escribir(a, Quaternion.Inverse(giro) * (p.manija.transform.position - origen));
+            cambio = true;
+        }
+#if UNITY_EDITOR
+        if (cambio) UnityEditor.EditorUtility.SetDirty(a); // así queda guardado en el asset
 #endif
     }
 

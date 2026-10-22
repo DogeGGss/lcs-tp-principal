@@ -41,7 +41,7 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
     private float finInvulnerable;
     private Semitransparente transparencia; // US 137: en la copia, mientras es invulnerable
     private ArmaEnTerceraPersona terceraPersona; // F26 (US 243): el arma y las manos que ven los demás
-    private LanzamientoDeGranada lanzamiento;    // US 259: el brazo que lanza la granada
+    private LanzamientoDeGranada lanzamiento;    // US 259: las manos con la granada y el lanzamiento
     private readonly HashSet<int> granadasExplotadas = new HashSet<int>();
     private bool cuerpoPropio;              // la copia ya tiene el modelo de su personaje (CharacterData.modelo)
     private float proximoCuerpo;
@@ -988,7 +988,7 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
         CrearContorno();
         transparencia = Semitransparente.Crear(gameObject, modelo); // US 137
         terceraPersona = ArmaEnTerceraPersona.Crear(gameObject, animador, camara); // F26: cómo tiene el arma
-        lanzamiento = LanzamientoDeGranada.Crear(gameObject, animador, terceraPersona); // US 259
+        lanzamiento = LanzamientoDeGranada.Crear(gameObject, terceraPersona); // US 259
     }
 
     private void CrearContorno()

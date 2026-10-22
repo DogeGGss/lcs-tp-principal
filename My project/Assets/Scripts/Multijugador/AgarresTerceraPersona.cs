@@ -74,7 +74,25 @@ public class AgarresTerceraPersona : ScriptableObject
 
     public List<Agarre> armas = new List<Agarre>();
 
-    [Header("Granadas (US 259)")]
+    [Header("Granadas (US 259): las manos")]
+    [Tooltip("Los puntos de las manos van respecto del pecho (este tanto más abajo que los ojos, metros) y de hacia dónde mira: x a la derecha, y arriba, z adelante.")]
+    public float granadaAlturaPecho = 0.3f;
+    [Tooltip("Sosteniéndola: la mano derecha (con la granada). Manija \"Granada: Mano derecha\" del muñeco espejo.")]
+    public Vector3 granadaDerecha = new Vector3(0.2f, 0.02f, 0.3f);
+    [Tooltip("Sosteniéndola: la mano izquierda. Manija \"Granada: Mano izquierda\".")]
+    public Vector3 granadaIzquierda = new Vector3(-0.12f, -0.08f, 0.3f);
+    [Tooltip("Lanzando: la mano derecha atrás, por arriba del hombro (a los 0,22 s). Con \"Probar el lanzamiento\": manija \"Granada: Atrás\".")]
+    public Vector3 granadaAtras = new Vector3(0.25f, 0.2f, -0.1f);
+    [Tooltip("Lanzando: donde la suelta, adelante y arriba (a los 0,34 s). Manija \"Granada: Suelta\".")]
+    public Vector3 granadaSuelta = new Vector3(0.15f, 0.28f, 0.48f);
+    [Tooltip("Lanzando: cuánto sube el arco de la mano entre atrás y la suelta (metros).")]
+    public float granadaArco = 0.12f;
+    [Tooltip("Lanzando: hasta dónde sigue la mano después de soltarla (a los 0,52 s). Manija \"Granada: Envión\".")]
+    public Vector3 granadaEnvion = new Vector3(0.05f, -0.1f, 0.42f);
+    [Tooltip("Lanzando: la mano izquierda estirada adelante, apuntando. Manija \"Granada: Izquierda apuntando\".")]
+    public Vector3 granadaApunta = new Vector3(-0.15f, 0.12f, 0.45f);
+
+    [Header("Granadas (US 259): la granada")]
     [Tooltip("Dónde va la granada respecto de la mano derecha, en el espacio del hueso de la mano (metros). Con el muñeco espejo: la manija \"Granada\".")]
     public Vector3 granadaLugar = new Vector3(0f, 0.08f, 0.03f);
     [Tooltip("Giro de la granada respecto de la mano (grados).")]

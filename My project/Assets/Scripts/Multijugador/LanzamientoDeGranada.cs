@@ -1,100 +1,118 @@
 using UnityEngine;
 
-// US 259, CA2: el lanzamiento de la granada que ven los demás jugadores. El brazo va hacia atrás y la arroja con la
-// animación de Mixamo "LanzarGranada" (Personajes/Animaciones), en la capa "Granada" del Animator del personaje: una
-// capa que mueve el torso, la cabeza y los brazos, no las piernas (máscara BrazosGranada), y que está apagada (peso 0)
-// salvo mientras lanza. La capa y la máscara las arma el editor solo (AnimacionesTerceraPersona) cuando está la animación.
-// Mientras lanza, el IK de los brazos de ArmaEnTerceraPersona se suelta (ManosLibres) para que mande la animación.
-// Empieza cuando el dueño hace clic (RpcLanzandoGranada) y suelta la granada al final del movimiento hacia adelante:
-// la granada de muestra que llega por la red (que el dueño suelta a los 0,34 s) espera a ese momento (FaltaParaSoltar).
-// Con una granada en la mano (ConGranada), la misma capa lo deja quieto en la pose lista para lanzar de la animación
-// (estado SostenerGranada, en 1 s): la granada arriba junto a la cabeza y la otra mano adelante, en vez de la pose de
-// rifle (la animación de Mixamo empieza y termina con un rifle en las manos: esa parte no se usa).
-// Lo usan las copias de los jugadores remotos (JugadorEnRed) y el muñeco espejo (EspejoTerceraPersona).
+// US 259: la granada que ven los demás jugadores, por código (como las recargas de ArmaEnTerceraPersona): las manos
+// van con el IK de los brazos a puntos del ajuste (AgarresTerceraPersona, sección Granadas), respecto del pecho y de
+// hacia dónde mira (si mira arriba o abajo, los brazos lo siguen).
+// - CA1: con una granada en la mano (ConGranada), la derecha la sostiene adelante del pecho y la izquierda queda
+//   adelante, relajada.
+// - CA2: al lanzar (Lanzar, cuando el dueño hace clic: RpcLanzandoGranada) el brazo derecho va atrás, por arriba del
+//   hombro, y vuelve en un arco hacia adelante y arriba, donde la suelta; la izquierda se estira adelante, apuntando.
+//   Los tiempos son los de primera persona (GrenadeThrower): la suelta a los 0,34 s del clic, igual que el dueño, y la
+//   granada de muestra que llega por la red sale en ese momento (FaltaParaSoltar). Después baja y saca la siguiente.
+// Lo usan las copias de los jugadores remotos (JugadorEnRed) y el muñeco espejo (EspejoTerceraPersona), que puede
+// dejarlo quieto en un momento del lanzamiento (Probar) para ajustar los puntos con manijas.
+[DefaultExecutionOrder(45)] // después de que se mueven el cuerpo y los ojos, antes de ArmaEnTerceraPersona
 public class LanzamientoDeGranada : MonoBehaviour
 {
-    public const string Capa = "Granada", Estado = "LanzarGranada", Sostener = "SostenerGranada";
+    private const float Atras = GrenadeThrower.Preparacion;              // 0,22 s: el brazo llega atrás
+    private const float Suelta = GrenadeThrower.Suelta;                  // 0,34 s: la suelta adelante
+    private const float Envion = Suelta + GrenadeThrower.Despues;        // 0,52 s: termina el envión
+    private const float Vuelve = Envion + 0.25f;                         // 0,77 s: de nuevo con la siguiente
+    private const float Entrar = 0.15f, Salir = 0.25f;
 
-    // La animación (3,2 s, en segundos del clip): hasta 1 s saca la granada de un rifle; en 1 s la tiene lista (la pose
-    // de sostenerla), la lleva atrás y la suelta en 1,83 s, cuando la mano llega arriba y adelante; en 2,3 s ya terminó
-    // el envión (después vuelve al rifle: no se usa). Va a 2,4 veces su velocidad (la del estado, en el Animator): suelta
-    // a los 0,35 s del clic, casi a la vez que el dueño (0,34 s).
-    public const float Largo = 3.2f, Velocidad = 2.4f;
-    public const float Pose = 1f, Inicio = 1f, Suelta = 1.83f, Fin = 2.3f;
-    private const float Entrar = 0.1f, Salir = 0.3f, Volver = 0.2f, SinGranada = 0.35f;
+    /// <summary>Lo que dura todo el lanzamiento (s), hasta que vuelve a sostener la siguiente.</summary>
+    public const float Dura = Vuelve;
 
-    /// <summary>Segundos desde que empieza hasta que suelta la granada.</summary>
-    public static float HastaSoltar => (Suelta - Inicio) / Velocidad;
-    private static float Dura => (Fin - Inicio) / Velocidad;
-
-    private Animator animador;
     private ArmaEnTerceraPersona arma;
-    private int capa = -1;
     private float desde = -10f;
     private float peso;
-    private static readonly int hashSostener = Animator.StringToHash(Sostener);
 
     /// <summary>Tiene una granada en la mano (lo pone el que maneja la copia).</summary>
     public bool ConGranada { get; set; }
 
-    public static LanzamientoDeGranada Crear(GameObject personaje, Animator animador, ArmaEnTerceraPersona arma)
+    /// <summary>Muñeco espejo: queda quieto en ese momento del lanzamiento (0 a 1); -1, normal.</summary>
+    public float Probar { get; set; } = -1f;
+
+    public static LanzamientoDeGranada Crear(GameObject personaje, ArmaEnTerceraPersona arma)
     {
-        if (personaje == null || animador == null) return null;
+        if (personaje == null || arma == null) return null;
         LanzamientoDeGranada l = personaje.AddComponent<LanzamientoDeGranada>();
-        l.animador = animador;
         l.arma = arma;
         return l;
     }
 
-    private float Pasado => Time.time - desde;
+    private float Pasado => Probar >= 0f ? Probar * Dura : Time.time - desde;
     private bool Lanzando => Pasado < Dura;
 
     /// <summary>Lo que falta para que suelte la granada (0 si ya la soltó o no está lanzando).</summary>
-    public float FaltaParaSoltar => Lanzando ? Mathf.Max(0f, HastaSoltar - Pasado) : 0f;
+    public float FaltaParaSoltar => Probar < 0f && Lanzando ? Mathf.Max(0f, Suelta - Pasado) : 0f;
 
     /// <summary>Ya la soltó y todavía no sacó la siguiente: la mano está vacía.</summary>
-    public bool ManoVacia => Pasado >= HastaSoltar && Pasado < HastaSoltar + SinGranada;
+    public bool ManoVacia => Pasado >= Suelta && Pasado < Envion + 0.1f;
 
     /// <summary>Empieza a lanzar (el dueño hizo clic).</summary>
-    public void Lanzar()
+    public void Lanzar() => desde = Time.time;
+
+    /// <summary>El marco de los puntos del ajuste: el pecho (más abajo que los ojos) y hacia dónde mira.</summary>
+    public bool Marco(out Vector3 origen, out Quaternion giro)
     {
-        if (animador == null) return;
-        if (capa < 0) capa = animador.GetLayerIndex(Capa);
-        if (capa < 0)
-        {
-            Debug.LogWarning("LanzamientoDeGranada: el Animator no tiene la capa \"" + Capa + "\" (se arma sola en el editor cuando está la animación LanzarGranada).");
-            return;
-        }
-        // Arranca en la misma pose de sostenerla.
-        animador.Play(Estado, capa, Inicio / Largo);
-        desde = Time.time;
+        origen = Vector3.zero;
+        giro = Quaternion.identity;
+        if (arma == null || arma.Ojos == null) return false;
+        giro = arma.Ojos.rotation;
+        origen = arma.Ojos.position - transform.up * AgarresTerceraPersona.Actual.granadaAlturaPecho;
+        return true;
     }
 
     private void Update()
     {
-        if (animador == null) return;
-        if (capa < 0) capa = animador.GetLayerIndex(Capa);
-        if (capa < 0) return;
+        if (arma == null) return;
         float t = Pasado;
         bool lanzando = t < Dura;
-        // Con una granada en la mano y sin lanzar (también al terminar de lanzar, con la siguiente ya en la mano): la
-        // pose de sostenerla. Se revisa cada cuadro, así vuelve a ella pase lo que pase en la capa.
-        if (!lanzando && ConGranada)
+        bool prendida = ConGranada || (lanzando && t < Envion);
+        peso = Mathf.MoveTowards(peso, prendida ? 1f : 0f, Time.deltaTime / (prendida ? Entrar : Salir));
+        if (peso <= 0f || !Marco(out Vector3 origen, out Quaternion giro)) { arma.ManosDeGranada(0f, Vector3.zero, Vector3.zero); return; }
+
+        AgarresTerceraPersona a = AgarresTerceraPersona.Actual;
+        Vector3 der = a.granadaDerecha, izq = a.granadaIzquierda;
+        if (lanzando)
         {
-            bool yendo = animador.IsInTransition(capa) && animador.GetNextAnimatorStateInfo(capa).shortNameHash == hashSostener;
-            if (!yendo && animador.GetCurrentAnimatorStateInfo(capa).shortNameHash != hashSostener)
+            if (t < Atras)
             {
-                if (peso > 0.01f) animador.CrossFadeInFixedTime(hashSostener, Volver, capa, Pose); // termina de lanzar
-                else animador.Play(hashSostener, capa, Pose / Largo);                              // la saca
+                // Lleva el brazo atrás, por arriba del hombro; la izquierda se estira adelante.
+                float k = Suave(t / Atras);
+                der = Vector3.Lerp(a.granadaDerecha, a.granadaAtras, k);
+                izq = Vector3.Lerp(a.granadaIzquierda, a.granadaApunta, k);
+            }
+            else if (t < Suelta)
+            {
+                // El arco hacia adelante y arriba, rápido al principio (como un latigazo).
+                float k = 1f - Mathf.Pow(1f - (t - Atras) / (Suelta - Atras), 2f);
+                Vector3 medio = (a.granadaAtras + a.granadaSuelta) * 0.5f + Vector3.up * a.granadaArco;
+                der = Bezier(a.granadaAtras, medio, a.granadaSuelta, k);
+                izq = a.granadaApunta;
+            }
+            else if (t < Envion)
+            {
+                // Sigue de largo hacia abajo y adelante.
+                float k = Suave((t - Suelta) / (Envion - Suelta));
+                der = Vector3.Lerp(a.granadaSuelta, a.granadaEnvion, k);
+                izq = Vector3.Lerp(a.granadaApunta, a.granadaIzquierda, k);
+            }
+            else
+            {
+                // Vuelve a sostener la siguiente.
+                float k = Suave((t - Envion) / (Vuelve - Envion));
+                der = Vector3.Lerp(a.granadaEnvion, a.granadaDerecha, k);
             }
         }
-        // Prendida mientras lanza o la sostiene; se apaga suave al terminar de lanzar la última o al cambiar de arma.
-        bool prendida = (lanzando && t < Dura - Salir) || (!lanzando && ConGranada) || (lanzando && ConGranada);
-        float rapidez = prendida ? 1f / Entrar : 1f / Salir;
-        peso = Mathf.MoveTowards(peso, prendida ? 1f : 0f, rapidez * Time.deltaTime);
-        float visto = Suave(peso);
-        animador.SetLayerWeight(capa, visto);
-        if (arma != null) arma.ManosLibres = visto;
+        arma.ManosDeGranada(Suave(peso), origen + giro * der, origen + giro * izq);
+    }
+
+    private static Vector3 Bezier(Vector3 a, Vector3 b, Vector3 c, float t)
+    {
+        float u = 1f - t;
+        return u * u * a + 2f * u * t * b + t * t * c;
     }
 
     private static float Suave(float t)
