@@ -1,19 +1,19 @@
 'use strict';
 const D=window.PRESENTATION, $=s=>document.querySelector(s);
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-let current=0,metric='s1',decision=0,business=0,weaponId='fusil',shield=50,plan=true;
+let current=0,metric='s1',decision=0,business=0,weaponId='fusil',shield=50;
 const num=n=>n.toLocaleString('es-AR'),dec=n=>n.toLocaleString('es-AR',{minimumFractionDigits:2,maximumFractionDigits:2});
 const money=(n,sign=false)=>(n<0?'−':sign&&n>0?'+':'')+'US$ '+num(Math.abs(Math.round(n)));
 const thousands=n=>n>=1e6?n.toLocaleString('es-AR',{maximumFractionDigits:1})+' M':num(Math.round(n/1000)*1000);
-// Números del simulador de la guía: los tres escenarios lado a lado, con o sin las mejoras del plan.
+// Números del simulador de la guía: los tres escenarios lado a lado.
 function scenarios(){
- const E=D.economics,L=E.scenarios[plan?'con':'sin'],mid=L[1];
- return `<div class="tabs"><button data-plan="1" aria-pressed="${plan}">Con el plan</button><button data-plan="0" aria-pressed="${!plan}">Sin el plan</button></div><div class="grid">${L.map(x=>`<article class="card scenario"><p class="eyebrow">${esc(x.name)}</p><div class="result ${x.result>=0?'pos':'neg'}">${money(x.result,true)}<small> por mes</small></div><dl class="facts"><div><dt>Jugadores por mes</dt><dd>${num(x.players)}</dd></div><div><dt>Pagan</dt><dd>${num(x.payers)} · ${x.conv.toLocaleString('es-AR')} %</dd></div><div><dt>Pagan los jugadores</dt><dd>${money(x.gross)}</dd></div><div><dt>Cuesta</dt><dd>${money(x.costs)}</dd></div><div><dt>Recupero</dt><dd>${x.payback?'mes '+x.payback:'no se recupera'}</dd></div></dl></article>`).join('')}</div><p class="lead">${mid.result>=0?`${plan?'Con':'Sin'} el plan, el promedio deja de perder plata desde ${thousands(mid.breakEven)} jugadores por mes.`:`${plan?'Con':'Sin'} el plan, el promedio necesita ${thousands(mid.breakEven)} jugadores por mes para no perder plata.`}</p><p class="footnote">Simulación con supuestos, no resultados reales · <a href="../index.html#negocio">Supuestos, fuentes y simulador en la guía</a></p>`;
+ const L=D.economics.scenarios,mid=L[1];
+ return `<div class="grid">${L.map(x=>`<article class="card scenario"><p class="eyebrow">${esc(x.name)}</p><div class="result ${x.result>=0?'pos':'neg'}">${money(x.result,true)}<small> por mes</small></div><dl class="facts"><div><dt>Jugadores por mes</dt><dd>${num(x.players)}</dd></div><div><dt>Pagan</dt><dd>${num(x.payers)} · ${x.conv.toLocaleString('es-AR')} %</dd></div><div><dt>Pagan los jugadores</dt><dd>${money(x.gross)}</dd></div><div><dt>Cuesta</dt><dd>${money(x.costs)}</dd></div><div><dt>Recupero</dt><dd>${x.payback?'mes '+x.payback:'no se recupera'}</dd></div></dl></article>`).join('')}</div><p class="lead">El promedio deja de perder plata desde ${thousands(mid.breakEven)} jugadores por mes.</p><p class="footnote">Simulación con supuestos, no resultados reales · <a href="../index.html#negocio">Supuestos, fuentes y simulador en la guía</a></p>`;
 }
-// Cuánto se invierte, en qué y qué vuelve (con el plan).
+// Cuánto se invierte, en qué y qué vuelve.
 function investment(){
- const E=D.economics,I=E.investment,L=E.scenarios.con,mid=L[1];
- return `<div class="grid two invest"><article class="card"><p class="eyebrow">La inversión</p><div class="metric-number">${money(I.total)}</div><div class="uses">${I.items.map(([n,v])=>`<div><span>${esc(n)}</span><b>${money(v)}</b><i style="width:${Math.max(1,v/I.total*100)}%"></i></div>`).join('')}</div><p class="footnote">Después, el juego necesita ${money(I.monthlyFixed)} fijos por mes (${money(I.salaries)} son los sueldos de los 7) más los servidores.</p></article><article class="card"><p class="eyebrow">Lo que vuelve · con el plan</p><table class="returns"><tr><th></th><th>Recupero</th><th>A los 3 años</th></tr>${L.map(x=>`<tr><td>${esc(x.name)}</td><td>${x.payback?'mes '+x.payback:'no se recupera'}</td><td>${x.perDollar?`US$ ${dec(x.perDollar)} por cada dólar`:`pierde ${money(-x.result)} por mes`}</td></tr>`).join('')}</table></article></div><div class="watch"><div><b>${thousands(mid.breakEven)}</b><span>jugadores por mes para no perder plata (promedio, con el plan)</span></div><div><b>${mid.conv.toLocaleString('es-AR')} %</b><span>de los jugadores paga algo en el mes</span></div><div><b>US$ ${dec(mid.arppu)}</b><span>gasta por mes cada uno que paga</span></div></div>`;
+ const E=D.economics,I=E.investment,L=E.scenarios,mid=L[1];
+ return `<div class="grid two invest"><article class="card"><p class="eyebrow">La inversión</p><div class="metric-number">${money(I.total)}</div><div class="uses">${I.items.map(([n,v])=>`<div><span>${esc(n)}</span><b>${money(v)}</b><i style="width:${Math.max(1,v/I.total*100)}%"></i></div>`).join('')}</div><p class="footnote">Después, el juego necesita ${money(I.monthlyFixed)} fijos por mes (${money(I.salaries)} son los sueldos de los 7) más los servidores.</p></article><article class="card"><p class="eyebrow">Lo que vuelve</p><table class="returns"><tr><th></th><th>Recupero</th><th>A los 3 años</th></tr>${L.map(x=>`<tr><td>${esc(x.name)}</td><td>${x.payback?'mes '+x.payback:'no se recupera'}</td><td>${x.perDollar?`US$ ${dec(x.perDollar)} por cada dólar`:`pierde ${money(-x.result)} por mes`}</td></tr>`).join('')}</table></article></div><div class="watch"><div><b>${thousands(mid.breakEven)}</b><span>jugadores por mes para no perder plata (escenario promedio)</span></div><div><b>${mid.conv.toLocaleString('es-AR')} %</b><span>de los jugadores paga algo en el mes</span></div><div><b>US$ ${dec(mid.arppu)}</b><span>gasta por mes cada uno que paga</span></div></div>`;
 }
 const tag=(text,pending=false)=>`<span class="tag ${pending?'pending':''}">${esc(text)}</span>`;
 const card=(title,text)=>`<article class="card"><h3>${esc(title)}</h3><p>${esc(text)}</p></article>`;
@@ -71,9 +71,7 @@ document.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)r
  if(d.go!==undefined){$('#indexDialog').close();go(+d.go)}
  if(d.metric){metric=d.metric;render()}
  if(d.decision!==undefined){decision=+d.decision;render()}
- if(d.business!==undefined){business=+d.business;render()}
- if(d.plan!==undefined){plan=d.plan==='1';render()}
- if(d.shield!==undefined){shield=+d.shield;render()}
+ if(d.business!==undefined){business=+d.business;render()} if(d.shield!==undefined){shield=+d.shield;render()}
  if(d.demo)openDemo(d.demo);
  if(d.clip!==undefined){const c=D.clips[+d.clip];if(c.src){$('#clipTitle').textContent=c.title;$('#video').src=c.src;$('#clipDialog').showModal()}}
 });
