@@ -108,7 +108,7 @@ MonoBehaviour:
     minimoAdelante: 0.2
     seguirCuerpo: 1
     giro: {x: -10, y: 0, z: 0}
-    escala: 1
+    escala: 0.76135
     manoDerecha: {x: 0, y: 0, z: 0}
     giroManoDerecha: {x: 0, y: 0, z: 0}
     manoIzquierda: {x: 0, y: 0, z: 0}
