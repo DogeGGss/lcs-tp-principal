@@ -42,6 +42,7 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
     private Semitransparente transparencia; // US 137: en la copia, mientras es invulnerable
     private ArmaEnTerceraPersona terceraPersona; // F26 (US 243): el arma y las manos que ven los demás
     private LanzamientoDeGranada lanzamiento;    // US 259: las manos con la granada y el lanzamiento
+    private CuchilloEnTerceraPersona cuchilloVisto; // US 257: las manos con el cuchillo y el corte
     private readonly HashSet<int> granadasExplotadas = new HashSet<int>();
     private bool cuerpoPropio;              // la copia ya tiene el modelo de su personaje (CharacterData.modelo)
     private float proximoCuerpo;
@@ -989,6 +990,7 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
         transparencia = Semitransparente.Crear(gameObject, modelo); // US 137
         terceraPersona = ArmaEnTerceraPersona.Crear(gameObject, animador, camara); // F26: cómo tiene el arma
         lanzamiento = LanzamientoDeGranada.Crear(gameObject, terceraPersona); // US 259
+        cuchilloVisto = CuchilloEnTerceraPersona.Crear(gameObject, terceraPersona); // US 257
     }
 
     private void CrearContorno()
@@ -1176,6 +1178,20 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
         if (manoDerecha == null && animador != null && animador.isHuman) manoDerecha = animador.GetBoneTransform(HumanBodyBones.RightHand);
         // US 259, CA1: con una granada en la mano, la pose de sostenerla (no la de rifle).
         if (lanzamiento != null) lanzamiento.ConGranada = !muerto && armaVista >= PrimeraGranada && armaVista != ArmaDesconocida;
+        // US 257, CA1: con el cuchillo en la mano, la pose de tenerlo (no la de rifle), con el cuchillo en la mano derecha.
+        if (cuchilloVisto != null) cuchilloVisto.ConCuchillo = !muerto && armaVista == ArmaCuchillo;
+        if (cuchilloVisto != null && manoDerecha != null && armaVista == ArmaCuchillo &&
+            (terceraPersona == null || !terceraPersona.Manejando))
+        {
+            AgarresTerceraPersona agarres = AgarresTerceraPersona.Actual;
+            cuchilloVisto.Munecas(); // la muñeca ya girada: el cuchillo gira con ella
+            agarres.PoseDeCuchillo(manoDerecha, out Vector3 lugarCuchillo, out Quaternion giroCuchillo);
+            soporteMano.SetPositionAndRotation(lugarCuchillo, giroCuchillo);
+            soporteMano.localScale = Vector3.one * agarres.cuchilloEscala;
+            if (enLaMano.TryGetValue(ArmaCuchillo, out ModeloEnMano hojaEnMano) && hojaEnMano.go != null)
+                hojaEnMano.go.transform.localPosition = Vector3.zero;
+            return;
+        }
         // CA2: la granada sale de la mano al final del lanzamiento; la siguiente aparece cuando la saca.
         if (lanzamiento != null && armaVista >= PrimeraGranada && armaVista != 255 &&
             enLaMano.TryGetValue(armaVista, out ModeloEnMano granadaEnMano) && granadaEnMano.go != null &&
@@ -1241,7 +1257,9 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
         armaRed = ArmaCuchillo;
         MostrarArma(ArmaCuchillo);
         if (sonidoCuchillo != null && sonido != null) sonido.PlayOneShot(sonidoCuchillo);
-        if (enLaMano.TryGetValue(ArmaCuchillo, out ModeloEnMano hoja) && hoja.go != null) StartCoroutine(Estocada(hoja.go.transform));
+        // US 257, CA2: el brazo hace el corte (sin el muñeco de tercera persona, el cuchillo solo va adelante y vuelve).
+        if (cuchilloVisto != null) cuchilloVisto.Atacar();
+        else if (enLaMano.TryGetValue(ArmaCuchillo, out ModeloEnMano hoja) && hoja.go != null) StartCoroutine(Estocada(hoja.go.transform));
         Punalada?.Invoke();
     }
 

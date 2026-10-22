@@ -16,18 +16,19 @@ MonoBehaviour:
   - arma: Pistol_2
     nombre: La Porteña
     alturaPecho: 0.3
-    lugar: {x: 0.17210786, y: -0.093331404, z: 0.46817636}
+    lugar: {x: 0.17210808, y: -0.08535128, z: 0.46969697}
     minimoAdelante: 0.3
     seguirCuerpo: 1
-    giro: {x: 0, y: 0.00012214974, z: 0.00012525156}
-    escala: 1.3263074
-    manoDerecha: {x: -0.00010125153, y: 0.000063167885, z: -0.00015947223}
-    giroManoDerecha: {x: -0.000091552734, y: 0, z: -0.008880615}
-    manoIzquierda: {x: -0.00011552125, y: 0.00012593716, z: -0.00016616285}
-    giroManoIzquierda: {x: 0.00060261146, y: 0.00674776, z: 0.00035251255}
+    giro: {x: 0, y: 0.00012468152, z: 0.0001232785}
+    escala: 1.326309
+    manoDerecha: {x: -0.000101285055, y: 0.00006320886, z: -0.00015982985}
+    giroManoDerecha: {x: -0.000091552734, y: 0.000005060637, z: -0.008911133}
+    manoIzquierda: {x: -0.00011540949, y: 0.00012595952, z: -0.00016684085}
+    giroManoIzquierda: {x: 0.000582821, y: 0.0067834933, z: 0.00034475976}
     recarga: 0
     tamborArriba: 0.15
     tamborGiro: {x: -50, y: -50, z: -5}
+    cerrojo: 0
     cartuchosGiro: {x: -6, y: 8, z: -30}
     cargador: {x: -0.03, y: -0.12, z: 0}
     giroCargador: {x: 0, y: 0, z: 0}
@@ -51,6 +52,7 @@ MonoBehaviour:
     recarga: 1
     tamborArriba: 0.15
     tamborGiro: {x: -50, y: -50, z: -5}
+    cerrojo: 0
     cartuchosGiro: {x: -6, y: 8, z: -30}
     cargador: {x: -0.03, y: -0.12, z: 0}
     giroCargador: {x: 0, y: 0, z: 0}
@@ -62,18 +64,19 @@ MonoBehaviour:
   - arma: Mitre
     nombre: Mitre
     alturaPecho: 0.3
-    lugar: {x: 0.2250072, y: 0.13401139, z: 0.25070566}
+    lugar: {x: 0.2250091, y: 0.088912725, z: 0.2700151}
     minimoAdelante: 0.2
     seguirCuerpo: 1
-    giro: {x: 0, y: 0.00012529116, z: 0.0003675682}
-    escala: 0.88453925
-    manoDerecha: {x: -0.00006346032, y: 0.000033847988, z: -0.0000474751}
-    giroManoDerecha: {x: -0.000061035156, y: 0.00015485383, z: -0.0018005371}
-    manoIzquierda: {x: -0.00007233024, y: 0.000037938356, z: -0.000081926584}
-    giroManoIzquierda: {x: -0.0005493164, y: 0.0016618088, z: 0}
+    giro: {x: 0, y: 0.00011345936, z: 0.00039267004}
+    escala: 0.88454497
+    manoDerecha: {x: -0.00006567687, y: 0.000034295022, z: -0.000046744943}
+    giroManoDerecha: {x: -0.000061035156, y: 0.00014440274, z: -0.0018005371}
+    manoIzquierda: {x: -0.00007353723, y: 0.000037796795, z: -0.00008431077}
+    giroManoIzquierda: {x: -0.0005493164, y: 0.0016142463, z: 0.000013280909}
     recarga: 0
     tamborArriba: 0.15
     tamborGiro: {x: -50, y: -50, z: -5}
+    cerrojo: 0
     cartuchosGiro: {x: -6, y: 8, z: -30}
     cargador: {x: -0.054476958, y: -0.07711139, z: 0.022461705}
     giroCargador: {x: 0.00005204332, y: 0.0000133908, z: 0.000007854022}
@@ -97,6 +100,7 @@ MonoBehaviour:
     recarga: 0
     tamborArriba: 0.15
     tamborGiro: {x: -50, y: -50, z: -5}
+    cerrojo: 0
     cartuchosGiro: {x: -6, y: 8, z: -30}
     cargador: {x: -0.06710421, y: -0.103278846, z: 0.09820411}
     giroCargador: {x: 0.00006503925, y: 0.000044026743, z: 0.00001368501}
@@ -120,6 +124,7 @@ MonoBehaviour:
     recarga: 0
     tamborArriba: 0.15
     tamborGiro: {x: -50, y: -50, z: -5}
+    cerrojo: 0
     cartuchosGiro: {x: -6, y: 8, z: -30}
     cargador: {x: -0.05, y: -0.09, z: 0.08}
     giroCargador: {x: 0, y: 0, z: 0}
@@ -143,6 +148,7 @@ MonoBehaviour:
     recarga: 2
     tamborArriba: 0.15
     tamborGiro: {x: -50, y: -50, z: -5}
+    cerrojo: 0
     cartuchosGiro: {x: -6, y: 8, z: -30}
     cargador: {x: -0.05426444, y: 0.08003737, z: 0.4237189}
     giroCargador: {x: 0.000007885549, y: 0.000006064375, z: 0}
@@ -151,8 +157,32 @@ MonoBehaviour:
     giroPalanca: {x: 0, y: 0, z: 0}
     retrocesoArriba: 12
     retrocesoAtras: 0.07
+  - arma: UltimoTren
+    nombre: "\xDAltimo Tren"
+    alturaPecho: 0.3
+    lugar: {x: 0.20101915, y: 0.039797984, z: 0.39316034}
+    minimoAdelante: 0.2
+    seguirCuerpo: 1
+    giro: {x: 0, y: 0.000036524816, z: 0.000021140731}
+    escala: 0.7437437
+    manoDerecha: {x: -0.012333948, y: -0.007820457, z: -0.067169756}
+    giroManoDerecha: {x: 0, y: 0.0000021149451, z: -0.000030517578}
+    manoIzquierda: {x: -0.027660228, y: 0.05476527, z: 0.054543443}
+    giroManoIzquierda: {x: 0.00005032327, y: 0.000054378677, z: 0.0000012474886}
+    recarga: 0
+    tamborArriba: 0.15
+    tamborGiro: {x: -50, y: -50, z: -5}
+    cerrojo: 1
+    cartuchosGiro: {x: -6, y: 8, z: -30}
+    cargador: {x: -0.052841637, y: -0.085852146, z: 0.24714495}
+    giroCargador: {x: 0.0000072594326, y: 0.0000000018646535, z: 0.000009385844}
+    palanca: 0
+    palancaLugar: {x: -0.07, y: 0.08, z: 0}
+    giroPalanca: {x: 0, y: 0, z: 0}
+    retrocesoArriba: 16
+    retrocesoAtras: 0.09
   granadaAlturaPecho: 0.3
-  granadaDerecha: {x: 0.29007626, y: -0.15613346, z: 0.14001861}
+  granadaDerecha: {x: 0.29007617, y: -0.1560236, z: 0.14014107}
   granadaIzquierda: {x: 0.00599911, y: -0.33309966, z: 0.1979624}
   granadaAtras: {x: 0.36790004, y: 0.012418892, z: -0.1785311}
   granadaSuelta: {x: 0.38200024, y: 0.25372705, z: 0.15571295}
@@ -169,6 +199,18 @@ MonoBehaviour:
   granadaGiroSuelta: {x: 0, y: 0, z: 0}
   granadaGiroEnvion: {x: 0, y: 0, z: 0}
   granadaGiroApunta: {x: 0, y: 0, z: 0}
-  granadaLugar: {x: -0.019943597, y: 0.110610075, z: 0.024627173}
-  granadaGiro: {x: -0.0015869141, y: 101.00841, z: 0.000011075608}
+  granadaLugar: {x: -0.019943673, y: 0.11061038, z: 0.02462719}
+  granadaGiro: {x: -0.0015869141, y: 101.00841, z: 0.000009958365}
   granadaEscala: 1
+  cuchilloDerecha: {x: 0.31300005, y: -0.194, z: 0.17900006}
+  cuchilloIzquierda: {x: -0.041000005, y: -0.24000001, z: 0.29000008}
+  cuchilloAtras: {x: 0.19600017, y: -0.08899999, z: 0.22199999}
+  cuchilloCorte: {x: 0.3939999, y: -0.08000004, z: 0.25100014}
+  cuchilloArco: 0.15
+  cuchilloGiroDerecha: {x: -8.754761, y: 0.000012524338, z: 0.00000046066825}
+  cuchilloGiroIzquierda: {x: -8.754761, y: 0.000012524338, z: 0.00000046066825}
+  cuchilloGiroAtras: {x: 0, y: 0, z: 0}
+  cuchilloGiroCorte: {x: 0, y: 0, z: 0}
+  cuchilloLugar: {x: -0.09458347, y: 0.15188812, z: 0.01818106}
+  cuchilloGiro: {x: -82.8952, y: -95.270935, z: -178.2385}
+  cuchilloEscala: 1
