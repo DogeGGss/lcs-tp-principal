@@ -26,14 +26,16 @@ window.PRESENTATION = {
   ],
   // Números del simulador de la guía (Modelo de negocio), en dólares por mes. Ya incluyen el plan:
   // pase y tienda directa, bienvenida a US$ 0,99, juego en inglés y Photon a 10 envíos por segundo.
+  // daily: juegan en un día; peak: a la vez en la hora pico; latam: % de los que pagan que son de Latinoamérica;
+  // arppuLatam / arppuRest: gasto por mes de cada pagador allá y en el resto (arppu es el promedio de los dos).
   economics: {
     source: 'Simulador de la guía · precios de Photon, Supabase, Steam y Unity de octubre de 2026 · dólar $ 1.550',
     investment: {total:38481, monthlyFixed:16856, salaries:15456,
       items:[['Desarrollo: los 5 sprints con el equipo', 33381], ['Marketing de lanzamiento', 5000], ['Steam Direct', 100]]},
     scenarios: [
-      {name:'Pesimista', players:25000, payers:500, conv:2, arppu:6.73, gross:3367, net:2251, costs:17104, result:-14853, afterTax:-14853, breakEven:237305, payback:null, cash3:-581231, perDollar:null},
-      {name:'Promedio', players:100000, payers:3000, conv:3, arppu:12.82, gross:38475, net:25317, costs:20129, result:5188, afterTax:3631, breakEven:76982, payback:24, cash3:45760, perDollar:2.19},
-      {name:'Optimista', players:250000, payers:10000, conv:4, arppu:16.77, gross:167700, net:108586, costs:25253, result:83332, afterTax:58333, breakEven:44088, payback:3, cash3:1955095, perDollar:51.81}
+      {name:'Pesimista', players:25000, daily:3750, peak:390, latam:65, arppuLatam:3.9, arppuRest:12, payers:500, conv:2, arppu:6.73, gross:3367, net:2251, costs:17104, result:-14853, afterTax:-14853, breakEven:237305, payback:null, cash3:-581231, perDollar:null},
+      {name:'Promedio', players:100000, daily:20000, peak:2500, latam:45, arppuLatam:6.5, arppuRest:18, payers:3000, conv:3, arppu:12.82, gross:38475, net:25317, costs:20129, result:5188, afterTax:3631, breakEven:76982, payback:24, cash3:45760, perDollar:2.19},
+      {name:'Optimista', players:250000, daily:62500, peak:10400, latam:35, arppuLatam:7.8, arppuRest:21.6, payers:10000, conv:4, arppu:16.77, gross:167700, net:108586, costs:25253, result:83332, afterTax:58333, breakEven:44088, payback:3, cash3:1955095, perDollar:51.81}
     ]
   },
   // Agregar rutas de clips reales dentro de presentacion/media/. No se publican archivos personales.
@@ -53,7 +55,7 @@ window.PRESENTATION = {
     {id:'juego', title:'Ahora, dentro del juego', label:'Demo del juego', minutes:2, note:'Reservado para una demo real o clips. Todavía no hay videos cargados. Preparar una ronda corta y un clip de respaldo; volver con el botón grande, sin buscar pestañas.'},
     {id:'negocio', title:'Entrar gratis. Elegir tu estilo.', label:'Propuesta comercial', minutes:2, note:'Pitch: shooter gratuito para jugar con amigos, con monetización cosmética: nada de lo que se vende da ventaja en la partida. Recorrer las cuatro pestañas: tienda directa, pase, cápsulas y cristales. Los precios están definidos; el pase y la tienda directa todavía no están en el juego.'},
     {id:'escenarios', title:'Tres escenarios, un mismo plan', label:'Números', minutes:2, note:'Los tres escenarios comparten lo decidido: 7 personas con sueldo promedio, los 5 sprints y el producto del sprint 5; cambia cuántos juegan y cuánto pagan. Los números ya incluyen el plan: pase y tienda directa, bienvenida a US$ 0,99, juego en inglés y Photon a 10 envíos por segundo. El promedio gana US$ 5.200 por mes con 100.000 jugadores por mes y deja de perder plata desde 77.000. El pesimista no se sostiene. Son simulaciones con supuestos; el detalle está en la guía.'},
-    {id:'inversion', title:'Qué se invierte y qué vuelve', label:'Inversión', minutes:2, note:'Se invierten US$ 38.500: casi todo es el desarrollo de los 5 sprints. Después, el juego necesita unos US$ 16.900 fijos por mes, y los sueldos son US$ 15.500 de eso. En el promedio se recupera en el mes 24 y a los 3 años vuelven US$ 2,19 por cada dólar; en el optimista, en el mes 3. Cerrar con los tres números a seguir: jugadores por mes, porcentaje que paga y gasto por pagador.'},
+    {id:'inversion', title:'Qué se invierte y qué vuelve', label:'Inversión', minutes:2, note:'Se invierten US$ 38.500: casi todo es el desarrollo de los 5 sprints. Después, el juego necesita unos US$ 16.900 fijos por mes, y los sueldos son US$ 15.500 de eso. En el promedio se recupera en el mes 24 y a los 3 años vuelven US$ 2,19 por cada dólar; en el optimista, en el mes 3. Los 100.000 jugadores por mes del promedio son 20.000 por día y 2.500 a la vez en la hora pico (cada uno juega 1,5 horas): Photon cobra por ese pico. El gasto de US$ 12,82 es el promedio de dos grupos: en Latinoamérica (45 % de los que pagan), el pase cada 8 semanas y un paquete chico por mes dan unos US$ 5, y con la tienda directa US$ 6,50; en el resto (55 %), el pase y un paquete mediano dan unos US$ 15, y con la tienda directa US$ 18. Cerrar con los números a seguir: jugadores por mes, porcentaje que paga y gasto por pagador.'},
     {id:'cierre', title:'Del núcleo jugable a una experiencia completa', label:'Cierre', minutes:1, note:'Cerrar con una demo concreta y dos aprendizajes del Sprint 3. Reemplazar pendientes antes del ensayo final. El tiempo planificado suma exactamente 20 minutos.'}
   ]
 };
