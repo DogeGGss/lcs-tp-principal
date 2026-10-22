@@ -123,6 +123,29 @@ MonoBehaviour:
     giroPalanca: {x: 0, y: 0, z: 0}
     retrocesoArriba: 3
     retrocesoAtras: 0.025
+  - arma: Roca
+    nombre: Roca
+    alturaPecho: 0.3
+    lugar: {x: 0.15, y: 0.12, z: 0.33}
+    minimoAdelante: 0.2
+    seguirCuerpo: 1
+    giro: {x: -10, y: 0, z: 0}
+    escala: 1.099074
+    manoDerecha: {x: 0, y: 0, z: 0}
+    giroManoDerecha: {x: 0, y: 0, z: 0}
+    manoIzquierda: {x: 0, y: 0, z: 0}
+    giroManoIzquierda: {x: 0, y: 0, z: 0}
+    recarga: 2
+    tamborArriba: 0.15
+    tamborGiro: {x: -50, y: -50, z: -5}
+    cartuchosGiro: {x: -6, y: 8, z: -30}
+    cargador: {x: -0.03, y: -0.07, z: 0.08}
+    giroCargador: {x: 0, y: 0, z: 0}
+    palanca: 0
+    palancaLugar: {x: -0.07, y: 0.08, z: 0}
+    giroPalanca: {x: 0, y: 0, z: 0}
+    retrocesoArriba: 12
+    retrocesoAtras: 0.07
   granadaAlturaPecho: 0.3
   granadaDerecha: {x: 0.29007626, y: -0.15613346, z: 0.14001861}
   granadaIzquierda: {x: 0.00599911, y: -0.33309966, z: 0.1979624}

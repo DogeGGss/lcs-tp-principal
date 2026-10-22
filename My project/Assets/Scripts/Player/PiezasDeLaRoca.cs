@@ -57,6 +57,15 @@ public class PiezasDeLaRoca : IPiezasDelArma
         return camara.InverseTransformVector(arma.TransformVector(Vector3.right * (Recorrido * escala * b)));
     }
 
+    /// <summary>Cuánto se corrió el guardamanos, en el mundo (tercera persona, US 249: la mano izquierda lo sigue).</summary>
+    public Vector3 Corrimiento()
+    {
+        float b = Bombeo;
+        if (b <= 0f) return Vector3.zero;
+        Escala();
+        return arma.TransformVector(Vector3.right * (Recorrido * escala * b));
+    }
+
     private void Escala()
     {
         if (escala > 0f) return;

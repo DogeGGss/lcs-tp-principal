@@ -17,6 +17,8 @@ public class AgarresTerceraPersona : ScriptableObject
         Cargador,
         [Tooltip("Revólver (La Trochita, US 245): el arma sube de costado mostrando el tambor y la mano izquierda la suelta y baja; la sostiene la derecha.")]
         Tambor,
+        [Tooltip("Escopeta (la Roca, US 249): el arma se inclina y la mano izquierda va de la boca de carga a buscar un cartucho y lo mete, uno por cada cartucho.")]
+        Cartuchos,
     }
 
     [System.Serializable]
@@ -54,7 +56,9 @@ public class AgarresTerceraPersona : ScriptableObject
         public float tamborArriba = 0.15f;
         [Tooltip("Tambor: giro del arma al subir (grados: x negativo levanta la punta, y la gira hacia el centro, z la inclina).")]
         public Vector3 tamborGiro = new Vector3(-50f, -50f, -5f);
-        [Tooltip("Cargador: dónde va la mano izquierda a agarrar el cargador, respecto de la mano derecha, en el espacio del arma (metros: x derecha, y arriba, z hacia el caño). Con el muñeco espejo: \"Probar la recarga\" y la manija \"Cargador\".")]
+        [Tooltip("Cartuchos: cuánto se inclina el arma mientras carga (grados: x levanta la punta, y la gira, z la vuelca de costado).")]
+        public Vector3 cartuchosGiro = new Vector3(-6f, 8f, -30f);
+        [Tooltip("Cargador: dónde va la mano izquierda a agarrar el cargador (en Cartuchos: la boca de carga, donde mete cada cartucho), respecto de la mano derecha, en el espacio del arma (metros: x derecha, y arriba, z hacia el caño). Con el muñeco espejo: \"Probar la recarga\" y la manija \"Cargador\".")]
         public Vector3 cargador = new Vector3(-0.03f, -0.12f, 0f);
         [Tooltip("Cargador: giro de la mano izquierda ahí, respecto de cómo agarra el arma (grados).")]
         public Vector3 giroCargador = Vector3.zero;

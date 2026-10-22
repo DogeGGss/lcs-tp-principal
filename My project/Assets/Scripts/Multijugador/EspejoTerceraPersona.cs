@@ -45,7 +45,7 @@ public class EspejoTerceraPersona : MonoBehaviour
     [Tooltip("Deja el muñeco quieto en un momento de la recarga (\"Momento de la recarga\") para ajustar con las manijas " +
              "\"Cargador\" y \"Palanca\" dónde agarra la mano izquierda.")]
     public bool probarLaRecarga;
-    [Tooltip("En qué momento de la recarga queda (0 a 1): en los fusiles, el cargador está agarrado entre 0,22 y 0,28 y la palanca entre 0,75 y 0,85.")]
+    [Tooltip("En qué momento de la recarga queda (0 a 1): en los fusiles, el cargador está agarrado entre 0,22 y 0,28 y la palanca entre 0,75 y 0,85; en la Roca (un cartucho), la mano está en la boca de carga en 0,75.")]
     [Range(0f, 1f)] public float momentoDeLaRecarga = 0.25f;
 
     [Tooltip("Con una granada en la mano: deja el muñeco quieto en un momento del lanzamiento (\"Momento del lanzamiento\") " +
