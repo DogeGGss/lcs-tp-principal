@@ -1182,6 +1182,18 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
             granadaEnMano.go.activeSelf == lanzamiento.ManoVacia)
             granadaEnMano.go.SetActive(!lanzamiento.ManoVacia);
         if (terceraPersona != null && terceraPersona.Manejando) return; // F26: el arma la pone ArmaEnTerceraPersona
+        if (manoDerecha != null && armaVista >= PrimeraGranada && armaVista != ArmaDesconocida)
+        {
+            // US 259: la granada, en la mano según su ajuste (AgarresTerceraPersona), también mientras la lanza.
+            AgarresTerceraPersona agarres = AgarresTerceraPersona.Actual;
+            agarres.PoseDeGranada(manoDerecha, out Vector3 lugar, out Quaternion giro);
+            soporteMano.SetPositionAndRotation(lugar, giro);
+            soporteMano.localScale = Vector3.one * agarres.granadaEscala;
+            if (enLaMano.TryGetValue(armaVista, out ModeloEnMano granada) && granada.go != null)
+                granada.go.transform.localPosition = Vector3.zero;
+            return;
+        }
+        soporteMano.localScale = Vector3.one;
         if (manoDerecha != null) soporteMano.position = manoDerecha.position;
         if (camara != null) soporteMano.rotation = camara.rotation;
     }

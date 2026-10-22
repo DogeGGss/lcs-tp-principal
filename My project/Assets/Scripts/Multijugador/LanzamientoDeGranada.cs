@@ -29,7 +29,7 @@ public class LanzamientoDeGranada : MonoBehaviour
     private int capa = -1;
     private float desde = -10f;
     private float peso;
-    private bool sosteniendo;
+    private static readonly int hashSostener = Animator.StringToHash(Sostener);
 
     /// <summary>Tiene una granada en la mano (lo pone el que maneja la copia).</summary>
     public bool ConGranada { get; set; }
@@ -66,7 +66,6 @@ public class LanzamientoDeGranada : MonoBehaviour
         if (peso > 0.01f && !Lanzando) animador.CrossFadeInFixedTime(Estado, 0.08f, capa, Inicio * Largo);
         else animador.Play(Estado, capa, Inicio);
         desde = Time.time;
-        sosteniendo = false;
     }
 
     private void Update()
@@ -76,13 +75,14 @@ public class LanzamientoDeGranada : MonoBehaviour
         if (capa < 0) return;
         float t = Pasado;
         bool lanzando = t < Dura;
-        // Al terminar de lanzar, si sigue con una granada (sacó la siguiente), vuelve a sostenerla.
-        if (!lanzando && ConGranada && !sosteniendo)
+        // Con una granada en la mano y sin lanzar (también al terminar de lanzar, con la siguiente ya en la mano): la
+        // pose de sostenerla. Se revisa cada cuadro, así vuelve a ella pase lo que pase en la capa.
+        if (!lanzando && ConGranada)
         {
-            animador.CrossFadeInFixedTime(Sostener, peso > 0.01f ? 0.15f : 0f, capa, 0f);
-            sosteniendo = true;
+            bool yendo = animador.IsInTransition(capa) && animador.GetNextAnimatorStateInfo(capa).shortNameHash == hashSostener;
+            if (!yendo && animador.GetCurrentAnimatorStateInfo(capa).shortNameHash != hashSostener)
+                animador.CrossFadeInFixedTime(hashSostener, peso > 0.01f ? 0.15f : 0f, capa, 0f);
         }
-        if (!ConGranada) sosteniendo = false;
         // Prendida mientras lanza o la sostiene; se apaga suave al terminar de lanzar la última o al cambiar de arma.
         bool prendida = (lanzando && t < Dura - Salir) || (!lanzando && ConGranada) || (lanzando && ConGranada);
         float rapidez = prendida ? 1f / Entrar : 1f / Salir;

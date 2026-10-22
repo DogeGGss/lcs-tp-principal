@@ -13,6 +13,7 @@ using UnityEngine;
 // las herramientas de siempre (W y E); la del arma también se escala (R) para cambiar el tamaño. Lo que se mueva pasa
 // al ajuste de esa arma (lugar, giro, escala y las manos) y queda guardado. Un arma sin ajuste se agrega con "Agregar
 // el arma en la mano".
+// Granadas (US 259): con una granada en la mano aparece la manija "Granada" (dónde va respecto de la mano derecha).
 // Recarga: con "Probar la recarga" el muñeco queda quieto en un momento de la recarga ("Momento de la recarga") y
 // aparecen las manijas "Cargador" y "Palanca" (fusiles): dónde agarra la mano izquierda el cargador y la palanca.
 // Se prende y apaga con Riftwalker > Muñeco espejo (tercera persona). Con el juego andando, los ajustes de cada arma
@@ -221,6 +222,7 @@ public class EspejoTerceraPersona : MonoBehaviour
 
         if (agregarArmaEnMano) { agregarArmaEnMano = false; AgregarArma(); }
         LeerManijas();
+        LeerManijaDeGranada();
 
         // La misma arma en la mano.
         GameObject ahora = switcher.HeldPrimary != null ? switcher.HeldPrimary : switcher.HeldSecondary;
@@ -247,16 +249,74 @@ public class EspejoTerceraPersona : MonoBehaviour
     {
         PonerManijas();
         // US 259: con la granada en la mano, la pose de sostenerla; sale de la mano al final del lanzamiento.
-        bool conGranada = enMano != null && enMano.name == "GranadaEnMano";
+        bool conGranada = ConGranada;
         if (lanzamiento != null) lanzamiento.ConGranada = conGranada;
         if (lanzamiento != null && modeloEnMano != null && conGranada) modeloEnMano.SetActive(!lanzamiento.ManoVacia);
+        Transform mano = copia != null ? copia.GetBoneTransform(HumanBodyBones.RightHand) : null;
+        PonerManijaDeGranada(conGranada && modeloEnMano != null ? mano : null);
         if (arma == null || arma.Manejando || modeloEnMano == null) return;
-        Transform mano = copia.GetBoneTransform(HumanBodyBones.RightHand);
+        if (conGranada && mano != null)
+        {
+            // La granada en la mano según su ajuste (AgarresTerceraPersona), como la ven los demás.
+            AgarresTerceraPersona.Actual.PoseDeGranada(mano, out Vector3 lugar, out Quaternion giro);
+            soporte.SetPositionAndRotation(lugar, giro);
+            soporte.localScale = Vector3.one * AgarresTerceraPersona.Actual.granadaEscala;
+            modeloEnMano.transform.localPosition = Vector3.zero;
+            return;
+        }
+        soporte.localScale = Vector3.one;
         if (mano != null) soporte.position = mano.position;
         soporte.rotation = ojos.rotation;
     }
 
+    // Tiene una granada en la mano (US 259).
+    private bool ConGranada => switcher != null && switcher.Granadas != null && switcher.Granadas.IsHolding &&
+                               switcher.HeldPrimary == null && switcher.HeldSecondary == null;
+
     // ---------- Manijas ----------
+
+    // US 259: la manija "Granada", con una granada en la mano: dónde va respecto de la mano derecha (se mueve, gira y
+    // escala). "mano": la mano derecha del muñeco, o null para sacarla.
+    private ManijaDeAjuste manijaGranada;
+    private Vector3 granadaUltimoLugar, granadaUltimaEscala;
+    private Quaternion granadaUltimoGiro;
+
+    private void PonerManijaDeGranada(Transform mano)
+    {
+        bool mostrar = ajustarConManijas && mano != null;
+        if (!mostrar)
+        {
+            if (manijaGranada != null) { Destroy(manijaGranada.gameObject); manijaGranada = null; }
+            return;
+        }
+        bool nueva = manijaGranada == null;
+        if (nueva) manijaGranada = Manija("Manija: Granada", new Color(0.6f, 1f, 0.2f), 0.03f);
+        AgarresTerceraPersona agarres = AgarresTerceraPersona.Actual;
+        agarres.PoseDeGranada(mano, out Vector3 lugar, out Quaternion giro);
+        Transform t = manijaGranada.transform;
+        t.SetPositionAndRotation(lugar, giro);
+        t.localScale = Vector3.one * agarres.granadaEscala;
+        granadaUltimoLugar = t.position;
+        granadaUltimoGiro = t.rotation;
+        granadaUltimaEscala = t.localScale;
+#if UNITY_EDITOR
+        if (nueva) UnityEditor.Selection.activeGameObject = manijaGranada.gameObject;
+#endif
+    }
+
+    private void LeerManijaDeGranada()
+    {
+        if (manijaGranada == null || copia == null) return;
+        Transform t = manijaGranada.transform;
+        bool movida = (t.position - granadaUltimoLugar).sqrMagnitude > 1e-8f || Quaternion.Angle(t.rotation, granadaUltimoGiro) > 0.01f ||
+                      (t.localScale - granadaUltimaEscala).sqrMagnitude > 1e-8f;
+        Transform mano = copia.GetBoneTransform(HumanBodyBones.RightHand);
+        if (!movida || mano == null) return;
+        AgarresTerceraPersona.Actual.GranadaDesde(mano, t);
+#if UNITY_EDITOR
+        UnityEditor.EditorUtility.SetDirty(AgarresTerceraPersona.Actual); // así queda guardado en el asset
+#endif
+    }
 
     private ManijaDeAjuste Manija(string nombre, Color color, float tamano)
     {

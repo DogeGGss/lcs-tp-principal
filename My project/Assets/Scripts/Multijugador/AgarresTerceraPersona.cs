@@ -74,6 +74,31 @@ public class AgarresTerceraPersona : ScriptableObject
 
     public List<Agarre> armas = new List<Agarre>();
 
+    [Header("Granadas (US 259)")]
+    [Tooltip("Dónde va la granada respecto de la mano derecha, en el espacio del hueso de la mano (metros). Con el muñeco espejo: la manija \"Granada\".")]
+    public Vector3 granadaLugar = new Vector3(0f, 0.08f, 0.03f);
+    [Tooltip("Giro de la granada respecto de la mano (grados).")]
+    public Vector3 granadaGiro = Vector3.zero;
+    [Tooltip("Tamaño de la granada (1 = el de siempre, 12 cm).")]
+    [Range(0.5f, 2f)] public float granadaEscala = 1f;
+
+    /// <summary>US 259: dónde va la granada con la mano derecha ahí (sigue a la mano también al lanzar).</summary>
+    public void PoseDeGranada(Transform mano, out Vector3 lugar, out Quaternion giro)
+    {
+        lugar = mano.position + mano.rotation * granadaLugar;
+        giro = mano.rotation * Quaternion.Euler(granadaGiro);
+    }
+
+    /// <summary>Pasa al ajuste dónde quedó la manija de la granada (muñeco espejo).</summary>
+    public void GranadaDesde(Transform mano, Transform manija)
+    {
+        Quaternion inversa = Quaternion.Inverse(mano.rotation);
+        granadaLugar = inversa * (manija.position - mano.position);
+        Vector3 e = (inversa * manija.rotation).eulerAngles;
+        granadaGiro = new Vector3(Mathf.DeltaAngle(0f, e.x), Mathf.DeltaAngle(0f, e.y), Mathf.DeltaAngle(0f, e.z));
+        granadaEscala = Mathf.Clamp(manija.localScale.x, 0.5f, 2f);
+    }
+
     private static AgarresTerceraPersona actual;
 
     /// <summary>El asset de Resources (o uno con los valores de siempre, si falta).</summary>
