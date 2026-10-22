@@ -28,9 +28,9 @@ public class CorteDeEmotes : MonoBehaviour
         return jugador != null;
     }
 
-    public static bool SePuede(PlayerMovement jugador)
+    public static bool SePuede(PlayerMovement jugador, bool conPausa)
     {
-        if (ShopUI.IsOpen || PauseMenu.IsPaused) return false;
+        if (ShopUI.IsOpen || (PauseMenu.IsPaused && !conPausa)) return false;
         HealthSystem vida = jugador.GetComponent<HealthSystem>();
         return vida == null || vida.currentHealth > 0;
     }

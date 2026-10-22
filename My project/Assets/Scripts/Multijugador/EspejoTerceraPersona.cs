@@ -64,7 +64,8 @@ public class EspejoTerceraPersona : MonoBehaviour
     [Header("Emotes (F27, para probar hasta que esté la rueda)")]
     [Tooltip("El número del baile en el catálogo (Resources/Emotes): 0 es el primero.")]
     [Min(0)] public int baileDePrueba;
-    [Tooltip("El jugador hace ese baile (lo ven los demás y este muñeco). Se corta como siempre: moviéndose, disparando...")]
+    [Tooltip("Es un botón: al tildarlo, el jugador hace ese baile (lo ven los demás y este muñeco) y se destilda solo. Se " +
+             "puede con la pausa abierta. Se corta como siempre: moviéndose, disparando...")]
     public bool bailar;
     [Tooltip("Corta el baile.")]
     public bool cortarElBaile;
@@ -262,7 +263,7 @@ public class EspejoTerceraPersona : MonoBehaviour
         if (bailar)
         {
             bailar = false;
-            if (!Emotes.Hacer(baileDePrueba)) Debug.LogWarning("Muñeco espejo: no se pudo hacer el baile " + baileDePrueba + " (¿existe en el catálogo?).");
+            if (!Emotes.Hacer(baileDePrueba, true)) Debug.LogWarning("Muñeco espejo: no se pudo hacer el baile " + baileDePrueba + " (¿existe en el catálogo?).");
         }
         if (cortarElBaile) { cortarElBaile = false; Emotes.Cortar(); }
         var lista = CatalogoDeEmotes.Actual.emotes;
