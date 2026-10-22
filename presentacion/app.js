@@ -1,7 +1,20 @@
 'use strict';
 const D=window.PRESENTATION, $=s=>document.querySelector(s);
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-let current=0,metric='s1',decision=0,business=0,weaponId='fusil',shield=50;
+let current=0,metric='s1',decision=0,business=0,weaponId='fusil',shield=50,plan=true;
+const num=n=>n.toLocaleString('es-AR'),dec=n=>n.toLocaleString('es-AR',{minimumFractionDigits:2,maximumFractionDigits:2});
+const money=(n,sign=false)=>(n<0?'−':sign&&n>0?'+':'')+'US$ '+num(Math.abs(Math.round(n)));
+const thousands=n=>n>=1e6?n.toLocaleString('es-AR',{maximumFractionDigits:1})+' M':num(Math.round(n/1000)*1000);
+// Números del simulador de la guía: los tres escenarios lado a lado, con o sin las mejoras del plan.
+function scenarios(){
+ const E=D.economics,L=E.scenarios[plan?'con':'sin'],mid=L[1];
+ return `<div class="tabs"><button data-plan="1" aria-pressed="${plan}">Con el plan</button><button data-plan="0" aria-pressed="${!plan}">Sin el plan</button></div><div class="grid">${L.map(x=>`<article class="card scenario"><p class="eyebrow">${esc(x.name)}</p><div class="result ${x.result>=0?'pos':'neg'}">${money(x.result,true)}<small> por mes</small></div><dl class="facts"><div><dt>Jugadores por mes</dt><dd>${num(x.players)}</dd></div><div><dt>Pagan</dt><dd>${num(x.payers)} · ${x.conv.toLocaleString('es-AR')} %</dd></div><div><dt>Pagan los jugadores</dt><dd>${money(x.gross)}</dd></div><div><dt>Cuesta</dt><dd>${money(x.costs)}</dd></div><div><dt>Recupero</dt><dd>${x.payback?'mes '+x.payback:'no se recupera'}</dd></div></dl></article>`).join('')}</div><p class="lead">${mid.result>=0?`${plan?'Con':'Sin'} el plan, el promedio deja de perder plata desde ${thousands(mid.breakEven)} jugadores por mes.`:`${plan?'Con':'Sin'} el plan, el promedio necesita ${thousands(mid.breakEven)} jugadores por mes para no perder plata.`}</p><p class="footnote">Simulación con supuestos, no resultados reales · <a href="../index.html#negocio">Supuestos, fuentes y simulador en la guía</a></p>`;
+}
+// Cuánto se invierte, en qué y qué vuelve (con el plan).
+function investment(){
+ const E=D.economics,I=E.investment,L=E.scenarios.con,mid=L[1];
+ return `<div class="grid two invest"><article class="card"><p class="eyebrow">La inversión</p><div class="metric-number">${money(I.total)}</div><div class="uses">${I.items.map(([n,v])=>`<div><span>${esc(n)}</span><b>${money(v)}</b><i style="width:${Math.max(1,v/I.total*100)}%"></i></div>`).join('')}</div><p class="footnote">Después, el juego necesita ${money(I.monthlyFixed)} fijos por mes (${money(I.salaries)} son los sueldos de los 7) más los servidores.</p></article><article class="card"><p class="eyebrow">Lo que vuelve · con el plan</p><table class="returns"><tr><th></th><th>Recupero</th><th>A los 3 años</th></tr>${L.map(x=>`<tr><td>${esc(x.name)}</td><td>${x.payback?'mes '+x.payback:'no se recupera'}</td><td>${x.perDollar?`US$ ${dec(x.perDollar)} por cada dólar`:`pierde ${money(-x.result)} por mes`}</td></tr>`).join('')}</table></article></div><div class="watch"><div><b>${thousands(mid.breakEven)}</b><span>jugadores por mes para no perder plata (promedio, con el plan)</span></div><div><b>${mid.conv.toLocaleString('es-AR')} %</b><span>de los jugadores paga algo en el mes</span></div><div><b>US$ ${dec(mid.arppu)}</b><span>gasta por mes cada uno que paga</span></div></div>`;
+}
 const tag=(text,pending=false)=>`<span class="tag ${pending?'pending':''}">${esc(text)}</span>`;
 const card=(title,text)=>`<article class="card"><h3>${esc(title)}</h3><p>${esc(text)}</p></article>`;
 const head=s=>`<div class="head"><p class="eyebrow">${String(current+1).padStart(2,'0')} / ${esc(s.label)} · ${s.minutes} min</p><h2>${esc(s.title)}</h2></div>`;
@@ -31,7 +44,9 @@ function content(s){
  case 'menus':return head(s)+`<div class="grid"><button class="demo-card" data-demo="tienda"><strong>01 / Tienda</strong><span>Elegir, comparar y comprar.</span><em>Abrir demo →</em></button><button class="demo-card" data-demo="modos"><strong>02 / Modos</strong><span>Tres andenes. Una elección.</span><em>Abrir demo →</em></button><button class="demo-card" data-demo="hud"><strong>03 / HUD</strong><span>Información durante el combate.</span><em>Abrir demo →</em></button></div><p class="lead">Primero lo probamos como maqueta.<br>Después lo llevamos a Unity.</p><p class="footnote">Demos web de la guía. No representan por sí solas el estado de la build.</p>`;
  case 'arsenal':return head(s)+arsenal();
  case 'juego':return head(s)+`<div class="grid">${D.clips.map((c,i)=>`<article class="card"><h3>${esc(c.title)}</h3><p>${esc(c.detail)}</p><div style="margin-top:28px">${c.src?`<button data-clip="${i}">Reproducir clip →</button>`:tag('Clip pendiente',true)}</div></article>`).join('')}</div><div class="pending-box" style="margin-top:24px"><strong>Espacio reservado para la demo real</strong><p>Una secuencia corta del Sprint 3 y un video de respaldo.</p></div>`;
- case 'negocio':{const b=D.business[business];return head(s)+`<div class="row" style="margin-bottom:22px">${tag('Propuesta comercial · no implementada',true)}${tag('Cosméticos, sin ventajas competitivas · propuesta')}</div>`+buttons(D.business,business,'data-business')+`<div class="business"><div><p class="eyebrow">Free to play</p><p class="pitch">Jugar con amigos<br>sin pagar una entrada.</p><div class="rail"></div><p class="lead">La personalización sostiene la propuesta comercial.</p></div><article class="card"><p class="eyebrow">${esc(b.name)}</p><h3>${esc(b.headline)}</h3><p>${esc(b.text)}</p><span class="big">${esc(b.model)}</span><p class="footnote">${esc(b.pending)}</p></article></div>`;}
+ case 'negocio':{const b=D.business[business];return head(s)+`<div class="row" style="margin-bottom:22px">${tag('Precios definidos · pase y tienda directa por hacer',true)}${tag('Cosméticos: no dan ventajas en la partida')}</div>`+buttons(D.business,business,'data-business')+`<div class="business"><div><p class="eyebrow">Free to play</p><p class="pitch">Jugar con amigos<br>sin pagar una entrada.</p><div class="rail"></div><p class="lead">La personalización sostiene la propuesta comercial.</p></div><article class="card"><p class="eyebrow">${esc(b.name)}</p><h3>${esc(b.headline)}</h3><p>${esc(b.text)}</p><span class="big">${esc(b.model)}</span><p class="footnote">${esc(b.pending)}</p></article></div>`;}
+ case 'escenarios':return head(s)+scenarios();
+ case 'inversion':return head(s)+investment();
  case 'cierre':return head(s)+`<div class="timeline"><span>SPRINT 1<br>Núcleo jugable</span><span>SPRINT 2<br>Integración</span><span>SPRINT 3<br>Evidencia y demo</span></div><div class="grid two">${card('Lo que aprendimos','Completar con dos aprendizajes del Sprint 3.')}${card('Lo que viene','Confirmar próximos objetivos y propuesta comercial.')}</div><p class="pitch">Construir. Probar. Aprender.</p><p class="footnote">Preguntas · <a href="../index.html">Explorar la guía de diseño</a></p>`;
  }
 }
@@ -57,6 +72,7 @@ document.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)r
  if(d.metric){metric=d.metric;render()}
  if(d.decision!==undefined){decision=+d.decision;render()}
  if(d.business!==undefined){business=+d.business;render()}
+ if(d.plan!==undefined){plan=d.plan==='1';render()}
  if(d.shield!==undefined){shield=+d.shield;render()}
  if(d.demo)openDemo(d.demo);
  if(d.clip!==undefined){const c=D.clips[+d.clip];if(c.src){$('#clipTitle').textContent=c.title;$('#video').src=c.src;$('#clipDialog').showModal()}}
