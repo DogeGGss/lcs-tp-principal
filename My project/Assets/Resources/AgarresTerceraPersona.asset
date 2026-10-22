@@ -28,6 +28,7 @@ MonoBehaviour:
     recarga: 0
     tamborArriba: 0.15
     tamborGiro: {x: -50, y: -50, z: -5}
+    cartuchosGiro: {x: -6, y: 8, z: -30}
     cargador: {x: -0.03, y: -0.12, z: 0}
     giroCargador: {x: 0, y: 0, z: 0}
     palanca: 0
@@ -50,6 +51,7 @@ MonoBehaviour:
     recarga: 1
     tamborArriba: 0.15
     tamborGiro: {x: -50, y: -50, z: -5}
+    cartuchosGiro: {x: -6, y: 8, z: -30}
     cargador: {x: -0.03, y: -0.12, z: 0}
     giroCargador: {x: 0, y: 0, z: 0}
     palanca: 0
@@ -60,18 +62,19 @@ MonoBehaviour:
   - arma: Mitre
     nombre: Mitre
     alturaPecho: 0.3
-    lugar: {x: 0.15011913, y: 0.14209406, z: 0.32993332}
+    lugar: {x: 0.2250072, y: 0.13401139, z: 0.25070566}
     minimoAdelante: 0.2
     seguirCuerpo: 1
-    giro: {x: -10.42038, y: 0.00009845049, z: 0.00041325385}
-    escala: 0.88445526
-    manoDerecha: {x: -0.000054020435, y: 0.00002784282, z: -0.00004480034}
-    giroManoDerecha: {x: -0.000030517578, y: 0.0004735076, z: -0.0015869141}
-    manoIzquierda: {x: -0.000060126185, y: 0.000031270087, z: -0.00007408857}
-    giroManoIzquierda: {x: -0.00048828125, y: 0.0017427172, z: 0.0000005709241}
+    giro: {x: 0, y: 0.00012529116, z: 0.0003675682}
+    escala: 0.88453925
+    manoDerecha: {x: -0.00006346032, y: 0.000033847988, z: -0.0000474751}
+    giroManoDerecha: {x: -0.000061035156, y: 0.00015485383, z: -0.0018005371}
+    manoIzquierda: {x: -0.00007233024, y: 0.000037938356, z: -0.000081926584}
+    giroManoIzquierda: {x: -0.0005493164, y: 0.0016618088, z: 0}
     recarga: 0
     tamborArriba: 0.15
     tamborGiro: {x: -50, y: -50, z: -5}
+    cartuchosGiro: {x: -6, y: 8, z: -30}
     cargador: {x: -0.054476958, y: -0.07711139, z: 0.022461705}
     giroCargador: {x: 0.00005204332, y: 0.0000133908, z: 0.000007854022}
     palanca: 1
@@ -82,18 +85,19 @@ MonoBehaviour:
   - arma: BelgranoSur
     nombre: Belgrano Sur
     alturaPecho: 0.3
-    lugar: {x: 0.21103303, y: 0.097840615, z: 0.2941991}
+    lugar: {x: 0.21106401, y: 0.009037104, z: 0.30992386}
     minimoAdelante: 0.2
     seguirCuerpo: 1
-    giro: {x: -26.845428, y: 0.00015197208, z: -0.00015258789}
-    escala: 1.0001695
-    manoDerecha: {x: -0.007961139, y: 0.0029193088, z: -0.013577595}
-    giroManoDerecha: {x: 0.0270846, y: -0.025665283, z: 0.14244267}
-    manoIzquierda: {x: 0.003920909, y: 0.008307808, z: -0.007920951}
-    giroManoIzquierda: {x: 0.08470305, y: -0.11904907, z: -0.00015258789}
+    giro: {x: 0, y: 0.00010359489, z: -0.00015258789}
+    escala: 1.0002542
+    manoDerecha: {x: -0.007979918, y: 0.0029259622, z: -0.013579957}
+    giroManoDerecha: {x: 0.026894743, y: -0.025665283, z: 0.14196992}
+    manoIzquierda: {x: 0.0039025657, y: 0.00830579, z: -0.007932007}
+    giroManoIzquierda: {x: 0.084584236, y: -0.1187439, z: -0.00015258789}
     recarga: 0
     tamborArriba: 0.15
     tamborGiro: {x: -50, y: -50, z: -5}
+    cartuchosGiro: {x: -6, y: 8, z: -30}
     cargador: {x: -0.06710421, y: -0.103278846, z: 0.09820411}
     giroCargador: {x: 0.00006503925, y: 0.000044026743, z: 0.00001368501}
     palanca: 1
@@ -104,18 +108,19 @@ MonoBehaviour:
   - arma: Urquiza
     nombre: Urquiza
     alturaPecho: 0.3
-    lugar: {x: 0.15, y: 0.12, z: 0.33}
+    lugar: {x: 0.20901178, y: -0.12738937, z: 0.28789702}
     minimoAdelante: 0.2
     seguirCuerpo: 1
-    giro: {x: -10, y: 0, z: 0}
-    escala: 0.76135
-    manoDerecha: {x: 0, y: 0, z: 0}
-    giroManoDerecha: {x: 0, y: 0, z: 0}
-    manoIzquierda: {x: 0, y: 0, z: 0}
-    giroManoIzquierda: {x: 0, y: 0, z: 0}
+    giro: {x: 0, y: 0.000058663914, z: 0.000008090024}
+    escala: 0.7614208
+    manoDerecha: {x: -0.0061806347, y: -0.00094056875, z: -0.037403315}
+    giroManoDerecha: {x: 0.00007616322, y: 0.0000019078452, z: 0.0002805175}
+    manoIzquierda: {x: -0.0027717948, y: 0.11952492, z: 0.15767816}
+    giroManoIzquierda: {x: 0.00005638166, y: -0.00039672852, z: 0.00003308471}
     recarga: 0
     tamborArriba: 0.15
     tamborGiro: {x: -50, y: -50, z: -5}
+    cartuchosGiro: {x: -6, y: 8, z: -30}
     cargador: {x: -0.05, y: -0.09, z: 0.08}
     giroCargador: {x: 0, y: 0, z: 0}
     palanca: 1
@@ -126,21 +131,21 @@ MonoBehaviour:
   - arma: Roca
     nombre: Roca
     alturaPecho: 0.3
-    lugar: {x: 0.25300008, y: -0.028024036, z: 0.24915661}
+    lugar: {x: 0.2530972, y: 0.055806406, z: 0.24448276}
     minimoAdelante: 0.2
     seguirCuerpo: 1
-    giro: {x: 16.400578, y: 0.000034272318, z: 0.0000014217915}
-    escala: 0.5977
-    manoDerecha: {x: -0.000013502082, y: 0.0000035762787, z: -0.000008483883}
-    giroManoDerecha: {x: 0, y: 0, z: 0.00014232348}
-    manoIzquierda: {x: -0.046202876, y: -0.037245005, z: -0.040744036}
-    giroManoIzquierda: {x: 0.00011072843, y: -0.000091552734, z: 0.000003961161}
+    giro: {x: 0, y: 0.00010491958, z: 0.000050143324}
+    escala: 0.5978666
+    manoDerecha: {x: -0.021992162, y: -0.028124005, z: -0.103794955}
+    giroManoDerecha: {x: -0.0007324219, y: 0.0010246179, z: -0.0018310547}
+    manoIzquierda: {x: -0.05660227, y: -0.01665746, z: -0.009015113}
+    giroManoIzquierda: {x: -0.00033569336, y: 0.0033925595, z: 0.00021311274}
     recarga: 2
     tamborArriba: 0.15
     tamborGiro: {x: -50, y: -50, z: -5}
     cartuchosGiro: {x: -6, y: 8, z: -30}
-    cargador: {x: -0.03, y: -0.07, z: 0.08}
-    giroCargador: {x: 0, y: 0, z: 0}
+    cargador: {x: -0.05426444, y: 0.08003737, z: 0.4237189}
+    giroCargador: {x: 0.000007885549, y: 0.000006064375, z: 0}
     palanca: 0
     palancaLugar: {x: -0.07, y: 0.08, z: 0}
     giroPalanca: {x: 0, y: 0, z: 0}
