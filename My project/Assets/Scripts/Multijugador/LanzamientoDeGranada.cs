@@ -7,22 +7,25 @@ using UnityEngine;
 // Mientras lanza, el IK de los brazos de ArmaEnTerceraPersona se suelta (ManosLibres) para que mande la animación.
 // Empieza cuando el dueño hace clic (RpcLanzandoGranada) y suelta la granada al final del movimiento hacia adelante:
 // la granada de muestra que llega por la red (que el dueño suelta a los 0,34 s) espera a ese momento (FaltaParaSoltar).
-// Con una granada en la mano (ConGranada), la misma capa lo deja en la pose del principio de la animación (estado
-// SostenerGranada, quieto): la granada a la altura del pecho, en vez de la pose de rifle.
+// Con una granada en la mano (ConGranada), la misma capa lo deja quieto en la pose lista para lanzar de la animación
+// (estado SostenerGranada, en 1 s): la granada arriba junto a la cabeza y la otra mano adelante, en vez de la pose de
+// rifle (la animación de Mixamo empieza y termina con un rifle en las manos: esa parte no se usa).
 // Lo usan las copias de los jugadores remotos (JugadorEnRed) y el muñeco espejo (EspejoTerceraPersona).
 public class LanzamientoDeGranada : MonoBehaviour
 {
     public const string Capa = "Granada", Estado = "LanzarGranada", Sostener = "SostenerGranada";
 
-    // La animación (3,2 s): arranca en 0,65 s (antes está quieto) y suelta la granada en 1,83 s, cuando la mano llega
-    // arriba y adelante. Va a 2,4 veces su velocidad (la del estado, en el Animator): suelta a los 0,49 s del clic.
+    // La animación (3,2 s, en segundos del clip): hasta 1 s saca la granada de un rifle; en 1 s la tiene lista (la pose
+    // de sostenerla), la lleva atrás y la suelta en 1,83 s, cuando la mano llega arriba y adelante; en 2,3 s ya terminó
+    // el envión (después vuelve al rifle: no se usa). Va a 2,4 veces su velocidad (la del estado, en el Animator): suelta
+    // a los 0,35 s del clic, casi a la vez que el dueño (0,34 s).
     public const float Largo = 3.2f, Velocidad = 2.4f;
-    public const float Inicio = 0.65f / Largo, Suelta = 1.83f / Largo;
-    private const float Entrar = 0.1f, Salir = 0.3f, SinGranada = 0.35f;
+    public const float Pose = 1f, Inicio = 1f, Suelta = 1.83f, Fin = 2.3f;
+    private const float Entrar = 0.1f, Salir = 0.3f, Volver = 0.2f, SinGranada = 0.35f;
 
     /// <summary>Segundos desde que empieza hasta que suelta la granada.</summary>
-    public static float HastaSoltar => (Suelta - Inicio) * Largo / Velocidad;
-    private static float Dura => (1f - Inicio) * Largo / Velocidad;
+    public static float HastaSoltar => (Suelta - Inicio) / Velocidad;
+    private static float Dura => (Fin - Inicio) / Velocidad;
 
     private Animator animador;
     private ArmaEnTerceraPersona arma;
@@ -62,9 +65,8 @@ public class LanzamientoDeGranada : MonoBehaviour
             Debug.LogWarning("LanzamientoDeGranada: el Animator no tiene la capa \"" + Capa + "\" (se arma sola en el editor cuando está la animación LanzarGranada).");
             return;
         }
-        // Desde la pose de sostenerla, pasa al lanzamiento en un instante (sin saltar de golpe).
-        if (peso > 0.01f && !Lanzando) animador.CrossFadeInFixedTime(Estado, 0.08f, capa, Inicio * Largo);
-        else animador.Play(Estado, capa, Inicio);
+        // Arranca en la misma pose de sostenerla.
+        animador.Play(Estado, capa, Inicio / Largo);
         desde = Time.time;
     }
 
@@ -81,7 +83,10 @@ public class LanzamientoDeGranada : MonoBehaviour
         {
             bool yendo = animador.IsInTransition(capa) && animador.GetNextAnimatorStateInfo(capa).shortNameHash == hashSostener;
             if (!yendo && animador.GetCurrentAnimatorStateInfo(capa).shortNameHash != hashSostener)
-                animador.CrossFadeInFixedTime(hashSostener, peso > 0.01f ? 0.15f : 0f, capa, 0f);
+            {
+                if (peso > 0.01f) animador.CrossFadeInFixedTime(hashSostener, Volver, capa, Pose); // termina de lanzar
+                else animador.Play(hashSostener, capa, Pose / Largo);                              // la saca
+            }
         }
         // Prendida mientras lanza o la sostiene; se apaga suave al terminar de lanzar la última o al cambiar de arma.
         bool prendida = (lanzando && t < Dura - Salir) || (!lanzando && ConGranada) || (lanzando && ConGranada);
