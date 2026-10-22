@@ -101,3 +101,25 @@ MonoBehaviour:
     giroPalanca: {x: 0.00006503925, y: 0.000044026743, z: 0.00001368501}
     retrocesoArriba: 5
     retrocesoAtras: 0.035
+  - arma: Urquiza
+    nombre: Urquiza
+    alturaPecho: 0.3
+    lugar: {x: 0.15, y: 0.12, z: 0.33}
+    minimoAdelante: 0.2
+    seguirCuerpo: 1
+    giro: {x: -10, y: 0, z: 0}
+    escala: 1
+    manoDerecha: {x: 0, y: 0, z: 0}
+    giroManoDerecha: {x: 0, y: 0, z: 0}
+    manoIzquierda: {x: 0, y: 0, z: 0}
+    giroManoIzquierda: {x: 0, y: 0, z: 0}
+    recarga: 0
+    tamborArriba: 0.15
+    tamborGiro: {x: -50, y: -50, z: -5}
+    cargador: {x: -0.05, y: -0.09, z: 0.08}
+    giroCargador: {x: 0, y: 0, z: 0}
+    palanca: 1
+    palancaLugar: {x: -0.07, y: 0.04, z: 0.22}
+    giroPalanca: {x: 0, y: 0, z: 0}
+    retrocesoArriba: 3
+    retrocesoAtras: 0.025
