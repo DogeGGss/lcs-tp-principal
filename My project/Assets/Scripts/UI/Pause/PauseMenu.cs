@@ -171,7 +171,8 @@ public class PauseMenu : MonoBehaviour
             if (!IsPaused)
             {
                 // La tienda corre después y se cierra sola con este mismo Esc.
-                if (!ShopUI.IsOpen && AllowPause) Pause();
+                // US 261, CA3: con la rueda de emotes abierta, Esc solo la cierra.
+                if (!ShopUI.IsOpen && AllowPause && !RuedaDeEmotes.UsaElEsc) Pause();
             }
             else if (Current == Panel.Controls && ControlsPanel.IsBusy) { } // Esc cancela el cambio de tecla
             else if (Current == Panel.Main) Resume();

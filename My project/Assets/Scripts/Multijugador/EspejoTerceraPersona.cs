@@ -69,6 +69,11 @@ public class EspejoTerceraPersona : MonoBehaviour
     public bool bailar;
     [Tooltip("Corta el baile.")]
     public bool cortarElBaile;
+    [Tooltip("Para probar la rueda (US 261) hasta que se equipen desde el perfil (US 264): el número del baile de cada " +
+             "espacio de la rueda (arriba, derecha, abajo, izquierda); -1, vacío.")]
+    public int[] espaciosDeLaRueda = { 0, 1, 2, 3 };
+    [Tooltip("Es un botón: equipa en la rueda los bailes de \"Espacios de la rueda\" (quedan guardados).")]
+    public bool equiparEnLaRueda;
     [Tooltip("Los bailes que hay, en orden (solo para ver).")]
     [TextArea(1, 6)] public string bailesQueHay;
 
@@ -266,6 +271,12 @@ public class EspejoTerceraPersona : MonoBehaviour
             if (!Emotes.Hacer(baileDePrueba, true)) Debug.LogWarning("Muñeco espejo: no se pudo hacer el baile " + baileDePrueba + " (¿existe en el catálogo?).");
         }
         if (cortarElBaile) { cortarElBaile = false; Emotes.Cortar(); }
+        if (equiparEnLaRueda)
+        {
+            equiparEnLaRueda = false;
+            for (int i = 0; i < EmotesEquipados.Espacios; i++)
+                EmotesEquipados.Poner(i, espaciosDeLaRueda != null && i < espaciosDeLaRueda.Length ? espaciosDeLaRueda[i] : -1);
+        }
         var lista = CatalogoDeEmotes.Actual.emotes;
         bailesQueHay = string.Join("\n", lista.ConvertAll(e => lista.IndexOf(e) + ": " + e.nombre));
         if (baile != null) baile.Baile = Emotes.Actual;

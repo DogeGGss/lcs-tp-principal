@@ -62,8 +62,12 @@ public class CameraLook : MonoBehaviour
         }
     }
 
+    /// <summary>US 261, CA1: con la rueda de emotes abierta la cámara no gira (el mouse elige el emote).</summary>
+    public static bool Quieta { get; set; }
+
     void Update()
     {
+        if (Quieta) return;
         // Con la mira telescópica puesta (US 009) el mouse va más lento en proporción al zoom, y encima se aplica la
         // sensibilidad de mira de Opciones (US 155).
         bool apuntando = MiraTelescopica.Puesta;
