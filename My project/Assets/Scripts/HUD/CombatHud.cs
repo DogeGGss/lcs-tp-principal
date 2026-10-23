@@ -47,6 +47,14 @@ public class CombatHud : MonoBehaviour
     // Mira (US 171): por defecto, cuatro rayitas blancas con borde oscuro y un hueco en el centro (px en 1920 x 1080).
     // El jugador la cambia desde Opciones > Mira (US 172): forma, color y si se abre con la dispersión del arma.
     private RectTransform crosshair;
+    private CanvasGroup ammoGroup;                                   // US 263: el arma del HUD (se esconde bailando)
+    private readonly System.Collections.Generic.List<CanvasGroup> inventoryGroups = new System.Collections.Generic.List<CanvasGroup>();
+
+    /// <summary>
+    /// US 263, CA5: con la cámara en tercera persona (bailando) se esconden la mira y el arma del HUD (la munición y
+    /// los espacios de las armas); la vida y el mapa siguen.
+    /// </summary>
+    public static bool SinArma { get; set; }
     private MiraDibujo crosshairDrawing;
     private float crosshairOpen; // px que está abierta por la dispersión (mira dinámica)
 
@@ -214,7 +222,9 @@ public class CombatHud : MonoBehaviour
         // La mira se ve con cualquier arma menos los francotiradores: sin la mira telescópica se tira a ojo, como el AWP
         // de CS (US 068), y con ella puesta la lente tiene su propia retícula (US 009). Con la pausa abierta se oculta
         // (con la tienda ya se oculta todo el HUD).
-        crosshair.gameObject.SetActive(!PauseMenu.IsPaused && MiraTelescopica.EnMano == null && !HabilidadVistaAerea.Activa);
+        crosshair.gameObject.SetActive(!PauseMenu.IsPaused && MiraTelescopica.EnMano == null && !HabilidadVistaAerea.Activa && !SinArma);
+        if (ammoGroup != null) ammoGroup.alpha = SinArma ? 0f : 1f;
+        foreach (CanvasGroup g in inventoryGroups) if (g != null) g.alpha = SinArma ? 0f : 1f;
         UpdateCrosshair();
         float center = MiraTelescopica.Puesta ? 0f : 1f;
         foreach (CanvasGroup part in hiddenWhenScoped) part.alpha = center;
@@ -785,6 +795,7 @@ public class CombatHud : MonoBehaviour
     private void BuildAmmo(RectTransform bar)
     {
         RectTransform block = Place(Node("Municion", bar), AmmoX, 0f, BlockW, BarH);
+        ammoGroup = block.gameObject.AddComponent<CanvasGroup>();
         weaponText = Text(Place(Node("Arma", block), 0f, 71f, BlockW, 14f), labelFont, 13f, Mute, TextAlignmentOptions.MidlineRight, 18f, true);
         magText = Text(Place(Node("Cargador", block), 0f, 88f, BlockW, 64f), displayFont, 72f, Ink, TextAlignmentOptions.MidlineRight);
         AddShadow(magText);
@@ -806,6 +817,7 @@ public class CombatHud : MonoBehaviour
             slot.rect = Place(Node("Espacio" + (i + 1), bar), InvX, y, InvW, InvRowH);
             slot.rect.pivot = new Vector2(1f, 0.5f);
             slot.rect.anchoredPosition = new Vector2(InvX + InvW, -(y + InvRowH / 2f));
+            inventoryGroups.Add(slot.rect.gameObject.AddComponent<CanvasGroup>());
             slot.bg = Image(slot.rect, rounded, Rgb(10, 12, 17, DarkAlpha(0.55f)), 5f);
 
             slot.icon = Image(Place(Node("Icono", slot.rect), 8f, 6f, 52f, 24f), null, Mute);
