@@ -117,11 +117,15 @@ public class AnimacionesDeEmotes : AssetPostprocessor
         }
         bool nuevos = false;
         foreach (AnimationClip clip in bailes)
-            if (!catalogo.emotes.Any(e => e.estado == clip.name))
+        {
+            CatalogoDeEmotes.Emote hay = catalogo.emotes.FirstOrDefault(e => e.estado == clip.name);
+            if (hay == null)
             {
-                catalogo.emotes.Add(new CatalogoDeEmotes.Emote { estado = clip.name, nombre = clip.name });
+                catalogo.emotes.Add(new CatalogoDeEmotes.Emote { estado = clip.name, nombre = clip.name, clip = clip });
                 nuevos = true;
             }
+            else if (hay.clip != clip) { hay.clip = clip; nuevos = true; } // la vista previa del perfil (US 264)
+        }
         if (nuevos) EditorUtility.SetDirty(catalogo);
         if (cambio || nuevos)
         {

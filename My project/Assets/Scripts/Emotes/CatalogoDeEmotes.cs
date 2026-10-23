@@ -17,6 +17,8 @@ public class CatalogoDeEmotes : ScriptableObject
         public string nombre = "";
         [Tooltip("El ícono (en la rueda y en el perfil).")]
         public Sprite icono;
+        [Tooltip("La animación (para la vista previa del perfil, US 264). La pone el editor.")]
+        public AnimationClip clip;
     }
 
     public List<Emote> emotes = new List<Emote>();

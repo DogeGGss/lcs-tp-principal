@@ -8,8 +8,8 @@ using Tipo = PerfilDatos.Tipo;
 using Cosmetico = PerfilDatos.Cosmetico;
 
 // Perfil del jugador (menú principal). Arriba, la cabecera con el banner, el avatar, el nombre, el título y un
-// resumen; abajo, dos pestañas: Estadísticas (US 221: las del jugador, F24, y las del minijuego, US 159) y Personalización
-// (avatares, banners, títulos y marcos).
+// resumen; abajo, tres pestañas: Estadísticas (US 221: las del jugador, F24, y las del minijuego, US 159), Personalización
+// (avatares, banners, títulos y marcos) y Emotes (US 264: los bailes que se llevan en la rueda).
 public class PantallaPerfil : PantallaBase
 {
     private const float Y0 = 520f, AnchoGrilla = 1260f;
@@ -20,9 +20,9 @@ public class PantallaPerfil : PantallaBase
     private Transform bajoMarco;
     private TextMeshProUGUI nombre, titulo, infoPestana;
     private readonly TextMeshProUGUI[] resumen = new TextMeshProUGUI[4];
-    private readonly TextMeshProUGUI[] pestanas = new TextMeshProUGUI[2];
+    private readonly TextMeshProUGUI[] pestanas = new TextMeshProUGUI[3];
     private Img subrayado;
-    private RectTransform panelEstad, panelPers, grilla, vista;
+    private RectTransform panelEstad, panelPers, panelEmotes, grilla, vista;
     private RectTransform cuerpoMinijuego;
     private float anchoTarjeta;
     private UnityEngine.UI.ScrollRect scroll;
@@ -41,6 +41,7 @@ public class PantallaPerfil : PantallaBase
         ArmarPestanas();
         ArmarEstadisticas();
         ArmarPersonalizacion();
+        ArmarEmotes();
         ElegirPestana(0);
     }
 
@@ -86,9 +87,9 @@ public class PantallaPerfil : PantallaBase
 
     private void ArmarPestanas()
     {
-        string[] nombres = { "Estadísticas", "Personalización" };
+        string[] nombres = { "Estadísticas", "Personalización", "Emotes" };
         float x = 60f;
-        for (int i = 0; i < 2; i++)
+        for (int i = 0; i < nombres.Length; i++)
         {
             int k = i;
             pestanas[i] = T(rect, nombres[i], x, 438f, 360f, 50f, FTitulo, 36f, Mute, nombres[i], TextAlignmentOptions.MidlineLeft, 6f, true);
@@ -109,18 +110,26 @@ public class PantallaPerfil : PantallaBase
     private void ElegirPestana(int i)
     {
         pestana = i;
-        for (int k = 0; k < 2; k++) pestanas[k].color = k == i ? Ink : Mute;
+        for (int k = 0; k < pestanas.Length; k++) pestanas[k].color = k == i ? Ink : Mute;
         RectTransform t = pestanas[i].rectTransform;
         subrayado.rectTransform.anchoredPosition = new Vector2(t.anchoredPosition.x, -490f);
         subrayado.rectTransform.sizeDelta = new Vector2(t.sizeDelta.x, 4f);
         panelEstad.gameObject.SetActive(i == 0);
         panelPers.gameObject.SetActive(i == 1);
+        panelEmotes.gameObject.SetActive(i == 2);
+        if (i == 2) VerEmote(emoteVisto); else VistaPreviaDeEmote.Apagar(); // la vista previa solo dibuja si se ve
         RefrescarInfo();
     }
 
     private void RefrescarInfo()
     {
         if (pestana == 0) infoPestana.text = $"Partidas terminadas  <color=#F3F4F6>{N(EstadisticasJugador.Datos.Partidas)}</color>";
+        else if (pestana == 2)
+        {
+            int equipados = 0;
+            for (int i = 0; i < EmotesEquipados.Espacios; i++) if (EmotesEquipados.En(i) >= 0) equipados++;
+            infoPestana.text = $"En la rueda  <color=#F3F4F6>{equipados} / {EmotesEquipados.Espacios}</color>";
+        }
         else
         {
             int tiene = PerfilDatos.Obtenidos(Tipo.Avatar) + PerfilDatos.Obtenidos(Tipo.Banner) + PerfilDatos.Obtenidos(Tipo.Titulo) + PerfilDatos.Obtenidos(Tipo.Marco);
@@ -485,6 +494,146 @@ public class PantallaPerfil : PantallaBase
             }, 26f);
     }
 
+    // ================= Emotes (US 264) =================
+    // Arriba, los 4 espacios de la rueda, en el mismo orden (arriba, derecha, abajo, izquierda); abajo, todos los bailes;
+    // a la derecha, el personaje elegido haciendo el que se mira (CA2). Se elige un espacio y después un emote para
+    // ponerlo ahí (CA3: si ya estaba en otro espacio, sale de ese); "Quitar" vacía un espacio (CA4). Se guarda con el
+    // perfil (CA5, EmotesEquipados).
+
+    private static readonly string[] LugaresDeLaRueda = { "Arriba", "Derecha", "Abajo", "Izquierda" };
+    private int espacioElegido = 0;
+    private int emoteVisto = -1;
+    private RectTransform espaciosEmotes, grillaEmotes;
+    private UnityEngine.UI.RawImage vistaEmote;
+    private TextMeshProUGUI nombreVisto, ayudaVista;
+
+    private void ArmarEmotes()
+    {
+        panelEmotes = Place(Node("Emotes", rect), 60f, Y0, 1800f, 540f);
+        espaciosEmotes = Place(Node("Espacios", panelEmotes), 0f, 0f, AnchoGrilla, 124f);
+        T(panelEmotes, "Ayuda", 0f, 136f, AnchoGrilla, 26f, FTexto, 19f, Mute,
+            "Elegí un espacio de la rueda y después el baile que va ahí. Mantené T en la partida para abrir la rueda.");
+        Scroll(panelEmotes, 0f, 172f, AnchoGrilla, 368f, out grillaEmotes);
+
+        RectTransform v = Place(Node("Vista", panelEmotes), 1300f, 0f, 500f, 540f);
+        Image(Stretch(Node("Fondo", v)), Rounded, PanelColor, 8f);
+        Borde(Stretch(Node("Marco", v)), 8f, White(0.08f));
+        T(v, "Rotulo", 24f, 18f, 400f, 22f, FRotulo, 17f, Accent, "Vista previa", TextAlignmentOptions.MidlineLeft, 16f, true);
+        RectTransform caja = Place(Node("Personaje", v), 62f, 50f, 376f, 401f);
+        vistaEmote = caja.gameObject.AddComponent<UnityEngine.UI.RawImage>();
+        vistaEmote.raycastTarget = false;
+        nombreVisto = T(v, "Nombre", 24f, 452f, 452f, 50f, FTitulo, 40f, Ink, "", TextAlignmentOptions.Center, 3f, true);
+        ayudaVista = T(v, "Detalle", 24f, 500f, 452f, 26f, FTexto, 18f, Mute, "", TextAlignmentOptions.Center);
+    }
+
+    private void RefrescarEmotes()
+    {
+        if (panelEmotes == null) return;
+        CatalogoDeEmotes catalogo = CatalogoDeEmotes.Actual;
+
+        // Los 4 espacios.
+        BorrarHijos(espaciosEmotes);
+        float w = (AnchoGrilla - 3f * 18f) / EmotesEquipados.Espacios;
+        for (int i = 0; i < EmotesEquipados.Espacios; i++)
+        {
+            int k = i;
+            int emote = EmotesEquipados.En(i);
+            CatalogoDeEmotes.Emote e = catalogo.De(emote);
+            bool elegido = espacioElegido == i;
+            RectTransform carta = Place(Node("Espacio" + (i + 1), espaciosEmotes), i * (w + 18f), 0f, w, 124f);
+            Image(carta, Rounded, elegido ? SelectedColor : PanelColor, 8f, true);
+            T(carta, "Lugar", 18f, 12f, w - 36f, 20f, FRotulo, 15f, elegido ? Accent : Mute,
+                $"Espacio {i + 1} · {LugaresDeLaRueda[i]}", TextAlignmentOptions.MidlineLeft, 14f, true);
+            if (e != null && e.icono != null)
+                Image(Place(Node("Icono", carta), 18f, 42f, 64f, 64f), e.icono, Color.white).preserveAspect = true;
+            float tx = e != null && e.icono != null ? 96f : 18f;
+            TextMeshProUGUI n = T(carta, "Nombre", tx, 44f, w - tx - 130f, 60f, FTitulo, 32f, e != null ? Ink : Mute,
+                e != null ? e.nombre : "Vacío", TextAlignmentOptions.MidlineLeft, 3f, true);
+            n.overflowMode = TextOverflowModes.Ellipsis;
+            Img borde = Borde(carta, 8f, elegido ? Accent : White(0.08f));
+            var p = Clickeable(carta, () =>
+            {
+                espacioElegido = k;
+                if (EmotesEquipados.En(k) >= 0) emoteVisto = EmotesEquipados.En(k);
+                Refrescar();
+            });
+            p.Hovered = () => { if (borde != null && espacioElegido != k) borde.color = White(0.35f); };
+            p.Exited = () => { if (borde != null && espacioElegido != k) borde.color = White(0.08f); };
+            // CA4: quitar el emote del espacio.
+            if (e != null)
+                CrearBoton(carta, w - 118f, 64f, 100f, 40f, "Quitar", false, () =>
+                {
+                    EmotesEquipados.Poner(k, -1);
+                    menu.Avisar($"Espacio {k + 1} vacío");
+                    Refrescar();
+                }, 18f);
+        }
+
+        // Todos los bailes.
+        BorrarHijos(grillaEmotes);
+        const int Columnas = 4;
+        const float Gap = 18f, Alto = 104f;
+        float cw = (AnchoGrilla - (Columnas - 1) * Gap) / Columnas;
+        for (int i = 0; i < catalogo.emotes.Count; i++)
+        {
+            CatalogoDeEmotes.Emote e = catalogo.emotes[i];
+            if (e == null) continue;
+            int k = i;
+            int espacio = EspacioDe(i);
+            bool visto = emoteVisto == i;
+            RectTransform carta = Place(Node(e.nombre, grillaEmotes), (i % Columnas) * (cw + Gap), (i / Columnas) * (Alto + Gap), cw, Alto);
+            Image(carta, Rounded, PanelColor, 8f, true);
+            if (e.icono != null) Image(Place(Node("Icono", carta), 16f, 16f, 72f, 72f), e.icono, Color.white).preserveAspect = true;
+            else
+            {
+                // Sin ícono: la inicial, en un cuadrado.
+                RectTransform ini = Place(Node("Inicial", carta), 16f, 16f, 72f, 72f);
+                Image(ini, Rounded, ChipColor, 6f);
+                T(ini, "Letra", 0f, 0f, 72f, 72f, FTitulo, 40f, Soft, e.nombre.Length > 0 ? e.nombre.Substring(0, 1) : "?", TextAlignmentOptions.Center);
+            }
+            TextMeshProUGUI n = T(carta, "Nombre", 104f, 18f, cw - 120f, 40f, FTitulo, 30f, Ink, e.nombre, TextAlignmentOptions.MidlineLeft, 3f, true);
+            n.overflowMode = TextOverflowModes.Ellipsis;
+            T(carta, "Estado", 104f, 60f, cw - 120f, 24f, FRotulo, 16f, espacio >= 0 ? Ok : Mute,
+                espacio >= 0 ? $"En el espacio {espacio + 1}" : "Sin equipar", TextAlignmentOptions.MidlineLeft, 12f, true);
+            Img borde = Borde(carta, 8f, visto ? Accent : White(0.08f));
+            var p = Clickeable(carta, () =>
+            {
+                // CA3: va al espacio elegido.
+                emoteVisto = k;
+                if (espacioElegido >= 0)
+                {
+                    EmotesEquipados.Poner(espacioElegido, k);
+                    menu.Avisar($"{e.nombre} en el espacio {espacioElegido + 1} ({LugaresDeLaRueda[espacioElegido].ToLowerInvariant()})");
+                }
+                Refrescar();
+            });
+            // CA2: pasando el mouse se ve en la vista previa.
+            p.Hovered = () => { VerEmote(k); if (borde != null && emoteVisto != k) borde.color = White(0.35f); };
+            p.Exited = () => { VerEmote(emoteVisto); if (borde != null && emoteVisto != k) borde.color = White(0.08f); };
+        }
+        int filas = (catalogo.emotes.Count + Columnas - 1) / Columnas;
+        grillaEmotes.sizeDelta = new Vector2(AnchoGrilla, Mathf.Max(368f, filas * (Alto + Gap)));
+        if (pestana == 2) VerEmote(emoteVisto);
+    }
+
+    private static int EspacioDe(int emote)
+    {
+        for (int i = 0; i < EmotesEquipados.Espacios; i++) if (EmotesEquipados.En(i) == emote) return i;
+        return -1;
+    }
+
+    // La vista previa: el personaje elegido haciendo ese emote (o quieto, sin ninguno).
+    private void VerEmote(int emote)
+    {
+        if (vistaEmote == null) return;
+        CatalogoDeEmotes.Emote e = CatalogoDeEmotes.Actual.De(emote);
+        VistaPreviaDeEmote.Mostrar(CharacterRoster.Selected, e != null ? e.clip : null);
+        vistaEmote.texture = VistaPreviaDeEmote.Textura;
+        nombreVisto.text = e != null ? e.nombre : "";
+        CharacterData pj = CharacterRoster.Selected;
+        ayudaVista.text = e == null ? "Pasá el mouse por un baile para verlo." : pj != null ? pj.displayName : "";
+    }
+
     // ================= Datos =================
 
     public override void Refrescar()
@@ -518,5 +667,6 @@ public class PantallaPerfil : PantallaBase
         RefrescarChips();
         RefrescarGrilla();
         RefrescarVista();
+        RefrescarEmotes();
     }
 }
