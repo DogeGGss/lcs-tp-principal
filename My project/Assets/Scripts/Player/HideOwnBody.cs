@@ -12,6 +12,20 @@ public class HideOwnBody : MonoBehaviour
     [SerializeField] private Camera ownCamera;
 
     private readonly List<Renderer> brazos = new List<Renderer>();
+    private readonly List<Renderer> cuerpo = new List<Renderer>();
+    private bool cuerpoVisible;
+
+    /// <summary>
+    /// US 263: bailando, con la cámara en tercera persona, el cuerpo se ve entero (y sin los brazos de primera persona,
+    /// que van encima de los del cuerpo).
+    /// </summary>
+    public void MostrarCuerpo(bool si)
+    {
+        if (cuerpoVisible == si) return;
+        cuerpoVisible = si;
+        foreach (Renderer r in cuerpo)
+            if (r != null) r.shadowCastingMode = si ? ShadowCastingMode.On : ShadowCastingMode.ShadowsOnly;
+    }
     private HealthSystem vida;
 
     // Con multijugador, esto tiene que correr solo en el jugador local: los demas si tienen que ver este cuerpo.
@@ -46,6 +60,7 @@ public class HideOwnBody : MonoBehaviour
     {
         foreach (Renderer r in brazos) if (r != null) Destroy(r.gameObject);
         brazos.Clear();
+        cuerpo.Clear();
         Armar();
     }
 
@@ -54,15 +69,17 @@ public class HideOwnBody : MonoBehaviour
         foreach (var r in GetComponentsInChildren<Renderer>())
         {
             if (ownCamera != null && r.transform.IsChildOf(ownCamera.transform)) continue;
-            r.shadowCastingMode = ShadowCastingMode.ShadowsOnly;
-            if (r is SkinnedMeshRenderer cuerpo) CrearBrazos(cuerpo);
+            if (r.name.StartsWith("Brazos (primera persona)")) continue; // los del cuerpo anterior (se borran en este cuadro)
+            r.shadowCastingMode = cuerpoVisible ? ShadowCastingMode.On : ShadowCastingMode.ShadowsOnly;
+            cuerpo.Add(r);
+            if (r is SkinnedMeshRenderer malla) CrearBrazos(malla);
         }
     }
 
     // Muerto, los brazos no quedan flotando donde estaba el cuerpo (el resto ya no se ve).
     private void LateUpdate()
     {
-        bool vivo = vida == null || vida.currentHealth > 0;
+        bool vivo = (vida == null || vida.currentHealth > 0) && !cuerpoVisible;
         foreach (Renderer r in brazos)
             if (r != null && r.enabled != vivo) r.enabled = vivo;
     }
