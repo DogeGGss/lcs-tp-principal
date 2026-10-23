@@ -22,7 +22,9 @@ function costs(){
 }
 const tag=(text,pending=false)=>`<span class="tag ${pending?'pending':''}">${esc(text)}</span>`;
 const card=(title,text)=>`<article class="card"><h3>${esc(title)}</h3><p>${esc(text)}</p></article>`;
-const head=s=>`<div class="head"><p class="eyebrow">${String(current+1).padStart(2,'0')} / ${esc(s.label)}</p><h2>${esc(s.title)}</h2></div>`;
+// La parte de la presentación (Juego, Equipo, Financiación) va antes del nombre del bloque.
+const eyebrow=s=>`${s.section&&s.section!==s.label?esc(s.section)+' · ':''}${esc(s.label)}`;
+const head=s=>`<div class="head"><p class="eyebrow">${eyebrow(s)}</p><h2>${esc(s.title)}</h2></div>`;
 const buttons=(items,active,attribute)=>`<div class="tabs">${items.map((x,i)=>`<button ${attribute}="${i}" aria-pressed="${i===active}">${esc(x.name)}</button>`).join('')}</div>`;
 function metrics(){
  const m=D.metrics[metric];
@@ -41,9 +43,8 @@ function arsenal(){
 }
 function content(s){
  switch(s.id){
- case 'inicio':return `<div class="hero"><p class="eyebrow">Laboratorio de Construcción de Software · Sprint 3</p><img class="hero-logo" src="media/logo.png" alt="Project Riftwalker"><h1>Del equipo<br>al juego.</h1><p class="lead">Decisiones, evidencia y una experiencia para jugar.</p><div class="row">${tag('20 minutos')}${tag('Presentación en construcción',true)}</div></div>`;
- case 'producto':return head(s)+`<div class="grid"><article class="card"><span class="big">4 vs 4</span><h3>Coordinar</h3><p>Táctico por equipos.<br>Un objetivo compartido.</p></article><article class="card"><span class="big">Deathmatch</span><h3>Dominar</h3><p>Duelo individual.<br>Adaptarse y acertar.</p></article><article class="card"><span class="big">Oleadas</span><h3>Resistir</h3><p>La invasión dimensional.<br>Superar el propio récord.</p></article></div><p class="lead">El entrenamiento une a los Riftwalkers. La invasión los pone a prueba.</p><p class="footnote">Visión de producto · disponibilidad y reglas definitivas a confirmar para Sprint 3.</p>`;
- case 'equipo':return head(s)+`<div class="row" style="margin-bottom:20px">${tag('Informe S1 · acuerdos y acciones para S2')}${tag('Ratificar para S3',true)}</div><div class="grid two">${D.agreements.map(x=>card(...x)).join('')}</div><p class="footnote">Por completar: integrantes, roles y un ejemplo de cómo estos acuerdos cambiaron el trabajo.</p>`;
+ case 'inicio':return `<div class="hero"><p class="eyebrow">Laboratorio de Construcción de Software · Sprint 3</p><img class="hero-logo" src="media/logo.png" alt="Project Riftwalker"><h1>Del equipo<br>al juego.</h1><p class="lead">Decisiones, evidencia y una experiencia para jugar.</p></div>`;
+ case 'trailer':{const t=D.trailer;return `<div class="head row trailer-head"><p class="eyebrow">${eyebrow(s)}</p>${t.src?'<button class="primary" data-trailer>▶ Pantalla completa</button>':''}</div><div class="trailer">${t.src?`<video id="trailerVideo" src="${esc(t.src)}"${t.poster?` poster="${esc(t.poster)}"`:''} controls playsinline preload="metadata"></video>`:'<div><strong>Tráiler</strong><p>Pendiente de cargar</p></div>'}</div>`}
  case 'metricas':return head(s)+metrics();
  case 'decisiones':{const d=D.decisions[decision];return head(s)+buttons(D.decisions,decision,'data-decision')+`<div class="decision"><article class="card"><small>EL PROBLEMA</small><h3>${esc(d.problem)}</h3></article><span class="arrow">→</span><article class="card"><small>LA DECISIÓN</small><h3>${esc(d.choice)}</h3></article><span class="arrow">→</span><article class="card"><small>EL BENEFICIO BUSCADO</small><h3>${esc(d.gain)}</h3></article></div><p class="footnote">${esc(d.source)} · sumar evidencia del resultado en Sprint 3.</p>`;}
  case 'menus':return head(s)+`<div class="grid"><button class="demo-card" data-demo="tienda"><strong>01 / Tienda</strong><span>Elegir, comparar y comprar.</span><em>Abrir demo →</em></button><button class="demo-card" data-demo="modos"><strong>02 / Modos</strong><span>Tres andenes. Una elección.</span><em>Abrir demo →</em></button><button class="demo-card" data-demo="hud"><strong>03 / HUD</strong><span>Información durante el combate.</span><em>Abrir demo →</em></button></div><p class="lead">Primero lo probamos como maqueta.<br>Después lo llevamos a Unity.</p><p class="footnote">Demos web de la guía. No representan por sí solas el estado de la build.</p>`;
@@ -59,7 +60,7 @@ function content(s){
 function render(focus=false){const s=D.slides[current];$('#slide').innerHTML=content(s);$('#position').textContent=`${current+1} / ${D.slides.length}`;$('#prev').disabled=current===0;$('#next').disabled=current===D.slides.length-1;$('#progress').style.width=`${(current+1)/D.slides.length*100}%`;$('#note').textContent=s.note;$('#announcement').textContent=`${current+1} de ${D.slides.length}: ${s.title}`;history.replaceState(null,'','#'+s.id);if(focus){$('#slide').focus({preventScroll:true});scrollTo(0,0)}}
 function go(n){current=Math.max(0,Math.min(D.slides.length-1,n));render(true)}
 $('#edition').textContent=D.edition;
-$('#indexGrid').innerHTML=D.slides.map((s,i)=>`<button data-go="${i}">${String(i+1).padStart(2,'0')} / ${esc(s.label)}<small>${s.minutes} min · ${esc(s.title)}</small></button>`).join('');
+$('#indexGrid').innerHTML=D.slides.map((s,i)=>`${s.section!==D.slides[i-1]?.section?`<h3 class="index-section">${esc(s.section)}</h3>`:''}<button data-go="${i}">${String(i+1).padStart(2,'0')} / ${esc(s.label)}<small>${s.minutes} min · ${esc(s.title)}</small></button>`).join('');
 $('#prev').onclick=()=>go(current-1);$('#next').onclick=()=>go(current+1);
 $('#indexButton').onclick=()=>$('#indexDialog').showModal();
 $('#notesButton').onclick=()=>{$('#notesDialog').showModal();$('#notesButton').setAttribute('aria-expanded','true')};
@@ -79,10 +80,11 @@ document.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)r
  if(d.decision!==undefined){decision=+d.decision;render()}
  if(d.business!==undefined){business=+d.business;render()} if(d.shield!==undefined){shield=+d.shield;render()}
  if(d.demo)openDemo(d.demo);
+ if(d.trailer!==undefined){const v=$('#trailerVideo');if(v){v.requestFullscreen?.().catch(()=>{});v.play().catch(()=>{})}}
  if(d.clip!==undefined){const c=D.clips[+d.clip];if(c.src){$('#clipTitle').textContent=c.title;$('#video').src=c.src;$('#clipDialog').showModal()}}
 });
 document.addEventListener('change',e=>{if(e.target.id==='weaponSelect'){weaponId=e.target.value;render()}});
-document.addEventListener('keydown',e=>{if(!$('#blackout').hidden){if(e.key==='Escape'||e.key.toLowerCase()==='b')blackout(false);return}if(document.querySelector('dialog[open]')||e.target.closest('input,select,textarea,button,a'))return;
+document.addEventListener('keydown',e=>{if(!$('#blackout').hidden){if(e.key==='Escape'||e.key.toLowerCase()==='b')blackout(false);return}if(document.querySelector('dialog[open]')||document.fullscreenElement?.tagName==='VIDEO'||e.target.closest('input,select,textarea,button,a,video'))return;
  if(e.key==='ArrowRight'||e.key==='PageDown'){e.preventDefault();go(current+1)}if(e.key==='ArrowLeft'||e.key==='PageUp'){e.preventDefault();go(current-1)}if(e.key.toLowerCase()==='b')blackout(true);if(e.key.toLowerCase()==='f')$('#fullscreen').click();
 });
 // Child demos use their own keyboard; only an explicit return message closes them.

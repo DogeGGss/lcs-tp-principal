@@ -1,25 +1,26 @@
 # Presentación del Sprint 3
 
-Abrir `/presentacion/` desde el enlace independiente de la guía. El recorrido suma 20 minutos. No avanza automáticamente: el operador controla el ritmo.
+Abrir `/presentacion/` desde el enlace independiente de la guía. El recorrido suma 20 minutos y se divide en tres partes, en este orden: Juego (apertura, tráiler, demos, arsenal y tecnología), Equipo (una métrica) y Financiación (propuesta comercial, números, costos e inversión), y después el cierre. Cada diapositiva muestra arriba su parte, y el índice las agrupa. No avanza automáticamente: el operador controla el ritmo.
 
 ## Para exponer
 
 - Anterior / Siguiente: ubicación fija y botones grandes. Flechas o Page Up / Page Down también funcionan cuando el foco está en la diapositiva.
-- Índice: saltar a cualquiera de los trece bloques.
+- Índice: saltar a cualquiera de los doce bloques.
 - Proyector: fondo claro con texto oscuro para salas iluminadas.
 - Pantalla completa: ocultar el navegador; F11 es alternativa.
 - Oscurecer / B: pausar visualmente; Esc o el botón permiten volver.
+- Tráiler: «Pantalla completa» lo reproduce ocupando toda la pantalla; Esc vuelve. Mientras el video está en pantalla completa, las flechas no cambian de diapositiva.
 - Ensayar: iniciar/pausar el reloj de 20 minutos. El reloj no cambia las diapositivas y sigue durante las demos.
 - Guion: notas para ensayar. Son visibles en la misma pantalla; no abrirlas durante la exposición si no se quieren proyectar.
 - Las demos se abren dentro del recorrido, con Volver y Reiniciar siempre arriba. Son maquetas web; no se presentan como ejecución del juego.
 
 ## Actualización por etapas
 
-Editar `content.js`: títulos, tiempos, guion, acuerdos, decisiones, métricas, propuesta comercial y números económicos. Mantener los tiempos de los trece bloques sumando 20 minutos. Las métricas desconocidas usan `null`, no cero. Los datos S1 son una foto histórica y nunca deben sobrescribirse con S3.
+Editar `content.js`: títulos, partes (`section`), tiempos, guion, tráiler, decisiones, métricas, propuesta comercial y números económicos. Mantener los tiempos de los doce bloques sumando 20 minutos. Las métricas desconocidas usan `null`, no cero. Los datos S1 son una foto histórica y nunca deben sobrescribirse con S3.
 
 `metrics.s3` se completa con el corte final del Sprint 3. Hasta entonces aparece Pendiente. Fuente histórica: InformeSprint1.docx facilitado por el equipo, cierre 28/09/2026. No se publica el documento completo.
 
-Para videos, copiar MP4 a `media/` y completar `clips[].src` con una ruta como `media/ronda.mp4`. Actualmente no hay clips y no se simula que los haya. Evitar videos pesados; un enlace externo puede servir de respaldo fuera del recorrido.
+Para el tráiler, copiar el MP4 a `media/` y completar `trailer.src` con una ruta como `media/trailer.mp4` (y `trailer.poster` con una imagen, si se quiere). GitHub no acepta archivos de más de 100 MB: comprimir el video por debajo de eso. Para otros videos, completar `clips[].src` de la misma forma. Actualmente no hay clips y no se simula que los haya. Evitar videos pesados; un enlace externo puede servir de respaldo fuera del recorrido.
 
 `arsenal.js` es una instantánea de las siete armas marcadas En el juego por la guía al 05/10/2026. No equivale a validar una build. Al actualizar el balance, regenerar o ajustar esa instantánea y su fecha. La pistola usa la recarga de 1,5 s indicada por EXTRA en la guía.
 
@@ -27,9 +28,9 @@ La propuesta comercial y los bloques Números, Costos e Inversión (antes del ci
 
 ## Pendientes para el ensayo final
 
-- Integrantes/roles y acuerdos ratificados; ejemplos del resultado de las decisiones.
+- Cargar el tráiler en `media/` y probarlo en pantalla completa.
+- Elegir la métrica de la parte Equipo.
 - Métricas S3, fecha de corte y fuente; aclarar denominadores de porcentajes.
-- Confirmar modos y reglas: el informe S1 dice oleadas infinitas y la guía habla de diez oleadas.
 - Actualizar disponibilidad/balance de armas contra el ejecutable que se mostrará.
 - Cargar clips y ensayar la demo real con respaldo.
 - Confirmar con el equipo los precios y las mejoras del plan (pase y tienda directa, bienvenida a US$ 0,99, juego en inglés y Photon a 10 envíos por segundo).
