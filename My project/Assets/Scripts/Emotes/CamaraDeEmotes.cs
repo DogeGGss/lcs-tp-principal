@@ -37,6 +37,7 @@ public class CamaraDeEmotes : MonoBehaviour
     private readonly List<Camera> camarasDeArmas = new List<Camera>();
     private readonly List<Rig> capasIK = new List<Rig>();
     private readonly List<float> pesosIK = new List<float>();
+    private readonly List<RigBuilder> armadoresIK = new List<RigBuilder>();
 
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
     private static void Crear()
@@ -53,6 +54,7 @@ public class CamaraDeEmotes : MonoBehaviour
     {
         if (!activa) return;
         foreach (Rig r in capasIK) if (r != null && r.weight != 0f) r.weight = 0f;
+        foreach (RigBuilder b in armadoresIK) if (b != null && b.enabled) b.enabled = false;
     }
 
     private void LateUpdate()
@@ -138,12 +140,17 @@ public class CamaraDeEmotes : MonoBehaviour
         // El IK de los brazos de primera persona (los agarres del arma) se apaga: los mueve el baile.
         capasIK.Clear();
         pesosIK.Clear();
-        foreach (Rig r in jugador.GetComponentsInChildren<Rig>())
+        foreach (Rig r in jugador.GetComponentsInChildren<Rig>(true))
             {
                 capasIK.Add(r);
                 pesosIK.Add(r.weight);
                 r.weight = 0f;
             }
+        // Y el que los arma, apagado: sin él los brazos quedan como los deja la animación (los agarres de primera persona
+        // cuelgan de la cámara, que ahora está atrás del personaje: con el IK, los brazos se torcían hacia ella).
+        armadoresIK.Clear();
+        foreach (RigBuilder b in jugador.GetComponentsInChildren<RigBuilder>(true))
+            if (b.enabled) { armadoresIK.Add(b); b.enabled = false; }
         activa = true;
         return true;
     }
@@ -159,6 +166,8 @@ public class CamaraDeEmotes : MonoBehaviour
         foreach (Camera c in camarasDeArmas) if (c != null) c.enabled = true;
         camarasDeArmas.Clear();
         for (int i = 0; i < capasIK.Count; i++) if (capasIK[i] != null) capasIK[i].weight = pesosIK[i];
+        foreach (RigBuilder b in armadoresIK) if (b != null) b.enabled = true;
+        armadoresIK.Clear();
         capasIK.Clear();
         pesosIK.Clear();
         if (baile != null) baile.Baile = -1;
