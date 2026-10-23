@@ -121,7 +121,7 @@ public class RuedaDeEmotes : MonoBehaviour
         t.alignment = TextAlignmentOptions.Center;
         t.color = ShopUIKit.Ink;
         t.raycastTarget = false;
-        t.enableWordWrapping = false;
+        t.textWrappingMode = TextWrappingModes.NoWrap;
         t.overflowMode = TextOverflowModes.Ellipsis;
         return t;
     }
