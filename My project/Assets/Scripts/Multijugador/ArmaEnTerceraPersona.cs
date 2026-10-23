@@ -56,6 +56,12 @@ public class ArmaEnTerceraPersona : MonoBehaviour
     private Vector3 granadaDerecha, granadaIzquierda, granadaCodoDerecho, granadaCodoIzquierdo;
     private float rotacionVista = 1f;
 
+    /// <summary>
+    /// F27 (US 262): está bailando (BaileEnTerceraPersona): las manos dejan el arma (el IK se apaga) y la animación del
+    /// baile mueve todo el cuerpo. El arma la esconde el que maneja la copia.
+    /// </summary>
+    public bool Bailando { get; set; }
+
     /// <summary>Lo que gira hacia dónde mira (los ojos de la copia).</summary>
     public Transform Ojos => ojos;
     /// <summary>El Animator del personaje.</summary>
@@ -391,6 +397,12 @@ public class ArmaEnTerceraPersona : MonoBehaviour
             System.Action mostrar = pendiente;
             pendiente = null;
             mostrar();
+        }
+        if (Bailando)
+        {
+            // US 262: bailando, las manos son del baile.
+            if (capa != null) capa.weight = 0f;
+            return;
         }
         if (!Manejando || ojos == null) { CopiarOriginales(); ManosConGranada(); return; }
         if (capa != null) capa.weight = 1f;

@@ -55,9 +55,9 @@ public abstract class ManosPorCodigo : MonoBehaviour
     {
         if (arma == null) return;
         // Mientras guarda el arma anterior (la sigue manejando ArmaEnTerceraPersona), todavía no.
-        bool prendida = !arma.Manejando && Prendida;
+        bool prendida = !arma.Manejando && !arma.Bailando && Prendida; // bailando (US 262), tampoco
         peso = Mathf.MoveTowards(peso, prendida ? 1f : 0f, Time.deltaTime / (prendida ? Entrar : Salir));
-        if (arma.Manejando) peso = 0f; // un arma con ajuste en la mano: las manos (y las muñecas) son de ella
+        if (arma.Manejando || arma.Bailando) peso = 0f; // un arma con ajuste en la mano: las manos (y las muñecas) son de ella
         pesoVisto = Suave(peso);
         if (peso <= 0f || !Marco(out Vector3 origen, out Quaternion giro)) { arma.ManosDeGranada(0f, Vector3.zero, Vector3.zero); return; }
 

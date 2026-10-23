@@ -43,6 +43,8 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
     private ArmaEnTerceraPersona terceraPersona; // F26 (US 243): el arma y las manos que ven los demás
     private LanzamientoDeGranada lanzamiento;    // US 259: las manos con la granada y el lanzamiento
     private CuchilloEnTerceraPersona cuchilloVisto; // US 257: las manos con el cuchillo y el corte
+    private BaileEnTerceraPersona baile;         // US 262: el baile (emote) que hace
+    private byte emoteRed;                       // US 262: el baile que llega por la red (0: ninguno; si no, su número + 1)
     private readonly HashSet<int> granadasExplotadas = new HashSet<int>();
     private bool cuerpoPropio;              // la copia ya tiene el modelo de su personaje (CharacterData.modelo)
     private float proximoCuerpo;
@@ -991,6 +993,7 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
         terceraPersona = ArmaEnTerceraPersona.Crear(gameObject, animador, camara); // F26: cómo tiene el arma
         lanzamiento = LanzamientoDeGranada.Crear(gameObject, terceraPersona); // US 259
         cuchilloVisto = CuchilloEnTerceraPersona.Crear(gameObject, terceraPersona); // US 257
+        baile = BaileEnTerceraPersona.Crear(gameObject, animador, terceraPersona);    // US 262
     }
 
     private void CrearContorno()
@@ -1173,6 +1176,13 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
 
     private void LateUpdate()
     {
+        // US 262: el baile que hace su dueño (CA2: también si ya bailaba cuando se armó esta copia); mientras baila, el
+        // arma no se ve (CA3).
+        if (baile != null)
+        {
+            baile.Baile = muerto ? -1 : emoteRed - 1;
+            if (soporteMano != null && soporteMano.gameObject.activeSelf == baile.Bailando) soporteMano.gameObject.SetActive(!baile.Bailando);
+        }
         if (soporteMano == null || photonView == null || photonView.IsMine) return;
         // El hueso se busca ya con la copia prendida (con el personaje apagado, el Animator no lo da).
         if (manoDerecha == null && animador != null && animador.isHuman) manoDerecha = animador.GetBoneTransform(HumanBodyBones.RightHand);
@@ -1580,6 +1590,7 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
             stream.SendNext(tamano);
             stream.SendNext(reserva);
             stream.SendNext(recarga);
+            stream.SendNext(muerto ? (byte)0 : (byte)(Emotes.Actual + 1)); // US 262: el baile que hace
             return;
         }
 
@@ -1603,6 +1614,8 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
                 tamanoRed = (short)stream.ReceiveNext();
                 reservaRed = (short)stream.ReceiveNext();
                 recargaRed = (byte)stream.ReceiveNext();
+                // US 262: el baile (si el que manda tiene una versión anterior, no viene: no baila).
+                emoteRed = stream.PeekNext() is byte ? (byte)stream.ReceiveNext() : (byte)0;
             }
         }
         catch (System.IndexOutOfRangeException) { }
