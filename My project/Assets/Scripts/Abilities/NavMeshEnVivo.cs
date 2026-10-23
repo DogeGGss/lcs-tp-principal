@@ -53,11 +53,14 @@ public static class NavMeshEnVivo
 
     // Lo que cuenta como mapa: colisiones sólidas que no son de personajes ni se mueven con física. Las barreras
     // (US 020) tampoco: duran poco y el perro las rodea igual porque las choca. Las puertas automáticas tampoco: se abren
-    // cuando el perro llega.
+    // cuando el perro llega. Los muros de las bases (US 190) tampoco: están solo en la compra, y el NavMesh se arma justo
+    // ahí (al aparecer con la habilidad), así que quedaban horneados y el perro se trababa en el borde de cada base toda
+    // la partida.
     private static bool DelMapa(Collider c) =>
         c != null && c.enabled && !c.isTrigger &&
         (c.attachedRigidbody == null || c.attachedRigidbody.isKinematic) &&
         c.GetComponentInParent<HealthSystem>() == null && c.GetComponentInParent<CharacterController>() == null &&
         c.GetComponentInParent<Barrera>() == null && c.GetComponentInParent<Perro>() == null &&
-        c.GetComponentInParent<ArmaEnPiso>() == null && !PuertaAutomatica.EsPuerta(c);
+        c.GetComponentInParent<ArmaEnPiso>() == null && c.GetComponentInParent<MurosDeBase>() == null &&
+        !PuertaAutomatica.EsPuerta(c);
 }
