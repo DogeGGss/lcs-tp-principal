@@ -999,7 +999,8 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
     private void CrearContorno()
     {
         ContornoRival.Crear(gameObject, modelo, ConfigRed.Actual != null ? ConfigRed.Actual.contornoRival : null,
-            () => Vivo && EquiposTacticos.EsRival(Actor));
+            () => Vivo && EquiposTacticos.EsRival(Actor),
+            () => Vivo && vida != null && vida.Invulnerable); // US 137: recién reaparecido, amarillo
     }
 
     // Los demás ven a este jugador con el modelo de su personaje (Astra, por ejemplo), en cuanto se sabe cuál eligió.
@@ -1024,6 +1025,8 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
         // El contorno rojo copiaba las mallas del cuerpo anterior: se arma de nuevo con las nuevas.
         foreach (ContornoRival viejo in GetComponents<ContornoRival>()) Destroy(viejo);
         CrearContorno();
+        // US 137: si ya estaba invulnerable (aparece y enseguida se sabe su personaje), el cuerpo nuevo también.
+        if (transparencia != null) transparencia.Rehacer();
     }
 
     private void Update()
