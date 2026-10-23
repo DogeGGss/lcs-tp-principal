@@ -4,14 +4,9 @@ window.PRESENTATION = {
   updated: '05/10/2026', source: 'InformeSprint1.docx · cierre 28/09/2026',
   metrics: {
     s1: {name:'Sprint 1 · 28/09/2026', planned:59, done:49, review:6, todo:4, tests:64, passed:58, failed:3, blocked:1, unrun:2},
-    s2: {name:'Sprint 2', source:null, planned:null, done:null, review:null, todo:null, tests:null, passed:null, failed:null, blocked:null, unrun:null},
+    s2: {name:'Sprint 2 · 12/10/2026', source:'Informe de avance y retrospectiva del Sprint 2', planned:60, done:59, review:0, todo:1, tests:414, passed:414, failed:0, blocked:0, unrun:0},
     s3: {name:'Sprint 3', source:null, planned:null, done:null, review:null, todo:null, tests:null, passed:null, failed:null, blocked:null, unrun:null}
   },
-  decisions: [
-    {name:'UI por código', problem:'Conflictos en escenas compartidas', choice:'ShopUIKit + maquetas interactivas', gain:'Medidas y estilo comunes', source:'DT-02 / DT-03 · Sprint 1'},
-    {name:'Combate por datos', problem:'Cada arma necesita un balance propio', choice:'Núcleo compartido + fichas de armas', gain:'Ajustar daño sin duplicar disparos', source:'DT-08 · Sprint 1'},
-    {name:'Multijugador', problem:'Conectar jugadores de distintas computadoras', choice:'Photon PUN 2', gain:'Integración de red sin un servidor propio', source:'DT-10 · decisión del Sprint 1; demo S3 pendiente'}
-  ],
   // Propuesta de precios de la guía (Modelo de negocio). Cosméticos: nada da ventaja en la partida.
   business: [
     {name:'Tienda directa', headline:'Elegí tu identidad', text:'Avatares, banners y apariencias a elección, sin azar.', model:'400 a 3.200 cristales', pending:'Según la rareza: común, raro, épico o legendario.'},
@@ -40,6 +35,23 @@ window.PRESENTATION = {
   },
   // Tráiler de la diapositiva 2: copiar el MP4 a presentacion/media/ y poner la ruta, por ejemplo 'media/trailer.mp4'.
   trailer: {src:null, poster:null},
+  // Lo que sumó cada sprint, para contarlo en voz alta (diapositiva Avance). image: foto grande del sprint;
+  // items: lo nuevo, con imágenes chicas opcionales. Un sprint sin items muestra solo su nombre y fechas.
+  progress: [
+    {name:'Sprint 1', dates:'21/09 al 28/09', title:'El núcleo jugable', image:'media/sprints/s1.jpg', items:[
+      {text:'Moverse, correr, saltar y agacharse'},
+      {text:'Las primeras armas: La Porteña, el Mitre y el cuchillo', images:['media/armas/pistola.png', 'media/armas/fusil.png']},
+      {text:'Vida y escudo, HUD y tienda'},
+      {text:'Menús, pausa, opciones y controles'}
+    ]},
+    {name:'Sprint 2', dates:'29/09 al 12/10', title:'Online y Modo Táctico', image:'../img/tactico-vista.jpg', items:[
+      {text:'Salas online con código, hasta 8 jugadores'},
+      {text:'Modo Táctico: rondas, dispositivo y economía'},
+      {text:'Cuatro personajes y el Trasbordo', images:['../img/alfa.png', '../img/bravo.png', '../img/charlie.png', '../img/astra.png'], round:true},
+      {text:'Cinco armas nuevas y tres granadas', images:['media/armas/subfusil.png', 'media/armas/rafaga.png', 'media/armas/escopeta.png', 'media/armas/francotirador.png', 'media/armas/pistolaPesada.png']}
+    ]},
+    {name:'Sprint 3', dates:'13/10 al 26/10', title:null, image:null, items:[]}
+  ],
   // Agregar rutas de clips reales dentro de presentacion/media/. No se publican archivos personales.
   clips: [
     {title:'Una ronda táctica', detail:'Coordinación · objetivo · resultado', src:null},
@@ -52,8 +64,8 @@ window.PRESENTATION = {
     {id:'menus', title:'El diseño se puede probar', section:'Juego', label:'Demo de interfaz', minutes:2, note:'Abrir la tienda, elegir categoría y arma, comprar y mostrar su ficha. Estas son maquetas web de la guía, no el ejecutable. Menús y HUD como demos alternativas; el botón Volver al recorrido queda siempre disponible.'},
     {id:'arsenal', title:'Cada arma cambia una decisión', section:'Juego', label:'Arsenal', minutes:2, note:'Elegir Mitre y comparar con La Porteña o Último Tren. Precio = moneda de partida, no dinero real. Datos tomados de la guía el 05/10/2026; confirmar balance y disponibilidad antes de S3.'},
     {id:'juego', title:'Ahora, dentro del juego', section:'Juego', label:'Demo del juego', minutes:2, note:'Reservado para una demo real o clips. Todavía no hay videos cargados. Preparar una ronda corta y un clip de respaldo; volver con el botón grande, sin buscar pestañas.'},
-    {id:'decisiones', title:'Decidir para poder avanzar', section:'Juego', label:'Tecnología', minutes:1, note:'Elegir una decisión y contar problema → elección → beneficio. La elección de Photon está documentada en S1; actualizar la evidencia de implementación y las limitaciones para S3.'},
-    {id:'metricas', title:'Avance con evidencia', section:'Equipo', label:'Métricas', minutes:2, note:'Mostrar el avance de los 3 sprints: historias en Done y pruebas que pasan. S1: 49/59 Done = 83,1 %; pruebas: 58 de 62 ejecutadas = 93,5 % (el informe redondea a 94 %). Completar S2 y S3 con los datos de cada informe.'},
+    {id:'metricas', title:'Avance con evidencia', section:'Equipo', label:'Métricas', minutes:2, note:'Mostrar el avance de los sprints: historias en Done y pruebas que pasan. S1: 49 de 59 en Done (83,1 %); 58 de 62 pruebas ejecutadas pasan (93,5 %). S2: 59 de 60 en Done (98,3 %; solo quedó sin empezar la US 183, diseño de los personajes) y las 414 pruebas pasan. La velocidad se duplicó: 140 puntos en el S1 y 281 en el S2. Completar el S3 con su informe.'},
+    {id:'avance', title:'Lo que sumó cada sprint', section:'Equipo', label:'Avance', minutes:1, note:'Contarlo en voz alta, señalando las imágenes: el Sprint 1 armó el núcleo jugable en el mapa de pruebas; el Sprint 2 llevó el juego online con el Modo Táctico completo en la estación espacial, los personajes con el Trasbordo, cinco armas nuevas y las granadas. El Sprint 3 se completa al cierre del sprint.'},
     {id:'negocio', title:'Entrar gratis. Elegir tu estilo.', section:'Financiación', label:'Propuesta comercial', minutes:2, note:'Pitch: shooter gratuito para jugar con amigos, con monetización cosmética: nada de lo que se vende da ventaja en la partida. Recorrer las cuatro pestañas: tienda directa, pase, cápsulas y cristales. Los precios están definidos; el pase y la tienda directa todavía no están en el juego.'},
     {id:'escenarios', title:'Tres escenarios, un mismo plan', section:'Financiación', label:'Números', minutes:2, note:'Los tres escenarios comparten lo decidido: 7 personas con sueldo promedio, los 5 sprints y el producto del sprint 5; cambia cuántos juegan y cuánto pagan. Los números ya incluyen el plan: pase y tienda directa, bienvenida a US$ 0,99, juego en inglés y Photon a 10 envíos por segundo. El promedio gana US$ 4.000 por mes con 100.000 jugadores por mes y deja de perder plata desde 82.000. Las horas de juego son las de un shooter competitivo: en el promedio, el 25 % juega cada día, 2 horas. El pesimista no se sostiene. Son simulaciones con supuestos; el detalle está en la guía.'},
     {id:'costos', title:'A dónde va cada dólar', section:'Financiación', label:'Costos', minutes:1, note:'La inversión se paga una sola vez: US$ 38.500, y el 85 % son los sueldos de los 7 durante los 5 sprints (US$ 1.600 brutos cada uno, × 1,38 por aguinaldo, contribuciones y ART: US$ 2.208 por persona por mes). Después, en un mes del promedio, de cada US$ 100 que pagan los jugadores: 34 se van en la comisión de Steam y la retención de EE.UU. (30 % de lo que se vende allá), 40 en sueldos, 8 en Photon, 3,5 en Unity Pro (se paga porque se pasan los US$ 200.000 por año), 2,6 en publicidad, 1 en otros gastos, 0,2 en Supabase y 3,1 en el impuesto a las ganancias. Quedan 7,20 de ganancia.'},

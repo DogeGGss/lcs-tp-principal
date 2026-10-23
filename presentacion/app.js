@@ -1,7 +1,7 @@
 'use strict';
 const D=window.PRESENTATION, $=s=>document.querySelector(s);
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-let current=0,decision=0,business=0,weaponId='fusil';
+let current=0,business=0,weaponId='fusil';
 const num=n=>n.toLocaleString('es-AR'),dec=n=>n.toLocaleString('es-AR',{minimumFractionDigits:2,maximumFractionDigits:2});
 const money=(n,sign=false)=>(n<0?'−':sign&&n>0?'+':'')+'US$ '+num(Math.abs(Math.round(n)));
 const thousands=n=>n>=1e6?n.toLocaleString('es-AR',{maximumFractionDigits:1})+' M':num(Math.round(n/1000)*1000);
@@ -20,6 +20,10 @@ function costs(){
  const E=D.economics,I=E.investment,S=I.salary,M=E.month,share=v=>(v/M.gross*100).toLocaleString('es-AR',{minimumFractionDigits:1,maximumFractionDigits:1});
  return `<div class="grid two invest costs"><article class="card"><p class="eyebrow">Inversión inicial</p><div class="metric-number">${money(I.total)}</div><div class="uses">${I.detail.map(([n,v])=>`<div><span>${esc(n)}</span><b>${money(v)}</b><i style="width:${Math.max(1,v/I.total*100)}%"></i></div>`).join('')}</div><p class="footnote">Cada sueldo: ${money(S.gross)} brutos × ${dec(S.factor)} (aguinaldo, contribuciones y ART) = ${money(S.perPerson)} por mes, durante los ${S.days} días de los 5 sprints.</p></article><article class="card"><p class="eyebrow">Cada mes, en el promedio</p><table class="returns spend"><tr><th>Pagan los jugadores: ${money(M.gross)}</th><th>Por mes</th><th>Cada US$ 100</th></tr>${M.items.map(([n,v])=>`<tr><td>${esc(n)}</td><td>${money(v)}</td><td>${share(v)}</td></tr>`).join('')}<tr class="left"><td>Queda de ganancia</td><td>${money(M.left)}</td><td>${share(M.left)}</td></tr></table></article></div>`;
 }
+// Lo que sumó cada sprint, con una foto grande y lo nuevo en pocas palabras.
+function progress(){
+ return `<div class="grid avance">${D.progress.map(p=>`<article class="card"><p class="eyebrow">${esc(p.name)} · ${esc(p.dates)}</p>${p.title?`<h3>${esc(p.title)}</h3>`:''}<div class="avance-foto">${p.image?`<img src="${esc(p.image)}" alt="">`:''}</div>${p.items.length?`<ul>${p.items.map(it=>`<li>${esc(it.text)}${it.images?`<span class="avance-imgs${it.round?' redondas':''}">${it.images.map(src=>`<img src="${esc(src)}" alt="">`).join('')}</span>`:''}</li>`).join('')}</ul>`:''}</article>`).join('')}</div>`;
+}
 const tag=(text,pending=false)=>`<span class="tag ${pending?'pending':''}">${esc(text)}</span>`;
 const card=(title,text)=>`<article class="card"><h3>${esc(title)}</h3><p>${esc(text)}</p></article>`;
 // La parte de la presentación (Juego, Equipo, Financiación) va antes del nombre del bloque.
@@ -30,11 +34,13 @@ const buttons=(items,active,attribute)=>`<div class="tabs">${items.map((x,i)=>`<
 function metrics(){
  const pct=(a,b)=>(100*a/b).toLocaleString('es-AR',{maximumFractionDigits:1})+' %';
  const bar=(parts,total,label)=>`<div class="bars" role="img" aria-label="${label}">${parts.map(([v,c])=>`<span style="width:${v/Math.max(1,total)*100}%;background:${c}"></span>`).join('')}<span style="flex:1;background:var(--line)"></span></div>`;
+ // Lo que queda fuera de Done o sin pasar; los ceros no se muestran.
+ const legend=parts=>{const l=parts.filter(([v])=>v>0);return l.length?`<div class="legend">${l.map(([v,t])=>`<span>${v} ${t}</span>`).join('')}</div>`:''};
  const sprint=m=>{
   if(['planned','done','review','todo','tests','passed','failed','blocked','unrun'].some(k=>m[k]==null))
    return `<article class="card sprint"><p class="eyebrow">${esc(m.name)}</p><div class="metric-number">—</div><p>historias en Done</p>${bar([],1,'Sin datos')}<div class="metric-number">—</div><p>pruebas que pasan</p>${bar([],1,'Sin datos')}</article>`;
   const run=m.tests-m.unrun;
-  return `<article class="card sprint"><p class="eyebrow">${esc(m.name)}</p><div class="metric-number">${pct(m.done,m.planned)}</div><p>${m.done} de ${m.planned} historias en Done</p>${bar([[m.done,'var(--green)'],[m.review,'var(--accent)']],m.planned,`${m.done} en Done, ${m.review} en revisión, ${m.todo} sin empezar`)}<div class="legend"><span>${m.review} en revisión</span><span>${m.todo} sin empezar</span></div><div class="metric-number">${pct(m.passed,run)}</div><p>${m.passed} de ${run} pruebas pasan</p>${bar([[m.passed,'var(--green)'],[m.failed,'var(--red)'],[m.blocked,'var(--accent)']],m.tests,`${m.passed} pasan, ${m.failed} fallan, ${m.blocked} bloqueadas, ${m.unrun} sin ejecutar`)}<div class="legend"><span>${m.failed} fallan</span><span>${m.blocked} bloqueada${m.blocked===1?'':'s'}</span><span>${m.unrun} sin ejecutar</span></div></article>`;
+  return `<article class="card sprint"><p class="eyebrow">${esc(m.name)}</p><div class="metric-number">${pct(m.done,m.planned)}</div><p>${m.done} de ${m.planned} historias en Done</p>${bar([[m.done,'var(--green)'],[m.review,'var(--accent)']],m.planned,`${m.done} en Done, ${m.review} en revisión, ${m.todo} sin empezar`)}${legend([[m.review,'en revisión'],[m.todo,'sin empezar']])}<div class="metric-number">${pct(m.passed,run)}</div><p>${m.passed} de ${run} pruebas pasan</p>${bar([[m.passed,'var(--green)'],[m.failed,'var(--red)'],[m.blocked,'var(--accent)']],m.tests,`${m.passed} pasan, ${m.failed} fallan, ${m.blocked} bloqueadas, ${m.unrun} sin ejecutar`)}${legend([[m.failed,'fallan'],[m.blocked,m.blocked===1?'bloqueada':'bloqueadas'],[m.unrun,'sin ejecutar']])}</article>`;
  };
  return `<div class="grid">${['s1','s2','s3'].map(k=>sprint(D.metrics[k])).join('')}</div>`;
 }
@@ -49,13 +55,13 @@ function content(s){
  case 'inicio':return `<div class="hero"><p class="eyebrow">Laboratorio de Construcción de Software · Sprint 3</p><img class="hero-logo" src="media/logo.png" alt="Project Riftwalker"><h1>Del equipo<br>al juego.</h1><p class="lead">Decisiones, evidencia y una experiencia para jugar.</p></div>`;
  case 'trailer':{const t=D.trailer;return `<div class="head row trailer-head"><p class="eyebrow">${eyebrow(s)}</p>${t.src?'<button class="primary" data-trailer>▶ Pantalla completa</button>':''}</div><div class="trailer">${t.src?`<video id="trailerVideo" src="${esc(t.src)}"${t.poster?` poster="${esc(t.poster)}"`:''} controls playsinline preload="metadata"></video>`:'<strong>Tráiler</strong>'}</div>`}
  case 'metricas':return head(s)+metrics();
- case 'decisiones':{const d=D.decisions[decision];return head(s)+buttons(D.decisions,decision,'data-decision')+`<div class="decision"><article class="card"><small>EL PROBLEMA</small><h3>${esc(d.problem)}</h3></article><span class="arrow">→</span><article class="card"><small>LA DECISIÓN</small><h3>${esc(d.choice)}</h3></article><span class="arrow">→</span><article class="card"><small>EL BENEFICIO BUSCADO</small><h3>${esc(d.gain)}</h3></article></div>`;}
  case 'menus':return head(s)+`<div class="grid"><button class="demo-card" data-demo="tienda"><strong>01 / Tienda</strong><span>Elegir, comparar y comprar.</span><em>Abrir demo →</em></button><button class="demo-card" data-demo="modos"><strong>02 / Modos</strong><span>Tres andenes. Una elección.</span><em>Abrir demo →</em></button><button class="demo-card" data-demo="hud"><strong>03 / HUD</strong><span>Información durante el combate.</span><em>Abrir demo →</em></button></div><p class="lead">Primero lo probamos como maqueta.<br>Después lo llevamos a Unity.</p>`;
  case 'arsenal':return head(s)+arsenal();
  case 'juego':return head(s)+`<div class="grid">${D.clips.map((c,i)=>`<article class="card"><h3>${esc(c.title)}</h3><p>${esc(c.detail)}</p><div style="margin-top:28px">${c.src?`<button data-clip="${i}">Reproducir clip →</button>`:''}</div></article>`).join('')}</div>`;
  case 'negocio':{const b=D.business[business];return head(s)+`<div class="row" style="margin-bottom:22px">${tag('Cosméticos: no dan ventajas en la partida')}</div>`+buttons(D.business,business,'data-business')+`<div class="business"><div><p class="eyebrow">Free to play</p><p class="pitch">Jugar con amigos<br>sin pagar una entrada.</p><div class="rail"></div><p class="lead">La personalización sostiene la propuesta comercial.</p></div><article class="card"><p class="eyebrow">${esc(b.name)}</p><h3>${esc(b.headline)}</h3><p>${esc(b.text)}</p><span class="big">${esc(b.model)}</span><p class="footnote">${esc(b.pending)}</p></article></div>`;}
  case 'escenarios':return head(s)+scenarios();
  case 'costos':return head(s)+costs();
+ case 'avance':return head(s)+progress();
  case 'inversion':return head(s)+investment();
  case 'cierre':return head(s)+`<div class="timeline"><span>SPRINT 1<br>Núcleo jugable</span><span>SPRINT 2<br>Integración</span><span>SPRINT 3<br>Evidencia y demo</span></div><p class="pitch">Construir. Probar. Aprender.</p><p class="footnote">Preguntas · <a href="../index.html">Explorar la guía de diseño</a></p>`;
  }
@@ -79,7 +85,6 @@ $('#clipDialog').addEventListener('close',()=>{$('#video').pause();$('#video').r
 document.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;const d=b.dataset;
  if(d.close)$('#'+d.close).close();
  if(d.go!==undefined){$('#indexDialog').close();go(+d.go)}
- if(d.decision!==undefined){decision=+d.decision;render()}
  if(d.business!==undefined){business=+d.business;render()}
  if(d.demo)openDemo(d.demo);
  if(d.trailer!==undefined){const v=$('#trailerVideo');if(v){v.requestFullscreen?.().catch(()=>{});v.play().catch(()=>{})}}

@@ -1,6 +1,6 @@
 # Presentación del Sprint 3
 
-Abrir `/presentacion/` desde el enlace independiente de la guía. El recorrido suma 20 minutos y se divide en tres partes, en este orden: Juego (apertura, tráiler, demos, arsenal y tecnología), Equipo (una métrica) y Financiación (propuesta comercial, números, costos e inversión), y después el cierre. Cada diapositiva muestra arriba su parte, y el índice las agrupa. No avanza automáticamente: el operador controla el ritmo.
+Abrir `/presentacion/` desde el enlace independiente de la guía. El recorrido suma 20 minutos y se divide en tres partes, en este orden: Juego (apertura, tráiler, demos y arsenal), Equipo (las métricas de cada sprint y lo que sumó cada uno) y Financiación (propuesta comercial, números, costos e inversión), y después el cierre. Cada diapositiva muestra arriba su parte, y el índice las agrupa. No avanza automáticamente: el operador controla el ritmo.
 
 ## Para exponer
 
@@ -16,9 +16,9 @@ Abrir `/presentacion/` desde el enlace independiente de la guía. El recorrido s
 
 ## Actualización por etapas
 
-Editar `content.js`: títulos, partes (`section`), tiempos, guion, tráiler, decisiones, métricas, propuesta comercial y números económicos. Mantener los tiempos de los doce bloques sumando 20 minutos. Las métricas desconocidas usan `null`, no cero. Los datos S1 son una foto histórica y nunca deben sobrescribirse con S3.
+Editar `content.js`: títulos, partes (`section`), tiempos, guion, tráiler, avance de cada sprint (`progress`), métricas, propuesta comercial y números económicos. Mantener los tiempos de los doce bloques sumando 20 minutos. Las métricas desconocidas usan `null`, no cero. Los datos S1 son una foto histórica y nunca deben sobrescribirse con S3.
 
-`metrics` tiene los tres sprints (`s1`, `s2`, `s3`): la diapositiva Métricas los muestra lado a lado para mostrar el avance. Un sprint sin datos muestra rayas. Las diapositivas no llevan textos internos (pendientes, «por completar», «a confirmar»): eso va en el guion o en esta lista. Fuente histórica: InformeSprint1.docx facilitado por el equipo, cierre 28/09/2026. No se publica el documento completo.
+`metrics` tiene los tres sprints (`s1` del informe del Sprint 1; `s2` del informe de avance y la retrospectiva del Sprint 2; `s3` pendiente): la diapositiva Métricas los muestra lado a lado para mostrar el avance. Un sprint sin datos muestra rayas. Las diapositivas no llevan textos internos (pendientes, «por completar», «a confirmar»): eso va en el guion o en esta lista. Fuente histórica: InformeSprint1.docx facilitado por el equipo, cierre 28/09/2026. No se publica el documento completo.
 
 Para el tráiler, copiar el MP4 a `media/` y completar `trailer.src` con una ruta como `media/trailer.mp4` (y `trailer.poster` con una imagen, si se quiere). GitHub no acepta archivos de más de 100 MB: comprimir el video por debajo de eso. Para otros videos, completar `clips[].src` de la misma forma. Actualmente no hay clips y no se simula que los haya. Evitar videos pesados; un enlace externo puede servir de respaldo fuera del recorrido.
 
@@ -29,7 +29,7 @@ La propuesta comercial y los bloques Números, Costos e Inversión (antes del ci
 ## Pendientes para el ensayo final
 
 - Cargar el tráiler en `media/` y probarlo en pantalla completa.
-- Elegir la métrica de la parte Equipo.
+- Al cierre del Sprint 3, completar `metrics.s3` y el Sprint 3 de `progress` (foto, título y lo nuevo).
 - Métricas S3, fecha de corte y fuente; aclarar denominadores de porcentajes.
 - Actualizar disponibilidad/balance de armas contra el ejecutable que se mostrará.
 - Cargar clips y ensayar la demo real con respaldo.
