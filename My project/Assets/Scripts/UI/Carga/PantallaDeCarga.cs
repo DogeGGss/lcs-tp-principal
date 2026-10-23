@@ -51,6 +51,11 @@ public class PantallaDeCarga : MonoBehaviour
     /// <summary>CA4: todavía se está esperando a que carguen los demás (el anfitrión no arranca la partida).</summary>
     public static bool EsperandoJugadores => Visible && actual.online;
 
+    /// <summary>Las tipografías del juego (para otras pantallas armadas por código, como la rueda de emotes).</summary>
+    public static TMP_FontAsset FuenteTitulo => displayFont;
+    public static TMP_FontAsset FuenteEtiqueta => labelFont;
+    public static Sprite Redondeado => rounded;
+
     /// <summary>Las tipografías del juego: las pasa el menú (o la pausa) al arrancar.</summary>
     public static void Registrar(TMP_FontAsset display, TMP_FontAsset label, TMP_FontAsset body, Sprite sprite)
     {

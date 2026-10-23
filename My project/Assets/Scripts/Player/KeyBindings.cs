@@ -10,7 +10,8 @@ public enum GameAction
     Saltar, Agacharse, Correr,
     Disparar, Apuntar, Recargar, Habilidad,
     ArmaPrincipal, ArmaSecundaria, Cuchillo, Granadas,
-    Tienda, Plantar, Soltar, Dispositivo, Mapa
+    Tienda, Plantar, Soltar, Dispositivo, Mapa,
+    Emotes, // F27 (US 261): mientras se mantiene, la rueda de emotes
 }
 
 // Teclas del jugador (US 155). Sigue usando el Input clásico: los scripts preguntan
@@ -43,6 +44,7 @@ public static class KeyBindings
         { GameAction.Soltar, KeyCode.G }, // US 184: soltar el arma en la mano (solo en Táctico)
         { GameAction.Dispositivo, KeyCode.Alpha5 }, // US 130: sacar el dispositivo (solo el portador, en Táctico)
         { GameAction.Mapa, KeyCode.H }, // US 194, CA6: mientras se mantiene, el mapa completo
+        { GameAction.Emotes, KeyCode.T }, // US 261: mientras se mantiene, la rueda de emotes (la B es la tienda)
     };
 
     private static readonly Dictionary<GameAction, string> Names = new Dictionary<GameAction, string>
@@ -67,6 +69,7 @@ public static class KeyBindings
         { GameAction.Soltar, "Soltar arma" },
         { GameAction.Dispositivo, "Dispositivo" },
         { GameAction.Mapa, "Mapa completo" },
+        { GameAction.Emotes, "Emotes" },
     };
 
     // ---------- Opciones del mouse (CA1, CA2) ----------
@@ -106,8 +109,14 @@ public static class KeyBindings
     public static KeyCode Key(GameAction action) =>
         (KeyCode)Guardado.GetInt(PrefKey(action), (int)Defaults[action]);
 
-    public static bool Down(GameAction action) => Input.GetKeyDown(Key(action)) || SimuladaDown(action);
-    public static bool Held(GameAction action) => Input.GetKey(Key(action)) || SimuladaHeld(action);
+    public static bool Down(GameAction action) => !Bloqueada(action) && (Input.GetKeyDown(Key(action)) || SimuladaDown(action));
+    public static bool Held(GameAction action) => !Bloqueada(action) && (Input.GetKey(Key(action)) || SimuladaHeld(action));
+
+    /// <summary>US 261, CA1: con la rueda de emotes abierta no se dispara ni se apunta.</summary>
+    public static bool SinDisparar { get; set; }
+
+    private static bool Bloqueada(GameAction action) =>
+        SinDisparar && (action == GameAction.Disparar || action == GameAction.Apuntar);
     public static bool Up(GameAction action) => Input.GetKeyUp(Key(action)) || SimuladaUp(action);
 
     // ---------- Tests de regresión ----------
