@@ -1,7 +1,7 @@
 'use strict';
 const D=window.PRESENTATION, $=s=>document.querySelector(s);
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-let current=0,decision=0,business=0,weaponId='fusil',shield=50;
+let current=0,decision=0,business=0,weaponId='fusil';
 const num=n=>n.toLocaleString('es-AR'),dec=n=>n.toLocaleString('es-AR',{minimumFractionDigits:2,maximumFractionDigits:2});
 const money=(n,sign=false)=>(n<0?'−':sign&&n>0?'+':'')+'US$ '+num(Math.abs(Math.round(n)));
 const thousands=n=>n>=1e6?n.toLocaleString('es-AR',{maximumFractionDigits:1})+' M':num(Math.round(n/1000)*1000);
@@ -40,7 +40,9 @@ function metrics(){
 }
 function arsenal(){
  const w=window.ARSENAL.find(x=>x.id===weaponId)||window.ARSENAL[0],t=w.tramos[0];
- return `<div class="row" style="margin-bottom:20px"><label for="weaponSelect" class="sr">Elegir arma</label><select id="weaponSelect">${window.ARSENAL.map(x=>`<option value="${esc(x.id)}" ${x.id===w.id?'selected':''}>${esc(x.alias)} · ${esc(x.nombre)}</option>`).join('')}</select></div><div class="weapon"><div class="weapon-art"><img src="../img/${esc(w.icono)}.png" alt="${esc(w.alias)}"></div><div><p class="eyebrow">${esc(w.modo)}</p><h3>${esc(w.alias)}</h3><div class="stats"><div><b>${w.precio.toLocaleString('es-AR')}</b><span>monedas de partida</span></div><div><b>${w.cargador}</b><span>balas / cargador</span></div><div><b>${w.recarga.toLocaleString('es-AR')} s</b><span>recarga</span></div><div><b>${t.cabeza}</b><span>daño · cabeza</span></div><div><b>${t.cuerpo}</b><span>daño · cuerpo</span></div><div><b>${Math.ceil((100+shield)/(t.cuerpo*(w.perdigones||1)))}</b><span>impactos al cuerpo*</span></div></div></div></div><div class="row" style="margin-top:20px"><span>Rival: 100 de vida +</span>${[0,25,50].map(s=>`<button data-shield="${s}" aria-pressed="${shield===s}">${s} de escudo</button>`).join('')}</div><p class="footnote">*Primer tramo: ${t.hasta==null?'cualquier distancia':`0–${t.hasta} m`}. Escopeta: todos los perdigones impactan.</p>`;
+ // Contra 100 de vida y 50 de escudo, con el daño del primer tramo (la escopeta, con todos los perdigones).
+ const tiros=Math.ceil(150/(t.cuerpo*(w.perdigones||1)));
+ return `<div class="row" style="margin-bottom:20px"><label for="weaponSelect" class="sr">Elegir arma</label><select id="weaponSelect">${window.ARSENAL.map(x=>`<option value="${esc(x.id)}" ${x.id===w.id?'selected':''}>${esc(x.alias)} · ${esc(x.nombre)}</option>`).join('')}</select></div><div class="weapon"><div class="weapon-art"><img src="../img/${esc(w.icono)}.png" alt="${esc(w.alias)}"></div><div><p class="eyebrow">${esc(w.modo)}</p><h3>${esc(w.alias)}</h3><div class="stats"><div><b>${w.precio.toLocaleString('es-AR')}</b><span>monedas de partida</span></div><div><b>${w.cargador}</b><span>balas / cargador</span></div><div><b>${w.recarga.toLocaleString('es-AR')} s</b><span>recarga</span></div><div><b>${t.cabeza}</b><span>daño · cabeza</span></div><div><b>${t.cuerpo}</b><span>daño · cuerpo</span></div><div><b>${tiros}</b><span>${tiros===1?'tiro':'tiros'} al cuerpo con escudo completo</span></div></div></div></div>`;
 }
 function content(s){
  switch(s.id){
@@ -78,7 +80,7 @@ document.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)r
  if(d.close)$('#'+d.close).close();
  if(d.go!==undefined){$('#indexDialog').close();go(+d.go)}
  if(d.decision!==undefined){decision=+d.decision;render()}
- if(d.business!==undefined){business=+d.business;render()} if(d.shield!==undefined){shield=+d.shield;render()}
+ if(d.business!==undefined){business=+d.business;render()}
  if(d.demo)openDemo(d.demo);
  if(d.trailer!==undefined){const v=$('#trailerVideo');if(v){v.requestFullscreen?.().catch(()=>{});v.play().catch(()=>{})}}
  if(d.clip!==undefined){const c=D.clips[+d.clip];if(c.src){$('#clipTitle').textContent=c.title;$('#video').src=c.src;$('#clipDialog').showModal()}}
