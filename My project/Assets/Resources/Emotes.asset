@@ -19,3 +19,15 @@ MonoBehaviour:
   - estado: Twerk
     nombre: Twerk
     icono: {fileID: 0}
+  - estado: Breakdance
+    nombre: Breakdance
+    icono: {fileID: 0}
+  - estado: Flair
+    nombre: Flair
+    icono: {fileID: 0}
+  - estado: Rumba
+    nombre: Rumba
+    icono: {fileID: 0}
+  - estado: Silly
+    nombre: Silly
+    icono: {fileID: 0}
