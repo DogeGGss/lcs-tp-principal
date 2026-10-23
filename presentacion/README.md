@@ -18,7 +18,7 @@ Abrir `/presentacion/` desde el enlace independiente de la guía. El recorrido s
 
 Editar `content.js`: títulos, partes (`section`), tiempos, guion, tráiler, decisiones, métricas, propuesta comercial y números económicos. Mantener los tiempos de los doce bloques sumando 20 minutos. Las métricas desconocidas usan `null`, no cero. Los datos S1 son una foto histórica y nunca deben sobrescribirse con S3.
 
-`metrics.s3` se completa con el corte final del Sprint 3. Hasta entonces aparece Pendiente. Fuente histórica: InformeSprint1.docx facilitado por el equipo, cierre 28/09/2026. No se publica el documento completo.
+`metrics` tiene los tres sprints (`s1`, `s2`, `s3`): la diapositiva Métricas los muestra lado a lado para mostrar el avance. Un sprint sin datos muestra rayas. Las diapositivas no llevan textos internos (pendientes, «por completar», «a confirmar»): eso va en el guion o en esta lista. Fuente histórica: InformeSprint1.docx facilitado por el equipo, cierre 28/09/2026. No se publica el documento completo.
 
 Para el tráiler, copiar el MP4 a `media/` y completar `trailer.src` con una ruta como `media/trailer.mp4` (y `trailer.poster` con una imagen, si se quiere). GitHub no acepta archivos de más de 100 MB: comprimir el video por debajo de eso. Para otros videos, completar `clips[].src` de la misma forma. Actualmente no hay clips y no se simula que los haya. Evitar videos pesados; un enlace externo puede servir de respaldo fuera del recorrido.
 
