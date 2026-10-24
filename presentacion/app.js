@@ -8,7 +8,7 @@ const thousands=n=>n>=1e6?n.toLocaleString('es-AR',{maximumFractionDigits:1})+' 
 // Números del simulador de la guía: los tres escenarios lado a lado.
 function scenarios(){
  const L=D.economics.scenarios,mid=L[1];
- return `<div class="grid">${L.map(x=>`<article class="card scenario"><p class="eyebrow">${esc(x.name)}</p><div class="result ${x.result>=0?'pos':'neg'}">${money(x.result,true)}<small> por mes</small></div><dl class="facts"><div><dt>Jugadores por mes</dt><dd>${num(x.players)}</dd></div><div><dt>Pagan</dt><dd>${num(x.payers)} · ${x.conv.toLocaleString('es-AR')} %</dd></div><div><dt>Pagan los jugadores</dt><dd>${money(x.gross)}</dd></div><div><dt>Cuesta</dt><dd>${money(x.costs)}</dd></div><div><dt>Recupero</dt><dd>${x.payback?'mes '+x.payback:'no se recupera'}</dd></div></dl></article>`).join('')}</div><p class="lead">El promedio deja de perder plata desde ${thousands(mid.breakEven)} jugadores por mes.</p>`;
+ return `<div class="grid">${L.map(x=>`<article class="card scenario"><p class="eyebrow">${esc(x.name)}</p><div class="result ${x.result>=0?'pos':'neg'}">${money(x.result,true)}<small> por mes</small></div><dl class="facts"><div><dt>Jugadores por mes</dt><dd>${num(x.players)}</dd></div><div><dt>Pagan</dt><dd>${num(x.payers)} · ${x.conv.toLocaleString('es-AR')} %</dd></div><div><dt>Ganancias en base al pago de los jugadores</dt><dd>${money(x.gross)}</dd></div><div><dt>Cuesta</dt><dd>${money(x.costs)}</dd></div><div><dt>Recupero</dt><dd>${x.payback?'mes '+x.payback:'no se recupera'}</dd></div></dl></article>`).join('')}</div><p class="lead">El promedio deja de perder plata desde ${thousands(mid.breakEven)} jugadores por mes.</p>`;
 }
 // Cuánto se invierte, en qué y qué vuelve.
 function investment(){
@@ -17,8 +17,8 @@ function investment(){
 }
 // A dónde va la inversión y, cada mes del promedio, lo que pagan los jugadores.
 function costs(){
- const E=D.economics,I=E.investment,S=I.salary,M=E.month,share=v=>(v/M.gross*100).toLocaleString('es-AR',{minimumFractionDigits:1,maximumFractionDigits:1});
- return `<div class="grid two invest costs"><article class="card"><p class="eyebrow">Inversión inicial</p><div class="metric-number">${money(I.total)}</div><div class="uses">${I.detail.map(([n,v])=>`<div><span>${esc(n)}</span><b>${money(v)}</b><i style="width:${Math.max(1,v/I.total*100)}%"></i></div>`).join('')}</div><p class="footnote">Cada uno, el sueldo junior de lo que hace: ${money(S.gross)} brutos entre los 7 × ${dec(S.factor)} (aguinaldo, contribuciones y ART) = ${money(S.team)} por mes, durante los ${S.days} días de los 5 sprints.</p></article><article class="card"><p class="eyebrow">Cada mes, en el promedio</p><table class="returns spend"><tr><th>Pagan los jugadores: ${money(M.gross)}</th><th>Por mes</th><th>Cada US$ 100</th></tr>${M.items.map(([n,v])=>`<tr><td>${esc(n)}</td><td>${money(v)}</td><td>${share(v)}</td></tr>`).join('')}<tr class="left"><td>Queda de ganancia</td><td>${money(M.left)}</td><td>${share(M.left)}</td></tr></table></article></div>`;
+ const E=D.economics,I=E.investment,S=I.salary,M=E.month;
+ return `<div class="grid two invest costs"><article class="card"><p class="eyebrow">Inversión inicial</p><div class="metric-number">${money(I.total)}</div><div class="uses">${I.detail.map(([n,v])=>`<div><span>${esc(n)}</span><b>${money(v)}</b><i style="width:${Math.max(1,v/I.total*100)}%"></i></div>`).join('')}</div><p class="footnote">Cada uno, el sueldo junior de lo que hace: ${money(S.gross)} brutos entre los 7 × ${dec(S.factor)} (aguinaldo, contribuciones y ART) = ${money(S.team)} por mes, durante los ${S.days} días de los 5 sprints.</p></article><article class="card"><p class="eyebrow">Cada mes, en el promedio</p><table class="returns spend"><tr><th>Ganancias en base al pago de los jugadores</th><th>${money(M.gross)}</th></tr>${M.items.map(([n,v])=>`<tr><td>${esc(n)}</td><td>${money(v)}</td></tr>`).join('')}<tr class="left"><td>Queda de ganancia</td><td>${money(M.left)}</td></tr></table></article></div>`;
 }
 // Lo que sumó cada sprint, con una foto grande y lo nuevo en pocas palabras.
 function progress(){
@@ -83,18 +83,14 @@ function content(s){
  case 'cierre':return head(s)+`<div class="timeline"><span>SPRINT 1<br>Núcleo jugable</span><span>SPRINT 2<br>Integración</span><span>SPRINT 3<br>Evidencia y demo</span></div><p class="pitch">Construir. Probar. Aprender.</p><p class="footnote">Preguntas · <a href="../index.html">Explorar la guía de diseño</a></p>`;
  }
 }
-function render(focus=false){const s=D.slides[current];$('#slide').innerHTML=content(s);$('#position').textContent=`${current+1} / ${D.slides.length}`;$('#prev').disabled=current===0;$('#next').disabled=current===D.slides.length-1;$('#progress').style.width=`${(current+1)/D.slides.length*100}%`;$('#note').textContent=s.note;$('#announcement').textContent=`${current+1} de ${D.slides.length}: ${s.title}`;history.replaceState(null,'','#'+s.id);if(focus){$('#slide').focus({preventScroll:true});scrollTo(0,0)}}
+function render(focus=false){const s=D.slides[current];$('#slide').innerHTML=content(s);$('#position').textContent=`${current+1} / ${D.slides.length}`;$('#prev').disabled=current===0;$('#next').disabled=current===D.slides.length-1;$('#progress').style.width=`${(current+1)/D.slides.length*100}%`;$('#speaker').textContent=s.speaker||D.speaker;$('#announcement').textContent=`${current+1} de ${D.slides.length}: ${s.title}`;history.replaceState(null,'','#'+s.id);if(focus){$('#slide').focus({preventScroll:true});scrollTo(0,0)}}
 function go(n){current=Math.max(0,Math.min(D.slides.length-1,n));render(true)}
 $('#edition').textContent=D.edition;
 $('#indexGrid').innerHTML=D.slides.map((s,i)=>`${s.section!==D.slides[i-1]?.section?`<h3 class="index-section">${esc(s.section)}</h3>`:''}<button data-go="${i}">${String(i+1).padStart(2,'0')} / ${esc(s.label)}<small>${s.minutes} min · ${esc(s.title)}</small></button>`).join('');
 $('#prev').onclick=()=>go(current-1);$('#next').onclick=()=>go(current+1);
 $('#indexButton').onclick=()=>$('#indexDialog').showModal();
-$('#notesButton').onclick=()=>{$('#notesDialog').showModal();$('#notesButton').setAttribute('aria-expanded','true')};
-$('#notesDialog').addEventListener('close',()=>$('#notesButton').setAttribute('aria-expanded','false'));
 $('#contrast').onclick=()=>{const on=document.body.classList.toggle('projector');$('#contrast').setAttribute('aria-pressed',on)};
 $('#fullscreen').onclick=async()=>{try{if(document.fullscreenElement)await document.exitFullscreen();else await document.documentElement.requestFullscreen()}catch{$('#announcement').textContent='El navegador no permitió pantalla completa. Podés usar F11.'}};
-function blackout(on){$('#blackout').hidden=!on;if(on)$('#unblank').focus();else $('#blank').focus()}
-$('#blank').onclick=()=>blackout(true);$('#unblank').onclick=()=>blackout(false);
 // El menú y el perfil son una página aparte (/menu); las otras demos son maquetas de la guía.
 const demoSrc=id=>id==='menu'?'../menu/index.html':`../index.html?demo=${id}`;
 let demo='';function openDemo(id){demo=id;$('#demoTitle').textContent={tienda:'Tienda de armas',modos:'Selección de modo',hud:'HUD de combate',menu:'Menú y perfil'}[id];$('#demoSub').textContent=id==='menu'?'El menú y el perfil del juego, en la página':'Maqueta interactiva de la guía';$('#demoFrame').src=demoSrc(id);$('#demoDialog').showModal()}
@@ -109,8 +105,8 @@ document.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)r
  if(d.trailer!==undefined){const v=$('#trailerVideo');if(v){v.requestFullscreen?.().catch(()=>{});v.play().catch(()=>{})}}
 });
 document.addEventListener('change',e=>{if(e.target.id==='weaponSelect'){weaponId=e.target.value;render()}});
-document.addEventListener('keydown',e=>{if(!$('#blackout').hidden){if(e.key==='Escape'||e.key.toLowerCase()==='b')blackout(false);return}if(document.querySelector('dialog[open]')||document.fullscreenElement?.tagName==='VIDEO'||e.target.closest('input,select,textarea,button,a,video'))return;
- if(e.key==='ArrowRight'||e.key==='PageDown'){e.preventDefault();go(current+1)}if(e.key==='ArrowLeft'||e.key==='PageUp'){e.preventDefault();go(current-1)}if(e.key.toLowerCase()==='b')blackout(true);if(e.key.toLowerCase()==='f')$('#fullscreen').click();
+document.addEventListener('keydown',e=>{if(document.querySelector('dialog[open]')||document.fullscreenElement?.tagName==='VIDEO'||e.target.closest('input,select,textarea,button,a,video'))return;
+ if(e.key==='ArrowRight'||e.key==='PageDown'){e.preventDefault();go(current+1)}if(e.key==='ArrowLeft'||e.key==='PageUp'){e.preventDefault();go(current-1)}if(e.key.toLowerCase()==='f')$('#fullscreen').click();
 });
 // Child demos use their own keyboard; only an explicit return message closes them.
 addEventListener('message',e=>{if(e.origin===location.origin&&e.source===$('#demoFrame').contentWindow&&e.data==='riftwalker:close-demo')$('#demoDialog').close()});

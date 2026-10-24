@@ -1,6 +1,8 @@
 // Contenido editable del recorrido. null significa pendiente, nunca cero.
 window.PRESENTATION = {
   title: 'Project Riftwalker', edition: 'Sprint 3',
+  // Quién lee cada diapositiva: se ve arriba, al lado del sprint. Cada diapositiva puede tener su speaker; si no, va este.
+  speaker: 'Equipo Riftwalker',
   updated: '05/10/2026', source: 'InformeSprint1.docx · cierre 28/09/2026',
   metrics: {
     s1: {name:'Sprint 1 · 28/09/2026', planned:59, done:49, review:6, todo:4, tests:64, passed:58, failed:3, blocked:1, unrun:2},
