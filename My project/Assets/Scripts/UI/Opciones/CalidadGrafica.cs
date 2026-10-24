@@ -109,7 +109,8 @@ public static class CalidadGrafica
             {
                 original = new Terreno { arboles = t.treeDistance, pasto = t.detailObjectDistance, densidad = t.detailObjectDensity, error = t.heightmapPixelError };
                 terrenos[t] = original;
-                t.drawInstanced = true; // el suelo, dibujado por la placa de video en menos llamadas
+                // No se prende acá el suelo instanciado (drawInstanced): si la escena no lo tiene puesto, la build
+                // descarta esa versión del shader del terreno y en la versión armada el suelo no se dibuja.
             }
             t.treeDistance = Mathf.Min(original.arboles, nivel.arboles);
             t.detailObjectDistance = Mathf.Min(original.pasto, nivel.pasto);
