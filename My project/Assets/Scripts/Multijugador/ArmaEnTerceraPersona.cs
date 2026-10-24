@@ -368,10 +368,21 @@ public class ArmaEnTerceraPersona : MonoBehaviour
         pechoAhora = transform.InverseTransformPoint(huesoPecho.position);
         pechoGiroAhora = Quaternion.Inverse(transform.rotation) * huesoPecho.rotation;
         if (!pechoMedido) { pechoPromedio = pechoAhora; pechoGiroPromedio = pechoGiroAhora; pechoMedido = true; }
-        float k = 1f - Mathf.Exp(-Time.deltaTime / 1.5f); // el lugar de siempre se acomoda en un segundo y medio
+        // El lugar de siempre se acomoda en un segundo y medio. Pero un cambio de postura (agacharse o pararse: el pecho
+        // se corre mucho) no es respirar ni balancearse: ese lo hacen los ojos, que ya bajan y suben solos. Ahí el lugar
+        // de siempre se pone al día enseguida; si no, el arma bajaba de más al agacharse y, al pararse, quedaba medio
+        // metro arriba con los brazos estirados (y agachándose y parándose seguido, siempre arriba).
+        bool postura = (pechoAhora - pechoPromedio).sqrMagnitude > PosturaDistancia * PosturaDistancia
+                       || Quaternion.Angle(pechoGiroAhora, pechoGiroPromedio) > PosturaGiro;
+        float k = 1f - Mathf.Exp(-Time.deltaTime / (postura ? 0.12f : 1.5f));
         pechoPromedio = Vector3.Lerp(pechoPromedio, pechoAhora, k);
         pechoGiroPromedio = Quaternion.Slerp(pechoGiroPromedio, pechoGiroAhora, k);
     }
+
+    // Más que esto ya no es respirar ni balancearse al caminar: es un cambio de postura (LateUpdate).
+    private const float PosturaDistancia = 0.12f, PosturaGiro = 12f;
+    // Y lo que se sigue del pecho nunca pasa de esto (por las dudas, mientras se pone al día).
+    private const float SeguirHasta = 0.08f, SeguirGiroHasta = 8f;
 
     // Cuánto se movió el pecho por la animación, en el mundo (corrimiento y giro), por "cuanto".
     private void MovimientoDelPecho(float cuanto, out Vector3 corrido, out Quaternion girado)
@@ -379,8 +390,9 @@ public class ArmaEnTerceraPersona : MonoBehaviour
         corrido = Vector3.zero;
         girado = Quaternion.identity;
         if (!pechoMedido || cuanto <= 0f) return;
-        corrido = transform.TransformVector(pechoAhora - pechoPromedio) * cuanto;
-        Quaternion delta = pechoGiroAhora * Quaternion.Inverse(pechoGiroPromedio); // en el espacio del cuerpo
+        corrido = transform.TransformVector(Vector3.ClampMagnitude(pechoAhora - pechoPromedio, SeguirHasta)) * cuanto;
+        Quaternion delta = Quaternion.RotateTowards(Quaternion.identity,
+            pechoGiroAhora * Quaternion.Inverse(pechoGiroPromedio), SeguirGiroHasta); // en el espacio del cuerpo
         girado = Quaternion.Slerp(Quaternion.identity, transform.rotation * delta * Quaternion.Inverse(transform.rotation), cuanto);
     }
 
