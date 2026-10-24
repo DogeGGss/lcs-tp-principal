@@ -85,6 +85,7 @@ public class PruebaDeRendimiento : MonoBehaviour
                            $"({SystemInfo.graphicsMemorySize} MB, {SystemInfo.graphicsDeviceType}), RAM {SystemInfo.systemMemorySize} MB");
         informe.AppendLine($"Pantalla {Screen.width}x{Screen.height}, calidad {QualitySettings.names[QualitySettings.GetQualityLevel()]}, " +
                            (Application.isEditor ? "en el editor" : "versión de desarrollo"));
+        Luces();
         informe.AppendLine();
         informe.AppendLine("Paso                                       | cuadro ms |  FPS | CPU ms | render ms | GPU ms | lotes | SetPass | triáng. (miles) | sombras");
 
@@ -117,6 +118,32 @@ public class PruebaDeRendimiento : MonoBehaviour
         corriendo = false;
         yield return new WaitForSecondsRealtime(25f);
         if (!corriendo) estado = "";
+    }
+
+    // Qué luces hay prendidas y cuáles proyectan sombra (las que no son la del sol cuestan mucho: 6 vistas cada una).
+    private void Luces()
+    {
+        var porTipo = new Dictionary<string, int>();
+        var conSombra = new List<string>();
+        foreach (Light l in Object.FindObjectsByType<Light>(FindObjectsInactive.Exclude, FindObjectsSortMode.None))
+        {
+            if (!l.enabled) continue;
+            string clave = $"{l.type} {l.lightmapBakeType}{(l.bakingOutput.isBaked ? " (horneada)" : "")}";
+            porTipo[clave] = porTipo.TryGetValue(clave, out int n) ? n + 1 : 1;
+            if (l.shadows != LightShadows.None) conSombra.Add($"  {Camino(l.transform)}: {l.type}, sombra {l.shadows}, alcance {l.range:0.#}, {l.lightmapBakeType}");
+        }
+        informe.Append("Luces prendidas:");
+        foreach (var par in porTipo) informe.Append($" {par.Value} {par.Key};");
+        informe.AppendLine();
+        informe.AppendLine($"Con sombra ({conSombra.Count}):");
+        for (int i = 0; i < conSombra.Count && i < 40; i++) informe.AppendLine(conSombra[i]);
+    }
+
+    private static string Camino(Transform t)
+    {
+        string c = t.name;
+        for (Transform p = t.parent; p != null; p = p.parent) c = p.name + "/" + c;
+        return c;
     }
 
     private static string Ruta()
