@@ -43,7 +43,7 @@ window.PRESENTATION = {
   // queue: historias esperando prueba (LPR) a las 23:59 de cada día, armado con cuánto estuvo cada una en LPR.
   // wait: espera mediana en LPR de las historias que salieron de LPR en ese sprint. El registro llega al 22/10.
   statusTime: {queue:[['22/09',5],['23/09',2],['24/09',3],['25/09',3],['26/09',19],['27/09',5],['28/09',5],['29/09',15],['30/09',22],['01/10',31],['02/10',37],['03/10',44],['04/10',44],['05/10',57],['06/10',87],['07/10',77],['08/10',75],['09/10',63],['10/10',55],['11/10',53],['12/10',25],['13/10',25],['14/10',28],['15/10',26],['16/10',46],['17/10',30],['18/10',24],['19/10',18],['20/10',22],['21/10',23],['22/10',26]],
-    sprints:[{name:'Sprint 1', from:'22/09', to:'28/09', wait:'15 h'}, {name:'Sprint 2', from:'29/09', to:'12/10', wait:'5,7 días'}, {name:'Sprint 3', from:'13/10', to:'22/10', wait:'3,1 días'}],
+    sprints:[{name:'Sprint 1', from:'22/09', to:'28/09', wait:'15 h', note:'Datos incompletos: el script se creó a mitad del sprint.'}, {name:'Sprint 2', from:'29/09', to:'12/10', wait:'5,7 días'}, {name:'Sprint 3', from:'13/10', to:'22/10', wait:'3,1 días'}],
     decision:'Pasamos gente de desarrollo a testing.'},
   // Tráiler de la diapositiva 2: copiar el MP4 a presentacion/media/ y poner la ruta, por ejemplo 'media/trailer.mp4'.
   trailer: {src:null, poster:null},

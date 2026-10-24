@@ -33,8 +33,8 @@
 .tiempo .eje{fill:var(--muted);font:14px Barlow,sans-serif}
 .tiempo .barra{fill:var(--blue)}.tiempo .barra.pico{fill:var(--accent)}
 .tiempo .pico-txt{fill:var(--text);font:700 18px Barlow,sans-serif}
-.esperas div{display:flex;justify-content:space-between;align-items:baseline;gap:12px;border-top:1px solid var(--line);padding:10px 0}
+.esperas div{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:baseline;gap:0 12px;border-top:1px solid var(--line);padding:6px 0}
 .esperas span{color:var(--muted);font-size:20px}
-.esperas b{font:700 42px Display,sans-serif;font-variant-numeric:tabular-nums;white-space:nowrap}
-.card p.decision-tiempo{margin-top:12px;border-left:4px solid var(--accent);padding-left:14px;color:var(--text);font-weight:700}
+.esperas small{flex-basis:100%;color:var(--muted);font-size:15px;line-height:1.3}.esperas b{font:700 42px Display,sans-serif;font-variant-numeric:tabular-nums;white-space:nowrap}
+.card p.decision-tiempo{margin-top:8px;border-left:4px solid var(--accent);padding-left:14px;color:var(--text);font-weight:700}
 @media(max-width:700px){.grid.tiempo{grid-template-columns:1fr}.bailes{flex-wrap:wrap}}
