@@ -505,7 +505,8 @@ public class PantallaPerfil : PantallaBase
     private int emoteVisto = -1;
     private RectTransform espaciosEmotes, grillaEmotes;
     private UnityEngine.UI.RawImage vistaEmote;
-    private TextMeshProUGUI nombreVisto, ayudaVista;
+    private TextMeshProUGUI nombreVisto, ayudaVista, personajeVisto;
+    private int pjVista = -1; // el personaje de la vista previa (índice en CharacterRoster.All); -1: el elegido
 
     private void ArmarEmotes()
     {
@@ -518,7 +519,12 @@ public class PantallaPerfil : PantallaBase
         RectTransform v = Place(Node("Vista", panelEmotes), 1300f, 0f, 500f, 540f);
         Image(Stretch(Node("Fondo", v)), Rounded, PanelColor, 8f);
         Borde(Stretch(Node("Marco", v)), 8f, White(0.08f));
-        T(v, "Rotulo", 24f, 18f, 400f, 22f, FRotulo, 17f, Accent, "Vista previa", TextAlignmentOptions.MidlineLeft, 16f, true);
+        T(v, "Rotulo", 24f, 18f, 240f, 22f, FRotulo, 17f, Accent, "Vista previa", TextAlignmentOptions.MidlineLeft, 16f, true);
+        // Con qué personaje se ve el baile (solo la vista previa: no cambia el personaje elegido).
+        CrearBoton(v, 280f, 12f, 36f, 34f, "<", false, () => CambiarPersonajeVisto(-1), 22f);
+        personajeVisto = T(v, "PersonajeVisto", 318f, 12f, 120f, 34f, FRotulo, 17f, Ink, "", TextAlignmentOptions.Center, 8f, true);
+        personajeVisto.overflowMode = TextOverflowModes.Ellipsis;
+        CrearBoton(v, 440f, 12f, 36f, 34f, ">", false, () => CambiarPersonajeVisto(1), 22f);
         RectTransform caja = Place(Node("Personaje", v), 62f, 50f, 376f, 401f);
         vistaEmote = caja.gameObject.AddComponent<UnityEngine.UI.RawImage>();
         vistaEmote.raycastTarget = false;
@@ -622,16 +628,35 @@ public class PantallaPerfil : PantallaBase
         return -1;
     }
 
-    // La vista previa: el personaje elegido haciendo ese emote (o quieto, sin ninguno).
+    // La vista previa: un personaje (de entrada, el elegido; con las flechas, cualquiera) haciendo ese emote (o quieto,
+    // sin ninguno).
     private void VerEmote(int emote)
     {
         if (vistaEmote == null) return;
         CatalogoDeEmotes.Emote e = CatalogoDeEmotes.Actual.De(emote);
-        VistaPreviaDeEmote.Mostrar(CharacterRoster.Selected, e != null ? e.clip : null);
+        CharacterData pj = PersonajeDeLaVista();
+        VistaPreviaDeEmote.Mostrar(pj, e != null ? e.clip : null);
         vistaEmote.texture = VistaPreviaDeEmote.Textura;
         nombreVisto.text = e != null ? e.nombre : "";
-        CharacterData pj = CharacterRoster.Selected;
-        ayudaVista.text = e == null ? "Pasá el mouse por un baile para verlo." : pj != null ? pj.displayName : "";
+        if (personajeVisto != null) personajeVisto.text = pj != null ? pj.displayName : "";
+        ayudaVista.text = e == null ? "Pasá el mouse por un baile para verlo." : pj != null ? pj.role : "";
+    }
+
+    private CharacterData PersonajeDeLaVista()
+    {
+        var todos = CharacterRoster.All;
+        if (todos.Count == 0) return null;
+        if (pjVista < 0 || pjVista >= todos.Count) pjVista = Mathf.Max(0, CharacterRoster.SelectedIndex);
+        return todos[pjVista];
+    }
+
+    private void CambiarPersonajeVisto(int paso)
+    {
+        int n = CharacterRoster.All.Count;
+        if (n == 0) return;
+        PersonajeDeLaVista();
+        pjVista = (pjVista + paso + n) % n;
+        VerEmote(emoteVisto);
     }
 
     // ================= Datos =================
