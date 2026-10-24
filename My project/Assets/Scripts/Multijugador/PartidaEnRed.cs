@@ -342,7 +342,7 @@ public class PartidaEnRed : MonoBehaviour
     {
         int indice = MejorPunto();
         if (PhotonNetwork.InRoom)
-            PhotonNetwork.LocalPlayer.SetCustomProperties(new Hashtable { { PropReserva, new[] { indice, PhotonNetwork.ServerTimestamp } } });
+            PhotonNetwork.LocalPlayer.SetCustomProperties(new ExitGames.Client.Photon.Hashtable { { PropReserva, new[] { indice, PhotonNetwork.ServerTimestamp } } });
         return indice;
     }
 
