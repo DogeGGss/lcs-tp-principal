@@ -37,7 +37,7 @@ public class PlayerAbility : MonoBehaviour
     {
         // US 119: en el campo de práctica se practica con las armas, sin habilidad (la Q no hace nada y el HUD no la
         // muestra). US 166: el tutorial presta una durante su paso (Prestar).
-        if (CampoDePractica.Activo)
+        if (CampoDePractica.Activo || SinHabilidades)
         {
             ability = null;
             Preparar();
@@ -51,10 +51,13 @@ public class PlayerAbility : MonoBehaviour
         Preparar();
     }
 
+    // En el Deathmatch no hay habilidades: el personaje es solo el aspecto (PersonajesDeathmatch).
+    private static bool SinHabilidades => MatchSettings.Mode == GameMode.Deathmatch && Photon.Pun.PhotonNetwork.InRoom;
+
     /// <summary>US 016: el personaje se eligió con la partida ya cargada (Modo Táctico): se usa su habilidad.</summary>
     public void UsarPersonaje(CharacterData character)
     {
-        if (!useSelectedCharacter || CampoDePractica.Activo || character == null || character.ability == null) return;
+        if (!useSelectedCharacter || CampoDePractica.Activo || SinHabilidades || character == null || character.ability == null) return;
         ability = character.ability;
         Preparar();
     }
