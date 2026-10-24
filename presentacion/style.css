@@ -17,11 +17,11 @@
 
 /* Emotes: los cuatro personajes a la misma escala, con una sombra donde pisan. */
 .bailes{display:flex;justify-content:space-around;align-items:flex-end;gap:8px;margin-top:4px}
-.baile{--alto:min(52vh,26vw,580px);margin:0;display:flex;flex-direction:column;align-items:center;min-width:0}
+.baile{--alto:min(52vh,26vw,440px);margin:0;display:flex;flex-direction:column;align-items:center;min-width:0}
 .baile-escena{position:relative}
-.baile-escena::after{content:'';position:absolute;left:50%;bottom:11%;width:min(160px,60%);height:24px;transform:translateX(-50%);background:radial-gradient(closest-side,rgba(0,0,0,.6),transparent)}
+.baile-escena::after{content:'';position:absolute;left:50%;bottom:2%;width:min(160px,60%);height:24px;transform:translateX(-50%);background:radial-gradient(closest-side,rgba(0,0,0,.6),transparent)}
 .baile img{position:relative;z-index:1;display:block;height:var(--alto);width:auto;max-width:none}
-.baile figcaption{position:relative;z-index:2;text-align:center;margin-top:calc(var(--alto) * -.08)}
+.baile figcaption{position:relative;z-index:2;text-align:center;margin-top:4px}
 .baile strong{display:block;font:700 32px Display,sans-serif}
 .baile figcaption span{color:var(--muted);font-size:17px;letter-spacing:2px;text-transform:uppercase}
 /* Tiempo por estado */
