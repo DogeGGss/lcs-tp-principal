@@ -1,11 +1,11 @@
 # Presentación del Sprint 3
 
-Abrir `/presentacion/` desde el enlace independiente de la guía. El recorrido suma 20 minutos y se divide en tres partes, en este orden: Juego (apertura, tráiler, demos, arsenal, menú y perfil, y los conjuntos), Equipo (las métricas de cada sprint y lo que sumó cada uno) y Financiación (propuesta comercial, números, costos e inversión), y después el cierre. Cada diapositiva muestra arriba su parte, y el índice las agrupa. No avanza automáticamente: el operador controla el ritmo.
+Abrir `/presentacion/` desde el enlace independiente de la guía. El recorrido suma 20 minutos y se divide en tres partes, en este orden: Juego (apertura, tráiler, demos, arsenal, menú y perfil, los conjuntos y los emotes), Equipo (las métricas de cada sprint, el tiempo por estado y lo que sumó cada uno) y Financiación (propuesta comercial, números, costos e inversión), y después el cierre. Cada diapositiva muestra arriba su parte, y el índice las agrupa. No avanza automáticamente: el operador controla el ritmo.
 
 ## Para exponer
 
 - Anterior / Siguiente: ubicación fija y botones grandes. Flechas o Page Up / Page Down también funcionan cuando el foco está en la diapositiva.
-- Índice: saltar a cualquiera de los trece bloques.
+- Índice: saltar a cualquiera de los quince bloques.
 - Proyector: fondo claro con texto oscuro para salas iluminadas.
 - Pantalla completa: ocultar el navegador; F11 es alternativa.
 - Tráiler: «Pantalla completa» lo reproduce ocupando toda la pantalla; Esc vuelve. Mientras el video está en pantalla completa, las flechas no cambian de diapositiva.
@@ -14,7 +14,7 @@ Abrir `/presentacion/` desde el enlace independiente de la guía. El recorrido s
 
 ## Actualización por etapas
 
-Editar `content.js`: títulos, partes (`section`), tiempos, guion, quién lee cada diapositiva (`speaker`, se ve arriba al lado del sprint), tráiler, avance de cada sprint (`progress`), métricas, propuesta comercial y números económicos. Mantener los tiempos de los trece bloques sumando 20 minutos. Las métricas desconocidas usan `null`, no cero. Los datos S1 son una foto histórica y nunca deben sobrescribirse con S3.
+Editar `content.js`: títulos, partes (`section`), tiempos, guion, quién lee cada diapositiva (`speaker`, se ve arriba al lado del sprint), tráiler, avance de cada sprint (`progress`), métricas, propuesta comercial y números económicos. Mantener los tiempos de los quince bloques sumando 20 minutos. Las métricas desconocidas usan `null`, no cero. Los datos S1 son una foto histórica y nunca deben sobrescribirse con S3.
 
 `metrics` tiene los tres sprints (`s1` del informe del Sprint 1; `s2` del informe de avance y la retrospectiva del Sprint 2; `s3` pendiente): la diapositiva Métricas los muestra lado a lado para mostrar el avance. Un sprint sin datos muestra rayas. Las diapositivas no llevan textos internos (pendientes, «por completar», «a confirmar»): eso va en el guion o en esta lista. Fuente histórica: InformeSprint1.docx facilitado por el equipo, cierre 28/09/2026. No se publica el documento completo.
 
@@ -49,3 +49,9 @@ Recorrido revisado en navegador a 1280 × 720 y 1024 × 768: las diez pantallas 
 La pantalla completa depende del navegador; el navegador integrado no la activó durante la prueba. El botón informa la alternativa F11. Falta probar en el equipo y proyector de la exposición.
 
 Al completar S3, actualizar también `metrics.s3.name` y `metrics.s3.source`. Hasta completar todos sus valores se conserva la pantalla de pendientes.
+
+## Emotes y tiempo por estado (24/10/2026)
+
+Emotes muestra a los cuatro personajes bailando, cada uno con un baile distinto (Alfa Flair, Bravo Silly, Charlie Rumba y Astra Shuffle). Son PNG animados en `media/emotes/`, hechos en Unity con los modelos y los clips del juego: misma cámara para los cuatro (misma escala y los pies a la misma altura), fondo transparente y 15 cuadros por segundo (Flair, 30). A Charlie se le sacan, solo para el render, dos tiras sueltas de su malla que flotan sobre los brazos.
+
+Tiempo por estado sale del registro del Action «Track US status time» (rama `tracker-data`, `.github/project_status_log.csv`): cuántas historias esperan prueba (LPR) al final de cada día y la espera mediana en LPR de cada sprint. El registro llega al 22/10/2026 (después venció el token del Action). Para hacerles lugar, Arsenal y Métricas bajaron a un minuto cada uno.

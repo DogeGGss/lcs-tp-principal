@@ -14,3 +14,27 @@
 @media(min-width:701px){.grid.two.costs{grid-template-columns:1fr 1.45fr}}
 @media(prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
 @media(min-width:701px) and (max-height:800px){.stats span{display:block;line-height:1.2;margin-top:5px}.stats div{padding:8px 0}.weapon{grid-template-columns:1fr 1.1fr}}
+
+/* Emotes: los cuatro personajes a la misma escala, con una sombra donde pisan. */
+.bailes{display:flex;justify-content:space-around;align-items:flex-end;gap:24px;margin-top:4px}
+.baile{--alto:min(52vh,32vw,417px);margin:0;display:flex;flex-direction:column;align-items:center;min-width:0}
+.baile-escena{position:relative}
+.baile-escena::after{content:'';position:absolute;left:50%;bottom:17%;width:min(150px,80%);height:24px;transform:translateX(-50%);background:radial-gradient(closest-side,rgba(0,0,0,.6),transparent)}
+.baile img{position:relative;z-index:1;display:block;height:var(--alto);width:auto;max-width:none}
+.baile figcaption{position:relative;z-index:2;text-align:center;margin-top:calc(var(--alto) * -.16)}
+.baile strong{display:block;font:700 32px Display,sans-serif}
+.baile figcaption span{color:var(--muted);font-size:17px;letter-spacing:2px;text-transform:uppercase}
+/* Tiempo por estado */
+.grid.tiempo{grid-template-columns:2fr 1fr}
+.tiempo svg{display:block;width:100%;height:auto}
+.tiempo .banda{fill:var(--line);opacity:.2}.tiempo .banda.par{opacity:.4}
+.tiempo .banda-txt{fill:var(--muted);font:700 14px Barlow,sans-serif;letter-spacing:2px}
+.tiempo .grilla{stroke:var(--line);stroke-width:1}
+.tiempo .eje{fill:var(--muted);font:14px Barlow,sans-serif}
+.tiempo .barra{fill:var(--blue)}.tiempo .barra.pico{fill:var(--accent)}
+.tiempo .pico-txt{fill:var(--text);font:700 18px Barlow,sans-serif}
+.esperas div{display:flex;justify-content:space-between;align-items:baseline;gap:12px;border-top:1px solid var(--line);padding:10px 0}
+.esperas span{color:var(--muted);font-size:20px}
+.esperas b{font:700 42px Display,sans-serif;font-variant-numeric:tabular-nums;white-space:nowrap}
+.card p.decision-tiempo{margin-top:12px;border-left:4px solid var(--accent);padding-left:14px;color:var(--text);font-weight:700}
+@media(max-width:700px){.grid.tiempo{grid-template-columns:1fr}.bailes{flex-wrap:wrap}}

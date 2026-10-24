@@ -20,6 +20,20 @@ function costs(){
  const E=D.economics,I=E.investment,S=I.salary,M=E.month;
  return `<div class="grid two invest costs"><article class="card"><p class="eyebrow">Inversión inicial</p><div class="metric-number">${money(I.total)}</div><div class="uses">${I.detail.map(([n,v])=>`<div><span>${esc(n)}</span><b>${money(v)}</b><i style="width:${Math.max(1,v/I.total*100)}%"></i></div>`).join('')}</div><p class="footnote">Cada uno, el sueldo junior de lo que hace: ${money(S.gross)} brutos entre los 7 × ${dec(S.factor)} (aguinaldo, contribuciones y ART) = ${money(S.team)} por mes, durante los ${S.days} días de los 5 sprints.</p></article><article class="card"><p class="eyebrow">Cada mes, en el promedio</p><table class="returns spend"><tr><th>Ganancias en base al pago de los jugadores</th><th>${money(M.gross)}</th></tr>${M.items.map(([n,v])=>`<tr><td>${esc(n)}</td><td>${money(v)}</td></tr>`).join('')}<tr class="left"><td>Queda de ganancia</td><td>${money(M.left)}</td></tr></table></article></div>`;
 }
+// Los cuatro personajes bailando, a la misma escala y con los pies a la misma altura.
+function dances(){
+ return `<div class="bailes">${D.emotes.map(e=>`<figure class="baile"><div class="baile-escena"><img src="${esc(e.src)}" alt="${esc(e.name)} bailando ${esc(e.dance)}"></div><figcaption><strong>${esc(e.name)}</strong><span>${esc(e.dance)}</span></figcaption></figure>`).join('')}</div>`;
+}
+// Historias esperando prueba (LPR) al final de cada día, con los sprints de fondo, y la espera mediana de cada sprint.
+function statusTime(){
+ const T=D.statusTime,Q=T.queue,W=760,H=300,L=40,R=8,TOP=40,B=34,top=Math.ceil(Math.max(...Q.map(q=>q[1]))/30)*30;
+ const bw=(W-L-R)/Q.length,y=v=>TOP+(H-TOP-B)*(1-v/top),at=d=>Q.findIndex(q=>q[0]===d),pico=Q.reduce((a,q,i)=>q[1]>Q[a][1]?i:a,0);
+ const bandas=T.sprints.map((s,i)=>{const a=at(s.from),b=at(s.to);return `<rect class="banda${i%2?' par':''}" x="${L+a*bw}" y="${TOP-30}" width="${(b-a+1)*bw}" height="${H-B-TOP+30}"/><text class="banda-txt" x="${L+a*bw+8}" y="${TOP-12}">${esc(s.name.toUpperCase())}</text>`}).join('');
+ const grilla=[0,top/3,2*top/3,top].map(v=>`<line class="grilla" x1="${L}" x2="${W-R}" y1="${y(v)}" y2="${y(v)}"/><text class="eje" x="${L-8}" y="${y(v)+5}" text-anchor="end">${v}</text>`).join('');
+ const barras=Q.map((q,i)=>`<rect class="barra${i===pico?' pico':''}" x="${L+i*bw+2}" y="${y(q[1])}" width="${bw-4}" height="${y(0)-y(q[1])}" rx="2"><title>${q[0]}: ${q[1]} historias esperando prueba</title></rect>`).join('');
+ const fechas=Q.map((q,i)=>i%7?'':`<text class="eje" x="${L+i*bw+bw/2}" y="${H-10}" text-anchor="middle">${q[0]}</text>`).join('');
+ return `<div class="grid tiempo"><article class="card"><p class="eyebrow">Historias esperando prueba (LPR), cada día</p><svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Historias esperando prueba por día: el pico es ${Q[pico][1]} el ${Q[pico][0]}">${bandas}${grilla}${barras}<text class="pico-txt" x="${L+pico*bw+bw/2}" y="${y(Q[pico][1])-8}" text-anchor="middle">${Q[pico][1]}</text>${fechas}</svg></article><article class="card"><p class="eyebrow">Espera mediana para probar</p><div class="esperas">${T.sprints.map(s=>`<div><span>${esc(s.name)}</span><b>${esc(s.wait)}</b></div>`).join('')}</div><p class="decision-tiempo">${esc(T.decision)}</p></article></div>`;
+}
 // Lo que sumó cada sprint, con una foto grande y lo nuevo en pocas palabras.
 function progress(){
  return `<div class="grid avance">${D.progress.map(p=>`<article class="card"><p class="eyebrow">${esc(p.name)} · ${esc(p.dates)}</p>${p.title?`<h3>${esc(p.title)}</h3>`:''}<div class="avance-foto">${p.image?`<img src="${esc(p.image)}" alt="">`:''}</div>${p.items.length?`<ul>${p.items.map(it=>`<li>${esc(it.text)}${it.images?`<span class="avance-imgs${it.round?' redondas':''}">${it.images.map(src=>`<img src="${esc(src)}" alt="">`).join('')}</span>`:''}</li>`).join('')}</ul>`:''}</article>`).join('')}</div>`;
@@ -73,6 +87,8 @@ function content(s){
  case 'metricas':return head(s)+metrics();
  case 'menus':return head(s)+`<div class="grid"><button class="demo-card" data-demo="tienda"><strong>01 / Tienda</strong><span>Elegir, comparar y comprar.</span><em>Abrir demo →</em></button><button class="demo-card" data-demo="modos"><strong>02 / Modos</strong><span>Tres andenes. Una elección.</span><em>Abrir demo →</em></button><button class="demo-card" data-demo="hud"><strong>03 / HUD</strong><span>Información durante el combate.</span><em>Abrir demo →</em></button></div><p class="lead">Primero lo probamos como maqueta.<br>Después lo llevamos a Unity.</p>`;
  case 'conjuntos':return head(s)+sets();
+ case 'emotes':return head(s)+dances();
+ case 'tiempo':return head(s)+statusTime();
  case 'arsenal':return head(s)+arsenal();
  case 'juego':return head(s)+`<button class="menu-demo" data-demo="menu"><img src="../menu/img/fondos/fondo-01.jpg" alt=""><span class="menu-demo-texto"><strong>Abrir el menú</strong><span>Entrá al Perfil desde tu credencial y armá tu combinación: 19 avatares, 19 banners, 70 títulos y 19 marcos. Son más de 500.000 combinaciones.</span><em>Abrir demo →</em></span></button>`;
  case 'negocio':return head(s)+offer();
