@@ -9,7 +9,7 @@ Abrir `/presentacion/` desde el enlace independiente de la guía. El recorrido s
 - Proyector: fondo claro con texto oscuro para salas iluminadas.
 - Pantalla completa: ocultar el navegador; F11 es alternativa.
 - Tráiler: «Pantalla completa» lo reproduce ocupando toda la pantalla; Esc vuelve. Mientras el video está en pantalla completa, las flechas no cambian de diapositiva.
-- Ensayar: iniciar/pausar el reloj de 20 minutos. El reloj no cambia las diapositivas y sigue durante las demos.
+- Tiempo: iniciar/pausar el reloj de 20 minutos. El reloj no cambia las diapositivas y sigue durante las demos.
 - Las demos se abren dentro del recorrido, con Volver y Reiniciar siempre arriba. Son maquetas web; no se presentan como ejecución del juego.
 
 ## Actualización por etapas
