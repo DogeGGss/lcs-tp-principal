@@ -1003,7 +1003,7 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
             () => Vivo && vida != null && vida.Invulnerable); // US 137: recién reaparecido, amarillo
     }
 
-    // Los demás ven a este jugador con el modelo de su personaje (Astra, por ejemplo), en cuanto se sabe cuál eligió.
+    // Los demás ven a este jugador con el modelo de su personaje (Soledad, por ejemplo), en cuanto se sabe cuál eligió.
     // Se pregunta cada medio segundo hasta que lo tiene: en el Táctico se elige con la partida ya cargada (US 016).
     // El propio jugador también cambia de cuerpo, así sus brazos en primera persona son los de su personaje.
     private void CuerpoDelPersonaje()
