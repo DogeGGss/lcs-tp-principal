@@ -328,20 +328,68 @@ public class PartidaEnRed : MonoBehaviour
     public Pose PuntoDeBase() => PuntoInicial();
 
     // US 030, CA5 (y US 137, CA2): el punto más lejos del rival vivo más cercano.
-    public Pose PuntoDeReaparicion()
+    // Dos que mueren a la vez reaparecen a la vez: cada uno, sin ver al otro (todavía muerto), elegía el mismo punto.
+    // Por eso el punto se reserva un rato antes (ReservarPunto, propiedad del jugador "dm.rp": el punto y la hora del
+    // servidor): los puntos reservados por otros cuentan como ocupados. Si dos reservan el mismo casi a la vez, se lo
+    // queda el de número de jugador más bajo y el otro elige de nuevo al reaparecer (PuntoReservado).
+    private const string PropReserva = "dm.rp";
+    private const int ReservaDura = 4000; // ms: después ya reapareció y cuenta como vivo
+
+    public Pose PuntoDeReaparicion() => puntos[MejorPunto()];
+
+    /// <summary>Elige el punto para reaparecer y lo avisa a los demás. Devuelve su número.</summary>
+    public int ReservarPunto()
     {
-        Pose mejor = puntos[0];
-        float mejorDistancia = -1f;
-        foreach (Pose punto in puntos)
+        int indice = MejorPunto();
+        if (PhotonNetwork.InRoom)
+            PhotonNetwork.LocalPlayer.SetCustomProperties(new Hashtable { { PropReserva, new[] { indice, PhotonNetwork.ServerTimestamp } } });
+        return indice;
+    }
+
+    /// <summary>El punto donde reaparecer: el reservado, salvo que otro de número más bajo haya reservado el mismo
+    /// (o la reserva sea vieja): entonces elige y reserva otro.</summary>
+    public Pose PuntoReservado(int reservado)
+    {
+        if (reservado < 0 || reservado >= puntos.Count || ReservaVieja(PhotonNetwork.LocalPlayer)) return puntos[ReservarPunto()];
+        int yo = PhotonNetwork.LocalPlayer.ActorNumber;
+        foreach (Player p in PhotonNetwork.PlayerListOthers)
+            if (p.ActorNumber < yo && Reserva(p) == reservado) return puntos[ReservarPunto()];
+        return puntos[reservado];
+    }
+
+    // El punto que reservó ese jugador (hace poco), o -1.
+    private static int Reserva(Player p)
+    {
+        if (p == null || !p.CustomProperties.TryGetValue(PropReserva, out object v) || !(v is int[] r) || r.Length < 2) return -1;
+        return unchecked(PhotonNetwork.ServerTimestamp - r[1]) <= ReservaDura ? r[0] : -1;
+    }
+
+    private static bool ReservaVieja(Player p) => Reserva(p) < 0;
+
+    // El punto más lejos de lo más cercano ocupado: los rivales vivos y los puntos que reservaron otros.
+    private int MejorPunto()
+    {
+        var reservados = new List<int>();
+        foreach (Player p in PhotonNetwork.PlayerListOthers)
         {
+            int r = Reserva(p);
+            if (r >= 0 && r < puntos.Count) reservados.Add(r);
+        }
+        int mejor = 0;
+        float mejorDistancia = -1f;
+        for (int i = 0; i < puntos.Count; i++)
+        {
+            Pose punto = puntos[i];
             float cercano = float.MaxValue;
             foreach (JugadorEnRed jugador in jugadores.Values)
                 if (jugador != null && jugador != Local && jugador.Vivo)
                     cercano = Mathf.Min(cercano, Vector3.Distance(punto.position, jugador.transform.position));
+            foreach (int r in reservados)
+                cercano = Mathf.Min(cercano, Vector3.Distance(punto.position, puntos[r].position));
             if (cercano > mejorDistancia)
             {
                 mejorDistancia = cercano;
-                mejor = punto;
+                mejor = i;
             }
         }
         return mejor;

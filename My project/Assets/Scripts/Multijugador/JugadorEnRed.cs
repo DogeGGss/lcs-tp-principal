@@ -345,15 +345,21 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
             partida.Aviso(titulo, "Reaparecés en la ronda siguiente.");
     }
 
+    private const float ReservaAntes = 0.5f; // s antes de reaparecer en que se reserva el punto (PartidaEnRed)
+
     private IEnumerator Reaparecer(string titulo, float espera)
     {
         float fin = Time.time + espera;
         finEspera = fin;
         topeEspera = Time.time + Mathf.Max(espera, TopeConTienda);
         string tecla = KeyBindings.Label(GameAction.Tienda);
+        int reservado = -1;
+        float reservadoEn = 0f;
         while (Time.time < fin)
         {
             partida.Aviso(titulo, $"Reaparecés en {Mathf.CeilToInt(fin - Time.time)}. Apretá {tecla} para cambiar de equipo");
+            // Medio segundo antes se reserva el punto, así otro que reaparece a la vez no elige el mismo.
+            if (reservado < 0 && fin - Time.time <= ReservaAntes) { reservado = partida.ReservarPunto(); reservadoEn = Time.time; }
             yield return null;
         }
         // US 138, CA5: si está eligiendo equipo, lo espera hasta que cierre la tienda (con un tope).
@@ -362,7 +368,10 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
         partida.Aviso(null);
         if (PartidaDeathmatch.YaTermino) yield break; // la partida terminó mientras esperaba: ya no reaparece
 
-        Pose punto = partida.PuntoDeReaparicion();
+        // Si esperó mucho (eligiendo equipo), el mapa cambió: se elige de nuevo.
+        if (reservado < 0 || Time.time - reservadoEn > 1.5f) { reservado = partida.ReservarPunto(); yield return new WaitForSeconds(ReservaAntes); }
+        if (PartidaDeathmatch.YaTermino) yield break;
+        Pose punto = partida.PuntoReservado(reservado);
         Teletransportar(transform, punto.position, punto.rotation);
         vida.Revive();
         foreach (Pistola arma in GetComponentsInChildren<Pistola>(true)) arma.Refill();
