@@ -47,6 +47,7 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
     private byte emoteRed;                       // US 262: el baile que llega por la red (0: ninguno; si no, su número + 1)
     private readonly HashSet<int> granadasExplotadas = new HashSet<int>();
     private bool cuerpoPropio;              // la copia ya tiene el modelo de su personaje (CharacterData.modelo)
+    private CharacterData cuerpoDe;         // de qué personaje es el cuerpo que tiene ahora
     private float proximoCuerpo;
     private int ultimoAtacante;
     private string ultimaArma = "";   // con qué lo dañaron por última vez, si no fue el arma en la mano (una granada)
@@ -1005,13 +1006,16 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
 
     // Los demás ven a este jugador con el modelo de su personaje (Soledad, por ejemplo), en cuanto se sabe cuál eligió.
     // Se pregunta cada medio segundo hasta que lo tiene: en el Táctico se elige con la partida ya cargada (US 016).
+    // En el Deathmatch el personaje es solo el aspecto y se puede cambiar en la cuenta del inicio
+    // (PersonajesDeathmatch): ahí se sigue preguntando, por si lo cambia.
     // El propio jugador también cambia de cuerpo, así sus brazos en primera persona son los de su personaje.
     private void CuerpoDelPersonaje()
     {
         proximoCuerpo = Time.time + 0.5f;
-        CharacterData personaje = PersonajesTacticos.De(Actor);
-        if (personaje == null || personaje.modelo == null) return;
+        CharacterData personaje = PersonajeDe(Actor);
+        if (personaje == null || personaje.modelo == null || personaje == cuerpoDe) return;
         cuerpoPropio = true;
+        cuerpoDe = personaje;
         if (!CuerpoDePersonaje.Cambiar(animador, personaje.modelo)) return;
         if (photonView.IsMine)
         {
@@ -1029,17 +1033,24 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
         if (transparencia != null) transparencia.Rehacer();
     }
 
+    /// <summary>El personaje de ese jugador en la partida: el que eligió en el Táctico o su aspecto en el Deathmatch.</summary>
+    public static CharacterData PersonajeDe(int actor) =>
+        PersonajesDeathmatch.Actual != null ? PersonajesDeathmatch.De(actor) : PersonajesTacticos.De(actor);
+
+    // Si hay que fijarse el personaje: hasta tener el suyo y, en el Deathmatch, siempre (lo puede cambiar).
+    private bool MirarCuerpo => (!cuerpoPropio || PersonajesDeathmatch.Actual != null) && Time.time >= proximoCuerpo;
+
     private void Update()
     {
         if (photonView == null) return;
         if (photonView.IsMine)
         {
             if (vida != null && vida.Invulnerable && Time.time >= finInvulnerable) vida.Invulnerable = false;
-            if (!cuerpoPropio && animador != null && Time.time >= proximoCuerpo) CuerpoDelPersonaje();
+            if (animador != null && MirarCuerpo) CuerpoDelPersonaje();
             return;
         }
         if (!recibido) return;
-        if (!cuerpoPropio && Time.time >= proximoCuerpo) CuerpoDelPersonaje();
+        if (MirarCuerpo) CuerpoDelPersonaje();
 
         // US 025: se acerca a lo último que llegó, adelantándolo según su velocidad lo que tardó en llegar.
         float dt = Time.deltaTime;

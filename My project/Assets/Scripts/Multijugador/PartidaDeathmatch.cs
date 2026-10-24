@@ -166,6 +166,7 @@ public class PartidaDeathmatch : MonoBehaviour
         Actual = this;
         anotado.Clear();
         ArrancarMusica();
+        gameObject.AddComponent<PersonajesDeathmatch>().Iniciar(); // el aspecto de cada uno (sin habilidades)
         if (PruebaSolo.Activa)
             Debug.Log("Prueba solo (Deathmatch): F9 suma una baja tuya (y te cura) · F7 te saca 60 de vida · F8 te deja en 19 bajas · F11 deja el reloj en 1:05 · F10 lo deja en 0:03.");
     }
