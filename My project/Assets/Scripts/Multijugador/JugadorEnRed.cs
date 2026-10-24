@@ -157,6 +157,7 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
         GrenadeThrower.Started += AlEmpezarGranada;
         Grenade1.Exploded += AlExplotarGranada;
         HabilidadTrasbordo.Usado += AlTrasbordar;
+        PortalDeTeletransporte.Paso += AlPasarPortal;   // Mapa 1: los portales
         HabilidadBarrera.Levantada += AlLevantarBarrera;
         HabilidadVistaAerea.Cambio += AlCambiarVistaAerea;
         HabilidadCallejero.Soltado += AlSoltarPerro;   // US 022, CA15
@@ -174,6 +175,7 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
         GrenadeThrower.Started -= AlEmpezarGranada;
         Grenade1.Exploded -= AlExplotarGranada;
         HabilidadTrasbordo.Usado -= AlTrasbordar;
+        PortalDeTeletransporte.Paso -= AlPasarPortal;
         HabilidadBarrera.Levantada -= AlLevantarBarrera;
         HabilidadVistaAerea.Cambio -= AlCambiarVistaAerea;
         HabilidadCallejero.Soltado -= AlSoltarPerro;
@@ -1460,6 +1462,26 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
         tiempoRed = info.SentServerTime;
         tiempoTrasbordo = info.SentServerTime;
         EfectosTrasbordo.Reproducir(origen, destino, transform, false, sonido != null ? sonido.outputAudioMixerGroup : null);
+    }
+
+    // Mapa 1: pasó por un portal. Como el Trasbordo, se avisa aparte de la posición: los demás lo ven aparecer de golpe
+    // en el otro portal (no se desliza cruzando el mapa) y escuchan el portal en los dos lados.
+    private void AlPasarPortal(Transform jugador, Vector3 desde, Vector3 hasta)
+    {
+        if (jugador != transform || muerto || !photonView.IsMine) return;
+        photonView.RPC(nameof(RpcPortal), RpcTarget.Others, desde, hasta);
+    }
+
+    [PunRPC]
+    private void RpcPortal(Vector3 desde, Vector3 hasta, PhotonMessageInfo info)
+    {
+        if (photonView.IsMine || muerto) return;
+        transform.position = hasta;
+        posicionRed = hasta;
+        velocidadRed = Vector3.zero;
+        tiempoRed = info.SentServerTime;
+        tiempoTrasbordo = info.SentServerTime; // las posiciones mandadas antes de pasar ya no valen
+        PortalDeTeletransporte.SonarPaso(desde, hasta, false);
     }
 
     // US 020, CA11: la Barrera se levanta igual en las demás computadoras, como de la copia de su dueño.
