@@ -67,6 +67,11 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
     private byte banderasRed, armaRed, saltosRed, aterrizajesRed;
     private byte saltosVistos, aterrizajesVistos, armaVista = 255;
     private float alturaParado = 0.75f, alturaAgachado = 0.3f;
+    // La altura de los ojos de la copia es la del Player (la del Alien Soldier, con el que se ajustaron los agarres de
+    // tercera persona). Con un personaje más bajo o más alto, los ojos quedaban arriba (o abajo) de su cabeza, y con
+    // ellos el arma y las manos: los brazos se estiraban hasta arriba. Se corrige por el tamaño de su cuerpo
+    // (Animator.humanScale) respecto del de siempre (AlturaDelCuerpo).
+    private float escalaDeReferencia, piesDeReferencia, paradoDeReferencia, agachadoDeReferencia;
     private GameObject cuchilloListo;
     private Transform modelo;
     private Collider[] colisiones;
@@ -1000,7 +1005,7 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
                 }
             };
 
-        // US 031, CA5: a los rivales se los reconoce por el contorno rojo, como en Valorant. No se ve su nombre ni su vida.
+                // US 031, CA5: a los rivales se los reconoce por el contorno rojo, como en Valorant. No se ve su nombre ni su vida.
         CrearContorno();
         transparencia = Semitransparente.Crear(gameObject, modelo); // US 137
         terceraPersona = ArmaEnTerceraPersona.Crear(gameObject, animador, camara); // F26: cómo tiene el arma
@@ -1038,11 +1043,36 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
             if (brazos != null) brazos.Rehacer();
             return;
         }
+        AlturaDelCuerpo();
         // El contorno rojo copiaba las mallas del cuerpo anterior: se arma de nuevo con las nuevas.
         foreach (ContornoRival viejo in GetComponents<ContornoRival>()) Destroy(viejo);
         CrearContorno();
         // US 137: si ya estaba invulnerable (aparece y enseguida se sabe su personaje), el cuerpo nuevo también.
         if (transparencia != null) transparencia.Rehacer();
+    }
+
+    // Los pies del cuerpo, en el espacio del padre de la cámara (donde se miden las alturas de los ojos).
+    private float Pies() => camara.parent != null ? camara.parent.InverseTransformPoint(animador.transform.position).y : animador.transform.position.y;
+
+    // El tamaño del cuerpo de siempre (el del Player, antes de ponerle el de su personaje), con el Animator ya andando.
+    private void MedirReferencia()
+    {
+        if (animador == null || !animador.isActiveAndEnabled || !animador.isHuman || camara == null) return;
+        escalaDeReferencia = animador.humanScale;
+        piesDeReferencia = Pies();
+        paradoDeReferencia = alturaParado;
+        agachadoDeReferencia = alturaAgachado;
+    }
+
+    // Ojos a la altura de este cuerpo: la misma distancia a los pies que en el de siempre, por su tamaño.
+    private void AlturaDelCuerpo()
+    {
+        if (escalaDeReferencia <= 0f) MedirReferencia(); // no llegó a medirse: por lo menos que no rompa
+        if (escalaDeReferencia <= 0f || animador == null || !animador.isHuman || camara == null) return;
+        float escala = Mathf.Clamp(animador.humanScale / escalaDeReferencia, 0.7f, 1.3f);
+        float pies = Pies();
+        alturaParado = pies + (paradoDeReferencia - piesDeReferencia) * escala;
+        alturaAgachado = pies + (agachadoDeReferencia - piesDeReferencia) * escala;
     }
 
     /// <summary>El personaje de ese jugador en la partida: el que eligió en el Táctico o su aspecto en el Deathmatch.</summary>
@@ -1061,6 +1091,7 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
             if (animador != null && MirarCuerpo) CuerpoDelPersonaje();
             return;
         }
+        if (escalaDeReferencia <= 0f && cuerpoDe == null) MedirReferencia(); // antes del primer cambio de cuerpo
         if (!recibido) return;
         if (MirarCuerpo) CuerpoDelPersonaje();
 
