@@ -1,7 +1,7 @@
 'use strict';
 const D=window.PRESENTATION, $=s=>document.querySelector(s);
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-let current=0,business=0,weaponId='fusil';
+let current=0,weaponId='fusil';
 const num=n=>n.toLocaleString('es-AR'),dec=n=>n.toLocaleString('es-AR',{minimumFractionDigits:2,maximumFractionDigits:2});
 const money=(n,sign=false)=>(n<0?'−':sign&&n>0?'+':'')+'US$ '+num(Math.abs(Math.round(n)));
 const thousands=n=>n>=1e6?n.toLocaleString('es-AR',{maximumFractionDigits:1})+' M':num(Math.round(n/1000)*1000);
@@ -30,12 +30,22 @@ function sets(){
  const PJ={astra:'Astra',pesado:'Pesado',guerrero:'Guerrero',sigiloso:'Sigiloso'},W=900,H=150,base='../menu/img/';
  return `<div class="conjuntos">${Marcos.conjuntos().map(({banner:b,avatar:a})=>{const d=Marcos.interior(b.id,H);return `<article class="conjunto"><div class="conjunto-banner" style="left:${d[0]}px;top:${d[1]}px;right:${d[2]}px;bottom:${d[3]}px"><img src="${base}banners/${b.id}.jpg" alt=""><i></i></div>${Marcos.html(b.id,0,0,W,H,false,base+'marcos/')}<span class="conjunto-avatar"><img src="${base}avatares/${a.id}.jpg" alt=""></span><strong>${esc(b.nombre)}</strong><small><b style="color:${COL[b.rareza]}">${RZ[b.rareza]}</b> · ${esc(b.estilo)}${PJ[b.personaje]?' · '+PJ[b.personaje]:''}</small></article>`}).join('')}</div>`;
 }
+// Los cuatro productos a la vista, cada uno con una imagen hecha con cosas del juego (avatares, banners y cápsulas).
+function offer(){
+ const R={1:'#9AA3B0',2:'#5C7CFF',3:'#B061FF',4:'#FFC93C'},av='../menu/img/avatares/';
+ const visual={
+  tienda:()=>`<div class="of-tienda">${[['astra-celeste',1,'400'],['sigiloso-manga',2,'800'],['astra-pop',3,'1.600'],['pesado-cubista',4,'3.200']].map(([id,r,p])=>`<span><img src="${av}${id}.jpg" alt="" style="border-color:${R[r]}"><b style="color:${R[r]}">${p}</b></span>`).join('')}</div>`,
+  pase:()=>`<div class="of-pase"><div class="of-premios">${[['astra-celeste',1],['guerrero-synthwave',2],['astra-acuarela',3],['astra-nouveau',4]].map(([id,r],i)=>`<img src="${av}${id}.jpg" alt="" style="left:${(i+1)*25}%;border-color:${R[r]}">`).join('')}</div><div class="of-niveles">${Array.from({length:40},(_,i)=>`<i${(i+1)%10===0?' class="hito"':''}></i>`).join('')}</div><small><span>Nivel 1</span><span>Nivel 40</span></small></div>`,
+  capsulas:()=>`<div class="of-capsulas"><span class="of-capsula"><i></i></span><div><div class="of-barra">${[[55,1],[30,2],[12,3],[3,4]].map(([p,r])=>`<i style="width:${p}%;background:${R[r]}"></i>`).join('')}</div><small>${[[55,'Común',1],[30,'Raro',2],[12,'Épico',3],[3,'Legendario',4]].map(([p,n,r])=>`<span><b style="color:${R[r]}">${p} %</b> ${n}</span>`).join('')}</small></div></div>`,
+  cristales:()=>`<div class="of-cristales">${[['500','4,99',.7],['1.100','9,99',.85],['2.300','19,99',1],['6.000','49,99',1.2]].map(([c,p,k])=>`<span><i style="--k:${k}"></i><b>${c}</b><small>US$ ${p}</small></span>`).join('')}</div>`
+ };
+ return `<div class="grid oferta">${D.business.map(b=>`<article class="card"><div class="of-visual">${visual[b.visual]()}</div><p class="eyebrow">${esc(b.name)}</p><h3>${esc(b.headline)}</h3><p>${esc(b.text)}</p><span class="of-precio">${esc(b.model)}</span><p class="footnote">${esc(b.note)}</p></article>`).join('')}</div><p class="lead">Jugar es gratis. Nada de lo que se vende da ventaja en la partida.</p>`;
+}
 const tag=(text,pending=false)=>`<span class="tag ${pending?'pending':''}">${esc(text)}</span>`;
 const card=(title,text)=>`<article class="card"><h3>${esc(title)}</h3><p>${esc(text)}</p></article>`;
 // La parte de la presentación (Juego, Equipo, Financiación) va antes del nombre del bloque.
 const eyebrow=s=>`${s.section&&s.section!==s.label?esc(s.section)+' · ':''}${esc(s.label)}`;
 const head=s=>`<div class="head"><p class="eyebrow">${eyebrow(s)}</p><h2>${esc(s.title)}</h2></div>`;
-const buttons=(items,active,attribute)=>`<div class="tabs">${items.map((x,i)=>`<button ${attribute}="${i}" aria-pressed="${i===active}">${esc(x.name)}</button>`).join('')}</div>`;
 // Avance de los tres sprints: historias terminadas y pruebas que pasan. Un sprint todavía sin datos muestra rayas.
 function metrics(){
  const pct=(a,b)=>(100*a/b).toLocaleString('es-AR',{maximumFractionDigits:1})+' %';
@@ -65,7 +75,7 @@ function content(s){
  case 'conjuntos':return head(s)+sets();
  case 'arsenal':return head(s)+arsenal();
  case 'juego':return head(s)+`<button class="menu-demo" data-demo="menu"><img src="../menu/img/fondos/fondo-01.jpg" alt=""><span class="menu-demo-texto"><strong>Abrir el menú</strong><span>Entrá al Perfil desde tu credencial y armá tu combinación: 19 avatares, 19 banners, 70 títulos y 19 marcos. Son más de 500.000 combinaciones.</span><em>Abrir demo →</em></span></button>`;
- case 'negocio':{const b=D.business[business];return head(s)+`<div class="row" style="margin-bottom:22px">${tag('Cosméticos: no dan ventajas en la partida')}</div>`+buttons(D.business,business,'data-business')+`<div class="business"><div><p class="eyebrow">Free to play</p><p class="pitch">Jugar con amigos<br>sin pagar una entrada.</p><div class="rail"></div><p class="lead">La personalización sostiene la propuesta comercial.</p></div><article class="card"><p class="eyebrow">${esc(b.name)}</p><h3>${esc(b.headline)}</h3><p>${esc(b.text)}</p><span class="big">${esc(b.model)}</span><p class="footnote">${esc(b.pending)}</p></article></div>`;}
+ case 'negocio':return head(s)+offer();
  case 'escenarios':return head(s)+scenarios();
  case 'costos':return head(s)+costs();
  case 'avance':return head(s)+progress();
@@ -94,7 +104,7 @@ $('#clipDialog').addEventListener('close',()=>{$('#video').pause();$('#video').r
 document.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;const d=b.dataset;
  if(d.close)$('#'+d.close).close();
  if(d.go!==undefined){$('#indexDialog').close();go(+d.go)}
- if(d.business!==undefined){business=+d.business;render()}
+
  if(d.demo)openDemo(d.demo);
  if(d.trailer!==undefined){const v=$('#trailerVideo');if(v){v.requestFullscreen?.().catch(()=>{});v.play().catch(()=>{})}}
 });
