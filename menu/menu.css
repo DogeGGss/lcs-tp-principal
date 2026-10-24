@@ -1,0 +1,78 @@
+@font-face{font-family:Barlow;src:url(fuentes/Barlow-Regular.ttf);font-weight:400}
+@font-face{font-family:Barlow;src:url(fuentes/Barlow-SemiBold.ttf);font-weight:600}
+@font-face{font-family:"Barlow Condensed";src:url(fuentes/BarlowCondensed-SemiBold.ttf);font-weight:600}
+@font-face{font-family:"Barlow Condensed";src:url(fuentes/BarlowCondensed-Bold.ttf);font-weight:700}
+@font-face{font-family:"JetBrains Mono";src:url(fuentes/JetBrainsMono.ttf)}
+
+/* Colores de ShopUIKit y PerfilUI */
+:root{--ink:#F3F4F6;--mute:#8E96A3;--soft:#D6DAE0;--accent:#F29A38;--accent-ink:#1A1106;--ok:#3DDC97;--bad:#FF5C5C;
+  --panel:rgba(10,12,17,.88);--chip:#1d2027;--sel:#2c2620;--linea:rgba(255,255,255,.08);--boletos:#F29A38;--cristales:#9B7BFF}
+html,body{margin:0;height:100%;background:#000;overflow:hidden;color-scheme:dark}
+#escenario{position:absolute;width:1920px;height:1080px;transform-origin:0 0;overflow:hidden;background:#07080b;
+  font-family:Barlow,"Segoe UI",sans-serif;color:var(--ink);user-select:none}
+#escenario *{box-sizing:border-box}
+.n{position:absolute}
+.t{position:absolute;display:flex;align-items:center;white-space:nowrap;overflow:hidden;line-height:1.05}
+.t.arriba{align-items:flex-start;white-space:normal}
+.t.centro{justify-content:center;text-align:center}
+.t.derecha{justify-content:flex-end;text-align:right}
+.t.puntos{display:block;text-overflow:ellipsis}
+.t.mayus{text-transform:uppercase}
+.ft{font-family:"Barlow Condensed","Arial Narrow",sans-serif;font-weight:700}
+.fr{font-family:"Barlow Condensed","Arial Narrow",sans-serif;font-weight:600}
+.fx{font-family:Barlow,"Segoe UI",sans-serif;font-weight:400}
+.fm{font-family:"JetBrains Mono",Consolas,monospace}
+.panel{background:var(--panel);border-radius:8px;box-shadow:inset 0 0 0 1px rgba(255,255,255,.1)}
+.clic{cursor:pointer}
+.cubrir{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center}
+
+/* Fondos del menú: cada uno se acerca y se corre un poco mientras se ve, con un fundido lento entre dos. */
+.fondo{position:absolute;inset:0;background-size:cover;background-position:center;opacity:0;transition:opacity 2.2s ease;
+  animation:acercar 11.2s linear forwards}
+.fondo.visible{opacity:1}
+@keyframes acercar{from{transform:scale(1.02) translateX(0)}to{transform:scale(1.08) translateX(-18px)}}
+@media(prefers-reduced-motion:reduce){.fondo{animation:none}}
+
+.jugar .flecha{position:absolute;background:var(--accent);
+  clip-path:polygon(0 0,100% 0,100% 100%,76% 100%,76% 40%,16% 100%,0 84%,60% 24%,0 24%)}
+.fila .marca{position:absolute;left:0;top:12px;width:4px;height:22px;background:var(--accent);opacity:0;transition:opacity .12s}
+.fila .t{transition:transform .12s,color .12s}
+.fila:hover .marca{opacity:1}
+.fila:hover .t{color:var(--accent)!important;transform:translateX(16px)}
+.borde-hover:hover{box-shadow:inset 0 0 0 1px var(--accent)}
+
+.boton{position:absolute;display:flex;align-items:center;justify-content:center;border-radius:8px;font-family:"Barlow Condensed",sans-serif;
+  font-weight:700;text-transform:uppercase;letter-spacing:.06em;cursor:pointer;border:0;color:var(--ink);background:var(--panel);
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.14)}
+.boton:hover{box-shadow:inset 0 0 0 1px var(--accent)}
+.boton.lleno{background:var(--accent);color:var(--accent-ink);box-shadow:none}
+.boton.lleno:hover{background:#f6ae5c}
+.boton.ok{background:var(--ok);color:#06130d;cursor:default;box-shadow:none}
+.boton:focus-visible,.clic:focus-visible{outline:3px solid var(--accent);outline-offset:3px}
+
+/* Marco de la cabecera: dos mitades, cada una cortada en nueve (esquina y adorno del centro fijos). */
+.marco{position:absolute;pointer-events:none}
+.mitad{position:absolute;top:0;height:100%;border-style:solid;border-color:transparent}
+
+.carta{position:absolute;background:var(--panel);border-radius:8px;overflow:hidden;cursor:pointer}
+.carta .linea-borde{position:absolute;inset:0;border-radius:8px;box-shadow:inset 0 0 0 1px rgba(255,255,255,.08);pointer-events:none}
+.carta:hover .linea-borde{box-shadow:inset 0 0 0 1px rgba(255,255,255,.35)}
+.carta.elegida .linea-borde,.carta.elegida:hover .linea-borde{box-shadow:inset 0 0 0 2px var(--accent)}
+.grilla{position:absolute;overflow-y:auto;overflow-x:hidden;scrollbar-width:thin;scrollbar-color:#3a3f48 transparent}
+.grilla::-webkit-scrollbar{width:8px}.grilla::-webkit-scrollbar-thumb{background:#3a3f48;border-radius:4px}
+
+.pestana{cursor:pointer;transition:color .12s}
+.pestana:hover{color:var(--soft)!important}
+.pestana.activa:hover{color:var(--ink)!important}
+
+.aviso{position:absolute;left:50%;top:960px;transform:translate(-50%,20px);padding:16px 30px;border-radius:8px;background:rgba(10,12,17,.96);
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.12),0 10px 30px #000a;font:600 26px "Barlow Condensed",sans-serif;letter-spacing:.04em;
+  opacity:0;transition:opacity .2s,transform .2s;pointer-events:none;white-space:nowrap}
+.aviso.visible{opacity:1;transform:translate(-50%,0)}
+
+.modal{position:absolute;inset:0;background:rgba(0,0,0,.72);display:flex;align-items:center;justify-content:center}
+.modal .caja{position:relative;width:640px;height:300px;background:#0f1218;border-radius:10px;box-shadow:inset 0 0 0 1px rgba(255,255,255,.12)}
+.modal input{position:absolute;left:40px;top:120px;width:560px;height:64px;border-radius:8px;border:0;padding:0 20px;background:#1d2027;
+  color:var(--ink);font:700 36px "Barlow Condensed",sans-serif;letter-spacing:.03em;text-transform:uppercase;outline:none;
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.14)}
+.modal input:focus{box-shadow:inset 0 0 0 2px var(--accent)}

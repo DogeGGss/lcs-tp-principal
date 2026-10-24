@@ -52,18 +52,12 @@ window.PRESENTATION = {
     ]},
     {name:'Sprint 3', dates:'13/10 al 26/10', title:null, image:null, items:[]}
   ],
-  // Agregar rutas de clips reales dentro de presentacion/media/. No se publican archivos personales.
-  clips: [
-    {title:'Una ronda táctica', detail:'Coordinación · objetivo · resultado', src:null},
-    {title:'De maqueta a juego', detail:'Mostrar el menú y una compra real', src:null},
-    {title:'Recorrer la universidad', detail:'Un lugar reconocible dentro del juego', src:null}
-  ],
   slides: [
     {id:'inicio', title:'Project Riftwalker', section:'Juego', label:'Apertura', minutes:1, note:'Presentar al equipo y la idea en una frase. La presentación corresponde al Sprint 3; el informe S1 se usa como base histórica.'},
     {id:'trailer', title:'Project Riftwalker', section:'Juego', label:'Tráiler', minutes:2, note:'Pasar el tráiler con «Pantalla completa». Al terminar, Esc y Siguiente.'},
     {id:'menus', title:'El diseño se puede probar', section:'Juego', label:'Demo de interfaz', minutes:2, note:'Abrir la tienda, elegir categoría y arma, comprar y mostrar su ficha. Estas son maquetas web de la guía, no el ejecutable. Menús y HUD como demos alternativas; el botón Volver al recorrido queda siempre disponible.'},
     {id:'arsenal', title:'Cada arma cambia una decisión', section:'Juego', label:'Arsenal', minutes:2, note:'Elegir Mitre y comparar con La Porteña o Último Tren. Precio = moneda de partida, no dinero real. Datos tomados de la guía el 05/10/2026; confirmar balance y disponibilidad antes de S3.'},
-    {id:'juego', title:'Ahora, dentro del juego', section:'Juego', label:'Demo del juego', minutes:2, note:'Reservado para una demo real o clips. Todavía no hay videos cargados. Preparar una ronda corta y un clip de respaldo; volver con el botón grande, sin buscar pestañas.'},
+    {id:'juego', title:'El menú, como está en el juego', section:'Juego', label:'Menú y perfil', minutes:2, note:'Abrir el menú: es la versión web del menú del juego, con las mismas imágenes y todo desbloqueado. Entrar al Perfil desde la credencial de arriba a la derecha y, en Personalización, armar una combinación en vivo: un avatar, un banner, un título y un marco (por ejemplo, el conjunto de Entre sombras). La cabecera y la credencial del menú cambian al instante. Mostrar también Emotes: los bailes que van en la rueda de la T.'},
     {id:'metricas', title:'Avance con evidencia', section:'Equipo', label:'Métricas', minutes:2, note:'Mostrar el avance de los sprints: historias en Done y pruebas que pasan. S1: 49 de 59 en Done (83,1 %); 58 de 62 pruebas ejecutadas pasan (93,5 %). S2: 59 de 60 en Done (98,3 %; solo quedó sin empezar la US 183, diseño de los personajes) y las 414 pruebas pasan. La velocidad se duplicó: 140 puntos en el S1 y 281 en el S2. Completar el S3 con su informe.'},
     {id:'avance', title:'Lo que sumó cada sprint', section:'Equipo', label:'Avance', minutes:1, note:'Contarlo en voz alta, señalando las imágenes: el Sprint 1 armó el núcleo jugable en el mapa de pruebas; el Sprint 2 llevó el juego online con el Modo Táctico completo en la estación espacial, los personajes con el Trasbordo, cinco armas nuevas y las granadas. El Sprint 3 se completa al cierre del sprint.'},
     {id:'negocio', title:'Entrar gratis. Elegir tu estilo.', section:'Financiación', label:'Propuesta comercial', minutes:2, note:'Pitch: shooter gratuito para jugar con amigos, con monetización cosmética: nada de lo que se vende da ventaja en la partida. Recorrer las cuatro pestañas: tienda directa, pase, cápsulas y cristales. Los precios están definidos; el pase y la tienda directa todavía no están en el juego.'},
