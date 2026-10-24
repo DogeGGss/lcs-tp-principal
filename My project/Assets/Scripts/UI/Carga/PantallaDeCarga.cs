@@ -117,7 +117,9 @@ public class PantallaDeCarga : MonoBehaviour
 
         modoTexto.text = modo;
         mapaTexto.text = mapa;
-        detalleTexto.text = detalle;
+        // Debajo del nombre, qué es el lugar (ConfigRed, "subtitulo") y después el detalle (la sala).
+        string subtitulo = Subtitulo(escenaNueva);
+        detalleTexto.text = string.IsNullOrEmpty(subtitulo) ? detalle : string.IsNullOrEmpty(detalle) ? subtitulo : subtitulo + "  ·  " + detalle;
         imagenMapa.sprite = imagen;
         imagenMapa.enabled = imagen != null;
         if (imagen != null) ajusteMapa.aspectRatio = imagen.rect.width / imagen.rect.height;
@@ -127,6 +129,14 @@ public class PantallaDeCarga : MonoBehaviour
         pieTexto.text = "";
         PonerAvance(0f);
         raiz.SetActive(true);
+    }
+
+    private static string Subtitulo(string escena)
+    {
+        ConfigRed red = ConfigRed.Actual;
+        if (red == null) return "";
+        foreach (ConfigRed.Mapa m in red.mapas) if (m != null && m.escena == escena) return m.subtitulo;
+        return "";
     }
 
     private void Ocultar()
