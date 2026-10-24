@@ -77,10 +77,10 @@ public static class PerfilDatos
     public static readonly List<Cosmetico> Catalogo = new List<Cosmetico>();
     public static readonly List<Personaje> Personajes = new List<Personaje>
     {
-        new Personaje { id = "astra", nombre = "Astra", rol = "Duelista", color = "#4CC3FF" },
-        new Personaje { id = "pesado", nombre = "Pesado", rol = "Centinela", color = "#F2B544" },
-        new Personaje { id = "guerrero", nombre = "Guerrero", rol = "Iniciador", color = "#FF5C5C" },
-        new Personaje { id = "sigiloso", nombre = "Sigiloso", rol = "Explorador", color = "#3DDC97" },
+        new Personaje { id = "astra", nombre = "Soledad", rol = "Duelista", color = "#4CC3FF" },
+        new Personaje { id = "pesado", nombre = "Unzué", rol = "Centinela", color = "#F2B544" },
+        new Personaje { id = "guerrero", nombre = "Goya", rol = "Iniciador", color = "#FF5C5C" },
+        new Personaje { id = "sigiloso", nombre = "Necochea", rol = "Explorador", color = "#3DDC97" },
     };
 
     public static readonly List<Pack> Packs = new List<Pack>
@@ -104,16 +104,16 @@ public static class PerfilDatos
             Catalogo.Add(new Cosmetico { id = id, nombre = nombre, personaje = personaje, estilo = estilo, tipo = Tipo.Banner, rareza = r });
 
         A("riftwalker", "Riftwalker", "", "Ícono", Rareza.Inicial);
-        A("astra-celeste", "Astra · Celeste", "astra", "Original", Rareza.Comun);
-        A("pesado-ambar", "Pesado · Ámbar", "pesado", "Original", Rareza.Comun);
-        A("guerrero-carmesi", "Guerrero · Carmesí", "guerrero", "Original", Rareza.Comun);
-        A("sigiloso-esmeralda", "Sigiloso · Esmeralda", "sigiloso", "Original", Rareza.Comun);
+        A("astra-celeste", "Soledad · Celeste", "astra", "Original", Rareza.Comun);
+        A("pesado-ambar", "Unzué · Ámbar", "pesado", "Original", Rareza.Comun);
+        A("guerrero-carmesi", "Goya · Carmesí", "guerrero", "Original", Rareza.Comun);
+        A("sigiloso-esmeralda", "Necochea · Esmeralda", "sigiloso", "Original", Rareza.Comun);
         A("pesado-realista", "Guardia de acero", "pesado", "Hiperrealismo", Rareza.Raro);
         A("guerrero-synthwave", "Turno nocturno", "guerrero", "Synthwave", Rareza.Raro);
         A("sigiloso-manga", "Entre sombras", "sigiloso", "Manga", Rareza.Raro);
         A("no-muerto", "No muerto", "", "Modo Zombie", Rareza.Raro);
         A("sigiloso-8bit", "Sombra de 8 bits", "sigiloso", "8 bits", Rareza.Raro);
-        A("astra-pop", "Astra eléctrica", "astra", "Pop art", Rareza.Epico);
+        A("astra-pop", "Soledad eléctrica", "astra", "Pop art", Rareza.Epico);
         A("guerrero-fauve", "Furia de color", "guerrero", "Fauvismo", Rareza.Epico);
         A("sigiloso-tinta", "Silencio de tinta", "sigiloso", "Tinta", Rareza.Epico);
         A("corazon-del-rift", "Corazón del Rift", "", "Cristal", Rareza.Epico);
@@ -134,7 +134,7 @@ public static class PerfilDatos
         B("guerrero-synthwave", "Turno nocturno", "guerrero", "Synthwave", Rareza.Raro);
         B("sigiloso-8bit", "Sombra de 8 bits", "sigiloso", "8 bits", Rareza.Raro);
         B("sigiloso-manga", "Entre sombras", "sigiloso", "Manga", Rareza.Epico);
-        B("astra-pop", "Astra eléctrica", "astra", "Pop art", Rareza.Epico);
+        B("astra-pop", "Soledad eléctrica", "astra", "Pop art", Rareza.Epico);
         B("guerrero-fauve", "Furia de color", "guerrero", "Fauvismo", Rareza.Epico);
         B("sigiloso-tinta", "Silencio de tinta", "sigiloso", "Tinta", Rareza.Epico);
         B("astra-acuarela", "Marea celeste", "astra", "Acuarela", Rareza.Epico);
