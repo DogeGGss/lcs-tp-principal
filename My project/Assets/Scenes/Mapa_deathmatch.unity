@@ -1224,6 +1224,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1043150563}
     m_Modifications:
+    - target: {fileID: 10848406, guid: 588955be0a3f24f3587555cad73fae83, type: 3}
+      propertyPath: m_Shadows.m_Type
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 158006, guid: 588955be0a3f24f3587555cad73fae83, type: 3}
       propertyPath: m_Name
       value: Wall_Inclined_01_Half (2)
@@ -18823,6 +18827,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 385002873}
     m_Modifications:
+    - target: {fileID: 10848406, guid: 588955be0a3f24f3587555cad73fae83, type: 3}
+      propertyPath: m_Shadows.m_Type
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 158006, guid: 588955be0a3f24f3587555cad73fae83, type: 3}
       propertyPath: m_Name
       value: Wall_Inclined_01_Half (2)
@@ -39539,6 +39547,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 385002873}
     m_Modifications:
+    - target: {fileID: 10848406, guid: 588955be0a3f24f3587555cad73fae83, type: 3}
+      propertyPath: m_Shadows.m_Type
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 158006, guid: 588955be0a3f24f3587555cad73fae83, type: 3}
       propertyPath: m_Name
       value: Wall_Inclined_01_Half (1)
@@ -42767,6 +42779,14 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 385002873}
     m_Modifications:
+    - target: {fileID: 10800000, guid: 243ee49f20f63434c95b7cbe33beac48, type: 3}
+      propertyPath: m_Shadows.m_Type
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 10800002, guid: 243ee49f20f63434c95b7cbe33beac48, type: 3}
+      propertyPath: m_Shadows.m_Type
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 100002, guid: 243ee49f20f63434c95b7cbe33beac48, type: 3}
       propertyPath: m_Name
       value: Wall_Inclined_01_Long (1)
@@ -44321,6 +44341,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 385002873}
     m_Modifications:
+    - target: {fileID: 10827744, guid: c6c98ad43c9734baca83db6231416995, type: 3}
+      propertyPath: m_Shadows.m_Type
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 110922, guid: c6c98ad43c9734baca83db6231416995, type: 3}
       propertyPath: m_Name
       value: Wall_Inclined_01_CoinLeft
@@ -54014,6 +54038,14 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 385002873}
     m_Modifications:
+    - target: {fileID: 10800000, guid: fedf50d65fc79434b89f634a6cba8fb2, type: 3}
+      propertyPath: m_Shadows.m_Type
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 10800010, guid: fedf50d65fc79434b89f634a6cba8fb2, type: 3}
+      propertyPath: m_Shadows.m_Type
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 100004, guid: fedf50d65fc79434b89f634a6cba8fb2, type: 3}
       propertyPath: m_Name
       value: Wall_Inclined_02_Long (2)
@@ -68589,6 +68621,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1043150563}
     m_Modifications:
+    - target: {fileID: 10848406, guid: 588955be0a3f24f3587555cad73fae83, type: 3}
+      propertyPath: m_Shadows.m_Type
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 158006, guid: 588955be0a3f24f3587555cad73fae83, type: 3}
       propertyPath: m_Name
       value: Wall_Inclined_01_Half
@@ -72373,6 +72409,14 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1043150563}
     m_Modifications:
+    - target: {fileID: 10800000, guid: fedf50d65fc79434b89f634a6cba8fb2, type: 3}
+      propertyPath: m_Shadows.m_Type
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 10800010, guid: fedf50d65fc79434b89f634a6cba8fb2, type: 3}
+      propertyPath: m_Shadows.m_Type
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 100004, guid: fedf50d65fc79434b89f634a6cba8fb2, type: 3}
       propertyPath: m_Name
       value: Wall_Inclined_02_Long (3)
@@ -75436,6 +75480,14 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 385002873}
     m_Modifications:
+    - target: {fileID: 10800000, guid: fedf50d65fc79434b89f634a6cba8fb2, type: 3}
+      propertyPath: m_Shadows.m_Type
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 10800010, guid: fedf50d65fc79434b89f634a6cba8fb2, type: 3}
+      propertyPath: m_Shadows.m_Type
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 100004, guid: fedf50d65fc79434b89f634a6cba8fb2, type: 3}
       propertyPath: m_Name
       value: Wall_Inclined_02_Long (1)
@@ -88956,6 +89008,14 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1043150563}
     m_Modifications:
+    - target: {fileID: 10800000, guid: 243ee49f20f63434c95b7cbe33beac48, type: 3}
+      propertyPath: m_Shadows.m_Type
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 10800002, guid: 243ee49f20f63434c95b7cbe33beac48, type: 3}
+      propertyPath: m_Shadows.m_Type
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 100002, guid: 243ee49f20f63434c95b7cbe33beac48, type: 3}
       propertyPath: m_Name
       value: Wall_Inclined_01_Long
@@ -89785,6 +89845,14 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 385002873}
     m_Modifications:
+    - target: {fileID: 10800000, guid: fedf50d65fc79434b89f634a6cba8fb2, type: 3}
+      propertyPath: m_Shadows.m_Type
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 10800010, guid: fedf50d65fc79434b89f634a6cba8fb2, type: 3}
+      propertyPath: m_Shadows.m_Type
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 100004, guid: fedf50d65fc79434b89f634a6cba8fb2, type: 3}
       propertyPath: m_Name
       value: Wall_Inclined_02_Long
@@ -100450,6 +100518,14 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1043150563}
     m_Modifications:
+    - target: {fileID: 10800000, guid: fedf50d65fc79434b89f634a6cba8fb2, type: 3}
+      propertyPath: m_Shadows.m_Type
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 10800010, guid: fedf50d65fc79434b89f634a6cba8fb2, type: 3}
+      propertyPath: m_Shadows.m_Type
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 100004, guid: fedf50d65fc79434b89f634a6cba8fb2, type: 3}
       propertyPath: m_Name
       value: Wall_Inclined_02_Long
@@ -108469,6 +108545,14 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1043150563}
     m_Modifications:
+    - target: {fileID: 10800000, guid: 243ee49f20f63434c95b7cbe33beac48, type: 3}
+      propertyPath: m_Shadows.m_Type
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 10800002, guid: 243ee49f20f63434c95b7cbe33beac48, type: 3}
+      propertyPath: m_Shadows.m_Type
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 100002, guid: 243ee49f20f63434c95b7cbe33beac48, type: 3}
       propertyPath: m_Name
       value: Wall_Inclined_01_Long (1)
@@ -115105,6 +115189,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1043150563}
     m_Modifications:
+    - target: {fileID: 10827744, guid: c6c98ad43c9734baca83db6231416995, type: 3}
+      propertyPath: m_Shadows.m_Type
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 110922, guid: c6c98ad43c9734baca83db6231416995, type: 3}
       propertyPath: m_Name
       value: Wall_Inclined_01_CoinLeft
@@ -115880,6 +115968,14 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 385002873}
     m_Modifications:
+    - target: {fileID: 10800000, guid: 243ee49f20f63434c95b7cbe33beac48, type: 3}
+      propertyPath: m_Shadows.m_Type
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 10800002, guid: 243ee49f20f63434c95b7cbe33beac48, type: 3}
+      propertyPath: m_Shadows.m_Type
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 100002, guid: 243ee49f20f63434c95b7cbe33beac48, type: 3}
       propertyPath: m_Name
       value: Wall_Inclined_01_Long
@@ -116682,6 +116778,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 385002873}
     m_Modifications:
+    - target: {fileID: 10848406, guid: 588955be0a3f24f3587555cad73fae83, type: 3}
+      propertyPath: m_Shadows.m_Type
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 158006, guid: 588955be0a3f24f3587555cad73fae83, type: 3}
       propertyPath: m_Name
       value: Wall_Inclined_01_Half
@@ -122221,6 +122321,14 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1043150563}
     m_Modifications:
+    - target: {fileID: 10800000, guid: 243ee49f20f63434c95b7cbe33beac48, type: 3}
+      propertyPath: m_Shadows.m_Type
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 10800002, guid: 243ee49f20f63434c95b7cbe33beac48, type: 3}
+      propertyPath: m_Shadows.m_Type
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 100002, guid: 243ee49f20f63434c95b7cbe33beac48, type: 3}
       propertyPath: m_Name
       value: Wall_Inclined_01_Long (2)
@@ -135472,6 +135580,14 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 385002873}
     m_Modifications:
+    - target: {fileID: 10800000, guid: fedf50d65fc79434b89f634a6cba8fb2, type: 3}
+      propertyPath: m_Shadows.m_Type
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 10800010, guid: fedf50d65fc79434b89f634a6cba8fb2, type: 3}
+      propertyPath: m_Shadows.m_Type
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 100004, guid: fedf50d65fc79434b89f634a6cba8fb2, type: 3}
       propertyPath: m_Name
       value: Wall_Inclined_02_Long (3)
@@ -143861,6 +143977,14 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 385002873}
     m_Modifications:
+    - target: {fileID: 10800000, guid: 243ee49f20f63434c95b7cbe33beac48, type: 3}
+      propertyPath: m_Shadows.m_Type
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 10800002, guid: 243ee49f20f63434c95b7cbe33beac48, type: 3}
+      propertyPath: m_Shadows.m_Type
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 100002, guid: 243ee49f20f63434c95b7cbe33beac48, type: 3}
       propertyPath: m_Name
       value: Wall_Inclined_01_Long (2)
@@ -158251,6 +158375,14 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1043150563}
     m_Modifications:
+    - target: {fileID: 10800000, guid: fedf50d65fc79434b89f634a6cba8fb2, type: 3}
+      propertyPath: m_Shadows.m_Type
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 10800010, guid: fedf50d65fc79434b89f634a6cba8fb2, type: 3}
+      propertyPath: m_Shadows.m_Type
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 100004, guid: fedf50d65fc79434b89f634a6cba8fb2, type: 3}
       propertyPath: m_Name
       value: Wall_Inclined_02_Long (1)
@@ -158828,6 +158960,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1043150563}
     m_Modifications:
+    - target: {fileID: 10848406, guid: 588955be0a3f24f3587555cad73fae83, type: 3}
+      propertyPath: m_Shadows.m_Type
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 158006, guid: 588955be0a3f24f3587555cad73fae83, type: 3}
       propertyPath: m_Name
       value: Wall_Inclined_01_Half (1)
@@ -160776,6 +160912,14 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1043150563}
     m_Modifications:
+    - target: {fileID: 10800000, guid: fedf50d65fc79434b89f634a6cba8fb2, type: 3}
+      propertyPath: m_Shadows.m_Type
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 10800010, guid: fedf50d65fc79434b89f634a6cba8fb2, type: 3}
+      propertyPath: m_Shadows.m_Type
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 100004, guid: fedf50d65fc79434b89f634a6cba8fb2, type: 3}
       propertyPath: m_Name
       value: Wall_Inclined_02_Long (2)
