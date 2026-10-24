@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Bravo
   m_EditorClassIdentifier: Assembly-CSharp::CharacterData
   order: 1
-  displayName: Bravo
+  displayName: Necochea
   role: Explorador
   portrait: {fileID: 21300000, guid: 6317dd54868f5844fb32c65e17f76bac, type: 3}
   color: {r: 0.3000, g: 0.9000, b: 0.4000, a: 1}

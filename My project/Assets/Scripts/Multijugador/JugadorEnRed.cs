@@ -47,6 +47,7 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
     private byte emoteRed;                       // US 262: el baile que llega por la red (0: ninguno; si no, su número + 1)
     private readonly HashSet<int> granadasExplotadas = new HashSet<int>();
     private bool cuerpoPropio;              // la copia ya tiene el modelo de su personaje (CharacterData.modelo)
+    private CharacterData cuerpoDe;         // de qué personaje es el cuerpo que tiene ahora
     private float proximoCuerpo;
     private int ultimoAtacante;
     private string ultimaArma = "";   // con qué lo dañaron por última vez, si no fue el arma en la mano (una granada)
@@ -66,6 +67,11 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
     private byte banderasRed, armaRed, saltosRed, aterrizajesRed;
     private byte saltosVistos, aterrizajesVistos, armaVista = 255;
     private float alturaParado = 0.75f, alturaAgachado = 0.3f;
+    // La altura de los ojos de la copia es la del Player (la del Alien Soldier, con el que se ajustaron los agarres de
+    // tercera persona). Con un personaje más bajo o más alto, los ojos quedaban arriba (o abajo) de su cabeza, y con
+    // ellos el arma y las manos: los brazos se estiraban hasta arriba. Se corrige por el tamaño de su cuerpo
+    // (Animator.humanScale) respecto del de siempre (AlturaDelCuerpo).
+    private float escalaDeReferencia, piesDeReferencia, paradoDeReferencia, agachadoDeReferencia;
     private GameObject cuchilloListo;
     private Transform modelo;
     private Collider[] colisiones;
@@ -151,6 +157,7 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
         GrenadeThrower.Started += AlEmpezarGranada;
         Grenade1.Exploded += AlExplotarGranada;
         HabilidadTrasbordo.Usado += AlTrasbordar;
+        PortalDeTeletransporte.Paso += AlPasarPortal;   // Mapa 1: los portales
         HabilidadBarrera.Levantada += AlLevantarBarrera;
         HabilidadVistaAerea.Cambio += AlCambiarVistaAerea;
         HabilidadCallejero.Soltado += AlSoltarPerro;   // US 022, CA15
@@ -168,6 +175,7 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
         GrenadeThrower.Started -= AlEmpezarGranada;
         Grenade1.Exploded -= AlExplotarGranada;
         HabilidadTrasbordo.Usado -= AlTrasbordar;
+        PortalDeTeletransporte.Paso -= AlPasarPortal;
         HabilidadBarrera.Levantada -= AlLevantarBarrera;
         HabilidadVistaAerea.Cambio -= AlCambiarVistaAerea;
         HabilidadCallejero.Soltado -= AlSoltarPerro;
@@ -344,15 +352,21 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
             partida.Aviso(titulo, "Reaparecés en la ronda siguiente.");
     }
 
+    private const float ReservaAntes = 0.5f; // s antes de reaparecer en que se reserva el punto (PartidaEnRed)
+
     private IEnumerator Reaparecer(string titulo, float espera)
     {
         float fin = Time.time + espera;
         finEspera = fin;
         topeEspera = Time.time + Mathf.Max(espera, TopeConTienda);
         string tecla = KeyBindings.Label(GameAction.Tienda);
+        int reservado = -1;
+        float reservadoEn = 0f;
         while (Time.time < fin)
         {
             partida.Aviso(titulo, $"Reaparecés en {Mathf.CeilToInt(fin - Time.time)}. Apretá {tecla} para cambiar de equipo");
+            // Medio segundo antes se reserva el punto, así otro que reaparece a la vez no elige el mismo.
+            if (reservado < 0 && fin - Time.time <= ReservaAntes) { reservado = partida.ReservarPunto(); reservadoEn = Time.time; }
             yield return null;
         }
         // US 138, CA5: si está eligiendo equipo, lo espera hasta que cierre la tienda (con un tope).
@@ -361,7 +375,10 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
         partida.Aviso(null);
         if (PartidaDeathmatch.YaTermino) yield break; // la partida terminó mientras esperaba: ya no reaparece
 
-        Pose punto = partida.PuntoDeReaparicion();
+        // Si esperó mucho (eligiendo equipo), el mapa cambió: se elige de nuevo.
+        if (reservado < 0 || Time.time - reservadoEn > 1.5f) { reservado = partida.ReservarPunto(); yield return new WaitForSeconds(ReservaAntes); }
+        if (PartidaDeathmatch.YaTermino) yield break;
+        Pose punto = partida.PuntoReservado(reservado);
         Teletransportar(transform, punto.position, punto.rotation);
         vida.Revive();
         foreach (Pistola arma in GetComponentsInChildren<Pistola>(true)) arma.Refill();
@@ -717,6 +734,9 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
 
     private byte ArmaActual => photonView != null && photonView.IsMine ? ArmaEnMano() : armaRed;
 
+    /// <summary>US 262: está bailando (o terminando de dejar de bailar), para el espectador.</summary>
+    public bool Bailando => baile != null && baile.Bailando;
+
     /// <summary>US 133: lo que tiene en la mano ahora (en la copia, lo que llega por la red), para el espectador.</summary>
     public byte ArmaVisible => muerto ? SinArma : ArmaActual;
 
@@ -987,7 +1007,7 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
                 }
             };
 
-        // US 031, CA5: a los rivales se los reconoce por el contorno rojo, como en Valorant. No se ve su nombre ni su vida.
+                // US 031, CA5: a los rivales se los reconoce por el contorno rojo, como en Valorant. No se ve su nombre ni su vida.
         CrearContorno();
         transparencia = Semitransparente.Crear(gameObject, modelo); // US 137
         terceraPersona = ArmaEnTerceraPersona.Crear(gameObject, animador, camara); // F26: cómo tiene el arma
@@ -1003,15 +1023,18 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
             () => Vivo && vida != null && vida.Invulnerable); // US 137: recién reaparecido, amarillo
     }
 
-    // Los demás ven a este jugador con el modelo de su personaje (Astra, por ejemplo), en cuanto se sabe cuál eligió.
+    // Los demás ven a este jugador con el modelo de su personaje (Soledad, por ejemplo), en cuanto se sabe cuál eligió.
     // Se pregunta cada medio segundo hasta que lo tiene: en el Táctico se elige con la partida ya cargada (US 016).
+    // En el Deathmatch el personaje es solo el aspecto y se puede cambiar en la cuenta del inicio
+    // (PersonajesDeathmatch): ahí se sigue preguntando, por si lo cambia.
     // El propio jugador también cambia de cuerpo, así sus brazos en primera persona son los de su personaje.
     private void CuerpoDelPersonaje()
     {
         proximoCuerpo = Time.time + 0.5f;
-        CharacterData personaje = PersonajesTacticos.De(Actor);
-        if (personaje == null || personaje.modelo == null) return;
+        CharacterData personaje = PersonajeDe(Actor);
+        if (personaje == null || personaje.modelo == null || personaje == cuerpoDe) return;
         cuerpoPropio = true;
+        cuerpoDe = personaje;
         if (!CuerpoDePersonaje.Cambiar(animador, personaje.modelo)) return;
         if (photonView.IsMine)
         {
@@ -1022,6 +1045,7 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
             if (brazos != null) brazos.Rehacer();
             return;
         }
+        AlturaDelCuerpo();
         // El contorno rojo copiaba las mallas del cuerpo anterior: se arma de nuevo con las nuevas.
         foreach (ContornoRival viejo in GetComponents<ContornoRival>()) Destroy(viejo);
         CrearContorno();
@@ -1029,17 +1053,49 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
         if (transparencia != null) transparencia.Rehacer();
     }
 
+    // Los pies del cuerpo, en el espacio del padre de la cámara (donde se miden las alturas de los ojos).
+    private float Pies() => camara.parent != null ? camara.parent.InverseTransformPoint(animador.transform.position).y : animador.transform.position.y;
+
+    // El tamaño del cuerpo de siempre (el del Player, antes de ponerle el de su personaje), con el Animator ya andando.
+    private void MedirReferencia()
+    {
+        if (animador == null || !animador.isActiveAndEnabled || !animador.isHuman || camara == null) return;
+        escalaDeReferencia = animador.humanScale;
+        piesDeReferencia = Pies();
+        paradoDeReferencia = alturaParado;
+        agachadoDeReferencia = alturaAgachado;
+    }
+
+    // Ojos a la altura de este cuerpo: la misma distancia a los pies que en el de siempre, por su tamaño.
+    private void AlturaDelCuerpo()
+    {
+        if (escalaDeReferencia <= 0f) MedirReferencia(); // no llegó a medirse: por lo menos que no rompa
+        if (escalaDeReferencia <= 0f || animador == null || !animador.isHuman || camara == null) return;
+        float escala = Mathf.Clamp(animador.humanScale / escalaDeReferencia, 0.7f, 1.3f);
+        float pies = Pies();
+        alturaParado = pies + (paradoDeReferencia - piesDeReferencia) * escala;
+        alturaAgachado = pies + (agachadoDeReferencia - piesDeReferencia) * escala;
+    }
+
+    /// <summary>El personaje de ese jugador en la partida: el que eligió en el Táctico o su aspecto en el Deathmatch.</summary>
+    public static CharacterData PersonajeDe(int actor) =>
+        PersonajesDeathmatch.Actual != null ? PersonajesDeathmatch.De(actor) : PersonajesTacticos.De(actor);
+
+    // Si hay que fijarse el personaje: hasta tener el suyo y, en el Deathmatch, siempre (lo puede cambiar).
+    private bool MirarCuerpo => (!cuerpoPropio || PersonajesDeathmatch.Actual != null) && Time.time >= proximoCuerpo;
+
     private void Update()
     {
         if (photonView == null) return;
         if (photonView.IsMine)
         {
             if (vida != null && vida.Invulnerable && Time.time >= finInvulnerable) vida.Invulnerable = false;
-            if (!cuerpoPropio && animador != null && Time.time >= proximoCuerpo) CuerpoDelPersonaje();
+            if (animador != null && MirarCuerpo) CuerpoDelPersonaje();
             return;
         }
+        if (escalaDeReferencia <= 0f && cuerpoDe == null) MedirReferencia(); // antes del primer cambio de cuerpo
         if (!recibido) return;
-        if (!cuerpoPropio && Time.time >= proximoCuerpo) CuerpoDelPersonaje();
+        if (MirarCuerpo) CuerpoDelPersonaje();
 
         // US 025: se acerca a lo último que llegó, adelantándolo según su velocidad lo que tardó en llegar.
         float dt = Time.deltaTime;
@@ -1406,6 +1462,26 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
         tiempoRed = info.SentServerTime;
         tiempoTrasbordo = info.SentServerTime;
         EfectosTrasbordo.Reproducir(origen, destino, transform, false, sonido != null ? sonido.outputAudioMixerGroup : null);
+    }
+
+    // Mapa 1: pasó por un portal. Como el Trasbordo, se avisa aparte de la posición: los demás lo ven aparecer de golpe
+    // en el otro portal (no se desliza cruzando el mapa) y escuchan el portal en los dos lados.
+    private void AlPasarPortal(Transform jugador, Vector3 desde, Vector3 hasta)
+    {
+        if (jugador != transform || muerto || !photonView.IsMine) return;
+        photonView.RPC(nameof(RpcPortal), RpcTarget.Others, desde, hasta);
+    }
+
+    [PunRPC]
+    private void RpcPortal(Vector3 desde, Vector3 hasta, PhotonMessageInfo info)
+    {
+        if (photonView.IsMine || muerto) return;
+        transform.position = hasta;
+        posicionRed = hasta;
+        velocidadRed = Vector3.zero;
+        tiempoRed = info.SentServerTime;
+        tiempoTrasbordo = info.SentServerTime; // las posiciones mandadas antes de pasar ya no valen
+        PortalDeTeletransporte.SonarPaso(desde, hasta, false);
     }
 
     // US 020, CA11: la Barrera se levanta igual en las demás computadoras, como de la copia de su dueño.

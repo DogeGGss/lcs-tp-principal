@@ -15,6 +15,9 @@ using static ShopUIKit;
 // Mirando a un compañero se ve en primera persona lo que tiene en la mano: una copia del arma de primera persona
 // propia que corresponde (y la mano, si BrazosEnCamara tiene la foto de los brazos con esa arma), que se sacude un
 // poco con cada disparo suyo. La dibuja la cámara de las armas, como la propia.
+// US 262: si el compañero que se mira baila (un emote), la cámara sale de sus ojos a tercera persona, atrás y un poco
+// arriba (como la del que baila, CamaraDeEmotes), para ver el baile: se ve su cuerpo y no el arma en primera persona,
+// el mouse gira alrededor y no atraviesa paredes. Al terminar el baile vuelve a sus ojos.
 // Lo agrega RondasTacticas al empezar una partida del Modo Táctico.
 public class Espectador : MonoBehaviour
 {
@@ -51,6 +54,12 @@ public class Espectador : MonoBehaviour
     // La puñalada del compañero: el cuchillo va para adelante y vuelve, como en su pantalla.
     private float punaladaEn = -10f;
     private const float PunaladaIda = 0.08f, PunaladaVuelta = 0.12f, PunaladaLargo = 0.3f;
+
+    // US 262: el compañero que se mira baila: la cámara en tercera persona.
+    private const float Pasar = 0.3f, Distancia = 2.8f, Arriba = 0.35f, AlturaPecho = 1.15f, RadioDeLaCamara = 0.2f;
+    private const float PitchInicial = 12f, PitchMinimo = -25f, PitchMaximo = 65f;
+    private float tercera;               // 0: en sus ojos; 1: atrás, viéndolo bailar
+    private float yaw, pitch, distanciaVista = Distancia;
 
     // Cartel de abajo con el nombre del compañero.
     private GameObject cartel;
@@ -98,6 +107,7 @@ public class Espectador : MonoBehaviour
         {
             Transform ojos = mirando.Ojos;
             camara.transform.SetPositionAndRotation(ojos.position, ojos.rotation);
+            if (VerBaile(ojos)) return;
             // Lo que su cuerpo arme después de empezar a mirarlo (la granada en la mano se arma la primera vez
             // que la saca) tampoco se dibuja: si no, se ve flotando al lado de la cámara.
             OcultarCuerpo(mirando);
@@ -352,6 +362,63 @@ public class Espectador : MonoBehaviour
     private void AlDispararElCompanero() => sacudon = 1f;
     private void AlAcuchillarElCompanero() => punaladaEn = Time.time;
 
+    // US 262: si el compañero baila, la cámara pasa de sus ojos a atrás de él (en Pasar segundos) y se ve su cuerpo.
+    // Devuelve true mientras no está del todo en sus ojos (ahí no se esconde el cuerpo ni se muestra el arma).
+    private bool VerBaile(Transform ojos)
+    {
+        bool baila = mirando.Bailando;
+        if (baila && tercera <= 0f)
+        {
+            // Empieza atrás de él, hacia donde mira, un poco desde arriba.
+            yaw = ojos.eulerAngles.y;
+            pitch = PitchInicial;
+            distanciaVista = Distancia;
+        }
+        tercera = Mathf.MoveTowards(tercera, baila ? 1f : 0f, Time.deltaTime / Pasar);
+        if (tercera <= 0f) return false;
+
+        // El mouse gira alrededor (los clics siguen pasando de compañero).
+        if (baila && !PauseMenu.IsPaused)
+        {
+            float sensibilidad = KeyBindings.Sensitivity;
+            yaw += Input.GetAxis("Mouse X") * sensibilidad;
+            pitch -= Input.GetAxis("Mouse Y") * sensibilidad * (KeyBindings.InvertY ? -1f : 1f);
+            pitch = Mathf.Clamp(pitch, PitchMinimo, PitchMaximo);
+        }
+
+        // Atrás y un poco arriba, mirando al pecho; si hay algo en el medio, se acerca.
+        Transform cuerpo = mirando.transform;
+        Vector3 pecho = cuerpo.position + cuerpo.up * AlturaPecho;
+        Vector3 hacia = Quaternion.Euler(pitch, yaw, 0f) * Vector3.back;
+        float lejos = Distancia;
+        foreach (RaycastHit g in Physics.SphereCastAll(pecho, RadioDeLaCamara, hacia, Distancia, Physics.DefaultRaycastLayers,
+                     QueryTriggerInteraction.Ignore))
+            if (g.collider != null && !g.collider.transform.IsChildOf(cuerpo) && g.distance < lejos) lejos = g.distance;
+        lejos = Mathf.Max(0.4f, lejos);
+        distanciaVista = lejos < distanciaVista ? lejos : Mathf.Lerp(distanciaVista, lejos, 1f - Mathf.Exp(-6f * Time.deltaTime));
+        Vector3 lugar = pecho + hacia * distanciaVista + Vector3.up * (Arriba * distanciaVista / Distancia);
+        Quaternion giro = Quaternion.LookRotation(pecho - lugar, Vector3.up);
+        float k = tercera * tercera * (3f - 2f * tercera);
+        camara.transform.SetPositionAndRotation(Vector3.Lerp(ojos.position, lugar, k), Quaternion.Slerp(ojos.rotation, giro, k));
+
+        // A mitad de camino se ve su cuerpo y se esconde el arma en primera persona; volviendo, al revés.
+        bool afuera = k > 0.25f;
+        if (afuera)
+        {
+            foreach (Renderer r in ocultos) if (r != null) r.enabled = true;
+            ocultos.Clear();
+            // El arma se vuelve a armar al volver a sus ojos (VerArmaDelCompanero).
+            if (vistaArma != null) vistaArma.gameObject.SetActive(false);
+            vistaArma = null;
+            armaMirada = null;
+            granadaMirada = null;
+            dispositivoMirado = false;
+            if (camaraArmas != null) camaraArmas.enabled = false;
+            return true;
+        }
+        return false;
+    }
+
     // El cuerpo del que se mira no se dibuja (si no, la cámara queda adentro de su cabeza).
     private void OcultarCuerpo(JugadorEnRed jugador)
     {
@@ -393,6 +460,7 @@ public class Espectador : MonoBehaviour
         mirando = jugador;
         if (mirando != null) { mirando.Disparo += AlDispararElCompanero; mirando.Punalada += AlAcuchillarElCompanero; }
         punaladaEn = -10f;
+        tercera = 0f; // US 262: si el nuevo baila, la cámara sale de sus ojos
         // Su arma se arma de nuevo en el próximo LateUpdate; sin nadie a quien mirar, no se ve ninguna.
         armaMirada = null;
         granadaMirada = null;

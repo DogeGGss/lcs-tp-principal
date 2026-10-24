@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Alfa
   m_EditorClassIdentifier: Assembly-CSharp::CharacterData
   order: 0
-  displayName: Alfa
+  displayName: Unzué
   role: Centinela
   portrait: {fileID: 21300000, guid: 23454d2aa33d69a4e92e4012a60bc492, type: 3}
   color: {r: 1.0000, g: 0.7800, b: 0.1200, a: 1}
