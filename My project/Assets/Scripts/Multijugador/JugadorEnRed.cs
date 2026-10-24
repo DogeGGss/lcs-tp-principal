@@ -718,6 +718,9 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
 
     private byte ArmaActual => photonView != null && photonView.IsMine ? ArmaEnMano() : armaRed;
 
+    /// <summary>US 262: está bailando (o terminando de dejar de bailar), para el espectador.</summary>
+    public bool Bailando => baile != null && baile.Bailando;
+
     /// <summary>US 133: lo que tiene en la mano ahora (en la copia, lo que llega por la red), para el espectador.</summary>
     public byte ArmaVisible => muerto ? SinArma : ArmaActual;
 

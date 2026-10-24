@@ -387,6 +387,26 @@ public class ArmaEnTerceraPersona : MonoBehaviour
     private void OnDisable()
     {
         if (capa != null && originalDerecho == null) capa.weight = 0f;
+        PrenderIK();
+    }
+
+    // US 262: bailando, el IK de los brazos se apaga entero (todas las capas y el que las arma, como en el jugador
+    // propio, CamaraDeEmotes): con el peso de la capa del arma en 0 no alcanzaba, las otras capas del personaje (los
+    // agarres de primera persona) seguían llevando las manos y los brazos se veían rotos.
+    private readonly System.Collections.Generic.List<RigBuilder> ikApagado = new System.Collections.Generic.List<RigBuilder>();
+
+    private void ApagarIK()
+    {
+        if (ikApagado.Count > 0) return;
+        foreach (RigBuilder b in GetComponentsInChildren<RigBuilder>(true))
+            if (b.enabled) { b.enabled = false; ikApagado.Add(b); }
+    }
+
+    private void PrenderIK()
+    {
+        if (ikApagado.Count == 0) return;
+        foreach (RigBuilder b in ikApagado) if (b != null) b.enabled = true;
+        ikApagado.Clear();
     }
 
     private void Update()
@@ -402,8 +422,10 @@ public class ArmaEnTerceraPersona : MonoBehaviour
         {
             // US 262: bailando, las manos son del baile.
             if (capa != null) capa.weight = 0f;
+            ApagarIK();
             return;
         }
+        PrenderIK();
         if (!Manejando || ojos == null) { CopiarOriginales(); ManosConGranada(); return; }
         if (capa != null) capa.weight = 1f;
         if (rotacionVista < 1f) { rotacionVista = 1f; PesoDelGiro(ikDerecho, 1f); PesoDelGiro(ikIzquierdo, 1f); }
