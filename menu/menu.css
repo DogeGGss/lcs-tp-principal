@@ -50,9 +50,6 @@ html,body{margin:0;height:100%;background:#000;overflow:hidden;color-scheme:dark
 .boton.ok{background:var(--ok);color:#06130d;cursor:default;box-shadow:none}
 .boton:focus-visible,.clic:focus-visible{outline:3px solid var(--accent);outline-offset:3px}
 
-/* Marco de la cabecera: dos mitades, cada una cortada en nueve (esquina y adorno del centro fijos). */
-.marco{position:absolute;pointer-events:none}
-.mitad{position:absolute;top:0;height:100%;border-style:solid;border-color:transparent}
 
 .carta{position:absolute;background:var(--panel);border-radius:8px;overflow:hidden;cursor:pointer}
 .carta .linea-borde{position:absolute;inset:0;border-radius:8px;box-shadow:inset 0 0 0 1px rgba(255,255,255,.08);pointer-events:none}

@@ -65,33 +65,9 @@
   }
   const degrade = (nodo, dir, a0, a1) => { nodo.style.background = `linear-gradient(${dir},rgba(0,0,0,${a0}),rgba(0,0,0,${a1}))`; nodo.style.pointerEvents = 'none'; };
 
-  // ---------- Marcos (PerfilUI.Enmarcar e InteriorMarco) ----------
-  // El alto del recuadro manda: el riel queda del mismo grosor arriba y a los costados. Cada mitad se corta en nueve con la
-  // esquina y medio adorno del centro fijos; los rieles se estiran o se repiten. Las mitades están a la mitad del original.
-  const ALTO = 1280, BORDE = 230, ESC = 0.5;
-  function enmarcar(padre, x, y, w, h, id, adentro) {
-    if (!id || !C.rieles[id]) return;
-    const r = adentro ? [0, 0, 0, 0] : C.rieles[id];
-    const s = h / (ALTO - r[1] - r[3]);
-    const ancho = w + (r[0] + r[2]) * s, alto = h + (r[1] + r[3]) * s;
-    const m = N(padre, x - r[0] * s, y - r[1] * s, ancho, alto, 'marco');
-    const [esq, cen, rep] = C.cortes[id];
-    const bv = BORDE * s, be = esq * s, bc = cen * s;
-    for (const lado of ['i', 'd']) {
-      const p = el('div', 'mitad', m);
-      p.style.left = lado === 'i' ? '0' : ancho / 2 + 'px';
-      p.style.width = ancho / 2 + 'px';
-      p.style.borderWidth = lado === 'i' ? `${bv}px ${bc}px ${bv}px ${be}px` : `${bv}px ${be}px ${bv}px ${bc}px`;
-      const corte = lado === 'i' ? [BORDE, cen, BORDE, esq] : [BORDE, esq, BORDE, cen];
-      p.style.borderImage = `url(img/marcos/${id}-${lado}.png) ${corte.map(v => v * ESC).join(' ')} ${rep ? 'round' : 'stretch'}`;
-    }
-  }
-  function interior(id, h, adentro) {
-    if (!id || !C.rieles[id]) return [0, 0, 0, 0];
-    const r = adentro ? [0, 0, 0, 0] : C.rieles[id], it = C.interiores[id];
-    const s = h / (ALTO - r[1] - r[3]);
-    return it.map((v, i) => Math.max((v - r[i]) * s - 2, 0));
-  }
+  // ---------- Marcos (marcos.js, compartido con la presentación) ----------
+  const enmarcar = (padre, x, y, w, h, id, adentro) => padre.insertAdjacentHTML('beforeend', Marcos.html(id, x, y, w, h, adentro));
+  const interior = (id, h, adentro) => Marcos.interior(id, h, adentro);
   // Banner con su marco en un recuadro: el banner llega hasta el borde interior del riel.
   function bannerEnmarcado(padre, w, h, banner, marco, adentro, sombra) {
     const d = interior(marco, h, adentro);
