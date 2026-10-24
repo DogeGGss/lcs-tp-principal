@@ -11,6 +11,8 @@ public class ConfigRed : ScriptableObject
     public class Mapa
     {
         public string nombre = "Mapa 1";
+        [Tooltip("Qué es el lugar. Va debajo del nombre en la pantalla de carga. Opcional.")]
+        public string subtitulo;
         [Tooltip("Nombre de la escena. Tiene que estar en la lista de escenas del build.")]
         public string escena;
         public bool tactico = true;
