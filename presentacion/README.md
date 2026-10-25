@@ -29,6 +29,7 @@ La propuesta comercial y los bloques Números, Costos e Inversión (antes del ci
 ## Pendientes para el ensayo final
 
 - Probar el tráiler en pantalla completa en el proyector.
+- Cargar el video de la diapositiva secreta (`secret.video`, el portal abriéndose en la universidad) y ensayarla en el proyector, con sonido.
 - Cuando el informe del Sprint 3 cierre el testing, actualizar las pruebas de `metrics.s3` (hoy son las de la planilla al 23/10) y la nota de Tiempo por estado (cuándo se pasó gente a testing y quiénes).
 - Actualizar disponibilidad/balance de armas contra el ejecutable que se mostrará.
 - Cargar clips y ensayar la demo real con respaldo.
@@ -62,3 +63,9 @@ Historia va después del tráiler y cuenta el universo del juego en tres momento
 ## Sprint 3 (25/10/2026)
 
 Métricas y Avance usan el «Informe de avances - Sprint 3»: 66 de las 68 historias en Done (la US 222 espera el Modo Zombie y la US 169 no se empezó) y, de los 299 casos de la planilla al 23/10, 267 pasan, 1 falla y 31 sin ejecutar. Avance suma el Sprint 3 (Deathmatch en su mapa, las habilidades con sus íconos, campo de práctica, tutorial y cometas, y perfil, logros, cápsulas, guardado y launcher) con la vista aérea de Colonia ARA San Juan. Las notas de Métricas, Tiempo por estado y Avance tienen los datos del informe para decirlos en voz alta. Revisado a 1280 × 720 y 1024 × 768: queda por encima de los controles.
+
+## Quién lee y diapositiva secreta (25/10/2026)
+
+Lee cada diapositiva: Historia, Nahuel Velazquez; Demo de interfaz, David Ramos; Arsenal, Lucas Huber; Menú, perfil y cápsulas, Conjuntos y Emotes, Luka Gómez; Métricas, Tiempo por estado y Avance, Agustín Barreto; Propuesta comercial y Números, Ulises Fonseca; Costos e Inversión, Nicolás Gauna. Apertura, Tráiler y Cierre quedan como «Equipo Riftwalker».
+
+Después del cierre hay una diapositiva secreta: en «16 / 16» Siguiente (o →, o el control remoto) sigue habilitado y rompe la página: tiembla con los colores separados, aparecen franjas invertidas y pedazos corridos, se agrieta desde un golpe cerca del centro, la barra de arriba, los controles y la diapositiva se caen, y se abre el portal; ahí pasa el video de `secret.video` a pantalla completa, con sonido (el navegador lo deja porque ya hubo clics en la página). No figura en el índice, en el contador ni en el reloj, y no cambia la dirección. ← o Esc vuelve al cierre como estaba (en pantalla completa, Esc primero sale de la pantalla completa: usar ←). Sin video, termina en el portal abierto. El video se precarga al llegar a Inversión. Probada a 1280 × 720 con el tráiler como video de prueba.

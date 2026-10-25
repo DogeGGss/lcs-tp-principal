@@ -106,8 +106,60 @@ function content(s){
  case 'cierre':return `<div class="hero"><p class="eyebrow">Laboratorio de Construcción de Software · Sprint 3</p><img class="hero-logo" src="media/logo.png" alt="Project Riftwalker"><h1>¡Gracias!</h1><p class="lead">¿Preguntas?</p></div>`;
  }
 }
-function render(focus=false){const s=D.slides[current];$('#slide').innerHTML=content(s);$('#position').textContent=`${current+1} / ${D.slides.length}`;$('#prev').disabled=current===0;$('#next').disabled=current===D.slides.length-1;$('#progress').style.width=`${(current+1)/D.slides.length*100}%`;$('#speaker').textContent=s.speaker||D.speaker;$('#announcement').textContent=`${current+1} de ${D.slides.length}: ${s.title}`;history.replaceState(null,'','#'+s.id);if(focus){$('#slide').focus({preventScroll:true});scrollTo(0,0)}}
-function go(n){current=Math.max(0,Math.min(D.slides.length-1,n));render(true)}
+function render(focus=false){const s=D.slides[current];$('#slide').innerHTML=content(s);$('#position').textContent=`${current+1} / ${D.slides.length}`;$('#prev').disabled=current===0;if(current>=D.slides.length-2)prepararSecreto();$('#progress').style.width=`${(current+1)/D.slides.length*100}%`;$('#speaker').textContent=s.speaker||D.speaker;$('#announcement').textContent=`${current+1} de ${D.slides.length}: ${s.title}`;history.replaceState(null,'','#'+s.id);if(focus){$('#slide').focus({preventScroll:true});scrollTo(0,0)}}
+// Diapositiva secreta: Siguiente en el cierre rompe la página (temblor, cortes, grietas, la interfaz se cae), se abre el
+// portal y pasa el video del modo invasión. No cuenta en el índice, el contador ni el reloj; ← o Esc vuelve al cierre.
+const secreto={abierto:false,timers:[],tic:0,capa:null,video:null};
+function go(n){const ultima=D.slides.length-1;
+ if(secreto.abierto){if(n<current)cerrarSecreto();return}
+ if(n>ultima&&current===ultima){abrirSecreto();return}
+ current=Math.max(0,Math.min(ultima,n));render(true)}
+function prepararSecreto(){
+ if(secreto.capa)return;const c=document.createElement('div');c.id='secreto';c.hidden=true;c.setAttribute('aria-hidden','true');
+ c.innerHTML=`<div class="fondo"></div><div class="destellos"></div><div class="rebanadas"></div><div class="cortes">${'<i></i>'.repeat(14)}</div><svg class="grietas" viewBox="0 0 1000 1000" preserveAspectRatio="none"></svg><div class="portal"></div>${D.secret.video?`<video playsinline preload="auto" src="${esc(D.secret.video)}"></video>`:''}`;
+ document.body.append(c);secreto.capa=c;secreto.video=c.querySelector('video');
+}
+// Grietas que salen de un golpe cerca del centro, en zigzag hasta el borde, y se dibujan de a poco.
+function grietas(svg){
+ const r=(a,b)=>a+Math.random()*(b-a),camino=(x,y,ang,pasos)=>{let d=`M${x} ${y}`;for(let i=0;i<pasos&&x>0&&x<1000&&y>0&&y<1000;i++){ang+=r(-.45,.45);const l=r(35,110);x+=Math.cos(ang)*l;y+=Math.sin(ang)*l;d+=` L${x.toFixed(1)} ${y.toFixed(1)}`}return d};
+ const x0=r(440,580),y0=r(380,500),d=[];
+ for(let k=0;k<11;k++){const ang=k/11*Math.PI*2+r(-.25,.25);d.push(camino(x0,y0,ang,18));if(Math.random()<.6)d.push(camino(x0+Math.cos(ang)*r(80,200),y0+Math.sin(ang)*r(80,200),ang+r(-1,1),6))}
+ svg.innerHTML=d.map(p=>`<path d="${p}" vector-effect="non-scaling-stroke"/>`).join('');
+ svg.querySelectorAll('path').forEach(p=>{const l=p.getTotalLength();p.style.strokeDasharray=l;p.style.strokeDashoffset=l});
+ setTimeout(()=>svg.querySelectorAll('path').forEach(p=>p.style.strokeDashoffset=0),40);
+}
+// Pedazos de la página corridos de lugar: copias de la diapositiva que cada tic muestran solo una franja, movida al costado.
+function rebanadas(c){
+ const m=$('#slide'),b=m.getBoundingClientRect(),cont=c.querySelector('.rebanadas');cont.innerHTML='';
+ for(let k=0;k<5;k++){const r=m.cloneNode(true);r.removeAttribute('id');r.removeAttribute('tabindex');
+  Object.assign(r.style,{position:'absolute',left:b.left+'px',top:b.top+'px',width:b.width+'px',height:b.height+'px',margin:0,background:'var(--bg)',display:'none'});cont.append(r)}
+}
+// Cada tic, franjas que invierten, tiñen o tapan la página en lugares al azar, pedazos corridos y algún destello negro.
+function cortes(c){
+ c.querySelectorAll('.rebanadas>main').forEach(r=>{if(Math.random()<.45){r.style.display='none';return}
+  const t=Math.random()*90,h=2+Math.random()*12,dx=(Math.random()<.5?-1:1)*(10+Math.random()*60);
+  Object.assign(r.style,{display:'block',clipPath:`inset(${t}% 0 ${Math.max(0,100-t-h)}% 0)`,translate:`${dx}px 0`})});
+ c.querySelectorAll('.cortes i').forEach(i=>{if(Math.random()<.5){i.style.display='none';return}
+  i.className=['inv','inv','tinte','negro'][Math.floor(Math.random()*4)];
+  Object.assign(i.style,{display:'block',top:Math.random()*100+'%',height:(1+Math.random()*8)+'vh',left:(Math.random()*40-20)+'%',width:(40+Math.random()*80)+'%',transform:`translateX(${Math.random()*120-60}px)`})});
+ c.querySelector('.destellos').style.opacity=Math.random()<.12?.85:0;
+}
+function abrirSecreto(){
+ prepararSecreto();const c=secreto.capa,v=secreto.video,t=(ms,f)=>secreto.timers.push(setTimeout(f,ms));
+ secreto.abierto=true;c.className=v?'':'sin-video';c.hidden=false;document.activeElement?.blur();
+ const empezarVideo=()=>{if(!v)return;c.classList.add('video');v.currentTime=0;v.play().catch(()=>{v.muted=true;v.play().catch(()=>{})})};
+ if(matchMedia('(prefers-reduced-motion: reduce)').matches){document.body.classList.add('rompiendo','cayendo');c.classList.add('abriendo','abierto');empezarVideo();return}
+ rebanadas(c);document.body.classList.add('rompiendo');grietas(c.querySelector('.grietas'));cortes(c);secreto.tic=setInterval(()=>cortes(c),55);
+ t(900,()=>c.classList.add('agrietada'));
+ t(1500,()=>{document.body.classList.add('cayendo');c.classList.add('abriendo')});
+ t(2300,()=>{clearInterval(secreto.tic);c.querySelector('.destellos').style.opacity=0;c.classList.add('abierto')});
+ t(2750,empezarVideo);
+}
+function cerrarSecreto(){
+ secreto.timers.forEach(clearTimeout);clearInterval(secreto.tic);secreto.timers=[];secreto.abierto=false;
+ document.body.classList.remove('rompiendo','cayendo');const c=secreto.capa;c.hidden=true;c.className='';
+ if(secreto.video){secreto.video.pause();secreto.video.currentTime=0}
+}
 $('#edition').textContent=D.edition;
 $('#indexGrid').innerHTML=D.slides.map((s,i)=>`${s.section!==D.slides[i-1]?.section?`<h3 class="index-section">${esc(s.section)}</h3>`:''}<button data-go="${i}">${String(i+1).padStart(2,'0')} / ${esc(s.label)}<small>${s.minutes} min · ${esc(s.title)}</small></button>`).join('');
 $('#prev').onclick=()=>go(current-1);$('#next').onclick=()=>go(current+1);
@@ -128,7 +180,7 @@ document.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)r
  if(d.trailer!==undefined){const v=$('#trailerVideo');if(v){v.requestFullscreen?.().catch(()=>{});v.play().catch(()=>{})}}
 });
 document.addEventListener('change',e=>{if(e.target.id==='weaponSelect'){weaponId=e.target.value;render()}});
-document.addEventListener('keydown',e=>{if(document.querySelector('dialog[open]')||document.fullscreenElement?.tagName==='VIDEO'||e.target.closest('input,select,textarea,button,a,video'))return;
+document.addEventListener('keydown',e=>{if(secreto.abierto){if(['Escape','ArrowLeft','PageUp'].includes(e.key)){e.preventDefault();cerrarSecreto()}return}if(document.querySelector('dialog[open]')||document.fullscreenElement?.tagName==='VIDEO'||e.target.closest('input,select,textarea,button,a,video'))return;
  if(e.key==='ArrowRight'||e.key==='PageDown'){e.preventDefault();go(current+1)}if(e.key==='ArrowLeft'||e.key==='PageUp'){e.preventDefault();go(current-1)}if(e.key.toLowerCase()==='f')$('#fullscreen').click();
 });
 // Child demos use their own keyboard; only an explicit return message closes them.
