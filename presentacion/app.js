@@ -91,7 +91,7 @@ function content(s){
  case 'emotes':return head(s)+dances();
  case 'tiempo':return head(s)+statusTime();
  case 'arsenal':return head(s)+arsenal();
- case 'juego':return head(s)+`<button class="menu-demo" data-demo="menu"><img src="../menu/img/fondos/fondo-01.jpg" alt=""><span class="menu-demo-texto"><strong>Abrir el menú</strong><span>Entrá al Perfil desde tu credencial y armá tu combinación: 19 avatares, 19 banners, 70 títulos y 19 marcos. Son más de 500.000 combinaciones.</span><em>Abrir demo →</em></span></button>`;
+ case 'juego':return head(s)+`<button class="menu-demo" data-demo="menu"><img src="../menu/img/fondos/fondo-01.jpg" alt=""><span class="menu-demo-texto"><strong>Abrir el menú</strong><span>Entrá al Perfil desde tu credencial y armá tu combinación: 19 avatares, 19 banners, 70 títulos y 19 marcos. Son más de 500.000 combinaciones. Y en la Estación del Rift, abrí cápsulas.</span><em>Abrir demo →</em></span></button>`;
  case 'negocio':return head(s)+offer();
  case 'escenarios':return head(s)+scenarios();
  case 'costos':return head(s)+costs();
@@ -108,9 +108,9 @@ $('#prev').onclick=()=>go(current-1);$('#next').onclick=()=>go(current+1);
 $('#indexButton').onclick=()=>$('#indexDialog').showModal();
 $('#contrast').onclick=()=>{const on=document.body.classList.toggle('projector');$('#contrast').setAttribute('aria-pressed',on)};
 $('#fullscreen').onclick=async()=>{try{if(document.fullscreenElement)await document.exitFullscreen();else await document.documentElement.requestFullscreen()}catch{$('#announcement').textContent='El navegador no permitió pantalla completa. Podés usar F11.'}};
-// El menú y el perfil son una página aparte (/menu); las otras demos son maquetas de la guía.
+// El menú, el perfil y la Estación del Rift son una página aparte (/menu); las otras demos son maquetas de la guía.
 const demoSrc=id=>id==='menu'?'../menu/index.html':`../index.html?demo=${id}`;
-let demo='';function openDemo(id){demo=id;$('#demoTitle').textContent={tienda:'Tienda de armas',modos:'Selección de modo',hud:'HUD de combate',menu:'Menú y perfil'}[id];$('#demoSub').textContent=id==='menu'?'El menú y el perfil del juego, en la página':'Maqueta interactiva de la guía';$('#demoFrame').src=demoSrc(id);$('#demoDialog').showModal()}
+let demo='';function openDemo(id){demo=id;$('#demoTitle').textContent={tienda:'Tienda de armas',modos:'Selección de modo',hud:'HUD de combate',menu:'Menú, perfil y cápsulas'}[id];$('#demoSub').textContent=id==='menu'?'El menú, el perfil y la Estación del Rift del juego, en la página':'Maqueta interactiva de la guía';$('#demoFrame').src=demoSrc(id);$('#demoDialog').showModal()}
 $('#resetDemo').onclick=()=>{$('#demoFrame').src=demoSrc(demo)};
 $('#demoDialog').addEventListener('close',()=>{$('#demoFrame').src='about:blank'});
 $('#clipDialog').addEventListener('close',()=>{$('#video').pause();$('#video').removeAttribute('src');$('#video').load()});

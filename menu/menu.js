@@ -1,5 +1,6 @@
-// Menú principal y Perfil de Project Riftwalker, como están en el juego (MenuRiftwalker y PantallaPerfil).
-// Las posiciones son las de Unity, en una pantalla de 1920 × 1080. Acá todo está desbloqueado para probar combinaciones.
+// Menú principal, Perfil y Estación del Rift de Project Riftwalker, como están en el juego (MenuRiftwalker, PantallaPerfil
+// y PantallaEstacion). Las posiciones son las de Unity, en una pantalla de 1920 × 1080. En el Perfil todo está
+// desbloqueado para probar combinaciones; la Estación arranca como un perfil nuevo para que las cápsulas traigan cosas nuevas.
 (() => {
   const C = window.CATALOGO;
   const E = document.getElementById('escenario');
@@ -10,8 +11,19 @@
   const EMOTES = ['Shuffle', 'Twerk', 'Breakdance', 'Flair', 'Rumba', 'Silly'];
   const LUGARES = ['Arriba', 'Derecha', 'Abajo', 'Izquierda'];
   const FONDOS = ['fondo-01', 'fondo-02', 'fondo-03', 'fondo-04', 'fondo-05', 'fondo-06'];
-  const MONEDAS = { creditos: 2450, boletos: 3, cristales: 120 }; // las del perfil nuevo del juego
   const CLAVE = 'riftwalker-menu-web';
+
+  // Cápsulas: las reglas de ejemplo de PerfilDatos. Las monedas y lo que salió no se guardan: cada vez que se abre la
+  // página arranca como el perfil nuevo del juego (2.450 créditos, 3 boletos y 120 cristales). F9 suma, como en el juego.
+  const PROB = [0, 55, 30, 12, 3], PROB_TIPO = [35, 25, 25, 15], GARANTIA = 10; // por rareza; avatar, banner, título, marco
+  const POR_REPETIDO = [0, 50, 120, 300, 800], CREDITOS_POR_BOLETO = 600, CRISTALES_POR_BOLETO = 100, CRISTALES_POR_DIEZ = 900;
+  const TIPOS = ['avatar', 'banner', 'titulo', 'marco'], PREFIJO = { avatar: 'av:', banner: 'bn:', titulo: 'ti:', marco: 'mc:' };
+  // El catálogo en el orden del juego: avatares, banners, marcos y títulos.
+  const CAT = [['avatar', C.avatares], ['banner', C.banners], ['marco', C.marcos], ['titulo', C.titulos]].flatMap(([tipo, l]) => l.map(c => ({ ...c, tipo })));
+  const rift = { creditos: 2450, boletos: 3, cristales: 120, obtenidos: [], sinEpico: 0, aperturas: 0, recientes: [] };
+  const clave = c => PREFIJO[c.tipo] + c.id;
+  const tiene = c => c.rareza === 0 || rift.obtenidos.includes(clave(c));
+  const desdeClave = k => CAT.find(c => clave(c) === k);
 
   // ---------- Estado (se recuerda en este navegador) ----------
   const inicial = { nombre: 'Jugador', ...C.inicial, emotes: [-1, -1, -1, -1] };
@@ -93,7 +105,7 @@
     }
   }
   function monedas(padre, derecha, y) {
-    const nombres = [['Se ganan jugando', MONEDAS.creditos, false], ['Abren cápsulas', MONEDAS.boletos, true], ['Moneda de pago', MONEDAS.cristales, true]];
+    const nombres = [['Se ganan jugando', rift.creditos, false], ['Abren cápsulas', rift.boletos, true], ['Moneda de pago', rift.cristales, true]];
     let x = derecha;
     for (let i = 2; i >= 0; i--) {
       const [ayuda, cantidad, sumar] = nombres[i], w = sumar ? 214 : 186;
@@ -105,6 +117,7 @@
       if (sumar) {
         const mas = N(chip, w - 40, 12, 30, 30); mas.style.borderRadius = '6px'; mas.style.background = i === 1 ? 'var(--boletos)' : 'var(--cristales)';
         T(mas, 0, -1, 30, 30, 'ft', 26, 'var(--accent-ink)', '+', { al: 'centro' });
+        if (i === 1 && location.hash !== '#estacion') clic(mas, abrirEstacion, 'Conseguir boletos');
       }
       x -= 10;
     }
@@ -186,12 +199,12 @@
     T(capa, 122, 718, 200, 24, 'fr', 17, 'var(--mute)', 'Campos de prueba:', { mayus: true, esp: 12 });
     T(capa, 300, 718, 240, 24, 'fr', 17, 'var(--soft)', 'Campo de práctica', { mayus: true, esp: 12 });
 
-    const tarjeta = N(capa, 80, 900, 580, 132, 'panel');
+    const tarjeta = clic(N(capa, 80, 900, 580, 132, 'panel borde-hover'), abrirEstacion, 'Abrir la Estación del Rift');
     const lt = N(tarjeta, 0, 0, 580, 3); lt.style.background = 'rgba(242,154,56,.8)';
     capsula(tarjeta, 30, 18);
     T(tarjeta, 128, 18, 420, 20, 'fr', 16, 'var(--accent)', '01 / Cápsulas', { mayus: true, esp: 12 });
     T(tarjeta, 126, 38, 430, 46, 'ft', 42, 'var(--ink)', 'Estación del Rift', { mayus: true, esp: 3 });
-    T(tarjeta, 128, 86, 420, 26, 'fx', 19, 'var(--mute)', `Tenés ${MONEDAS.boletos} boletos para abrir`);
+    T(tarjeta, 128, 86, 420, 26, 'fx', 19, 'var(--mute)', rift.boletos === 1 ? 'Tenés 1 boleto para abrir' : `Tenés ${rift.boletos} boletos para abrir`);
 
     const nota = N(capa, 1572, 966, 300, 76, 'panel');
     const ci = N(nota, 16, 14, 48, 48); ci.style.borderRadius = '50%'; ci.style.background = 'var(--accent)';
@@ -434,10 +447,469 @@
     setTimeout(() => { inp.focus(); inp.select(); }, 0);
   }
 
+  // ================= Estación del Rift =================
+  // Con un boleto se abre una cápsula que trae un avatar, un banner, un título o un marco. La cápsula tiembla, toma el
+  // color de la rareza (si es épica o legendaria primero amaga con azul), se abre la grieta, hay un destello y aparece
+  // el premio. Lo que el juego superpone con transparencia pasa por sobre(): Unity mezcla en espacio lineal y así se
+  // ve igual que en la captura del juego.
+  const W = 1180, H = 690, CX = 590, CY = 320, REVELAR = 1.25, FIN = 1.7;
+  const rgb = h => [1, 3, 5].map(i => parseInt(h.slice(i, i + 2), 16));
+  const ACC = rgb('#F29A38'), HOT = rgb('#FFD2A1');
+  const clamp01 = v => Math.min(1, Math.max(0, v));
+  const mezclar = (a, b, k) => a.map((v, i) => v + (b[i] - v) * clamp01(k));
+  const css = (c, a = 1) => `rgba(${c.map(Math.round).join(',')},${a.toFixed(3)})`;
+  function sobre(a, fondo = 13) {
+    a = clamp01(a);
+    const l = Math.pow(fondo / 255, 2.2) * (1 - a) + a;
+    return clamp01((Math.pow(l, 1 / 2.2) * 255 - fondo) / (255 - fondo));
+  }
+  // UIRing con glow: el color en el centro y transparente en el borde; glowMid es el alfa a mitad de radio.
+  function resplandor(c, a, mid, radio, x, y) {
+    const p = Math.log(mid) / Math.log(0.5), paradas = [];
+    for (let k = 0; k <= 12; k++) paradas.push(`${css(c, sobre(a * Math.pow(1 - k / 12, p)))} ${(k / 12 * 100).toFixed(1)}%`);
+    return `radial-gradient(circle ${radio}px at ${x}px ${y}px,${paradas.join(',')})`;
+  }
+  function lienzo(padre) {
+    const c = el('canvas', 'n', padre); c.width = W; c.height = H;
+    Object.assign(c.style, { left: '0', top: '0', width: W + 'px', height: H + 'px', pointerEvents: 'none' });
+    return c.getContext('2d');
+  }
+
+  let est = null; // la pantalla abierta: nodos y estado de la animación
+  function abrirEstacion() { location.hash = 'estacion'; }
+
+  function estacion() {
+    pararFondos();
+    if (est) est.vivo = false;
+    capa.innerHTML = ''; capa.style.background = '#0b0d11';
+    est = { vivo: true, estado: 'espera', t: 0, resultados: null, mostrados: false, amague: false, colorFinal: ACC, colorAmague: ACC,
+      luzC: HOT, tapaC: ACC, brilloC: ACC, antes: null, canjes: [] };
+    const volver = clic(N(capa, 60, 34, 150, 52, 'panel borde-hover'), volverAlMenu, 'Volver al menú');
+    T(volver, 0, 0, 150, 52, 'ft', 26, 'var(--ink)', '« Menú', { mayus: true, esp: 6, al: 'centro' });
+    T(capa, 240, 34, 400, 20, 'fr', 17, 'var(--accent)', 'Suministros del otro lado', { mayus: true, esp: 16 });
+    T(capa, 238, 52, 600, 46, 'ft', 44, 'var(--ink)', 'Estación del Rift', { mayus: true, esp: 3 });
+    est.monedas = N(capa, 1100, 0, 760, 120);
+    escenaEstacion(est);
+    accionesEstacion(est);
+    columnaEstacion(est);
+    leyenda('Un boleto, una cápsula. Cada una trae un avatar, un banner, un título o un marco.');
+    refrescarEstacion();
+    requestAnimationFrame(tick);
+  }
+
+  function escenaEstacion(s) {
+    const e = N(capa, 60, 120, W, H); e.style.background = '#0D0D16'; e.style.borderRadius = '10px'; e.style.overflow = 'hidden';
+    const cielo = N(e, 0, 0, W, 360);
+    cielo.style.background = 'linear-gradient(rgba(0,0,0,.86),rgba(0,0,0,.68) 36%,rgba(0,0,0,.15) 78%,rgba(0,0,0,0))';
+    // Piso en perspectiva, con la línea de seguridad del andén, y los marcos de cámara en las esquinas.
+    let juntas = '';
+    for (let i = 0; i <= 12; i++) { const x = i * W / 12; juntas += `<line x1="${CX + (x - CX) * 0.35}" y1="541" x2="${CX + (x - CX) * 1.6}" y2="${H}"/>`; }
+    const esquinas = [[40, 40], [W - 40, 40], [40, H - 40], [W - 40, H - 40]].map(([x, y]) => {
+      const sx = x < CX ? 1 : -1, sy = y < CY ? 1 : -1;
+      return `<polyline points="${x},${y + 26 * sy} ${x},${y} ${x + 26 * sx},${y}"/>`;
+    }).join('');
+    e.insertAdjacentHTML('beforeend', `<svg class="n" style="left:0;top:0" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}">` +
+      `<rect x="0" y="540" width="${W}" height="${H - 540}" fill="#0D161C"/>` +
+      `<rect x="0" y="538" width="${W}" height="3" fill="${css(ACC, sobre(0.7))}"/>` +
+      `<g stroke="rgba(255,255,255,${sobre(0.05).toFixed(3)})" stroke-width="2">${juntas}</g>` +
+      `<g stroke="rgba(255,255,255,${sobre(0.25, 2).toFixed(3)})" stroke-width="2" fill="none">${esquinas}</g></svg>`);
+    s.numero = T(e, 70, 54, 500, 22, 'fm', 16, 'var(--mute)', '');
+    s.estadoTexto = T(e, W - 570, 54, 500, 22, 'fm', 16, 'var(--ok)', '', { al: 'der' });
+    s.brillo = N(e, 0, 0, W, H);
+    s.sombra = N(e, CX - 150, 518, 300, 60); s.sombra.style.borderRadius = '30px'; s.sombra.style.background = 'rgba(0,0,0,.75)';
+    s.grieta = lienzo(e);
+
+    // Cápsula.
+    const cap = s.capsula = N(e, CX - 115, CY - 170, 230, 340);
+    const parte = (x, y, w, h, color, radio) => { const d = N(cap, x, y, w, h); d.style.background = color; d.style.borderRadius = radio + 'px'; return d; };
+    parte(0, 0, 230, 340, '#1C1C2A', 16);
+    parte(18, 50, 22, 240, `rgba(255,255,255,${sobre(0.08, 28).toFixed(3)})`, 8);
+    s.luz = parte(95, 70, 40, 200, css(HOT), 10);
+    parte(70, 60, 90, 220, 'rgba(0,0,0,.35)', 12);
+    s.tapa = parte(-10, -6, 250, 58, css(ACC), 12);
+    s.base = parte(-10, 288, 250, 58, css(ACC), 12);
+    T(s.base, 0, 0, 250, 58, 'fm', 18, 'var(--accent-ink)', 'RW · RIFT', { al: 'centro', esp: 20 });
+    const icono = el('img', 'n', cap); icono.src = 'img/icono.png'; icono.alt = '';
+    Object.assign(icono.style, { left: '71px', top: '126px', width: '88px', height: '88px' });
+    const borde = N(cap, 0, 0, 230, 340); borde.style.borderRadius = '12px'; borde.style.boxShadow = `inset 0 0 0 2px rgba(255,255,255,${sobre(0.15, 28).toFixed(3)})`;
+
+    s.chispas = lienzo(e);
+    s.datosChispas = Array.from({ length: 22 }, () => [Math.random() * 480 - 240, 30 + Math.random() * 60, Math.random()]); // x, velocidad, fase
+    s.destello = N(e, 0, 0, W, H); s.destello.style.background = '#fff'; s.destello.style.opacity = '0';
+    s.premio = N(e, 0, 0, W, H); // la carta grande crece desde el centro
+    s.premios = N(e, 0, 0, W, H);
+    [s.brillo, s.sombra, s.destello, s.premio, s.premios].forEach(n => { n.style.pointerEvents = 'none'; });
+  }
+
+  function accionesEstacion(s) {
+    s.abrir1 = Boton(capa, 60, 870, 340, 74, 'Abrir 1 · 1 boleto', 30, 'lleno', () => abrir(1));
+    s.abrir5 = Boton(capa, 416, 870, 340, 74, 'Abrir 5 · 5 boletos', 30, '', () => abrir(5));
+    s.saltar = Boton(capa, 772, 870, 200, 74, 'Saltar', 28, '', saltar);
+    s.equipar = Boton(capa, 772, 870, 260, 74, 'Equipar', 30, 'verde', equiparPremio);
+    s.leyenda = T(capa, 60, 822, W, 36, 'fx', 24, 'var(--soft)', '', { html: true });
+    T(capa, 60, 956, W, 50, 'fx', 18, 'var(--mute)', 'Simulación de negocio: no hay pagos reales. Los boletos se consiguen jugando (créditos) o con ' +
+      'cristales de la tienda. Las probabilidades se muestran siempre.', { arriba: true });
+  }
+  const leyenda = html => { est.leyenda.innerHTML = '<span>' + html + '</span>'; };
+
+  // ---------- Columna derecha ----------
+  function columnaEstacion(s) {
+    const x = 1270, w = 590;
+    const prob = N(capa, x, 120, w, 262, 'panel');
+    T(prob, 24, 18, 400, 22, 'fr', 17, 'var(--accent)', 'Probabilidades', { mayus: true, esp: 16 });
+    for (let r = 4, fila = 0; r >= 1; r--, fila++) {
+      const y = 52 + fila * 36;
+      T(prob, 24, y, 140, 30, 'ft', 26, COLOR[r], RAREZA[r], { mayus: true, esp: 3 });
+      const pista = N(prob, 170, y + 12, 300, 8); pista.style.background = `rgba(255,255,255,${sobre(0.08).toFixed(3)})`; pista.style.borderRadius = '4px';
+      const barra = N(prob, 170, y + 12, 300 * PROB[r] / 55, 8); barra.style.background = COLOR[r]; barra.style.borderRadius = '4px';
+      T(prob, 480, y, 86, 30, 'fm', 20, 'var(--ink)', PROB[r] + ' %', { al: 'der' });
+    }
+    s.garantia = T(prob, 24, 200, 540, 26, 'fx', 19, 'var(--soft)', '', { html: true });
+    s.barraGarantia = N(prob, 24, 232, 542, 10);
+
+    const canje = N(capa, x, 398, w, 290, 'panel');
+    T(canje, 24, 18, 400, 22, 'fr', 17, 'var(--accent)', 'Conseguir boletos', { mayus: true, esp: 16 });
+    filaCanje(canje, 52, 0, `${CREDITOS_POR_BOLETO} créditos`, '1 boleto', () => rift.creditos >= CREDITOS_POR_BOLETO,
+      () => canjear(CREDITOS_POR_BOLETO, 0, 1) ? '+1 boleto' : 'Te faltan créditos: se ganan jugando partidas');
+    filaCanje(canje, 120, 2, `${CRISTALES_POR_BOLETO} cristales`, '1 boleto', () => rift.cristales >= CRISTALES_POR_BOLETO,
+      () => canjear(0, CRISTALES_POR_BOLETO, 1) ? '+1 boleto' : 'Te faltan cristales');
+    filaCanje(canje, 188, 2, `${CRISTALES_POR_DIEZ} cristales`, '10 boletos · 10 % menos', () => rift.cristales >= CRISTALES_POR_DIEZ,
+      () => canjear(0, CRISTALES_POR_DIEZ, 10) ? '+10 boletos' : 'Te faltan cristales');
+    T(canje, 24, 252, 540, 26, 'fr', 18, 'var(--cristales)', '¿Sin cristales? Ir a la tienda »', { mayus: true, esp: 8 });
+
+    const rec = N(capa, x, 704, w, 232, 'panel');
+    T(rec, 24, 18, 400, 22, 'fr', 17, 'var(--accent)', 'Últimos premios', { mayus: true, esp: 16 });
+    s.recientes = N(rec, 24, 50, 542, 172);
+    Boton(capa, x, 952, w, 56, 'Ver contenido de la cápsula', 24, '', verContenido);
+  }
+
+  function filaCanje(p, y, moneda, costo, recibe, puede, hacer) {
+    const f = N(p, 16, y, 558, 58); f.style.background = `rgba(255,255,255,${sobre(0.03).toFixed(3)})`; f.style.borderRadius = '6px';
+    iconoMoneda(p, moneda, 44, y + 29, 22);
+    T(p, 66, y + 6, 300, 26, 'ft', 26, 'var(--ink)', costo);
+    T(p, 66, y + 32, 300, 20, 'fr', 15, 'var(--mute)', 'por ' + recibe, { mayus: true, esp: 10 });
+    const b = Boton(p, 574 - 160 - 10, y + 9, 160, 40, 'Canjear', 22, '', () => { avisar(hacer()); refrescarEstacion(); });
+    est.canjes.push([b, puede]);
+  }
+
+  // ---------- Reglas (PerfilDatos) ----------
+  function canjear(creditos, cristales, boletos) {
+    if (rift.creditos < creditos || rift.cristales < cristales) return false;
+    rift.creditos -= creditos; rift.cristales -= cristales; rift.boletos += boletos;
+    return true;
+  }
+  // 0 a 99: los primeros números son legendarios, después épicos, raros y el resto comunes.
+  function sortear() {
+    const tiro = Math.floor(Math.random() * 100);
+    let acumulado = 0;
+    for (let r = 4; r >= 1; r--) { acumulado += PROB[r]; if (tiro < acumulado) return r; }
+    return 1;
+  }
+  // Dentro de la rareza, primero el tipo (si no, casi todo serían títulos) y después el objeto.
+  function sortearTipo(r) {
+    const hay = t => CAT.some(c => c.rareza === r && c.tipo === TIPOS[t]);
+    let total = 0;
+    TIPOS.forEach((_, t) => { if (hay(t)) total += PROB_TIPO[t]; });
+    const tiro = Math.floor(Math.random() * total);
+    let acumulado = 0;
+    for (let t = 0; t < TIPOS.length; t++) { if (!hay(t)) continue; acumulado += PROB_TIPO[t]; if (tiro < acumulado) return TIPOS[t]; }
+    return 'titulo';
+  }
+  function abrirCapsulas(cantidad) {
+    const lista = [];
+    for (let i = 0; i < cantidad; i++) {
+      rift.boletos--; rift.aperturas++;
+      const garantia = rift.sinEpico >= GARANTIA - 1;
+      let r = sortear();
+      if (garantia && r < 3) r = 3;
+      rift.sinEpico = r >= 3 ? 0 : rift.sinEpico + 1;
+      const tipo = sortearTipo(r), posibles = CAT.filter(c => c.rareza === r && c.tipo === tipo);
+      const premio = posibles[Math.floor(Math.random() * posibles.length)];
+      const res = { c: premio, garantia, nuevo: !tiene(premio), creditos: 0 };
+      if (res.nuevo) rift.obtenidos.push(clave(premio));
+      else { res.creditos = POR_REPETIDO[r]; rift.creditos += res.creditos; }
+      rift.recientes.unshift(clave(premio));
+      if (rift.recientes.length > 8) rift.recientes.pop();
+      lista.push(res);
+    }
+    return lista;
+  }
+
+  // ---------- Acciones ----------
+  function abrir(cantidad) {
+    const s = est;
+    if (s.estado === 'abriendo') return;
+    if (rift.boletos < cantidad) { avisar(cantidad === 1 ? 'No tenés boletos: canjeá créditos o cristales' : `Te faltan boletos para abrir ${cantidad}`); return; }
+    s.resultados = abrirCapsulas(cantidad);
+    const mejor = Math.max(...s.resultados.map(r => r.c.rareza));
+    s.colorFinal = rgb(COLOR[mejor]);
+    s.amague = mejor >= 3;
+    s.colorAmague = rgb(COLOR[2]);
+    s.premio.innerHTML = ''; s.premios.innerHTML = ''; s.mostrados = false;
+    s.estado = 'abriendo'; s.t = 0;
+    s.capsula.style.display = '';
+    leyenda('Recibiendo la carga…');
+    refrescarEstacion();
+  }
+  function saltar() { if (est.estado === 'abriendo') est.t = FIN; }
+  function equiparPremio() {
+    const r = est.resultados;
+    if (!r || r.length !== 1) return;
+    const c = r[0].c;
+    estado[c.tipo] = c.id; guardar();
+    avisar(`<span style="color:${COLOR[c.rareza]}">${c.nombre}</span> equipado`);
+    refrescarEstacion();
+  }
+
+  // ---------- Animación ----------
+  function tick(ahora) {
+    const s = est;
+    if (!s || !s.vivo) return;
+    const now = ahora / 1000, dt = s.antes == null ? 0 : Math.min(0.25, now - s.antes);
+    s.antes = now;
+    if (s.estado === 'abriendo') {
+      s.t += dt;
+      if (s.t >= REVELAR && !s.mostrados) mostrarPremios();
+      if (s.t >= FIN) terminar();
+    }
+    const abriendo = s.estado === 'abriendo';
+    const temblor = abriendo ? clamp01(s.t / REVELAR) : 0;
+    const bob = Math.sin(now * 1.6) * 7, fuerza = 9 * temblor * temblor;
+    s.capsula.style.transform = `translate(${Math.sin(now * 70) * fuerza}px,${-(bob + Math.cos(now * 53) * fuerza)}px) scale(${1 + 0.05 * temblor})`;
+    s.sombra.style.transform = `scaleX(${1 - bob / 60})`;
+
+    // Color: naranja en espera; al abrir, la rareza (si es épica o mejor, primero amaga con azul).
+    let objetivo = ACC;
+    if (abriendo) objetivo = s.amague && s.t < 0.75 ? s.colorAmague : s.colorFinal;
+    else if (s.estado === 'revelado') objetivo = s.colorFinal;
+    s.luzC = mezclar(s.luzC, objetivo, dt * 8);
+    s.luz.style.background = css(s.luzC);
+    s.tapaC = s.estado === 'espera' ? ACC : mezclar(s.tapaC, objetivo, dt * 6);
+    s.tapa.style.background = s.base.style.background = css(s.tapaC);
+    const pulso = s.estado === 'espera' ? 0.22 + 0.06 * Math.sin(now * 2) : 0.3 + 0.4 * temblor;
+    s.brilloC = mezclar(s.brilloC, objetivo, dt * 6);
+    s.brillo.style.background = resplandor(s.brilloC, pulso, 0.25, 300 + 60 * temblor, CX, CY);
+
+    s.grieta.clearRect(0, 0, W, H);
+    if (abriendo) grieta(s.grieta, Math.max(0, (s.t - 0.85) * 1.7));
+    const flash = abriendo ? clamp01(1 - Math.abs(s.t - REVELAR) / 0.3) : 0;
+    s.destello.style.opacity = sobre(0.85 * flash).toFixed(3);
+
+    const ch = s.chispas, velocidad = 1 + 4 * temblor;
+    ch.clearRect(0, 0, W, H);
+    ch.fillStyle = css(mezclar(HOT, objetivo, 0.6));
+    for (const [x, v, z] of s.datosChispas) {
+      const fase = (z + now * v * velocidad / 400) % 1;
+      ch.globalAlpha = sobre(Math.sin(fase * Math.PI) * 0.8);
+      ch.fillRect(CX + x * (0.6 + fase * 0.5), CY + 170 - fase * 380, 4, 4);
+    }
+    ch.globalAlpha = 1;
+
+    // Premio: entra creciendo.
+    if (s.mostrados) {
+      const k = s.estado === 'revelado' ? 1 : clamp01((s.t - REVELAR) / 0.35);
+      s.premio.style.transform = `scale(${0.7 + 0.3 * (1 - Math.pow(1 - k, 3))})`;
+      [...s.premios.children].forEach((carta, i) => {
+        const ki = s.estado === 'revelado' ? 1 : clamp01((s.t - REVELAR - i * 0.08) / 0.3);
+        carta.style.transform = `scale(${0.6 + 0.4 * (1 - Math.pow(1 - ki, 3))})`;
+      });
+    }
+    requestAnimationFrame(tick);
+  }
+
+  // RiftwalkerRiftGraphic: dos grietas que se abren hacia los costados y chispas que salen del centro.
+  function grieta(g, tiempo) {
+    const suave = v => { v = clamp01(v); return v * v * (3 - 2 * v); }, entre = (a, b, v) => clamp01((v - a) / (b - a));
+    const crece = suave(entre(0.3, 1.05, tiempo)), abre = suave(entre(1.05, 2.35, tiempo)), alfa = crece * (1 - entre(1.8, 2.65, tiempo));
+    if (alfa <= 0) return;
+    const tramo = (a, b, ancho, color, al) => {
+      g.globalAlpha = sobre(al); g.strokeStyle = color; g.lineWidth = ancho;
+      g.beginPath(); g.moveTo(CX + a[0], CY - a[1]); g.lineTo(CX + b[0], CY - b[1]); g.stroke();
+    };
+    const medio = 195 * crece;
+    for (const lado of [-1, 1]) {
+      let antes = [lado * 615 * abre, -medio];
+      for (let i = 1; i <= 16; i++) {
+        const jitter = Math.sin(i * 7.31) * 13 + Math.sin(i * 2.17) * 7;
+        const sig = [lado * (615 * abre + jitter * Math.sin(i * Math.PI / 16)), -medio + 2 * medio * i / 16];
+        tramo(antes, sig, 25, 'rgb(255,56,4)', alfa * 0.06);
+        tramo(antes, sig, 10, 'rgb(255,99,13)', alfa * 0.18);
+        tramo(antes, sig, 3, 'rgb(255,158,51)', alfa);
+        tramo(antes, sig, 1, 'rgb(255,237,184)', alfa);
+        antes = sig;
+      }
+    }
+    const estallido = clamp01((tiempo - 0.85) / 1.4);
+    for (let i = 0; i < 28; i++) {
+      const ang = i * 2.39996, d = [Math.cos(ang), Math.sin(ang) * 0.5], r = 35 + estallido * (180 + (i % 5) * 43), l = 4 + 12 * estallido;
+      tramo([d[0] * r, d[1] * r], [d[0] * (r + l), d[1] * (r + l)], 1.5, 'rgb(255,143,36)', alfa * Math.sin(estallido * Math.PI));
+    }
+    g.globalAlpha = 1;
+  }
+
+  function mostrarPremios() {
+    const s = est;
+    s.mostrados = true;
+    s.capsula.style.display = 'none';
+    if (s.resultados.length === 1) cartaGrande(s.premio, s.resultados[0]);
+    else {
+      const w = 196, gap = 18, n = s.resultados.length, x0 = (W - (n * w + (n - 1) * gap)) / 2;
+      s.resultados.forEach((r, i) => cartaChica(s.premios, r, x0 + i * (w + gap), 170, w));
+    }
+  }
+
+  function terminar() {
+    const s = est;
+    if (!s.mostrados) mostrarPremios();
+    s.estado = 'revelado'; s.t = FIN;
+    const nuevos = s.resultados.filter(r => r.nuevo).length, creditos = s.resultados.reduce((a, r) => a + r.creditos, 0);
+    if (s.resultados.length === 1) {
+      const r = s.resultados[0];
+      leyenda(r.nuevo ? `¡Nuevo! <span style="color:${COLOR[r.c.rareza]}">${r.c.nombre}</span> ya está en tu colección.`
+        : `Repetido: se convirtió en <span style="color:#D6DAE0">${r.creditos} créditos</span>.`);
+    } else leyenda(`${nuevos} ${nuevos === 1 ? 'nuevo' : 'nuevos'}` + (creditos > 0 ? ` · repetidos convertidos en ${creditos} créditos` : ''));
+    refrescarEstacion();
+  }
+
+  // ---------- Cartas del premio ----------
+  // Achica la letra hasta que entra (como el auto size de TextMeshPro): antes que cortar una palabra larga.
+  function ajustar(t, max, min) {
+    for (let tam = max; tam >= min; tam--) {
+      t.style.fontSize = tam + 'px';
+      if (t.scrollWidth <= t.clientWidth + 1 && t.scrollHeight <= t.clientHeight + 1) return;
+    }
+  }
+  function cartaGrande(padre, r) {
+    const c = r.c, color = COLOR[c.rareza];
+    N(padre, 0, 0, W, H).style.background = resplandor(rgb(color), 0.45, 0.3, 320, CX, CY);
+    const k = N(padre, CX - 190, CY - 250, 380, 500); k.style.background = color; k.style.borderRadius = '12px';
+    const fondo = N(k, 4, 4, 372, 492); fondo.style.background = '#0E1117'; fondo.style.borderRadius = '10px';
+    T(k, 0, 18, 380, 26, 'fr', 22, color, RAREZA[c.rareza] + (r.garantia ? ' · garantía' : ''), { al: 'centro', mayus: true, esp: 16 });
+    arte(k, c, 40, 56, 300);
+    ajustar(T(k, 20, 372, 340, 46, 'ft', 40, 'var(--ink)', c.nombre, { al: 'centro', mayus: true, esp: 3 }), 40, 24);
+    T(k, 20, 418, 340, 22, 'fr', 16, 'var(--mute)', TIPO[c.tipo] + (c.estilo ? ' · ' + c.estilo : ''), { al: 'centro', mayus: true, esp: 14 });
+    etiqueta(k, r, 190, 456);
+  }
+  function cartaChica(padre, r, x, y, w) {
+    const c = r.c, color = COLOR[c.rareza];
+    const k = N(padre, x, y, w, 320); k.style.background = color; k.style.borderRadius = '10px'; k.style.transform = 'scale(.6)';
+    const fondo = N(k, 3, 3, w - 6, 314); fondo.style.background = '#0E1117'; fondo.style.borderRadius = '8px';
+    T(k, 0, 12, w, 20, 'fr', 15, color, RAREZA[c.rareza], { al: 'centro', mayus: true, esp: 12 });
+    arte(k, c, 14, 38, w - 28);
+    T(k, 10, 216, w - 20, 52, 'fr', 20, 'var(--ink)', c.nombre, { al: 'centro' }).style.whiteSpace = 'normal';
+    etiqueta(k, r, w / 2, 284);
+  }
+  function arte(k, c, x, y, lado) {
+    if (c.tipo === 'avatar') { Img(k, srcAvatar(c.id), x, y, lado, lado); return; }
+    const fondo = N(k, x, y, lado, lado); fondo.style.background = '#151922'; fondo.style.borderRadius = '6px';
+    if (c.tipo === 'banner') Img(k, srcBanner(c.id), x, y + lado / 3, lado, lado / 3);
+    else if (c.tipo === 'marco') {
+      // Sobre el banner que tenés equipado, como queda en la cabecera del Perfil.
+      const alto = lado / 3;
+      bannerEnmarcado(N(k, x, y + (lado - alto) / 2, lado, alto), lado, alto, estado.banner, c.id, true);
+    } else {
+      const t = T(k, x + 12, y, lado - 24, lado, 'ft', lado / 6, COLOR[c.rareza], c.nombre, { al: 'centro', mayus: true, esp: 2 });
+      t.style.whiteSpace = 'normal';
+      ajustar(t, lado / 6, lado / 12);
+    }
+  }
+  function etiqueta(k, r, cx, y) {
+    const w = r.nuevo ? 110 : 170, chip = N(k, cx - w / 2, y, w, 30);
+    chip.style.borderRadius = '6px'; chip.style.background = r.nuevo ? 'var(--accent)' : `rgba(255,255,255,${sobre(0.12, 14).toFixed(3)})`;
+    T(chip, 0, 0, w, 30, 'fr', 17, r.nuevo ? 'var(--accent-ink)' : 'var(--soft)', r.nuevo ? 'Nuevo' : `+${r.creditos} créditos`, { al: 'centro', mayus: true, esp: 14 });
+  }
+
+  // ---------- Datos a la vista ----------
+  function refrescarEstacion() {
+    const s = est;
+    if (!s || !s.vivo) return;
+    const abriendo = s.estado === 'abriendo', r = s.resultados;
+    s.abrir1.disabled = abriendo || rift.boletos < 1;
+    s.abrir5.disabled = abriendo || rift.boletos < 5;
+    s.abrir1.textContent = s.estado === 'revelado' ? 'Abrir otra · 1 boleto' : 'Abrir 1 · 1 boleto';
+    s.saltar.style.display = abriendo ? '' : 'none';
+    s.equipar.style.display = s.estado === 'revelado' && r && r.length === 1 && estado[r[0].c.tipo] !== r[0].c.id ? '' : 'none';
+    s.canjes.forEach(([b, puede]) => { b.disabled = !puede(); });
+
+    s.numero.textContent = 'CÁPSULA DEL RIFT · Nº ' + String(rift.aperturas + (abriendo ? 0 : 1)).padStart(3, '0');
+    s.estadoTexto.textContent = abriendo ? '• ABRIENDO' : s.estado === 'revelado' ? '• ENTREGADO' : '• EN ESPERA';
+    s.estadoTexto.style.color = abriendo ? 'var(--accent)' : 'var(--ok)';
+
+    const faltan = GARANTIA - rift.sinEpico;
+    s.garantia.innerHTML = '<span>' + (faltan <= 1 ? `¡La próxima trae <span style="color:${COLOR[3]}">épico o mejor</span> asegurado!`
+      : `Épico o mejor asegurado en <span style="color:var(--ink)">${faltan} cápsulas</span>`) + '</span>';
+    s.barraGarantia.innerHTML = '';
+    const paso = 542 / GARANTIA;
+    for (let i = 0; i < GARANTIA; i++) {
+      const d = N(s.barraGarantia, i * paso, 0, paso - 4, 10); d.style.borderRadius = '3px';
+      d.style.background = i < GARANTIA - faltan ? COLOR[3] : `rgba(255,255,255,${sobre(0.1).toFixed(3)})`;
+    }
+
+    s.recientes.innerHTML = '';
+    let fila = 0;
+    for (const k of rift.recientes) {
+      if (fila >= 5) break;
+      const c = desdeClave(k);
+      if (!c) continue;
+      const punto = N(s.recientes, 0, fila * 34 + 10, 10, 10); punto.style.borderRadius = '5px'; punto.style.background = COLOR[c.rareza];
+      T(s.recientes, 22, fila * 34, 520, 30, 'fx', 20, 'var(--ink)', `${c.nombre}  <span style="color:var(--mute)">· ${TIPO[c.tipo]}</span>`, { html: true, puntos: true });
+      fila++;
+    }
+    if (!fila) T(s.recientes, 0, 0, 520, 30, 'fx', 20, 'var(--mute)', 'Todavía no abriste ninguna cápsula.');
+    s.monedas.innerHTML = '';
+    monedas(s.monedas, 760, 34);
+  }
+
+  // ---------- Contenido de la cápsula ----------
+  function verContenido() {
+    const m = el('div', 'modal', E), caja = el('div', 'caja', m);
+    caja.style.width = '1160px'; caja.style.height = '860px';
+    T(caja, 48, 36, 900, 22, 'fr', 18, 'var(--accent)', 'Estación del Rift', { mayus: true, esp: 16 });
+    T(caja, 46, 60, 900, 54, 'ft', 48, 'var(--ink)', 'Contenido de la cápsula', { mayus: true, esp: 3 });
+    T(caja, 48, 118, 1064, 74, 'fx', 20, 'var(--mute)', `Primero sale la rareza (con estas probabilidades), después el tipo (${PROB_TIPO[0]} % avatar, ` +
+      `${PROB_TIPO[1]} % banner, ${PROB_TIPO[2]} % título, ${PROB_TIPO[3]} % marco) y por último un objeto al azar. Cada ${GARANTIA} cápsulas ` +
+      'hay uno épico o mejor asegurado. Los repetidos se convierten en créditos.', { arriba: true });
+    const lista = N(caja, 48, 200, 1064, 556, 'grilla'), interno = N(lista, 0, 0, 1064, 556);
+    let y = 0;
+    for (let r = 4; r >= 1; r--) {
+      const items = CAT.filter(c => c.rareza === r);
+      T(interno, 0, y, 1064, 36, 'ft', 30, COLOR[r], `${RAREZA[r]}  <span style="color:#8E96A3;font-size:20px">${PROB[r]} % · ${items.length} objetos</span>`,
+        { mayus: true, esp: 3, html: true });
+      y += 44;
+      items.forEach((c, i) => {
+        if (i > 0 && i % 3 === 0) y += 34;
+        const suyo = tiene(c);
+        T(interno, (i % 3) * 356, y, 346, 30, 'fx', 20, suyo ? 'var(--ink)' : 'var(--soft)',
+          `${c.nombre}  <span style="color:#8E96A3">${TIPO[c.tipo]}</span>${suyo ? '  <span style="color:#3DDC97">· tenés</span>' : ''}`,
+          { html: true, puntos: true });
+      });
+      y += 50;
+    }
+    interno.style.height = Math.max(556, y) + 'px';
+    Boton(caja, 1160 - 48 - 200, 860 - 40 - 60 + 8, 200, 56, 'Cerrar', 24, '', () => m.remove());
+  }
+
+  // DEBUG (F9, en el menú y en sus pantallas, como en el juego): suma de las tres monedas.
+  function sumarDebug() {
+    rift.creditos += 1000; rift.boletos += 10; rift.cristales += 500;
+    avisar('Debug: +1.000 créditos, +10 boletos y +500 cristales');
+    if (location.hash === '#estacion') refrescarEstacion(); else mostrar();
+  }
+
   // ---------- Navegación y escala ----------
-  function mostrar() { if (location.hash === '#perfil') perfil(); else menu(); }
+  function mostrar() {
+    if (est && location.hash !== '#estacion') est.vivo = false;
+    if (location.hash === '#perfil') perfil(); else if (location.hash === '#estacion') estacion(); else menu();
+  }
   addEventListener('hashchange', mostrar);
-  addEventListener('keydown', e => { if (e.key === 'Escape' && location.hash === '#perfil' && !E.querySelector('.modal')) volverAlMenu(); });
+  addEventListener('keydown', e => {
+    if (e.key === 'F9') { e.preventDefault(); sumarDebug(); return; }
+    if (e.key !== 'Escape') return;
+    const modal = E.querySelector('.modal');
+    if (modal) { if (location.hash === '#estacion') modal.remove(); return; }
+    if (location.hash === '#estacion' && est && est.estado === 'abriendo') { saltar(); return; }
+    if (location.hash === '#perfil' || location.hash === '#estacion') volverAlMenu();
+  });
   function escalar() {
     const k = Math.min(innerWidth / 1920, innerHeight / 1080);
     E.style.transform = `scale(${k})`;
