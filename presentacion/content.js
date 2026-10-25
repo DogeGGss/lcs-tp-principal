@@ -51,9 +51,9 @@ window.PRESENTATION = {
   // que la representan, con su mapa. Oleadas va sin mapa ni detalle: se muestra más adelante.
   story: {
     chapters: [
-      {title:'Viajar entre dimensiones', text:'La humanidad abre portales a otras dimensiones: nuevos recursos y un gran salto tecnológico.', image:'media/historia/portal.jpg'},
-      {title:'Pero no fue la única', text:'Por los portales llegan criaturas que invaden planetas por sus recursos. Y aprenden a usar nuestra tecnología.', image:'media/historia/invasion.jpg'},
-      {title:'El programa Riftwalker', text:'Soldados entrenados para atravesar las fracturas dimensionales, los Rifts, y combatirlas.', image:'media/historia/riftwalkers.jpg'}
+      {title:'Viajar entre dimensiones', image:'media/historia/portal.jpg'},
+      {title:'Pero no fue la única', image:'media/historia/invasion.jpg'},
+      {title:'El programa Riftwalker', image:'media/historia/riftwalkers.jpg'}
     ],
     facets: 'Tres modos, tres facetas de un Riftwalker',
     modes: [

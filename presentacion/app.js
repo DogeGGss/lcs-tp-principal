@@ -41,7 +41,7 @@ function progress(){
 // La historia en tres momentos, con cuadros del tráiler, y abajo los modos que la representan con su mapa.
 function story(){
  const H=D.story;
- return `<div class="historia"><div class="relato">${H.chapters.map((c,i)=>`<figure class="capitulo"><img src="${esc(c.image)}" alt=""><figcaption><b>${String(i+1).padStart(2,'0')}</b><strong>${esc(c.title)}</strong><span>${esc(c.text)}</span></figcaption></figure>`).join('')}</div><p class="facetas">${esc(H.facets)}</p><div class="modos-historia">${H.modes.map(m=>`<article class="modo-historia${m.map?'':' corto'}"><img src="${esc(m.image)}" alt=""><div><strong>${esc(m.name)}</strong><span>${esc(m.facet)}</span>${m.map?`<small>Mapa: ${esc(m.map)}</small>`:''}</div></article>`).join('')}</div></div>`;
+ return `<div class="historia"><div class="relato">${H.chapters.map((c,i)=>`<figure class="capitulo"><img src="${esc(c.image)}" alt=""><figcaption><b>${String(i+1).padStart(2,'0')}</b><strong>${esc(c.title)}</strong></figcaption></figure>`).join('')}</div><p class="facetas">${esc(H.facets)}</p><div class="modos-historia">${H.modes.map(m=>`<article class="modo-historia${m.map?'':' corto'}"><img src="${esc(m.image)}" alt=""><div><strong>${esc(m.name)}</strong><span>${esc(m.facet)}</span>${m.map?`<small>Mapa: ${esc(m.map)}</small>`:''}</div></article>`).join('')}</div></div>`;
 }
 // Los conjuntos del Perfil (avatar, banner y marco del mismo estilo), uno abajo del otro como la cabecera del juego.
 function sets(){
