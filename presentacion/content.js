@@ -52,7 +52,7 @@ window.PRESENTATION = {
   story: {
     chapters: [
       {title:'Viajar entre dimensiones', image:'media/historia/portal.jpg'},
-      {title:'Pero no fue la única', image:'media/historia/invasion.jpg'},
+      {title:'Un nuevo enemigo', image:'media/historia/invasion.jpg'},
       {title:'El programa Riftwalker', image:'media/historia/riftwalkers.jpg'}
     ],
     facets: 'Tres modos, tres facetas de un Riftwalker',
