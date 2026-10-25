@@ -107,7 +107,7 @@ function content(s){
  }
 }
 function render(focus=false){const s=D.slides[current];$('#slide').innerHTML=content(s);$('#position').textContent=`${current+1} / ${D.slides.length}`;$('#prev').disabled=current===0;if(current>=D.slides.length-2)prepararSecreto();$('#progress').style.width=`${(current+1)/D.slides.length*100}%`;$('#speaker').textContent=s.speaker||D.speaker;$('#announcement').textContent=`${current+1} de ${D.slides.length}: ${s.title}`;history.replaceState(null,'','#'+s.id);if(focus){$('#slide').focus({preventScroll:true});scrollTo(0,0)}}
-// Diapositiva secreta: Siguiente en el cierre rompe la página (temblor, cortes, grietas, la interfaz se cae), se abre el
+// Diapositiva secreta: Siguiente en el cierre rompe la página de a poco (temblor, cortes, grietas, la interfaz se cae), se abre el
 // portal y pasa el video del modo invasión. No cuenta en el índice, el contador ni el reloj; ← o Esc vuelve al cierre.
 const secreto={abierto:false,timers:[],tic:0,capa:null,video:null};
 function go(n){const ultima=D.slides.length-1;
@@ -116,48 +116,64 @@ function go(n){const ultima=D.slides.length-1;
  current=Math.max(0,Math.min(ultima,n));render(true)}
 function prepararSecreto(){
  if(secreto.capa)return;const c=document.createElement('div');c.id='secreto';c.hidden=true;c.setAttribute('aria-hidden','true');
- c.innerHTML=`<div class="fondo"></div><div class="destellos"></div><div class="rebanadas"></div><div class="cortes">${'<i></i>'.repeat(14)}</div><svg class="grietas" viewBox="0 0 1000 1000" preserveAspectRatio="none"></svg><div class="portal"></div>${D.secret.video?`<video playsinline preload="auto" src="${esc(D.secret.video)}"></video>`:''}`;
+ c.innerHTML=`<div class="fondo"></div><div class="destellos"></div><div class="rebanadas"></div><div class="cortes">${'<i></i>'.repeat(14)}</div><svg class="grietas"></svg><div class="portal"></div>${D.secret.video?`<video playsinline preload="auto" src="${esc(D.secret.video)}"></video>`:''}`;
  document.body.append(c);secreto.capa=c;secreto.video=c.querySelector('video');
 }
-// Grietas que salen de un golpe cerca del centro, en zigzag hasta el borde, y se dibujan de a poco.
+// Grietas que salen de un golpe cerca del centro, en zigzag hasta el borde, en píxeles de la pantalla (así el largo con que
+// se dibujan coincide con el real). Quedan sin dibujar hasta agrietar().
 function grietas(svg){
- const r=(a,b)=>a+Math.random()*(b-a),camino=(x,y,ang,pasos)=>{let d=`M${x} ${y}`;for(let i=0;i<pasos&&x>0&&x<1000&&y>0&&y<1000;i++){ang+=r(-.45,.45);const l=r(35,110);x+=Math.cos(ang)*l;y+=Math.sin(ang)*l;d+=` L${x.toFixed(1)} ${y.toFixed(1)}`}return d};
+ const W=innerWidth,H=innerHeight,r=(a,b)=>a+Math.random()*(b-a),p=(x,y)=>`${(x*W/1000).toFixed(1)} ${(y*H/1000).toFixed(1)}`;
+ const camino=(x,y,ang,pasos)=>{let d='M'+p(x,y);for(let i=0;i<pasos&&x>0&&x<1000&&y>0&&y<1000;i++){ang+=r(-.45,.45);const l=r(35,110);x+=Math.cos(ang)*l;y+=Math.sin(ang)*l;d+=' L'+p(x,y)}return d};
  const x0=r(440,580),y0=r(380,500),d=[];
+ // El portal se abre donde fue el golpe.
+ svg.parentNode.style.setProperty('--golpe-x',x0/10+'%');svg.parentNode.style.setProperty('--golpe-y',y0/10+'%');
  for(let k=0;k<11;k++){const ang=k/11*Math.PI*2+r(-.25,.25);d.push(camino(x0,y0,ang,18));if(Math.random()<.6)d.push(camino(x0+Math.cos(ang)*r(80,200),y0+Math.sin(ang)*r(80,200),ang+r(-1,1),6))}
- svg.innerHTML=d.map(p=>`<path d="${p}" vector-effect="non-scaling-stroke"/>`).join('');
- svg.querySelectorAll('path').forEach(p=>{const l=p.getTotalLength();p.style.strokeDasharray=l;p.style.strokeDashoffset=l});
- setTimeout(()=>svg.querySelectorAll('path').forEach(p=>p.style.strokeDashoffset=0),40);
+ svg.setAttribute('viewBox',`0 0 ${W} ${H}`);svg.innerHTML=d.map(x=>`<path d="${x}"/>`).join('');
+ svg.querySelectorAll('path').forEach(x=>{const l=x.getTotalLength();x.style.strokeDasharray=l;x.style.strokeDashoffset=l});
 }
+// Las grietas se dibujan de a una: cada una arranca un poco después de la anterior.
+function agrietar(svg){svg.querySelectorAll('path').forEach((p,i)=>{p.style.transitionDelay=(i*.13)+'s';p.style.strokeDashoffset=0})}
 // Pedazos de la página corridos de lugar: copias de la diapositiva que cada tic muestran solo una franja, movida al costado.
 function rebanadas(c){
  const m=$('#slide'),b=m.getBoundingClientRect(),cont=c.querySelector('.rebanadas');cont.innerHTML='';
  for(let k=0;k<5;k++){const r=m.cloneNode(true);r.removeAttribute('id');r.removeAttribute('tabindex');
   Object.assign(r.style,{position:'absolute',left:b.left+'px',top:b.top+'px',width:b.width+'px',height:b.height+'px',margin:0,background:'var(--bg)',display:'none'});cont.append(r)}
 }
-// Cada tic, franjas que invierten, tiñen o tapan la página en lugares al azar, pedazos corridos y algún destello negro.
-function cortes(c){
- c.querySelectorAll('.rebanadas>main').forEach(r=>{if(Math.random()<.45){r.style.display='none';return}
-  const t=Math.random()*90,h=2+Math.random()*12,dx=(Math.random()<.5?-1:1)*(10+Math.random()*60);
+// Cada tic, franjas que invierten, tiñen o tapan la página, pedazos corridos y algún destello negro. k (de 0 a 1) es
+// cuánto se rompió: al principio casi nada, cada vez más (también el temblor y la separación de colores).
+function cortes(c,k){
+ const hay=p=>Math.random()<p;
+ c.querySelectorAll('.rebanadas>main').forEach(r=>{if(!hay(.08+.47*k)){r.style.display='none';return}
+  const t=Math.random()*90,h=1+Math.random()*(3+10*k),dx=(Math.random()<.5?-1:1)*(4+Math.random()*(8+60*k));
   Object.assign(r.style,{display:'block',clipPath:`inset(${t}% 0 ${Math.max(0,100-t-h)}% 0)`,translate:`${dx}px 0`})});
- c.querySelectorAll('.cortes i').forEach(i=>{if(Math.random()<.5){i.style.display='none';return}
+ c.querySelectorAll('.cortes i').forEach(i=>{if(!hay(.04+.46*k)){i.style.display='none';return}
   i.className=['inv','inv','tinte','negro'][Math.floor(Math.random()*4)];
-  Object.assign(i.style,{display:'block',top:Math.random()*100+'%',height:(1+Math.random()*8)+'vh',left:(Math.random()*40-20)+'%',width:(40+Math.random()*80)+'%',transform:`translateX(${Math.random()*120-60}px)`})});
- c.querySelector('.destellos').style.opacity=Math.random()<.12?.85:0;
+  Object.assign(i.style,{display:'block',top:Math.random()*100+'%',height:(.4+Math.random()*(1.5+6.5*k))+'vh',left:(Math.random()*40-20)+'%',width:(30+Math.random()*(30+60*k))+'%',transform:`translateX(${(Math.random()*2-1)*(8+52*k)}px)`})});
+ c.querySelector('.destellos').style.opacity=hay(.015+.1*k)?.85:0;
+ document.body.style.setProperty('--temblor',(.6+6.4*k).toFixed(1)+'px');document.body.style.setProperty('--rgb',(.8+4.7*k).toFixed(1)+'px');
 }
+// Unos 8,5 s: la página falla cada vez más (0 a 4,6 s), se agrieta (desde 2 s), la barra, los controles y la diapositiva se
+// aflojan y se caen de a uno (4,3 a 7,5 s), se abre una grieta de luz (6,3 s), se vuelve el portal (7,6 s) y pasa el video.
 function abrirSecreto(){
- prepararSecreto();const c=secreto.capa,v=secreto.video,t=(ms,f)=>secreto.timers.push(setTimeout(f,ms));
+ prepararSecreto();const c=secreto.capa,v=secreto.video,svg=c.querySelector('.grietas'),b=document.body,t=(ms,f)=>secreto.timers.push(setTimeout(f,ms));
  secreto.abierto=true;c.className=v?'':'sin-video';c.hidden=false;document.activeElement?.blur();
  const empezarVideo=()=>{if(!v)return;c.classList.add('video');v.currentTime=0;v.play().catch(()=>{v.muted=true;v.play().catch(()=>{})})};
- if(matchMedia('(prefers-reduced-motion: reduce)').matches){document.body.classList.add('rompiendo','cayendo');c.classList.add('abriendo','abierto');empezarVideo();return}
- rebanadas(c);document.body.classList.add('rompiendo');grietas(c.querySelector('.grietas'));cortes(c);secreto.tic=setInterval(()=>cortes(c),55);
- t(900,()=>c.classList.add('agrietada'));
- t(1500,()=>{document.body.classList.add('cayendo');c.classList.add('abriendo')});
- t(2300,()=>{clearInterval(secreto.tic);c.querySelector('.destellos').style.opacity=0;c.classList.add('abierto')});
- t(2750,empezarVideo);
+ if(matchMedia('(prefers-reduced-motion: reduce)').matches){b.classList.add('rompiendo','cae-top','cae-nav','cae-main');c.classList.add('oscuro','abriendo','abierto');empezarVideo();return}
+ rebanadas(c);grietas(svg);b.classList.add('rompiendo');
+ const inicio=performance.now(),tic=()=>cortes(c,Math.min(1,(performance.now()-inicio)/4600));tic();secreto.tic=setInterval(tic,70);
+ t(2000,()=>{c.classList.add('agrietada');agrietar(svg)});
+ t(4300,()=>b.classList.add('flojo'));
+ t(4800,()=>b.classList.add('cae-top'));
+ t(5200,()=>b.classList.add('cae-nav'));
+ t(5500,()=>{b.classList.add('cae-main');c.classList.add('oscuro')});
+ t(6300,()=>c.classList.add('abriendo'));
+ t(7600,()=>{clearInterval(secreto.tic);c.querySelector('.destellos').style.opacity=0;c.classList.add('abierto')});
+ t(8500,empezarVideo);
 }
 function cerrarSecreto(){
  secreto.timers.forEach(clearTimeout);clearInterval(secreto.tic);secreto.timers=[];secreto.abierto=false;
- document.body.classList.remove('rompiendo','cayendo');const c=secreto.capa;c.hidden=true;c.className='';
+ document.body.classList.remove('rompiendo','flojo','cae-top','cae-nav','cae-main');document.body.style.removeProperty('--temblor');document.body.style.removeProperty('--rgb');
+ const c=secreto.capa;c.hidden=true;c.className='';
  if(secreto.video){secreto.video.pause();secreto.video.currentTime=0}
 }
 $('#edition').textContent=D.edition;
