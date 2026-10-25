@@ -29,8 +29,7 @@ La propuesta comercial y los bloques Números, Costos e Inversión (antes del ci
 ## Pendientes para el ensayo final
 
 - Probar el tráiler en pantalla completa en el proyector.
-- Al cierre del Sprint 3, completar `metrics.s3` y el Sprint 3 de `progress` (foto, título y lo nuevo).
-- Métricas S3, fecha de corte y fuente; aclarar denominadores de porcentajes.
+- Cuando el informe del Sprint 3 cierre el testing, actualizar las pruebas de `metrics.s3` (hoy son las de la planilla al 23/10) y la nota de Tiempo por estado (cuándo se pasó gente a testing y quiénes).
 - Actualizar disponibilidad/balance de armas contra el ejecutable que se mostrará.
 - Cargar clips y ensayar la demo real con respaldo.
 - Confirmar con el equipo los precios y las mejoras del plan (pase y tienda directa, bienvenida a US$ 0,99, juego en inglés y Photon a 10 envíos por segundo).
@@ -59,3 +58,7 @@ Tiempo por estado sale del registro del Action «Track US status time» (rama `t
 ## Tráiler e historia (25/10/2026)
 
 Historia va después del tráiler y cuenta el universo del juego en tres momentos (los portales, la invasión y el programa Riftwalker), cada uno con un cuadro del tráiler (`media/historia/`), y abajo los modos que representan las facetas de un Riftwalker con su mapa: Táctico en MALVINAS-01 (`../img/mapa.jpg`) y Deathmatch en Colonia ARA San Juan (la imagen de su pantalla de carga). Oleadas va sin mapa ni detalle, con la ilustración de su tarjeta del juego: se muestra más adelante. El texto está en `story` (content.js) y el guion completo, para leer en voz alta, en la nota de la diapositiva. Para hacerle lugar, la demo de interfaz e Inversión bajaron a un minuto cada una. Revisado a 1280 × 720, 1024 × 768 y 1920 × 1080: queda por encima de los controles, sin desbordes.
+
+## Sprint 3 (25/10/2026)
+
+Métricas y Avance usan el «Informe de avances - Sprint 3»: 66 de las 68 historias en Done (la US 222 espera el Modo Zombie y la US 169 no se empezó) y, de los 299 casos de la planilla al 23/10, 267 pasan, 1 falla y 31 sin ejecutar. Avance suma el Sprint 3 (Deathmatch en su mapa, las habilidades con sus íconos, campo de práctica, tutorial y cometas, y perfil, logros, cápsulas, guardado y launcher) con la vista aérea de Colonia ARA San Juan. Las notas de Métricas, Tiempo por estado y Avance tienen los datos del informe para decirlos en voz alta. Revisado a 1280 × 720 y 1024 × 768: queda por encima de los controles.
