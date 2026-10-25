@@ -1,11 +1,11 @@
 # Presentación del Sprint 3
 
-Abrir `/presentacion/` desde el enlace independiente de la guía. El recorrido suma 20 minutos y se divide en tres partes, en este orden: Juego (apertura, tráiler, demos, arsenal, menú y perfil, los conjuntos y los emotes), Equipo (las métricas de cada sprint, el tiempo por estado y lo que sumó cada uno) y Financiación (propuesta comercial, números, costos e inversión), y después el cierre. Cada diapositiva muestra arriba su parte, y el índice las agrupa. No avanza automáticamente: el operador controla el ritmo.
+Abrir `/presentacion/` desde el enlace independiente de la guía. El recorrido suma 20 minutos y se divide en tres partes, en este orden: Juego (apertura, tráiler, historia, demos, arsenal, menú y perfil, los conjuntos y los emotes), Equipo (las métricas de cada sprint, el tiempo por estado y lo que sumó cada uno) y Financiación (propuesta comercial, números, costos e inversión), y después el cierre. Cada diapositiva muestra arriba su parte, y el índice las agrupa. No avanza automáticamente: el operador controla el ritmo.
 
 ## Para exponer
 
 - Anterior / Siguiente: ubicación fija y botones grandes. Flechas o Page Up / Page Down también funcionan cuando el foco está en la diapositiva.
-- Índice: saltar a cualquiera de los quince bloques.
+- Índice: saltar a cualquiera de los dieciséis bloques.
 - Proyector: fondo claro con texto oscuro para salas iluminadas.
 - Pantalla completa: ocultar el navegador; F11 es alternativa.
 - Tráiler: «Pantalla completa» lo reproduce ocupando toda la pantalla; Esc vuelve. Mientras el video está en pantalla completa, las flechas no cambian de diapositiva.
@@ -14,13 +14,13 @@ Abrir `/presentacion/` desde el enlace independiente de la guía. El recorrido s
 
 ## Actualización por etapas
 
-Editar `content.js`: títulos, partes (`section`), tiempos, guion, quién lee cada diapositiva (`speaker`, se ve arriba al lado del sprint), tráiler, avance de cada sprint (`progress`), métricas, propuesta comercial y números económicos. Mantener los tiempos de los quince bloques sumando 20 minutos. Las métricas desconocidas usan `null`, no cero. Los datos S1 son una foto histórica y nunca deben sobrescribirse con S3.
+Editar `content.js`: títulos, partes (`section`), tiempos, guion, quién lee cada diapositiva (`speaker`, se ve arriba al lado del sprint), tráiler, avance de cada sprint (`progress`), métricas, propuesta comercial y números económicos. Mantener los tiempos de los dieciséis bloques sumando 20 minutos. Las métricas desconocidas usan `null`, no cero. Los datos S1 son una foto histórica y nunca deben sobrescribirse con S3.
 
 `metrics` tiene los tres sprints (`s1` del informe del Sprint 1; `s2` del informe de avance y la retrospectiva del Sprint 2; `s3` pendiente): la diapositiva Métricas los muestra lado a lado para mostrar el avance. Un sprint sin datos muestra rayas. Las diapositivas no llevan textos internos (pendientes, «por completar», «a confirmar»): eso va en el guion o en esta lista. Fuente histórica: InformeSprint1.docx facilitado por el equipo, cierre 28/09/2026. No se publica el documento completo.
 
 Menú, perfil y cápsulas (diapositiva 5) abre `/menu/`: una copia web del menú principal, del Perfil y de la Estación del Rift del juego, con las medidas de `MenuRiftwalker`, `PantallaPerfil` y `PantallaEstacion`, las imágenes de `Resources/Perfil` y todo desbloqueado en el Perfil. La diapositiva Conjuntos lista los 19 conjuntos (avatar, banner y marco del mismo personaje y estilo) con `menu/marcos.js`, el mismo código que arma los marcos del menú. El catálogo (`menu/catalogo.js`) se genera desde `PerfilDatos.cs`: si cambian los cosméticos del juego, hay que regenerarlo y volver a copiar las imágenes.
 
-Para el tráiler, copiar el MP4 a `media/` y completar `trailer.src` con una ruta como `media/trailer.mp4` (y `trailer.poster` con una imagen, si se quiere). GitHub no acepta archivos de más de 100 MB: comprimir el video por debajo de eso. Para otros videos, completar `clips[].src` de la misma forma. Actualmente no hay clips y no se simula que los haya. Evitar videos pesados; un enlace externo puede servir de respaldo fuera del recorrido.
+El tráiler está en `media/trailer.mp4` (`trailer.src`), con un cuadro del propio video como portada (`trailer.poster`, `media/trailer-poster.jpg`). Es el del equipo recomprimido a 1080p, unos 4,5 Mbps (71,5 MB), con el índice al principio para que arranque sin bajarlo entero: GitHub no acepta archivos de más de 100 MB. Si se cambia, recomprimirlo por debajo de eso. Para otros videos, completar `clips[].src` de la misma forma. Actualmente no hay clips y no se simula que los haya. Evitar videos pesados; un enlace externo puede servir de respaldo fuera del recorrido.
 
 `arsenal.js` es una instantánea de las siete armas marcadas En el juego por la guía al 05/10/2026. No equivale a validar una build. Al actualizar el balance, regenerar o ajustar esa instantánea y su fecha. La pistola usa la recarga de 1,5 s indicada por EXTRA en la guía. Las imágenes de `media/armas/` (una por `id`) son renders de los modelos de primera persona del juego, de costado y con fondo transparente, hechos desde Unity el 23/10/2026; si cambia un modelo, hay que volver a renderizarla.
 
@@ -28,7 +28,7 @@ La propuesta comercial y los bloques Números, Costos e Inversión (antes del ci
 
 ## Pendientes para el ensayo final
 
-- Cargar el tráiler en `media/` y probarlo en pantalla completa.
+- Probar el tráiler en pantalla completa en el proyector.
 - Al cierre del Sprint 3, completar `metrics.s3` y el Sprint 3 de `progress` (foto, título y lo nuevo).
 - Métricas S3, fecha de corte y fuente; aclarar denominadores de porcentajes.
 - Actualizar disponibilidad/balance de armas contra el ejecutable que se mostrará.
@@ -55,3 +55,7 @@ Al completar S3, actualizar también `metrics.s3.name` y `metrics.s3.source`. Ha
 Emotes muestra a los cuatro personajes bailando, cada uno con un baile distinto (Unzué Flair, Necochea Silly, Goya Rumba y Soledad Shuffle). Son PNG animados en `media/emotes/`, grabados de la vista previa de emotes del Perfil tal como la dibuja el juego en Play (`VistaPreviaDeEmote.Mostrar` y su textura de 600 × 640, cuadro por cuadro con el tiempo del juego fijo), recortados a la misma escala, con fondo transparente y a 15 cuadros por segundo (Flair, 30). Grabarlos en modo edición, moviendo la animación a mano, no da el mismo baile que el juego.
 
 Tiempo por estado sale del registro del Action «Track US status time» (rama `tracker-data`, `.github/project_status_log.csv`): cuántas historias esperan prueba (LPR) al final de cada día y la espera mediana en LPR de cada sprint. El registro llega al 22/10/2026 (después venció el token del Action). Para hacerles lugar, Arsenal y Métricas bajaron a un minuto cada uno.
+
+## Tráiler e historia (25/10/2026)
+
+Historia va después del tráiler y cuenta el universo del juego en tres momentos (los portales, la invasión y el programa Riftwalker), cada uno con un cuadro del tráiler (`media/historia/`), y abajo los modos que representan las facetas de un Riftwalker con su mapa: Táctico en MALVINAS-01 (`../img/mapa.jpg`) y Deathmatch en Colonia ARA San Juan (la imagen de su pantalla de carga). Oleadas va sin mapa ni detalle, con la ilustración de su tarjeta del juego: se muestra más adelante. El texto está en `story` (content.js) y el guion completo, para leer en voz alta, en la nota de la diapositiva. Para hacerle lugar, la demo de interfaz e Inversión bajaron a un minuto cada una. Revisado a 1280 × 720, 1024 × 768 y 1920 × 1080: queda por encima de los controles, sin desbordes.

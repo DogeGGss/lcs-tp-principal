@@ -38,6 +38,11 @@ function statusTime(){
 function progress(){
  return `<div class="grid avance">${D.progress.map(p=>`<article class="card"><p class="eyebrow">${esc(p.name)} · ${esc(p.dates)}</p>${p.title?`<h3>${esc(p.title)}</h3>`:''}<div class="avance-foto">${p.image?`<img src="${esc(p.image)}" alt="">`:''}</div>${p.items.length?`<ul>${p.items.map(it=>`<li>${esc(it.text)}${it.images?`<span class="avance-imgs${it.round?' redondas':''}">${it.images.map(src=>`<img src="${esc(src)}" alt="">`).join('')}</span>`:''}</li>`).join('')}</ul>`:''}</article>`).join('')}</div>`;
 }
+// La historia en tres momentos, con cuadros del tráiler, y abajo los modos que la representan con su mapa.
+function story(){
+ const H=D.story;
+ return `<div class="historia"><div class="relato">${H.chapters.map((c,i)=>`<figure class="capitulo"><img src="${esc(c.image)}" alt=""><figcaption><b>${String(i+1).padStart(2,'0')}</b><strong>${esc(c.title)}</strong><span>${esc(c.text)}</span></figcaption></figure>`).join('')}</div><p class="facetas">${esc(H.facets)}</p><div class="modos-historia">${H.modes.map(m=>`<article class="modo-historia${m.map?'':' corto'}"><img src="${esc(m.image)}" alt=""><div><strong>${esc(m.name)}</strong><span>${esc(m.facet)}</span>${m.map?`<small>Mapa: ${esc(m.map)}</small>`:''}</div></article>`).join('')}</div></div>`;
+}
 // Los conjuntos del Perfil (avatar, banner y marco del mismo estilo), uno abajo del otro como la cabecera del juego.
 function sets(){
  const RZ=['Inicial','Común','Raro','Épico','Legendario'],COL=['#8E96A3','#9AA3B0','#5C7CFF','#B061FF','#FFC93C'];
@@ -85,6 +90,7 @@ function content(s){
  switch(s.id){
  case 'inicio':return `<div class="hero"><p class="eyebrow">Laboratorio de Construcción de Software · Sprint 3</p><img class="hero-logo" src="media/logo.png" alt="Project Riftwalker"><h1>Del equipo<br>al juego.</h1><p class="lead">Decisiones, evidencia y una experiencia para jugar.</p></div>`;
  case 'trailer':{const t=D.trailer;return `<div class="head row trailer-head"><p class="eyebrow">${eyebrow(s)}</p>${t.src?'<button class="primary" data-trailer>▶ Pantalla completa</button>':''}</div><div class="trailer">${t.src?`<video id="trailerVideo" src="${esc(t.src)}"${t.poster?` poster="${esc(t.poster)}"`:''} controls playsinline preload="metadata"></video>`:'<strong>Tráiler</strong>'}</div>`}
+ case 'historia':return head(s)+story();
  case 'metricas':return head(s)+metrics();
  case 'menus':return head(s)+`<div class="grid"><button class="demo-card" data-demo="tienda"><strong>01 / Tienda</strong><span>Elegir, comparar y comprar.</span><em>Abrir demo →</em></button><button class="demo-card" data-demo="modos"><strong>02 / Modos</strong><span>Tres andenes. Una elección.</span><em>Abrir demo →</em></button><button class="demo-card" data-demo="hud"><strong>03 / HUD</strong><span>Información durante el combate.</span><em>Abrir demo →</em></button></div>`;
  case 'conjuntos':return head(s)+sets();
