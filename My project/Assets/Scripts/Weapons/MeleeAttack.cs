@@ -25,7 +25,11 @@ public class MeleeAttack : MonoBehaviour
     private float inicioDelCorte;
 
     /// <summary>De 0 a 1 mientras corta, o -1.</summary>
-    public float AvanceDelCorte => isAttacking ? Mathf.Clamp01((Time.time - inicioDelCorte) / Total) : -1f;
+    public float AvanceDelCorte => isAttacking && AnimacionPrimeraPersona.AnimacionesNuevas ? Mathf.Clamp01((Time.time - inicioDelCorte) / Total) : -1f;
+
+    // Entrega del Sprint 3 (sin las animaciones nuevas, AnimacionPrimeraPersona.AnimacionesNuevas): la estocada de la
+    // v0.2.0, por código en el cuchillo, con el golpe apenas llega adelante.
+    private const float stabDistance = 0.3f, stabDuration = 0.08f, returnDuration = 0.12f;
 
     private void Start()
     {
@@ -70,6 +74,11 @@ public class MeleeAttack : MonoBehaviour
 
     private IEnumerator AttackRoutine(MeleeWeaponData data)
     {
+        if (!AnimacionPrimeraPersona.AnimacionesNuevas)
+        {
+            yield return EstocadaComoAntes(data);
+            yield break;
+        }
         isAttacking = true;
         Swung?.Invoke(this);
 
@@ -91,6 +100,56 @@ public class MeleeAttack : MonoBehaviour
             if (viewModel == null || !viewModel.activeInHierarchy) break;
             yield return null;
         }
+        isAttacking = false;
+    }
+
+    // La estocada de la v0.2.0 (entrega del Sprint 3): el cuchillo va hacia adelante, golpea y vuelve.
+    private IEnumerator EstocadaComoAntes(MeleeWeaponData data)
+    {
+        isAttacking = true;
+        Swung?.Invoke(this);
+
+        // CA6: Sonido de ataque
+        if (swingSound != null)
+            audioSource.PlayOneShot(swingSound);
+
+        GameObject viewModel = weaponHolder.CurrentViewModel;
+        Vector3 initialPos = Vector3.zero;
+
+        // CA6: Animación procedural en el prefab visual instanciado
+        if (viewModel != null)
+        {
+            initialPos = viewModel.transform.localPosition;
+            Vector3 targetPos = initialPos + Vector3.forward * stabDistance;
+
+            float elapsed = 0f;
+            while (elapsed < stabDuration)
+            {
+                if (viewModel == null) { isAttacking = false; yield break; }
+                viewModel.transform.localPosition = Vector3.Lerp(initialPos, targetPos, elapsed / stabDuration);
+                elapsed += Time.deltaTime;
+                yield return null;
+            }
+        }
+
+        // Detección de impacto
+        ExecuteHitCheck(data);
+
+        // Regreso del arma a su posición
+        if (viewModel != null)
+        {
+            Vector3 targetPos = initialPos + Vector3.forward * stabDistance;
+            float elapsed = 0f;
+            while (elapsed < returnDuration)
+            {
+                if (viewModel == null) { isAttacking = false; yield break; }
+                viewModel.transform.localPosition = Vector3.Lerp(targetPos, initialPos, elapsed / returnDuration);
+                elapsed += Time.deltaTime;
+                yield return null;
+            }
+            viewModel.transform.localPosition = initialPos;
+        }
+
         isAttacking = false;
     }
 

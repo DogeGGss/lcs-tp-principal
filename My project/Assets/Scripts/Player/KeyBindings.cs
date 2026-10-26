@@ -102,7 +102,9 @@ public static class KeyBindings
     /// <summary>Avisa cuando cambia una tecla o una opción del mouse.</summary>
     public static event Action Changed;
 
-    public static IEnumerable<GameAction> All => (GameAction[])Enum.GetValues(typeof(GameAction));
+    // Entrega del Sprint 3: sin emotes (Emotes.Disponibles) la T de la rueda no figura en los controles.
+    public static IEnumerable<GameAction> All =>
+        Array.FindAll((GameAction[])Enum.GetValues(typeof(GameAction)), a => a != GameAction.Emotes || Emotes.Disponibles);
 
     // ---------- Consultas para los scripts del juego ----------
 

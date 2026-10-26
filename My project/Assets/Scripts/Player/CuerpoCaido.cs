@@ -30,6 +30,8 @@ public class CuerpoCaido : MonoBehaviour
     /// </summary>
     public static CuerpoCaido Crear(Transform modelo, Vector3 empujon, GameObject armaEnMano = null)
     {
+        // Entrega del Sprint 3 (sin las animaciones nuevas, US 260): sin cuerpo con física, el que llama cae como antes.
+        if (!AnimacionPrimeraPersona.AnimacionesNuevas) return null;
         if (modelo == null) return null;
         Animator animador = modelo.GetComponentInChildren<Animator>(true);
         if (animador == null || !animador.isHuman) return null;

@@ -7,6 +7,10 @@ using UnityEngine;
 // tienda o recibir daño (y al morir): lo revisa CorteDeEmotes.
 public static class Emotes
 {
+    // Entrega del Sprint 3 (v0.3.0): F27 (US 261 a US 264) no se llegó a probar y no entra. En false no hay rueda de
+    // emotes (la T no hace nada y no figura en los controles), el Perfil no tiene la pestaña Emotes y nadie baila.
+    public static readonly bool Disponibles = false;
+
     /// <summary>El baile que está haciendo (su número en el catálogo), o -1 si ninguno.</summary>
     public static int Actual { get; private set; } = -1;
 
@@ -19,6 +23,7 @@ public static class Emotes
     /// </summary>
     public static bool Hacer(int indice, bool conPausa = false)
     {
+        if (!Disponibles) return false;
         if (CatalogoDeEmotes.Actual.De(indice) == null) return false;
         if (!CorteDeEmotes.Encontrar(out PlayerMovement jugador)) return false;
         if (!CorteDeEmotes.SePuede(jugador, conPausa)) return false;

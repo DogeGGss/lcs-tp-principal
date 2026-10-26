@@ -109,8 +109,9 @@ public class MiraTelescopica : MonoBehaviour
             nivelAlVolver = 0;
             return;
         }
-        // En medio del cerrojo (sin la mira puesta): apunta cuando termina.
-        if (nivel == 0 && Time.time < cerrojoHasta)
+        // En medio del cerrojo (sin la mira puesta): apunta cuando termina. En la entrega del Sprint 3 (sin las
+        // animaciones nuevas), como en la v0.2.0: apunta enseguida.
+        if (nivel == 0 && Time.time < cerrojoHasta && AnimacionPrimeraPersona.AnimacionesNuevas)
         {
             nivelAlVolver = 1;
             volverEn = cerrojoHasta;
@@ -167,7 +168,10 @@ public class MiraTelescopica : MonoBehaviour
     // El arma sube hacia el ojo mientras se apunta y baja si no; la lente aparece cuando llega y se va enseguida al salir.
     private void Subir()
     {
-        subida = Mathf.MoveTowards(subida, nivel > 0 ? 1f : 0f, Time.deltaTime / Mathf.Max(0.01f, tiempoSubida));
+        float hasta = nivel > 0 ? 1f : 0f;
+        // Entrega del Sprint 3 (sin las animaciones nuevas): sin subir el arma, la lente aparece enseguida (v0.2.0).
+        subida = AnimacionPrimeraPersona.AnimacionesNuevas
+            ? Mathf.MoveTowards(subida, hasta, Time.deltaTime / Mathf.Max(0.01f, tiempoSubida)) : hasta;
         bool conLente = nivel > 0 && subida >= 1f;
         if (conLente != lente) Mostrar();
     }
@@ -175,7 +179,7 @@ public class MiraTelescopica : MonoBehaviour
     private void Mostrar()
     {
         if (nivel == 0) lente = false;
-        else lente = subida >= 1f;
+        else lente = subida >= 1f || !AnimacionPrimeraPersona.AnimacionesNuevas;
         bool puesta = lente;
         foreach (Renderer parte in partes)
             if (parte != null) parte.enabled = !puesta;

@@ -20,7 +20,8 @@ public class PantallaPerfil : PantallaBase
     private Transform bajoMarco;
     private TextMeshProUGUI nombre, titulo, infoPestana;
     private readonly TextMeshProUGUI[] resumen = new TextMeshProUGUI[4];
-    private readonly TextMeshProUGUI[] pestanas = new TextMeshProUGUI[3];
+    // Entrega del Sprint 3: sin emotes (Emotes.Disponibles) no está la pestaña Emotes.
+    private readonly TextMeshProUGUI[] pestanas = new TextMeshProUGUI[Emotes.Disponibles ? 3 : 2];
     private Img subrayado;
     private RectTransform panelEstad, panelPers, panelEmotes, grilla, vista;
     private RectTransform cuerpoMinijuego;
@@ -41,7 +42,7 @@ public class PantallaPerfil : PantallaBase
         ArmarPestanas();
         ArmarEstadisticas();
         ArmarPersonalizacion();
-        ArmarEmotes();
+        if (Emotes.Disponibles) ArmarEmotes();
         ElegirPestana(0);
     }
 
@@ -87,7 +88,8 @@ public class PantallaPerfil : PantallaBase
 
     private void ArmarPestanas()
     {
-        string[] nombres = { "Estadísticas", "Personalización", "Emotes" };
+        string[] nombres = Emotes.Disponibles ? new[] { "Estadísticas", "Personalización", "Emotes" }
+                                              : new[] { "Estadísticas", "Personalización" };
         float x = 60f;
         for (int i = 0; i < nombres.Length; i++)
         {
@@ -116,7 +118,7 @@ public class PantallaPerfil : PantallaBase
         subrayado.rectTransform.sizeDelta = new Vector2(t.sizeDelta.x, 4f);
         panelEstad.gameObject.SetActive(i == 0);
         panelPers.gameObject.SetActive(i == 1);
-        panelEmotes.gameObject.SetActive(i == 2);
+        if (panelEmotes != null) panelEmotes.gameObject.SetActive(i == 2);
         if (i == 2) VerEmote(emoteVisto); else VistaPreviaDeEmote.Apagar(); // la vista previa solo dibuja si se ve
         RefrescarInfo();
     }

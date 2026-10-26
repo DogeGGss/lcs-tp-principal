@@ -281,7 +281,7 @@ public class BrazosEnCamara : MonoBehaviour
     {
         var malla = new Mesh { name = "Brazos con " + arma.name };
         DedosDelArma dedos = arma.GetComponent<DedosDelArma>(); // US 244: los dedos abiertos o cerrados para esta arma
-        if (dedos != null) dedos.Aplicar(animador);
+        if (dedos != null && AnimacionPrimeraPersona.AnimacionesNuevas) dedos.Aplicar(animador); // entrega del Sprint 3: como antes
         brazosCuerpo.BakeMesh(malla, true); // con la escala: la copia queda a escala 1
         Mesh derecha = SepararBrazoDerecho(malla);
 
@@ -392,7 +392,8 @@ public class BrazosEnCamara : MonoBehaviour
         ajustada = enMano;
         if (enMano != null) brazosCuerpo.enabled = true;
         // US 244: los dedos de cada arma también se ajustan en vivo (el componente aparece en el arma en la mano).
-        if (enMano != null && TieneAgarres(enMano))
+        // En la entrega del Sprint 3 (sin las animaciones nuevas) los dedos quedan como antes.
+        if (AnimacionPrimeraPersona.AnimacionesNuevas && enMano != null && TieneAgarres(enMano))
         {
             DedosDelArma dedos = enMano.GetComponent<DedosDelArma>();
 #if UNITY_EDITOR

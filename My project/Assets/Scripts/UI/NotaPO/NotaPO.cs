@@ -23,30 +23,29 @@ public class NotaPO : MonoBehaviour
     [SerializeField] private CanvasGroup transitionOverlay;
 
     [Header("Textos")]
-    [SerializeField] private string eyebrow = "Nota para el PO · Sprint 1";
+    [SerializeField] private string eyebrow = "Nota para el PO · Sprint 3";
     [SerializeField] private string title = "Hola, Amin";
     [TextArea(2, 4)]
     [SerializeField] private string intro =
-        "Esta es la entrega del Sprint 1 de Project Riftwalker. Para que sepas qué probar, acá va lo que ya funciona y lo que todavía falta implementar.";
+        "Esta es la entrega del Sprint 3 de Project Riftwalker: el Deathmatch online en su propio mapa, los cuatro personajes con su habilidad y el progreso del jugador. Para jugar online hacen falta al menos 2 jugadores, cada uno en su computadora.";
     [SerializeField] private string worksTitle = "Lo que funciona";
     [Tooltip("Un punto por renglón. Lo que va antes de \":\" sale resaltado.")]
     [TextArea(5, 12)]
     [SerializeField] private string works =
-        "Movimiento: caminar, correr, saltar y agacharse, con gravedad, colisiones y reaparición si caés del mapa.\n" +
-        "Armas: pistola La Porteña, fusil Mitre y cuchillo. Daño por zona (cabeza, cuerpo y piernas) y por distancia, dispersión, retroceso, recarga y marcas de bala en las paredes.\n" +
-        "Tienda: en la fase de compra y dentro de la zona de compra se puede comprar, vender y deshacer compras. Los escudos protegen de verdad.\n" +
-        "HUD: vida, escudo, arma y munición, mira y marcador de impacto. La habilidad muestra su tiempo de recarga.\n" +
-        "Menús: principal con música, opciones de video, sonido y controles, nombre de jugador, créditos y pausa (seguir, reiniciar, opciones y salir).";
+        "Deathmatch online: todos contra todos, de 2 a 8 jugadores, en Colonia ARA San Juan. Gana el primero en llegar a 25 bajas o el que más tenga a los 8 minutos. Las armas se eligen gratis y cada baja cura 50.\n" +
+        "Personajes: Unzué (Barrera), Necochea (Vista aérea), Goya (Callejero) y Soledad (Trasbordo), cada uno con su modelo y su habilidad, que se usa en el Táctico.\n" +
+        "Campo de práctica: desde el menú, con todas las armas, blancos, bots y un tutorial que enseña los controles paso a paso.\n" +
+        "Minijuego y logros: en la compra del Táctico se les dispara a los cometas. Hay 25 logros, con aviso al conseguirlos, y un ranking global.\n" +
+        "Perfil: avatar, banner, título y marco, y estadísticas por modo con el KDA. Con los créditos de cada partida se abren cápsulas en la Estación del Rift; la tienda de cristales es una simulación y no cobra.\n" +
+        "Guardado y launcher: el progreso se guarda solo, también en la nube, y el launcher instala y actualiza el juego.";
     [SerializeField] private string missingTitle = "Lo que todavía falta";
     [Tooltip("Un punto por renglón. Lo que va antes de \":\" sale resaltado.")]
     [TextArea(5, 12)]
     [SerializeField] private string missing =
-        "Resto de las armas: la tienda muestra todas, pero por ahora solo se usan la pistola La Porteña, el Mitre y el cuchillo. Las demás se pueden comprar, pero todavía no se pueden usar.\n" +
-        "Granadas: se compran, pero todavía no se pueden tirar.\n" +
-        "Habilidad: el Silbato carga y se ve en el HUD, pero todavía no tiene efecto.\n" +
-        "Modos y multijugador: Táctico y Deathmatch muestran la sala, pero falta la conexión online. Zombie todavía no tiene zombis: Jugar abre el mapa de la universidad para recorrerlo con las armas, la tienda y el HUD.\n" +
-        "Logros: la pantalla está, pero todavía no tiene logros.\n" +
-        "Mapas y rivales: Pruebas y Pruebas 2 abren dos mapas de prueba, temporales, para mostrar la jugabilidad. En Pruebas aparecen enemigos que te persiguen y se pueden matar, pero todavía no atacan.";
+        "Zombie: todavía no hay zombis. Jugar abre el mapa de la universidad, que está en construcción, para recorrerlo.\n" +
+        "Estadísticas del Zombie: dicen \"Sin datos\" hasta que el modo tenga partidas (US 222).\n" +
+        "Animaciones: por ahora solo La Porteña tiene animación en primera persona.\n" +
+        "Penetración de superficies: las balas todavía no atraviesan paredes ni objetos (US 169).";
 
     [Header("Tipografías (las mismas de la tienda)")]
     [SerializeField] private TMP_FontAsset displayFont; // Barlow Condensed Bold
@@ -75,15 +74,19 @@ public class NotaPO : MonoBehaviour
     private static readonly (string label, GameAction[] keys, string join)[] Controls =
     {
         ("Mover", new[] { GameAction.Adelante, GameAction.Izquierda, GameAction.Atras, GameAction.Derecha }, ""),
-        ("Correr", new[] { GameAction.Correr }, ""),
+        ("Correr (en el Táctico, caminar despacio)", new[] { GameAction.Correr }, ""),
         ("Saltar", new[] { GameAction.Saltar }, ""),
         ("Agacharse", new[] { GameAction.Agacharse }, ""),
         ("Disparar", new[] { GameAction.Disparar }, ""),
         ("Apuntar", new[] { GameAction.Apuntar }, ""),
         ("Recargar", new[] { GameAction.Recargar }, ""),
-        ("Mitre / pistola / cuchillo", new[] { GameAction.ArmaPrincipal, GameAction.ArmaSecundaria, GameAction.Cuchillo }, " / "),
+        ("Principal / secundaria / cuchillo / granadas", new[] { GameAction.ArmaPrincipal, GameAction.ArmaSecundaria, GameAction.Cuchillo, GameAction.Granadas }, " / "),
         ("Tienda", new[] { GameAction.Tienda }, ""),
         ("Habilidad", new[] { GameAction.Habilidad }, ""),
+        ("Dispositivo", new[] { GameAction.Dispositivo }, ""),
+        ("Plantar y desactivar", new[] { GameAction.Plantar }, ""),
+        ("Soltar el arma", new[] { GameAction.Soltar }, ""),
+        ("Mapa", new[] { GameAction.Mapa }, ""),
     };
 
     private RectTransform canvasRoot, chip, modal, panel;

@@ -31,6 +31,11 @@ public class AnimacionPrimeraPersona : MonoBehaviour
 {
     private const string NombreFoto = "Brazos con {0} (cámara)"; // las que arma BrazosEnCamara
 
+    // Entrega del Sprint 3 (v0.3.0): las animaciones de F26 (US 242 a US 260) no se llegaron a probar y no entran.
+    // En false queda como en la v0.2.0: solo La Porteña se anima en primera persona, el cuchillo, las granadas y la mira
+    // del Último Tren funcionan como antes, los demás ven el arma como antes y el cuerpo cae como antes.
+    public static readonly bool AnimacionesNuevas = false;
+
     [Tooltip("Apagado, el arma queda quieta como antes.")]
     public bool activa = true;
 
@@ -259,6 +264,7 @@ public class AnimacionPrimeraPersona : MonoBehaviour
     {
         if (switcher == null) return null;
         GameObject arma = switcher.HeldSecondary;
+        if (!AnimacionesNuevas) return EsPortena(arma) ? arma : null; // entrega del Sprint 3: solo La Porteña
         if (EsPortena(arma) || EsTrochita(arma)) return arma;
         arma = switcher.HeldPrimary;
         if (EsUrquiza(arma) || EsRoca(arma) || EsMitre(arma) || EsBelgrano(arma) || EsTren(arma)) return arma;
@@ -554,17 +560,27 @@ public class AnimacionPrimeraPersona : MonoBehaviour
 
         // Quieto: respira. Caminando se balancea; corriendo, más.
         float rapidez = new Vector2(vel.x, vel.z).magnitude;
-        float intensidad = apoyado ? Mathf.Clamp(rapidez / Mathf.Max(0.1f, velocidadCaminando), 0f, 1.6f) : 0f;
-        // Corriendo los pasos son un poco más rápidos, no en proporción a la velocidad (a 8 m/s, 2,5 pasos por segundo).
-        fase += dt * balanceoRitmo * Mathf.PI * 2f * Mathf.Clamp(Mathf.Sqrt(rapidez / Mathf.Max(0.1f, velocidadCaminando)), 0.6f, 1.3f);
-        mover += new Vector3(Mathf.Sin(fase) * balanceoAncho, -Mathf.Abs(Mathf.Cos(fase)) * balanceoAlto, 0f) * intensidad;
-        respira += dt * respiracionRitmo * Mathf.PI * 2f;
-        float quieto = 1f - Mathf.Clamp01(intensidad);
-        mover += new Vector3(0f, Mathf.Sin(respira) * respiracion, 0f) * quieto;
-        girar += new Vector3(Mathf.Sin(respira + 0.6f) * 0.25f, 0f, 0f) * quieto;
+        if (AnimacionesNuevas)
+        {
+            float intensidad = apoyado ? Mathf.Clamp(rapidez / Mathf.Max(0.1f, velocidadCaminando), 0f, 1.6f) : 0f;
+            // Corriendo los pasos son un poco más rápidos, no en proporción a la velocidad (a 8 m/s, 2,5 pasos por segundo).
+            fase += dt * balanceoRitmo * Mathf.PI * 2f * Mathf.Clamp(Mathf.Sqrt(rapidez / Mathf.Max(0.1f, velocidadCaminando)), 0.6f, 1.3f);
+            mover += new Vector3(Mathf.Sin(fase) * balanceoAncho, -Mathf.Abs(Mathf.Cos(fase)) * balanceoAlto, 0f) * intensidad;
+            respira += dt * respiracionRitmo * Mathf.PI * 2f;
+            float quieto = 1f - Mathf.Clamp01(intensidad);
+            mover += new Vector3(0f, Mathf.Sin(respira) * respiracion, 0f) * quieto;
+            girar += new Vector3(Mathf.Sin(respira + 0.6f) * 0.25f, 0f, 0f) * quieto;
 
-        // Salto
-        mover += new Vector3(0f, -saltoPos, 0f);
+            // Salto
+            mover += new Vector3(0f, -saltoPos, 0f);
+        }
+        else
+        {
+            // Entrega del Sprint 3: el balanceo de la v0.2.0 (1,8 pasos por segundo), sin respirar ni el salto.
+            float intensidad = apoyado ? Mathf.Clamp01(rapidez / 5f) : 0f;
+            fase += dt * 1.8f * Mathf.PI * 2f * Mathf.Clamp(rapidez / 5f, 0.5f, 1.6f);
+            mover += new Vector3(Mathf.Sin(fase) * balanceoAncho, -Mathf.Abs(Mathf.Cos(fase)) * balanceoAlto, 0f) * intensidad;
+        }
 
         // Mirar (con la mira puesta, sin retraso)
         girar += new Vector3(retraso.x, retraso.y, -retraso.y * 0.5f) * (1f - alOjo);

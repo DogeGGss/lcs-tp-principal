@@ -1010,10 +1010,15 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
                 // US 031, CA5: a los rivales se los reconoce por el contorno rojo, como en Valorant. No se ve su nombre ni su vida.
         CrearContorno();
         transparencia = Semitransparente.Crear(gameObject, modelo); // US 137
-        terceraPersona = ArmaEnTerceraPersona.Crear(gameObject, animador, camara); // F26: cómo tiene el arma
-        lanzamiento = LanzamientoDeGranada.Crear(gameObject, terceraPersona); // US 259
-        cuchilloVisto = CuchilloEnTerceraPersona.Crear(gameObject, terceraPersona); // US 257
-        baile = BaileEnTerceraPersona.Crear(gameObject, animador, terceraPersona);    // US 262
+        // Entrega del Sprint 3: sin las animaciones nuevas (F26) los demás ven el arma como en la v0.2.0, y sin emotes
+        // (F27) no hay baile.
+        if (AnimacionPrimeraPersona.AnimacionesNuevas)
+        {
+            terceraPersona = ArmaEnTerceraPersona.Crear(gameObject, animador, camara); // F26: cómo tiene el arma
+            lanzamiento = LanzamientoDeGranada.Crear(gameObject, terceraPersona); // US 259
+            cuchilloVisto = CuchilloEnTerceraPersona.Crear(gameObject, terceraPersona); // US 257
+        }
+        if (Emotes.Disponibles) baile = BaileEnTerceraPersona.Crear(gameObject, animador, terceraPersona); // US 262
     }
 
     private void CrearContorno()
@@ -1069,6 +1074,8 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
     // Ojos a la altura de este cuerpo: la misma distancia a los pies que en el de siempre, por su tamaño.
     private void AlturaDelCuerpo()
     {
+        // Vino con las armas en tercera persona (#562): en la entrega del Sprint 3, sin ellas, los ojos quedan como antes.
+        if (!AnimacionPrimeraPersona.AnimacionesNuevas) return;
         if (escalaDeReferencia <= 0f) MedirReferencia(); // no llegó a medirse: por lo menos que no rompa
         if (escalaDeReferencia <= 0f || animador == null || !animador.isHuman || camara == null) return;
         float escala = Mathf.Clamp(animador.humanScale / escalaDeReferencia, 0.7f, 1.3f);

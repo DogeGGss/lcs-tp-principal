@@ -132,7 +132,11 @@ public class ArmaDeFuego : MonoBehaviour, IHudWeapon
         // Con la mira telescópica puesta la dispersión es la de apuntar (US 167, CA5).
         bool conMira = mira != null && mira.ConLente;
         WeaponFire.Fire(shopItem, playerCamera, shooter, conMira, alcance);
-        if (pumpSound != null && currentAmmo > 0) StartCoroutine(PlayLater(pumpSound, pumpDelay, pumpSkip));
+        // Entrega del Sprint 3 (sin las animaciones nuevas): como en la v0.2.0, el sonido entero, después de esperar lo
+        // que ahora se saltea del principio.
+        if (pumpSound != null && currentAmmo > 0)
+            StartCoroutine(AnimacionPrimeraPersona.AnimacionesNuevas ? PlayLater(pumpSound, pumpDelay, pumpSkip)
+                                                                     : PlayLater(pumpSound, pumpDelay + pumpSkip));
         // Cerrojo: sale de la mira y vuelve sola cuando se puede volver a disparar (US 068, CA3).
         if (mira != null) mira.AlDisparar(1f / Mathf.Max(0.01f, shopItem.fireRate));
     }
@@ -212,11 +216,13 @@ public class ArmaDeFuego : MonoBehaviour, IHudWeapon
             reloadStart = Time.time;
             reloadDuration = Mathf.Max(0.01f, shopItem.reloadTime);
             // El sonido arranca con el cartucho: su golpe (a los 0,3 s del archivo) cae cuando la mano lo mete (US 248).
+            // En la entrega del Sprint 3 (sin las animaciones nuevas) suena al final, como en la v0.2.0.
             AudioClip shell = shellSound != null ? shellSound : reloadSound;
-            if (shell != null) audioSource.PlayOneShot(shell);
+            if (shell != null && AnimacionPrimeraPersona.AnimacionesNuevas) audioSource.PlayOneShot(shell);
             yield return new WaitForSeconds(shopItem.reloadTime);
             currentAmmo++;
             if (!Municion.ReservaInfinita) reserveAmmo--; // US 121, CA1 y Deathmatch: la reserva no se gasta
+            if (shell != null && !AnimacionPrimeraPersona.AnimacionesNuevas) audioSource.PlayOneShot(shell);
         }
         reloading = false;
     }

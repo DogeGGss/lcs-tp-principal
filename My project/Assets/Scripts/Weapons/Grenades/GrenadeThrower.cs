@@ -108,6 +108,12 @@ public class GrenadeThrower : MonoBehaviour
         if (PauseMenu.IsPaused || ShopUI.IsOpen) return; // el clic de la tienda no tira granadas
         if (ownerHealth != null && ownerHealth.currentHealth <= 0) return;
 
+        // Entrega del Sprint 3 (sin las animaciones nuevas): como en la v0.2.0, sale apenas se hace clic.
+        if (!AnimacionPrimeraPersona.AnimacionesNuevas)
+        {
+            if (KeyBindings.Down(GameAction.Disparar)) Throw(); // CA2
+            return;
+        }
         if (lanzando) { Lanzando(); return; }
         if (KeyBindings.Down(GameAction.Disparar) && Time.time - SacadaDesde >= 0.2f) // CA2 (con la mano ya arriba)
         {

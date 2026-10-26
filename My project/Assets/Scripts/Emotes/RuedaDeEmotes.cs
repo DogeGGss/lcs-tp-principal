@@ -191,6 +191,7 @@ public class RuedaDeEmotes : MonoBehaviour
 
     private void Update()
     {
+        if (!Emotes.Disponibles) return; // entrega del Sprint 3: sin emotes, la T no abre la rueda
         if (!Abierta)
         {
             ActualizarEnElAire();
