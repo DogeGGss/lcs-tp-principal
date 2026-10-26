@@ -39,7 +39,7 @@ public class MeleeWeaponHolder : MonoBehaviour
         if (weapon.viewModelPrefab != null)
             CurrentViewModel = Instantiate(weapon.viewModelPrefab, viewModelParent, false);
         if (movement != null)
-            movement.speedMultiplier = weapon.moveSpeedMultiplier;
+            movement.speedMultiplier = weapon.MoveSpeedMultiplier;
     }
 
     public void Unequip()

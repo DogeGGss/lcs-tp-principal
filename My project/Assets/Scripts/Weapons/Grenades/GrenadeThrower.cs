@@ -4,6 +4,9 @@ using UnityEngine;
 // Granadas en la mano del jugador (US 079; la de humo es la US 074): elegirlas con la tecla 4 (CA1), lanzarlas con el clic izquierdo (CA2)
 // y gastarlas al lanzar (CA6). Las que tiene salen de PlayerLoadout (lo que compró en la tienda).
 // WeaponSwitcher lo agrega solo al jugador si no está: no hace falta tocar la escena.
+// US 258: el lanzamiento tiene su movimiento (AnimacionPrimeraPersona): el brazo va hacia atrás (Preparacion), la arroja
+// hacia adelante (Arrojar) y la granada sale de la mano al final, hacia donde mira el jugador en ese momento. Después la
+// mano baja (Despues) y, si le quedan de ese tipo, saca la siguiente desde abajo (SacadaDesde); si no, vuelve el arma.
 public class GrenadeThrower : MonoBehaviour
 {
     [Tooltip("Prefab de la granada (con Grenade1). Si está vacío se usa el de la ficha (ShopItem.grenadePrefab).")]
@@ -29,6 +32,19 @@ public class GrenadeThrower : MonoBehaviour
     // granadas se arman ahí, centradas y del tamaño de handSize por su escala: se ajusta una vez para todas.
     public const string NombreMano = "Mano con granada";
 
+    // US 258: tiempos del lanzamiento (s).
+    public const float Preparacion = 0.22f, Arrojar = 0.12f, Despues = 0.18f;
+    public const float Suelta = Preparacion + Arrojar;
+    private float lanzaDesde = -10f;
+    private bool lanzando, soltada;
+
+    /// <summary>Segundos desde que empezó a lanzar (hasta Suelta + Despues), o -1 si no está lanzando.</summary>
+    public float AvanceDelLanzamiento => lanzando ? Time.time - lanzaDesde : -1f;
+    /// <summary>Cuándo empezó a sacar la granada que tiene en la mano (al elegirla o después de lanzar la anterior).</summary>
+    public float SacadaDesde { get; private set; } = -10f;
+    /// <summary>La que tiene en la mano la sacó después de lanzar otra (no al elegirla): solo vuelve la mano derecha.</summary>
+    public bool SacadaTrasLanzar { get; private set; }
+
     private PlayerLoadout loadout;
     private Transform owner;
     private HealthSystem ownerHealth;
@@ -47,6 +63,8 @@ public class GrenadeThrower : MonoBehaviour
 
     // Cada granada que se lanza, con quién la tiró: el multijugador la repite en las demás computadoras.
     public static event System.Action<Transform, Grenade1> Thrown;
+    // US 259: empezó a lanzar una (el clic): los demás jugadores ven el brazo ir hacia atrás antes de que salga.
+    public static event System.Action<Transform> Started;
 
     void Awake()
     {
@@ -90,7 +108,40 @@ public class GrenadeThrower : MonoBehaviour
         if (PauseMenu.IsPaused || ShopUI.IsOpen) return; // el clic de la tienda no tira granadas
         if (ownerHealth != null && ownerHealth.currentHealth <= 0) return;
 
-        if (KeyBindings.Down(GameAction.Disparar)) Throw(); // CA2
+        // Entrega del Sprint 3 (sin las animaciones nuevas): como en la v0.2.0, sale apenas se hace clic.
+        if (!AnimacionPrimeraPersona.AnimacionesNuevas)
+        {
+            if (KeyBindings.Down(GameAction.Disparar)) Throw(); // CA2
+            return;
+        }
+        if (lanzando) { Lanzando(); return; }
+        if (KeyBindings.Down(GameAction.Disparar) && Time.time - SacadaDesde >= 0.2f) // CA2 (con la mano ya arriba)
+        {
+            lanzando = true;
+            soltada = false;
+            lanzaDesde = Time.time;
+            Started?.Invoke(owner);
+        }
+    }
+
+    // US 258: la suelta al final del movimiento hacia adelante; después la mano baja y saca la siguiente.
+    void Lanzando()
+    {
+        float t = Time.time - lanzaDesde;
+        if (!soltada && t >= Suelta)
+        {
+            soltada = true;
+            Throw();
+            if (selected == null) { lanzando = false; return; } // era la última: vuelve el arma
+            if (heldModel != null) heldModel.SetActive(false);
+        }
+        if (soltada && t >= Suelta + Despues)
+        {
+            lanzando = false;
+            SacadaDesde = Time.time;
+            SacadaTrasLanzar = true;
+            if (heldModel != null) heldModel.SetActive(true);
+        }
     }
 
     void Throw()
@@ -143,6 +194,9 @@ public class GrenadeThrower : MonoBehaviour
     void SetSelected(ShopItem item)
     {
         selected = item;
+        lanzando = false;
+        SacadaDesde = Time.time;
+        SacadaTrasLanzar = false;
         DestroyHeldModel();
         if (item == null) return;
         UltimaElegida = item;

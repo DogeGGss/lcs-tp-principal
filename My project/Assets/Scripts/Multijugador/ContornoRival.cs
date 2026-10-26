@@ -11,16 +11,24 @@ using UnityEngine.Rendering;
 // Efectos/ContornoRival (material ContornoRival): una máscara que marca lo que se ve del personaje y, después, el
 // contorno, un poco más grande, que se dibuja solo fuera de esa marca. Así queda solo la silueta. No se ve a través
 // de las paredes, ni a través del humo de una granada (US 074).
+// US 137 (CA3): mientras el jugador recién reaparecido es invulnerable, el contorno es amarillo (y se ve aunque sea
+// del mismo equipo), como el cuerpo semitransparente (Semitransparente).
 public class ContornoRival : MonoBehaviour
 {
     private static Material mascara;
 
-    private System.Func<bool> esRival;
+    private static readonly int ColorBase = Shader.PropertyToID("_BaseColor");
+
+    private System.Func<bool> esRival, invulnerable;
     private Renderer[] partes;
     private bool visible = true;
+    private bool amarillo;
+    private MaterialPropertyBlock bloque;
 
-    // esRival dice en cada cuadro si se tiene que ver el contorno (por ejemplo, vivo y del otro equipo).
-    public static void Crear(GameObject personaje, Transform modelo, Material material, System.Func<bool> esRival)
+    // esRival dice en cada cuadro si se tiene que ver el contorno (por ejemplo, vivo y del otro equipo); invulnerable, si
+    // va amarillo (puede ser null: siempre rojo).
+    public static void Crear(GameObject personaje, Transform modelo, Material material, System.Func<bool> esRival,
+        System.Func<bool> invulnerable = null)
     {
         if (personaje == null || modelo == null || material == null || esRival == null) return;
         Material marca = Mascara(material);
@@ -36,6 +44,7 @@ public class ContornoRival : MonoBehaviour
 
         ContornoRival contorno = personaje.AddComponent<ContornoRival>();
         contorno.esRival = esRival;
+        contorno.invulnerable = invulnerable;
         contorno.partes = lista.ToArray();
         contorno.Mostrar(false);
     }
@@ -109,7 +118,28 @@ public class ContornoRival : MonoBehaviour
             enabled = false;
             return;
         }
-        Mostrar(esRival() && !TapadoPorHumo());
+        bool protegido = invulnerable != null && invulnerable();
+        Amarillo(protegido);
+        Mostrar((esRival() || protegido) && !TapadoPorHumo());
+    }
+
+    // El color del contorno de este personaje (el material es el mismo para todos: va por renderer).
+    private void Amarillo(bool valor)
+    {
+        if (valor == amarillo || partes == null) return;
+        amarillo = valor;
+        if (bloque == null) bloque = new MaterialPropertyBlock();
+        foreach (Renderer r in partes)
+        {
+            if (r == null || r.name != "Contorno") continue;
+            if (valor)
+            {
+                r.GetPropertyBlock(bloque);
+                bloque.SetColor(ColorBase, Semitransparente.Amarillo);
+                r.SetPropertyBlock(bloque);
+            }
+            else r.SetPropertyBlock(null);
+        }
     }
 
     // US 074 (CA4): el contorno se dibuja encima del humo, así que si hay una nube entre la cámara y el pecho del

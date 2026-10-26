@@ -16,6 +16,10 @@ public static class WeaponFire
     // Cada baja de un disparo, y si fue a la cabeza: sin conexión, el aviso de baja sale de acá (US 057, CA4).
     public static event System.Action<bool> Killed;
 
+    // Cada perdigón que pega en un personaje, con el daño y la zona, justo antes de hacerle el daño (el campo de
+    // práctica lo muestra arriba de sus muñecos, US 120).
+    public static event System.Action<HealthSystem, int, BodyZone> Impacto;
+
     // Cada disparo, con quién tiró, desde dónde y la dirección de cada perdigón. El multijugador lo repite
     // en las demás computadoras (US 028).
     public static event System.Action<Transform, Vector3, Vector3[]> Fired;
@@ -46,7 +50,7 @@ public static class WeaponFire
         // La bala se ve: fogonazo en la boca del arma y una estela por perdigón hasta donde pegó.
         Vector3 muzzle = Trazadora.BocaLocal(camera);
         Trazadora.Fogonazo(muzzle);
-        if (MinijuegoPajaros.Activo)
+        if (MinijuegoCometas.Activo)
         {
             FirePractice(weapon, camera, aim, view, spread, pellets, muzzle, range);
             return;
@@ -62,7 +66,20 @@ public static class WeaponFire
 
             if (target == null)
             {
-                ImpactMarks.Spawn(hit);
+                // US 020, CA5: la Barrera frena la bala; si el que tira es rival, le hace el daño de cuerpo.
+                Barrera barrera = Barrera.De(hit.collider);
+                if (barrera != null)
+                {
+                    barrera.Chispas(hit.point, hit.normal);
+                    barrera.PedirDanio(weapon.HitDamage(BodyZone.Body, hit.distance), shooter, hit.point);
+                }
+                // US 022, CA9: el perro del Callejero de un rival recibe el daño de cuerpo.
+                else if (Perro.De(hit.collider) != null)
+                {
+                    if (Perro.De(hit.collider).PedirDanio(weapon.HitDamage(BodyZone.Body, hit.distance), shooter, hit.point)) anyHit = true;
+                }
+                // US 120: los botones del panel del campo de práctica también se aprietan de un tiro.
+                else if (!BotonDePractica.Disparar(hit.collider)) ImpactMarks.Spawn(hit);
                 continue;
             }
 
@@ -72,6 +89,7 @@ public static class WeaponFire
             // Se mira antes de aplicar el daño: a un jugador de otra computadora el daño le llega después (US 029).
             int damage = weapon.HitDamage(zone, hit.distance);
             bool lethal = target.WouldDie(damage);
+            Impacto?.Invoke(target, damage, zone);
             HealthSystem.DamageOrigin = camera.transform.position; // US 192: desde dónde le dispararon
             target.TakeDamage(damage, zone == BodyZone.Head);
             anyHit = true;
@@ -89,20 +107,20 @@ public static class WeaponFire
     }
 
     // Fase de compra del Táctico (F21, US 157): el disparo es solo para el minijuego. Tiene la cadencia, la dispersión y
-    // el retroceso del arma, pero solo le pega a los pájaros: no daña a nadie, no deja marcas y no va por la red (cada
-    // jugador tiene sus pájaros). Un acierto muestra el marcador de impacto (US 158, CA4).
+    // el retroceso del arma, pero solo le pega a los cometas: no daña a nadie, no deja marcas y no va por la red (cada
+    // jugador tiene sus cometas). Un acierto muestra el marcador de impacto (US 158, CA4).
     private static void FirePractice(ShopItem weapon, Camera camera, WeaponAim aim, Quaternion view, float spread, int pellets,
         Vector3 muzzle, float range)
     {
-        MinijuegoPajaros.ContarDisparo();
-        float reach = MinijuegoPajaros.Alcance(range);
+        MinijuegoCometas.ContarDisparo();
+        float reach = MinijuegoCometas.Alcance(range);
         bool anyHit = false;
         for (int i = 0; i < pellets; i++)
         {
             Vector3 direction = view * Deviation(spread) * Vector3.forward;
-            Pajaro bird = MinijuegoPajaros.Buscar(camera.transform.position, direction, reach, out Vector3 point);
-            Trazadora.Mostrar(muzzle, bird != null ? point : camera.transform.position + direction * Mathf.Min(reach, 300f));
-            if (bird != null && MinijuegoPajaros.Acertar(bird, point)) anyHit = true;
+            Cometa comet = MinijuegoCometas.Buscar(camera.transform.position, direction, reach, out Vector3 point);
+            Trazadora.Mostrar(muzzle, comet != null ? point : camera.transform.position + direction * Mathf.Min(reach, 300f));
+            if (comet != null && MinijuegoCometas.Acertar(comet, point)) anyHit = true;
         }
         aim.Kick(weapon);
         if (anyHit) Hit?.Invoke(HitMarkerKind.Body);
@@ -114,7 +132,13 @@ public static class WeaponFire
     {
         if (!Trace(origin, direction, range, shooter, out RaycastHit hit, out HealthSystem target, out BodyZone _))
             return origin + direction * range;
-        if (target == null) ImpactMarks.Spawn(hit);
+        if (target == null)
+        {
+            // US 020, CA7: en la Barrera, chispas en vez de marca (el daño lo manda quien disparó).
+            Barrera barrera = Barrera.De(hit.collider);
+            if (barrera != null) barrera.Chispas(hit.point, hit.normal);
+            else if (Perro.De(hit.collider) == null) ImpactMarks.Spawn(hit);
+        }
         return hit.point;
     }
 

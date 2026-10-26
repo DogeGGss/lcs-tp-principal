@@ -9,7 +9,7 @@ using Slider = UnityEngine.UI.Slider;
 // - CA2: blanco, verde, amarillo, celeste, rojo o un color propio (rojo, verde y azul).
 // - CA3: mientras se cambia, la mira se ve de muestra sobre un fondo claro y uno oscuro, al tamaño del juego.
 // - CA4: "Se abre con la dispersión": la mira se separa según la dispersión del arma (lo hace CombatHud).
-// - CA5: se guarda con "Aplicar" (MiraConfig, en PlayerPrefs) y se usa al volver a entrar al juego.
+// - CA5: se guarda con "Aplicar" (MiraConfig, con las opciones) y se usa al volver a entrar al juego.
 // - CA6: "Restablecer" vuelve a la mira por defecto.
 // En el menú principal la crea OpcionesPantalla (pestaña nueva, sin tocar la escena); en la pausa, PauseMenu (Setup).
 public class MiraUIController : MonoBehaviour, OpcionesPantalla.ISeccion
@@ -82,13 +82,12 @@ public class MiraUIController : MonoBehaviour, OpcionesPantalla.ISeccion
         // Con lugar (menú principal) van dos columnas: controles a la izquierda y vista previa a la derecha.
         // En la pausa la columna es angosta: la vista previa va arriba y todo lo demás abajo.
         bool ancho = kit.width >= 1000f;
-        float y = 114f;
+        float y = 114f, yDerecha = y;
 
         if (ancho)
         {
             float mitad = (kit.width - OpcionesKit.Pad * 2f - 48f) / 2f;
             kit.Columna(OpcionesKit.Pad + mitad + 48f, mitad);
-            float yDerecha = y;
             VistaPrevia(kit, ref yDerecha, 200f);
             yDerecha += 10f;
             kit.Grupo("Color propio", ref yDerecha);
@@ -116,6 +115,7 @@ public class MiraUIController : MonoBehaviour, OpcionesPantalla.ISeccion
         segDinamica = kit.FilaSegmentos("Dispersión", ref y, FijaAbre, i => { pendiente.dinamica = i == 1; Mostrar(); });
 
         float yPie = y + 12f;
+        y = Mathf.Max(y, yDerecha); // el pie va debajo de la columna más larga
         kit.Pie(ref y, AplicarConfiguracion, RestablecerConfiguracion);
         if (alVolver != null) kit.Boton(kit.Left + 352f, yPie, 130f, 40f, "Volver", false, alVolver);
     }

@@ -12,7 +12,7 @@ using Slider = UnityEngine.UI.Slider;
 // - CA3: todas las acciones con su tecla actual.
 // - CA4: clic en una acción y se aprieta la tecla nueva; Esc cancela.
 // - CA5: si la tecla ya la usa otra acción, avisa y pregunta si se intercambian.
-// - CA6: se guarda en PlayerPrefs y el juego lee las teclas desde KeyBindings.
+// - CA6: se guarda con las opciones (Guardado) y el juego lee las teclas desde KeyBindings.
 // Dentro de las opciones del menú principal (US 048) los cambios quedan pendientes hasta "Aplicar", y
 // "Restablecer" pide confirmación. En la pausa se guardan al instante, como antes.
 public class ControlsPanel : MonoBehaviour, OpcionesPantalla.ISeccion
@@ -27,6 +27,7 @@ public class ControlsPanel : MonoBehaviour, OpcionesPantalla.ISeccion
 
     // Medidas en unidades del panel (PanelControles mide 600 de ancho).
     private const float Pad = 40f, RowH = 44f, KeyRowH = 40f, KeyGap = 4f, ColGap = 16f;
+    private const int ColumnasMenu = 4; // columnas de teclas en las opciones del menú principal (en la pausa, 2)
 
     private class KeyRow
     {
@@ -142,12 +143,12 @@ public class ControlsPanel : MonoBehaviour, OpcionesPantalla.ISeccion
         }
 
         // En las opciones del menú, PanelControles viene estirado distinto a lo ancho y a lo alto: se corrige para
-        // que las letras no salgan deformadas (igual que Gráficos y Sonido).
-        // El alto de diseño era para 9 filas de teclas por columna: cada fila de más suma su alto, así el pie no se corta.
+        // que las letras no salgan deformadas, con el mismo alto de diseño que Gráficos y Sonido (así todo se ve del
+        // mismo tamaño). Entra con las teclas en 4 columnas de hasta 6 filas: cada fila de más suma su alto.
         int acciones = new List<GameAction>(KeyBindings.All).Count;
-        int filasDeMas = Mathf.Max(0, Mathf.CeilToInt((acciones + 1) / 2f) - 9);
+        int filasDeMas = Mathf.Max(0, Mathf.CeilToInt((acciones + 1) / (float)ColumnasMenu) - 6);
         if (pantalla != null)
-            OpcionesKit.SinDeformar(transform.parent as RectTransform, OpcionesKit.AltoControles + filasDeMas * (KeyRowH + KeyGap));
+            OpcionesKit.SinDeformar(transform.parent as RectTransform, OpcionesKit.AltoPestana + filasDeMas * (KeyRowH + KeyGap));
 
         // Estirado al tamaño de PanelControles y dibujado encima de lo que tenga.
         RectTransform self = transform as RectTransform;
@@ -364,25 +365,52 @@ public class ControlsPanel : MonoBehaviour, OpcionesPantalla.ISeccion
         Text(Place(Node("Titulo", root), Pad, 36f, inner, 50f), displayFont, 46f, Ink, TextAlignmentOptions.MidlineLeft, 2f, true).text = "Controles";
         Image(Place(Node("LineaAnden", root), Pad, 92f, 120f, 3f), null, Accent);
 
+        // En las opciones del menú principal todo tiene que entrar en el alto de las otras pestañas (ver Start): las dos
+        // sensibilidades van una al lado de la otra, la ayuda de las teclas al lado de su título y las teclas en 4
+        // columnas. En la pausa, como siempre: una fila por sensibilidad y 2 columnas de teclas.
+        bool enMenu = pantalla != null;
+
         // ---- Mouse (CA1, CA2) ----
         float y = 114f;
         Group("Mouse", ref y);
-        sensitivity = SliderRow("Sensibilidad", ref y, w, KeyBindings.MinSensitivity, KeyBindings.MaxSensitivity, out sensitivityValue);
+        if (enMenu)
+        {
+            float mitad = (inner - 48f) / 2f;
+            sensitivity = SliderRow("Sensibilidad", Pad, y, mitad, KeyBindings.MinSensitivity, KeyBindings.MaxSensitivity, out sensitivityValue);
+            aimSensitivity = SliderRow("Al apuntar", Pad + mitad + 48f, y, mitad, KeyBindings.MinAimSensitivity, KeyBindings.MaxAimSensitivity, out aimValue);
+            y += RowH;
+        }
+        else
+        {
+            sensitivity = SliderRow("Sensibilidad", Pad, y, inner, KeyBindings.MinSensitivity, KeyBindings.MaxSensitivity, out sensitivityValue);
+            y += RowH;
+            aimSensitivity = SliderRow("Al apuntar", Pad, y, inner, KeyBindings.MinAimSensitivity, KeyBindings.MaxAimSensitivity, out aimValue);
+            y += RowH;
+        }
         sensitivity.onValueChanged.AddListener(v => { KeyBindings.Sensitivity = v; sensitivityValue.text = Number(v); Guardar(); });
-        aimSensitivity = SliderRow("Al apuntar", ref y, w, KeyBindings.MinAimSensitivity, KeyBindings.MaxAimSensitivity, out aimValue);
         aimSensitivity.onValueChanged.AddListener(v => { KeyBindings.AimSensitivity = v; aimValue.text = "×" + v.ToString("0.00").Replace('.', ','); Guardar(); });
         InvertRow(ref y);
 
         // ---- Teclas (CA3, CA4) ----
-        y += 10f;
-        Group("Teclas", ref y);
-        TextMeshProUGUI hint = Text(Place(Node("Ayuda", root), Pad, y, inner, 22f), bodyFont, 16f, Mute, TextAlignmentOptions.MidlineLeft);
-        hint.text = "Hacé clic en una acción y apretá la tecla nueva. Esc cancela.";
-        y += 32f;
+        const string ayuda = "Hacé clic en una acción y apretá la tecla nueva. Esc cancela.";
+        if (enMenu)
+        {
+            y += 6f;
+            Text(Place(Node("Ayuda", root), Pad + 200f, y - 2f, inner - 200f, 24f), bodyFont, 16f, Mute, TextAlignmentOptions.MidlineRight).text = ayuda;
+            Group("Teclas", ref y);
+        }
+        else
+        {
+            y += 10f;
+            Group("Teclas", ref y);
+            Text(Place(Node("Ayuda", root), Pad, y, inner, 22f), bodyFont, 16f, Mute, TextAlignmentOptions.MidlineLeft).text = ayuda;
+            y += 32f;
+        }
 
         List<GameAction> actions = new List<GameAction>(KeyBindings.All);
-        int perColumn = Mathf.CeilToInt((actions.Count + 1) / 2f); // +1: Pausa, fija
-        float colW = (inner - ColGap) / 2f;
+        int columnas = enMenu ? ColumnasMenu : 2;
+        int perColumn = Mathf.CeilToInt((actions.Count + 1) / (float)columnas); // +1: Pausa, fija
+        float colW = (inner - ColGap * (columnas - 1)) / columnas;
         for (int i = 0; i <= actions.Count; i++)
         {
             int col = i / perColumn, line = i % perColumn;
@@ -391,9 +419,29 @@ public class ControlsPanel : MonoBehaviour, OpcionesPantalla.ISeccion
             if (i < actions.Count) rows.Add(BuildKeyRow(actions[i], x, ry, colW));
             else BuildFixedRow("Pausa", "Esc", x, ry, colW);
         }
-        y += perColumn * (KeyRowH + KeyGap) + 12f;
+        y += perColumn * (KeyRowH + KeyGap);
+
+        // ---- Pie y tecla repetida (CA5) en las opciones del menú principal ----
+        // El pie, centrado y a la misma altura que en las otras pestañas. El aviso de tecla repetida no tiene lugar
+        // propio: aparece encima del pie mientras está abierto (hay que intercambiar o cancelar antes de aplicar).
+        // El aviso de guardado es el de OpcionesPantalla ("Cambios guardados"): no hace falta el "Guardado" de la pausa.
+        if (enMenu)
+        {
+            OpcionesKit.PieCentrado(root, y, displayFont, rounded, () => { Aplicar(); pantalla.AvisarGuardado(); }, PedirRestablecer, out _);
+            float alto = root.rect.height;
+            conflictBar = Place(Node("TeclaRepetida", root), Pad, alto - 72f, inner, 64f);
+            Image(conflictBar, rounded, Over(Rgb(242, 154, 56, 0.12f), PanelBase), 6f, true);
+            conflictText = Text(Place(Node("Texto", conflictBar), 16f, 0f, inner - 32f - 300f, 64f), bodyFont, 16f, Soft, TextAlignmentOptions.MidlineLeft);
+            conflictText.textWrappingMode = TextWrappingModes.Normal;
+            Button(conflictBar, inner - 16f - 120f - 10f - 150f, 14f, 150f, 36f, "Intercambiar", true, ConfirmSwap);
+            Button(conflictBar, inner - 16f - 120f, 14f, 120f, 36f, "Cancelar", false, CloseConflict);
+            conflictBar.gameObject.SetActive(false);
+            RefreshAll();
+            return;
+        }
 
         // ---- Tecla repetida (CA5) ----
+        y += 12f;
         conflictBar = Place(Node("TeclaRepetida", root), Pad, y, inner, 96f);
         Image(conflictBar, rounded, Over(Rgb(242, 154, 56, 0.12f), PanelBase), 6f, true);
         conflictText = Text(Place(Node("Texto", conflictBar), 16f, 10f, inner - 32f, 44f), bodyFont, 16f, Soft, TextAlignmentOptions.TopLeft);
@@ -403,17 +451,12 @@ public class ControlsPanel : MonoBehaviour, OpcionesPantalla.ISeccion
         conflictBar.gameObject.SetActive(false);
         y += 108f;
 
-        // ---- Pie ----
+        // ---- Pie (en la pausa se guarda al instante: no hay Aplicar) ----
         float footX = Pad;
         if (onBack != null)
         {
             Button(root, footX, y, 130f, 40f, "Volver", false, onBack);
             footX += 146f;
-        }
-        if (pantalla != null)
-        {
-            Button(root, footX, y, 150f, 40f, "Aplicar", true, () => { Aplicar(); pantalla.AvisarGuardado(); });
-            footX += 166f;
         }
         Button(root, footX, y, 170f, 40f, "Restablecer", false, PedirRestablecer);
         savedText = Text(Place(Node("Guardado", root), footX + 186f, y, 140f, 40f), labelFont, 16f, Ok, TextAlignmentOptions.MidlineLeft, 12f, true);
@@ -429,13 +472,12 @@ public class ControlsPanel : MonoBehaviour, OpcionesPantalla.ISeccion
         y += 24f;
     }
 
-    private Slider SliderRow(string title, ref float y, float w, float min, float max, out TextMeshProUGUI value)
+    // Nombre, slider y valor en un tramo de "ancho" desde x.
+    private Slider SliderRow(string title, float x, float y, float ancho, float min, float max, out TextMeshProUGUI value)
     {
-        Text(Place(Node(title, root), Pad, y, 190f, RowH), labelFont, 19f, Ink, TextAlignmentOptions.MidlineLeft, 5f, true).text = title;
-        value = Text(Place(Node("Valor", root), w - Pad - 60f, y, 60f, RowH), labelFont, 18f, Ink, TextAlignmentOptions.MidlineRight);
-        Slider slider = BuildSlider(root, Pad + 190f, y + (RowH - 26f) / 2f, w - Pad * 2f - 190f - 76f, min, max);
-        y += RowH;
-        return slider;
+        Text(Place(Node(title, root), x, y, 190f, RowH), labelFont, 19f, Ink, TextAlignmentOptions.MidlineLeft, 5f, true).text = title;
+        value = Text(Place(Node("Valor", root), x + ancho - 60f, y, 60f, RowH), labelFont, 18f, Ink, TextAlignmentOptions.MidlineRight);
+        return BuildSlider(root, x + 190f, y + (RowH - 26f) / 2f, ancho - 190f - 76f, min, max);
     }
 
     private void InvertRow(ref float y)

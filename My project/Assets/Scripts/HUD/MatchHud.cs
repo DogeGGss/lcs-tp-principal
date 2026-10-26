@@ -605,6 +605,13 @@ public class MatchHud : MonoBehaviour
         Instance.ShowWarning(text, seconds);
     }
 
+    /// <summary>Saca el aviso rojo si sigue mostrando ese texto (por ejemplo, terminó lo que avisaba).</summary>
+    public static void ClearWarn(string text)
+    {
+        if (Instance == null || Instance.warningText == null || Instance.warningText.text != text) return;
+        Instance.warningEnd = 0f;
+    }
+
     private void BuildBanner(string eyebrow, string title, Color color, string sub, IList<string> chips, float seconds, string footer)
     {
         if (banner != null) Destroy(banner.gameObject);
@@ -753,6 +760,11 @@ public class MatchHud : MonoBehaviour
             warning = Node("AvisoRojo", hudRoot);
             warning.anchorMin = warning.anchorMax = warning.pivot = new Vector2(0.5f, 0.5f);
             warning.anchoredPosition = new Vector2(0f, -120f);
+            // Canvas propio por encima de la pantalla de resultado (orden 200): el aviso de un logro que se
+            // desbloquea al terminar la partida quedaba tapado por la tabla.
+            var capa = warning.gameObject.AddComponent<Canvas>();
+            capa.overrideSorting = true;
+            capa.sortingOrder = 210;
             Image(Stretch(Node("Borde", warning)), rounded, RivalColor, 6f);
             Image(Place(Node("Fondo", warning), 2f, 2f, 10f, 10f), rounded, Over(WithAlpha(RivalColor, 0.18f), Rgb(10, 12, 17)), 5f);
             warningText = Text(Stretch(Node("Texto", warning)), labelFont, 24f, Ink, TextAlignmentOptions.Center, 10f, true);
@@ -793,7 +805,8 @@ public class MatchHud : MonoBehaviour
 
     private void UpdateTable()
     {
-        bool held = Input.GetKey(KeyCode.Tab) && !PauseMenu.IsPaused;
+        // En el campo de práctica no hay tabla: ahí Tab saltea los pasos del tutorial (US 166, CA4).
+        bool held = Input.GetKey(KeyCode.Tab) && !PauseMenu.IsPaused && !CampoDePractica.Activo;
         if (table.gameObject.activeSelf != held) { table.gameObject.SetActive(held); nextTableRefresh = 0f; }
         if (!held || Time.unscaledTime < nextTableRefresh) return;
         nextTableRefresh = Time.unscaledTime + 0.25f;

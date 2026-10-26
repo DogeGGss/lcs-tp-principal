@@ -1,0 +1,39 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 59cc722dfea44b649923919357f0a397, type: 3}
+  m_Name: Emotes
+  m_EditorClassIdentifier: Riftwalker::CatalogoDeEmotes
+  emotes:
+  - estado: Shuffle
+    nombre: Shuffle
+    icono: {fileID: 0}
+    clip: {fileID: -203655887218126122, guid: ac8bc584e88631a4db51727dcc3c6a47, type: 3}
+  - estado: Twerk
+    nombre: Twerk
+    icono: {fileID: 0}
+    clip: {fileID: -203655887218126122, guid: 4f9a632cb609f4e4cbd781bc601735af, type: 3}
+  - estado: Breakdance
+    nombre: Breakdance
+    icono: {fileID: 0}
+    clip: {fileID: -203655887218126122, guid: d052688fd724d3846b01de0252769e3c, type: 3}
+  - estado: Flair
+    nombre: Flair
+    icono: {fileID: 0}
+    clip: {fileID: -203655887218126122, guid: ffe236bf4484ff3418de5a172080f1e5, type: 3}
+  - estado: Rumba
+    nombre: Rumba
+    icono: {fileID: 0}
+    clip: {fileID: -203655887218126122, guid: 7a474da37b3eb0943bc4ca3ff965861c, type: 3}
+  - estado: Silly
+    nombre: Silly
+    icono: {fileID: 0}
+    clip: {fileID: -203655887218126122, guid: bf86d8f300e7a004da99c4019d2eb361, type: 3}

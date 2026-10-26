@@ -212,6 +212,8 @@ public class WeaponSwitcher : MonoBehaviour
         if (fuego != null) fuego.Refill();
         Mitre mitre = arma.GetComponent<Mitre>();
         if (mitre != null) mitre.Refill();
+        Pistola pistola = arma.GetComponent<Pistola>();
+        if (pistola != null) pistola.Refill();
     }
 
     void CambiarA(Pendiente arma)
@@ -441,7 +443,7 @@ public class WeaponSwitcher : MonoBehaviour
 
         // Aplica el multiplicador definido en el cuchillo
         float knifeSpeed = (meleeScript != null && meleeScript.CurrentWeapon != null)
-            ? meleeScript.CurrentWeapon.moveSpeedMultiplier
+            ? meleeScript.CurrentWeapon.MoveSpeedMultiplier // en el Deathmatch, sin el bonus
             : 1.0f;
 
         ApplySpeedMultiplier(knifeSpeed);

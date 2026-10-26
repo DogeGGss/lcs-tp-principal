@@ -13,10 +13,11 @@ MonoBehaviour:
   m_Name: Alfa
   m_EditorClassIdentifier: Assembly-CSharp::CharacterData
   order: 0
-  displayName: Alfa
-  role: Iniciador
-  portrait: {fileID: 0}
-  color: {r: 0.9490, g: 0.6039, b: 0.2196, a: 1}
+  displayName: Unzué
+  role: Centinela
+  portrait: {fileID: 21300000, guid: 23454d2aa33d69a4e92e4012a60bc492, type: 3}
+  color: {r: 1.0000, g: 0.7800, b: 0.1200, a: 1}
   description: 
-  ability: {fileID: 11400000, guid: c4bdc8ecaf38a3c499e064d472fb97a3, type: 2}
-  provisional: 1
+  ability: {fileID: 11400000, guid: 7653c73771644ebb90dbd7f221131c57, type: 2}
+  modelo: {fileID: 919132149155446097, guid: 0fad68ca839206145b892efcae6ad9d6, type: 3}
+  provisional: 0

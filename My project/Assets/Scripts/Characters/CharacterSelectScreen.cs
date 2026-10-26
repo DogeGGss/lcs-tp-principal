@@ -15,6 +15,7 @@ using Img = UnityEngine.UI.Image;
 // US 016 (Táctico): con LockedBy, los personajes que ya eligió un compañero aparecen bloqueados ("Elegido por …");
 // con ConfirmHandler, confirmar no cierra enseguida: espera a que el servidor diga si se lo quedó (Accept) o si
 // otro llegó primero (Reject, "Ya lo eligió …").
+// Deathmatch (PersonajesDeathmatch): con soloAspecto, el personaje es solo el aspecto; la tarjeta no muestra habilidad.
 // Se arma por código con las medidas de una pantalla de 1920 x 1080, como la tienda y la selección de modo.
 public class CharacterSelectScreen : MonoBehaviour
 {
@@ -50,6 +51,7 @@ public class CharacterSelectScreen : MonoBehaviour
     private Sprite rounded;
     private System.Action onConfirm, onCancel;
     private float timeLimit, openedAt;
+    private bool soloAspecto;
     private int selected = -1, lastUsed = -1;
     private TextMeshProUGUI timerText, hintText;
     private Img confirmBg;
@@ -57,9 +59,10 @@ public class CharacterSelectScreen : MonoBehaviour
     /// <summary>
     /// Abre la selección. eyebrow: texto chico arriba del título (por ejemplo "Modo Zombie · Normal").
     /// timeLimit: segundos para elegir (0 = sin límite). onCancel: null si no se puede volver.
+    /// soloAspecto: el personaje no trae habilidad (Deathmatch): la tarjeta lo dice en lugar de mostrar la habilidad.
     /// </summary>
     public static CharacterSelectScreen Show(TMP_FontAsset display, TMP_FontAsset label, TMP_FontAsset body, Sprite roundedSprite,
-        string eyebrow, float timeLimit, System.Action onConfirm, System.Action onCancel)
+        string eyebrow, float timeLimit, System.Action onConfirm, System.Action onCancel, bool soloAspecto = false)
     {
         if (CharacterRoster.All.Count == 0)
         {
@@ -87,6 +90,7 @@ public class CharacterSelectScreen : MonoBehaviour
         screen.onConfirm = onConfirm;
         screen.onCancel = onCancel;
         screen.timeLimit = timeLimit;
+        screen.soloAspecto = soloAspecto;
         screen.Build((RectTransform)go.transform, eyebrow);
         return screen;
     }
@@ -189,8 +193,8 @@ public class CharacterSelectScreen : MonoBehaviour
         Text(Place(Node("Rol", bodyRect), 22f, y, w - 44f, 22f), labelFont, 16f, data.color, TextAlignmentOptions.MidlineLeft, 14f, true).text = data.role;
         y += 34f;
 
-        // Habilidad
-        AbilityData ability = data.ability;
+        // Habilidad (en Deathmatch no hay: es solo el aspecto)
+        AbilityData ability = soloAspecto ? null : data.ability;
         RectTransform icon = Place(Node("Icono", bodyRect), 22f, y, 48f, 48f);
         Image(icon, rounded, Over(WithAlpha(data.color, 0.25f), Rgb(12, 14, 19)), 6f);
         if (ability != null && ability.icon != null)
@@ -199,9 +203,10 @@ public class CharacterSelectScreen : MonoBehaviour
             pic.preserveAspect = true;
         }
         Text(Place(Node("Habilidad", bodyRect), 84f, y - 2f, w - 106f, 28f), labelFont, 21f, Ink, TextAlignmentOptions.MidlineLeft, 4f, true).text =
-            ability != null ? ability.displayName : "Sin habilidad";
+            soloAspecto ? "Solo aspecto" : ability != null ? ability.displayName : "Sin habilidad";
         Text(Place(Node("Recarga", bodyRect), 84f, y + 26f, w - 106f, 22f), labelFont, 15f, Mute, TextAlignmentOptions.MidlineLeft, 8f, true).text =
-            ability != null ? $"{KeyBindings.Label(GameAction.Habilidad)} · Recarga {Number(ability.cooldown)} s" : "";
+            soloAspecto ? "En Deathmatch no hay habilidades"
+            : ability != null ? $"{KeyBindings.Label(GameAction.Habilidad)} · Recarga {Number(ability.cooldown)} s" : "";
         y += 64f;
 
         // Descripción (del personaje; si no tiene, la de la habilidad)

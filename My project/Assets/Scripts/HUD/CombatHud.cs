@@ -15,6 +15,7 @@ public interface IHudWeapon
 // HUD de combate, diseño Andén (F15): la vida a la izquierda, la habilidad en el medio y la munición a la
 // derecha, abajo al centro y unidas por una vía. Se arma por código con las medidas de la maqueta
 // (pantalla de referencia de 1920 x 1080) y lee todo del jugador: HealthSystem, PlayerAbility y el arma en la mano.
+// En Deathmatch no hay habilidades: en el medio va la racha de bajas, con el mismo reloj de andén.
 public class CombatHud : MonoBehaviour
 {
     [Header("Tipografías")]
@@ -46,6 +47,14 @@ public class CombatHud : MonoBehaviour
     // Mira (US 171): por defecto, cuatro rayitas blancas con borde oscuro y un hueco en el centro (px en 1920 x 1080).
     // El jugador la cambia desde Opciones > Mira (US 172): forma, color y si se abre con la dispersión del arma.
     private RectTransform crosshair;
+    private CanvasGroup ammoGroup;                                   // US 263: el arma del HUD (se esconde bailando)
+    private readonly System.Collections.Generic.List<CanvasGroup> inventoryGroups = new System.Collections.Generic.List<CanvasGroup>();
+
+    /// <summary>
+    /// US 263, CA5: con la cámara en tercera persona (bailando) se esconden la mira y el arma del HUD (la munición y
+    /// los espacios de las armas); la vida y el mapa siguen.
+    /// </summary>
+    public static bool SinArma { get; set; }
     private MiraDibujo crosshairDrawing;
     private float crosshairOpen; // px que está abierta por la dispersión (mira dinámica)
 
@@ -146,6 +155,14 @@ public class CombatHud : MonoBehaviour
     private AbilityData shownSkill;
     private TextMeshProUGUI cooldownText, keyText, nameText;
     private TextMeshProUGUI weaponText, magText, reserveText;
+
+    // Deathmatch: la racha de bajas (bajas seguidas sin morir) en el lugar de la habilidad.
+    private GameObject streak;
+    private UnityEngine.UI.Image streakFill;
+    private readonly UnityEngine.UI.Image[] streakTicks = new UnityEngine.UI.Image[12];
+    private TextMeshProUGUI streakText, streakLabel;
+    private int lastStreak = -1, lastStreakState = int.MinValue;
+    private float streakAt = -10f;
     private RectTransform sleepersRoot;
     private UnityEngine.UI.Image[] sleepers = new UnityEngine.UI.Image[0];
     private float usedAt = -10f;
@@ -153,6 +170,7 @@ public class CombatHud : MonoBehaviour
     // Lo último que se dibujó, para tocar la interfaz solo cuando algo cambia.
     private int lastHp = int.MinValue, lastShield, lastMaxHp, lastMaxShield;
     private int lastSkillState = int.MinValue;
+    private string lastSkillText = "";
     private string lastAmmoState;
 
     private void Awake()
@@ -196,6 +214,7 @@ public class CombatHud : MonoBehaviour
         UpdateHealth();
         UpdateHeal();
         UpdateSkill();
+        UpdateStreak();
         UpdateAmmo();
         UpdateInventory();
         UpdateHitMarker();
@@ -203,7 +222,9 @@ public class CombatHud : MonoBehaviour
         // La mira se ve con cualquier arma menos los francotiradores: sin la mira telescópica se tira a ojo, como el AWP
         // de CS (US 068), y con ella puesta la lente tiene su propia retícula (US 009). Con la pausa abierta se oculta
         // (con la tienda ya se oculta todo el HUD).
-        crosshair.gameObject.SetActive(!PauseMenu.IsPaused && MiraTelescopica.EnMano == null);
+        crosshair.gameObject.SetActive(!PauseMenu.IsPaused && MiraTelescopica.EnMano == null && !HabilidadVistaAerea.Activa && !SinArma);
+        if (ammoGroup != null) ammoGroup.alpha = SinArma ? 0f : 1f;
+        foreach (CanvasGroup g in inventoryGroups) if (g != null) g.alpha = SinArma ? 0f : 1f;
         UpdateCrosshair();
         float center = MiraTelescopica.Puesta ? 0f : 1f;
         foreach (CanvasGroup part in hiddenWhenScoped) part.alpha = center;
@@ -432,32 +453,77 @@ public class CombatHud : MonoBehaviour
 
     private void UpdateSkill()
     {
-        if (ability == null || ability.Ability == null) return;
+        // US 166: en el campo de práctica la habilidad aparece y se va con el paso del tutorial (y el componente puede
+        // agregarse después de que el HUD encontró al jugador).
+        if (ability == null && health != null)
+        {
+            ability = health.GetComponent<PlayerAbility>();
+            if (ability != null) ability.Used += OnAbilityUsed;
+        }
+        bool hasAbility = ability != null && ability.Ability != null;
+        if (skill.activeSelf != hasAbility) skill.SetActive(hasAbility);
+        if (!hasAbility) return;
         // US 016: en el Táctico el personaje (y su habilidad) se elige con la partida ya cargada.
         if (ability.Ability != shownSkill) SetupSkill(ability.Ability);
 
-        float progress = ability.Progress;
+        // US 020, CA10: con el efecto en pie (la Barrera), el aro y el número muestran su vida en vez de la recarga.
+        float active = ability.ProgresoActivo;
+        bool inUse = active >= 0f;
+        float progress = inUse ? Mathf.Clamp01(active) : ability.Progress;
         bool ready = ability.IsReady, used = Time.time - usedAt < 0.4f;
         int lit = Mathf.FloorToInt(progress * 12f + 0.0001f);
         // US 019, CA7: con cargas, los segundos son los que faltan para la próxima aunque quede alguna para usar.
-        int seconds = ability.Recargando ? Mathf.CeilToInt(ability.CooldownLeft) : 0;
+        int seconds = ability.Recargando && !inUse ? Mathf.CeilToInt(ability.CooldownLeft) : 0;
         int left = ability.Cargas;
         ringFill.fillAmount = progress;
+        string text = inUse ? ability.TextoActivo ?? "" : seconds > 0 ? seconds.ToString() : "";
 
-        int state = lit + seconds * 16 + (ready ? 1 << 20 : 0) + (used ? 1 << 21 : 0) + (left << 22);
-        if (state == lastSkillState) return;
+        int state = lit + seconds * 16 + (ready ? 1 << 20 : 0) + (used ? 1 << 21 : 0) + (left << 22) + (inUse ? 1 << 27 : 0);
+        if (state == lastSkillState && text == lastSkillText) return;
         lastSkillState = state;
+        lastSkillText = text;
 
         Color line = used ? Accent : Ink, dim = White(FadeAlpha(0.22f));
         ringFill.color = line;
         for (int i = 0; i < ticks.Length; i++) ticks[i].color = i < lit ? line : dim;
         icon.color = used ? Accent : ready ? Ink : dim;
-        cooldownText.text = seconds > 0 ? seconds.ToString() : "";
+        cooldownText.text = text;
         keyChip.color = ready ? Ink : White(FadeAlpha(0.14f));
         keyText.color = ready ? KeyInk : Ink;
         nameText.color = ready ? Ink : Mute;
         for (int i = 0; i < charges.Length; i++) charges[i].color = i < left ? (used && i == left - 1 ? Accent : Ink) : dim;
         if (charges.Length > 0) cooldownText.color = ready ? Mute : Color.white;
+        if (inUse) { ringFill.color = Accent; cooldownText.color = Color.white; }
+    }
+
+    // ---------- Deathmatch: la racha de bajas en el reloj de andén ----------
+
+    // Sin habilidades, el centro muestra las bajas seguidas sin morir: cada baja prende una marca (el aro se completa a
+    // las 12), el número es la racha y abajo va la mejor de la partida. Al morir vuelve a 0.
+    private void UpdateStreak()
+    {
+        Photon.Realtime.Player yo = Photon.Pun.PhotonNetwork.LocalPlayer;
+        bool show = PartidaDeathmatch.Actual != null && !skill.activeSelf && yo != null;
+        if (streak.activeSelf != show) streak.SetActive(show);
+        if (!show) { lastStreak = -1; return; }
+
+        int now = PartidaDeathmatch.Racha(yo.ActorNumber);
+        int best = Mathf.Max(now, PartidaDeathmatch.MejorRacha(yo.ActorNumber));
+        if (lastStreak >= 0 && now > lastStreak) streakAt = Time.time; // una baja más: se enciende un momento
+        lastStreak = now;
+        bool flash = Time.time - streakAt < 0.4f;
+        int state = now + (best << 10) + (flash ? 1 << 20 : 0);
+        if (state == lastStreakState) return;
+        lastStreakState = state;
+
+        int lit = Mathf.Min(now, streakTicks.Length);
+        Color line = flash ? Accent : Ink, dim = White(FadeAlpha(0.22f));
+        streakFill.fillAmount = lit / (float)streakTicks.Length;
+        streakFill.color = line;
+        for (int i = 0; i < streakTicks.Length; i++) streakTicks[i].color = i < lit ? line : dim;
+        streakText.text = now.ToString();
+        streakText.color = now > 0 ? Color.white : Mute;
+        streakLabel.text = best > 0 ? $"Racha <color=#{ColorUtility.ToHtmlStringRGB(Mute)}>· Mejor {best}</color>" : "Racha";
     }
 
     // Marcas cortas centradas debajo del aro, como los vagones de una formación.
@@ -491,7 +557,8 @@ public class CombatHud : MonoBehaviour
         weaponText.color = reloading ? Accent : Mute;
         magText.text = hasAmmo ? ammo.ToString() : "—";
         magText.color = low ? Bad : Ink;
-        reserveText.text = hasAmmo && reserve >= 0 ? $"/ {reserve}" : "";
+        // US 121 y Deathmatch: la reserva es infinita.
+        reserveText.text = hasAmmo && reserve >= 0 ? (Municion.ReservaInfinita ? "/ ∞" : $"/ {reserve}") : "";
         float reserveW = reserveText.text.Length > 0 ? Width(reserveText, reserveText.text) + 8f : 0f;
         Place(magText.rectTransform, 0f, 88f, BlockW - reserveW, 64f);
 
@@ -618,9 +685,14 @@ public class CombatHud : MonoBehaviour
         BuildHealth(bar);
         GameObject railsLeft = Image(Place(Node("Rieles", bar), RailLeftX, 160f, 120f, 12f), rails, Color.white).gameObject;
         BuildSkill(bar);
+        BuildStreak(bar);
         GameObject railsRight = Image(Place(Node("Rieles", bar), RailRightX, 160f, 120f, 12f), rails, Color.white).gameObject;
         // Con la mira telescópica puesta (US 009) se oculta el centro del andén: la habilidad y sus rieles tapan la lente.
-        hiddenWhenScoped = new[] { railsLeft.AddComponent<CanvasGroup>(), skill.AddComponent<CanvasGroup>(), railsRight.AddComponent<CanvasGroup>() };
+        hiddenWhenScoped = new[]
+        {
+            railsLeft.AddComponent<CanvasGroup>(), skill.AddComponent<CanvasGroup>(), streak.AddComponent<CanvasGroup>(),
+            railsRight.AddComponent<CanvasGroup>(),
+        };
         BuildAmmo(bar);
         BuildInventory(bar);
         BuildCrosshair(root);
@@ -657,25 +729,7 @@ public class CombatHud : MonoBehaviour
         RectTransform block = Place(Node("Habilidad", bar), SkillX, 0f, SkillW, BarH);
         skill = block.gameObject;
 
-        // El aro mide 112 px: 12 marcas alrededor, el recorrido y el relleno de la recarga.
-        RectTransform ringRect = Place(Node("Aro", block), 19f, 11f, 112f, 112f);
-        Vector2 center = new Vector2(56f, 56f);
-        for (int i = 0; i < ticks.Length; i++)
-        {
-            float angle = i * Mathf.PI / 6f;
-            Vector2 direction = new Vector2(Mathf.Sin(angle), -Mathf.Cos(angle));
-            ticks[i] = Segment(ringRect, center + direction * 51.5f, center + direction * 44.8f, 2.7f, White(FadeAlpha(0.22f)));
-        }
-        const float radius = 37f;
-        float disc = 2f * (radius - 1.7f);
-        Image(Place(Node("Fondo", ringRect), 56f - disc / 2f, 56f - disc / 2f, disc, disc), circle, Rgb(8, 10, 14, DarkAlpha(0.35f)));
-        float ringSize = 2f * radius * 64f / 60f;
-        Image(Place(Node("Recorrido", ringRect), 56f - ringSize / 2f, 56f - ringSize / 2f, ringSize, ringSize), ring, White(FadeAlpha(0.14f)));
-        ringFill = Image(Place(Node("Recarga", ringRect), 56f - ringSize / 2f, 56f - ringSize / 2f, ringSize, ringSize), ring, Ink);
-        ringFill.type = UnityEngine.UI.Image.Type.Filled;
-        ringFill.fillMethod = UnityEngine.UI.Image.FillMethod.Radial360;
-        ringFill.fillOrigin = (int)UnityEngine.UI.Image.Origin360.Top;
-        ringFill.fillClockwise = true;
+        RectTransform ringRect = BuildRing(block, ticks, out ringFill);
         icon = Image(Place(Node("Icono", ringRect), 33f, 33f, 46f, 46f), null, Ink);
         icon.preserveAspect = true;
         cooldownText = Text(Stretch(Node("Segundos", ringRect)), displayFont, 34f, Color.white, TextAlignmentOptions.Midline);
@@ -688,8 +742,52 @@ public class CombatHud : MonoBehaviour
         keyText = Text(Stretch(Node("Letra", keyChip.rectTransform)), monoFont, 14f, KeyInk, TextAlignmentOptions.Midline);
         keyText.fontStyle = FontStyles.Bold;
         nameText = Text(Place(Node("Nombre", keyRow), 32f, 0f, 200f, 24f), labelFont, 15f, Ink, TextAlignmentOptions.MidlineLeft, 14f, true);
+        PlatformLine(block);
+    }
 
-        // La línea de seguridad del borde del andén.
+    // Deathmatch: el mismo reloj, con la racha en el medio. Las marcas 5 y 10 son un poco más largas: son los logros
+    // de racha "Sin escalas" y "Tren bala" (US 238).
+    private void BuildStreak(RectTransform bar)
+    {
+        RectTransform block = Place(Node("Racha", bar), SkillX, 0f, SkillW, BarH);
+        streak = block.gameObject;
+        RectTransform ringRect = BuildRing(block, streakTicks, out streakFill, 4, 9);
+        streakText = Text(Stretch(Node("Numero", ringRect)), displayFont, 40f, Color.white, TextAlignmentOptions.Midline);
+        AddShadow(streakText);
+        streakLabel = Text(Place(Node("Nombre", block), 0f, 133f, SkillW, 24f), labelFont, 15f, Ink, TextAlignmentOptions.Midline, 14f, true);
+        PlatformLine(block);
+        streak.SetActive(false);
+    }
+
+    // El reloj de andén mide 112 px: 12 marcas alrededor (las que van en "largas", un poco más largas), el fondo, el
+    // recorrido y el relleno, que arranca arriba y gira como las agujas.
+    private RectTransform BuildRing(RectTransform block, UnityEngine.UI.Image[] marks, out UnityEngine.UI.Image fill, params int[] largas)
+    {
+        RectTransform ringRect = Place(Node("Aro", block), 19f, 11f, 112f, 112f);
+        Vector2 center = new Vector2(56f, 56f);
+        for (int i = 0; i < marks.Length; i++)
+        {
+            float angle = i * Mathf.PI / 6f;
+            Vector2 direction = new Vector2(Mathf.Sin(angle), -Mathf.Cos(angle));
+            float inner = System.Array.IndexOf(largas, i) >= 0 ? 41f : 44.8f;
+            marks[i] = Segment(ringRect, center + direction * 51.5f, center + direction * inner, 2.7f, White(FadeAlpha(0.22f)));
+        }
+        const float radius = 37f;
+        float disc = 2f * (radius - 1.7f);
+        Image(Place(Node("Fondo", ringRect), 56f - disc / 2f, 56f - disc / 2f, disc, disc), circle, Rgb(8, 10, 14, DarkAlpha(0.35f)));
+        float ringSize = 2f * radius * 64f / 60f;
+        Image(Place(Node("Recorrido", ringRect), 56f - ringSize / 2f, 56f - ringSize / 2f, ringSize, ringSize), ring, White(FadeAlpha(0.14f)));
+        fill = Image(Place(Node("Relleno", ringRect), 56f - ringSize / 2f, 56f - ringSize / 2f, ringSize, ringSize), ring, Ink);
+        fill.type = UnityEngine.UI.Image.Type.Filled;
+        fill.fillMethod = UnityEngine.UI.Image.FillMethod.Radial360;
+        fill.fillOrigin = (int)UnityEngine.UI.Image.Origin360.Top;
+        fill.fillClockwise = true;
+        return ringRect;
+    }
+
+    // La línea de seguridad del borde del andén.
+    private void PlatformLine(RectTransform block)
+    {
         if (glow != null) Image(Place(Node("Brillo", block), -20f, 157f, SkillW + 40f, 23f), glow, WithAlpha(Accent, FadeAlpha(0.5f)));
         Image(Place(Node("LineaDelAnden", block), 0f, 167f, SkillW, 3f), null, Accent);
     }
@@ -697,6 +795,7 @@ public class CombatHud : MonoBehaviour
     private void BuildAmmo(RectTransform bar)
     {
         RectTransform block = Place(Node("Municion", bar), AmmoX, 0f, BlockW, BarH);
+        ammoGroup = block.gameObject.AddComponent<CanvasGroup>();
         weaponText = Text(Place(Node("Arma", block), 0f, 71f, BlockW, 14f), labelFont, 13f, Mute, TextAlignmentOptions.MidlineRight, 18f, true);
         magText = Text(Place(Node("Cargador", block), 0f, 88f, BlockW, 64f), displayFont, 72f, Ink, TextAlignmentOptions.MidlineRight);
         AddShadow(magText);
@@ -718,6 +817,7 @@ public class CombatHud : MonoBehaviour
             slot.rect = Place(Node("Espacio" + (i + 1), bar), InvX, y, InvW, InvRowH);
             slot.rect.pivot = new Vector2(1f, 0.5f);
             slot.rect.anchoredPosition = new Vector2(InvX + InvW, -(y + InvRowH / 2f));
+            inventoryGroups.Add(slot.rect.gameObject.AddComponent<CanvasGroup>());
             slot.bg = Image(slot.rect, rounded, Rgb(10, 12, 17, DarkAlpha(0.55f)), 5f);
 
             slot.icon = Image(Place(Node("Icono", slot.rect), 8f, 6f, 52f, 24f), null, Mute);

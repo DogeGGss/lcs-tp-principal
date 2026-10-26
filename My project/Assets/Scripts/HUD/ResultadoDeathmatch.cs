@@ -89,6 +89,14 @@ public class ResultadoDeathmatch : MonoBehaviour
         linea = Image(Place(Node("Linea", root), 870f, 280f, 180f, 4f), null, Ink);
         detalle = Text(Place(Node("Detalle", root), 0f, 298f, 1920f, 48f), displayFont, 34f, Ink, TextAlignmentOptions.Center, 2f);
 
+        // Prueba del menú (Perfil y cápsulas): los créditos se ganan jugando.
+        bool gane = PartidaDeathmatch.Actual != null && Photon.Pun.PhotonNetwork.LocalPlayer != null &&
+                    PartidaDeathmatch.Actual.Ganador == Photon.Pun.PhotonNetwork.LocalPlayer.ActorNumber;
+        int creditos = PerfilDatos.GanarPorPartida(gane);
+        RegistroDePartida.Deathmatch(gane); // F24: estadísticas del jugador
+        Text(Place(Node("Creditos", root), 1420f, 40f, 460f, 34f), labelFont, 24f, Accent, TextAlignmentOptions.MidlineRight, 12f, true).text =
+            $"+{creditos} créditos";
+
         tabla = Place(Node("Tabla", root), (1920f - TablaW) / 2f, TablaY, TablaW, 100f);
 
         boton = Place(Node("VolverAlMenu", root), 830f, TablaY + 136f, 260f, 56f);

@@ -1,0 +1,18 @@
+fileFormatVersion: 2
+guid: 98cd2fa8e52fafa4ebeeaabee328c42b
+ShaderImporter:
+  externalObjects: {}
+  defaultTextures:
+  - _MainTexture: {fileID: 2800000, guid: 7ee4bd8c5c91e724394a8723ddeed8cc, type: 3}
+  - _Cutout: {fileID: 2800000, guid: 7e505bb275e04ac4892e0fe7abe90a2d, type: 3}
+  nonModifiableTextures: []
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 398182
+  packageName: Wind VFX - URP
+  packageVersion: 1.0
+  assetPath: Assets/Vefects/Wind VFX URP/VFX/Shaders/SH_Vefects_URP_Wind_Dust_Specs_01_Unlit.shader
+  uploadId: 972086

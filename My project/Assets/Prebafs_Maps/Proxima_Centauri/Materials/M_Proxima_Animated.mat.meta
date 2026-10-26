@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 45a8502a1da517a449a386455ba079ad
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 2100000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 416838
+  packageName: Proxima Centauri
+  packageVersion: 1.0
+  assetPath: Assets/Proxima_Centauri/Materials/M_Proxima_Animated.mat
+  uploadId: 1019220

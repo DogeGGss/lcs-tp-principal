@@ -30,6 +30,9 @@ public class PartidaDeathmatch : MonoBehaviour
 
     private const string PropFase = "dm.fase", PropFin = "dm.fin", PropGanador = "dm.gan";
     private const string PropBajas = "dm.k", PropMuertes = "dm.d", PropCabezas = "dm.c", PropCuando = "dm.t";
+    // F24 (US 222): asistencias, bajas que tenía al morir por última vez (de ahí sale la racha), mejor racha y la hora
+    // del servidor en que empezó la partida (la identifica y mide cuánto duró).
+    private const string PropAsistencias = "dm.a", PropBajasAlMorir = "dm.bm", PropMejorRacha = "dm.mr", PropInicio = "dm.ini";
 
     public static PartidaDeathmatch Actual { get; private set; }
 
@@ -104,26 +107,54 @@ public class PartidaDeathmatch : MonoBehaviour
     public static int Bajas(int actor) => Leer(PropBajas + actor, 0);
     public static int Muertes(int actor) => Leer(PropMuertes + actor, 0);
     public static int Cabezas(int actor) => Leer(PropCabezas + actor, 0);
+    public static int Asistencias(int actor) => Leer(PropAsistencias + actor, 0);
+    /// <summary>F24: más bajas seguidas sin morir en esta partida.</summary>
+    public static int MejorRacha(int actor) => Leer(PropMejorRacha + actor, 0);
+    /// <summary>Bajas seguidas sin morir que lleva ahora (el centro del HUD en Deathmatch).</summary>
+    public static int Racha(int actor) => Mathf.Max(0, Bajas(actor) - Leer(PropBajasAlMorir + actor, 0));
+    /// <summary>F24: hora del servidor en que empezó la partida; null si el anfitrión no la publicó.</summary>
+    public static int? Inicio => Sala != null && Sala.CustomProperties.TryGetValue(PropInicio, out object v) && v is int n ? n : (int?)null;
 
     /// <summary>Los jugadores por puesto: más bajas; con las mismas, menos muertes; después, el que llegó antes (CA5).</summary>
     public static List<Player> Puestos()
     {
         var lista = new List<Player>(PhotonNetwork.PlayerList);
         int ahora = Ahora;
-        lista.Sort((a, b) =>
-        {
-            int c = Bajas(b.ActorNumber).CompareTo(Bajas(a.ActorNumber));
-            if (c != 0) return c;
-            c = Muertes(a.ActorNumber).CompareTo(Muertes(b.ActorNumber));
-            if (c != 0) return c;
-            // Hace cuánto llegó cada uno a sus bajas: el que lleva más tiempo llegó primero.
-            int haceA = unchecked(ahora - Leer(PropCuando + a.ActorNumber, ahora));
-            int haceB = unchecked(ahora - Leer(PropCuando + b.ActorNumber, ahora));
-            c = haceB.CompareTo(haceA);
-            return c != 0 ? c : a.ActorNumber.CompareTo(b.ActorNumber);
-        });
+        lista.Sort((a, b) => CompararPuestos(Marca(a.ActorNumber, ahora), Marca(b.ActorNumber, ahora)));
         return lista;
     }
+
+    /// <summary>Lo que decide el puesto de un jugador. hace: ms desde que llegó a sus bajas actuales.</summary>
+    public struct Puesto
+    {
+        public int actor, bajas, muertes, hace;
+    }
+
+    private static Puesto Marca(int actor, int ahora) => new Puesto
+    {
+        actor = actor, bajas = Bajas(actor), muertes = Muertes(actor),
+        hace = unchecked(ahora - Leer(PropCuando + actor, ahora)),
+    };
+
+    /// <summary>
+    /// Negativo si a va antes que b (US 140, CA2): más bajas; con las mismas, menos muertes; después, el que llegó antes a
+    /// esas bajas (el que lleva más tiempo con ellas) y, si todo es igual, el que entró primero a la sala.
+    /// </summary>
+    public static int CompararPuestos(Puesto a, Puesto b)
+    {
+        int c = b.bajas.CompareTo(a.bajas);
+        if (c != 0) return c;
+        c = a.muertes.CompareTo(b.muertes);
+        if (c != 0) return c;
+        c = b.hace.CompareTo(a.hace);
+        return c != 0 ? c : a.actor.CompareTo(b.actor);
+    }
+
+    /// <summary>US 140, CA1: la baja la suma otro jugador; caerse del mapa (atacante 0) o matarse solo no suma.</summary>
+    public static bool SumaBaja(int atacante, int muerto) => atacante > 0 && atacante != muerto;
+
+    /// <summary>US 140, CA2: llegar a 25 bajas gana y termina la partida en ese momento.</summary>
+    public static bool GanaPorBajas(int bajas) => bajas >= BajasParaGanar;
 
     // =====================================================================
     // Ciclo de vida
@@ -135,6 +166,7 @@ public class PartidaDeathmatch : MonoBehaviour
         Actual = this;
         anotado.Clear();
         ArrancarMusica();
+        gameObject.AddComponent<PersonajesDeathmatch>().Iniciar(); // el aspecto de cada uno (sin habilidades)
         if (PruebaSolo.Activa)
             Debug.Log("Prueba solo (Deathmatch): F9 suma una baja tuya (y te cura) · F7 te saca 60 de vida · F8 te deja en 19 bajas · F11 deja el reloj en 1:05 · F10 lo deja en 0:03.");
     }
@@ -198,7 +230,7 @@ public class PartidaDeathmatch : MonoBehaviour
             // Espera a que todos terminen de cargar el mapa (pantalla de carga, US 196).
             if (PantallaDeCarga.EsperandoJugadores || Time.unscaledTime < proximoArranque) return;
             proximoArranque = Time.unscaledTime + 2f; // la propiedad tarda un instante en volver del servidor
-            Sala.SetCustomProperties(new Hashtable { { PropFase, (int)Fase.Cuenta }, { PropFin, Ahora + Ms(DuracionCuenta) }, { PropGanador, 0 } });
+            Sala.SetCustomProperties(new Hashtable { { PropFase, (int)Fase.Cuenta }, { PropFin, Ahora + Ms(DuracionCuenta) }, { PropGanador, 0 }, { PropInicio, Ahora } });
             return;
         }
 
@@ -286,23 +318,35 @@ public class PartidaDeathmatch : MonoBehaviour
 
     /// <summary>
     /// Lo llama JugadorEnRed en cada muerte, en todas las computadoras; solo el anfitrión anota, así hay una sola
-    /// cuenta. atacante 0 (o el mismo que murió): nadie suma la baja (CA2).
+    /// cuenta. atacante 0 (o el mismo que murió): nadie suma la baja (CA2). asistentes: los que lo habían dañado en los
+    /// últimos 10 s (F24).
     /// </summary>
-    public static void ContarBaja(int atacante, int muerto, bool cabeza)
+    public static void ContarBaja(int atacante, int muerto, bool cabeza, int[] asistentes)
     {
         PartidaDeathmatch p = Actual;
         if (p == null || !PhotonNetwork.IsMasterClient || Sala == null || !p.Lista || p.FaseActual != Fase.Combate) return;
 
         var cambios = new Hashtable();
-        if (muerto > 0) cambios[PropMuertes + muerto] = Sumar(PropMuertes + muerto);
-        if (atacante > 0 && atacante != muerto)
+        if (muerto > 0)
+        {
+            cambios[PropMuertes + muerto] = Sumar(PropMuertes + muerto);
+            // F24: la racha del que murió vuelve a empezar desde las bajas que tiene ahora.
+            cambios[PropBajasAlMorir + muerto] = Anotar(PropBajasAlMorir + muerto, Valor(PropBajas + muerto));
+        }
+        if (SumaBaja(atacante, muerto))
         {
             int bajas = Sumar(PropBajas + atacante);
             cambios[PropBajas + atacante] = bajas;
             cambios[PropCuando + atacante] = Ahora;
             if (cabeza) cambios[PropCabezas + atacante] = Sumar(PropCabezas + atacante);
+            // F24 (US 222): la mejor racha del que mató y las asistencias de los que lo habían dañado.
+            int racha = bajas - Valor(PropBajasAlMorir + atacante);
+            if (racha > Valor(PropMejorRacha + atacante)) cambios[PropMejorRacha + atacante] = Anotar(PropMejorRacha + atacante, racha);
+            if (asistentes != null)
+                foreach (int a in asistentes)
+                    if (a > 0 && a != atacante && a != muerto) cambios[PropAsistencias + a] = Sumar(PropAsistencias + a);
             // CA3: llegó a 25, gana y se termina en este momento.
-            if (bajas >= BajasParaGanar)
+            if (GanaPorBajas(bajas))
             {
                 cambios[PropFase] = (int)Fase.Terminada;
                 cambios[PropGanador] = atacante;
@@ -317,6 +361,15 @@ public class PartidaDeathmatch : MonoBehaviour
     private static int Sumar(string clave)
     {
         int valor = Mathf.Max(Leer(clave, 0), anotado.TryGetValue(clave, out int n) ? n : 0) + 1;
+        anotado[clave] = valor;
+        return valor;
+    }
+
+    // Lo último que se sabe de un valor (lo publicado o lo que el anfitrión acaba de anotar), y anotar uno nuevo.
+    private static int Valor(string clave) => Mathf.Max(Leer(clave, 0), anotado.TryGetValue(clave, out int n) ? n : 0);
+
+    private static int Anotar(string clave, int valor)
+    {
         anotado[clave] = valor;
         return valor;
     }
@@ -359,7 +412,7 @@ public class PartidaDeathmatch : MonoBehaviour
         JugadorEnRed local = partida != null ? partida.Local : null;
         if (Input.GetKeyDown(KeyCode.F9))
         {
-            ContarBaja(yo, 0, false);
+            ContarBaja(yo, 0, false, null);
             if (local != null) local.SumarVidaPorBaja(); // US 139
         }
         else if (Input.GetKeyDown(KeyCode.F7))

@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 251b9ce9b2a0fee47ad881737436bd33
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 224336
+  packageName: SPARROW Fighter Spacecraft
+  packageVersion: 1.0
+  assetPath: Assets/Sparrow_Fighter/Meshes/Materials/Sparrow_grey.mat
+  uploadId: 505250

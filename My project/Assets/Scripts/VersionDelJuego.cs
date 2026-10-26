@@ -1,7 +1,6 @@
 using System;
 using System.Collections;
 using Riftwalker.Releases;
-using TMPro;
 using UnityEngine;
 using UnityEngine.Networking;
 
@@ -23,16 +22,12 @@ public static class VersionDelJuego
     [Serializable] private class Release { public string tag_name; public bool draft, prerelease; public Asset[] assets; }
     [Serializable] private class Asset { public string name; }
 
-    // Sprint 2 delivery: the launcher (F22) is Sprint 3 and the PO gets the game without it, so there is nothing to
-    // update from. Without the check the game never asks for a newer version. Set it back to true to turn it on.
-    private static readonly bool BuscarActualizaciones = false;
-
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
     private static void Reiniciar() { buscando = false; comprobadaEn = -1000; versionNueva = null; }
 
     public static IEnumerator Comprobar(Action<string> terminado)
     {
-        if (!BuscarActualizaciones || Application.isEditor || Debug.isDebugBuild) { terminado(null); yield break; }
+        if (Application.isEditor || Debug.isDebugBuild) { terminado(null); yield break; }
         while (buscando) yield return null;
         if (Time.realtimeSinceStartup - comprobadaEn < 60) { terminado(Aviso()); yield break; }
         ReleaseVersion local;
@@ -105,20 +100,4 @@ public static class VersionDelJuego
     }
     private static string Aviso() => versionNueva == null ? null :
         "Hay una versión nueva (" + versionNueva + "). Actualizá el juego desde el launcher para jugar online.";
-
-    public static void MostrarEnMenu(Transform panel)
-    {
-        if (panel == null || panel.Find("Version del juego") != null) return;
-        var existing = panel.GetComponentInChildren<TMP_Text>(true);
-        var go = new GameObject("Version del juego", typeof(RectTransform), typeof(TextMeshProUGUI));
-        go.transform.SetParent(panel, false);
-        var rect = (RectTransform)go.transform;
-        rect.anchorMin = rect.anchorMax = rect.pivot = new Vector2(1, 0);
-        rect.anchoredPosition = new Vector2(-28, 18); rect.sizeDelta = new Vector2(300, 32);
-        var text = go.GetComponent<TextMeshProUGUI>();
-        if (existing != null) text.font = existing.font;
-        text.text = "v" + Application.version; text.fontSize = 20;
-        text.alignment = TextAlignmentOptions.BottomRight;
-        text.color = new Color32(142, 150, 163, 255); text.raycastTarget = false;
-    }
 }

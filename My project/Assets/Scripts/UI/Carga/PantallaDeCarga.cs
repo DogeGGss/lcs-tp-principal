@@ -51,6 +51,11 @@ public class PantallaDeCarga : MonoBehaviour
     /// <summary>CA4: todavía se está esperando a que carguen los demás (el anfitrión no arranca la partida).</summary>
     public static bool EsperandoJugadores => Visible && actual.online;
 
+    /// <summary>Las tipografías del juego (para otras pantallas armadas por código, como la rueda de emotes).</summary>
+    public static TMP_FontAsset FuenteTitulo => displayFont;
+    public static TMP_FontAsset FuenteEtiqueta => labelFont;
+    public static Sprite Redondeado => rounded;
+
     /// <summary>Las tipografías del juego: las pasa el menú (o la pausa) al arrancar.</summary>
     public static void Registrar(TMP_FontAsset display, TMP_FontAsset label, TMP_FontAsset body, Sprite sprite)
     {
@@ -112,7 +117,9 @@ public class PantallaDeCarga : MonoBehaviour
 
         modoTexto.text = modo;
         mapaTexto.text = mapa;
-        detalleTexto.text = detalle;
+        // Debajo del nombre, qué es el lugar (ConfigRed, "subtitulo") y después el detalle (la sala).
+        string subtitulo = Subtitulo(escenaNueva);
+        detalleTexto.text = string.IsNullOrEmpty(subtitulo) ? detalle : string.IsNullOrEmpty(detalle) ? subtitulo : subtitulo + "  ·  " + detalle;
         imagenMapa.sprite = imagen;
         imagenMapa.enabled = imagen != null;
         if (imagen != null) ajusteMapa.aspectRatio = imagen.rect.width / imagen.rect.height;
@@ -122,6 +129,14 @@ public class PantallaDeCarga : MonoBehaviour
         pieTexto.text = "";
         PonerAvance(0f);
         raiz.SetActive(true);
+    }
+
+    private static string Subtitulo(string escena)
+    {
+        ConfigRed red = ConfigRed.Actual;
+        if (red == null) return "";
+        foreach (ConfigRed.Mapa m in red.mapas) if (m != null && m.escena == escena) return m.subtitulo;
+        return "";
     }
 
     private void Ocultar()

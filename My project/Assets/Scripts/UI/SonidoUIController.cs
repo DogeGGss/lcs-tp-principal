@@ -22,7 +22,7 @@ public class SonidoUIController : MonoBehaviour, OpcionesPantalla.ISeccion
     [Tooltip("Suena por el grupo Musica unos segundos, si no hay otra música sonando.")]
     [SerializeField] private AudioClip muestraMusica;
 
-    // Parámetros del Audio Mixer y claves de PlayerPrefs (se llaman igual)
+    // Parámetros del Audio Mixer y claves del guardado (se llaman igual)
     private const string CLAVE_GENERAL = "VolumenGeneral";
     private const string CLAVE_MUSICA = "VolumenMusica";
     private const string CLAVE_EFECTOS = "VolumenEfectos";
@@ -157,10 +157,10 @@ public class SonidoUIController : MonoBehaviour, OpcionesPantalla.ISeccion
 
     private void MostrarGuardado()
     {
-        Mostrar(sliderGeneral, textoGeneral, Guardado(CLAVE_GENERAL));
-        Mostrar(sliderMusica, textoMusica, Guardado(CLAVE_MUSICA));
-        Mostrar(sliderEfectos, textoEfectos, Guardado(CLAVE_EFECTOS));
-        Mostrar(sliderInterfaz, textoInterfaz, Guardado(CLAVE_INTERFAZ));
+        Mostrar(sliderGeneral, textoGeneral, VolumenGuardado(CLAVE_GENERAL));
+        Mostrar(sliderMusica, textoMusica, VolumenGuardado(CLAVE_MUSICA));
+        Mostrar(sliderEfectos, textoEfectos, VolumenGuardado(CLAVE_EFECTOS));
+        Mostrar(sliderInterfaz, textoInterfaz, VolumenGuardado(CLAVE_INTERFAZ));
     }
 
     private static void Mostrar(Slider slider, TextMeshProUGUI texto, float valor)
@@ -169,7 +169,7 @@ public class SonidoUIController : MonoBehaviour, OpcionesPantalla.ISeccion
         texto.text = Porcentaje(valor);
     }
 
-    private static float Guardado(string clave) => PlayerPrefs.GetFloat(clave, VOLUMEN_POR_DEFECTO);
+    private static float VolumenGuardado(string clave) => Guardado.GetFloat(clave, VOLUMEN_POR_DEFECTO);
 
     // =========================================================
     // CA3: APLICAR / DESCARTAR
@@ -179,7 +179,7 @@ public class SonidoUIController : MonoBehaviour, OpcionesPantalla.ISeccion
         listo && (Distinto(sliderGeneral, CLAVE_GENERAL) || Distinto(sliderMusica, CLAVE_MUSICA) ||
                   Distinto(sliderEfectos, CLAVE_EFECTOS) || Distinto(sliderInterfaz, CLAVE_INTERFAZ));
 
-    private static bool Distinto(Slider slider, string clave) => Mathf.Abs(slider.value - Guardado(clave)) > 0.001f;
+    private static bool Distinto(Slider slider, string clave) => Mathf.Abs(slider.value - VolumenGuardado(clave)) > 0.001f;
 
     // Botón "Aplicar" de la pestaña.
     public void AplicarSonido()
@@ -191,11 +191,11 @@ public class SonidoUIController : MonoBehaviour, OpcionesPantalla.ISeccion
     public void Aplicar()
     {
         if (!listo) return;
-        PlayerPrefs.SetFloat(CLAVE_GENERAL, sliderGeneral.value);
-        PlayerPrefs.SetFloat(CLAVE_MUSICA, sliderMusica.value);
-        PlayerPrefs.SetFloat(CLAVE_EFECTOS, sliderEfectos.value);
-        PlayerPrefs.SetFloat(CLAVE_INTERFAZ, sliderInterfaz.value);
-        PlayerPrefs.Save();
+        Guardado.SetFloat(CLAVE_GENERAL, sliderGeneral.value);
+        Guardado.SetFloat(CLAVE_MUSICA, sliderMusica.value);
+        Guardado.SetFloat(CLAVE_EFECTOS, sliderEfectos.value);
+        Guardado.SetFloat(CLAVE_INTERFAZ, sliderInterfaz.value);
+        Guardado.Save();
         AplicarGuardado(audioMixer);
     }
 
@@ -233,10 +233,10 @@ public class SonidoUIController : MonoBehaviour, OpcionesPantalla.ISeccion
     /// <summary>Pasa al mixer los volúmenes guardados. Lo llama el menú principal al arrancar.</summary>
     public static void AplicarGuardado(AudioMixer mixer)
     {
-        AplicarAlMixer(mixer, CLAVE_GENERAL, Guardado(CLAVE_GENERAL));
-        AplicarAlMixer(mixer, CLAVE_MUSICA, Guardado(CLAVE_MUSICA));
-        AplicarAlMixer(mixer, CLAVE_EFECTOS, Guardado(CLAVE_EFECTOS));
-        AplicarAlMixer(mixer, CLAVE_INTERFAZ, Guardado(CLAVE_INTERFAZ));
+        AplicarAlMixer(mixer, CLAVE_GENERAL, VolumenGuardado(CLAVE_GENERAL));
+        AplicarAlMixer(mixer, CLAVE_MUSICA, VolumenGuardado(CLAVE_MUSICA));
+        AplicarAlMixer(mixer, CLAVE_EFECTOS, VolumenGuardado(CLAVE_EFECTOS));
+        AplicarAlMixer(mixer, CLAVE_INTERFAZ, VolumenGuardado(CLAVE_INTERFAZ));
     }
 
     public void AplicarGuardado() => AplicarGuardado(audioMixer);

@@ -19,16 +19,16 @@ MonoBehaviour:
   price: 900
   icon: {fileID: 21300000, guid: d610cd8312cf46a47a2095143c71ae48, type: 3}
   tint: {r: 1, g: 1, b: 1, a: 1}
-  description: A menos de 8 m mata de un tiro si el rival no tiene escudo o tiene el liviano.
+  description: A menos de 10 m mata de un tiro si el rival no tiene escudo o tiene el liviano.
   fireMode: Bombeo (12 perdigones)
   automatic: 0
-  fireRate: 1
+  fireRate: 1.2
   burstCount: 1
   burstRate: 0
   equipTime: 1
   magazine: 7
   reserve: 21
-  reloadTime: 0.5
+  reloadTime: 0.4
   reloadPerShell: 1
   mobility: 0.95
   realLength: 1
@@ -36,23 +36,23 @@ MonoBehaviour:
   zoom2: 0
   pellets: 12
   penetration: Baja
-  spread: {x: 4.5, y: 4.5}
+  spread: {x: 3.5, y: 3.5}
   spamSpread: 0
   spamSpreadMax: 0
-  recoil: "Un golpe por disparo; el cono de 4,5\xB0 no cambia al moverse."
+  recoil: "Un golpe por disparo; el cono de 3,5\xB0 no cambia al moverse."
   bands:
-  - upTo: 8
-    head: 24
-    body: 12
-    legs: 10
-  - upTo: 15
-    head: 14
-    body: 7
-    legs: 6
+  - upTo: 10
+    head: 30
+    body: 15
+    legs: 12
+  - upTo: 20
+    head: 20
+    body: 10
+    legs: 8
   - upTo: 0
-    head: 8
-    body: 4
-    legs: 3
+    head: 10
+    body: 5
+    legs: 4
   recoilExactShots: 0
   recoilKick: 0
   recoilMaxClimb: 0

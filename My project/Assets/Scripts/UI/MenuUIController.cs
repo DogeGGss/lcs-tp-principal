@@ -22,6 +22,8 @@ public class MenuUIController : MonoBehaviour
     [SerializeField] private string escenaPruebas = "MapaPruebasV1";
     [Tooltip("Escena que abre el botón PRUEBAS 2 (tiene que estar en Build Settings).")]
     [SerializeField] private string escenaPruebas2 = "Example_01 1";
+    [Tooltip("Escena del campo de práctica (US 118), la que abre el menú principal (US 122).")]
+    [SerializeField] private string escenaPractica = "Mapa_practica";
 
     [Header("Transición")]
     [SerializeField] private CanvasGroup overlayTransicion;
@@ -34,9 +36,9 @@ public class MenuUIController : MonoBehaviour
     {
         OcultarTodosLosPaneles();
 
+        // El menú principal lo dibuja MenuRiftwalker (con la versión y "Volver a la partida"); este panel queda vacío y
+        // marca que se está en el menú.
         panelMenuPrincipal.SetActive(true);
-        VersionDelJuego.MostrarEnMenu(panelMenuPrincipal.transform);
-        VolverALaPartida.MostrarEnMenu(panelMenuPrincipal.transform); // US 195, CA2
 
         overlayTransicion.alpha = 0f;
         overlayTransicion.blocksRaycasts = false;
@@ -60,6 +62,14 @@ public void IrAlEscenario2()
 {
     SceneManager.LoadScene(escenaPruebas2);
 }
+
+    // US 122, CA1 y CA2: el botón "Campo de práctica" del menú lleva directo al mapa de práctica, con la pantalla de
+    // carga (US 196) como las partidas. Se vuelve con la pausa (CA3).
+    public void IrAlCampoDePractica()
+    {
+        // La captura del mapa está en Resources/Carga (así no hay que asignarla en la escena del menú).
+        PantallaDeCarga.Cargar(escenaPractica, "Campo de práctica", "Mapa de práctica", Resources.Load<Sprite>("Carga/MapaPractica"));
+    }
 
     public void MostrarMenuPrincipal()
     {

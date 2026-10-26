@@ -8,7 +8,7 @@ using UnityEngine;
 // compra de 20 s (encerrados en la base), combate de 1:40 y un cartel de 5 s con el ganador.
 // - CA1: la ronda 1 arranca con los equipos formados (US 031), cada uno en su base con $ 800 y la pistola.
 // - CA2: en la compra cada uno queda dentro de la zona de compra de su lado y no le puede hacer daño a nadie: solo
-//   le dispara a los pájaros del minijuego (F21), sin gastar balas, y no puede tirar granadas.
+//   le dispara a los cometas del minijuego (F21), sin gastar balas, y no puede tirar granadas.
 // - CA3: al terminar la compra se abre la base y corre el reloj del combate (lo muestra MarcadorTactico).
 // - CA4: al terminar la ronda, cartel con el ganador 5 s; después todos vuelven a su base (los muertos reviven).
 // - CA5: desde la ronda 7 los lados se intercambian, con cartel; la plata vuelve a $ 800 y las armas a la pistola.
@@ -60,12 +60,15 @@ public class RondasTacticas : MonoBehaviour
         PropMotivo = "rt.mot", PropRondas0 = "rt.e0", PropRondas1 = "rt.e1", PropSubita = "rt.sub",
         PropDispositivo = "rt.disp", PropLugar = "rt.lugar", PropDesactivado = "rt.desact",
         PropPlantador = "rt.plantador", PropDesactivador = "rt.desactivador",
-        PropRacha0 = "rt.racha0", PropRacha1 = "rt.racha1"; // derrotas seguidas de cada equipo (US 135, CA4)
+        PropRacha0 = "rt.racha0", PropRacha1 = "rt.racha1", // derrotas seguidas de cada equipo (US 135, CA4)
+        PropInicio = "rt.ini"; // F24: hora del servidor en que empezó la partida (la identifica y mide cuánto duró)
 
     /// <summary>US 034: estadísticas que cada jugador publica de sí mismo (plantadas y desactivaciones).</summary>
     public const string PropPlantadas = "st.pl", PropDesactivaciones = "st.des";
     /// <summary>US 195, CA3: bajas y muertes, también publicadas por cada jugador.</summary>
     public const string PropBajas = "st.k", PropMuertes = "st.m";
+    /// <summary>F24 (US 222): asistencias y bajas a la cabeza, también publicadas por cada jugador.</summary>
+    public const string PropAsistencias = "st.as", PropCabezas = "st.c";
 
     /// <summary>Bajas de ese jugador en esta partida (para la tabla y el resultado).</summary>
     public static int BajasDe(Player p) => Estadistica(p, PropBajas);
@@ -73,6 +76,16 @@ public class RondasTacticas : MonoBehaviour
     public static int MuertesDe(Player p) => Estadistica(p, PropMuertes);
     public static int Estadistica(Player p, string clave) =>
         p != null && p.CustomProperties.TryGetValue(clave, out object v) && v is int n ? n : 0;
+
+    /// <summary>
+    /// F24: una estadística del jugador local, contando lo que anotó y todavía no volvió del servidor (al terminar la
+    /// partida, la última baja puede estar en camino).
+    /// </summary>
+    public static int Propia(string clave) =>
+        Mathf.Max(Estadistica(PhotonNetwork.LocalPlayer, clave), anotado.TryGetValue(clave, out int n) ? n : 0);
+
+    /// <summary>F24: hora del servidor en que empezó la partida; null si el anfitrión no la publicó.</summary>
+    public static int? Inicio => Sala != null && Sala.CustomProperties.TryGetValue(PropInicio, out object v) && v is int n ? n : (int?)null;
 
     /// <summary>
     /// US 195: la ronda en juego ya está en combate (o terminando), según lo que publicó el anfitrión. Se puede leer
@@ -136,7 +149,7 @@ public class RondasTacticas : MonoBehaviour
     private int dispositivoVisto;
     private Vector3? ultimoDentro;
     private readonly List<Behaviour> armasBloqueadas = new List<Behaviour>();
-    private MinijuegoPajaros minijuego;
+    private MinijuegoCometas minijuego;
 
     // =====================================================================
     // Inicio
@@ -155,7 +168,7 @@ public class RondasTacticas : MonoBehaviour
         gameObject.AddComponent<PersonajesTacticos>().Iniciar(partida); // US 016
         gameObject.AddComponent<Espectador>().Iniciar(partida);         // US 133
         gameObject.AddComponent<DispositivoTactico>().Iniciar(partida, this); // US 130 a US 132
-        minijuego = gameObject.AddComponent<MinijuegoPajaros>();             // F21: pájaros en la compra
+        minijuego = gameObject.AddComponent<MinijuegoCometas>();             // F21: cometas en la compra
         minijuego.Iniciar(partida);
         // US 032, CA8: el Táctico no tiene música; el sonido de fondo lo pone el mapa (AmbienteDelMapa, US 083 CA1).
         if (PruebaSolo.Activa)
@@ -185,7 +198,7 @@ public class RondasTacticas : MonoBehaviour
         Publicar(new Hashtable
         {
             // US 016: antes de la ronda 1, 20 s para elegir personaje.
-            { PropRonda, 1 }, { PropFase, (int)Fase.Seleccion }, { PropFin, Ahora + Ms(DuracionSeleccion) },
+            { PropRonda, 1 }, { PropFase, (int)Fase.Seleccion }, { PropFin, Ahora + Ms(DuracionSeleccion) }, { PropInicio, Ahora },
             { PropRondas0, 0 }, { PropRondas1, 0 }, { PropGanador, -1 }, { PropDispositivo, 0 }, { PropDesactivado, 0 }
         });
     }
@@ -435,7 +448,7 @@ public class RondasTacticas : MonoBehaviour
             if (partida != null && partida.Local != null) partida.Local.VolverAlInicio(partida.PuntoDeBase());
         }
 
-        // F21 (US 156, CA1): los pájaros del minijuego aparecen solo durante la compra.
+        // F21 (US 156, CA1): los cometas del minijuego aparecen solo durante la compra.
         if (minijuego != null) minijuego.Cambiar(fase == Fase.Compra);
 
         switch (fase)
@@ -517,6 +530,8 @@ public class RondasTacticas : MonoBehaviour
     private void EmpezarRonda(int ronda)
     {
         HumoGranada.DisiparTodas(); // US 074: el humo de la ronda anterior no pasa a la nueva
+        Barrera.QuitarTodas();      // US 020: ni las barreras
+        Perro.QuitarTodos();        // US 022: ni los perros del Callejero
         JugadorEnRed local = partida != null ? partida.Local : null;
         if (local == null) return;
         local.EmpezarRonda(partida.PuntoDeBase());
@@ -565,15 +580,19 @@ public class RondasTacticas : MonoBehaviour
     /// CA2: lo llama JugadorEnRed en cada baja (en todas las computadoras). Cobra solo el que mató, si el muerto
     /// es un rival y la ronda está en combate.
     /// </summary>
-    public static void ContarBaja(int atacante, int muerto)
+    public static void ContarBaja(int atacante, int muerto, bool cabeza, int[] asistentes)
     {
         RondasTacticas r = Actual;
         if (r == null || PhotonNetwork.LocalPlayer == null) return;
         int yo = PhotonNetwork.LocalPlayer.ActorNumber;
         // US 195, CA3: cada uno anota en la sala sus propias muertes y bajas (las mismas que cuenta el aviso de bajas).
         if (muerto == yo) Sumar(PropMuertes);
+        // F24 (US 222): y sus asistencias, si lo había dañado hace poco y lo eliminó otro.
+        if (atacante > 0 && atacante != muerto && atacante != yo && asistentes != null && System.Array.IndexOf(asistentes, yo) >= 0)
+            Sumar(PropAsistencias);
         if (atacante != yo || atacante == muerto) return;
         Sumar(PropBajas);
+        if (cabeza) Sumar(PropCabezas);
         if (r.FaseActual != Fase.Combate || EquiposTacticos.SonAliados(atacante, muerto)) return;
         r.Cobrar(PremioBaja);
     }
@@ -677,8 +696,8 @@ public class RondasTacticas : MonoBehaviour
         MatchHud.Warn("No podés salir de la base durante la compra");
     }
 
-    // No se dispara, no se acuchilla ni se tiran granadas durante la compra (los pájaros del minijuego son de la US 157).
-    // soloGranadas: en la compra solo se traban las granadas. Con las demás armas se le dispara a los pájaros del
+    // No se dispara, no se acuchilla ni se tiran granadas durante la compra (los cometas del minijuego son de la US 157).
+    // soloGranadas: en la compra solo se traban las granadas. Con las demás armas se le dispara a los cometas del
     // minijuego (F21, US 157), que no gastan balas ni hacen daño.
     private void BloquearArmas(bool bloquear, bool soloGranadas = false)
     {

@@ -1,0 +1,79 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &1100000000000000001
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1100000000000000002}
+  - component: {fileID: 1100000000000000003}
+  - component: {fileID: 1100000000000000004}
+  m_Layer: 0
+  m_Name: Viento_Mapa1
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1100000000000000002
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1100000000000000001}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1100000000000000003
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1100000000000000001}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0d9dcfe726f64dfa8f730d86175129ca, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::AmbienteDelMapa
+  efectos: {fileID: -490443676671801125, guid: ddda7e32a2420c4489fcc2a1c31e1976, type: 2}
+  fondo: {fileID: 8300000, guid: 1c27f3017b620224588fc52e67eaecbf, type: 3}
+  volumenFondo: 0.05
+  consola: {fileID: 0}
+  maquina: {fileID: 8300000, guid: 284c97ab4ab954a0d9c8de221d392040, type: 3}
+  volumenEquipos: 0.6
+  distanciaMinima: 1.5
+  distanciaMaxima: 10
+  consolas:
+  - Wall_Console
+  - Intercom
+  maquinas:
+  - Wall_Gear
+  - Wall_Pipes
+  - Pipes_
+--- !u!114 &1100000000000000004
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1100000000000000001}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a6026d8133784fc0b0b884c3c6749818, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::VientoDelMapa
+  particulas:
+  - {fileID: 5627696518775099638, guid: 2b9690e13d0c86840b695d2cc5420291, type: 3}
+  - {fileID: 4683849804331954680, guid: 18ad69c0c434a7b4babaaf57f515e746, type: 3}
+  corrida: {x: 0, y: 1, z: 0}
+  direccion: 60

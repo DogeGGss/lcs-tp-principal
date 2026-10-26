@@ -150,7 +150,7 @@ public class Mitre : MonoBehaviour, IHudWeapon
             return;
         }
 
-        if (!MinijuegoPajaros.Activo) currentAmmo--; // US 157, CA2: en la compra los disparos no gastan balas
+        if (!MinijuegoCometas.Activo) currentAmmo--; // US 157, CA2: en la compra los disparos no gastan balas
 
         if (shootSound != null)
         {
@@ -184,7 +184,7 @@ public class Mitre : MonoBehaviour, IHudWeapon
         int ammoToLoad = Mathf.Min(neededAmmo, reserveAmmo);
 
         currentAmmo += ammoToLoad;
-        reserveAmmo -= ammoToLoad;
+        if (!Municion.ReservaInfinita) reserveAmmo -= ammoToLoad; // US 121, CA1 y Deathmatch: la reserva no se gasta
 
         isReloading = false;
         Debug.Log($"Mitre recargado: {currentAmmo}/{maxAmmo} | Reserva restante: {reserveAmmo}");

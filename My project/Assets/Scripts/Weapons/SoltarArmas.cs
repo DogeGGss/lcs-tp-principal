@@ -40,7 +40,8 @@ public class SoltarArmas : MonoBehaviour
     public static event System.Action<Suelta> Soltada;
     public static event System.Action<int> Pedida;
 
-    public static bool Activo => MatchSettings.Mode == GameMode.Tactico;
+    // En el campo de práctica (US 119) las armas se cambian con la tienda: no se sueltan.
+    public static bool Activo => MatchSettings.Mode == GameMode.Tactico && !CampoDePractica.Activo;
 
     private PlayerLoadout loadout;
     private WeaponSwitcher switcher;
@@ -262,7 +263,7 @@ public class SoltarArmas : MonoBehaviour
             Mitre mitreLleno = arma.GetComponent<Mitre>();
             if (mitreLleno != null) mitreLleno.Refill();
             Pistola pistolaLlena = arma.GetComponent<Pistola>();
-            if (pistolaLlena != null) pistolaLlena.currentAmmo = pistolaLlena.maxAmmo;
+            if (pistolaLlena != null) pistolaLlena.Refill();
             return;
         }
         ArmaDeFuego fuego = arma.GetComponent<ArmaDeFuego>();

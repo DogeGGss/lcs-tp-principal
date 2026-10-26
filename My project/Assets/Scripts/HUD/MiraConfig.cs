@@ -1,6 +1,6 @@
 using UnityEngine;
 
-// Configuración de la mira del HUD (US 172). Se guarda en PlayerPrefs, como la sensibilidad y el campo de visión,
+// Configuración de la mira del HUD (US 172). Se guarda con las opciones (Guardado, US 162), como la sensibilidad y el campo de visión,
 // y la leen la mira del HUD (CombatHud) y la pestaña "Mira" de las opciones (MiraUIController).
 public static class MiraConfig
 {
@@ -61,35 +61,35 @@ public static class MiraConfig
         Mira d = Defecto;
         return new Mira
         {
-            tipo = Mathf.Clamp(PlayerPrefs.GetInt("Mira_Tipo", d.tipo), 0, NombresTipo.Length - 1),
-            largo = Mathf.Clamp(PlayerPrefs.GetFloat("Mira_Largo", d.largo), LargoMin, LargoMax),
-            grosor = Mathf.Clamp(PlayerPrefs.GetFloat("Mira_Grosor", d.grosor), GrosorMin, GrosorMax),
-            hueco = Mathf.Clamp(PlayerPrefs.GetFloat("Mira_Hueco", d.hueco), HuecoMin, HuecoMax),
-            punto = PlayerPrefs.GetInt("Mira_Punto", d.punto ? 1 : 0) == 1,
-            borde = PlayerPrefs.GetInt("Mira_Borde", d.borde ? 1 : 0) == 1,
-            dinamica = PlayerPrefs.GetInt("Mira_Dinamica", d.dinamica ? 1 : 0) == 1,
-            color = Mathf.Clamp(PlayerPrefs.GetInt("Mira_Color", d.color), 0, ColorPropio),
+            tipo = Mathf.Clamp(Guardado.GetInt("Mira_Tipo", d.tipo), 0, NombresTipo.Length - 1),
+            largo = Mathf.Clamp(Guardado.GetFloat("Mira_Largo", d.largo), LargoMin, LargoMax),
+            grosor = Mathf.Clamp(Guardado.GetFloat("Mira_Grosor", d.grosor), GrosorMin, GrosorMax),
+            hueco = Mathf.Clamp(Guardado.GetFloat("Mira_Hueco", d.hueco), HuecoMin, HuecoMax),
+            punto = Guardado.GetInt("Mira_Punto", d.punto ? 1 : 0) == 1,
+            borde = Guardado.GetInt("Mira_Borde", d.borde ? 1 : 0) == 1,
+            dinamica = Guardado.GetInt("Mira_Dinamica", d.dinamica ? 1 : 0) == 1,
+            color = Mathf.Clamp(Guardado.GetInt("Mira_Color", d.color), 0, ColorPropio),
             propio = new Color32(
-                (byte)Mathf.Clamp(PlayerPrefs.GetInt("Mira_R", d.propio.r), 0, 255),
-                (byte)Mathf.Clamp(PlayerPrefs.GetInt("Mira_G", d.propio.g), 0, 255),
-                (byte)Mathf.Clamp(PlayerPrefs.GetInt("Mira_B", d.propio.b), 0, 255), 255)
+                (byte)Mathf.Clamp(Guardado.GetInt("Mira_R", d.propio.r), 0, 255),
+                (byte)Mathf.Clamp(Guardado.GetInt("Mira_G", d.propio.g), 0, 255),
+                (byte)Mathf.Clamp(Guardado.GetInt("Mira_B", d.propio.b), 0, 255), 255)
         };
     }
 
     public static void Guardar(Mira m)
     {
-        PlayerPrefs.SetInt("Mira_Tipo", m.tipo);
-        PlayerPrefs.SetFloat("Mira_Largo", m.largo);
-        PlayerPrefs.SetFloat("Mira_Grosor", m.grosor);
-        PlayerPrefs.SetFloat("Mira_Hueco", m.hueco);
-        PlayerPrefs.SetInt("Mira_Punto", m.punto ? 1 : 0);
-        PlayerPrefs.SetInt("Mira_Borde", m.borde ? 1 : 0);
-        PlayerPrefs.SetInt("Mira_Dinamica", m.dinamica ? 1 : 0);
-        PlayerPrefs.SetInt("Mira_Color", m.color);
-        PlayerPrefs.SetInt("Mira_R", m.propio.r);
-        PlayerPrefs.SetInt("Mira_G", m.propio.g);
-        PlayerPrefs.SetInt("Mira_B", m.propio.b);
-        PlayerPrefs.Save();
+        Guardado.SetInt("Mira_Tipo", m.tipo);
+        Guardado.SetFloat("Mira_Largo", m.largo);
+        Guardado.SetFloat("Mira_Grosor", m.grosor);
+        Guardado.SetFloat("Mira_Hueco", m.hueco);
+        Guardado.SetInt("Mira_Punto", m.punto ? 1 : 0);
+        Guardado.SetInt("Mira_Borde", m.borde ? 1 : 0);
+        Guardado.SetInt("Mira_Dinamica", m.dinamica ? 1 : 0);
+        Guardado.SetInt("Mira_Color", m.color);
+        Guardado.SetInt("Mira_R", m.propio.r);
+        Guardado.SetInt("Mira_G", m.propio.g);
+        Guardado.SetInt("Mira_B", m.propio.b);
+        Guardado.Save();
         actual = m;
         leida = true;
         Cambiada?.Invoke();

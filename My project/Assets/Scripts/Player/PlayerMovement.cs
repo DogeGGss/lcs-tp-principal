@@ -175,8 +175,9 @@ public class PlayerMovement : MonoBehaviour
         }
         else if (!SinControles && KeyBindings.Held(GameAction.Correr))
         {
-            // US 198: en el Táctico no se corre; Shift camina despacio y sin ruido.
-            if (MatchSettings.Mode == GameMode.Tactico)
+            // US 198: en el Táctico no se corre; Shift camina despacio y sin ruido. En el campo de práctica (que no es
+            // ningún modo, aunque quede elegido el último) se corre (US 166).
+            if (MatchSettings.Mode == GameMode.Tactico && !CampoDePractica.Activo)
             {
                 currentSpeed = slowWalkSpeed;
                 despacio = true;
@@ -373,6 +374,7 @@ public class PlayerMovement : MonoBehaviour
     // (o cualquier cosa con vida, como un bot), no cuenta como piso.
     private void OnControllerColliderHit(ControllerColliderHit golpe)
     {
+        VallaElectrica.Tocar(transform, golpe.collider, golpe.point); // US 240, CA6: la valla del borde electrocuta
         // Cualquier apoyo que empuje un poco hacia arriba: también el borde del hombro, donde el piso es casi vertical.
         if (golpe.normal.y < 0.05f || golpe.collider == null) return; // de costado, no lo tiene debajo
         HealthSystem otro = golpe.collider.GetComponentInParent<HealthSystem>();

@@ -167,7 +167,7 @@ public class GraficosUIController : MonoBehaviour, OpcionesPantalla.ISeccion
         if (resoluciones.Length > 0)
         {
             Resolution r = resoluciones[Mathf.Clamp(e.resolucion, 0, resoluciones.Length - 1)];
-            textoResolucion.text = r.width + " x " + r.height;
+            textoResolucion.text = r.width + " x " + r.height + "  ·  " + Forma(r.width, r.height);
         }
         textoCalidad.text = NivelesCalidad[Mathf.Clamp(e.calidad, 0, NivelesCalidad.Length - 1)];
         segModo.Marcar(e.modo);
@@ -198,16 +198,16 @@ public class GraficosUIController : MonoBehaviour, OpcionesPantalla.ISeccion
         if (resoluciones.Length > 0)
         {
             Resolution r = resoluciones[Mathf.Clamp(pendiente.resolucion, 0, resoluciones.Length - 1)];
-            PlayerPrefs.SetInt(CLAVE_RESOLUCION_ANCHO, r.width);
-            PlayerPrefs.SetInt(CLAVE_RESOLUCION_ALTO, r.height);
+            Guardado.SetInt(CLAVE_RESOLUCION_ANCHO, r.width);
+            Guardado.SetInt(CLAVE_RESOLUCION_ALTO, r.height);
         }
-        PlayerPrefs.SetString(CLAVE_CALIDAD, NivelesCalidad[Mathf.Clamp(pendiente.calidad, 0, NivelesCalidad.Length - 1)]);
-        PlayerPrefs.SetInt(CLAVE_MODO_PANTALLA, pendiente.modo);
-        PlayerPrefs.SetInt(CLAVE_VSYNC, pendiente.vsync);
-        PlayerPrefs.SetInt(CLAVE_FPS, OpcionesFPS[Mathf.Clamp(pendiente.fps, 0, OpcionesFPS.Length - 1)]);
-        PlayerPrefs.SetFloat(CLAVE_FOV, pendiente.fov);
+        Guardado.SetString(CLAVE_CALIDAD, NivelesCalidad[Mathf.Clamp(pendiente.calidad, 0, NivelesCalidad.Length - 1)]);
+        Guardado.SetInt(CLAVE_MODO_PANTALLA, pendiente.modo);
+        Guardado.SetInt(CLAVE_VSYNC, pendiente.vsync);
+        Guardado.SetInt(CLAVE_FPS, OpcionesFPS[Mathf.Clamp(pendiente.fps, 0, OpcionesFPS.Length - 1)]);
+        Guardado.SetFloat(CLAVE_FOV, pendiente.fov);
         IndicadorRendimiento.Activo = pendiente.indicador; // US 197, CA5
-        PlayerPrefs.Save();
+        Guardado.Save();
 
         AplicarGuardado();
         // En partida, el campo de visión se ve al instante (CameraLook lo lee solo al empezar).
@@ -263,20 +263,20 @@ public class GraficosUIController : MonoBehaviour, OpcionesPantalla.ISeccion
     private Estado LeerGuardado()
     {
         // Si había guardado otro nivel (por ejemplo "PC"), se muestra Media.
-        int calidad = System.Array.IndexOf(NivelesCalidad, PlayerPrefs.GetString(CLAVE_CALIDAD, CALIDAD_DEFECTO));
+        int calidad = System.Array.IndexOf(NivelesCalidad, Guardado.GetString(CLAVE_CALIDAD, CALIDAD_DEFECTO));
         if (calidad < 0) calidad = System.Array.IndexOf(NivelesCalidad, CALIDAD_DEFECTO);
-        int fps = System.Array.IndexOf(OpcionesFPS, PlayerPrefs.GetInt(CLAVE_FPS, FPS_DEFECTO));
+        int fps = System.Array.IndexOf(OpcionesFPS, Guardado.GetInt(CLAVE_FPS, FPS_DEFECTO));
 
         return new Estado
         {
             resolucion = BuscarResolucion(resoluciones,
-                PlayerPrefs.GetInt(CLAVE_RESOLUCION_ANCHO, RESOLUCION_ANCHO_DEFECTO),
-                PlayerPrefs.GetInt(CLAVE_RESOLUCION_ALTO, RESOLUCION_ALTO_DEFECTO)),
+                Guardado.GetInt(CLAVE_RESOLUCION_ANCHO, RESOLUCION_ANCHO_DEFECTO),
+                Guardado.GetInt(CLAVE_RESOLUCION_ALTO, RESOLUCION_ALTO_DEFECTO)),
             calidad = calidad < 0 ? 0 : calidad,
-            modo = Mathf.Clamp(PlayerPrefs.GetInt(CLAVE_MODO_PANTALLA, MODO_PANTALLA_DEFECTO), 0, 2),
-            vsync = PlayerPrefs.GetInt(CLAVE_VSYNC, VSYNC_DEFECTO) == 1 ? 1 : 0,
+            modo = Mathf.Clamp(Guardado.GetInt(CLAVE_MODO_PANTALLA, MODO_PANTALLA_DEFECTO), 0, 2),
+            vsync = Guardado.GetInt(CLAVE_VSYNC, VSYNC_DEFECTO) == 1 ? 1 : 0,
             fps = fps < 0 ? System.Array.IndexOf(OpcionesFPS, FPS_DEFECTO) : fps,
-            fov = Mathf.Clamp(PlayerPrefs.GetFloat(CLAVE_FOV, FOV_POR_DEFECTO), FOV_MINIMO, FOV_MAXIMO),
+            fov = Mathf.Clamp(Guardado.GetFloat(CLAVE_FOV, FOV_POR_DEFECTO), FOV_MINIMO, FOV_MAXIMO),
             indicador = IndicadorRendimiento.Activo
         };
     }
@@ -287,23 +287,9 @@ public class GraficosUIController : MonoBehaviour, OpcionesPantalla.ISeccion
     /// </summary>
     public static void AplicarGuardado()
     {
-        Resolution[] lista = Unicas(Screen.resolutions);
-        int indiceModo = Mathf.Clamp(PlayerPrefs.GetInt(CLAVE_MODO_PANTALLA, MODO_PANTALLA_DEFECTO), 0, 2);
-        FullScreenMode modo = ModoPantalla(indiceModo);
-        if (lista.Length > 0)
-        {
-            Resolution r = lista[BuscarResolucion(lista,
-                PlayerPrefs.GetInt(CLAVE_RESOLUCION_ANCHO, RESOLUCION_ANCHO_DEFECTO),
-                PlayerPrefs.GetInt(CLAVE_RESOLUCION_ALTO, RESOLUCION_ALTO_DEFECTO))];
-            // CA1: "Sin bordes" es una ventana de ese tamaño sin marco (no ocupa toda la pantalla, salvo que se
-            // elija la resolución del monitor). En los otros modos se le devuelve el marco si se lo habían sacado.
-            if (indiceModo != 1) VentanaSinBordes.Restaurar();
-            Screen.SetResolution(r.width, r.height, modo, r.refreshRateRatio);
-            if (indiceModo == 1) VentanaSinBordes.Quitar(r.width, r.height);
-        }
-        else Screen.fullScreenMode = modo;
+        AplicarPantalla();
 
-        int calidad = System.Array.IndexOf(QualitySettings.names, PlayerPrefs.GetString(CLAVE_CALIDAD, CALIDAD_DEFECTO));
+        int calidad = System.Array.IndexOf(QualitySettings.names, Guardado.GetString(CLAVE_CALIDAD, CALIDAD_DEFECTO));
         if (calidad < 0) calidad = System.Array.IndexOf(QualitySettings.names, CALIDAD_DEFECTO);
         if (calidad < 0) calidad = 0;
         QualitySettings.SetQualityLevel(calidad, true);
@@ -311,8 +297,35 @@ public class GraficosUIController : MonoBehaviour, OpcionesPantalla.ISeccion
         CalidadGrafica.Aplicar(QualitySettings.names.Length > 0 ? QualitySettings.names[calidad] : CALIDAD_DEFECTO);
 
         // Después de la calidad: cada nivel de calidad trae su propio VSync.
-        QualitySettings.vSyncCount = PlayerPrefs.GetInt(CLAVE_VSYNC, VSYNC_DEFECTO) == 1 ? 1 : 0;
-        Application.targetFrameRate = PlayerPrefs.GetInt(CLAVE_FPS, FPS_DEFECTO);
+        QualitySettings.vSyncCount = Guardado.GetInt(CLAVE_VSYNC, VSYNC_DEFECTO) == 1 ? 1 : 0;
+        Application.targetFrameRate = Guardado.GetInt(CLAVE_FPS, FPS_DEFECTO);
+    }
+
+    /// <summary>
+    /// Aplica solo la resolución y el modo de pantalla guardados. La usan las opciones y el menú de pausa.
+    /// </summary>
+    public static void AplicarPantalla()
+    {
+        Resolution[] lista = Unicas(Screen.resolutions);
+        int indiceModo = Mathf.Clamp(Guardado.GetInt(CLAVE_MODO_PANTALLA, MODO_PANTALLA_DEFECTO), 0, 2);
+        FullScreenMode modo = ModoPantalla(indiceModo);
+        if (lista.Length > 0)
+        {
+            Resolution r = lista[BuscarResolucion(lista,
+                Guardado.GetInt(CLAVE_RESOLUCION_ANCHO, RESOLUCION_ANCHO_DEFECTO),
+                Guardado.GetInt(CLAVE_RESOLUCION_ALTO, RESOLUCION_ALTO_DEFECTO))];
+            // Pantalla completa con otra forma que el monitor (por ejemplo 16:9 o 4:3 en un ultrawide): se usa la
+            // pantalla completa en ventana, que Unity escala con barras negras a los costados. La exclusiva cambia la
+            // resolución del monitor y muchos la estiran.
+            if (modo == FullScreenMode.ExclusiveFullScreen && !MismaFormaQueElMonitor(r.width, r.height))
+                modo = FullScreenMode.FullScreenWindow;
+            // CA1: "Sin bordes" es una ventana de ese tamaño sin marco (no ocupa toda la pantalla, salvo que se
+            // elija la resolución del monitor). En los otros modos se le devuelve el marco si se lo habían sacado.
+            if (indiceModo != 1) VentanaSinBordes.Restaurar();
+            Screen.SetResolution(r.width, r.height, modo, r.refreshRateRatio);
+            if (indiceModo == 1) VentanaSinBordes.Quitar(r.width, r.height);
+        }
+        else Screen.fullScreenMode = modo;
     }
 
     private static FullScreenMode ModoPantalla(int indice)
@@ -325,22 +338,80 @@ public class GraficosUIController : MonoBehaviour, OpcionesPantalla.ISeccion
         }
     }
 
-    // CA2: una entrada por tamaño, con la frecuencia más alta que admite el monitor para ese tamaño.
-    // Solo las que tienen la misma forma que el monitor (por ejemplo 16:9) y al menos 720 de alto: las demás se
-    // ven con barras negras a los costados y borrosas en pantalla completa.
+    // Tamaños comunes de 16:9 y 4:3, por si el monitor no los ofrece (pasa en los ultrawide).
+    private static readonly Vector2Int[] Comunes169 =
+        { new Vector2Int(1280, 720), new Vector2Int(1600, 900), new Vector2Int(1920, 1080), new Vector2Int(2560, 1440), new Vector2Int(3840, 2160) };
+    private static readonly Vector2Int[] Comunes43 =
+        { new Vector2Int(960, 720), new Vector2Int(1280, 960), new Vector2Int(1440, 1080), new Vector2Int(1600, 1200), new Vector2Int(1920, 1440) };
+
+    private static float FormaMonitor =>
+        Display.main.systemHeight > 0 ? (float)Display.main.systemWidth / Display.main.systemHeight : 16f / 9f;
+
+    private static bool MismaForma(int ancho, int alto, float forma) => Mathf.Abs((float)ancho / alto - forma) < 0.02f;
+    private static bool MismaFormaQueElMonitor(int ancho, int alto) => MismaForma(ancho, alto, FormaMonitor);
+
+    /// <summary>La forma de una resolución, para mostrarla al lado del tamaño ("16:9", "4:3", "21:9"...).</summary>
+    private static string Forma(int ancho, int alto)
+    {
+        float f = (float)ancho / alto;
+        if (Mathf.Abs(f - 16f / 9f) < 0.02f) return "16:9";
+        if (Mathf.Abs(f - 4f / 3f) < 0.02f) return "4:3";
+        if (Mathf.Abs(f - 16f / 10f) < 0.02f) return "16:10";
+        if (f > 2.3f && f < 2.45f) return "21:9";
+        if (f > 3.5f && f < 3.6f) return "32:9";
+        int a = ancho, b = alto;
+        while (b != 0) { int t = a % b; a = b; b = t; }
+        return (ancho / a) + ":" + (alto / a);
+    }
+
+    // CA2: una entrada por tamaño, con la frecuencia más alta que admite el monitor para ese tamaño, y al menos 720
+    // de alto. Primero las que tienen la forma del monitor; después las de 16:9 y las de 4:3, que en un monitor de
+    // otra forma (por ejemplo, un ultrawide) se ven con barras negras a los costados. Si el monitor no ofrece esos
+    // tamaños, se agregan los comunes que entran en la pantalla.
     private static Resolution[] Unicas(Resolution[] lista)
     {
-        float forma = Display.main.systemHeight > 0 ? (float)Display.main.systemWidth / Display.main.systemHeight : 16f / 9f;
-        var unicas = new System.Collections.Generic.List<Resolution>();
         var todas = new System.Collections.Generic.List<Resolution>(lista);
-        var buenas = todas.FindAll(r => r.height >= ALTO_MINIMO && Mathf.Abs((float)r.width / r.height - forma) < 0.02f);
-        if (buenas.Count == 0) buenas = todas; // monitor raro: se muestran todas
-        foreach (Resolution r in buenas)
+        var unicas = new System.Collections.Generic.List<Resolution>();
+        float monitor = FormaMonitor;
+        int anchoMonitor = Display.main.systemWidth > 0 ? Display.main.systemWidth : Screen.currentResolution.width;
+        int altoMonitor = Display.main.systemHeight > 0 ? Display.main.systemHeight : Screen.currentResolution.height;
+        RefreshRate frecuencia = Screen.currentResolution.refreshRateRatio;
+
+        void Grupo(float forma, Vector2Int[] comunes)
         {
-            int i = unicas.FindIndex(u => u.width == r.width && u.height == r.height);
-            if (i < 0) unicas.Add(r);
-            else if (r.refreshRateRatio.value > unicas[i].refreshRateRatio.value) unicas[i] = r;
+            var grupo = new System.Collections.Generic.List<Resolution>();
+            foreach (Resolution r in todas)
+            {
+                if (r.height < ALTO_MINIMO || !MismaForma(r.width, r.height, forma)) continue;
+                int i = grupo.FindIndex(u => u.width == r.width && u.height == r.height);
+                if (i < 0) grupo.Add(r);
+                else if (r.refreshRateRatio.value > grupo[i].refreshRateRatio.value) grupo[i] = r;
+            }
+            if (comunes != null)
+                foreach (Vector2Int c in comunes)
+                    if (c.x <= anchoMonitor && c.y <= altoMonitor && !grupo.Exists(u => u.width == c.x && u.height == c.y))
+                        grupo.Add(new Resolution { width = c.x, height = c.y, refreshRateRatio = frecuencia });
+            grupo.Sort((a, b) => a.height.CompareTo(b.height));
+            foreach (Resolution r in grupo)
+                if (!unicas.Exists(u => u.width == r.width && u.height == r.height)) unicas.Add(r);
         }
+
+        Grupo(monitor, null);
+        if (unicas.Count == 0)
+        {
+            // Monitor raro: se muestran todas, como antes.
+            foreach (Resolution r in todas)
+            {
+                int i = unicas.FindIndex(u => u.width == r.width && u.height == r.height);
+                if (i < 0) unicas.Add(r);
+                else if (r.refreshRateRatio.value > unicas[i].refreshRateRatio.value) unicas[i] = r;
+            }
+            return unicas.ToArray();
+        }
+        // Los tamaños comunes se agregan solo si la forma es distinta de la del monitor: con la misma forma se usa la
+        // pantalla completa exclusiva, que solo acepta los tamaños que ofrece el monitor.
+        Grupo(16f / 9f, MismaForma(16, 9, monitor) ? null : Comunes169);
+        Grupo(4f / 3f, MismaForma(4, 3, monitor) ? null : Comunes43);
         return unicas.ToArray();
     }
 
@@ -349,10 +420,15 @@ public class GraficosUIController : MonoBehaviour, OpcionesPantalla.ISeccion
         for (int i = 0; i < lista.Length; i++)
             if (lista[i].width == ancho && lista[i].height == alto) return i;
 
-        // Si no existe la resolución guardada, se busca 1920 x 1080.
+        // Si no existe la resolución guardada, se busca 1920 x 1080 con la forma del monitor; si el monitor es de
+        // otra forma (por ejemplo, ultrawide), la más grande de su forma, como antes de sumar 16:9 y 4:3.
+        int ultimaDelMonitor = -1;
         for (int i = 0; i < lista.Length; i++)
+        {
+            if (!MismaFormaQueElMonitor(lista[i].width, lista[i].height)) continue;
             if (lista[i].width == RESOLUCION_ANCHO_DEFECTO && lista[i].height == RESOLUCION_ALTO_DEFECTO) return i;
-
-        return Mathf.Max(lista.Length - 1, 0);
+            ultimaDelMonitor = i;
+        }
+        return ultimaDelMonitor >= 0 ? ultimaDelMonitor : Mathf.Max(lista.Length - 1, 0);
     }
 }

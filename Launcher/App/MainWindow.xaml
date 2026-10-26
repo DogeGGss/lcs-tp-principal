@@ -37,14 +37,19 @@
      <Grid.Background><LinearGradientBrush StartPoint="0,0" EndPoint="1,0.8"><GradientStop Color="#101821"/><GradientStop Color="#17232B" Offset="0.55"/><GradientStop Color="#272017" Offset="1"/></LinearGradientBrush></Grid.Background>
      <Viewbox HorizontalAlignment="Right" Width="680" Stretch="Fill" Opacity="0.7">
       <Canvas Width="680" Height="240" ClipToBounds="True">
+       <Canvas.Resources>
+        <RadialGradientBrush x:Key="TrainGlow"><GradientStop Color="#99FFE0B0"/><GradientStop Color="#33F29A38" Offset="0.45"/><GradientStop Color="#00F29A38" Offset="1"/></RadialGradientBrush>
+       </Canvas.Resources>
        <Path Data="M 0,240 L 365,75 L 680,240 M 80,240 L 365,75 L 600,240 M 180,240 L 365,75 L 500,240 M 0,216 L 680,216 M 85,182 L 608,182 M 180,147 L 541,147 M 260,116 L 457,116" Stroke="#41464A" StrokeThickness="1"/>
-       <Path Data="M 210,142 L 210,35 L 288,35 L 288,103 M 220,142 L 220,47 L 277,47 L 277,108 M 461,127 L 461,30 L 590,30 L 590,197 M 473,137 L 473,43 L 578,43 L 578,191 M 295,102 L 295,18 L 315,18 L 315,92 M 407,98 L 407,18 L 428,18 L 428,111" Stroke="#64717B" StrokeThickness="2"/>
-       <Path Data="M 498,-20 L 369,84 L 425,84 L 282,259 L 345,107 L 305,107 Z" Fill="#F29A38" Opacity="0.08"/>
-       <Path x:Name="Rift" Data="M 498,-20 L 369,84 L 411,84 L 282,259" Stroke="#F29A38" StrokeThickness="3">
-        <Path.Effect><DropShadowEffect Color="#F29A38" BlurRadius="28" ShadowDepth="0" Opacity="0.7"/></Path.Effect>
-        <Path.Triggers><EventTrigger RoutedEvent="Loaded"><BeginStoryboard><Storyboard RepeatBehavior="Forever" AutoReverse="True"><DoubleAnimation Storyboard.TargetProperty="Opacity" From="0.45" To="1" Duration="0:0:2.8"/></Storyboard></BeginStoryboard></EventTrigger></Path.Triggers>
+       <Path x:Name="TrainBeam" Opacity="0">
+        <Path.Fill><LinearGradientBrush StartPoint="0,0" EndPoint="0,1"><GradientStop Color="#66FFE7BF"/><GradientStop Color="#00FFE7BF" Offset="1"/></LinearGradientBrush></Path.Fill>
        </Path>
-       <Ellipse Width="6" Height="6" Fill="#F29A38" Canvas.Left="210" Canvas.Top="33"/><Ellipse Width="6" Height="6" Fill="#4CC3FF" Canvas.Left="461" Canvas.Top="28"/>
+       <Ellipse x:Name="TrainGlowLeft" Fill="{StaticResource TrainGlow}" Opacity="0"/><Ellipse x:Name="TrainGlowRight" Fill="{StaticResource TrainGlow}" Opacity="0"/>
+       <Ellipse x:Name="TrainLightLeft" Fill="#FFF6E4" Opacity="0"/><Ellipse x:Name="TrainLightRight" Fill="#FFF6E4" Opacity="0"/>
+       <Path x:Name="ArchesBack" Data="M 295,102 L 295,18 L 315,18 L 315,92 M 407,98 L 407,18 L 428,18 L 428,111" Stroke="#64717B" StrokeThickness="2"/>
+       <Path x:Name="ArchesLeft" Data="M 210,142 L 210,35 L 288,35 L 288,103 M 220,142 L 220,47 L 277,47 L 277,108" Stroke="#64717B" StrokeThickness="2"/>
+       <Path x:Name="ArchesRight" Data="M 461,127 L 461,30 L 590,30 L 590,197 M 473,137 L 473,43 L 578,43 L 578,191" Stroke="#64717B" StrokeThickness="2"/>
+       <Ellipse x:Name="SignalOrange" Width="6" Height="6" Fill="#F29A38" Canvas.Left="210" Canvas.Top="33"/><Ellipse x:Name="SignalBlue" Width="6" Height="6" Fill="#4CC3FF" Canvas.Left="461" Canvas.Top="28"/>
       </Canvas>
      </Viewbox>
      <Border><Border.Background><LinearGradientBrush><GradientStop Color="#F20A0C11"/><GradientStop Color="#A00A0C11" Offset="0.43"/><GradientStop Color="#000A0C11" Offset="1"/></LinearGradientBrush></Border.Background></Border>

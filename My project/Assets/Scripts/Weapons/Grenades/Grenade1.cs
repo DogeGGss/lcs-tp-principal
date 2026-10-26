@@ -177,6 +177,9 @@ public class Grenade1 : MonoBehaviour
                 foreach (Collider theirs in thrower.GetComponentsInChildren<Collider>())
                     Physics.IgnoreCollision(mine, theirs);
 
+        // Las paredes invisibles de los bordes frenan solo a los jugadores: la granada pasa por encima de la valla.
+        ParedSoloJugadores.Atravesar(gameObject);
+
         if (body == null) return;
         body.AddForce(direction * throwForce, ForceMode.Impulse);
         body.AddForce(inherited, ForceMode.VelocityChange);
@@ -221,10 +224,34 @@ public class Grenade1 : MonoBehaviour
         // Distancia más corta de cada personaje al centro, mirando solo las partes que la explosión "ve".
         var reached = new Dictionary<HealthSystem, float>();
         var pushed = new HashSet<Rigidbody>();
+        var walls = new Dictionary<Barrera, float>(); // US 020, CA5: la Barrera también recibe daño, según la distancia
+        var dogs = new Dictionary<Perro, float>();    // US 022, CA9: y el perro del Callejero
 
         foreach (Collider part in parts)
         {
             if (part.transform.IsChildOf(transform)) continue;
+
+            Barrera wall = Barrera.De(part);
+            if (wall != null)
+            {
+                if (!wall.Activa || part.isTrigger) continue;
+                Vector3 near = ClosestPoint(part, center);
+                float d = Vector3.Distance(center, near);
+                if (d <= radius && !Blocked(center, near, wall.transform) && (!walls.TryGetValue(wall, out float prev) || d < prev))
+                    walls[wall] = d;
+                continue;
+            }
+
+            Perro dog = Perro.De(part);
+            if (dog != null)
+            {
+                if (!dog.Activo) continue;
+                Vector3 near = ClosestPoint(part, center);
+                float d = Vector3.Distance(center, near);
+                if (d <= radius && !Blocked(center, near, dog.transform) && (!dogs.TryGetValue(dog, out float prev) || d < prev))
+                    dogs[dog] = d;
+                continue;
+            }
 
             HealthSystem health = part.GetComponentInParent<HealthSystem>();
             if (health != null && (health.currentHealth <= 0 || EquiposTacticos.SonAliados(thrower, health))) continue; // CA7
@@ -242,6 +269,11 @@ public class Grenade1 : MonoBehaviour
             if (rb != null && rb != body && pushed.Add(rb))
                 rb.AddExplosionForce(explosionForce * 10, center, radius);
         }
+
+        foreach (KeyValuePair<Barrera, float> entry in walls)
+            entry.Key.PedirDanio(DamageAt(entry.Value), thrower, center);
+        foreach (KeyValuePair<Perro, float> entry in dogs)
+            entry.Key.PedirDanio(DamageAt(entry.Value), thrower, center);
 
         // El daño se aplica una sola vez por personaje, aunque tenga varios colliders (CA4).
         foreach (KeyValuePair<HealthSystem, float> entry in reached)
@@ -345,6 +377,7 @@ public class Grenade1 : MonoBehaviour
             if (other.IsChildOf(target)) continue;
             if (hit.collider.GetComponentInParent<HealthSystem>() != null) continue;
             if (hit.collider.GetComponentInParent<ArmaEnPiso>() != null) continue; // un arma tirada no es pared
+            if (hit.collider.GetComponentInParent<Perro>() != null) continue;      // el perro del Callejero tampoco
             return true;
         }
         return false;

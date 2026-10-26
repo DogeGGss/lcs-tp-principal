@@ -10,12 +10,13 @@ public enum GameAction
     Saltar, Agacharse, Correr,
     Disparar, Apuntar, Recargar, Habilidad,
     ArmaPrincipal, ArmaSecundaria, Cuchillo, Granadas,
-    Tienda, Plantar, Soltar, Dispositivo, Mapa
+    Tienda, Plantar, Soltar, Dispositivo, Mapa,
+    Emotes, // F27 (US 261): mientras se mantiene, la rueda de emotes
 }
 
 // Teclas del jugador (US 155). Sigue usando el Input clásico: los scripts preguntan
 // KeyBindings.Down(GameAction.Recargar) en lugar de Input.GetKeyDown(KeyCode.R).
-// Las teclas y las opciones del mouse se guardan en PlayerPrefs (US 048).
+// Las teclas y las opciones del mouse se guardan con las opciones (Guardado, US 048 y US 162).
 // Esc no se puede reasignar: abre la pausa y cancela los cambios de tecla.
 public static class KeyBindings
 {
@@ -43,6 +44,7 @@ public static class KeyBindings
         { GameAction.Soltar, KeyCode.G }, // US 184: soltar el arma en la mano (solo en Táctico)
         { GameAction.Dispositivo, KeyCode.Alpha5 }, // US 130: sacar el dispositivo (solo el portador, en Táctico)
         { GameAction.Mapa, KeyCode.H }, // US 194, CA6: mientras se mantiene, el mapa completo
+        { GameAction.Emotes, KeyCode.T }, // US 261: mientras se mantiene, la rueda de emotes (la B es la tienda)
     };
 
     private static readonly Dictionary<GameAction, string> Names = new Dictionary<GameAction, string>
@@ -67,6 +69,7 @@ public static class KeyBindings
         { GameAction.Soltar, "Soltar arma" },
         { GameAction.Dispositivo, "Dispositivo" },
         { GameAction.Mapa, "Mapa completo" },
+        { GameAction.Emotes, "Emotes" },
     };
 
     // ---------- Opciones del mouse (CA1, CA2) ----------
@@ -79,36 +82,76 @@ public static class KeyBindings
 
     public static float Sensitivity
     {
-        get => PlayerPrefs.GetFloat(SensitivityKey, DefaultSensitivity);
-        set { PlayerPrefs.SetFloat(SensitivityKey, Mathf.Clamp(value, MinSensitivity, MaxSensitivity)); Changed?.Invoke(); }
+        get => Guardado.GetFloat(SensitivityKey, DefaultSensitivity);
+        set { Guardado.SetFloat(SensitivityKey, Mathf.Clamp(value, MinSensitivity, MaxSensitivity)); Changed?.Invoke(); }
     }
 
     /// <summary>Multiplica la sensibilidad mientras se apunta con mira.</summary>
     public static float AimSensitivity
     {
-        get => PlayerPrefs.GetFloat(AimSensitivityKey, DefaultAimSensitivity);
-        set { PlayerPrefs.SetFloat(AimSensitivityKey, Mathf.Clamp(value, MinAimSensitivity, MaxAimSensitivity)); Changed?.Invoke(); }
+        get => Guardado.GetFloat(AimSensitivityKey, DefaultAimSensitivity);
+        set { Guardado.SetFloat(AimSensitivityKey, Mathf.Clamp(value, MinAimSensitivity, MaxAimSensitivity)); Changed?.Invoke(); }
     }
 
     public static bool InvertY
     {
-        get => PlayerPrefs.GetInt(InvertYKey, 0) == 1;
-        set { PlayerPrefs.SetInt(InvertYKey, value ? 1 : 0); Changed?.Invoke(); }
+        get => Guardado.GetInt(InvertYKey, 0) == 1;
+        set { Guardado.SetInt(InvertYKey, value ? 1 : 0); Changed?.Invoke(); }
     }
 
     /// <summary>Avisa cuando cambia una tecla o una opción del mouse.</summary>
     public static event Action Changed;
 
-    public static IEnumerable<GameAction> All => (GameAction[])Enum.GetValues(typeof(GameAction));
+    // Entrega del Sprint 3: sin emotes (Emotes.Disponibles) la T de la rueda no figura en los controles.
+    public static IEnumerable<GameAction> All =>
+        Array.FindAll((GameAction[])Enum.GetValues(typeof(GameAction)), a => a != GameAction.Emotes || Emotes.Disponibles);
 
     // ---------- Consultas para los scripts del juego ----------
 
     public static KeyCode Key(GameAction action) =>
-        (KeyCode)PlayerPrefs.GetInt(PrefKey(action), (int)Defaults[action]);
+        (KeyCode)Guardado.GetInt(PrefKey(action), (int)Defaults[action]);
 
-    public static bool Down(GameAction action) => Input.GetKeyDown(Key(action));
-    public static bool Held(GameAction action) => Input.GetKey(Key(action));
-    public static bool Up(GameAction action) => Input.GetKeyUp(Key(action));
+    public static bool Down(GameAction action) => !Bloqueada(action) && (Input.GetKeyDown(Key(action)) || SimuladaDown(action));
+    public static bool Held(GameAction action) => !Bloqueada(action) && (Input.GetKey(Key(action)) || SimuladaHeld(action));
+
+    /// <summary>US 261, CA1: con la rueda de emotes abierta no se dispara ni se apunta.</summary>
+    public static bool SinDisparar { get; set; }
+
+    private static bool Bloqueada(GameAction action) =>
+        SinDisparar && (action == GameAction.Disparar || action == GameAction.Apuntar);
+    public static bool Up(GameAction action) => Input.GetKeyUp(Key(action)) || SimuladaUp(action);
+
+    // ---------- Tests de regresión ----------
+
+    // Los tests automáticos (ModoPruebas) aprietan y sueltan acciones como el jugador, así el juego pasa por el mismo
+    // camino que con una tecla: desde el cuadro siguiente la acción está apretada (Down solo ese cuadro) hasta que se
+    // suelta (Up el cuadro siguiente). Fuera de los tests no hace nada.
+    private static readonly Dictionary<GameAction, int> apretadaDesde = new Dictionary<GameAction, int>();
+    private static readonly Dictionary<GameAction, int> soltadaEn = new Dictionary<GameAction, int>();
+
+    public static void Apretar(GameAction action)
+    {
+        if (!ModoPruebas.Activo) return;
+        apretadaDesde[action] = Time.frameCount + 1;
+        soltadaEn.Remove(action);
+    }
+
+    public static void Soltar(GameAction action)
+    {
+        if (!apretadaDesde.Remove(action)) return;
+        soltadaEn[action] = Time.frameCount + 1;
+    }
+
+    /// <summary>Suelta todo lo que quedó apretado (al terminar cada test).</summary>
+    public static void SoltarTodo()
+    {
+        apretadaDesde.Clear();
+        soltadaEn.Clear();
+    }
+
+    private static bool SimuladaDown(GameAction a) => apretadaDesde.Count > 0 && apretadaDesde.TryGetValue(a, out int f) && Time.frameCount == f;
+    private static bool SimuladaHeld(GameAction a) => apretadaDesde.Count > 0 && apretadaDesde.TryGetValue(a, out int f) && Time.frameCount >= f;
+    private static bool SimuladaUp(GameAction a) => soltadaEn.Count > 0 && soltadaEn.TryGetValue(a, out int f) && Time.frameCount == f;
 
     /// <summary>-1, 0 o 1 según qué tecla esté apretada (como Input.GetAxisRaw).</summary>
     public static float Axis(GameAction negative, GameAction positive) =>
@@ -159,7 +202,7 @@ public static class KeyBindings
 
     public static void Set(GameAction action, KeyCode key)
     {
-        PlayerPrefs.SetInt(PrefKey(action), (int)key);
+        Guardado.SetInt(PrefKey(action), (int)key);
         Changed?.Invoke();
     }
 
@@ -167,22 +210,22 @@ public static class KeyBindings
     public static void Swap(GameAction action, GameAction other)
     {
         KeyCode a = Key(action), b = Key(other);
-        PlayerPrefs.SetInt(PrefKey(action), (int)b);
-        PlayerPrefs.SetInt(PrefKey(other), (int)a);
+        Guardado.SetInt(PrefKey(action), (int)b);
+        Guardado.SetInt(PrefKey(other), (int)a);
         Changed?.Invoke();
     }
 
     public static void ResetDefaults()
     {
-        foreach (GameAction action in All) PlayerPrefs.DeleteKey(PrefKey(action));
-        PlayerPrefs.SetFloat(SensitivityKey, DefaultSensitivity);
-        PlayerPrefs.DeleteKey(AimSensitivityKey);
-        PlayerPrefs.DeleteKey(InvertYKey);
+        foreach (GameAction action in All) Guardado.DeleteKey(PrefKey(action));
+        Guardado.SetFloat(SensitivityKey, DefaultSensitivity);
+        Guardado.DeleteKey(AimSensitivityKey);
+        Guardado.DeleteKey(InvertYKey);
         Save();
         Changed?.Invoke();
     }
 
-    public static void Save() => PlayerPrefs.Save();
+    public static void Save() => Guardado.Save();
 
     /// <summary>Teclas que se pueden asignar: todo menos Esc (cancela) y los joysticks.</summary>
     public static bool CanAssign(KeyCode key) =>

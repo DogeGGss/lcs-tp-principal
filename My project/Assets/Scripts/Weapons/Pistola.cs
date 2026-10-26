@@ -27,6 +27,7 @@ public class Pistola : MonoBehaviour, IHudWeapon
     private Transform shooter;
     private ShopItem data;
     private bool isReloading = false;
+    private int fullReserve = -1; // la reserva con la que viene el arma, para volver a llenarla
     private float reloadStartTime;
 
     // Datos para el HUD (US 056): el HUD le pone el nombre de la tienda (Línea A o Línea H).
@@ -35,6 +36,20 @@ public class Pistola : MonoBehaviour, IHudWeapon
     public int MagazineSize => maxAmmo;
     public int Reserve => reserveAmmo;
     public float ReloadProgress => isReloading ? Mathf.Clamp01((Time.time - reloadStartTime) / reloadTime) : -1f;
+
+    void Awake()
+    {
+        if (fullReserve < 0) fullReserve = reserveAmmo;
+    }
+
+    /// <summary>Cargador lleno y la reserva con la que viene el arma. Lo usan el inicio de cada ronda del Táctico
+    /// (antes La Porteña se quedaba con la reserva gastada de la ronda anterior), la reaparición y la tienda.</summary>
+    public void Refill()
+    {
+        if (fullReserve < 0) fullReserve = reserveAmmo;
+        currentAmmo = maxAmmo;
+        reserveAmmo = fullReserve;
+    }
 
     void Start()
     {
@@ -99,7 +114,7 @@ public class Pistola : MonoBehaviour, IHudWeapon
             return;
         }
 
-        if (!MinijuegoPajaros.Activo) currentAmmo--; // US 157, CA2: en la compra los disparos no gastan balas
+        if (!MinijuegoCometas.Activo) currentAmmo--; // US 157, CA2: en la compra los disparos no gastan balas
 
         Debug.Log(
             "¡PUM! Balas en cargador: " +
@@ -165,7 +180,7 @@ public class Pistola : MonoBehaviour, IHudWeapon
         int ammoToLoad = Mathf.Min(neededAmmo, reserveAmmo);
 
         currentAmmo += ammoToLoad;
-        reserveAmmo -= ammoToLoad;
+        if (!Municion.ReservaInfinita) reserveAmmo -= ammoToLoad; // US 121, CA1 y Deathmatch: la reserva no se gasta
 
         isReloading = false;
 

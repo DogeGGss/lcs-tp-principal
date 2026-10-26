@@ -23,30 +23,29 @@ public class NotaPO : MonoBehaviour
     [SerializeField] private CanvasGroup transitionOverlay;
 
     [Header("Textos")]
-    [SerializeField] private string eyebrow = "Nota para el PO · Sprint 2";
+    [SerializeField] private string eyebrow = "Nota para el PO · Sprint 3";
     [SerializeField] private string title = "Hola, Amin";
     [TextArea(2, 4)]
     [SerializeField] private string intro =
-        "Esta es la entrega del Sprint 2 de Project Riftwalker: el Modo Táctico online, 4 contra 4 en la estación espacial. Para jugarlo hacen falta al menos 2 jugadores, cada uno en su computadora.";
+        "Esta es la entrega del Sprint 3 de Project Riftwalker: el Deathmatch online en su propio mapa, los cuatro personajes con su habilidad y el progreso del jugador. Para jugar online hacen falta al menos 2 jugadores, cada uno en su computadora.";
     [SerializeField] private string worksTitle = "Lo que funciona";
     [Tooltip("Un punto por renglón. Lo que va antes de \":\" sale resaltado.")]
     [TextArea(5, 12)]
     [SerializeField] private string works =
-        "Modo Táctico online: salas con código, de 2 a 8 jugadores. Equipos al azar, compra, rondas, cambio de lado y muerte súbita; gana el primero en llegar a 7.\n" +
-        "Dispositivo: se planta en A o B y se desactiva. Al morir mirás a un compañero hasta la ronda siguiente.\n" +
-        "Personajes: se eligen antes de la ronda 1, sin repetir en el equipo. Astra usa su habilidad, el Trasbordo.\n" +
-        "Armas: 7 de fuego, el cuchillo y granadas de metralla, humo y flash. Se sueltan y se levantan del piso.\n" +
-        "Tienda y HUD: plata por ronda, lo que compran tus compañeros, marcador, minimapa, tabla con Tab, FPS y ping.\n" +
-        "Reconexión: si se te corta, volvés a la misma partida desde el menú.";
+        "Deathmatch online: todos contra todos, de 2 a 8 jugadores, en Colonia ARA San Juan. Gana el primero en llegar a 25 bajas o el que más tenga a los 8 minutos. Las armas se eligen gratis y cada baja cura 50.\n" +
+        "Personajes: Unzué (Barrera), Necochea (Vista aérea), Goya (Callejero) y Soledad (Trasbordo), cada uno con su modelo y su habilidad, que se usa en el Táctico.\n" +
+        "Campo de práctica: desde el menú, con todas las armas, blancos, bots y un tutorial que enseña los controles paso a paso.\n" +
+        "Minijuego y logros: en la compra del Táctico se les dispara a los cometas. Hay 25 logros, con aviso al conseguirlos, y un ranking global.\n" +
+        "Perfil: avatar, banner, título y marco, y estadísticas por modo con el KDA. Con los créditos de cada partida se abren cápsulas en la Estación del Rift; la tienda de cristales es una simulación y no cobra.\n" +
+        "Guardado y launcher: el progreso se guarda solo, también en la nube, y el launcher instala y actualiza el juego.";
     [SerializeField] private string missingTitle = "Lo que todavía falta";
     [Tooltip("Un punto por renglón. Lo que va antes de \":\" sale resaltado.")]
     [TextArea(5, 12)]
     [SerializeField] private string missing =
-        "Deathmatch: el andén está, pero crear o unirse a una sala todavía no está implementado.\n" +
         "Zombie: todavía no hay zombis. Jugar abre el mapa de la universidad, que está en construcción, para recorrerlo.\n" +
-        "Personajes: Alfa, Bravo y Charlie son provisionales. Su habilidad carga, pero todavía no tiene efecto.\n" +
-        "Logros: la pantalla está, pero todavía no tiene logros.\n" +
-        "Mapas de prueba: Pruebas y Pruebas 2 abren dos mapas sin conexión. Los enemigos de Pruebas todavía no atacan.";
+        "Estadísticas del Zombie: dicen \"Sin datos\" hasta que el modo tenga partidas (US 222).\n" +
+        "Animaciones: por ahora solo La Porteña tiene animación en primera persona.\n" +
+        "Penetración de superficies: las balas todavía no atraviesan paredes ni objetos (US 169).";
 
     [Header("Tipografías (las mismas de la tienda)")]
     [SerializeField] private TMP_FontAsset displayFont; // Barlow Condensed Bold
@@ -82,11 +81,11 @@ public class NotaPO : MonoBehaviour
         ("Apuntar", new[] { GameAction.Apuntar }, ""),
         ("Recargar", new[] { GameAction.Recargar }, ""),
         ("Principal / secundaria / cuchillo / granadas", new[] { GameAction.ArmaPrincipal, GameAction.ArmaSecundaria, GameAction.Cuchillo, GameAction.Granadas }, " / "),
+        ("Tienda", new[] { GameAction.Tienda }, ""),
+        ("Habilidad", new[] { GameAction.Habilidad }, ""),
         ("Dispositivo", new[] { GameAction.Dispositivo }, ""),
         ("Plantar y desactivar", new[] { GameAction.Plantar }, ""),
         ("Soltar el arma", new[] { GameAction.Soltar }, ""),
-        ("Tienda", new[] { GameAction.Tienda }, ""),
-        ("Habilidad", new[] { GameAction.Habilidad }, ""),
         ("Mapa", new[] { GameAction.Mapa }, ""),
     };
 

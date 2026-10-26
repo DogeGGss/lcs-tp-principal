@@ -11,8 +11,8 @@ using Hashtable = ExitGames.Client.Photon.Hashtable;
 // El anfitrión crea la sala y recibe un código de 5 caracteres; los demás entran con ese código. La sala guarda
 // el modo y el mapa. Al iniciar, el anfitrión carga el mapa y Photon lo carga en todos a la vez; en la escena
 // del mapa, PartidaEnRed arma los jugadores (US 025 a US 030).
-// US 195: al iniciar, la sala pasa a guardar 2 minutos a quien se desconecta. VolverALaPartida (el botón del menú
-// principal) se conecta con el usuario y la región anotados por Reconexion y vuelve a entrar a esa sala.
+// US 195: al iniciar, la sala pasa a guardar 2 minutos a quien se desconecta. "Volver a la partida" (la tarjeta del menú
+// principal, en MenuRiftwalker) se conecta con el usuario y la región anotados por Reconexion y vuelve a entrar a esa sala.
 public class Multijugador : MonoBehaviourPunCallbacks, IOnEventCallback
 {
     public const int MaxJugadores = 8;

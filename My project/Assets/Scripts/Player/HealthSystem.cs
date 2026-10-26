@@ -26,6 +26,8 @@ public class HealthSystem : MonoBehaviour
     // Desde dónde viene el daño (US 192): el lugar del que disparó o donde explotó la granada. Lo pone quien hace el
     // daño justo antes de TakeDamage y se borra al usarlo. Sin lugar, el indicador de dirección no muestra nada.
     public static Vector3? DamageOrigin;
+    // US 260: desde dónde vino el último daño que recibió (para empujar el cuerpo al morir), o null si no se sabe.
+    public Vector3? LastDamageOrigin { get; private set; }
 
     // Avisa cada golpe que de verdad le sacó escudo o vida a alguien: a quién, cuánto y desde dónde (US 192).
     public static event System.Action<HealthSystem, int, Vector3?> Damaged;
@@ -86,6 +88,7 @@ public class HealthSystem : MonoBehaviour
         }
         DamageOrigin = null;
         if (currentHealth <= 0 || Invulnerable) return;
+        LastDamageOrigin = origin;
         if (damageAmount > 0) Damaged?.Invoke(this, damageAmount, origin);
 
         if (currentShield > 0)

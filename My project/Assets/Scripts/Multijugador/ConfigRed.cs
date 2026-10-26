@@ -11,6 +11,8 @@ public class ConfigRed : ScriptableObject
     public class Mapa
     {
         public string nombre = "Mapa 1";
+        [Tooltip("Qué es el lugar. Va debajo del nombre en la pantalla de carga. Opcional.")]
+        public string subtitulo;
         [Tooltip("Nombre de la escena. Tiene que estar en la lista de escenas del build.")]
         public string escena;
         public bool tactico = true;
@@ -74,6 +76,46 @@ public class ConfigRed : ScriptableObject
     [Tooltip("Trasbordo (US 019, CA10): suena donde estaba el jugador y se escucha a unos 25 m. Sin clip, suena uno generado.")]
     public AudioClip sonidoTrasbordo;
     [Range(0f, 1f)] public float volumenTrasbordo = 0.8f;
+    [Tooltip("Barrera (US 020): el material de la pared. Sin material, se usa uno gris generado.")]
+    public Material materialBarrera;
+    [Tooltip("Barrera (US 020): el color de sus tiras de luz (el del personaje). Se usa si no hay material de luces.")]
+    public Color colorLucesBarrera = new Color(1f, 0.78f, 0.12f);
+    [Tooltip("Barrera (US 020): material propio para las tiras de luz (por ejemplo, uno con emisión).")]
+    public Material materialLucesBarrera;
+    [Tooltip("Barrera (US 020, CA12 y CA13): se escuchan a unos 25 m. Sin clip, suena uno generado.")]
+    public AudioClip sonidoBarreraSube;
+    public AudioClip sonidoBarreraGolpe;
+    public AudioClip sonidoBarreraGrieta;
+    public AudioClip sonidoBarreraRompe;
+    public AudioClip sonidoBarreraApaga;
+    [Range(0f, 1f)] public float volumenBarrera = 0.8f;
+    [Tooltip("Vista aérea (US 021, CA12): al activarla. Sin clip, suena uno generado.")]
+    public AudioClip sonidoVistaAerea;
+    [Tooltip("Vista aérea (US 021, CA13): al terminar.")]
+    public AudioClip sonidoVistaAereaFin;
+    [Tooltip("Vista aérea (US 021, CA7): el aviso a los rivales de que los están observando.")]
+    public AudioClip sonidoObservado;
+    [Range(0f, 1f)] public float volumenVistaAerea = 0.8f;
+    [Tooltip("Callejero (US 022, CA2): el modelo del perro (el lobo de \"Realistic Furry Wolf\"). Se le pone el material holográfico y se ajusta a 80 cm de alto. Vacío: un perro armado con formas simples.")]
+    public GameObject modeloPerro;
+    [Tooltip("Callejero (US 022, CA4): las animaciones del lobo (WolfAnimations), si el modelo no trae su controlador.")]
+    public RuntimeAnimatorController animacionesPerro;
+    [Tooltip("Callejero (US 022, CA4): el estado del Animator para correr y para atacar.")]
+    public string estadoPerroCorrer = "Running_New";
+    public string estadoPerroAtacar = "AttackR";
+    public string estadoPerroSentado = "sitingIdle__New";
+    [Tooltip("Callejero (US 022, CA3): el color del perro para su dueño y sus compañeros. Los rivales lo ven rojo.")]
+    public Color colorPerro = new Color(1f, 0.55f, 0.12f);
+    [Tooltip("Callejero (US 022, CA11, CA16 y CA17). Sin clip, suena uno generado.")]
+    public AudioClip sonidoPerroSoltar;
+    public AudioClip sonidoPerroLadrido;
+    [Tooltip("Callejero (US 022, CA11): ladridos que el perro va alternando mientras corre. Con alguno cargado, ya no gruñe de fondo. Vacío: usa Sonido Perro Ladrido.")]
+    public AudioClip[] ladridosPerro = new AudioClip[0];
+    public AudioClip sonidoPerroGrunido;
+    public AudioClip sonidoPerroMordida;
+    public AudioClip sonidoPerroMuerte;
+    public AudioClip sonidoPerroDesaparece;
+    [Range(0f, 1f)] public float volumenPerro = 0.8f;
 
     [Tooltip("Música del Modo Deathmatch (US 136, CA6). Suena en loop por el grupo Música. Sin clip, no suena nada.")]
     public AudioClip musicaDeathmatch;

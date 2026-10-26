@@ -117,6 +117,7 @@ public class ShopUI : MonoBehaviour
     private UnityEngine.UI.RectMask2D catsMask, listMask, detailMask;
     private CanvasGroup shopGroup, detailGroup, toastGroup;
     private GameObject hudClock, hudHint, banner;
+    private TextMeshProUGUI hudHintText;
     private TextMeshProUGUI hudTime, hudRound, hudMoney, bannerText, toastText;
     private TextMeshProUGUI barSub, barPhase, barTime, barMoney, barNext;
     private RectTransform barProgress, catRowsRoot, legendRoot, listRowsRoot;
@@ -228,7 +229,10 @@ public class ShopUI : MonoBehaviour
             if (loadout == null) return;
         }
 
-        if (KeyBindings.Down(GameAction.Tienda))
+        // US 166: en el campo de práctica el aviso dice "Tienda" mientras corre el tutorial y "Cambiar arma" después.
+        if (CampoDePractica.Activo && hudHintText != null && hudHintText.text != NombrePractica) SetHint(NombrePractica);
+
+        if (KeyBindings.Down(GameAction.Tienda) && !CharacterSelectScreen.IsOpen) // con la selección de personaje abierta, no
         {
             // US 138, CA5: en Deathmatch solo se abre muerto, en la cuenta inicial o recién reaparecido.
             if (!open && Dm && loadout.CheckAccess() != ShopResult.Ok)
@@ -257,6 +261,8 @@ public class ShopUI : MonoBehaviour
         categories.AddRange(catalog.ActiveCategories());
         // US 138, CA2: en Deathmatch no hay escudos ni granadas.
         if (Dm) categories.RemoveAll(c => c == ShopCategory.Shields || c == ShopCategory.Grenades);
+        // US 119: en el campo de práctica no es una tienda, es donde se cambia de arma (US 166: salvo en el tutorial).
+        if (CampoDePractica.Activo) SetHint(NombrePractica);
         BuildCategoryRows();
         lastAccess = loadout.CheckAccess();
         Render();
@@ -502,7 +508,9 @@ public class ShopUI : MonoBehaviour
 
         // Con marcador (US 057) el tiempo de la compra ya está en su centro: este reloj quedaba abajo, asomándose.
         hudClock.SetActive(!open && !Dm && phase != null && phase.IsActive && MatchHud.Instance == null);
-        hudHint.SetActive(!open && (phaseActive || Dm) && access == ShopResult.Ok && !PantallaDeCarga.Visible);
+        // US 166: durante el tutorial del campo de práctica, solo en su paso (el de la tienda).
+        hudHint.SetActive(!open && (phaseActive || Dm) && access == ShopResult.Ok && !PantallaDeCarga.Visible &&
+                          !TutorialDePractica.OcultaAvisoTienda);
         hudMoney.gameObject.SetActive(!open && !Dm); // US 138, CA1: sin plata
         if (Spectated != null || showedSpectated)
         {
@@ -516,6 +524,15 @@ public class ShopUI : MonoBehaviour
         {
             hudTime.text = Clock(phase.TimeLeft);
             hudRound.text = $"Ronda {phase.Round}";
+        }
+
+        // US 119: en el campo de práctica se cambia cuando quiera: no hay tiempo que mostrar.
+        bool clock = !CampoDePractica.Activo;
+        if (open && barTime.gameObject.activeSelf != clock)
+        {
+            barPhase.gameObject.SetActive(clock);
+            barTime.gameObject.SetActive(clock);
+            barProgress.parent.gameObject.SetActive(clock);
         }
 
         if (open && Dm)
@@ -593,15 +610,18 @@ public class ShopUI : MonoBehaviour
         RenderTeam();
     }
 
+    // US 166: mientras corre el tutorial del campo de práctica se la nombra "Tienda", como en las partidas.
+    private static string NombrePractica => TutorialDePractica.EnCurso ? "Tienda" : "Cambiar arma";
+
     private void RenderBar()
     {
-        barTitle.text = Dm ? "Elegí tu equipo" : "Tienda";
+        barTitle.text = CampoDePractica.Activo ? NombrePractica : Dm ? "Elegí tu equipo" : "Tienda";
         if (Dm)
         {
             // US 138, CA1: sin plata ni precios.
-            barSub.text = "Deathmatch";
+            barSub.text = CampoDePractica.Activo ? "Campo de práctica" : "Deathmatch";
             barMoney.text = "Todo gratis";
-            barNext.text = "Se guarda para la próxima vida";
+            barNext.text = CampoDePractica.Activo ? "Cambiala cuando quieras" : "Se guarda para la próxima vida";
             banner.SetActive(false);
             return;
         }
@@ -1100,7 +1120,8 @@ public class ShopUI : MonoBehaviour
         {
             // US 138, CA3: elegir equipa gratis; la que ya está en uso dice "Elegida".
             if (access != ShopResult.Ok) PaintButton(ButtonStyle.Locked, "Ahora no", "solo mirar");
-            else if (loadout.IsEquipped(item)) PaintButton(ButtonStyle.Owned, "Elegida", "se guarda para la próxima vida");
+            else if (loadout.IsEquipped(item))
+                PaintButton(ButtonStyle.Owned, "Elegida", CampoDePractica.Activo ? "la tenés en la mano" : "se guarda para la próxima vida");
             else PaintButton(ButtonStyle.Normal, "Elegir", "Enter · clic");
         }
         else if (access != ShopResult.Ok)
@@ -1260,7 +1281,7 @@ public class ShopUI : MonoBehaviour
         {
             // US 138, CA4: no hay gasto; se avisa que lo elegido queda.
             TextMeshProUGUI keep = Text(Place(Node("Guardado", loadoutCells[5]), 0f, 51f, right, 40f), labelFont, 17f, Ink, TextAlignmentOptions.MidlineRight, 6f, true);
-            keep.text = "Se guarda para la próxima vida";
+            keep.text = CampoDePractica.Activo ? "Cambiala cuando quieras" : "Se guarda para la próxima vida";
             return;
         }
         if (loadout.HasPurchases && loadout.CheckAccess() == ShopResult.Ok)
@@ -1796,6 +1817,16 @@ public class ShopUI : MonoBehaviour
         parent.DetachChildren();
     }
 
+    // El aviso de abajo ("B Tienda"), con el ancho justo para el texto.
+    private void SetHint(string text)
+    {
+        hudHintText.text = text;
+        RectTransform hint = (RectTransform)hudHint.transform;
+        float hintWidth = 59f + Width(hudHintText, text.ToUpperInvariant()) + 19f;
+        hint.sizeDelta = new Vector2(hintWidth, 48f);
+        hint.anchoredPosition = new Vector2(960f - hintWidth / 2f, -150f);
+    }
+
     private void BuildHud()
     {
         RectTransform clock = Place(Node("RelojFase", hud), 865f, 22f, 190f, 96f);
@@ -1811,12 +1842,9 @@ public class ShopUI : MonoBehaviour
         Image(hint, rounded, HudColor, 24f);
         Border(hint, 24f, Over(Rgb(242, 154, 56, 0.6f), HudBase));
         Key(hint, 19f, 9f, KeyBindings.Label(GameAction.Tienda), true, false);
-        TextMeshProUGUI hintText = Text(Place(Node("Texto", hint), 59f, 0f, 200f, 48f), labelFont, 20f, Ink, TextAlignmentOptions.MidlineLeft, 10f, true);
-        hintText.text = "Tienda";
-        float hintWidth = 59f + Width(hintText, "TIENDA") + 19f;
-        hint.sizeDelta = new Vector2(hintWidth, 48f);
-        hint.anchoredPosition = new Vector2(960f - hintWidth / 2f, -150f);
+        hudHintText = Text(Place(Node("Texto", hint), 59f, 0f, 200f, 48f), labelFont, 20f, Ink, TextAlignmentOptions.MidlineLeft, 10f, true);
         hudHint = hint.gameObject;
+        SetHint("Tienda");
 
         hudMoney = Text(Place(Node("Plata", hud), 34f, 866f, 600f, 40f), displayFont, 34f, Ink);
         Material shadow = hudMoney.fontMaterial;

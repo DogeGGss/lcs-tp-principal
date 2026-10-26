@@ -12,6 +12,20 @@ public class HideOwnBody : MonoBehaviour
     [SerializeField] private Camera ownCamera;
 
     private readonly List<Renderer> brazos = new List<Renderer>();
+    private readonly List<Renderer> cuerpo = new List<Renderer>();
+    private bool cuerpoVisible;
+
+    /// <summary>
+    /// US 263: bailando, con la cámara en tercera persona, el cuerpo se ve entero (y sin los brazos de primera persona,
+    /// que van encima de los del cuerpo).
+    /// </summary>
+    public void MostrarCuerpo(bool si)
+    {
+        if (cuerpoVisible == si) return;
+        cuerpoVisible = si;
+        foreach (Renderer r in cuerpo)
+            if (r != null) r.shadowCastingMode = si ? ShadowCastingMode.On : ShadowCastingMode.ShadowsOnly;
+    }
     private HealthSystem vida;
 
     // Con multijugador, esto tiene que correr solo en el jugador local: los demas si tienen que ver este cuerpo.
@@ -22,12 +36,12 @@ public class HideOwnBody : MonoBehaviour
         Armar();
     }
 
-    // Fuera del Táctico (Zombie, por ejemplo) el personaje se elige en el menú, antes de la partida: el cuerpo pasa a
-    // ser el suyo desde el principio, y con él los brazos. En el Táctico se elige con la partida empezada y lo cambia
+    // En el Zombie el personaje se elige en el menú, antes de la partida: el cuerpo pasa a ser el suyo desde el
+    // principio, y con él los brazos. En el Táctico y en el Deathmatch se elige con la partida empezada y lo cambia
     // JugadorEnRed (que después llama a Rehacer).
     private void CuerpoElegido()
     {
-        if (MatchSettings.Mode == GameMode.Tactico) return;
+        if (MatchSettings.Mode == GameMode.Tactico || MatchSettings.Mode == GameMode.Deathmatch) return;
         CharacterData personaje = CharacterRoster.Selected;
         if (personaje == null || personaje.modelo == null) return;
         foreach (Animator animador in GetComponentsInChildren<Animator>())
@@ -46,6 +60,7 @@ public class HideOwnBody : MonoBehaviour
     {
         foreach (Renderer r in brazos) if (r != null) Destroy(r.gameObject);
         brazos.Clear();
+        cuerpo.Clear();
         Armar();
     }
 
@@ -54,15 +69,17 @@ public class HideOwnBody : MonoBehaviour
         foreach (var r in GetComponentsInChildren<Renderer>())
         {
             if (ownCamera != null && r.transform.IsChildOf(ownCamera.transform)) continue;
-            r.shadowCastingMode = ShadowCastingMode.ShadowsOnly;
-            if (r is SkinnedMeshRenderer cuerpo) CrearBrazos(cuerpo);
+            if (r.name.StartsWith("Brazos (primera persona)")) continue; // los del cuerpo anterior (se borran en este cuadro)
+            r.shadowCastingMode = cuerpoVisible ? ShadowCastingMode.On : ShadowCastingMode.ShadowsOnly;
+            cuerpo.Add(r);
+            if (r is SkinnedMeshRenderer malla) CrearBrazos(malla);
         }
     }
 
     // Muerto, los brazos no quedan flotando donde estaba el cuerpo (el resto ya no se ve).
     private void LateUpdate()
     {
-        bool vivo = vida == null || vida.currentHealth > 0;
+        bool vivo = (vida == null || vida.currentHealth > 0) && !cuerpoVisible;
         foreach (Renderer r in brazos)
             if (r != null && r.enabled != vivo) r.enabled = vivo;
     }

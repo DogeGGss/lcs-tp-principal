@@ -9,7 +9,7 @@ using static ShopUIKit;
 // - CA3: cuadros por segundo, actualizados cada 0,5 s.
 // - CA4: en las partidas online, el ping al servidor de Photon en ms: verde hasta 80, amarillo hasta 150 y rojo si
 //   pasa de 150. En las partidas locales no se muestra.
-// - CA5: la opción se guarda en PlayerPrefs y se usa al volver a abrir el juego.
+// - CA5: la opción se guarda (Guardado, US 162) y se usa al volver a abrir el juego.
 // Se crea solo al arrancar el juego y sigue entre escenas: no hay que ponerlo en ninguna.
 public class IndicadorRendimiento : MonoBehaviour
 {
@@ -29,10 +29,10 @@ public class IndicadorRendimiento : MonoBehaviour
     /// <summary>Si el jugador eligió ver el indicador (CA1 y CA5).</summary>
     public static bool Activo
     {
-        get => PlayerPrefs.GetInt(Clave, 0) == 1;
+        get => Guardado.GetInt(Clave, 0) == 1;
         set
         {
-            PlayerPrefs.SetInt(Clave, value ? 1 : 0);
+            Guardado.SetInt(Clave, value ? 1 : 0);
             if (actual != null) actual.Mostrar(value);
         }
     }

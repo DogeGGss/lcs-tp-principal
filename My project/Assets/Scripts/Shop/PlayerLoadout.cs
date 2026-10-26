@@ -32,7 +32,8 @@ public class PlayerLoadout : MonoBehaviour
     public event System.Action Changed;
 
     // Deathmatch (US 138): no hay plata. Las armas se eligen gratis y se conservan de una vida a la otra.
-    public static bool Free => MatchSettings.Mode == GameMode.Deathmatch;
+    // En el campo de práctica (US 119), igual: todas las armas gratis y sin zona de compra.
+    public static bool Free => MatchSettings.Mode == GameMode.Deathmatch || CampoDePractica.Activo;
 
     // Al morir, justo antes de perder el equipamiento: así el arma todavía se puede soltar al piso (US 184, CA8).
     public event System.Action LosingEquipment;
@@ -63,6 +64,16 @@ public class PlayerLoadout : MonoBehaviour
         if (phase != null) phase.Started += OnPhaseStarted;
         if (health != null) health.Died += LoseEquipment;
         if (Free) StartCoroutine(DefaultEquipment());
+        if (CampoDePractica.Activo) GranadasDePractica();
+    }
+
+    // US 166: en el campo de práctica se llevan todas las granadas, y no se gastan (el tutorial enseña a tirarlas).
+    private void GranadasDePractica()
+    {
+        if (catalog == null) return;
+        foreach (ShopItem item in catalog.ItemsIn(ShopCategory.Grenades))
+            if (item != null) grenades[item] = Mathf.Max(1, item.maxCarry);
+        Changed?.Invoke();
     }
 
     // US 138, CA6: si no eligió nada, juega con el Mitre y La Porteña. Un cuadro después, para que el resto
@@ -102,7 +113,7 @@ public class PlayerLoadout : MonoBehaviour
     public bool Consume(ShopItem grenade)
     {
         if (grenade == null || grenade.kind != ShopItemKind.Grenade || Count(grenade) <= 0) return false;
-        grenades[grenade] = Count(grenade) - 1;
+        if (!CampoDePractica.Activo) grenades[grenade] = Count(grenade) - 1; // US 166: en el campo no se gastan
         Purchase bought = LastPurchaseOf(grenade);
         if (bought != null) purchases.Remove(bought); // si no, "Deshacer" devolvería la plata de una granada ya usada
         Changed?.Invoke();

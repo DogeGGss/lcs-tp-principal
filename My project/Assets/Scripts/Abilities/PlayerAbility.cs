@@ -25,10 +25,24 @@ public class PlayerAbility : MonoBehaviour
     [SerializeField] private bool useSelectedCharacter = true;
 
     private EfectoHabilidad efecto;
+    // US 020, CA8: la recarga espera a que termine el efecto (la barrera).
+    private bool esperandoEfecto;
+
+    /// <summary>Mientras el efecto está activo, lo que muestra el reloj del HUD (-1: nada).</summary>
+    public float ProgresoActivo => efecto != null ? efecto.ProgresoActivo : -1f;
+    public string TextoActivo => efecto != null ? efecto.TextoActivo : null;
 
     // US 015, CA6: el jugador empieza la partida con la habilidad del personaje que eligió.
     private void Awake()
     {
+        // US 119: en el campo de práctica se practica con las armas, sin habilidad (la Q no hace nada y el HUD no la
+        // muestra). US 166: el tutorial presta una durante su paso (Prestar).
+        if (CampoDePractica.Activo || SinHabilidades)
+        {
+            ability = null;
+            Preparar();
+            return;
+        }
         if (useSelectedCharacter)
         {
             CharacterData character = CharacterRoster.Selected;
@@ -37,11 +51,21 @@ public class PlayerAbility : MonoBehaviour
         Preparar();
     }
 
+    // En el Deathmatch no hay habilidades: el personaje es solo el aspecto (PersonajesDeathmatch).
+    private static bool SinHabilidades => MatchSettings.Mode == GameMode.Deathmatch && Photon.Pun.PhotonNetwork.InRoom;
+
     /// <summary>US 016: el personaje se eligió con la partida ya cargada (Modo Táctico): se usa su habilidad.</summary>
     public void UsarPersonaje(CharacterData character)
     {
-        if (!useSelectedCharacter || character == null || character.ability == null) return;
+        if (!useSelectedCharacter || CampoDePractica.Activo || SinHabilidades || character == null || character.ability == null) return;
         ability = character.ability;
+        Preparar();
+    }
+
+    /// <summary>US 166: el tutorial del campo de práctica presta una habilidad durante su paso (null la saca).</summary>
+    public void Prestar(AbilityData datos)
+    {
+        ability = datos;
         Preparar();
     }
 
@@ -50,6 +74,13 @@ public class PlayerAbility : MonoBehaviour
     {
         Cargas = MaxCargas;
         CooldownLeft = 0f;
+        esperandoEfecto = false;
+    }
+
+    /// <summary>US 020, CA8: terminó el efecto (la barrera se rompió o se apagó): empieza a correr la recarga.</summary>
+    public void TerminoEfecto()
+    {
+        esperandoEfecto = false;
     }
 
     // Todas las cargas listas y el componente del efecto que corresponde (y ninguno de otra habilidad).
@@ -57,6 +88,7 @@ public class PlayerAbility : MonoBehaviour
     {
         Cargas = MaxCargas;
         CooldownLeft = 0f;
+        esperandoEfecto = false;
         System.Type tipo = ability == null ? null : EfectoHabilidad.Tipo(ability.efecto);
         if (efecto != null && (tipo == null || efecto.GetType() != tipo)) { Destroy(efecto); efecto = null; }
         if (efecto == null && tipo != null)
@@ -69,7 +101,7 @@ public class PlayerAbility : MonoBehaviour
 
     private void Update()
     {
-        if (Recargando && ability != null)
+        if (Recargando && ability != null && !esperandoEfecto)
         {
             CooldownLeft -= Time.deltaTime;
             if (CooldownLeft <= 0f)
@@ -78,7 +110,9 @@ public class PlayerAbility : MonoBehaviour
                 CooldownLeft = Recargando ? CooldownLeft + ability.cooldown : 0f;
             }
         }
-        if (ability != null && !ShopUI.IsOpen && KeyBindings.Down(GameAction.Habilidad)) TryUse();
+        // US 020: las que se apuntan antes leen la tecla en su efecto, que después llama a Usar.
+        bool apunta = efecto != null && efecto.ApuntaAntes;
+        if (ability != null && !apunta && !ShopUI.IsOpen && !PauseMenu.IsPaused && KeyBindings.Down(GameAction.Habilidad)) TryUse();
     }
 
     public bool TryUse()
@@ -86,9 +120,24 @@ public class PlayerAbility : MonoBehaviour
         if (!IsReady) return false;
         // US 019, CA3 y CA6: si el efecto no se puede hacer (contra una pared, en la compra...), no se gasta la carga.
         if (efecto != null && (!efecto.PuedeUsar() || !efecto.Aplicar())) return false;
+        Gastar();
+        return true;
+    }
+
+    /// <summary>US 020: el efecto ya se hizo (la barrera se puso): gasta la carga y, si corresponde, espera a que
+    /// termine para empezar a recargar.</summary>
+    public bool Usar()
+    {
+        if (!IsReady) return false;
+        Gastar();
+        return true;
+    }
+
+    private void Gastar()
+    {
         if (!Recargando) CooldownLeft = ability.cooldown;
         Cargas--;
+        if (efecto != null && efecto.RecargaAlTerminar) esperandoEfecto = true;
         Used?.Invoke();
-        return true;
     }
 }

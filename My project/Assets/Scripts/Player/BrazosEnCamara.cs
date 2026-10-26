@@ -109,7 +109,8 @@ public class BrazosEnCamara : MonoBehaviour
 
         foreach (KeyValuePair<GameObject, MeshRenderer> foto in fotos)
         {
-            bool ver = foto.Key == enMano;
+            // Con la mira telescópica puesta (US 254) el arma se esconde: los brazos también.
+            bool ver = foto.Key == enMano && !MiraTelescopica.Puesta;
             if (foto.Value != null) foto.Value.enabled = ver;
             if (brazoDerecho.TryGetValue(foto.Key, out MeshRenderer derecho) && derecho != null) derecho.enabled = ver;
         }
@@ -279,6 +280,8 @@ public class BrazosEnCamara : MonoBehaviour
     private void SacarFoto(GameObject arma)
     {
         var malla = new Mesh { name = "Brazos con " + arma.name };
+        DedosDelArma dedos = arma.GetComponent<DedosDelArma>(); // US 244: los dedos abiertos o cerrados para esta arma
+        if (dedos != null && AnimacionPrimeraPersona.AnimacionesNuevas) dedos.Aplicar(animador); // entrega del Sprint 3: como antes
         brazosCuerpo.BakeMesh(malla, true); // con la escala: la copia queda a escala 1
         Mesh derecha = SepararBrazoDerecho(malla);
 
@@ -388,6 +391,16 @@ public class BrazosEnCamara : MonoBehaviour
             foreach (Transform parte in enMano.GetComponentsInChildren<Transform>(true)) parte.gameObject.layer = capa;
         ajustada = enMano;
         if (enMano != null) brazosCuerpo.enabled = true;
+        // US 244: los dedos de cada arma también se ajustan en vivo (el componente aparece en el arma en la mano).
+        // En la entrega del Sprint 3 (sin las animaciones nuevas) los dedos quedan como antes.
+        if (AnimacionPrimeraPersona.AnimacionesNuevas && enMano != null && TieneAgarres(enMano))
+        {
+            DedosDelArma dedos = enMano.GetComponent<DedosDelArma>();
+#if UNITY_EDITOR
+            if (dedos == null) dedos = enMano.AddComponent<DedosDelArma>();
+#endif
+            if (dedos != null) dedos.Aplicar(animador);
+        }
 #if UNITY_EDITOR
         GuardarAjuste(false);
 #endif
@@ -447,6 +460,8 @@ public class BrazosEnCamara : MonoBehaviour
         public string arma;
         public Vector3 lugar, escala, derecho, izquierdo;
         public Quaternion giro, derechoGiro, izquierdoGiro;
+        // US 244: los dedos (DedosDelArma, en JSON), si el arma tiene.
+        public string dedos;
     }
 
     [System.Serializable]
@@ -481,6 +496,8 @@ public class BrazosEnCamara : MonoBehaviour
                 izquierdo = prestado ? izquierdoLocal : izquierdo.localPosition,
                 izquierdoGiro = prestado ? izquierdoGiro : izquierdo.localRotation
             });
+            DedosDelArma dedos = arma.GetComponent<DedosDelArma>();
+            if (dedos != null) ajuste.armas[ajuste.armas.Count - 1].dedos = JsonUtility.ToJson(dedos);
         }
         string json = JsonUtility.ToJson(ajuste, true);
         if (json == ultimoGuardado) return;

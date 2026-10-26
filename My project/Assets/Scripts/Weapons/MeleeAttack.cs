@@ -16,10 +16,20 @@ public class MeleeAttack : MonoBehaviour
     public static event System.Action<MeleeAttack> Swung;
     public AudioClip SwingSound => swingSound;
 
-    // Parámetros de movimiento del cuchiloo para animación rápida por código
-    private float stabDistance = 0.3f;
-    private float stabDuration = 0.08f;
-    private float returnDuration = 0.12f;
+    // US 256: el corte de costado. Lo dibuja AnimacionPrimeraPersona con el avance (AvanceDelCorte); acá solo se mide el
+    // tiempo: el golpe llega en la mitad del corte y todo termina antes de que se pueda volver a atacar (0,75 s).
+    public const float Preparacion = 0.12f; // la mano lleva el cuchillo hacia atrás y hacia adentro
+    public const float Corte = 0.12f;       // el corte cruza de adentro hacia afuera; el golpe, en la mitad
+    public const float Vuelta = 0.30f;      // vuelve a su lugar
+    public const float Total = Preparacion + Corte + Vuelta;
+    private float inicioDelCorte;
+
+    /// <summary>De 0 a 1 mientras corta, o -1.</summary>
+    public float AvanceDelCorte => isAttacking && AnimacionPrimeraPersona.AnimacionesNuevas ? Mathf.Clamp01((Time.time - inicioDelCorte) / Total) : -1f;
+
+    // Entrega del Sprint 3 (sin las animaciones nuevas, AnimacionPrimeraPersona.AnimacionesNuevas): la estocada de la
+    // v0.2.0, por código en el cuchillo, con el golpe apenas llega adelante.
+    private const float stabDistance = 0.3f, stabDuration = 0.08f, returnDuration = 0.12f;
 
     private void Start()
     {
@@ -64,6 +74,38 @@ public class MeleeAttack : MonoBehaviour
 
     private IEnumerator AttackRoutine(MeleeWeaponData data)
     {
+        if (!AnimacionPrimeraPersona.AnimacionesNuevas)
+        {
+            yield return EstocadaComoAntes(data);
+            yield break;
+        }
+        isAttacking = true;
+        Swung?.Invoke(this);
+
+        // CA6: Sonido de ataque
+        if (swingSound != null)
+            audioSource.PlayOneShot(swingSound);
+
+        GameObject viewModel = weaponHolder.CurrentViewModel;
+        inicioDelCorte = Time.time;
+
+        // CA3 (US 256): el golpe, en la mitad del corte. CA4: si cambió de arma antes, el corte se interrumpe sin golpe.
+        yield return new WaitForSeconds(Preparacion + Corte * 0.5f);
+        if (viewModel == null || !viewModel.activeInHierarchy) { isAttacking = false; yield break; }
+        ExecuteHitCheck(data);
+
+        // El resto del corte y la vuelta (también se corta si guarda el cuchillo).
+        while (Time.time - inicioDelCorte < Total)
+        {
+            if (viewModel == null || !viewModel.activeInHierarchy) break;
+            yield return null;
+        }
+        isAttacking = false;
+    }
+
+    // La estocada de la v0.2.0 (entrega del Sprint 3): el cuchillo va hacia adelante, golpea y vuelve.
+    private IEnumerator EstocadaComoAntes(MeleeWeaponData data)
+    {
         isAttacking = true;
         Swung?.Invoke(this);
 
@@ -83,7 +125,7 @@ public class MeleeAttack : MonoBehaviour
             float elapsed = 0f;
             while (elapsed < stabDuration)
             {
-                if (viewModel == null) yield break;
+                if (viewModel == null) { isAttacking = false; yield break; }
                 viewModel.transform.localPosition = Vector3.Lerp(initialPos, targetPos, elapsed / stabDuration);
                 elapsed += Time.deltaTime;
                 yield return null;
@@ -100,7 +142,7 @@ public class MeleeAttack : MonoBehaviour
             float elapsed = 0f;
             while (elapsed < returnDuration)
             {
-                if (viewModel == null) yield break;
+                if (viewModel == null) { isAttacking = false; yield break; }
                 viewModel.transform.localPosition = Vector3.Lerp(targetPos, initialPos, elapsed / returnDuration);
                 elapsed += Time.deltaTime;
                 yield return null;
@@ -113,7 +155,7 @@ public class MeleeAttack : MonoBehaviour
 
     private void ExecuteHitCheck(MeleeWeaponData data)
     {
-        if (MinijuegoPajaros.Activo) return; // US 157, CA7: en la compra el cuchillo se usa, pero no hace daño
+        if (MinijuegoCometas.Activo) return; // US 157, CA7: en la compra el cuchillo se usa, pero no hace daño
         // CA2: Busca todos los colliders dentro del rango del arma, con las zonas de impacto de los huesos (US 165)
         Vector3 origin = playerCamera.transform.position;
         Vector3 forward = playerCamera.transform.forward;
@@ -155,6 +197,19 @@ public class MeleeAttack : MonoBehaviour
             best.TakeDamage(data.damage);
             WeaponFire.ReportMelee(lethal);
             Debug.Log($"Golpe cuerpo a cuerpo a {best.name}. Daño: {data.damage}");
+        }
+        // US 020, CA5: sin nadie a tiro, el cuchillo le pega a la Barrera que tenga adelante (si es de un rival).
+        else if (Physics.Raycast(origin, forward, out RaycastHit pared, data.range, Physics.DefaultRaycastLayers, QueryTriggerInteraction.Ignore))
+        {
+            Barrera barrera = Barrera.De(pared.collider);
+            if (barrera != null)
+            {
+                barrera.Chispas(pared.point, pared.normal);
+                barrera.PedirDanio(data.damage, this, pared.point);
+            }
+            // US 022, CA9: también al perro del Callejero de un rival.
+            Perro perro = Perro.De(pared.collider);
+            if (perro != null && perro.PedirDanio(data.damage, this, pared.point)) WeaponFire.ReportMelee(false);
         }
     }
 
