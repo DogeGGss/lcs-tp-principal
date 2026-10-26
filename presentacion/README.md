@@ -75,3 +75,7 @@ Después del cierre hay una diapositiva secreta: en «16 / 16» Siguiente (o →
 Los sueldos salen de las horas que registró cada uno en el Sprint 3 (Retrospectiva y métricas del Sprint 3): cada uno cobra el sueldo junior de lo que hace por sus horas, sobre 80 h de tiempo completo por sprint (356,9 h entre los 7, el 64 %). Los sueldos pasan de US$ 7.139 a US$ 4.846 brutos por mes (US$ 6.687 con cargas) y la inversión, de US$ 26.700 a US$ 20.000. Números, Costos e Inversión tienen los números nuevos del simulador de la guía; en el promedio se gana US$ 7.495 por mes, el equilibrio baja a 46.000 jugadores y se recupera en el mes 10.
 
 En pantallas bajas (1280 × 720 y 1024 × 768), la última columna de la fila de abajo de Inversión es más ancha (1,4 veces las otras): el gasto por pagador entra en dos renglones y la fila queda por encima de los controles.
+
+## Video de la diapositiva secreta (26/10/2026)
+
+La diapositiva secreta pasa media/invasion.mp4 (1920 × 1080, 28 s, 15,5 MB, tal como llegó: ya empieza a reproducirse mientras baja). La grieta de luz ya no se abre en un círculo: se abre en un recuadro con la forma del video, en el centro (88 % del ancho o 84 % del alto de la pantalla, lo que entre), y su contorno de luz es el borde del video, que pasa adentro. Sin video queda el portal redondo. Probado a 1280 × 720 y 1920 × 1080: el video y el recuadro coinciden y ← lo cierra y vuelve al cierre.

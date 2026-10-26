@@ -116,8 +116,10 @@ function go(n){const ultima=D.slides.length-1;
  current=Math.max(0,Math.min(ultima,n));render(true)}
 function prepararSecreto(){
  if(secreto.capa)return;const c=document.createElement('div');c.id='secreto';c.hidden=true;c.setAttribute('aria-hidden','true');
- c.innerHTML=`<div class="fondo"></div><div class="destellos"></div><div class="rebanadas"></div><div class="cortes">${'<i></i>'.repeat(14)}</div><svg class="grietas"></svg><div class="portal"></div>${D.secret.video?`<video playsinline preload="auto" src="${esc(D.secret.video)}"></video>`:''}`;
- document.body.append(c);secreto.capa=c;secreto.video=c.querySelector('video');
+ c.innerHTML=`<div class="fondo"></div><div class="destellos"></div><div class="rebanadas"></div><div class="cortes">${'<i></i>'.repeat(14)}</div><svg class="grietas"></svg>${D.secret.video?`<video playsinline preload="auto" src="${esc(D.secret.video)}"></video>`:''}<div class="portal"></div>`;
+ document.body.append(c);secreto.capa=c;const v=secreto.video=c.querySelector('video');
+ // El recuadro del portal toma la forma del video (16:9 hasta que se sabe).
+ v?.addEventListener('loadedmetadata',()=>c.style.setProperty('--aspecto',v.videoWidth/v.videoHeight));
 }
 // Grietas que salen de un golpe cerca del centro, en zigzag hasta el borde, en píxeles de la pantalla (así el largo con que
 // se dibujan coincide con el real). Quedan sin dibujar hasta agrietar().
@@ -153,7 +155,8 @@ function cortes(c,k){
  document.body.style.setProperty('--temblor',(.6+6.4*k).toFixed(1)+'px');document.body.style.setProperty('--rgb',(.8+4.7*k).toFixed(1)+'px');
 }
 // Unos 8,5 s: la página falla cada vez más (0 a 4,6 s), se agrieta (desde 2 s), la barra, los controles y la diapositiva se
-// aflojan y se caen de a uno (4,3 a 7,5 s), se abre una grieta de luz (6,3 s), se vuelve el portal (7,6 s) y pasa el video.
+// aflojan y se caen de a uno (4,3 a 7,5 s), se abre una grieta de luz (6,3 s), se vuelve el portal con la forma del video
+// (7,6 s) y el video pasa adentro (8,5 s).
 function abrirSecreto(){
  prepararSecreto();const c=secreto.capa,v=secreto.video,svg=c.querySelector('.grietas'),b=document.body,t=(ms,f)=>secreto.timers.push(setTimeout(f,ms));
  secreto.abierto=true;c.className=v?'':'sin-video';c.hidden=false;document.activeElement?.blur();

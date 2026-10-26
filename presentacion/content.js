@@ -51,8 +51,9 @@ window.PRESENTATION = {
   trailer: {src:'media/trailer.mp4', poster:'media/trailer-poster.jpg'},
   // Diapositiva secreta, después del cierre: Siguiente en «16 / 16» rompe la página y pasa el video del portal abriéndose en la
   // universidad, para anunciar el modo invasión. No figura en el índice, el contador ni el reloj; ← o Esc vuelve al cierre.
-  // video: el MP4 (8 a 10 s) en presentacion/media/, por ejemplo 'media/invasion.mp4'. Sin video, queda el portal abierto.
-  secret: {video:null},
+  // video: el MP4 en presentacion/media/. El portal se abre en un recuadro con la forma del video y su contorno de luz es el
+  // borde del video. Sin video, queda el portal redondo abierto.
+  secret: {video:'media/invasion.mp4'},
   // La historia del juego (diapositiva Historia, después del tráiler): tres momentos con cuadros del tráiler y los modos
   // que la representan, con su mapa. Oleadas va sin mapa ni detalle: se muestra más adelante.
   story: {
