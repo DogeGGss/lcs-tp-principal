@@ -670,6 +670,30 @@ a.uslink{white-space:nowrap}
 .mapa-fig{margin:16px 0}
 .mapa-fig img{display:block;width:100%;height:auto;border-radius:10px;border:1px solid var(--line)}
 .mapa-fig figcaption{margin-top:6px;font-size:14px;color:var(--ink-2)}
+/* Arte del perfil: conjuntos como en la cabecera del Perfil, zonas del banner e instrucciones */
+.pa-conjuntos{display:flex;flex-direction:column;gap:4px;margin:12px 0}
+.pa-conj{position:relative;height:calc(190px * var(--k,1))}
+.pa-escala{position:absolute;left:calc(20px * var(--k,1));top:calc(20px * var(--k,1));width:900px;height:150px;transform:scale(var(--k,1));transform-origin:0 0;border-radius:10px;background:#0A0C11}
+.pa-banner{position:absolute;overflow:hidden}
+.pa-banner img{width:100%;height:100%;object-fit:cover;display:block}
+.pa-banner i{position:absolute;inset:0;background:linear-gradient(90deg,#000e,#0000 64%)}
+.pa-avatar{position:absolute;left:46px;top:23px;width:104px;height:104px;padding:2px;box-sizing:border-box;border-radius:4px;background:#F3F4F6}
+.pa-avatar img{width:100%;height:100%;object-fit:cover;border-radius:3px;display:block}
+.pa-escala strong{position:absolute;left:168px;top:24px;font:700 44px var(--display);letter-spacing:.03em;text-transform:uppercase;color:#F3F4F6;white-space:nowrap}
+.pa-escala small{position:absolute;left:170px;top:78px;font:18px var(--body);color:#D6DAE0}
+.pa-escala small b{font-weight:600}
+.pa-zonas svg{display:block;width:100%;height:auto}
+.pa-z-fondo{fill:var(--mono-bg);stroke:var(--line)}
+.pa-z-franja{fill:var(--paper);stroke:var(--ink-2);stroke-dasharray:4 3}
+.pa-z-tranquila{fill:var(--line)}
+.pa-z-foco{fill:var(--accent-soft);stroke:var(--accent);stroke-width:2}
+.pa-z-boton{fill:none;stroke:var(--ink-2);stroke-dasharray:3 3}
+.pa-z-t{font:13px var(--body);fill:var(--ink-2)}
+.pa-z-b{font-weight:700;fill:var(--ink)}
+.pa-pedido{margin-top:12px;border:1px solid var(--line);border-radius:8px;background:var(--paper)}
+.pa-pedido summary{cursor:pointer;padding:10px 14px;font-weight:600}
+.pa-pedido pre{margin:0;padding:12px 14px;max-height:420px;overflow:auto;white-space:pre-wrap;font:13px/1.5 var(--mono);background:var(--mono-bg);border-top:1px solid var(--line);border-radius:0 0 8px 8px}
+
 .mapa-ctl{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0 8px}
 .mapa-ctl button{font:600 14px/1 var(--display);letter-spacing:.06em;text-transform:uppercase;padding:9px 12px;border-radius:8px;border:1px solid var(--line);background:var(--paper);color:var(--ink);cursor:pointer}
 .mapa-ctl button.on{border-color:var(--accent);color:var(--accent)}
@@ -1755,6 +1779,191 @@ body.capture,body.capture-ms,body.capture-cr{padding-left:0!important}
     </div>
   </div>
 </section>
+
+<section id="perfil-arte">
+  <div class="sec-head"><h2>Arte del perfil</h2><span class="sub">Avatares, banners, marcos y títulos · F23 · US 218 a US 220 y US 232</span> <span class="st st-ok">En el juego</span></div>
+  <p>El Perfil se personaliza con cosméticos de un catálogo cerrado: 19 avatares, 19 banners, 19 marcos y 70 títulos, más «Sin título» y «Sin marco». No se suben imágenes propias. Los avatares, banners y marcos van en <b>conjuntos</b>: cada conjunto tiene un avatar, un banner y un marco con el mismo estilo artístico. Se consiguen en las cápsulas de la Estación del Rift (US 234). Las imágenes se generaron con IA a partir de los retratos de los personajes y con las reglas de esta sección, se revisaron una por una y después se integraron en el juego.</p>
+  <p class="soft">Las historias que hablan de estas imágenes enlazan acá: los títulos (US 218), los avatares (US 219), los banners (US 220), los marcos (US 232) y las cápsulas (US 234).</p>
+
+  <h3 id="perfil-arte-conjuntos">Los 19 conjuntos</h3>
+  <p class="soft">Cada uno como se ve en la cabecera del Perfil: el banner, su marco y el avatar del mismo estilo. La rareza es la que tiene en las cápsulas.</p>
+  <div class="pa-conjuntos" id="perfilConjuntos"><p class="soft">Cargando los conjuntos…</p></div>
+  <div class="mapa-leyenda"><span><i style="background:#8E96A3"></i>Inicial</span><span><i style="background:#9AA3B0"></i>Común</span><span><i style="background:#5C7CFF"></i>Raro</span><span><i style="background:#B061FF"></i>Épico</span><span><i style="background:#FFC93C"></i>Legendario</span></div>
+
+  <h3 id="perfil-arte-proceso">Cómo se hicieron</h3>
+  <ol>
+    <li><b>Diseño del Perfil (12/10).</b> Primero se acordó la pantalla: cabecera con el banner de fondo, el avatar, el nombre y el título, y las pestañas Estadísticas y Personalización. De ahí salen las medidas y las zonas que cada imagen tiene que dejar libres.</li>
+    <li><b>Primeros avatares y banners (13/10).</b> Diez avatares y diez banners: los cuatro personajes con sus colores, la R de Riftwalker (el avatar inicial) y temas del juego, como el último tren, el no muerto y el corazón del Rift. El mismo día se sumaron diez pares en estilos artísticos: pop art, hiperrealismo, fauvismo, art nouveau, synthwave, tinta, cubismo, etc. El de cómic se cambió por manga.</li>
+    <li><b>Marcos (14/10).</b> Primero uno de prueba, el de Blindaje fragmentado, y después uno por conjunto, con el estilo de su banner.</li>
+    <li><b>Revisión de los conjuntos (14/10).</b> Se sacaron los que no convencían y se sumaron cuatro: Sombra de 8 bits, Marea celeste, Bastión de tinta y Pulso de puntos. Una tanda se descartó por repetir poses: desde entonces, el avatar y el banner de un conjunto van en escenas, escalas y poses distintas.</li>
+    <li><b>Al juego (16/10).</b> El catálogo entró en <code>PerfilDatos</code> con sus rarezas, y las cápsulas los reparten (PR #431 y #437).</li>
+    <li><b>Reglas fijas y alta resolución (17/10).</b> Se fijaron las medidas y las zonas de abajo, y con ellas se rehicieron los 19 marcos y los 19 banners a 3840 × 1280 (los marcos, en el PR #470). Los detalles que salían mal se corrigieron uno por uno; por ejemplo, un brazo de más en Marea celeste.</li>
+  </ol>
+
+  <h3 id="perfil-arte-reglas">Medidas y zonas</h3>
+  <div class="table-wrap"><table>
+    <tr><th>Imagen</th><th>Medida</th><th>Cómo la usa el juego</th><th>Qué tiene que cumplir</th></tr>
+    <tr><td><b>Avatar</b></td><td>Cuadrado: 1024 × 1024 para pedirlo; en el juego, 512 × 512.</td><td>Se ve desde 60 hasta 300 px (600 en 4K), con borde y esquinas redondeadas.</td><td>Se entiende a 60 px; nada importante en el 5 % de cada borde; el foco en el tercio central; sin texto. Cada avatar cambia al menos 3 de estas 6 cosas respecto de los otros: encuadre, ángulo, gesto, pose, luz y fondo.</td></tr>
+    <tr><td><b>Banner</b></td><td>3:1, 3840 × 1280.</td><td>La cabecera mide 1800 × 300 y muestra solo la franja del 25 al 75 % del alto. Sobre el 64 % izquierdo van la sombra, el avatar, el nombre, el título y las estadísticas; abajo a la derecha, un botón.</td><td>El 60 % izquierdo, tranquilo y oscuro; el foco centrado entre el 66 y el 88 % del ancho y entre el 35 y el 55 % del alto; la esquina de abajo a la derecha, libre; sin marco ni texto. Una escena, no otro retrato.</td></tr>
+    <tr><td><b>Marco</b></td><td>3:1, 3840 × 1280, PNG con transparencia real.</td><td>Se estira de 3:1 a 6:1 alrededor de la cabecera: se corta al medio y no se deforman las esquinas (25 % del ancho de cada lado) ni el adorno del centro (20 %); los tramos del medio se estiran o se repiten.</td><td>Centro 100 % transparente. Línea de apoyo al 6 % del alto desde cada borde: hacia afuera, como mucho 6 %; hacia adentro, 9 % (12 % en las esquinas). Tramos parejos, adorno centrado, siluetas distintas entre marcos y sin texto.</td></tr>
+  </table></div>
+  <figure class="mapa-fig pa-zonas">
+    <svg viewBox="0 0 600 220" role="img" aria-label="Zonas de un banner de 3:1: la franja que se ve del 25 al 75 % del alto, el 60 % izquierdo tranquilo, el foco a la derecha y la esquina del botón libre">
+      <rect class="pa-z-fondo" x="0" y="10" width="600" height="200" rx="6"/>
+      <rect class="pa-z-franja" x="0" y="60" width="600" height="100"/>
+      <rect class="pa-z-tranquila" x="0" y="60" width="360" height="100"/>
+      <rect class="pa-z-foco" x="396" y="80" width="132" height="40" rx="4"/>
+      <rect class="pa-z-boton" x="468" y="126" width="132" height="34"/>
+      <text class="pa-z-t" x="300" y="40" text-anchor="middle">Solo fondo: se ve en la colección, no en la cabecera</text>
+      <text class="pa-z-t" x="300" y="190" text-anchor="middle">Solo fondo</text>
+      <text class="pa-z-t pa-z-b" x="180" y="106" text-anchor="middle">Tranquila: 0 a 60 % del ancho</text>
+      <text class="pa-z-t" x="180" y="126" text-anchor="middle">avatar, nombre, título y estadísticas</text>
+      <text class="pa-z-t pa-z-b" x="462" y="104" text-anchor="middle">Foco</text>
+      <text class="pa-z-t" x="534" y="148" text-anchor="middle">Botón</text>
+      <text class="pa-z-t" x="6" y="74">25 %</text>
+      <text class="pa-z-t" x="6" y="155">75 %</text>
+    </svg>
+    <figcaption>Zonas de un banner. La franja del medio es lo que muestra la cabecera; el foco va entre el 66 y el 88 % del ancho y entre el 35 y el 55 % del alto.</figcaption>
+  </figure>
+
+  <h3 id="perfil-arte-estilo">Estilo</h3>
+  <div class="grid3">
+    <div class="card"><b>El mundo del juego.</b> Ciencia ficción con trenes y andenes, estaciones espaciales y el Rift (energía celeste y violeta), con toques argentinos: andenes, boletos y nombres de líneas de tren.</div>
+    <div class="card"><b>Un estilo por conjunto.</b> Art nouveau, tinta china, pop art, 8 bits, acuarela, puntillismo, synthwave, cubismo, manga… El avatar, el banner y el marco de un conjunto comparten el estilo.</div>
+    <div class="card"><b>Los personajes, como son.</b> Se respetan la cara, el pelo, el casco, el traje y los colores de cada uno; cambian la pose, el gesto, la luz y el estilo. Colores: Astra celeste, Alfa amarillo, Bravo verde y Charlie naranja.</div>
+  </div>
+
+  <h3 id="perfil-arte-pedido">Cómo pedir una imagen</h3>
+  <p>Las imágenes se piden a un generador de imágenes con IA (por ejemplo, un proyecto de ChatGPT) con estas instrucciones pegadas al principio, adjuntando el retrato del personaje. Antes de generar, la IA escribe un plan corto (medida, foco, pose, paleta y en qué se diferencia de las anteriores); después revisa la imagen contra la lista de control.</p>
+  <div class="table-wrap"><table>
+    <tr><th>Pedido</th><th>Qué se le dice</th></tr>
+    <tr><td>Avatar</td><td>Conjunto, personaje (con su retrato), estilo, idea (escena o gesto) y los avatares que ya tiene el conjunto.</td></tr>
+    <tr><td>Banner</td><td>Conjunto, personaje (con su retrato), estilo, escena (qué pasa) y cómo es su avatar, para no repetir la pose.</td></tr>
+    <tr><td>Marco</td><td>Conjunto, estilo, forma (esquinas, remate, rieles), material y colores.</td></tr>
+  </table></div>
+  <details class="pa-pedido">
+    <summary>Ver las instrucciones para pegar en el generador</summary>
+    <pre>## 1. QUÉ HACÉS
+Sos el ilustrador de los cosméticos del Perfil de Project Riftwalker, un shooter en primera persona de ciencia ficción con trenes, andenes, estaciones espaciales y el Rift (una energía dimensional celeste y violeta). Hacés tres tipos de imagen: AVATAR, BANNER y MARCO.
+El juego pone encima sus propios textos y botones. Nunca dibujes texto, letras, números, logos, botones, interfaz, firmas ni marcas de agua.
+Personajes: Astra, Alfa, Bravo y Charlie. Cuando te pido uno, te adjunto su retrato: respetá su cara, pelo, casco, traje y colores. Podés cambiar la pose, el gesto, el encuadre, la luz y el estilo artístico.
+
+## 2. CÓMO TRABAJÁS, SIEMPRE
+a) Antes de generar, escribí un plan de 5 líneas:
+   - tipo y medida;
+   - dónde va el foco (en % del ancho y del alto);
+   - pose y encuadre;
+   - paleta;
+   - en qué se diferencia de las imágenes anteriores del mismo pedido o conjunto.
+b) Generá una imagen por vez, salvo que te pida variantes.
+c) Después de generar, revisala con la lista de control de la sección 6 y decime punto por punto qué cumple y qué no. No digas que cumple algo que no verificaste. Si algo falla, ofrecé corregirlo.
+d) Si mi pedido choca con estas reglas, preguntame antes de generar.
+
+## 3. AVATAR (cuadrado)
+- Medida: 1024 × 1024.
+- Se ve desde 60 px hasta 600 px: la cara y la silueta se tienen que entender a 60 px. Usá contraste fuerte entre el personaje y el fondo, y nada importante en detalles finos.
+- El juego le pone un borde y esquinas redondeadas: dejá libre el 5 % de cada borde (no cortes la cara ni la mano principal contra el borde).
+- Foco (ojos o la acción) en el tercio central de la imagen.
+- VARIEDAD, lo más importante: cada avatar tiene que cambiar al menos 3 de estas 6 cosas respecto de los otros avatares del pedido o del conjunto:
+   1. encuadre: primer plano, busto, medio cuerpo, cuerpo entero, de espaldas girando;
+   2. ángulo: de frente, 3/4, perfil, desde abajo, desde arriba;
+   3. gesto o expresión;
+   4. acción o pose;
+   5. luz: contraluz, lateral dura, neón, luz de día;
+   6. fondo: color liso, escena, patrón abstracto.
+  Nunca hagas dos avatares seguidos de busto centrado, de frente, mirando a cámara.
+
+## 4. BANNER (rectángulo 3:1)
+- Medida final: 3840 × 1280 (3:1). Si no podés esa medida, generá 1536 × 1024 y componé dentro de la franja central de 1536 × 512. Lo de arriba y abajo de esa franja se recorta, así que dejá ahí solo fondo.
+- Cómo se usa: en la cabecera del Perfil se ve solo la FRANJA CENTRAL, del 25 % al 75 % del alto. Sobre el 64 % izquierdo el juego pone una sombra oscura, el avatar, el nombre, el título y cuatro recuadros con estadísticas. Abajo a la derecha hay un botón.
+- Zonas, en % del ancho y del alto de la imagen:
+  * Del 0 al 60 % del ancho, zona tranquila: oscura y con poco detalle, sin caras ni puntos de interés. Puede seguir el fondo suave.
+  * FOCO (lo que tiene que mirar el ojo: la cara, el personaje o el objeto principal): su centro entre el 66 % y el 88 % del ancho y entre el 35 % y el 55 % del alto. El foco entero tiene que quedar dentro de la franja del 25 al 75 % del alto.
+  * Esquina de abajo a la derecha (más del 78 % del ancho y más del 58 % del alto): libre, ahí va el botón.
+  * Por encima del 25 % y por debajo del 75 % del alto: solo fondo. Se ve en las tarjetas de la colección, pero no en la cabecera.
+- Sin bordes, marcos, viñetas, recuadros ni bandas negras: el marco es otra imagen.
+- Que sea una escena, no otro retrato: si el banner es de un conjunto, el personaje aparece en otra escena, otra escala y otra pose que en su avatar.
+
+## 5. MARCO (borde con el centro transparente)
+- PNG con transparencia REAL (canal alfa). Nada de fondo blanco, negro ni un tablero de ajedrez dibujado. El centro, 100 % transparente.
+- Medida final: 3840 × 1280 (3:1). Si no podés, generá 1536 × 1024 con el marco ocupando la franja central de 1536 × 512 y todo lo demás transparente.
+- Cómo se usa: el juego estira el marco de 3:1 a 6:1 alrededor de la cabecera. Corta la imagen al medio y no deforma las esquinas (hasta el 25 % del ancho de cada lado) ni el adorno del centro (hasta el 20 % del ancho, exactamente centrado). Los tramos entre las esquinas y el centro se estiran o se repiten.
+- LÍNEA DE APOYO: un rectángulo imaginario metido hacia adentro, a una distancia igual al 6 % del ALTO de la imagen desde cada borde (arriba, abajo, izquierda y derecha, todos medidos con el alto). Esa línea queda sobre el borde de la cabecera.
+  * Hacia AFUERA de la línea, como máximo el 6 % del alto. Si sale más, tapa los botones y los títulos de la pantalla. Nada de salpicaduras, rayos, llamas ni adornos que se escapen.
+  * Hacia ADENTRO de la línea, como máximo el 9 % del alto en los lados, arriba y abajo, y el 12 % en las esquinas. Más adentro, tapa el avatar y el nombre.
+  * El riel completo mide entre el 4 % y el 15 % del alto.
+- Tramos parejos: entre cada esquina y el centro, el riel es un patrón continuo y uniforme, sin un detalle único en el medio del tramo, para que se pueda estirar o repetir sin que se note.
+- Formas distintas: variá la silueta entre marcos (esquinas en chanfle, redondeadas o escalonadas, remaches, un remate arriba al centro, riel doble, filete fino con esquinas pesadas, arriba distinto de abajo). Siempre dentro de los límites de la línea de apoyo.
+- Nitidez: bordes definidos, sin desenfoque ni ruido, con el estilo y los colores del conjunto.
+
+## 6. LISTA DE CONTROL (revisá antes de entregar)
+AVATAR: cuadrado; se entiende a 60 px; cambia 3 de las 6 cosas respecto de los otros; nada importante en el 5 % del borde; sin texto.
+BANNER: 3:1; el 60 % izquierdo tranquilo; foco entre el 66 y el 88 % del ancho y entre el 35 y el 55 % del alto, dentro de la franja del 25 al 75 %; esquina de abajo a la derecha libre; sin marco ni texto.
+MARCO: PNG con transparencia real; centro vacío; afuera de la línea como máximo el 6 % del alto; adentro como máximo el 9 % (12 % en las esquinas); tramos parejos; adorno del centro centrado; sin texto.
+
+## 7. ESTILO DEL JUEGO
+Ciencia ficción con trenes y andenes, estaciones espaciales y el Rift. Toques argentinos: andenes, boletos, nombres de líneas de tren (Mitre, Roca, Belgrano, Urquiza).
+Cada conjunto tiene un estilo artístico propio (art nouveau, tinta china, pop art, 8 bits, acuarela, puntillismo, synthwave, cubismo, manga, etc.); el avatar, el banner y el marco de un mismo conjunto lo comparten.
+Colores de los personajes: Astra celeste, Alfa amarillo, Bravo verde y Charlie naranja.
+
+Modelos de pedido:
+AVATAR · Conjunto: [nombre]. Personaje: [nombre, con su retrato adjunto]. Estilo: [estilo]. Idea: [escena o gesto]. Avatares que ya tiene el conjunto: [lista corta].
+BANNER · Conjunto: [nombre]. Personaje: [nombre, con su retrato]. Estilo: [estilo]. Escena: [qué pasa]. Su avatar es: [descripción corta, para no repetir la pose].
+MARCO · Conjunto: [nombre]. Estilo: [estilo]. Forma: [esquinas, remate, rieles]. Material y colores: [...].</pre>
+  </details>
+  <p class="soft" style="margin-top:12px">Si la imagen sale más chica que la medida final, se agranda con un escalador con IA (por ejemplo Upscayl, gratis) a ×2 o ×4 y se recorta a la medida exacta; con «cambiar tamaño» de un editor común queda borrosa. Los marcos se revisan sobre un fondo de color para confirmar que la transparencia es real.</p>
+
+  <h3 id="perfil-arte-titulos">Títulos</h3>
+  <p>Son 70 frases, sin imagen: 50 de la lista inicial y 20 sarcásticas que se sumaron después. Hablan de trenes (Último pasajero, Perdí el tren, Jefe de estación), del Rift (Viajero del Rift), del shooter (Una bala alcanza, Recargando…), de zombies (Pesadilla de la horda) y tienen humor argentino (Sobreviví de pedo). «Sin título» deja la cabecera sin título. Se consiguen en las cápsulas, como el resto.</p>
+
+  <h3 id="perfil-arte-nuevo">Cómo sumar un conjunto</h3>
+  <ol>
+    <li><b>Pedir las tres imágenes</b> con las instrucciones de arriba: avatar, banner y marco, del mismo estilo, y el avatar y el banner con poses distintas.</li>
+    <li><b>Revisarlas</b> con la lista de control y llevarlas a la medida final: avatar cuadrado, banner y marco de 3840 × 1280.</li>
+    <li><b>Copiarlas al juego</b> con el mismo id en <code>Resources/Perfil/Avatares</code> (JPG), <code>Banners</code> (JPG) y <code>Marcos</code> (PNG). Los banners se importan con tamaño máximo 4096 y los marcos con 2048, los dos con mipmaps.</li>
+    <li><b>Sumarlo al catálogo</b> en <code>PerfilDatos</code>: nombre, personaje, estilo y rareza, y las medidas del marco (<code>RielesMarco</code>, <code>InterioresMarco</code> y <code>CortesMarco</code>: dónde está la línea de apoyo, dónde termina el riel por dentro y dónde se corta).</li>
+    <li><b>Probarlo</b> en la cabecera, la vista previa, la colección y las cartas de las cápsulas, en 1080p y en 4K. En 1080p el marco no sale más de 25 px de la cabecera, y nunca tapa el avatar ni el nombre.</li>
+    <li><b>Actualizar la copia web</b> del menú: <code>menu/herramientas/generar-catalogo.js</code> y <code>preparar-menu.ps1</code> (ver el README del menú).</li>
+  </ol>
+
+  <div class="dev">
+    <h3 id="perfil-arte-codigo">Dónde está</h3>
+    <div class="files">
+      <code>Resources/Perfil</code><span><code>Avatares</code>, <code>Banners</code>, <code>Marcos</code> y los <code>Fondos</code> del menú principal, con el id de cada cosmético como nombre.</span>
+      <code>Perfil/PerfilDatos</code><span>El catálogo: avatares, banners, marcos y los 70 títulos, con su rareza y las medidas de cada marco.</span>
+      <code>Perfil/PerfilUI</code><span><code>Enmarcar</code> parte el marco en dos mitades y estira los rieles; <code>InteriorMarco</code> corta el banner en el borde interior del riel.</span>
+      <code>menu/</code><span>La copia web del menú y del Perfil en esta página, con las mismas imágenes en tamaño web (<code>menu/img</code>).</span>
+    </div>
+  </div>
+</section>
+
+<script src="menu/catalogo.js"></script><script src="menu/marcos.js"></script>
+<script>
+// Los 19 conjuntos de «Arte del perfil», armados como en la cabecera del Perfil (PerfilUI.Enmarcar). Se dibujan recién
+// cuando la sección se acerca a la pantalla, así los marcos y banners no se bajan al abrir la guía.
+(function () {
+  var el = document.getElementById('perfilConjuntos');
+  if (!el || !window.Marcos || !window.CATALOGO) return;
+  var RZ = ['Inicial', 'Común', 'Raro', 'Épico', 'Legendario'], COL = ['#8E96A3', '#9AA3B0', '#5C7CFF', '#B061FF', '#FFC93C'];
+  var W = 900, H = 150, base = 'menu/img/';
+  function escalar() { el.style.setProperty('--k', Math.min(1, el.clientWidth / (W + 40))); }
+  function pintar() {
+    el.innerHTML = Marcos.conjuntos().map(function (c) {
+      var b = c.banner, a = c.avatar, d = Marcos.interior(b.id, H);
+      return '<div class="pa-conj" role="img" aria-label="Conjunto ' + b.nombre + ', ' + RZ[b.rareza].toLowerCase() + ', estilo ' + b.estilo + '"><div class="pa-escala">' +
+        '<div class="pa-banner" style="left:' + d[0] + 'px;top:' + d[1] + 'px;right:' + d[2] + 'px;bottom:' + d[3] + 'px"><img src="' + base + 'banners/' + b.id + '.jpg" alt=""><i></i></div>' +
+        Marcos.html(b.id, 0, 0, W, H, false, base + 'marcos/') +
+        '<span class="pa-avatar"><img src="' + base + 'avatares/' + a.id + '.jpg" alt=""></span>' +
+        '<strong>' + b.nombre + '</strong><small><b style="color:' + COL[b.rareza] + '">' + RZ[b.rareza] + '</b> · ' + b.estilo + '</small></div></div>';
+    }).join('');
+    escalar();
+  }
+  addEventListener('resize', escalar);
+  if (!('IntersectionObserver' in window)) { pintar(); return; }
+  var ojo = new IntersectionObserver(function (e) { if (e[0].isIntersecting) { ojo.disconnect(); pintar(); } }, { rootMargin: '1200px 0px' });
+  ojo.observe(el);
+})();
+</script>
 
 <section id="pantallas">
   <div class="sec-head"><h2>Otras pantallas</h2><span class="sub">Sin maqueta propia: siguen la parte 1</span></div>
@@ -4749,6 +4958,7 @@ renderRules(); renderOneShot(); renderArsenal(); renderCalcOptions(); renderCalc
       { id: 'resultado-partida', t: 'Resultado de partida', i: 'flag', subs: [['resultado-tactico', 'Táctico'], ['resultado-deathmatch', 'Deathmatch'], ['resultado-diferencias', 'Qué cambia en cada modo'], ['resultado-medidas', 'Medidas'], ['resultado-codigo', 'Cómo está hecho']] },
       { id: 'modo-espectador', t: 'Espectador', i: 'users', subs: [['espectador-estados', 'Estados'], ['espectador-medidas', 'Medidas'], ['espectador-codigo', 'Cómo está hecho']] },
       { id: 'logros', t: 'Logros y ranking', i: 'star', subs: [['logros-catalogo', 'Catálogo'], ['logros-desbloqueo', 'Cómo se desbloquean'], ['logros-aviso', 'Aviso y sonido'], ['logros-pantalla', 'Pantalla de Logros'], ['logros-ranking', 'Ranking global'], ['logros-guardado', 'Guardado'], ['logros-nuevo', 'Cómo sumar un logro'], ['logros-codigo', 'Dónde está']] },
+      { id: 'perfil-arte', t: 'Arte del perfil', i: 'palette', subs: [['perfil-arte-conjuntos', 'Los 19 conjuntos'], ['perfil-arte-proceso', 'Cómo se hicieron'], ['perfil-arte-reglas', 'Medidas y zonas'], ['perfil-arte-estilo', 'Estilo'], ['perfil-arte-pedido', 'Cómo pedir una imagen'], ['perfil-arte-titulos', 'Títulos'], ['perfil-arte-nuevo', 'Cómo sumar un conjunto'], ['perfil-arte-codigo', 'Dónde está']] },
       { id: 'pantallas', t: 'Otras pantallas', i: 'window', subs: [['pantalla-menu', 'Menú principal'], ['pantalla-opciones', 'Opciones'], ['pantalla-pausa', 'Pausa'], ['pantalla-sala', 'Sala online'], ['pantalla-volver', 'Volver a la partida'], ['pantalla-elegir-equipo', 'Elegir equipo'], ['pantalla-nueva', 'Para hacer una pantalla nueva']] },
       { id: 'launcher', t: 'Launcher', i: 'download', subs: [['launcher-descargas', 'Qué se descarga'], ['launcher-instalar', 'Instalar y desinstalar'], ['launcher-ventana', 'Cómo se ve'], ['launcher-medidas', 'Medidas y colores'], ['launcher-estados', 'Estados'], ['launcher-revisar', 'Revisar el diseño'], ['launcher-publicar', 'Publicar una versión']] }] },
     { g: 'Combate', p: 'Parte 3 · Combate', items: [
