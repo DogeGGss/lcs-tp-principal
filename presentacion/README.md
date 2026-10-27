@@ -1,11 +1,11 @@
 # Presentación del Sprint 3
 
-Abrir `/presentacion/` desde el enlace independiente de la guía. El recorrido suma 20 minutos y se divide en tres partes, en este orden: Juego (apertura, tráiler, historia, demos, arsenal, menú y perfil, los conjuntos y los emotes), Equipo (las métricas de cada sprint, el tiempo por estado y lo que sumó cada uno) y Financiación (propuesta comercial, números, costos e inversión), y después el cierre. Cada diapositiva muestra arriba su parte, y el índice las agrupa. No avanza automáticamente: el operador controla el ritmo.
+Abrir `/presentacion/` desde el enlace independiente de la guía. El recorrido suma 20 minutos y se divide en tres partes, en este orden: Juego (apertura, tráiler, historia, demos, arsenal, menú, perfil y cápsulas), Equipo (las métricas de cada sprint, el tiempo por estado y lo que sumó cada uno) y Financiación (propuesta comercial, números, costos e inversión), y después el cierre. Cada diapositiva muestra arriba su parte, y el índice las agrupa. No avanza automáticamente: el operador controla el ritmo.
 
 ## Para exponer
 
 - Anterior / Siguiente: ubicación fija y botones grandes. Flechas o Page Up / Page Down también funcionan cuando el foco está en la diapositiva.
-- Índice: saltar a cualquiera de los dieciséis bloques.
+- Índice: saltar a cualquiera de los catorce bloques.
 - Proyector: fondo claro con texto oscuro para salas iluminadas.
 - Pantalla completa: ocultar el navegador; F11 es alternativa.
 - Tráiler: «Pantalla completa» lo reproduce ocupando toda la pantalla; Esc vuelve. Mientras el video está en pantalla completa, las flechas no cambian de diapositiva.
@@ -14,11 +14,11 @@ Abrir `/presentacion/` desde el enlace independiente de la guía. El recorrido s
 
 ## Actualización por etapas
 
-Editar `content.js`: títulos, partes (`section`), tiempos, guion, quién lee cada diapositiva (`speaker`, se ve arriba al lado del sprint), tráiler, avance de cada sprint (`progress`), métricas, propuesta comercial y números económicos. Mantener los tiempos de los dieciséis bloques sumando 20 minutos. Las métricas desconocidas usan `null`, no cero. Los datos S1 son una foto histórica y nunca deben sobrescribirse con S3.
+Editar `content.js`: títulos, partes (`section`), tiempos, guion, quién lee cada diapositiva (`speaker`, se ve arriba al lado del sprint), tráiler, avance de cada sprint (`progress`), métricas, propuesta comercial y números económicos. Mantener los tiempos de los catorce bloques sumando 20 minutos. Las métricas desconocidas usan `null`, no cero. Los datos S1 son una foto histórica y nunca deben sobrescribirse con S3.
 
 `metrics` tiene los tres sprints (`s1` del informe del Sprint 1; `s2` del informe de avance y la retrospectiva del Sprint 2; `s3` pendiente): la diapositiva Métricas los muestra lado a lado para mostrar el avance. Un sprint sin datos muestra rayas. Las diapositivas no llevan textos internos (pendientes, «por completar», «a confirmar»): eso va en el guion o en esta lista. Fuente histórica: InformeSprint1.docx facilitado por el equipo, cierre 28/09/2026. No se publica el documento completo.
 
-Menú, perfil y cápsulas (diapositiva 5) abre `/menu/`: una copia web del menú principal, del Perfil y de la Estación del Rift del juego, con las medidas de `MenuRiftwalker`, `PantallaPerfil` y `PantallaEstacion`, las imágenes de `Resources/Perfil` y todo desbloqueado en el Perfil. La diapositiva Conjuntos lista los 19 conjuntos (avatar, banner y marco del mismo personaje y estilo) con `menu/marcos.js`, el mismo código que arma los marcos del menú. El catálogo (`menu/catalogo.js`) se genera desde `PerfilDatos.cs`: si cambian los cosméticos del juego, hay que regenerarlo y volver a copiar las imágenes.
+Menú, perfil y cápsulas (diapositiva 6) abre `/menu/`: una copia web del menú principal, del Perfil y de la Estación del Rift del juego, con las medidas de `MenuRiftwalker`, `PantallaPerfil` y `PantallaEstacion`, las imágenes de `Resources/Perfil` y todo desbloqueado en el Perfil. La diapositiva Conjuntos lista los 19 conjuntos (avatar, banner y marco del mismo personaje y estilo) con `menu/marcos.js`, el mismo código que arma los marcos del menú. El catálogo (`menu/catalogo.js`) se genera desde `PerfilDatos.cs`: si cambian los cosméticos del juego, hay que regenerarlo y volver a copiar las imágenes.
 
 El tráiler está en `media/trailer.mp4` (`trailer.src`), con un cuadro del propio video como portada (`trailer.poster`, `media/trailer-poster.jpg`). Es el del equipo recomprimido a 1080p, unos 4,5 Mbps (71,5 MB), con el índice al principio para que arranque sin bajarlo entero: GitHub no acepta archivos de más de 100 MB. Si se cambia, recomprimirlo por debajo de eso. Para otros videos, completar `clips[].src` de la misma forma. Actualmente no hay clips y no se simula que los haya. Evitar videos pesados; un enlace externo puede servir de respaldo fuera del recorrido.
 
@@ -66,7 +66,7 @@ Métricas y Avance usan el «Informe de avances - Sprint 3»: 66 de las 68 histo
 
 ## Quién lee y diapositiva secreta (25/10/2026)
 
-Lee cada diapositiva: Historia, Nahuel Velazquez; Demo de interfaz, David Ramos; Arsenal, Lucas Huber; Menú, perfil y cápsulas, Conjuntos y Emotes, Luka Gómez; Métricas, Tiempo por estado y Avance, Agustín Barreto; Propuesta comercial y Números, Ulises Fonseca; Costos e Inversión, Nicolás Gauna. Apertura, Tráiler y Cierre quedan como «Equipo Riftwalker».
+Lee cada diapositiva: Historia, Nahuel Velazquez; Demo de interfaz, David Ramos; Arsenal, Lucas Huber; Menú, perfil y cápsulas, Luka Gómez; Métricas, Tiempo por estado y Avance, Agustín Barreto; Propuesta comercial y Números, Ulises Fonseca; Costos e Inversión, Nicolás Gauna. Apertura, Tráiler y Cierre quedan como «Equipo Riftwalker».
 
 Después del cierre hay una diapositiva secreta: en «16 / 16» Siguiente (o →, o el control remoto) sigue habilitado y rompe la página de a poco, en unos 8 segundos: empieza con fallas chiquitas que van creciendo (temblor, colores separados, franjas invertidas y pedazos corridos), a los 2 s se agrieta desde un golpe cerca del centro, entre los 4 y los 7 s la barra de arriba, los controles y la diapositiva se aflojan y se caen de a uno, y en el lugar del golpe se abre una grieta de luz que se vuelve el portal; ahí pasa el video de `secret.video` a pantalla completa, con sonido (el navegador lo deja porque ya hubo clics en la página). No figura en el índice, en el contador ni en el reloj, y no cambia la dirección. ← o Esc vuelve al cierre como estaba (en pantalla completa, Esc primero sale de la pantalla completa: usar ←). Sin video, termina en el portal abierto. El video se precarga al llegar a Inversión. Probada a 1280 × 720 con el tráiler como video de prueba.
 
@@ -79,3 +79,7 @@ En pantallas bajas (1280 × 720 y 1024 × 768), la última columna de la fila de
 ## Video de la diapositiva secreta (26/10/2026)
 
 La diapositiva secreta pasa media/invasion.mp4 (1920 × 1080, 28 s, 15,5 MB, tal como llegó: ya empieza a reproducirse mientras baja). La grieta de luz ya no se abre en un círculo: se abre en un recuadro con la forma del video, en el centro (88 % del ancho o 84 % del alto de la pantalla, lo que entre), y su contorno de luz es el borde del video, que pasa adentro. Sin video queda el portal redondo. Probado a 1280 × 720 y 1920 × 1080: el video y el recuadro coinciden y ← lo cierra y vuelve al cierre.
+
+## Sin Conjuntos ni Emotes (27/10/2026)
+
+Se sacaron las diapositivas Conjuntos y Emotes: los emotes no entran en la entrega del Sprint 3 (v0.3.0). Quedan catorce bloques; para seguir en 20 minutos, Menú, perfil y cápsulas y la Demo de interfaz pasan a 2 minutos cada una. El código que las dibuja (`sets()`, `dances()`) y los PNG de `media/emotes/` siguen, por si vuelven.
