@@ -2129,7 +2129,136 @@ body.capture,body.capture-ms,body.capture-cr{padding-left:0!important}
 </section>
 
 <!-- ===================== PARTE 6 · MAPAS ===================== -->
-<div class="part"><span class="pn">6</span><div><h2>Mapas</h2><p>Dónde se juega cada modo. Historias: US 082 a US 084, US 185 a US 190 y US 213 a US 215.</p></div></div>
+<div class="part"><span class="pn">6</span><div><h2>Mapas</h2><p>Dónde se juega cada modo. Historias: US 082 a US 084, US 185 a US 190, US 213 a US 215, US 239 a US 241 y US 265.</p></div></div>
+
+<section id="mapa-deathmatch">
+  <div class="sec-head"><h2>Mapa 1 · Colonia ARA San Juan</h2><span class="sub">Modo Deathmatch · US 082</span> <span class="st st-ok">En el juego</span></div>
+  <p>El mapa del Deathmatch: una colonia en un planeta rocoso alienígena, de noche, con dos casas enfrentadas, dos vagones en el medio y un patio abajo. La idea sale de Nuketown: un mapa chico y abierto, de unos 105 × 46 m, que se cruza corriendo en 13 s, así en un todos contra todos de 2 a 8 jugadores siempre hay alguien cerca. Las casas salen del kit sci-fi de Creepy Cat, el mismo del Mapa 2; alrededor hay terreno, plantas alienígenas, dos portales y una valla eléctrica que marca el borde.</p>
+  <p class="soft">Se reparte en cinco historias: cómo se ve y cómo suena (US 082), lo que necesita el Deathmatch (US 239), los recorridos y los límites (US 240), el rendimiento (US 241) y los portales (US 265). Cada una enlaza la parte de esta sección que le toca.</p>
+  <figure class="mapa-fig"><img src="img/deathmatch-vista.jpg" alt="El Mapa 1 visto desde arriba, de noche: las dos casas blancas enfrentadas, un vagón en el medio, los dos portales encendidos a los costados y árboles naranjas y plantas violetas alrededor" loading="lazy" width="1280" height="720"><figcaption>La vista que usa la pantalla de carga.</figcaption></figure>
+
+  <h3 id="mapa-deathmatch-plano">Plano de bloqueo</h3>
+  <p class="soft">El plano sobre el que se armó el mapa (Nahuel, PR #438), con el norte arriba y una grilla de 2 m, la medida del kit. Cada color es un tipo de bloque; los números son las 16 apariciones y la rayita, hacia dónde mira cada una.</p>
+  <figure class="mapa-fig"><img src="img/deathmatch-bloqueo.png" alt="Plano de bloqueo del Mapa 1: el borde rojo, las dos casas grises a los costados, los dos vagones azules en el medio, galpones amarillos, coberturas verdes, cajones violetas, cercas blancas y las 16 apariciones numeradas en naranja" loading="lazy" width="2619" height="1189"><figcaption><code>Materials/Mapa1/Plano_Mapa1.png</code>. La barra de abajo mide 10 m.</figcaption></figure>
+  <div class="mapa-leyenda"><span><i style="background:#D6D6D6"></i>Casas</span><span><i style="background:#6AA8E8"></i>Vagones</span><span><i style="background:#E9BB55"></i>Galpones</span><span><i style="background:#76D3AC"></i>Coberturas</span><span><i style="background:#C99AE0"></i>Cajones</span><span><i style="background:#F0F0F0"></i>Cercas</span><span><i style="background:#E0554F;height:4px"></i>Borde</span><span><i style="background:#F29A38"></i>Apariciones</span></div>
+  <div class="table-wrap"><table>
+    <tr><th>Bloque</th><th>Cómo es</th><th>Para qué</th></tr>
+    <tr><td>Casas (2)</td><td>17 × 12 m y dos pisos (6 m de alto), una al oeste y otra al este. Cada una ocupa 3 × 2 pisos de 6 × 6 m del kit.</td><td>Son las dos mitades del mapa: adentro se pelea de cerca y desde las ventanas se cubre el medio.</td></tr>
+    <tr><td>Vagones (2)</td><td>14,5 y 10,6 m de largo y 3 m de alto, cruzados en el medio.</td><td>Cortan la línea de tiro entre las dos casas y arman dos pasillos.</td></tr>
+    <tr><td>Galpones (4)</td><td>Tres en el oeste y uno en el noreste, contra el borde.</td><td>Rompen los costados largos, para que no haya una línea limpia de punta a punta.</td></tr>
+    <tr><td>Coberturas (7) y cajones (5)</td><td>Bloques bajos repartidos por el patio y los bordes.</td><td>Dónde cubrirse al cruzar lo abierto entre una casa y la otra.</td></tr>
+    <tr><td>Cercas (2)</td><td>Dos tramos cortos entre la casa oeste y los vagones.</td><td>Cortan el paso del norte hacia el medio.</td></tr>
+    <tr><td>Borde</td><td>El contorno de la zona de juego, con el patio que baja al sur. En el juego es la valla eléctrica.</td><td>Hasta dónde se puede caminar (US 240 CA6).</td></tr>
+  </table></div>
+
+  <h3 id="mapa-deathmatch-modo">Para el Deathmatch</h3>
+  <div class="table-wrap"><table>
+    <tr><th>Parte</th><th>Cómo está</th><th>Historia</th></tr>
+    <tr><td>Apariciones</td><td>16, el doble del máximo de jugadores (8), repartidas por el borde y el medio y mirando hacia el centro. Al reaparecer se usa la más lejana al rival vivo más cercano (US 030).</td><td>US 239 (CA1)</td></tr>
+    <tr><td>Separación</td><td>Al menos 10 m entre dos cualesquiera. Hoy las más cercanas son la 12 y la 14, a 11,9 m.</td><td>US 239 (CA2)</td></tr>
+    <tr><td>Aparición segura</td><td>Cada punto está sobre el piso y despejado: se aparece parado y se puede mover enseguida.</td><td>US 239 (CA3)</td></tr>
+    <tr><td>Elegirlo en la sala</td><td>En <code>ConfigRed</code> es «Colonia ARA San Juan», escena <code>Mapa_deathmatch</code>, marcado solo para Deathmatch. Es el mapa del modo.</td><td>US 239 (CA4)</td></tr>
+    <tr><td>Minimapa</td><td>Se dibuja solo al empezar, a partir del piso y las paredes: no hay que preparar una imagen.</td><td>US 239 (CA5)</td></tr>
+  </table></div>
+
+  <h3 id="mapa-deathmatch-recorridos">Recorridos y límites</h3>
+  <p>En el Deathmatch no hay habilidades, así que el mapa se recorre caminando, corriendo y saltando, y no hay por dónde caerse.</p>
+  <div class="table-wrap"><table>
+    <tr><th>Regla</th><th>Cómo está</th><th>Historia</th></tr>
+    <tr><td>Colisiones</td><td>Paredes, casas, contenedores, escaleras, vallas, árboles y cactus frenan. Las plantas bajas del musgo no: se camina a través de ellas. No hay paredes invisibles adentro.</td><td>US 240 (CA1 a CA3)</td></tr>
+    <tr><td>Escaleras</td><td>Las del kit (<code>Stairway_Step_01</code>), que se suben caminando.</td><td>US 240 (CA4)</td></tr>
+    <tr><td>Puertas</td><td>Las 4 puertas del kit (<code>Door_Vert_01</code>) bajan al piso con su sonido cuando alguien está a 3,5 m o menos (y hasta 3 m más arriba o más abajo). Se abren en 0,45 s y, cuando no queda nadie, esperan 0,8 s y se cierran en 0,6 s. Cada computadora las mueve con los personajes que ve, así se ven igual para todos sin mandar nada por la red.</td><td>US 240 (CA5)</td></tr>
+    <tr><td>Borde</td><td>Una valla eléctrica rodea todo. Sus paredes invisibles frenan solo a los jugadores: están en la capa <i>Ignore Raycast</i> y las granadas no chocan con ellas, así que balas y granadas pasan por encima. A los techos no se llega.</td><td>US 240 (CA6 a CA8)</td></tr>
+    <tr><td>Balas y granadas</td><td>Chocan con lo que se ve, también con los postes, los cables y los carteles de la valla. Entre los cables y por encima, pasan.</td><td>US 240 (CA9)</td></tr>
+    <tr><td>Valla eléctrica</td><td>Tocar cualquier parte saca 5 de vida, como mucho una vez por segundo. Saltan chispas celestes con un zumbido que oyen los de cerca, y el que la tocó ve un destello. Si lo mata sin que nadie lo haya dañado antes, nadie suma la baja: «Te electrocutó la valla».</td><td>US 240 (CA10)</td></tr>
+  </table></div>
+
+  <h3 id="mapa-deathmatch-portales">Portales</h3>
+  <p>Dos portales (<code>PortalTwo</code>, de The Portal Collection), uno a cada lado del mapa. El que entra en el remolino de uno sale por el punto de salida del otro (<code>TP_portal</code>), mirando hacia afuera, con la misma vida, armas y munición.</p>
+  <div class="table-wrap"><table>
+    <tr><th>Qué</th><th>Cómo está</th><th>Historia</th></tr>
+    <tr><td>Sin rebote</td><td>Después de pasar, 0,75 s sin volver a pasar, por si sale encima del otro portal.</td><td>US 265 (CA1, CA2)</td></tr>
+    <tr><td>En red</td><td>Lo hace el jugador dueño de su cuerpo; los demás lo ven desaparecer y aparecer de golpe en el otro portal.</td><td>US 265 (CA3)</td></tr>
+    <tr><td>Disparos</td><td>El trigger que tapa el remolino está en la capa <i>Ignore Raycast</i>: balas y granadas lo atraviesan.</td><td>US 265 (CA4)</td></tr>
+    <tr><td>Sonido</td><td>Cada portal zumba todo el tiempo (fuerte a 2 m, ya no se oye a 18 m) y al pasar suena en los dos portales (hasta 30 m). Va por el grupo de efectos.</td><td>US 265 (CA5, CA6)</td></tr>
+  </table></div>
+
+  <h3 id="mapa-deathmatch-ambiente">Cómo se ve y cómo suena</h3>
+  <div class="table-wrap"><table>
+    <tr><th>Parte</th><th>Cómo está</th><th>Historia</th></tr>
+    <tr><td>Sonido</td><td>Al cargar la escena se pone solo <code>Resources/Mapas/Viento_Mapa1</code>: el viento de fondo en loop y el zumbido de las máquinas del kit, que se oye a menos de 3 m y se pierde a 10 m. Todo por el grupo de efectos.</td><td>US 082 (CA1)</td></tr>
+    <tr><td>Cielo</td><td>Cielo de estrellas (Vibrant 4K Starfield Skybox), sin sol, con un planeta animado.</td><td>US 082 (CA2)</td></tr>
+    <tr><td>Luz y niebla</td><td>Luz blanca azulada con sombras y niebla verde azulada (exponencial, densidad 0,006) que tapa las montañas.</td><td>US 082 (CA3)</td></tr>
+    <tr><td>Terreno</td><td>Un terreno de Unity con grava clara, roca negra y musgo azul verdoso; la roca y el musgo, más altos que la grava. Casas, contenedores, vallas, árboles y cactus apoyan sobre él.</td><td>US 082 (CA4, CA5)</td></tr>
+    <tr><td>Vegetación</td><td>Plantas sobre el musgo y 2.277 árboles y cactus alienígenas, con 20 luces en el musgo.</td><td>US 082 (CA6)</td></tr>
+    <tr><td>Fondo</td><td>Montañas fuera de la valla y tres naves grandes quietas (USS Virginia).</td><td>US 082 (CA7)</td></tr>
+    <tr><td>Polvo y viento</td><td>Partículas de polvo y ráfagas alrededor de la cámara de cada jugador (no en todo el mapa), que soplan a 60°.</td><td>US 082 (CA8)</td></tr>
+    <tr><td>Naves de paso</td><td>Cada 10 a 25 s pasan cazas (Sparrow Fighter), solos o en formación, a 35–70 m de altura y con estela celeste. Suben antes de una montaña o una nave grande para no atravesarla. Cada computadora tira las suyas.</td><td>US 082 (CA9)</td></tr>
+  </table></div>
+
+  <h3 id="mapa-deathmatch-rendimiento">Rendimiento</h3>
+  <p>A diferencia del Mapa 2, este mapa no tiene la luz horneada y está lleno de vegetación, así que lo que más pesa son los árboles, las sombras y el pasto. La meta (US 241) es 30 FPS o más con la calidad Media, luces que no parpadean, nada rosa y menos de 15 s de carga.</p>
+  <div class="grid3">
+    <div class="card"><b>Árboles con niveles de detalle.</b> Cada árbol tiene dos versiones simplificadas (35 % y 12 % de los triángulos), y los 1.788 cactus iguales se dibujan juntos (GPU instancing).</div>
+    <div class="card"><b>Sombras justas.</b> Las 36 luces de las paredes inclinadas de las casas ya no hacen sombra: costaban 12 ms de procesador por cuadro en la computadora de referencia.</div>
+    <div class="card"><b>La calidad recorta.</b> La calidad de Opciones decide las sombras y hasta dónde se ven los árboles y el pasto, sin pasar nunca de lo que tiene la escena.</div>
+  </div>
+  <p class="soft" style="margin-top:12px">Para medir: con F2 (en el editor o en una versión de desarrollo) se apaga de a una cosa y se guarda el tiempo por cuadro en <code>Logs/PruebaDeRendimiento.txt</code>.</p>
+
+  <h3 id="mapa-deathmatch-assets">Qué se usó</h3>
+  <div class="table-wrap"><table>
+    <tr><th>Qué</th><th>Cómo se usa</th><th>Por qué</th></tr>
+    <tr><td>3D Scifi Kit de Creepy Cat</td><td>Las dos casas: paredes, pisos de 6 × 6 m, techos, escaleras, las 4 puertas y consolas.</td><td>Es el kit del Mapa 2: mismo estilo, módulos de 2 m y cada pieza con su colisión.</td></tr>
+    <tr><td>Minimal Scifi Pack (Dzeruza)</td><td>36 cajas y 11 contenedores.</td><td>Las coberturas y los cajones del plano.</td></tr>
+    <tr><td>RTS Sci-fi game assets</td><td>Los dos vagones, estructuras y una torre láser.</td><td>Vehículos y construcciones grandes que el kit no trae.</td></tr>
+    <tr><td>The Portal Collection</td><td>Los dos portales.</td><td>Ya traen el remolino animado.</td></tr>
+    <tr><td>Vegetación</td><td>Alien Flora Set, cactus y plantas alienígenas y plantas de Splash of Color.</td><td>Para que se lea como otro planeta.</td></tr>
+    <tr><td>Cielo y fondo</td><td>Vibrant 4K Starfield Skybox, un planeta animado y las naves USS Virginia.</td><td>Noche de estrellas sin sol (US 082 CA2).</td></tr>
+    <tr><td>Ambiente</td><td>Cazas Sparrow Fighter y el viento de Vefects Wind VFX.</td><td>Que el mapa se mueva aunque nadie dispare.</td></tr>
+  </table></div>
+
+  <h3 id="mapa-deathmatch-armado">Cómo se armó</h3>
+  <ol>
+    <li><b>Plano.</b> Primero el plano de bloqueo (arriba): casas, vagones, coberturas, borde y apariciones sobre la grilla de 2 m. Se puso en el piso de la escena como <code>Plano de referencia</code> (<code>Materials/Mapa1/Mapa1_Plano.mat</code>), igual que el Mapa 2 y la universidad.</li>
+    <li><b>Bloqueo con cubos.</b> Sobre el plano, un cubo de color por bloque (<code>Bloqueo_Piso</code>, <code>Borde</code>, <code>Casa</code>, <code>Vehiculo</code> y <code>Cobertura</code>): borde de 5 m, casas de 6 m y vagones de 3 m. Se recorrió así, sin arte, con <code>Prueba local</code> prendido para caminarlo sin red.</li>
+    <li><b>Escala.</b> Recorrido el bloqueo, todo se agrandó 1,3 veces (de unos 81 × 35 m a 105 × 46 m): las casas quedaron en 3 × 2 pisos justos del kit y cruzar el mapa pasó a 13 s.</li>
+    <li><b>Apariciones.</b> Las 16 en <code>Puntos de aparicion</code>, a más de 10 m entre sí y mirando al centro.</li>
+    <li><b>Vestirlo.</b> Cada cubo se cambió por sus piezas (casas del kit, vagones, cajas y contenedores), el piso pasó a ser el terreno y se sumó la vegetación.</li>
+    <li><b>Borde y vida.</b> La valla eléctrica con sus paredes invisibles, las puertas automáticas, las naves de paso y el viento (US 240 y US 082).</li>
+    <li><b>Portales.</b> Los dos portales con sus puntos de salida, conectados desde el menú (US 265).</li>
+    <li><b>Rendimiento y build.</b> Niveles de detalle, instancing y sombras, y probarlo en el build: ahí aparecieron los árboles y el piso que faltaban (US 241).</li>
+  </ol>
+
+  <h3 id="mapa-deathmatch-reglas">Para cambiar el mapa</h3>
+  <ol>
+    <li><b>Primero el bloqueo.</b> Un cambio de recorrido (mover una casa, un vagón o una cobertura) se prueba en bloque y caminando antes de vestirlo.</li>
+    <li><b>Piezas del kit, en múltiplos de 2 m.</b> Así no aparecen huecos ni colisiones raras.</li>
+    <li><b>Apariciones.</b> 16, sobre el piso, a 10 m o más entre sí y mirando al centro. Si movés una, volvé a medir las distancias.</li>
+    <li><b>Valla.</b> Todo lo que cuelga de <code>Vallas (bordes)</code> electrocuta. Una pared invisible nueva va en la capa <i>Ignore Raycast</i> y con <code>ParedSoloJugadores</code>, para que las granadas pasen por encima.</li>
+    <li><b>Portales.</b> Si movés un portal, mové también su <code>TP_portal</code> y volvé a correr <i>Riftwalker › Mapas › Conectar portales</i>.</li>
+    <li><b>Luces y vegetación.</b> La luz no está horneada: una luz nueva va sin sombra en tiempo real. Un árbol nuevo lleva sus niveles de detalle y una planta repetida, GPU instancing.</li>
+    <li><b>Terreno instanciado.</b> Dejá el terreno con <i>Draw Instanced</i>: si no, el build sale sin piso.</li>
+    <li><b>Antes de subir.</b> <code>Prueba local</code> y <code>Plano de referencia</code> apagados.</li>
+    <li><b>Probar.</b> Un Deathmatch editor contra build: aparecer en varios puntos, pasar por los portales, abrir las puertas, tocar la valla y medir con F2.</li>
+  </ol>
+
+  <div class="dev">
+    <h3 id="mapa-deathmatch-codigo">Dónde está</h3>
+    <div class="files">
+      <code>Scenes/Mapa_deathmatch</code><span>La escena del mapa.</span>
+      <code>Mapa</code><span><code>Piso</code>, <code>Plano de referencia</code> (apagado), <code>Vallas (bordes)</code>, <code>Casa</code> y <code>Casa (1)</code>, <code>Obstaculos</code> y <code>Vegetacion</code>.</span>
+      <code>Puntos de aparicion</code><span>Las 16 apariciones.</span>
+      <code>Pasaje (teletransporte)</code><span>Los dos portales, con sus puntos de salida <code>TP_portal</code>.</span>
+      <code>Materials/Mapa1</code><span>El plano, los materiales del bloqueo, los árboles, los cactus, el pasto, el terreno y la valla.</span>
+      <code>Scripts/Mapas</code><span><code>PuertaAutomatica</code>, <code>VallaElectrica</code>, <code>ParedSoloJugadores</code>, <code>PortalDeTeletransporte</code>, <code>NavesDePaso</code> y <code>VientoDelMapa</code>.</span>
+      <code>Editor/PortalesDelMapa</code><span><i>Riftwalker › Mapas › Conectar portales</i>.</span>
+      <code>Resources/Mapas/Viento_Mapa1</code><span>El sonido del mapa y el polvo.</span>
+      <code>ConfigRed</code><span>El mapa en la lista de la sala.</span>
+      <code>UI/Carga/MapaDeathmatch.jpg</code><span>El fondo de la pantalla de carga.</span>
+      <code>CalidadGrafica</code><span>Lo que recorta cada calidad; <code>PruebaDeRendimiento</code>, la medición con F2.</span>
+    </div>
+  </div>
+</section>
 
 <section id="mapas">
   <div class="sec-head"><h2>Mapa 2 · Estación espacial</h2><span class="sub">Modo Táctico · US 083</span> <span class="st st-ok">En el juego</span></div>
@@ -2255,7 +2384,6 @@ body.capture,body.capture-ms,body.capture-cr{padding-left:0!important}
       <code>UI/Carga/MapaTactico.jpg</code><span>El fondo de la pantalla de carga.</span>
     </div>
   </div>
-  <p class="soft" style="margin-top:12px">El Mapa 1 (US 082) es el del Deathmatch: hoy es la escena de ejemplo del kit (<code>Example_01 1</code>). El Mapa de pruebas también se puede elegir en la sala.</p>
 </section>
 
 <section id="mapa-universidad">
@@ -4534,6 +4662,7 @@ renderRules(); renderOneShot(); renderArsenal(); renderCalcOptions(); renderCalc
       { id: 'negocio', t: 'Modelo de negocio', i: 'chart', subs: [['negocio-simulador', 'Simulador'], ['negocio-escenarios', 'Los tres escenarios'], ['negocio-mejoras', 'Mejoras del plan'], ['negocio-precios', 'Precios de los cristales'], ['negocio-sueldos', 'Sueldos del equipo'], ['negocio-servidores', 'Servidores: Photon o Steam'], ['negocio-conclusiones', 'Conclusiones'], ['negocio-fuentes', 'Supuestos y fuentes']] }] },
     { g: 'Personajes', p: 'Parte 5 · Personajes', items: [{ id: 'personajes', t: 'Personajes y habilidades', i: 'users', subs: [['barrera', 'Barrera'], ['vista-aerea', 'Vista aérea'], ['callejero', 'Callejero'], ['trasbordo', 'Trasbordo']] }] },
     { g: 'Mapas', p: 'Parte 6 · Mapas', items: [
+      { id: 'mapa-deathmatch', t: 'Mapa 1 · Colonia ARA San Juan', i: 'map', subs: [['mapa-deathmatch-plano', 'Plano de bloqueo'], ['mapa-deathmatch-modo', 'Para el Deathmatch'], ['mapa-deathmatch-recorridos', 'Recorridos y límites'], ['mapa-deathmatch-portales', 'Portales'], ['mapa-deathmatch-ambiente', 'Cómo se ve y cómo suena'], ['mapa-deathmatch-rendimiento', 'Rendimiento'], ['mapa-deathmatch-assets', 'Qué se usó'], ['mapa-deathmatch-armado', 'Cómo se armó'], ['mapa-deathmatch-reglas', 'Para cambiar el mapa'], ['mapa-deathmatch-codigo', 'Dónde está']] },
       { id: 'mapas', t: 'Mapa 2 · Estación espacial', i: 'map', subs: [['mapa-tactico-plano', 'Plano'], ['mapa-tactico-zonas', 'Bases, zonas y sitios'], ['mapa-tactico-recorridos', 'Recorridos y líneas de tiro'], ['mapa-tactico-assets', 'Por qué el kit'], ['mapa-tactico-armado', 'Cómo se armó'], ['mapa-tactico-reglas', 'Para cambiar el mapa'], ['mapa-tactico-codigo', 'Dónde está']] },
       { id: 'mapa-universidad', t: 'Mapa 3 · Universidad', i: 'map' }] },
     { g: 'Proyecto', p: 'Parte 7 · Decisiones y pendientes', items: [
