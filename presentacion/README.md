@@ -30,7 +30,7 @@ La propuesta comercial y los bloques Números, Costos e Inversión (antes del ci
 
 - Probar el tráiler en pantalla completa en el proyector.
 - Cargar el video de la diapositiva secreta (`secret.video`, el portal abriéndose en la universidad) y ensayarla en el proyector, con sonido.
-- Cuando el informe del Sprint 3 cierre el testing, actualizar las pruebas de `metrics.s3` (hoy son las de la planilla al 23/10) y la nota de Tiempo por estado (cuándo se pasó gente a testing y quiénes).
+- Actualizar la nota de Tiempo por estado (cuándo se pasó gente a testing y quiénes).
 - Actualizar disponibilidad/balance de armas contra el ejecutable que se mostrará.
 - Cargar clips y ensayar la demo real con respaldo.
 - Confirmar con el equipo los precios y las mejoras del plan (pase y tienda directa, bienvenida a US$ 0,99, juego en inglés y Photon a 10 envíos por segundo).
@@ -62,7 +62,7 @@ Historia va después del tráiler y cuenta el universo del juego en tres momento
 
 ## Sprint 3 (25/10/2026)
 
-Métricas y Avance usan el «Informe de avances - Sprint 3»: 66 de las 68 historias en Done (la US 222 espera el Modo Zombie y la US 169 no se empezó) y, de los 299 casos de la planilla al 23/10, 267 pasan, 1 falla y 31 sin ejecutar. Avance suma el Sprint 3 (Deathmatch en su mapa, las habilidades con sus íconos, campo de práctica, tutorial y cometas, y perfil, logros, cápsulas, guardado y launcher) con la vista aérea de Colonia ARA San Juan. Las notas de Métricas, Tiempo por estado y Avance tienen los datos del informe para decirlos en voz alta. Revisado a 1280 × 720 y 1024 × 768: queda por encima de los controles.
+Métricas y Avance usan el «Informe de avances - Sprint 3»: 66 de las 68 historias en Done (la US 222 espera el Modo Zombie y la US 169 no se empezó) y, de los 309 casos de la planilla al 27/10, los 302 ejecutados pasan y quedan 7 sin ejecutar (6 de la US 169 y 1 de la US 222). Avance suma el Sprint 3 (Deathmatch en su mapa, las habilidades con sus íconos, campo de práctica, tutorial y cometas, y perfil, logros, cápsulas, guardado y launcher) con la vista aérea de Colonia ARA San Juan. Las notas de Métricas, Tiempo por estado y Avance tienen los datos del informe para decirlos en voz alta. Revisado a 1280 × 720 y 1024 × 768: queda por encima de los controles.
 
 ## Quién lee y diapositiva secreta (25/10/2026)
 
