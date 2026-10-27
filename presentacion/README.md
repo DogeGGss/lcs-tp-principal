@@ -71,7 +71,7 @@ Después del cierre hay una diapositiva secreta: en «16 / 16» Siguiente (o →
 
 ## Sueldos por horas (26/10/2026)
 
-Los sueldos salen de las horas que registró cada uno en el Sprint 3 (Retrospectiva y métricas del Sprint 3): cada uno cobra el sueldo junior de lo que hace por sus horas, sobre 80 h de tiempo completo por sprint (356,9 h entre los 7, el 64 %). Los sueldos pasan de US$ 7.139 a US$ 4.846 brutos por mes (US$ 6.687 con cargas) y la inversión, de US$ 26.700 a US$ 20.000. Números, Costos e Inversión tienen los números nuevos del simulador de la guía; en el promedio se gana US$ 7.495 por mes, el equilibrio baja a 46.000 jugadores y se recupera en el mes 10.
+Los sueldos salen de las horas que registró cada uno en el Sprint 3 (Retrospectiva y métricas del Sprint 3): cada uno cobra el sueldo junior de lo que hace por sus horas, sobre 80 h de tiempo completo por sprint (356,9 h entre los 7, el 64 %). Los sueldos pasan de US$ 7.139 a US$ 4.846 brutos por mes (US$ 6.687 con cargas) y la inversión, de US$ 26.700 a US$ 20.000. Números, Costos e Inversión tienen los números nuevos del simulador de la guía; en el promedio se gana US$ 7.495 por mes antes del impuesto (US$ 5.246 después), el equilibrio baja a 46.000 jugadores y se recupera en el mes 10.
 
 En pantallas bajas (1280 × 720 y 1024 × 768), la última columna de la fila de abajo de Inversión es más ancha (1,4 veces las otras): el gasto por pagador entra en dos renglones y la fila queda por encima de los controles.
 
@@ -86,3 +86,7 @@ Se sacaron las diapositivas Conjuntos y Emotes: los emotes no entran en la entre
 ## Sin Tiempo por estado (27/10/2026)
 
 Se sacó la diapositiva Tiempo por estado. Quedan trece bloques; para seguir en 20 minutos, Métricas pasa a 2 minutos (la lee Agustín, como la que se sacó). El código que la dibuja (`statusTime()`) y sus datos siguen, por si vuelve.
+
+## Números con la ganancia neta (27/10/2026)
+
+Cada escenario muestra en grande lo que queda después de todo: Steam, la retención de EE.UU., los gastos y el impuesto a las ganancias (`afterTax`), igual que la última línea de Costos. La fila «Steam, retención e impuestos» hace que la tarjeta cierre: ganancias − Steam e impuestos − costos = lo que queda. El recupero, los 3 años y el equilibrio ya usaban ese número (el equilibrio es igual antes y después del impuesto).
