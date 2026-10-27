@@ -1,11 +1,11 @@
 # Presentación del Sprint 3
 
-Abrir `/presentacion/` desde el enlace independiente de la guía. El recorrido suma 20 minutos y se divide en tres partes, en este orden: Juego (apertura, tráiler, historia, demos, arsenal, menú, perfil y cápsulas), Equipo (las métricas de cada sprint, el tiempo por estado y lo que sumó cada uno) y Financiación (propuesta comercial, números, costos e inversión), y después el cierre. Cada diapositiva muestra arriba su parte, y el índice las agrupa. No avanza automáticamente: el operador controla el ritmo.
+Abrir `/presentacion/` desde el enlace independiente de la guía. El recorrido suma 20 minutos y se divide en tres partes, en este orden: Juego (apertura, tráiler, historia, demos, arsenal, menú, perfil y cápsulas), Equipo (las métricas de cada sprint y lo que sumó cada uno) y Financiación (propuesta comercial, números, costos e inversión), y después el cierre. Cada diapositiva muestra arriba su parte, y el índice las agrupa. No avanza automáticamente: el operador controla el ritmo.
 
 ## Para exponer
 
 - Anterior / Siguiente: ubicación fija y botones grandes. Flechas o Page Up / Page Down también funcionan cuando el foco está en la diapositiva.
-- Índice: saltar a cualquiera de los catorce bloques.
+- Índice: saltar a cualquiera de los trece bloques.
 - Proyector: fondo claro con texto oscuro para salas iluminadas.
 - Pantalla completa: ocultar el navegador; F11 es alternativa.
 - Tráiler: «Pantalla completa» lo reproduce ocupando toda la pantalla; Esc vuelve. Mientras el video está en pantalla completa, las flechas no cambian de diapositiva.
@@ -30,7 +30,6 @@ La propuesta comercial y los bloques Números, Costos e Inversión (antes del ci
 
 - Probar el tráiler en pantalla completa en el proyector.
 - Cargar el video de la diapositiva secreta (`secret.video`, el portal abriéndose en la universidad) y ensayarla en el proyector, con sonido.
-- Actualizar la nota de Tiempo por estado (cuándo se pasó gente a testing y quiénes).
 - Actualizar disponibilidad/balance de armas contra el ejecutable que se mostrará.
 - Cargar clips y ensayar la demo real con respaldo.
 - Confirmar con el equipo los precios y las mejoras del plan (pase y tienda directa, bienvenida a US$ 0,99, juego en inglés y Photon a 10 envíos por segundo).
@@ -66,7 +65,7 @@ Métricas y Avance usan el «Informe de avances - Sprint 3»: 66 de las 68 histo
 
 ## Quién lee y diapositiva secreta (25/10/2026)
 
-Lee cada diapositiva: Historia, Nahuel Velazquez; Demo de interfaz, David Ramos; Arsenal, Lucas Huber; Menú, perfil y cápsulas, Luka Gómez; Métricas, Tiempo por estado y Avance, Agustín Barreto; Propuesta comercial y Números, Ulises Fonseca; Costos e Inversión, Nicolás Gauna. Apertura, Tráiler y Cierre quedan como «Equipo Riftwalker».
+Lee cada diapositiva: Historia, Nahuel Velazquez; Demo de interfaz, David Ramos; Arsenal, Lucas Huber; Menú, perfil y cápsulas, Luka Gómez; Métricas y Avance, Agustín Barreto; Propuesta comercial y Números, Ulises Fonseca; Costos e Inversión, Nicolás Gauna. Apertura, Tráiler y Cierre quedan como «Equipo Riftwalker».
 
 Después del cierre hay una diapositiva secreta: en «16 / 16» Siguiente (o →, o el control remoto) sigue habilitado y rompe la página de a poco, en unos 8 segundos: empieza con fallas chiquitas que van creciendo (temblor, colores separados, franjas invertidas y pedazos corridos), a los 2 s se agrieta desde un golpe cerca del centro, entre los 4 y los 7 s la barra de arriba, los controles y la diapositiva se aflojan y se caen de a uno, y en el lugar del golpe se abre una grieta de luz que se vuelve el portal; ahí pasa el video de `secret.video` a pantalla completa, con sonido (el navegador lo deja porque ya hubo clics en la página). No figura en el índice, en el contador ni en el reloj, y no cambia la dirección. ← o Esc vuelve al cierre como estaba (en pantalla completa, Esc primero sale de la pantalla completa: usar ←). Sin video, termina en el portal abierto. El video se precarga al llegar a Inversión. Probada a 1280 × 720 con el tráiler como video de prueba.
 
@@ -83,3 +82,7 @@ La diapositiva secreta pasa media/invasion.mp4 (1920 × 1080, 28 s, 15,5 MB, tal
 ## Sin Conjuntos ni Emotes (27/10/2026)
 
 Se sacaron las diapositivas Conjuntos y Emotes: los emotes no entran en la entrega del Sprint 3 (v0.3.0). Quedan catorce bloques; para seguir en 20 minutos, Menú, perfil y cápsulas y la Demo de interfaz pasan a 2 minutos cada una. El código que las dibuja (`sets()`, `dances()`) y los PNG de `media/emotes/` siguen, por si vuelven.
+
+## Sin Tiempo por estado (27/10/2026)
+
+Se sacó la diapositiva Tiempo por estado. Quedan trece bloques; para seguir en 20 minutos, Métricas pasa a 2 minutos (la lee Agustín, como la que se sacó). El código que la dibuja (`statusTime()`) y sus datos siguen, por si vuelve.
