@@ -8,9 +8,18 @@ using UnityEngine;
 // - Piernas: una cápsula por pata (muslo a pie) y por brazo (brazo a mano).
 // Son triggers: no frenan a nadie, solo las encuentran las balas. Si el modelo no tiene esos huesos, no se arma nada
 // y todo el bicho cuenta como cuerpo (su cápsula).
+// Si el prefab del bicho ya trae zonas (las que se pasan con Riftwalker > NPCs > Pasar zonas de impacto a los prefabs
+// y después se ajustan a mano), se usan esas y no se arma ninguna.
 public static class ZonasDeNpc
 {
-    /// <summary>Arma las zonas en el modelo. Devuelve cuántas armó.</summary>
+    /// <summary>Las zonas del modelo: si ya tiene, las deja; si no, las arma. Devuelve cuántas tiene.</summary>
+    public static int Asegurar(Transform modelo)
+    {
+        int tiene = modelo.GetComponentsInChildren<HitZone>(true).Length;
+        return tiene > 0 ? tiene : Armar(modelo);
+    }
+
+    /// <summary>Arma las zonas en el modelo (sin mirar si ya tiene). Devuelve cuántas armó.</summary>
     public static int Armar(Transform modelo)
     {
         Transform cabeza = Hueso(modelo, "Bip01 Head");
