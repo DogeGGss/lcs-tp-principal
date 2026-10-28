@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   nombre: Tanque
   modelo: {fileID: 6697294229898335401, guid: 7dc7b54399d54194e9f2619f1832e8d5, type: 3}
-  escala: 1.4
+  escala: 1
   vida: 400
   danio: 40
   frenaAlRecibirImpacto: 0

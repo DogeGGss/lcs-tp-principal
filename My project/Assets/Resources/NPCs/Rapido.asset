@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   nombre: Rápido
   modelo: {fileID: 8914286996971816111, guid: 877dc861ccb8af54a82af8e7768fd13c, type: 3}
-  escala: 0.6
+  escala: 0.3
   vida: 60
   danio: 10
   frenaAlRecibirImpacto: 1
