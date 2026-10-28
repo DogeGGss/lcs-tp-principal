@@ -5,7 +5,9 @@ using UnityEngine;
 // - la vida de su tipo, sin escudo (CA1 a CA3), en un HealthSystem como el de los jugadores, así las armas lo dañan
 //   igual (US 038);
 // - una cápsula para chocar y recibir disparos, del tamaño del modelo.
-// Moverse, detectar, atacar y morir son las US 035 a 039: leen de acá el tipo (Tipo) y el Animator (Animador).
+// - sus animaciones, desde el código (Animaciones, AnimadorDeNpc): el controlador de muestra del modelo no sirve;
+// - la persecución del jugador (PersecucionDeNpc, US 035 y 036).
+// Atacar, recibir daño y morir son las US 037 a 039: leen de acá el tipo (Tipo) y las animaciones.
 public class Npc : MonoBehaviour
 {
     /// <summary>El tipo de este NPC (vida, daño, velocidad, puntos).</summary>
@@ -16,9 +18,13 @@ public class Npc : MonoBehaviour
     public HealthSystem Vida { get; private set; }
     /// <summary>Su modelo (hijo de este objeto).</summary>
     public Transform Modelo { get; private set; }
+    /// <summary>Sus animaciones (las de su tipo).</summary>
+    public AnimadorDeNpc Animaciones { get; private set; }
+    /// <summary>Está vivo.</summary>
+    public bool Vivo => Vida != null && Vida.currentHealth > 0;
 
-    /// <summary>Arma un NPC de ese tipo en ese lugar, mirando hacia ahí.</summary>
-    public static Npc Crear(TipoDeNpc tipo, Vector3 lugar, Quaternion giro)
+    /// <summary>Arma un NPC de ese tipo en ese lugar, mirando hacia ahí. persigue: sale a buscar al jugador (US 035).</summary>
+    public static Npc Crear(TipoDeNpc tipo, Vector3 lugar, Quaternion giro, bool persigue = true)
     {
         if (tipo == null || tipo.modelo == null)
         {
@@ -29,6 +35,7 @@ public class Npc : MonoBehaviour
         go.transform.SetPositionAndRotation(lugar, giro);
         Npc npc = go.AddComponent<Npc>();
         npc.Armar(tipo);
+        if (persigue) go.AddComponent<PersecucionDeNpc>();
         return npc;
     }
 
@@ -48,6 +55,8 @@ public class Npc : MonoBehaviour
         {
             Animador.applyRootMotion = false;                          // lo mueve el código (US 035)
             Animador.cullingMode = AnimatorCullingMode.CullUpdateTransforms; // lejos de la cámara no se anima de más
+            Animaciones = new AnimadorDeNpc(Animador);
+            Animaciones.Poner(tipo.quieto != null ? tipo.quieto : tipo.quietoEnCombate, true, 0f);
         }
 
         // La vida del tipo, sin escudo (CA1 a CA3).
@@ -66,6 +75,16 @@ public class Npc : MonoBehaviour
         capsula.center = centro;
         capsula.height = Mathf.Max(alto, ancho);
         capsula.radius = Mathf.Max(0.2f, ancho * 0.5f);
+    }
+
+    private void Update()
+    {
+        if (Animaciones != null) Animaciones.Actualizar(Time.deltaTime);
+    }
+
+    private void OnDestroy()
+    {
+        if (Animaciones != null) Animaciones.Destruir();
     }
 
     // La caja de lo que se ve del modelo (en el mundo).

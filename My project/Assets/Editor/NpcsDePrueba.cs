@@ -2,8 +2,8 @@ using UnityEditor;
 using UnityEngine;
 
 // F11 (NPCs), US 145: para ver los tipos de NPC uno al lado del otro (CA4: que se distingan de lejos). Con el juego
-// andando, Riftwalker > NPCs > Aparecer uno de cada tipo los pone en fila adelante de la cámara, quietos (todavía no
-// se mueven: US 035). Se borran solos al salir del Play.
+// andando, Riftwalker > NPCs > Aparecer uno de cada tipo los pone en fila adelante de la cámara, y salen a buscar al
+// jugador (US 035 y 036). Se borran solos al salir del Play.
 public static class NpcsDePrueba
 {
     [MenuItem("Riftwalker/NPCs/Aparecer uno de cada tipo")]
