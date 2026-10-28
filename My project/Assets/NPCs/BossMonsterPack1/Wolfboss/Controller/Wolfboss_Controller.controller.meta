@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: e204244be734b26468047601be2dff7b
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 189463
+  packageName: 'Monster: Wolf boss'
+  packageVersion: 1.0
+  assetPath: Assets/Hatogame_new/BossMonsterPack1/Wolfboss/Controller/Wolfboss_Controller.controller
+  uploadId: 626876
