@@ -58,8 +58,10 @@ public class TipoDeNpc : ScriptableObject
     public AudioClip grito;
 
     [Header("Puntos (US 147)")]
-    [Tooltip("Puntos por matarlo (sin contar el tiro a la cabeza, US 039).")]
+    [Tooltip("Puntos por matarlo (US 039, CA3).")]
     [Min(0)] public int puntosPorBaja = 60;
+    [Tooltip("Puntos por matarlo si el último impacto fue a la cabeza (US 039, CA3).")]
+    [Min(0)] public int puntosPorBajaALaCabeza = 100;
 
     /// <summary>Todos los tipos, de Resources/NPCs, en el orden de su vida (de menos a más).</summary>
     public static TipoDeNpc[] Todos()

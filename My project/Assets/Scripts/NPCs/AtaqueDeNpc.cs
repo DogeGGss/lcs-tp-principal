@@ -38,6 +38,7 @@ public class AtaqueDeNpc : MonoBehaviour
     {
         if (npc == null || npc.Tipo == null || persecucion == null) return;
         if (!npc.Vivo) { Terminar(); enabled = false; return; }
+        if (npc.Aturdido) { if (golpeando) Terminar(); return; } // la flash corta el golpe (US 038, CA2)
 
         if (golpeando)
         {

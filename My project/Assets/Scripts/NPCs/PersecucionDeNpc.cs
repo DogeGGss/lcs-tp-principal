@@ -66,6 +66,7 @@ public class PersecucionDeNpc : MonoBehaviour
     {
         if (npc == null || npc.Tipo == null) return;
         if (!npc.Vivo) { Frenar(); enabled = false; return; } // muerto (US 039)
+        if (npc.Aturdido) { Frenar(); return; }                 // la flash lo dejó quieto (US 038, CA2)
 
         Objetivo = JugadorMasCercano(transform.position);
         if (Objetivo == null) { Frenar(); Animar(false); return; } // US 036, CA4
@@ -79,7 +80,9 @@ public class PersecucionDeNpc : MonoBehaviour
         // US 036, CA2: lo ve de cerca: grita una vez y acelera mientras lo vea.
         loVe = Ve(Objetivo);
         if (loVe && !grito) Gritar();
-        agente.speed = npc.Tipo.velocidad * (loVe ? MasRapido : 1f);
+        ReaccionDeNpc reaccion = GetComponent<ReaccionDeNpc>();
+        float golpeado = reaccion != null ? reaccion.Velocidad : 1f; // US 038, CA3: recién golpeado, un poco más lento
+        agente.speed = npc.Tipo.velocidad * (loVe ? MasRapido : 1f) * golpeado;
 
         Vector3 hasta = Objetivo.position - transform.position;
         hasta.y = 0f;
