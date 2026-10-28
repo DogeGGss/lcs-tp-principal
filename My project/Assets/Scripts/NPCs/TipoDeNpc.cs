@@ -35,6 +35,28 @@ public class TipoDeNpc : ScriptableObject
     [Tooltip("Si con esa velocidad corre (animación de correr) o camina.")]
     public bool corre;
 
+    [Header("Animaciones (las del modelo)")]
+    [Tooltip("Quieto, sin el jugador cerca (o con el jugador muerto).")]
+    public AnimationClip quieto;
+    [Tooltip("Quieto frente al jugador, listo para atacar.")]
+    public AnimationClip quietoEnCombate;
+    [Tooltip("Caminar (si no corre).")]
+    public AnimationClip caminar;
+    [Tooltip("Correr (si corre, o si es lo único que tiene).")]
+    public AnimationClip correr;
+    [Tooltip("Golpes al jugador (US 037): se usa uno al azar.")]
+    public AnimationClip[] ataques;
+    [Tooltip("Al recibir un impacto (US 038).")]
+    public AnimationClip golpeRecibido;
+    [Tooltip("Morir (US 039).")]
+    public AnimationClip morir;
+    [Tooltip("Aturdido por la flash (US 038, CA2). Si no tiene, se queda quieto.")]
+    public AnimationClip aturdido;
+
+    [Header("Sonido")]
+    [Tooltip("Grito al ver al jugador de cerca (US 036, CA2). Opcional.")]
+    public AudioClip grito;
+
     [Header("Puntos (US 147)")]
     [Tooltip("Puntos por matarlo (sin contar el tiro a la cabeza, US 039).")]
     [Min(0)] public int puntosPorBaja = 60;

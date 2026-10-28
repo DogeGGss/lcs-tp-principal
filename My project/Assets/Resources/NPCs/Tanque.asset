@@ -20,4 +20,15 @@ MonoBehaviour:
   frenaAlRecibirImpacto: 0
   velocidad: 1.8
   corre: 0
+  quieto: {fileID: 1827226128182048838, guid: 7af4d73ab07918f4fbf078cab489e4b8, type: 3}
+  quietoEnCombate: {fileID: 1827226128182048838, guid: d2e25d5293bd3c04a9278b305c0f0efe, type: 3}
+  caminar: {fileID: 1827226128182048838, guid: cca0042ae7bbbc94c999043722c6906b, type: 3}
+  correr: {fileID: 1827226128182048838, guid: a7ef05839d8269640b6e5424b6114fd6, type: 3}
+  ataques:
+  - {fileID: 1827226128182048838, guid: 2e0c5e6b121ff8047a09822e4ecf7c08, type: 3}
+  - {fileID: 1827226128182048838, guid: 4997eaa1e556a434faf6f7d59df3c6bf, type: 3}
+  golpeRecibido: {fileID: 1827226128182048838, guid: ec8e909a44cd1614897f965eedb6c14e, type: 3}
+  morir: {fileID: 1827226128182048838, guid: 688d54156d330eb48b69f546ee8691e1, type: 3}
+  aturdido: {fileID: 0}
+  grito: {fileID: 0}
   puntosPorBaja: 60
