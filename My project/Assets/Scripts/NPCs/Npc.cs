@@ -6,8 +6,8 @@ using UnityEngine;
 //   igual (US 038);
 // - una cápsula para chocar y recibir disparos, del tamaño del modelo.
 // - sus animaciones, desde el código (Animaciones, AnimadorDeNpc): el controlador de muestra del modelo no sirve;
-// - la persecución del jugador (PersecucionDeNpc, US 035 y 036).
-// Atacar, recibir daño y morir son las US 037 a 039: leen de acá el tipo (Tipo) y las animaciones.
+// - la persecución del jugador (PersecucionDeNpc, US 035 y 036) y sus golpes (AtaqueDeNpc, US 037).
+// Recibir daño y morir son las US 038 y 039: leen de acá el tipo (Tipo) y las animaciones.
 public class Npc : MonoBehaviour
 {
     /// <summary>El tipo de este NPC (vida, daño, velocidad, puntos).</summary>
@@ -35,7 +35,11 @@ public class Npc : MonoBehaviour
         go.transform.SetPositionAndRotation(lugar, giro);
         Npc npc = go.AddComponent<Npc>();
         npc.Armar(tipo);
-        if (persigue) go.AddComponent<PersecucionDeNpc>();
+        if (persigue)
+        {
+            go.AddComponent<PersecucionDeNpc>();
+            go.AddComponent<AtaqueDeNpc>(); // US 037
+        }
         return npc;
     }
 
