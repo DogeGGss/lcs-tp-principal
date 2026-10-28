@@ -29,6 +29,16 @@ public class PersecucionDeNpc : MonoBehaviour
 
     private static int siguienteLugar;
 
+    // El proyecto entra al Play sin recargar los scripts (Enter Play Mode Options): lo estático queda de la partida
+    // anterior (por ejemplo, el jugador ya borrado). Se limpia al empezar cada una.
+    [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+    private static void Limpiar()
+    {
+        siguienteLugar = 0;
+        jugadores.Clear();
+        jugadoresEn = -10f;
+    }
+
     private Npc npc;
     private NavMeshAgent agente;
     private int tipoDeAgente = -1;
@@ -225,7 +235,8 @@ public class PersecucionDeNpc : MonoBehaviour
     /// <summary>El jugador vivo más cercano a ese punto (US 036, CA1), o null si no hay ninguno vivo (CA4).</summary>
     public static Transform JugadorMasCercano(Vector3 desde)
     {
-        if (Time.time - jugadoresEn > 1f)
+        // Cada segundo, o si alguno ya no está (o el reloj volvió a empezar: otra partida).
+        if (Time.time - jugadoresEn > 1f || Time.time < jugadoresEn || jugadores.Count == 0 || jugadores.Exists(j => j == null))
         {
             jugadoresEn = Time.time;
             jugadores.Clear();

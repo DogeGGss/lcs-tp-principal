@@ -17,8 +17,21 @@ public static class NavMeshEnVivo
     private static int tipo = -1;
 
     /// <summary>Ya se puede usar (terminó de armarse para la escena actual).</summary>
-    public static bool Listo => datos != null && armando != null && armando.isDone &&
+    public static bool Listo => datos != null && armando != null && armando.isDone && instancia.valid &&
                                 escena == UnityEngine.SceneManagement.SceneManager.GetActiveScene();
+
+    // El proyecto entra al Play sin recargar los scripts ni la escena (Enter Play Mode Options): al salir del Play
+    // Unity borra el NavMesh armado, pero esto seguía creyendo que estaba (y no lo volvía a armar: en la segunda
+    // partida los NPCs y el perro no se movían). Se olvida al empezar cada partida.
+    [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+    private static void Olvidar()
+    {
+        if (instancia.valid) instancia.Remove(); // por si quedó (no se suma otro encima)
+        datos = null;
+        armando = null;
+        instancia = default;
+        escena = default;
+    }
 
     /// <summary>El tipo de agente (tamaño de perro) del NavMesh armado.</summary>
     public static int Tipo => tipo;
@@ -27,7 +40,7 @@ public static class NavMeshEnVivo
     public static void Preparar(Vector3 centro)
     {
         UnityEngine.SceneManagement.Scene actual = UnityEngine.SceneManagement.SceneManager.GetActiveScene();
-        if (datos != null && escena == actual) return;
+        if (datos != null && escena == actual && instancia.valid) return;
         if (instancia.valid) instancia.Remove();
         escena = actual;
 

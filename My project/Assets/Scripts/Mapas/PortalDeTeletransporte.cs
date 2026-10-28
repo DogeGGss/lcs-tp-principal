@@ -74,6 +74,7 @@ public class PortalDeTeletransporte : MonoBehaviour
 
     private void Pasar(Collider otro)
     {
+        if (Time.time < pasoEn) pasoEn = -10f; // otra partida (el reloj volvió a empezar)
         if (destino == null || Time.time - pasoEn < Espera) return;
         CharacterController cuerpo = otro.GetComponentInParent<CharacterController>();
         if (cuerpo == null || cuerpo.GetComponent<PlayerMovement>() == null) return; // solo jugadores que se manejan acá
