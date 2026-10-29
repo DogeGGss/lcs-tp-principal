@@ -5,7 +5,8 @@ using UnityEngine;
 // - CA2: el cuchillo y la granada de metralla también lo dañan (MeleeAttack y Grenade1 buscan su vida). La flash lo
 //   deja quieto 2 s (Npc.Aturdir, desde la explosión) y el humo no le hace nada.
 // - CA3: al recibir un impacto hace la animación de recibir un golpe (TipoDeNpc.golpeRecibido) del torso para arriba,
-//   mezclada con la de caminar, y le salta sangre, sin dejar de avanzar. Sin esa animación, se sacude un instante. Si
+//   mezclada con la de caminar, y le salta sangre, sin dejar de avanzar. Sin esa animación, se sacude un instante (los
+//   jefes no: no se tambalean, solo les salta sangre, US 146). Si
 //   su tipo se frena con los impactos (TipoDeNpc.frenaAlRecibirImpacto), baja un poco la velocidad y la recupera de a
 //   poco (no se frena en seco). El Tanque (y el Jefe) no.
 // - CA4: cada impacto de bala avisa (Npc.ImpactoDeBala), para que el modo Zombie sume los 10 puntos (US 147).
@@ -36,7 +37,7 @@ public class ReaccionDeNpc : MonoBehaviour
         // ahí va la de morir (US 039).
         AnimationClip clip = npc.Tipo != null ? npc.Tipo.golpeRecibido : null;
         if (npc.Vivo && clip != null && npc.Animaciones != null) npc.Animaciones.Golpe(clip);
-        else if (npc.Vivo)
+        else if (npc.Vivo && (npc.Tipo == null || !npc.Tipo.esJefe))
         {
             if (!sacudiendo && npc.Modelo != null) giroModelo = npc.Modelo.localRotation;
             sacudidaHasta = Time.time + Sacudida;

@@ -1,0 +1,962 @@
+fileFormatVersion: 2
+guid: 12032f68da0993d41bcee7217e8288f7
+timeCreated: 1500052349
+licenseType: Store
+ModelImporter:
+  serializedVersion: 19
+  fileIDToRecycleName:
+    100000: body_centr
+    100002: body_centr 1
+    100004: body_tail
+    100006: body_tail 1
+    100008: body_up
+    100010: body_up 1
+    100012: FK_controllers
+    100014: //RootNode
+    100016: group1
+    100018: head
+    100020: head 1
+    100022: head_2
+    100024: jaw_down_1
+    100026: jaw_down_1 1
+    100028: jaw_down_2
+    100030: jaw_down_3
+    100032: jaw_up_1
+    100034: jaw_up_1 1
+    100036: jaw_up_2
+    100038: jaw_up_3
+    100040: left_belly_button_high_1
+    100042: left_belly_button_high_1 1
+    100044: left_belly_button_high_2
+    100046: left_belly_button_high_2 1
+    100048: left_belly_button_high_3
+    100050: left_belly_button_low_1
+    100052: left_belly_button_low_1 1
+    100054: left_belly_button_low_2
+    100056: left_belly_button_low_2 1
+    100058: left_belly_button_low_3
+    100060: left_belly_button_mid_1
+    100062: left_belly_button_mid_1 1
+    100064: left_belly_button_mid_2
+    100066: left_belly_button_mid_2 1
+    100068: left_belly_button_mid_3
+    100070: left_big_finger_1
+    100072: left_big_finger_2
+    100074: left_big_finger_2 1
+    100076: left_big_finger_3
+    100078: left_big_finger_3 1
+    100080: left_big_finger_4
+    100082: left_big_finger_4 1
+    100084: left_big_finger_5
+    100086: left_elbow
+    100088: left_elbow 1
+    100090: left_forefinger_1
+    100092: left_forefinger_1 1
+    100094: left_forefinger_2
+    100096: left_forefinger_2 1
+    100098: left_forefinger_3
+    100100: left_forefinger_3 1
+    100102: left_forefinger_4
+    100104: left_hand
+    100106: left_hand 1
+    100108: left_middle_finger_1
+    100110: left_middle_finger_1 1
+    100112: left_middle_finger_2
+    100114: left_middle_finger_2 1
+    100116: left_middle_finger_3
+    100118: left_middle_finger_3 1
+    100120: left_middle_finger_4
+    100122: left_shoulder
+    100124: left_shoulder 1
+    100126: left_spike_1
+    100128: left_spike_1 1
+    100130: left_spike_2
+    100132: left_spike_3
+    100134: left_spike_3 1
+    100136: left_spike_4
+    100138: left_spike_4 1
+    100140: left_spike_5
+    100142: left_spike_6
+    100144: left_wing_back_1
+    100146: left_wing_back_1 1
+    100148: left_wing_back_2
+    100150: left_wing_back_2 1
+    100152: left_wing_back_3
+    100154: left_wing_front_1
+    100156: left_wing_front_1 1
+    100158: left_wing_front_2
+    100160: left_wing_front_2 1
+    100162: left_wing_front_3
+    100164: neck
+    100166: neck 1
+    100168: petal_centr_1
+    100170: petal_centr_1 1
+    100172: petal_centr_2
+    100174: petal_centr_back_1
+    100176: petal_centr_back_1 1
+    100178: petal_centr_back_2
+    100180: petal_left_down_1
+    100182: petal_left_down_1 1
+    100184: petal_left_down_2
+    100186: petal_left_up_1
+    100188: petal_left_up_1 1
+    100190: petal_left_up_2
+    100192: petal_right_down_1
+    100194: petal_right_down_1 1
+    100196: petal_right_down_2
+    100198: petal_right_up_1
+    100200: petal_right_up_1 1
+    100202: petal_right_up_2
+    100204: right__wing_front_1
+    100206: right__wing_front_1 1
+    100208: right__wing_front_2
+    100210: right__wing_front_2 1
+    100212: right__wing_front_3
+    100214: right_belly_button_high_1
+    100216: right_belly_button_high_1 1
+    100218: right_belly_button_high_2
+    100220: right_belly_button_high_2 1
+    100222: right_belly_button_high_3
+    100224: right_belly_button_low_1
+    100226: right_belly_button_low_1 1
+    100228: right_belly_button_low_2
+    100230: right_belly_button_low_2 1
+    100232: right_belly_button_low_3
+    100234: right_belly_button_mid_1
+    100236: right_belly_button_mid_1 1
+    100238: right_belly_button_mid_2
+    100240: right_belly_button_mid_2 1
+    100242: right_belly_button_mid_3
+    100244: right_big_finger_1
+    100246: right_big_finger_2
+    100248: right_big_finger_2 1
+    100250: right_big_finger_3
+    100252: right_big_finger_3 1
+    100254: right_big_finger_4
+    100256: right_big_finger_4 1
+    100258: right_big_finger_5
+    100260: right_elbow
+    100262: right_elbow 1
+    100264: right_forefinger_1
+    100266: right_forefinger_1 1
+    100268: right_forefinger_2
+    100270: right_forefinger_2 1
+    100272: right_forefinger_3
+    100274: right_forefinger_3 1
+    100276: right_forefinger_4
+    100278: right_hand
+    100280: right_hand 1
+    100282: right_middle_finger_1
+    100284: right_middle_finger_1 1
+    100286: right_middle_finger_2
+    100288: right_middle_finger_2 1
+    100290: right_middle_finger_3
+    100292: right_middle_finger_3 1
+    100294: right_middle_finger_4
+    100296: right_shoulder
+    100298: right_shoulder 1
+    100300: right_spike_1
+    100302: right_spike_1 1
+    100304: right_spike_2
+    100306: right_spike_3
+    100308: right_spike_3 1
+    100310: right_spike_4
+    100312: right_spike_4 1
+    100314: right_spike_5
+    100316: right_spike_6
+    100318: right_wing_back_1
+    100320: right_wing_back_1 1
+    100322: right_wing_back_2
+    100324: right_wing_back_2 1
+    100326: right_wing_back_3
+    100328: root
+    100330: root 1
+    100332: tail_1
+    100334: tail_1 1
+    100336: tail_2
+    100338: tail_2 1
+    100340: tail_3
+    100342: tail_3 1
+    100344: tail_4
+    100346: tail_4 1
+    100348: tail_5
+    100350: tail_6
+    100352: tbeetle_texture_orange:polySurface1
+    100354: tbeetle_texture_orange:polySurface10
+    100356: tbeetle_texture_orange:polySurface100
+    100358: tbeetle_texture_orange:polySurface101
+    100360: tbeetle_texture_orange:polySurface102
+    100362: tbeetle_texture_orange:polySurface103
+    100364: tbeetle_texture_orange:polySurface104
+    100366: tbeetle_texture_orange:polySurface105
+    100368: tbeetle_texture_orange:polySurface106
+    100370: tbeetle_texture_orange:polySurface107
+    100372: tbeetle_texture_orange:polySurface108
+    100374: tbeetle_texture_orange:polySurface109
+    100376: tbeetle_texture_orange:polySurface11
+    100378: tbeetle_texture_orange:polySurface110
+    100380: tbeetle_texture_orange:polySurface111
+    100382: tbeetle_texture_orange:polySurface112
+    100384: tbeetle_texture_orange:polySurface113
+    100386: tbeetle_texture_orange:polySurface114
+    100388: tbeetle_texture_orange:polySurface115
+    100390: tbeetle_texture_orange:polySurface116
+    100392: tbeetle_texture_orange:polySurface117
+    100394: tbeetle_texture_orange:polySurface118
+    100396: tbeetle_texture_orange:polySurface119
+    100398: tbeetle_texture_orange:polySurface12
+    100400: tbeetle_texture_orange:polySurface120
+    100402: tbeetle_texture_orange:polySurface121
+    100404: tbeetle_texture_orange:polySurface122
+    100406: tbeetle_texture_orange:polySurface123
+    100408: tbeetle_texture_orange:polySurface124
+    100410: tbeetle_texture_orange:polySurface125
+    100412: tbeetle_texture_orange:polySurface126
+    100414: tbeetle_texture_orange:polySurface127
+    100416: tbeetle_texture_orange:polySurface128
+    100418: tbeetle_texture_orange:polySurface129
+    100420: tbeetle_texture_orange:polySurface13
+    100422: tbeetle_texture_orange:polySurface130
+    100424: tbeetle_texture_orange:polySurface131
+    100426: tbeetle_texture_orange:polySurface14
+    100428: tbeetle_texture_orange:polySurface15
+    100430: tbeetle_texture_orange:polySurface16
+    100432: tbeetle_texture_orange:polySurface17
+    100434: tbeetle_texture_orange:polySurface18
+    100436: tbeetle_texture_orange:polySurface19
+    100438: tbeetle_texture_orange:polySurface2
+    100440: tbeetle_texture_orange:polySurface20
+    100442: tbeetle_texture_orange:polySurface21
+    100444: tbeetle_texture_orange:polySurface22
+    100446: tbeetle_texture_orange:polySurface23
+    100448: tbeetle_texture_orange:polySurface24
+    100450: tbeetle_texture_orange:polySurface25
+    100452: tbeetle_texture_orange:polySurface26
+    100454: tbeetle_texture_orange:polySurface27
+    100456: tbeetle_texture_orange:polySurface28
+    100458: tbeetle_texture_orange:polySurface29
+    100460: tbeetle_texture_orange:polySurface3
+    100462: tbeetle_texture_orange:polySurface30
+    100464: tbeetle_texture_orange:polySurface31
+    100466: tbeetle_texture_orange:polySurface32
+    100468: tbeetle_texture_orange:polySurface33
+    100470: tbeetle_texture_orange:polySurface34
+    100472: tbeetle_texture_orange:polySurface35
+    100474: tbeetle_texture_orange:polySurface36
+    100476: tbeetle_texture_orange:polySurface37
+    100478: tbeetle_texture_orange:polySurface38
+    100480: tbeetle_texture_orange:polySurface39
+    100482: tbeetle_texture_orange:polySurface4
+    100484: tbeetle_texture_orange:polySurface40
+    100486: tbeetle_texture_orange:polySurface41
+    100488: tbeetle_texture_orange:polySurface42
+    100490: tbeetle_texture_orange:polySurface43
+    100492: tbeetle_texture_orange:polySurface44
+    100494: tbeetle_texture_orange:polySurface45
+    100496: tbeetle_texture_orange:polySurface46
+    100498: tbeetle_texture_orange:polySurface47
+    100500: tbeetle_texture_orange:polySurface48
+    100502: tbeetle_texture_orange:polySurface49
+    100504: tbeetle_texture_orange:polySurface5
+    100506: tbeetle_texture_orange:polySurface50
+    100508: tbeetle_texture_orange:polySurface51
+    100510: tbeetle_texture_orange:polySurface52
+    100512: tbeetle_texture_orange:polySurface53
+    100514: tbeetle_texture_orange:polySurface54
+    100516: tbeetle_texture_orange:polySurface55
+    100518: tbeetle_texture_orange:polySurface56
+    100520: tbeetle_texture_orange:polySurface57
+    100522: tbeetle_texture_orange:polySurface58
+    100524: tbeetle_texture_orange:polySurface59
+    100526: tbeetle_texture_orange:polySurface6
+    100528: tbeetle_texture_orange:polySurface60
+    100530: tbeetle_texture_orange:polySurface61
+    100532: tbeetle_texture_orange:polySurface62
+    100534: tbeetle_texture_orange:polySurface63
+    100536: tbeetle_texture_orange:polySurface64
+    100538: tbeetle_texture_orange:polySurface65
+    100540: tbeetle_texture_orange:polySurface66
+    100542: tbeetle_texture_orange:polySurface67
+    100544: tbeetle_texture_orange:polySurface68
+    100546: tbeetle_texture_orange:polySurface69
+    100548: tbeetle_texture_orange:polySurface7
+    100550: tbeetle_texture_orange:polySurface70
+    100552: tbeetle_texture_orange:polySurface71
+    100554: tbeetle_texture_orange:polySurface72
+    100556: tbeetle_texture_orange:polySurface73
+    100558: tbeetle_texture_orange:polySurface74
+    100560: tbeetle_texture_orange:polySurface75
+    100562: tbeetle_texture_orange:polySurface76
+    100564: tbeetle_texture_orange:polySurface77
+    100566: tbeetle_texture_orange:polySurface78
+    100568: tbeetle_texture_orange:polySurface79
+    100570: tbeetle_texture_orange:polySurface8
+    100572: tbeetle_texture_orange:polySurface80
+    100574: tbeetle_texture_orange:polySurface81
+    100576: tbeetle_texture_orange:polySurface82
+    100578: tbeetle_texture_orange:polySurface83
+    100580: tbeetle_texture_orange:polySurface84
+    100582: tbeetle_texture_orange:polySurface85
+    100584: tbeetle_texture_orange:polySurface86
+    100586: tbeetle_texture_orange:polySurface87
+    100588: tbeetle_texture_orange:polySurface88
+    100590: tbeetle_texture_orange:polySurface89
+    100592: tbeetle_texture_orange:polySurface9
+    100594: tbeetle_texture_orange:polySurface90
+    100596: tbeetle_texture_orange:polySurface91
+    100598: tbeetle_texture_orange:polySurface92
+    100600: tbeetle_texture_orange:polySurface93
+    100602: tbeetle_texture_orange:polySurface94
+    100604: tbeetle_texture_orange:polySurface95
+    100606: tbeetle_texture_orange:polySurface96
+    100608: tbeetle_texture_orange:polySurface97
+    100610: tbeetle_texture_orange:polySurface98
+    100612: tbeetle_texture_orange:polySurface99
+    400000: body_centr
+    400002: body_centr 1
+    400004: body_tail
+    400006: body_tail 1
+    400008: body_up
+    400010: body_up 1
+    400012: FK_controllers
+    400014: //RootNode
+    400016: group1
+    400018: head
+    400020: head 1
+    400022: head_2
+    400024: jaw_down_1
+    400026: jaw_down_1 1
+    400028: jaw_down_2
+    400030: jaw_down_3
+    400032: jaw_up_1
+    400034: jaw_up_1 1
+    400036: jaw_up_2
+    400038: jaw_up_3
+    400040: left_belly_button_high_1
+    400042: left_belly_button_high_1 1
+    400044: left_belly_button_high_2
+    400046: left_belly_button_high_2 1
+    400048: left_belly_button_high_3
+    400050: left_belly_button_low_1
+    400052: left_belly_button_low_1 1
+    400054: left_belly_button_low_2
+    400056: left_belly_button_low_2 1
+    400058: left_belly_button_low_3
+    400060: left_belly_button_mid_1
+    400062: left_belly_button_mid_1 1
+    400064: left_belly_button_mid_2
+    400066: left_belly_button_mid_2 1
+    400068: left_belly_button_mid_3
+    400070: left_big_finger_1
+    400072: left_big_finger_2
+    400074: left_big_finger_2 1
+    400076: left_big_finger_3
+    400078: left_big_finger_3 1
+    400080: left_big_finger_4
+    400082: left_big_finger_4 1
+    400084: left_big_finger_5
+    400086: left_elbow
+    400088: left_elbow 1
+    400090: left_forefinger_1
+    400092: left_forefinger_1 1
+    400094: left_forefinger_2
+    400096: left_forefinger_2 1
+    400098: left_forefinger_3
+    400100: left_forefinger_3 1
+    400102: left_forefinger_4
+    400104: left_hand
+    400106: left_hand 1
+    400108: left_middle_finger_1
+    400110: left_middle_finger_1 1
+    400112: left_middle_finger_2
+    400114: left_middle_finger_2 1
+    400116: left_middle_finger_3
+    400118: left_middle_finger_3 1
+    400120: left_middle_finger_4
+    400122: left_shoulder
+    400124: left_shoulder 1
+    400126: left_spike_1
+    400128: left_spike_1 1
+    400130: left_spike_2
+    400132: left_spike_3
+    400134: left_spike_3 1
+    400136: left_spike_4
+    400138: left_spike_4 1
+    400140: left_spike_5
+    400142: left_spike_6
+    400144: left_wing_back_1
+    400146: left_wing_back_1 1
+    400148: left_wing_back_2
+    400150: left_wing_back_2 1
+    400152: left_wing_back_3
+    400154: left_wing_front_1
+    400156: left_wing_front_1 1
+    400158: left_wing_front_2
+    400160: left_wing_front_2 1
+    400162: left_wing_front_3
+    400164: neck
+    400166: neck 1
+    400168: petal_centr_1
+    400170: petal_centr_1 1
+    400172: petal_centr_2
+    400174: petal_centr_back_1
+    400176: petal_centr_back_1 1
+    400178: petal_centr_back_2
+    400180: petal_left_down_1
+    400182: petal_left_down_1 1
+    400184: petal_left_down_2
+    400186: petal_left_up_1
+    400188: petal_left_up_1 1
+    400190: petal_left_up_2
+    400192: petal_right_down_1
+    400194: petal_right_down_1 1
+    400196: petal_right_down_2
+    400198: petal_right_up_1
+    400200: petal_right_up_1 1
+    400202: petal_right_up_2
+    400204: right__wing_front_1
+    400206: right__wing_front_1 1
+    400208: right__wing_front_2
+    400210: right__wing_front_2 1
+    400212: right__wing_front_3
+    400214: right_belly_button_high_1
+    400216: right_belly_button_high_1 1
+    400218: right_belly_button_high_2
+    400220: right_belly_button_high_2 1
+    400222: right_belly_button_high_3
+    400224: right_belly_button_low_1
+    400226: right_belly_button_low_1 1
+    400228: right_belly_button_low_2
+    400230: right_belly_button_low_2 1
+    400232: right_belly_button_low_3
+    400234: right_belly_button_mid_1
+    400236: right_belly_button_mid_1 1
+    400238: right_belly_button_mid_2
+    400240: right_belly_button_mid_2 1
+    400242: right_belly_button_mid_3
+    400244: right_big_finger_1
+    400246: right_big_finger_2
+    400248: right_big_finger_2 1
+    400250: right_big_finger_3
+    400252: right_big_finger_3 1
+    400254: right_big_finger_4
+    400256: right_big_finger_4 1
+    400258: right_big_finger_5
+    400260: right_elbow
+    400262: right_elbow 1
+    400264: right_forefinger_1
+    400266: right_forefinger_1 1
+    400268: right_forefinger_2
+    400270: right_forefinger_2 1
+    400272: right_forefinger_3
+    400274: right_forefinger_3 1
+    400276: right_forefinger_4
+    400278: right_hand
+    400280: right_hand 1
+    400282: right_middle_finger_1
+    400284: right_middle_finger_1 1
+    400286: right_middle_finger_2
+    400288: right_middle_finger_2 1
+    400290: right_middle_finger_3
+    400292: right_middle_finger_3 1
+    400294: right_middle_finger_4
+    400296: right_shoulder
+    400298: right_shoulder 1
+    400300: right_spike_1
+    400302: right_spike_1 1
+    400304: right_spike_2
+    400306: right_spike_3
+    400308: right_spike_3 1
+    400310: right_spike_4
+    400312: right_spike_4 1
+    400314: right_spike_5
+    400316: right_spike_6
+    400318: right_wing_back_1
+    400320: right_wing_back_1 1
+    400322: right_wing_back_2
+    400324: right_wing_back_2 1
+    400326: right_wing_back_3
+    400328: root
+    400330: root 1
+    400332: tail_1
+    400334: tail_1 1
+    400336: tail_2
+    400338: tail_2 1
+    400340: tail_3
+    400342: tail_3 1
+    400344: tail_4
+    400346: tail_4 1
+    400348: tail_5
+    400350: tail_6
+    400352: tbeetle_texture_orange:polySurface1
+    400354: tbeetle_texture_orange:polySurface10
+    400356: tbeetle_texture_orange:polySurface100
+    400358: tbeetle_texture_orange:polySurface101
+    400360: tbeetle_texture_orange:polySurface102
+    400362: tbeetle_texture_orange:polySurface103
+    400364: tbeetle_texture_orange:polySurface104
+    400366: tbeetle_texture_orange:polySurface105
+    400368: tbeetle_texture_orange:polySurface106
+    400370: tbeetle_texture_orange:polySurface107
+    400372: tbeetle_texture_orange:polySurface108
+    400374: tbeetle_texture_orange:polySurface109
+    400376: tbeetle_texture_orange:polySurface11
+    400378: tbeetle_texture_orange:polySurface110
+    400380: tbeetle_texture_orange:polySurface111
+    400382: tbeetle_texture_orange:polySurface112
+    400384: tbeetle_texture_orange:polySurface113
+    400386: tbeetle_texture_orange:polySurface114
+    400388: tbeetle_texture_orange:polySurface115
+    400390: tbeetle_texture_orange:polySurface116
+    400392: tbeetle_texture_orange:polySurface117
+    400394: tbeetle_texture_orange:polySurface118
+    400396: tbeetle_texture_orange:polySurface119
+    400398: tbeetle_texture_orange:polySurface12
+    400400: tbeetle_texture_orange:polySurface120
+    400402: tbeetle_texture_orange:polySurface121
+    400404: tbeetle_texture_orange:polySurface122
+    400406: tbeetle_texture_orange:polySurface123
+    400408: tbeetle_texture_orange:polySurface124
+    400410: tbeetle_texture_orange:polySurface125
+    400412: tbeetle_texture_orange:polySurface126
+    400414: tbeetle_texture_orange:polySurface127
+    400416: tbeetle_texture_orange:polySurface128
+    400418: tbeetle_texture_orange:polySurface129
+    400420: tbeetle_texture_orange:polySurface13
+    400422: tbeetle_texture_orange:polySurface130
+    400424: tbeetle_texture_orange:polySurface131
+    400426: tbeetle_texture_orange:polySurface14
+    400428: tbeetle_texture_orange:polySurface15
+    400430: tbeetle_texture_orange:polySurface16
+    400432: tbeetle_texture_orange:polySurface17
+    400434: tbeetle_texture_orange:polySurface18
+    400436: tbeetle_texture_orange:polySurface19
+    400438: tbeetle_texture_orange:polySurface2
+    400440: tbeetle_texture_orange:polySurface20
+    400442: tbeetle_texture_orange:polySurface21
+    400444: tbeetle_texture_orange:polySurface22
+    400446: tbeetle_texture_orange:polySurface23
+    400448: tbeetle_texture_orange:polySurface24
+    400450: tbeetle_texture_orange:polySurface25
+    400452: tbeetle_texture_orange:polySurface26
+    400454: tbeetle_texture_orange:polySurface27
+    400456: tbeetle_texture_orange:polySurface28
+    400458: tbeetle_texture_orange:polySurface29
+    400460: tbeetle_texture_orange:polySurface3
+    400462: tbeetle_texture_orange:polySurface30
+    400464: tbeetle_texture_orange:polySurface31
+    400466: tbeetle_texture_orange:polySurface32
+    400468: tbeetle_texture_orange:polySurface33
+    400470: tbeetle_texture_orange:polySurface34
+    400472: tbeetle_texture_orange:polySurface35
+    400474: tbeetle_texture_orange:polySurface36
+    400476: tbeetle_texture_orange:polySurface37
+    400478: tbeetle_texture_orange:polySurface38
+    400480: tbeetle_texture_orange:polySurface39
+    400482: tbeetle_texture_orange:polySurface4
+    400484: tbeetle_texture_orange:polySurface40
+    400486: tbeetle_texture_orange:polySurface41
+    400488: tbeetle_texture_orange:polySurface42
+    400490: tbeetle_texture_orange:polySurface43
+    400492: tbeetle_texture_orange:polySurface44
+    400494: tbeetle_texture_orange:polySurface45
+    400496: tbeetle_texture_orange:polySurface46
+    400498: tbeetle_texture_orange:polySurface47
+    400500: tbeetle_texture_orange:polySurface48
+    400502: tbeetle_texture_orange:polySurface49
+    400504: tbeetle_texture_orange:polySurface5
+    400506: tbeetle_texture_orange:polySurface50
+    400508: tbeetle_texture_orange:polySurface51
+    400510: tbeetle_texture_orange:polySurface52
+    400512: tbeetle_texture_orange:polySurface53
+    400514: tbeetle_texture_orange:polySurface54
+    400516: tbeetle_texture_orange:polySurface55
+    400518: tbeetle_texture_orange:polySurface56
+    400520: tbeetle_texture_orange:polySurface57
+    400522: tbeetle_texture_orange:polySurface58
+    400524: tbeetle_texture_orange:polySurface59
+    400526: tbeetle_texture_orange:polySurface6
+    400528: tbeetle_texture_orange:polySurface60
+    400530: tbeetle_texture_orange:polySurface61
+    400532: tbeetle_texture_orange:polySurface62
+    400534: tbeetle_texture_orange:polySurface63
+    400536: tbeetle_texture_orange:polySurface64
+    400538: tbeetle_texture_orange:polySurface65
+    400540: tbeetle_texture_orange:polySurface66
+    400542: tbeetle_texture_orange:polySurface67
+    400544: tbeetle_texture_orange:polySurface68
+    400546: tbeetle_texture_orange:polySurface69
+    400548: tbeetle_texture_orange:polySurface7
+    400550: tbeetle_texture_orange:polySurface70
+    400552: tbeetle_texture_orange:polySurface71
+    400554: tbeetle_texture_orange:polySurface72
+    400556: tbeetle_texture_orange:polySurface73
+    400558: tbeetle_texture_orange:polySurface74
+    400560: tbeetle_texture_orange:polySurface75
+    400562: tbeetle_texture_orange:polySurface76
+    400564: tbeetle_texture_orange:polySurface77
+    400566: tbeetle_texture_orange:polySurface78
+    400568: tbeetle_texture_orange:polySurface79
+    400570: tbeetle_texture_orange:polySurface8
+    400572: tbeetle_texture_orange:polySurface80
+    400574: tbeetle_texture_orange:polySurface81
+    400576: tbeetle_texture_orange:polySurface82
+    400578: tbeetle_texture_orange:polySurface83
+    400580: tbeetle_texture_orange:polySurface84
+    400582: tbeetle_texture_orange:polySurface85
+    400584: tbeetle_texture_orange:polySurface86
+    400586: tbeetle_texture_orange:polySurface87
+    400588: tbeetle_texture_orange:polySurface88
+    400590: tbeetle_texture_orange:polySurface89
+    400592: tbeetle_texture_orange:polySurface9
+    400594: tbeetle_texture_orange:polySurface90
+    400596: tbeetle_texture_orange:polySurface91
+    400598: tbeetle_texture_orange:polySurface92
+    400600: tbeetle_texture_orange:polySurface93
+    400602: tbeetle_texture_orange:polySurface94
+    400604: tbeetle_texture_orange:polySurface95
+    400606: tbeetle_texture_orange:polySurface96
+    400608: tbeetle_texture_orange:polySurface97
+    400610: tbeetle_texture_orange:polySurface98
+    400612: tbeetle_texture_orange:polySurface99
+    4300000: tbeetle_texture_orange:polySurface5
+    4300002: tbeetle_texture_orange:polySurface6
+    4300004: tbeetle_texture_orange:polySurface7
+    4300006: tbeetle_texture_orange:polySurface8
+    4300008: tbeetle_texture_orange:polySurface9
+    4300010: tbeetle_texture_orange:polySurface10
+    4300012: tbeetle_texture_orange:polySurface11
+    4300014: tbeetle_texture_orange:polySurface12
+    4300016: tbeetle_texture_orange:polySurface13
+    4300018: tbeetle_texture_orange:polySurface14
+    4300020: tbeetle_texture_orange:polySurface15
+    4300022: tbeetle_texture_orange:polySurface16
+    4300024: tbeetle_texture_orange:polySurface17
+    4300026: tbeetle_texture_orange:polySurface18
+    4300028: tbeetle_texture_orange:polySurface19
+    4300030: tbeetle_texture_orange:polySurface20
+    4300032: tbeetle_texture_orange:polySurface21
+    4300034: tbeetle_texture_orange:polySurface22
+    4300036: tbeetle_texture_orange:polySurface23
+    4300038: tbeetle_texture_orange:polySurface24
+    4300040: tbeetle_texture_orange:polySurface25
+    4300042: tbeetle_texture_orange:polySurface26
+    4300044: tbeetle_texture_orange:polySurface27
+    4300046: tbeetle_texture_orange:polySurface28
+    4300048: tbeetle_texture_orange:polySurface29
+    4300050: tbeetle_texture_orange:polySurface30
+    4300052: tbeetle_texture_orange:polySurface31
+    4300054: tbeetle_texture_orange:polySurface32
+    4300056: tbeetle_texture_orange:polySurface33
+    4300058: tbeetle_texture_orange:polySurface34
+    4300060: tbeetle_texture_orange:polySurface35
+    4300062: tbeetle_texture_orange:polySurface36
+    4300064: tbeetle_texture_orange:polySurface37
+    4300066: tbeetle_texture_orange:polySurface38
+    4300068: tbeetle_texture_orange:polySurface39
+    4300070: tbeetle_texture_orange:polySurface40
+    4300072: tbeetle_texture_orange:polySurface41
+    4300074: tbeetle_texture_orange:polySurface42
+    4300076: tbeetle_texture_orange:polySurface43
+    4300078: tbeetle_texture_orange:polySurface44
+    4300080: tbeetle_texture_orange:polySurface45
+    4300082: tbeetle_texture_orange:polySurface46
+    4300084: tbeetle_texture_orange:polySurface47
+    4300086: tbeetle_texture_orange:polySurface48
+    4300088: tbeetle_texture_orange:polySurface49
+    4300090: tbeetle_texture_orange:polySurface50
+    4300092: tbeetle_texture_orange:polySurface51
+    4300094: tbeetle_texture_orange:polySurface52
+    4300096: tbeetle_texture_orange:polySurface53
+    4300098: tbeetle_texture_orange:polySurface54
+    4300100: tbeetle_texture_orange:polySurface55
+    4300102: tbeetle_texture_orange:polySurface56
+    4300104: tbeetle_texture_orange:polySurface57
+    4300106: tbeetle_texture_orange:polySurface58
+    4300108: tbeetle_texture_orange:polySurface59
+    4300110: tbeetle_texture_orange:polySurface60
+    4300112: tbeetle_texture_orange:polySurface61
+    4300114: tbeetle_texture_orange:polySurface62
+    4300116: tbeetle_texture_orange:polySurface63
+    4300118: tbeetle_texture_orange:polySurface64
+    4300120: tbeetle_texture_orange:polySurface65
+    4300122: tbeetle_texture_orange:polySurface66
+    4300124: tbeetle_texture_orange:polySurface67
+    4300126: tbeetle_texture_orange:polySurface68
+    4300128: tbeetle_texture_orange:polySurface69
+    4300130: tbeetle_texture_orange:polySurface70
+    4300132: tbeetle_texture_orange:polySurface71
+    4300134: tbeetle_texture_orange:polySurface72
+    4300136: tbeetle_texture_orange:polySurface73
+    4300138: tbeetle_texture_orange:polySurface74
+    4300140: tbeetle_texture_orange:polySurface75
+    4300142: tbeetle_texture_orange:polySurface76
+    4300144: tbeetle_texture_orange:polySurface77
+    4300146: tbeetle_texture_orange:polySurface78
+    4300148: tbeetle_texture_orange:polySurface79
+    4300150: tbeetle_texture_orange:polySurface80
+    4300152: tbeetle_texture_orange:polySurface81
+    4300154: tbeetle_texture_orange:polySurface82
+    4300156: tbeetle_texture_orange:polySurface83
+    4300158: tbeetle_texture_orange:polySurface84
+    4300160: tbeetle_texture_orange:polySurface85
+    4300162: tbeetle_texture_orange:polySurface86
+    4300164: tbeetle_texture_orange:polySurface87
+    4300166: tbeetle_texture_orange:polySurface88
+    4300168: tbeetle_texture_orange:polySurface89
+    4300170: tbeetle_texture_orange:polySurface90
+    4300172: tbeetle_texture_orange:polySurface91
+    4300174: tbeetle_texture_orange:polySurface92
+    4300176: tbeetle_texture_orange:polySurface93
+    4300178: tbeetle_texture_orange:polySurface94
+    4300180: tbeetle_texture_orange:polySurface95
+    4300182: tbeetle_texture_orange:polySurface96
+    4300184: tbeetle_texture_orange:polySurface97
+    4300186: tbeetle_texture_orange:polySurface98
+    4300188: tbeetle_texture_orange:polySurface99
+    4300190: tbeetle_texture_orange:polySurface100
+    4300192: tbeetle_texture_orange:polySurface101
+    4300194: tbeetle_texture_orange:polySurface102
+    4300196: tbeetle_texture_orange:polySurface103
+    4300198: tbeetle_texture_orange:polySurface104
+    4300200: tbeetle_texture_orange:polySurface105
+    4300202: tbeetle_texture_orange:polySurface106
+    4300204: tbeetle_texture_orange:polySurface107
+    4300206: tbeetle_texture_orange:polySurface108
+    4300208: tbeetle_texture_orange:polySurface109
+    4300210: tbeetle_texture_orange:polySurface110
+    4300212: tbeetle_texture_orange:polySurface111
+    4300214: tbeetle_texture_orange:polySurface112
+    4300216: tbeetle_texture_orange:polySurface113
+    4300218: tbeetle_texture_orange:polySurface114
+    4300220: tbeetle_texture_orange:polySurface115
+    4300222: tbeetle_texture_orange:polySurface116
+    4300224: tbeetle_texture_orange:polySurface117
+    4300226: tbeetle_texture_orange:polySurface118
+    4300228: tbeetle_texture_orange:polySurface119
+    4300230: tbeetle_texture_orange:polySurface120
+    4300232: tbeetle_texture_orange:polySurface121
+    4300234: tbeetle_texture_orange:polySurface122
+    4300236: tbeetle_texture_orange:polySurface123
+    4300238: tbeetle_texture_orange:polySurface124
+    4300240: tbeetle_texture_orange:polySurface125
+    4300242: tbeetle_texture_orange:polySurface126
+    4300244: tbeetle_texture_orange:polySurface127
+    4300246: tbeetle_texture_orange:polySurface128
+    4300248: tbeetle_texture_orange:polySurface129
+    4300250: tbeetle_texture_orange:polySurface130
+    4300252: tbeetle_texture_orange:polySurface131
+    4300254: tbeetle_texture_orange:polySurface4
+    4300256: tbeetle_texture_orange:polySurface3
+    4300258: tbeetle_texture_orange:polySurface2
+    4300260: tbeetle_texture_orange:polySurface1
+    7400000: Take 001
+    9500000: //RootNode
+    13700000: tbeetle_texture_orange:polySurface1
+    13700002: tbeetle_texture_orange:polySurface10
+    13700004: tbeetle_texture_orange:polySurface100
+    13700006: tbeetle_texture_orange:polySurface101
+    13700008: tbeetle_texture_orange:polySurface102
+    13700010: tbeetle_texture_orange:polySurface103
+    13700012: tbeetle_texture_orange:polySurface104
+    13700014: tbeetle_texture_orange:polySurface105
+    13700016: tbeetle_texture_orange:polySurface106
+    13700018: tbeetle_texture_orange:polySurface107
+    13700020: tbeetle_texture_orange:polySurface108
+    13700022: tbeetle_texture_orange:polySurface109
+    13700024: tbeetle_texture_orange:polySurface11
+    13700026: tbeetle_texture_orange:polySurface110
+    13700028: tbeetle_texture_orange:polySurface111
+    13700030: tbeetle_texture_orange:polySurface112
+    13700032: tbeetle_texture_orange:polySurface113
+    13700034: tbeetle_texture_orange:polySurface114
+    13700036: tbeetle_texture_orange:polySurface115
+    13700038: tbeetle_texture_orange:polySurface116
+    13700040: tbeetle_texture_orange:polySurface117
+    13700042: tbeetle_texture_orange:polySurface118
+    13700044: tbeetle_texture_orange:polySurface119
+    13700046: tbeetle_texture_orange:polySurface12
+    13700048: tbeetle_texture_orange:polySurface120
+    13700050: tbeetle_texture_orange:polySurface121
+    13700052: tbeetle_texture_orange:polySurface122
+    13700054: tbeetle_texture_orange:polySurface123
+    13700056: tbeetle_texture_orange:polySurface124
+    13700058: tbeetle_texture_orange:polySurface125
+    13700060: tbeetle_texture_orange:polySurface126
+    13700062: tbeetle_texture_orange:polySurface127
+    13700064: tbeetle_texture_orange:polySurface128
+    13700066: tbeetle_texture_orange:polySurface129
+    13700068: tbeetle_texture_orange:polySurface13
+    13700070: tbeetle_texture_orange:polySurface130
+    13700072: tbeetle_texture_orange:polySurface131
+    13700074: tbeetle_texture_orange:polySurface14
+    13700076: tbeetle_texture_orange:polySurface15
+    13700078: tbeetle_texture_orange:polySurface16
+    13700080: tbeetle_texture_orange:polySurface17
+    13700082: tbeetle_texture_orange:polySurface18
+    13700084: tbeetle_texture_orange:polySurface19
+    13700086: tbeetle_texture_orange:polySurface2
+    13700088: tbeetle_texture_orange:polySurface20
+    13700090: tbeetle_texture_orange:polySurface21
+    13700092: tbeetle_texture_orange:polySurface22
+    13700094: tbeetle_texture_orange:polySurface23
+    13700096: tbeetle_texture_orange:polySurface24
+    13700098: tbeetle_texture_orange:polySurface25
+    13700100: tbeetle_texture_orange:polySurface26
+    13700102: tbeetle_texture_orange:polySurface27
+    13700104: tbeetle_texture_orange:polySurface28
+    13700106: tbeetle_texture_orange:polySurface29
+    13700108: tbeetle_texture_orange:polySurface3
+    13700110: tbeetle_texture_orange:polySurface30
+    13700112: tbeetle_texture_orange:polySurface31
+    13700114: tbeetle_texture_orange:polySurface32
+    13700116: tbeetle_texture_orange:polySurface33
+    13700118: tbeetle_texture_orange:polySurface34
+    13700120: tbeetle_texture_orange:polySurface35
+    13700122: tbeetle_texture_orange:polySurface36
+    13700124: tbeetle_texture_orange:polySurface37
+    13700126: tbeetle_texture_orange:polySurface38
+    13700128: tbeetle_texture_orange:polySurface39
+    13700130: tbeetle_texture_orange:polySurface4
+    13700132: tbeetle_texture_orange:polySurface40
+    13700134: tbeetle_texture_orange:polySurface41
+    13700136: tbeetle_texture_orange:polySurface42
+    13700138: tbeetle_texture_orange:polySurface43
+    13700140: tbeetle_texture_orange:polySurface44
+    13700142: tbeetle_texture_orange:polySurface45
+    13700144: tbeetle_texture_orange:polySurface46
+    13700146: tbeetle_texture_orange:polySurface47
+    13700148: tbeetle_texture_orange:polySurface48
+    13700150: tbeetle_texture_orange:polySurface49
+    13700152: tbeetle_texture_orange:polySurface5
+    13700154: tbeetle_texture_orange:polySurface50
+    13700156: tbeetle_texture_orange:polySurface51
+    13700158: tbeetle_texture_orange:polySurface52
+    13700160: tbeetle_texture_orange:polySurface53
+    13700162: tbeetle_texture_orange:polySurface54
+    13700164: tbeetle_texture_orange:polySurface55
+    13700166: tbeetle_texture_orange:polySurface56
+    13700168: tbeetle_texture_orange:polySurface57
+    13700170: tbeetle_texture_orange:polySurface58
+    13700172: tbeetle_texture_orange:polySurface59
+    13700174: tbeetle_texture_orange:polySurface6
+    13700176: tbeetle_texture_orange:polySurface60
+    13700178: tbeetle_texture_orange:polySurface61
+    13700180: tbeetle_texture_orange:polySurface62
+    13700182: tbeetle_texture_orange:polySurface63
+    13700184: tbeetle_texture_orange:polySurface64
+    13700186: tbeetle_texture_orange:polySurface65
+    13700188: tbeetle_texture_orange:polySurface66
+    13700190: tbeetle_texture_orange:polySurface67
+    13700192: tbeetle_texture_orange:polySurface68
+    13700194: tbeetle_texture_orange:polySurface69
+    13700196: tbeetle_texture_orange:polySurface7
+    13700198: tbeetle_texture_orange:polySurface70
+    13700200: tbeetle_texture_orange:polySurface71
+    13700202: tbeetle_texture_orange:polySurface72
+    13700204: tbeetle_texture_orange:polySurface73
+    13700206: tbeetle_texture_orange:polySurface74
+    13700208: tbeetle_texture_orange:polySurface75
+    13700210: tbeetle_texture_orange:polySurface76
+    13700212: tbeetle_texture_orange:polySurface77
+    13700214: tbeetle_texture_orange:polySurface78
+    13700216: tbeetle_texture_orange:polySurface79
+    13700218: tbeetle_texture_orange:polySurface8
+    13700220: tbeetle_texture_orange:polySurface80
+    13700222: tbeetle_texture_orange:polySurface81
+    13700224: tbeetle_texture_orange:polySurface82
+    13700226: tbeetle_texture_orange:polySurface83
+    13700228: tbeetle_texture_orange:polySurface84
+    13700230: tbeetle_texture_orange:polySurface85
+    13700232: tbeetle_texture_orange:polySurface86
+    13700234: tbeetle_texture_orange:polySurface87
+    13700236: tbeetle_texture_orange:polySurface88
+    13700238: tbeetle_texture_orange:polySurface89
+    13700240: tbeetle_texture_orange:polySurface9
+    13700242: tbeetle_texture_orange:polySurface90
+    13700244: tbeetle_texture_orange:polySurface91
+    13700246: tbeetle_texture_orange:polySurface92
+    13700248: tbeetle_texture_orange:polySurface93
+    13700250: tbeetle_texture_orange:polySurface94
+    13700252: tbeetle_texture_orange:polySurface95
+    13700254: tbeetle_texture_orange:polySurface96
+    13700256: tbeetle_texture_orange:polySurface97
+    13700258: tbeetle_texture_orange:polySurface98
+    13700260: tbeetle_texture_orange:polySurface99
+  materials:
+    importMaterials: 1
+    materialName: 0
+    materialSearch: 1
+  animations:
+    legacyGenerateAnimations: 4
+    bakeSimulation: 0
+    resampleCurves: 1
+    optimizeGameObjects: 0
+    motionNodeName: 
+    rigImportErrors: 
+    rigImportWarnings: 
+    animationImportErrors: 
+    animationImportWarnings: 
+    animationRetargetingWarnings: 
+    animationDoRetargetingWarnings: 0
+    animationCompression: 1
+    animationRotationError: 0.5
+    animationPositionError: 0.5
+    animationScaleError: 0.5
+    animationWrapMode: 0
+    extraExposedTransformPaths: []
+    clipAnimations: []
+    isReadable: 1
+  meshes:
+    lODScreenPercentages: []
+    globalScale: 1
+    meshCompression: 0
+    addColliders: 0
+    importBlendShapes: 1
+    swapUVChannels: 0
+    generateSecondaryUV: 0
+    useFileUnits: 1
+    optimizeMeshForGPU: 1
+    keepQuads: 0
+    weldVertices: 1
+    secondaryUVAngleDistortion: 8
+    secondaryUVAreaDistortion: 15.000001
+    secondaryUVHardAngle: 88
+    secondaryUVPackMargin: 4
+    useFileScale: 1
+  tangentSpace:
+    normalSmoothAngle: 60
+    normalImportMode: 0
+    tangentImportMode: 3
+  importAnimation: 1
+  copyAvatar: 0
+  humanDescription:
+    serializedVersion: 2
+    human: []
+    skeleton: []
+    armTwist: 0.5
+    foreArmTwist: 0.5
+    upperLegTwist: 0.5
+    legTwist: 0.5
+    armStretch: 0.05
+    legStretch: 0.05
+    feetSpacing: 0
+    rootMotionBoneName: 
+    rootMotionBoneRotation: {x: 0, y: 0, z: 0, w: 1}
+    hasTranslationDoF: 0
+    hasExtraRoot: 0
+    skeletonHasParents: 1
+  lastHumanDescriptionAvatarSource: {instanceID: 0}
+  animationType: 2
+  humanoidOversampling: 1
+  additionalBone: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 95575
+  packageName: Flying carnivorous beetle
+  packageVersion: 1.0
+  assetPath: Assets/Flying Beetle/animation/flyingbeetle@idle 1.fbx
+  uploadId: 189967

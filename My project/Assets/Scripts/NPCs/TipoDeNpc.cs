@@ -20,6 +20,8 @@ public class TipoDeNpc : ScriptableObject
     public GameObject modelo;
     [Tooltip("Tamaño respecto del modelo original: así se distinguen de lejos (el Rápido más chico, el Tanque más grande).")]
     [Min(0.1f)] public float escala = 1f;
+    [Tooltip("Giro del modelo (grados) para que mire hacia adelante: algunos modelos vienen mirando para atrás (el escarabajo del Jefe, 180).")]
+    public float giroDelModelo;
 
     [Header("Combate")]
     [Tooltip("Vida al aparecer. No tienen escudo.")]
@@ -28,6 +30,8 @@ public class TipoDeNpc : ScriptableObject
     [Min(0)] public int danio = 20;
     [Tooltip("Cuánto se puede alejar el jugador, en m, más allá de donde llega la animación del golpe, y que igual le pegue (US 037, CA2). Más lejos, falla.")]
     [Min(0.1f)] public float alcance = 0.5f;
+    [Tooltip("Qué tan rápido hace sus animaciones de ataque (1: como vienen; 1,5: un 50 % más rápido). El golpe entra antes en la misma proporción.")]
+    [Range(0.5f, 3f)] public float velocidadDeAtaque = 1f;
     [Tooltip("Si al recibir un impacto se frena un instante (US 038, CA3). El Tanque y el Jefe no se frenan.")]
     public bool frenaAlRecibirImpacto = true;
 
@@ -58,6 +62,12 @@ public class TipoDeNpc : ScriptableObject
     [Header("Sonido")]
     [Tooltip("Grito al ver al jugador de cerca (US 036, CA2). Opcional.")]
     public AudioClip grito;
+
+    [Header("Jefe (US 146)")]
+    [Tooltip("Es un jefe: mientras está vivo se ve su barra de vida arriba de la pantalla (BarraDeJefe).")]
+    public bool esJefe;
+    [Tooltip("El nombre que se ve en la barra del jefe. Vacío: el nombre del tipo.")]
+    public string titulo;
 
     [Header("Puntos (US 147)")]
     [Tooltip("Puntos por matarlo (US 039, CA3).")]

@@ -72,14 +72,15 @@ public class AtaqueDeNpc : MonoBehaviour
 
         AnimationClip clip = Elegir(persecucion.EntreCuerpos(jugador));
         GolpeDeNpc? medido = npc.GolpeDe(clip);
-        impacto = medido.HasValue ? medido.Value.momento : ImpactoSinMedir;
+        float rapido = Mathf.Max(0.1f, npc.Tipo.velocidadDeAtaque); // más rápido: el golpe entra antes y termina antes
+        impacto = (medido.HasValue ? medido.Value.momento : ImpactoSinMedir) / rapido;
         llega = (medido.HasValue ? medido.Value.avance : 0f) + npc.Tipo.alcance;
-        float dura = clip != null ? clip.length : DuracionSinClip;
+        float dura = (clip != null ? clip.length : DuracionSinClip) / rapido;
         termina = Time.time + Mathf.Max(dura, impacto + 0.05f);
         if (clip != null && npc.Animaciones != null)
         {
             npc.Animaciones.Poner(clip, false, 0.1f, true);
-            npc.Animaciones.Velocidad(1f);
+            npc.Animaciones.Velocidad(rapido);
         }
     }
 
