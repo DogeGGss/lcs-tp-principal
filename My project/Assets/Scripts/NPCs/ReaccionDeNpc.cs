@@ -4,23 +4,25 @@ using UnityEngine;
 // - CA1: el daño de cada arma según la zona y la distancia lo hace WeaponFire, igual que a un jugador (ZonasDeNpc).
 // - CA2: el cuchillo y la granada de metralla también lo dañan (MeleeAttack y Grenade1 buscan su vida). La flash lo
 //   deja quieto 2 s (Npc.Aturdir, desde la explosión) y el humo no le hace nada.
-// - CA3: al recibir un impacto se sacude un instante y le salta sangre, sin dejar de avanzar; si su tipo se frena con
-//   los impactos (TipoDeNpc.frenaAlRecibirImpacto), va más lento un momento. El Tanque (y el Jefe) no.
+// - CA3: al recibir un impacto hace la animación de recibir un golpe (TipoDeNpc.golpeRecibido) del torso para arriba,
+//   mezclada con la de caminar, y le salta sangre, sin dejar de avanzar. Sin esa animación, se sacude un instante. Si
+//   su tipo se frena con los impactos (TipoDeNpc.frenaAlRecibirImpacto), baja un poco la velocidad y la recupera de a
+//   poco (no se frena en seco). El Tanque (y el Jefe) no.
 // - CA4: cada impacto de bala avisa (Npc.ImpactoDeBala), para que el modo Zombie sume los 10 puntos (US 147).
 // Lo agrega Npc.Crear.
 [RequireComponent(typeof(Npc))]
 public class ReaccionDeNpc : MonoBehaviour
 {
     private const float Sacudida = 0.18f, Angulo = 9f;     // s y grados del sacudón
-    private const float Freno = 0.3f, VelocidadFrenado = 0.45f; // s y fracción de la velocidad, si se frena
+    private const float Freno = 0.4f, VelocidadFrenado = 0.65f; // s para recuperarse y fracción de la velocidad, si se frena
 
     private Npc npc;
-    private float sacudidaHasta = -10f, frenadoHasta = -10f;
+    private float sacudidaHasta = -10f, frenadoEn = -10f;
     private Quaternion giroModelo = Quaternion.identity;
     private bool sacudiendo;
 
     /// <summary>Cuánto de su velocidad tiene ahora (1: toda; menos, recién golpeado). Lo usa la persecución.</summary>
-    public float Velocidad => Time.time < frenadoHasta ? VelocidadFrenado : 1f;
+    public float Velocidad => Mathf.Lerp(VelocidadFrenado, 1f, Mathf.Clamp01((Time.time - frenadoEn) / Freno));
 
     private void Awake() => npc = GetComponent<Npc>();
 
@@ -30,11 +32,17 @@ public class ReaccionDeNpc : MonoBehaviour
     private void AlRecibirDanio(HealthSystem vida, int danio, Vector3? desde)
     {
         if (npc == null || vida != npc.Vida || danio <= 0) return;
-        // CA3: sacudida, sangre y, si corresponde, un freno corto.
-        if (!sacudiendo && npc.Modelo != null) giroModelo = npc.Modelo.localRotation;
-        sacudidaHasta = Time.time + Sacudida;
-        sacudiendo = true;
-        if (npc.Tipo != null && npc.Tipo.frenaAlRecibirImpacto) frenadoHasta = Time.time + Freno;
+        // CA3: la animación del golpe (o la sacudida), sangre y, si corresponde, un freno corto. El golpe que lo mata no:
+        // ahí va la de morir (US 039).
+        AnimationClip clip = npc.Tipo != null ? npc.Tipo.golpeRecibido : null;
+        if (npc.Vivo && clip != null && npc.Animaciones != null) npc.Animaciones.Golpe(clip);
+        else if (npc.Vivo)
+        {
+            if (!sacudiendo && npc.Modelo != null) giroModelo = npc.Modelo.localRotation;
+            sacudidaHasta = Time.time + Sacudida;
+            sacudiendo = true;
+        }
+        if (npc.Vivo && npc.Tipo != null && npc.Tipo.frenaAlRecibirImpacto) frenadoEn = Time.time;
         Sangre.Salpicar(PuntoDelGolpe(desde), desde);
     }
 

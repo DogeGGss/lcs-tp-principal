@@ -47,6 +47,7 @@ public class MuerteDeNpc : MonoBehaviour
         // CA2: la animación de morir (queda en el último cuadro).
         if (npc.Animaciones != null && npc.Tipo != null && npc.Tipo.morir != null)
         {
+            npc.Animaciones.CortarGolpe();
             npc.Animaciones.Poner(npc.Tipo.morir, false, 0.1f, true);
             npc.Animaciones.Velocidad(1f);
         }
