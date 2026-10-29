@@ -6,7 +6,8 @@ using UnityEngine;
 // - la vida de su tipo, sin escudo (CA1 a CA3), en un HealthSystem como el de los jugadores, así las armas lo dañan
 //   igual (US 038);
 // - una cápsula para chocar y recibir disparos, del tamaño del modelo.
-// - sus animaciones, desde el código (Animaciones, AnimadorDeNpc): el controlador de muestra del modelo no sirve;
+// - sus animaciones, desde el código (Animaciones, AnimadorDeNpc): el controlador de muestra del modelo no sirve; de
+//   las de ataque se mide al aparecer cuándo pegan y cuánto se adelantan (GolpeDeNpc, US 037);
 // - la persecución del jugador (PersecucionDeNpc, US 035 y 036) y sus golpes (AtaqueDeNpc, US 037);
 // - sus zonas de impacto (ZonasDeNpc), la reacción a los golpes (ReaccionDeNpc) y la muerte (MuerteDeNpc), US 038 y
 //   039; la flash lo aturde (Aturdir).
@@ -29,6 +30,13 @@ public class Npc : MonoBehaviour
     public float Frente { get; private set; } = 0.4f;
     /// <summary>Cuánto sale su cuerpo hacia los costados desde el centro, en m (el ancho del agente).</summary>
     public float Ancho { get; private set; } = 0.4f;
+    /// <summary>Lo que más se adelanta el cuerpo con sus animaciones de ataque, en m más allá de Frente (US 037).</summary>
+    public float AvanceDeAtaque { get; private set; }
+    private readonly Dictionary<AnimationClip, GolpeDeNpc> golpes = new Dictionary<AnimationClip, GolpeDeNpc>();
+
+    /// <summary>Cuándo pega y hasta dónde llega esa animación de ataque (medido al aparecer), o null si no se midió.</summary>
+    public GolpeDeNpc? GolpeDe(AnimationClip clip) => clip != null && golpes.TryGetValue(clip, out GolpeDeNpc g) ? g : (GolpeDeNpc?)null;
+
     /// <summary>Está vivo.</summary>
     public bool Vivo => Vida != null && Vida.currentHealth > 0;
     /// <summary>Aturdido por la flash (US 038, CA2): quieto, sin perseguir ni atacar.</summary>
@@ -168,6 +176,22 @@ public class Npc : MonoBehaviour
         }
         Medir(capsula.radius);
 
+        // US 037: en qué momento pega cada animación de ataque y cuánto se adelanta el cuerpo (algunas, como la
+        // embestida del Lizard, lo llevan bien adelante). Después vuelve a la pose de quieto.
+        if (Animaciones != null && tipo.ataques != null)
+        {
+            Animador.cullingMode = AnimatorCullingMode.AlwaysAnimate;
+            foreach (AnimationClip clip in tipo.ataques)
+            {
+                if (clip == null || golpes.ContainsKey(clip)) continue;
+                GolpeDeNpc g = GolpeDeNpc.Medir(this, tipo, clip);
+                golpes[clip] = g;
+                AvanceDeAtaque = Mathf.Max(AvanceDeAtaque, g.avance);
+            }
+            Animaciones.Evaluar();
+            Animador.cullingMode = AnimatorCullingMode.CullUpdateTransforms;
+        }
+
         // La cápsula para chocar, dentro del cuerpo: la caja de la malla de los modelos con huesos suele venir más
         // grande que el bicho, y así empujaba al jugador sin tocarlo (y no llegaba a pegarle). Con zonas de impacto,
         // centrada y del ancho más chico del cuerpo (adelante o a los costados).
@@ -219,7 +243,7 @@ public class Npc : MonoBehaviour
     }
 
     // Los puntos que marcan la forma del collider (en el mundo), con el radio alrededor de cada uno.
-    private static System.Collections.Generic.IEnumerable<(Vector3, float)> Puntos(Collider c)
+    internal static IEnumerable<(Vector3, float)> Puntos(Collider c)
     {
         Transform t = c.transform;
         Vector3 e = t.lossyScale;

@@ -17,6 +17,7 @@ MonoBehaviour:
   escala: 1.2
   vida: 400
   danio: 40
+  alcance: 0.5
   frenaAlRecibirImpacto: 0
   velocidad: 1.8
   corre: 0
@@ -26,7 +27,7 @@ MonoBehaviour:
   correr: {fileID: 1827226128182048838, guid: a7ef05839d8269640b6e5424b6114fd6, type: 3}
   ataques:
   - {fileID: 1827226128182048838, guid: 2e0c5e6b121ff8047a09822e4ecf7c08, type: 3}
-  - {fileID: 1827226128182048838, guid: 4997eaa1e556a434faf6f7d59df3c6bf, type: 3}
+  - {fileID: 0}
   golpeRecibido: {fileID: 1827226128182048838, guid: ec8e909a44cd1614897f965eedb6c14e, type: 3}
   morir: {fileID: 1827226128182048838, guid: 688d54156d330eb48b69f546ee8691e1, type: 3}
   aturdido: {fileID: 0}
