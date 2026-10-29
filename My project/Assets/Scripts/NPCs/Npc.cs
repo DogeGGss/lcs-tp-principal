@@ -173,18 +173,22 @@ public class Npc : MonoBehaviour
         // centrada y del ancho más chico del cuerpo (adelante o a los costados).
         if (GetComponentInChildren<HitZone>(true) != null)
         {
-            capsula.radius = Mathf.Max(0.15f, Mathf.Min(Frente, Ancho) * 0.9f);
+            capsula.radius = Mathf.Max(0.15f, Mathf.Min(Frente, Ancho, RadioDelTorso()));
             capsula.center = new Vector3(0f, capsula.center.y, 0f);
             capsula.height = Mathf.Max(capsula.height, capsula.radius * 2f);
         }
     }
 
-    // Lo que sale cada zona de impacto, en los ejes de este objeto (adelante = z, costados = x), con el modelo quieto.
+    // Lo que salen la cabeza y el cuerpo (las zonas de impacto), en los ejes de este objeto (adelante = z, costados = x),
+    // con el modelo quieto. Las patas y los brazos no cuentan: se mueven todo el tiempo y en algunos modelos quedan
+    // estirados, y harían al bicho más grande de lo que es.
     private void Medir(float sinZonas)
     {
         float frente = 0f, ancho = 0f;
         bool alguna = false;
         foreach (HitZone zona in GetComponentsInChildren<HitZone>(true))
+        {
+        if (zona.zone == BodyZone.Legs) continue;
         foreach (Collider c in zona.GetComponents<Collider>())
         {
             alguna = true;
@@ -195,8 +199,23 @@ public class Npc : MonoBehaviour
                 ancho = Mathf.Max(ancho, Mathf.Abs(l.x) + radio);
             }
         }
+        }
         Frente = alguna ? Mathf.Max(0.15f, frente) : sinZonas;
         Ancho = alguna ? Mathf.Max(0.15f, ancho) : sinZonas;
+    }
+
+    // El radio de la zona del cuerpo (el torso), en m: lo más ancho que es sin contar patas ni brazos.
+    private float RadioDelTorso()
+    {
+        float r = float.MaxValue;
+        foreach (HitZone zona in GetComponentsInChildren<HitZone>(true))
+        {
+            if (zona.zone != BodyZone.Body) continue;
+            foreach (Collider c in zona.GetComponents<Collider>())
+            foreach ((Vector3 _, float radio) in Puntos(c))
+                if (radio > 0f) r = Mathf.Min(r, radio);
+        }
+        return r == float.MaxValue ? Ancho : r;
     }
 
     // Los puntos que marcan la forma del collider (en el mundo), con el radio alrededor de cada uno.
