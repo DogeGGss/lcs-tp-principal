@@ -670,6 +670,18 @@ a.uslink{white-space:nowrap}
 .mapa-fig{margin:16px 0}
 .mapa-fig img{display:block;width:100%;height:auto;border-radius:10px;border:1px solid var(--line)}
 .mapa-fig figcaption{margin-top:6px;font-size:14px;color:var(--ink-2)}
+/* Cuenta y buscar partida: la maqueta en un iframe (menu/cuentas.html) y los mails */
+.cu-stage iframe{display:block;width:1920px;height:1080px;border:0}
+.cu-ctl .seg{flex-wrap:wrap}
+.cu-mails{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,320px),1fr));gap:16px;margin-top:12px}
+.cu-mail{background:var(--paper);border:1px solid var(--line);border-radius:10px;padding:18px 20px;font-size:15px;line-height:1.5}
+.cu-mail p{margin:0 0 10px}
+.cu-mail-cab{display:flex;flex-direction:column;gap:2px;padding-bottom:10px;margin-bottom:12px;border-bottom:1px solid var(--line)}
+.cu-mail-cab b{font-family:var(--display);letter-spacing:.06em;text-transform:uppercase;color:var(--accent)}
+.cu-mail-cab span{color:var(--ink-2);font-size:14px}
+.cu-codigo{font:600 30px/1 var(--mono);letter-spacing:.2em;padding:12px 16px;margin:4px 0 12px;background:var(--mono-bg);border-radius:8px;text-align:center}
+.cu-mail-pie{color:var(--ink-2);font-size:13px}
+
 /* Arte del perfil: conjuntos como en la cabecera del Perfil, zonas del banner e instrucciones */
 .pa-conjuntos{display:flex;flex-direction:column;gap:4px;margin:12px 0}
 .pa-conj{position:relative;height:calc(190px * var(--k,1))}
@@ -1965,6 +1977,123 @@ MARCO · Conjunto: [nombre]. Estilo: [estilo]. Forma: [esquinas, remate, rieles]
 })();
 </script>
 
+<section id="cuenta">
+  <div class="sec-head"><h2>Cuenta y buscar partida</h2><span class="sub">F18 · US 237, US 269 a US 273 · F28 · US 274 a US 280</span> <span class="st st-idea">Diseño para revisar</span></div>
+  <p>Dos cosas nuevas del Sprint 4. La <b>cuenta</b>: crearla con mail y contraseña convierte al jugador de esta PC en una cuenta sin perder nada, y con ella se recupera el progreso en cualquier PC. Y <b>buscar partida</b>: en el andén de Táctico y de Deathmatch, el juego te junta con otros jugadores del mismo modo, versión y región, y la partida arranca sola. Buscar partida pide cuenta; las salas con código y el campo de práctica siguen sin cuenta.</p>
+  <p class="soft">Todavía no está en el juego: es la propuesta para revisar antes de programarla. La maqueta usa las mismas piezas que el menú (el Perfil, las ventanas y el andén de cada modo), y sus botones llevan de un estado al otro como en el juego.</p>
+
+  <h3 id="cuenta-maqueta">Maqueta</h3>
+  <div class="controls cu-ctl" id="cuentaCtl">
+    <div><span class="ctl-label">Cuenta</span><span class="seg">
+      <button type="button" data-e="perfil-sin" aria-pressed="true">Sin cuenta</button><button type="button" data-e="crear" aria-pressed="false">Crear</button><button type="button" data-e="crear-error" aria-pressed="false">Mail usado</button><button type="button" data-e="perfil-confirmar" aria-pressed="false">Confirmar mail</button><button type="button" data-e="perfil-cuenta" aria-pressed="false">Con cuenta</button><button type="button" data-e="entrar" aria-pressed="false">Iniciar sesión</button><button type="button" data-e="entrar-error" aria-pressed="false">Error</button><button type="button" data-e="recuperar" aria-pressed="false">Recuperar</button><button type="button" data-e="recuperar-codigo" aria-pressed="false">Código</button><button type="button" data-e="cerrar" aria-pressed="false">Cerrar sesión</button><button type="button" data-e="borrar" aria-pressed="false">Borrar</button><button type="button" data-e="privacidad" aria-pressed="false">Privacidad</button>
+    </span></div>
+    <div><span class="ctl-label">Buscar partida</span><span class="seg">
+      <button type="button" data-e="anden" aria-pressed="false">Andén</button><button type="button" data-e="anden-sin-cuenta" aria-pressed="false">Sin cuenta</button><button type="button" data-e="buscando" aria-pressed="false">Buscando</button><button type="button" data-e="minimo" aria-pressed="false">Con el mínimo</button><button type="button" data-e="cuenta-regresiva" aria-pressed="false">Por empezar</button><button type="button" data-e="sin-conexion" aria-pressed="false">Sin conexión</button>
+    </span></div>
+  </div>
+  <div class="stage cu-stage"><div class="stage-inner"><iframe id="cuentaFrame" src="menu/cuentas.html#perfil-sin" title="Maqueta de la cuenta y de buscar partida" width="1920" height="1080" loading="lazy"></iframe></div></div>
+  <p class="soft" style="margin-top:10px">También se abre sola, a pantalla completa: <a href="menu/cuentas.html">menu/cuentas.html</a>. <span class="kbd">Esc</span> cierra las ventanas y cancela la búsqueda.</p>
+
+  <h3 id="cuenta-perfil">La cuenta en el Perfil</h3>
+  <p>El Perfil suma la pestaña <b>Cuenta</b>, después de Estadísticas y Personalización. A la derecha de las pestañas dice cómo está esta PC: «Sin cuenta», «Falta confirmar» o «Con cuenta». Abajo, dos tarjetas: la de la cuenta y la de privacidad.</p>
+  <div class="table-wrap"><table>
+    <tr><th>Estado</th><th>Qué muestra</th><th>Historia</th></tr>
+    <tr><td>Sin cuenta</td><td>«Jugás sin cuenta», qué se pierde sin ella (si reinstalás o cambiás de PC, empezás de cero), tres ventajas (recuperar el progreso, buscar partida y el ranking a tu nombre) y los botones «Crear cuenta» (naranja) e «Iniciar sesión».</td><td>US 237, US 269</td></tr>
+    <tr><td>Falta confirmar</td><td>«Confirmá tu mail»: el mail al que se mandó el código, las 6 casillas del código y «Confirmar». Se puede pedir otro código pasados 60 s. Mientras tanto se juega como siempre; «Buscar partida» se habilita al confirmar.</td><td>US 237 (CA2)</td></tr>
+    <tr><td>Con cuenta</td><td>El mail con la etiqueta «Confirmada», qué quedó en la cuenta, tres datos (desde cuándo, el nombre y «Buscar partida: habilitado») y los botones «Cerrar sesión» y «Borrar cuenta» (en rojo, sin relleno).</td><td>US 270, US 273</td></tr>
+    <tr><td>Privacidad</td><td>Siempre a la derecha: «Qué guardamos», en cuatro renglones, y «Ver el aviso completo».</td><td>US 273 (CA1)</td></tr>
+  </table></div>
+
+  <h3 id="cuenta-ventanas">Ventanas</h3>
+  <p class="soft">Todas son como la de «Cambiar nombre»: 760 de ancho sobre el juego oscurecido, antetítulo naranja, título en mayúsculas, campos con su nombre arriba y dos botones al pie (el de la acción, a la derecha y en naranja). <span class="kbd">Esc</span> o un clic afuera cierran sin hacer nada.</p>
+  <div class="table-wrap"><table>
+    <tr><th>Ventana</th><th>Qué pide</th><th>Al aceptar</th><th>Historia</th></tr>
+    <tr><td>Crear cuenta</td><td>Mail, contraseña (8 caracteres o más) y repetirla. Debajo: «Al crear la cuenta aceptás el aviso de privacidad», con el link.</td><td>Manda el código y pasa a «Confirmá tu mail».</td><td>US 237 (CA1)</td></tr>
+    <tr><td>Iniciar sesión</td><td>Mail y contraseña, «¿Te olvidaste la contraseña?» y, al pie, «¿No tenés cuenta? Crear cuenta».</td><td>Entra y avisa «Sumamos el progreso de esta PC a tu cuenta» si en la PC se había jugado sin cuenta.</td><td>US 269</td></tr>
+    <tr><td>Recuperar la contraseña</td><td>Primero el mail; después el código de 6 números y la contraseña nueva, dos veces.</td><td>Cambia la contraseña y entra a la cuenta.</td><td>US 271</td></tr>
+    <tr><td>Cerrar sesión</td><td>Solo confirmar: explica que en esta PC se sigue como un jugador nuevo y que todo queda en la cuenta.</td><td>Vuelve a «Sin cuenta».</td><td>US 270</td></tr>
+    <tr><td>Borrar cuenta</td><td>Antetítulo rojo «Esto no se puede deshacer», qué se borra y la contraseña para confirmar. El botón es rojo.</td><td>Borra la cuenta y sus datos y vuelve a «Sin cuenta».</td><td>US 273 (CA2, CA3)</td></tr>
+    <tr><td>Aviso de privacidad</td><td>Qué guardamos, para qué, dónde y tus derechos (Ley 25.326), y «Entendido».</td><td>Vuelve a donde estaba.</td><td>US 273 (CA1)</td></tr>
+    <tr><td>Necesitás una cuenta</td><td>Sale al tocar «Buscar partida» sin cuenta: por qué hace falta, y «Cancelar», «Iniciar sesión» y «Crear cuenta».</td><td>Abre la ventana elegida.</td><td>US 274 (CA2)</td></tr>
+  </table></div>
+  <div class="table-wrap" style="margin-top:12px"><table>
+    <tr><th>Mensaje</th><th>Cuándo</th></tr>
+    <tr><td>«Escribí un mail válido.»</td><td>El mail no tiene la forma de un mail.</td></tr>
+    <tr><td>«La contraseña tiene que tener 8 caracteres o más.» · «Las contraseñas no coinciden.»</td><td>Antes de mandar nada, debajo del campo.</td></tr>
+    <tr><td>«Ese mail ya tiene una cuenta.» con «Iniciar sesión»</td><td>Al crear una cuenta con un mail que ya existe.</td></tr>
+    <tr><td>«El mail o la contraseña no coinciden.»</td><td>Al iniciar sesión, en una franja roja arriba. No dice cuál de los dos está mal.</td></tr>
+    <tr><td>«Tu mail todavía no está confirmado. Te mandamos otro código.»</td><td>Al iniciar sesión con una cuenta sin confirmar.</td></tr>
+    <tr><td>«El código venció o no es correcto. Pedí otro.»</td><td>Al confirmar el mail o recuperar la contraseña.</td></tr>
+    <tr><td>«Hace falta internet para esto.»</td><td>Sin conexión, en cualquier ventana. No se borra lo escrito.</td></tr>
+  </table></div>
+  <p class="soft" style="margin-top:12px">Los avisos al pie, como los del menú: «Listo: tu cuenta está activa», «Sumamos el progreso de esta PC a tu cuenta», «Contraseña cambiada. Entraste a tu cuenta», «Cerraste la sesión» y «Borramos tu cuenta y sus datos».</p>
+
+  <h3 id="cuenta-mails">Los mails</h3>
+  <p class="soft">Llegan en castellano y con un código de 6 números, que se escribe en el juego: así no hace falta ninguna página web. Se configuran en Supabase (Authentication › Email Templates) y salen por un SMTP propio.</p>
+  <div class="cu-mails">
+    <div class="cu-mail"><div class="cu-mail-cab"><b>Project Riftwalker</b><span>Asunto: Tu código para confirmar la cuenta</span></div><p>¡Hola! Este es tu código para confirmar tu cuenta de Project Riftwalker:</p><div class="cu-codigo">481 902</div><p>Escribilo en el juego, en Perfil › Cuenta. Vence en 1 hora.</p><p class="cu-mail-pie">Si no creaste una cuenta, ignorá este mail.</p></div>
+    <div class="cu-mail"><div class="cu-mail-cab"><b>Project Riftwalker</b><span>Asunto: Tu código para cambiar la contraseña</span></div><p>Pediste cambiar la contraseña de tu cuenta de Project Riftwalker. Tu código es:</p><div class="cu-codigo">207 391</div><p>Escribilo en el juego junto con la contraseña nueva. Vence en 1 hora.</p><p class="cu-mail-pie">Si no lo pediste, ignorá este mail: tu contraseña sigue igual.</p></div>
+  </div>
+
+  <h3 id="buscar-partida">Buscar partida</h3>
+  <p>En el andén de Táctico y de Deathmatch, «Buscar partida» va primero, grande y del color del modo; «Crear sala» y «Unirse con código» siguen al lado, igual que hoy. Mientras busca, el panel de búsqueda reemplaza a los botones: el andén sigue a la vista, así se sabe en qué modo se está buscando.</p>
+  <div class="table-wrap"><table>
+    <tr><th>Estado</th><th>Qué se ve</th><th>Historia</th></tr>
+    <tr><td>Andén</td><td>Los tres botones y, debajo, con qué cuenta y en qué región se busca. Sin cuenta, dice que buscar partida la necesita y las salas con código no.</td><td>US 274 (CA1)</td></tr>
+    <tr><td>Buscando</td><td>«Buscando partida», cuántos hay sobre 8 («3 / 8 jugadores»), el tiempo que lleva (0:23), el modo, la región y «misma versión del juego», los 8 lugares (los vacíos dicen «Buscando…») y «Cancelar».</td><td>US 275 (CA1, CA2)</td></tr>
+    <tr><td>Con el mínimo</td><td>Cuando hay el mínimo, el pie cuenta para atrás desde 45 s («Si no entra nadie más, arranca en 0:31»), con una barra del color del modo. Si entra alguien, la espera vuelve a empezar.</td><td>US 276 (CA2)</td></tr>
+    <tr><td>Por empezar</td><td>«Partida encontrada» y «Empieza en 7»: la cuenta regresiva de 10 s. Se puede cancelar hasta el final; si alguien sale y quedan menos que el mínimo, vuelve a «Buscando».</td><td>US 276 (CA1, CA3)</td></tr>
+    <tr><td>Sin conexión</td><td>El panel con el borde rojo: «Se cortó la conexión», que no se perdió nada y «Volver al andén». Con una versión vieja dice que hay que actualizar desde el launcher.</td><td>US 275 (CA3)</td></tr>
+  </table></div>
+  <div class="table-wrap" style="margin-top:12px"><table>
+    <tr><th>Regla</th><th>Valor</th><th>Historia</th></tr>
+    <tr><td>Con quién te junta</td><td>Mismo modo, misma versión del juego y misma región (la mejor que encuentra Photon; hoy, Sudamérica).</td><td>US 274 (CA3)</td></tr>
+    <tr><td>Jugadores</td><td>Hasta 8. Mínimo para arrancar: 2 en Deathmatch y 4 en Táctico (2 contra 2).</td><td>US 276</td></tr>
+    <tr><td>Espera con el mínimo</td><td>45 s sin que entre nadie; después, cuenta regresiva de 10 s.</td><td>US 276 (CA2)</td></tr>
+    <tr><td>Salas con código</td><td>Siguen igual, sin cuenta, y nunca reciben jugadores de buscar partida.</td><td>US 274 (CA4)</td></tr>
+    <tr><td>Quién es cada uno</td><td>Cada jugador entra con su cuenta verificada; se ve el nombre de la cuenta y nadie puede estar dos veces.</td><td>US 277</td></tr>
+  </table></div>
+
+  <h3 id="cuenta-medidas">Medidas</h3>
+  <div class="grid3">
+    <div class="card"><b>Pestaña Cuenta.</b> Tarjetas desde y = 520: la de la cuenta de 1100 × 500 y la de privacidad de 670 × 500, a 30 px. Título de 60 px, texto de 25 px y botones de 320 × 66.</div>
+    <div class="card"><b>Ventanas.</b> 760 de ancho, márgenes de 48 px. Campos de 664 × 60 con su nombre de 17 px arriba, errores de 20 px en rojo debajo, código en 6 casillas de 64 × 76 y botones de 320 × 64.</div>
+    <div class="card"><b>Búsqueda.</b> El botón principal del andén mide 380 × 84, del color del modo. El panel de búsqueda, 860 × 470 en (150, 510), con una línea de 4 px del color del modo arriba y los 8 lugares en dos columnas de 390 × 46.</div>
+  </div>
+
+  <div class="dev">
+    <h3 id="cuenta-codigo">Dónde va a estar</h3>
+    <div class="files">
+      <code>Perfil/Cuenta</code><span>Supabase Auth por REST, como <code>LogrosOnline</code>: crear la cuenta (<code>PUT /auth/v1/user</code> sobre el jugador anónimo), confirmar y recuperar con código (<code>/auth/v1/verify</code>), entrar, cerrar sesión y la sesión guardada.</span>
+      <code>Perfil/PantallaPerfil</code><span>La pestaña Cuenta; las ventanas, con las piezas de <code>ShopUIKit</code>.</span>
+      <code>Perfil/Billetera</code><span>Las monedas de la cuenta en la base (US 272), con un id por movimiento.</span>
+      <code>Multijugador/BuscarPartida</code><span>La búsqueda con Photon (<code>JoinRandomOrCreateRoom</code> por modo, salas públicas) y el arranque automático.</span>
+      <code>Backend/Supabase/cuentas.sql</code><span>Perfiles, billetera, la fusión del progreso de una PC con la cuenta (<code>rw_merge_player</code>) y sus pruebas.</span>
+      <code>Edge Functions</code><span><code>photon-auth</code> (Photon verifica la cuenta, US 277) y <code>borrar-cuenta</code> (US 273).</span>
+    </div>
+  </div>
+</section>
+
+<script>
+// Maqueta de «Cuenta y buscar partida»: los botones cambian el estado de menu/cuentas.html (el ancla del iframe) y se
+// marcan solos cuando el estado cambia desde adentro de la maqueta.
+(function () {
+  var marco = document.getElementById('cuentaFrame'), ctl = document.getElementById('cuentaCtl');
+  if (!marco || !ctl) return;
+  var botones = ctl.querySelectorAll('button[data-e]');
+  function marcar(e) { botones.forEach(function (b) { b.setAttribute('aria-pressed', String(b.dataset.e === e)); }); }
+  botones.forEach(function (b) {
+    b.addEventListener('click', function () {
+      try { marco.contentWindow.location.hash = b.dataset.e; } catch (x) { marco.src = 'menu/cuentas.html#' + b.dataset.e; }
+      marcar(b.dataset.e);
+    });
+  });
+  marco.addEventListener('load', function () {
+    try { marco.contentWindow.addEventListener('hashchange', function () { marcar(marco.contentWindow.location.hash.slice(1) || 'perfil-sin'); }); } catch (x) { }
+  });
+})();
+</script>
+
 <section id="pantallas">
   <div class="sec-head"><h2>Otras pantallas</h2><span class="sub">Sin maqueta propia: siguen la parte 1</span></div>
   <div class="table-wrap"><table>
@@ -2737,6 +2866,7 @@ MARCO · Conjunto: [nombre]. Estilo: [estilo]. Forma: [esquinas, remate, rieles]
   <div class="table-wrap"><table>
     <tr><th>Qué</th><th>Historias</th><th>Estado</th></tr>
     <tr><td>Modo Zombie: oleadas, tipos de zombi, jefe, puntos, tienda, marcador (diseño listo) y resultado con récord</td><td>US 143 a US 151</td><td><span class="st st-todo">Falta hacerlo</span></td></tr>
+    <tr><td>Cuentas con mail y contraseña y buscar partida: el diseño está para revisar (<a href="#cuenta">Cuenta y buscar partida</a>)</td><td>US 237, US 269 a US 280</td><td><span class="st st-idea">A revisar</span></td></tr>
     <tr><td>Mapa 3: la noche, lo que necesitan los zombis, los recorridos y el rendimiento</td><td>US 186 a US 189</td><td><span class="st st-mid">A medias</span></td></tr>
     <tr><td>Mapa 2: revisar la línea de tiro de 139 m del pasillo norte (desde una base no se tiene que ver la otra)</td><td>US 213</td><td><span class="st st-mid">A revisar</span></td></tr>
     <tr><td>Estadísticas y campo de práctica</td><td>US 159, US 118 a US 122, US 166</td><td><span class="st st-todo">Falta diseñar</span></td></tr>
@@ -4959,6 +5089,7 @@ renderRules(); renderOneShot(); renderArsenal(); renderCalcOptions(); renderCalc
       { id: 'modo-espectador', t: 'Espectador', i: 'users', subs: [['espectador-estados', 'Estados'], ['espectador-medidas', 'Medidas'], ['espectador-codigo', 'Cómo está hecho']] },
       { id: 'logros', t: 'Logros y ranking', i: 'star', subs: [['logros-catalogo', 'Catálogo'], ['logros-desbloqueo', 'Cómo se desbloquean'], ['logros-aviso', 'Aviso y sonido'], ['logros-pantalla', 'Pantalla de Logros'], ['logros-ranking', 'Ranking global'], ['logros-guardado', 'Guardado'], ['logros-nuevo', 'Cómo sumar un logro'], ['logros-codigo', 'Dónde está']] },
       { id: 'perfil-arte', t: 'Arte del perfil', i: 'palette', subs: [['perfil-arte-conjuntos', 'Los 19 conjuntos'], ['perfil-arte-proceso', 'Cómo se hicieron'], ['perfil-arte-reglas', 'Medidas y zonas'], ['perfil-arte-estilo', 'Estilo'], ['perfil-arte-pedido', 'Cómo pedir una imagen'], ['perfil-arte-titulos', 'Títulos'], ['perfil-arte-nuevo', 'Cómo sumar un conjunto'], ['perfil-arte-codigo', 'Dónde está']] },
+      { id: 'cuenta', t: 'Cuenta y buscar partida', i: 'users', subs: [['cuenta-maqueta', 'Maqueta'], ['cuenta-perfil', 'La cuenta en el Perfil'], ['cuenta-ventanas', 'Ventanas'], ['cuenta-mails', 'Los mails'], ['buscar-partida', 'Buscar partida'], ['cuenta-medidas', 'Medidas'], ['cuenta-codigo', 'Dónde va a estar']] },
       { id: 'pantallas', t: 'Otras pantallas', i: 'window', subs: [['pantalla-menu', 'Menú principal'], ['pantalla-opciones', 'Opciones'], ['pantalla-pausa', 'Pausa'], ['pantalla-sala', 'Sala online'], ['pantalla-volver', 'Volver a la partida'], ['pantalla-elegir-equipo', 'Elegir equipo'], ['pantalla-nueva', 'Para hacer una pantalla nueva']] },
       { id: 'launcher', t: 'Launcher', i: 'download', subs: [['launcher-descargas', 'Qué se descarga'], ['launcher-instalar', 'Instalar y desinstalar'], ['launcher-ventana', 'Cómo se ve'], ['launcher-medidas', 'Medidas y colores'], ['launcher-estados', 'Estados'], ['launcher-revisar', 'Revisar el diseño'], ['launcher-publicar', 'Publicar una versión']] }] },
     { g: 'Combate', p: 'Parte 3 · Combate', items: [

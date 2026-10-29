@@ -1,0 +1,45 @@
+/* Diseño de cuenta y buscar partida: lo que se suma a las piezas de menu.css (todavía no está en el juego). */
+
+/* Ventanas: la caja toma el tamaño que le da cuentas.js */
+.modal .caja{height:auto}
+.modal .entrada,.entrada{position:absolute;text-transform:none;letter-spacing:0;height:60px;border-radius:8px;border:0;padding:0 20px;background:#1d2027;color:var(--ink);
+  font:400 26px Barlow,"Segoe UI",sans-serif;outline:none;box-shadow:inset 0 0 0 1px rgba(255,255,255,.14)}
+.modal .entrada:focus,.entrada:focus{box-shadow:inset 0 0 0 2px var(--accent)}
+.modal .entrada.mal,.entrada.mal{box-shadow:inset 0 0 0 2px var(--bad)}
+.entrada::placeholder{color:#59606b}
+.enlace{cursor:pointer;text-decoration:underline;text-underline-offset:4px;text-decoration-color:rgba(242,154,56,.5)}
+.enlace:hover{text-decoration-color:var(--accent)}
+.boton.peligro{background:transparent;color:var(--bad);box-shadow:inset 0 0 0 1px rgba(255,92,92,.55)}
+.boton.peligro:hover{box-shadow:inset 0 0 0 1px var(--bad)}
+.boton.rojo{background:var(--bad);color:#1a0606;box-shadow:none}
+.boton.rojo:hover{background:#ff7d7d}
+.boton.color{background:var(--c);color:#111;box-shadow:none}
+.boton.color:hover{filter:brightness(1.08)}
+.boton.fantasma{background:rgba(0,0,0,.35);color:#fff;box-shadow:inset 0 0 0 2px rgba(255,255,255,.4)}
+.boton.fantasma:hover{box-shadow:inset 0 0 0 2px #fff}
+
+/* Código de 6 números */
+.digito{position:absolute;width:64px;height:76px;border-radius:8px;background:#1d2027;box-shadow:inset 0 0 0 1px rgba(255,255,255,.14);
+  display:flex;align-items:center;justify-content:center;font:400 40px "JetBrains Mono",Consolas,monospace;color:var(--ink)}
+.digito.activo{box-shadow:inset 0 0 0 2px var(--accent)}
+.digito.activo::after{content:'';width:2px;height:40px;background:var(--accent);animation:parpadeo 1s steps(1) infinite}
+@keyframes parpadeo{50%{opacity:0}}
+
+/* Marcas de la lista de ventajas */
+.tilde{position:absolute;width:26px;height:26px;border-radius:50%;background:rgba(61,220,151,.16)}
+.tilde::after{content:'';position:absolute;left:8px;top:5px;width:7px;height:12px;border:solid var(--ok);border-width:0 3px 3px 0;transform:rotate(45deg)}
+.chip-estado{position:absolute;display:flex;align-items:center;gap:8px;padding:0 14px;height:34px;border-radius:17px;
+  font:600 17px "Barlow Condensed",sans-serif;letter-spacing:.12em;text-transform:uppercase}
+
+/* Andén de cada modo (como ModeSelectScreen) */
+.regla{display:inline-flex;align-items:center;height:40px;padding:0 14px;margin-right:10px;border-radius:6px;
+  border:1px solid var(--c);background:rgba(0,0,0,.4);color:var(--c);font:400 19px "JetBrains Mono",Consolas,monospace}
+.lugar{position:absolute;display:flex;align-items:center;gap:14px;font:600 24px Barlow,"Segoe UI",sans-serif;
+  border-bottom:1px solid rgba(255,255,255,.08)}
+.lugar .punto{width:12px;height:12px;border-radius:50%;background:var(--c);flex:none}
+.lugar.libre{color:rgba(255,255,255,.35);font-weight:400}
+.lugar.libre .punto{background:transparent;box-shadow:inset 0 0 0 2px rgba(255,255,255,.25);animation:latido 1.6s ease-in-out infinite}
+@keyframes latido{50%{opacity:.35}}
+.barra{position:absolute;height:6px;border-radius:3px;background:rgba(255,255,255,.12);overflow:hidden}
+.barra i{position:absolute;left:0;top:0;bottom:0;background:var(--c)}
+@media(prefers-reduced-motion:reduce){.lugar.libre .punto,.digito.activo::after{animation:none}}
