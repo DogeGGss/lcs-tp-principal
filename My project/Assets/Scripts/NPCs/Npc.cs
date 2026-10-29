@@ -24,6 +24,11 @@ public class Npc : MonoBehaviour
     public Transform Modelo { get; private set; }
     /// <summary>Sus animaciones (las de su tipo).</summary>
     public AnimadorDeNpc Animaciones { get; private set; }
+    /// <summary>Cuánto sale su cuerpo hacia adelante desde el centro, en m (según sus zonas de impacto): hasta ahí llega
+    /// el jugador sin atravesarlo (US 037).</summary>
+    public float Frente { get; private set; } = 0.4f;
+    /// <summary>Cuánto sale su cuerpo hacia los costados desde el centro, en m (el ancho del agente).</summary>
+    public float Ancho { get; private set; } = 0.4f;
     /// <summary>Está vivo.</summary>
     public bool Vivo => Vida != null && Vida.currentHealth > 0;
     /// <summary>Aturdido por la flash (US 038, CA2): quieto, sin perseguir ni atacar.</summary>
@@ -151,6 +156,83 @@ public class Npc : MonoBehaviour
 
         // US 038, CA1: cabeza, cuerpo y piernas, sobre sus huesos (las del prefab, si las tiene).
         ZonasDeNpc.Asegurar(m.transform);
+
+        // US 037: hasta dónde llega su cuerpo (adelante y a los costados), con las zonas de impacto (las que se
+        // ajustan en el prefab). Sin zonas, la cápsula.
+        // Se mide en la pose de quieto (no en la de modelado, con los brazos abiertos).
+        if (Animaciones != null)
+        {
+            Animador.cullingMode = AnimatorCullingMode.AlwaysAnimate;
+            Animaciones.Evaluar();
+            Animador.cullingMode = AnimatorCullingMode.CullUpdateTransforms;
+        }
+        Medir(capsula.radius);
+
+        // La cápsula para chocar, dentro del cuerpo: la caja de la malla de los modelos con huesos suele venir más
+        // grande que el bicho, y así empujaba al jugador sin tocarlo (y no llegaba a pegarle). Con zonas de impacto,
+        // centrada y del ancho más chico del cuerpo (adelante o a los costados).
+        if (GetComponentInChildren<HitZone>(true) != null)
+        {
+            capsula.radius = Mathf.Max(0.15f, Mathf.Min(Frente, Ancho) * 0.9f);
+            capsula.center = new Vector3(0f, capsula.center.y, 0f);
+            capsula.height = Mathf.Max(capsula.height, capsula.radius * 2f);
+        }
+    }
+
+    // Lo que sale cada zona de impacto, en los ejes de este objeto (adelante = z, costados = x), con el modelo quieto.
+    private void Medir(float sinZonas)
+    {
+        float frente = 0f, ancho = 0f;
+        bool alguna = false;
+        foreach (HitZone zona in GetComponentsInChildren<HitZone>(true))
+        foreach (Collider c in zona.GetComponents<Collider>())
+        {
+            alguna = true;
+            foreach ((Vector3 punto, float radio) in Puntos(c))
+            {
+                Vector3 l = transform.InverseTransformPoint(punto);
+                frente = Mathf.Max(frente, l.z + radio);
+                ancho = Mathf.Max(ancho, Mathf.Abs(l.x) + radio);
+            }
+        }
+        Frente = alguna ? Mathf.Max(0.15f, frente) : sinZonas;
+        Ancho = alguna ? Mathf.Max(0.15f, ancho) : sinZonas;
+    }
+
+    // Los puntos que marcan la forma del collider (en el mundo), con el radio alrededor de cada uno.
+    private static System.Collections.Generic.IEnumerable<(Vector3, float)> Puntos(Collider c)
+    {
+        Transform t = c.transform;
+        Vector3 e = t.lossyScale;
+        float mayor = Mathf.Max(Mathf.Abs(e.x), Mathf.Abs(e.y), Mathf.Abs(e.z));
+        switch (c)
+        {
+            case SphereCollider s:
+                yield return (t.TransformPoint(s.center), s.radius * mayor);
+                break;
+            case CapsuleCollider k:
+            {
+                Vector3 eje = k.direction == 0 ? Vector3.right : k.direction == 1 ? Vector3.up : Vector3.forward;
+                float escalaEje = Mathf.Abs(Vector3.Scale(eje, e).magnitude);
+                Vector3 otros = Vector3.Scale(Vector3.one - eje, e);
+                float radio = k.radius * Mathf.Max(Mathf.Abs(otros.x), Mathf.Abs(otros.y), Mathf.Abs(otros.z));
+                float medio = Mathf.Max(0f, k.height * 0.5f * escalaEje - radio) / Mathf.Max(0.0001f, escalaEje);
+                yield return (t.TransformPoint(k.center + eje * medio), radio);
+                yield return (t.TransformPoint(k.center - eje * medio), radio);
+                break;
+            }
+            case BoxCollider b:
+                for (int i = 0; i < 8; i++)
+                {
+                    Vector3 esquina = new Vector3((i & 1) == 0 ? -0.5f : 0.5f, (i & 2) == 0 ? -0.5f : 0.5f, (i & 4) == 0 ? -0.5f : 0.5f);
+                    yield return (t.TransformPoint(b.center + Vector3.Scale(esquina, b.size)), 0f);
+                }
+                break;
+            default:
+                Bounds caja = c.bounds;
+                yield return (caja.center, caja.extents.magnitude);
+                break;
+        }
     }
 
     private void OnEnable() => todos.Add(this);

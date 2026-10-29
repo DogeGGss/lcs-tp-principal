@@ -100,6 +100,12 @@ public class AnimadorDeNpc
         else if (!enLoop && t > clip.length) entradas[actual].SetTime(clip.length); // queda en el último cuadro
     }
 
+    /// <summary>Aplica ya la pose de la animación puesta (sin esperar al cuadro siguiente).</summary>
+    public void Evaluar()
+    {
+        if (grafo.IsValid()) grafo.Evaluate(0f);
+    }
+
     public void Destruir()
     {
         if (grafo.IsValid()) grafo.Destroy();
