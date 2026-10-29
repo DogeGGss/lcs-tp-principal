@@ -150,8 +150,8 @@
     const t = N(capa, 60, 520, 1100, 500, 'panel');
     T(t, 44, 36, 600, 22, 'fr', 18, 'var(--accent)', 'Tu cuenta', { mayus: true, esp: 16 });
     T(t, 42, 62, 900, 64, 'ft', 60, 'var(--ink)', 'Jugás sin cuenta', { mayus: true, esp: 3 });
-    T(t, 44, 136, 980, 70, 'fx', 25, 'var(--soft)', 'Tu progreso se guarda en esta PC. Si reinstalás el juego o jugás en otra PC, empezás de cero.', { arriba: true, alto: 1.35 });
-    ['Recuperá tu progreso en cualquier PC', 'Buscá partida con otros jugadores', 'Tu lugar en el ranking, a tu nombre'].forEach((v, i) => {
+    T(t, 44, 136, 980, 70, 'fx', 25, 'var(--soft)', 'Tu progreso se guarda solo en esta PC: no sube a la nube ni aparecés en el ranking. Con una cuenta, arrancás de cero y todo queda en la nube.', { arriba: true, alto: 1.35 });
+    ['Tu progreso en la nube, en cualquier PC', 'Aparecé en el ranking global', 'Buscá partida con otros jugadores'].forEach((v, i) => {
       N(t, 44, 230 + i * 48, 26, 26, 'tilde');
       T(t, 86, 226 + i * 48, 800, 34, 'fx', 24, 'var(--ink)', v);
     });
@@ -216,21 +216,23 @@
     Object.assign(i.style, { left: '48px', top: y + 28 + 'px', width: (o.w || 664) + 'px' });
     i.type = o.clave ? 'password' : 'text'; i.value = valor || ''; i.placeholder = o.ejemplo || ''; i.setAttribute('aria-label', etiqueta);
     if (o.error) T(caja, 48, y + 94, 664, 26, 'fx', 20, 'var(--bad)', o.error);
+    if (o.clave) T(caja, 48 + (o.w || 664) - 110, y + 28, 92, 60, 'fr', 18, 'var(--accent)', 'Ver', { mayus: true, esp: 12, al: 'der' }).classList.add('clic');
     return i;
   }
   function crear(conError) {
     perfil('sin');
     const cerrar = () => ir('perfil-sin');
-    const c = ventana(760, 640, cerrar);
+    const c = ventana(760, 690, cerrar);
     titulo(c, 'Cuenta nueva', 'Crear cuenta');
-    campo(c, 140, 'Mail', conError ? MAIL : '', { ejemplo: 'tu@mail.com', error: conError ? 'Ese mail ya tiene una cuenta.' : '' });
-    if (conError) T(c, 360, 234, 352, 26, 'fx', 20, 'var(--accent)', 'Iniciar sesión', { al: 'der' }).classList.add('enlace');
-    campo(c, 270, 'Contraseña', 'riftwalker', { clave: true, ayuda: '8 caracteres o más' });
-    campo(c, 380, 'Repetir la contraseña', 'riftwalker', { clave: true });
-    T(c, 48, 486, 664, 30, 'fx', 20, 'var(--mute)', 'Al crear la cuenta aceptás el <span class="enlace" style="color:var(--accent)">aviso de privacidad</span>.', { html: true });
+    T(c, 48, 120, 664, 26, 'fx', 20, 'var(--mute)', 'La cuenta arranca de cero: lo que jugaste sin cuenta queda en esta PC.');
+    campo(c, 170, 'Mail', conError ? MAIL : '', { ejemplo: 'tu@mail.com', error: conError ? 'Ese mail ya tiene una cuenta.' : '' });
+    if (conError) T(c, 360, 264, 352, 26, 'fx', 20, 'var(--accent)', 'Iniciar sesión', { al: 'der' }).classList.add('enlace');
+    campo(c, 300, 'Contraseña', 'riftwalker', { clave: true, ayuda: '8 caracteres o más' });
+    campo(c, 410, 'Repetir la contraseña', 'riftwalker', { clave: true });
+    T(c, 48, 526, 664, 30, 'fx', 20, 'var(--mute)', 'Al crear la cuenta aceptás el <span class="enlace" style="color:var(--accent)">aviso de privacidad</span>.', { html: true });
     c.querySelectorAll('.enlace').forEach(e => e.addEventListener('click', ev => { ev.stopPropagation(); ir(e.textContent.includes('Iniciar') ? 'entrar' : 'privacidad'); }));
-    Boton(c, 48, 540, 320, 64, 'Cancelar', 24, '', cerrar);
-    Boton(c, 392, 540, 320, 64, 'Crear cuenta', 24, 'lleno', () => ir(conError ? 'crear-error' : 'perfil-confirmar'));
+    Boton(c, 48, 586, 320, 64, 'Cancelar', 24, '', cerrar);
+    Boton(c, 392, 586, 320, 64, 'Crear cuenta', 24, 'lleno', () => ir(conError ? 'crear-error' : 'perfil-confirmar'));
   }
   function entrar(conError) {
     perfil('sin');
@@ -248,7 +250,7 @@
     const olvido = T(c, 412, y + 210, 300, 28, 'fx', 20, 'var(--accent)', '¿Te olvidaste la contraseña?', { al: 'der' });
     clic(olvido, () => ir('recuperar')).classList.add('enlace');
     Boton(c, 48, y + 256, 320, 64, 'Cancelar', 24, '', cerrar);
-    Boton(c, 392, y + 256, 320, 64, 'Entrar', 24, 'lleno', () => { if (conError) { ir('perfil-cuenta'); avisar('Sumamos el progreso de esta PC a tu cuenta'); } else ir('entrar-error'); });
+    Boton(c, 392, y + 256, 320, 64, 'Entrar', 24, 'lleno', () => { if (conError) { ir('perfil-cuenta'); avisar('Entraste a tu cuenta'); } else ir('entrar-error'); });
     const pie = T(c, 48, y + 344, 664, 30, 'fx', 20, 'var(--mute)', '¿No tenés cuenta? <span class="enlace" style="color:var(--accent)">Crear cuenta</span>', { html: true, al: 'centro' });
     pie.querySelector('.enlace').addEventListener('click', () => ir('crear'));
   }
@@ -279,7 +281,7 @@
     const volver = () => ir('perfil-cuenta');
     const c = ventana(760, 400, volver);
     titulo(c, 'Tu cuenta', 'Cerrar sesión');
-    T(c, 48, 132, 664, 140, 'fx', 23, 'var(--soft)', 'En esta PC vas a jugar como un jugador nuevo, sin cuenta. Tu progreso, tus monedas y tus cosméticos quedan guardados en la cuenta y vuelven cuando inicies sesión.', { arriba: true, alto: 1.4 });
+    T(c, 48, 132, 664, 140, 'fx', 23, 'var(--soft)', 'En esta PC volvés a tu progreso sin cuenta. Tu progreso, tus monedas y tus cosméticos de la cuenta quedan guardados en ella y vuelven cuando inicies sesión.', { arriba: true, alto: 1.4 });
     Boton(c, 48, 296, 320, 64, 'Cancelar', 24, '', volver);
     Boton(c, 392, 296, 320, 64, 'Cerrar sesión', 24, 'lleno', () => { ir('perfil-sin'); avisar('Cerraste la sesión'); });
   }
@@ -288,7 +290,7 @@
     const volver = () => ir('perfil-cuenta');
     const c = ventana(760, 540, volver);
     titulo(c, 'Esto no se puede deshacer', 'Borrar cuenta', 'var(--bad)');
-    T(c, 48, 132, 664, 140, 'fx', 23, 'var(--soft)', 'Se borran tu cuenta, tu progreso, tus monedas, tus cosméticos y tu lugar en el ranking. En esta PC seguís como un jugador nuevo, y el mail queda libre.', { arriba: true, alto: 1.4 });
+    T(c, 48, 132, 664, 140, 'fx', 23, 'var(--soft)', 'Se borran tu cuenta, su progreso, sus monedas, sus cosméticos y tu lugar en el ranking. En esta PC volvés a tu progreso sin cuenta, y el mail queda libre.', { arriba: true, alto: 1.4 });
     campo(c, 290, 'Tu contraseña, para confirmar', 'riftwalker', { clave: true });
     Boton(c, 48, 432, 320, 64, 'Cancelar', 24, '', volver);
     Boton(c, 392, 432, 320, 64, 'Borrar cuenta', 24, 'rojo', () => { ir('perfil-sin'); avisar('Borramos tu cuenta y sus datos'); });

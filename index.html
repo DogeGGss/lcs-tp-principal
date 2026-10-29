@@ -1978,8 +1978,8 @@ MARCO · Conjunto: [nombre]. Estilo: [estilo]. Forma: [esquinas, remate, rieles]
 </script>
 
 <section id="cuenta">
-  <div class="sec-head"><h2>Cuenta y buscar partida</h2><span class="sub">F18 · US 237, US 269 a US 273 · F28 · US 274 a US 280</span> <span class="st st-idea">Diseño para revisar</span></div>
-  <p>Dos cosas nuevas del Sprint 4. La <b>cuenta</b>: crearla con mail y contraseña convierte al jugador de esta PC en una cuenta sin perder nada, y con ella se recupera el progreso en cualquier PC. Y <b>buscar partida</b>: en el andén de Táctico y de Deathmatch, el juego te junta con otros jugadores del mismo modo, versión y región, y la partida arranca sola. Buscar partida pide cuenta; las salas con código y el campo de práctica siguen sin cuenta.</p>
+  <div class="sec-head"><h2>Cuenta y buscar partida</h2><span class="sub">F18 · US 237, US 269 a US 273, US 281 · F28 · US 274 a US 280</span> <span class="st st-idea">Diseño para revisar</span></div>
+  <p>Dos cosas nuevas del Sprint 4. La <b>cuenta</b>: se crea con mail y contraseña y arranca de cero; con ella el progreso queda en la nube, se recupera en cualquier PC y se aparece en el ranking. Sin cuenta se juega igual, pero el progreso queda solo en la PC (US 281). Y <b>buscar partida</b>: en el andén de Táctico y de Deathmatch, el juego te junta con otros jugadores del mismo modo, versión y región, y la partida arranca sola. Buscar partida pide cuenta; las salas con código y el campo de práctica siguen sin cuenta.</p>
   <p class="soft">Todavía no está en el juego: es la propuesta para revisar antes de programarla. La maqueta usa las mismas piezas que el menú (el Perfil, las ventanas y el andén de cada modo), y sus botones llevan de un estado al otro como en el juego.</p>
 
   <h3 id="cuenta-maqueta">Maqueta</h3>
@@ -1998,7 +1998,7 @@ MARCO · Conjunto: [nombre]. Estilo: [estilo]. Forma: [esquinas, remate, rieles]
   <p>El Perfil suma la pestaña <b>Cuenta</b>, después de Estadísticas y Personalización. A la derecha de las pestañas dice cómo está esta PC: «Sin cuenta», «Falta confirmar» o «Con cuenta». Abajo, dos tarjetas: la de la cuenta y la de privacidad.</p>
   <div class="table-wrap"><table>
     <tr><th>Estado</th><th>Qué muestra</th><th>Historia</th></tr>
-    <tr><td>Sin cuenta</td><td>«Jugás sin cuenta», qué se pierde sin ella (si reinstalás o cambiás de PC, empezás de cero), tres ventajas (recuperar el progreso, buscar partida y el ranking a tu nombre) y los botones «Crear cuenta» (naranja) e «Iniciar sesión».</td><td>US 237, US 269</td></tr>
+    <tr><td>Sin cuenta</td><td>«Jugás sin cuenta», que el progreso queda solo en esta PC (sin nube ni ranking) y que la cuenta arranca de cero, tres ventajas (el progreso en la nube, aparecer en el ranking y buscar partida) y los botones «Crear cuenta» (naranja) e «Iniciar sesión».</td><td>US 237, US 269</td></tr>
     <tr><td>Falta confirmar</td><td>«Confirmá tu mail»: el mail al que se mandó el código, las 6 casillas del código y «Confirmar». Se puede pedir otro código pasados 60 s. Mientras tanto se juega como siempre; «Buscar partida» se habilita al confirmar.</td><td>US 237 (CA2)</td></tr>
     <tr><td>Con cuenta</td><td>El mail con la etiqueta «Confirmada», qué quedó en la cuenta, tres datos (desde cuándo, el nombre y «Buscar partida: habilitado») y los botones «Cerrar sesión» y «Borrar cuenta» (en rojo, sin relleno).</td><td>US 270, US 273</td></tr>
     <tr><td>Privacidad</td><td>Siempre a la derecha: «Qué guardamos», en cuatro renglones, y «Ver el aviso completo».</td><td>US 273 (CA1)</td></tr>
@@ -2008,11 +2008,11 @@ MARCO · Conjunto: [nombre]. Estilo: [estilo]. Forma: [esquinas, remate, rieles]
   <p class="soft">Todas son como la de «Cambiar nombre»: 760 de ancho sobre el juego oscurecido, antetítulo naranja, título en mayúsculas, campos con su nombre arriba y dos botones al pie (el de la acción, a la derecha y en naranja). <span class="kbd">Esc</span> o un clic afuera cierran sin hacer nada.</p>
   <div class="table-wrap"><table>
     <tr><th>Ventana</th><th>Qué pide</th><th>Al aceptar</th><th>Historia</th></tr>
-    <tr><td>Crear cuenta</td><td>Mail, contraseña (8 caracteres o más) y repetirla. Debajo: «Al crear la cuenta aceptás el aviso de privacidad», con el link.</td><td>Manda el código y pasa a «Confirmá tu mail».</td><td>US 237 (CA1)</td></tr>
-    <tr><td>Iniciar sesión</td><td>Mail y contraseña, «¿Te olvidaste la contraseña?» y, al pie, «¿No tenés cuenta? Crear cuenta».</td><td>Entra y avisa «Sumamos el progreso de esta PC a tu cuenta» si en la PC se había jugado sin cuenta.</td><td>US 269</td></tr>
+    <tr><td>Crear cuenta</td><td>Arriba, «La cuenta arranca de cero: lo que jugaste sin cuenta queda en esta PC». Mail, contraseña (8 caracteres o más) y repetirla, con «Ver» para mostrarlas. Debajo: «Al crear la cuenta aceptás el aviso de privacidad», con el link.</td><td>Manda el código y pasa a «Confirmá tu mail».</td><td>US 237 (CA1)</td></tr>
+    <tr><td>Iniciar sesión</td><td>Mail y contraseña, «¿Te olvidaste la contraseña?» y, al pie, «¿No tenés cuenta? Crear cuenta».</td><td>Entra a la cuenta y baja su progreso. Lo jugado sin cuenta en esa PC no se mezcla: queda para cuando se juegue sin cuenta.</td><td>US 269</td></tr>
     <tr><td>Recuperar la contraseña</td><td>Primero el mail; después el código de 6 números y la contraseña nueva, dos veces.</td><td>Cambia la contraseña y entra a la cuenta.</td><td>US 271</td></tr>
-    <tr><td>Cerrar sesión</td><td>Solo confirmar: explica que en esta PC se sigue como un jugador nuevo y que todo queda en la cuenta.</td><td>Vuelve a «Sin cuenta».</td><td>US 270</td></tr>
-    <tr><td>Borrar cuenta</td><td>Antetítulo rojo «Esto no se puede deshacer», qué se borra y la contraseña para confirmar. El botón es rojo.</td><td>Borra la cuenta y sus datos y vuelve a «Sin cuenta».</td><td>US 273 (CA2, CA3)</td></tr>
+    <tr><td>Cerrar sesión</td><td>Solo confirmar: explica que en esta PC se vuelve al progreso sin cuenta y que lo de la cuenta queda en ella.</td><td>Vuelve a «Sin cuenta», con el progreso de la PC.</td><td>US 270</td></tr>
+    <tr><td>Borrar cuenta</td><td>Antetítulo rojo «Esto no se puede deshacer», qué se borra y la contraseña para confirmar. El botón es rojo.</td><td>Borra la cuenta y sus datos y vuelve a «Sin cuenta», con el progreso de la PC.</td><td>US 273 (CA2, CA3)</td></tr>
     <tr><td>Aviso de privacidad</td><td>Qué guardamos, para qué, dónde y tus derechos (Ley 25.326), y «Entendido».</td><td>Vuelve a donde estaba.</td><td>US 273 (CA1)</td></tr>
     <tr><td>Necesitás una cuenta</td><td>Sale al tocar «Buscar partida» sin cuenta: por qué hace falta, y «Cancelar», «Iniciar sesión» y «Crear cuenta».</td><td>Abre la ventana elegida.</td><td>US 274 (CA2)</td></tr>
   </table></div>
@@ -2026,10 +2026,10 @@ MARCO · Conjunto: [nombre]. Estilo: [estilo]. Forma: [esquinas, remate, rieles]
     <tr><td>«El código venció o no es correcto. Pedí otro.»</td><td>Al confirmar el mail o recuperar la contraseña.</td></tr>
     <tr><td>«Hace falta internet para esto.»</td><td>Sin conexión, en cualquier ventana. No se borra lo escrito.</td></tr>
   </table></div>
-  <p class="soft" style="margin-top:12px">Los avisos al pie, como los del menú: «Listo: tu cuenta está activa», «Sumamos el progreso de esta PC a tu cuenta», «Contraseña cambiada. Entraste a tu cuenta», «Cerraste la sesión» y «Borramos tu cuenta y sus datos».</p>
+  <p class="soft" style="margin-top:12px">Los avisos al pie, como los del menú: «Listo: tu cuenta está activa», «Entraste a tu cuenta», «Contraseña cambiada. Entraste a tu cuenta», «Cerraste la sesión» y «Borramos tu cuenta y sus datos».</p>
 
   <h3 id="cuenta-mails">Los mails</h3>
-  <p class="soft">Llegan en castellano y con un código de 6 números, que se escribe en el juego: así no hace falta ninguna página web. Se configuran en Supabase (Authentication › Email Templates) y salen por un SMTP propio.</p>
+  <p class="soft">Llegan en castellano y con un código de 6 números, que se escribe en el juego: así no hace falta ninguna página web. Se configuran en Supabase (Authentication › Emails › Templates: «Confirm signup» para confirmar la cuenta y «Reset Password» para recuperar la contraseña) y salen por un SMTP propio.</p>
   <div class="cu-mails">
     <div class="cu-mail"><div class="cu-mail-cab"><b>Project Riftwalker</b><span>Asunto: Tu código para confirmar la cuenta</span></div><p>¡Hola! Este es tu código para confirmar tu cuenta de Project Riftwalker:</p><div class="cu-codigo">481 902</div><p>Escribilo en el juego, en Perfil › Cuenta. Vence en 1 hora.</p><p class="cu-mail-pie">Si no creaste una cuenta, ignorá este mail.</p></div>
     <div class="cu-mail"><div class="cu-mail-cab"><b>Project Riftwalker</b><span>Asunto: Tu código para cambiar la contraseña</span></div><p>Pediste cambiar la contraseña de tu cuenta de Project Riftwalker. Tu código es:</p><div class="cu-codigo">207 391</div><p>Escribilo en el juego junto con la contraseña nueva. Vence en 1 hora.</p><p class="cu-mail-pie">Si no lo pediste, ignorá este mail: tu contraseña sigue igual.</p></div>
@@ -2064,11 +2064,11 @@ MARCO · Conjunto: [nombre]. Estilo: [estilo]. Forma: [esquinas, remate, rieles]
   <div class="dev">
     <h3 id="cuenta-codigo">Dónde va a estar</h3>
     <div class="files">
-      <code>Perfil/Cuenta</code><span>Supabase Auth por REST, como <code>LogrosOnline</code>: crear la cuenta (<code>PUT /auth/v1/user</code> sobre el jugador anónimo), confirmar y recuperar con código (<code>/auth/v1/verify</code>), entrar, cerrar sesión y la sesión guardada.</span>
-      <code>Perfil/PantallaPerfil</code><span>La pestaña Cuenta; las ventanas, con las piezas de <code>ShopUIKit</code>.</span>
+      <code>Perfil/LogrosOnline.Cuenta</code><span>Supabase Auth por REST, como <code>LogrosOnline</code>: crear la cuenta (<code>POST /auth/v1/signup</code>, un jugador nuevo), confirmar y recuperar con código (<code>/auth/v1/verify</code>), entrar, cerrar sesión y la sesión guardada. Sin cuenta, la sesión anónima queda solo para las opiniones y para ver el ranking (US 281).</span>
+      <code>Perfil/PestanaCuenta</code><span>La pestaña Cuenta del Perfil y sus ventanas, con las piezas de <code>ShopUIKit</code>; las reglas y los mensajes, en <code>ReglasCuenta</code>.</span>
       <code>Perfil/Billetera</code><span>Las monedas de la cuenta en la base (US 272), con un id por movimiento.</span>
       <code>Multijugador/BuscarPartida</code><span>La búsqueda con Photon (<code>JoinRandomOrCreateRoom</code> por modo, salas públicas) y el arranque automático.</span>
-      <code>Backend/Supabase/cuentas.sql</code><span>Perfiles, billetera, la fusión del progreso de una PC con la cuenta (<code>rw_merge_player</code>) y sus pruebas.</span>
+      <code>Backend/Supabase/cuentas.sql</code><span>Perfiles, billetera, que la nube y el ranking sean solo de cuentas, y sus pruebas. La limpieza de la base de las pruebas va aparte, en <code>reset-cuentas.sql</code>.</span>
       <code>Edge Functions</code><span><code>photon-auth</code> (Photon verifica la cuenta, US 277) y <code>borrar-cuenta</code> (US 273).</span>
     </div>
   </div>
