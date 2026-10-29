@@ -1,0 +1,16 @@
+fileFormatVersion: 2
+guid: 819a16f481bcf7646a1b32f9b76f484a
+timeCreated: 1498976880
+licenseType: Store
+NativeFormatImporter:
+  mainObjectFileID: 9100000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 95575
+  packageName: Flying carnivorous beetle
+  packageVersion: 1.0
+  assetPath: Assets/Flying Beetle/Flying Beetle Animator Controller.controller
+  uploadId: 189967

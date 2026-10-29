@@ -117,6 +117,7 @@ public class Npc : MonoBehaviour
         npc.Armar(tipo);
         go.AddComponent<ReaccionDeNpc>(); // US 038
         go.AddComponent<MuerteDeNpc>();   // US 039
+        if (tipo.esJefe) BarraDeJefe.Mostrar(npc); // US 146, CA4
         if (persigue)
         {
             go.AddComponent<PersecucionDeNpc>();
@@ -133,7 +134,7 @@ public class Npc : MonoBehaviour
         GameObject m = Instantiate(tipo.modelo, transform);
         m.name = "Modelo";
         m.transform.localPosition = Vector3.zero;
-        m.transform.localRotation = Quaternion.identity;
+        m.transform.localRotation = Quaternion.Euler(0f, tipo.giroDelModelo, 0f); // los que vienen mirando para atrás
         m.transform.localScale = tipo.modelo.transform.localScale * tipo.escala;
         Modelo = m.transform;
         Animador = m.GetComponentInChildren<Animator>();

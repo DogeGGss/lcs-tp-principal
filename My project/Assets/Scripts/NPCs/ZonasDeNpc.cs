@@ -6,8 +6,11 @@ using UnityEngine;
 // - Cabeza: una esfera en "Bip01 Head".
 // - Cuerpo: una cápsula de la pelvis al cuello (acostada en los de cuatro patas).
 // - Piernas: una cápsula por pata (muslo a pie) y por brazo (brazo a mano).
-// Son triggers: no frenan a nadie, solo las encuentran las balas. Si el modelo no tiene esos huesos, no se arma nada
-// y todo el bicho cuenta como cuerpo (su cápsula).
+// El Jefe (el escarabajo, US 146) tiene otro esqueleto (root, body_up, neck, head, body_tail, tail_1 a tail_6): ahí la
+// cabeza es una esfera en "head", el cuerpo una cápsula de la cola del cuerpo al cuello, y la cola, una cápsula que
+// cuenta como piernas (ArmarEscarabajo).
+// Son triggers: no frenan a nadie, solo las encuentran las balas. Si el modelo no tiene ninguno de esos esqueletos, no
+// se arma nada y todo el bicho cuenta como cuerpo (su cápsula).
 // Si el prefab del bicho ya trae zonas (las que se pasan con Riftwalker > NPCs > Pasar zonas de impacto a los prefabs
 // y después se ajustan a mano), se usan esas y no se arma ninguna.
 public static class ZonasDeNpc
@@ -25,7 +28,7 @@ public static class ZonasDeNpc
         Transform cabeza = Hueso(modelo, "Bip01 Head");
         Transform cuello = Hueso(modelo, "Bip01 Neck");
         Transform pelvis = Hueso(modelo, "Bip01 Pelvis");
-        if (cabeza == null || pelvis == null) return 0;
+        if (cabeza == null || pelvis == null) return ArmarEscarabajo(modelo);
         if (cuello == null) cuello = cabeza.parent;
 
         int hechas = 0;
@@ -44,6 +47,25 @@ public static class ZonasDeNpc
             hechas += Extremidad(modelo, $"Bip01 {lado} Thigh", $"Bip01 {lado} Foot", largoCuerpo);
             hechas += Extremidad(modelo, $"Bip01 {lado} UpperArm", $"Bip01 {lado} Hand", largoCuerpo);
         }
+        return hechas;
+    }
+
+    // El esqueleto del escarabajo (Flying Beetle, el Jefe). Los huesos que mueven la malla son los de "root"; los de
+    // "FK_controllers" (con " 1" al final) son controles del modelado y no se usan.
+    private static int ArmarEscarabajo(Transform modelo)
+    {
+        Transform raiz = Hueso(modelo, "root");
+        if (raiz == null) return 0;
+        Transform cabeza = Hueso(raiz, "head"), cuello = Hueso(raiz, "neck"), atras = Hueso(raiz, "body_tail");
+        Transform cola1 = Hueso(raiz, "tail_1"), cola6 = Hueso(raiz, "tail_6");
+        if (cabeza == null || cuello == null || atras == null) return 0;
+
+        int hechas = 0;
+        float largoCuerpo = Vector3.Distance(atras.position, cuello.position);
+        hechas += Esfera(cabeza, Mathf.Max(0.1f, Vector3.Distance(cabeza.position, cuello.position) * 0.9f, largoCuerpo * 0.25f), BodyZone.Head);
+        hechas += Capsula(atras, atras.position, cuello.position, Mathf.Max(0.15f, largoCuerpo * 0.35f), BodyZone.Body);
+        if (cola1 != null && cola6 != null)
+            hechas += Capsula(cola1, cola1.position, cola6.position, Mathf.Max(0.08f, largoCuerpo * 0.15f), BodyZone.Legs);
         return hechas;
     }
 

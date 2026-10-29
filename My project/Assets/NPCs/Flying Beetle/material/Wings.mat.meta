@@ -1,0 +1,16 @@
+fileFormatVersion: 2
+guid: 1888bafb443668844b88fe4f0f57e175
+timeCreated: 1500053409
+licenseType: Store
+NativeFormatImporter:
+  mainObjectFileID: 2100000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 95575
+  packageName: Flying carnivorous beetle
+  packageVersion: 1.0
+  assetPath: Assets/Flying Beetle/material/Wings.mat
+  uploadId: 189967
