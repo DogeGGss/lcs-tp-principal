@@ -11,7 +11,9 @@ using UnityEngine.AI;
 // - CA4: no se encima con los demás (esquiva a los otros agentes) y, cerca del jugador, cada uno busca su lugar
 //   alrededor de él, así lo rodean en vez de hacer fila.
 // - CA5: camina o corre (según su tipo) con la animación al ritmo de su velocidad; quieto, la de quieto.
-// - CA6: a distancia de ataque (DistanciaDeAtaque) se frena mirándolo; el golpe es la US 037.
+// - CA6: a distancia de ataque se frena mirándolo; el golpe es la US 037. La distancia es entre los cuerpos (del frente
+//   del NPC, según sus zonas de impacto, al costado del jugador), así ninguno se mete adentro del jugador para pegarle.
+//   Si el jugador se le viene encima, el NPC retrocede lo justo para no atravesarlo.
 // US 036 (detectar al jugador):
 // - CA1: siempre sabe dónde está el jugador (el más cercano, si hubiera varios) y lo usa de destino.
 // - CA2: si lo ve (sin paredes en el medio) a menos de 10 m, grita una vez y va 20 % más rápido mientras lo vea.
@@ -21,7 +23,8 @@ using UnityEngine.AI;
 [RequireComponent(typeof(Npc))]
 public class PersecucionDeNpc : MonoBehaviour
 {
-    public const float DistanciaDeAtaque = 1.5f;      // US 037, CA1
+    public const float DistanciaDeAtaque = 1.5f;      // US 037, CA1: m entre los cuerpos, como máximo, para golpear
+    private const float Separacion = 0.25f;            // m entre los cuerpos donde se frena (dentro de los 1,5 m)
     private const float CadaCuanto = 0.25f;            // s entre cálculos del camino (CA3)
     private const float VeHasta = 10f, MasRapido = 1.2f; // US 036, CA2
     private const float Rodear = 4f;                   // m: desde acá cada uno busca su lugar alrededor (CA4)
@@ -37,6 +40,7 @@ public class PersecucionDeNpc : MonoBehaviour
         siguienteLugar = 0;
         jugadores.Clear();
         jugadoresEn = -10f;
+        radioDe = null;
     }
 
     private Npc npc;
@@ -66,6 +70,7 @@ public class PersecucionDeNpc : MonoBehaviour
     {
         if (npc == null || npc.Tipo == null) return;
         if (!npc.Vivo) { Frenar(); enabled = false; return; } // muerto (US 039)
+        if (npc.Aturdido) { Frenar(); return; }                 // la flash lo dejó quieto (US 038, CA2)
 
         Objetivo = JugadorMasCercano(transform.position);
         if (Objetivo == null) { Frenar(); Animar(false); return; } // US 036, CA4
@@ -79,11 +84,19 @@ public class PersecucionDeNpc : MonoBehaviour
         // US 036, CA2: lo ve de cerca: grita una vez y acelera mientras lo vea.
         loVe = Ve(Objetivo);
         if (loVe && !grito) Gritar();
-        agente.speed = npc.Tipo.velocidad * (loVe ? MasRapido : 1f);
+        ReaccionDeNpc reaccion = GetComponent<ReaccionDeNpc>();
+        float golpeado = reaccion != null ? reaccion.Velocidad : 1f; // US 038, CA3: recién golpeado, un poco más lento
+        agente.speed = npc.Tipo.velocidad * (loVe ? MasRapido : 1f) * golpeado;
 
         Vector3 hasta = Objetivo.position - transform.position;
         hasta.y = 0f;
-        EnDistanciaDeAtaque = hasta.magnitude <= DistanciaDeAtaque;
+        float entre = EntreCuerpos(Objetivo); // m del frente del NPC al costado del jugador
+        // Con un poco de margen para que no titubee entre frenar y avanzar.
+        EnDistanciaDeAtaque = entre <= (EnDistanciaDeAtaque ? Separacion + 0.3f : Separacion + 0.05f);
+
+        // Se le metió encima (el jugador lo empujó o lo esquivó por el costado): retrocede lo justo, por el NavMesh.
+        if (entre < 0f && hasta.sqrMagnitude > 1e-4f)
+            agente.Move(-hasta.normalized * Mathf.Min(-entre, 4f * Time.deltaTime));
 
         // CA6: a distancia de ataque se frena y lo mira.
         if (EnDistanciaDeAtaque || Ocupado)
@@ -112,7 +125,7 @@ public class PersecucionDeNpc : MonoBehaviour
         if (desdeJugador.magnitude < Rodear && desdeJugador.sqrMagnitude > 1e-4f)
         {
             float giro = Mathf.Lerp(angulo, 0f, desdeJugador.magnitude / Rodear) * 0.5f;
-            destino = Objetivo.position + Quaternion.Euler(0f, giro, 0f) * desdeJugador.normalized * (DistanciaDeAtaque * 0.8f);
+            destino = Objetivo.position + Quaternion.Euler(0f, giro, 0f) * desdeJugador.normalized * (npc.Frente + RadioDe(Objetivo) + Separacion);
         }
         if (NavMesh.SamplePosition(destino, out NavMeshHit cerca, BuscarPiso, Filtro())) destino = cerca.position;
         agente.SetDestination(destino); // si no llega entero, va hasta donde se pueda y espera (camino parcial)
@@ -198,7 +211,6 @@ public class PersecucionDeNpc : MonoBehaviour
             }
         }
         if (!NavMesh.SamplePosition(transform.position, out NavMeshHit piso, 3f, Filtro())) return;
-        CapsuleCollider capsula = GetComponent<CapsuleCollider>();
         if (agente == null)
         {
             transform.position = piso.position;
@@ -207,7 +219,7 @@ public class PersecucionDeNpc : MonoBehaviour
             agente.speed = npc.Tipo.velocidad;
             agente.acceleration = 20f;
             agente.angularSpeed = 540f;
-            agente.radius = capsula != null ? Mathf.Clamp(capsula.radius, 0.25f, 1.2f) : 0.4f;
+            agente.radius = Mathf.Clamp(npc.Ancho, 0.2f, 1.2f); // su ancho real (CA4: no se enciman)
             agente.height = Alto();
             agente.baseOffset = 0f;
             agente.stoppingDistance = 0.1f;
@@ -217,6 +229,35 @@ public class PersecucionDeNpc : MonoBehaviour
         }
         else agente.Warp(piso.position);
         proximoCamino = 0f;
+    }
+
+    /// <summary>
+    /// Metros entre su cuerpo y el del jugador: del frente del NPC (Npc.Frente) al costado del jugador (el radio de su
+    /// CharacterController). Negativo: se están metiendo uno dentro del otro.
+    /// </summary>
+    public float EntreCuerpos(Transform jugador)
+    {
+        if (jugador == null) return float.MaxValue;
+        Vector3 hasta = jugador.position - transform.position;
+        hasta.y = 0f;
+        return hasta.magnitude - npc.Frente - RadioDe(jugador);
+    }
+
+    private static Transform radioDe;
+    private static float radio = 0.5f;
+
+    /// <summary>El radio del cuerpo del jugador (su CharacterController), en m.</summary>
+    public static float RadioDe(Transform jugador)
+    {
+        if (jugador == null) return 0.5f;
+        if (jugador != radioDe)
+        {
+            radioDe = jugador;
+            CharacterController cc = jugador.GetComponent<CharacterController>();
+            Vector3 e = jugador.lossyScale;
+            radio = cc != null ? cc.radius * Mathf.Max(Mathf.Abs(e.x), Mathf.Abs(e.z)) : 0.5f;
+        }
+        return radio;
     }
 
     private NavMeshQueryFilter Filtro() => new NavMeshQueryFilter { agentTypeID = tipoDeAgente, areaMask = NavMesh.AllAreas };

@@ -1,5 +1,900 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
+--- !u!1 &153941465999120542
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 8296358494058728703}
+  - component: {fileID: 3628306460388358973}
+  - component: {fileID: 7838002800922352342}
+  m_Layer: 0
+  m_Name: Zona de impacto (Body)
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &8296358494058728703
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 153941465999120542}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0.70547754, y: 0.047963917, z: -0.70547885, w: 0.047965135}
+  m_LocalPosition: {x: -2.68, y: -0.138, z: -0}
+  m_LocalScale: {x: 1.2723469, y: 1.2723469, z: 0.022934051}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 5792797070669989020}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &3628306460388358973
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 153941465999120542}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a6ea32033e7cd0b419d84bb2aaf661bc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Riftwalker::HitZone
+  zone: 1
+--- !u!136 &7838002800922352342
+CapsuleCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 153941465999120542}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Radius: 0.9908231
+  m_Height: 5.2843895
+  m_Direction: 2
+  m_Center: {x: 0, y: 0, z: 0}
+--- !u!1 &181107365553964455
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 7758644670691697869}
+  - component: {fileID: 1618335911836345508}
+  - component: {fileID: 762453496996885241}
+  m_Layer: 0
+  m_Name: Zona de impacto (Legs)
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &7758644670691697869
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 181107365553964455}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0.6516694, y: -0.18555498, z: 0.58701265, w: -0.44307163}
+  m_LocalPosition: {x: -1.43, y: -0.256, z: 0.049}
+  m_LocalScale: {x: 0.81381, y: 0.83514, z: 0.48004}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 297744593989316182}
+  m_LocalEulerAnglesHint: {x: 52.685, y: -82.246, z: -152.667}
+--- !u!114 &1618335911836345508
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 181107365553964455}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a6ea32033e7cd0b419d84bb2aaf661bc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Riftwalker::HitZone
+  zone: 2
+--- !u!136 &762453496996885241
+CapsuleCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 181107365553964455}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Radius: 0.3963291
+  m_Height: 3.1338649
+  m_Direction: 2
+  m_Center: {x: 0, y: 0, z: 0}
+--- !u!1 &1178924333117041951
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 6051245383992881195}
+  - component: {fileID: 6501627132749552803}
+  - component: {fileID: 2041228166136365818}
+  m_Layer: 0
+  m_Name: Zona de impacto (Legs) (1)
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &6051245383992881195
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1178924333117041951}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0.7371677, y: -0.12078862, z: -0.6330065, w: 0.20321575}
+  m_LocalPosition: {x: -1.897, y: -0.407, z: -2.242}
+  m_LocalScale: {x: 1, y: 1, z: 0.58503}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 8908510048816834595}
+  m_LocalEulerAnglesHint: {x: 8.435, y: -96.735, z: -153.889}
+--- !u!114 &6501627132749552803
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1178924333117041951}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a6ea32033e7cd0b419d84bb2aaf661bc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Riftwalker::HitZone
+  zone: 2
+--- !u!136 &2041228166136365818
+CapsuleCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1178924333117041951}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Radius: 0.39632922
+  m_Height: 3.2584605
+  m_Direction: 2
+  m_Center: {x: 0, y: 0, z: 0}
+--- !u!1 &2337622929104259990
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 8335444069057172256}
+  - component: {fileID: 1918804598187049892}
+  - component: {fileID: 4357129093478184558}
+  m_Layer: 0
+  m_Name: Zona de impacto (Legs) (3)
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &8335444069057172256
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2337622929104259990}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0.48833126, y: 0.567779, z: 0.6621219, w: 0.02746401}
+  m_LocalPosition: {x: -2.167, y: -0.314, z: -0.016}
+  m_LocalScale: {x: 0.49706277, y: 0.6038062, z: 0.48004}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 297744593989316182}
+  m_LocalEulerAnglesHint: {x: -51.142, y: -101.183, z: -124.321}
+--- !u!114 &1918804598187049892
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2337622929104259990}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a6ea32033e7cd0b419d84bb2aaf661bc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Riftwalker::HitZone
+  zone: 2
+--- !u!136 &4357129093478184558
+CapsuleCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2337622929104259990}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Radius: 0.3963291
+  m_Height: 3.1338649
+  m_Direction: 2
+  m_Center: {x: 0, y: 0, z: 0}
+--- !u!1 &5142104939170523897
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2626718639447834950}
+  - component: {fileID: 2395450098588430928}
+  - component: {fileID: 8112283702845249001}
+  m_Layer: 0
+  m_Name: Zona de impacto (Legs) (1)
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2626718639447834950
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5142104939170523897}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0.55399287, y: -0.16416441, z: 0.80480045, w: 0.13578731}
+  m_LocalPosition: {x: -0.5279984, y: -0.24700332, z: 1.9319985}
+  m_LocalScale: {x: 1, y: 1.2283864, z: 0.61907}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1479041322629156124}
+  m_LocalEulerAnglesHint: {x: 6.534, y: -70.461, z: 156.23}
+--- !u!114 &2395450098588430928
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5142104939170523897}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a6ea32033e7cd0b419d84bb2aaf661bc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Riftwalker::HitZone
+  zone: 2
+--- !u!136 &8112283702845249001
+CapsuleCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5142104939170523897}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Radius: 0.3963292
+  m_Height: 3.2584603
+  m_Direction: 2
+  m_Center: {x: 0, y: 0, z: 0}
+--- !u!1 &5428998343930582704
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 8982909155464398366}
+  - component: {fileID: 8883091847532806710}
+  - component: {fileID: 5685357341498597909}
+  m_Layer: 0
+  m_Name: Zona de impacto (Legs)
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &8982909155464398366
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5428998343930582704}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0.7371677, y: -0.12078862, z: -0.6330065, w: 0.20321575}
+  m_LocalPosition: {x: -2.1119945, y: -0.18799675, z: -0.0000030994415}
+  m_LocalScale: {x: 1, y: 1, z: 0.58503}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 8908510048816834595}
+  m_LocalEulerAnglesHint: {x: 8.435, y: -96.735, z: -153.889}
+--- !u!114 &8883091847532806710
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5428998343930582704}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a6ea32033e7cd0b419d84bb2aaf661bc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Riftwalker::HitZone
+  zone: 2
+--- !u!136 &5685357341498597909
+CapsuleCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5428998343930582704}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Radius: 0.39632922
+  m_Height: 3.2584605
+  m_Direction: 2
+  m_Center: {x: 0, y: 0, z: 0}
+--- !u!1 &6122282124410461415
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 879901254273297658}
+  - component: {fileID: 274614155268965924}
+  - component: {fileID: 4314340078088364108}
+  m_Layer: 0
+  m_Name: Zona de impacto (Legs) (1)
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &879901254273297658
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6122282124410461415}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0.46019682, y: -0.053406063, z: 0.74664295, w: -0.4773793}
+  m_LocalPosition: {x: -1.3929982, y: -0.8100007, z: -0.9979994}
+  m_LocalScale: {x: 0.81381, y: 0.83514, z: 0.48004}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 297744593989316182}
+  m_LocalEulerAnglesHint: {x: 31.274, y: -48.105, z: -129.055}
+--- !u!114 &274614155268965924
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6122282124410461415}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a6ea32033e7cd0b419d84bb2aaf661bc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Riftwalker::HitZone
+  zone: 2
+--- !u!136 &4314340078088364108
+CapsuleCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6122282124410461415}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Radius: 0.3963291
+  m_Height: 3.1338649
+  m_Direction: 2
+  m_Center: {x: 0, y: 0, z: 0}
+--- !u!1 &7090182576389962320
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 7963187955644739138}
+  - component: {fileID: 8532162153898197345}
+  - component: {fileID: 8373121212131065883}
+  m_Layer: 0
+  m_Name: Zona de impacto (Legs)
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &7963187955644739138
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7090182576389962320}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0.7245599, y: -0.18554497, z: 0.647398, w: 0.1464991}
+  m_LocalPosition: {x: -0.77300024, y: -0.06900209, z: 0.000000059604645}
+  m_LocalScale: {x: 1, y: 1.2283864, z: 0.61907}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1479041322629156124}
+  m_LocalEulerAnglesHint: {x: 1.602, y: -96.827, z: 152.694}
+--- !u!114 &8532162153898197345
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7090182576389962320}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a6ea32033e7cd0b419d84bb2aaf661bc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Riftwalker::HitZone
+  zone: 2
+--- !u!136 &8373121212131065883
+CapsuleCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7090182576389962320}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Radius: 0.3963292
+  m_Height: 3.2584603
+  m_Direction: 2
+  m_Center: {x: 0, y: 0, z: 0}
+--- !u!1 &7153075271444078476
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 4686770433427849635}
+  - component: {fileID: 7594226244634844247}
+  - component: {fileID: 32162476162040430}
+  m_Layer: 0
+  m_Name: Zona de impacto (Legs) (2)
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &4686770433427849635
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7153075271444078476}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0.6279076, y: 0.61201257, z: 0.4708946, w: -0.09711314}
+  m_LocalPosition: {x: -2.064, y: -0.803, z: -1.042}
+  m_LocalScale: {x: 0.49706277, y: 0.6038062, z: 0.48004}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 297744593989316182}
+  m_LocalEulerAnglesHint: {x: -27.028, y: -127.126, z: -105.098}
+--- !u!114 &7594226244634844247
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7153075271444078476}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a6ea32033e7cd0b419d84bb2aaf661bc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Riftwalker::HitZone
+  zone: 2
+--- !u!136 &32162476162040430
+CapsuleCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7153075271444078476}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Radius: 0.3963291
+  m_Height: 3.1338649
+  m_Direction: 2
+  m_Center: {x: 0, y: 0, z: 0}
+--- !u!1 &7340161229247470083
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 6073547402167907288}
+  - component: {fileID: 7388256294372783844}
+  - component: {fileID: 7487809277858221515}
+  m_Layer: 0
+  m_Name: Zona de impacto (Body) (1)
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &6073547402167907288
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7340161229247470083}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0.70547754, y: 0.047963917, z: -0.70547885, w: 0.047965135}
+  m_LocalPosition: {x: -1.372, y: 0.04, z: -0}
+  m_LocalScale: {x: 0.7402278, y: 0.727031, z: 0.78986037}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 5792797070669989020}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &7388256294372783844
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7340161229247470083}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a6ea32033e7cd0b419d84bb2aaf661bc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Riftwalker::HitZone
+  zone: 1
+--- !u!136 &7487809277858221515
+CapsuleCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7340161229247470083}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Radius: 0.9908231
+  m_Height: 5.2843895
+  m_Direction: 2
+  m_Center: {x: 0, y: 0, z: 0}
+--- !u!1 &8414603603737107762
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 8527970346097280894}
+  - component: {fileID: 9177694306418060236}
+  - component: {fileID: 2501450929846257921}
+  m_Layer: 0
+  m_Name: Zona de impacto (Legs)
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &8527970346097280894
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8414603603737107762}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0.7330439, y: -0.14292842, z: 0.6219496, w: 0.23536511}
+  m_LocalPosition: {x: -0.51, y: 0.019, z: 0.056}
+  m_LocalScale: {x: 1.1503, y: 1.1503, z: 0.6226788}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 8942572879927117513}
+  m_LocalEulerAnglesHint: {x: -9.63, y: -96.731, z: 149.37}
+--- !u!114 &9177694306418060236
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8414603603737107762}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a6ea32033e7cd0b419d84bb2aaf661bc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Riftwalker::HitZone
+  zone: 2
+--- !u!136 &2501450929846257921
+CapsuleCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8414603603737107762}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Radius: 0.3963293
+  m_Height: 3.1338663
+  m_Direction: 2
+  m_Center: {x: 0, y: 0, z: 0}
+--- !u!1 &8794911435292197320
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 8847222099361383118}
+  - component: {fileID: 7320784421231507806}
+  - component: {fileID: 2277436622461589509}
+  m_Layer: 0
+  m_Name: Zona de impacto (Legs) (1)
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &8847222099361383118
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8794911435292197320}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0.5160802, y: -0.1926641, z: 0.8123303, w: 0.1914716}
+  m_LocalPosition: {x: -0.396, y: -0.462, z: 1.051}
+  m_LocalScale: {x: 1.1503, y: 1.1503, z: 0.6229423}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 8942572879927117513}
+  m_LocalEulerAnglesHint: {x: 6.626, y: -66.689, z: 149.112}
+--- !u!114 &7320784421231507806
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8794911435292197320}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a6ea32033e7cd0b419d84bb2aaf661bc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Riftwalker::HitZone
+  zone: 2
+--- !u!136 &2277436622461589509
+CapsuleCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8794911435292197320}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Radius: 0.3963293
+  m_Height: 3.1338663
+  m_Direction: 2
+  m_Center: {x: 0, y: 0, z: 0}
+--- !u!1 &8794915567155523929
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2041171292415317420}
+  - component: {fileID: 5058241421738203939}
+  - component: {fileID: 8871808121129720321}
+  m_Layer: 0
+  m_Name: Zona de impacto (Head)
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2041171292415317420
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8794915567155523929}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -0.396, y: 0.195, z: -0.016}
+  m_LocalScale: {x: 0.58458, y: 0.58458, z: 0.58458}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 3174173916792810344}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &5058241421738203939
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8794915567155523929}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a6ea32033e7cd0b419d84bb2aaf661bc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Riftwalker::HitZone
+  zone: 0
+--- !u!135 &8871808121129720321
+SphereCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8794915567155523929}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Radius: 0.93191344
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1001 &8607646740179237374
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -49,7 +944,7 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: -5883429062261242229, guid: e6b070634da492a48a576974248d64b9, type: 3}
-      propertyPath: m_Materials.Array.data[0]
+      propertyPath: 'm_Materials.Array.data[0]'
       value: 
       objectReference: {fileID: 2100000, guid: 622dfe6cbe6bf144cb3d01ba0282c0e7, type: 2}
     - target: {fileID: 919132149155446097, guid: e6b070634da492a48a576974248d64b9, type: 3}
@@ -58,12 +953,76 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
-    m_AddedGameObjects: []
+    m_AddedGameObjects:
+    - targetCorrespondingSourceObject: {fileID: -6408438495188353694, guid: e6b070634da492a48a576974248d64b9, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 8296358494058728703}
+    - targetCorrespondingSourceObject: {fileID: -6408438495188353694, guid: e6b070634da492a48a576974248d64b9, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 6073547402167907288}
+    - targetCorrespondingSourceObject: {fileID: 823850582173794103, guid: e6b070634da492a48a576974248d64b9, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 8527970346097280894}
+    - targetCorrespondingSourceObject: {fileID: 823850582173794103, guid: e6b070634da492a48a576974248d64b9, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 8847222099361383118}
+    - targetCorrespondingSourceObject: {fileID: -912739530318538840, guid: e6b070634da492a48a576974248d64b9, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 7758644670691697869}
+    - targetCorrespondingSourceObject: {fileID: -912739530318538840, guid: e6b070634da492a48a576974248d64b9, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 879901254273297658}
+    - targetCorrespondingSourceObject: {fileID: -912739530318538840, guid: e6b070634da492a48a576974248d64b9, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 4686770433427849635}
+    - targetCorrespondingSourceObject: {fileID: -912739530318538840, guid: e6b070634da492a48a576974248d64b9, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 8335444069057172256}
+    - targetCorrespondingSourceObject: {fileID: 924895619755479517, guid: e6b070634da492a48a576974248d64b9, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 8982909155464398366}
+    - targetCorrespondingSourceObject: {fileID: 924895619755479517, guid: e6b070634da492a48a576974248d64b9, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 6051245383992881195}
+    - targetCorrespondingSourceObject: {fileID: 6591140404346770070, guid: e6b070634da492a48a576974248d64b9, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 2041171292415317420}
+    - targetCorrespondingSourceObject: {fileID: 7201850803148158178, guid: e6b070634da492a48a576974248d64b9, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 7963187955644739138}
+    - targetCorrespondingSourceObject: {fileID: 7201850803148158178, guid: e6b070634da492a48a576974248d64b9, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 2626718639447834950}
     m_AddedComponents:
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: e6b070634da492a48a576974248d64b9, type: 3}
       insertIndex: -1
       addedObject: {fileID: 3533354461774365811}
   m_SourcePrefab: {fileID: 100100000, guid: e6b070634da492a48a576974248d64b9, type: 3}
+--- !u!4 &297744593989316182 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: -912739530318538840, guid: e6b070634da492a48a576974248d64b9, type: 3}
+  m_PrefabInstance: {fileID: 8607646740179237374}
+  m_PrefabAsset: {fileID: 0}
+--- !u!4 &1479041322629156124 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 7201850803148158178, guid: e6b070634da492a48a576974248d64b9, type: 3}
+  m_PrefabInstance: {fileID: 8607646740179237374}
+  m_PrefabAsset: {fileID: 0}
+--- !u!4 &3174173916792810344 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 6591140404346770070, guid: e6b070634da492a48a576974248d64b9, type: 3}
+  m_PrefabInstance: {fileID: 8607646740179237374}
+  m_PrefabAsset: {fileID: 0}
+--- !u!4 &5792797070669989020 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: -6408438495188353694, guid: e6b070634da492a48a576974248d64b9, type: 3}
+  m_PrefabInstance: {fileID: 8607646740179237374}
+  m_PrefabAsset: {fileID: 0}
+--- !u!4 &8908510048816834595 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 924895619755479517, guid: e6b070634da492a48a576974248d64b9, type: 3}
+  m_PrefabInstance: {fileID: 8607646740179237374}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &8914286996971816111 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 919132149155446097, guid: e6b070634da492a48a576974248d64b9, type: 3}
@@ -71,7 +1030,7 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
 --- !u!95 &3533354461774365811
 Animator:
-  serializedVersion: 5
+  serializedVersion: 7
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -85,8 +1044,14 @@ Animator:
   m_ApplyRootMotion: 0
   m_LinearVelocityBlending: 0
   m_StabilizeFeet: 0
+  m_AnimatePhysics: 0
   m_WarningMessage: 
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
+--- !u!4 &8942572879927117513 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 823850582173794103, guid: e6b070634da492a48a576974248d64b9, type: 3}
+  m_PrefabInstance: {fileID: 8607646740179237374}
+  m_PrefabAsset: {fileID: 0}

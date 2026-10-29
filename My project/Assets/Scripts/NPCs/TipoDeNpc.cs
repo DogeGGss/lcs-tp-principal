@@ -26,6 +26,8 @@ public class TipoDeNpc : ScriptableObject
     [Min(1)] public int vida = 100;
     [Tooltip("Daño de cada golpe al jugador (US 037): se aplica primero al escudo y el resto a la vida.")]
     [Min(0)] public int danio = 20;
+    [Tooltip("Hasta dónde llega el golpe (US 037, CA2), en m desde el frente de su cuerpo hasta el del jugador. Si al pegar el jugador quedó más lejos, falla.")]
+    [Min(0.1f)] public float alcance = 1f;
     [Tooltip("Si al recibir un impacto se frena un instante (US 038, CA3). El Tanque y el Jefe no se frenan.")]
     public bool frenaAlRecibirImpacto = true;
 
@@ -58,8 +60,10 @@ public class TipoDeNpc : ScriptableObject
     public AudioClip grito;
 
     [Header("Puntos (US 147)")]
-    [Tooltip("Puntos por matarlo (sin contar el tiro a la cabeza, US 039).")]
+    [Tooltip("Puntos por matarlo (US 039, CA3).")]
     [Min(0)] public int puntosPorBaja = 60;
+    [Tooltip("Puntos por matarlo si el último impacto fue a la cabeza (US 039, CA3).")]
+    [Min(0)] public int puntosPorBajaALaCabeza = 100;
 
     /// <summary>Todos los tipos, de Resources/NPCs, en el orden de su vida (de menos a más).</summary>
     public static TipoDeNpc[] Todos()

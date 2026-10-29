@@ -32,3 +32,4 @@ MonoBehaviour:
   aturdido: {fileID: 1827226128182048838, guid: 6714494b3c5a6de43a36a4ffaaa71a0a, type: 3}
   grito: {fileID: 0}
   puntosPorBaja: 60
+  puntosPorBajaALaCabeza: 100

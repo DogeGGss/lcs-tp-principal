@@ -1,9 +1,11 @@
 using UnityEngine;
 
 // F11 (NPCs), US 037: el NPC golpea al jugador cuando lo alcanza.
-// - CA1: ataca cuando el jugador está a menos de 1,5 m (PersecucionDeNpc lo frena ahí) y delante de él.
-// - CA2: el golpe hace daño 0,5 s después de empezar la animación; si en ese tiempo el jugador se alejó más de 2 m (o
-//   quedó atrás), falla.
+// - CA1: ataca cuando el jugador está a menos de 1,5 m (PersecucionDeNpc lo frena ahí) y delante de él. Las distancias
+//   son entre los cuerpos (del frente del NPC, según sus zonas de impacto, al costado del jugador), no entre los
+//   centros: así el Tanque, que es más largo, no se mete adentro del jugador para pegarle.
+// - CA2: el golpe hace daño 0,5 s después de empezar la animación; si en ese tiempo el jugador se alejó más que el
+//   alcance de su tipo (TipoDeNpc.alcance) o quedó atrás, falla.
 // - CA3: hace el daño de su tipo (TipoDeNpc.danio). El sistema de vida del jugador lo aplica primero al escudo y el
 //   resto a la vida (HealthSystem.TakeDamage).
 // - CA4: golpea como máximo una vez por segundo (y nunca antes de terminar la animación del golpe anterior).
@@ -14,7 +16,6 @@ using UnityEngine;
 public class AtaqueDeNpc : MonoBehaviour
 {
     private const float Impacto = 0.5f;        // CA2: s desde que empieza la animación hasta el daño
-    private const float AlcanceDelGolpe = 2f;   // CA2: m; más lejos, falla
     private const float Cadencia = 1f;          // CA4: s entre golpes, como mínimo
     private const float Delante = 60f;          // CA1: grados a cada lado de hacia dónde mira
     private const float DuracionSinClip = 0.8f; // si el tipo no tiene animación de ataque
@@ -38,6 +39,7 @@ public class AtaqueDeNpc : MonoBehaviour
     {
         if (npc == null || npc.Tipo == null || persecucion == null) return;
         if (!npc.Vivo) { Terminar(); enabled = false; return; }
+        if (npc.Aturdido) { if (golpeando) Terminar(); return; } // la flash corta el golpe (US 038, CA2)
 
         if (golpeando)
         {
@@ -81,9 +83,7 @@ public class AtaqueDeNpc : MonoBehaviour
         if (objetivo == null) return;
         HealthSystem vida = objetivo.GetComponent<HealthSystem>();
         if (vida == null || vida.currentHealth <= 0) return;
-        Vector3 hasta = objetivo.position - transform.position;
-        hasta.y = 0f;
-        if (hasta.magnitude > AlcanceDelGolpe || !DeFrente(objetivo)) return; // CA2: se alejó o quedó atrás: falla
+        if (persecucion.EntreCuerpos(objetivo) > npc.Tipo.alcance || !DeFrente(objetivo)) return; // CA2: se alejó o quedó atrás: falla
 
         int danio = npc.Tipo.danio;
         HealthSystem.DamageOrigin = transform.position + Vector3.up; // CA5: el aviso de daño hacia el lado del golpe
