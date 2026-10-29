@@ -13,7 +13,8 @@ using UnityEngine.AI;
 // - CA5: camina o corre (según su tipo) con la animación al ritmo de su velocidad; quieto, la de quieto.
 // - CA6: a distancia de ataque se frena mirándolo; el golpe es la US 037. La distancia es entre los cuerpos (del frente
 //   del NPC, según sus zonas de impacto, al costado del jugador), así ninguno se mete adentro del jugador para pegarle.
-//   Si el jugador se le viene encima, el NPC retrocede lo justo para no atravesarlo.
+//   Si el jugador se le viene encima, el NPC retrocede lo justo para no atravesarlo. Si sus animaciones de ataque lo
+//   llevan hacia adelante (GolpeDeNpc), se frena más lejos, lo que se adelantan (Parada).
 // US 036 (detectar al jugador):
 // - CA1: siempre sabe dónde está el jugador (el más cercano, si hubiera varios) y lo usa de destino.
 // - CA2: si lo ve (sin paredes en el medio) a menos de 10 m, grita una vez y va 20 % más rápido mientras lo vea.
@@ -25,6 +26,7 @@ public class PersecucionDeNpc : MonoBehaviour
 {
     public const float DistanciaDeAtaque = 1.5f;      // US 037, CA1: m entre los cuerpos, como máximo, para golpear
     private const float Separacion = 0.25f;            // m entre los cuerpos donde se frena (dentro de los 1,5 m)
+    private const float AvanceMaximo = 1.2f;           // m: lo más que se aleja por las animaciones que se adelantan
     private const float CadaCuanto = 0.25f;            // s entre cálculos del camino (CA3)
     private const float VeHasta = 10f, MasRapido = 1.2f; // US 036, CA2
     private const float Rodear = 4f;                   // m: desde acá cada uno busca su lugar alrededor (CA4)
@@ -92,7 +94,7 @@ public class PersecucionDeNpc : MonoBehaviour
         hasta.y = 0f;
         float entre = EntreCuerpos(Objetivo); // m del frente del NPC al costado del jugador
         // Con un poco de margen para que no titubee entre frenar y avanzar.
-        EnDistanciaDeAtaque = entre <= (EnDistanciaDeAtaque ? Separacion + 0.3f : Separacion + 0.05f);
+        EnDistanciaDeAtaque = entre <= (EnDistanciaDeAtaque ? Parada + 0.3f : Parada + 0.05f);
 
         // Se le metió encima (el jugador lo empujó o lo esquivó por el costado): retrocede lo justo, por el NavMesh.
         if (entre < 0f && hasta.sqrMagnitude > 1e-4f)
@@ -125,7 +127,7 @@ public class PersecucionDeNpc : MonoBehaviour
         if (desdeJugador.magnitude < Rodear && desdeJugador.sqrMagnitude > 1e-4f)
         {
             float giro = Mathf.Lerp(angulo, 0f, desdeJugador.magnitude / Rodear) * 0.5f;
-            destino = Objetivo.position + Quaternion.Euler(0f, giro, 0f) * desdeJugador.normalized * (npc.Frente + RadioDe(Objetivo) + Separacion);
+            destino = Objetivo.position + Quaternion.Euler(0f, giro, 0f) * desdeJugador.normalized * (npc.Frente + RadioDe(Objetivo) + Parada);
         }
         if (NavMesh.SamplePosition(destino, out NavMeshHit cerca, BuscarPiso, Filtro())) destino = cerca.position;
         agente.SetDestination(destino); // si no llega entero, va hasta donde se pueda y espera (camino parcial)
@@ -230,6 +232,12 @@ public class PersecucionDeNpc : MonoBehaviour
         else agente.Warp(piso.position);
         proximoCamino = 0f;
     }
+
+    /// <summary>
+    /// Metros entre los cuerpos donde se frena para golpear: un poco separado y, si alguna de sus animaciones de ataque
+    /// lo lleva hacia adelante (la embestida del Lizard), eso más, así al golpear no atraviesa al jugador.
+    /// </summary>
+    public float Parada => Separacion + Mathf.Min(npc.AvanceDeAtaque, AvanceMaximo);
 
     /// <summary>
     /// Metros entre su cuerpo y el del jugador: del frente del NPC (Npc.Frente) al costado del jugador (el radio de su

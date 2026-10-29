@@ -4,8 +4,10 @@ using UnityEngine;
 // - CA1: ataca cuando el jugador está a menos de 1,5 m (PersecucionDeNpc lo frena ahí) y delante de él. Las distancias
 //   son entre los cuerpos (del frente del NPC, según sus zonas de impacto, al costado del jugador), no entre los
 //   centros: así el Tanque, que es más largo, no se mete adentro del jugador para pegarle.
-// - CA2: el golpe hace daño 0,5 s después de empezar la animación; si en ese tiempo el jugador se alejó más que el
-//   alcance de su tipo (TipoDeNpc.alcance) o quedó atrás, falla.
+// - CA2: el golpe hace daño cuando se ve el manotazo en la animación (GolpeDeNpc: el momento en que el cuerpo llega más
+//   adelante; 0,5 s si no se pudo medir). Si en ese momento el jugador quedó más allá de donde llega la animación,
+//   más el alcance de su tipo (TipoDeNpc.alcance), o quedó atrás, falla. De sus animaciones de ataque elige al azar
+//   entre las que llegan hasta el jugador desde donde está.
 // - CA3: hace el daño de su tipo (TipoDeNpc.danio). El sistema de vida del jugador lo aplica primero al escudo y el
 //   resto a la vida (HealthSystem.TakeDamage).
 // - CA4: golpea como máximo una vez por segundo (y nunca antes de terminar la animación del golpe anterior).
@@ -15,7 +17,7 @@ using UnityEngine;
 [RequireComponent(typeof(Npc))]
 public class AtaqueDeNpc : MonoBehaviour
 {
-    private const float Impacto = 0.5f;        // CA2: s desde que empieza la animación hasta el daño
+    private const float ImpactoSinMedir = 0.5f; // CA2: s desde que empieza la animación hasta el daño, si no se midió
     private const float Cadencia = 1f;          // CA4: s entre golpes, como mínimo
     private const float Delante = 60f;          // CA1: grados a cada lado de hacia dónde mira
     private const float DuracionSinClip = 0.8f; // si el tipo no tiene animación de ataque
@@ -23,6 +25,7 @@ public class AtaqueDeNpc : MonoBehaviour
     private Npc npc;
     private PersecucionDeNpc persecucion;
     private float empezo = -10f, proximo, termina;
+    private float impacto = ImpactoSinMedir, llega; // del golpe en curso: cuándo pega y hasta dónde llega (m entre los cuerpos)
     private bool golpeando, pego;
     private Transform objetivo;
 
@@ -43,8 +46,8 @@ public class AtaqueDeNpc : MonoBehaviour
 
         if (golpeando)
         {
-            // CA2: a los 0,5 s, el daño, si el jugador sigue al alcance y adelante.
-            if (!pego && Time.time - empezo >= Impacto)
+            // CA2: en el momento del manotazo, el daño, si el jugador sigue al alcance y adelante.
+            if (!pego && Time.time - empezo >= impacto)
             {
                 pego = true;
                 Pegar();
@@ -67,10 +70,12 @@ public class AtaqueDeNpc : MonoBehaviour
         proximo = Time.time + Cadencia;
         persecucion.Ocupado = true;
 
-        AnimationClip[] ataques = npc.Tipo.ataques;
-        AnimationClip clip = ataques != null && ataques.Length > 0 ? ataques[Random.Range(0, ataques.Length)] : null;
+        AnimationClip clip = Elegir(persecucion.EntreCuerpos(jugador));
+        GolpeDeNpc? medido = npc.GolpeDe(clip);
+        impacto = medido.HasValue ? medido.Value.momento : ImpactoSinMedir;
+        llega = (medido.HasValue ? medido.Value.avance : 0f) + npc.Tipo.alcance;
         float dura = clip != null ? clip.length : DuracionSinClip;
-        termina = Time.time + Mathf.Max(dura, Impacto + 0.05f);
+        termina = Time.time + Mathf.Max(dura, impacto + 0.05f);
         if (clip != null && npc.Animaciones != null)
         {
             npc.Animaciones.Poner(clip, false, 0.1f, true);
@@ -83,7 +88,7 @@ public class AtaqueDeNpc : MonoBehaviour
         if (objetivo == null) return;
         HealthSystem vida = objetivo.GetComponent<HealthSystem>();
         if (vida == null || vida.currentHealth <= 0) return;
-        if (persecucion.EntreCuerpos(objetivo) > npc.Tipo.alcance || !DeFrente(objetivo)) return; // CA2: se alejó o quedó atrás: falla
+        if (persecucion.EntreCuerpos(objetivo) > llega || !DeFrente(objetivo)) return; // CA2: se alejó o quedó atrás: falla
 
         int danio = npc.Tipo.danio;
         HealthSystem.DamageOrigin = transform.position + Vector3.up; // CA5: el aviso de daño hacia el lado del golpe
@@ -91,6 +96,26 @@ public class AtaqueDeNpc : MonoBehaviour
         vida.TakeDamage(danio); // CA3: primero el escudo y después la vida
         HealthSystem.DamageSource = null;
         Golpeo?.Invoke(npc, vida, danio);
+    }
+
+    // Al azar entre sus animaciones de ataque que llegan hasta el jugador desde donde está (las cortas, si está pegado;
+    // la embestida, si quedó más lejos). Si ninguna llega, la que más se adelanta.
+    private AnimationClip Elegir(float entre)
+    {
+        AnimationClip[] ataques = npc.Tipo.ataques;
+        if (ataques == null || ataques.Length == 0) return null;
+        var llegan = new System.Collections.Generic.List<AnimationClip>();
+        AnimationClip larga = null;
+        float masLarga = float.MinValue;
+        foreach (AnimationClip c in ataques)
+        {
+            if (c == null) continue;
+            GolpeDeNpc? g = npc.GolpeDe(c);
+            float avance = g.HasValue ? g.Value.avance : 0f;
+            if (avance + npc.Tipo.alcance >= entre) llegan.Add(c);
+            if (avance > masLarga) { masLarga = avance; larga = c; }
+        }
+        return llegan.Count > 0 ? llegan[Random.Range(0, llegan.Count)] : larga;
     }
 
     private void Terminar()
