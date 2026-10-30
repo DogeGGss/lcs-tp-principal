@@ -36,6 +36,14 @@ public class VueloDeNpc : MonoBehaviour
     /// <summary>Bolas de veneno por vuelo (CA3). La furia (US 268) las sube a 5.</summary>
     public int Bolas = 3;
 
+    /// <summary>La furia (US 268): vuela más seguido y escupe más bolas desde ahora.</summary>
+    public void MasSeguido(float cadaCuanto, int bolas)
+    {
+        CadaCuanto = cadaCuanto;
+        Bolas = bolas;
+        proximo = Mathf.Min(proximo, Time.time + cadaCuanto);
+    }
+
     /// <summary>Está volando (despegando, en el aire, aterrizando o recuperándose).</summary>
     public bool Volando => fase != Fase.Tierra;
 

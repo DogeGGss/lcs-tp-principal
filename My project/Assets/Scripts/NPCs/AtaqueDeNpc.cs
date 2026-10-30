@@ -68,12 +68,12 @@ public class AtaqueDeNpc : MonoBehaviour
         pego = false;
         objetivo = jugador;
         empezo = Time.time;
-        proximo = Time.time + Mathf.Max(0.2f, npc.Tipo.cadencia);
+        proximo = Time.time + Mathf.Max(0.2f, npc.Tipo.cadencia / Mathf.Max(0.1f, npc.MasVelocidadDeAtaque));
         persecucion.Ocupado = true;
 
         AnimationClip clip = Elegir(persecucion.EntreCuerpos(jugador));
         GolpeDeNpc? medido = npc.GolpeDe(clip);
-        float rapido = Mathf.Max(0.1f, npc.Tipo.velocidadDeAtaque); // más rápido: el golpe entra antes y termina antes
+        float rapido = Mathf.Max(0.1f, npc.Tipo.velocidadDeAtaque * npc.MasVelocidadDeAtaque); // más rápido: el golpe entra antes y termina antes
         impacto = (medido.HasValue ? medido.Value.momento : ImpactoSinMedir) / rapido;
         llega = (medido.HasValue ? medido.Value.avance : 0f) + npc.Tipo.alcance;
         float dura = (clip != null ? clip.length : DuracionSinClip) / rapido;

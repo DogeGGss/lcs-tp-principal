@@ -41,6 +41,12 @@ public class Npc : MonoBehaviour
     public bool Vivo => Vida != null && Vida.currentHealth > 0;
     /// <summary>Aturdido por la flash (US 038, CA2): quieto, sin perseguir ni atacar.</summary>
     public bool Aturdido => Time.time < aturdidoHasta;
+    /// <summary>Multiplica su velocidad al perseguir (la furia del jefe la sube, US 268).</summary>
+    public float MasVelocidad { get; set; } = 1f;
+    /// <summary>Multiplica la velocidad de sus golpes (animación, momento del daño y cadencia; la furia, US 268).</summary>
+    public float MasVelocidadDeAtaque { get; set; } = 1f;
+    /// <summary>Su barra de vida arriba de la pantalla, si es un jefe (US 146).</summary>
+    public BarraDeJefe Barra { get; private set; }
 
     private float aturdidoHasta = -10f;
 
@@ -117,7 +123,8 @@ public class Npc : MonoBehaviour
         npc.Armar(tipo);
         go.AddComponent<ReaccionDeNpc>(); // US 038
         go.AddComponent<MuerteDeNpc>();   // US 039
-        if (tipo.esJefe) BarraDeJefe.Mostrar(npc); // US 146, CA4
+        if (tipo.esJefe) npc.Barra = BarraDeJefe.Mostrar(npc); // US 146, CA4
+        if (tipo.furia) go.AddComponent<FuriaDeNpc>();             // US 268
         if (persigue)
         {
             go.AddComponent<PersecucionDeNpc>();

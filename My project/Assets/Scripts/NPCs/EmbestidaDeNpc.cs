@@ -33,6 +33,13 @@ public class EmbestidaDeNpc : MonoBehaviour
     /// <summary>Segundos entre embestidas (CA2). La furia (US 268) lo baja a 6.</summary>
     public float CadaCuanto = 10f;
 
+    /// <summary>La furia (US 268): embiste más seguido desde ahora.</summary>
+    public void MasSeguido(float cadaCuanto)
+    {
+        CadaCuanto = cadaCuanto;
+        proxima = Mathf.Min(proxima, Time.time + cadaCuanto);
+    }
+
     /// <summary>Está embistiendo (preparando, lanzado o recuperándose).</summary>
     public bool Embistiendo => fase != Fase.Libre;
 
