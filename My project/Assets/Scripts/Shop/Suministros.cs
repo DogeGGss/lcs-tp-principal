@@ -27,34 +27,57 @@ public static class Suministros
         }
     }
 
-    // Una caja de balas naranja (como el ícono de Suministros de la guía de diseño): el borde y tres renglones.
+    // Un cargador naranja con dos balas asomando arriba (la opción C que eligió Luka). Se dibuja por código con
+    // suavizado (4 × 4 muestras por píxel), en coordenadas de un dibujo de 56 × 108 (y hacia abajo).
     private static Sprite Icono()
     {
-        const int ancho = 84, alto = 34;
+        const int ancho = 64, alto = 128, muestras = 4;
+        const float escala = 1.12f, margenX = (ancho - 56f * escala) / 2f, margenY = (alto - 108f * escala) / 2f;
+        Color cargador = ShopUIKit.Accent, bala = ShopUIKit.Ink;
         var textura = new Texture2D(ancho, alto, TextureFormat.RGBA32, false) { filterMode = FilterMode.Bilinear, hideFlags = HideFlags.DontSave };
-        Color32 nada = new Color32(0, 0, 0, 0), color = ShopUIKit.Accent;
-        var pixeles = new Color32[ancho * alto];
-        for (int i = 0; i < pixeles.Length; i++) pixeles[i] = nada;
-        void Rect(int x0, int y0, int x1, int y1)
-        {
-            for (int y = y0; y < y1; y++)
-                for (int x = x0; x < x1; x++)
-                    pixeles[y * ancho + x] = color;
-        }
-        // Borde de la caja (28 × 22, desde arriba a 6 px), de 3 px. En la textura y crece hacia arriba.
-        int izq = 28, der = 56, arriba = alto - 6, abajo = alto - 28;
-        Rect(izq, abajo, der, abajo + 3);
-        Rect(izq, arriba - 3, der, arriba);
-        Rect(izq, abajo, izq + 3, arriba);
-        Rect(der - 3, abajo, der, arriba);
-        // Los renglones (balas).
-        Rect(34, alto - 13, 50, alto - 11);
-        Rect(34, alto - 19, 50, alto - 17);
-        Rect(34, alto - 25, 44, alto - 23);
-        textura.SetPixels32(pixeles);
+        var pixeles = new Color[ancho * alto];
+        for (int py = 0; py < alto; py++)
+            for (int px = 0; px < ancho; px++)
+            {
+                int enBala = 0, enCargador = 0;
+                for (int sy = 0; sy < muestras; sy++)
+                    for (int sx = 0; sx < muestras; sx++)
+                    {
+                        // Al dibujo: x de 0 a 56, y de 0 (arriba) a 108. La textura tiene la y hacia arriba.
+                        float x = (px + (sx + 0.5f) / muestras - margenX) / escala;
+                        float y = (alto - (py + (sy + 0.5f) / muestras) - margenY) / escala;
+                        if (Bala(x, y, 10f) || Bala(x, y, 26f)) enBala++;
+                        else if (Cargador(x, y)) enCargador++;
+                    }
+                float total = muestras * muestras;
+                float a = (enBala + enCargador) / total;
+                Color c = a > 0f ? Color.Lerp(cargador, bala, enBala / (float)(enBala + enCargador)) : Color.clear;
+                c.a = a;
+                pixeles[py * ancho + px] = c;
+            }
+        textura.SetPixels(pixeles);
         textura.Apply();
         Sprite sprite = Sprite.Create(textura, new Rect(0, 0, ancho, alto), new Vector2(0.5f, 0.5f), 100f);
         sprite.hideFlags = HideFlags.DontSave;
         return sprite;
+    }
+
+    // El cargador: un trapecio inclinado, de (0,17)-(44,17) arriba a (12,107)-(56,107) abajo.
+    private static bool Cargador(float x, float y)
+    {
+        if (y < 17f || y > 107f) return false;
+        float corrido = (y - 17f) / 90f * 12f;
+        return x >= corrido && x <= 44f + corrido;
+    }
+
+    // Una bala de 12 de ancho que empieza en x: la punta redonda (de y 0 a 7) y la vaina (de 7 a 19).
+    private static bool Bala(float x, float y, float desde)
+    {
+        float dx = x - (desde + 6f);
+        if (dx < -6f || dx > 6f) return false;
+        if (y >= 7f && y <= 19f) return true;
+        if (y < 0f || y > 7f) return false;
+        float dy = (7f - y) / 7f;
+        return (dx / 6f) * (dx / 6f) + dy * dy <= 1f;
     }
 }
