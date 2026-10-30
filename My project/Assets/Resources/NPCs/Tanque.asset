@@ -19,7 +19,7 @@ MonoBehaviour:
   danio: 40
   alcance: 0.5
   frenaAlRecibirImpacto: 0
-  velocidad: 1.8
+  velocidad: 2.5
   corre: 0
   quieto: {fileID: 1827226128182048838, guid: 7af4d73ab07918f4fbf078cab489e4b8, type: 3}
   quietoEnCombate: {fileID: 1827226128182048838, guid: d2e25d5293bd3c04a9278b305c0f0efe, type: 3}
