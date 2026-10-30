@@ -123,6 +123,7 @@ public class Npc : MonoBehaviour
             go.AddComponent<PersecucionDeNpc>();
             go.AddComponent<AtaqueDeNpc>(); // US 037
             if (tipo.embiste) go.AddComponent<EmbestidaDeNpc>(); // US 266 (después de la persecución: la usa)
+            if (tipo.vuela) go.AddComponent<VueloDeNpc>();       // US 267
         }
         return npc;
     }
