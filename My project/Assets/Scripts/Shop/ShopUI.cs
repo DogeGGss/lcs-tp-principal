@@ -442,7 +442,7 @@ public class ShopUI : MonoBehaviour
         ShopResult result = loadout.Buy(item);
         if (result == ShopResult.Ok)
         {
-            ShowToast(item.price > 0 && !Dm ? $"{ItemName(item)} <color=#F29A38>−{Money(item.price)}</color>" : $"Elegiste {ItemName(item)}");
+            ShowToast(item.Price > 0 && !Dm ? $"{ItemName(item)} <color=#F29A38>−{Money(item.Price)}</color>" : $"Elegiste {ItemName(item)}");
             Play(buySound);
             return;
         }
@@ -455,10 +455,18 @@ public class ShopUI : MonoBehaviour
     {
         if (Dm) return; // US 138: no hay nada que vender
         if (loadout.CheckAccess() != ShopResult.Ok) return;
+        if (PlayerLoadout.SinVenta)
+        {
+            // US 148, CA6: en Invasión no se vende.
+            ShowToast("<color=#FF5C5C>En Invasión no se vende: lo comprado se queda hasta que lo reemplaces</color>");
+            Shake();
+            Play(errorSound);
+            return;
+        }
         ShopResult result = loadout.Sell(item);
         if (result == ShopResult.Ok)
         {
-            ShowToast($"Vendiste {ItemName(item)} <color=#3DDC97>+{Money(item.price)}</color>");
+            ShowToast($"Vendiste {ItemName(item)} <color=#3DDC97>+{Money(item.Price)}</color>");
             Play(sellSound);
             return;
         }
@@ -630,9 +638,20 @@ public class ShopUI : MonoBehaviour
             banner.SetActive(false);
             return;
         }
-        barSub.text = phase != null ? $"Táctico · Ronda {phase.Round}" : "Táctico";
-        barMoney.text = Money(loadout.Wallet.Money);
-        barNext.text = $"Próxima ronda: mínimo {Money(minimumNextRound)}";
+        if (PartidaDeInvasion.Actual != null)
+        {
+            // US 148, CA2: los puntos y la oleada que viene.
+            barSub.text = InvasionSub();
+            barMoney.text = Money(loadout.Wallet.Money);
+            float mas = DificultadDeInvasion.Puntos;
+            barNext.text = $"+{Mathf.CeilToInt(60 * mas)} por invasor · +{Mathf.CeilToInt(100 * mas)} a la cabeza";
+        }
+        else
+        {
+            barSub.text = phase != null ? $"Táctico · Ronda {phase.Round}" : "Táctico";
+            barMoney.text = Money(loadout.Wallet.Money);
+            barNext.text = $"Próxima ronda: mínimo {Money(minimumNextRound)}";
+        }
 
         ShopResult access = loadout.CheckAccess();
         banner.SetActive(access != ShopResult.Ok);
@@ -640,6 +659,15 @@ public class ShopUI : MonoBehaviour
             bannerText.text = "Estás fuera de la zona de compra. Volvé al punto de aparición para comprar.";
         else if (access == ShopResult.BuyPhaseOver)
             bannerText.text = "La fase de compra terminó. Podés mirar, pero no comprar.";
+    }
+
+    // US 148, CA2: "Invasión · Oleada 4 de 10" (en el descanso, la que viene).
+    private static string InvasionSub()
+    {
+        OleadasDeInvasion oleadas = PartidaDeInvasion.Actual.GetComponent<OleadasDeInvasion>();
+        if (oleadas == null) return "Invasión";
+        int n = Mathf.Max(1, oleadas.Descanso ? oleadas.Oleada + 1 : oleadas.Oleada);
+        return n > OleadasDeInvasion.Ultima ? $"Invasión · Oleada {n} · modo infinito" : $"Invasión · Oleada {n} de {OleadasDeInvasion.Ultima}";
     }
 
     private void RenderCategories()
@@ -695,7 +723,7 @@ public class ShopUI : MonoBehaviour
             }
             else
             {
-                row.rightText.text = Dm ? "" : item.price <= 0 ? "Gratis" : Money(item.price);
+                row.rightText.text = Dm ? "" : item.Price <= 0 ? "Gratis" : Money(item.Price);
                 row.rightText.color = cant ? Bad : Ink;
                 stateWidth = Mathf.Max(84f, Width(row.rightText, row.rightText.text));
                 Place(row.rightText.rectTransform, 461f - stateWidth, 0f, stateWidth, ItemRowH);
@@ -747,7 +775,7 @@ public class ShopUI : MonoBehaviour
         string title = ItemName(item);
         float nameSize = title.Length > 15 ? 36f : 46f;
 
-        detailPrice.text = Dm ? "" : item.price <= 0 ? "Gratis" : Money(item.price);
+        detailPrice.text = Dm ? "" : item.Price <= 0 ? "Gratis" : Money(item.Price);
         detailPrice.color = cant ? Bad : Ink;
         float priceWidth = Width(detailPrice, detailPrice.text);
         detailName.text = title;
@@ -798,7 +826,7 @@ public class ShopUI : MonoBehaviour
         Clear(detailBody);
         if (item.IsWeapon) BuildWeaponBody(item);
         else if (item.kind == ShopItemKind.Shield) BuildShieldBody(item, roleTop + roleHeight);
-        else BuildGrenadeBody(item, roleTop + roleHeight);
+        else if (item.kind != ShopItemKind.Ammo) BuildGrenadeBody(item, roleTop + roleHeight);
         RenderBuyButton(item);
     }
 
@@ -1131,19 +1159,23 @@ public class ShopUI : MonoBehaviour
         }
         else if (access != ShopResult.Ok)
             PaintButton(ButtonStyle.Locked, access == ShopResult.BuyPhaseOver ? "Terminó la compra" : "Fuera de la zona", "solo mirar");
+        else if (item.IsWeapon && loadout.IsEquipped(item) && PlayerLoadout.SinVenta)
+            PaintButton(ButtonStyle.Owned, "Ya la tenés", "se queda hasta que la reemplaces"); // US 148, CA6
+        else if (item.kind == ShopItemKind.Shield && loadout.Shield >= item.shieldPoints && PlayerLoadout.SinVenta)
+            PaintButton(ButtonStyle.Owned, "Escudo lleno", "—");
         else if (item.IsWeapon && loadout.IsEquipped(item))
             PaintButton(ButtonStyle.Owned, "Ya la tenés", loadout.BoughtThisPhase(item)
-                ? $"clic derecho: vender +{Money(item.price)}"
-                : item.price <= 0 ? "la tenés siempre" : "la trajiste de la ronda anterior");
+                ? $"clic derecho: vender +{Money(item.Price)}"
+                : item.Price <= 0 ? "la tenés siempre" : "la trajiste de la ronda anterior");
         else if (item.kind == ShopItemKind.Shield && loadout.Shield >= item.shieldPoints)
-            PaintButton(ButtonStyle.Owned, "Escudo lleno", loadout.BoughtThisPhase(item) ? $"clic derecho: vender +{Money(item.price)}" : "—");
+            PaintButton(ButtonStyle.Owned, "Escudo lleno", loadout.BoughtThisPhase(item) ? $"clic derecho: vender +{Money(item.Price)}" : "—");
         else if (item.kind == ShopItemKind.Grenade && loadout.Count(item) >= item.maxCarry)
             PaintButton(ButtonStyle.Locked, "Máximo alcanzado", $"{item.maxCarry} por jugador");
         else if (cost > money)
-            PaintButton(ButtonStyle.Cant, $"Te faltan {Money(cost - money)}", Money(item.price));
+            PaintButton(ButtonStyle.Cant, $"Te faltan {Money(cost - money)}", Money(item.Price));
         else
-            PaintButton(ButtonStyle.Normal, item.price <= 0 ? "Elegir · Gratis" : $"Comprar · {Money(item.price)}",
-                cost == item.price ? "Enter · clic" : cost < 0 ? $"te devuelven {Money(-cost)}" : $"pagás {Money(cost)}");
+            PaintButton(ButtonStyle.Normal, item.Price <= 0 ? "Elegir · Gratis" : $"Comprar · {Money(item.Price)}",
+                cost == item.Price ? "Enter · clic" : cost < 0 ? $"te devuelven {Money(-cost)}" : $"pagás {Money(cost)}");
     }
 
     private void PaintButton(ButtonStyle style, string label, string sub)
@@ -1281,7 +1313,7 @@ public class ShopUI : MonoBehaviour
         // Gastado esta ronda y "Deshacer" (US 076, CA10), alineados a la derecha.
         float right = loadoutWidths[5] - 18f;
         TextMeshProUGUI title = Text(Place(Node("Titulo", loadoutCells[5]), 0f, 21f, right, 24f), labelFont, 14f, Mute, TextAlignmentOptions.MidlineRight, 12f, true);
-        title.text = Dm ? "Tu equipo" : "Gastado esta ronda";
+        title.text = Dm ? "Tu equipo" : PlayerLoadout.SinVenta ? "Gastado en el descanso" : "Gastado esta ronda";
         if (Dm)
         {
             // US 138, CA4: no hay gasto; se avisa que lo elegido queda.
@@ -1289,7 +1321,7 @@ public class ShopUI : MonoBehaviour
             keep.text = CampoDePractica.Activo ? "Cambiala cuando quieras" : "Se guarda para la próxima vida";
             return;
         }
-        if (loadout.HasPurchases && loadout.CheckAccess() == ShopResult.Ok)
+        if (loadout.HasPurchases && loadout.CheckAccess() == ShopResult.Ok && !PlayerLoadout.SinVenta) // US 148, CA6
         {
             RectTransform undo = Place(Node("Deshacer", loadoutCells[5]), 0f, 54f, 10f, 34f);
             Image(undo, rounded, Over(White(0.08f), PanelBase), 6f, true);
@@ -1608,6 +1640,7 @@ public class ShopUI : MonoBehaviour
             case ShopCategory.Rifles: return "Fusiles";
             case ShopCategory.Snipers: return "Francotiradores";
             case ShopCategory.Shields: return "Escudos";
+            case ShopCategory.Supplies: return "Suministros";
             default: return "Granadas";
         }
     }
@@ -1618,8 +1651,8 @@ public class ShopUI : MonoBehaviour
         int low = int.MaxValue, high = int.MinValue;
         foreach (ShopItem item in items)
         {
-            low = Mathf.Min(low, item.price);
-            high = Mathf.Max(high, item.price);
+            low = Mathf.Min(low, item.Price);
+            high = Mathf.Max(high, item.Price);
         }
         return low == high ? Money(low, false) : $"{Money(low, false)}+";
     }
@@ -1632,7 +1665,7 @@ public class ShopUI : MonoBehaviour
     private string ListSubtitle(ShopItem item)
     {
         if (item.IsWeapon) return $"{item.displayName} · {item.fireMode}";
-        if (item.kind == ShopItemKind.Shield) return item.shortEffect;
+        if (item.kind == ShopItemKind.Shield || item.kind == ShopItemKind.Ammo) return item.shortEffect;
         return $"{loadout.Count(item)}/{item.maxCarry} · {item.shortEffect}";
     }
 
@@ -1643,6 +1676,7 @@ public class ShopUI : MonoBehaviour
             case ShopItemKind.PrimaryWeapon: return $"Principal · {item.fireMode}";
             case ShopItemKind.SecondaryWeapon: return $"Secundaria · {item.fireMode}";
             case ShopItemKind.Shield: return $"Escudo · {item.shieldPoints} puntos";
+            case ShopItemKind.Ammo: return "Suministros";
             default: return "Granada · espacio 4";
         }
     }
@@ -1651,7 +1685,7 @@ public class ShopUI : MonoBehaviour
     {
         ShopItem best = null;
         foreach (ShopItem item in catalog.ItemsIn(value))
-            if (item.bands != null && item.bands.Length > 0 && (best == null || item.price > best.price)) best = item;
+            if (item.bands != null && item.bands.Length > 0 && (best == null || item.Price > best.Price)) best = item;
         return best;
     }
 
@@ -1931,7 +1965,8 @@ public class ShopUI : MonoBehaviour
         Border(catsPanel, 10f, LineColor);
 
         // Atajos en renglones que se acomodan solos, como el ".legend" de la maqueta.
-        (string key, string label)[] shortcuts = { (KeyBindings.Label(GameAction.Tienda), "Cerrar"), ("1–9", "Elegir"), ("↵", "Comprar"), ("⌫", "Volver"), (null, "Clic der. vender") };
+        var shortcuts = new List<(string key, string label)> { (KeyBindings.Label(GameAction.Tienda), "Cerrar"), ("1–9", "Elegir"), ("↵", "Comprar"), ("⌫", "Volver") };
+        if (MatchSettings.Mode != GameMode.Zombie) shortcuts.Add((null, "Clic der. vender")); // US 148, CA6: en Invasión no se vende (se arma en Awake: todavía no hay PartidaDeInvasion)
         float x = 19f, y = 15f;
         foreach ((string key, string label) in shortcuts)
         {
