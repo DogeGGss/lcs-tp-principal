@@ -1,5 +1,8 @@
 using UnityEngine;
 
+/// <summary>Lo que deja la bola de veneno del jefe al caer (US 267).</summary>
+public enum VenenoDelVuelo { Nubes, Charcos }
+
 // F11 (NPCs), US 145: un tipo de NPC enemigo del modo Zombie (los bichos del rift). Todo lo que distingue a un tipo
 // está acá, como dato, y no en el código (CA5): se ajusta o se suma un tipo nuevo creando otro de estos
 // (Create > Riftwalker > Tipo de NPC) en Resources/NPCs.
@@ -82,6 +85,10 @@ public class TipoDeNpc : ScriptableObject
     public AnimationClip volar;
     [Tooltip("Animación al escupir cada bola de veneno (se mezcla con la de vuelo).")]
     public AnimationClip escupir;
+    [Tooltip("Qué deja cada bola de veneno donde cae: una nube venenosa que lastima y tapa la vista, o un charco en el piso (US 267).")]
+    public VenenoDelVuelo veneno = VenenoDelVuelo.Nubes;
+    [Tooltip("Material de las partículas de la nube venenosa (el humo de la granada de humo). Vacío: sin partículas, solo la pantalla verde.")]
+    public Material materialDeNube;
     [Tooltip("Si a la mitad de la vida se enfurece (US 268): ruge, se pone rojo y va más rápido y ataca más seguido.")]
     public bool furia;
     [Tooltip("Animación del rugido al enfurecerse.")]

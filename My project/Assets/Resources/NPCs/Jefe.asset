@@ -42,6 +42,8 @@ MonoBehaviour:
   vuela: 1
   volar: {fileID: 7400000, guid: 8f8ad413d2c254e4b8e5bd1ee79e356b, type: 3}
   escupir: {fileID: 7400000, guid: 495488b67c58bcd48b6e41fd3cc7a8a7, type: 3}
+  veneno: 0
+  materialDeNube: {fileID: 2100000, guid: 34d513672558fe0478dd3a29e7f55db4, type: 2}
   furia: 1
   rugido: {fileID: 7400000, guid: 693eb987195b4674690a3b04d565c310, type: 3}
   puntosPorBaja: 500
