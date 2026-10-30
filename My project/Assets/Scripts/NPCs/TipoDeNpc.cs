@@ -5,7 +5,8 @@ using UnityEngine;
 // (Create > Riftwalker > Tipo de NPC) en Resources/NPCs.
 // - Común: Catfish, 100 de vida, golpea por 20, camina a 2,5 m/s (CA1).
 // - Rápido: Wolf Boss achicado, 60 de vida, golpea por 10, corre a 5 m/s (CA2).
-// - Tanque: Lizard agrandado, 400 de vida, golpea por 40, a 1,8 m/s y no se frena al recibir impactos (CA3).
+// - Tanque: Lizard agrandado, 400 de vida, golpea por 40, camina a 2,5 m/s (como el Común) y no se frena al recibir
+//   impactos (CA3).
 // Cada uno con su modelo y su tamaño, así se reconocen de lejos (CA4).
 // Lo usan Npc (que arma el NPC con su modelo, su vida y su tamaño) y las US que lo mueven, lo hacen atacar, recibir
 // daño y morir (US 035 a 039).
