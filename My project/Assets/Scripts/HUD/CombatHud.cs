@@ -89,6 +89,9 @@ public class CombatHud : MonoBehaviour
     /// <summary>Nombre del arma en la mano, para los avisos de bajas (US 057).</summary>
     public string WeaponName { get; private set; }
 
+    /// <summary>La tipografía mono del HUD, para otras pantallas (US 150: los números de la vía de Invasión).</summary>
+    public TMP_FontAsset MonoFont => monoFont;
+
     /// <summary>Ícono del arma en la mano (de su ficha de la tienda), para los avisos de bajas (US 057).</summary>
     public Sprite WeaponIcon { get; private set; }
 

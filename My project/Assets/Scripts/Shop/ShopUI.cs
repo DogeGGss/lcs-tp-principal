@@ -509,9 +509,14 @@ public class ShopUI : MonoBehaviour
         // Con marcador (US 057) el tiempo de la compra ya está en su centro: este reloj quedaba abajo, asomándose.
         hudClock.SetActive(!open && !Dm && phase != null && phase.IsActive && MatchHud.Instance == null);
         // US 166: durante el tutorial del campo de práctica, solo en su paso (el de la tienda).
+        // US 150: en Invasión arriba al centro está el marcador del modo: el aviso va debajo de él.
+        RectTransform hintRect = (RectTransform)hudHint.transform;
+        float hintY = PartidaDeInvasion.Actual != null ? -238f : -150f;
+        if (hintRect.anchoredPosition.y != hintY) hintRect.anchoredPosition = new Vector2(hintRect.anchoredPosition.x, hintY);
         hudHint.SetActive(!open && (phaseActive || Dm) && access == ShopResult.Ok && !PantallaDeCarga.Visible &&
                           !TutorialDePractica.OcultaAvisoTienda);
-        hudMoney.gameObject.SetActive(!open && !Dm); // US 138, CA1: sin plata
+        // US 138, CA1: sin plata. US 150: en Invasión los puntos tienen su propio lugar (MarcadorInvasion).
+        hudMoney.gameObject.SetActive(!open && !Dm && PartidaDeInvasion.Actual == null);
         if (Spectated != null || showedSpectated)
         {
             // La plata del compañero cambia sin avisar (llega por la red): se revisa en cada cuadro. Al dejar de
