@@ -17,6 +17,7 @@ using UnityEngine.UI;
 // - CA5: la oleada termina cuando mueren todos (en la 10, también el Jefe): "Oleada N superada" y descanso.
 // - CA6: al superar la 10, "¡Sobreviviste!" con "Seguir" (modo infinito) y "Terminar" (el resultado, US 151).
 // - CA7: desde la 11, la misma regla de cantidad y los enemigos con 10 % más de vida por cada oleada después de la 10.
+// US 161, CA3: la dificultad cambia la cantidad de cada oleada (la vida de cada enemigo la ajusta Npc).
 // El marcador (la oleada, cuántos quedan, el descanso y los puntos) es la US 150: MarcadorInvasion.
 public class OleadasDeInvasion : MonoBehaviour
 {
@@ -90,7 +91,7 @@ public class OleadasDeInvasion : MonoBehaviour
         if (fase != Fase.Descanso) return; // solo desde el descanso: una oleada no corta a la anterior
         Oleada++;
         fase = Fase.Oleada;
-        total = Base + PorOleada * (Oleada - 1); // CA1 (y CA7)
+        total = Mathf.Max(1, Mathf.RoundToInt((Base + PorOleada * (Oleada - 1)) * DificultadDeInvasion.Cantidad)); // CA1 (y CA7), US 161
         muertos = 0;
         vivos.Clear();
         tipos.Clear();
@@ -206,10 +207,10 @@ public class OleadasDeInvasion : MonoBehaviour
         hacia.y = 0f;
         Npc npc = Npc.Crear(tipo, lugar, hacia.sqrMagnitude > 1e-4f ? Quaternion.LookRotation(hacia) : Quaternion.identity);
         if (npc == null) return null;
-        // CA7: más vida en el modo infinito.
+        // CA7: más vida en el modo infinito (sobre la de la dificultad, que ya pone Npc, US 161).
         if (Oleada > Ultima && npc.Vida != null)
         {
-            int vida = Mathf.RoundToInt(tipo.vida * (1f + VidaExtra * (Oleada - Ultima)));
+            int vida = Mathf.RoundToInt(DificultadDeInvasion.VidaDeEnemigo(tipo.vida) * (1f + VidaExtra * (Oleada - Ultima)));
             npc.Vida.maxHealth = vida;
             npc.Vida.SetState(vida, 0);
         }
@@ -228,6 +229,25 @@ public class OleadasDeInvasion : MonoBehaviour
         fase = Fase.Descanso;
         MatchHud.ShowBanner("Modo Invasión", $"Oleada {Oleada} superada", ShopUIKit.Ok, "Descanso de 20 s: abrí la tienda", null, 3f);
         if (descanso != null) descanso.Begin(); else Invoke(nameof(Empezar), 20f);
+    }
+
+    /// <summary>Para probar (Riftwalker > Invasión > Ir a la oleada 10): saca a los enemigos que quedan y arranca ya la
+    /// oleada n.</summary>
+    public void IrA(int n)
+    {
+        if (fase == Fase.Final) return;
+        foreach (Npc v in vivos) if (v != null) Destroy(v.gameObject);
+        if (jefe != null) Destroy(jefe.gameObject);
+        vivos.Clear();
+        tipos.Clear();
+        aparecio.Clear();
+        porAparecer.Clear();
+        jefe = null;
+        jefeVivo = false;
+        Oleada = Mathf.Max(0, n - 1);
+        fase = Fase.Descanso;
+        if (descanso != null && descanso.IsActive) descanso.Terminar(); // al cerrar la compra arranca la oleada
+        else Empezar();
     }
 
     // ---------- CA4: dónde aparece ----------

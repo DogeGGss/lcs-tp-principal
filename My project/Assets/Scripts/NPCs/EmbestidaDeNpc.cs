@@ -231,7 +231,7 @@ public class EmbestidaDeNpc : MonoBehaviour
             golpeados.Add(vida);
             HealthSystem.DamageOrigin = transform.position + Vector3.up;
             HealthSystem.DamageSource = npc.Tipo.nombre;
-            vida.TakeDamage(Danio);
+            vida.TakeDamage(DificultadDeInvasion.DanioDeEnemigo(Danio)); // US 161, CA3
             HealthSystem.DamageSource = null;
             Vector3 lado = Vector3.Cross(Vector3.up, direccion) * (costado >= 0f ? 1f : -1f);
             EmpujonAlJugador.Empujar(vida.transform, (lado + direccion * 0.35f).normalized * Empujon, EmpujonDura);

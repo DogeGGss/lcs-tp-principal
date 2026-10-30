@@ -19,6 +19,7 @@ using VertexHelper = UnityEngine.UI.VertexHelper;
 // - CA5: una banderita naranja marca en la vía la oleada récord guardada de la dificultad (US 151). Al pasarla aparece
 //   "¡Nuevo récord! · Oleada N" durante 3 s, una sola vez por partida.
 // - CA6: las fuentes y colores del HUD de combate (US 176), y se oculta con la tienda abierta.
+// US 161, CA5: la dificultad elegida, arriba a la izquierda del panel.
 public class MarcadorInvasion : MonoBehaviour
 {
     /// <summary>El verde del modo (el del andén de Invasión en la selección de modo).</summary>
@@ -132,6 +133,10 @@ public class MarcadorInvasion : MonoBehaviour
         // La línea verde de abajo, con su brillo.
         Image(Place(Node("Brillo", panel), Ancho / 2f - 90f, Alto - 8f, 180f, 17f), MatchHud.Instance.Rounded, WithAlpha(Verde, FadeAlpha(0.18f)), 8f);
         Image(Place(Node("Linea", panel), Ancho / 2f - 75f, Alto - 1f, 150f, 3f), null, Verde);
+
+        // US 161, CA5: la dificultad.
+        Text(Place(Node("Dificultad", panel), 18f, 12f, 200f, 20f), display, 13f, Mute, TextAlignmentOptions.TopLeft, 12f, true)
+            .text = DificultadDeInvasion.Nombre;
 
         // CA1: el título.
         titulo = Text(Node("Oleada", panel), display, 44f, Ink, TextAlignmentOptions.BaselineLeft, 6f, true);

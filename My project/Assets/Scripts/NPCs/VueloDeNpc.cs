@@ -267,7 +267,7 @@ public class BolaDeVeneno : MonoBehaviour
                 {
                     HealthSystem.DamageOrigin = antes;
                     HealthSystem.DamageSource = fuente;
-                    vida.TakeDamage(Danio);
+                    vida.TakeDamage(DificultadDeInvasion.DanioDeEnemigo(Danio)); // US 161, CA3
                     HealthSystem.DamageSource = null;
                 }
                 Caer(jugador.transform.position + Vector3.up * 0.5f);
@@ -363,7 +363,7 @@ public class CharcoDeVeneno : MonoBehaviour
             if (rel.magnitude > radio) continue;
             HealthSystem.DamageOrigin = transform.position;
             HealthSystem.DamageSource = fuente;
-            vida.TakeDamage(DanioPorTic);
+            vida.TakeDamage(DificultadDeInvasion.DanioDeEnemigo(DanioPorTic)); // US 161, CA3
             HealthSystem.DamageSource = null;
         }
     }
