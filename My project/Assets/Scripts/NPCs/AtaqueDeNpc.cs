@@ -18,7 +18,7 @@ using UnityEngine;
 public class AtaqueDeNpc : MonoBehaviour
 {
     private const float ImpactoSinMedir = 0.5f; // CA2: s desde que empieza la animación hasta el daño, si no se midió
-    private const float Cadencia = 1f;          // CA4: s entre golpes, como mínimo
+    // CA4: s entre golpes, como mínimo: los de su tipo (TipoDeNpc.cadencia; el jefe, 1,5 s, US 266).
     private const float Delante = 60f;          // CA1: grados a cada lado de hacia dónde mira
     private const float DuracionSinClip = 0.8f; // si el tipo no tiene animación de ataque
 
@@ -57,7 +57,8 @@ public class AtaqueDeNpc : MonoBehaviour
         }
 
         // CA1 y CA4: al lado del jugador, de frente, y pasado un segundo del golpe anterior.
-        if (persecucion.EnDistanciaDeAtaque && persecucion.Objetivo != null && Time.time >= proximo && DeFrente(persecucion.Objetivo))
+        // (No mientras otro ataque, como la embestida del jefe, lo tiene ocupado.)
+        if (!persecucion.Ocupado && persecucion.EnDistanciaDeAtaque && persecucion.Objetivo != null && Time.time >= proximo && DeFrente(persecucion.Objetivo))
             Empezar(persecucion.Objetivo);
     }
 
@@ -67,7 +68,7 @@ public class AtaqueDeNpc : MonoBehaviour
         pego = false;
         objetivo = jugador;
         empezo = Time.time;
-        proximo = Time.time + Cadencia;
+        proximo = Time.time + Mathf.Max(0.2f, npc.Tipo.cadencia);
         persecucion.Ocupado = true;
 
         AnimationClip clip = Elegir(persecucion.EntreCuerpos(jugador));
