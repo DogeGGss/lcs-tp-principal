@@ -11,7 +11,7 @@ using UnityEngine.SceneManagement;
 // - CA5: Esc pausa el juego (PauseMenu: sin conexión, el tiempo se detiene y los enemigos también).
 // - CA6: suenan la música y el ambiente del modo, en loop por el grupo Música (ConfigRed: musicaInvasion y
 //   ambienteInvasion). Sin clips cargados no suena nada.
-// Las oleadas son la US 144 (OleadasDeInvasion), los puntos la US 147 (PuntosDeInvasion), el marcador la US 150 (MarcadorInvasion) y la regeneración de vida,
+// Las oleadas son la US 144 (OleadasDeInvasion), el resultado la US 151 (ResultadoDeInvasion), los puntos la US 147 (PuntosDeInvasion), el marcador la US 150 (MarcadorInvasion) y la regeneración de vida,
 // la US 149 (RegeneracionDeVida, se le suma al jugador). Se crea sola: no hace falta ponerla en la escena.
 public class PartidaDeInvasion : MonoBehaviour
 {
@@ -39,16 +39,22 @@ public class PartidaDeInvasion : MonoBehaviour
     }
 
     private bool armada;
+    private HealthSystem vidaJugador;
+
+    /// <summary>US 151, CA3: cuándo empezó la partida (Time.time: con la pausa no corre).</summary>
+    public float Inicio { get; private set; }
 
     private void Awake() => Actual = this;
 
     private void OnDestroy()
     {
         if (Actual == this) Actual = null;
+        if (vidaJugador != null) vidaJugador.Died -= AlMorirElJugador;
     }
 
     private void Start()
     {
+        Inicio = Time.time;
         ArrancarMusica();
         gameObject.AddComponent<OleadasDeInvasion>(); // US 144
         gameObject.AddComponent<MarcadorInvasion>();  // US 150
@@ -70,8 +76,13 @@ public class PartidaDeInvasion : MonoBehaviour
             vida.maxHealth = VidaInicial;
             vida.SetState(VidaInicial, 0);
             if (vida.GetComponent<RegeneracionDeVida>() == null) vida.gameObject.AddComponent<RegeneracionDeVida>(); // US 149
+            vidaJugador = vida;
+            vida.Died += AlMorirElJugador; // US 151, CA1 y CA6 (caerse del mapa también lo mata: FueraDelMapa)
         }
     }
+
+    // US 151, CA1: no hay segunda vida, la partida termina.
+    private void AlMorirElJugador() => ResultadoDeInvasion.Mostrar(true);
 
     // CA6
     private void ArrancarMusica()

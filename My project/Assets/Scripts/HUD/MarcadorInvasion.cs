@@ -84,7 +84,7 @@ public class MarcadorInvasion : MonoBehaviour
         if (billetera == null) SeguirBilletera();
 
         MatchHud.HideCenter(); // el centro de la US 057 no se usa en este modo (ni en el descanso, que es una fase de compra)
-        grupo.alpha = ShopUI.IsOpen || oleadas.EnElFinal ? 0f : 1f; // CA6
+        grupo.alpha = ShopUI.IsOpen || oleadas.EnElFinal || ResultadoDeInvasion.Actual != null ? 0f : 1f; // CA6 (y US 151)
         ActualizarPanel();
         ActualizarSaltos();
         ActualizarPildora();
@@ -206,7 +206,7 @@ public class MarcadorInvasion : MonoBehaviour
     }
 
     // Las figuras viven en este archivo con otro nombre y Unity no les agrega solo el CanvasRenderer (sin él no se ven).
-    private static T Figura<T>(RectTransform rect) where T : UIShape
+    public static T Figura<T>(RectTransform rect) where T : UIShape
     {
         rect.gameObject.AddComponent<CanvasRenderer>();
         return rect.gameObject.AddComponent<T>();

@@ -15,6 +15,11 @@ public class PuntosDeInvasion : MonoBehaviour
     /// <summary>CA6: cada suma de puntos, y si fue por una baja a la cabeza.</summary>
     public static event System.Action<int, bool> Sumo;
 
+    /// <summary>US 151, CA3: lo que hizo en la partida, para el resultado.</summary>
+    public int Bajas { get; private set; }
+    public int BajasALaCabeza { get; private set; }
+    public int PuntosGanados { get; private set; }
+
     private PlayerWallet billetera;
 
     private void OnEnable()
@@ -31,7 +36,12 @@ public class PuntosDeInvasion : MonoBehaviour
 
     private void AlImpactar(Npc npc, int danio, BodyZone zona) => Sumar(PorImpacto, false);
 
-    private void AlMorir(Npc npc, int puntos, bool cabeza) => Sumar(puntos, cabeza);
+    private void AlMorir(Npc npc, int puntos, bool cabeza)
+    {
+        Bajas++;
+        if (cabeza) BajasALaCabeza++;
+        Sumar(puntos, cabeza);
+    }
 
     private void Sumar(int puntos, bool cabeza)
     {
@@ -40,6 +50,7 @@ public class PuntosDeInvasion : MonoBehaviour
         if (billetera == null) return;
         billetera.SinTope(); // CA5
         billetera.Add(puntos);
+        PuntosGanados += puntos;
         Sumo?.Invoke(puntos, cabeza);
     }
 }

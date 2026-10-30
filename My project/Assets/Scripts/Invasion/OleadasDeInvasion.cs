@@ -15,7 +15,7 @@ using UnityEngine.UI;
 //   jugador, fuera de su vista y conectados con él por el NavMesh. Si no hay ninguno así, se aflojan las condiciones
 //   (cualquier distancia fuera de la vista, después cualquiera), y sin puntos aparecen alrededor del jugador.
 // - CA5: la oleada termina cuando mueren todos (en la 10, también el Jefe): "Oleada N superada" y descanso.
-// - CA6: al superar la 10, "¡Sobreviviste!" con "Seguir" (modo infinito) y "Terminar" (el resultado es la US 151).
+// - CA6: al superar la 10, "¡Sobreviviste!" con "Seguir" (modo infinito) y "Terminar" (el resultado, US 151).
 // - CA7: desde la 11, la misma regla de cantidad y los enemigos con 10 % más de vida por cada oleada después de la 10.
 // El marcador (la oleada, cuántos quedan, el descanso y los puntos) es la US 150: MarcadorInvasion.
 public class OleadasDeInvasion : MonoBehaviour
@@ -357,12 +357,11 @@ public class OleadasDeInvasion : MonoBehaviour
         if (descanso != null) descanso.Begin(); else Invoke(nameof(Empezar), 20f);
     }
 
-    // El resultado de la partida es la US 151: por ahora vuelve al menú.
+    // US 151, CA2: el resultado de la partida.
     private void Terminar()
     {
         CerrarFinal();
-        Guardado.Save();
-        PantallaDeCarga.Cargar("MenuPrincipal", "", "Menú principal");
+        ResultadoDeInvasion.Mostrar(false);
     }
 
     private void CerrarFinal()
