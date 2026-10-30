@@ -12,7 +12,7 @@ using VertexHelper = UnityEngine.UI.VertexHelper;
 // - CA1: arriba al centro, "Oleada N de 10" (en la 10, con la etiqueta "Jefe"; después, "Oleada N · modo infinito") y
 //   debajo el recorrido de las 10 oleadas como una línea de tren: las pasadas en verde, la actual con un pulso, la 10
 //   (el jefe) con forma de rombo y después la estación ∞ del modo infinito.
-// - CA2: "Quedan N zombis", contando los que todavía no aparecieron, con una barra blanca que se vacía.
+// - CA2: "Quedan N invasores", contando los que todavía no aparecieron, con una barra blanca que se vacía.
 // - CA3: en el descanso, "Próxima oleada en 0:20" en verde, con una barra verde que se llena. Muestra la oleada que viene.
 // - CA4: los puntos (la billetera, US 147) abajo a la izquierda, en el lugar de la plata del Táctico. Cada vez que suben
 //   aparece lo que se sumó ("+60"), en naranja si la baja fue a la cabeza.
@@ -260,7 +260,7 @@ public class MarcadorInvasion : MonoBehaviour
             int quedan = oleadas.Quedan;
             izquierda = "Quedan";
             centro = quedan.ToString();
-            derecha = quedan == 1 ? "zombi" : "zombis";
+            derecha = quedan == 1 ? "invasor" : "invasores";
             fraccion = oleadas.Total > 0 ? (float)quedan / oleadas.Total : 0f;
         }
 
