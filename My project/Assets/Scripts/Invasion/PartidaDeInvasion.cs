@@ -11,7 +11,7 @@ using UnityEngine.SceneManagement;
 // - CA5: Esc pausa el juego (PauseMenu: sin conexión, el tiempo se detiene y los enemigos también).
 // - CA6: suenan la música y el ambiente del modo, en loop por el grupo Música (ConfigRed: musicaInvasion y
 //   ambienteInvasion). Sin clips cargados no suena nada.
-// Las oleadas son la US 144 (OleadasDeInvasion), el marcador la US 150 (MarcadorInvasion) y la regeneración de vida,
+// Las oleadas son la US 144 (OleadasDeInvasion), los puntos la US 147 (PuntosDeInvasion), el marcador la US 150 (MarcadorInvasion) y la regeneración de vida,
 // la US 149 (RegeneracionDeVida, se le suma al jugador). Se crea sola: no hace falta ponerla en la escena.
 public class PartidaDeInvasion : MonoBehaviour
 {
@@ -52,6 +52,7 @@ public class PartidaDeInvasion : MonoBehaviour
         ArrancarMusica();
         gameObject.AddComponent<OleadasDeInvasion>(); // US 144
         gameObject.AddComponent<MarcadorInvasion>();  // US 150
+        gameObject.AddComponent<PuntosDeInvasion>();  // US 147
     }
 
     // CA3: el estado inicial del jugador, en cuanto está (aparece con la escena).
@@ -61,6 +62,7 @@ public class PartidaDeInvasion : MonoBehaviour
         PlayerWallet billetera = FindFirstObjectByType<PlayerWallet>();
         if (billetera == null) return;
         armada = true;
+        billetera.SinTope(); // US 147, CA5
         billetera.Set(PuntosIniciales);
         HealthSystem vida = billetera.GetComponent<HealthSystem>();
         if (vida != null)

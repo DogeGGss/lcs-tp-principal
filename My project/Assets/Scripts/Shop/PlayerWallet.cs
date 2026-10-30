@@ -32,10 +32,13 @@ public class PlayerWallet : MonoBehaviour
         MoneyChanged?.Invoke(Money);
     }
 
+    /// <summary>US 147, CA5: en el Modo Invasión los puntos no tienen tope.</summary>
+    public void SinTope() => maxMoney = int.MaxValue;
+
     public void Add(int amount)
     {
         if (amount <= 0) return;
-        Money = Mathf.Min(maxMoney, Money + amount);
+        Money = (int)System.Math.Min(maxMoney, (long)Money + amount);
         MoneyChanged?.Invoke(Money);
     }
 }

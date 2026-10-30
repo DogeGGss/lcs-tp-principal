@@ -14,8 +14,8 @@ using VertexHelper = UnityEngine.UI.VertexHelper;
 //   (el jefe) con forma de rombo y después la estación ∞ del modo infinito.
 // - CA2: "Quedan N invasores", contando los que todavía no aparecieron, con una barra blanca que se vacía.
 // - CA3: en el descanso, "Próxima oleada en 0:20" en verde, con una barra verde que se llena. Muestra la oleada que viene.
-// - CA4: los puntos (la billetera, US 147) abajo a la izquierda, en el lugar de la plata del Táctico. Cada vez que suben
-//   aparece lo que se sumó ("+60"), en naranja si la baja fue a la cabeza.
+// - CA4: los puntos (la billetera, US 147) abajo a la izquierda, en el lugar de la plata del Táctico. Cada suma (US 147)
+//   aparece un instante ("+60"), en naranja si la baja fue a la cabeza.
 // - CA5: una banderita naranja marca en la vía la oleada récord guardada de la dificultad (US 151). Al pasarla aparece
 //   "¡Nuevo récord! · Oleada N" durante 3 s, una sola vez por partida.
 // - CA6: las fuentes y colores del HUD de combate (US 176), y se oculta con la tienda abierta.
@@ -30,14 +30,13 @@ public class MarcadorInvasion : MonoBehaviour
     private const float DuracionSalto = 0.9f, Subida = 44f;       // CA4: lo que suma cada baja
     private const float PuntosX = 34f, PuntosY = 170f;            // desde abajo a la izquierda, donde está la plata
 
-    private class Salto { public TextMeshProUGUI texto; public float desde; public int cuadro; }
+    private class Salto { public TextMeshProUGUI texto; public float desde; public int cuadro, suma; }
 
     private OleadasDeInvasion oleadas;
     private PlayerWallet billetera;
     private int record;            // CA5: la oleada récord al empezar la partida (0: todavía no hay)
     private bool avisoRecord;      // CA5: ya salió el aviso
     private float recordDesde = -10f;
-    private int puntosAntes;
     private float relleno;         // ancho que se ve de la barra (va hacia el real de a poco)
 
     private TMP_FontAsset display, label, mono;
@@ -53,13 +52,13 @@ public class MarcadorInvasion : MonoBehaviour
 
     private void OnEnable()
     {
-        WeaponFire.Killed += AlMatar;
+        PuntosDeInvasion.Sumo += AlSumar;
         OleadasDeInvasion.Empezo += AlEmpezar;
     }
 
     private void OnDisable()
     {
-        WeaponFire.Killed -= AlMatar;
+        PuntosDeInvasion.Sumo -= AlSumar;
         OleadasDeInvasion.Empezo -= AlEmpezar;
         if (billetera != null) billetera.MoneyChanged -= AlCambiarPuntos;
     }
@@ -296,18 +295,11 @@ public class MarcadorInvasion : MonoBehaviour
         PlayerWallet b = FindFirstObjectByType<PlayerWallet>();
         if (b == null) return;
         billetera = b;
-        puntosAntes = b.Money;
         b.MoneyChanged += AlCambiarPuntos;
         MostrarPuntos(b.Money);
     }
 
-    private void AlCambiarPuntos(int ahora)
-    {
-        int suma = ahora - puntosAntes;
-        puntosAntes = ahora;
-        MostrarPuntos(ahora);
-        if (suma > 0 && oleadas != null && oleadas.Oleada > 0) Saltar(suma); // los puntos del arranque no son una baja
-    }
+    private void AlCambiarPuntos(int ahora) => MostrarPuntos(ahora);
 
     private void MostrarPuntos(int valor)
     {
@@ -318,9 +310,18 @@ public class MarcadorInvasion : MonoBehaviour
         Place(puntosRotulo.rectTransform, w + 10f, 10f, 80f, 60f);
     }
 
-    private void Saltar(int suma)
+    // CA4 y US 147, CA6: lo que se sumó. Lo del mismo cuadro va junto (el impacto que mata y la baja: "+70").
+    private void AlSumar(int suma, bool cabeza)
     {
         if (grupo == null) return;
+        Salto ultimo = saltos.Count > 0 ? saltos[saltos.Count - 1] : null;
+        if (ultimo != null && ultimo.cuadro == Time.frameCount && ultimo.texto != null)
+        {
+            ultimo.suma += suma;
+            ultimo.texto.text = $"+{ultimo.suma}";
+            if (cabeza) ultimo.texto.color = Accent;
+            return;
+        }
         RectTransform r = Node("Suma", grupo.transform);
         r.anchorMin = r.anchorMax = r.pivot = Vector2.zero;
         r.sizeDelta = new Vector2(200f, 30f);
@@ -328,15 +329,8 @@ public class MarcadorInvasion : MonoBehaviour
         TextMeshProUGUI t = Text(r, display, 24f, Ink, TextAlignmentOptions.BottomLeft, 6f);
         t.text = $"+{suma}";
         Sombra(t);
-        saltos.Add(new Salto { texto = t, desde = Time.unscaledTime, cuadro = Time.frameCount });
-    }
-
-    // La baja llega después de los puntos (el arma avisa al terminar el disparo): el último salto se pinta de naranja.
-    private void AlMatar(bool cabeza)
-    {
-        if (!cabeza || saltos.Count == 0) return;
-        Salto ultimo = saltos[saltos.Count - 1];
-        if (Time.frameCount - ultimo.cuadro <= 1) ultimo.texto.color = Accent;
+        if (cabeza) t.color = Accent;
+        saltos.Add(new Salto { texto = t, desde = Time.unscaledTime, cuadro = Time.frameCount, suma = suma });
     }
 
     private void ActualizarSaltos()
