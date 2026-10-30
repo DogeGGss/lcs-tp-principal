@@ -32,6 +32,8 @@ public class TipoDeNpc : ScriptableObject
     [Min(0.1f)] public float alcance = 0.5f;
     [Tooltip("Qué tan rápido hace sus animaciones de ataque (1: como vienen; 1,5: un 50 % más rápido). El golpe entra antes en la misma proporción.")]
     [Range(0.5f, 3f)] public float velocidadDeAtaque = 1f;
+    [Tooltip("Segundos entre golpes, como mínimo (US 037, CA4). El jefe, 1,5 (US 266).")]
+    [Min(0.2f)] public float cadencia = 1f;
     [Tooltip("Si al recibir un impacto se frena un instante (US 038, CA3). El Tanque y el Jefe no se frenan.")]
     public bool frenaAlRecibirImpacto = true;
 
@@ -68,6 +70,12 @@ public class TipoDeNpc : ScriptableObject
     public bool esJefe;
     [Tooltip("El nombre que se ve en la barra del jefe. Vacío: el nombre del tipo.")]
     public string titulo;
+    [Tooltip("Si embiste (US 266): marca el camino con una línea roja y se lanza en línea recta.")]
+    public bool embiste;
+    [Tooltip("Animación mientras se prepara para embestir (el aviso, con la línea roja). Vacío: la de quieto en combate.")]
+    public AnimationClip preparaEmbestida;
+    [Tooltip("Animación mientras embiste. Vacío: la de correr.")]
+    public AnimationClip embestida;
 
     [Header("Puntos (US 147)")]
     [Tooltip("Puntos por matarlo (US 039, CA3).")]

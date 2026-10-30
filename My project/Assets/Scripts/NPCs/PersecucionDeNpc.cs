@@ -60,6 +60,10 @@ public class PersecucionDeNpc : MonoBehaviour
     public bool LoVe => loVe;
     /// <summary>Otro componente (el ataque, US 037, o la flash, US 038) maneja las animaciones y lo frena.</summary>
     public bool Ocupado { get; set; }
+    /// <summary>Otro componente lo mueve y lo gira (la embestida del jefe, US 266): no lo mira al jugador ni retrocede.</summary>
+    public bool Controlado { get; set; }
+    /// <summary>Su NavMeshAgent (null hasta que sube al NavMesh).</summary>
+    public NavMeshAgent Agente => agente != null && agente.isOnNavMesh ? agente : null;
 
     private void Awake()
     {
@@ -97,7 +101,7 @@ public class PersecucionDeNpc : MonoBehaviour
         EnDistanciaDeAtaque = entre <= (EnDistanciaDeAtaque ? Parada + 0.3f : Parada + 0.05f);
 
         // Se le metió encima (el jugador lo empujó o lo esquivó por el costado): retrocede lo justo, por el NavMesh.
-        if (entre < 0f && hasta.sqrMagnitude > 1e-4f)
+        if (entre < 0f && hasta.sqrMagnitude > 1e-4f && !Controlado)
             agente.Move(-hasta.normalized * Mathf.Min(-entre, 4f * Time.deltaTime));
 
         // CA6: a distancia de ataque se frena y lo mira.
@@ -105,7 +109,7 @@ public class PersecucionDeNpc : MonoBehaviour
         {
             agente.isStopped = true;
             agente.velocity = Vector3.zero;
-            if (hasta.sqrMagnitude > 1e-4f)
+            if (hasta.sqrMagnitude > 1e-4f && !Controlado)
                 transform.rotation = Quaternion.RotateTowards(transform.rotation, Quaternion.LookRotation(hasta.normalized), 540f * Time.deltaTime);
         }
         else

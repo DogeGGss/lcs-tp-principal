@@ -20,6 +20,7 @@ MonoBehaviour:
   danio: 50
   alcance: 0.5
   velocidadDeAtaque: 1.5
+  cadencia: 1.5
   frenaAlRecibirImpacto: 0
   velocidad: 1.8
   corre: 0
@@ -35,5 +36,8 @@ MonoBehaviour:
   grito: {fileID: 0}
   esJefe: 1
   titulo: El Escarabajo
+  embiste: 1
+  preparaEmbestida: {fileID: 7400000, guid: 693eb987195b4674690a3b04d565c310, type: 3}
+  embestida: {fileID: 7400000, guid: 8f8ad413d2c254e4b8e5bd1ee79e356b, type: 3}
   puntosPorBaja: 500
   puntosPorBajaALaCabeza: 500
