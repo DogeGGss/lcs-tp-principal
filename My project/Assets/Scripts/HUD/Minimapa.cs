@@ -18,6 +18,7 @@ using Img = UnityEngine.UI.Image;
 // - CA7: el dibujo de cada mapa se arma solo al empezar, a partir de las paredes y el piso del mapa (no hay que
 //   preparar una imagen por mapa): se recorre el mapa en una grilla y se mira dónde hay piso y dónde hay pared.
 // - CA8: funciona en Táctico, Deathmatch y Zombie (en Zombie, el jugador y el mapa).
+// Invasión (US 283): los invasores vivos se ven siempre como puntos rojos, y el jefe (US 146) con un punto más grande.
 // Lo crea CombatHud sobre su lienzo. Hay dos vistas del mismo mapa: la chica (el radar) y la grande (el mapa completo).
 public class Minimapa : MonoBehaviour
 {
@@ -60,6 +61,7 @@ public class Minimapa : MonoBehaviour
         public readonly Dictionary<JugadorEnRed, RectTransform> companeros = new Dictionary<JugadorEnRed, RectTransform>();
         public readonly Dictionary<JugadorEnRed, GameObject> iconos = new Dictionary<JugadorEnRed, GameObject>();
         public readonly List<RectTransform> rivales = new List<RectTransform>();
+        public readonly List<RectTransform> invasores = new List<RectTransform>();
         public readonly List<(ZonaDePlantado zona, RectTransform rect, RectTransform letra)> zonas =
             new List<(ZonaDePlantado, RectTransform, RectTransform)>();
         private readonly List<JugadorEnRed> sobran = new List<JugadorEnRed>();
@@ -111,6 +113,7 @@ public class Minimapa : MonoBehaviour
 
             Companeros(centro, derecho);
             Rivales(centro);
+            Invasores(centro);
             Zonas(centro, derecho);
             Dispositivo(centro, derecho);
         }
@@ -178,6 +181,30 @@ public class Minimapa : MonoBehaviour
                 rivales[i].anchoredPosition = EnMapa(lugares[i], centro);
             }
             for (int i = lugares.Count; i < rivales.Count; i++) rivales[i].gameObject.SetActive(false);
+        }
+
+        // US 283, CA2 y CA3: en Invasión, todos los invasores vivos en rojo; el jefe, más grande.
+        private void Invasores(Vector3 centro)
+        {
+            int n = 0;
+            if (PartidaDeInvasion.Actual != null)
+                foreach (Npc npc in Npc.Todos)
+                {
+                    if (npc == null || !npc.Vivo) continue;
+                    if (n >= invasores.Count)
+                    {
+                        RectTransform nuevo = Marca("Invasor", 14f, new Color(0f, 0f, 0f, 0.75f));
+                        Image(Centrado(Node("Color", nuevo), 10f), redondeado, MatchHud.RivalColor, 5f);
+                        invasores.Add(nuevo);
+                    }
+                    RectTransform punto = invasores[n++];
+                    bool jefe = npc.Tipo != null && npc.Tipo.esJefe;
+                    punto.gameObject.SetActive(true);
+                    punto.localScale = Vector3.one * (jefe ? 1.7f : 1f);
+                    punto.anchoredPosition = EnMapa(npc.transform.position, centro);
+                    if (jefe) punto.SetAsLastSibling();
+                }
+            for (int i = n; i < invasores.Count; i++) invasores[i].gameObject.SetActive(false);
         }
 
         // CA5: zonas de plantado, con su letra.
