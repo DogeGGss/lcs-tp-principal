@@ -173,6 +173,9 @@ public class Npc : MonoBehaviour
         capsula.height = Mathf.Max(alto, ancho);
         capsula.radius = Mathf.Max(0.2f, ancho * 0.5f);
 
+        // US 269, CA4: se dibuja después de la marca roja de los portales, así al pasar por delante de uno se ve normal.
+        MarcaAtraves.DespuesDeLaMarca(m);
+
         // US 038, CA1: cabeza, cuerpo y piernas, sobre sus huesos (las del prefab, si las tiene).
         ZonasDeNpc.Asegurar(m.transform);
 
