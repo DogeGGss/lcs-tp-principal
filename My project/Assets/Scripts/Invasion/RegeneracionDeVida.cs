@@ -3,7 +3,7 @@ using UnityEngine;
 // F08 (Modo Invasión), US 149: la vida se regenera sola, como en CoD Zombies. La pone PartidaDeInvasion en el jugador,
 // así que solo existe en este modo (CA6).
 // - CA1: empieza cuando el jugador pasa 4 s seguidos sin recibir daño.
-// - CA2: mientras se regenera recupera 15 de vida por segundo, de a poco (se junta lo de cada cuadro), hasta la vida
+// - CA2: mientras se regenera recupera 8 de vida por segundo, de a poco (se junta lo de cada cuadro), hasta la vida
 //   máxima (100).
 // - CA3: cualquier golpe, aunque solo le saque escudo, corta la regeneración y la espera arranca de nuevo.
 // - CA4: el escudo no se toca: solo se recupera comprándolo.
@@ -13,7 +13,7 @@ using UnityEngine;
 public class RegeneracionDeVida : MonoBehaviour
 {
     public const float Espera = 4f;          // CA1
-    public const float VidaPorSegundo = 15f; // CA2
+    public const float VidaPorSegundo = 8f; // CA2
 
     private HealthSystem vida;
     private float ultimoGolpe;
