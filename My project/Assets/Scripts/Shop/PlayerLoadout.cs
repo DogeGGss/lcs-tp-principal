@@ -35,6 +35,9 @@ public class PlayerLoadout : MonoBehaviour
     // En el campo de práctica (US 119), igual: todas las armas gratis y sin zona de compra.
     public static bool Free => MatchSettings.Mode == GameMode.Deathmatch || CampoDePractica.Activo;
 
+    // US 148, CA6: en Invasión no se vende ni se deshace nada, y reemplazar algo no devuelve lo que costó.
+    public static bool SinVenta => PartidaDeInvasion.Actual != null;
+
     // Al morir, justo antes de perder el equipamiento: así el arma todavía se puede soltar al piso (US 184, CA8).
     public event System.Action LosingEquipment;
 
@@ -137,10 +140,11 @@ public class PlayerLoadout : MonoBehaviour
     {
         if (Free) return 0;
         int refund = 0;
+        if (SinVenta) return item.Price;
         if (item.kind == ShopItemKind.PrimaryWeapon) refund = PaidThisPhase(Primary);
         else if (item.kind == ShopItemKind.SecondaryWeapon) refund = PaidThisPhase(Secondary);
         else if (item.kind == ShopItemKind.Shield) refund = ShieldPurchase()?.paid ?? 0;
-        return item.price - refund;
+        return item.Price - refund;
     }
 
     public ShopResult CanBuy(ShopItem item)
@@ -166,6 +170,8 @@ public class PlayerLoadout : MonoBehaviour
             case ShopItemKind.Grenade:
                 if (Count(item) >= item.maxCarry) return ShopResult.MaxReached;
                 break;
+            case ShopItemKind.Ammo:
+                break;
         }
         return CostOf(item) > wallet.Money ? ShopResult.NotEnoughMoney : ShopResult.Ok;
     }
@@ -179,15 +185,15 @@ public class PlayerLoadout : MonoBehaviour
         switch (item.kind)
         {
             case ShopItemKind.PrimaryWeapon:
-                RefundIfBoughtThisPhase(Primary);
+                if (!SinVenta) RefundIfBoughtThisPhase(Primary);
                 Primary = item;
                 break;
             case ShopItemKind.SecondaryWeapon:
-                RefundIfBoughtThisPhase(Secondary);
+                if (!SinVenta) RefundIfBoughtThisPhase(Secondary);
                 Secondary = item;
                 break;
             case ShopItemKind.Shield:
-                Purchase previous = ShieldPurchase();
+                Purchase previous = SinVenta ? null : ShieldPurchase();
                 if (previous != null)
                 {
                     // Mejora en la misma fase: se devuelve el escudo anterior (US 080, CA3).
@@ -200,18 +206,24 @@ public class PlayerLoadout : MonoBehaviour
             case ShopItemKind.Grenade:
                 grenades[item] = Count(item) + 1;
                 break;
+            case ShopItemKind.Ammo:
+                // US 148, CA4: llena las dos armas.
+                WeaponSwitcher armas = GetComponentInChildren<WeaponSwitcher>(true);
+                if (armas != null) armas.RellenarTodas();
+                break;
         }
 
-        if (!Free) wallet.Spend(item.price);
-        if (item.price > 0 && !Free)
-            purchases.Add(new Purchase { item = item, paid = item.price, shieldBefore = shieldBefore });
+        int price = item.Price;
+        if (!Free) wallet.Spend(price);
+        if (price > 0 && !Free)
+            purchases.Add(new Purchase { item = item, paid = price, shieldBefore = shieldBefore });
         Changed?.Invoke();
         return ShopResult.Ok;
     }
 
     public ShopResult CanSell(ShopItem item)
     {
-        if (Free) return ShopResult.NotSellable;
+        if (Free || SinVenta) return ShopResult.NotSellable;
         ShopResult access = CheckAccess();
         if (access != ShopResult.Ok) return access;
 
@@ -235,6 +247,7 @@ public class PlayerLoadout : MonoBehaviour
     // Botón "Deshacer": devuelve todo lo comprado en la fase actual (US 076, CA10).
     public void UndoPurchases()
     {
+        if (SinVenta) return;
         if (CheckAccess() != ShopResult.Ok) return;
         for (int i = purchases.Count - 1; i >= 0; i--) Revert(purchases[i]);
         Changed?.Invoke();

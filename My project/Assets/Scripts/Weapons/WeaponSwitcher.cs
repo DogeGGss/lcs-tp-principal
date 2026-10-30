@@ -206,6 +206,13 @@ public class WeaponSwitcher : MonoBehaviour
         }
     }
 
+    /// <summary>US 148, CA4: la munición de la tienda de Invasión llena las dos armas (cargador y reserva).</summary>
+    public void RellenarTodas()
+    {
+        if (PrimaryObj != null) Rellenar(PrimaryObj);
+        if (SecondaryObj != null) Rellenar(SecondaryObj);
+    }
+
     static void Rellenar(GameObject arma)
     {
         ArmaDeFuego fuego = arma.GetComponent<ArmaDeFuego>();

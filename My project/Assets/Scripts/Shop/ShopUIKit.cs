@@ -61,6 +61,8 @@ public static class ShopUIKit
     public static string Money(int amount, bool spaced = true)
     {
         string digits = Mathf.Abs(amount).ToString("N0", CultureInfo.InvariantCulture).Replace(",", ".");
+        // US 148, CA2: en Invasión se paga con puntos.
+        if (PartidaDeInvasion.Actual != null) return (amount < 0 ? "-" : "") + digits + (spaced ? " pts" : "");
         return (amount < 0 ? "-" : "") + (spaced ? "$ " : "$") + digits;
     }
 
