@@ -17,7 +17,7 @@ using UnityEngine.UI;
 // - CA5: la oleada termina cuando mueren todos (en la 10, también el Jefe): "Oleada N superada" y descanso.
 // - CA6: al superar la 10, "¡Sobreviviste!" con "Seguir" (modo infinito) y "Terminar" (el resultado es la US 151).
 // - CA7: desde la 11, la misma regla de cantidad y los enemigos con 10 % más de vida por cada oleada después de la 10.
-// Mientras tanto, arriba al centro se ve la oleada y cuántos quedan (o el descanso); el marcador final es la US 150.
+// El marcador (la oleada, cuántos quedan, el descanso y los puntos) es la US 150: MarcadorInvasion.
 public class OleadasDeInvasion : MonoBehaviour
 {
     public const int Ultima = 10;                         // CA6
@@ -35,6 +35,10 @@ public class OleadasDeInvasion : MonoBehaviour
     public int Quedan => Mathf.Max(0, total - muertos) + (jefeVivo ? 1 : 0);
     /// <summary>Juega en modo infinito (siguió después de la 10).</summary>
     public bool Infinito { get; private set; }
+    /// <summary>Enemigos de la oleada en curso, con el Jefe en la 10 (US 150: la barra de los que quedan).</summary>
+    public int Total => total + (Oleada == Ultima && tipoJefe != null ? 1 : 0);
+    /// <summary>Está la pantalla de "¡Sobreviviste!" (US 150: el marcador se oculta).</summary>
+    public bool EnElFinal => fase == Fase.Final;
 
     /// <summary>Avisa cada oleada que empieza y cada oleada superada (para el marcador y los puntos).</summary>
     public static event System.Action<int> Empezo, Supero;
@@ -129,7 +133,6 @@ public class OleadasDeInvasion : MonoBehaviour
             if (yo != null) { navMeshPedido = true; NavMeshEnVivo.Preparar(yo.position); }
         }
 
-        Marcador();
         if (fase != Fase.Oleada) return;
 
         jugadorAhora = Jugador();
@@ -311,20 +314,6 @@ public class OleadasDeInvasion : MonoBehaviour
         if (p == null) return null;
         HealthSystem vida = p.GetComponent<HealthSystem>();
         return vida != null && vida.currentHealth <= 0 ? null : p.transform;
-    }
-
-    // ---------- Arriba al centro (hasta el marcador de la US 150) ----------
-
-    private void Marcador()
-    {
-        if (fase == Fase.Final) return;
-        string deCuantas = Infinito || Oleada > Ultima ? " · modo infinito" : $" de {Ultima}";
-        if (fase == Fase.Descanso)
-        {
-            float queda = descanso != null ? descanso.TimeLeft : 0f;
-            MatchHud.SetCenter("Descanso", queda, $"Oleada {Oleada + 1}{(Infinito || Oleada + 1 > Ultima ? " · modo infinito" : $" de {Ultima}")}", queda <= 5f);
-        }
-        else MatchHud.SetCenter($"Oleada {Oleada}{deCuantas}", null, "enemigos", false, Quedan.ToString());
     }
 
     // ---------- CA6: ¡Sobreviviste! ----------

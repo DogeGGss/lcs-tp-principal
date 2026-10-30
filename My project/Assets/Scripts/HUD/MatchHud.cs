@@ -263,6 +263,14 @@ public class MatchHud : MonoBehaviour
         Instance.deviceLight.color = WithAlpha(RivalColor, 0.35f + 0.65f * Mathf.Abs(Mathf.Sin(Time.unscaledTime * speed)));
     }
 
+    /// <summary>US 150: el modo tiene su propio marcador (Invasión): el centro no se muestra, ni en la fase de compra.</summary>
+    public static void HideCenter()
+    {
+        if (Instance == null) return;
+        Instance.modeSetCenter = true;
+        Instance.marker.gameObject.SetActive(false);
+    }
+
     /// <summary>Vuelve al comportamiento por defecto (fase de compra, si la hay).</summary>
     public static void ClearCenter()
     {

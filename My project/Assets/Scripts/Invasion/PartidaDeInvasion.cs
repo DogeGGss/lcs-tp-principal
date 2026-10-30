@@ -11,7 +11,7 @@ using UnityEngine.SceneManagement;
 // - CA5: Esc pausa el juego (PauseMenu: sin conexión, el tiempo se detiene y los enemigos también).
 // - CA6: suenan la música y el ambiente del modo, en loop por el grupo Música (ConfigRed: musicaInvasion y
 //   ambienteInvasion). Sin clips cargados no suena nada.
-// Las oleadas son la US 144 (OleadasDeInvasion). Se crea sola: no hace falta ponerla en la escena.
+// Las oleadas son la US 144 (OleadasDeInvasion) y el marcador, la US 150 (MarcadorInvasion). Se crea sola: no hace falta ponerla en la escena.
 public class PartidaDeInvasion : MonoBehaviour
 {
     public const int PuntosIniciales = 500; // CA3
@@ -50,6 +50,7 @@ public class PartidaDeInvasion : MonoBehaviour
     {
         ArrancarMusica();
         gameObject.AddComponent<OleadasDeInvasion>(); // US 144
+        gameObject.AddComponent<MarcadorInvasion>();  // US 150
     }
 
     // CA3: el estado inicial del jugador, en cuanto está (aparece con la escena).

@@ -511,7 +511,8 @@ public class ShopUI : MonoBehaviour
         // US 166: durante el tutorial del campo de práctica, solo en su paso (el de la tienda).
         hudHint.SetActive(!open && (phaseActive || Dm) && access == ShopResult.Ok && !PantallaDeCarga.Visible &&
                           !TutorialDePractica.OcultaAvisoTienda);
-        hudMoney.gameObject.SetActive(!open && !Dm); // US 138, CA1: sin plata
+        // US 138, CA1: sin plata. US 150: en Invasión los puntos tienen su propio lugar (MarcadorInvasion).
+        hudMoney.gameObject.SetActive(!open && !Dm && PartidaDeInvasion.Actual == null);
         if (Spectated != null || showedSpectated)
         {
             // La plata del compañero cambia sin avisar (llega por la red): se revisa en cada cuadro. Al dejar de
