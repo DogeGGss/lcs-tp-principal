@@ -155,11 +155,12 @@ public class Npc : MonoBehaviour
             Animaciones.Poner(tipo.quieto != null ? tipo.quieto : tipo.quietoEnCombate, true, 0f);
         }
 
-        // La vida del tipo, sin escudo (CA1 a CA3).
+        // La vida del tipo, sin escudo (CA1 a CA3). En Invasión, según la dificultad (US 161, CA3).
+        int vida = DificultadDeInvasion.VidaDeEnemigo(tipo.vida);
         Vida = gameObject.AddComponent<HealthSystem>();
-        Vida.maxHealth = tipo.vida;
+        Vida.maxHealth = vida;
         Vida.maxShield = 0;
-        Vida.SetState(tipo.vida, 0);
+        Vida.SetState(vida, 0);
 
         // Una cápsula del tamaño del modelo, parada (para chocar y para los disparos).
         Bounds caja = Limites(m);

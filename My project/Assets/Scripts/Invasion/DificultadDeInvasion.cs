@@ -32,6 +32,10 @@ public static class DificultadDeInvasion
         _ => 1f
     };
 
+    /// <summary>CA3: la vida de un enemigo con la dificultad aplicada (solo en una partida de Invasión).</summary>
+    public static int VidaDeEnemigo(int vida) =>
+        PartidaDeInvasion.Actual != null ? Mathf.Max(1, Mathf.RoundToInt(vida * Vida)) : vida;
+
     /// <summary>CA3: el daño de un golpe de enemigo con la dificultad aplicada (solo en una partida de Invasión: en el
     /// campo de práctica los NPCs pegan lo de su tipo).</summary>
     public static int DanioDeEnemigo(int danio) =>
