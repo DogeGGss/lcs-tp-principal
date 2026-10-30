@@ -111,7 +111,7 @@ public static class PerfilDatos
         A("pesado-realista", "Guardia de acero", "pesado", "Hiperrealismo", Rareza.Raro);
         A("guerrero-synthwave", "Turno nocturno", "guerrero", "Synthwave", Rareza.Raro);
         A("sigiloso-manga", "Entre sombras", "sigiloso", "Manga", Rareza.Raro);
-        A("no-muerto", "No muerto", "", "Modo Zombie", Rareza.Raro);
+        A("no-muerto", "No muerto", "", "Modo Invasión", Rareza.Raro);
         A("sigiloso-8bit", "Sombra de 8 bits", "sigiloso", "8 bits", Rareza.Raro);
         A("astra-pop", "Soledad eléctrica", "astra", "Pop art", Rareza.Epico);
         A("guerrero-fauve", "Furia de color", "guerrero", "Fauvismo", Rareza.Epico);
@@ -128,7 +128,7 @@ public static class PerfilDatos
         B("forja-ambar", "Forja ámbar", "pesado", "Original", Rareza.Comun);
         B("pulso-carmesi", "Pulso carmesí", "guerrero", "Original", Rareza.Comun);
         B("velo-esmeralda", "Velo esmeralda", "sigiloso", "Original", Rareza.Comun);
-        B("ultima-oleada", "Última oleada", "", "Modo Zombie", Rareza.Raro);
+        B("ultima-oleada", "Última oleada", "", "Modo Invasión", Rareza.Raro);
         B("nucleo-del-rift", "Núcleo del Rift", "", "Cristal", Rareza.Raro);
         B("pesado-realista", "Guardia de acero", "pesado", "Hiperrealismo", Rareza.Raro);
         B("guerrero-synthwave", "Turno nocturno", "guerrero", "Synthwave", Rareza.Raro);

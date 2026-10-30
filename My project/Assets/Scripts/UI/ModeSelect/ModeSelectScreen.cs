@@ -29,11 +29,11 @@ public class ModeSelectScreen : MonoBehaviour
     [SerializeField] private Sprite rounded;
     [Tooltip("Bordes de 1 px para los radios 6 y 8, en ese orden.")]
     [SerializeField] private Sprite[] borders = new Sprite[2];
-    [Tooltip("Captura del mapa de cada modo (Táctico, Deathmatch, Zombie), en gris. Se ve difuminada detrás del andén.")]
+    [Tooltip("Captura del mapa de cada modo (Táctico, Deathmatch, Invasión), en gris. Se ve difuminada detrás del andén.")]
     [SerializeField] private Sprite[] mapBackgrounds = new Sprite[3];
 
     [Header("Partida")]
-    [Tooltip("Escena que carga Jugar en Zombie. Vacío: todavía no hay escena.")]
+    [Tooltip("Escena que carga Jugar en Invasión. Vacío: todavía no hay escena.")]
     [SerializeField] private string zombieScene = "";
 
     [Header("Eventos (para conectar el multijugador y las partidas)")]
@@ -50,12 +50,12 @@ public class ModeSelectScreen : MonoBehaviour
     // Se arman en Awake: ShopUIKit consulta el espacio de color y Unity no deja hacerlo al crear el componente.
     private static Color[] ModeColor, ModeBg;
     private static readonly string[] ModeHex = { "#F29A38", "#FF4B4B", "#7DE05A" };
-    private static readonly string[] Titles = { "Táctico", "Deathmatch", "Zombie" };
+    private static readonly string[] Titles = { "Táctico", "Deathmatch", "Invasión" };
     private static readonly string[] Blurbs =
     {
         "Plantá o desactivá el dispositivo. Sin reaparición.",
         "Todos contra todos. Reaparecés a los 3 s.",
-        "Sobreviví a la horda en la universidad."
+        "Resistí la invasión en la universidad."
     };
     private static readonly string[][] Chips =
     {
@@ -79,9 +79,9 @@ public class ModeSelectScreen : MonoBehaviour
     private static readonly string[] DifficultyName = { "Fácil", "Normal", "Difícil" };
     private static readonly string[] DifficultyText =
     {
-        "Zombis con 75 % de vida y daño. Regenerás a los 3 s.",
+        "Enemigos con 75 % de vida y daño. Regenerás a los 3 s.",
         "Como está pensado. Regenerás a los 4 s.",
-        "125 % de vida, 150 % de daño y más zombis. +25 % de puntos."
+        "125 % de vida, 150 % de daño y más enemigos. +25 % de puntos."
     };
 
     // ---------- Piezas ----------
@@ -986,7 +986,7 @@ public class ModeSelectScreen : MonoBehaviour
     {
         if (CharacterSelectScreen.IsOpen) return;
         CharacterSelectScreen.Show(displayFont, labelFont, bodyFont, rounded,
-            "Modo Zombie · " + DifficultyName[(int)MatchSettings.Difficulty], 0f, StartZombie, () => { });
+            "Modo Invasión · " + DifficultyName[(int)MatchSettings.Difficulty], 0f, StartZombie, () => { });
     }
 
     private void StartZombie()
@@ -1001,10 +1001,10 @@ public class ModeSelectScreen : MonoBehaviour
             if (ConfigRed.Actual != null)
                 foreach (ConfigRed.Mapa m in ConfigRed.Actual.mapas)
                     if (m != null && m.escena == zombieScene) { mapa = m.nombre; imagen = m.imagen; }
-            PantallaDeCarga.Cargar(zombieScene, "Modo Zombie · " + DifficultyName[(int)MatchSettings.Difficulty], mapa, imagen, GameMode.Zombie);
+            PantallaDeCarga.Cargar(zombieScene, "Modo Invasión · " + DifficultyName[(int)MatchSettings.Difficulty], mapa, imagen, GameMode.Zombie);
         }
         else if (onPlayZombie.GetPersistentEventCount() == 0)
-            details[2].status.text = "El modo Zombie todavía está en desarrollo (F08).";
+            details[2].status.text = "El Modo Invasión todavía está en desarrollo (F08).";
     }
 
     // ================= Cuadro a cuadro =================

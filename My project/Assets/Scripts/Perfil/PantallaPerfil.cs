@@ -201,7 +201,7 @@ public class PantallaPerfil : PantallaBase
             ("Mejor racha", N(e.mejorRacha)),
         });
         // El Zombie todavía no tiene final: se va a registrar con la US 151.
-        Tarjeta(2, "Zombie", "#7DE05A", SinDatos + ". Las partidas Zombie se van a registrar cuando el modo tenga final.", null);
+        Tarjeta(2, "Invasión", "#7DE05A", SinDatos + ". Las partidas de Invasión se van a registrar cuando el modo tenga final.", null);
         RectTransform minijuego = Tarjeta(3, "Minijuego: cometas", "#4CC3FF", null, null);
         cuerpoMinijuego = Place(Node("Datos", minijuego), 0f, 60f, w, 236f);
         RefrescarMinijuego();

@@ -57,7 +57,7 @@ public class CharacterSelectScreen : MonoBehaviour
     private Img confirmBg;
 
     /// <summary>
-    /// Abre la selección. eyebrow: texto chico arriba del título (por ejemplo "Modo Zombie · Normal").
+    /// Abre la selección. eyebrow: texto chico arriba del título (por ejemplo "Modo Invasión · Normal").
     /// timeLimit: segundos para elegir (0 = sin límite). onCancel: null si no se puede volver.
     /// soloAspecto: el personaje no trae habilidad (Deathmatch): la tarjeta lo dice en lugar de mostrar la habilidad.
     /// </summary>
