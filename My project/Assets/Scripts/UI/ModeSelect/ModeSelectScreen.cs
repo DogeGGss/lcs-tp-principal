@@ -79,7 +79,7 @@ public class ModeSelectScreen : MonoBehaviour
     private static readonly string[] DifficultyName = { "Fácil", "Normal", "Difícil" };
     private static readonly string[] DifficultyText =
     {
-        "Enemigos con 75 % de vida y daño. Regenerás a los 3 s.",
+        "75 % de vida y daño y menos enemigos. Regenerás a los 3 s.",
         "Como está pensado. Regenerás a los 4 s.",
         "125 % de vida, 150 % de daño y más enemigos. +25 % de puntos."
     };

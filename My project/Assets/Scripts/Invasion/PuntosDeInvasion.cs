@@ -8,6 +8,7 @@ using UnityEngine;
 //   500 el Jefe. Cuenta cualquier baja (bala, cuchillo o granada).
 // - CA5: la billetera no tiene tope en este modo.
 // - CA6: avisa cada suma (Sumo) y el marcador (US 150) la muestra un instante junto a los puntos.
+// US 161, CA4: en Difícil cada impacto y cada baja dan 25 % más (13, 75, 125 y 625 el Jefe).
 public class PuntosDeInvasion : MonoBehaviour
 {
     public const int PorImpacto = 10; // CA2
@@ -46,6 +47,7 @@ public class PuntosDeInvasion : MonoBehaviour
     private void Sumar(int puntos, bool cabeza)
     {
         if (puntos <= 0) return;
+        puntos = Mathf.CeilToInt(puntos * DificultadDeInvasion.Puntos); // US 161, CA4
         if (billetera == null) billetera = FindFirstObjectByType<PlayerWallet>();
         if (billetera == null) return;
         billetera.SinTope(); // CA5
