@@ -231,6 +231,25 @@ public class OleadasDeInvasion : MonoBehaviour
         if (descanso != null) descanso.Begin(); else Invoke(nameof(Empezar), 20f);
     }
 
+    /// <summary>Para probar (Riftwalker > Invasión > Ir a la oleada 10): saca a los enemigos que quedan y arranca ya la
+    /// oleada n.</summary>
+    public void IrA(int n)
+    {
+        if (fase == Fase.Final) return;
+        foreach (Npc v in vivos) if (v != null) Destroy(v.gameObject);
+        if (jefe != null) Destroy(jefe.gameObject);
+        vivos.Clear();
+        tipos.Clear();
+        aparecio.Clear();
+        porAparecer.Clear();
+        jefe = null;
+        jefeVivo = false;
+        Oleada = Mathf.Max(0, n - 1);
+        fase = Fase.Descanso;
+        if (descanso != null && descanso.IsActive) descanso.Terminar(); // al cerrar la compra arranca la oleada
+        else Empezar();
+    }
+
     // ---------- CA4: dónde aparece ----------
 
     private bool Lugar(Transform jugador, out Vector3 lugar)
