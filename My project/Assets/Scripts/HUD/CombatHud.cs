@@ -102,6 +102,7 @@ public class CombatHud : MonoBehaviour
 
     private CanvasGroup group;
     private GameObject crit, hint, skill;
+    private UnityEngine.UI.Image critImage;
     private CanvasGroup[] hiddenWhenScoped;
     private TextMeshProUGUI hintText;
     private TextMeshProUGUI hpText, shieldText;
@@ -418,6 +419,9 @@ public class CombatHud : MonoBehaviour
         markHalfShield.gameObject.SetActive(maxShield > 0);
         markHalfShield.anchoredPosition = new Vector2(BlockW * (maxHp + maxShield / 2f) / total - 1f, 4f);
         crit.SetActive(low);
+        // US 149, CA5: en Invasión, mientras la vida se regenera, los bordes se van aclarando a medida que sube.
+        float fuerza = shown.GetComponent<RegeneracionDeVida>() != null ? Mathf.Clamp01(1.25f - hp / (maxHp * criticalHealth)) : 1f;
+        critImage.color = new Color(1f, 0.24f, 0.24f, 0.6f * fuerza);
     }
 
     // US 139, CA3: el "+50" aparece a la derecha del número, sube un poco y se apaga.
@@ -657,7 +661,8 @@ public class CombatHud : MonoBehaviour
         group.blocksRaycasts = false;
         group.interactable = false;
 
-        crit = Image(Stretch(Node("VidaCritica", root)), vignette, new Color(1f, 0.24f, 0.24f, 0.6f)).gameObject;
+        critImage = Image(Stretch(Node("VidaCritica", root)), vignette, new Color(1f, 0.24f, 0.24f, 0.6f));
+        crit = critImage.gameObject;
         crit.SetActive(false);
 
         RectTransform shadeRect = Node("Sombra", root);
