@@ -11,9 +11,12 @@ using UnityEngine.UI;
 // - CA2: como máximo 12 vivos a la vez; los que faltan aparecen a medida que mueren los anteriores.
 // - CA3: en las oleadas 1 y 2 solo Comunes; desde la 3, el 25 % Rápidos; desde la 5, además, el 10 % Tanques. En la 10
 //   aparece el Jefe (US 146) cuando cayó la mitad de la oleada: va aparte (no cuenta entre los 33 ni en el tope de 12).
-// - CA4: aparecen en los puntos de aparición del mapa (US 187, AparicionDeEnemigos) que están entre 15 m y 50 m del
-//   jugador, fuera de su vista y conectados con él por el NavMesh. Si no hay ninguno así, se aflojan las condiciones
-//   (cualquier distancia fuera de la vista, después cualquiera), y sin puntos aparecen alrededor del jugador.
+// - CA4 (US 269): salen de portales (PortalDeEnemigos) que se abren en lugares al azar del NavMesh entre 15 m y 50 m
+//   del jugador, conectados con él caminando y, si se puede, fuera de su vista. Cada vez se mandan de 3 a 5 enemigos a
+//   un portal, que los larga de a uno (con el tope de 12 vivos). Hay como mucho 3: los que ya están abiertos se vuelven
+//   a usar y quedan abiertos hasta que termina la oleada. El Jefe sale solo de un portal grande.
+//   Si no se encuentra lugar (o todavía no hay NavMesh), el portal se abre en los puntos de aparición del mapa (US 187,
+//   AparicionDeEnemigos), de reserva, y si no hay, alrededor del jugador.
 // - CA5: la oleada termina cuando mueren todos (en la 10, también el Jefe): "Oleada N superada" y descanso.
 // - CA6: al superar la 10, "¡Sobreviviste!" con "Seguir" (modo infinito) y "Terminar" (el resultado, US 151).
 // - CA7: desde la 11, la misma regla de cantidad y los enemigos con 10 % más de vida por cada oleada después de la 10.
@@ -24,7 +27,6 @@ public class OleadasDeInvasion : MonoBehaviour
     public const int Ultima = 10;                         // CA6
     private const int Base = 6, PorOleada = 3;            // CA1
     private const int MaximoVivos = 12;                   // CA2
-    private const float CadaCuanto = 0.6f;                // s entre apariciones
     private const float Cerca = 15f, Lejos = 50f;         // CA4: m del jugador
     private const float VidaExtra = 0.1f;                 // CA7: por oleada después de la 10
 
@@ -49,9 +51,13 @@ public class OleadasDeInvasion : MonoBehaviour
     private Fase fase = Fase.Descanso;
     private int total, muertos;
     private readonly Queue<TipoDeNpc> porAparecer = new Queue<TipoDeNpc>();
+    private readonly List<PortalDeEnemigos> portales = new List<PortalDeEnemigos>(); // US 269
+    private PortalDeEnemigos portalDelJefe;
+    private float proximoPortal;
+    private const int MaximoPortales = 3, PorPortalMin = 3, PorPortalMax = 5; // US 269, CA3
+    private const float EntrePortales = 1.2f, EntreSalidas = 0.8f;             // s
     private readonly List<Npc> vivos = new List<Npc>();
     private readonly Dictionary<Npc, TipoDeNpc> tipos = new Dictionary<Npc, TipoDeNpc>(); // de qué tipo es cada uno
-    private float proximaAparicion;
     private bool jefeSalio, jefeVivo, jefeMuerto;
     private readonly Dictionary<Npc, float> aparecio = new Dictionary<Npc, float>();
     private Transform jugadorAhora;
@@ -100,7 +106,7 @@ public class OleadasDeInvasion : MonoBehaviour
         jefe = null;
         porAparecer.Clear();
         foreach (TipoDeNpc t in Composicion(Oleada, total)) porAparecer.Enqueue(t);
-        proximaAparicion = Time.time + 1f;
+        proximoPortal = Time.time + 1f;
         MatchHud.ShowBanner("Modo Invasión", $"Oleada {Oleada}", ShopUIKit.Bad, Oleada == Ultima ? "Llega el jefe" : $"{total} enemigos", null, 2.5f);
         Empezo?.Invoke(Oleada);
     }
@@ -156,36 +162,71 @@ public class OleadasDeInvasion : MonoBehaviour
         Transform jugador = jugadorAhora;
         if (jugador == null) return;
 
-        // CA2: de a uno, sin pasar de 12 vivos.
-        if (porAparecer.Count > 0 && vivos.Count < MaximoVivos && Time.time >= proximaAparicion)
+        // US 269: los portales. Cuando hacen falta más enemigos de los que ya esperan en los portales, se manda un grupo
+        // a uno: uno nuevo si hay menos de 3 abiertos y se encuentra lugar; si no, el abierto que menos tiene en fila.
+        portales.RemoveAll(p => p == null || p.Cerrando);
+        int esperando = 0;
+        foreach (PortalDeEnemigos p in portales) esperando += p.Fila.Count;
+        if (porAparecer.Count > 0 && Time.time >= proximoPortal && vivos.Count + esperando < MaximoVivos)
         {
-            proximaAparicion = Time.time + CadaCuanto;
-            TipoDeNpc tipo = porAparecer.Peek();
-            if (Lugar(jugador, out Vector3 lugar))
+            PortalDeEnemigos portal = null;
+            if (portales.Count < MaximoPortales && LugarDePortal(jugador, out Vector3 lugar))
             {
-                porAparecer.Dequeue();
-                Npc npc = Aparecer(tipo, lugar, jugador);
-                if (npc != null) { vivos.Add(npc); tipos[npc] = tipo; aparecio[npc] = Time.time; }
-                else total--; // el tipo no tiene modelo: no cuenta
+                portal = PortalDeEnemigos.Abrir(lugar, jugador.position, ConfigInvasion.Actual.escala);
+                portal.Proximo = Time.time + 0.6f; // que termine de abrirse
+                portales.Add(portal);
+            }
+            else foreach (PortalDeEnemigos p in portales) if (portal == null || p.Fila.Count < portal.Fila.Count) portal = p;
+            if (portal != null)
+            {
+                proximoPortal = Time.time + EntrePortales;
+                int cuantos = Mathf.Min(porAparecer.Count, Random.Range(PorPortalMin, PorPortalMax + 1));
+                for (int i = 0; i < cuantos; i++) portal.Fila.Enqueue(porAparecer.Dequeue());
             }
         }
 
-        // CA3 (US 146, CA1): el Jefe, a mitad de la oleada 10.
-        if (Oleada == Ultima && !jefeSalio && tipoJefe != null && muertos >= total / 2 && Lugar(jugador, out Vector3 dondeJefe))
+        // CA2: cada portal larga los suyos de a uno, sin pasar de 12 vivos. Quedan abiertos hasta que termina la oleada.
+        foreach (PortalDeEnemigos portal in portales)
         {
-            jefeSalio = true;
-            jefe = Aparecer(tipoJefe, dondeJefe, jugador);
-            jefeVivo = jefe != null;
-            if (jefe != null) aparecio[jefe] = Time.time;
+            if (portal.Fila.Count == 0) continue;
+            if (!portal.Listo || vivos.Count >= MaximoVivos || Time.time < portal.Proximo) continue;
+            portal.Proximo = Time.time + EntreSalidas;
+            TipoDeNpc tipo = portal.Fila.Dequeue();
+            Npc npc = Aparecer(tipo, portal.Salida, jugador);
+            if (npc != null) { vivos.Add(npc); tipos[npc] = tipo; aparecio[npc] = Time.time; }
+            else total--; // el tipo no tiene modelo: no cuenta
+        }
+
+        // CA3 (US 146, CA1 y US 269, CA5): el Jefe, a mitad de la oleada 10, de un portal grande (que queda abierto hasta
+        // el final de la oleada).
+        Vector3 dondeJefe = Vector3.zero;
+        if (Oleada == Ultima && !jefeSalio && (portalDelJefe == null || portalDelJefe.Fila.Count == 0) && tipoJefe != null
+            && muertos >= total / 2 && (portalDelJefe != null || LugarDePortal(jugador, out dondeJefe)))
+        {
+            if (portalDelJefe == null) portalDelJefe = PortalDeEnemigos.Abrir(dondeJefe, jugador.position, ConfigInvasion.Actual.escalaJefe);
+            portalDelJefe.Fila.Enqueue(tipoJefe); // (si el jefe se perdió, vuelve a salir por el mismo portal)
             MatchHud.ShowBanner("Oleada 10", "¡Llegó el jefe!", ShopUIKit.Bad, "", null, 3f);
         }
+        if (portalDelJefe != null && !portalDelJefe.Cerrando && portalDelJefe.Listo && portalDelJefe.Fila.Count > 0)
+        {
+            portalDelJefe.Fila.Dequeue();
+            jefeSalio = true;
+            jefe = Aparecer(tipoJefe, portalDelJefe.Salida, jugador);
+            jefeVivo = jefe != null;
+            if (jefe != null) aparecio[jefe] = Time.time;
+            portalDelJefe.Proximo = Time.time + 1.5f;
+        }
+
         // El jefe: si murió, listo; si desapareció sin morir, vuelve a aparecer.
         if (jefeVivo && jefe != null && !jefe.Vivo) { jefeVivo = false; jefeMuerto = true; }
         else if (jefeVivo && (jefe == null || Perdido(jefe))) { if (jefe != null) Destroy(jefe.gameObject); jefe = null; jefeVivo = false; jefeSalio = false; }
 
         // CA5: superada (en la 10, solo con el jefe muerto).
         bool faltaJefe = Oleada == Ultima && tipoJefe != null && !jefeMuerto;
-        if (porAparecer.Count == 0 && vivos.Count == 0 && !faltaJefe) Superar();
+        int pendientes = 0;
+        foreach (PortalDeEnemigos p in portales) if (p != null && !p.Cerrando) pendientes += p.Fila.Count;
+        if (portalDelJefe != null) pendientes += portalDelJefe.Fila.Count;
+        if (porAparecer.Count == 0 && pendientes == 0 && vivos.Count == 0 && !faltaJefe) Superar();
     }
 
     // Vivo pero perdido: se cayó del mapa (muy por debajo del jugador) o, a los 10 s de aparecer, todavía no pudo
@@ -219,6 +260,7 @@ public class OleadasDeInvasion : MonoBehaviour
 
     private void Superar()
     {
+        CerrarPortales();
         Supero?.Invoke(Oleada);
         if (Oleada == Ultima && !Infinito)
         {
@@ -238,6 +280,7 @@ public class OleadasDeInvasion : MonoBehaviour
         if (fase == Fase.Final) return;
         foreach (Npc v in vivos) if (v != null) Destroy(v.gameObject);
         if (jefe != null) Destroy(jefe.gameObject);
+        CerrarPortales();
         vivos.Clear();
         tipos.Clear();
         aparecio.Clear();
@@ -250,7 +293,52 @@ public class OleadasDeInvasion : MonoBehaviour
         else Empezar();
     }
 
-    // ---------- CA4: dónde aparece ----------
+    private void CerrarPortales()
+    {
+        foreach (PortalDeEnemigos p in portales) if (p != null) p.Cerrar();
+        portales.Clear();
+        if (portalDelJefe != null) portalDelJefe.Cerrar();
+        portalDelJefe = null;
+    }
+
+    // ---------- US 269, CA1: dónde se abre un portal ----------
+
+    // Al azar en el NavMesh a 15–50 m, conectado con el jugador, con lugar para el portal y, primero, fuera de su vista;
+    // si no, a la vista; si no hay NavMesh o no se encuentra, en los puntos de aparición (US 187) o alrededor del jugador.
+    private bool LugarDePortal(Transform jugador, out Vector3 lugar)
+    {
+        Camera cam = Camera.main;
+        if (NavMeshEnVivo.Listo || NavMesh.SamplePosition(jugador.position, out _, 5f, NavMesh.AllAreas))
+        {
+            for (int intento = 0; intento < 30; intento++)
+            {
+                bool escondido = intento < 20;
+                Vector2 c = Random.insideUnitCircle.normalized;
+                Vector3 p = jugador.position + new Vector3(c.x, 0f, c.y) * Random.Range(Cerca, Lejos);
+                if (!Conectado(p, jugador.position, out Vector3 q)) continue;
+                float d = Vector3.Distance(q, jugador.position);
+                if (d < Cerca * 0.8f || d > Lejos * 1.2f) continue;
+                if (escondido && LoVe(cam, q)) continue;
+                if (!HayLugar(q)) continue;
+                lugar = q;
+                return true;
+            }
+        }
+        return Lugar(jugador, out lugar);
+    }
+
+    // Lugar para el portal parado: nada sólido del mapa en un cilindro de 1,2 m de radio y 3 m de alto.
+    private static bool HayLugar(Vector3 piso)
+    {
+        foreach (Collider c in Physics.OverlapCapsule(piso + Vector3.up * 1.3f, piso + Vector3.up * 2.6f, 1.2f, Physics.DefaultRaycastLayers, QueryTriggerInteraction.Ignore))
+        {
+            if (c.GetComponentInParent<Npc>() != null || c.GetComponentInParent<PlayerMovement>() != null) continue;
+            return false;
+        }
+        return true;
+    }
+
+    // ---------- CA4: dónde aparece (de reserva) ----------
 
     private bool Lugar(Transform jugador, out Vector3 lugar)
     {

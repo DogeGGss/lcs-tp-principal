@@ -4,10 +4,12 @@ using UnityEngine;
 // US 022, CA8: el rival mordido por el perro del Callejero queda marcado 3 s: su silueta se ve a través de las paredes
 // para el dueño del perro y sus compañeros. Se dibujan copias de sus mallas (que siguen sus huesos) con el shader
 // Efectos/MarcaAtraves, que no respeta la profundidad. Al final se apaga de a poco.
+// Con soloDetras (los portales de enemigos de la Invasión, US 269) se usa Efectos/MarcaDetras: se dibuja solo donde
+// lo tapa una pared, no donde se ve directo.
 public class MarcaAtraves : MonoBehaviour
 {
     private const float Apagado = 0.4f;
-    private static Material material;
+    private static Material material, materialDetras;
     private static readonly Dictionary<Transform, MarcaAtraves> activas = new Dictionary<Transform, MarcaAtraves>();
 
     private Transform personaje;
@@ -16,12 +18,12 @@ public class MarcaAtraves : MonoBehaviour
     private float hasta;
 
     /// <summary>Marca a ese personaje esos segundos (si ya estaba marcado, alarga la marca).</summary>
-    public static void Marcar(Transform personaje, float segundos, Color color)
+    public static void Marcar(Transform personaje, float segundos, Color color, bool soloDetras = false)
     {
         if (personaje == null) return;
         if (!activas.TryGetValue(personaje, out MarcaAtraves marca) || marca == null)
         {
-            Material base_ = MaterialMarca();
+            Material base_ = soloDetras ? MaterialDetras() : MaterialMarca();
             if (base_ == null) return;
             marca = personaje.gameObject.AddComponent<MarcaAtraves>();
             marca.Armar(personaje, base_);
@@ -91,6 +93,38 @@ public class MarcaAtraves : MonoBehaviour
         foreach (Renderer r in copias) if (r != null) Destroy(r.gameObject);
         if (propio != null) Destroy(propio);
         if (personaje != null && activas.TryGetValue(personaje, out MarcaAtraves m) && m == this) activas.Remove(personaje);
+    }
+
+    /// <summary>Cola de dibujo de lo que va después de la marca "solo detrás" (sigue siendo opaco: hasta 2500).</summary>
+    public const int ColaDespuesDeLaMarca = 2460;
+
+    /// <summary>
+    /// US 269, CA4: lo opaco de ese objeto se dibuja después de la marca "solo detrás" (Efectos/MarcaDetras), así no la
+    /// tapa como si fuera una pared: los enemigos que pasan por delante de un portal y el mismo portal. Usa copias de
+    /// sus materiales (las del objeto, no los del proyecto).
+    /// </summary>
+    public static void DespuesDeLaMarca(GameObject objeto)
+    {
+        if (objeto == null) return;
+        foreach (Renderer r in objeto.GetComponentsInChildren<Renderer>(true))
+        {
+            if (r is ParticleSystemRenderer) continue;
+            Material[] mats = r.materials; // copias
+            for (int i = 0; i < mats.Length; i++)
+                if (mats[i] != null && mats[i].renderQueue <= 2450) mats[i].renderQueue = ColaDespuesDeLaMarca;
+            r.materials = mats;
+        }
+    }
+
+    private static Material MaterialDetras()
+    {
+        if (materialDetras == null)
+        {
+            Shader shader = Resources.Load<Shader>("Efectos/MarcaDetras");
+            if (shader == null) shader = Shader.Find("Efectos/MarcaDetras");
+            if (shader != null) materialDetras = new Material(shader) { name = "Marca detrás" };
+        }
+        return materialDetras;
     }
 
     private static Material MaterialMarca()

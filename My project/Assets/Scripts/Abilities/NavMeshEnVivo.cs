@@ -77,5 +77,6 @@ public static class NavMeshEnVivo
         c.GetComponentInParent<HealthSystem>() == null && c.GetComponentInParent<CharacterController>() == null &&
         c.GetComponentInParent<Barrera>() == null && c.GetComponentInParent<Perro>() == null &&
         c.GetComponentInParent<ArmaEnPiso>() == null && c.GetComponentInParent<MurosDeBase>() == null &&
+        c.GetComponentInParent<PortalDeEnemigos>() == null && // US 269: duran una oleada
         !PuertaAutomatica.EsPuerta(c);
 }
