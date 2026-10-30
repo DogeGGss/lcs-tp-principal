@@ -22,7 +22,7 @@ MonoBehaviour:
   velocidadDeAtaque: 1.5
   cadencia: 1.5
   frenaAlRecibirImpacto: 0
-  velocidad: 1.8
+  velocidad: 3.5
   corre: 0
   quieto: {fileID: 7400000, guid: 12032f68da0993d41bcee7217e8288f7, type: 3}
   quietoEnCombate: {fileID: 7400000, guid: f6145ecde24cdf54b89e3e4990dd0f11, type: 3}
@@ -39,5 +39,8 @@ MonoBehaviour:
   embiste: 1
   preparaEmbestida: {fileID: 7400000, guid: 693eb987195b4674690a3b04d565c310, type: 3}
   embestida: {fileID: 7400000, guid: 8f8ad413d2c254e4b8e5bd1ee79e356b, type: 3}
+  vuela: 1
+  volar: {fileID: 7400000, guid: 8f8ad413d2c254e4b8e5bd1ee79e356b, type: 3}
+  escupir: {fileID: 7400000, guid: 495488b67c58bcd48b6e41fd3cc7a8a7, type: 3}
   puntosPorBaja: 500
   puntosPorBajaALaCabeza: 500

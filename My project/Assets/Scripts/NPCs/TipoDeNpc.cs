@@ -76,6 +76,12 @@ public class TipoDeNpc : ScriptableObject
     public AnimationClip preparaEmbestida;
     [Tooltip("Animación mientras embiste. Vacío: la de correr.")]
     public AnimationClip embestida;
+    [Tooltip("Si levanta vuelo y escupe veneno (US 267).")]
+    public bool vuela;
+    [Tooltip("Animación de vuelo (al subir, en el aire y al bajar). Vacío: la de caminar.")]
+    public AnimationClip volar;
+    [Tooltip("Animación al escupir cada bola de veneno (se mezcla con la de vuelo).")]
+    public AnimationClip escupir;
 
     [Header("Puntos (US 147)")]
     [Tooltip("Puntos por matarlo (US 039, CA3).")]
