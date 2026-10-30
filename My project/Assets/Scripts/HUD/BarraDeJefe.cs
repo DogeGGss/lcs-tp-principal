@@ -18,7 +18,8 @@ public class BarraDeJefe : MonoBehaviour
 
     private Npc jefe;
     private RectTransform relleno, tramo;
-    private TextMeshProUGUI valor;
+    private TextMeshProUGUI valor, nombreTexto;
+    private string nombre;
     private Image imagenRelleno;
     private CanvasGroup grupo;
     private float mostrado = 1f, rastro = 1f, murioEn = -1f;
@@ -58,8 +59,9 @@ public class BarraDeJefe : MonoBehaviour
         caja.sizeDelta = new Vector2(Ancho, 46f);
 
         // El nombre a la izquierda y la vida a la derecha, arriba de la barra.
-        string nombre = string.IsNullOrEmpty(npc.Tipo.titulo) ? npc.Tipo.nombre : npc.Tipo.titulo;
-        TextMeshProUGUI texto = Texto("Nombre", caja, nombre.ToUpperInvariant(), titulo, 22f, ShopUIKit.Ink, TextAlignmentOptions.BottomLeft);
+        nombre = (string.IsNullOrEmpty(npc.Tipo.titulo) ? npc.Tipo.nombre : npc.Tipo.titulo).ToUpperInvariant();
+        TextMeshProUGUI texto = Texto("Nombre", caja, nombre, titulo, 22f, ShopUIKit.Ink, TextAlignmentOptions.BottomLeft);
+        nombreTexto = texto;
         texto.characterSpacing = 6f;
         valor = Texto("Vida", caja, "", etiqueta, 16f, ShopUIKit.Mute, TextAlignmentOptions.BottomRight);
 
@@ -102,6 +104,13 @@ public class BarraDeJefe : MonoBehaviour
     }
 
     /// <summary>El color de la vida (la furia de la US 268 la pone roja).</summary>
+    /// <summary>La furia (US 268): la vida en rojo y "FURIA" al lado del nombre.</summary>
+    public void Enfurecer()
+    {
+        PonerColor(ShopUIKit.Bad);
+        if (nombreTexto != null) nombreTexto.text = $"{nombre}  <color=#FF5C5C>FURIA</color>";
+    }
+
     public void PonerColor(Color color)
     {
         if (imagenRelleno != null) imagenRelleno.color = color;

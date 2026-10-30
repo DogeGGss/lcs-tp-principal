@@ -92,7 +92,7 @@ public class PersecucionDeNpc : MonoBehaviour
         if (loVe && !grito) Gritar();
         ReaccionDeNpc reaccion = GetComponent<ReaccionDeNpc>();
         float golpeado = reaccion != null ? reaccion.Velocidad : 1f; // US 038, CA3: recién golpeado, un poco más lento
-        agente.speed = npc.Tipo.velocidad * (loVe ? MasRapido : 1f) * golpeado;
+        agente.speed = npc.Tipo.velocidad * npc.MasVelocidad * (loVe ? MasRapido : 1f) * golpeado; // (la furia, US 268)
 
         Vector3 hasta = Objetivo.position - transform.position;
         hasta.y = 0f;

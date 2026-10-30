@@ -82,6 +82,10 @@ public class TipoDeNpc : ScriptableObject
     public AnimationClip volar;
     [Tooltip("Animación al escupir cada bola de veneno (se mezcla con la de vuelo).")]
     public AnimationClip escupir;
+    [Tooltip("Si a la mitad de la vida se enfurece (US 268): ruge, se pone rojo y va más rápido y ataca más seguido.")]
+    public bool furia;
+    [Tooltip("Animación del rugido al enfurecerse.")]
+    public AnimationClip rugido;
 
     [Header("Puntos (US 147)")]
     [Tooltip("Puntos por matarlo (US 039, CA3).")]
