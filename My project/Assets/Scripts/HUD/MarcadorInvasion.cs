@@ -127,7 +127,7 @@ public class MarcadorInvasion : MonoBehaviour
         panel.pivot = new Vector2(0.5f, 1f);
         panel.anchoredPosition = new Vector2(0f, -Arriba);
         panel.sizeDelta = new Vector2(Ancho, Alto);
-        Stretch(Node("Fondo", panel)).gameObject.AddComponent<FormaRedondeada>()
+        Figura<FormaRedondeada>(Stretch(Node("Fondo", panel)))
             .Pintar(Rgb(6, 10, 6, DarkAlpha(0.74f)), WithAlpha(Verde, FadeAlpha(0.28f)), 10f, 1f);
 
         // La línea verde de abajo, con su brillo.
@@ -144,7 +144,7 @@ public class MarcadorInvasion : MonoBehaviour
 
         // CA1 y CA5: la vía.
         RectTransform viaRect = Place(Node("Via", panel), 26f, 64f, 568f, 62f);
-        via = viaRect.gameObject.AddComponent<ViaDeOleadas>();
+        via = Figura<ViaDeOleadas>(viaRect);
         via.raycastTarget = false;
         for (int i = 0; i <= OleadasDeInvasion.Ultima; i++)
         {
@@ -199,11 +199,18 @@ public class MarcadorInvasion : MonoBehaviour
         halo.pivot = new Vector2(0f, 1f);
         halo.offsetMin = new Vector2(-10f, -10f);
         halo.offsetMax = new Vector2(10f, 10f);
-        halo.gameObject.AddComponent<FormaRedondeada>().Pintar(WithAlpha(Verde, FadeAlpha(0.12f)), Color.clear, 32f, 0f);
-        Stretch(Node("Fondo", pildora)).gameObject.AddComponent<FormaRedondeada>()
+        Figura<FormaRedondeada>(halo).Pintar(WithAlpha(Verde, FadeAlpha(0.12f)), Color.clear, 32f, 0f);
+        Figura<FormaRedondeada>(Stretch(Node("Fondo", pildora)))
             .Pintar(Rgb(10, 24, 8, DarkAlpha(0.9f)), Verde, 22f, 1f);
         pildoraTexto = Text(Stretch(Node("Texto", pildora)), display, 24f, Verde, TextAlignmentOptions.Center, 10f, true);
         pildora.gameObject.SetActive(false);
+    }
+
+    // Las figuras viven en este archivo con otro nombre y Unity no les agrega solo el CanvasRenderer (sin él no se ven).
+    private static T Figura<T>(RectTransform rect) where T : UIShape
+    {
+        rect.gameObject.AddComponent<CanvasRenderer>();
+        return rect.gameObject.AddComponent<T>();
     }
 
     // ---------- CA1, CA2 y CA3: el panel ----------
