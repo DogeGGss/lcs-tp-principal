@@ -57,7 +57,9 @@ public static class NavMeshEnVivo
         var fuentes = new List<NavMeshBuildSource>();
         NavMeshBuilder.CollectSources(limites, Physics.DefaultRaycastLayers, NavMeshCollectGeometry.PhysicsColliders, 0,
             new List<NavMeshBuildMarkup>(), fuentes);
-        fuentes.RemoveAll(f => !DelMapa(f.component as Collider));
+        // El terreno (el pasto de la uni, por ejemplo) no viene como un Collider sino como Terrain: antes se descartaba y
+        // el NavMesh quedaba solo sobre las veredas y los pisos, así los NPCs y el perro no pisaban el pasto.
+        fuentes.RemoveAll(f => f.shape != NavMeshBuildSourceShape.Terrain && !DelMapa(f.component as Collider));
 
         datos = new NavMeshData(tipo);
         instancia = NavMesh.AddNavMeshData(datos);
