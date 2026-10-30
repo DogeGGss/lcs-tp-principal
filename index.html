@@ -681,6 +681,10 @@ a.uslink{white-space:nowrap}
 .cu-mail-cab span{color:var(--ink-2);font-size:14px}
 .cu-codigo{font:600 30px/1 var(--mono);letter-spacing:.2em;padding:12px 16px;margin:4px 0 12px;background:var(--mono-bg);border-radius:8px;text-align:center}
 .cu-mail-pie{color:var(--ink-2);font-size:13px}
+/* Maqueta del launcher: su ventana mide 1144 × 724 (el panel de 1120 × 700 y la sombra) */
+.lc-stage{aspect-ratio:1144/724;background:#05060a}
+.lc-stage .stage-inner{width:1144px;height:724px}
+.lc-stage iframe{display:block;width:1144px;height:724px;border:0}
 
 /* Arte del perfil: conjuntos como en la cabecera del Perfil, zonas del banner e instrucciones */
 .pa-conjuntos{display:flex;flex-direction:column;gap:4px;margin:12px 0}
@@ -1978,43 +1982,32 @@ MARCO · Conjunto: [nombre]. Estilo: [estilo]. Forma: [esquinas, remate, rieles]
 </script>
 
 <section id="cuenta">
-  <div class="sec-head"><h2>Cuenta y buscar partida</h2><span class="sub">F18 · US 237, US 269 a US 273, US 281 · F28 · US 274 a US 280</span> <span class="st st-idea">Diseño para revisar</span></div>
-  <p>Dos cosas nuevas del Sprint 4. La <b>cuenta</b>: se crea con mail y contraseña y arranca de cero; con ella el progreso queda en la nube, se recupera en cualquier PC y se aparece en el ranking. Sin cuenta se juega igual, pero el progreso queda solo en la PC (US 281). Y <b>buscar partida</b>: en el andén de Táctico y de Deathmatch, el juego te junta con otros jugadores del mismo modo, versión y región, y la partida arranca sola. Buscar partida pide cuenta; las salas con código y el campo de práctica siguen sin cuenta.</p>
-  <p class="soft">Todavía no está en el juego: es la propuesta para revisar antes de programarla. La maqueta usa las mismas piezas que el menú (el Perfil, las ventanas y el andén de cada modo), y sus botones llevan de un estado al otro como en el juego.</p>
+  <div class="sec-head"><h2>Cuenta y buscar partida</h2><span class="sub">F18 · US 237, US 269 a US 273, US 281, US 282 · F28 · US 274 a US 280</span> <span class="st st-idea">Diseño para revisar</span></div>
+  <p>Dos cosas nuevas del Sprint 4. La <b>cuenta</b> se maneja desde el <a href="#launcher">launcher</a>, como en el cliente de League of Legends: ahí se crea con mail y contraseña, se inicia sesión y se cierra. Para jugar hace falta una cuenta, y JUGAR abre el juego con ella. Cada cuenta arranca de cero, guarda el progreso en la nube y aparece en el ranking (US 281). Y <b>buscar partida</b>: en el andén de Táctico y de Deathmatch, el juego te junta con otros jugadores del mismo modo, versión y región, y la partida arranca sola.</p>
+  <p class="soft">Todavía no está ni en el launcher ni en el juego: es la propuesta para revisar antes de programarla. Las dos maquetas usan las mismas piezas que el launcher y que el menú, y sus botones llevan de un estado al otro.</p>
 
-  <h3 id="cuenta-maqueta">Maqueta</h3>
-  <div class="controls cu-ctl" id="cuentaCtl">
-    <div><span class="ctl-label">Cuenta</span><span class="seg">
-      <button type="button" data-e="perfil-sin" aria-pressed="true">Sin cuenta</button><button type="button" data-e="crear" aria-pressed="false">Crear</button><button type="button" data-e="crear-error" aria-pressed="false">Mail usado</button><button type="button" data-e="perfil-confirmar" aria-pressed="false">Confirmar mail</button><button type="button" data-e="perfil-cuenta" aria-pressed="false">Con cuenta</button><button type="button" data-e="entrar" aria-pressed="false">Iniciar sesión</button><button type="button" data-e="entrar-error" aria-pressed="false">Error</button><button type="button" data-e="recuperar" aria-pressed="false">Recuperar</button><button type="button" data-e="recuperar-codigo" aria-pressed="false">Código</button><button type="button" data-e="cerrar" aria-pressed="false">Cerrar sesión</button><button type="button" data-e="borrar" aria-pressed="false">Borrar</button><button type="button" data-e="privacidad" aria-pressed="false">Privacidad</button>
+  <h3 id="cuenta-launcher">La cuenta en el launcher</h3><span id="cuenta-maqueta"></span><span id="cuenta-ventanas"></span>
+  <div class="controls cu-ctl" id="launcherCtl">
+    <div><span class="ctl-label">Sin sesión</span><span class="seg">
+      <button type="button" data-e="entrar" aria-pressed="true">Iniciar sesión</button><button type="button" data-e="entrar-error" aria-pressed="false">Error</button><button type="button" data-e="crear" aria-pressed="false">Crear cuenta</button><button type="button" data-e="crear-error" aria-pressed="false">Mail usado</button><button type="button" data-e="confirmar" aria-pressed="false">Confirmar mail</button><button type="button" data-e="recuperar" aria-pressed="false">Recuperar</button><button type="button" data-e="recuperar-codigo" aria-pressed="false">Código</button>
     </span></div>
-    <div><span class="ctl-label">Buscar partida</span><span class="seg">
-      <button type="button" data-e="anden" aria-pressed="false">Andén</button><button type="button" data-e="anden-sin-cuenta" aria-pressed="false">Sin cuenta</button><button type="button" data-e="buscando" aria-pressed="false">Buscando</button><button type="button" data-e="minimo" aria-pressed="false">Con el mínimo</button><button type="button" data-e="cuenta-regresiva" aria-pressed="false">Por empezar</button><button type="button" data-e="sin-conexion" aria-pressed="false">Sin conexión</button>
+    <div><span class="ctl-label">Con la cuenta</span><span class="seg">
+      <button type="button" data-e="listo" aria-pressed="false">Listo para jugar</button><button type="button" data-e="menu" aria-pressed="false">Menú de la cuenta</button><button type="button" data-e="cerrar" aria-pressed="false">Cerrar sesión</button><button type="button" data-e="cerrar-juego" aria-pressed="false">Con el juego abierto</button><button type="button" data-e="borrar" aria-pressed="false">Borrar</button><button type="button" data-e="privacidad" aria-pressed="false">Privacidad</button><button type="button" data-e="sin-conexion" aria-pressed="false">Sin conexión</button>
     </span></div>
   </div>
-  <div class="stage cu-stage"><div class="stage-inner"><iframe id="cuentaFrame" src="menu/cuentas.html#perfil-sin" title="Maqueta de la cuenta y de buscar partida" width="1920" height="1080" loading="lazy"></iframe></div></div>
-  <p class="soft" style="margin-top:10px">También se abre sola, a pantalla completa: <a href="menu/cuentas.html">menu/cuentas.html</a>. <span class="kbd">Esc</span> cierra las ventanas y cancela la búsqueda.</p>
-
-  <h3 id="cuenta-perfil">La cuenta en el Perfil</h3>
-  <p>El Perfil suma la pestaña <b>Cuenta</b>, después de Estadísticas y Personalización. A la derecha de las pestañas dice cómo está esta PC: «Sin cuenta», «Falta confirmar» o «Con cuenta». Abajo, dos tarjetas: la de la cuenta y la de privacidad.</p>
+  <div class="stage lc-stage"><div class="stage-inner"><iframe id="launcherFrame" src="launcher/cuenta.html#entrar" title="Maqueta de la cuenta en el launcher" width="1144" height="724" loading="lazy"></iframe></div></div>
+  <p class="soft" style="margin-top:10px">También se abre sola: <a href="launcher/cuenta.html">launcher/cuenta.html</a>. <span class="kbd">Esc</span> cierra los paneles y el menú.</p>
+  <p>Sin una sesión, el panel de la cuenta tapa el launcher menos la barra de arriba, que sigue con Ajustes, minimizar y cerrar. Es una tarjeta como la de <a href="#launcher-ventana">Ajustes</a>, y mientras está, JUGAR no se puede tocar. Con la cuenta, la barra de arriba muestra la inicial, el nombre y el mail, y abre el menú de la cuenta. La sesión queda guardada: al volver a abrir el launcher sigue en la cuenta, también sin conexión.</p>
   <div class="table-wrap"><table>
-    <tr><th>Estado</th><th>Qué muestra</th><th>Historia</th></tr>
-    <tr><td>Sin cuenta</td><td>«Jugás sin cuenta», que el progreso queda solo en esta PC (sin nube ni ranking) y que la cuenta arranca de cero, tres ventajas (el progreso en la nube, aparecer en el ranking y buscar partida) y los botones «Crear cuenta» (naranja) e «Iniciar sesión».</td><td>US 237, US 269</td></tr>
-    <tr><td>Falta confirmar</td><td>«Confirmá tu mail»: el mail al que se mandó el código, las 6 casillas del código y «Confirmar». Se puede pedir otro código pasados 60 s. Mientras tanto se juega como siempre; «Buscar partida» se habilita al confirmar.</td><td>US 237 (CA2)</td></tr>
-    <tr><td>Con cuenta</td><td>El mail con la etiqueta «Confirmada», qué quedó en la cuenta, tres datos (desde cuándo, el nombre y «Buscar partida: habilitado») y los botones «Cerrar sesión» y «Borrar cuenta» (en rojo, sin relleno).</td><td>US 270, US 273</td></tr>
-    <tr><td>Privacidad</td><td>Siempre a la derecha: «Qué guardamos», en cuatro renglones, y «Ver el aviso completo».</td><td>US 273 (CA1)</td></tr>
-  </table></div>
-
-  <h3 id="cuenta-ventanas">Ventanas</h3>
-  <p class="soft">Todas son como la de «Cambiar nombre»: 760 de ancho sobre el juego oscurecido, antetítulo naranja, título en mayúsculas, campos con su nombre arriba y dos botones al pie (el de la acción, a la derecha y en naranja). <span class="kbd">Esc</span> o un clic afuera cierran sin hacer nada.</p>
-  <div class="table-wrap"><table>
-    <tr><th>Ventana</th><th>Qué pide</th><th>Al aceptar</th><th>Historia</th></tr>
-    <tr><td>Crear cuenta</td><td>Arriba, «La cuenta arranca de cero: lo que jugaste sin cuenta queda en esta PC». Mail, contraseña (8 caracteres o más) y repetirla, con «Ver» para mostrarlas. Debajo: «Al crear la cuenta aceptás el aviso de privacidad», con el link.</td><td>Manda el código y pasa a «Confirmá tu mail».</td><td>US 237 (CA1)</td></tr>
-    <tr><td>Iniciar sesión</td><td>Mail y contraseña, «¿Te olvidaste la contraseña?» y, al pie, «¿No tenés cuenta? Crear cuenta».</td><td>Entra a la cuenta y baja su progreso. Lo jugado sin cuenta en esa PC no se mezcla: queda para cuando se juegue sin cuenta.</td><td>US 269</td></tr>
-    <tr><td>Recuperar la contraseña</td><td>Primero el mail; después el código de 6 números y la contraseña nueva, dos veces.</td><td>Cambia la contraseña y entra a la cuenta.</td><td>US 271</td></tr>
-    <tr><td>Cerrar sesión</td><td>Solo confirmar: explica que en esta PC se vuelve al progreso sin cuenta y que lo de la cuenta queda en ella.</td><td>Vuelve a «Sin cuenta», con el progreso de la PC.</td><td>US 270</td></tr>
-    <tr><td>Borrar cuenta</td><td>Antetítulo rojo «Esto no se puede deshacer», qué se borra y la contraseña para confirmar. El botón es rojo.</td><td>Borra la cuenta y sus datos y vuelve a «Sin cuenta», con el progreso de la PC.</td><td>US 273 (CA2, CA3)</td></tr>
+    <tr><th>Panel</th><th>Qué pide</th><th>Al aceptar</th><th>Historia</th></tr>
+    <tr><td>Iniciar sesión</td><td>Es lo primero que se ve sin sesión. Pide el mail y la contraseña (con «Ver»), y tiene «¿Te olvidaste la contraseña?» y, al pie, «¿No tenés cuenta? Crear cuenta».</td><td>Entra a la cuenta y habilita JUGAR.</td><td>US 269</td></tr>
+    <tr><td>Crear cuenta</td><td>Avisa que la cuenta arranca de cero y pide el mail, la contraseña (8 caracteres o más) y repetirla. Debajo: «Al crear la cuenta aceptás el aviso de privacidad», con el link.</td><td>Manda el código y pasa a «Confirmá tu mail».</td><td>US 237 (CA1)</td></tr>
+    <tr><td>Confirmá tu mail</td><td>A qué mail se mandó el código (y que se fije en el correo no deseado), las 6 casillas, «¿No te llegó?» a los 60 s y «¿Te equivocaste de mail? Cambialo».</td><td>Entra a la cuenta.</td><td>US 237 (CA2)</td></tr>
+    <tr><td>Recuperar la contraseña</td><td>Primero el mail; después el código de 6 números y la contraseña nueva, dos veces.</td><td>Cambia la contraseña y entra.</td><td>US 271</td></tr>
+    <tr><td>Menú de la cuenta</td><td>El mail, «Cuenta confirmada · desde…», «Aviso de privacidad», «Cerrar sesión» y «Borrar cuenta», en rojo.</td><td>Abre el panel elegido.</td><td>US 270, US 273</td></tr>
+    <tr><td>Cerrar sesión</td><td>Solo confirmar. Si el juego está abierto, pide cerrarlo primero.</td><td>Vuelve a «Iniciá sesión».</td><td>US 270</td></tr>
+    <tr><td>Borrar cuenta</td><td>Panel con el borde rojo: «Esto no se puede deshacer», qué se borra y la contraseña para confirmar.</td><td>Borra la cuenta y sus datos y vuelve a «Iniciá sesión».</td><td>US 273 (CA2, CA3)</td></tr>
     <tr><td>Aviso de privacidad</td><td>Qué guardamos, para qué, dónde y tus derechos (Ley 25.326), y «Entendido».</td><td>Vuelve a donde estaba.</td><td>US 273 (CA1)</td></tr>
-    <tr><td>Necesitás una cuenta</td><td>Sale al tocar «Buscar partida» sin cuenta: por qué hace falta, y «Cancelar», «Iniciar sesión» y «Crear cuenta».</td><td>Abre la ventana elegida.</td><td>US 274 (CA2)</td></tr>
   </table></div>
   <div class="table-wrap" style="margin-top:12px"><table>
     <tr><th>Mensaje</th><th>Cuándo</th></tr>
@@ -2022,24 +2015,44 @@ MARCO · Conjunto: [nombre]. Estilo: [estilo]. Forma: [esquinas, remate, rieles]
     <tr><td>«La contraseña tiene que tener 8 caracteres o más.» · «Las contraseñas no coinciden.»</td><td>Antes de mandar nada, debajo del campo.</td></tr>
     <tr><td>«Ese mail ya tiene una cuenta.» con «Iniciar sesión»</td><td>Al crear una cuenta con un mail que ya existe.</td></tr>
     <tr><td>«El mail o la contraseña no coinciden.»</td><td>Al iniciar sesión, en una franja roja arriba. No dice cuál de los dos está mal.</td></tr>
-    <tr><td>«Tu mail todavía no está confirmado. Te mandamos otro código.»</td><td>Al iniciar sesión con una cuenta sin confirmar.</td></tr>
+    <tr><td>«Tu mail todavía no está confirmado. Te mandamos otro código.»</td><td>Al iniciar sesión con una cuenta sin confirmar: pasa a «Confirmá tu mail».</td></tr>
     <tr><td>«El código venció o no es correcto. Pedí otro.»</td><td>Al confirmar el mail o recuperar la contraseña.</td></tr>
-    <tr><td>«Hace falta internet para esto.»</td><td>Sin conexión, en cualquier ventana. No se borra lo escrito.</td></tr>
+    <tr><td>«Hace falta internet para esto.»</td><td>Sin conexión, en cualquier panel. No se borra lo escrito.</td></tr>
   </table></div>
-  <p class="soft" style="margin-top:12px">Los avisos al pie, como los del menú: «Listo: tu cuenta está activa», «Entraste a tu cuenta», «Contraseña cambiada. Entraste a tu cuenta», «Cerraste la sesión» y «Borramos tu cuenta y sus datos».</p>
+  <p class="soft" style="margin-top:12px">Lo que pasó se cuenta en la tarjeta de la derecha, donde el launcher ya dice cómo está la instalación: «Listo: tu cuenta está activa.», «Entraste a tu cuenta.» y «Contraseña cambiada. Entraste a tu cuenta.».</p>
+
+  <h3 id="cuenta-juego">La cuenta en el juego</h3><span id="cuenta-perfil"></span>
+  <div class="controls cu-ctl" id="juegoCtl">
+    <div><span class="ctl-label">Cuenta</span><span class="seg">
+      <button type="button" data-e="perfil-cuenta" aria-pressed="true">Perfil › Cuenta</button><button type="button" data-e="privacidad" aria-pressed="false">Privacidad</button><button type="button" data-e="sin-sesion" aria-pressed="false">Sin sesión</button><button type="button" data-e="sesion-cerrada" aria-pressed="false">Sesión cerrada</button>
+    </span></div>
+    <div><span class="ctl-label">Buscar partida</span><span class="seg">
+      <button type="button" data-e="anden" aria-pressed="false">Andén</button><button type="button" data-e="buscando" aria-pressed="false">Buscando</button><button type="button" data-e="minimo" aria-pressed="false">Con el mínimo</button><button type="button" data-e="cuenta-regresiva" aria-pressed="false">Por empezar</button><button type="button" data-e="sin-conexion" aria-pressed="false">Sin conexión</button>
+    </span></div>
+  </div>
+  <div class="stage cu-stage"><div class="stage-inner"><iframe id="juegoFrame" src="menu/cuentas.html#perfil-cuenta" title="Maqueta de la cuenta en el juego y de buscar partida" width="1920" height="1080" loading="lazy"></iframe></div></div>
+  <p class="soft" style="margin-top:10px">También se abre sola, a pantalla completa: <a href="menu/cuentas.html">menu/cuentas.html</a>. <span class="kbd">Esc</span> cierra el aviso de privacidad y cancela la búsqueda.</p>
+  <p>El juego abre con la cuenta del launcher y no la cambia: el Perfil solo la muestra. Si se abre el .exe directo, usa la sesión que quedó en el launcher.</p>
+  <div class="table-wrap"><table>
+    <tr><th>Pantalla</th><th>Qué muestra</th><th>Historia</th></tr>
+    <tr><td>Perfil › Cuenta</td><td>La pestaña Cuenta, después de Estadísticas y Personalización. El mail con la etiqueta «Confirmada», qué quedó en la cuenta, tres datos (desde cuándo, el nombre y «En la nube») y que para cambiar de cuenta, cerrar sesión o borrarla se usa el launcher. A la derecha, la tarjeta de privacidad, con «Ver el aviso completo».</td><td>US 282 (CA2), US 273 (CA1)</td></tr>
+    <tr><td>Iniciá sesión en el launcher</td><td>Sale al abrir el juego sin una sesión, por ejemplo desde el .exe sin haber entrado al launcher. Tiene los tres pasos, «Abrir el launcher» (abre el launcher y cierra el juego) y «Salir». No deja jugar.</td><td>US 282 (CA3)</td></tr>
+    <tr><td>Tu sesión se cerró</td><td>La misma pantalla, cuando la sesión se cierra con el juego abierto (desde el launcher, o al borrar la cuenta). Sale al volver al menú, nunca en medio de una partida.</td><td>US 282 (CA3)</td></tr>
+    <tr><td>Sin conexión</td><td>Con la sesión guardada, el juego abre igual y sube lo jugado cuando vuelve la conexión.</td><td>US 282 (CA4)</td></tr>
+  </table></div>
 
   <h3 id="cuenta-mails">Los mails</h3>
-  <p class="soft">Llegan en castellano y con un código de 6 números, que se escribe en el juego: así no hace falta ninguna página web. Se configuran en Supabase (Authentication › Emails › Templates: «Confirm signup» para confirmar la cuenta y «Reset Password» para recuperar la contraseña) y salen por un SMTP propio.</p>
+  <p class="soft">Llegan en castellano y con un código de 6 números, que se escribe en el launcher: así no hace falta ninguna página web. Se configuran en Supabase (Authentication › Emails › Templates: «Confirm signup» para confirmar la cuenta y «Reset Password» para recuperar la contraseña) y salen por un SMTP propio.</p>
   <div class="cu-mails">
-    <div class="cu-mail"><div class="cu-mail-cab"><b>Project Riftwalker</b><span>Asunto: Tu código para confirmar la cuenta</span></div><p>¡Hola! Este es tu código para confirmar tu cuenta de Project Riftwalker:</p><div class="cu-codigo">481 902</div><p>Escribilo en el juego, en Perfil › Cuenta. Vence en 1 hora.</p><p class="cu-mail-pie">Si no creaste una cuenta, ignorá este mail.</p></div>
-    <div class="cu-mail"><div class="cu-mail-cab"><b>Project Riftwalker</b><span>Asunto: Tu código para cambiar la contraseña</span></div><p>Pediste cambiar la contraseña de tu cuenta de Project Riftwalker. Tu código es:</p><div class="cu-codigo">207 391</div><p>Escribilo en el juego junto con la contraseña nueva. Vence en 1 hora.</p><p class="cu-mail-pie">Si no lo pediste, ignorá este mail: tu contraseña sigue igual.</p></div>
+    <div class="cu-mail"><div class="cu-mail-cab"><b>Project Riftwalker</b><span>Asunto: Tu código para confirmar la cuenta</span></div><p>¡Hola! Este es tu código para confirmar tu cuenta de Project Riftwalker:</p><div class="cu-codigo">481 902</div><p>Escribilo en el launcher, donde creaste la cuenta. Vence en 1 hora.</p><p class="cu-mail-pie">Si no creaste una cuenta, ignorá este mail.</p></div>
+    <div class="cu-mail"><div class="cu-mail-cab"><b>Project Riftwalker</b><span>Asunto: Tu código para cambiar la contraseña</span></div><p>Pediste cambiar la contraseña de tu cuenta de Project Riftwalker. Tu código es:</p><div class="cu-codigo">207 391</div><p>Escribilo en el launcher junto con la contraseña nueva. Vence en 1 hora.</p><p class="cu-mail-pie">Si no lo pediste, ignorá este mail: tu contraseña sigue igual.</p></div>
   </div>
 
   <h3 id="buscar-partida">Buscar partida</h3>
-  <p>En el andén de Táctico y de Deathmatch, «Buscar partida» va primero, grande y del color del modo; «Crear sala» y «Unirse con código» siguen al lado, igual que hoy. Mientras busca, el panel de búsqueda reemplaza a los botones: el andén sigue a la vista, así se sabe en qué modo se está buscando.</p>
+  <p>En el andén de Táctico y de Deathmatch, «Buscar partida» va primero, grande y del color del modo; «Crear sala» y «Unirse con código» siguen al lado, igual que hoy. Mientras busca, el panel de búsqueda reemplaza a los botones: el andén sigue a la vista, así se sabe en qué modo se está buscando. Se ve en la <a href="#cuenta-juego">maqueta del juego</a>, en «Buscar partida».</p>
   <div class="table-wrap"><table>
     <tr><th>Estado</th><th>Qué se ve</th><th>Historia</th></tr>
-    <tr><td>Andén</td><td>Los tres botones y, debajo, con qué cuenta y en qué región se busca. Sin cuenta, dice que buscar partida la necesita y las salas con código no.</td><td>US 274 (CA1)</td></tr>
+    <tr><td>Andén</td><td>Los tres botones y, debajo, con qué cuenta y en qué región se busca.</td><td>US 274 (CA1, CA2)</td></tr>
     <tr><td>Buscando</td><td>«Buscando partida», cuántos hay sobre 8 («3 / 8 jugadores»), el tiempo que lleva (0:23), el modo, la región y «misma versión del juego», los 8 lugares (los vacíos dicen «Buscando…») y «Cancelar».</td><td>US 275 (CA1, CA2)</td></tr>
     <tr><td>Con el mínimo</td><td>Cuando hay el mínimo, el pie cuenta para atrás desde 45 s («Si no entra nadie más, arranca en 0:31»), con una barra del color del modo. Si entra alguien, la espera vuelve a empezar.</td><td>US 276 (CA2)</td></tr>
     <tr><td>Por empezar</td><td>«Partida encontrada» y «Empieza en 7»: la cuenta regresiva de 10 s. Se puede cancelar hasta el final; si alguien sale y quedan menos que el mínimo, vuelve a «Buscando».</td><td>US 276 (CA1, CA3)</td></tr>
@@ -2050,46 +2063,52 @@ MARCO · Conjunto: [nombre]. Estilo: [estilo]. Forma: [esquinas, remate, rieles]
     <tr><td>Con quién te junta</td><td>Mismo modo, misma versión del juego y misma región (la mejor que encuentra Photon; hoy, Sudamérica).</td><td>US 274 (CA3)</td></tr>
     <tr><td>Jugadores</td><td>Hasta 8. Mínimo para arrancar: 2 en Deathmatch y 4 en Táctico (2 contra 2).</td><td>US 276</td></tr>
     <tr><td>Espera con el mínimo</td><td>45 s sin que entre nadie; después, cuenta regresiva de 10 s.</td><td>US 276 (CA2)</td></tr>
-    <tr><td>Salas con código</td><td>Siguen igual, sin cuenta, y nunca reciben jugadores de buscar partida.</td><td>US 274 (CA4)</td></tr>
-    <tr><td>Quién es cada uno</td><td>Cada jugador entra con su cuenta verificada; se ve el nombre de la cuenta y nadie puede estar dos veces.</td><td>US 277</td></tr>
+    <tr><td>Salas con código</td><td>Siguen igual y nunca reciben jugadores de buscar partida.</td><td>US 274 (CA4)</td></tr>
+    <tr><td>Quién es cada uno</td><td>Cada jugador entra con la cuenta con la que abrió el juego, verificada; se ve el nombre de la cuenta y nadie puede estar dos veces.</td><td>US 277</td></tr>
   </table></div>
 
   <h3 id="cuenta-medidas">Medidas</h3>
   <div class="grid3">
-    <div class="card"><b>Pestaña Cuenta.</b> Tarjetas desde y = 520: la de la cuenta de 1100 × 500 y la de privacidad de 670 × 500, a 30 px. Título de 60 px, texto de 25 px y botones de 320 × 66.</div>
-    <div class="card"><b>Ventanas.</b> 760 de ancho, márgenes de 48 px. Campos de 664 × 60 con su nombre de 17 px arriba, errores de 20 px en rojo debajo, código en 6 casillas de 64 × 76 y botones de 320 × 64.</div>
+    <div class="card"><b>Launcher.</b> El panel de la cuenta mide 570 de ancho, como Ajustes, con el borde naranja de 3 px arriba (rojo para borrar) y márgenes de 32. Campos de 44 de alto con su nombre de 12 px arriba, código en 6 casillas de 60 × 70 y botón principal de 52. La cuenta en la barra mide 46 de alto, con la inicial en un círculo naranja de 30, y su menú, 300 de ancho.</div>
+    <div class="card"><b>Juego.</b> Pestaña Cuenta: tarjetas desde y = 520, la de la cuenta de 1100 × 500 y la de privacidad de 670 × 500, a 30 px, con título de 48 px y texto de 25 px. «Iniciá sesión en el launcher»: título de 104 px en x = 150, los tres pasos de 340 × 84 y botones de 76 de alto.</div>
     <div class="card"><b>Búsqueda.</b> El botón principal del andén mide 380 × 84, del color del modo. El panel de búsqueda, 860 × 470 en (150, 510), con una línea de 4 px del color del modo arriba y los 8 lugares en dos columnas de 390 × 46.</div>
   </div>
 
   <div class="dev">
     <h3 id="cuenta-codigo">Dónde va a estar</h3>
     <div class="files">
-      <code>Perfil/LogrosOnline.Cuenta</code><span>Supabase Auth por REST, como <code>LogrosOnline</code>: crear la cuenta (<code>POST /auth/v1/signup</code>, un jugador nuevo), confirmar y recuperar con código (<code>/auth/v1/verify</code>), entrar, cerrar sesión y la sesión guardada. Sin cuenta, la sesión anónima queda solo para las opiniones y para ver el ranking (US 281).</span>
-      <code>Perfil/PestanaCuenta</code><span>La pestaña Cuenta del Perfil y sus ventanas, con las piezas de <code>ShopUIKit</code>; las reglas y los mensajes, en <code>ReglasCuenta</code>.</span>
+      <code>Launcher/Core/Cuenta.cs</code><span>Supabase Auth por REST con <code>HttpClient</code>: crear la cuenta (<code>POST /auth/v1/signup</code>), confirmar y recuperar con código (<code>/auth/v1/verify</code>), entrar, cerrar sesión y borrar (US 273). Guarda la sesión, nunca la contraseña.</span>
+      <code>Launcher/App/MainWindow.Cuenta.cs</code><span>El panel de la cuenta, la cuenta en la barra con su menú, y JUGAR solo con una sesión.</span>
+      <code>ReglasCuenta.cs</code><span>Las reglas y los mensajes de la cuenta: el mismo archivo en el launcher y en el juego (el proyecto del launcher lo incluye con un link), con sus pruebas.</span>
+      <code>cuenta-sesion.json</code><span>La sesión que comparten el launcher y el juego, en la carpeta de guardado del juego (<code>%USERPROFILE%\AppData\LocalLow\Equipo 4\Project Riftwalker</code>), que es de cada usuario de Windows. Supabase cambia el token de renovación cada vez que se usa: los dos leen el archivo antes de renovarla.</span>
+      <code>Perfil/LogrosOnline.Cuenta</code><span>En el juego: abre con la sesión del launcher, la renueva y sube el progreso de la cuenta; sin sesión, muestra «Iniciá sesión en el launcher».</span>
+      <code>Perfil/PestanaCuenta</code><span>La pestaña Cuenta del Perfil, solo para ver. En el editor de Unity, donde no hay launcher, deja iniciar sesión para probar.</span>
       <code>Perfil/Billetera</code><span>Las monedas de la cuenta en la base (US 272), con un id por movimiento.</span>
       <code>Multijugador/BuscarPartida</code><span>La búsqueda con Photon (<code>JoinRandomOrCreateRoom</code> por modo, salas públicas) y el arranque automático.</span>
-      <code>Backend/Supabase/cuentas.sql</code><span>Perfiles, billetera, que la nube y el ranking sean solo de cuentas, y sus pruebas. La limpieza de la base de las pruebas va aparte, en <code>reset-cuentas.sql</code>.</span>
+      <code>Backend/Supabase</code><span><code>logros.sql</code> deja la nube y el ranking solo para las cuentas; <code>reset-cuentas.sql</code> limpia la base de las pruebas (US 281).</span>
       <code>Edge Functions</code><span><code>photon-auth</code> (Photon verifica la cuenta, US 277) y <code>borrar-cuenta</code> (US 273).</span>
     </div>
   </div>
 </section>
 
 <script>
-// Maqueta de «Cuenta y buscar partida»: los botones cambian el estado de menu/cuentas.html (el ancla del iframe) y se
-// marcan solos cuando el estado cambia desde adentro de la maqueta.
+// Maquetas de «Cuenta y buscar partida»: los botones cambian el estado de cada maqueta (el ancla del iframe) y se
+// marcan solos cuando el estado cambia desde adentro.
 (function () {
-  var marco = document.getElementById('cuentaFrame'), ctl = document.getElementById('cuentaCtl');
-  if (!marco || !ctl) return;
-  var botones = ctl.querySelectorAll('button[data-e]');
-  function marcar(e) { botones.forEach(function (b) { b.setAttribute('aria-pressed', String(b.dataset.e === e)); }); }
-  botones.forEach(function (b) {
-    b.addEventListener('click', function () {
-      try { marco.contentWindow.location.hash = b.dataset.e; } catch (x) { marco.src = 'menu/cuentas.html#' + b.dataset.e; }
-      marcar(b.dataset.e);
+  [['launcherCtl', 'launcherFrame', 'launcher/cuenta.html', 'entrar'], ['juegoCtl', 'juegoFrame', 'menu/cuentas.html', 'perfil-cuenta']].forEach(function (m) {
+    var ctl = document.getElementById(m[0]), marco = document.getElementById(m[1]);
+    if (!marco || !ctl) return;
+    var botones = ctl.querySelectorAll('button[data-e]');
+    function marcar(e) { botones.forEach(function (b) { b.setAttribute('aria-pressed', String(b.dataset.e === e)); }); }
+    botones.forEach(function (b) {
+      b.addEventListener('click', function () {
+        try { marco.contentWindow.location.hash = b.dataset.e; } catch (x) { marco.src = m[2] + '#' + b.dataset.e; }
+        marcar(b.dataset.e);
+      });
     });
-  });
-  marco.addEventListener('load', function () {
-    try { marco.contentWindow.addEventListener('hashchange', function () { marcar(marco.contentWindow.location.hash.slice(1) || 'perfil-sin'); }); } catch (x) { }
+    marco.addEventListener('load', function () {
+      try { marco.contentWindow.addEventListener('hashchange', function () { marcar(marco.contentWindow.location.hash.slice(1) || m[3]); }); } catch (x) { }
+    });
   });
 })();
 </script>
@@ -2132,7 +2151,7 @@ MARCO · Conjunto: [nombre]. Estilo: [estilo]. Forma: [esquinas, remate, rieles]
 
 <section id="launcher">
   <div class="sec-head"><h2>Launcher</h2><span class="sub">Instala el juego y lo mantiene al día</span> <span class="st st-mid">En prueba</span></div>
-  <p>Programa aparte, como el cliente de League of Legends, que se abre antes del juego: muestra las notas del parche, baja e instala la última versión y abre el juego. Online solo se juntan jugadores con la misma versión, así que para jugar con los demás hay que estar actualizado. Historias: US 200 a US 211.</p>
+  <p>Programa aparte, como el cliente de League of Legends, que se abre antes del juego: muestra las notas del parche, baja e instala la última versión y abre el juego. También es donde se entra a la <a href="#cuenta-launcher">cuenta</a>: sin una sesión no deja jugar, y JUGAR abre el juego con esa cuenta. Online solo se juntan jugadores con la misma versión, así que para jugar con los demás hay que estar actualizado. Historias: US 200 a US 211.</p>
   <p><a class="btn" style="display:inline-block;text-decoration:none" href="https://github.com/DogeGGss/lcs-tp-principal/releases/download/launcher/Riftwalker-Launcher.exe">Descargar el launcher</a></p>
   <p class="soft">El link no cambia nunca: <code>github.com/DogeGGss/lcs-tp-principal/releases/download/launcher/Riftwalker-Launcher.exe</code>. Es un solo .exe de unos 60 MB y no hace falta instalar nada más.</p>
 
@@ -2175,6 +2194,7 @@ MARCO · Conjunto: [nombre]. Estilo: [estilo]. Forma: [esquinas, remate, rieles]
   <div class="table-wrap"><table>
     <tr><th>Situación</th><th>Botón</th><th>Qué dice arriba</th><th>Historia</th></tr>
     <tr><td>Buscando versiones</td><td>"Buscando actualizaciones…", deshabilitado</td><td>Consultando las versiones publicadas</td><td>US 200, US 201</td></tr>
+    <tr><td>Sin sesión</td><td>El panel «Iniciá sesión» tapa la ventana; JUGAR no se puede tocar</td><td>"Iniciá sesión para jugar." (ver <a href="#cuenta-launcher">Cuenta</a>)</td><td>US 269, US 282</td></tr>
     <tr><td>Juego sin instalar</td><td><b>INSTALAR ↓</b></td><td>"Primera parada"</td><td>US 200</td></tr>
     <tr><td>Hay una versión nueva</td><td><b>ACTUALIZAR ↓</b></td><td>"Hay algo nuevo" y "Nueva versión X.Y.Z. Instalá esta versión para jugar desde el launcher."</td><td>US 201</td></tr>
     <tr><td>Descargando</td><td>"Descargando…", deshabilitado, con Cancelar</td><td>Barra con porcentaje, MB y tiempo restante</td><td>US 202</td></tr>
@@ -3854,7 +3874,7 @@ $('#controls').addEventListener('click', e => {
   render();
 });
 function fitAll() {
-  document.querySelectorAll('.stage').forEach(st => { const inner = st.querySelector('.stage-inner'); if (inner) inner.style.transform = `scale(${st.clientWidth / 1920})`; });
+  document.querySelectorAll('.stage').forEach(st => { const inner = st.querySelector('.stage-inner'); if (inner) inner.style.transform = `scale(${st.clientWidth / (inner.offsetWidth || 1920)})`; });
 }
 const fit = fitAll;
 const fitObserver = new ResizeObserver(fitAll);

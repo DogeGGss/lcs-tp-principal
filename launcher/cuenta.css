@@ -1,0 +1,134 @@
+/* Copia web del launcher (Launcher/App/MainWindow.xaml y App.xaml) con la cuenta, para revisar el diseño. Las medidas
+   son las del launcher en tamaño Normal: el panel de 1120 × 700 con 12 px alrededor para la sombra. */
+@font-face{font-family:Barlow;src:url(../menu/fuentes/Barlow-Regular.ttf);font-weight:400}
+@font-face{font-family:Barlow;src:url(../menu/fuentes/Barlow-SemiBold.ttf);font-weight:600}
+@font-face{font-family:"Barlow Condensed";src:url(../menu/fuentes/BarlowCondensed-Bold.ttf);font-weight:700}
+
+:root{--ink:#F3F4F6;--mute:#8E96A3;--soft:#AEB5C0;--accent:#F29A38;--accent-ink:#1A1106;--ok:#3DDC97;--bad:#FF5C5C;
+  --fondo:#0A0C11;--linea:#272C35;--borde:#343B47;--boton:#1B2029;--tarjeta:#141922;--notas:#10141B}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;background:#05060a;overflow:hidden}
+body{font:400 15px Barlow,"Segoe UI",sans-serif;color:var(--ink)}
+#escenario{position:absolute;width:1144px;height:724px;transform-origin:0 0}
+.d{font-family:"Barlow Condensed",Barlow,sans-serif;font-weight:700}
+
+/* Ventana: esquinas cortadas (30 px arriba a la izquierda y abajo a la derecha, 12 px en las otras), sombra y trazos */
+.sombra{position:absolute;left:12px;top:12px;width:1120px;height:700px;filter:drop-shadow(0 0 9px rgba(0,0,0,.8))}
+.marco{position:absolute;inset:0;background:var(--fondo);
+  clip-path:polygon(30px 0,1108px 0,1120px 12px,1120px 670px,1090px 700px,12px 700px,0 688px,0 30px)}
+.trazos{position:absolute;left:12px;top:12px;width:1120px;height:700px;overflow:visible;pointer-events:none}
+
+/* Barra de arriba */
+.barra{position:absolute;left:0;top:0;width:1120px;height:70px;border-bottom:1px solid var(--linea);display:flex;align-items:center;padding:0 16px 0 32px}
+.logo{display:flex;align-items:center;gap:14px}
+.logo .d{font-size:27px;letter-spacing:.01em}
+.canal{margin-left:22px;background:#1E241E;color:var(--ok);font-size:11px;font-weight:600;padding:4px 10px;border-radius:3px;letter-spacing:.02em}
+.derecha{margin-left:auto;display:flex;align-items:center}
+.btn{font:400 14px Barlow,sans-serif;color:var(--ink);background:var(--boton);border:1px solid var(--borde);border-radius:3px;padding:11px 18px;cursor:pointer;white-space:nowrap}
+.btn:hover,.btn:focus-visible{border-color:var(--accent);outline:none}
+.btn.plano{background:transparent;border-color:transparent}
+.btn.plano:hover{border-color:transparent;color:#fff}
+.btn.lleno{background:var(--accent);border-color:var(--accent);color:var(--accent-ink);font-weight:600}
+.btn.lleno:hover{filter:brightness(1.06)}
+.btn.rojo{background:var(--bad);border-color:var(--bad);color:#1a0606;font-weight:600}
+.sep{width:1px;height:26px;background:#303743;margin:0 8px 0 18px}
+.ventana{width:38px;height:34px;display:grid;place-items:center;border-radius:3px;color:var(--soft);cursor:pointer}
+.ventana:hover{background:var(--boton);color:var(--ink)}
+.ventana.cerrar:hover{background:#C42B1C;color:#fff}
+
+/* La cuenta en la barra: inicial, nombre y mail, y la flecha del menú */
+.chip{display:flex;align-items:center;gap:10px;height:46px;padding:0 12px 0 8px;margin-right:12px;background:var(--boton);border:1px solid var(--borde);border-radius:3px;cursor:pointer}
+.chip:hover,.chip.abierto{border-color:var(--accent)}
+.inicial{width:30px;height:30px;border-radius:50%;background:var(--accent);color:var(--accent-ink);display:grid;place-items:center;font-size:18px}
+.chip .nombre{font-size:16px;letter-spacing:.04em;line-height:1.05}
+.chip .mail{font-size:11px;color:var(--mute);line-height:1.2}
+.chip .flecha{color:var(--accent);font-size:14px;margin-left:4px}
+.menu{position:absolute;right:243px;top:62px;width:300px;background:var(--tarjeta);border:1px solid #303743;border-radius:4px;box-shadow:0 12px 30px rgba(0,0,0,.55);z-index:5;padding:6px 0}
+.menu .cab{padding:12px 16px 14px;border-bottom:1px solid var(--linea);margin-bottom:6px}
+.menu .cab b{display:block;font-weight:600;font-size:14px}
+.menu .cab small{display:block;color:var(--ok);font-size:12px;margin-top:3px}
+.menu .item{padding:11px 16px;font-size:14px;cursor:pointer}
+.menu .item:hover{background:var(--boton)}
+.menu .item.rojo{color:var(--bad)}
+.menu hr{border:0;border-top:1px solid var(--linea);margin:6px 0}
+
+/* Banner */
+.banner{position:absolute;left:0;top:70px;width:1120px;height:188px;overflow:hidden;background:linear-gradient(110deg,#101821,#17232B 55%,#272017)}
+.banner svg{position:absolute;right:0;top:0;width:680px;height:188px;opacity:.7}
+.banner .tapa{position:absolute;inset:0;background:linear-gradient(90deg,rgba(10,12,17,.95),rgba(10,12,17,.63) 43%,rgba(10,12,17,0))}
+.banner .textos{position:absolute;left:34px;top:22px}
+.banner .ante{color:var(--accent);font-size:12px;font-weight:600}
+.banner .p1{font-size:28px;margin-top:6px;line-height:1}
+.banner .p2{font-size:66px;line-height:1;margin-top:-2px}
+.banner .lema{color:var(--soft);font-size:16px;margin:3px 0 0 2px}
+.banner .punto{position:absolute;right:28px;bottom:20px;color:var(--mute);font-size:11px}
+
+/* Contenido: notas del parche a la izquierda y la tarjeta de la próxima partida a la derecha */
+.notas-col{position:absolute;left:32px;top:283px;width:686px;height:353px}
+.notas-col h2{margin:0;font-size:23px;font-weight:700;font-family:"Barlow Condensed",sans-serif}
+.notas-col .sub{color:var(--mute);font-size:13px;margin-top:3px}
+.combo{position:absolute;right:0;top:4px;width:180px;height:34px;background:var(--boton);border:1px solid var(--borde);border-radius:3px;font-size:14px;padding:7px 12px}
+.combo::after{content:'⌄';position:absolute;right:10px;top:4px;color:var(--accent)}
+.notas{position:absolute;left:0;top:58px;right:0;bottom:0;background:var(--notas);border:1px solid var(--linea);border-radius:4px;padding:15px 20px;overflow:hidden}
+.notas h3{margin:0 0 4px;font-size:22px;font-weight:600}
+.notas h4{margin:12px 0 4px;font-size:18px;font-weight:600}
+.notas p{margin:0;color:var(--soft);font-size:14px;line-height:1.45}
+.notas li{font-size:14px;color:var(--ink);line-height:1.6}
+.notas ul{margin:0;padding-left:18px}
+.partida{position:absolute;left:748px;top:283px;width:340px;height:353px;background:var(--tarjeta);border:1px solid #303743;border-radius:4px;padding:21px 23px;display:flex;flex-direction:column}
+.partida .ante{font-size:12px;color:var(--mute);font-weight:600}
+.partida .titulo{font-size:28px;margin:8px 0}
+.partida .inst{color:var(--soft);font-size:14px}
+.partida hr{border:0;border-top:1px solid var(--linea);margin:14px 0;width:100%}
+.partida .estado{font-size:15px;line-height:20px}
+.partida .estado b{font-weight:600}
+.partida .abajo{margin-top:auto}
+.progreso{height:5px;background:#303743;border-radius:2px;overflow:hidden}
+.progreso i{display:block;height:100%;width:100%;background:var(--accent)}
+.progreso-texto{color:var(--mute);font-size:12px;margin:8px 0 14px}
+.jugar{width:100%;height:57px;font-size:25px;letter-spacing:.02em;background:var(--accent);color:var(--accent-ink);border:0;border-radius:3px;cursor:pointer}
+.jugar:disabled{opacity:.45;cursor:default}
+.reintentar{margin-top:6px;font-size:14px;color:var(--ink);padding:5px;cursor:pointer;display:inline-block}
+
+/* Barra de abajo */
+.pie{position:absolute;left:0;top:656px;width:1120px;height:44px;border-top:1px solid var(--linea);display:flex;align-items:center;padding:0 32px;font-size:11px;color:var(--mute)}
+.pie .pto{width:6px;height:6px;border-radius:50%;background:var(--ok);margin-right:9px}
+.pie .ver{margin-left:auto}
+
+/* Capa de la cuenta: tapa todo menos la barra de arriba (que sigue con Ajustes, minimizar y cerrar), como Ajustes */
+.capa{position:absolute;left:0;top:70px;width:1120px;height:630px;background:rgba(9,11,16,.9);display:flex;align-items:center;justify-content:center;z-index:4}
+.tarjeta{width:570px;background:var(--tarjeta);border:1px solid var(--accent);border-top-width:3px;padding:30px 32px}
+.tarjeta.peligro{border-color:var(--bad)}
+.tarjeta .ante{font-size:12px;color:var(--accent);font-weight:600;letter-spacing:.04em;margin-bottom:6px}
+.tarjeta.peligro .ante{color:var(--bad)}
+.tarjeta h1{margin:0;font-size:32px;line-height:1.05}
+.tarjeta .ayuda{color:var(--mute);margin:8px 0 20px;line-height:1.4}
+.tarjeta .ayuda b{color:var(--ink);font-weight:600}
+.rotulo{display:flex;justify-content:space-between;font-size:12px;margin:0 0 8px}
+.rotulo small{color:var(--mute);font-size:12px}
+.campo{position:relative;margin-bottom:16px}
+.campo input{width:100%;height:44px;background:var(--fondo);border:1px solid var(--borde);color:var(--ink);font:400 15px Barlow,sans-serif;padding:0 12px;outline:none;caret-color:var(--accent)}
+.campo input:focus{border-color:var(--accent)}
+.campo.mal input{border-color:var(--bad)}
+.campo .ver{position:absolute;right:12px;top:31px;font-size:12px;font-weight:600;color:var(--accent);cursor:pointer;letter-spacing:.04em}
+.campo .error{color:var(--bad);font-size:13px;margin-top:6px}
+.campo .error a{color:var(--accent)}
+.franja{background:rgba(255,92,92,.12);box-shadow:inset 3px 0 0 var(--bad);color:#FFB3B3;font-size:14px;padding:12px 14px;margin:-6px 0 18px}
+.enlace{color:var(--accent);cursor:pointer;text-decoration:underline;text-underline-offset:3px;text-decoration-color:rgba(242,154,56,.45)}
+.enlace:hover{text-decoration-color:var(--accent)}
+.fila{display:flex;justify-content:space-between;align-items:center;font-size:14px}
+.principal{width:100%;height:52px;font-size:22px;letter-spacing:.02em;background:var(--accent);color:var(--accent-ink);border:0;border-radius:3px;cursor:pointer;margin-top:6px}
+.principal:hover{filter:brightness(1.06)}
+.principal.rojo{background:var(--bad);color:#1a0606}
+.botones{display:flex;justify-content:flex-end;gap:10px;margin-top:22px}
+.botones .btn.lleno,.botones .btn.rojo{font-family:"Barlow Condensed",sans-serif;font-weight:700;font-size:17px;letter-spacing:.03em;padding:10px 20px}
+.nota{color:var(--mute);font-size:13px;text-align:center;margin-top:16px}
+.legal{color:var(--mute);font-size:13px;margin:-4px 0 4px}
+.cifras{display:flex;gap:12px;margin:2px 0 10px}
+.cifras div{width:60px;height:70px;background:var(--fondo);border:1px solid var(--borde);display:grid;place-items:center;font:700 34px "Barlow Condensed",sans-serif}
+.cifras div.activo{border-color:var(--accent)}
+.cifras div.activo::after{content:'';width:2px;height:34px;background:var(--accent);animation:parpadeo 1s steps(1) infinite}
+@keyframes parpadeo{50%{opacity:0}}
+.priv h3{margin:14px 0 4px;font-size:12px;color:var(--accent);font-weight:600;letter-spacing:.04em}
+.priv p{margin:0;color:var(--soft);font-size:14px;line-height:1.45}
+@media(prefers-reduced-motion:reduce){.cifras div.activo::after{animation:none}}

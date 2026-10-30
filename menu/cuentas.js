@@ -1,7 +1,8 @@
-// Diseño de la cuenta (F18: US 237 y US 269 a US 273) y de buscar partida (F28: US 274 a US 277), armado con las piezas
-// del menú del juego (menu.css, como MenuRiftwalker, PantallaPerfil y ModeSelectScreen) en una pantalla de 1920 × 1080.
-// Cada estado tiene su ancla (#perfil-sin, #crear, #buscando…) para que la guía los muestre, y los botones llevan de un
-// estado al siguiente como en el juego. Todavía no está en el juego: es la propuesta para revisar.
+// Diseño de la cuenta en el juego (F18: US 282 y US 273) y de buscar partida (F28: US 274 a US 277), armado con las
+// piezas del menú del juego (menu.css, como MenuRiftwalker, PantallaPerfil y ModeSelectScreen) en una pantalla de
+// 1920 × 1080. La cuenta se maneja en el launcher (launcher/cuenta.html): el juego abre con esa cuenta, el Perfil solo
+// la muestra y, sin una sesión, el juego pide iniciarla en el launcher. Cada estado tiene su ancla (#perfil-cuenta,
+// #sin-sesion, #buscando…) para que la guía los muestre. Todavía no está en el juego: es la propuesta para revisar.
 (() => {
   const C = window.CATALOGO;
   const E = document.getElementById('escenario');
@@ -122,7 +123,7 @@
     Boton(cab, 1800 - 150 - 220, 222, 220, 46, 'Cambiar nombre', 20, '', null);
   }
   // El Perfil con la pestaña nueva «Cuenta» elegida.
-  function perfil(estadoCuenta) {
+  function perfil() {
     capa.innerHTML = ''; capa.style.background = '#0b0d11';
     const volver = N(capa, 60, 34, 150, 52, 'panel');
     T(volver, 0, 0, 150, 52, 'ft', 26, 'var(--ink)', '« Menú', { mayus: true, esp: 6, al: 'centro' });
@@ -136,59 +137,29 @@
       t.style.width = 'auto';
       if (i === 2) { const r = N(capa, x, 488, 10, 4); r.style.background = 'var(--accent)'; requestAnimationFrame(() => { r.style.width = t.offsetWidth + 'px'; }); }
     });
-    const etiqueta = { sin: 'Sin cuenta', confirmar: 'Falta confirmar', cuenta: 'Con cuenta' }[estadoCuenta];
-    const info = T(capa, 1060, 452, 800, 26, 'fr', 19, 'var(--mute)', `Esta PC  <b>${etiqueta}</b>`, { mayus: true, esp: 14, al: 'der', html: true });
+    const info = T(capa, 1060, 452, 800, 26, 'fr', 19, 'var(--mute)', 'Cuenta  <b>Desde el launcher</b>', { mayus: true, esp: 14, al: 'der', html: true });
     info.style.whiteSpace = 'pre';
     info.querySelector('b').style.cssText = 'color:var(--ink);font-family:"JetBrains Mono",monospace;font-weight:400;letter-spacing:0;margin-left:10px';
     const l = N(capa, 60, 494, 1800, 1); l.style.background = 'rgba(255,255,255,.08)';
-    if (estadoCuenta === 'sin') tarjetaSinCuenta(); else if (estadoCuenta === 'confirmar') tarjetaConfirmar(); else tarjetaConCuenta();
+    tarjetaCuenta();
     tarjetaPrivacidad();
   }
 
-  // ---------- Pestaña Cuenta ----------
-  function tarjetaSinCuenta() {
-    const t = N(capa, 60, 520, 1100, 500, 'panel');
-    T(t, 44, 36, 600, 22, 'fr', 18, 'var(--accent)', 'Tu cuenta', { mayus: true, esp: 16 });
-    T(t, 42, 62, 900, 64, 'ft', 60, 'var(--ink)', 'Jugás sin cuenta', { mayus: true, esp: 3 });
-    T(t, 44, 136, 980, 70, 'fx', 25, 'var(--soft)', 'Tu progreso se guarda solo en esta PC: no sube a la nube ni aparecés en el ranking. Con una cuenta, arrancás de cero y todo queda en la nube.', { arriba: true, alto: 1.35 });
-    ['Tu progreso en la nube, en cualquier PC', 'Aparecé en el ranking global', 'Buscá partida con otros jugadores'].forEach((v, i) => {
-      N(t, 44, 230 + i * 48, 26, 26, 'tilde');
-      T(t, 86, 226 + i * 48, 800, 34, 'fx', 24, 'var(--ink)', v);
-    });
-    Boton(t, 44, 396, 320, 66, 'Crear cuenta', 26, 'lleno', () => ir('crear'));
-    Boton(t, 384, 396, 320, 66, 'Iniciar sesión', 26, '', () => ir('entrar'));
-  }
-  function codigo(padre, x, y, cifras, activo) {
-    for (let i = 0; i < 6; i++) {
-      const d = N(padre, x + i * 76, y, 64, 76, 'digito' + (i === activo ? ' activo' : ''));
-      if (cifras[i]) d.textContent = cifras[i];
-    }
-  }
-  function tarjetaConfirmar() {
-    const t = N(capa, 60, 520, 1100, 500, 'panel');
-    T(t, 44, 36, 600, 22, 'fr', 18, 'var(--accent)', 'Tu cuenta · Falta un paso', { mayus: true, esp: 16 });
-    T(t, 42, 62, 900, 64, 'ft', 60, 'var(--ink)', 'Confirmá tu mail', { mayus: true, esp: 3 });
-    T(t, 44, 136, 1000, 70, 'fx', 25, 'var(--soft)', `Te mandamos un código de 6 números a <b style="color:var(--ink)">${MAIL}</b>. Escribilo para activar la cuenta.`, { arriba: true, alto: 1.35, html: true });
-    codigo(t, 44, 232, ['4', '8', '1'], 3);
-    Boton(t, 526, 232, 260, 76, 'Confirmar', 28, 'lleno', () => { ir('perfil-cuenta'); avisar('Listo: tu cuenta está activa'); });
-    const reenviar = T(t, 44, 336, 700, 30, 'fx', 21, 'var(--mute)', '');
-    reloj(reenviar, 42, true, s => s ? `¿No te llegó? Podés pedir otro en 0:${String(s).padStart(2, '0')}` : '¿No te llegó? Pedí otro código');
-    T(t, 44, 420, 1000, 30, 'fx', 21, 'var(--mute)', 'Mientras tanto seguís jugando como siempre. «Buscar partida» se habilita al confirmar.');
-  }
-  function tarjetaConCuenta() {
+  // ---------- Pestaña Cuenta: solo muestra la cuenta del launcher (US 282, CA2) ----------
+  function tarjetaCuenta() {
     const t = N(capa, 60, 520, 1100, 500, 'panel');
     T(t, 44, 36, 600, 22, 'fr', 18, 'var(--accent)', 'Tu cuenta', { mayus: true, esp: 16 });
     T(t, 42, 64, 760, 56, 'ft', 48, 'var(--ink)', MAIL, { esp: 2, puntos: true });
     const chip = N(t, 830, 76, 0, 0, 'chip-estado'); chip.style.width = 'auto'; chip.style.height = '34px';
     chip.style.background = 'rgba(61,220,151,.14)'; chip.style.color = 'var(--ok)'; chip.textContent = 'Confirmada';
-    T(t, 44, 136, 1000, 70, 'fx', 25, 'var(--soft)', 'Tu progreso, tus monedas y tu lugar en el ranking están en la cuenta. Entrá con este mail en cualquier PC para seguir donde lo dejaste.', { arriba: true, alto: 1.35 });
-    [['Desde', '29/10/2026'], ['Nombre', NOMBRE], ['Buscar partida', 'Habilitado']].forEach(([r, v], i) => {
+    T(t, 44, 136, 1000, 70, 'fx', 25, 'var(--soft)', 'Entraste desde el launcher. Tu progreso, tus monedas y tu lugar en el ranking están en la cuenta, y los seguís en cualquier PC.', { arriba: true, alto: 1.35 });
+    [['Desde', '29/10/2026'], ['Nombre', NOMBRE], ['Progreso', 'En la nube']].forEach(([r, v], i) => {
       const c = N(t, 44 + i * 300, 236, 280, 84); c.style.background = 'rgba(0,0,0,.35)'; c.style.borderRadius = '6px';
       T(c, 18, 10, 260, 18, 'fr', 15, 'var(--mute)', r, { mayus: true, esp: 14 });
       T(c, 18, 32, 260, 40, 'ft', 32, 'var(--ink)', v, { mayus: true, esp: 3 });
     });
-    Boton(t, 44, 396, 300, 66, 'Cerrar sesión', 26, '', () => ir('cerrar'));
-    Boton(t, 364, 396, 300, 66, 'Borrar cuenta', 26, 'peligro', () => ir('borrar'));
+    const l = N(t, 44, 360, 1012, 1); l.style.background = 'rgba(255,255,255,.08)';
+    T(t, 44, 390, 1000, 70, 'fx', 23, 'var(--mute)', 'Para cambiar de cuenta, cerrar sesión o borrar la cuenta, usá el <b style="color:var(--ink)">launcher</b>: el menú de la cuenta está arriba, al lado de Ajustes.', { arriba: true, alto: 1.4, html: true });
   }
   function tarjetaPrivacidad() {
     const t = N(capa, 1190, 520, 670, 500, 'panel');
@@ -209,108 +180,42 @@
     T(caja, 48, 36, 700, 22, 'fr', 18, color || 'var(--accent)', antetitulo, { mayus: true, esp: 16 });
     T(caja, 46, 60, 800, 54, 'ft', 48, 'var(--ink)', texto, { mayus: true, esp: 3 });
   }
-  function campo(caja, y, etiqueta, valor, o = {}) {
-    T(caja, 48, y, 500, 22, 'fr', 17, 'var(--mute)', etiqueta, { mayus: true, esp: 12 });
-    if (o.ayuda) T(caja, 300, y, (o.w || 664) - 252, 22, 'fx', 18, 'var(--mute)', o.ayuda, { al: 'der' });
-    const i = el('input', 'entrada' + (o.error ? ' mal' : ''), caja);
-    Object.assign(i.style, { left: '48px', top: y + 28 + 'px', width: (o.w || 664) + 'px' });
-    i.type = o.clave ? 'password' : 'text'; i.value = valor || ''; i.placeholder = o.ejemplo || ''; i.setAttribute('aria-label', etiqueta);
-    if (o.error) T(caja, 48, y + 94, 664, 26, 'fx', 20, 'var(--bad)', o.error);
-    if (o.clave) T(caja, 48 + (o.w || 664) - 110, y + 28, 92, 60, 'fr', 18, 'var(--accent)', 'Ver', { mayus: true, esp: 12, al: 'der' }).classList.add('clic');
-    return i;
-  }
-  function crear(conError) {
-    perfil('sin');
-    const cerrar = () => ir('perfil-sin');
-    const c = ventana(760, 690, cerrar);
-    titulo(c, 'Cuenta nueva', 'Crear cuenta');
-    T(c, 48, 120, 664, 26, 'fx', 20, 'var(--mute)', 'La cuenta arranca de cero: lo que jugaste sin cuenta queda en esta PC.');
-    campo(c, 170, 'Mail', conError ? MAIL : '', { ejemplo: 'tu@mail.com', error: conError ? 'Ese mail ya tiene una cuenta.' : '' });
-    if (conError) T(c, 360, 264, 352, 26, 'fx', 20, 'var(--accent)', 'Iniciar sesión', { al: 'der' }).classList.add('enlace');
-    campo(c, 300, 'Contraseña', 'riftwalker', { clave: true, ayuda: '8 caracteres o más' });
-    campo(c, 410, 'Repetir la contraseña', 'riftwalker', { clave: true });
-    T(c, 48, 526, 664, 30, 'fx', 20, 'var(--mute)', 'Al crear la cuenta aceptás el <span class="enlace" style="color:var(--accent)">aviso de privacidad</span>.', { html: true });
-    c.querySelectorAll('.enlace').forEach(e => e.addEventListener('click', ev => { ev.stopPropagation(); ir(e.textContent.includes('Iniciar') ? 'entrar' : 'privacidad'); }));
-    Boton(c, 48, 586, 320, 64, 'Cancelar', 24, '', cerrar);
-    Boton(c, 392, 586, 320, 64, 'Crear cuenta', 24, 'lleno', () => ir(conError ? 'crear-error' : 'perfil-confirmar'));
-  }
-  function entrar(conError) {
-    perfil('sin');
-    const cerrar = () => ir('perfil-sin');
-    const c = ventana(760, conError ? 650 : 600, cerrar);
-    titulo(c, 'Tu cuenta', 'Iniciar sesión');
-    let y = 140;
-    if (conError) {
-      const b = N(c, 48, 132, 664, 56); b.style.background = 'rgba(255,92,92,.12)'; b.style.borderRadius = '8px'; b.style.boxShadow = 'inset 3px 0 0 var(--bad)';
-      T(b, 20, 0, 640, 56, 'fx', 21, '#FFB3B3', 'El mail o la contraseña no coinciden.');
-      y = 206;
-    }
-    campo(c, y, 'Mail', MAIL, { error: '' });
-    campo(c, y + 110, 'Contraseña', 'riftwalkr', { clave: true });
-    const olvido = T(c, 412, y + 210, 300, 28, 'fx', 20, 'var(--accent)', '¿Te olvidaste la contraseña?', { al: 'der' });
-    clic(olvido, () => ir('recuperar')).classList.add('enlace');
-    Boton(c, 48, y + 256, 320, 64, 'Cancelar', 24, '', cerrar);
-    Boton(c, 392, y + 256, 320, 64, 'Entrar', 24, 'lleno', () => { if (conError) { ir('perfil-cuenta'); avisar('Entraste a tu cuenta'); } else ir('entrar-error'); });
-    const pie = T(c, 48, y + 344, 664, 30, 'fx', 20, 'var(--mute)', '¿No tenés cuenta? <span class="enlace" style="color:var(--accent)">Crear cuenta</span>', { html: true, al: 'centro' });
-    pie.querySelector('.enlace').addEventListener('click', () => ir('crear'));
-  }
-  function recuperar(paso) {
-    perfil('sin');
-    const cerrar = () => ir('perfil-sin');
-    if (paso === 1) {
-      const c = ventana(760, 420, cerrar);
-      titulo(c, 'Tu cuenta', 'Recuperar la contraseña');
-      T(c, 48, 128, 664, 30, 'fx', 22, 'var(--soft)', 'Escribí tu mail y te mandamos un código para elegir una contraseña nueva.');
-      campo(c, 180, 'Mail', MAIL);
-      Boton(c, 48, 316, 320, 64, 'Cancelar', 24, '', cerrar);
-      Boton(c, 392, 316, 320, 64, 'Mandar código', 24, 'lleno', () => ir('recuperar-codigo'));
-      return;
-    }
-    const c = ventana(760, 640, cerrar);
-    titulo(c, 'Tu cuenta', 'Contraseña nueva');
-    T(c, 48, 128, 664, 30, 'fx', 22, 'var(--soft)', 'Si hay una cuenta con ese mail, te llegó un código de 6 números.');
-    T(c, 48, 178, 500, 22, 'fr', 17, 'var(--mute)', 'Código', { mayus: true, esp: 12 });
-    codigo(c, 48, 206, ['2', '0', '7', '3', '9', '1'], -1);
-    campo(c, 310, 'Contraseña nueva', 'nuevaclave', { clave: true, ayuda: '8 caracteres o más' });
-    campo(c, 420, 'Repetir la contraseña', 'nuevaclave', { clave: true });
-    Boton(c, 48, 540, 320, 64, 'Cancelar', 24, '', cerrar);
-    Boton(c, 392, 540, 320, 64, 'Cambiar', 24, 'lleno', () => { ir('perfil-cuenta'); avisar('Contraseña cambiada. Entraste a tu cuenta'); });
-  }
-  function cerrarSesion() {
-    perfil('cuenta');
-    const volver = () => ir('perfil-cuenta');
-    const c = ventana(760, 400, volver);
-    titulo(c, 'Tu cuenta', 'Cerrar sesión');
-    T(c, 48, 132, 664, 140, 'fx', 23, 'var(--soft)', 'En esta PC volvés a tu progreso sin cuenta. Tu progreso, tus monedas y tus cosméticos de la cuenta quedan guardados en ella y vuelven cuando inicies sesión.', { arriba: true, alto: 1.4 });
-    Boton(c, 48, 296, 320, 64, 'Cancelar', 24, '', volver);
-    Boton(c, 392, 296, 320, 64, 'Cerrar sesión', 24, 'lleno', () => { ir('perfil-sin'); avisar('Cerraste la sesión'); });
-  }
-  function borrar() {
-    perfil('cuenta');
-    const volver = () => ir('perfil-cuenta');
-    const c = ventana(760, 540, volver);
-    titulo(c, 'Esto no se puede deshacer', 'Borrar cuenta', 'var(--bad)');
-    T(c, 48, 132, 664, 140, 'fx', 23, 'var(--soft)', 'Se borran tu cuenta, su progreso, sus monedas, sus cosméticos y tu lugar en el ranking. En esta PC volvés a tu progreso sin cuenta, y el mail queda libre.', { arriba: true, alto: 1.4 });
-    campo(c, 290, 'Tu contraseña, para confirmar', 'riftwalker', { clave: true });
-    Boton(c, 48, 432, 320, 64, 'Cancelar', 24, '', volver);
-    Boton(c, 392, 432, 320, 64, 'Borrar cuenta', 24, 'rojo', () => { ir('perfil-sin'); avisar('Borramos tu cuenta y sus datos'); });
-  }
   function privacidad() {
-    perfil('sin');
-    const volver = () => history.length > 1 ? history.back() : ir('perfil-sin');
+    perfil();
+    const volver = () => ir('perfil-cuenta');
     const c = ventana(980, 780, volver);
     titulo(c, 'Privacidad', 'Aviso de privacidad');
     const partes = [
       ['Qué guardamos', 'Tu mail y tu contraseña (cifrada), tu nombre, tu progreso (logros, cosméticos, monedas), tus estadísticas de partida y las opiniones que mandes.'],
       ['Para qué', 'Para que recuperes tu progreso en cualquier PC, para el ranking global y para buscar partida. No lo usamos para publicidad ni lo compartimos con nadie.'],
       ['Dónde', 'En la base del juego (Supabase). Las partidas pasan por los servidores de Photon, que reciben tu nombre de jugador, tu id de cuenta y tu conexión (IP), como cualquier juego en línea.'],
-      ['Tus derechos', 'Podés ver y cambiar tus datos desde el Perfil, y borrar la cuenta con todo lo que tiene cuando quieras (Ley 25.326 de Protección de Datos Personales).'],
+      ['Tus derechos', 'Podés ver tus datos en el Perfil y borrar la cuenta con todo lo que tiene desde el launcher, cuando quieras (Ley 25.326 de Protección de Datos Personales).'],
     ];
     partes.forEach(([t, d], i) => {
       T(c, 48, 136 + i * 136, 880, 26, 'fr', 20, 'var(--accent)', t, { mayus: true, esp: 12 });
       T(c, 48, 166 + i * 136, 880, 100, 'fx', 22, 'var(--soft)', d, { arriba: true, alto: 1.4 });
     });
     Boton(c, 660, 690, 272, 60, 'Entendido', 24, 'lleno', volver);
+  }
+
+  // ---------- Sin sesión: «Iniciá sesión en el launcher» (US 282, CA3) ----------
+  function sinSesion(cerrada) {
+    capa.innerHTML = ''; capa.style.background = '#07080a';
+    Img(capa, '../img/tactico-vista.jpg', 0, 0, 1920, 1080);
+    degrade(N(capa, 0, 0, 1920, 1080), '90deg', 0.96, 0.78);
+    T(capa, 150, 250, 900, 26, 'fr', 22, cerrada ? 'var(--bad)' : 'var(--accent)', cerrada ? 'Tu sesión se cerró' : 'Project Riftwalker', { mayus: true, esp: 30 });
+    T(capa, 144, 284, 1500, 110, 'ft', 104, 'var(--ink)', 'Iniciá sesión en el launcher', { mayus: true, esp: 1 });
+    T(capa, 150, 410, 1100, 90, 'fx', 30, 'var(--soft)', cerrada
+      ? 'Se cerró la sesión de tu cuenta, por ejemplo desde el launcher. Volvé a entrar ahí para seguir jugando: tu progreso está guardado en la cuenta.'
+      : 'Para jugar hace falta una cuenta. Abrí el launcher, entrá con tu cuenta y tocá Jugar: el juego se abre con ella.', { arriba: true, alto: 1.4 });
+    [['1', 'Abrí el launcher'], ['2', 'Entrá con tu cuenta'], ['3', 'Tocá Jugar']].forEach(([n, x], i) => {
+      const p = N(capa, 150 + i * 360, 540, 340, 84, 'panel');
+      T(p, 24, 0, 50, 84, 'ft', 48, 'var(--accent)', n);
+      T(p, 74, 0, 260, 84, 'fx', 26, 'var(--ink)', x);
+    });
+    Boton(capa, 150, 680, 380, 76, 'Abrir el launcher', 30, 'lleno', () => avisar('Se abre el launcher y se cierra el juego'));
+    Boton(capa, 550, 680, 220, 76, 'Salir', 30, '', () => avisar('Se cierra el juego'));
+    T(capa, 152, 784, 1100, 30, 'fx', 21, 'var(--mute)', 'Si el launcher no está en esta PC, bajalo desde la guía del juego.');
   }
 
   // ---------- Andén y buscar partida (como ModeSelectScreen) ----------
@@ -330,25 +235,13 @@
     const r = N(capa, 150, 440, 1200, 40); r.innerHTML = m.reglas.map(x => `<span class="regla">${x}</span>`).join('');
     return m;
   }
-  function andenConBotones(modo, sinCuenta) {
+  function andenConBotones(modo) {
     const m = anden(modo);
-    Boton(capa, 150, 520, 380, 84, 'Buscar partida', 34, 'color', () => ir(sinCuenta ? 'anden-sin-cuenta' : 'buscando'));
+    Boton(capa, 150, 520, 380, 84, 'Buscar partida', 34, 'color', () => ir('buscando'));
     Boton(capa, 550, 520, 280, 84, 'Crear sala', 30, 'fantasma', null).disabled = false;
     Boton(capa, 850, 520, 340, 84, 'Unirse con código', 30, 'fantasma', null).disabled = false;
-    T(capa, 152, 626, 1000, 30, 'fx', 22, 'rgba(255,255,255,.6)', sinCuenta
-      ? 'Buscar partida necesita una cuenta. Las salas con código no.'
-      : `Buscás con tu cuenta (${NOMBRE}) · Región Sudamérica`);
+    T(capa, 152, 626, 1000, 30, 'fx', 22, 'rgba(255,255,255,.6)', `Buscás con tu cuenta (${NOMBRE}) · Región Sudamérica`);
     return m;
-  }
-  function sinCuentaParaBuscar() {
-    andenConBotones('deathmatch', true);
-    const volver = () => ir('anden-sin');
-    const c = ventana(860, 400, volver);
-    titulo(c, 'Buscar partida', 'Necesitás una cuenta');
-    T(c, 48, 132, 764, 150, 'fx', 23, 'var(--soft)', 'Para buscar partida cada jugador entra con su cuenta: así nadie se hace pasar por otro y lo que ganás queda a tu nombre. Crear una lleva un minuto. Las salas con código se siguen jugando sin cuenta.', { arriba: true, alto: 1.4 });
-    Boton(c, 48, 300, 240, 64, 'Cancelar', 24, '', volver);
-    Boton(c, 308, 300, 240, 64, 'Iniciar sesión', 24, '', () => ir('entrar'));
-    Boton(c, 568, 300, 244, 64, 'Crear cuenta', 24, 'lleno', () => ir('crear'));
   }
   // Panel de búsqueda: reemplaza a los botones del andén mientras busca (US 275).
   function busqueda(modo, jugadores, fase) {
@@ -399,21 +292,11 @@
 
   // ---------- Estados ----------
   const ESTADOS = {
-    'perfil-sin': () => perfil('sin'),
-    'crear': () => crear(false),
-    'crear-error': () => crear(true),
-    'perfil-confirmar': () => perfil('confirmar'),
-    'perfil-cuenta': () => perfil('cuenta'),
-    'entrar': () => entrar(false),
-    'entrar-error': () => entrar(true),
-    'recuperar': () => recuperar(1),
-    'recuperar-codigo': () => recuperar(2),
-    'cerrar': cerrarSesion,
-    'borrar': borrar,
+    'perfil-cuenta': perfil,
     'privacidad': privacidad,
-    'anden': () => andenConBotones('deathmatch', false),
-    'anden-sin': () => andenConBotones('deathmatch', true),
-    'anden-sin-cuenta': sinCuentaParaBuscar,
+    'sin-sesion': () => sinSesion(false),
+    'sesion-cerrada': () => sinSesion(true),
+    'anden': () => andenConBotones('deathmatch'),
     'buscando': () => busqueda('deathmatch', [NOMBRE, 'Nahue', 'Luka'], 'buscando'),
     'minimo': () => busqueda('tactico', [NOMBRE, 'Agus', 'Lucas', 'Nico'], 'minimo'),
     'cuenta-regresiva': () => busqueda('deathmatch', [NOMBRE, 'Nahue', 'Luka', 'David', 'Agus', 'Lucas'], 'cuenta'),
@@ -422,16 +305,14 @@
   function mostrar() {
     relojes.forEach(clearInterval); relojes = [];
     capa.style.removeProperty('--c');
-    (ESTADOS[location.hash.slice(1)] || ESTADOS['perfil-sin'])();
+    (ESTADOS[location.hash.slice(1)] || ESTADOS['perfil-cuenta'])();
   }
   addEventListener('hashchange', mostrar);
   addEventListener('keydown', e => {
     if (e.key !== 'Escape') return;
     const h = location.hash.slice(1);
     if (['buscando', 'minimo', 'cuenta-regresiva'].includes(h)) ir('anden');
-    else if (h === 'anden-sin-cuenta') ir('anden-sin');
-    else if (['crear', 'crear-error', 'entrar', 'entrar-error', 'recuperar', 'recuperar-codigo', 'privacidad'].includes(h)) ir('perfil-sin');
-    else if (['cerrar', 'borrar'].includes(h)) ir('perfil-cuenta');
+    else if (h === 'privacidad') ir('perfil-cuenta');
   });
   function escalar() {
     const k = Math.min(innerWidth / 1920, innerHeight / 1080);
