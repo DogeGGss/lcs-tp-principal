@@ -10,9 +10,10 @@ using UnityEngine.AI;
 //   él, arriba.
 // - CA3: mientras vuela escupe 3 bolas de veneno, una cada 1,5 s, hacia donde está el jugador: caen en arco, son verdes
 //   y se ven venir, así que se pueden esquivar.
-// - CA4: si la bola le pega al jugador le hace 15 de daño; donde cae deja un charco de 5 m de ancho.
-// - CA5: cada charco dura 8 s y después se achica hasta desaparecer; el jugador que está adentro recibe 10 de daño por
-//   segundo. No lastiman a los enemigos. Como mucho hay 6 (el más viejo se va).
+// - CA4: si la bola le pega al jugador le hace 15 de daño; donde cae deja una nube venenosa (NubeDeVeneno: verde, como
+//   la de la granada de humo, que lastima y tapa la vista) o, según su tipo (TipoDeNpc.veneno), un charco de 5 m.
+// - CA5: la nube dura 10 s y el que está adentro recibe 10 de daño por segundo y ve todo verde; el charco dura 8 s y
+//   también saca 10 por segundo. No lastiman a los enemigos. Como mucho hay 4 nubes o 6 charcos (el más viejo se va).
 // - CA6: después de escupir baja, queda 1,5 s quieto y vuelve a pelear por tierra.
 // - CA7: si no hay lugar arriba (bajo techo), no despega y prueba más tarde. Las bolas chocan con las paredes y dejan el
 //   charco en el piso más cercano.
@@ -192,7 +193,7 @@ public class VueloDeNpc : MonoBehaviour
         if (jugador == null) return;
         if (npc.Tipo.escupir != null && npc.Animaciones != null) npc.Animaciones.Golpe(npc.Tipo.escupir, 0.9f);
         Vector3 boca = Boca();
-        BolaDeVeneno.Lanzar(boca, jugador.position, npc.Tipo.nombre, transform);
+        BolaDeVeneno.Lanzar(boca, jugador.position, npc.Tipo.nombre, transform, npc.Tipo.veneno, npc.Tipo.materialDeNube);
     }
 
     // La boca: la zona de impacto de la cabeza (o el frente del cuerpo, si no tiene).
@@ -228,9 +229,11 @@ public class BolaDeVeneno : MonoBehaviour
     private Vector3 velocidad;
     private string fuente;
     private Transform jefe;
+    private VenenoDelVuelo deja;
+    private Material nube;
     private float muere;
 
-    public static void Lanzar(Vector3 desde, Vector3 hacia, string fuente, Transform jefe)
+    public static void Lanzar(Vector3 desde, Vector3 hacia, string fuente, Transform jefe, VenenoDelVuelo deja = VenenoDelVuelo.Nubes, Material nube = null)
     {
         GameObject go = GameObject.CreatePrimitive(PrimitiveType.Sphere);
         go.name = "Bola de veneno";
@@ -244,6 +247,8 @@ public class BolaDeVeneno : MonoBehaviour
         // Tiro parabólico: llega a "hacia" en Vuelo segundos.
         bola.velocidad = (hacia - desde) / Vuelo + 0.5f * Gravedad * Vuelo * Vector3.up;
         bola.fuente = fuente;
+        bola.deja = deja;
+        bola.nube = nube;
         bola.jefe = jefe;
         bola.muere = Time.time + 6f;
     }
@@ -292,10 +297,14 @@ public class BolaDeVeneno : MonoBehaviour
             if (g.collider.GetComponentInParent<CharacterController>() != null) continue;
             if (piso == null || g.distance < piso.Value.distance) piso = g;
         }
-        if (piso.HasValue)
-            CharcoDeVeneno.Crear(piso.Value.point, fuente);
-        else if (NavMesh.SamplePosition(donde, out NavMeshHit cerca, 5f, NavMesh.AllAreas))
-            CharcoDeVeneno.Crear(cerca.position, fuente);
+        Vector3? lugar = null;
+        if (piso.HasValue) lugar = piso.Value.point;
+        else if (NavMesh.SamplePosition(donde, out NavMeshHit cerca, 5f, NavMesh.AllAreas)) lugar = cerca.position;
+        if (lugar.HasValue)
+        {
+            if (deja == VenenoDelVuelo.Charcos) CharcoDeVeneno.Crear(lugar.Value, fuente);
+            else NubeDeVeneno.Crear(lugar.Value, fuente, nube);
+        }
         Destroy(gameObject);
     }
 }
