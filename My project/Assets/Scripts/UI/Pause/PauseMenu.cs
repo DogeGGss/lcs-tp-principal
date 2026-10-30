@@ -581,7 +581,7 @@ public class PauseMenu : MonoBehaviour
 
     private void RefreshTexts()
     {
-        string mode = MatchSettings.Mode == GameMode.Zombie ? "Zombie"
+        string mode = MatchSettings.Mode == GameMode.Zombie ? "Invasión"
             : MatchSettings.Mode == GameMode.Deathmatch ? "Deathmatch" : "Táctico";
         metaText.text = mode + (isMultiplayer ? " · Online" : "");
 

@@ -96,7 +96,7 @@ public class PantallaDeCarga : MonoBehaviour
     public static void MostrarOnline(string escena, GameMode modo, string mapa, Sprite imagen, string sala)
     {
         Crear();
-        string nombreModo = modo == GameMode.Tactico ? "Modo Táctico" : modo == GameMode.Deathmatch ? "Deathmatch" : "Modo Zombie";
+        string nombreModo = modo == GameMode.Tactico ? "Modo Táctico" : modo == GameMode.Deathmatch ? "Deathmatch" : "Modo Invasión";
         actual.Mostrar(escena, nombreModo, mapa, string.IsNullOrEmpty(sala) ? "" : "Sala " + sala, imagen, modo, true);
         if (PhotonNetwork.CurrentRoom != null) actual.ultimaPartida = PhotonNetwork.CurrentRoom.Name + "/" + escena;
         // Lo que quedó de una partida anterior no cuenta.

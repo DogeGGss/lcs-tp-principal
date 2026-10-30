@@ -230,7 +230,7 @@ public class Multijugador : MonoBehaviourPunCallbacks, IOnEventCallback
         return lista;
     }
 
-    public static string Titulo(GameMode modo) => modo == GameMode.Deathmatch ? "Deathmatch" : modo == GameMode.Zombie ? "Zombie" : "Táctico";
+    public static string Titulo(GameMode modo) => modo == GameMode.Deathmatch ? "Deathmatch" : modo == GameMode.Zombie ? "Invasión" : "Táctico";
 
     // ================= Conexión =================
 

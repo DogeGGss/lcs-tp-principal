@@ -24,7 +24,7 @@ public class CreditsScreen : MonoBehaviour
     [Header("Contenido")]
     [SerializeField] private string gameTitle = "Project Riftwalker";
     [SerializeField, TextArea] private string prologue = "Hace no tanto tiempo, en una universidad\nmuy, muy cercana…";
-    [SerializeField, TextArea] private string lede = "Un shooter táctico, un deathmatch y una horda de zombis en la universidad. Hecho por siete estudiantes en diez semanas, con más café que horas de sueño.";
+    [SerializeField, TextArea] private string lede = "Un shooter táctico, un deathmatch y una invasión alienígena en la universidad. Hecho por siete estudiantes en diez semanas, con más café que horas de sueño.";
     [SerializeField] private List<Role> team = new List<Role>
     {
         new Role { role = "Scrum Master", names = "Ulises Fonseca" },
