@@ -3,6 +3,9 @@ using UnityEngine;
 /// <summary>Lo que deja la bola de veneno del jefe al caer (US 267).</summary>
 public enum VenenoDelVuelo { Nubes, Charcos }
 
+/// <summary>El dibujo de las marcas que brillan de un enemigo (US 283).</summary>
+public enum PatronDeMarcas { Ninguno = 0, Manchas = 1, Aros = 2, RayasEnElLomo = 3 }
+
 // F11 (NPCs), US 145: un tipo de NPC enemigo del modo Zombie (los bichos del rift). Todo lo que distingue a un tipo
 // está acá, como dato, y no en el código (CA5): se ajusta o se suma un tipo nuevo creando otro de estos
 // (Create > Riftwalker > Tipo de NPC) en Resources/NPCs.
@@ -26,6 +29,48 @@ public class TipoDeNpc : ScriptableObject
     [Min(0.1f)] public float escala = 1f;
     [Tooltip("Giro del modelo (grados) para que mire hacia adelante: algunos modelos vienen mirando para atrás (el escarabajo del Jefe, 180).")]
     public float giroDelModelo;
+
+    [Header("Marcas que brillan (US 283)")]
+    [Tooltip("El dibujo de las marcas bioluminiscentes, para que se vea de noche. Ninguno: sin marcas.")]
+    public PatronDeMarcas marcas = PatronDeMarcas.Ninguno;
+    [Tooltip("De qué color brillan.")]
+    [ColorUsage(false, false)] public Color colorDeMarcas = new Color(0f, 0.9f, 1f);
+    [Tooltip("Manchas y aros: cuántas entran a lo largo del cuerpo (más: más chicas y juntas). Las rayas usan las opciones de abajo.")]
+    [Range(2f, 30f)] public float cantidadDeMarcas = 9f;
+    [Tooltip("Manchas y aros: qué tan grandes son.")]
+    [Range(0.1f, 1f)] public float tamanioDeMarcas = 0.6f;
+    [Tooltip("Manchas y aros: qué parte de los lugares queda sin marca (0: todo marcado).")]
+    [Range(0f, 0.95f)] public float huecosEntreMarcas = 0.35f;
+    [Tooltip("Manchas y aros: qué tan irregulares son (0: redondas; 1: como de vaca, largas, torcidas y con el borde ondulado).")]
+    [Range(0f, 1f)] public float irregularidadDeMarcas;
+    [Tooltip("Cuánto brillan (más de 1 resplandece con el bloom del mapa).")]
+    [Range(0f, 10f)] public float brilloDeMarcas = 2.2f;
+    [Tooltip("Qué tan opacas son sobre la piel (bajas: se ven como de adentro del bicho; 1: pintadas encima).")]
+    [Range(0f, 1f)] public float opacidadDeMarcas = 0.5f;
+    [Tooltip("Cuánto respiran (suben y bajan de brillo despacio).")]
+    [Range(0f, 1f)] public float pulsoDeMarcas = 0.35f;
+    [Tooltip("Huesos del modelo cuyas partes no llevan marcas: lo que no es piel (la lanza del Catfish va en \"BN_ R_ Hand\").")]
+    public string[] huesosSinMarcas = new string[0];
+    [Tooltip("Rayas: distancia entre una raya y la siguiente, en el largo del cuerpo (1 = el cuerpo entero). Menos: más juntas.")]
+    [Range(0.005f, 0.3f)] public float separacionDeRayas = 0.05f;
+    [Tooltip("Rayas: qué tan anchas son, en el largo del cuerpo. Más que la separación: se tocan.")]
+    [Range(0.001f, 0.1f)] public float anchoDeRayas = 0.015f;
+    [Tooltip("Rayas: hasta dónde llegan hacia cada costado desde el medio del lomo, en el largo del cuerpo (terminan en punta).")]
+    [Range(0.01f, 0.5f)] public float largoDeRayas = 0.08f;
+    [Tooltip("Giro de las marcas (grados, en x, y, z) respecto del modelo: hacia dónde corren las rayas y dónde queda el lomo. " +
+             "Las rayas cruzan el eje adelante (z) y van arriba (y): por ejemplo, y 90 las pone a lo largo del cuerpo; " +
+             "x o z 90 cambian qué lado cuenta como lomo. Se ve en los enemigos que aparecen después.")]
+    public Vector3 giroDeMarcas;
+    [Tooltip("Ojos: dónde están en la textura del bicho (u, v: de 0 a 1, desde abajo a la izquierda). Brillan del color de las marcas.")]
+    public Vector2 ojoEnLaTextura;
+    [Tooltip("Ojos: qué tan grande es la zona del ojo en la textura (0: sin ojos que brillen).")]
+    [Range(0f, 0.2f)] public float radioDelOjo;
+    [Tooltip("Ojos: cuánto brillan (más de 1 resplandece con el bloom).")]
+    [Range(0f, 10f)] public float brilloDeOjos = 4f;
+    [Tooltip("Ojos: delineado de manchitas que brillan alrededor de cada ojo (0: sin delineado; 1: fuerte).")]
+    [Range(0f, 1f)] public float delineadoDeOjos;
+    [Tooltip("Ojos: brilla lo negro de esa zona de la textura (huecos, como los de la cabeza del Jefe) en vez de lo de color fuerte.")]
+    public bool ojosOscuros;
 
     [Header("Combate")]
     [Tooltip("Vida al aparecer. No tienen escudo.")]

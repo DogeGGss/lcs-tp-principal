@@ -15,9 +15,30 @@ MonoBehaviour:
   nombre: Tanque
   modelo: {fileID: 6697294229898335401, guid: 7dc7b54399d54194e9f2619f1832e8d5, type: 3}
   escala: 1.2
+  giroDelModelo: 0
+  marcas: 1
+  colorDeMarcas: {r: 1, g: 0.45, b: 0.05, a: 1}
+  cantidadDeMarcas: 8
+  tamanioDeMarcas: 0.75
+  huecosEntreMarcas: 0.3
+  irregularidadDeMarcas: 0.75
+  brilloDeMarcas: 2.2
+  opacidadDeMarcas: 0.13
+  pulsoDeMarcas: 0.3
+  huesosSinMarcas: []
+  separacionDeRayas: 0.05
+  anchoDeRayas: 0.015
+  largoDeRayas: 0.08
+  giroDeMarcas: {x: 0, y: 0, z: 0}
+  ojoEnLaTextura: {x: 0.613, y: 0.273}
+  radioDelOjo: 0.03
+  brilloDeOjos: 8
+  delineadoDeOjos: 0.7
   vida: 400
   danio: 40
   alcance: 0.5
+  velocidadDeAtaque: 1
+  cadencia: 1
   frenaAlRecibirImpacto: 0
   velocidad: 2.5
   corre: 0
@@ -32,5 +53,17 @@ MonoBehaviour:
   morir: {fileID: 1827226128182048838, guid: 688d54156d330eb48b69f546ee8691e1, type: 3}
   aturdido: {fileID: 0}
   grito: {fileID: 0}
+  esJefe: 0
+  titulo: 
+  embiste: 0
+  preparaEmbestida: {fileID: 0}
+  embestida: {fileID: 0}
+  vuela: 0
+  volar: {fileID: 0}
+  escupir: {fileID: 0}
+  veneno: 0
+  materialDeNube: {fileID: 0}
+  furia: 0
+  rugido: {fileID: 0}
   puntosPorBaja: 60
   puntosPorBajaALaCabeza: 100

@@ -16,6 +16,25 @@ MonoBehaviour:
   modelo: {fileID: 1174681552261998, guid: cda9515b23e2f454b9c8d645acee645e, type: 3}
   escala: 2.5
   giroDelModelo: 180
+  marcas: 0
+  colorDeMarcas: {r: 0.45, g: 1, b: 0.2, a: 1}
+  cantidadDeMarcas: 9
+  tamanioDeMarcas: 0.6
+  huecosEntreMarcas: 0.35
+  irregularidadDeMarcas: 0
+  brilloDeMarcas: 2.2
+  opacidadDeMarcas: 0.5
+  pulsoDeMarcas: 0.35
+  huesosSinMarcas: []
+  separacionDeRayas: 0.05
+  anchoDeRayas: 0.015
+  largoDeRayas: 0.08
+  giroDeMarcas: {x: 0, y: 0, z: 0}
+  ojoEnLaTextura: {x: 0.797, y: 0.143}
+  radioDelOjo: 0.08
+  brilloDeOjos: 2
+  delineadoDeOjos: 0
+  ojosOscuros: 1
   vida: 2000
   danio: 50
   alcance: 0.5
