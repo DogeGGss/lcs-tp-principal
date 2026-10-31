@@ -13,6 +13,9 @@ public class BarraDeJefe : MonoBehaviour
     public const float Furia = 0.5f;
 
     private const float Ancho = 640f, Alto = 12f, Abajo = 118f; // px de la pantalla de 1920 × 1080
+    // En Invasión el marcador de oleadas (MarcadorInvasion) ocupa el centro de arriba (620 px de ancho): la barra va
+    // arriba a la derecha, más angosta, donde en los otros modos van los avisos de bajas (los invasores no los usan).
+    private const float AnchoEnInvasion = 480f, DerechaEnInvasion = 24f, ArribaEnInvasion = 40f;
     private const float Sigue = 0.6f;    // s que el tramo claro tarda en alcanzar a la vida
     private const float Apagarse = 0.6f; // s al morir
 
@@ -53,10 +56,20 @@ public class BarraDeJefe : MonoBehaviour
         Sprite redondo = hud != null ? hud.Rounded : null;
 
         var caja = Rect("Barra", transform);
-        caja.anchorMin = caja.anchorMax = new Vector2(0.5f, 1f);
-        caja.pivot = new Vector2(0.5f, 1f);
-        caja.anchoredPosition = new Vector2(0f, -Abajo);
-        caja.sizeDelta = new Vector2(Ancho, 46f);
+        if (PartidaDeInvasion.Actual != null)
+        {
+            escala.screenMatchMode = CanvasScaler.ScreenMatchMode.Expand; // igual que el marcador, para no encimarse
+            caja.anchorMin = caja.anchorMax = caja.pivot = new Vector2(1f, 1f);
+            caja.anchoredPosition = new Vector2(-DerechaEnInvasion, -ArribaEnInvasion);
+            caja.sizeDelta = new Vector2(AnchoEnInvasion, 46f);
+        }
+        else
+        {
+            caja.anchorMin = caja.anchorMax = new Vector2(0.5f, 1f);
+            caja.pivot = new Vector2(0.5f, 1f);
+            caja.anchoredPosition = new Vector2(0f, -Abajo);
+            caja.sizeDelta = new Vector2(Ancho, 46f);
+        }
 
         // El nombre a la izquierda y la vida a la derecha, arriba de la barra.
         nombre = (string.IsNullOrEmpty(npc.Tipo.titulo) ? npc.Tipo.nombre : npc.Tipo.titulo).ToUpperInvariant();
