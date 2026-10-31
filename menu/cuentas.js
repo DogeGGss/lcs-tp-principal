@@ -1,22 +1,14 @@
-// Diseño de la cuenta en el juego (F18: US 282 y US 273) y de buscar partida (F28: US 274 a US 277), armado con las
-// piezas del menú del juego (menu.css, como MenuRiftwalker, PantallaPerfil y ModeSelectScreen) en una pantalla de
-// 1920 × 1080. La cuenta se maneja en el launcher (launcher/cuenta.html): el juego abre con esa cuenta, el Perfil solo
-// la muestra y, sin una sesión, el juego pide iniciarla en el launcher. Cada estado tiene su ancla (#perfil-cuenta,
-// #sin-sesion, #buscando…) para que la guía los muestre. Todavía no está en el juego: es la propuesta para revisar.
+// Diseño de la cuenta en el juego (F18: US 282 y US 273), armado con las piezas del menú del juego (menu.css, como
+// MenuRiftwalker y PantallaPerfil) en una pantalla de 1920 × 1080. La cuenta se maneja en el launcher
+// (launcher/cuenta.html): el juego abre con esa cuenta, el Perfil solo la muestra y, sin una sesión, el juego pide
+// iniciarla en el launcher. Buscar partida tiene su propia maqueta, sobre la pantalla de elegir modo (partida.html).
+// Cada estado tiene su ancla (#perfil-cuenta, #sin-sesion…) para que la guía los muestre. Todavía no está en el juego.
 (() => {
   const C = window.CATALOGO;
   const E = document.getElementById('escenario');
   const MAIL = 'ulises.fonseca@gmail.com', NOMBRE = 'Ulises';
   const SET = 'guerrero-synthwave';
   const TITULO = (C.titulos.find(t => t.nombre === 'Viajero del Rift') || C.titulos[1] || {}).nombre || 'Viajero del Rift';
-  const MODO = {
-    deathmatch: { c: '#FF4B4B', anden: 'Andén 2 · Online', nombre: 'Deathmatch', foto: '../img/deathmatch-vista.jpg',
-      texto: 'Todos contra todos. Elegís tus armas gratis, cada baja te cura 50 y reaparecés a los 3 s lejos de los rivales.',
-      reglas: ['Hasta 8', '25 bajas', '8 min', 'Armas gratis'], minimo: 2 },
-    tactico: { c: '#F29A38', anden: 'Andén 1 · Online', nombre: 'Táctico', foto: '../img/tactico-vista.jpg',
-      texto: 'Un equipo planta el dispositivo en A o B y el otro lo defiende. Sin reaparición: si morís, mirás a un compañero hasta la ronda siguiente.',
-      reglas: ['4 vs 4', 'Primero a 7', 'Cambio de lado en la 6', 'Compra 20 s'], minimo: 4 },
-  };
 
   // ---------- Piezas (las mismas de menu.js) ----------
   const el = (tag, cls, padre) => { const e = document.createElement(tag); if (cls) e.className = cls; if (padre) padre.appendChild(e); return e; };
@@ -218,89 +210,12 @@
     T(capa, 152, 784, 1100, 30, 'fx', 21, 'var(--mute)', 'Si el launcher no está en esta PC, bajalo desde la guía del juego.');
   }
 
-  // ---------- Andén y buscar partida (como ModeSelectScreen) ----------
-  function anden(modo) {
-    const m = MODO[modo];
-    capa.innerHTML = ''; capa.style.background = '#07080a';
-    capa.style.setProperty('--c', m.c);
-    Img(capa, m.foto, 0, 0, 1920, 1080);
-    degrade(N(capa, 0, 0, 1400, 1080), '90deg', 0.92, 0.1);
-    degrade(N(capa, 0, 760, 1920, 320), '0deg', 0.7, 0);
-    T(capa, 64, 50, 700, 22, 'fr', 20, 'rgba(255,255,255,.6)', 'Project Riftwalker', { mayus: true, esp: 30 });
-    T(capa, 62, 76, 700, 58, 'ft', 54, 'var(--ink)', 'Elegí el modo', { mayus: true, esp: 2 });
-    T(capa, 1500, 52, 356, 44, 'fr', 22, 'rgba(255,255,255,.7)', '<b style="color:#fff;font-family:JetBrains Mono,monospace;font-weight:400;border:1px solid rgba(255,255,255,.4);border-radius:4px;padding:2px 8px;margin-right:10px">Esc</b> Volver', { html: true, al: 'der', mayus: true, esp: 10 });
-    T(capa, 150, 166, 900, 30, 'fr', 24, m.c, m.anden, { mayus: true, esp: 32 });
-    T(capa, 144, 196, 1300, 130, 'ft', 128, 'var(--ink)', m.nombre, { mayus: true });
-    T(capa, 150, 336, 1000, 80, 'fx', 28, 'rgba(255,255,255,.85)', m.texto, { arriba: true, alto: 1.35 });
-    const r = N(capa, 150, 440, 1200, 40); r.innerHTML = m.reglas.map(x => `<span class="regla">${x}</span>`).join('');
-    return m;
-  }
-  function andenConBotones(modo) {
-    const m = anden(modo);
-    Boton(capa, 150, 520, 380, 84, 'Buscar partida', 34, 'color', () => ir('buscando'));
-    Boton(capa, 550, 520, 280, 84, 'Crear sala', 30, 'fantasma', null).disabled = false;
-    Boton(capa, 850, 520, 340, 84, 'Unirse con código', 30, 'fantasma', null).disabled = false;
-    T(capa, 152, 626, 1000, 30, 'fx', 22, 'rgba(255,255,255,.6)', `Buscás con tu cuenta (${NOMBRE}) · Región Sudamérica`);
-    return m;
-  }
-  // Panel de búsqueda: reemplaza a los botones del andén mientras busca (US 275).
-  function busqueda(modo, jugadores, fase) {
-    const m = anden(modo);
-    const p = N(capa, 150, 510, 860, 470, 'panel');
-    p.style.background = 'rgba(0,0,0,.62)'; p.style.boxShadow = 'inset 0 0 0 1px rgba(255,255,255,.18)';
-    const linea = N(p, 0, 0, 860, 4); linea.style.background = m.c; linea.style.borderRadius = '8px 8px 0 0';
-    if (fase === 'cuenta') {
-      T(p, 30, 22, 500, 26, 'fr', 22, m.c, 'Partida encontrada', { mayus: true, esp: 14 });
-      const n = T(p, 30, 50, 600, 60, 'ft', 52, 'var(--ink)', '', { mayus: true, esp: 3 });
-      reloj(n, 7, true, s => s ? `Empieza en ${s}` : 'Cargando el mapa…');
-    } else {
-      T(p, 30, 22, 500, 26, 'fr', 22, m.c, 'Buscando partida', { mayus: true, esp: 14 });
-      T(p, 30, 50, 600, 60, 'ft', 52, 'var(--ink)', `${jugadores.length} / 8 jugadores`, { mayus: true, esp: 3 });
-      const r = T(p, 560, 34, 270, 64, 'fm', 54, 'var(--ink)', '', { al: 'der' });
-      reloj(r, fase === 'minimo' ? 52 : 23, false);
-    }
-    T(p, 30, 112, 800, 28, 'fx', 21, 'rgba(255,255,255,.6)', `${m.nombre} · Sudamérica · misma versión del juego`);
-    for (let i = 0; i < 8; i++) {
-      const col = i % 2, fila = Math.floor(i / 2), j = jugadores[i];
-      const lugar = N(p, 30 + col * 410, 156 + fila * 52, 390, 46, 'lugar' + (j ? '' : ' libre'));
-      lugar.innerHTML = `<span class="punto"></span><span>${j ? j : 'Buscando…'}</span>`;
-      if (j && i === 0) lugar.lastChild.innerHTML = `${j} <span style="color:rgba(255,255,255,.5);font-weight:400">(vos)</span>`;
-    }
-    const pie = fase === 'minimo'
-      ? `Hay ${jugadores.length}, el mínimo para ${m.nombre}. Si no entra nadie más, arranca en`
-      : fase === 'cuenta' ? 'Si sale alguien y quedan menos que el mínimo, sigue buscando.'
-      : `Arranca sola con 8 jugadores, o con ${m.minimo} si pasan 45 s sin que entre nadie.`;
-    const t = T(p, 30, 380, 560, 60, 'fx', 20, 'rgba(255,255,255,.75)', pie, { arriba: true, alto: 1.35, html: true });
-    if (fase === 'minimo') {
-      const s = el('b', '', t.querySelector('span')); s.style.cssText = 'color:#fff;font-family:"JetBrains Mono",monospace;font-weight:400;margin-left:8px';
-      reloj(s, 31, true, x => `0:${String(x).padStart(2, '0')}`);
-      const b = N(p, 30, 440, 560, 6, 'barra'); const i = el('i', '', b); i.style.width = '31%';
-    }
-    Boton(p, 620, 380, 210, 64, 'Cancelar', 26, 'fantasma', () => { ir('anden'); avisar('Búsqueda cancelada'); });
-  }
-  function sinConexion() {
-    const m = anden('deathmatch');
-    const p = N(capa, 150, 510, 860, 300, 'panel');
-    p.style.background = 'rgba(0,0,0,.62)'; p.style.boxShadow = 'inset 0 0 0 1px rgba(255,92,92,.45)';
-    const linea = N(p, 0, 0, 860, 4); linea.style.background = 'var(--bad)'; linea.style.borderRadius = '8px 8px 0 0';
-    T(p, 30, 26, 600, 26, 'fr', 22, 'var(--bad)', 'Buscar partida', { mayus: true, esp: 14 });
-    T(p, 30, 54, 800, 60, 'ft', 52, 'var(--ink)', 'Se cortó la conexión', { mayus: true, esp: 3 });
-    T(p, 30, 122, 800, 70, 'fx', 22, 'rgba(255,255,255,.8)', 'Revisá tu internet y volvé a buscar. No perdiste nada: tu progreso está guardado.', { arriba: true, alto: 1.4 });
-    Boton(p, 30, 210, 300, 64, 'Volver al andén', 24, 'color', () => ir('anden'));
-    return m;
-  }
-
   // ---------- Estados ----------
   const ESTADOS = {
     'perfil-cuenta': perfil,
     'privacidad': privacidad,
     'sin-sesion': () => sinSesion(false),
     'sesion-cerrada': () => sinSesion(true),
-    'anden': () => andenConBotones('deathmatch'),
-    'buscando': () => busqueda('deathmatch', [NOMBRE, 'Nahue', 'Luka'], 'buscando'),
-    'minimo': () => busqueda('tactico', [NOMBRE, 'Agus', 'Lucas', 'Nico'], 'minimo'),
-    'cuenta-regresiva': () => busqueda('deathmatch', [NOMBRE, 'Nahue', 'Luka', 'David', 'Agus', 'Lucas'], 'cuenta'),
-    'sin-conexion': sinConexion,
   };
   function mostrar() {
     relojes.forEach(clearInterval); relojes = [];
@@ -311,8 +226,7 @@
   addEventListener('keydown', e => {
     if (e.key !== 'Escape') return;
     const h = location.hash.slice(1);
-    if (['buscando', 'minimo', 'cuenta-regresiva'].includes(h)) ir('anden');
-    else if (h === 'privacidad') ir('perfil-cuenta');
+    if (h === 'privacidad') ir('perfil-cuenta');
   });
   function escalar() {
     const k = Math.min(innerWidth / 1920, innerHeight / 1080);

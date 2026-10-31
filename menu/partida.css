@@ -1,0 +1,116 @@
+/* Buscar partida en la pantalla de elegir modo (ModeSelectScreen), con un andén elegido. Mismas medidas que el juego:
+   1920 × 1080, el detalle en (150, 150), el título de 128 y la tecla Esc arriba a la derecha. Todavía no está en el juego. */
+@font-face{font-family:Barlow;src:url(fuentes/Barlow-Regular.ttf);font-weight:400}
+@font-face{font-family:Barlow;src:url(fuentes/Barlow-SemiBold.ttf);font-weight:600}
+@font-face{font-family:"Barlow Condensed";src:url(fuentes/BarlowCondensed-SemiBold.ttf);font-weight:600}
+@font-face{font-family:"Barlow Condensed";src:url(fuentes/BarlowCondensed-Bold.ttf);font-weight:700}
+@font-face{font-family:"JetBrains Mono";src:url(fuentes/JetBrainsMono.ttf)}
+
+:root{--display:"Barlow Condensed","Arial Narrow",sans-serif;--body:Barlow,"Segoe UI",sans-serif;--mono:"JetBrains Mono",Consolas,monospace;--bad:#FF5C5C}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;background:#000;overflow:hidden}
+#escenario{position:absolute;width:1920px;height:1080px;transform-origin:0 0;overflow:hidden;color:#fff;font-family:var(--body)}
+
+/* Fondo del andén elegido: la captura del mapa, la luz del modo y su motivo, oscurecido a la izquierda para leer */
+.fondo{position:absolute;inset:0;background:var(--base)}
+.fondo .mapa{position:absolute;inset:0;background:url(../img/mapa_bg.jpg) center/cover;opacity:.17}
+.fondo .luz{position:absolute;left:820px;top:-180px;width:1440px;height:1440px;border-radius:50%;background:radial-gradient(closest-side,rgb(var(--rgb)/.30),rgb(var(--rgb)/.07) 55%,transparent)}
+.fondo .rejilla{position:absolute;inset:0;background-image:linear-gradient(rgb(var(--rgb)/.08) 1.5px,transparent 1.5px),linear-gradient(90deg,rgb(var(--rgb)/.08) 1.5px,transparent 1.5px);background-size:64px 64px}
+.trazo{position:absolute;height:2px;width:120px;background:linear-gradient(90deg,transparent,rgba(255,236,214,.85));transform:rotate(-24deg);animation:trazo 2.6s linear infinite;opacity:0}
+@keyframes trazo{0%{opacity:0;translate:-160px 70px}12%{opacity:.9}60%{opacity:.5}100%{opacity:0;translate:320px -140px}}
+.sombra{position:absolute;inset:0;background:linear-gradient(90deg,rgba(0,0,0,.84) 0%,rgba(0,0,0,.58) 45%,rgba(0,0,0,0) 72%)}
+
+/* El radar de la búsqueda, a la derecha: anillos que salen del centro y un punto por cada jugador que entra */
+.radar{position:absolute;left:1180px;top:200px;width:640px;height:640px}
+.radar .aro{position:absolute;inset:0;border-radius:50%;border:2px solid rgb(var(--rgb)/.55);animation:aro 2.6s ease-out infinite;opacity:0}
+.radar .aro:nth-child(2){animation-delay:-.87s}.radar .aro:nth-child(3){animation-delay:-1.73s}
+@keyframes aro{0%{transform:scale(.12);opacity:.9}100%{transform:scale(1);opacity:0}}
+.radar .guia{position:absolute;border-radius:50%;border:1px solid rgb(var(--rgb)/.18)}
+.radar .barrido{position:absolute;inset:0;border-radius:50%;background:conic-gradient(from 0deg,rgb(var(--rgb)/.32),transparent 22%);animation:gira 3.2s linear infinite}
+@keyframes gira{to{transform:rotate(1turn)}}
+.radar .centro{position:absolute;left:304px;top:304px;width:32px;height:32px;border-radius:50%;background:rgb(var(--rgb));box-shadow:0 0 40px rgb(var(--rgb))}
+.radar .pj{position:absolute;width:18px;height:18px;margin:-9px 0 0 -9px;border-radius:50%;background:#fff;box-shadow:0 0 0 4px rgb(var(--rgb)/.6),0 0 24px rgb(var(--rgb))}
+.radar .pj span{position:absolute;left:26px;top:-4px;white-space:nowrap;font:600 20px/1 var(--display);letter-spacing:.08em;text-transform:uppercase;color:rgba(255,255,255,.8)}
+.radar.listo .barrido,.radar.listo .aro{animation-duration:1.1s}
+
+/* Arriba: la tecla Esc (como en el juego) */
+.esc{position:absolute;right:64px;top:50px;display:flex;align-items:center;gap:12px;font:600 22px/1 var(--display);letter-spacing:.08em;text-transform:uppercase;color:rgba(255,255,255,.85);cursor:pointer}
+.esc b{display:inline-grid;place-items:center;min-width:44px;height:36px;padding:0 9px;border-radius:6px;background:#fff;color:#111;font:700 18px/1 var(--mono)}
+
+/* El detalle del andén */
+.detalle{position:absolute;left:150px;top:150px;width:900px}
+.detalle .n{font:600 24px/1 var(--display);letter-spacing:.32em;text-transform:uppercase;color:rgb(var(--rgb))}
+.detalle .t{font:700 128px/.86 var(--display);text-transform:uppercase;margin:12px 0 16px}
+.detalle .d{font:400 28px/1.35 var(--body);color:rgba(255,255,255,.85);max-width:760px}
+.reglas{display:flex;gap:12px;flex-wrap:wrap;margin:22px 0 34px}
+.reglas span{font:600 21px/1 var(--mono);padding:10px 14px;border-radius:6px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.14)}
+
+/* «Buscar partida»: lo principal de la pantalla */
+.buscar{position:relative;display:flex;align-items:center;gap:26px;width:720px;height:124px;padding:0 34px 0 30px;border:0;border-radius:12px;background:rgb(var(--rgb));color:#111;cursor:pointer;
+  box-shadow:0 0 0 0 rgb(var(--rgb)/.55),0 18px 50px rgb(var(--rgb)/.28);animation:latir 2.2s ease-out infinite;overflow:hidden;text-align:left}
+.buscar:hover{filter:brightness(1.07);transform:translateY(-2px)}
+@keyframes latir{0%{box-shadow:0 0 0 0 rgb(var(--rgb)/.55),0 18px 50px rgb(var(--rgb)/.28)}70%,100%{box-shadow:0 0 0 22px rgb(var(--rgb)/0),0 18px 50px rgb(var(--rgb)/.28)}}
+.buscar::after{content:'';position:absolute;top:0;bottom:0;width:120px;left:-160px;background:linear-gradient(100deg,transparent,rgba(255,255,255,.45),transparent);animation:brillo 3.4s ease-in-out infinite}
+@keyframes brillo{0%,55%{left:-160px}100%{left:760px}}
+.buscar .icono{flex:none;width:64px;height:64px;border-radius:50%;border:4px solid #111;position:relative}
+.buscar .icono::before{content:'';position:absolute;inset:11px;border-radius:50%;border:3px solid #111;opacity:.55}
+.buscar .icono::after{content:'';position:absolute;left:50%;top:50%;width:26px;height:4px;background:#111;transform-origin:0 50%;animation:gira 2.4s linear infinite}
+.buscar .txt{flex:1}
+.buscar .txt b{display:block;font:700 60px/1 var(--display);letter-spacing:.05em;text-transform:uppercase}
+.buscar .txt small{display:block;font:600 21px/1.1 var(--display);letter-spacing:.12em;text-transform:uppercase;opacity:.72;margin-top:6px}
+.buscar .flecha{font:700 54px/1 var(--display)}
+.cuenta{display:flex;align-items:center;gap:12px;margin-top:18px;font:400 22px/1.3 var(--body);color:rgba(255,255,255,.7)}
+.cuenta .ok{width:12px;height:12px;border-radius:50%;background:#3DDC97;box-shadow:0 0 10px #3DDC97}
+.cuenta b{color:#fff;font-weight:600}
+
+/* Sala privada: se ve, pero en segundo plano */
+.privada{margin-top:46px;padding-top:24px;border-top:1px solid rgba(255,255,255,.12);width:720px}
+.privada .r{font:600 20px/1 var(--display);letter-spacing:.3em;text-transform:uppercase;color:rgba(255,255,255,.55);margin-bottom:16px}
+.privada .fila{display:flex;gap:14px}
+.chico{font:700 26px/1 var(--display);letter-spacing:.06em;text-transform:uppercase;padding:15px 26px;border-radius:8px;border:2px solid rgba(255,255,255,.4);background:rgba(0,0,0,.25);color:#fff;cursor:pointer}
+.chico:hover{border-color:#fff}
+.chico.color{background:rgb(var(--rgb));border-color:rgb(var(--rgb));color:#111}
+.chico.rojo{background:var(--bad);border-color:var(--bad);color:#1a0606}
+.codigo{display:none;gap:14px;margin-top:16px}
+.codigo.on{display:flex}
+.codigo input{width:280px;font:700 40px/1 var(--mono);letter-spacing:.35em;text-transform:uppercase;padding:12px 16px;border-radius:8px;border:2px solid rgba(255,255,255,.35);background:rgba(0,0,0,.5);color:#fff;outline:none}
+.codigo input:focus{border-color:rgb(var(--rgb))}
+
+/* Panel de la búsqueda: reemplaza a los botones mientras busca (US 275) */
+.panel{width:860px;border-radius:12px;background:rgba(0,0,0,.62);box-shadow:inset 0 0 0 1px rgba(255,255,255,.18);overflow:hidden}
+.panel.mal{box-shadow:inset 0 0 0 1px rgba(255,92,92,.5)}
+.panel .barra{height:5px;background:rgb(var(--rgb));position:relative;overflow:hidden}
+.panel .barra::after{content:'';position:absolute;top:0;bottom:0;width:220px;background:linear-gradient(90deg,transparent,rgba(255,255,255,.8),transparent);animation:corre 1.6s linear infinite}
+@keyframes corre{from{left:-220px}to{left:100%}}
+.panel.mal .barra{background:var(--bad)}.panel.mal .barra::after{display:none}
+.panel .in{padding:24px 30px 26px}
+.panel .cab{display:flex;justify-content:space-between;align-items:center}
+.panel .cab .e{font:600 24px/1 var(--display);letter-spacing:.24em;text-transform:uppercase;color:rgb(var(--rgb))}
+.panel.mal .cab .e{color:var(--bad)}
+.panel .cab .reloj{font:400 46px/1 var(--mono);color:#fff}
+.panel .grande{font:700 72px/1 var(--display);text-transform:uppercase;letter-spacing:.02em;margin:10px 0 6px}
+.panel .grande em{font-style:normal;color:rgb(var(--rgb))}
+.panel .datos{font:600 20px/1 var(--mono);color:rgba(255,255,255,.62)}
+.panel .texto{font:400 24px/1.4 var(--body);color:rgba(255,255,255,.82);margin:14px 0 6px;max-width:760px}
+.lugares{display:grid;grid-template-columns:1fr 1fr;gap:8px 28px;margin:22px 0 22px;padding:0;list-style:none}
+.lugares li{display:flex;align-items:center;gap:14px;height:46px;font:600 24px/1 var(--body);border-bottom:1px solid rgba(255,255,255,.08)}
+.lugares li i{width:12px;height:12px;border-radius:50%;background:rgb(var(--rgb));flex:none}
+.lugares li small{color:rgba(255,255,255,.5);font-weight:400}
+.lugares li.libre{color:rgba(255,255,255,.35);font-weight:400}
+.lugares li.libre i{background:transparent;box-shadow:inset 0 0 0 2px rgba(255,255,255,.28);animation:pulso 1.6s ease-in-out infinite}
+.lugares li.nuevo{animation:entra .6s ease-out}
+@keyframes pulso{50%{opacity:.3}}
+@keyframes entra{from{background:rgb(var(--rgb)/.35)}to{background:transparent}}
+.pie{display:flex;justify-content:space-between;align-items:flex-end;gap:24px}
+.pie p{margin:0;font:400 21px/1.35 var(--body);color:rgba(255,255,255,.72);max-width:520px}
+.pie p b{color:#fff;font:400 21px/1 var(--mono)}
+.progreso{height:6px;border-radius:3px;background:rgba(255,255,255,.12);margin-top:12px;overflow:hidden;width:520px}
+.progreso i{display:block;height:100%;background:rgb(var(--rgb));transition:width 1s linear}
+.botones{display:flex;gap:14px;margin-top:22px}
+.aviso{position:absolute;left:50%;bottom:60px;transform:translateX(-50%);padding:16px 26px;border-radius:8px;background:rgba(0,0,0,.8);box-shadow:inset 0 0 0 1px rgba(255,255,255,.2);font:400 24px/1 var(--body);opacity:0;transition:opacity .3s;pointer-events:none}
+.aviso.on{opacity:1}
+
+/* La sala privada abierta (como hoy, US 026 y US 027) */
+.sala .rc{font:700 40px/1 var(--mono);letter-spacing:.3em;color:rgb(var(--rgb))}
+
+@media(prefers-reduced-motion:reduce){*{animation:none!important}}

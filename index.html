@@ -2026,12 +2026,9 @@ MARCO · Conjunto: [nombre]. Estilo: [estilo]. Forma: [esquinas, remate, rieles]
     <div><span class="ctl-label">Cuenta</span><span class="seg">
       <button type="button" data-e="perfil-cuenta" aria-pressed="true">Perfil › Cuenta</button><button type="button" data-e="privacidad" aria-pressed="false">Privacidad</button><button type="button" data-e="sin-sesion" aria-pressed="false">Sin sesión</button><button type="button" data-e="sesion-cerrada" aria-pressed="false">Sesión cerrada</button>
     </span></div>
-    <div><span class="ctl-label">Buscar partida</span><span class="seg">
-      <button type="button" data-e="anden" aria-pressed="false">Andén</button><button type="button" data-e="buscando" aria-pressed="false">Buscando</button><button type="button" data-e="minimo" aria-pressed="false">Con el mínimo</button><button type="button" data-e="cuenta-regresiva" aria-pressed="false">Por empezar</button><button type="button" data-e="sin-conexion" aria-pressed="false">Sin conexión</button>
-    </span></div>
   </div>
-  <div class="stage cu-stage"><div class="stage-inner"><iframe id="juegoFrame" src="menu/cuentas.html#perfil-cuenta" title="Maqueta de la cuenta en el juego y de buscar partida" width="1920" height="1080" loading="lazy"></iframe></div></div>
-  <p class="soft" style="margin-top:10px">También se abre sola, a pantalla completa: <a href="menu/cuentas.html">menu/cuentas.html</a>. <span class="kbd">Esc</span> cierra el aviso de privacidad y cancela la búsqueda.</p>
+  <div class="stage cu-stage"><div class="stage-inner"><iframe id="juegoFrame" src="menu/cuentas.html#perfil-cuenta" title="Maqueta de la cuenta en el juego" width="1920" height="1080" loading="lazy"></iframe></div></div>
+  <p class="soft" style="margin-top:10px">También se abre sola, a pantalla completa: <a href="menu/cuentas.html">menu/cuentas.html</a>. <span class="kbd">Esc</span> cierra el aviso de privacidad.</p>
   <p>El juego abre con la cuenta del launcher y no la cambia: el Perfil solo la muestra. Si se abre el .exe directo, usa la sesión que quedó en el launcher.</p>
   <div class="table-wrap"><table>
     <tr><th>Pantalla</th><th>Qué muestra</th><th>Historia</th></tr>
@@ -2049,14 +2046,27 @@ MARCO · Conjunto: [nombre]. Estilo: [estilo]. Forma: [esquinas, remate, rieles]
   </div>
 
   <h3 id="buscar-partida">Buscar partida</h3>
-  <p>En el andén de Táctico y de Deathmatch, «Buscar partida» va primero, grande y del color del modo; «Crear sala» y «Unirse con código» siguen al lado, igual que hoy. Mientras busca, el panel de búsqueda reemplaza a los botones: el andén sigue a la vista, así se sabe en qué modo se está buscando. Se ve en la <a href="#cuenta-juego">maqueta del juego</a>, en «Buscar partida».</p>
+  <p>En la pantalla de elegir modo que ya está en el juego (<a href="#modos">Selección de modo</a>), al entrar a Táctico o Deathmatch, <b>«Buscar partida» es lo principal</b>: un botón grande, del color del modo, con un pulso y un brillo que lo recorre. Debajo se ve con qué cuenta, en qué región y con qué versión se busca. La <b>sala privada</b> («Crear sala» y «Unirse con código») sigue a la vista, pero abajo, más chica y separada por una línea, para jugar con amigos.</p>
+  <p>Mientras busca, el panel de la búsqueda reemplaza a los botones y a la derecha aparece un radar del color del modo, con un punto por cada jugador que entra. La tecla de arriba pasa a decir «Cancelar búsqueda». Zombie no cambia: es para un solo jugador.</p>
+  <div class="controls cu-ctl" id="partidaCtl">
+    <div><span class="ctl-label">Andén</span><span class="seg">
+      <button type="button" data-e="anden" aria-pressed="true">Deathmatch</button><button type="button" data-e="anden-tactico" aria-pressed="false">Táctico</button><button type="button" data-e="codigo" aria-pressed="false">Unirse con código</button><button type="button" data-e="sala" aria-pressed="false">Sala privada</button>
+    </span></div>
+    <div><span class="ctl-label">Búsqueda</span><span class="seg">
+      <button type="button" data-e="buscando" aria-pressed="false">Buscando</button><button type="button" data-e="minimo" aria-pressed="false">Con el mínimo</button><button type="button" data-e="encontrada" aria-pressed="false">Partida encontrada</button><button type="button" data-e="sin-conexion" aria-pressed="false">Sin conexión</button><button type="button" data-e="version" aria-pressed="false">Versión vieja</button>
+    </span></div>
+  </div>
+  <div class="stage cu-stage"><div class="stage-inner"><iframe id="partidaFrame" src="menu/partida.html#anden" title="Maqueta de buscar partida en la pantalla de elegir modo" width="1920" height="1080" loading="lazy"></iframe></div></div>
+  <p class="soft" style="margin-top:10px">También se abre sola, a pantalla completa: <a href="menu/partida.html">menu/partida.html</a>. <span class="kbd">Esc</span> cancela la búsqueda o sale de la sala, como la tecla de arriba.</p>
   <div class="table-wrap"><table>
     <tr><th>Estado</th><th>Qué se ve</th><th>Historia</th></tr>
-    <tr><td>Andén</td><td>Los tres botones y, debajo, con qué cuenta y en qué región se busca.</td><td>US 274 (CA1, CA2)</td></tr>
-    <tr><td>Buscando</td><td>«Buscando partida», cuántos hay sobre 8 («3 / 8 jugadores»), el tiempo que lleva (0:23), el modo, la región y «misma versión del juego», los 8 lugares (los vacíos dicen «Buscando…») y «Cancelar».</td><td>US 275 (CA1, CA2)</td></tr>
-    <tr><td>Con el mínimo</td><td>Cuando hay el mínimo, el pie cuenta para atrás desde 45 s («Si no entra nadie más, arranca en 0:31»), con una barra del color del modo. Si entra alguien, la espera vuelve a empezar.</td><td>US 276 (CA2)</td></tr>
-    <tr><td>Por empezar</td><td>«Partida encontrada» y «Empieza en 7»: la cuenta regresiva de 10 s. Se puede cancelar hasta el final; si alguien sale y quedan menos que el mínimo, vuelve a «Buscando».</td><td>US 276 (CA1, CA3)</td></tr>
-    <tr><td>Sin conexión</td><td>El panel con el borde rojo: «Se cortó la conexión», que no se perdió nada y «Volver al andén». Con una versión vieja dice que hay que actualizar desde el launcher.</td><td>US 275 (CA3)</td></tr>
+    <tr><td>Andén</td><td>El detalle del modo como hoy (andén, nombre, texto y reglas) y, en el lugar de los botones, «Buscar partida» grande (720 × 124) con «Deathmatch · con jugadores de tu región». Debajo, «Con tu cuenta Ulises · Sudamérica · misma versión». Más abajo, «Sala privada · con amigos» con «Crear sala» y «Unirse con código», más chicos y sin relleno.</td><td>US 274 (CA1, CA2)</td></tr>
+    <tr><td>Buscando</td><td>El panel con una barra del color del modo arriba: «Buscando partida», el tiempo que lleva (0:23), cuántos hay («3 / 8 jugadores»), el modo, la región y la versión, los 8 lugares (los vacíos dicen «Buscando…» y laten), la regla para arrancar y «Cancelar». A la derecha, el radar con el nombre de cada jugador que entra.</td><td>US 275 (CA1, CA2)</td></tr>
+    <tr><td>Con el mínimo</td><td>Con el mínimo (2 en Deathmatch, 4 en Táctico), el pie dice «Ya está el mínimo… Si no entra nadie más, arranca en 0:31», con una barra que se llena en 45 s. Si entra alguien, la espera vuelve a empezar.</td><td>US 276 (CA2)</td></tr>
+    <tr><td>Partida encontrada</td><td>«Partida encontrada» y «Empieza en 7», la cuenta regresiva de 10 s, con el mapa. El radar gira más rápido. Se puede salir hasta el final; si alguien sale y quedan menos que el mínimo, vuelve a «Buscando». Después, la pantalla de carga (US 196).</td><td>US 276 (CA1, CA3)</td></tr>
+    <tr><td>Sin conexión</td><td>El panel con la barra y el borde rojos: «Se cortó la conexión», que no se perdió nada, «Volver a buscar» y «Volver».</td><td>US 275 (CA3)</td></tr>
+    <tr><td>Versión vieja</td><td>«Hay una versión nueva»: solo se juntan jugadores con la misma versión. «Abrir el launcher» lo abre y cierra el juego.</td><td>US 275 (CA3), US 204</td></tr>
+    <tr><td>Sala privada</td><td>Como hoy (código para copiar, los 8 lugares, el mapa e «Iniciar partida»), pero en el lugar de los botones, igual que la búsqueda. La tecla de arriba dice «Salir de la sala».</td><td>US 026, US 027, US 274 (CA4)</td></tr>
   </table></div>
   <div class="table-wrap" style="margin-top:12px"><table>
     <tr><th>Regla</th><th>Valor</th><th>Historia</th></tr>
@@ -2065,13 +2075,14 @@ MARCO · Conjunto: [nombre]. Estilo: [estilo]. Forma: [esquinas, remate, rieles]
     <tr><td>Espera con el mínimo</td><td>45 s sin que entre nadie; después, cuenta regresiva de 10 s.</td><td>US 276 (CA2)</td></tr>
     <tr><td>Salas con código</td><td>Siguen igual y nunca reciben jugadores de buscar partida.</td><td>US 274 (CA4)</td></tr>
     <tr><td>Quién es cada uno</td><td>Cada jugador entra con la cuenta con la que abrió el juego, verificada; se ve el nombre de la cuenta y nadie puede estar dos veces.</td><td>US 277</td></tr>
+    <tr><td>Mientras busca</td><td>No se puede cambiar de modo: primero hay que cancelar (Esc o «Cancelar»).</td><td>US 275</td></tr>
   </table></div>
 
   <h3 id="cuenta-medidas">Medidas</h3>
   <div class="grid3">
     <div class="card"><b>Launcher.</b> El panel de la cuenta mide 570 de ancho, como Ajustes, con el borde naranja de 3 px arriba (rojo para borrar) y márgenes de 32. Campos de 44 de alto con su nombre de 12 px arriba, código en 6 casillas de 60 × 70 y botón principal de 52. La cuenta en la barra mide 46 de alto, con la inicial en un círculo naranja de 30, y su menú, 300 de ancho.</div>
     <div class="card"><b>Juego.</b> Pestaña Cuenta: tarjetas desde y = 520, la de la cuenta de 1100 × 500 y la de privacidad de 670 × 500, a 30 px, con título de 48 px y texto de 25 px. «Iniciá sesión en el launcher»: título de 104 px en x = 150, los tres pasos de 340 × 84 y botones de 76 de alto.</div>
-    <div class="card"><b>Búsqueda.</b> El botón principal del andén mide 380 × 84, del color del modo. El panel de búsqueda, 860 × 470 en (150, 510), con una línea de 4 px del color del modo arriba y los 8 lugares en dos columnas de 390 × 46.</div>
+    <div class="card"><b>Buscar partida.</b> En el detalle del andén (150, 150; 900 de ancho). «Buscar partida» mide 720 × 124, del color del modo, con el texto de 60 px. La sala privada, abajo: rótulo de 20 px y botones de 26 px sin relleno. El panel de la búsqueda mide 860 de ancho, con una barra de 5 px del color del modo y los 8 lugares en dos columnas de 46 de alto. El radar, de 640, en (1180, 200).</div>
   </div>
 
   <div class="dev">
@@ -2095,7 +2106,7 @@ MARCO · Conjunto: [nombre]. Estilo: [estilo]. Forma: [esquinas, remate, rieles]
 // Maquetas de «Cuenta y buscar partida»: los botones cambian el estado de cada maqueta (el ancla del iframe) y se
 // marcan solos cuando el estado cambia desde adentro.
 (function () {
-  [['launcherCtl', 'launcherFrame', 'launcher/cuenta.html', 'entrar'], ['juegoCtl', 'juegoFrame', 'menu/cuentas.html', 'perfil-cuenta']].forEach(function (m) {
+  [['launcherCtl', 'launcherFrame', 'launcher/cuenta.html', 'entrar'], ['juegoCtl', 'juegoFrame', 'menu/cuentas.html', 'perfil-cuenta'], ['partidaCtl', 'partidaFrame', 'menu/partida.html', 'anden']].forEach(function (m) {
     var ctl = document.getElementById(m[0]), marco = document.getElementById(m[1]);
     if (!marco || !ctl) return;
     var botones = ctl.querySelectorAll('button[data-e]');
