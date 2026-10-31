@@ -78,7 +78,11 @@ public class OleadasDeInvasion : MonoBehaviour
         if (AparicionDeEnemigos.Todos.Count == 0) Debug.LogWarning("[Invasión] El mapa no tiene puntos de aparición (Riftwalker > Invasión > Crear 3 puntos de aparición): los enemigos aparecen en el NavMesh alrededor del jugador.");
 
         descanso = BuyPhase.Current;
-        if (descanso != null) descanso.Ended += AlTerminarDescanso;
+        if (descanso != null)
+        {
+            descanso.SinRondasDePrueba(); // la tienda solo se abre en el descanso, no en medio de la oleada
+            descanso.Ended += AlTerminarDescanso;
+        }
         else Empezar(); // sin fase de compra en la escena: arranca directo
     }
 
