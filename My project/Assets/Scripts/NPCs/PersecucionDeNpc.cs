@@ -200,6 +200,7 @@ public class PersecucionDeNpc : MonoBehaviour
     private void SubirAlNavMesh()
     {
         proximoAgente = Time.time + 0.5f;
+        bool grande = npc.Tipo != null && npc.Tipo.esJefe; // no entra a lugares angostos (NavMeshEnVivo)
         if (tipoDeAgente < 0)
         {
             // ¿El mapa tiene NavMesh horneado (el tipo de agente común, Humanoid)?
@@ -209,11 +210,12 @@ public class PersecucionDeNpc : MonoBehaviour
             else
             {
                 NavMeshEnVivo.Preparar(transform.position);
-                if (!NavMeshEnVivo.Listo) return;
-                tipoDeAgente = NavMeshEnVivo.Tipo;
+                if (grande ? !NavMeshEnVivo.ListoGrande : !NavMeshEnVivo.Listo) return;
+                tipoDeAgente = grande ? NavMeshEnVivo.TipoGrande : NavMeshEnVivo.Tipo;
             }
         }
-        if (!NavMesh.SamplePosition(transform.position, out NavMeshHit piso, 3f, Filtro())) return;
+        // (El grande busca más lejos: si apareció en un lugar angosto, sale a donde entra.)
+        if (!NavMesh.SamplePosition(transform.position, out NavMeshHit piso, grande ? 12f : 3f, Filtro())) return;
         if (agente == null)
         {
             transform.position = piso.position;
