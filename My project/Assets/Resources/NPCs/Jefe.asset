@@ -52,7 +52,12 @@ MonoBehaviour:
   golpeRecibido: {fileID: 0}
   morir: {fileID: 7400000, guid: bf34b5e8e3924f043bc6c995d99928e6, type: 3}
   aturdido: {fileID: 0}
-  grito: {fileID: 0}
+  grito: {fileID: 8300000, guid: 088a0273948441a4802940d3648b87a5, type: 3}
+  sonidoDeAtaque: {fileID: 8300000, guid: a5e2403c5d5f49e599287bebf756c21b, type: 3}
+  sonidoDeRugido: {fileID: 8300000, guid: 088a0273948441a4802940d3648b87a5, type: 3}
+  sonidoDeVuelo: {fileID: 8300000, guid: f1f3e2534e724d72ac7e833c927a2f6b, type: 3}
+  sonidoDeEscupir: {fileID: 8300000, guid: 5f2e0b32b11f476ebedea7c386175493, type: 3}
+  sonidoDeImpactoDeVeneno: {fileID: 8300000, guid: 03a836ce61c6449b8a7b54686f8159c8, type: 3}
   esJefe: 1
   titulo: El Escarabajo
   embiste: 1

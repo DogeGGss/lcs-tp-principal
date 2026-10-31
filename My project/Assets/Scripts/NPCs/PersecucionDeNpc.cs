@@ -156,19 +156,7 @@ public class PersecucionDeNpc : MonoBehaviour
     private void Gritar()
     {
         grito = true;
-        AudioClip clip = npc.Tipo.grito;
-        if (clip == null) return;
-        var go = new GameObject("NPC (grito)");
-        go.transform.position = transform.position + Vector3.up;
-        AudioSource fuente = go.AddComponent<AudioSource>();
-        fuente.clip = clip;
-        fuente.spatialBlend = 1f;
-        fuente.rolloffMode = AudioRolloffMode.Linear;
-        fuente.minDistance = 3f;
-        fuente.maxDistance = 30f;
-        fuente.outputAudioMixerGroup = GrupoDeEfectos();
-        fuente.Play();
-        Destroy(go, clip.length + 0.1f);
+        SonidoDeNpc.Uno(npc.Tipo.grito, transform, npc.Tipo.esJefe ? 50f : 30f);
     }
 
     // CA5: caminar o correr al ritmo de su velocidad; quieto, la de quieto (frente al jugador, la de combate).
@@ -308,16 +296,5 @@ public class PersecucionDeNpc : MonoBehaviour
             if (d < mejorDistancia) { mejorDistancia = d; mejor = v.transform; }
         }
         return mejor;
-    }
-
-    private static UnityEngine.Audio.AudioMixerGroup grupo;
-    private static UnityEngine.Audio.AudioMixerGroup GrupoDeEfectos()
-    {
-        if (grupo == null)
-        {
-            Pistola pistola = FindFirstObjectByType<Pistola>(FindObjectsInactive.Include);
-            if (pistola != null) grupo = pistola.sfxGroup;
-        }
-        return grupo;
     }
 }
