@@ -44,6 +44,9 @@ public class Pistola : MonoBehaviour, IHudWeapon
 
     /// <summary>Cargador lleno y la reserva con la que viene el arma. Lo usan el inicio de cada ronda del Táctico
     /// (antes La Porteña se quedaba con la reserva gastada de la ronda anterior), la reaparición y la tienda.</summary>
+    /// <summary>US 148: el cargador y la reserva están como al comprarla.</summary>
+    public bool Llena => currentAmmo >= maxAmmo && (fullReserve < 0 || reserveAmmo >= fullReserve);
+
     public void Refill()
     {
         if (fullReserve < 0) fullReserve = reserveAmmo;

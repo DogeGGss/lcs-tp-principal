@@ -481,7 +481,7 @@ public class ShopUI : MonoBehaviour
         {
             case ShopResult.NotEnoughMoney: return $"Te faltan {Money(loadout.CostOf(item) - loadout.Wallet.Money)}";
             case ShopResult.AlreadyEquipped: return $"Ya tenés {ItemName(item)}";
-            case ShopResult.MaxReached: return $"Máximo de {item.displayName.ToLowerInvariant()}";
+            case ShopResult.MaxReached: return item.kind == ShopItemKind.Ammo ? "Ya tenés las balas al máximo" : $"Máximo de {item.displayName.ToLowerInvariant()}";
             case ShopResult.ShieldFull: return "Tu escudo ya está lleno";
             case ShopResult.BuyPhaseOver: return Dm ? "Ahora no podés cambiar de equipo" : "Terminó la fase de compra";
             case ShopResult.OutsideBuyZone: return "Fuera de la zona de compra";

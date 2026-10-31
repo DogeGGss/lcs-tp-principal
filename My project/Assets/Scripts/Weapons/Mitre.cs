@@ -113,6 +113,9 @@ public class Mitre : MonoBehaviour, IHudWeapon
     }
 
     // Al comprarla en la tienda queda con el cargador lleno y la reserva completa (US 077, CA1).
+    /// <summary>US 148: el cargador y la reserva están como al comprarla.</summary>
+    public bool Llena => currentAmmo >= maxAmmo && (fullReserve < 0 || reserveAmmo >= fullReserve);
+
     public void Refill()
     {
         if (fullReserve < 0) fullReserve = reserveAmmo;
