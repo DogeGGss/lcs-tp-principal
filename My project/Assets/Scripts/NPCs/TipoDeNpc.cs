@@ -113,6 +113,16 @@ public class TipoDeNpc : ScriptableObject
     [Header("Sonido")]
     [Tooltip("Grito al ver al jugador de cerca (US 036, CA2). Opcional.")]
     public AudioClip grito;
+    [Tooltip("Al empezar cada golpe cuerpo a cuerpo (US 037). Opcional.")]
+    public AudioClip sonidoDeAtaque;
+    [Tooltip("Jefe: el rugido antes de embestir (US 266) y al enfurecerse (US 268). Opcional.")]
+    public AudioClip sonidoDeRugido;
+    [Tooltip("Jefe: el zumbido de las alas, en loop todo el tiempo mientras vive (también en el piso, siempre aletea). Opcional.")]
+    public AudioClip sonidoDeVuelo;
+    [Tooltip("Jefe: al escupir cada bola de veneno (US 267, CA3). Opcional.")]
+    public AudioClip sonidoDeEscupir;
+    [Tooltip("Jefe: cuando la bola de veneno toca el piso y se arma la nube (o el charco) (US 267, CA4). Opcional.")]
+    public AudioClip sonidoDeImpactoDeVeneno;
 
     [Header("Jefe (US 146)")]
     [Tooltip("Es un jefe: mientras está vivo se ve su barra de vida arriba de la pantalla (BarraDeJefe).")]

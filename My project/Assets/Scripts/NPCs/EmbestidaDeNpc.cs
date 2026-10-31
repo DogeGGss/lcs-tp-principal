@@ -178,6 +178,7 @@ public class EmbestidaDeNpc : MonoBehaviour
         persecucion.Controlado = true;
         transform.rotation = Quaternion.LookRotation(direccion, Vector3.up);
         Animar(npc.Tipo.preparaEmbestida != null ? npc.Tipo.preparaEmbestida : npc.Tipo.quietoEnCombate, false, 1f);
+        SonidoDeNpc.Uno(npc.Tipo.sonidoDeRugido, transform, 50f); // CA: ruge antes de embestir
         Dibujar();
     }
 

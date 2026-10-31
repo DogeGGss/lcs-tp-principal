@@ -83,6 +83,7 @@ public class AtaqueDeNpc : MonoBehaviour
             npc.Animaciones.Poner(clip, false, 0.1f, true);
             npc.Animaciones.Velocidad(rapido);
         }
+        SonidoDeNpc.Uno(npc.Tipo.sonidoDeAtaque, transform, npc.Tipo.esJefe ? 40f : 25f);
     }
 
     private void Pegar()

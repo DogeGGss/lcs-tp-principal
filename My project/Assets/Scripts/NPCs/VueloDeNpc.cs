@@ -57,6 +57,7 @@ public class VueloDeNpc : MonoBehaviour
     private int escupidas;
     private float subido, alturaModelo;
     private CapsuleCollider capsula;
+    private AudioSource alas; // el zumbido de las alas: siempre aletea, en el piso y en el aire
 
     private void Awake()
     {
@@ -67,6 +68,13 @@ public class VueloDeNpc : MonoBehaviour
         proximo = Time.time + PrimeraVez;
     }
 
+    private void Start()
+    {
+        // Las alas zumban todo el tiempo mientras vive (siguen al cuerpo, que sube al volar).
+        if (npc != null && npc.Tipo != null)
+            alas = SonidoDeNpc.EnLoop(npc.Tipo.sonidoDeVuelo, npc.Modelo != null ? npc.Modelo : transform, 50f, 0.9f);
+    }
+
     private void Update()
     {
         if (persecucion == null) persecucion = GetComponent<PersecucionDeNpc>();
@@ -75,6 +83,7 @@ public class VueloDeNpc : MonoBehaviour
         // Muerto: si estaba en el aire, cae al piso y listo.
         if (!npc.Vivo)
         {
+            if (alas != null) { SonidoDeNpc.Cortar(alas, 0.6f); alas = null; }
             Altura(0f, Subir / CaeEn);
             if (subido <= 0f) enabled = false;
             return;
@@ -192,8 +201,10 @@ public class VueloDeNpc : MonoBehaviour
         Transform jugador = persecucion.Objetivo;
         if (jugador == null) return;
         if (npc.Tipo.escupir != null && npc.Animaciones != null) npc.Animaciones.Golpe(npc.Tipo.escupir, 0.9f);
+        SonidoDeNpc.Uno(npc.Tipo.sonidoDeEscupir, transform, 40f); // CA3: con un sonido al escupirla
         Vector3 boca = Boca();
-        BolaDeVeneno.Lanzar(boca, jugador.position, npc.Tipo.nombre, transform, npc.Tipo.veneno, npc.Tipo.materialDeNube);
+        BolaDeVeneno.Lanzar(boca, jugador.position, npc.Tipo.nombre, transform, npc.Tipo.veneno, npc.Tipo.materialDeNube,
+            npc.Tipo.sonidoDeImpactoDeVeneno);
     }
 
     // La boca: la zona de impacto de la cabeza (o el frente del cuerpo, si no tiene).
@@ -213,6 +224,7 @@ public class VueloDeNpc : MonoBehaviour
 
     private void OnDisable()
     {
+        if (alas != null) { SonidoDeNpc.Cortar(alas, 0.3f); alas = null; }
         if (fase != Fase.Tierra && npc != null && npc.Vivo) Terminar();
     }
 }
@@ -231,9 +243,11 @@ public class BolaDeVeneno : MonoBehaviour
     private Transform jefe;
     private VenenoDelVuelo deja;
     private Material nube;
+    private AudioClip revienta; // el sonido al tocar el piso (y armarse la nube o el charco)
     private float muere;
 
-    public static void Lanzar(Vector3 desde, Vector3 hacia, string fuente, Transform jefe, VenenoDelVuelo deja = VenenoDelVuelo.Nubes, Material nube = null)
+    public static void Lanzar(Vector3 desde, Vector3 hacia, string fuente, Transform jefe, VenenoDelVuelo deja = VenenoDelVuelo.Nubes, Material nube = null,
+        AudioClip revienta = null)
     {
         GameObject go = GameObject.CreatePrimitive(PrimitiveType.Sphere);
         go.name = "Bola de veneno";
@@ -243,6 +257,7 @@ public class BolaDeVeneno : MonoBehaviour
         var render = go.GetComponent<MeshRenderer>();
         render.sharedMaterial = Veneno.Material(new Color(0.45f, 1f, 0.2f, 0.95f));
         render.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
+        EfectoDeVeneno.Bola(go, Tam); // halo que brilla, gotas y humo verde
         var bola = go.AddComponent<BolaDeVeneno>();
         // Tiro parabólico: llega a "hacia" en Vuelo segundos.
         bola.velocidad = (hacia - desde) / Vuelo + 0.5f * Gravedad * Vuelo * Vector3.up;
@@ -250,6 +265,7 @@ public class BolaDeVeneno : MonoBehaviour
         bola.deja = deja;
         bola.nube = nube;
         bola.jefe = jefe;
+        bola.revienta = revienta;
         bola.muere = Time.time + 6f;
     }
 
@@ -282,7 +298,7 @@ public class BolaDeVeneno : MonoBehaviour
             return;
         }
         transform.position = despues;
-        if (Time.time >= muere) Destroy(gameObject);
+        if (Time.time >= muere) { EfectoDeVeneno.Soltar(gameObject); Destroy(gameObject); }
     }
 
     // CA4 y CA7: el charco en el piso de abajo (si chocó con una pared, el piso más cercano a ese punto).
@@ -300,6 +316,9 @@ public class BolaDeVeneno : MonoBehaviour
         Vector3? lugar = null;
         if (piso.HasValue) lugar = piso.Value.point;
         else if (NavMesh.SamplePosition(donde, out NavMeshHit cerca, 5f, NavMesh.AllAreas)) lugar = cerca.position;
+        SonidoDeNpc.En(revienta, lugar ?? donde, 35f); // revienta y se arma la nube
+        EfectoDeVeneno.Salpicar(lugar ?? donde);
+        EfectoDeVeneno.Soltar(gameObject);
         if (lugar.HasValue)
         {
             if (deja == VenenoDelVuelo.Charcos) CharcoDeVeneno.Crear(lugar.Value, fuente);
