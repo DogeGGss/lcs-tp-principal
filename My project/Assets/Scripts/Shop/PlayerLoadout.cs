@@ -171,6 +171,9 @@ public class PlayerLoadout : MonoBehaviour
                 if (Count(item) >= item.maxCarry) return ShopResult.MaxReached;
                 break;
             case ShopItemKind.Ammo:
+                // US 148: con las balas al máximo no se cobra por llenar lo que ya está lleno.
+                WeaponSwitcher armas = GetComponentInChildren<WeaponSwitcher>(true);
+                if (armas != null && armas.MunicionLlena()) return ShopResult.MaxReached;
                 break;
         }
         return CostOf(item) > wallet.Money ? ShopResult.NotEnoughMoney : ShopResult.Ok;

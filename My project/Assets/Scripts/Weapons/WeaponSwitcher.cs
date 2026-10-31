@@ -213,6 +213,20 @@ public class WeaponSwitcher : MonoBehaviour
         if (SecondaryObj != null) Rellenar(SecondaryObj);
     }
 
+    /// <summary>US 148: si las armas que lleva ya tienen el cargador y la reserva llenos (no hace falta munición).</summary>
+    public bool MunicionLlena() => (PrimaryObj == null || Llena(PrimaryObj)) && (SecondaryObj == null || Llena(SecondaryObj));
+
+    static bool Llena(GameObject arma)
+    {
+        ArmaDeFuego fuego = arma.GetComponent<ArmaDeFuego>();
+        if (fuego != null && !fuego.Llena) return false;
+        Mitre mitre = arma.GetComponent<Mitre>();
+        if (mitre != null && !mitre.Llena) return false;
+        Pistola pistola = arma.GetComponent<Pistola>();
+        if (pistola != null && !pistola.Llena) return false;
+        return true;
+    }
+
     static void Rellenar(GameObject arma)
     {
         ArmaDeFuego fuego = arma.GetComponent<ArmaDeFuego>();

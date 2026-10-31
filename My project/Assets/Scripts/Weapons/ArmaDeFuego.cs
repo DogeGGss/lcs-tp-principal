@@ -77,6 +77,9 @@ public class ArmaDeFuego : MonoBehaviour, IHudWeapon
     }
 
     // Al comprarla queda con el cargador lleno y la reserva completa (US 077, CA1).
+    /// <summary>US 148: el cargador y la reserva están como al comprarla.</summary>
+    public bool Llena => shopItem == null || (currentAmmo >= shopItem.magazine && reserveAmmo >= shopItem.reserve);
+
     public void Refill()
     {
         if (shopItem == null) return;
