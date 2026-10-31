@@ -156,7 +156,16 @@ public class PersecucionDeNpc : MonoBehaviour
     private void Gritar()
     {
         grito = true;
-        SonidoDeNpc.Uno(npc.Tipo.grito, transform, npc.Tipo.esJefe ? 50f : 30f);
+        SonidoDeNpc.Uno(UnGrito(npc.Tipo), transform, npc.Tipo.esJefe ? 50f : 30f);
+    }
+
+    // El grito, o uno al azar entre ese y los otros del tipo.
+    private static AudioClip UnGrito(TipoDeNpc tipo)
+    {
+        int otros = tipo.otrosGritos != null ? tipo.otrosGritos.Length : 0;
+        int i = Random.Range(-1, otros);
+        AudioClip clip = i < 0 ? tipo.grito : tipo.otrosGritos[i];
+        return clip != null ? clip : tipo.grito;
     }
 
     // CA5: caminar o correr al ritmo de su velocidad; quieto, la de quieto (frente al jugador, la de combate).

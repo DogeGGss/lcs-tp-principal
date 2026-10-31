@@ -52,7 +52,9 @@ MonoBehaviour:
   golpeRecibido: {fileID: 1827226128182048838, guid: 09d9c3834ddb7764a9fc9a8bff2e3208, type: 3}
   morir: {fileID: 1827226128182048838, guid: 0447182bd66f5ca4fb61d2d2e771bb56, type: 3}
   aturdido: {fileID: 1827226128182048838, guid: 5a5ada102496c01419601769365d759c, type: 3}
-  grito: {fileID: 0}
+  grito: {fileID: 8300000, guid: b1d38b577d19452db56c70475afc77b3, type: 3}
+  otrosGritos: []
+  sonidoDeAtaque: {fileID: 8300000, guid: 0de1b4e5587149e29883d15a373bee1d, type: 3}
   esJefe: 0
   titulo: 
   embiste: 0

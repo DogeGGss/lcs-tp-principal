@@ -123,6 +123,7 @@ public class Npc : MonoBehaviour
         npc.Armar(tipo);
         go.AddComponent<ReaccionDeNpc>(); // US 038
         go.AddComponent<MuerteDeNpc>();   // US 039
+        if (tipo.pasos != null && tipo.pasos.Length > 0) go.AddComponent<PasosDeNpc>(); // las pisadas
         if (tipo.esJefe) npc.Barra = BarraDeJefe.Mostrar(npc); // US 146, CA4
         if (tipo.furia) go.AddComponent<FuriaDeNpc>();             // US 268
         if (persigue)
