@@ -13,6 +13,9 @@ public class BarraDeJefe : MonoBehaviour
     public const float Furia = 0.5f;
 
     private const float Ancho = 640f, Alto = 12f, Abajo = 118f; // px de la pantalla de 1920 × 1080
+    // En Invasión el marcador de oleadas (MarcadorInvasion) ocupa de 22 a 222 px y el aviso de récord de 252 a 296: la
+    // barra va debajo de los dos para que no la tapen.
+    private const float AbajoEnInvasion = 306f;
     private const float Sigue = 0.6f;    // s que el tramo claro tarda en alcanzar a la vida
     private const float Apagarse = 0.6f; // s al morir
 
@@ -55,7 +58,7 @@ public class BarraDeJefe : MonoBehaviour
         var caja = Rect("Barra", transform);
         caja.anchorMin = caja.anchorMax = new Vector2(0.5f, 1f);
         caja.pivot = new Vector2(0.5f, 1f);
-        caja.anchoredPosition = new Vector2(0f, -Abajo);
+        caja.anchoredPosition = new Vector2(0f, -(PartidaDeInvasion.Actual != null ? AbajoEnInvasion : Abajo));
         caja.sizeDelta = new Vector2(Ancho, 46f);
 
         // El nombre a la izquierda y la vida a la derecha, arriba de la barra.
