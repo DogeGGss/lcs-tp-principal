@@ -6,15 +6,19 @@ using UnityEngine.AI;
 // sin atravesar paredes. Para eso hace falta un NavMesh del mapa. En lugar de prepararlo a mano en cada escena, se arma
 // solo con el juego andando, a partir de las colisiones del mapa (sin personajes, triggers ni objetos que se mueven),
 // la primera vez que alguien tiene la habilidad. Se arma de a poco (asíncrono) para no trabar el juego.
+// Se arman dos: uno para los cuerpos chicos (el perro, los enemigos) y otro para los grandes (el Jefe, US 146), que no
+// pasa por puertas ni pasillos angostos ni entra a los edificios (si no, embistiendo o volando se metía y se trababa).
 public static class NavMeshEnVivo
 {
     private const float Alcance = 160f; // m alrededor del jugador: un terreno enorme no se procesa entero
 
-    private static NavMeshData datos;
-    private static NavMeshDataInstance instancia;
-    private static AsyncOperation armando;
+    private const float RadioGrande = 1.6f, AltoGrande = 3f;
+
+    private static NavMeshData datos, datosGrande;
+    private static NavMeshDataInstance instancia, instanciaGrande;
+    private static AsyncOperation armando, armandoGrande;
     private static UnityEngine.SceneManagement.Scene escena;
-    private static int tipo = -1;
+    private static int tipo = -1, tipoGrande = -1;
 
     /// <summary>Ya se puede usar (terminó de armarse para la escena actual).</summary>
     public static bool Listo => datos != null && armando != null && armando.isDone && instancia.valid &&
@@ -27,14 +31,21 @@ public static class NavMeshEnVivo
     private static void Olvidar()
     {
         if (instancia.valid) instancia.Remove(); // por si quedó (no se suma otro encima)
-        datos = null;
-        armando = null;
-        instancia = default;
+        if (instanciaGrande.valid) instanciaGrande.Remove();
+        datos = datosGrande = null;
+        armando = armandoGrande = null;
+        instancia = instanciaGrande = default;
         escena = default;
     }
 
     /// <summary>El tipo de agente (tamaño de perro) del NavMesh armado.</summary>
     public static int Tipo => tipo;
+
+    /// <summary>El de los cuerpos grandes (el Jefe) ya se puede usar.</summary>
+    public static bool ListoGrande => Listo && datosGrande != null && armandoGrande != null && armandoGrande.isDone && instanciaGrande.valid;
+
+    /// <summary>El tipo de agente de los cuerpos grandes (el Jefe): no pasa por lugares angostos.</summary>
+    public static int TipoGrande => tipoGrande;
 
     /// <summary>Empieza a armarlo para la escena actual, si todavía no se armó.</summary>
     public static void Preparar(Vector3 centro)
@@ -42,6 +53,7 @@ public static class NavMeshEnVivo
         UnityEngine.SceneManagement.Scene actual = UnityEngine.SceneManagement.SceneManager.GetActiveScene();
         if (datos != null && escena == actual && instancia.valid) return;
         if (instancia.valid) instancia.Remove();
+        if (instanciaGrande.valid) instanciaGrande.Remove();
         escena = actual;
 
         NavMeshBuildSettings ajustes = NavMesh.CreateSettings();
@@ -64,6 +76,19 @@ public static class NavMeshEnVivo
         datos = new NavMeshData(tipo);
         instancia = NavMesh.AddNavMeshData(datos);
         armando = NavMeshBuilder.UpdateNavMeshDataAsync(datos, ajustes, fuentes, limites);
+
+        // El de los grandes, con las mismas colisiones.
+        NavMeshBuildSettings grande = NavMesh.CreateSettings();
+        grande.agentRadius = RadioGrande;
+        grande.agentHeight = AltoGrande;
+        grande.agentClimb = 0.45f;
+        grande.agentSlope = 46f;
+        grande.overrideVoxelSize = true;
+        grande.voxelSize = 0.2f;
+        tipoGrande = grande.agentTypeID;
+        datosGrande = new NavMeshData(tipoGrande);
+        instanciaGrande = NavMesh.AddNavMeshData(datosGrande);
+        armandoGrande = NavMeshBuilder.UpdateNavMeshDataAsync(datosGrande, grande, fuentes, limites);
     }
 
     // Lo que cuenta como mapa: colisiones sólidas que no son de personajes ni se mueven con física. Las barreras

@@ -156,7 +156,7 @@ public class EmbestidaDeNpc : MonoBehaviour
         if (NavMesh.Raycast(inicio, inicio + hacia * Largo, out NavMeshHit borde, filtro))
             cuanto = Mathf.Min(cuanto, borde.distance - 0.2f);
         // Paredes a la altura del cuerpo (sin contar el piso ni las rampas: lo que mira para arriba).
-        float radio = Mathf.Clamp(npc.Ancho * 0.5f, 0.2f, 0.8f);
+        float radio = Mathf.Clamp(npc.Ancho * 0.8f, 0.2f, 2f); // casi todo su ancho (el Jefe es grande; Ancho es hasta el costado)
         Vector3 cuerpo = transform.position + Vector3.up * (radio + 0.5f);
         foreach (RaycastHit g in Physics.SphereCastAll(cuerpo, radio, hacia, Largo + npc.Frente, Physics.DefaultRaycastLayers, QueryTriggerInteraction.Ignore))
         {
