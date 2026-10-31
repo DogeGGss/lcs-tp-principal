@@ -113,6 +113,12 @@ public class TipoDeNpc : ScriptableObject
     [Header("Sonido")]
     [Tooltip("Grito al ver al jugador de cerca (US 036, CA2). Opcional.")]
     public AudioClip grito;
+    [Tooltip("Otros gritos (opcional): se elige uno al azar entre estos y el de arriba, así no suenan todos iguales.")]
+    public AudioClip[] otrosGritos = new AudioClip[0];
+    [Tooltip("Pisadas al caminar o correr: una al azar cada largoDelPaso metros. Vacío: sin pasos.")]
+    public AudioClip[] pasos = new AudioClip[0];
+    [Tooltip("Cada cuántos metros pisa (más: pasos más espaciados, como un bicho grande).")]
+    [Min(0.3f)] public float largoDelPaso = 1.2f;
     [Tooltip("Al empezar cada golpe cuerpo a cuerpo (US 037). Opcional.")]
     public AudioClip sonidoDeAtaque;
     [Tooltip("Jefe: el rugido antes de embestir (US 266) y al enfurecerse (US 268). Opcional.")]

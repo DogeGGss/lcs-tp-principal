@@ -52,7 +52,18 @@ MonoBehaviour:
   golpeRecibido: {fileID: 1827226128182048838, guid: ec8e909a44cd1614897f965eedb6c14e, type: 3}
   morir: {fileID: 1827226128182048838, guid: 688d54156d330eb48b69f546ee8691e1, type: 3}
   aturdido: {fileID: 0}
-  grito: {fileID: 0}
+  grito: {fileID: 8300000, guid: d3794f886d2049c8a3855eea2196ea45, type: 3}
+  otrosGritos:
+  - {fileID: 8300000, guid: 863d4da23df349ae84f4ee93660d0322, type: 3}
+  - {fileID: 8300000, guid: a5b1b366b3344beb96453e3a75638587, type: 3}
+  - {fileID: 8300000, guid: 0ca3d213864449d8aa5e7022c7ed436a, type: 3}
+  pasos:
+  - {fileID: 8300000, guid: 49d158c2781c4bd3ac0298877c3fb9dd, type: 3}
+  - {fileID: 8300000, guid: 3bf0ee73cc2747319a2e7ae3b37d946b, type: 3}
+  - {fileID: 8300000, guid: b446d09fe29946998fe5bf60ef35f6c6, type: 3}
+  - {fileID: 8300000, guid: b7b2e9597acd4829b340599c3ca17652, type: 3}
+  largoDelPaso: 1.6
+  sonidoDeAtaque: {fileID: 8300000, guid: 1c01e9de43874de7b39980ff349fe9a8, type: 3}
   esJefe: 0
   titulo: 
   embiste: 0
