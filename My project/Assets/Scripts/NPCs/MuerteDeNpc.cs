@@ -4,18 +4,19 @@ using UnityEngine.AI;
 // F11 (NPCs), US 039: el NPC muere al quedarse sin vida.
 // - CA1: deja de moverse y de atacar, y ya no bloquea el paso ni recibe disparos (se apagan su cápsula, sus zonas de
 //   impacto y su agente de navegación).
-// - CA2: hace la animación de morir y a los 5 s desaparece (el último medio segundo se hunde en el piso).
+// - CA2: hace la animación de morir y, cuando termina, se desintegra de arriba hacia abajo (US 284,
+//   DesintegracionDeNpc) y desaparece.
 // - CA3 y CA4: avisa la baja (Npc.Murio) con los puntos: los de su tipo, o los de cabeza si el último impacto fue a la
 //   cabeza. Con eso el modo Zombie suma los puntos (US 147) y descuenta un enemigo de la oleada (US 144, US 150).
 // Lo agrega Npc.Crear.
 [RequireComponent(typeof(Npc))]
 public class MuerteDeNpc : MonoBehaviour
 {
-    private const float Desaparece = 5f, Hundirse = 0.6f, Hondo = 1.2f;
+    private const float SinClip = 1.5f, Quieto = 0.15f; // s de la muerte sin animación, y quieto antes de desintegrarse
 
     private Npc npc;
     private float murioEn = -1f;
-    private Vector3 dondeCayo;
+    private float desintegraEn = -1f;
 
     private void Awake() => npc = GetComponent<Npc>();
 
@@ -33,7 +34,6 @@ public class MuerteDeNpc : MonoBehaviour
     {
         if (murioEn >= 0f) return;
         murioEn = Time.time;
-        dondeCayo = transform.position;
 
         // CA1: quieto, sin atacar, sin chocar y sin recibir disparos.
         NavMeshAgent agente = GetComponent<NavMeshAgent>();
@@ -58,13 +58,17 @@ public class MuerteDeNpc : MonoBehaviour
         Npc.AvisarMuerte(npc, puntos, cabeza);
     }
 
-    // CA2: a los 5 s, se hunde y desaparece.
+    // CA2: cuando termina la animación de morir, se desintegra (y DesintegracionDeNpc lo borra al final).
     private void Update()
     {
-        if (murioEn < 0f) return;
-        float t = Time.time - murioEn;
-        float hundido = Mathf.InverseLerp(Desaparece - Hundirse, Desaparece, t);
-        if (hundido > 0f) transform.position = dondeCayo + Vector3.down * Hondo * hundido;
-        if (t >= Desaparece) Destroy(gameObject);
+        if (murioEn < 0f || desintegraEn == float.MaxValue) return;
+        if (desintegraEn < 0f)
+        {
+            AnimationClip clip = npc.Tipo != null ? npc.Tipo.morir : null;
+            desintegraEn = murioEn + (clip != null ? clip.length : SinClip) + Quieto;
+        }
+        if (Time.time < desintegraEn) return;
+        desintegraEn = float.MaxValue;
+        DesintegracionDeNpc.Empezar(npc);
     }
 }
