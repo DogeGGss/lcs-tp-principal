@@ -12,11 +12,34 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6cb6d8d75b8640af90d2c5f369da01c4, type: 3}
   m_Name: Comun
   m_EditorClassIdentifier: 
-  nombre: Común
+  nombre: "Com\xFAn"
   modelo: {fileID: 4503948766496688305, guid: b06cee2df35c0e945bfe2a139257266c, type: 3}
-  escala: 1.0
+  escala: 1
+  giroDelModelo: 0
+  marcas: 2
+  colorDeMarcas: {r: 0.25987896, g: 0.754717, b: 0.4267174, a: 1}
+  cantidadDeMarcas: 9
+  tamanioDeMarcas: 0.7
+  huecosEntreMarcas: 0.35
+  irregularidadDeMarcas: 0
+  brilloDeMarcas: 2.2
+  opacidadDeMarcas: 0.13
+  pulsoDeMarcas: 0.35
+  huesosSinMarcas:
+  - BN_ R_ Hand
+  separacionDeRayas: 0.05
+  anchoDeRayas: 0.015
+  largoDeRayas: 0.08
+  giroDeMarcas: {x: 0, y: 0, z: 0}
+  ojoEnLaTextura: {x: 0.586, y: 0.879}
+  radioDelOjo: 0.08
+  brilloDeOjos: 8
+  delineadoDeOjos: 0.7
   vida: 100
   danio: 20
+  alcance: 0.5
+  velocidadDeAtaque: 1
+  cadencia: 1
   frenaAlRecibirImpacto: 1
   velocidad: 2.5
   corre: 0
@@ -31,5 +54,17 @@ MonoBehaviour:
   morir: {fileID: 1827226128182048838, guid: bda8ad7dc6f89b74d89d8becacc9b2bf, type: 3}
   aturdido: {fileID: 1827226128182048838, guid: 6714494b3c5a6de43a36a4ffaaa71a0a, type: 3}
   grito: {fileID: 0}
+  esJefe: 0
+  titulo: 
+  embiste: 0
+  preparaEmbestida: {fileID: 0}
+  embestida: {fileID: 0}
+  vuela: 0
+  volar: {fileID: 0}
+  escupir: {fileID: 0}
+  veneno: 0
+  materialDeNube: {fileID: 0}
+  furia: 0
+  rugido: {fileID: 0}
   puntosPorBaja: 60
   puntosPorBajaALaCabeza: 100

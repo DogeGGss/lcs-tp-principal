@@ -176,6 +176,9 @@ public class Npc : MonoBehaviour
         // US 269, CA4: se dibuja después de la marca roja de los portales, así al pasar por delante de uno se ve normal.
         MarcaAtraves.DespuesDeLaMarca(m);
 
+        // US 283: las marcas que brillan de su tipo, para que se vea de noche.
+        MarcasQueBrillan.Poner(this, m, tipo);
+
         // US 038, CA1: cabeza, cuerpo y piernas, sobre sus huesos (las del prefab, si las tiene).
         ZonasDeNpc.Asegurar(m.transform);
 
