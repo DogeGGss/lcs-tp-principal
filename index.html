@@ -1982,9 +1982,9 @@ MARCO · Conjunto: [nombre]. Estilo: [estilo]. Forma: [esquinas, remate, rieles]
 </script>
 
 <section id="cuenta">
-  <div class="sec-head"><h2>Cuenta y buscar partida</h2><span class="sub">F18 · US 237, US 269 a US 273, US 281, US 282 · F28 · US 274 a US 280</span> <span class="st st-idea">Diseño para revisar</span></div>
+  <div class="sec-head"><h2>Cuenta y buscar partida</h2><span class="sub">F18 · US 237, US 269 a US 273, US 281, US 282 · F28 · US 274 a US 280</span> <span class="st st-mid">En prueba</span></div>
   <p>Dos cosas nuevas del Sprint 4. La <b>cuenta</b> se maneja desde el <a href="#launcher">launcher</a>, como en el cliente de League of Legends: ahí se crea con mail y contraseña, se inicia sesión y se cierra. Para jugar hace falta una cuenta, y JUGAR abre el juego con ella. Cada cuenta arranca de cero, guarda el progreso en la nube y aparece en el ranking (US 281). Y <b>buscar partida</b>: en el andén de Táctico y de Deathmatch, el juego te junta con otros jugadores del mismo modo, versión y región, y la partida arranca sola.</p>
-  <p class="soft">Todavía no está ni en el launcher ni en el juego: es la propuesta para revisar antes de programarla. Las dos maquetas usan las mismas piezas que el launcher y que el menú, y sus botones llevan de un estado al otro.</p>
+  <p class="soft">Ya está en el launcher y en el juego (PR #618, la cuenta, y #619, buscar partida), en prueba. Faltan recuperar la contraseña (US 271), las monedas en la cuenta (US 272), borrar la cuenta (US 273) y que Photon verifique la cuenta (US 277, CA1). Las maquetas usan las mismas piezas que el launcher y que el menú, y sus botones llevan de un estado al otro.</p>
 
   <h3 id="cuenta-launcher">La cuenta en el launcher</h3><span id="cuenta-maqueta"></span><span id="cuenta-ventanas"></span>
   <div class="controls cu-ctl" id="launcherCtl">
@@ -2086,16 +2086,18 @@ MARCO · Conjunto: [nombre]. Estilo: [estilo]. Forma: [esquinas, remate, rieles]
   </div>
 
   <div class="dev">
-    <h3 id="cuenta-codigo">Dónde va a estar</h3>
+    <h3 id="cuenta-codigo">Dónde está</h3>
     <div class="files">
-      <code>Launcher/Core/Cuenta.cs</code><span>Supabase Auth por REST con <code>HttpClient</code>: crear la cuenta (<code>POST /auth/v1/signup</code>), confirmar y recuperar con código (<code>/auth/v1/verify</code>), entrar, cerrar sesión y borrar (US 273). Guarda la sesión, nunca la contraseña.</span>
+      <code>Launcher/Core/Cuentas.cs</code><span>Supabase Auth por REST con <code>HttpClient</code>: crear la cuenta (<code>POST /auth/v1/signup</code>), confirmar con el código (<code>/auth/v1/verify</code>), pedir otro, entrar, cerrar sesión y renovar la sesión al abrir. Guarda la sesión, nunca la contraseña. Con 4 pruebas en <code>Launcher/Tests</code>.</span>
       <code>Launcher/App/MainWindow.Cuenta.cs</code><span>El panel de la cuenta, la cuenta en la barra con su menú, y JUGAR solo con una sesión.</span>
       <code>ReglasCuenta.cs</code><span>Las reglas y los mensajes de la cuenta: el mismo archivo en el launcher y en el juego (el proyecto del launcher lo incluye con un link), con sus pruebas.</span>
       <code>cuenta-sesion.json</code><span>La sesión que comparten el launcher y el juego, en la carpeta de guardado del juego (<code>%USERPROFILE%\AppData\LocalLow\Equipo 4\Project Riftwalker</code>), que es de cada usuario de Windows. Supabase cambia el token de renovación cada vez que se usa: los dos leen el archivo antes de renovarla.</span>
-      <code>Perfil/LogrosOnline.Cuenta</code><span>En el juego: abre con la sesión del launcher, la renueva y sube el progreso de la cuenta; sin sesión, muestra «Iniciá sesión en el launcher».</span>
-      <code>Perfil/PestanaCuenta</code><span>La pestaña Cuenta del Perfil, solo para ver. En el editor de Unity, donde no hay launcher, deja iniciar sesión para probar.</span>
+      <code>Perfil/LogrosOnline.Cuenta</code><span>En el juego: abre con la sesión del launcher, la renueva y sube el progreso de la cuenta (su archivo, con <code>Guardado.UsarCuenta</code>).</span>
+      <code>Perfil/PantallaSinSesion</code><span>Sin una sesión, en el juego publicado: «Iniciá sesión en el launcher», que tapa el menú.</span>
+      <code>Perfil/PestanaCuenta</code><span>La pestaña Cuenta del Perfil, solo para ver. En el editor de Unity, donde no hay launcher, deja iniciar sesión para probar; <i>Riftwalker &gt; Cuenta &gt; Como en el juego publicado</i> simula el build.</span>
       <code>Perfil/Billetera</code><span>Las monedas de la cuenta en la base (US 272), con un id por movimiento.</span>
-      <code>Multijugador/BuscarPartida</code><span>La búsqueda con Photon (<code>JoinRandomOrCreateRoom</code> por modo, salas públicas) y el arranque automático.</span>
+      <code>Multijugador/Multijugador.cs</code><span>La búsqueda con Photon (<code>JoinRandomOrCreateRoom</code> por modo, salas públicas visibles) y el arranque automático: el anfitrión decide con <code>QueHacer</code> (probado en <code>BuscarPartidaTests</code>) y la hora del servidor queda en la sala.</span>
+      <code>UI/ModeSelect/ModeSelectScreen.Busqueda.cs</code><span>«Buscar partida», la sala privada más chica, el panel de la búsqueda, el error y el radar, en la pantalla de elegir modo.</span>
       <code>Backend/Supabase</code><span><code>logros.sql</code> deja la nube y el ranking solo para las cuentas; <code>reset-cuentas.sql</code> limpia la base de las pruebas (US 281).</span>
       <code>Edge Functions</code><span><code>photon-auth</code> (Photon verifica la cuenta, US 277) y <code>borrar-cuenta</code> (US 273).</span>
     </div>
