@@ -11,9 +11,10 @@ using Img = UnityEngine.UI.Image;
 
 // Selección de modo (US 047), diseño "Andenes": la pantalla se parte en tres con dos rayos y cada andén es un modo.
 // Al pasar el mouse el andén se agranda; al hacer clic ocupa toda la pantalla y muestra sus opciones:
-// Táctico y Deathmatch crean o se unen a una sala (US 026, US 027); Zombie elige la dificultad (US 161) y juega.
+// Táctico y Deathmatch buscan partida (F28, en ModeSelectScreen.Busqueda.cs) o crean o se unen a una sala privada
+// (US 026, US 027); Zombie elige la dificultad (US 161) y juega.
 // Se arma por código con las medidas de la maqueta (pantalla de referencia de 1920 x 1080), como el HUD y la tienda.
-public class ModeSelectScreen : MonoBehaviour
+public partial class ModeSelectScreen : MonoBehaviour
 {
     [Serializable] public class ModeEvent : UnityEvent<GameMode> { }
     [Serializable] public class JoinEvent : UnityEvent<GameMode, string> { }
@@ -125,6 +126,7 @@ public class ModeSelectScreen : MonoBehaviour
         public UnityEngine.UI.Button startButton;
         public CanvasGroup startGroup;
         public float actionsY;
+        public Busqueda busqueda; // Táctico y Deathmatch: buscar partida (null en Zombie)
     }
 
     private RectTransform root;
@@ -224,6 +226,7 @@ public class ModeSelectScreen : MonoBehaviour
         shadeGroup.blocksRaycasts = false;
         shadeImg.raycastTarget = false;
 
+        BuildRadar();
         BuildTop();
         for (int i = 0; i < 3; i++) details[i] = BuildDetail(i);
     }
@@ -634,17 +637,20 @@ public class ModeSelectScreen : MonoBehaviour
             y += 41f + 30f;
             d.actionsY = y;
             int mode = i;
-            float bx = ButtonAt(d.rect, 0f, y, "Crear sala", true, c, () => CreateRoom(mode)).x;
-            ButtonAt(d.rect, bx + 18f, y, "Unirse con código", false, c, () => ShowJoin(mode));
-
-            d.codeRow = Place(Node("Codigo", d.rect), 0f, y + 78f + 24f, 900f, 72f);
+            // F28: «Buscar partida» grande y, abajo, la sala privada. La búsqueda, la sala y el error van en el mismo
+            // lugar que los botones y los reemplazan (MostrarBloque).
+            d.busqueda = new Busqueda();
+            BuildBuscar(d, mode, c, y);
+            d.codeRow = Place(Node("Codigo", d.busqueda.acciones), 0f, 340f, 900f, 72f);
             d.code = CodeInput(d.codeRow, c);
             ButtonAt(d.codeRow, 318f, 0f, "Entrar", false, c, () => Join(mode), 30f, 72f);
             d.codeRow.gameObject.SetActive(false);
 
-            d.room = BuildRoom(d, y + 78f + 22f, c);
+            d.room = BuildRoom(d, y, c);
             d.room.gameObject.SetActive(false);
-            d.status = Text(Place(Node("Aviso", d.rect), 0f, y + 78f + 24f + 72f + 16f, 900f, 30f), bodyFont, 22f, White(0.7f), TextAlignmentOptions.MidlineLeft);
+            BuildPanelBusqueda(d, mode, c, y);
+            BuildPanelError(d, mode, c, y);
+            d.status = Text(Place(Node("Aviso", d.rect), 0f, y + 428f, 900f, 30f), bodyFont, 22f, White(0.7f), TextAlignmentOptions.MidlineLeft);
         }
         else
         {
@@ -816,6 +822,7 @@ public class ModeSelectScreen : MonoBehaviour
         if (open < 0) return;
         // US 026 y US 027, CA9: con Esc se sale de la sala y se vuelve a los andenes.
         Multijugador.SalirDeLaSala();
+        MostrarBloque(details[open], Bloque.Acciones);
         open = -1;
         if (EventSystem.current != null) EventSystem.current.SetSelectedGameObject(null);
         backText.text = "Menú principal";
@@ -826,6 +833,13 @@ public class ModeSelectScreen : MonoBehaviour
 
     private void Back()
     {
+        // F28 (US 275, CA2): Esc cancela la búsqueda (sin salir del andén) o cierra el aviso de error.
+        if ((open == 0 || open == 1) && details[open].busqueda != null)
+        {
+            Bloque bloque = details[open].busqueda.bloque;
+            if (bloque == Bloque.Busqueda) { CancelarBusqueda(open); return; }
+            if (bloque == Bloque.Error) { MostrarBloque(details[open], Bloque.Acciones); return; }
+        }
         if (open >= 0) CloseMode();
         else if (menu != null) menu.MostrarMenuPrincipal();
     }
@@ -837,6 +851,7 @@ public class ModeSelectScreen : MonoBehaviour
         if (d.room != null) d.room.gameObject.SetActive(false);
         if (d.code != null) d.code.text = "";
         d.status.text = "";
+        MostrarBloque(d, Bloque.Acciones);
     }
 
     // US 027: crea la sala en Photon; la sala aparece cuando Photon confirma (OnNetworkChanged).
@@ -913,13 +928,15 @@ public class ModeSelectScreen : MonoBehaviour
 
     private void OnNetworkChanged()
     {
-        if (open == 0 || open == 1) RefreshRoom(details[open], open);
+        if (open == 0 || open == 1) Refrescar(details[open], open);
     }
 
     private void OnNetworkError(string message)
     {
         if (open != 0 && open != 1) return;
         Detail d = details[open];
+        // Buscando partida, el error va en su panel (US 275, CA3); si no, debajo de los botones, como siempre.
+        if (d.busqueda != null && d.busqueda.bloque == Bloque.Busqueda) { MostrarError(d, Multijugador.Instancia.UltimoFallo); return; }
         d.status.text = message;
         if (d.codeRow.gameObject.activeSelf && d.code != null) d.code.ActivateInputField();
     }
@@ -1060,6 +1077,7 @@ public class ModeSelectScreen : MonoBehaviour
         UpdateLabels(intro, dt);
         UpdateTop(intro, dt);
         UpdateDetails(now, dt);
+        AnimarBusqueda(now, dt);
         AnimateTactico(now, dt);
         AnimateDeathmatch(now, dt, centers);
         AnimateZombie(now);

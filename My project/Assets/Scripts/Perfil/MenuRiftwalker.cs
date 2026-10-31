@@ -553,7 +553,8 @@ public class MenuRiftwalker : MonoBehaviour
             return;
         }
         int s = Mathf.CeilToInt(partida.restante);
-        salaVolver.text = "Sala " + partida.sala;
+        // Las salas privadas tienen un código de 5 letras; las de buscar partida (F28), un nombre largo que no sirve mostrar.
+        salaVolver.text = partida.sala.Length == 5 ? "Sala " + partida.sala : "Partida pública";
         detalleVolver.text = $"Podés volver durante {s / 60}:{s % 60:00}";
     }
 
