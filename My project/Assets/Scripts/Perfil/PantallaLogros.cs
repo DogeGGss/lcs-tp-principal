@@ -20,6 +20,8 @@ public class PantallaLogros : PantallaBase
     float siguiente;
     LogrosOnline.Jugador seleccionado;
     LogrosOnline Servicio => LogrosOnline.Instancia;
+    // US 281, CA2: sin cuenta se ve el ranking, pero no se aparece en él.
+    bool SinCuenta => Servicio != null && Servicio.Configurado && Servicio.Cuenta != ReglasCuenta.Estado.ConCuenta;
 
     public PantallaLogros(MenuRiftwalker menu, RectTransform parent) : base(menu, parent, "Logros")
     {
@@ -71,6 +73,7 @@ public class PantallaLogros : PantallaBase
         var datos = Servicio?.Datos;
         T(resumen, "Puesto", 28, 592, 384, 40, FTitulo, 29, Ink, datos?.me == null ? "PUESTO EN LOGROS: —" : "PUESTO EN LOGROS: #" + datos.me.rank);
         string estado = Servicio == null ? "El progreso se guarda en esta PC." : Servicio.Estado;
+        if (SinCuenta) estado = "Creá una cuenta para aparecer en el ranking (Perfil › Cuenta).\n" + estado;
         if (datos != null) estado += "\n" + (datos.population == 1 ? "1 jugador registrado" : datos.population + " jugadores registrados") + Fecha(datos.fetched_at);
         if (!string.IsNullOrEmpty(LogrosCometas.AvisoGuardado)) estado += "\n" + LogrosCometas.AvisoGuardado;
         var texto = T(resumen, "Conexión", 28, 650, 384, 176, FTexto, 20, Mute, estado);
@@ -90,7 +93,7 @@ public class PantallaLogros : PantallaBase
             filas = LogrosCometas.Catalogo.Length;
             for (int i = 0; i < filas; i++) FilaLogro(LogrosCometas.Catalogo[i], i);
             if (seleccionado != null) CrearBoton(acciones, 0, 0, 300, 48, "Volver al ranking", false, () => { seleccionado = null; Dibujar(true); }, 22);
-            else T(acciones, "Nota", 0, 0, 1330, 48, FTexto, 20, Mute, "Los porcentajes corresponden a los jugadores registrados en el servicio online.");
+            else T(acciones, "Nota", 0, 0, 1330, 48, FTexto, 20, Mute, "Los porcentajes corresponden a los jugadores con cuenta.");
         }
         else
         {
@@ -169,7 +172,7 @@ public class PantallaLogros : PantallaBase
         proximo.button.interactable = coincide && tabla.has_more;
         LogrosOnline.Fila mio = coincide ? tabla.Propia : null;
         string puesto = !coincide ? "" : mio != null ? $"Tu puesto: <color=#F3F4F6>#{mio.rank}</color> · {CategoriasRanking.Mostrar(cat, mio.value)}"
-            : "Todavía no aparecés en esta categoría.";
+            : SinCuenta ? "Creá una cuenta para aparecer en el ranking." : "Todavía no aparecés en esta categoría.";
         T(acciones, "Puesto", 456, 0, 520, 48, FTexto, 23, Soft, puesto + (coincide ? Fecha(tabla.fetched_at) : ""));
         T(acciones, "Página", 1000, 0, 330, 48, FTexto, 23, Soft, "Página " + (pagina / 50 + 1), TextAlignmentOptions.MidlineRight);
         return filas;

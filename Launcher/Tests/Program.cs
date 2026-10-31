@@ -254,6 +254,72 @@ if (args.Contains("--live-install"))
         Console.WriteLine($"Installed {manifest.Version}: {manifest.Game.Size / 1048576d:N0} MB ZIP, {manifest.Game.UnpackedSize / 1048576d:N0} MB unpacked, SHA-256 verified");
         Console.WriteLine("Notes shown in the launcher end with: " + ReleaseClient.NotesForLauncher(target.Body).Split('\n').Last());
     });
+// ---------- Cuenta (US 237, US 269, US 270 y US 282): un Supabase de mentira, sin conexión ----------
+const string SesionJson = "{\"access_token\":\"a1\",\"refresh_token\":\"r1\",\"expires_in\":3600,\"expires_at\":1,\"user\":{\"id\":\"u1\",\"email\":\"ulises@gmail.com\",\"created_at\":\"2026-10-29T12:00:00Z\",\"user_metadata\":{},\"identities\":[{\"id\":\"i1\"}]}}";
+HttpResponseMessage Json(HttpStatusCode code, string body) => new(code) { Content = new StringContent(body, Encoding.UTF8, "application/json") };
+Cuentas NuevaCuenta(TestFolder temp, Func<HttpRequestMessage, HttpResponseMessage> responder) =>
+    new(new HttpClient(new Handler(responder)), new ServicioCuentas("https://prueba.supabase.co", "sb_publishable_prueba"), temp.Path);
+Test("Cuenta: confirmar guarda la sesión con el formato que lee el juego", async () =>
+{
+    using var temp = new TestFolder();
+    string? pedido = null;
+    var cuentas = NuevaCuenta(temp, req => { pedido = req.RequestUri!.PathAndQuery + " " + req.Content!.ReadAsStringAsync().Result; Equal("sb_publishable_prueba", req.Headers.GetValues("apikey").Single()); return Json(HttpStatusCode.OK, SesionJson); });
+    Equal<string?>(null, await cuentas.ConfirmarAsync("ulises@gmail.com", "481 902", default));
+    Equal(true, pedido!.StartsWith("/auth/v1/verify ") && pedido.Contains("\"type\":\"signup\"") && pedido.Contains("\"token\":\"481902\""));
+    Equal(Path.Combine(temp.Path, "cuenta-sesion-prueba.supabase.co.json"), cuentas.RutaSesion);
+    string guardada = File.ReadAllText(cuentas.RutaSesion);
+    foreach (string campo in new[] { "\"access_token\":\"a1\"", "\"refresh_token\":\"r1\"", "\"expires_at\":", "\"user\":{\"id\":\"u1\"" }) Equal(true, guardada.Contains(campo));
+    Equal(false, guardada.Contains("null")); // JsonUtility, en el juego, no quiere null en las clases
+    Equal(false, guardada.Contains("Nombre") || guardada.Contains("Desde")); // solo los campos de Supabase
+    Equal(true, cuentas.LeerSesion()!.ExpiresAt > DateTimeOffset.UtcNow.ToUnixTimeSeconds() + 3000);
+    Equal("ulises", cuentas.Sesion!.User!.Nombre);
+});
+Test("Cuenta: crear manda el código, y con un mail usado lo dice", async () =>
+{
+    using var temp = new TestFolder();
+    string identidades = "[{\"id\":\"i1\"}]";
+    var cuentas = NuevaCuenta(temp, req => { Equal("/auth/v1/signup", req.RequestUri!.AbsolutePath); return Json(HttpStatusCode.OK, "{\"id\":\"u1\",\"email\":\"a@b.com\",\"identities\":" + identidades + "}"); });
+    Equal<string?>(null, await cuentas.CrearAsync(" a@b.com ", "riftwalker", default));
+    Equal(false, File.Exists(cuentas.RutaSesion)); // falta el código
+    identidades = "[]";
+    Equal<string?>(ReglasCuenta.MailUsado, await cuentas.CrearAsync("a@b.com", "riftwalker", default));
+    Equal<string?>(ReglasCuenta.ClaveCorta, await cuentas.CrearAsync("a@b.com", "corta", default));
+});
+Test("Cuenta: errores al entrar y sin conexión", async () =>
+{
+    using var temp = new TestFolder();
+    var pedidos = new List<string>();
+    string error = "invalid_credentials";
+    var cuentas = NuevaCuenta(temp, req => { pedidos.Add(req.RequestUri!.PathAndQuery); return Json(HttpStatusCode.BadRequest, "{\"error_code\":\"" + error + "\"}"); });
+    Equal<string?>(ReglasCuenta.NoCoinciden, await cuentas.EntrarAsync("a@b.com", "riftwalkr", default));
+    error = "email_not_confirmed"; pedidos.Clear();
+    Equal<string?>(ReglasCuenta.SinConfirmar, await cuentas.EntrarAsync("a@b.com", "riftwalker", default));
+    Equal("/auth/v1/resend", pedidos.Last()); // manda otro código para confirmarla
+    var sinRed = NuevaCuenta(temp, _ => throw new HttpRequestException("sin red"));
+    Equal<string?>(ReglasCuenta.SinInternet, await sinRed.EntrarAsync("a@b.com", "riftwalker", default));
+});
+Test("Cuenta: renovar al abrir, cerrar sesión y la carpeta del juego", async () =>
+{
+    using var temp = new TestFolder();
+    var ok = NuevaCuenta(temp, _ => Json(HttpStatusCode.OK, SesionJson));
+    await ok.ConfirmarAsync("ulises@gmail.com", "481902", default);
+    // Vencida y sin conexión: se sigue con la guardada (el juego abre igual, US 282 CA4).
+    File.WriteAllText(ok.RutaSesion, File.ReadAllText(ok.RutaSesion).Replace("\"expires_at\":", "\"expires_at\":1,\"x\":"));
+    Equal(true, await NuevaCuenta(temp, _ => throw new HttpRequestException("sin red")).RenovarAsync(default));
+    Equal(true, File.Exists(ok.RutaSesion));
+    // Vencida y rechazada (se cerró desde otro lado): se borra y hay que entrar de nuevo.
+    Equal(false, await NuevaCuenta(temp, _ => Json(HttpStatusCode.BadRequest, "{\"error_code\":\"refresh_token_not_found\"}")).RenovarAsync(default));
+    Equal(false, File.Exists(ok.RutaSesion));
+    // Cerrar sesión avisa a Supabase con la sesión y borra el archivo.
+    await ok.ConfirmarAsync("ulises@gmail.com", "481902", default);
+    string? salir = null;
+    var cerrar = NuevaCuenta(temp, req => { salir = req.RequestUri!.PathAndQuery + " " + req.Headers.Authorization; return new HttpResponseMessage(HttpStatusCode.NoContent); });
+    cerrar.Cargar();
+    await cerrar.CerrarAsync(default);
+    Equal("/auth/v1/logout?scope=local Bearer a1", salir);
+    Equal(false, File.Exists(ok.RutaSesion));
+    Equal(true, Cuentas.CarpetaDelJuego().EndsWith(Path.Combine("LocalLow", "Equipo 4", "Project Riftwalker")));
+});
 int failures = 0;
 foreach (var test in tests)
 {

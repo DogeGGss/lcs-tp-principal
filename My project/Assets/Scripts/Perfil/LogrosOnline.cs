@@ -10,8 +10,9 @@ using UnityEngine.Networking;
 // Sincroniza los logros con el ranking (rw_sync_comets) y el resto del progreso del jugador (rw_sync_progress,
 // ProgresoNube, US 162 y US 163). El guardado en la PC lo hace Guardado. El ranking (US 226) es por logros
 // (rw_achievement_board) o por cualquier otra estadística (rw_stat_board, CategoriasRanking). También manda las
-// opiniones de "Danos tu opinión" que esperan en Opiniones (rw_send_feedback, que avisa a Discord).
-public sealed class LogrosOnline : MonoBehaviour
+// opiniones de "Danos tu opinión" que esperan en Opiniones (rw_send_feedback, que avisa a Discord). La cuenta del jugador
+// (US 237), con la misma sesión, está en LogrosOnline.Cuenta.cs.
+public sealed partial class LogrosOnline : MonoBehaviour
 {
     [Serializable] public sealed class Jugador
     {
@@ -43,7 +44,8 @@ public sealed class LogrosOnline : MonoBehaviour
         /// <summary>El jugador local, si aparece en esta categoría (JsonUtility no deja el null: se mira el id).</summary>
         public Fila Propia => me != null && !string.IsNullOrEmpty(me.player_id) ? me : null;
     }
-    [Serializable] private sealed class Usuario { public string id; }
+    // El usuario de la sesión: su mail, el nombre de la cuenta (user_metadata) y, al crearla, sus identidades (US 237).
+    [Serializable] private sealed class Usuario { public string id, email, created_at; public bool is_anonymous; public Meta user_metadata; public Identidad[] identities; }
     [Serializable] private sealed class Sesion
     { public string access_token, refresh_token; public long expires_at; public int expires_in; public Usuario user; }
     [Serializable] private sealed class Renovar { public string refresh_token; }
@@ -82,7 +84,11 @@ public sealed class LogrosOnline : MonoBehaviour
     private const float SegundosPorAviso = 2.6f;
     private readonly Queue<string> avisosPendientes = new Queue<string>();
     private float proximoAviso;
-    private string RutaSesion => Path.Combine(Application.persistentDataPath, "logros-sesion-" + new Uri(config.url).Host + ".json");
+    // Dos sesiones (US 237 y US 281): la de la cuenta abierta o, sin cuenta, la anónima (solo para opiniones y para ver el
+    // ranking). El editor y los builds las comparten.
+    private string RutaSesion => enCuenta ? RutaSesionCuenta : RutaSesionAnonima;
+    private string RutaSesionAnonima => Path.Combine(Application.persistentDataPath, "logros-sesion-" + new Uri(config.url).Host + ".json");
+    private string RutaSesionCuenta => Path.Combine(Application.persistentDataPath, "cuenta-sesion-" + new Uri(config.url).Host + ".json");
     private string RutaCache => Path.Combine(Application.persistentDataPath, "logros-ranking-" + new Uri(config.url).Host + ".json");
     private string RutaCacheEstadistica => Path.Combine(Application.persistentDataPath, "logros-estadistica-" + new Uri(config.url).Host + ".json");
 
@@ -100,8 +106,10 @@ public sealed class LogrosOnline : MonoBehaviour
         Instancia = this; DontDestroyOnLoad(gameObject);
         config = Resources.Load<LogrosOnlineConfig>("LogrosOnline");
         LogrosCometas.Desbloqueado += Avisar;
+        PlayerProfile.NameChanged += NombreCambiado;
         if (!Configurado) return;
         Estado = "Pendiente de conexión.";
+        AbrirCuentaGuardada();
         if (File.Exists(RutaSesion))
         {
             try
@@ -117,15 +125,17 @@ public sealed class LogrosOnline : MonoBehaviour
     private void Update()
     {
         MostrarAvisoPendiente();
-        if (!Configurado || Ocupado || Time.unscaledTime < intentar || !PlayerProfile.HasName) return;
+        // Sin sesión, un build publicado espera que se entre en el launcher: no se conecta (US 282).
+        if (!Configurado || SinSesion || Ocupado || Time.unscaledTime < intentar || !PlayerProfile.HasName) return;
         // El documento del progreso se rearma solo cuando cambia algo guardado.
         if (progresoDisponible && revisionProgreso != Guardado.Revision)
         {
             revisionProgreso = Guardado.Revision;
             progresoCambio = ProgresoNube.Json() != progresoEnviado;
         }
-        if (pedir || enviado != LogrosCometas.Revision || nombreEnviado != PlayerProfile.Name || (progresoDisponible && progresoCambio)
-            || (opinionesDisponible && Opiniones.Pendientes > 0))
+        // Sin cuenta no se sube nada (US 281): la sesión anónima solo manda opiniones y pide el ranking.
+        bool subir = enCuenta && (enviado != LogrosCometas.Revision || nombreEnviado != PlayerProfile.Name || (progresoDisponible && progresoCambio));
+        if (pedir || subir || (opinionesDisponible && Opiniones.Pendientes > 0))
             StartCoroutine(Trabajar());
     }
     /// <summary>Manda enseguida la opinión que acaba de guardar la ventana y avisa en el menú cómo le fue.</summary>
@@ -146,37 +156,9 @@ public sealed class LogrosOnline : MonoBehaviour
         Ocupado = true; Estado = "Sincronizando…"; Revision++;
         try
         {
-            if (identidadDanada) { Fallar("No se pudo recuperar la identidad online. El progreso local está conservado."); yield break; }
-            // Supabase cambia el token de renovación cada vez que se usa y, si alguien reusa uno viejo, anula la sesión.
-            // Con dos juegos abiertos en esta PC (el editor y un build comparten la carpeta) el otro pudo renovarla:
-            // antes de renovar se mira el archivo. Si la sesión quedó anulada, se crea otra identidad anónima; la
-            // anterior queda en el ranking con lo que tenía.
-            string anulado = null, aviso = null;
-            for (int intento = 0; intento < 4 && Vencida(); intento++)
-            {
-                Sesion enArchivo = LeerSesion();
-                if (enArchivo != null && enArchivo.refresh_token != anulado && (sesion == null || enArchivo.refresh_token != sesion.refresh_token))
-                { sesion = enArchivo; continue; }
-                string usado = sesion?.refresh_token;
-                yield return Post(usado == null ? "/auth/v1/signup" : "/auth/v1/token?grant_type=refresh_token",
-                    usado == null ? "{}" : JsonUtility.ToJson(new Renovar { refresh_token = usado }), false);
-                if (error != null)
-                {
-                    if (usado != null && (codigo == 400 || codigo == 401))
-                    { anulado = usado; sesion = null; aviso = " · la sesión anterior se había anulado: se creó una nueva"; continue; }
-                    Fallar(codigo == 400 || codigo == 401 ? "No se pudo autenticar. Revisá el acceso anónimo del proyecto." : error);
-                    yield break;
-                }
-                Sesion nueva = null;
-                try { nueva = JsonUtility.FromJson<Sesion>(respuesta); } catch { }
-                if (nueva == null || string.IsNullOrEmpty(nueva.access_token) || string.IsNullOrEmpty(nueva.refresh_token))
-                { Fallar("Respuesta de autenticación inválida."); yield break; }
-                nueva.expires_at = DateTimeOffset.UtcNow.ToUnixTimeSeconds() + Math.Max(60, nueva.expires_in);
-                sesion = nueva;
-                try { Guardado.EscribirAtomico(RutaSesion, JsonUtility.ToJson(sesion)); }
-                catch { identidadDanada = true; Fallar("No se pudo guardar la identidad online. Revisá los permisos de la carpeta de progreso."); yield break; }
-            }
-            if (Vencida()) { Fallar("No se pudo autenticar."); yield break; }
+            yield return AsegurarSesion();
+            if (falloSesion != null) { Fallar(falloSesion); yield break; }
+            string aviso = avisoSesion;
 
             // Opiniones: una por vuelta y antes que lo demás, así llegan aunque falle otra cosa. Cada una lleva su id:
             // si se reenvía (por un corte), la base no la duplica ni vuelve a avisar a Discord.
@@ -210,39 +192,11 @@ public sealed class LogrosOnline : MonoBehaviour
                 if (op.id == opinionPorAvisar && (error == null || rechazada || muchas)) opinionPorAvisar = null;
             }
 
-            int revision = LogrosCometas.Revision;
-            string nombre = PlayerProfile.Name;
-            var p = LogrosCometas.Datos;
-            yield return Post("/rest/v1/rpc/rw_sync_comets", JsonUtility.ToJson(new Sincronizar {
-                p_name = nombre, p_blue = p.aciertos[0], p_green = p.aciertos[1], p_gold = p.aciertos[2] }), true);
-            if (error != null) { Fallar(error); yield break; }
-            Jugador propio = null;
-            try { propio = JsonUtility.FromJson<Jugador>(respuesta); } catch { }
-            if (propio == null || string.IsNullOrEmpty(propio.player_id)) { Fallar("Respuesta de progreso inválida."); yield break; }
-            LogrosCometas.Fusionar(propio.blue, propio.green, propio.gold);
-            enviado = revision; nombreEnviado = nombre;
-
-            // US 162 (CA3) y US 163 (CA2): el resto del progreso. La base junta (máximo, mínimo, unión) y devuelve lo
-            // que tiene, que se junta con lo de la PC.
-            if (progresoDisponible && progresoCambio)
+            // Sin cuenta no se sube nada (US 281): la sesión anónima solo manda opiniones y pide el ranking.
+            if (enCuenta)
             {
-                string documento = ProgresoNube.Json();
-                yield return Post("/rest/v1/rpc/rw_sync_progress", "{\"p\":" + documento + "}", true);
-                if (error != null)
-                {
-                    if (codigo != 404) { Fallar(error); yield break; }
-                    progresoDisponible = false; // falta actualizar la base: se sigue solo con los logros
-                }
-                else
-                {
-                    ProgresoNube.Documento nube = null;
-                    try { nube = JsonUtility.FromJson<ProgresoNube.Documento>(respuesta); } catch { }
-                    if (nube == null) { Fallar("Respuesta de progreso inválida."); yield break; }
-                    ProgresoNube.Fusionar(nube);
-                    progresoEnviado = ProgresoNube.Json();
-                    revisionProgreso = Guardado.Revision;
-                    progresoCambio = false;
-                }
+                yield return SubirProgreso();
+                if (falloSubida != null) { Fallar(falloSubida); yield break; }
             }
             if (pedir && categoria != "")
             {
@@ -282,7 +236,96 @@ public sealed class LogrosOnline : MonoBehaviour
         }
         finally { Ocupado = false; }
     }
+    // Logros (rw_sync_comets) y el resto del progreso (rw_sync_progress) de la cuenta. Si falla, deja el motivo en falloSubida.
+    private string falloSubida;
+    private IEnumerator SubirProgreso()
+    {
+        falloSubida = null;
+        int revision = LogrosCometas.Revision;
+        string nombre = PlayerProfile.Name;
+        var p = LogrosCometas.Datos;
+        yield return Post("/rest/v1/rpc/rw_sync_comets", JsonUtility.ToJson(new Sincronizar {
+            p_name = nombre, p_blue = p.aciertos[0], p_green = p.aciertos[1], p_gold = p.aciertos[2] }), true);
+        if (error != null) { falloSubida = error; yield break; }
+        Jugador propio = null;
+        try { propio = JsonUtility.FromJson<Jugador>(respuesta); } catch { }
+        if (propio == null || string.IsNullOrEmpty(propio.player_id)) { falloSubida = "Respuesta de progreso inválida."; yield break; }
+        LogrosCometas.Fusionar(propio.blue, propio.green, propio.gold);
+        enviado = revision; nombreEnviado = nombre;
+
+        // US 162 (CA3) y US 163 (CA2): el resto del progreso. La base junta (máximo, mínimo, unión) y devuelve lo
+        // que tiene, que se junta con lo de la PC.
+        if (progresoDisponible && progresoCambio)
+        {
+            string documento = ProgresoNube.Json();
+            yield return Post("/rest/v1/rpc/rw_sync_progress", "{\"p\":" + documento + "}", true);
+            if (error != null)
+            {
+                if (codigo != 404) { falloSubida = error; yield break; }
+                progresoDisponible = false; // falta actualizar la base: se sigue solo con los logros
+            }
+            else
+            {
+                ProgresoNube.Documento nube = null;
+                try { nube = JsonUtility.FromJson<ProgresoNube.Documento>(respuesta); } catch { }
+                if (nube == null) { falloSubida = "Respuesta de progreso inválida."; yield break; }
+                ProgresoNube.Fusionar(nube);
+                progresoEnviado = ProgresoNube.Json();
+                revisionProgreso = Guardado.Revision;
+                progresoCambio = false;
+            }
+        }
+    }
+
     private bool Vencida() => sesion == null || sesion.expires_at <= DateTimeOffset.UtcNow.ToUnixTimeSeconds() + 60;
+
+    // La sesión vigente, para la sincronización (Trabajar) y para la cuenta (US 237). Si no pudo, deja el motivo en
+    // falloSesion; avisoSesion cuenta si hubo que crear otra identidad.
+    private string falloSesion, avisoSesion;
+    private IEnumerator AsegurarSesion()
+    {
+        falloSesion = avisoSesion = null;
+        if (identidadDanada) { falloSesion = "No se pudo recuperar la identidad online. El progreso local está conservado."; yield break; }
+        // Supabase cambia el token de renovación cada vez que se usa y, si alguien reusa uno viejo, anula la sesión.
+        // Con dos juegos abiertos en esta PC (el editor y un build comparten la carpeta) el otro pudo renovarla:
+        // antes de renovar se mira el archivo. Si la sesión quedó anulada, se crea otra identidad anónima; la
+        // anterior queda en la base con sus opiniones.
+        string anulado = null;
+        for (int intento = 0; intento < 4 && Vencida(); intento++)
+        {
+            Sesion enArchivo = LeerSesion();
+            if (enArchivo != null && enArchivo.refresh_token != anulado && (sesion == null || enArchivo.refresh_token != sesion.refresh_token))
+            { sesion = enArchivo; continue; }
+            // La sesión de una cuenta no se reemplaza por una anónima: si se perdió, se sale de la cuenta (US 237).
+            if (enCuenta && sesion == null) { SalirDeLaCuentaLocal(); falloSesion = ReglasCuenta.SesionVencida; yield break; }
+            string usado = sesion?.refresh_token;
+            yield return Post(usado == null ? "/auth/v1/signup" : "/auth/v1/token?grant_type=refresh_token",
+                usado == null ? "{}" : JsonUtility.ToJson(new Renovar { refresh_token = usado }), false);
+            if (error != null)
+            {
+                if (enCuenta && (codigo == 400 || codigo == 401)) { SalirDeLaCuentaLocal(); falloSesion = ReglasCuenta.SesionVencida; yield break; }
+                if (usado != null && (codigo == 400 || codigo == 401))
+                { anulado = usado; sesion = null; avisoSesion = " · la sesión anterior se había anulado: se creó una nueva"; continue; }
+                falloSesion = codigo == 400 || codigo == 401 ? "No se pudo autenticar. Revisá el acceso anónimo del proyecto." : error;
+                yield break;
+            }
+            Sesion nueva = null;
+            try { nueva = JsonUtility.FromJson<Sesion>(respuesta); } catch { }
+            if (nueva == null || string.IsNullOrEmpty(nueva.access_token) || string.IsNullOrEmpty(nueva.refresh_token))
+            { falloSesion = "Respuesta de autenticación inválida."; yield break; }
+            nueva.expires_at = DateTimeOffset.UtcNow.ToUnixTimeSeconds() + Math.Max(60, nueva.expires_in);
+            sesion = nueva;
+            if (!GuardarSesion())
+            { identidadDanada = true; falloSesion = "No se pudo guardar la identidad online. Revisá los permisos de la carpeta de progreso."; yield break; }
+        }
+        if (Vencida()) falloSesion = "No se pudo autenticar.";
+    }
+
+    private bool GuardarSesion()
+    {
+        try { Guardado.EscribirAtomico(RutaSesion, JsonUtility.ToJson(sesion)); return true; }
+        catch { return false; }
+    }
 
     // La sesión como está en el archivo (la puede haber renovado otro juego abierto en esta PC).
     private Sesion LeerSesion()
@@ -296,10 +339,12 @@ public sealed class LogrosOnline : MonoBehaviour
         catch { return null; }
     }
 
-    private IEnumerator Post(string ruta, string json, bool autenticado)
+    private IEnumerator Post(string ruta, string json, bool autenticado) => Pedir("POST", ruta, json, autenticado);
+
+    private IEnumerator Pedir(string metodo, string ruta, string json, bool autenticado)
     {
         respuesta = error = cuerpoError = null; codigo = 0;
-        using (var req = new UnityWebRequest(config.url.TrimEnd('/') + ruta, "POST"))
+        using (var req = new UnityWebRequest(config.url.TrimEnd('/') + ruta, metodo))
         {
             req.uploadHandler = new UploadHandlerRaw(Encoding.UTF8.GetBytes(json));
             req.downloadHandler = new DownloadHandlerBuffer(); req.timeout = 15;
@@ -353,5 +398,5 @@ public sealed class LogrosOnline : MonoBehaviour
     }
 
     private void OnDestroy()
-    { if (Instancia == this) { LogrosCometas.Desbloqueado -= Avisar; Instancia = null; } }
+    { if (Instancia == this) { LogrosCometas.Desbloqueado -= Avisar; PlayerProfile.NameChanged -= NombreCambiado; Instancia = null; } }
 }

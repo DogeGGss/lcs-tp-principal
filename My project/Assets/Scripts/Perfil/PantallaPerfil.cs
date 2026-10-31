@@ -8,8 +8,9 @@ using Tipo = PerfilDatos.Tipo;
 using Cosmetico = PerfilDatos.Cosmetico;
 
 // Perfil del jugador (menú principal). Arriba, la cabecera con el banner, el avatar, el nombre, el título y un
-// resumen; abajo, tres pestañas: Estadísticas (US 221: las del jugador, F24, y las del minijuego, US 159), Personalización
-// (avatares, banners, títulos y marcos) y Emotes (US 264: los bailes que se llevan en la rueda).
+// resumen; abajo, cuatro pestañas: Estadísticas (US 221: las del jugador, F24, y las del minijuego, US 159), Personalización
+// (avatares, banners, títulos y marcos), Emotes (US 264: los bailes que se llevan en la rueda) y Cuenta (US 237,
+// PestanaCuenta).
 public class PantallaPerfil : PantallaBase
 {
     private const float Y0 = 520f, AnchoGrilla = 1260f;
@@ -20,9 +21,10 @@ public class PantallaPerfil : PantallaBase
     private Transform bajoMarco;
     private TextMeshProUGUI nombre, titulo, infoPestana;
     private readonly TextMeshProUGUI[] resumen = new TextMeshProUGUI[4];
-    private readonly TextMeshProUGUI[] pestanas = new TextMeshProUGUI[3];
+    private readonly TextMeshProUGUI[] pestanas = new TextMeshProUGUI[4];
     private Img subrayado;
-    private RectTransform panelEstad, panelPers, panelEmotes, grilla, vista;
+    private RectTransform panelEstad, panelPers, panelEmotes, panelCuenta, grilla, vista;
+    private PestanaCuenta cuenta;
     private RectTransform cuerpoMinijuego;
     private float anchoTarjeta;
     private UnityEngine.UI.ScrollRect scroll;
@@ -42,6 +44,8 @@ public class PantallaPerfil : PantallaBase
         ArmarEstadisticas();
         ArmarPersonalizacion();
         ArmarEmotes();
+        panelCuenta = Place(Node("Cuenta", rect), 60f, Y0, 1800f, 540f);
+        cuenta = new PestanaCuenta(menu, panelCuenta);
         ElegirPestana(0);
     }
 
@@ -87,7 +91,7 @@ public class PantallaPerfil : PantallaBase
 
     private void ArmarPestanas()
     {
-        string[] nombres = { "Estadísticas", "Personalización", "Emotes" };
+        string[] nombres = { "Estadísticas", "Personalización", "Emotes", "Cuenta" };
         float x = 60f;
         for (int i = 0; i < nombres.Length; i++)
         {
@@ -117,6 +121,8 @@ public class PantallaPerfil : PantallaBase
         panelEstad.gameObject.SetActive(i == 0);
         panelPers.gameObject.SetActive(i == 1);
         panelEmotes.gameObject.SetActive(i == 2);
+        panelCuenta.gameObject.SetActive(i == 3);
+        if (i == 3) cuenta.Refrescar();
         if (i == 2) VerEmote(emoteVisto); else VistaPreviaDeEmote.Apagar(); // la vista previa solo dibuja si se ve
         RefrescarInfo();
     }
@@ -124,6 +130,7 @@ public class PantallaPerfil : PantallaBase
     private void RefrescarInfo()
     {
         if (pestana == 0) infoPestana.text = $"Partidas terminadas  <color=#F3F4F6>{N(EstadisticasJugador.Datos.Partidas)}</color>";
+        else if (pestana == 3) infoPestana.text = cuenta.Info;
         else if (pestana == 2)
         {
             int equipados = 0;
@@ -693,5 +700,12 @@ public class PantallaPerfil : PantallaBase
         RefrescarGrilla();
         RefrescarVista();
         RefrescarEmotes();
+        if (pestana == 3) cuenta.Refrescar();
+    }
+
+    public override void Tick()
+    {
+        base.Tick();
+        if (pestana == 3) { cuenta.Tick(); RefrescarInfo(); }
     }
 }
