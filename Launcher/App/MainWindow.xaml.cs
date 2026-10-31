@@ -63,6 +63,8 @@ public partial class MainWindow : Window
             ReleasePicker.Items.Add(new { Label = "Vista previa" }); ReleasePicker.SelectedIndex = 0;
             Notes.Document = MarkdownNotes.Render("## El próximo cruce empieza acá\nUn punto de encuentro para preparar tu próxima partida.\n### Tu juego, al día\n- Descargá las nuevas versiones desde este launcher.\n- Conservá tus opciones y tu progreso.\n- Consultá qué cambió antes de jugar.\n### Elegí tu andén\n**Táctico · Deathmatch · Zombie**\n\nEsta es una vista previa de la interfaz, no las notas de una versión publicada.");
             if (args.Contains("--settings-preview")) OpenSettings(true);
+            int cuenta = Array.IndexOf(args, "--cuenta"); // the account's steps: --cuenta entrar|crear|confirmar|listo|menu…
+            if (cuenta >= 0) VistaPreviaCuenta(cuenta + 1 < args.Length ? args[cuenta + 1] : "entrar");
             if (args.Contains("--render"))
             {
                 await Task.Delay(700);
@@ -81,6 +83,7 @@ public partial class MainWindow : Window
         }
         if (args.Contains("--updated")) File.WriteAllText(Storage.Child(root, ".riftwalker/update-ok"), App.LauncherVersion);
         if (!installedLauncher) { OpenSettings(true); Idle(); return; }
+        IniciarCuenta();
         await RefreshAsync();
     }
     private void Begin(string text, bool cancellable)
@@ -102,6 +105,7 @@ public partial class MainWindow : Window
         StateTitle.Text = !installedLauncher ? "BIENVENIDO AL ANDÉN" : local == null ? "PRIMERA PARADA" : NeedsUpdate ? "HAY ALGO NUEVO" : "LISTO PARA ENTRAR";
         if (message != null) StatusText.Text = message;
         else if (target != null && NeedsUpdate) StatusText.Text = $"{(target.Prerelease ? "Experimental" : "Nueva versión")} {target.Version}. Instalá esta versión para jugar desde el launcher.";
+        else if (local != null && ConSesion) StatusText.Text = EstadoConCuenta(online);
         else if (local != null) StatusText.Text = online ? $"Versión {local.Version} · Actualizado" : "No se pudo buscar actualizaciones. Podés jugar con la versión instalada.";
         else StatusText.Text = "Configurá la instalación para comenzar.";
         ChannelBadge.Text = settings.Experimental ? "EXPERIMENTAL" : "ESTABLE";
@@ -203,6 +207,7 @@ public partial class MainWindow : Window
         if (target == null && installer.Installed == null) { await RefreshAsync(); return; }
         if (!NeedsUpdate)
         {
+            if (!ConSesion) { AbrirCuenta(PanelCuenta.Entrar); return; } // to play you need an account (US 282)
             try { installer.Launch(); Close(); } catch (Exception ex) { Log(ex); Idle(ex.Message); }
             return;
         }

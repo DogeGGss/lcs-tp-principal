@@ -115,6 +115,17 @@ Project Riftwalker/
 
 Para desinstalar, cerrá el juego y el launcher, borrá **solo la carpeta elegida para Project Riftwalker** y los dos accesos directos. Las opciones y partidas del juego se conservan en las ubicaciones de Unity; no se borran automáticamente.
 
+## Cuenta
+
+El launcher funciona como un cliente (F18: US 237, US 269, US 270 y US 282; diseño en la guía, `#cuenta-launcher`): para jugar hace falta una cuenta. Sin una sesión, el panel de la cuenta tapa la ventana (menos la barra de arriba, que sigue con Ajustes, minimizar y cerrar) y pide iniciar sesión o crear la cuenta, con el código de 6 números que llega por mail. Con la cuenta, la barra de arriba muestra la inicial, el nombre y el mail, y su menú tiene el aviso de privacidad y «Cerrar sesión» (pide cerrar el juego si está abierto).
+
+- `Core/Cuentas.cs`: Supabase Auth por REST (crear, confirmar, reenviar el código, entrar, cerrar sesión y renovar al abrir). Usa el mismo proyecto que el juego, con la publishable key, que es pública a propósito.
+- `App/MainWindow.Cuenta.cs`: el panel, la cuenta en la barra y su menú. JUGAR solo abre el juego con una sesión.
+- La sesión (nunca la contraseña) se guarda en la carpeta de guardado del juego: `%USERPROFILE%\AppData\LocalLow\Equipo 4\Project Riftwalker\cuenta-sesion-<host>.json`, con el formato que lee el juego (`LogrosOnline.Cuenta.cs`). Así el juego abre con esa cuenta aunque se lo abra sin el launcher, y sin conexión sigue con la guardada.
+- Las reglas y los mensajes (`ReglasCuenta.cs`) son el mismo archivo que usa el juego: el proyecto `Core` lo incluye con un link.
+
+Para ver cada paso sin conectarse: `--preview --cuenta entrar|entrar-error|crear|crear-error|confirmar|listo|menu|cerrar|cerrar-juego|privacidad` (también con `--render`).
+
 ## Integración del juego
 
 - `ReleaseVersion.cs`: comparación de versiones compartida con el launcher.
@@ -138,13 +149,14 @@ Estas comprobaciones de entorno no se sustituyen por las pruebas automatizadas.
 
 ## Pruebas automatizadas
 
-`dotnet run --project Launcher/Tests/Riftwalker.Launcher.Tests.csproj` corre 23 pruebas sin red ni archivos fuera de la carpeta temporal:
+`dotnet run --project Launcher/Tests/Riftwalker.Launcher.Tests.csproj` corre 29 pruebas sin red ni archivos fuera de la carpeta temporal:
 
 - Orden de versiones y selección de canal estable/experimental.
 - Descarga: reanudación con Range, servidor que ignora Range, fragmento incorrecto, archivo dañado, cancelación y corte en medio.
 - Instalación: reemplazo de `game/` conservando configuración y respaldo, rutas peligrosas en el ZIP, sello de versión, tamaño descomprimido, recuperación de un cambio interrumpido y carpetas no administradas.
 - Manifiesto y direcciones de descarga.
 - Lista de versiones reutilizada con su ETag, y última estable desde `release.json` cuando la API no responde.
+- Cuenta, con un Supabase de mentira: la sesión que se guarda tiene el formato que lee el juego, crear con un mail usado, errores al entrar, sin conexión, renovar al abrir y cerrar sesión.
 
 Opciones extra: `-- --package-root <carpeta del release>` instala de verdad el paquete que generó `Publish-Release.ps1`, y `-- --live` consulta los releases reales de GitHub (solo lectura).
 

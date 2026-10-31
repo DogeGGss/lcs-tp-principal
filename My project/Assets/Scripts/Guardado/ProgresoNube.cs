@@ -45,6 +45,15 @@ public static class ProgresoNube
             else if (clave == EstadisticasJugador.Clave) EstadisticasJugador.Recargar();
             else if (clave == PerfilDatos.Clave) PerfilDatos.Recargar();
         };
+        // Se entró o se salió de una cuenta (US 237): todo lo del jugador es otro. Logros antes que estadísticas: al
+        // recargarlas, los logros de combate se revisan con lo de la cuenta.
+        Guardado.CambioDeJugador += () =>
+        {
+            LogrosCometas.Recargar();
+            EstadisticasMinijuego.Recargar();
+            EstadisticasJugador.Recargar();
+            PerfilDatos.Recargar();
+        };
     }
 
     // ---------- Subir ----------

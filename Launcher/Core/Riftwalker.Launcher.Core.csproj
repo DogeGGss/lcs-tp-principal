@@ -4,5 +4,9 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
   </PropertyGroup>
-  <ItemGroup><Compile Include="../../My project/Assets/Scripts/ReleaseVersion.cs" Link="ReleaseVersion.cs" /></ItemGroup>
+  <ItemGroup>
+    <Compile Include="../../My project/Assets/Scripts/ReleaseVersion.cs" Link="ReleaseVersion.cs" />
+    <!-- Las reglas y los mensajes de la cuenta: el mismo archivo que usa el juego. -->
+    <Compile Include="../../My project/Assets/Scripts/Perfil/ReglasCuenta.cs" Link="ReglasCuenta.cs" />
+  </ItemGroup>
 </Project>

@@ -19,6 +19,9 @@ using UnityEngine;
 // En el editor usa otro archivo (jugador-editor.json): como con PlayerPrefs, las pruebas en el editor no se mezclan
 // con lo del juego instalado. Con los tests automáticos (ModoPruebas) usa uno temporal que arranca vacío.
 // Los datos temporales de "Volver a la partida" (Reconexion) siguen en PlayerPrefs.
+// Cuenta (US 237 y US 281): con una cuenta abierta, el progreso (logros, estadísticas, perfil, monedas, emotes, récords y
+// el nombre) va al archivo de la cuenta (jugador-<id>.json), y las opciones de la PC siguen en este. Sin cuenta, todo va
+// acá, como siempre. cuenta-activa.txt dice al arrancar qué cuenta está abierta.
 public static class Guardado
 {
     public const int VersionFormato = 1;
@@ -30,13 +33,15 @@ public static class Guardado
     public static string RutaPruebas => Path.Combine(Application.temporaryCachePath, "jugador-pruebas.json");
 
     /// <summary>Lo que el jugador tiene que saber del guardado (archivo recuperado, dañado, de otra versión), o null.</summary>
-    public static string Aviso => Actual.Aviso;
+    public static string Aviso => Actual.Aviso ?? cuenta?.Aviso;
     /// <summary>Sube con cada cambio, también los que vienen del archivo de otro juego abierto.</summary>
     public static int Revision { get; private set; }
     /// <summary>Una clave cambió al juntarse con el archivo de otro juego abierto en esta PC.</summary>
     public static event Action<string> Juntado;
 
     private static Almacen actual;
+    private static Almacen cuenta; // el progreso de la cuenta abierta (US 237), o null sin cuenta
+    private static string idCuenta;
     private static readonly Dictionary<string, Func<string, string, string>> uniones = new Dictionary<string, Func<string, string, string>>();
     private static readonly List<string> maximos = new List<string>();
     private static GuardadoAutomatico automatico;
@@ -58,6 +63,9 @@ public static class Guardado
     private static void Reiniciar()
     {
         actual = null;
+        cuenta = null;
+        idCuenta = null;
+        CambioDeJugador = null;
         automatico = null;
         Revision = 0;
         Juntado = null;
@@ -70,6 +78,7 @@ public static class Guardado
     private static void AlIniciar()
     {
         _ = Actual;
+        AbrirCuentaGuardada();
         if (automatico != null) return;
         var go = new GameObject("Guardado del jugador");
         UnityEngine.Object.DontDestroyOnLoad(go);
@@ -78,21 +87,85 @@ public static class Guardado
 
     // ---------- Los mismos métodos que PlayerPrefs ----------
 
-    public static int GetInt(string clave, int porDefecto = 0) => Actual.GetInt(clave, porDefecto);
-    public static float GetFloat(string clave, float porDefecto = 0f) => Actual.GetFloat(clave, porDefecto);
-    public static string GetString(string clave, string porDefecto = "") => Actual.GetString(clave, porDefecto);
-    public static bool HasKey(string clave) => Actual.HasKey(clave);
-    public static void SetInt(string clave, int valor) => Actual.SetInt(clave, valor);
-    public static void SetFloat(string clave, float valor) => Actual.SetFloat(clave, valor);
-    public static void SetString(string clave, string valor) => Actual.SetString(clave, valor);
-    public static void DeleteKey(string clave) => Actual.DeleteKey(clave);
+    public static int GetInt(string clave, int porDefecto = 0) => Para(clave).GetInt(clave, porDefecto);
+    public static float GetFloat(string clave, float porDefecto = 0f) => Para(clave).GetFloat(clave, porDefecto);
+    public static string GetString(string clave, string porDefecto = "") => Para(clave).GetString(clave, porDefecto);
+    public static bool HasKey(string clave) => Para(clave).HasKey(clave);
+    public static void SetInt(string clave, int valor) => Para(clave).SetInt(clave, valor);
+    public static void SetFloat(string clave, float valor) => Para(clave).SetFloat(clave, valor);
+    public static void SetString(string clave, string valor) => Para(clave).SetString(clave, valor);
+    public static void DeleteKey(string clave) => Para(clave).DeleteKey(clave);
     /// <summary>Escribe ya lo pendiente (como PlayerPrefs.Save).</summary>
-    public static void Save() => Actual.Guardar();
+    public static void Save()
+    {
+        Actual.Guardar();
+        cuenta?.Guardar();
+    }
 
     /// <summary>Lo llama GuardadoAutomatico cada cuadro: escribe un segundo después del último cambio.</summary>
     public static void Tick()
     {
         if (actual != null && actual.Pendiente && Time.unscaledTime - actual.UltimoCambio >= Demora) actual.Guardar();
+        if (cuenta != null && cuenta.Pendiente && Time.unscaledTime - cuenta.UltimoCambio >= Demora) cuenta.Guardar();
+    }
+
+    // ---------- Cuenta (US 237 y US 281) ----------
+
+    // Lo que es del jugador y no de la PC: con una cuenta abierta va a su archivo. Las opciones (controles, gráficos,
+    // sonido, mira, dificultad, personaje elegido) quedan en el de la PC.
+    private static readonly string[] DeLaCuenta =
+    {
+        LogrosCometas.Clave, EstadisticasMinijuego.Clave, EstadisticasJugador.Clave, PerfilDatos.Clave,
+        "Riftwalker.Emote", MatchSettings.ZombieRecordPrefix, "Jugador.Nombre"
+    };
+
+    /// <summary>La clave es progreso del jugador (va a la cuenta) y no una opción de la PC.</summary>
+    public static bool EsDeLaCuenta(string clave)
+    {
+        foreach (string prefijo in DeLaCuenta) if (clave.StartsWith(prefijo, StringComparison.Ordinal)) return true;
+        return false;
+    }
+
+    private static Almacen Para(string clave) => cuenta != null && EsDeLaCuenta(clave) ? cuenta : Actual;
+
+    /// <summary>El id de la cuenta abierta, o null sin cuenta.</summary>
+    public static string CuentaActiva => idCuenta;
+
+    /// <summary>Cambió el jugador (se entró o se salió de una cuenta): cada sistema vuelve a leer lo suyo.</summary>
+    public static event Action CambioDeJugador;
+
+    private static string RutaMarcaCuenta => Path.Combine(Application.persistentDataPath, "cuenta-activa.txt");
+    private static string RutaCuenta(string id) =>
+        Path.Combine(Application.persistentDataPath, (Application.isEditor ? "jugador-editor-" : "jugador-") + id + ".json");
+
+    /// <summary>Abre el progreso de la cuenta id (o vuelve al de la PC con null) y avisa a todos.</summary>
+    public static void UsarCuenta(string id)
+    {
+        if (ModoPruebas.Activo || id == idCuenta) return;
+        cuenta?.Guardar();
+        idCuenta = string.IsNullOrEmpty(id) ? null : id;
+        cuenta = idCuenta == null ? null : new Almacen(RutaCuenta(idCuenta), false);
+        cuenta?.Cargar();
+        try
+        {
+            if (idCuenta == null) File.Delete(RutaMarcaCuenta);
+            else EscribirAtomico(RutaMarcaCuenta, idCuenta);
+        }
+        catch { } // sin la marca, al volver a abrir el juego arranca sin cuenta: se vuelve a iniciar sesión
+        Revision++;
+        CambioDeJugador?.Invoke();
+    }
+
+    // Antes de la primera escena: si quedó una cuenta abierta, su progreso.
+    private static void AbrirCuentaGuardada()
+    {
+        if (ModoPruebas.Activo || cuenta != null) return;
+        string id = null;
+        try { if (File.Exists(RutaMarcaCuenta)) id = File.ReadAllText(RutaMarcaCuenta).Trim(); } catch { }
+        if (string.IsNullOrEmpty(id) || id.IndexOfAny(Path.GetInvalidFileNameChars()) >= 0) return;
+        idCuenta = id;
+        cuenta = new Almacen(RutaCuenta(id), false);
+        cuenta.Cargar();
     }
 
     // ---------- Progreso que se junta con el de otro juego abierto ----------
