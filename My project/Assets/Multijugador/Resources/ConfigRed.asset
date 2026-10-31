@@ -85,6 +85,8 @@ MonoBehaviour:
   volumenPerro: 0.8
   musicaDeathmatch: {fileID: 8300000, guid: 7d3c4a44088ab004a8f7971b5ed4b23e, type: 3}
   ambienteDeathmatch: {fileID: 0}
+  musicaInvasion: {fileID: 8300000, guid: 7cf646c974734c1a9808a8c1a86b6bf7, type: 3}
+  ambienteInvasion: {fileID: 0}
   grupoMusica: {fileID: -3878677901696022068, guid: ddda7e32a2420c4489fcc2a1c31e1976, type: 2}
   volumenMusica: 0.35
   volumenAmbiente: 0.5
