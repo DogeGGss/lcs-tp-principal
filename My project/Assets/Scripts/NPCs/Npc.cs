@@ -132,6 +132,7 @@ public class Npc : MonoBehaviour
             go.AddComponent<AtaqueDeNpc>(); // US 037
             if (tipo.embiste) go.AddComponent<EmbestidaDeNpc>(); // US 266 (después de la persecución: la usa)
             if (tipo.vuela) go.AddComponent<VueloDeNpc>();       // US 267
+            if (tipo.aDistancia != AtaqueADistancia.Ninguno) go.AddComponent<DistanciaDeNpc>(); // US 285 y US 286
         }
         return npc;
     }
@@ -143,7 +144,7 @@ public class Npc : MonoBehaviour
         // El modelo, al tamaño del tipo (CA4).
         GameObject m = Instantiate(tipo.modelo, transform);
         m.name = "Modelo";
-        m.transform.localPosition = Vector3.zero;
+        m.transform.localPosition = Vector3.up * tipo.alturaDeVuelo; // los que flotan (US 285 y US 286)
         m.transform.localRotation = Quaternion.Euler(0f, tipo.giroDelModelo, 0f); // los que vienen mirando para atrás
         m.transform.localScale = tipo.modelo.transform.localScale * tipo.escala;
         Modelo = m.transform;

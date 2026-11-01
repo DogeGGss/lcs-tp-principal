@@ -1,0 +1,58 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6cb6d8d75b8640af90d2c5f369da01c4, type: 3}
+  m_Name: Tirador
+  m_EditorClassIdentifier: 
+  nombre: Tirador
+  modelo: {fileID: 7674759261756376287, guid: 5afd1af3d47333f459a9daf744e7ddf4, type: 3}
+  escala: 1.3
+  giroDelModelo: 0
+  marcas: 0
+  colorDeMarcas: {r: 0.4, g: 1, b: 0.2, a: 1}
+  ojoEnLaTextura: {x: 0.757, y: 0.252}
+  radioDelOjo: 0.3
+  brilloDeOjos: 6
+  delineadoDeOjos: 0
+  ojosOscuros: 0
+  centroDelIris: {x: 0.7325, y: 0.25}
+  radioDelIris: 0.082
+  vida: 60
+  danio: 10
+  alcance: 0.5
+  velocidadDeAtaque: 1
+  cadencia: 1.2
+  frenaAlRecibirImpacto: 1
+  velocidad: 3
+  corre: 0
+  quieto: {fileID: 1827226128182048838, guid: 341db0f8035df7f42ae999d5a7c79b41, type: 3}
+  quietoEnCombate: {fileID: 1827226128182048838, guid: 64a5d6de648889e40b25e67ae370c06a, type: 3}
+  caminar: {fileID: 1827226128182048838, guid: ce9ad570d4e35904e943a6ed2fb02f3b, type: 3}
+  correr: {fileID: 1827226128182048838, guid: 9e63e165047bc2341a96d193b84d75ab, type: 3}
+  ataques:
+  - {fileID: 1827226128182048838, guid: 1455634421bcd7b4b88cc15e6e95f520, type: 3}
+  golpeRecibido: {fileID: 1827226128182048838, guid: 0d5fcf1279f534f4d8347cb461d4c60a, type: 3}
+  morir: {fileID: 1827226128182048838, guid: 468f4c1c737e11a47bcf25469431190b, type: 3}
+  aturdido: {fileID: 1827226128182048838, guid: 200c2961b52f60845aa4008409aac699, type: 3}
+  grito: {fileID: 0}
+  esJefe: 0
+  aDistancia: 2
+  alturaDeVuelo: 1.5
+  distanciaMinima: 7
+  distanciaMaxima: 20
+  danioADistancia: 8
+  cadaCuantoDispara: 3
+  colorADistancia: {r: 0.4, g: 1, b: 0.2, a: 1}
+  animacionADistancia: {fileID: 1827226128182048838, guid: f3f3046fe170eb1449995f5ee9486e19, type: 3}
+  sonidoDeDisparo: {fileID: 8300000, guid: 9db280126af3481d9d9712e10b1602e4, type: 3}
+  sonidoDeImpactoADistancia: {fileID: 8300000, guid: eacb6fb9ae5e424eb4c343a58c075bbb, type: 3}
+  puntosPorBaja: 70
+  puntosPorBajaALaCabeza: 110

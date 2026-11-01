@@ -6,6 +6,9 @@ public enum VenenoDelVuelo { Nubes, Charcos }
 /// <summary>El dibujo de las marcas que brillan de un enemigo (US 283).</summary>
 public enum PatronDeMarcas { Ninguno = 0, Manchas = 1, Aros = 2, RayasEnElLomo = 3 }
 
+/// <summary>El ataque a distancia de un enemigo (US 285 y US 286).</summary>
+public enum AtaqueADistancia { Ninguno, RayoDelOjo, RafagaDeBolas }
+
 // F11 (NPCs), US 145: un tipo de NPC enemigo del modo Zombie (los bichos del rift). Todo lo que distingue a un tipo
 // está acá, como dato, y no en el código (CA5): se ajusta o se suma un tipo nuevo creando otro de estos
 // (Create > Riftwalker > Tipo de NPC) en Resources/NPCs.
@@ -71,6 +74,10 @@ public class TipoDeNpc : ScriptableObject
     [Range(0f, 1f)] public float delineadoDeOjos;
     [Tooltip("Ojos: brilla lo negro de esa zona de la textura (huecos, como los de la cabeza del Jefe) en vez de lo de color fuerte.")]
     public bool ojosOscuros;
+    [Tooltip("Ojos: si brilla solo el iris, su centro en la textura (u, v). Se usa con radioDelIris.")]
+    public Vector2 centroDelIris;
+    [Tooltip("Ojos: radio del iris en la textura (0: brilla todo el ojo). Así el blanco del ojo no brilla.")]
+    [Range(0f, 0.3f)] public float radioDelIris;
 
     [Header("Combate")]
     [Tooltip("Vida al aparecer. No tienen escudo.")]
@@ -155,6 +162,30 @@ public class TipoDeNpc : ScriptableObject
     public bool furia;
     [Tooltip("Animación del rugido al enfurecerse.")]
     public AnimationClip rugido;
+
+    [Header("A distancia (US 285 y US 286)")]
+    [Tooltip("Su ataque de lejos: el rayo del ojo (con aviso) o ráfagas de bolas de energía. Ninguno: solo cuerpo a cuerpo.")]
+    public AtaqueADistancia aDistancia = AtaqueADistancia.Ninguno;
+    [Tooltip("Metros sobre el piso a los que flota (0: camina por el piso).")]
+    [Min(0f)] public float alturaDeVuelo;
+    [Tooltip("Si el jugador está más cerca que esto, retrocede (m).")]
+    [Min(0f)] public float distanciaMinima = 7f;
+    [Tooltip("Dispara si el jugador está a menos de esto y lo ve (m); más lejos, se acerca.")]
+    [Min(1f)] public float distanciaMaxima = 20f;
+    [Tooltip("Daño de cada rayo o de cada bola.")]
+    [Min(0)] public int danioADistancia = 10;
+    [Tooltip("Segundos entre un ataque a distancia y el siguiente (el rayo, o la ráfaga entera).")]
+    [Min(0.5f)] public float cadaCuantoDispara = 3f;
+    [Tooltip("Color del rayo o de las bolas (también el de su mira).")]
+    public Color colorADistancia = new Color(1f, 0.15f, 0.1f);
+    [Tooltip("Animación al disparar (si no tiene, el primer ataque).")]
+    public AnimationClip animacionADistancia;
+    [Tooltip("Al empezar a cargar el disparo. Opcional.")]
+    public AudioClip sonidoDeCarga;
+    [Tooltip("Al disparar (cada bola o el rayo). Opcional.")]
+    public AudioClip sonidoDeDisparo;
+    [Tooltip("Donde pega el disparo. Opcional.")]
+    public AudioClip sonidoDeImpactoADistancia;
 
     [Header("Puntos (US 147)")]
     [Tooltip("Puntos por matarlo (US 039, CA3).")]

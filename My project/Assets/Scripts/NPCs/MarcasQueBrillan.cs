@@ -23,7 +23,8 @@ public class MarcasQueBrillan : MonoBehaviour
 
     private static readonly int ColorId = Shader.PropertyToID("_ColorDeMarcas"), PatronId = Shader.PropertyToID("_Patron"),
         CantidadId = Shader.PropertyToID("_Cantidad"), TamanioId = Shader.PropertyToID("_Tamanio"),
-        BrilloOjosId = Shader.PropertyToID("_BrilloOjos"), OjosOscurosId = Shader.PropertyToID("_OjosOscuros"), BaseMapId = Shader.PropertyToID("_BaseMap"),
+        BrilloOjosId = Shader.PropertyToID("_BrilloOjos"), OjosOscurosId = Shader.PropertyToID("_OjosOscuros"),
+        IrisId = Shader.PropertyToID("_Iris"), BaseMapId = Shader.PropertyToID("_BaseMap"),
         HuecosId = Shader.PropertyToID("_Huecos"), BrilloId = Shader.PropertyToID("_Brillo"),
         OpacidadId = Shader.PropertyToID("_Opacidad"),
         SeparacionId = Shader.PropertyToID("_Separacion"), AnchoRayasId = Shader.PropertyToID("_AnchoRayas"),
@@ -73,6 +74,7 @@ public class MarcasQueBrillan : MonoBehaviour
         material.SetFloat(LargoRayasId, tipo.largoDeRayas);
         material.SetFloat(BrilloOjosId, tipo.radioDelOjo > 0f ? tipo.brilloDeOjos : 0f);
         material.SetFloat(OjosOscurosId, tipo.ojosOscuros ? 1f : 0f);
+        material.SetVector(IrisId, new Vector4(tipo.centroDelIris.x, tipo.centroDelIris.y, tipo.radioDelIris, 0f));
 
         bool alguna = false;
         foreach (Renderer r in modelo.GetComponentsInChildren<Renderer>(true))
