@@ -9,7 +9,8 @@ using UnityEngine.UI;
 //   oleada y, al superarla, vuelve a empezar.
 // - CA1: la oleada N trae 6 + 3 × (N − 1) enemigos (6 en la 1, 9 en la 2, 33 en la 10).
 // - CA2: como máximo 12 vivos a la vez; los que faltan aparecen a medida que mueren los anteriores.
-// - CA3: en las oleadas 1 y 2 solo Comunes; desde la 3, el 25 % Rápidos; desde la 5, además, el 10 % Tanques. En la 10
+// - CA3: en las oleadas 1 y 2 solo Comunes; desde la 3, el 25 % Rápidos; desde la 4, el 10 % Tiradores (Watcher verde,
+//   US 286); desde la 5, el 10 % Tanques; desde la 6, el 5 % Francotiradores (Watcher rojo, US 285). En la 10
 //   aparece el Jefe (US 146) cuando cayó la mitad de la oleada: va aparte (no cuenta entre los 33 ni en el tope de 12).
 // - CA4 (US 269): salen de portales (PortalDeEnemigos) que se abren en lugares al azar del NavMesh entre 15 m y 50 m
 //   del jugador, conectados con él caminando y, si se puede, fuera de su vista. Cada vez se mandan de 3 a 5 enemigos a
@@ -62,7 +63,7 @@ public class OleadasDeInvasion : MonoBehaviour
     private readonly Dictionary<Npc, float> aparecio = new Dictionary<Npc, float>();
     private Transform jugadorAhora;
     private Npc jefe;
-    private TipoDeNpc comun, rapido, tanque, tipoJefe;
+    private TipoDeNpc comun, rapido, tanque, tirador, francotirador, tipoJefe;
     private BuyPhase descanso;
     private GameObject finalUi;
 
@@ -74,6 +75,8 @@ public class OleadasDeInvasion : MonoBehaviour
         comun = TipoDeNpc.Buscar("Comun");
         rapido = TipoDeNpc.Buscar("Rapido");
         tanque = TipoDeNpc.Buscar("Tanque");
+        tirador = TipoDeNpc.Buscar("Tirador");             // US 286
+        francotirador = TipoDeNpc.Buscar("Francotirador"); // US 285
         tipoJefe = System.Array.Find(TipoDeNpc.Todos(), t => t.esJefe);
         if (AparicionDeEnemigos.Todos.Count == 0) Debug.LogWarning("[Invasión] El mapa no tiene puntos de aparición (Riftwalker > Invasión > Crear 3 puntos de aparición): los enemigos aparecen en el NavMesh alrededor del jugador.");
 
@@ -120,9 +123,20 @@ public class OleadasDeInvasion : MonoBehaviour
     {
         int rapidos = n >= 3 ? Mathf.RoundToInt(cuantos * 0.25f) : 0;
         int tanques = n >= 5 ? Mathf.RoundToInt(cuantos * 0.10f) : 0;
+        int tiradores = n >= 4 && tirador != null ? Mathf.Max(1, Mathf.RoundToInt(cuantos * 0.10f)) : 0;
+        int francos = n >= 6 && francotirador != null ? Mathf.Max(1, Mathf.RoundToInt(cuantos * 0.05f)) : 0;
         var lista = new List<TipoDeNpc>();
         for (int i = 0; i < cuantos; i++)
-            lista.Add(i < rapidos ? rapido : i < rapidos + tanques ? tanque : comun);
+        {
+            int k = i;
+            if (k < rapidos) { lista.Add(rapido); continue; }
+            k -= rapidos;
+            if (k < tanques) { lista.Add(tanque); continue; }
+            k -= tanques;
+            if (k < tiradores) { lista.Add(tirador); continue; }
+            k -= tiradores;
+            lista.Add(k < francos ? francotirador : comun);
+        }
         for (int i = lista.Count - 1; i > 0; i--)
         {
             int j = Random.Range(0, i + 1);

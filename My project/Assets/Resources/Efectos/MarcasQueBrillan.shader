@@ -16,6 +16,7 @@ Shader "Efectos/MarcasQueBrillan"
         _Ojo2 ("Ojo 2 (pose quieta, w: radio)", Vector) = (0, 0, 0, 0)
         _Patron ("Patrón (0 ninguno, 1 manchas, 2 aros, 3 rayas en el lomo)", Float) = 2
         _OjosOscuros ("Ojos: brilla lo negro (huecos)", Float) = 0
+        _Iris ("Ojos: solo el iris (centro xy y radio z en la textura; z 0: todo el ojo)", Vector) = (0, 0, 0, 0)
         _Cantidad ("Cantidad (a lo largo del cuerpo)", Float) = 9
         _Tamanio ("Tamaño", Range(0.1, 1)) = 0.6
         _Huecos ("Huecos", Range(0, 0.95)) = 0.35
@@ -71,6 +72,7 @@ Shader "Efectos/MarcasQueBrillan"
                 half4 _ColorDeMarcas;
                 float4 _BaseMap_ST;
                 float _BrilloOjos, _Delineado, _OjosOscuros;
+                float4 _Iris;
                 float4 _Ojo1, _Ojo2;
                 float _Patron, _Cantidad, _Tamanio, _Huecos, _Brillo, _Opacidad, _Pulso, _Destello, _Apagado, _Separacion, _AnchoRayas, _LargoRayas, _Irregular;
             CBUFFER_END
@@ -185,6 +187,8 @@ Shader "Efectos/MarcasQueBrillan"
                 float iris = smoothstep(0.2, 0.5, max(t.r, max(t.g, t.b)) - min(t.r, min(t.g, t.b))); // lo de color fuerte
                 // O lo negro: los huecos de la cabeza del Jefe (US 146), su punto débil.
                 iris = lerp(iris, 1 - smoothstep(0.03, 0.1, max(t.r, max(t.g, t.b))), _OjosOscuros);
+                // Solo el iris (un círculo de la textura), con el borde suave: el blanco del ojo no brilla.
+                if (_Iris.z > 0) iris *= 1 - smoothstep(_Iris.z * 0.85, _Iris.z, distance(i.uv, _Iris.xy));
                 float luzOjo = ojo * iris * _BrilloOjos * (1 + _Pulso * 0.3 * sin(_Time.y * 2.2)) * (1 + _Destello) * (1 - _Apagado);
 
                 // Delineado: un anillo de manchitas alrededor de cada ojo.
