@@ -136,7 +136,9 @@ public class ResultadoDeathmatch : MonoBehaviour
         int bajas = primero != null ? PartidaDeathmatch.Bajas(primero.ActorNumber) : 0;
         bool porBajas = bajas >= PartidaDeathmatch.BajasParaGanar;
         string cuantas = bajas == 1 ? "1 baja" : $"{bajas} bajas";
-        if (gane)
+        if (gane && PartidaDeathmatch.Actual != null && PartidaDeathmatch.Actual.PorAbandono)
+            detalle.text = "Los demás jugadores abandonaron la partida";
+        else if (gane)
             detalle.text = porBajas ? $"Llegaste primero a <color=#F29A38>{cuantas}</color>"
                                     : $"Se acabó el tiempo: ganaste con <color=#F29A38>{cuantas}</color>";
         else if (primero != null)
