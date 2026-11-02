@@ -226,6 +226,7 @@ public sealed partial class LogrosOnline
     {
         enviado = -1; nombreEnviado = null;
         progresoEnviado = null; progresoCambio = true; revisionProgreso = -1;
+        saldoTraido = false; // US 272: el saldo es el de la otra cuenta (o el de la PC)
         pedir = true; fallos = 0; intentar = Time.unscaledTime;
         Revision++;
     }
@@ -241,17 +242,11 @@ public sealed partial class LogrosOnline
         catch { }
     }
 
-    // El nombre de la cuenta sigue al del jugador: así aparece al entrar desde otra PC (US 269) y en el launcher.
+    // El nombre de la cuenta sigue al del jugador: así aparece al entrar desde otra PC (US 269) y en el launcher. Lo sube
+    // la próxima vuelta de Trabajar (SubirNombreDeCuenta), que lo reintenta hasta que quede guardado.
     private void NombreCambiado(string nombre)
     {
-        if (enCuenta && Configurado && nombre != sesion?.user?.user_metadata?.nombre) StartCoroutine(EnTurno(GuardarNombre(nombre)));
-    }
-
-    private IEnumerator GuardarNombre(string nombre)
-    {
-        yield return AsegurarSesion();
-        if (falloSesion != null || !enCuenta) yield break;
-        yield return Pedir("PUT", "/auth/v1/user", JsonUtility.ToJson(new DatosUsuario { data = new Meta { nombre = nombre } }), true);
+        if (enCuenta && fallos == 0) intentar = Time.unscaledTime;
     }
 
     private static T Leer<T>(string json) where T : class

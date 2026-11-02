@@ -163,14 +163,11 @@ public class PantallaEstacion : PantallaBase
         Borde(canje, 8f, White(0.06f));
         T(canje, "Rotulo", 24f, 18f, 400f, 22f, FRotulo, 17f, Accent, "Conseguir boletos", TextAlignmentOptions.MidlineLeft, 16f, true);
         Canje(canje, 52f, 0, $"{PerfilDatos.Numero(PerfilDatos.CreditosPorBoleto)} créditos", "1 boleto",
-            () => PerfilDatos.Creditos >= PerfilDatos.CreditosPorBoleto,
-            () => PerfilDatos.CanjearCreditos() ? "+1 boleto" : "Te faltan créditos: se ganan jugando partidas");
+            () => PerfilDatos.Creditos >= PerfilDatos.CreditosPorBoleto, PerfilDatos.CanjearCreditos, "+1 boleto");
         Canje(canje, 120f, 2, $"{PerfilDatos.CristalesPorBoleto} cristales", "1 boleto",
-            () => PerfilDatos.Cristales >= PerfilDatos.CristalesPorBoleto,
-            () => PerfilDatos.CanjearCristales(1) ? "+1 boleto" : "Te faltan cristales");
+            () => PerfilDatos.Cristales >= PerfilDatos.CristalesPorBoleto, listo => PerfilDatos.CanjearCristales(1, listo), "+1 boleto");
         Canje(canje, 188f, 2, $"{PerfilDatos.CristalesPorDiez} cristales", "10 boletos · 10 % menos",
-            () => PerfilDatos.Cristales >= PerfilDatos.CristalesPorDiez,
-            () => PerfilDatos.CanjearCristales(10) ? "+10 boletos" : "Te faltan cristales");
+            () => PerfilDatos.Cristales >= PerfilDatos.CristalesPorDiez, listo => PerfilDatos.CanjearCristales(10, listo), "+10 boletos");
         TextMeshProUGUI tienda = T(canje, "Tienda", 24f, 252f, 540f, 26f, FRotulo, 18f, ColorCristales, "¿Sin cristales? Ir a la tienda »", TextAlignmentOptions.MidlineLeft, 8f, true);
         tienda.raycastTarget = true;
         var pt = tienda.gameObject.AddComponent<ShopPointerTarget>();
@@ -186,27 +183,42 @@ public class PantallaEstacion : PantallaBase
         CrearBoton(rect, x, 952f, w, 56f, "Ver contenido de la cápsula", false, VerContenido, 24f);
     }
 
-    private void Canje(RectTransform parent, float y, int moneda, string costo, string recibe, System.Func<bool> puede, System.Func<string> hacer)
+    // hacer canjea y avisa cómo le fue (null si se pudo): con cuenta, la base lo confirma antes (US 272).
+    private void Canje(RectTransform parent, float y, int moneda, string costo, string recibe, System.Func<bool> puede,
+        System.Action<System.Action<string>> hacer, string hecho)
     {
         Image(Place(Node("Fila", parent), 16f, y, 558f, 58f), Rounded, White(0.03f), 6f);
         IconoMoneda(parent, moneda, 44f, y + 29f, 22f);
         T(parent, "Costo", 66f, y + 6f, 300f, 26f, FTitulo, 26f, Ink, costo);
         T(parent, "Recibe", 66f, y + 32f, 300f, 20f, FRotulo, 15f, Mute, "por " + recibe, TextAlignmentOptions.MidlineLeft, 10f, true);
-        Boton b = CrearBoton(parent, 574f - 160f - 10f, y + 9f, 160f, 40f, "Canjear", false, () => menu.Avisar(hacer()), 22f);
+        Boton b = CrearBoton(parent, 574f - 160f - 10f, y + 9f, 160f, 40f, "Canjear", false, () =>
+        {
+            if (pagando) return;
+            pagando = true;
+            hacer(error => { pagando = false; menu.Avisar(error ?? hecho); Refrescar(); });
+        }, 22f);
         canjes.Add((b, puede));
     }
 
     // ================= Acciones =================
 
+    private bool pagando; // con cuenta, el gasto espera la confirmación de la base (US 272)
+
     private void Abrir(int cantidad)
     {
-        if (estado == Estado.Abriendo) return;
-        if (!PerfilDatos.PuedeAbrir(cantidad))
+        if (estado == Estado.Abriendo || pagando) return;
+        pagando = true;
+        PerfilDatos.Abrir(cantidad, (lista, error) =>
         {
-            menu.Avisar(cantidad == 1 ? "No tenés boletos: canjeá créditos o cristales" : $"Te faltan boletos para abrir {cantidad}");
-            return;
-        }
-        resultados = PerfilDatos.Abrir(cantidad);
+            pagando = false;
+            if (lista == null) { menu.Avisar(error); Refrescar(); return; }
+            Mostrar(lista);
+        });
+    }
+
+    private void Mostrar(List<PerfilDatos.Resultado> lista)
+    {
+        resultados = lista;
         Rareza mejor = Rareza.Comun;
         foreach (var r in resultados) if (r.cosmetico.rareza > mejor) mejor = r.cosmetico.rareza;
         colorFinal = ColorRareza(mejor);
