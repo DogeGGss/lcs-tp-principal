@@ -12,7 +12,7 @@ using Img = UnityEngine.UI.Image;
 // Selección de modo (US 047), diseño "Andenes": la pantalla se parte en tres con dos rayos y cada andén es un modo.
 // Al pasar el mouse el andén se agranda; al hacer clic ocupa toda la pantalla y muestra sus opciones:
 // Táctico y Deathmatch buscan partida (F28, en ModeSelectScreen.Busqueda.cs) o crean o se unen a una sala privada
-// (US 026, US 027); Zombie elige la dificultad (US 161) y juega.
+// (US 026, US 027); Invasión elige la dificultad (US 161) y juega.
 // Se arma por código con las medidas de la maqueta (pantalla de referencia de 1920 x 1080), como el HUD y la tienda.
 public partial class ModeSelectScreen : MonoBehaviour
 {
@@ -154,12 +154,13 @@ public partial class ModeSelectScreen : MonoBehaviour
     private Vector2 crossPos = new Vector2(960f, 380f), crossFrom, crossTo = new Vector2(960f, 380f);
     private float crossT = 1f, crossDur = 0.6f, crossWait;
     private float hitAt = -10f;
-    // Zombie
-    private readonly List<RectTransform> fogs = new List<RectTransform>();
-    private readonly List<RectTransform> zombies = new List<RectTransform>();
-    private readonly List<float> zombieDelay = new List<float>();
-    private readonly List<UIRing> eyes = new List<UIRing>();
-    private readonly List<Vector2> zombieBase = new List<Vector2>();
+    // Invasión: el radar de oleadas
+    private const float RadarRadio = 220f;
+    private RectTransform barridoInvasion;
+    private TextMeshProUGUI oleadaTexto;
+    private readonly List<UIRing> blips = new List<UIRing>();
+    private readonly List<float> blipAngulo = new List<float>(), blipDistancia = new List<float>(), blipLuz = new List<float>();
+    private float anguloBarrido;
     private readonly UnityEngine.UI.Button[] difficultyButtons = new UnityEngine.UI.Button[3];
     private TextMeshProUGUI record;
 
@@ -209,7 +210,7 @@ public partial class ModeSelectScreen : MonoBehaviour
         for (int i = 0; i < 3; i++) andenes[i] = BuildAnden(i);
         BuildTactico(andenes[0].motif);
         BuildDeathmatch(andenes[1]);
-        BuildZombie(andenes[2].motif);
+        BuildInvasion(andenes[2].motif);
         foreach (Anden a in andenes) { a.dim.transform.SetAsLastSibling(); a.flash.transform.SetAsLastSibling(); }
 
         for (int k = 0; k < 2; k++) BuildBolt(k);
@@ -440,71 +441,48 @@ public partial class ModeSelectScreen : MonoBehaviour
             Segment(hitRect, new Vector2(30f * sx, 30f * sy), new Vector2(14f * sx, 14f * sy), 5f, Color.white);
     }
 
-    private void BuildZombie(RectTransform m)
+    // Andén 3: un radar, en la misma línea que el dispositivo del Táctico y la mira del Deathmatch. El barrido gira y va
+    // marcando a los enemigos que se acercan al centro (el jugador); el punto rojo grande es el Jefe. Arriba, la oleada.
+    private void BuildInvasion(RectTransform m)
     {
-        Color green = ModeColor[2], moon = Hex(0xD8EFCB), fog = WithAlpha(Hex(0xB8E6A6), FadeAlpha(0.30f));
-        Circle(m, 170f, -330f, 88f, WithAlpha(moon, FadeAlpha(0.16f)));
-        Glow(m, 170f, -330f, 170f, WithAlpha(moon, FadeAlpha(0.14f)), 0.4f);
+        Color green = ModeColor[2], rojo = Hex(0xFF4B4B);
+        RectTransform radar = Group("Radar", m, 0f, -170f);
 
-        fogs.Add(FogBank(m, -160f, 420f, 520f, 120f, fog));
-        var figures = new[]
+        Glow(radar, 0f, 0f, RadarRadio + 60f, WithAlpha(green, FadeAlpha(0.12f)), 0.3f);
+        Circle(radar, 0f, 0f, RadarRadio, Hex(0x07100A));
+        foreach (float r in new[] { 80f, 150f })
+            Circle(radar, 0f, 0f, r, WithAlpha(green, FadeAlpha(0.22f)), 2f);
+        Circle(radar, 0f, 0f, RadarRadio, WithAlpha(green, FadeAlpha(0.7f)), 3f);
+        UIRing marcas = Circle(radar, 0f, 0f, RadarRadio + 14f, WithAlpha(green, FadeAlpha(0.35f)), 2f);
+        marcas.dashCount = 48; marcas.dashFill = 0.25f;
+        Segment(radar, new Vector2(-RadarRadio, 0f), new Vector2(RadarRadio, 0f), 1.5f, WithAlpha(green, FadeAlpha(0.15f)));
+        Segment(radar, new Vector2(0f, -RadarRadio), new Vector2(0f, RadarRadio), 1.5f, WithAlpha(green, FadeAlpha(0.15f)));
+
+        // El barrido: una línea con su estela, que gira entera.
+        barridoInvasion = Group("Barrido", radar, 0f, 0f);
+        for (int k = 11; k >= 0; k--)
         {
-            (x: -230f, y: 560f, s: 0.8f, delay: 0.4f, arms: 1),
-            (x: -40f, y: 540f, s: 1.05f, delay: 2.1f, arms: 0),
-            (x: 170f, y: 570f, s: 0.7f, delay: 3.6f, arms: 2),
-            (x: 330f, y: 560f, s: 0.9f, delay: 1.2f, arms: 0)
-        };
-        foreach (var f in figures) BuildZombieFigure(m, f.x, f.y, f.s, f.delay, f.arms, green);
-        fogs.Add(FogBank(m, 120f, 470f, 620f, 130f, fog));
-    }
-
-    private RectTransform FogBank(RectTransform parent, float x, float y, float rx, float ry, Color color)
-    {
-        RectTransform bank = Glow(parent, x, y, rx, color, 0.35f);
-        bank.localScale = new Vector3(1f, ry / rx, 1f);
-        return bank;
-    }
-
-    private void BuildZombieFigure(RectTransform parent, float x, float y, float scale, float delay, int arms, Color eye)
-    {
-        Color ink = Hex(0x020402);
-        RectTransform figure = Group("Zombi", parent, x, y);
-        figure.localScale = Vector3.one * scale;
-        zombies.Add(figure);
-        zombieBase.Add(new Vector2(x, y));
-        zombieDelay.Add(delay);
-
-        // Torso con hombros (sigue por debajo de la pantalla, así nunca se ve cortado).
-        scratch.Clear();
-        scratch.Add(new Vector2(-86f, 320f));
-        Bezier(scratch, new Vector2(-86f, 0f), new Vector2(-86f, -66f), new Vector2(-74f, -108f), new Vector2(-34f, -118f));
-        Bezier(scratch, new Vector2(34f, -118f), new Vector2(74f, -108f), new Vector2(86f, -66f), new Vector2(86f, 0f));
-        scratch.Add(new Vector2(86f, 320f));
-        Poly(figure, ink, scratch.ToArray());
-        Poly(figure, ink, RectPts(-16f, -138f, 32f, 30f));
-        Circle(figure, 0f, -170f, 44f, ink);
-        foreach (float ex in new[] { -15f, 15f }) eyes.Add(Circle(figure, ex, -176f, 5.5f, eye));
-
-        if (arms >= 1) Arm(figure, ink, new Vector2(60f, -96f), new Vector2(120f, -196f), new Vector2(150f, -214f));
-        if (arms >= 2)
-        {
-            Arm(figure, ink, new Vector2(-60f, -96f), new Vector2(-120f, -196f), new Vector2(-150f, -214f));
+            float a = -k * 3.5f * Mathf.Deg2Rad;
+            Line(barridoInvasion, WithAlpha(green, FadeAlpha(k == 0 ? 0.9f : 0.32f * (1f - k / 12f))), k == 0 ? 3f : 6f,
+                Vector2.zero, new Vector2(Mathf.Sin(a) * RadarRadio, -Mathf.Cos(a) * RadarRadio));
         }
-    }
 
-    private void Arm(RectTransform parent, Color ink, params Vector2[] points)
-    {
-        UIPolyline arm = Line(parent, ink, 26f, points);
-        arm.roundJoins = true;
-    }
-
-    private static void Bezier(List<Vector2> into, Vector2 a, Vector2 b, Vector2 c, Vector2 d, int steps = 8)
-    {
-        for (int i = 0; i <= steps; i++)
+        // Los enemigos: se encienden cuando pasa el barrido y se apagan de a poco; el último es el Jefe.
+        for (int k = 0; k < 8; k++)
         {
-            float t = i / (float)steps, u = 1f - t;
-            into.Add(u * u * u * a + 3f * u * u * t * b + 3f * u * t * t * c + t * t * t * d);
+            bool jefe = k == 7;
+            blips.Add(Circle(radar, 0f, 0f, jefe ? 11f : 6f, jefe ? rojo : green));
+            blipAngulo.Add(UnityEngine.Random.Range(0f, 360f));
+            blipDistancia.Add(UnityEngine.Random.Range(60f, RadarRadio - 10f));
+            blipLuz.Add(0f);
         }
+
+        // El jugador en el centro.
+        Circle(radar, 0f, 0f, 16f, WithAlpha(green, FadeAlpha(0.5f)), 2f);
+        Circle(radar, 0f, 0f, 6f, green);
+
+        oleadaTexto = Text(Place(Node("Oleada", radar), -160f, -RadarRadio - 70f, 320f, 40f), monoFont, 26f, green, TextAlignmentOptions.Center, 6f);
+        oleadaTexto.text = "OLEADA 01 / 10";
     }
 
     private void BuildBolt(int k)
@@ -1080,7 +1058,7 @@ public partial class ModeSelectScreen : MonoBehaviour
         AnimarBusqueda(now, dt);
         AnimateTactico(now, dt);
         AnimateDeathmatch(now, dt, centers);
-        AnimateZombie(now);
+        AnimateInvasion(now, dt);
 
         if (now > nextStrike) { Strike(UnityEngine.Random.value < 0.5f ? 0 : 1, false); nextStrike = now + UnityEngine.Random.Range(2.6f, 5.6f); }
     }
@@ -1339,26 +1317,38 @@ public partial class ModeSelectScreen : MonoBehaviour
         hit.alpha = now - hitAt < 0.12f ? 1f : Mathf.Max(0f, 1f - (now - hitAt - 0.12f) / 0.35f);
     }
 
-    private void AnimateZombie(float now)
+    private void AnimateInvasion(float now, float dt)
     {
         bool hot = hover == 2 || open == 2;
-        for (int f = 0; f < fogs.Count; f++)
+        float antes = anguloBarrido;
+        anguloBarrido = Mathf.Repeat(anguloBarrido + dt * 360f / (hot ? 1.6f : 3.2f), 360f);
+        barridoInvasion.localEulerAngles = new Vector3(0f, 0f, -anguloBarrido);
+        float paso = Mathf.Repeat(anguloBarrido - antes, 360f);
+
+        for (int k = 0; k < blips.Count; k++)
         {
-            float periodFog = f == 0 ? 11f : 7.5f;
-            float x = (f == 0 ? -160f : 120f) + 140f * Mathf.Sin(now * Mathf.PI * 2f / periodFog * (f == 0 ? 1f : -1f));
-            fogs[f].anchoredPosition = new Vector2(x, fogs[f].anchoredPosition.y);
+            bool jefe = k == blips.Count - 1;
+            // Se acerca al centro; al llegar, aparece otro en el borde.
+            blipDistancia[k] -= dt * (jefe ? 6f : 14f) * (hot ? 2.2f : 1f);
+            if (blipDistancia[k] < 24f)
+            {
+                blipDistancia[k] = RadarRadio - UnityEngine.Random.Range(4f, 30f);
+                blipAngulo[k] = UnityEngine.Random.Range(0f, 360f);
+                blipLuz[k] = 0f;
+            }
+            // El barrido lo encontró en este cuadro: se enciende.
+            if (Mathf.Repeat(blipAngulo[k] - antes, 360f) <= paso) blipLuz[k] = 1f;
+            else blipLuz[k] = Mathf.Max(0f, blipLuz[k] - dt / 2.4f);
+
+            float a = blipAngulo[k] * Mathf.Deg2Rad;
+            blips[k].rectTransform.anchoredPosition = new Vector2(Mathf.Sin(a) * blipDistancia[k], Mathf.Cos(a) * blipDistancia[k]);
+            Color c = jefe ? Hex(0xFF4B4B) : ModeColor[2];
+            blips[k].color = WithAlpha(c, FadeAlpha(0.08f + 0.92f * blipLuz[k]));
         }
-        for (int z = 0; z < zombies.Count; z++)
-        {
-            float period = hot ? 3.2f : 5.5f;
-            float p = Mathf.Repeat((now + zombieDelay[z]) / period, 1f);
-            float low = hot ? 130f : 200f, high = hot ? 10f : 40f;
-            float a = hot ? 0.4f : 0.45f, b = hot ? 0.7f : 0.6f;
-            float off = p < a ? Mathf.Lerp(low, high, Smooth(p / a)) : p < b ? high : Mathf.Lerp(high, low, Smooth((p - b) / (1f - b)));
-            zombies[z].anchoredPosition = new Vector2(zombieBase[z].x, -(zombieBase[z].y + off));
-        }
-        float eye = 0.25f + 0.75f * (0.5f + 0.5f * Mathf.Cos(now * Mathf.PI * 2f / 2.2f));
-        foreach (UIRing e in eyes) e.color = WithAlpha(ModeColor[2], eye);
+
+        int oleada = 1 + Mathf.FloorToInt(Mathf.Repeat(now / 5f, 10f));
+        string texto = "OLEADA " + oleada.ToString("00") + " / 10";
+        if (oleadaTexto.text != texto) oleadaTexto.text = texto;
     }
 
     private static float EaseOut(float t) => 1f - (1f - t) * (1f - t);
