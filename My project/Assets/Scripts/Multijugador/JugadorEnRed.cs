@@ -1033,6 +1033,14 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
         proximoCuerpo = Time.time + 0.5f;
         CharacterData personaje = PersonajeDe(Actor);
         if (personaje == null || personaje.modelo == null || personaje == cuerpoDe) return;
+        // La copia mide la altura de sus ojos con el cuerpo de siempre (el del Player) antes de cambiarlo: si se medía
+        // después, la referencia era el cuerpo nuevo y la altura no se corregía (con Soledad, la más baja, los ojos y el
+        // arma quedaban arriba de la cabeza). Si todavía no se puede medir, se prueba de nuevo en medio segundo.
+        if (!photonView.IsMine && escalaDeReferencia <= 0f)
+        {
+            MedirReferencia();
+            if (escalaDeReferencia <= 0f) return;
+        }
         cuerpoPropio = true;
         cuerpoDe = personaje;
         if (!CuerpoDePersonaje.Cambiar(animador, personaje.modelo)) return;
@@ -1069,12 +1077,16 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
     // Ojos a la altura de este cuerpo: la misma distancia a los pies que en el de siempre, por su tamaño.
     private void AlturaDelCuerpo()
     {
-        if (escalaDeReferencia <= 0f) MedirReferencia(); // no llegó a medirse: por lo menos que no rompa
         if (escalaDeReferencia <= 0f || animador == null || !animador.isHuman || camara == null) return;
         float escala = Mathf.Clamp(animador.humanScale / escalaDeReferencia, 0.7f, 1.3f);
         float pies = Pies();
         alturaParado = pies + (paradoDeReferencia - piesDeReferencia) * escala;
         alturaAgachado = pies + (agachadoDeReferencia - piesDeReferencia) * escala;
+        // Para revisar en la consola (solo en el editor y en las compilaciones de desarrollo).
+        if (Debug.isDebugBuild)
+            Debug.Log($"[Tercera persona] {name} con {(cuerpoDe != null ? cuerpoDe.displayName : "su cuerpo")}: tamaño {animador.humanScale:0.000} " +
+                      $"(referencia {escalaDeReferencia:0.000}, escala {escala:0.00}), ojos a {alturaParado - pies:0.00} m de los pies " +
+                      $"(referencia {paradoDeReferencia - piesDeReferencia:0.00} m).");
     }
 
     /// <summary>El personaje de ese jugador en la partida: el que eligió en el Táctico o su aspecto en el Deathmatch.</summary>
