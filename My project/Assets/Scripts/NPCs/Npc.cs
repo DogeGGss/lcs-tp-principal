@@ -21,7 +21,8 @@ public class Npc : MonoBehaviour
     public Animator Animador { get; private set; }
     /// <summary>Su vida.</summary>
     public HealthSystem Vida { get; private set; }
-    /// <summary>Su modelo (hijo de este objeto).</summary>
+    /// <summary>Lo que lleva su modelo (hijo de este objeto), con la altura, el giro y el tamaño de su tipo: lo que se
+    /// mueve para que vuele, se agache o se sacuda. El modelo con su Animator va adentro (Animador).</summary>
     public Transform Modelo { get; private set; }
     /// <summary>Sus animaciones (las de su tipo).</summary>
     public AnimadorDeNpc Animaciones { get; private set; }
@@ -141,13 +142,18 @@ public class Npc : MonoBehaviour
     {
         Tipo = tipo;
 
-        // El modelo, al tamaño del tipo (CA4).
-        GameObject m = Instantiate(tipo.modelo, transform);
-        m.name = "Modelo";
-        m.transform.localPosition = Vector3.up * tipo.alturaDeVuelo; // los que flotan (US 285 y US 286)
-        m.transform.localRotation = Quaternion.Euler(0f, tipo.giroDelModelo, 0f); // los que vienen mirando para atrás
-        m.transform.localScale = tipo.modelo.transform.localScale * tipo.escala;
-        Modelo = m.transform;
+        // El modelo, al tamaño del tipo (CA4). La altura, el giro y el tamaño van en un contenedor (Modelo) y el modelo,
+        // con su Animator, adentro tal como viene en su prefab: en algunos casos el Animator de Unity devuelve su propio
+        // objeto a como estaba al crearse, y con el tamaño puesto ahí el bicho se veía un instante de su tamaño original
+        // (sobre todo el Rápido, el Wolf Boss achicado a 0,3).
+        var contenedor = new GameObject("Modelo").transform;
+        contenedor.SetParent(transform, false);
+        contenedor.localPosition = Vector3.up * tipo.alturaDeVuelo; // los que flotan (US 285 y US 286)
+        contenedor.localRotation = Quaternion.Euler(0f, tipo.giroDelModelo, 0f); // los que vienen mirando para atrás
+        contenedor.localScale = Vector3.one * tipo.escala;
+        GameObject m = Instantiate(tipo.modelo, contenedor);
+        m.name = tipo.modelo.name;
+        Modelo = contenedor;
         Animador = m.GetComponentInChildren<Animator>();
         if (Animador != null)
         {
