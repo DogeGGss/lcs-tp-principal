@@ -37,7 +37,8 @@ public struct GolpeDeNpc
         // Lo más adelante que llega el cuerpo en cada momento del clip.
         var tiempos = new List<float>();
         var frentes = new List<float>();
-        GameObject modelo = npc.Modelo.gameObject;
+        // Desde el objeto del Animator: los caminos del clip (Bip01/...) empiezan ahí, no en el contenedor (Npc.Modelo).
+        GameObject modelo = npc.Animador != null ? npc.Animador.gameObject : npc.Modelo.gameObject;
         for (float t = 0f; t <= clip.length + 1e-4f; t += Paso)
         {
             clip.SampleAnimation(modelo, Mathf.Min(t, clip.length));
