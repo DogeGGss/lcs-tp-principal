@@ -4,10 +4,13 @@ using UnityEngine;
 
 // El progreso del jugador que se guarda también en la nube (F18, US 162, CA3, y US 163, CA2), además de los logros, que
 // van con el ranking (LogrosOnline, rw_sync_comets): las estadísticas del minijuego (US 159) y las del jugador (F24), los
-// récords de Zombie y los cosméticos del Perfil. Arma el documento que sube LogrosOnline (rw_sync_progress) y junta el que vuelve:
-// - contadores que solo suben: el máximo; mejores tiempos: el mínimo;
-// - cosméticos obtenidos: la unión; equipados: los de la PC (la nube solo los devuelve si la PC no los tiene).
-// Las opciones y las monedas no se suben (las monedas bajan al gastarlas: juntarlas con el máximo devolvería lo gastado).
+// récords de Zombie y el Perfil (cosméticos, cápsulas abiertas, pity, compras y últimos premios). Arma el documento que
+// sube LogrosOnline (rw_sync_progress) y junta el que vuelve:
+// - contadores que solo suben: el máximo (el pity va como «cápsula del último épico», que también solo sube);
+// - mejores tiempos: el mínimo; cosméticos, packs de una vez y compras: la unión;
+// - equipados y últimos premios: los de la PC, salvo en una PC nueva, que primero trae los de la nube (PerfilDatos.EquipadoPropio).
+// Las opciones no se suben. Las monedas tienen su propio saldo en la base (US 272, LogrosOnline.Billetera): juntarlas
+// con el máximo devolvería lo gastado.
 // Todo va atado al id del jugador en la base, nunca al nombre: así se le puede sumar una cuenta después (US 237).
 // También registra en Guardado qué claves se juntan con las de otro juego abierto en esta PC.
 public static class ProgresoNube
@@ -83,11 +86,28 @@ public static class ProgresoNube
         foreach (ZombieDifficulty z in Enum.GetValues(typeof(ZombieDifficulty)))
             Sumar(d.contadores, Zombie + z.ToString().ToLowerInvariant(), MatchSettings.ZombieRecord(z));
 
-        var obtenidos = new List<string>(PerfilDatos.ObtenidosIds);
-        obtenidos.Sort(string.CompareOrdinal);
-        d.conjuntos.Add(new Conjunto { clave = Perfil + "obtenidos", elementos = obtenidos.ToArray() });
-        foreach (var (tipo, id) in PerfilDatos.Equipados) d.valores.Add(new Texto { clave = Perfil + tipo, valor = id });
+        d.conjuntos.Add(Ordenado(Perfil + "obtenidos", PerfilDatos.ObtenidosIds));
+        d.conjuntos.Add(Ordenado(Perfil + "packs_usados", PerfilDatos.PacksUsados));
+        d.conjuntos.Add(Ordenado(Perfil + "compras", PerfilDatos.ComprasNube));
+        Sumar(d.contadores, Perfil + "aperturas", PerfilDatos.Aperturas);
+        Sumar(d.contadores, Perfil + "ultimo_epico", PerfilDatos.UltimoEpico);
+        Sumar(d.contadores, Perfil + "gastado", PerfilDatos.Gastado);
+        if (PerfilDatos.EquipadoPropio) // en una PC nueva, lo de entrada no pisa lo de la nube
+        {
+            foreach (var (tipo, id) in PerfilDatos.Equipados) d.valores.Add(new Texto { clave = Perfil + tipo, valor = id });
+            IReadOnlyList<string> recientes = PerfilDatos.Recientes;
+            for (int i = 0; i < recientes.Count; i++) d.valores.Add(new Texto { clave = Reciente + i, valor = recientes[i] });
+        }
         return d;
+    }
+
+    private const string Reciente = Perfil + "reciente.";
+
+    private static Conjunto Ordenado(string clave, IEnumerable<string> elementos)
+    {
+        var lista = new List<string>(elementos);
+        lista.Sort(string.CompareOrdinal);
+        return new Conjunto { clave = clave, elementos = lista.ToArray() };
     }
 
     public static string Json() => JsonUtility.ToJson(Armar());
@@ -159,15 +179,33 @@ public static class ProgresoNube
         foreach (ZombieDifficulty z in Enum.GetValues(typeof(ZombieDifficulty)))
             MatchSettings.SubirZombieRecord(z, (int)Leer(Zombie + z.ToString().ToLowerInvariant()));
 
-        // Perfil: obtenidos (unión) y equipados (solo si la PC no tenía nada guardado)
-        var obtenidos = new List<string>();
+        // Perfil: lo que solo suma (unión y máximo) y lo equipado y los últimos premios (solo en una PC nueva)
+        var perfil = new PerfilDatos.Nube
+        {
+            aperturas = (int)Leer(Perfil + "aperturas"),
+            ultimoEpico = (int)Leer(Perfil + "ultimo_epico"),
+            gastado = (int)Leer(Perfil + "gastado"),
+        };
         if (nube.conjuntos != null)
             foreach (Conjunto c in nube.conjuntos)
-                if (c != null && c.clave == Perfil + "obtenidos" && c.elementos != null) obtenidos.AddRange(c.elementos);
-        var equipados = new Dictionary<string, string>();
+            {
+                if (c == null || c.elementos == null) continue;
+                if (c.clave == Perfil + "obtenidos") perfil.obtenidos.AddRange(c.elementos);
+                else if (c.clave == Perfil + "packs_usados") perfil.packs.AddRange(c.elementos);
+                else if (c.clave == Perfil + "compras") perfil.compras.AddRange(c.elementos);
+            }
+        var recientes = new SortedDictionary<int, string>();
         if (nube.valores != null)
             foreach (Texto t in nube.valores)
-                if (t != null && t.clave != null && t.clave.StartsWith(Perfil, StringComparison.Ordinal)) equipados[t.clave.Substring(Perfil.Length)] = t.valor ?? "";
-        PerfilDatos.FusionarNube(obtenidos, equipados);
+            {
+                if (t == null || t.clave == null) continue;
+                if (t.clave.StartsWith(Reciente, StringComparison.Ordinal))
+                {
+                    if (int.TryParse(t.clave.Substring(Reciente.Length), out int i) && !string.IsNullOrEmpty(t.valor)) recientes[i] = t.valor;
+                }
+                else if (t.clave.StartsWith(Perfil, StringComparison.Ordinal)) perfil.equipados[t.clave.Substring(Perfil.Length)] = t.valor ?? "";
+            }
+        perfil.recientes.AddRange(recientes.Values);
+        PerfilDatos.FusionarNube(perfil);
     }
 }

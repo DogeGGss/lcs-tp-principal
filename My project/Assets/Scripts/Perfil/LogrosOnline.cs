@@ -11,7 +11,8 @@ using UnityEngine.Networking;
 // ProgresoNube, US 162 y US 163). El guardado en la PC lo hace Guardado. El ranking (US 226) es por logros
 // (rw_achievement_board) o por cualquier otra estadística (rw_stat_board, CategoriasRanking). También manda las
 // opiniones de "Danos tu opinión" que esperan en Opiniones (rw_send_feedback, que avisa a Discord). La cuenta del jugador
-// (US 237), con la misma sesión, está en LogrosOnline.Cuenta.cs.
+// (US 237), con la misma sesión, está en LogrosOnline.Cuenta.cs; las monedas de la cuenta (US 272) y lo que se sube
+// antes de cerrar el juego, en LogrosOnline.Billetera.cs.
 public sealed partial class LogrosOnline : MonoBehaviour
 {
     [Serializable] public sealed class Jugador
@@ -107,6 +108,7 @@ public sealed partial class LogrosOnline : MonoBehaviour
         config = Resources.Load<LogrosOnlineConfig>("LogrosOnline");
         LogrosCometas.Desbloqueado += Avisar;
         PlayerProfile.NameChanged += NombreCambiado;
+        Application.wantsToQuit += AlCerrar;
         if (!Configurado) return;
         Estado = "Pendiente de conexión.";
         AbrirCuentaGuardada();
@@ -134,7 +136,8 @@ public sealed partial class LogrosOnline : MonoBehaviour
             progresoCambio = ProgresoNube.Json() != progresoEnviado;
         }
         // Sin cuenta no se sube nada (US 281): la sesión anónima solo manda opiniones y pide el ranking.
-        bool subir = enCuenta && (enviado != LogrosCometas.Revision || nombreEnviado != PlayerProfile.Name || (progresoDisponible && progresoCambio));
+        bool subir = enCuenta && (enviado != LogrosCometas.Revision || nombreEnviado != PlayerProfile.Name || (progresoDisponible && progresoCambio)
+            || BilleteraPendiente || NombreDeCuentaPendiente);
         if (pedir || subir || (opinionesDisponible && Opiniones.Pendientes > 0))
             StartCoroutine(Trabajar());
     }
@@ -195,8 +198,14 @@ public sealed partial class LogrosOnline : MonoBehaviour
             // Sin cuenta no se sube nada (US 281): la sesión anónima solo manda opiniones y pide el ranking.
             if (enCuenta)
             {
+                if (NombreDeCuentaPendiente) yield return SubirNombreDeCuenta();
                 yield return SubirProgreso();
                 if (falloSubida != null) { Fallar(falloSubida); yield break; }
+                if (BilleteraPendiente)
+                {
+                    yield return SubirBilletera(null);
+                    if (falloBilletera != null) { Fallar(falloBilletera); yield break; }
+                }
             }
             if (pedir && categoria != "")
             {
@@ -229,7 +238,7 @@ public sealed partial class LogrosOnline : MonoBehaviour
                 Datos = nuevo;
                 try { Guardado.EscribirAtomico(RutaCache, JsonUtility.ToJson(nuevo)); } catch { }
             }
-            fallos = 0; intentar = Time.unscaledTime + 15f;
+            fallos = 0; intentar = Time.unscaledTime + 2f; // lo nuevo sale enseguida (antes esperaba 15 s y se perdía si se cerraba el juego)
             if (!progresoDisponible) aviso += " · falta actualizar la base para guardar el resto del progreso en la nube";
             else if (!RankingDisponible) aviso += " · falta actualizar la base para el ranking por estadísticas";
             Estado = "Conectado · actualizado " + DateTime.Now.ToString("HH:mm") + aviso; Revision++;
@@ -398,5 +407,9 @@ public sealed partial class LogrosOnline : MonoBehaviour
     }
 
     private void OnDestroy()
-    { if (Instancia == this) { LogrosCometas.Desbloqueado -= Avisar; PlayerProfile.NameChanged -= NombreCambiado; Instancia = null; } }
+    {
+        if (Instancia != this) return;
+        LogrosCometas.Desbloqueado -= Avisar; PlayerProfile.NameChanged -= NombreCambiado; Application.wantsToQuit -= AlCerrar;
+        Instancia = null;
+    }
 }

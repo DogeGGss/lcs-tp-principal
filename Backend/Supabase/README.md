@@ -53,13 +53,13 @@ Los logros nuevos se agregan siempre **al final** de `LogrosCometas.Catalogo`: l
 
 **Dos juegos abiertos en la misma PC** (dos builds) comparten el archivo. Antes de guardar, cada uno junta su progreso con el del archivo (el máximo de cada color y de cada estadística del minijuego), así ninguno pisa al otro; los aciertos que hagan al mismo tiempo no se suman entre sí. El editor usa su propio archivo, pero comparte la sesión online con los builds: sus pruebas también cuentan para el ranking.
 
-**Resto del progreso en la nube** (`rw_sync_progress`, tabla `rw_player_progress`): estadísticas del jugador (F24) y del minijuego (US 159), récords de Zombie y cosméticos del Perfil. El juego manda listas `{clave, valor}` y la base junta: contadores con el máximo, mejores tiempos con el mínimo, cosméticos obtenidos con la unión y equipados con lo último. Las opciones y las monedas no se suben: las monedas bajan al gastarse y juntarlas con el máximo devolvería lo gastado (con cuentas, US 237, el saldo lo tiene que manejar la base).
+**Resto del progreso en la nube** (`rw_sync_progress`, tabla `rw_player_progress`): estadísticas del jugador (F24) y del minijuego (US 159), récords de Zombie y el Perfil: cosméticos, cápsulas abiertas, pity, total gastado, compras, packs de una sola vez y últimos premios. El juego manda listas `{clave, valor}` y la base junta: contadores con el máximo, mejores tiempos con el mínimo, cosméticos, packs y compras con la unión, y equipados y últimos premios con lo último. El pity se manda como «la cápsula del último épico», que solo sube, así también se junta con el máximo. En una PC nueva el juego no manda lo equipado hasta traer lo de la nube: si no, lo de entrada pisaría lo que el jugador tenía. Las opciones no se suben. Las monedas tienen su propio saldo (ver «Monedas de la cuenta»).
 
 La sesión anónima y la última consulta del ranking se guardan por dominio del proyecto en esa misma carpeta. No compartir esos archivos de sesión. El JSON local no es una copia portable de una cuenta: borrar la sesión crea otra identidad, y no hay recuperación por correo ni fusión de cuentas en esta entrega.
 
 Supabase cambia el token de renovación cada vez que se usa y anula la sesión si alguien reusa uno viejo. Por eso, antes de renovar, el juego vuelve a leer el archivo de sesión (otro juego abierto en la PC pudo renovarla). Si aun así la sesión quedó anulada, crea otra identidad anónima y lo avisa en la pantalla de Logros; la anterior queda en el ranking con el mismo nombre y lo que tenía.
 
-El progreso local funciona sin internet. Se sincronizan totales acumulados, usando el máximo entre nube y PC: reintentar no duplica puntos. Los cambios se envían como máximo cada 15 segundos; el ranking se consulta al abrir, al cambiar de página/filtro, manualmente y cada 60 segundos mientras la pantalla permanece abierta. Errores de red aplican espera creciente de 10 a 120 segundos y conservan la caché visible con su fecha.
+El progreso local funciona sin internet. Se sincronizan totales acumulados, usando el máximo entre nube y PC: reintentar no duplica puntos. Los cambios se envían enseguida (con 2 segundos entre una sincronización y la siguiente) y, al cerrar el juego, si queda algo sin subir, el juego espera hasta 4 segundos a que salga; el ranking se consulta al abrir, al cambiar de página/filtro, manualmente y cada 60 segundos mientras la pantalla permanece abierta. Errores de red aplican espera creciente de 10 a 120 segundos y conservan la caché visible con su fecha.
 
 ## Cuentas (US 237, US 269, US 270, US 281 y US 282)
 
@@ -77,7 +77,7 @@ El launcher (y el Perfil, en el editor) hace estos pedidos a Supabase Auth:
 4. Iniciar sesión: `POST /auth/v1/token?grant_type=password`. Si el mail no está confirmado, se manda otro código y se pide confirmarlo.
 5. Cerrar sesión: `POST /auth/v1/logout?scope=local`.
 
-El nombre de jugador lo pide el juego la primera vez y lo guarda en la cuenta (`PUT /auth/v1/user` con `data.nombre`): así aparece en el launcher y en otra PC.
+El nombre de jugador lo pide el juego la primera vez y lo guarda en la cuenta (`PUT /auth/v1/user` con `data.nombre`): así aparece en el launcher y en otra PC. Si no se pudo guardar (sin conexión), el juego lo reintenta en cada sincronización.
 
 **Configuración en el panel de Supabase (una sola vez):**
 
@@ -94,6 +94,18 @@ El nombre de jugador lo pide el juego la primera vez y lo guarda en la cuenta (`
 1. Volver a correr `logros.sql`: `rw_sync_comets` y `rw_sync_progress` pasan a rechazar las sesiones anónimas (`Account required`).
 2. Correr `reset-cuentas.sql`. **No se puede deshacer.** Muestra primero qué va a borrar y después borra el ranking, los logros y el progreso de las pruebas, y los jugadores anónimos sin opiniones. Los anónimos con opiniones quedan, porque borrarlos borraría sus opiniones.
 
+## Monedas de la cuenta (US 272)
+
+El saldo de créditos, boletos y cristales de una cuenta lo lleva la base: en SQL Editor ejecutar `Backend/Supabase/monedas.sql` (después de `logros.sql`; es reejecutable y no borra nada). La prueba opcional `monedas.test.sql` revierte sus datos al terminar.
+
+- Tablas `rw_wallet` (el saldo) y `rw_wallet_moves` (cada movimiento con un id que genera el juego), con RLS y sin acceso directo. La RPC `rw_wallet_apply` aplica los movimientos en orden y devuelve el saldo y los ids rechazados.
+- Lo ganado (partidas, repetidos de las cápsulas, compras simuladas y F9) se suma enseguida en el juego y espera en una fila (en el archivo de la cuenta) hasta que sube; sin conexión espera hasta que vuelva.
+- Para gastar (abrir cápsulas y canjear) la base confirma antes: si no alcanza el saldo de la cuenta (se gastó en otra PC), lo rechaza y no cambia nada. Sin conexión no se gasta y la Estación lo avisa.
+- Reintentar no repite: un movimiento que ya llegó no se vuelve a aplicar, y uno rechazado sigue rechazado.
+- Las cuentas arrancan en cero. Las monedas que había en la PC (o en el archivo de una cuenta antes de esta versión) no pasan a la cuenta: la primera vez que se conecta, el juego toma el saldo de la base.
+- «Reiniciar datos de prueba» (Tienda) es solo sin cuenta.
+- Mientras no se corra `monedas.sql`, el juego sigue con las monedas en la PC, como antes.
+- Como el resto, no es a prueba de trampas: el sorteo de las cápsulas sigue en el juego y la base acepta lo que el juego dice que ganó (con topes por movimiento).
 ## Seguridad y límites de esta entrega
 
 Las tablas tienen RLS y no permiten acceso directo desde el cliente. Las RPC identifican al jugador por su sesión, no por un ID enviado en el cuerpo; los desbloqueos se calculan en la base a partir de los contadores. No se distribuyen claves administrativas.

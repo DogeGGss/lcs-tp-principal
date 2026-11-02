@@ -9,7 +9,7 @@ using Pack = PerfilDatos.Pack;
 // "comprar" pide confirmación, suma los cristales y anota la compra, pero no se cobra nada.
 public class PantallaTienda : PantallaBase
 {
-    private Boton botonOferta;
+    private Boton botonOferta, botonReiniciar;
     private TextMeshProUGUI precioOferta;
     private readonly Boton[] botonesPack = new Boton[4];
     private RectTransform historial;
@@ -94,7 +94,7 @@ public class PantallaTienda : PantallaBase
         T(r, "Rotulo", 24f, 18f, 560f, 22f, FRotulo, 17f, Accent, "Total gastado (simulado)", TextAlignmentOptions.MidlineLeft, 16f, true);
         total = T(r, "Total", 22f, 46f, 560f, 70f, FTitulo, 66f, Ink, "");
         cuenta = T(r, "Cuenta", 24f, 118f, 560f, 28f, FTexto, 20f, Mute, "");
-        CrearBoton(r, 24f, 170f, 552f, 56f, "Reiniciar datos de prueba", false, () =>
+        botonReiniciar = CrearBoton(r, 24f, 170f, 552f, 56f, "Reiniciar datos de prueba", false, () =>
             menu.Confirmar("Prueba del menú", "Reiniciar datos",
                 "Vuelve todo a como arranca la prueba: monedas, colección, equipado, compras y cápsulas abiertas.",
                 "Reiniciar", () => { PerfilDatos.Reiniciar(); menu.Avisar("Datos de prueba reiniciados"); }), 22f);
@@ -121,6 +121,9 @@ public class PantallaTienda : PantallaBase
         botonOferta.Habilitar(oferta);
         botonOferta.texto.text = oferta ? "Comprar" : "Ya la compraste";
         precioOferta.color = oferta ? Ink : Mute;
+        // Solo sin cuenta: con cuenta, la nube devolvería todo (US 272).
+        botonReiniciar.Habilitar(PerfilDatos.PuedeReiniciar);
+        botonReiniciar.texto.text = PerfilDatos.PuedeReiniciar ? "Reiniciar datos de prueba" : "Con cuenta no se reinicia";
 
         BorrarHijos(historial);
         int n = 0;

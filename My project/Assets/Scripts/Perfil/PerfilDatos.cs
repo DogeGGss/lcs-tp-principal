@@ -5,8 +5,10 @@ using UnityEngine;
 
 // Datos fijos del menú principal para el Perfil, la Estación del Rift
 // (cápsulas) y la tienda de cristales. Todavía no hay historias refinadas: catálogo, rarezas, probabilidades, precios y
-// estadísticas son de ejemplo. Se guarda con el progreso del jugador (Guardado, clave "Perfil.Prueba", US 162); los
-// cosméticos obtenidos y equipados también van a la nube (ProgresoNube), las monedas no.
+// estadísticas son de ejemplo. Se guarda con el progreso del jugador (Guardado, clave "Perfil.Prueba", US 162). Con una
+// cuenta todo va también a la nube: los cosméticos, las cápsulas abiertas, el pity, las compras y los últimos premios con
+// el resto del progreso (ProgresoNube), y las monedas con su propio saldo en la base (US 272, LogrosOnline.Billetera).
+// Las cuentas arrancan de cero (US 237, CA3): sin monedas ni cosméticos, salvo los de entrada.
 //
 // Las tres monedas simulan el negocio de un juego gratuito; no se cobra nada:
 // - Créditos: se ganan jugando (al terminar una partida). Se cambian por boletos.
@@ -46,21 +48,32 @@ public static class PerfilDatos
         public int creditos; // por repetido
     }
 
+    // cuando: "2026-11-01T14:03", para ordenar las compras de varias PCs (las viejas solo tienen fecha, "01/11 14:03").
     [Serializable]
-    private class Compra { public string pack; public int precio; public string fecha; }
+    private class Compra { public string pack; public int precio; public string fecha, cuando; }
+
+    /// <summary>US 272: lo que cambia el saldo (negativo, un gasto). Con cuenta, cada uno tiene su id: la base no aplica
+    /// dos veces el mismo aunque se reenvíe.</summary>
+    [Serializable]
+    public class Movimiento { public string id, motivo; public int creditos, boletos, cristales; }
 
     [Serializable]
     private class Estado
     {
-        public int creditos = 2450, boletos = 3, cristales = 120;
+        public int creditos, boletos, cristales; // con cuenta: el saldo de la base más los movimientos que esperan subir
         public List<string> obtenidos = new List<string>();
         public string avatar = "riftwalker", banner = "anden-riftwalker", titulo = "";
         public string marco = "anden-riftwalker"; // el del conjunto inicial: equipado de entrada para que se vea
-        public int sinEpico, aperturas, gastado;
+        public int aperturas, gastado;
+        public int sinEpico;          // solo para leer guardados viejos: ahora sale de aperturas - ultimoEpico
+        public int ultimoEpico = -1;  // aperturas cuando salió el último épico (sube siempre: se junta con el máximo en la nube)
         public List<Compra> compras = new List<Compra>();
         public List<string> recientes = new List<string>();
         public List<string> nuevos = new List<string>();
         public List<string> packsUsados = new List<string>();
+        public List<Movimiento> pendientes = new List<Movimiento>(); // con cuenta: ganado y todavía no subido
+        public bool nubeRecibida;    // ya llegó lo de la nube a esta PC
+        public bool equipadoElegido; // el jugador equipó algo en esta PC
     }
 
     public const string Clave = "Perfil.Prueba"; // la misma que en PlayerPrefs: así se migra solo (Guardado)
@@ -193,17 +206,8 @@ public static class PerfilDatos
             {
                 try { e = JsonUtility.FromJson<Estado>(json); } catch { e = null; }
             }
-            guardadoAlCargar = e != null;
-            if (e == null)
-            {
-                e = new Estado();
-                // Para que el perfil no arranque vacío: algunos cosméticos ya obtenidos.
-                foreach (string clave in new[] { "av:astra-celeste", "av:pesado-ambar", "bn:umbral-celeste", "ti:t1", "ti:t5", "ti:t21", "ti:t49" })
-                    e.obtenidos.Add(clave);
-                e.avatar = "astra-celeste";
-                e.banner = "umbral-celeste";
-                e.titulo = "t1";
-            }
+            if (e == null) e = new Estado(); // de cero: los cosméticos de entrada y sin monedas (US 237, CA3)
+            if (e.ultimoEpico < 0) e.ultimoEpico = Mathf.Max(0, e.aperturas - e.sinEpico);
             return e;
         }
     }
@@ -232,18 +236,43 @@ public static class PerfilDatos
 
     // ---------- Nube (ProgresoNube, US 162 y US 163) ----------
 
-    // Si al cargar no había nada guardado, lo equipado que vuelve de la nube reemplaza a lo de entrada.
-    private static bool guardadoAlCargar;
-
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
-    private static void ReiniciarSesion()
-    {
-        e = null; // se vuelve a leer del guardado en cada Play (el editor no recarga el dominio)
-        guardadoAlCargar = false;
-    }
+    private static void ReiniciarSesion() => e = null; // se vuelve a leer del guardado en cada Play (el editor no recarga el dominio)
+
+    /// <summary>
+    /// Si lo equipado y los últimos premios de esta PC ya se pueden subir. En una PC nueva (o recién instalada) primero
+    /// se trae lo de la nube: si no, lo de entrada pisaría lo que el jugador tenía equipado en la otra. Lo que equipa a
+    /// mano en esta PC también cuenta.
+    /// </summary>
+    public static bool EquipadoPropio => E.nubeRecibida || E.equipadoElegido;
 
     /// <summary>Claves de los cosméticos obtenidos ("av:...", "bn:...", "ti:...", "mc:...").</summary>
     public static IEnumerable<string> ObtenidosIds => E.obtenidos;
+    public static int UltimoEpico => E.ultimoEpico;
+    public static IEnumerable<string> PacksUsados => E.packsUsados;
+
+    /// <summary>Las compras para la nube, cada una en un texto: "2026-11-01T14:03|Bolsa de cristales|1200".</summary>
+    public static IEnumerable<string> ComprasNube
+    {
+        get { foreach (Compra c in E.compras) yield return CuandoDe(c) + "|" + c.pack + "|" + c.precio; }
+    }
+
+    private static string CuandoDe(Compra c)
+    {
+        if (!string.IsNullOrEmpty(c.cuando)) return c.cuando;
+        // Las de antes solo tienen día y hora ("01/11 14:03"): se toman del año actual.
+        return DateTime.TryParseExact(c.fecha, "dd/MM HH:mm", System.Globalization.CultureInfo.InvariantCulture,
+            System.Globalization.DateTimeStyles.None, out DateTime d) ? d.ToString("yyyy-MM-ddTHH:mm") : "0000-00-00T00:00";
+    }
+
+    /// <summary>Lo que volvió de la nube para el Perfil (ProgresoNube.Fusionar).</summary>
+    public sealed class Nube
+    {
+        public readonly List<string> obtenidos = new List<string>(), packs = new List<string>(), compras = new List<string>();
+        public readonly Dictionary<string, string> equipados = new Dictionary<string, string>();
+        public readonly List<string> recientes = new List<string>();
+        public int aperturas, ultimoEpico, gastado;
+    }
 
     /// <summary>Lo equipado de cada tipo: avatar, banner, título y marco.</summary>
     public static IEnumerable<(string tipo, string id)> Equipados
@@ -258,23 +287,50 @@ public static class PerfilDatos
     }
 
     /// <summary>
-    /// Junta lo que vuelve de la nube: suma los cosméticos obtenidos que falten y, si esta PC no tenía nada guardado,
-    /// equipa lo de la nube (solo lo que el jugador tiene). Nunca quita nada.
+    /// Junta lo que vuelve de la nube. Suma los cosméticos, los packs de una sola vez y las compras que falten, y se
+    /// queda con lo más alto de las cápsulas abiertas, el último épico (el pity) y el total gastado. La primera vez en
+    /// esta PC, además, equipa lo de la nube (solo lo que el jugador tiene) y trae los últimos premios. Nunca quita nada.
     /// </summary>
-    public static void FusionarNube(IEnumerable<string> obtenidos, IReadOnlyDictionary<string, string> equipados)
+    public static void FusionarNube(Nube nube)
     {
         Estado s = E;
         bool cambio = false;
-        foreach (string clave in obtenidos)
+        foreach (string clave in nube.obtenidos)
             if (!string.IsNullOrEmpty(clave) && DesdeClave(clave) != null && !s.obtenidos.Contains(clave)) { s.obtenidos.Add(clave); cambio = true; }
-        if (!guardadoAlCargar)
+        foreach (string id in nube.packs)
+            if (Packs.Exists(p => p.id == id) && !s.packsUsados.Contains(id)) { s.packsUsados.Add(id); cambio = true; }
+        if (nube.aperturas > s.aperturas) { s.aperturas = nube.aperturas; cambio = true; }
+        if (nube.ultimoEpico > s.ultimoEpico) { s.ultimoEpico = nube.ultimoEpico; cambio = true; }
+        if (nube.gastado > s.gastado) { s.gastado = nube.gastado; cambio = true; }
+
+        var mias = new HashSet<string>(ComprasNube);
+        bool compras = false;
+        foreach (string texto in nube.compras)
         {
-            cambio |= Equipar(Tipo.Avatar, equipados, "avatar", ref s.avatar);
-            cambio |= Equipar(Tipo.Banner, equipados, "banner", ref s.banner);
-            cambio |= Equipar(Tipo.Titulo, equipados, "titulo", ref s.titulo);
-            cambio |= Equipar(Tipo.Marco, equipados, "marco", ref s.marco);
-            guardadoAlCargar = true;
+            string[] partes = texto?.Split('|');
+            if (partes == null || partes.Length != 3 || mias.Contains(texto) || !int.TryParse(partes[2], out int precio)) continue;
+            string fecha = DateTime.TryParse(partes[0], System.Globalization.CultureInfo.InvariantCulture,
+                System.Globalization.DateTimeStyles.None, out DateTime d) ? d.ToString("dd/MM HH:mm") : "";
+            s.compras.Add(new Compra { pack = partes[1], precio = precio, fecha = fecha, cuando = partes[0] });
+            compras = true;
         }
+        if (compras)
+        {
+            s.compras.Sort((a, b) => string.CompareOrdinal(CuandoDe(b), CuandoDe(a))); // la más nueva primero
+            if (s.compras.Count > 100) s.compras.RemoveRange(100, s.compras.Count - 100);
+            cambio = true;
+        }
+
+        if (!EquipadoPropio)
+        {
+            cambio |= Equipar(Tipo.Avatar, nube.equipados, "avatar", ref s.avatar);
+            cambio |= Equipar(Tipo.Banner, nube.equipados, "banner", ref s.banner);
+            cambio |= Equipar(Tipo.Titulo, nube.equipados, "titulo", ref s.titulo);
+            cambio |= Equipar(Tipo.Marco, nube.equipados, "marco", ref s.marco);
+            var recientes = nube.recientes.FindAll(clave => DesdeClave(clave) != null);
+            if (recientes.Count > 0) { s.recientes = recientes; cambio = true; }
+        }
+        if (!s.nubeRecibida) { s.nubeRecibida = true; cambio = true; }
         if (cambio) Guardar();
     }
 
@@ -291,7 +347,8 @@ public static class PerfilDatos
     public static int Boletos => E.boletos;
     public static int Cristales => E.cristales;
     public static int Aperturas => E.aperturas;
-    public static int FaltanParaGarantia => Garantia - E.sinEpico;
+    public static int FaltanParaGarantia => Garantia - SinEpico;
+    private static int SinEpico => Mathf.Max(0, E.aperturas - E.ultimoEpico); // cápsulas desde el último épico
     public static int Gastado => E.gastado;
     public static IReadOnlyList<string> Recientes => E.recientes;
 
@@ -419,6 +476,7 @@ public static class PerfilDatos
         else if (c.tipo == Tipo.Marco) E.marco = c.id;
         else E.titulo = c.id;
         E.nuevos.Remove(c.Clave);
+        E.equipadoElegido = true;
         Guardar();
         return true;
     }
@@ -430,19 +488,28 @@ public static class PerfilDatos
 
     public static bool PuedeAbrir(int cantidad) => E.boletos >= cantidad;
 
-    /// <summary>Abre cápsulas: gasta un boleto por cada una. Devuelve null si no alcanzan los boletos.</summary>
-    public static List<Resultado> Abrir(int cantidad)
+    /// <summary>
+    /// Abre cápsulas: gasta un boleto por cada una y después las sortea. listo recibe los premios, o null y el motivo si
+    /// no se pudo (no alcanzan los boletos o, con cuenta, no hay conexión: la base confirma el gasto, US 272).
+    /// </summary>
+    public static void Abrir(int cantidad, Action<List<Resultado>, string> listo)
     {
-        if (!PuedeAbrir(cantidad)) return null;
+        string falta = cantidad == 1 ? "No tenés boletos: canjeá créditos o cristales" : $"Te faltan boletos para abrir {cantidad}";
+        Gastar(Mover("capsula", boletos: -cantidad), falta, error => listo?.Invoke(error == null ? Sortear(cantidad) : null, error));
+    }
+
+    // Las cápsulas ya pagadas.
+    private static List<Resultado> Sortear(int cantidad)
+    {
         var lista = new List<Resultado>();
+        int repetidos = 0;
         for (int i = 0; i < cantidad; i++)
         {
-            E.boletos--;
+            bool garantia = SinEpico >= Garantia - 1;
             E.aperturas++;
-            bool garantia = E.sinEpico >= Garantia - 1;
             Rareza r = Sortear();
             if (garantia && r < Rareza.Epico) r = Rareza.Epico;
-            E.sinEpico = r >= Rareza.Epico ? 0 : E.sinEpico + 1;
+            if (r >= Rareza.Epico) E.ultimoEpico = E.aperturas;
 
             // Dentro de la rareza, primero el tipo (si no, casi todo serían títulos: son 71 de 129) y después el objeto.
             Tipo tipo = SortearTipo(r);
@@ -457,13 +524,14 @@ public static class PerfilDatos
             else
             {
                 res.creditos = CreditosPorRepetido[(int)r];
-                E.creditos += res.creditos;
+                repetidos += res.creditos;
             }
             E.recientes.Insert(0, premio.Clave);
             if (E.recientes.Count > 8) E.recientes.RemoveAt(E.recientes.Count - 1);
             lista.Add(res);
         }
-        Guardar();
+        if (repetidos > 0) Sumar(Mover("repetido", creditos: repetidos)); // Sumar guarda
+        else Guardar();
         return lista;
     }
 
@@ -504,23 +572,15 @@ public static class PerfilDatos
 
     // ================= Monedas =================
 
-    public static bool CanjearCreditos()
-    {
-        if (E.creditos < CreditosPorBoleto) return false;
-        E.creditos -= CreditosPorBoleto;
-        E.boletos++;
-        Guardar();
-        return true;
-    }
+    /// <summary>Canjea créditos por un boleto. listo recibe null si se pudo, o el motivo.</summary>
+    public static void CanjearCreditos(Action<string> listo) =>
+        Gastar(Mover("canje_creditos", creditos: -CreditosPorBoleto, boletos: 1), "Te faltan créditos: se ganan jugando partidas", listo);
 
-    public static bool CanjearCristales(int boletos)
+    /// <summary>Canjea cristales por boletos (10 juntos salen más baratos). listo recibe null si se pudo, o el motivo.</summary>
+    public static void CanjearCristales(int boletos, Action<string> listo)
     {
         int costo = boletos >= 10 ? CristalesPorDiez : CristalesPorBoleto * boletos;
-        if (E.cristales < costo) return false;
-        E.cristales -= costo;
-        E.boletos += boletos;
-        Guardar();
-        return true;
+        Gastar(Mover("canje_cristales", cristales: -costo, boletos: boletos), "Te faltan cristales", listo);
     }
 
     public static bool PackDisponible(Pack p) => !p.unaVez || !E.packsUsados.Contains(p.id);
@@ -529,34 +589,93 @@ public static class PerfilDatos
     public static bool ComprarSimulado(Pack p)
     {
         if (!PackDisponible(p)) return false;
-        E.cristales += p.cristales + p.bonus;
-        E.boletos += p.boletos;
         E.gastado += p.precio;
         if (p.unaVez) E.packsUsados.Add(p.id);
-        E.compras.Insert(0, new Compra { pack = p.nombre, precio = p.precio, fecha = DateTime.Now.ToString("dd/MM HH:mm") });
-        Guardar();
+        DateTime ahora = DateTime.Now;
+        E.compras.Insert(0, new Compra { pack = p.nombre, precio = p.precio, fecha = ahora.ToString("dd/MM HH:mm"), cuando = ahora.ToString("yyyy-MM-ddTHH:mm") });
+        Sumar(Mover("compra", cristales: p.cristales + p.bonus, boletos: p.boletos));
         return true;
     }
 
     public const int DebugCreditos = 1000, DebugBoletos = 10, DebugCristales = 500;
 
     /// <summary>DEBUG (F9 en el menú): suma de las tres monedas para probar sin jugar ni comprar.</summary>
-    public static void SumarDebug()
-    {
-        E.creditos += DebugCreditos;
-        E.boletos += DebugBoletos;
-        E.cristales += DebugCristales;
-        Guardar();
-    }
+    public static void SumarDebug() => Sumar(Mover("debug", DebugCreditos, DebugBoletos, DebugCristales));
 
     /// <summary>Créditos por jugar: se llama al terminar una partida. Devuelve cuántos sumó.</summary>
     public static int GanarPorPartida(bool gano)
     {
         int creditos = gano ? CreditosVictoria : CreditosDerrota;
-        E.creditos += creditos;
-        Guardar();
+        Sumar(Mover("partida", creditos: creditos));
         return creditos;
     }
+
+    // ----- Saldo de la cuenta (US 272) -----
+    // Sin cuenta, las monedas son de la PC, como antes. Con cuenta, el saldo lo lleva la base (Backend/Supabase/monedas.sql):
+    // lo ganado se suma al toque y queda en la fila hasta que LogrosOnline lo sube (también lo ganado sin conexión, CA4);
+    // para gastar, primero lo confirma la base (CA3 y CA4: si se gastó en otra PC, la base no deja gastar de más).
+
+    /// <summary>Hay una cuenta abierta: las monedas son las de la base.</summary>
+    public static bool ConCuenta => Guardado.CuentaActiva != null;
+
+    public static bool HayPendientes => E.pendientes.Count > 0;
+
+    /// <summary>Copia de lo ganado que todavía no subió.</summary>
+    public static List<Movimiento> Pendientes => new List<Movimiento>(E.pendientes);
+
+    public static Movimiento Mover(string motivo, int creditos = 0, int boletos = 0, int cristales = 0) =>
+        new Movimiento { id = Guid.NewGuid().ToString(), motivo = motivo, creditos = creditos, boletos = boletos, cristales = cristales };
+
+    private static bool Alcanza(Movimiento m) => E.creditos + m.creditos >= 0 && E.boletos + m.boletos >= 0 && E.cristales + m.cristales >= 0;
+
+    private static void Aplicar(Movimiento m)
+    {
+        E.creditos = Mathf.Max(0, E.creditos + m.creditos);
+        E.boletos = Mathf.Max(0, E.boletos + m.boletos);
+        E.cristales = Mathf.Max(0, E.cristales + m.cristales);
+    }
+
+    // Se aplica ya y, con cuenta, espera en la fila para subir (lo ganado, o un gasto que no pudo confirmar la base
+    // porque todavía no tiene monedas.sql: cuando la tenga, lo repite en orden).
+    private static void Sumar(Movimiento m)
+    {
+        Aplicar(m);
+        if (ConCuenta) E.pendientes.Add(m);
+        Guardar();
+    }
+
+    // Un gasto: sin cuenta (o sin el servicio online), al instante; con cuenta, la base lo confirma antes.
+    private static void Gastar(Movimiento m, string falta, Action<string> listo)
+    {
+        if (!Alcanza(m)) { listo?.Invoke(falta); return; }
+        LogrosOnline online = LogrosOnline.Instancia;
+        if (!ConCuenta || online == null || !online.BilleteraEnLaNube)
+        {
+            Sumar(m);
+            listo?.Invoke(null);
+            return;
+        }
+        online.Gastar(m, falta, listo);
+    }
+
+    /// <summary>
+    /// El saldo que devolvió la base después de aplicar lo que se le mandó: es el de la cuenta. Salen de la fila los que
+    /// ya llegaron (aplicados o rechazados) y se vuelven a sumar los que se ganaron mientras tanto.
+    /// </summary>
+    public static void SaldoDeLaNube(int creditos, int boletos, int cristales, ICollection<string> enviados)
+    {
+        E.pendientes.RemoveAll(m => enviados.Contains(m.id));
+        E.creditos = creditos; E.boletos = boletos; E.cristales = cristales;
+        foreach (Movimiento m in E.pendientes) Aplicar(m);
+        Guardar();
+    }
+
+    /// <summary>Sin el servicio online actualizado (falta correr monedas.sql), un gasto con cuenta se hace en la PC y
+    /// queda en la fila.</summary>
+    public static void GastarEnLaPC(Movimiento m) => Sumar(m);
+
+    /// <summary>«Reiniciar datos de prueba» es solo sin cuenta: la nube devolvería todo.</summary>
+    public static bool PuedeReiniciar => !ConCuenta;
 
     public static string Pesos(int monto) => "$ " + monto.ToString("N0", System.Globalization.CultureInfo.InvariantCulture).Replace(",", ".");
     public static string Numero(int n) => n.ToString("N0", System.Globalization.CultureInfo.InvariantCulture).Replace(",", ".");
