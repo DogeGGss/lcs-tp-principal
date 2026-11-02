@@ -263,7 +263,13 @@ public class CombatHud : MonoBehaviour
         ShopItem weapon = null;
         GameObject held = switcher.HeldPrimary;
         if (held != null) weapon = WeaponSwitcher.FichaDe(held);
-        else if (switcher.pistolObj != null && switcher.pistolObj.activeInHierarchy && loadout != null) weapon = loadout.Secondary;
+        else
+        {
+            // La secundaria en la mano: La Porteña (pistolObj) o la que se compró, como La Trochita (otrasSecundarias).
+            GameObject secundaria = switcher.HeldSecondary;
+            if (secundaria != null) weapon = WeaponSwitcher.FichaDe(secundaria);
+            if (weapon == null && secundaria != null && secundaria == switcher.pistolObj && loadout != null) weapon = loadout.Secondary;
+        }
         if (weapon == null) return 0f;
 
         float degrees = WeaponAim.For(view).CurrentSpread(weapon, false);
