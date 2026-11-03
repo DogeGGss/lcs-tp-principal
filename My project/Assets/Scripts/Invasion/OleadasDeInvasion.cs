@@ -47,6 +47,9 @@ public class OleadasDeInvasion : MonoBehaviour
     /// <summary>Avisa cada oleada que empieza y cada oleada superada (para el marcador y los puntos).</summary>
     public static event System.Action<int> Empezo, Supero;
 
+    /// <summary>Avisa cuando sale el cartel de "¡Llegó el jefe!" (US 298: el marcador se muestra un momento).</summary>
+    public static event System.Action LlegoElJefe;
+
     private enum Fase { Descanso, Oleada, Final }
 
     private Fase fase = Fase.Descanso;
@@ -224,6 +227,7 @@ public class OleadasDeInvasion : MonoBehaviour
             if (portalDelJefe == null) portalDelJefe = PortalDeEnemigos.Abrir(dondeJefe, jugador.position, ConfigInvasion.Actual.escalaJefe);
             portalDelJefe.Fila.Enqueue(tipoJefe); // (si el jefe se perdió, vuelve a salir por el mismo portal)
             MatchHud.ShowBanner("Oleada 10", "¡Llegó el jefe!", ShopUIKit.Bad, "", null, 3f);
+            LlegoElJefe?.Invoke();
         }
         if (portalDelJefe != null && !portalDelJefe.Cerrando && portalDelJefe.Listo && portalDelJefe.Fila.Count > 0)
         {
