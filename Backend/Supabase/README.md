@@ -106,6 +106,26 @@ El saldo de créditos, boletos y cristales de una cuenta lo lleva la base: en SQ
 - «Reiniciar datos de prueba» (Tienda) es solo sin cuenta.
 - Mientras no se corra `monedas.sql`, el juego sigue con las monedas en la PC, como antes.
 - Como el resto, no es a prueba de trampas: el sorteo de las cápsulas sigue en el juego y la base acepta lo que el juego dice que ganó (con topes por movimiento).
+## Funciones (Edge Functions): verificar la cuenta en Photon y borrar la cuenta
+
+Dos funciones en `Backend/Supabase/functions`, que se publican desde el panel de Supabase (no hace falta instalar nada):
+
+- **`photon-auth`** (US 277, CA1): Photon le pasa la sesión de la cuenta con la que se conecta el juego publicado y la función la valida con Supabase Auth. Devuelve el id de la cuenta como usuario de Photon (así la misma cuenta no entra dos veces a una sala) y su nombre. Una sesión vencida, cerrada o de una cuenta borrada no entra.
+- **`borrar-cuenta`** (US 273, CA2): la llama el launcher con la sesión y la contraseña. Comprueba la contraseña y borra el usuario con la clave de servicio; sus datos se van en cascada (progreso, monedas, logros, ranking y opiniones).
+
+**Publicarlas (una vez, y de nuevo si cambian):**
+
+1. En el panel de Supabase: *Edge Functions › Deploy a new function › Via Editor*.
+2. Nombre `photon-auth`; pegar todo `functions/photon-auth/index.ts` y *Deploy*. Después, en esa función, *Settings*: **apagar «Verify JWT with legacy secret»** y *Save changes*. Photon no manda el encabezado de Supabase; la sesión la verifica la función.
+3. Nombre `borrar-cuenta`; pegar `functions/borrar-cuenta/index.ts`, *Deploy*, y **también apagar «Verify JWT with legacy secret»**. La función valida la sesión y la contraseña por su cuenta; con la opción prendida, las sesiones firmadas con las claves nuevas de Supabase quedarían rechazadas.
+4. Las dos usan `SUPABASE_URL`, `SUPABASE_ANON_KEY` y `SUPABASE_SERVICE_ROLE_KEY`, que Supabase les da solas. Si el proyecto tiene apagadas las claves viejas (*legacy API keys*), cargar en *Edge Functions › Secrets* `CLAVE_PUBLICA` (la `sb_publishable_...`) y `CLAVE_SERVICIO` (la `sb_secret_...`). La clave de servicio va solo ahí: nunca en el juego, el launcher ni el repositorio.
+
+**Photon (una vez):** en https://dashboard.photonengine.com, la aplicación del juego › *Manage* › *Authentication* › agregar un proveedor **Custom Server**:
+
+- *Authentication URL*: `https://linroadyovelwuaxjjhk.supabase.co/functions/v1/photon-auth`
+- **Dejar prendido «Allow anonymous clients to connect»**: el editor y los builds de desarrollo entran sin verificar (para probar con dos copias del juego), y los builds publicados antes de este cambio también.
+
+Orden: primero las funciones, después Photon. Para probar la verificación en el editor: *Riftwalker › Cuenta › Como en el juego publicado*, y buscar partida. Si la sesión no vale, la búsqueda dice «No se pudo verificar tu cuenta» y ofrece abrir el launcher.
 ## Seguridad y límites de esta entrega
 
 Las tablas tienen RLS y no permiten acceso directo desde el cliente. Las RPC identifican al jugador por su sesión, no por un ID enviado en el cuerpo; los desbloqueos se calculan en la base a partir de los contadores. No se distribuyen claves administrativas.

@@ -7,13 +7,13 @@ using System.Windows.Threading;
 
 namespace Riftwalker.Launcher;
 
-// The player's account (F18: US 237, US 269, US 270 and US 282; design in the guide, #cuenta-launcher). The launcher
+// The player's account (F18: US 237, US 269, US 270, US 273 and US 282; design in the guide, #cuenta-launcher). The launcher
 // works like a game client: without a session the account panel covers the window (everything but the top bar) and
 // PLAY does nothing; with one, the top bar shows the account and its menu, and PLAY opens the game with that session
 // (the game reads the same file, see Cuentas). Each step of the panel is built in code, like the game's menus.
 public partial class MainWindow
 {
-    private enum PanelCuenta { Ninguno, Entrar, Crear, Confirmar, Privacidad, Cerrar, CerrarJuego }
+    private enum PanelCuenta { Ninguno, Entrar, Crear, Confirmar, Privacidad, Cerrar, CerrarJuego, Borrar, BorrarJuego }
     private const int SegundosParaReenviar = 60;
     private Cuentas? cuentas;
     private PanelCuenta panelCuenta;
@@ -92,6 +92,12 @@ public partial class MainWindow
         CerrarMenuCuenta();
         AbrirCuenta(!App.Preview && installer.IsRunning() ? PanelCuenta.CerrarJuego : PanelCuenta.Cerrar);
     }
+    // US 273, CA2: the same, to delete the account.
+    private void MenuBorrar_Click(object sender, RoutedEventArgs e)
+    {
+        CerrarMenuCuenta();
+        AbrirCuenta(!App.Preview && installer.IsRunning() ? PanelCuenta.BorrarJuego : PanelCuenta.Borrar);
+    }
 
     private void TeclaCuenta(object sender, KeyEventArgs e)
     {
@@ -99,7 +105,7 @@ public partial class MainWindow
         if (CuentaMenuCapa.Visibility == Visibility.Visible) CerrarMenuCuenta();
         else if (panelCuenta is PanelCuenta.Crear or PanelCuenta.Confirmar) AbrirCuenta(PanelCuenta.Entrar);
         else if (panelCuenta == PanelCuenta.Privacidad) AbrirCuenta(volverDePrivacidad);
-        else if (panelCuenta is PanelCuenta.Cerrar or PanelCuenta.CerrarJuego) AbrirCuenta(PanelCuenta.Ninguno);
+        else if (panelCuenta is PanelCuenta.Cerrar or PanelCuenta.CerrarJuego or PanelCuenta.Borrar or PanelCuenta.BorrarJuego) AbrirCuenta(PanelCuenta.Ninguno);
         else return;
         e.Handled = true;
     }
@@ -123,7 +129,9 @@ public partial class MainWindow
             case PanelCuenta.Confirmar: Confirmar(error); break;
             case PanelCuenta.Privacidad: Privacidad(); break;
             case PanelCuenta.Cerrar: Cerrar(); break;
-            case PanelCuenta.CerrarJuego: CerrarJuego(); break;
+            case PanelCuenta.CerrarJuego: CerrarJuego("Cerrar sesión"); break;
+            case PanelCuenta.Borrar: Borrar(error); break;
+            case PanelCuenta.BorrarJuego: CerrarJuego("Borrar cuenta"); break;
         }
     }
 
@@ -266,7 +274,7 @@ public partial class MainWindow
             ("QUÉ GUARDAMOS", "Tu mail y tu contraseña (cifrada), tu nombre, tu progreso (logros, cosméticos y monedas), tus estadísticas de partida y las opiniones que mandes."),
             ("PARA QUÉ", "Para que recuperes tu progreso en cualquier PC, para el ranking global y para buscar partida. No lo usamos para publicidad ni lo compartimos con nadie."),
             ("DÓNDE", "En la base del juego (Supabase). Las partidas pasan por los servidores de Photon, que reciben tu nombre de jugador, tu id de cuenta y tu conexión (IP)."),
-            ("TUS DERECHOS", "Podés ver tus datos en el Perfil del juego y pedir que borremos tu cuenta con todo lo que tiene (Ley 25.326 de Protección de Datos Personales)."),
+            ("TUS DERECHOS", "Podés ver tus datos en el Perfil del juego y borrar la cuenta con todo lo que tiene desde este launcher (Ley 25.326 de Protección de Datos Personales)."),
         ];
         foreach (var (titulo, texto) in partes)
         {
@@ -291,10 +299,37 @@ public partial class MainWindow
             AbrirCuenta(PanelCuenta.Entrar);
         };
     }
-    private void CerrarJuego()
+    private void CerrarJuego(string accion)
     {
-        Encabezado("TU CUENTA", "CERRÁ EL JUEGO PRIMERO", "Project Riftwalker está abierto con tu cuenta. Cerralo y volvé a tocar «Cerrar sesión».");
+        Encabezado("TU CUENTA", "CERRÁ EL JUEGO PRIMERO", $"Project Riftwalker está abierto con tu cuenta. Cerralo y volvé a tocar «{accion}».");
         Botones((null, null), ("ENTENDIDO", () => AbrirCuenta(PanelCuenta.Ninguno)));
+    }
+
+    // US 273, CA2 and CA3: the password to confirm, and the red button. Once deleted, back to «Iniciá sesión».
+    private void Borrar(string? error)
+    {
+        Encabezado("ESTO NO SE PUEDE DESHACER", "BORRAR CUENTA", "Se borran tu cuenta, su progreso, sus monedas, sus cosméticos y tu lugar en el ranking. El mail queda libre para crear otra cuenta.");
+        Campo clave = new("TU CONTRASEÑA, PARA CONFIRMAR", true);
+        if (error == ReglasCuenta.ClaveIncorrecta) clave.Marcar(error);
+        else if (error != null) Franja(error, true);
+        Agregar(clave.Raiz);
+        var (_, borrar) = Botones(("Volver", () => AbrirCuenta(PanelCuenta.Ninguno)), ("BORRAR CUENTA", null));
+        borrar.Background = Rojo; borrar.BorderBrush = Rojo; borrar.Foreground = Pincel(0x1A0606);
+        async void Enviar()
+        {
+            if (esperandoCuenta || cuentas == null || App.Preview) return;
+            if (clave.Valor.Length == 0) { clave.Marcar(ReglasCuenta.ClaveIncorrecta); return; }
+            string valor = clave.Valor;
+            string? r = await Esperar(borrar, "BORRANDO…", t => cuentas.BorrarAsync(valor, t));
+            if (r != null) { PintarCuenta(); AbrirCuenta(r == ReglasCuenta.SesionVencida ? PanelCuenta.Entrar : PanelCuenta.Borrar, r); return; }
+            mailCuenta = "";
+            avisoEntrar = "Borraste tu cuenta y todo lo que tenía. El mail quedó libre para crear otra.";
+            PintarCuenta();
+            AbrirCuenta(PanelCuenta.Entrar);
+        }
+        borrar.Click += (_, _) => Enviar();
+        clave.Enter += Enviar;
+        clave.Foco();
     }
 
     // In: the panel closes and the right card says what happened.
@@ -518,7 +553,7 @@ public partial class MainWindow
         cuentas = new Cuentas(http, ServicioCuentas.Juego, System.IO.Path.Combine(System.IO.Path.GetTempPath(), "riftwalker-vista-previa"));
         PreviewKeyDown += TeclaCuenta;
         mailCuenta = "ulises.fonseca@gmail.com";
-        bool conCuenta = paso is "listo" or "menu" or "cerrar" or "cerrar-juego" or "privacidad";
+        bool conCuenta = paso is "listo" or "menu" or "cerrar" or "cerrar-juego" or "privacidad" or "borrar" or "borrar-error";
         if (conCuenta)
         {
             cuentas.UsarVistaPrevia(new SesionCuenta { User = new UsuarioCuenta { Id = "vista-previa", Email = mailCuenta, CreatedAt = "2026-10-29T12:00:00Z", UserMetadata = new MetaCuenta { Nombre = "Ulises" } } });
@@ -536,6 +571,8 @@ public partial class MainWindow
             case "privacidad": AbrirCuenta(PanelCuenta.Privacidad); break;
             case "cerrar": AbrirCuenta(PanelCuenta.Cerrar); break;
             case "cerrar-juego": AbrirCuenta(PanelCuenta.CerrarJuego); break;
+            case "borrar": AbrirCuenta(PanelCuenta.Borrar); break;
+            case "borrar-error": AbrirCuenta(PanelCuenta.Borrar, ReglasCuenta.ClaveIncorrecta); break;
             case "listo": AbrirCuenta(PanelCuenta.Ninguno); break;
             case "menu": UpdateLayout(); CuentaChip_Click(CuentaChip, new RoutedEventArgs()); break;
             default: AbrirCuenta(PanelCuenta.Entrar); break;

@@ -494,7 +494,7 @@ public class PestanaCuenta
             { "Qué guardamos", "Tu mail y tu contraseña (cifrada), tu nombre, tu progreso (logros, cosméticos, monedas), tus estadísticas de partida y las opiniones que mandes." },
             { "Para qué", "Para que recuperes tu progreso en cualquier PC, para el ranking global y para buscar partida. No lo usamos para publicidad ni lo compartimos con nadie." },
             { "Dónde", "En la base del juego (Supabase). Las partidas pasan por los servidores de Photon, que reciben tu nombre de jugador, tu id de cuenta y tu conexión (IP), como cualquier juego en línea." },
-            { "Tus derechos", "Podés ver tus datos en el Perfil y pedir que borremos tu cuenta con todo lo que tiene (Ley 25.326 de Protección de Datos Personales)." },
+            { "Tus derechos", "Podés ver tus datos en el Perfil y borrar tu cuenta con todo lo que tiene desde el launcher, en el menú de la cuenta (Ley 25.326 de Protección de Datos Personales)." },
         };
         for (int i = 0; i < 4; i++)
         {

@@ -320,6 +320,35 @@ Test("Cuenta: renovar al abrir, cerrar sesión y la carpeta del juego", async ()
     Equal(false, File.Exists(ok.RutaSesion));
     Equal(true, Cuentas.CarpetaDelJuego().EndsWith(Path.Combine("LocalLow", "Equipo 4", "Project Riftwalker")));
 });
+Test("Cuenta: borrar pide la contraseña y saca de la PC la sesión y el archivo de la cuenta (US 273)", async () =>
+{
+    using var temp = new TestFolder();
+    await NuevaCuenta(temp, _ => Json(HttpStatusCode.OK, SesionJson)).ConfirmarAsync("ulises@gmail.com", "481902", default);
+    foreach (string a in new[] { "jugador-u1.json", "jugador-editor-u1.json", "jugador-otra.json" }) File.WriteAllText(Path.Combine(temp.Path, a), "{}");
+    File.WriteAllText(Path.Combine(temp.Path, "cuenta-activa.txt"), "u1");
+    // Contraseña mal: no se borra nada.
+    var mal = NuevaCuenta(temp, _ => Json(HttpStatusCode.Unauthorized, "{\"error\":\"clave\"}"));
+    mal.Cargar();
+    Equal<string?>(ReglasCuenta.ClaveIncorrecta, await mal.BorrarAsync("otra-clave", default));
+    Equal(true, File.Exists(mal.RutaSesion));
+    // Bien: la función recibe la sesión y la contraseña, y la PC queda sin la cuenta.
+    string? pedido = null;
+    var bien = NuevaCuenta(temp, req => { pedido = req.RequestUri!.AbsolutePath + " " + req.Headers.Authorization + " " + req.Content!.ReadAsStringAsync().Result; return Json(HttpStatusCode.OK, "{\"borrada\":true}"); });
+    bien.Cargar();
+    Equal<string?>(null, await bien.BorrarAsync("riftwalker", default));
+    Equal("/functions/v1/borrar-cuenta Bearer a1 {\"clave\":\"riftwalker\"}", pedido);
+    Equal(false, File.Exists(bien.RutaSesion));
+    Equal(false, File.Exists(Path.Combine(temp.Path, "jugador-u1.json")) || File.Exists(Path.Combine(temp.Path, "jugador-editor-u1.json")));
+    Equal(true, File.Exists(Path.Combine(temp.Path, "jugador-otra.json"))); // las otras cuentas de la PC quedan
+    Equal(false, File.Exists(Path.Combine(temp.Path, "cuenta-activa.txt")));
+    Equal<SesionCuenta?>(null, bien.Sesion);
+    // Sin conexión lo dice y la sesión queda.
+    await NuevaCuenta(temp, _ => Json(HttpStatusCode.OK, SesionJson)).ConfirmarAsync("ulises@gmail.com", "481902", default);
+    var sinRed = NuevaCuenta(temp, _ => throw new HttpRequestException("sin red"));
+    sinRed.Cargar();
+    Equal<string?>(ReglasCuenta.SinInternet, await sinRed.BorrarAsync("riftwalker", default));
+    Equal(true, File.Exists(sinRed.RutaSesion));
+});
 int failures = 0;
 foreach (var test in tests)
 {

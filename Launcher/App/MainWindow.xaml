@@ -123,6 +123,8 @@
      <Border Height="1" Background="#272C35" Margin="0,0,0,6"/>
      <Button Style="{StaticResource ItemMenu}" Content="Aviso de privacidad" Click="MenuPrivacidad_Click"/>
      <Button Style="{StaticResource ItemMenu}" Content="Cerrar sesión" Click="MenuCerrar_Click"/>
+     <Border Height="1" Background="#272C35" Margin="0,6"/>
+     <Button Style="{StaticResource ItemMenu}" Content="Borrar cuenta" Foreground="#FF5C5C" Click="MenuBorrar_Click"/>
     </StackPanel>
    </Border>
   </Canvas>
