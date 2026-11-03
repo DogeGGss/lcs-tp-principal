@@ -1,0 +1,437 @@
+using System.Collections.Generic;
+using TMPro;
+using UnityEngine;
+using UnityEngine.AI;
+using static ShopUIKit;
+
+// F08 (Modo Invasión), US 292: el puesto de suministros. Lo agrega PartidaDeInvasion.
+// - CA1: desde la oleada 2, al empezar cada oleada cae un puesto en uno de los lugares del mapa (LugarDeSuministros),
+//   nunca en el mismo que el anterior. Cae a cielo abierto cerca de ese lugar (nunca adentro de un edificio ni sobre
+//   un techo) y es la caja de los mapas de práctica y Táctico (ConfigInvasion.cajaPuesto).
+// - CA2: al caer aparece «Suministros en <lugar>», el puesto se ve en el minimapa (Minimapa) y tiene una marca encima
+//   con la distancia, que se dibuja en la pantalla: se ve a través de las paredes.
+// - CA3: alrededor hay un anillo verde (15 m de radio) en el piso y en el minimapa.
+// - CA4: los puntos que se ganan adentro del anillo (US 147) cargan el puesto; los de afuera solo cuentan para el
+//   récord. La carga se ve arriba del reloj del centro (CombatHud).
+// - CA5: la meta es el 40 % de los puntos que da la oleada entera (la cuenta: invasores × puntos por invasor).
+// - CA6: el de la oleada 2 cae ya cargado.
+// - CA7: al superar la oleada, si está cargado se abre (Abrio, para la elección de la US 293); si no, se va sin dar nada.
+// El radio, la meta y los puntos por invasor están en ConfigInvasion. De a varios (US 289) la carga va a sumar lo de
+// todos; por ahora cuenta lo del jugador local.
+public class PuestoDeSuministros : MonoBehaviour
+{
+    public const int DesdeLaOleada = 2; // CA1 y CA6
+    private const float Caida = 1.2f, AlturaDeCaida = 30f, AlturaDeLaMarca = 2.2f;
+    private const float DuracionAviso = 3f, EntradaAviso = 0.25f;
+
+    public static PuestoDeSuministros Actual { get; private set; }
+
+    /// <summary>CA7: el puesto estaba cargado al terminar la oleada (la US 293 abre la elección).</summary>
+    public static event System.Action Abrio;
+
+    /// <summary>Hay un puesto en el mapa.</summary>
+    public bool Hay => puesto != null;
+    public Vector3 Lugar { get; private set; }
+    public string NombreDelLugar { get; private set; }
+    public float Radio => ConfigInvasion.Actual.radioPuesto;
+    public int Carga { get; private set; }
+    public int Meta { get; private set; }
+    public float Progreso => Meta > 0 ? Mathf.Clamp01(Carga / (float)Meta) : 0f;
+    public bool Cargado => Meta > 0 && Carga >= Meta;
+    /// <summary>CA4: el jugador está adentro del anillo.</summary>
+    public bool Adentro { get; private set; }
+
+    private OleadasDeInvasion oleadas;
+    private List<(string nombre, Vector3 lugar)> lugares;
+    private string anterior;
+    private GameObject puesto;
+    private Transform cuerpo;
+    private float cayoEn;
+    private Transform jugador;
+    private static Material linea;
+
+    // La marca y el aviso, en la pantalla.
+    private RectTransform lienzo, marca, aviso;
+    private CanvasGroup marcaGrupo, avisoGrupo;
+    private TextMeshProUGUI distancia, avisoTexto;
+    private float avisoDesde = -10f;
+
+    private void Awake() => Actual = this;
+
+    private void OnEnable()
+    {
+        OleadasDeInvasion.Empezo += AlEmpezar;
+        OleadasDeInvasion.Supero += AlSuperar;
+        PuntosDeInvasion.Sumo += AlSumar;
+    }
+
+    private void OnDisable()
+    {
+        OleadasDeInvasion.Empezo -= AlEmpezar;
+        OleadasDeInvasion.Supero -= AlSuperar;
+        PuntosDeInvasion.Sumo -= AlSumar;
+    }
+
+    private void OnDestroy()
+    {
+        if (Actual == this) Actual = null;
+        Quitar();
+        if (lienzo != null) Destroy(lienzo.gameObject);
+    }
+
+    // ---------- CA1 y CA6: cae ----------
+
+    private void AlEmpezar(int oleada)
+    {
+        Quitar(); // (Ir a la oleada 10 corta una oleada a la mitad)
+        if (oleada < DesdeLaOleada) return;
+        if (oleadas == null) oleadas = GetComponent<OleadasDeInvasion>();
+        if (!Elegir(out string nombre, out Vector3 lugar)) return;
+
+        ConfigInvasion config = ConfigInvasion.Actual;
+        int total = oleadas != null ? oleadas.Total : 1;
+        Meta = Mathf.Max(1, Mathf.CeilToInt(config.metaPuesto * total * config.puntosPorInvasor * DificultadDeInvasion.Puntos)); // CA5
+        Carga = oleada == DesdeLaOleada ? Meta : 0; // CA6
+        NombreDelLugar = nombre;
+        Lugar = lugar;
+        anterior = nombre;
+        Armar();
+        Avisar($"Suministros en {nombre}"); // CA2
+    }
+
+    // Un lugar al azar que no sea el anterior. Cerca de ese lugar se busca un punto a cielo abierto (nada encima: ni
+    // techo ni edificio) y al que se llegue caminando desde el jugador (así no cae sobre un techo). Si ninguno sirve,
+    // cerca del jugador con la misma regla.
+    private bool Elegir(out string nombre, out Vector3 lugar)
+    {
+        if (lugares == null) BuscarLugares();
+        Transform yo = Jugador();
+        Vector3 desde = yo != null ? yo.position : Vector3.zero;
+        var opciones = new List<(string nombre, Vector3 lugar)>();
+        foreach (var l in lugares) if (l.nombre != anterior) opciones.Add(l);
+        if (opciones.Count == 0) opciones.AddRange(lugares);
+        while (opciones.Count > 0)
+        {
+            int i = Random.Range(0, opciones.Count);
+            if (Afuera(opciones[i].lugar, desde, BuscarHasta, out lugar)) { nombre = opciones[i].nombre; return true; }
+            opciones.RemoveAt(i);
+        }
+        nombre = "los alrededores";
+        return Afuera(desde, desde, BuscarHasta, out lugar);
+    }
+
+    private const float BuscarHasta = 40f, PasoDeBusqueda = 4f;
+    private NavMeshPath camino;
+
+    // En anillos de 4 m alrededor de "cerca": un punto del NavMesh con el cielo libre y conectado con "desde".
+    private bool Afuera(Vector3 cerca, Vector3 desde, float hasta, out Vector3 lugar)
+    {
+        bool hayDesde = NavMesh.SamplePosition(desde, out NavMeshHit origen, 4f, NavMesh.AllAreas);
+        for (float r = 0f; r <= hasta; r += PasoDeBusqueda)
+        {
+            int pasos = r <= 0f ? 1 : Mathf.CeilToInt(2f * Mathf.PI * r / PasoDeBusqueda);
+            float giro = Random.value * Mathf.PI * 2f;
+            for (int k = 0; k < pasos; k++)
+            {
+                float a = giro + k * Mathf.PI * 2f / pasos;
+                Vector3 p = cerca + new Vector3(Mathf.Cos(a), 0f, Mathf.Sin(a)) * r;
+                if (!NavMesh.SamplePosition(p, out NavMeshHit hit, 3f, NavMesh.AllAreas)) continue;
+                if (!CieloAbierto(hit.position)) continue;
+                if (hayDesde)
+                {
+                    if (camino == null) camino = new NavMeshPath();
+                    if (!NavMesh.CalculatePath(origen.position, hit.position, NavMesh.AllAreas, camino) || camino.status != NavMeshPathStatus.PathComplete) continue;
+                }
+                lugar = hit.position;
+                return true;
+            }
+        }
+        lugar = cerca;
+        return false;
+    }
+
+    // Nada encima en 80 m (con un poco de ancho, para que la caja no roce un alero al caer).
+    private static bool CieloAbierto(Vector3 piso) =>
+        !Physics.SphereCast(piso + Vector3.up * 1.2f, 0.9f, Vector3.up, out RaycastHit _, 80f, Physics.DefaultRaycastLayers, QueryTriggerInteraction.Ignore);
+
+    private void BuscarLugares()
+    {
+        var crudos = new List<(string nombre, Vector3 lugar)>();
+        foreach (LugarDeSuministros l in LugarDeSuministros.Todos)
+            crudos.Add((string.IsNullOrWhiteSpace(l.nombre) ? l.name : l.nombre, l.transform.position));
+        if (crudos.Count == 0) crudos = LugarDeSuministros.Automaticos();
+
+        lugares = new List<(string, Vector3)>();
+        foreach (var c in crudos)
+            if (NavMesh.SamplePosition(c.lugar, out NavMeshHit hit, 20f, NavMesh.AllAreas)) lugares.Add((c.nombre, hit.position));
+            else if (LugarDeSuministros.Todos.Count > 0) lugares.Add(c); // los puestos a mano se respetan
+    }
+
+    // ---------- CA4: la carga ----------
+
+    private void AlSumar(int puntos, bool cabeza)
+    {
+        if (!Hay || Cargado) return;
+        ActualizarAdentro();
+        if (!Adentro) return; // afuera cuenta para el récord, no para el puesto
+        Carga = Mathf.Min(Meta, Carga + puntos);
+        if (Cargado) Avisar("Puesto cargado");
+    }
+
+    /// <summary>Para probar (Riftwalker > Invasión > Cargar el puesto).</summary>
+    public void CargarDePrueba()
+    {
+        if (!Hay || Cargado) return;
+        Carga = Meta;
+        Avisar("Puesto cargado");
+    }
+
+    private void ActualizarAdentro()
+    {
+        Transform yo = Jugador();
+        if (!Hay || yo == null) { Adentro = false; return; }
+        Vector3 d = yo.position - Lugar;
+        Adentro = new Vector2(d.x, d.z).sqrMagnitude <= Radio * Radio && Mathf.Abs(d.y) < 6f;
+    }
+
+    private Transform Jugador()
+    {
+        if (jugador == null)
+        {
+            PlayerMovement p = FindFirstObjectByType<PlayerMovement>();
+            if (p != null) jugador = p.transform;
+        }
+        return jugador;
+    }
+
+    // ---------- CA7: se abre o se va ----------
+
+    private void AlSuperar(int oleada)
+    {
+        if (!Hay) return;
+        if (Cargado)
+        {
+            Avisar("Puesto abierto");
+            Abrio?.Invoke();
+        }
+        else Avisar("El puesto se fue sin cargar");
+        Quitar();
+    }
+
+    private void Quitar()
+    {
+        if (puesto != null) Destroy(puesto);
+        puesto = null;
+        cuerpo = null;
+        Adentro = false;
+        Carga = Meta = 0;
+    }
+
+    // ---------- El puesto en el mapa ----------
+
+    private void Armar()
+    {
+        Color verde = MarcadorInvasion.Verde;
+        puesto = new GameObject("Puesto de suministros");
+        puesto.transform.position = Lugar;
+
+        cuerpo = new GameObject("Cajón").transform;
+        cuerpo.SetParent(puesto.transform, false);
+        GameObject modelo = ConfigInvasion.Actual.cajaPuesto;
+        if (modelo != null) // la caja de los mapas de práctica y Táctico (Crate_01)
+        {
+            Transform caja = Instantiate(modelo, cuerpo).transform;
+            caja.localPosition = Vector3.zero;
+            caja.localRotation = Quaternion.Euler(0f, Random.Range(0f, 360f), 0f);
+            caja.localScale = Vector3.one * ConfigInvasion.Actual.escalaCajaPuesto;
+        }
+        else
+        {
+            Caja(cuerpo, new Vector3(0f, 0.45f, 0f), new Vector3(1.4f, 0.9f, 1f), new Color(0.16f, 0.2f, 0.14f), false);
+            Caja(cuerpo, new Vector3(0f, 0.92f, 0f), new Vector3(1.46f, 0.08f, 1.06f), verde, true);
+        }
+        var luz = new GameObject("Luz").AddComponent<Light>();
+        luz.transform.SetParent(cuerpo, false);
+        luz.transform.localPosition = Vector3.up * 2f;
+        luz.type = LightType.Point;
+        luz.color = verde;
+        luz.range = 8f;
+        luz.intensity = 2f;
+        luz.shadows = LightShadows.None;
+
+        // La columna de luz, para encontrarlo de lejos.
+        LineRenderer columna = Linea("Columna", 0.35f, WithAlpha(verde, 0.45f));
+        columna.positionCount = 2;
+        columna.SetPosition(0, Lugar);
+        columna.SetPosition(1, Lugar + Vector3.up * 30f);
+        columna.endColor = WithAlpha(verde, 0f);
+
+        // CA3: el anillo en el piso.
+        LineRenderer anillo = Linea("Anillo", 0.18f, WithAlpha(verde, 0.85f));
+        const int puntos = 96;
+        anillo.positionCount = puntos;
+        anillo.loop = true;
+        for (int i = 0; i < puntos; i++)
+        {
+            float a = i * Mathf.PI * 2f / puntos;
+            Vector3 p = Lugar + new Vector3(Mathf.Cos(a), 0f, Mathf.Sin(a)) * Radio;
+            if (Physics.Raycast(p + Vector3.up * 4f, Vector3.down, out RaycastHit piso, 10f, Physics.DefaultRaycastLayers, QueryTriggerInteraction.Ignore))
+                p.y = piso.point.y;
+            anillo.SetPosition(i, p + Vector3.up * 0.08f);
+        }
+
+        cayoEn = Time.time;
+        cuerpo.localPosition = Vector3.up * AlturaDeCaida;
+    }
+
+    private void Caja(Transform padre, Vector3 lugar, Vector3 medida, Color color, bool brilla)
+    {
+        GameObject c = GameObject.CreatePrimitive(PrimitiveType.Cube);
+        Destroy(c.GetComponent<Collider>()); // no tapa el paso de los invasores
+        c.transform.SetParent(padre, false);
+        c.transform.localPosition = lugar;
+        c.transform.localScale = medida;
+        Material m = c.GetComponent<Renderer>().material;
+        m.color = color;
+        if (brilla)
+        {
+            m.EnableKeyword("_EMISSION");
+            m.SetColor("_EmissionColor", color * 1.5f);
+        }
+    }
+
+    private LineRenderer Linea(string nombre, float ancho, Color color)
+    {
+        var go = new GameObject(nombre);
+        go.transform.SetParent(puesto.transform, false);
+        LineRenderer l = go.AddComponent<LineRenderer>();
+        if (linea == null) linea = new Material(Shader.Find("Sprites/Default")) { name = "Puesto de suministros" };
+        l.sharedMaterial = linea;
+        l.useWorldSpace = true;
+        l.widthMultiplier = ancho;
+        l.startColor = l.endColor = color;
+        l.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
+        l.receiveShadows = false;
+        return l;
+    }
+
+    // ---------- Cada cuadro ----------
+
+    private void Update()
+    {
+        ActualizarAdentro();
+        if (cuerpo != null)
+        {
+            float t = Mathf.Clamp01((Time.time - cayoEn) / Caida);
+            cuerpo.localPosition = Vector3.up * AlturaDeCaida * (1f - t * t); // cae acelerando
+        }
+        if (lienzo == null && MatchHud.Instance != null) ArmarPantalla();
+        if (lienzo == null) return;
+        ActualizarMarca();
+        ActualizarAviso();
+    }
+
+    private void ArmarPantalla()
+    {
+        var go = new GameObject("Puesto de suministros (pantalla)", typeof(RectTransform), typeof(Canvas), typeof(UnityEngine.UI.CanvasScaler));
+        go.layer = 5;
+        Canvas canvas = go.GetComponent<Canvas>();
+        canvas.renderMode = RenderMode.ScreenSpaceOverlay;
+        canvas.sortingOrder = 36; // como las marcas de compañeros: debajo del HUD (40)
+        var escala = go.GetComponent<UnityEngine.UI.CanvasScaler>();
+        escala.uiScaleMode = UnityEngine.UI.CanvasScaler.ScaleMode.ScaleWithScreenSize;
+        escala.referenceResolution = new Vector2(1920f, 1080f);
+        escala.screenMatchMode = UnityEngine.UI.CanvasScaler.ScreenMatchMode.Expand;
+        lienzo = (RectTransform)go.transform;
+        TMP_FontAsset display = MatchHud.Instance.DisplayFont, label = MatchHud.Instance.LabelFont;
+        Sprite redondeado = MatchHud.Instance.Rounded;
+        Color verde = MarcadorInvasion.Verde;
+
+        // CA2: la marca, un rombo verde con la distancia abajo.
+        marca = Node("Marca", lienzo);
+        marca.anchorMin = marca.anchorMax = marca.pivot = new Vector2(0.5f, 0.5f);
+        marca.sizeDelta = new Vector2(120f, 60f);
+        marcaGrupo = marca.gameObject.AddComponent<CanvasGroup>();
+        marcaGrupo.blocksRaycasts = false;
+        RectTransform rombo = Node("Rombo", marca);
+        rombo.anchorMin = rombo.anchorMax = rombo.pivot = new Vector2(0.5f, 1f);
+        rombo.sizeDelta = new Vector2(20f, 20f);
+        rombo.anchoredPosition = new Vector2(0f, -6f);
+        rombo.localRotation = Quaternion.Euler(0f, 0f, 45f);
+        Image(rombo, redondeado, Rgb(6, 10, 6, 0.85f), 3f);
+        RectTransform adentro = Stretch(Node("Color", rombo));
+        adentro.offsetMin = new Vector2(3f, 3f);
+        adentro.offsetMax = new Vector2(-3f, -3f);
+        Image(adentro, redondeado, verde, 2f);
+        distancia = Text(Place(Node("Distancia", marca), 0f, 32f, 120f, 22f), label, 15f, verde, TextAlignmentOptions.Center, 8f);
+        distancia.rectTransform.anchorMin = distancia.rectTransform.anchorMax = new Vector2(0f, 1f);
+        marca.gameObject.SetActive(false);
+
+        // El aviso: una píldora verde arriba al centro, como el del récord (US 150).
+        aviso = Node("Aviso", lienzo);
+        aviso.anchorMin = aviso.anchorMax = aviso.pivot = new Vector2(0.5f, 1f);
+        avisoGrupo = aviso.gameObject.AddComponent<CanvasGroup>();
+        avisoGrupo.blocksRaycasts = false;
+        MarcadorInvasion.Figura<FormaRedondeada>(Stretch(Node("Fondo", aviso))).Pintar(Rgb(10, 24, 8, 0.9f), verde, 22f, 1f);
+        avisoTexto = Text(Stretch(Node("Texto", aviso)), display, 24f, verde, TextAlignmentOptions.Center, 10f, true);
+        aviso.gameObject.SetActive(false);
+    }
+
+    private void ActualizarMarca()
+    {
+        Camera camara = Camera.main;
+        bool ver = Hay && camara != null && !ShopUI.IsOpen && ResultadoDeInvasion.Actual == null;
+        if (marca.gameObject.activeSelf != ver) marca.gameObject.SetActive(ver);
+        if (!ver) return;
+
+        Vector3 arriba = Lugar + Vector3.up * AlturaDeLaMarca;
+        Vector3 pantalla = camara.WorldToScreenPoint(arriba);
+        if (pantalla.z < 0f) pantalla = new Vector3(Screen.width - pantalla.x, Screen.height - pantalla.y, 0f); // atrás: del lado opuesto
+        bool afuera = pantalla.z <= 0f || pantalla.x < 0f || pantalla.x > Screen.width || pantalla.y < 0f || pantalla.y > Screen.height;
+        if (afuera) // pegada al borde, del lado donde está
+        {
+            Vector2 medio = new Vector2(Screen.width, Screen.height) * 0.5f;
+            Vector2 dir = (Vector2)pantalla - medio;
+            if (pantalla.z <= 0f && dir.y > 0f) dir.y = -dir.y;
+            if (dir.sqrMagnitude < 1f) dir = Vector2.down;
+            float margen = 60f * Screen.height / 1080f;
+            float k = Mathf.Min((medio.x - margen) / Mathf.Max(Mathf.Abs(dir.x), 0.001f), (medio.y - margen) / Mathf.Max(Mathf.Abs(dir.y), 0.001f));
+            pantalla = medio + dir * k;
+        }
+        RectTransformUtility.ScreenPointToLocalPointInRectangle(lienzo, pantalla, null, out Vector2 local);
+        marca.anchoredPosition = local;
+        float metros = Vector3.Distance(camara.transform.position, Lugar);
+        distancia.text = Adentro ? "Adentro" : $"{metros:0} m";
+        marcaGrupo.alpha = Adentro ? 0.55f : 1f;
+    }
+
+    // Los avisos esperan en fila y salen recién cuando no hay un cartel grande en pantalla ("Oleada 3", "Oleada 2
+    // superada"): el cartel los taparía. Si aparece un cartel mientras se ve uno, se esconde y el tiempo no corre.
+    private readonly Queue<string> pendientes = new Queue<string>();
+
+    private void Avisar(string texto) => pendientes.Enqueue(texto);
+
+    private void Mostrar(string texto)
+    {
+        avisoTexto.text = texto;
+        aviso.sizeDelta = new Vector2(Width(avisoTexto, texto) + 44f, 44f);
+        aviso.gameObject.SetActive(true);
+        avisoDesde = Time.unscaledTime;
+    }
+
+    private void ActualizarAviso()
+    {
+        bool tapado = MatchHud.BannerVisible;
+        if (!aviso.gameObject.activeSelf)
+        {
+            if (pendientes.Count == 0 || tapado) return;
+            Mostrar(pendientes.Dequeue());
+        }
+        if (tapado) { avisoDesde += Time.unscaledDeltaTime; avisoGrupo.alpha = 0f; return; }
+        float t = Time.unscaledTime - avisoDesde;
+        if (t >= DuracionAviso) { aviso.gameObject.SetActive(false); return; }
+        float entra = Mathf.Clamp01(t / EntradaAviso), sale = Mathf.Clamp01((DuracionAviso - t) / EntradaAviso);
+        avisoGrupo.alpha = Mathf.Min(entra, sale) * (ShopUI.IsOpen ? 0f : 1f);
+        aviso.anchoredPosition = new Vector2(0f, -320f - 10f * (1f - entra));
+    }
+}
