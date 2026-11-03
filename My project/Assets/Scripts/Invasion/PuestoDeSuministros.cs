@@ -405,26 +405,29 @@ public class PuestoDeSuministros : MonoBehaviour
         marcaGrupo.alpha = Adentro ? 0.55f : 1f;
     }
 
-    private void Avisar(string texto)
-    {
-        avisoDesde = Time.unscaledTime;
-        if (aviso == null) { pendiente = texto; return; }
-        Mostrar(texto);
-    }
+    // Los avisos esperan en fila y salen recién cuando no hay un cartel grande en pantalla ("Oleada 3", "Oleada 2
+    // superada"): el cartel los taparía. Si aparece un cartel mientras se ve uno, se esconde y el tiempo no corre.
+    private readonly Queue<string> pendientes = new Queue<string>();
 
-    private string pendiente;
+    private void Avisar(string texto) => pendientes.Enqueue(texto);
 
     private void Mostrar(string texto)
     {
         avisoTexto.text = texto;
         aviso.sizeDelta = new Vector2(Width(avisoTexto, texto) + 44f, 44f);
         aviso.gameObject.SetActive(true);
+        avisoDesde = Time.unscaledTime;
     }
 
     private void ActualizarAviso()
     {
-        if (pendiente != null) { Mostrar(pendiente); pendiente = null; }
-        if (!aviso.gameObject.activeSelf) return;
+        bool tapado = MatchHud.BannerVisible;
+        if (!aviso.gameObject.activeSelf)
+        {
+            if (pendientes.Count == 0 || tapado) return;
+            Mostrar(pendientes.Dequeue());
+        }
+        if (tapado) { avisoDesde += Time.unscaledDeltaTime; avisoGrupo.alpha = 0f; return; }
         float t = Time.unscaledTime - avisoDesde;
         if (t >= DuracionAviso) { aviso.gameObject.SetActive(false); return; }
         float entra = Mathf.Clamp01(t / EntradaAviso), sale = Mathf.Clamp01((DuracionAviso - t) / EntradaAviso);

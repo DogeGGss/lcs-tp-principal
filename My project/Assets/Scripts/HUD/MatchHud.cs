@@ -573,6 +573,9 @@ public class MatchHud : MonoBehaviour
         Instance.BuildBanner(eyebrow, title, color, sub, chips, seconds, footer);
     }
 
+    /// <summary>Hay un cartel grande en pantalla (US 292: los avisos del puesto esperan a que se vaya).</summary>
+    public static bool BannerVisible => Instance != null && Instance.banner != null && Instance.banner.gameObject.activeSelf;
+
     public static void HideBanner()
     {
         if (Instance != null && Instance.banner != null) Instance.banner.gameObject.SetActive(false);
