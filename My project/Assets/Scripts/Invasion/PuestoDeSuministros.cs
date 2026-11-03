@@ -6,7 +6,8 @@ using static ShopUIKit;
 
 // F08 (Modo Invasión), US 292: el puesto de suministros. Lo agrega PartidaDeInvasion.
 // - CA1: desde la oleada 2, al empezar cada oleada cae un puesto en uno de los lugares del mapa (LugarDeSuministros),
-//   nunca en el mismo que el anterior.
+//   nunca en el mismo que el anterior. Cae a cielo abierto cerca de ese lugar (nunca adentro de un edificio ni sobre
+//   un techo) y es la caja de los mapas de práctica y Táctico (ConfigInvasion.cajaPuesto).
 // - CA2: al caer aparece «Suministros en <lugar>», el puesto se ve en el minimapa (Minimapa) y tiene una marca encima
 //   con la distancia, que se dibuja en la pantalla: se ve a través de las paredes.
 // - CA3: alrededor hay un anillo verde (15 m de radio) en el piso y en el minimapa.
@@ -98,33 +99,60 @@ public class PuestoDeSuministros : MonoBehaviour
         Avisar($"Suministros en {nombre}"); // CA2
     }
 
-    // Un lugar al azar que no sea el anterior, apoyado en el NavMesh. Sin lugares, cerca del jugador.
+    // Un lugar al azar que no sea el anterior. Cerca de ese lugar se busca un punto a cielo abierto (nada encima: ni
+    // techo ni edificio) y al que se llegue caminando desde el jugador (así no cae sobre un techo). Si ninguno sirve,
+    // cerca del jugador con la misma regla.
     private bool Elegir(out string nombre, out Vector3 lugar)
     {
         if (lugares == null) BuscarLugares();
-        var opciones = new List<(string, Vector3)>();
+        Transform yo = Jugador();
+        Vector3 desde = yo != null ? yo.position : Vector3.zero;
+        var opciones = new List<(string nombre, Vector3 lugar)>();
         foreach (var l in lugares) if (l.nombre != anterior) opciones.Add(l);
         if (opciones.Count == 0) opciones.AddRange(lugares);
-        if (opciones.Count > 0)
+        while (opciones.Count > 0)
         {
-            (nombre, lugar) = opciones[Random.Range(0, opciones.Count)];
-            return true;
+            int i = Random.Range(0, opciones.Count);
+            if (Afuera(opciones[i].lugar, desde, BuscarHasta, out lugar)) { nombre = opciones[i].nombre; return true; }
+            opciones.RemoveAt(i);
         }
         nombre = "los alrededores";
-        Transform yo = Jugador();
-        Vector3 centro = yo != null ? yo.position : Vector3.zero;
-        for (int i = 0; i < 20; i++)
+        return Afuera(desde, desde, BuscarHasta, out lugar);
+    }
+
+    private const float BuscarHasta = 40f, PasoDeBusqueda = 4f;
+    private NavMeshPath camino;
+
+    // En anillos de 4 m alrededor de "cerca": un punto del NavMesh con el cielo libre y conectado con "desde".
+    private bool Afuera(Vector3 cerca, Vector3 desde, float hasta, out Vector3 lugar)
+    {
+        bool hayDesde = NavMesh.SamplePosition(desde, out NavMeshHit origen, 4f, NavMesh.AllAreas);
+        for (float r = 0f; r <= hasta; r += PasoDeBusqueda)
         {
-            Vector2 d = Random.insideUnitCircle.normalized * Random.Range(20f, 40f);
-            if (NavMesh.SamplePosition(centro + new Vector3(d.x, 0f, d.y), out NavMeshHit hit, 6f, NavMesh.AllAreas))
+            int pasos = r <= 0f ? 1 : Mathf.CeilToInt(2f * Mathf.PI * r / PasoDeBusqueda);
+            float giro = Random.value * Mathf.PI * 2f;
+            for (int k = 0; k < pasos; k++)
             {
+                float a = giro + k * Mathf.PI * 2f / pasos;
+                Vector3 p = cerca + new Vector3(Mathf.Cos(a), 0f, Mathf.Sin(a)) * r;
+                if (!NavMesh.SamplePosition(p, out NavMeshHit hit, 3f, NavMesh.AllAreas)) continue;
+                if (!CieloAbierto(hit.position)) continue;
+                if (hayDesde)
+                {
+                    if (camino == null) camino = new NavMeshPath();
+                    if (!NavMesh.CalculatePath(origen.position, hit.position, NavMesh.AllAreas, camino) || camino.status != NavMeshPathStatus.PathComplete) continue;
+                }
                 lugar = hit.position;
                 return true;
             }
         }
-        lugar = centro;
-        return yo != null;
+        lugar = cerca;
+        return false;
     }
+
+    // Nada encima en 80 m (con un poco de ancho, para que la caja no roce un alero al caer).
+    private static bool CieloAbierto(Vector3 piso) =>
+        !Physics.SphereCast(piso + Vector3.up * 1.2f, 0.9f, Vector3.up, out RaycastHit _, 80f, Physics.DefaultRaycastLayers, QueryTriggerInteraction.Ignore);
 
     private void BuscarLugares()
     {
@@ -209,9 +237,19 @@ public class PuestoDeSuministros : MonoBehaviour
 
         cuerpo = new GameObject("Cajón").transform;
         cuerpo.SetParent(puesto.transform, false);
-        Caja(cuerpo, new Vector3(0f, 0.45f, 0f), new Vector3(1.4f, 0.9f, 1f), new Color(0.16f, 0.2f, 0.14f), false);
-        Caja(cuerpo, new Vector3(0f, 0.92f, 0f), new Vector3(1.46f, 0.08f, 1.06f), verde, true);
-        Caja(cuerpo, new Vector3(0f, 0.45f, -0.51f), new Vector3(0.9f, 0.12f, 0.02f), verde, true);
+        GameObject modelo = ConfigInvasion.Actual.cajaPuesto;
+        if (modelo != null) // la caja de los mapas de práctica y Táctico (Crate_01)
+        {
+            Transform caja = Instantiate(modelo, cuerpo).transform;
+            caja.localPosition = Vector3.zero;
+            caja.localRotation = Quaternion.Euler(0f, Random.Range(0f, 360f), 0f);
+            caja.localScale = Vector3.one * ConfigInvasion.Actual.escalaCajaPuesto;
+        }
+        else
+        {
+            Caja(cuerpo, new Vector3(0f, 0.45f, 0f), new Vector3(1.4f, 0.9f, 1f), new Color(0.16f, 0.2f, 0.14f), false);
+            Caja(cuerpo, new Vector3(0f, 0.92f, 0f), new Vector3(1.46f, 0.08f, 1.06f), verde, true);
+        }
         var luz = new GameObject("Luz").AddComponent<Light>();
         luz.transform.SetParent(cuerpo, false);
         luz.transform.localPosition = Vector3.up * 2f;

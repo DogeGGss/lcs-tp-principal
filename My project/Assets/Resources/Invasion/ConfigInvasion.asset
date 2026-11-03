@@ -19,3 +19,5 @@ MonoBehaviour:
   salida: 1.2
   sonidoAbrir: {fileID: 0}
   sonidoAbierto: {fileID: 0}
+  cajaPuesto: {fileID: 121674, guid: 031729a7ef10c4aa1b5e0060c2f63acd, type: 3}
+  escalaCajaPuesto: 1.3

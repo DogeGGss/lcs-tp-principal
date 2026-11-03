@@ -40,6 +40,10 @@ public class ConfigInvasion : ScriptableObject
     [Range(0.05f, 1f)] public float metaPuesto = 0.4f;
     [Tooltip("CA5: los puntos que da en promedio cada invasor (la baja, 60, y unos 4 impactos de 10). Con esto se calcula cuánto da la oleada entera.")]
     [Min(1)] public int puntosPorInvasor = 100;
+    [Tooltip("La caja que cae. Vacía: un cajón verde hecho con cubos.")]
+    public GameObject cajaPuesto;
+    [Tooltip("Tamaño de la caja que cae.")]
+    [Min(0.1f)] public float escalaCajaPuesto = 1.3f;
 
     /// <summary>US 299, CA1: los invasores de la oleada (sin la dificultad).</summary>
     public int Invasores(int oleada) => invasoresAlEmpezar + invasoresPorOleada * (Mathf.Max(1, oleada) - 1);
