@@ -16,6 +16,8 @@ public interface IHudWeapon
 // derecha, abajo al centro y unidas por una vía. Se arma por código con las medidas de la maqueta
 // (pantalla de referencia de 1920 x 1080) y lee todo del jugador: HealthSystem, PlayerAbility y el arma en la mano.
 // En Deathmatch no hay habilidades: en el medio va la racha de bajas, con el mismo reloj de andén.
+// US 297: en Invasión tampoco. En el medio va la oleada en el reloj (CA2), con el aro que se vacía a medida que mueren
+// los invasores y la línea del andén verde, y en el respiro (CA3) se pone verde y cuenta los segundos a la siguiente.
 public class CombatHud : MonoBehaviour
 {
     [Header("Tipografías")]
@@ -167,6 +169,13 @@ public class CombatHud : MonoBehaviour
     private TextMeshProUGUI streakText, streakLabel;
     private int lastStreak = -1, lastStreakState = int.MinValue;
     private float streakAt = -10f;
+    // US 297: la oleada de Invasión en el lugar de la habilidad.
+    private GameObject wave;
+    private UnityEngine.UI.Image waveFill;
+    private readonly UnityEngine.UI.Image[] waveTicks = new UnityEngine.UI.Image[12];
+    private TextMeshProUGUI waveText, waveLabel;
+    private OleadasDeInvasion waves;
+    private string lastWaveState;
     private RectTransform sleepersRoot;
     private UnityEngine.UI.Image[] sleepers = new UnityEngine.UI.Image[0];
     private float usedAt = -10f;
@@ -219,6 +228,7 @@ public class CombatHud : MonoBehaviour
         UpdateHeal();
         UpdateSkill();
         UpdateStreak();
+        UpdateWave();
         UpdateAmmo();
         UpdateInventory();
         UpdateHitMarker();
@@ -539,6 +549,49 @@ public class CombatHud : MonoBehaviour
         streakLabel.text = best > 0 ? $"Racha <color=#{ColorUtility.ToHtmlStringRGB(Mute)}>· Mejor {best}</color>" : "Racha";
     }
 
+    // ---------- US 297: la oleada de Invasión en el reloj de andén ----------
+
+    // CA2: el número de la oleada con «Oleada» abajo; el aro arranca lleno y se vacía a medida que mueren los invasores.
+    // CA3: en el respiro el reloj se pone verde, cuenta los segundos a la oleada siguiente y el aro se vacía con el tiempo.
+    private void UpdateWave()
+    {
+        if (waves == null && PartidaDeInvasion.Actual != null) waves = PartidaDeInvasion.Actual.GetComponent<OleadasDeInvasion>();
+        bool show = waves != null && !waves.EnElFinal && !skill.activeSelf;
+        if (wave.activeSelf != show) wave.SetActive(show);
+        if (!show) return;
+
+        bool rest = waves.Descanso;
+        float fraction;
+        string number, label;
+        if (rest)
+        {
+            BuyPhase phase = BuyPhase.Current;
+            float left = phase != null ? phase.TimeLeft : 0f;
+            number = Mathf.Max(0, Mathf.CeilToInt(left)).ToString();
+            label = "Próxima oleada";
+            fraction = phase != null && phase.Duration > 0f ? Mathf.Clamp01(left / phase.Duration) : 0f;
+        }
+        else
+        {
+            number = waves.Oleada.ToString();
+            label = "Oleada";
+            fraction = waves.Total > 0 ? Mathf.Clamp01(waves.Quedan / (float)waves.Total) : 0f;
+        }
+        int lit = Mathf.CeilToInt(fraction * waveTicks.Length - 0.001f);
+        string state = $"{rest}|{number}|{lit}|{Mathf.RoundToInt(fraction * 200f)}";
+        if (state == lastWaveState) return;
+        lastWaveState = state;
+
+        Color line = rest ? MarcadorInvasion.Verde : Ink, dim = White(FadeAlpha(0.22f));
+        waveFill.fillAmount = fraction;
+        waveFill.color = line;
+        for (int i = 0; i < waveTicks.Length; i++) waveTicks[i].color = i < lit ? line : dim;
+        waveText.text = number;
+        waveText.color = rest ? MarcadorInvasion.Verde : Color.white;
+        waveLabel.text = label;
+        waveLabel.color = rest ? MarcadorInvasion.Verde : Ink;
+    }
+
     // Marcas cortas centradas debajo del aro, como los vagones de una formación.
     private void BuildCharges(int count)
     {
@@ -700,11 +753,13 @@ public class CombatHud : MonoBehaviour
         GameObject railsLeft = Image(Place(Node("Rieles", bar), RailLeftX, 160f, 120f, 12f), rails, Color.white).gameObject;
         BuildSkill(bar);
         BuildStreak(bar);
+        BuildWave(bar);
         GameObject railsRight = Image(Place(Node("Rieles", bar), RailRightX, 160f, 120f, 12f), rails, Color.white).gameObject;
         // Con la mira telescópica puesta (US 009) se oculta el centro del andén: la habilidad y sus rieles tapan la lente.
         hiddenWhenScoped = new[]
         {
             railsLeft.AddComponent<CanvasGroup>(), skill.AddComponent<CanvasGroup>(), streak.AddComponent<CanvasGroup>(),
+            wave.AddComponent<CanvasGroup>(),
             railsRight.AddComponent<CanvasGroup>(),
         };
         BuildAmmo(bar);
@@ -800,10 +855,25 @@ public class CombatHud : MonoBehaviour
     }
 
     // La línea de seguridad del borde del andén.
-    private void PlatformLine(RectTransform block)
+    private void PlatformLine(RectTransform block) => PlatformLine(block, Accent);
+
+    private void PlatformLine(RectTransform block, Color color)
     {
-        if (glow != null) Image(Place(Node("Brillo", block), -20f, 157f, SkillW + 40f, 23f), glow, WithAlpha(Accent, FadeAlpha(0.5f)));
-        Image(Place(Node("LineaDelAnden", block), 0f, 167f, SkillW, 3f), null, Accent);
+        if (glow != null) Image(Place(Node("Brillo", block), -20f, 157f, SkillW + 40f, 23f), glow, WithAlpha(color, FadeAlpha(0.5f)));
+        Image(Place(Node("LineaDelAnden", block), 0f, 167f, SkillW, 3f), null, color);
+    }
+
+    // US 297, CA2: el mismo reloj para la oleada de Invasión, con la línea del andén verde (el color del modo).
+    private void BuildWave(RectTransform bar)
+    {
+        RectTransform block = Place(Node("Oleada", bar), SkillX, 0f, SkillW, BarH);
+        wave = block.gameObject;
+        RectTransform ringRect = BuildRing(block, waveTicks, out waveFill);
+        waveText = Text(Stretch(Node("Numero", ringRect)), displayFont, 40f, Color.white, TextAlignmentOptions.Midline);
+        AddShadow(waveText);
+        waveLabel = Text(Place(Node("Nombre", block), 0f, 133f, SkillW, 24f), labelFont, 15f, Ink, TextAlignmentOptions.Midline, 14f, true);
+        PlatformLine(block, MarcadorInvasion.Verde);
+        wave.SetActive(false);
     }
 
     private void BuildAmmo(RectTransform bar)
