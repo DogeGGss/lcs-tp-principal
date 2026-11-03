@@ -20,6 +20,11 @@ using VertexHelper = UnityEngine.UI.VertexHelper;
 //   "¡Nuevo récord! · Oleada N" durante 3 s, una sola vez por partida.
 // - CA6: las fuentes y colores del HUD de combate (US 176), y se oculta con la tienda abierta.
 // US 161, CA5: la dificultad elegida, arriba a la izquierda del panel.
+// US 298 (marcador con Tab): el panel de arriba ya no está siempre.
+// - CA1: mientras se juega, el panel de las oleadas no se ve (los puntos de abajo y el aviso de récord sí).
+// - CA2: con Tab apretado se ve el panel y, debajo del minimapa, «Tus cartas»: las armas que llevás y las cartas
+//   elegidas (las llena la US 295 en MarcadorInvasion.Cartas). En este modo Tab no muestra la tabla de la US 057.
+// - CA3: el panel aparece solo 3 s al empezar una oleada, al superarla, cuando sale el jefe y con un nuevo récord.
 public class MarcadorInvasion : MonoBehaviour
 {
     /// <summary>El verde del modo (el del andén de Invasión en la selección de modo).</summary>
@@ -30,6 +35,11 @@ public class MarcadorInvasion : MonoBehaviour
     private const float DuracionRecord = 3f, Entrada = 0.25f;     // CA5
     private const float DuracionSalto = 0.9f, Subida = 44f;       // CA4: lo que suma cada baja
     private const float PuntosX = 34f, PuntosY = 170f;            // desde abajo a la izquierda, donde está la plata
+    private const float DuracionMomento = 3f, Fundido = 0.15f;    // US 298, CA3: lo que se ve el panel solo
+    private const float CartasX = 24f, CartasY = 332f, AnchoCartas = 260f; // US 298, CA2: debajo del minimapa (y su ayuda)
+
+    /// <summary>US 298, CA2: las cartas elegidas en la partida, en orden (las suma la US 295). Se vacía al empezar.</summary>
+    public static readonly List<string> Cartas = new List<string>();
 
     private class Salto { public TextMeshProUGUI texto; public float desde; public int cuadro, suma; }
 
@@ -50,28 +60,40 @@ public class MarcadorInvasion : MonoBehaviour
     private CanvasGroup pildoraGrupo;
     private readonly List<Salto> saltos = new List<Salto>();
     private string cabezaAntes, infoAntes; // para acomodar los textos solo cuando cambian
+    private CanvasGroup panelGrupo, cartasGrupo; // US 298
+    private RectTransform cartas;
+    private TextMeshProUGUI cartasTexto;
+    private string cartasAntes;
+    private PlayerLoadout equipo;
+    private float mostrarHasta = -10f;           // US 298, CA3
 
     private void OnEnable()
     {
         PuntosDeInvasion.Sumo += AlSumar;
         OleadasDeInvasion.Empezo += AlEmpezar;
+        OleadasDeInvasion.Supero += AlSuperar;
+        OleadasDeInvasion.LlegoElJefe += Momento;
     }
 
     private void OnDisable()
     {
         PuntosDeInvasion.Sumo -= AlSumar;
         OleadasDeInvasion.Empezo -= AlEmpezar;
+        OleadasDeInvasion.Supero -= AlSuperar;
+        OleadasDeInvasion.LlegoElJefe -= Momento;
         if (billetera != null) billetera.MoneyChanged -= AlCambiarPuntos;
     }
 
     private void OnDestroy()
     {
         if (grupo != null) Destroy(grupo.gameObject);
+        if (MatchHud.TableProvider == SinTabla) MatchHud.TableProvider = null;
     }
 
     private void Start()
     {
         record = MatchSettings.ZombieRecord(MatchSettings.Difficulty);
+        Cartas.Clear();
     }
 
     private void Update()
@@ -89,6 +111,7 @@ public class MarcadorInvasion : MonoBehaviour
         ActualizarPanel();
         ActualizarSaltos();
         ActualizarPildora();
+        ActualizarTab();
     }
 
     // ---------- Armado ----------
@@ -118,6 +141,26 @@ public class MarcadorInvasion : MonoBehaviour
         ArmarPanel(raiz);
         ArmarPuntos(raiz);
         ArmarPildora(raiz);
+        ArmarCartas(raiz);
+
+        // US 298, CA2: Tab es para el panel y las cartas, no para la tabla de la US 057 (con null no dibuja nada).
+        MatchHud.TableProvider = SinTabla;
+    }
+
+    private static MatchHud.Table SinTabla() => null;
+
+    // US 298, CA2: «Tus cartas», debajo del minimapa.
+    private void ArmarCartas(RectTransform raiz)
+    {
+        cartas = Place(Node("TusCartas", raiz), CartasX, CartasY, AnchoCartas, 80f);
+        cartasGrupo = cartas.gameObject.AddComponent<CanvasGroup>();
+        cartasGrupo.alpha = 0f;
+        Figura<FormaRedondeada>(Stretch(Node("Fondo", cartas)))
+            .Pintar(Rgb(6, 10, 6, DarkAlpha(0.74f)), WithAlpha(Verde, FadeAlpha(0.28f)), 10f, 1f);
+        Text(Place(Node("Titulo", cartas), 14f, 10f, AnchoCartas - 28f, 18f), display, 13f, Verde, TextAlignmentOptions.TopLeft, 12f, true)
+            .text = "Tus cartas";
+        cartasTexto = Text(Place(Node("Lista", cartas), 14f, 34f, AnchoCartas - 28f, 40f), label, 16f, Ink, TextAlignmentOptions.TopLeft);
+        cartasTexto.lineSpacing = 8f;
     }
 
     private void ArmarPanel(RectTransform raiz)
@@ -127,6 +170,8 @@ public class MarcadorInvasion : MonoBehaviour
         panel.pivot = new Vector2(0.5f, 1f);
         panel.anchoredPosition = new Vector2(0f, -Arriba);
         panel.sizeDelta = new Vector2(Ancho, Alto);
+        panelGrupo = panel.gameObject.AddComponent<CanvasGroup>(); // US 298, CA1
+        panelGrupo.alpha = 0f;
         Figura<FormaRedondeada>(Stretch(Node("Fondo", panel)))
             .Pintar(Rgb(6, 10, 6, DarkAlpha(0.74f)), WithAlpha(Verde, FadeAlpha(0.28f)), 10f, 1f);
 
@@ -356,10 +401,45 @@ public class MarcadorInvasion : MonoBehaviour
         }
     }
 
+    // ---------- US 298: Tab y los momentos ----------
+
+    private void Momento() => mostrarHasta = Time.unscaledTime + DuracionMomento; // CA3
+
+    private void AlSuperar(int oleada) => Momento();
+
+    private void ActualizarTab()
+    {
+        bool tab = Input.GetKey(KeyCode.Tab) && !PauseMenu.IsPaused;
+        float paso = Time.unscaledDeltaTime / Fundido;
+        panelGrupo.alpha = Mathf.MoveTowards(panelGrupo.alpha, tab || Time.unscaledTime < mostrarHasta ? 1f : 0f, paso); // CA1 y CA3
+        cartasGrupo.alpha = Mathf.MoveTowards(cartasGrupo.alpha, tab ? 1f : 0f, paso); // CA2
+        if (cartasGrupo.alpha > 0f) ActualizarCartas();
+    }
+
+    private void ActualizarCartas()
+    {
+        if (equipo == null) equipo = FindFirstObjectByType<PlayerLoadout>();
+        var lineas = new List<string>();
+        if (equipo != null && equipo.Primary != null) lineas.Add(Nombre(equipo.Primary));
+        if (equipo != null && equipo.Secondary != null) lineas.Add(Nombre(equipo.Secondary));
+        if (Cartas.Count == 0) lineas.Add("<color=#9AA39A>Todavía no elegiste cartas</color>");
+        else foreach (string c in Cartas) lineas.Add("<color=#7DE05A>•</color> " + c);
+        string texto = string.Join("\n", lineas);
+        if (texto == cartasAntes) return;
+        cartasAntes = texto;
+        cartasTexto.text = texto;
+        float alto = cartasTexto.GetPreferredValues(texto, AnchoCartas - 28f, 0f).y;
+        cartasTexto.rectTransform.sizeDelta = new Vector2(AnchoCartas - 28f, alto);
+        cartas.sizeDelta = new Vector2(AnchoCartas, 34f + alto + 14f);
+    }
+
+    private static string Nombre(ShopItem arma) => string.IsNullOrEmpty(arma.displayName) ? arma.name : arma.displayName;
+
     // ---------- CA5: el récord ----------
 
     private void AlEmpezar(int oleada)
     {
+        Momento(); // US 298, CA3 (también cubre el nuevo récord, que se avisa al empezar la oleada)
         if (avisoRecord || record <= 0 || oleada <= record || pildora == null) return;
         avisoRecord = true;
         recordDesde = Time.unscaledTime;
