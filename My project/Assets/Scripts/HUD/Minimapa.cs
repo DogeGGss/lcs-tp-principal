@@ -19,6 +19,7 @@ using Img = UnityEngine.UI.Image;
 //   preparar una imagen por mapa): se recorre el mapa en una grilla y se mira dónde hay piso y dónde hay pared.
 // - CA8: funciona en Táctico, Deathmatch y Zombie (en Zombie, el jugador y el mapa).
 // Invasión (US 283): los invasores vivos se ven siempre como puntos rojos, y el jefe (US 146) con un punto más grande.
+// US 292, CA2 y CA3: el puesto de suministros, un cuadrado verde con su anillo (15 m) alrededor.
 // Lo crea CombatHud sobre su lienzo. Hay dos vistas del mismo mapa: la chica (el radar) y la grande (el mapa completo).
 public class Minimapa : MonoBehaviour
 {
@@ -62,6 +63,7 @@ public class Minimapa : MonoBehaviour
         public readonly Dictionary<JugadorEnRed, GameObject> iconos = new Dictionary<JugadorEnRed, GameObject>();
         public readonly List<RectTransform> rivales = new List<RectTransform>();
         public readonly List<RectTransform> invasores = new List<RectTransform>();
+        public RectTransform puesto, anilloPuesto;
         public readonly List<(ZonaDePlantado zona, RectTransform rect, RectTransform letra)> zonas =
             new List<(ZonaDePlantado, RectTransform, RectTransform)>();
         private readonly List<JugadorEnRed> sobran = new List<JugadorEnRed>();
@@ -114,6 +116,7 @@ public class Minimapa : MonoBehaviour
             Companeros(centro, derecho);
             Rivales(centro);
             Invasores(centro);
+            Puesto(centro, derecho);
             Zonas(centro, derecho);
             Dispositivo(centro, derecho);
         }
@@ -205,6 +208,33 @@ public class Minimapa : MonoBehaviour
                     if (jefe) punto.SetAsLastSibling();
                 }
             for (int i = n; i < invasores.Count; i++) invasores[i].gameObject.SetActive(false);
+        }
+
+        // US 292, CA2 y CA3: el puesto de suministros y su anillo.
+        private void Puesto(Vector3 centro, Quaternion derecho)
+        {
+            PuestoDeSuministros p = PuestoDeSuministros.Actual;
+            bool hay = p != null && p.Hay;
+            if (!hay)
+            {
+                if (puesto != null) { puesto.gameObject.SetActive(false); anilloPuesto.gameObject.SetActive(false); }
+                return;
+            }
+            float lado = 2f * p.Radio * escala;
+            if (puesto == null)
+            {
+                anilloPuesto = Centrado(Node("Anillo del puesto", giro), lado);
+                anilloPuesto.SetSiblingIndex(1); // arriba del mapa, debajo de los puntos
+                Image(anilloPuesto, redondeado, WithAlpha(MarcadorInvasion.Verde, 0.25f), lado * 0.5f);
+                puesto = Marca("Puesto", 18f, new Color(0f, 0f, 0f, 0.75f));
+                Image(Centrado(Node("Color", puesto), 12f), redondeado, MarcadorInvasion.Verde, 3f);
+            }
+            anilloPuesto.gameObject.SetActive(true);
+            puesto.gameObject.SetActive(true);
+            anilloPuesto.sizeDelta = new Vector2(lado, lado);
+            anilloPuesto.anchoredPosition = puesto.anchoredPosition = EnMapa(p.Lugar, centro);
+            puesto.localRotation = derecho;
+            puesto.SetAsLastSibling();
         }
 
         // CA5: zonas de plantado, con su letra.

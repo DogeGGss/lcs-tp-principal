@@ -59,6 +59,7 @@ public class PartidaDeInvasion : MonoBehaviour
         gameObject.AddComponent<OleadasDeInvasion>(); // US 144
         gameObject.AddComponent<MarcadorInvasion>();  // US 150
         gameObject.AddComponent<PuntosDeInvasion>();  // US 147
+        gameObject.AddComponent<PuestoDeSuministros>(); // US 292
     }
 
     // CA3: el estado inicial del jugador, en cuanto está (aparece con la escena).

@@ -175,6 +175,11 @@ public class CombatHud : MonoBehaviour
     private readonly UnityEngine.UI.Image[] waveTicks = new UnityEngine.UI.Image[12];
     private TextMeshProUGUI waveText, waveLabel;
     private OleadasDeInvasion waves;
+    // US 292, CA4: la carga del puesto de suministros, arriba del reloj.
+    private GameObject supply;
+    private TextMeshProUGUI supplyLabel;
+    private UnityEngine.UI.Image supplyFill;
+    private const float SupplyBarW = 200f;
     private string lastWaveState;
     private RectTransform sleepersRoot;
     private UnityEngine.UI.Image[] sleepers = new UnityEngine.UI.Image[0];
@@ -561,6 +566,7 @@ public class CombatHud : MonoBehaviour
         if (!show) return;
 
         bool rest = waves.Descanso;
+        UpdateSupply(rest);
         float fraction;
         string number, label;
         if (rest)
@@ -590,6 +596,22 @@ public class CombatHud : MonoBehaviour
         waveText.color = rest ? MarcadorInvasion.Verde : Color.white;
         waveLabel.text = label;
         waveLabel.color = rest ? MarcadorInvasion.Verde : Ink;
+    }
+
+    // US 292, CA4: verde con «Carga del puesto» adentro del anillo; gris con «Fuera del anillo» afuera.
+    private void UpdateSupply(bool rest)
+    {
+        PuestoDeSuministros puesto = PuestoDeSuministros.Actual;
+        bool show = !rest && puesto != null && puesto.Hay;
+        if (supply.activeSelf != show) supply.SetActive(show);
+        if (!show) return;
+        bool inside = puesto.Adentro;
+        Color color = inside ? MarcadorInvasion.Verde : Mute;
+        supplyLabel.text = inside ? "Carga del puesto" : "Fuera del anillo";
+        supplyLabel.color = color;
+        supplyFill.color = color;
+        supplyFill.rectTransform.sizeDelta = new Vector2(Mathf.Max(6f, SupplyBarW * puesto.Progreso), 6f);
+        supplyFill.enabled = puesto.Progreso > 0f;
     }
 
     // Marcas cortas centradas debajo del aro, como los vagones de una formación.
@@ -873,6 +895,15 @@ public class CombatHud : MonoBehaviour
         AddShadow(waveText);
         waveLabel = Text(Place(Node("Nombre", block), 0f, 133f, SkillW, 24f), labelFont, 15f, Ink, TextAlignmentOptions.Midline, 14f, true);
         PlatformLine(block, MarcadorInvasion.Verde);
+
+        // US 292, CA4: arriba del reloj, la carga del puesto.
+        RectTransform carga = Place(Node("CargaDelPuesto", block), (SkillW - SupplyBarW) / 2f, -46f, SupplyBarW, 36f);
+        supply = carga.gameObject;
+        supplyLabel = Text(Place(Node("Texto", carga), 0f, 0f, SupplyBarW, 20f), labelFont, 14f, Ink, TextAlignmentOptions.Midline, 12f, true);
+        AddShadow(supplyLabel);
+        Image(Place(Node("Fondo", carga), 0f, 26f, SupplyBarW, 6f), rounded, White(FadeAlpha(0.18f)), 3f);
+        supplyFill = Image(Place(Node("Relleno", carga), 0f, 26f, SupplyBarW, 6f), rounded, MarcadorInvasion.Verde, 3f);
+        supply.SetActive(false);
         wave.SetActive(false);
     }
 

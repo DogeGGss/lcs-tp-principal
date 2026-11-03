@@ -1,7 +1,7 @@
 using UnityEngine;
 
 // F08 (Modo Invasión): lo que se ajusta del modo desde el editor, en Resources/Invasion/ConfigInvasion: los portales de
-// donde salen los enemigos (US 269) y cuántos invasores trae cada oleada (US 299).
+// donde salen los enemigos (US 269), cuántos invasores trae cada oleada (US 299) y el puesto de suministros (US 292).
 [CreateAssetMenu(menuName = "Riftwalker/Invasión/Configuración", fileName = "ConfigInvasion")]
 public class ConfigInvasion : ScriptableObject
 {
@@ -32,6 +32,14 @@ public class ConfigInvasion : ScriptableObject
     [Min(0)] public int vivosPorOleada = 1;
     [Tooltip("CA2 y CA3: el tope de vivos a la vez nunca pasa de este número.")]
     [Min(1)] public int vivosMaximo = 30;
+
+    [Header("Puesto de suministros (US 292)")]
+    [Tooltip("CA3: radio del anillo alrededor del puesto, en metros.")]
+    [Min(1f)] public float radioPuesto = 15f;
+    [Tooltip("CA5: qué parte de los puntos de la oleada entera hace falta para cargar el puesto (0,4 = 40 %).")]
+    [Range(0.05f, 1f)] public float metaPuesto = 0.4f;
+    [Tooltip("CA5: los puntos que da en promedio cada invasor (la baja, 60, y unos 4 impactos de 10). Con esto se calcula cuánto da la oleada entera.")]
+    [Min(1)] public int puntosPorInvasor = 100;
 
     /// <summary>US 299, CA1: los invasores de la oleada (sin la dificultad).</summary>
     public int Invasores(int oleada) => invasoresAlEmpezar + invasoresPorOleada * (Mathf.Max(1, oleada) - 1);
