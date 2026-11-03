@@ -26,6 +26,8 @@ public static class ReglasCuenta
     public const string SinServicio = "Las cuentas necesitan el servicio online, que no está configurado en esta versión.";
     public const string SinMail = "No se pudo mandar el mail. Probá de nuevo en un rato.";
     public const string Generico = "No se pudo completar. Probá de nuevo en un rato.";
+    public const string ClaveIncorrecta = "La contraseña no es correcta.";                                     // US 273, al borrar
+    public const string CuentaSinVerificar = "No se pudo verificar tu cuenta. Volvé a entrar en el launcher.";  // US 277, CA1
 
     private static readonly Regex FormaDeMail = new Regex(@"^[^@\s]+@[^@\s]+\.[^@\s]{2,}$");
 

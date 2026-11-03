@@ -76,7 +76,7 @@ public partial class ModeSelectScreen
         b.aguja = Group("Aguja", icono, 0f, 0f);
         Line(b.aguja, Oscuro, 4f, Vector2.zero, new Vector2(24f, 0f));
         Text(Place(Node("Titulo", b.buscar), 118f, 20f, 520f, 64f), displayFont, 60f, Oscuro, TextAlignmentOptions.MidlineLeft, 5f, true).text = "Buscar partida";
-        Text(Place(Node("Detalle", b.buscar), 120f, 84f, 520f, 24f), labelFont, 21f, WithAlpha(Oscuro, 0.72f), TextAlignmentOptions.MidlineLeft, 12f, true).text =
+        Text(Place(Node("Detalle", b.buscar), 120f, 84f, 520f, 24f), labelFont, 21f, WithAlpha(Oscuro, 0.72f), TextAlignmentOptions.MidlineLeft, 16f, true).text =
             Titles[mode] + " · con jugadores de tu región";
         UIPolyline flecha = Line(b.buscar, Oscuro, 5f, new Vector2(646f, 62f), new Vector2(690f, 62f));
         flecha.roundJoins = true;
@@ -92,7 +92,7 @@ public partial class ModeSelectScreen
         b.cuenta = Text(Place(Node("Cuenta", b.acciones), 24f, 143f, 860f, 30f), bodyFont, 22f, White(0.7f), TextAlignmentOptions.MidlineLeft);
 
         Image(Place(Node("Linea", b.acciones), 0f, 204f, AnchoBuscar, 1f), null, White(FadeAlpha(0.12f)));
-        Text(Place(Node("Privada", b.acciones), 0f, 226f, AnchoBuscar, 22f), labelFont, 20f, White(0.55f), TextAlignmentOptions.MidlineLeft, 30f, true).text =
+        Text(Place(Node("Privada", b.acciones), 0f, 226f, AnchoBuscar, 22f), labelFont, 20f, White(0.55f), TextAlignmentOptions.MidlineLeft, 16f, true).text =
             "Sala privada · con amigos";
         float x = ButtonAt(b.acciones, 0f, 262f, "Crear sala", false, c, () => CreateRoom(mode), 26f, 60f).x;
         ButtonAt(b.acciones, x + 14f, 262f, "Unirse con código", false, c, () => ShowJoin(mode), 26f, 60f);
@@ -106,7 +106,7 @@ public partial class ModeSelectScreen
         Image(b.panel, rounded, new Color(0f, 0f, 0f, DarkAlpha(0.62f)), 12f, true);
         Border(b.panel, 8f, White(0.18f));
         Image(Place(Node("Barra", b.panel), 0f, 0f, AnchoPanel, 5f), null, c);
-        b.titulo = Text(Place(Node("Titulo", b.panel), 30f, 26f, 520f, 26f), labelFont, 24f, c, TextAlignmentOptions.MidlineLeft, 24f, true);
+        b.titulo = Text(Place(Node("Titulo", b.panel), 30f, 26f, 520f, 26f), labelFont, 24f, c, TextAlignmentOptions.MidlineLeft, 16f, true);
         b.reloj = Text(Place(Node("Reloj", b.panel), 560f, 18f, 270f, 50f), monoFont, 46f, Ink, TextAlignmentOptions.MidlineRight);
         b.grande = Text(Place(Node("Grande", b.panel), 30f, 62f, 800f, 76f), displayFont, 72f, Ink, TextAlignmentOptions.MidlineLeft, 2f, true);
         b.datos = Text(Place(Node("Datos", b.panel), 30f, 142f, 800f, 24f), monoFont, 20f, White(0.62f), TextAlignmentOptions.MidlineLeft);
@@ -137,7 +137,7 @@ public partial class ModeSelectScreen
         Image(b.error, rounded, new Color(0f, 0f, 0f, DarkAlpha(0.62f)), 12f, true);
         Border(b.error, 8f, WithAlpha(Bad, 0.5f));
         Image(Place(Node("Barra", b.error), 0f, 0f, AnchoPanel, 5f), null, Bad);
-        Text(Place(Node("Rotulo", b.error), 30f, 26f, 520f, 26f), labelFont, 24f, Bad, TextAlignmentOptions.MidlineLeft, 24f, true).text = "Buscar partida";
+        Text(Place(Node("Rotulo", b.error), 30f, 26f, 520f, 26f), labelFont, 24f, Bad, TextAlignmentOptions.MidlineLeft, 16f, true).text = "Buscar partida";
         b.errorTitulo = Text(Place(Node("Titulo", b.error), 30f, 58f, 800f, 72f), displayFont, 64f, Ink, TextAlignmentOptions.MidlineLeft, 2f, true);
         b.errorTexto = Text(Place(Node("Texto", b.error), 30f, 134f, 780f, 64f), bodyFont, 24f, White(0.82f), TextAlignmentOptions.TopLeft);
         b.errorTexto.textWrappingMode = TextWrappingModes.Normal;
@@ -169,7 +169,7 @@ public partial class ModeSelectScreen
             RectTransform j = Group("Jugador", radar, LugarRadar[k].x, LugarRadar[k].y);
             radarColor.Add(Circle(j, 0f, 0f, 13f, Color.white, 4f));
             Circle(j, 0f, 0f, 9f, Color.white);
-            TextMeshProUGUI nombre = Text(Place(Node("Nombre", j), 24f, -14f, 260f, 28f), labelFont, 20f, White(0.8f), TextAlignmentOptions.MidlineLeft, 8f, true);
+            TextMeshProUGUI nombre = Text(Place(Node("Nombre", j), 24f, -14f, 260f, 28f), labelFont, 20f, White(0.8f), TextAlignmentOptions.MidlineLeft, 16f, true);
             radarJugadores.Add(j);
             radarNombres.Add(nombre);
             j.gameObject.SetActive(false);
@@ -251,13 +251,15 @@ public partial class ModeSelectScreen
     private void MostrarError(Detail d, Multijugador.Fallo fallo)
     {
         Busqueda b = d.busqueda;
-        bool version = fallo == Multijugador.Fallo.Version;
-        b.errorTitulo.text = version ? "Hay una versión nueva" : fallo == Multijugador.Fallo.CuentaRepetida ? "Tu cuenta ya está jugando" : "Se cortó la conexión";
+        bool version = fallo == Multijugador.Fallo.Version, cuenta = fallo == Multijugador.Fallo.Cuenta;
+        b.errorTitulo.text = version ? "Hay una versión nueva" : cuenta ? "No se pudo verificar tu cuenta"
+            : fallo == Multijugador.Fallo.CuentaRepetida ? "Tu cuenta ya está jugando" : "Se cortó la conexión";
         b.errorTexto.text = version ? "Solo se juntan jugadores con la misma versión del juego. Actualizá desde el launcher y volvé a buscar."
+            : cuenta ? "Tu sesión venció o se cerró. Volvé a entrar en el launcher y buscá de nuevo."
             : fallo == Multijugador.Fallo.CuentaRepetida ? "Tu cuenta está en esa partida desde otra PC. Cerrá el juego ahí y volvé a buscar."
             : "Revisá tu internet y volvé a buscar. No perdiste nada: tu progreso está guardado.";
-        b.reintentar.gameObject.SetActive(!version);
-        b.launcher.gameObject.SetActive(version);
+        b.reintentar.gameObject.SetActive(!version && !cuenta);
+        b.launcher.gameObject.SetActive(version || cuenta);
         MostrarBloque(d, Bloque.Error);
     }
 
@@ -307,6 +309,9 @@ public partial class ModeSelectScreen
         int modo = open == 0 || open == 1 ? open : -1;
         bool ver = modo >= 0 && details[modo].busqueda.bloque == Bloque.Busqueda;
         radarGroup.alpha = Mathf.MoveTowards(radarGroup.alpha, ver ? 1f : 0f, dt / 0.3f);
+        // Mientras se ve el radar, el dibujo del andén (la grilla y el sitio del Táctico, la mira del Deathmatch) se apaga.
+        for (int i = 0; i < 2; i++)
+            if (andenes[i].figura != null) andenes[i].figura.alpha = 1f - (i == radarModo ? radarGroup.alpha : 0f);
         if (!ver) return;
         PintarBusqueda(details[modo], modo, now);
     }

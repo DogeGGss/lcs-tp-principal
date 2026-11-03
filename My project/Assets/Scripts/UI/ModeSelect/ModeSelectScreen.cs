@@ -101,6 +101,7 @@ public partial class ModeSelectScreen : MonoBehaviour
         public CanvasGroup group;
         public UIPolygon shape;
         public RectTransform motif;
+        public CanvasGroup figura; // el dibujo del modo (sin el mapa de fondo): se apaga mientras se ve el radar de buscar partida
         public Img dim, flash;
         public float flashAt = -10f;
     }
@@ -208,7 +209,7 @@ public partial class ModeSelectScreen : MonoBehaviour
         root.sizeDelta = new Vector2(W, H);
 
         for (int i = 0; i < 3; i++) andenes[i] = BuildAnden(i);
-        BuildTactico(andenes[0].motif);
+        BuildTactico(Figura(andenes[0], andenes[0].motif));
         BuildDeathmatch(andenes[1]);
         BuildInvasion(andenes[2].motif);
         foreach (Anden a in andenes) { a.dim.transform.SetAsLastSibling(); a.flash.transform.SetAsLastSibling(); }
@@ -251,6 +252,15 @@ public partial class ModeSelectScreen : MonoBehaviour
         rect.anchorMin = rect.anchorMax = rect.pivot = new Vector2(0f, 1f);
         rect.anchoredPosition = new Vector2(x, -y);
         rect.sizeDelta = Vector2.zero;
+        return rect;
+    }
+
+    // El dibujo de un andén online, en su propio grupo: el radar de buscar partida lo reemplaza (si no, quedaban encimados).
+    private RectTransform Figura(Anden a, Transform parent)
+    {
+        RectTransform rect = Group("Figura", parent, 0f, 0f);
+        a.figura = rect.gameObject.AddComponent<CanvasGroup>();
+        a.figura.blocksRaycasts = false;
         return rect;
     }
 
@@ -414,8 +424,9 @@ public partial class ModeSelectScreen : MonoBehaviour
     private void BuildDeathmatch(Anden a)
     {
         Color red = ModeColor[1];
+        RectTransform figura = Figura(a, a.shape.transform);
         // Trazadoras que cruzan en diagonal (en coordenadas de pantalla, no se mueven con el andén).
-        RectTransform tr = Group("Trazadoras", a.shape.transform, 0f, 0f);
+        RectTransform tr = Group("Trazadoras", figura, 0f, 0f);
         for (int i = 0; i < 7; i++)
         {
             float y = 250f + i * 150f;
@@ -426,7 +437,7 @@ public partial class ModeSelectScreen : MonoBehaviour
             tracerPhase.Add(UnityEngine.Random.value);
         }
 
-        cross = Group("Mira", a.shape.transform, 960f, 380f);
+        cross = Group("Mira", figura, 960f, 380f);
         UIRing outer = Circle(cross, 0f, 0f, 96f, WithAlpha(red, FadeAlpha(0.35f)), 2f); outer.dashCount = 26; outer.dashFill = 0.45f;
         Circle(cross, 0f, 0f, 56f, red, 4f);
         Segment(cross, new Vector2(-84f, 0f), new Vector2(-34f, 0f), 4f, red);
@@ -513,7 +524,7 @@ public partial class ModeSelectScreen : MonoBehaviour
         l.group = l.rect.gameObject.AddComponent<CanvasGroup>();
         l.group.blocksRaycasts = false;
 
-        TextMeshProUGUI eyebrow = Text(Place(Node("Anden", l.rect), 0f, 0f, 600f, 24f), labelFont, 22f, ModeColor[i], TextAlignmentOptions.Center, 32f, true);
+        TextMeshProUGUI eyebrow = Text(Place(Node("Anden", l.rect), 0f, 0f, 600f, 24f), labelFont, 22f, ModeColor[i], TextAlignmentOptions.Center, 30f, true);
         eyebrow.text = "Andén " + (i + 1);
         eyebrow.rectTransform.anchorMax = new Vector2(1f, 1f);
         eyebrow.rectTransform.sizeDelta = new Vector2(0f, 24f);
@@ -570,7 +581,7 @@ public partial class ModeSelectScreen : MonoBehaviour
         RectTransform back = Place(Node("Volver", top), W - 64f - 330f, 50f, 330f, 36f);
         backButton = back;
         Image(back, null, White(0f), 0f, true);
-        backText = Text(Place(Node("Texto", back), 0f, 0f, 330f, 36f), labelFont, 22f, White(0.85f), TextAlignmentOptions.MidlineRight, 8f, true);
+        backText = Text(Place(Node("Texto", back), 0f, 0f, 330f, 36f), labelFont, 22f, White(0.85f), TextAlignmentOptions.MidlineRight, 16f, true);
         backText.text = "Menú principal";
         RectTransform key = Place(Node("Tecla", back), 0f, 0f, 56f, 36f);
         Image(key, rounded, Ink, 6f);
@@ -596,7 +607,7 @@ public partial class ModeSelectScreen : MonoBehaviour
         d.group = d.rect.gameObject.AddComponent<CanvasGroup>();
         Color c = ModeColor[i];
 
-        Text(Place(Node("Anden", d.rect), 0f, 0f, 900f, 26f), labelFont, 24f, c, TextAlignmentOptions.MidlineLeft, 32f, true).text = DetailEyebrow[i];
+        Text(Place(Node("Anden", d.rect), 0f, 0f, 900f, 26f), labelFont, 24f, c, TextAlignmentOptions.MidlineLeft, 30f, true).text = DetailEyebrow[i];
         Text(Place(Node("Nombre", d.rect), 0f, 36f, 900f, 118f), displayFont, 128f, Ink, TextAlignmentOptions.MidlineLeft, 1f, true).text = Titles[i];
         TextMeshProUGUI body = Text(Place(Node("Texto", d.rect), 0f, 166f, 760f, 120f), bodyFont, 28f, White(0.85f), TextAlignmentOptions.TopLeft);
         body.textWrappingMode = TextWrappingModes.Normal;
@@ -668,9 +679,9 @@ public partial class ModeSelectScreen : MonoBehaviour
         RectTransform room = Place(Node("Sala", d.rect), 0f, y, 720f, 390f);
         Image(room, rounded, new Color(0f, 0f, 0f, DarkAlpha(0.55f)), 10f);
         Border(room, 8f, White(0.18f));
-        Text(Place(Node("Sala", room), 26f, 22f, 200f, 40f), labelFont, 22f, White(0.7f), TextAlignmentOptions.MidlineLeft, 10f, true).text = "Sala";
+        Text(Place(Node("Sala", room), 26f, 22f, 200f, 40f), labelFont, 22f, White(0.7f), TextAlignmentOptions.MidlineLeft, 16f, true).text = "Sala";
         d.roomCode = Text(Place(Node("Codigo", room), 160f, 22f, 400f, 40f), monoFont, 40f, c, TextAlignmentOptions.Center, 30f);
-        d.roomCount = Text(Place(Node("Jugadores", room), 494f, 22f, 200f, 40f), labelFont, 22f, White(0.7f), TextAlignmentOptions.MidlineRight, 10f, true);
+        d.roomCount = Text(Place(Node("Jugadores", room), 494f, 22f, 200f, 40f), labelFont, 22f, White(0.7f), TextAlignmentOptions.MidlineRight, 16f, true);
         RectTransform copy = ButtonRect(room, 462f, 24f, "Copiar", false, c, CopyCode, 20f, 36f);
         d.copyLabel = copy.GetComponentInChildren<TextMeshProUGUI>();
         for (int s = 0; s < 8; s++)
@@ -680,7 +691,7 @@ public partial class ModeSelectScreen : MonoBehaviour
             d.slots[s] = Text(Place(Node("Lugar", room), x, sy, 324f, 36f), bodyFont, 21f, Ink, TextAlignmentOptions.MidlineLeft);
         }
 
-        Text(Place(Node("Mapa", room), 26f, 256f, 120f, 40f), labelFont, 22f, White(0.7f), TextAlignmentOptions.MidlineLeft, 10f, true).text = "Mapa";
+        Text(Place(Node("Mapa", room), 26f, 256f, 120f, 40f), labelFont, 22f, White(0.7f), TextAlignmentOptions.MidlineLeft, 16f, true).text = "Mapa";
         d.roomMap = Text(Place(Node("NombreMapa", room), 120f, 256f, 330f, 40f), bodyFont, 24f, Ink, TextAlignmentOptions.MidlineLeft);
         d.mapButton = ButtonRect(room, 462f, 258f, "Cambiar mapa", false, c, NextMap, 20f, 36f);
 

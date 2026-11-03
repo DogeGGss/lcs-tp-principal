@@ -71,7 +71,7 @@ public class Multijugador : MonoBehaviourPunCallbacks, IOnEventCallback
 
     private enum Pedido { Nada, Crear, Unirse, Volver, Buscar }
 
-    public enum Fallo { Conexion, Version, CuentaRepetida }
+    public enum Fallo { Conexion, Version, CuentaRepetida, Cuenta }
 
     /// <summary>Por qué falló lo último que se pidió: la búsqueda muestra un aviso para cada caso (US 275, CA3). Con una
     /// versión vieja (US 204) ofrece abrir el launcher.</summary>
@@ -110,10 +110,24 @@ public class Multijugador : MonoBehaviourPunCallbacks, IOnEventCallback
         string aviso = null;
         yield return VersionDelJuego.Comprobar(resultado => aviso = resultado);
         if (aviso != null) { Fallar(aviso); yield break; }
-        ConectarAhora();
+        // US 277, CA1: en el juego publicado, Photon verifica la cuenta con la base: se conecta con la sesión al día.
+        string sesion = null;
+        if (ConCuentaVerificada)
+        {
+            bool listo = false;
+            LogrosOnline.Instancia.SesionParaPhoton(s => { sesion = s; listo = true; });
+            while (!listo) yield return null;
+            if (sesion == null) { UltimoFallo = Fallo.Cuenta; Fallar(ReglasCuenta.CuentaSinVerificar); yield break; }
+        }
+        ConectarAhora(sesion);
     }
 
-    private void ConectarAhora()
+    // En el juego publicado (con cuenta): en el editor y en los builds de desarrollo se entra sin verificar, para poder
+    // probar con dos copias del juego (ver UsuarioPhoton). Riftwalker > Cuenta > Como en el juego publicado lo prueba.
+    private static bool ConCuentaVerificada =>
+        !LogrosOnline.EntraEnElJuego && LogrosOnline.Instancia != null && !string.IsNullOrEmpty(LogrosOnline.Instancia.IdDeLaCuenta);
+
+    private void ConectarAhora(string sesion)
     {
         if (PhotonNetwork.IsConnected) return;
         PhotonNetwork.AutomaticallySyncScene = true;
@@ -123,7 +137,15 @@ public class Multijugador : MonoBehaviourPunCallbacks, IOnEventCallback
         // US 195: Photon reconoce al que vuelve a una sala por su usuario. Para volver se usan el usuario y la región
         // con los que se jugó esa partida.
         bool volviendo = pedido == Pedido.Volver;
-        PhotonNetwork.AuthValues = new AuthenticationValues(volviendo ? vuelta.usuario : UsuarioPhoton());
+        var auth = new AuthenticationValues(volviendo ? vuelta.usuario : UsuarioPhoton());
+        if (sesion != null)
+        {
+            // US 277, CA1: Photon le pasa la sesión a la Edge Function photon-auth (Backend/Supabase/functions), que la
+            // valida con Supabase y le devuelve el id y el nombre de la cuenta. Sin una sesión válida, Photon no deja entrar.
+            auth.AuthType = CustomAuthenticationType.Custom;
+            auth.SetAuthPostData(new Dictionary<string, object> { { "token", sesion } });
+        }
+        PhotonNetwork.AuthValues = auth;
         // Solo se juntan jugadores con la misma versión del juego (US 204). ConnectUsingSettings pisa GameVersion con la
         // AppVersion de PhotonServerSettings (vacía), así que la versión va en una copia de esa configuración.
         var ajustes = PhotonNetwork.PhotonServerSettings == null ? null : PhotonNetwork.PhotonServerSettings.AppSettings.CopyTo(new AppSettings());
@@ -459,6 +481,14 @@ public class Multijugador : MonoBehaviourPunCallbacks, IOnEventCallback
         else Fallar(ErrorCrear);
     }
 
+    // US 277, CA1: la base no reconoció la sesión (venció, se cerró o se borró la cuenta).
+    public override void OnCustomAuthenticationFailed(string debugMessage)
+    {
+        Debug.LogWarning($"Multijugador: Photon no aceptó la cuenta ({debugMessage}).");
+        UltimoFallo = Fallo.Cuenta;
+        Fallar(ReglasCuenta.CuentaSinVerificar);
+    }
+
     public override void OnJoinRandomFailed(short returnCode, string message)
     {
         Debug.LogWarning($"Multijugador: no se pudo buscar partida ({returnCode}: {message}).");
@@ -586,7 +616,8 @@ public class Multijugador : MonoBehaviourPunCallbacks, IOnEventCallback
         }
         cambiandoUsuario = false;
         if (habia != Pedido.Nada) Fallar(habia == Pedido.Crear ? ErrorCrear : habia == Pedido.Volver ? ErrorVolver : habia == Pedido.Buscar ? ErrorBuscar : ErrorEntrar);
-        else if (cause != DisconnectCause.DisconnectByClientLogic) Error?.Invoke("Se perdió la conexión con el servidor.");
+        else if (cause != DisconnectCause.DisconnectByClientLogic && cause != DisconnectCause.CustomAuthenticationFailed)
+            Error?.Invoke("Se perdió la conexión con el servidor."); // la cuenta rechazada ya avisó (OnCustomAuthenticationFailed)
         Cambio?.Invoke();
 
         // Sin conexión no hay partida: se vuelve al menú.

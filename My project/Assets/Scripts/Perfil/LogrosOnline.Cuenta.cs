@@ -76,6 +76,19 @@ public sealed partial class LogrosOnline
     /// <summary>US 270: sale de la cuenta y vuelve al progreso de la PC.</summary>
     public void CerrarSesion(Action listo) => StartCoroutine(EnTurno(SalirAhora(listo)));
 
+    /// <summary>
+    /// US 277, CA1: la sesión de la cuenta, renovada si hacía falta, para que Photon la verifique con la base (Edge
+    /// Function photon-auth). listo recibe null si no hay cuenta o no se pudo renovar (sin conexión o sesión cerrada).
+    /// </summary>
+    public void SesionParaPhoton(Action<string> listo) => StartCoroutine(EnTurno(SesionParaPhotonAhora(listo)));
+
+    private IEnumerator SesionParaPhotonAhora(Action<string> listo)
+    {
+        if (!Configurado || !enCuenta) { listo?.Invoke(null); yield break; }
+        yield return AsegurarSesion();
+        listo?.Invoke(falloSesion == null && enCuenta && sesion != null ? sesion.access_token : null);
+    }
+
     /// <summary>«¿Te equivocaste de mail?»: se olvida del mail que esperaba el código.</summary>
     public void OlvidarPendiente() { GuardarPendiente(null); CambioCuenta?.Invoke(); }
 

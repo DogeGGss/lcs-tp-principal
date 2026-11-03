@@ -11,6 +11,7 @@ namespace Riftwalker.Launcher;
 //   and POST /auth/v1/verify confirms it and returns the session.
 // - Log in (US 269): POST /auth/v1/token?grant_type=password.
 // - Log out (US 270): POST /auth/v1/logout, and the session file is deleted.
+// - Delete the account (US 273): POST /functions/v1/borrar-cuenta with the password (Backend/Supabase/functions).
 // The session (never the password) is saved in the game's save folder, in the format of LogrosOnline.Sesion: the game
 // reads it when it opens (US 282). Supabase rotates the refresh token on every use, so the file is read again before
 // renewing, in case the game already did it.
@@ -107,6 +108,29 @@ public sealed class Cuentas(HttpClient http, ServicioCuentas servicio, string ca
         Sesion = null;
     }
 
+    /// <summary>
+    /// US 273, CA2 and CA3: deletes the account with everything it has (Edge Function borrar-cuenta, which checks the
+    /// password again and has the service key), then the session and the account's save files leave the PC. null if it
+    /// was deleted; otherwise, the message for the player.
+    /// </summary>
+    public async Task<string?> BorrarAsync(string clave, CancellationToken token)
+    {
+        if (string.IsNullOrEmpty(clave)) return ReglasCuenta.ClaveIncorrecta;
+        if (!await RenovarAsync(token) || Sesion is not { User: { } usuario } s) return ReglasCuenta.SesionVencida;
+        var r = await PedirAsync(HttpMethod.Post, "/functions/v1/borrar-cuenta", new Borrado(clave), s.AccessToken, token);
+        if (r.Codigo == 0) return ReglasCuenta.SinInternet;
+        if (r.Codigo == 401) return r.Cuerpo.Contains("\"clave\"") ? ReglasCuenta.ClaveIncorrecta : ReglasCuenta.SesionVencida;
+        if (!r.Bien) return ReglasCuenta.Generico;
+        string id = usuario.Id;
+        string[] archivos = [RutaSesion, .. new[] { "jugador-", "jugador-editor-" }.SelectMany(p => new[] { $"{p}{id}.json", $"{p}{id}.json.bak" }).Select(a => Path.Combine(carpetaJuego, a))];
+        foreach (string archivo in archivos) try { File.Delete(archivo); } catch (Exception ex) when (ex is IOException or UnauthorizedAccessException) { }
+        // The game's mark of the last account used on this PC: if it was this one, it goes too.
+        string marca = Path.Combine(carpetaJuego, "cuenta-activa.txt");
+        try { if (File.Exists(marca) && File.ReadAllText(marca).Trim() == id) File.Delete(marca); } catch (Exception ex) when (ex is IOException or UnauthorizedAccessException) { }
+        Sesion = null;
+        return null;
+    }
+
     /// <summary>When the launcher opens: renews the session if it expired. false if Supabase rejected it (closed somewhere
     /// else, or the account was deleted): it is deleted and the player logs in again. Offline, the saved one is kept.</summary>
     public async Task<bool> RenovarAsync(CancellationToken token)
@@ -178,6 +202,7 @@ public sealed class Cuentas(HttpClient http, ServicioCuentas servicio, string ca
     private sealed record Verificacion([property: JsonPropertyName("type")] string Tipo, [property: JsonPropertyName("email")] string Mail, [property: JsonPropertyName("token")] string Codigo);
     private sealed record Reenvio([property: JsonPropertyName("type")] string Tipo, [property: JsonPropertyName("email")] string Mail);
     private sealed record Renovacion([property: JsonPropertyName("refresh_token")] string Token);
+    private sealed record Borrado([property: JsonPropertyName("clave")] string Clave);
 }
 
 /// <summary>The game's Supabase project: the same as Assets/Resources/LogrosOnline.asset. The publishable key is public on
