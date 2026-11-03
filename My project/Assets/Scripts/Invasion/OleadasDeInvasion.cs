@@ -9,6 +9,9 @@ using UnityEngine.UI;
 //   oleada y, al superarla, vuelve a empezar.
 // - CA1: la oleada N trae 6 + 3 × (N − 1) enemigos (6 en la 1, 9 en la 2, 33 en la 10).
 // - CA2: como máximo 12 vivos a la vez; los que faltan aparecen a medida que mueren los anteriores.
+// US 299 (más invasores) reemplaza CA1 y CA2: la oleada N trae 10 + 5 × (N − 1) invasores en Normal (10 en la 1, 55 en
+// la 10, 105 en la 20) y el tope de vivos a la vez es 15 en la 1 y sube de a uno por oleada hasta 30. Las cifras están
+// en ConfigInvasion para ajustarlas probando.
 // - CA3: en las oleadas 1 y 2 solo Comunes; desde la 3, el 25 % Rápidos; desde la 4, el 10 % Tiradores (Watcher verde,
 //   US 286); desde la 5, el 10 % Tanques; desde la 6, el 5 % Francotiradores (Watcher rojo, US 285). En la 10
 //   aparece el Jefe (US 146) cuando cayó la mitad de la oleada: va aparte (no cuenta entre los 33 ni en el tope de 12).
@@ -26,8 +29,6 @@ using UnityEngine.UI;
 public class OleadasDeInvasion : MonoBehaviour
 {
     public const int Ultima = 10;                         // CA6
-    private const int Base = 6, PorOleada = 3;            // CA1
-    private const int MaximoVivos = 12;                   // CA2
     private const float Cerca = 15f, Lejos = 50f;         // CA4: m del jugador
     private const float VidaExtra = 0.1f;                 // CA7: por oleada después de la 10
 
@@ -107,7 +108,7 @@ public class OleadasDeInvasion : MonoBehaviour
         if (fase != Fase.Descanso) return; // solo desde el descanso: una oleada no corta a la anterior
         Oleada++;
         fase = Fase.Oleada;
-        total = Mathf.Max(1, Mathf.RoundToInt((Base + PorOleada * (Oleada - 1)) * DificultadDeInvasion.Cantidad)); // CA1 (y CA7), US 161
+        total = Mathf.Max(1, Mathf.RoundToInt(ConfigInvasion.Actual.Invasores(Oleada) * DificultadDeInvasion.Cantidad)); // US 299, CA1 (y CA7), US 161
         muertos = 0;
         vivos.Clear();
         tipos.Clear();
@@ -188,7 +189,8 @@ public class OleadasDeInvasion : MonoBehaviour
         portales.RemoveAll(p => p == null || p.Cerrando);
         int esperando = 0;
         foreach (PortalDeEnemigos p in portales) esperando += p.Fila.Count;
-        if (porAparecer.Count > 0 && Time.time >= proximoPortal && vivos.Count + esperando < MaximoVivos)
+        int maximoVivos = ConfigInvasion.Actual.TopeDeVivos(Oleada); // US 299, CA2
+        if (porAparecer.Count > 0 && Time.time >= proximoPortal && vivos.Count + esperando < maximoVivos)
         {
             PortalDeEnemigos portal = null;
             if (portales.Count < MaximoPortales && LugarDePortal(jugador, out Vector3 lugar))
@@ -206,11 +208,11 @@ public class OleadasDeInvasion : MonoBehaviour
             }
         }
 
-        // CA2: cada portal larga los suyos de a uno, sin pasar de 12 vivos. Quedan abiertos hasta que termina la oleada.
+        // CA2: cada portal larga los suyos de a uno, sin pasar del tope de vivos (US 299). Quedan abiertos hasta que termina la oleada.
         foreach (PortalDeEnemigos portal in portales)
         {
             if (portal.Fila.Count == 0) continue;
-            if (!portal.Listo || vivos.Count >= MaximoVivos || Time.time < portal.Proximo) continue;
+            if (!portal.Listo || vivos.Count >= maximoVivos || Time.time < portal.Proximo) continue;
             portal.Proximo = Time.time + EntreSalidas;
             TipoDeNpc tipo = portal.Fila.Dequeue();
             Npc npc = Aparecer(tipo, portal.Salida, jugador);

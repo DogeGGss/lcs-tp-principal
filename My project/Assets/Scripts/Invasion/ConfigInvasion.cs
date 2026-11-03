@@ -1,7 +1,7 @@
 using UnityEngine;
 
-// F08 (Modo Invasión): lo que se ajusta del modo desde el editor, en Resources/Invasion/ConfigInvasion. Por ahora, los
-// portales de donde salen los enemigos (US 269).
+// F08 (Modo Invasión): lo que se ajusta del modo desde el editor, en Resources/Invasion/ConfigInvasion: los portales de
+// donde salen los enemigos (US 269) y cuántos invasores trae cada oleada (US 299).
 [CreateAssetMenu(menuName = "Riftwalker/Invasión/Configuración", fileName = "ConfigInvasion")]
 public class ConfigInvasion : ScriptableObject
 {
@@ -20,6 +20,24 @@ public class ConfigInvasion : ScriptableObject
     public AudioClip sonidoAbrir;
     [Tooltip("Zumbido mientras está abierto. Vacío: Sonidos/Resources/Mapas/portal_loop.")]
     public AudioClip sonidoAbierto;
+
+    [Header("Cantidad de invasores (US 299)")]
+    [Tooltip("CA1: invasores de la oleada 1 en Normal (la dificultad los multiplica, US 161).")]
+    [Min(1)] public int invasoresAlEmpezar = 10;
+    [Tooltip("CA1: cuántos invasores más trae cada oleada.")]
+    [Min(0)] public int invasoresPorOleada = 5;
+    [Tooltip("CA2: tope de invasores vivos a la vez en la oleada 1.")]
+    [Min(1)] public int vivosAlEmpezar = 15;
+    [Tooltip("CA2: cuánto sube el tope de vivos a la vez por oleada.")]
+    [Min(0)] public int vivosPorOleada = 1;
+    [Tooltip("CA2 y CA3: el tope de vivos a la vez nunca pasa de este número.")]
+    [Min(1)] public int vivosMaximo = 30;
+
+    /// <summary>US 299, CA1: los invasores de la oleada (sin la dificultad).</summary>
+    public int Invasores(int oleada) => invasoresAlEmpezar + invasoresPorOleada * (Mathf.Max(1, oleada) - 1);
+
+    /// <summary>US 299, CA2: el tope de invasores vivos a la vez en la oleada.</summary>
+    public int TopeDeVivos(int oleada) => Mathf.Min(vivosMaximo, vivosAlEmpezar + vivosPorOleada * (Mathf.Max(1, oleada) - 1));
 
     private static ConfigInvasion actual;
 
