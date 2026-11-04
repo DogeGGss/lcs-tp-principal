@@ -5,7 +5,7 @@ using UnityEngine;
 // verde (la de la granada de humo, HumoGranada, con otro color): tapa la vista desde afuera y, desde adentro, la
 // pantalla se pone verde. Al jugador que está adentro le saca 10 de vida por segundo (de a 5 cada medio segundo). No
 // lastima a los enemigos. Dura 10 s (los últimos 2 se va disipando) y como mucho hay 5: si sale una nueva, la más
-// vieja se va.
+// vieja se va. US 302, CA4: el Jefe de la oleada 40 en adelante las deja más grandes (escala).
 public class NubeDeVeneno : MonoBehaviour
 {
     private const float Radio = 4.5f, Dura = 10f;
@@ -22,19 +22,21 @@ public class NubeDeVeneno : MonoBehaviour
 
     private HumoGranada humo;
     private string fuente;
-    private float proximoTic;
+    private float proximoTic, radio = Radio;
     private readonly List<HealthSystem> jugadores = new List<HealthSystem>();
 
-    public static void Crear(Vector3 donde, string fuente, Material material)
+    public static void Crear(Vector3 donde, string fuente, Material material, float escala = 1f)
     {
         nubes.RemoveAll(n => n == null);
         while (nubes.Count >= Maximo) { if (nubes[0] != null) Destroy(nubes[0].gameObject); nubes.RemoveAt(0); }
 
-        HumoGranada humo = HumoGranada.Crear(donde, Radio, Dura, Verde, Pantalla, material);
+        float radio = Radio * Mathf.Max(0.1f, escala);
+        HumoGranada humo = HumoGranada.Crear(donde, radio, Dura, Verde, Pantalla, material);
         humo.gameObject.name = "Nube de veneno";
         var nube = humo.gameObject.AddComponent<NubeDeVeneno>();
         nube.humo = humo;
         nube.fuente = fuente;
+        nube.radio = radio;
         nube.proximoTic = Time.time + Tic;
         foreach (PlayerMovement p in FindObjectsByType<PlayerMovement>(FindObjectsSortMode.None))
         {
@@ -54,7 +56,7 @@ public class NubeDeVeneno : MonoBehaviour
             if (vida == null || vida.currentHealth <= 0) continue;
             // Adentro: el cuerpo (de los pies a la cabeza) toca la nube.
             Vector3 pecho = vida.transform.position + Vector3.up * 0.5f;
-            if (Vector3.Distance(pecho, humo.Centro) > Radio * 0.9f) continue;
+            if (Vector3.Distance(pecho, humo.Centro) > radio * 0.9f) continue;
             HealthSystem.DamageOrigin = humo.Centro;
             HealthSystem.DamageSource = fuente;
             vida.TakeDamage(DanioPorTic);

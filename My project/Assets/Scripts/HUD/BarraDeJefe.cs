@@ -20,6 +20,17 @@ public class BarraDeJefe : MonoBehaviour
     private const float Apagarse = 0.6f; // s al morir
 
     private Npc jefe;
+    private RectTransform marca;
+
+    /// <summary>Pone la marca de la furia en esa parte de la vida (US 302: al 75 % en la oleada 20); con 1 o más (arranca
+    /// enfurecido) no se ve.</summary>
+    public void MarcaDeFuria(float fraccion)
+    {
+        if (marca == null) return;
+        marca.gameObject.SetActive(fraccion > 0f && fraccion < 1f);
+        marca.anchorMin = new Vector2(Mathf.Clamp01(fraccion), 0f);
+        marca.anchorMax = new Vector2(Mathf.Clamp01(fraccion), 1f);
+    }
     private RectTransform relleno, tramo;
     private TextMeshProUGUI valor, nombreTexto;
     private string nombre;
@@ -89,7 +100,7 @@ public class BarraDeJefe : MonoBehaviour
         relleno = Lleno("Vida", fondo, ShopUIKit.Accent, redondo);
         imagenRelleno = relleno.GetComponent<Image>();
 
-        var marca = Rect("Marca de la furia", fondo);
+        marca = Rect("Marca de la furia", fondo);
         marca.anchorMin = new Vector2(Furia, 0f);
         marca.anchorMax = new Vector2(Furia, 1f);
         marca.sizeDelta = new Vector2(2f, 8f);

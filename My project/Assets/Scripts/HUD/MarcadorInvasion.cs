@@ -276,7 +276,7 @@ public class MarcadorInvasion : MonoBehaviour
             cabezaAntes = cabeza;
             titulo.text = $"Oleada {n}";
             deCuantas.text = infinito ? "· modo infinito" : $"de {OleadasDeInvasion.Ultima}";
-            bool jefe = n == OleadasDeInvasion.Ultima;
+            bool jefe = OleadasDeInvasion.EsDeJefe(n); // US 302: la 10, la 20, la 30...
             chipJefe.gameObject.SetActive(jefe);
             float w1 = Width(titulo, titulo.text), w2 = Width(deCuantas, deCuantas.text), w3 = 0f;
             if (jefe) w3 = Width(chipJefe.GetComponentInChildren<TextMeshProUGUI>(), "Jefe") + 16f;

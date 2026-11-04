@@ -2,7 +2,7 @@ using UnityEngine;
 
 // F08 (Modo Invasión): lo que se ajusta del modo desde el editor, en Resources/Invasion/ConfigInvasion: los portales de
 // donde salen los enemigos (US 269), cuántos invasores trae cada oleada (US 299), el puesto de suministros (US 292) y
-// los alfas (US 301).
+// los alfas (US 301) y cómo se endurece el Jefe en cada vuelta (US 302).
 [CreateAssetMenu(menuName = "Riftwalker/Invasión/Configuración", fileName = "ConfigInvasion")]
 public class ConfigInvasion : ScriptableObject
 {
@@ -53,6 +53,20 @@ public class ConfigInvasion : ScriptableObject
     [Min(1)] public int unAlfaCada = 15;
     [Tooltip("CA2 a CA4: cómo es el alfa (tamaño, vida, daño, puntos, color y aura).")]
     public VarianteAlfa alfa = new VarianteAlfa();
+
+    [Header("Jefe cada 10 oleadas (US 302)")]
+    [Tooltip("CA2 a CA4: vida que suma el Jefe en cada vuelta (en Normal: 2.000 en la 10, 3.500 en la 20, 5.000 en la 30...).")]
+    [Min(0)] public int vidaDelJefePorVuelta = 1500;
+    [Tooltip("CA2: desde la oleada 20, con qué parte de la vida se enfurece (en la 10, la mitad).")]
+    [Range(0.05f, 1f)] public float furiaDesdeLaVuelta2 = 0.75f;
+    [Tooltip("CA2: Tanques que lo escoltan desde la oleada 20 (salen del portal del Jefe).")]
+    [Min(0)] public int escoltaDelJefe = 2;
+    [Tooltip("CA3: embestidas seguidas desde la oleada 30 (que además arranca enfurecido).")]
+    [Min(1)] public int embestidasSeguidas = 2;
+    [Tooltip("CA4: desde la oleada 40, cuánto más grandes son sus nubes de veneno en cada vuelta (0,25 = 25 % más).")]
+    [Min(0f)] public float nubesMasGrandesPorVuelta = 0.25f;
+    [Tooltip("CA4: desde la oleada 40, por cuánto se multiplica el tiempo entre sus vuelos en cada vuelta (0,8 = 20 % más seguidos).")]
+    [Range(0.3f, 1f)] public float vuelosPorVuelta = 0.8f;
 
     /// <summary>US 299, CA1: los invasores de la oleada (sin la dificultad).</summary>
     public int Invasores(int oleada) => invasoresAlEmpezar + invasoresPorOleada * (Mathf.Max(1, oleada) - 1);

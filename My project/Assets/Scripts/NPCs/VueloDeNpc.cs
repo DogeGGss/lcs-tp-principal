@@ -37,12 +37,18 @@ public class VueloDeNpc : MonoBehaviour
     /// <summary>Bolas de veneno por vuelo (CA3). La furia (US 268) las sube a 5.</summary>
     public int Bolas = 3;
 
+    /// <summary>US 302, CA4: multiplica el tamaño de las nubes que deja (más grandes desde la oleada 40).</summary>
+    public float TamanioDeNubes = 1f;
+    /// <summary>US 302, CA4: multiplica el tiempo entre vuelos (menos de 1: más seguidos, desde la oleada 40). Vale
+    /// también después de la furia.</summary>
+    public float EntreVuelos = 1f;
+
     /// <summary>La furia (US 268): vuela más seguido y escupe más bolas desde ahora.</summary>
     public void MasSeguido(float cadaCuanto, int bolas)
     {
         CadaCuanto = cadaCuanto;
         Bolas = bolas;
-        proximo = Mathf.Min(proximo, Time.time + cadaCuanto);
+        proximo = Mathf.Min(proximo, Time.time + cadaCuanto * EntreVuelos);
     }
 
     /// <summary>Está volando (despegando, en el aire, aterrizando o recuperándose).</summary>
@@ -154,7 +160,7 @@ public class VueloDeNpc : MonoBehaviour
     private void Terminar()
     {
         fase = Fase.Tierra;
-        proximo = Time.time + CadaCuanto;
+        proximo = Time.time + CadaCuanto * EntreVuelos;
         if (capsula != null) capsula.enabled = true;
         persecucion.Ocupado = false;
         persecucion.Controlado = false;
@@ -204,7 +210,7 @@ public class VueloDeNpc : MonoBehaviour
         SonidoDeNpc.Uno(npc.Tipo.sonidoDeEscupir, transform, 40f); // CA3: con un sonido al escupirla
         Vector3 boca = Boca();
         BolaDeVeneno.Lanzar(boca, jugador.position, npc.Tipo.nombre, transform, npc.Tipo.veneno, npc.Tipo.materialDeNube,
-            npc.Tipo.sonidoDeImpactoDeVeneno);
+            npc.Tipo.sonidoDeImpactoDeVeneno, TamanioDeNubes);
     }
 
     // La boca: la zona de impacto de la cabeza (o el frente del cuerpo, si no tiene).
@@ -244,10 +250,11 @@ public class BolaDeVeneno : MonoBehaviour
     private VenenoDelVuelo deja;
     private Material nube;
     private AudioClip revienta; // el sonido al tocar el piso (y armarse la nube o el charco)
+    private float tamNube = 1f; // US 302, CA4
     private float muere;
 
     public static void Lanzar(Vector3 desde, Vector3 hacia, string fuente, Transform jefe, VenenoDelVuelo deja = VenenoDelVuelo.Nubes, Material nube = null,
-        AudioClip revienta = null)
+        AudioClip revienta = null, float tamNube = 1f)
     {
         GameObject go = GameObject.CreatePrimitive(PrimitiveType.Sphere);
         go.name = "Bola de veneno";
@@ -266,6 +273,7 @@ public class BolaDeVeneno : MonoBehaviour
         bola.nube = nube;
         bola.jefe = jefe;
         bola.revienta = revienta;
+        bola.tamNube = tamNube;
         bola.muere = Time.time + 6f;
     }
 
@@ -322,7 +330,7 @@ public class BolaDeVeneno : MonoBehaviour
         if (lugar.HasValue)
         {
             if (deja == VenenoDelVuelo.Charcos) CharcoDeVeneno.Crear(lugar.Value, fuente);
-            else NubeDeVeneno.Crear(lugar.Value, fuente, nube);
+            else NubeDeVeneno.Crear(lugar.Value, fuente, nube, tamNube);
         }
         Destroy(gameObject);
     }
