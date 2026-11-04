@@ -402,6 +402,10 @@ public class WeaponSwitcher : MonoBehaviour
         if (meleeScript != null && meleeScript.CurrentViewModel != null) meleeScript.CurrentViewModel.SetActive(false);
     }
 
+    /// <summary>La última arma de fuego que tuvo en la mano (la principal o la secundaria), aunque ahora tenga el
+    /// cuchillo o una granada. La usa la carta Filo de Invasión (US 317).</summary>
+    public GameObject UltimaDeFuego { get; private set; }
+
     // Vuelve al arma principal si la tiene; si no, a la secundaria (o al cuchillo).
     public void VolverAlArma()
     {
@@ -422,6 +426,7 @@ public class WeaponSwitcher : MonoBehaviour
         bool yaEnMano = principal != null && principal.activeSelf;
         GuardarPrincipales(principal);
         if (principal != null) principal.SetActive(true);
+        if (principal != null) UltimaDeFuego = principal;
         if (!yaEnMano) SonarSacar(principal);
         GuardarSecundarias(null);
         if (meleeScript != null && meleeScript.CurrentViewModel != null)
@@ -446,6 +451,7 @@ public class WeaponSwitcher : MonoBehaviour
         bool yaEnMano = secundaria != null && secundaria.activeSelf;
         GuardarSecundarias(secundaria);
         if (secundaria != null) secundaria.SetActive(true);
+        if (secundaria != null) UltimaDeFuego = secundaria;
         if (!yaEnMano) SonarSacar(secundaria);
         if (meleeScript != null && meleeScript.CurrentViewModel != null)
         {

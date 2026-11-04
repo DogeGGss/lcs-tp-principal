@@ -55,10 +55,15 @@ public static class MunicionDelArma
         else if (arma.TryGetComponent(out Pistola pistola)) pistola.SumarBalas(pistola.maxAmmo);
     }
 
-    /// <summary>El arma que tiene en la mano (o, si no tiene ninguna, la principal o la secundaria).</summary>
+    /// <summary>El arma de fuego que tiene en la mano; con el cuchillo o una granada, la última que tuvo (si todavía la
+    /// tiene); si no, la principal o la secundaria.</summary>
     public static GameObject EnLaMano(WeaponSwitcher armas)
     {
         if (armas == null) return null;
-        return armas.HeldPrimary ?? armas.HeldSecondary ?? armas.PrimaryObj ?? armas.SecondaryObj;
+        GameObject enLaMano = armas.HeldPrimary ?? armas.HeldSecondary;
+        if (enLaMano != null) return enLaMano;
+        GameObject ultima = armas.UltimaDeFuego;
+        if (ultima != null && (ultima == armas.PrimaryObj || ultima == armas.SecondaryObj)) return ultima;
+        return armas.PrimaryObj ?? armas.SecondaryObj;
     }
 }
