@@ -14,6 +14,8 @@ public class MeleeAttack : MonoBehaviour
 
     // Cada ataque con el cuchillo: el multijugador lo repite en las demás computadoras (US 028).
     public static event System.Action<MeleeAttack> Swung;
+    // Cada baja con el cuchillo (la carta Filo de Invasión recarga el arma: US 317).
+    public static event System.Action<MeleeAttack> Mato;
     public AudioClip SwingSound => swingSound;
 
     // US 256: el corte de costado. Lo dibuja AnimacionPrimeraPersona con el avance (AvanceDelCorte); acá solo se mide el
@@ -137,6 +139,7 @@ public class MeleeAttack : MonoBehaviour
             HealthSystem.DamageOrigin = origin; // US 192
             best.TakeDamage(data.damage);
             WeaponFire.ReportMelee(lethal);
+            if (lethal) Mato?.Invoke(this);
             Debug.Log($"Golpe cuerpo a cuerpo a {best.name}. Daño: {data.damage}");
         }
         // US 020, CA5: sin nadie a tiro, el cuchillo le pega a la Barrera que tenga adelante (si es de un rival).

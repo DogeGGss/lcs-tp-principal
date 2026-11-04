@@ -72,7 +72,7 @@ public class CartaDeInvasion
         new CartaDeInvasion { nombre = "Reciclador", rareza = RarezaDeCarta.Rara, rindeCon = "Todas",
             efecto = "Cada baja a la cabeza devuelve 5 balas al cargador.", aplicar = EfectosDeCartas.EnElJuego },
         new CartaDeInvasion { nombre = "Filo", rareza = RarezaDeCarta.Comun, rindeCon = "Cuchillo", unaVez = true,
-            efecto = "Matar con el cuchillo recarga el arma que tenés en la mano." },
+            efecto = "Matar con el cuchillo recarga la última arma que tuviste en la mano.", aplicar = EfectosDeCartas.EnElJuego },
         new CartaDeInvasion { nombre = "Carroñero", rareza = RarezaDeCarta.Rara, rindeCon = "Todas",
             efecto = "1 de cada 5 invasores suelta un cargador al morir." },
     };
