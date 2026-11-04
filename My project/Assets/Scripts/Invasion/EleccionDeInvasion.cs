@@ -10,7 +10,9 @@ using static ShopUIKit;
 // - CA1: 3 opciones, cada una con su nombre, su rareza, qué hace y con qué armas rinde. Se elige con el mouse o con
 //   1, 2 y 3. Mientras se elige el respiro no corre (OleadasDeInvasion espera a TerminoLaEleccion). El color dice qué
 //   es: blanca común, azul rara, violeta épica y roja un arma.
-// - CA2: al abrirse, el puesto le suma a cada arma la mitad de su munición máxima.
+// - CA2: al abrirse, el puesto recarga todas las armas (Luka, 04/11: toda la munición, no la mitad).
+// La pantalla no aparece de golpe: espera a que se vaya el cartel de la oleada, oscurece de a poco y las cartas
+// entran de a una (también al volver a tirar).
 // - CA3: la rareza de cada carta según la oleada (CartaDeInvasion.RarezaAlAzar).
 // - CA4: «Volver a tirar» (R) cambia las 3 opciones por 150 puntos; en el mismo puesto, cada vez 100 más.
 // - CA5: las cartas duran toda la partida y, si se repiten, se suman (se ven con Tab: MarcadorInvasion.Cartas). Las
@@ -43,6 +45,12 @@ public class EleccionDeInvasion : MonoBehaviour
     private readonly List<CartaDeInvasion> orden = new List<CartaDeInvasion>();
     private readonly List<Behaviour> bloqueados = new List<Behaviour>();
 
+    private const float Espera = 0.6f, Fundido = 0.35f, EntradaCarta = 0.4f, Escalon = 0.12f;
+    private bool visible;
+    private float mostrarEn, mostradaEn, cartasDesde;
+    private CanvasGroup grupo, cabezaGrupo;
+    private RectTransform cabeza;
+    private readonly List<(CanvasGroup grupo, RectTransform rect, float x)> cartas = new List<(CanvasGroup, RectTransform, float)>();
     private RectTransform lienzo, fila;
     private TextMeshProUGUI tirarTexto, puntosTexto;
     private UnityEngine.UI.Image tirarFondo;
@@ -100,20 +108,58 @@ public class EleccionDeInvasion : MonoBehaviour
         if (equipo == null) equipo = FindFirstObjectByType<PlayerLoadout>();
         if (lienzo == null) Armar();
 
-        // CA2: la mitad de la munición máxima de cada arma.
+        // CA2: recarga todas las armas.
         WeaponSwitcher armas = equipo != null ? equipo.GetComponentInChildren<WeaponSwitcher>(true) : null;
-        if (armas != null) armas.RecargarMitad();
+        if (armas != null) armas.RellenarTodas();
 
-        Abierta = true;
+        Abierta = true; // el respiro ya espera, aunque la pantalla todavía no se vea
+        visible = false;
         costo = PrimeraTirada;
+        mostrarEn = Time.unscaledTime + Espera;
+    }
+
+    // Cuando se fue el cartel de "Oleada N superada" (y un momento más), aparece la pantalla.
+    private void Mostrar()
+    {
+        visible = true;
+        mostradaEn = Time.unscaledTime;
+        grupo.alpha = 0f;
         lienzo.gameObject.SetActive(true);
         Bloquear();
         Tirar();
     }
 
+    private void Animar()
+    {
+        float ahora = Time.unscaledTime;
+        grupo.alpha = Suave((ahora - mostradaEn) / Fundido);
+        float c = Suave((ahora - mostradaEn - 0.1f) / Fundido);
+        cabeza.anchoredPosition = new Vector2(0f, -110f + 24f * (1f - c));
+        cabezaGrupo.alpha = c;
+        for (int i = 0; i < cartas.Count; i++)
+        {
+            var (g, r, x) = cartas[i];
+            if (g == null) continue;
+            float t = Suave((ahora - cartasDesde - i * Escalon) / EntradaCarta);
+            g.alpha = t;
+            r.anchoredPosition = new Vector2(x, -70f * (1f - t));
+            r.localScale = Vector3.one * Mathf.Lerp(0.92f, 1f, t);
+        }
+    }
+
+    private static float Suave(float t)
+    {
+        t = Mathf.Clamp01(t);
+        return 1f - (1f - t) * (1f - t) * (1f - t); // frena al llegar
+    }
+
+    // Se puede elegir cuando ya entraron las cartas.
+    private bool Lista => visible && Time.unscaledTime - cartasDesde >= Escalon * 2f + EntradaCarta * 0.8f;
+
     private void Cerrar()
     {
         Abierta = false;
+        visible = false;
         if (lienzo != null) lienzo.gameObject.SetActive(false);
         Desbloquear();
     }
@@ -203,7 +249,7 @@ public class EleccionDeInvasion : MonoBehaviour
 
     private void Elegir(int i)
     {
-        if (!Abierta || i < 0 || i >= opciones.Count) return;
+        if (!Abierta || !Lista || i < 0 || i >= opciones.Count) return;
         Opcion o = opciones[i];
         if (o.arma != null) equipo.Recibir(o.arma); // US 294, CA4
         else if (o.carta != null)
@@ -231,7 +277,7 @@ public class EleccionDeInvasion : MonoBehaviour
 
     private void VolverATirar()
     {
-        if (!Abierta || equipo == null || equipo.Wallet == null) return;
+        if (!Abierta || !Lista || equipo == null || equipo.Wallet == null) return;
         if (equipo.Wallet.Money < costo) { MatchHud.Warn($"Te faltan puntos para volver a tirar ({costo})", 2f); return; }
         equipo.Wallet.Spend(costo);
         costo += MasPorTirada; // CA4
@@ -241,6 +287,14 @@ public class EleccionDeInvasion : MonoBehaviour
     private void Update()
     {
         if (!Abierta) return;
+        if (!visible)
+        {
+            if (MatchHud.BannerVisible) mostrarEn = Mathf.Max(mostrarEn, Time.unscaledTime + 0.3f);
+            if (Time.unscaledTime >= mostrarEn) Mostrar();
+            return;
+        }
+        Animar();
+        if (!Lista) return;
         if (Input.GetKeyDown(KeyCode.Alpha1) || Input.GetKeyDown(KeyCode.Keypad1)) Elegir(0);
         else if (Input.GetKeyDown(KeyCode.Alpha2) || Input.GetKeyDown(KeyCode.Keypad2)) Elegir(1);
         else if (Input.GetKeyDown(KeyCode.Alpha3) || Input.GetKeyDown(KeyCode.Keypad3)) Elegir(2);
@@ -270,9 +324,11 @@ public class EleccionDeInvasion : MonoBehaviour
         escala.screenMatchMode = UnityEngine.UI.CanvasScaler.ScreenMatchMode.Expand;
         lienzo = (RectTransform)go.transform;
 
+        grupo = go.AddComponent<CanvasGroup>();
         Image(Stretch(Node("Fondo", lienzo)), null, new Color(0f, 0f, 0f, DarkAlpha(0.72f)), 0f, true);
 
-        RectTransform cabeza = Node("Titulo", lienzo);
+        cabeza = Node("Titulo", lienzo);
+        cabezaGrupo = cabeza.gameObject.AddComponent<CanvasGroup>();
         cabeza.anchorMin = cabeza.anchorMax = cabeza.pivot = new Vector2(0.5f, 1f);
         cabeza.anchoredPosition = new Vector2(0f, -110f);
         cabeza.sizeDelta = new Vector2(1200f, 110f);
@@ -319,6 +375,8 @@ public class EleccionDeInvasion : MonoBehaviour
     private void Dibujar()
     {
         for (int i = fila.childCount - 1; i >= 0; i--) Destroy(fila.GetChild(i).gameObject);
+        cartas.Clear();
+        cartasDesde = Time.unscaledTime + (Time.unscaledTime - mostradaEn < 0.2f ? 0.25f : 0f); // la primera vez, después del fondo
         for (int i = 0; i < opciones.Count; i++)
         {
             float x = (opciones.Count - 1) * -0.5f * (AnchoCarta + Separacion) + i * (AnchoCarta + Separacion);
@@ -341,6 +399,9 @@ public class EleccionDeInvasion : MonoBehaviour
         carta.anchorMin = carta.anchorMax = carta.pivot = new Vector2(0.5f, 0.5f);
         carta.anchoredPosition = new Vector2(x, 0f);
         carta.sizeDelta = new Vector2(AnchoCarta, AltoCarta);
+        CanvasGroup grupoCarta = carta.gameObject.AddComponent<CanvasGroup>();
+        grupoCarta.alpha = 0f;
+        cartas.Add((grupoCarta, carta, x));
         MarcadorInvasion.Figura<FormaRedondeada>(Stretch(Node("Fondo", carta)))
             .Pintar(Rgb(12, 14, 19, 0.96f), color, 16f, 3f);
 
