@@ -84,24 +84,33 @@ public class ArmaDeFuego : MonoBehaviour, IHudWeapon
 
     // Al comprarla queda con el cargador lleno y la reserva completa (US 077, CA1).
     /// <summary>US 148: el cargador y la reserva están como al comprarla.</summary>
-    public bool Llena => shopItem == null || (currentAmmo >= shopItem.magazine && reserveAmmo >= shopItem.reserve);
+    public bool Llena => shopItem == null || (currentAmmo >= shopItem.magazine && reserveAmmo >= ReservaLlena);
+
+    /// <summary>La reserva llena (la de la ficha; con la Mochila, más: US 315).</summary>
+    public int ReservaLlena => shopItem != null ? Municion.Reserva(shopItem.reserve) : 0;
 
     public void Refill()
     {
         if (shopItem == null) return;
         currentAmmo = shopItem.magazine;
-        reserveAmmo = shopItem.reserve;
+        reserveAmmo = ReservaLlena;
         loaded = true;
     }
 
     /// <summary>US 293, CA2: la munición máxima del arma (cargador y reserva llenos).</summary>
-    public int MunicionMaxima => shopItem != null ? shopItem.magazine + shopItem.reserve : 0;
+    public int MunicionMaxima => shopItem != null ? shopItem.magazine + ReservaLlena : 0;
+
+    /// <summary>US 315: la reserva llena creció (la Mochila): suma esas balas a la reserva.</summary>
+    public void AgrandarReserva(float antes)
+    {
+        if (shopItem != null) reserveAmmo += Municion.Agrandada(shopItem.reserve, antes);
+    }
 
     /// <summary>US 293, CA2: suma balas a la reserva sin pasarse de la llena; lo que sobra va al cargador.</summary>
     public void SumarBalas(int balas)
     {
         if (shopItem == null) return;
-        int aReserva = Mathf.Clamp(shopItem.reserve - reserveAmmo, 0, balas);
+        int aReserva = Mathf.Clamp(ReservaLlena - reserveAmmo, 0, balas);
         reserveAmmo += aReserva;
         currentAmmo = Mathf.Min(shopItem.magazine, currentAmmo + balas - aReserva);
     }

@@ -68,7 +68,7 @@ public class CartaDeInvasion
         new CartaDeInvasion { nombre = "Logística", rareza = RarezaDeCarta.Rara, rindeCon = "Todas", unaVez = true,
             efecto = "Desde ahora, los puestos recargan toda la munición en vez de la mitad." },
         new CartaDeInvasion { nombre = "Mochila", rareza = RarezaDeCarta.Comun, rindeCon = "Todas",
-            efecto = "40 % más de reserva en las dos armas." },
+            efecto = "40 % más de reserva en las dos armas.", aplicar = EfectosDeCartas.Mochila },
         new CartaDeInvasion { nombre = "Reciclador", rareza = RarezaDeCarta.Rara, rindeCon = "Todas",
             efecto = "Cada baja a la cabeza devuelve 5 balas al cargador." },
         new CartaDeInvasion { nombre = "Filo", rareza = RarezaDeCarta.Comun, rindeCon = "Cuchillo", unaVez = true,

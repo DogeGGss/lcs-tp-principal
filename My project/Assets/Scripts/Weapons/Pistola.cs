@@ -45,23 +45,30 @@ public class Pistola : MonoBehaviour, IHudWeapon
     /// <summary>Cargador lleno y la reserva con la que viene el arma. Lo usan el inicio de cada ronda del Táctico
     /// (antes La Porteña se quedaba con la reserva gastada de la ronda anterior), la reaparición y la tienda.</summary>
     /// <summary>US 148: el cargador y la reserva están como al comprarla.</summary>
-    public bool Llena => currentAmmo >= maxAmmo && (fullReserve < 0 || reserveAmmo >= fullReserve);
+    public bool Llena => currentAmmo >= maxAmmo && (fullReserve < 0 || reserveAmmo >= Municion.Reserva(fullReserve));
 
     public void Refill()
     {
         if (fullReserve < 0) fullReserve = reserveAmmo;
         currentAmmo = maxAmmo;
-        reserveAmmo = fullReserve;
+        reserveAmmo = Municion.Reserva(fullReserve); // con la Mochila, más (US 315)
     }
 
     /// <summary>US 293, CA2: la munición máxima del arma (cargador y reserva llenos).</summary>
-    public int MunicionMaxima => maxAmmo + Mathf.Max(fullReserve, reserveAmmo);
+    public int MunicionMaxima => maxAmmo + Mathf.Max(Municion.Reserva(fullReserve), reserveAmmo);
+
+    /// <summary>US 315: la reserva llena creció (la Mochila): suma esas balas a la reserva.</summary>
+    public void AgrandarReserva(float antes)
+    {
+        if (fullReserve < 0) fullReserve = reserveAmmo;
+        reserveAmmo += Municion.Agrandada(fullReserve, antes);
+    }
 
     /// <summary>US 293, CA2: suma balas a la reserva sin pasarse de la llena; lo que sobra va al cargador.</summary>
     public void SumarBalas(int balas)
     {
         if (fullReserve < 0) fullReserve = reserveAmmo;
-        int aReserva = Mathf.Clamp(fullReserve - reserveAmmo, 0, balas);
+        int aReserva = Mathf.Clamp(Municion.Reserva(fullReserve) - reserveAmmo, 0, balas);
         reserveAmmo += aReserva;
         currentAmmo = Mathf.Min(maxAmmo, currentAmmo + balas - aReserva);
     }
