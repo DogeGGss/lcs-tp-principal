@@ -88,6 +88,18 @@ public class ArmaDeFuego : MonoBehaviour, IHudWeapon
         loaded = true;
     }
 
+    /// <summary>US 293, CA2: la munición máxima del arma (cargador y reserva llenos).</summary>
+    public int MunicionMaxima => shopItem != null ? shopItem.magazine + shopItem.reserve : 0;
+
+    /// <summary>US 293, CA2: suma balas a la reserva sin pasarse de la llena; lo que sobra va al cargador.</summary>
+    public void SumarBalas(int balas)
+    {
+        if (shopItem == null) return;
+        int aReserva = Mathf.Clamp(shopItem.reserve - reserveAmmo, 0, balas);
+        reserveAmmo += aReserva;
+        currentAmmo = Mathf.Min(shopItem.magazine, currentAmmo + balas - aReserva);
+    }
+
     private void OnEnable()
     {
         bursting = false;

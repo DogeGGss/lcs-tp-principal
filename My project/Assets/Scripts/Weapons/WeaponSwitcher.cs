@@ -213,6 +213,23 @@ public class WeaponSwitcher : MonoBehaviour
         if (SecondaryObj != null) Rellenar(SecondaryObj);
     }
 
+    /// <summary>US 293, CA2: suma a cada arma la mitad de su munición máxima (al abrirse el puesto de suministros).</summary>
+    public void RecargarMitad()
+    {
+        if (PrimaryObj != null) Mitad(PrimaryObj);
+        if (SecondaryObj != null) Mitad(SecondaryObj);
+    }
+
+    static void Mitad(GameObject arma)
+    {
+        ArmaDeFuego fuego = arma.GetComponent<ArmaDeFuego>();
+        if (fuego != null) fuego.SumarBalas(fuego.MunicionMaxima / 2);
+        Mitre mitre = arma.GetComponent<Mitre>();
+        if (mitre != null) mitre.SumarBalas(mitre.MunicionMaxima / 2);
+        Pistola pistola = arma.GetComponent<Pistola>();
+        if (pistola != null) pistola.SumarBalas(pistola.MunicionMaxima / 2);
+    }
+
     /// <summary>US 148: si las armas que lleva ya tienen el cargador y la reserva llenos (no hace falta munición).</summary>
     public bool MunicionLlena() => (PrimaryObj == null || Llena(PrimaryObj)) && (SecondaryObj == null || Llena(SecondaryObj));
 

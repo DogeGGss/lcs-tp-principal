@@ -292,9 +292,27 @@ public class OleadasDeInvasion : MonoBehaviour
             Final(); // CA6
             return;
         }
-        fase = Fase.Descanso;
         MatchHud.ShowBanner("Modo Invasión", $"Oleada {Oleada} superada", ShopUIKit.Ok, "Descanso de 20 s", null, 3f);
+        ArrancarDescanso();
+    }
+
+    // US 293, CA1 y CA6: si se abrió el puesto, el respiro arranca recién después de elegir.
+    private bool esperandoEleccion;
+
+    private void ArrancarDescanso()
+    {
+        fase = Fase.Descanso;
+        EleccionDeInvasion eleccion = GetComponent<EleccionDeInvasion>();
+        if (eleccion != null && eleccion.Retener()) { esperandoEleccion = true; return; }
         if (descanso != null) descanso.Begin(); else Invoke(nameof(Empezar), 20f);
+    }
+
+    /// <summary>US 293, CA6: se eligió en el puesto, arranca el respiro.</summary>
+    public void TerminoLaEleccion()
+    {
+        if (!esperandoEleccion || fase != Fase.Descanso) return;
+        esperandoEleccion = false;
+        ArrancarDescanso();
     }
 
     /// <summary>Para probar (Riftwalker > Invasión > Ir a la oleada 10): saca a los enemigos que quedan y arranca ya la
@@ -312,6 +330,7 @@ public class OleadasDeInvasion : MonoBehaviour
         jefe = null;
         jefeVivo = false;
         Oleada = Mathf.Max(0, n - 1);
+        esperandoEleccion = false;
         fase = Fase.Descanso;
         if (descanso != null && descanso.IsActive) descanso.Terminar(); // al cerrar la compra arranca la oleada
         else Empezar();
@@ -485,8 +504,7 @@ public class OleadasDeInvasion : MonoBehaviour
     {
         Infinito = true;
         CerrarFinal();
-        fase = Fase.Descanso;
-        if (descanso != null) descanso.Begin(); else Invoke(nameof(Empezar), 20f);
+        ArrancarDescanso();
     }
 
     // US 151, CA2: el resultado de la partida.

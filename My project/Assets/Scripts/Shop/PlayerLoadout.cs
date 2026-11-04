@@ -292,6 +292,17 @@ public class PlayerLoadout : MonoBehaviour
         return true;
     }
 
+    /// <summary>US 293 y US 294: un arma del puesto de suministros. Reemplaza la de su espacio y viene con la
+    /// munición llena (el cambio de arma la rellena, como al comprarla).</summary>
+    public void Recibir(ShopItem item)
+    {
+        if (item == null) return;
+        if (item.kind == ShopItemKind.PrimaryWeapon) Primary = item;
+        else if (item.kind == ShopItemKind.SecondaryWeapon) Secondary = item;
+        else return;
+        Changed?.Invoke();
+    }
+
     // US 195, CA3: en Deathmatch, el que vuelve a la partida recupera las armas que había elegido (su lugar en el
     // catálogo; menos de 0, ninguna).
     public void Restaurar(int primary, int secondary)
