@@ -21,7 +21,9 @@ public class Npc : MonoBehaviour
     /// <summary>US 301: la variante alfa, o null si es uno común de su tipo.</summary>
     public VarianteAlfa Alfa { get; private set; }
     /// <summary>US 301, CA3: multiplica todo su daño (golpes, bolas y rayo).</summary>
-    public float MasDanio => Alfa != null ? Alfa.danio : 1f;
+    public float MasDanio => (Alfa != null ? Alfa.danio : 1f) * MasDanioPorJefes;
+    /// <summary>US 303, CA1: cuánto más pega por los Jefes que ya cayeron (lo pone el modo al aparecer).</summary>
+    public float MasDanioPorJefes { get; set; } = 1f;
     /// <summary>El daño que hace un ataque suyo: según la dificultad (US 161, CA3) y, si es alfa, más (US 301, CA3).</summary>
     public int Danio(int danio) => Mathf.RoundToInt(DificultadDeInvasion.DanioDeEnemigo(danio) * MasDanio);
     /// <summary>El Animator de su modelo.</summary>

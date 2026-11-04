@@ -5,10 +5,10 @@ using static ShopUIKit;
 
 // F08 (Modo Invasión), US 151: el resultado de la partida, como la opción A de la maqueta (la vía del marcador de la
 // US 150 con la oleada alcanzada y cinco números). Lo muestran PartidaDeInvasion (al morir) y OleadasDeInvasion (al
-// elegir "Terminar" después de la 10).
+// elegir "Retirarse" después de un Jefe, US 303).
 // - CA1: si el jugador muere, la partida termina: "Has muerto · No salvaste al mundo", en rojo.
-// - CA2: si supera la 10 y elige "Terminar", "¡Sobreviviste! · Salvaste al mundo". Si siguió en modo infinito y después
-//   muere, "Sobreviviste 10 oleadas · Salvaste al mundo" y la oleada a la que llegó.
+// - CA2 (con la US 303): si se retira después de un Jefe, "¡Sobreviviste! · Salvaste al mundo". Si ya había bajado
+//   algún Jefe y después muere, "Sobreviviste N oleadas · Salvaste al mundo", la oleada a la que llegó y los Jefes.
 // - CA3: la oleada alcanzada, las bajas, las bajas a la cabeza, los puntos ganados y el tiempo jugado.
 // - CA4: guarda la oleada más alta de la dificultad (MatchSettings, que va con el progreso a la nube, US 162 y 163). Si la
 //   superó, "¡Nuevo récord!"; si no, el récord actual (y la banderita en la vía).
@@ -57,7 +57,8 @@ public class ResultadoDeInvasion : MonoBehaviour
 
         // CA2 y CA4: hasta dónde llegó y el récord.
         int oleada = Mathf.Max(1, oleadas != null ? oleadas.Oleada : 1);
-        bool infinito = oleadas != null && oleadas.Infinito;
+        bool infinito = oleadas != null && oleadas.Infinito; // US 303: ya bajó algún Jefe
+        int jefes = oleadas != null ? oleadas.JefesDerrotados : 0;
         bool salvo = !murio || infinito;
         ZombieDifficulty dificultad = MatchSettings.Difficulty;
         int recordAntes = MatchSettings.ZombieRecord(dificultad);
@@ -96,7 +97,7 @@ public class ResultadoDeInvasion : MonoBehaviour
 
         // Títulos.
         Color color = salvo ? MarcadorInvasion.Verde : Bad;
-        string titulo = !murio ? "¡Sobreviviste!" : infinito ? "Sobreviviste 10 oleadas" : "Has muerto";
+        string titulo = !murio ? "¡Sobreviviste!" : infinito ? $"Sobreviviste {jefes * OleadasDeInvasion.Ultima} oleadas" : "Has muerto";
         Text(Place(Node("Antetitulo", raiz), 0f, 70f, 1920f, 30f), label, 24f, Mute, TextAlignmentOptions.Center, 24f, true).text =
             $"Fin de la partida  ·  {NombreDificultad[(int)dificultad]}";
         Text(Place(Node("Titulo", raiz), 0f, 100f, 1920f, 170f), display, titulo.Length > 16 ? 120f : 150f, color,
@@ -105,8 +106,8 @@ public class ResultadoDeInvasion : MonoBehaviour
         Text(Place(Node("Lema", raiz), 0f, 296f, 1920f, 34f), label, 26f, color, TextAlignmentOptions.Center, 24f, true).text =
             salvo ? "Salvaste al mundo" : "No salvaste al mundo";
         Text(Place(Node("Detalle", raiz), 0f, 336f, 1920f, 36f), label, 30f, Ink, TextAlignmentOptions.Center, 12f, true).text =
-            !murio ? $"Superaste las {OleadasDeInvasion.Ultima} oleadas"
-            : infinito ? $"Llegaste a la oleada {oleada}  ·  modo infinito"
+            !murio ? $"Te retiraste después del Jefe de la oleada {oleada}"
+            : infinito ? $"Llegaste a la oleada {oleada}  ·  {jefes} {(jefes == 1 ? "Jefe derrotado" : "Jefes derrotados")}"
             : $"Caíste en la oleada {oleada} de {OleadasDeInvasion.Ultima}";
 
         // La vía, como en el marcador (US 150).
