@@ -28,6 +28,12 @@ using UnityEngine.UI;
 // US 301, CA1: desde la oleada 4, 1 de cada 15 invasores que salen (de cualquier tipo, salvo el Jefe) es un alfa
 // (VarianteAlfa, con los números en ConfigInvasion). La cuenta sigue de una oleada a la otra; si un alfa se pierde sin
 // morir, el que sale en su lugar también es alfa.
+// US 302: el Jefe sale en las oleadas 10, 20, 30 y así cada 10 (en cada una, como en la 10: a mitad de la oleada, de un
+// portal grande), cada vez más duro (los números en ConfigInvasion; la vida, en Normal, y la dificultad la cambia):
+// - CA2: en la 20, 3.500 de vida, se enfurece al 75 % y salen con él 2 Tanques de escolta por su portal.
+// - CA3: en la 30, 5.000 de vida, arranca enfurecido y embiste dos veces seguidas.
+// - CA4: desde la 40, 1.500 de vida más cada vez, y sus nubes de veneno más grandes y sus vuelos más seguidos.
+// Lo de cada vuelta se suma a lo de las anteriores (la escolta y las embestidas dobles siguen después).
 // El marcador (la oleada, cuántos quedan, el descanso y los puntos) es la US 150: MarcadorInvasion.
 public class OleadasDeInvasion : MonoBehaviour
 {
@@ -43,8 +49,14 @@ public class OleadasDeInvasion : MonoBehaviour
     public int Quedan => Mathf.Max(0, total - muertos) + (jefeVivo ? 1 : 0);
     /// <summary>Juega en modo infinito (siguió después de la 10).</summary>
     public bool Infinito { get; private set; }
-    /// <summary>Enemigos de la oleada en curso, con el Jefe en la 10 (US 150: la barra de los que quedan).</summary>
-    public int Total => total + (Oleada == Ultima && tipoJefe != null ? 1 : 0);
+    /// <summary>Enemigos de la oleada en curso, con el Jefe en las de jefe (US 150: la barra de los que quedan).</summary>
+    public int Total => total + (DeJefe && tipoJefe != null ? 1 : 0);
+    /// <summary>US 302, CA1: la oleada en curso trae al Jefe (la 10, la 20, la 30...).</summary>
+    public bool DeJefe => EsDeJefe(Oleada);
+    /// <summary>US 302, CA1: esa oleada trae al Jefe.</summary>
+    public static bool EsDeJefe(int oleada) => oleada > 0 && oleada % Ultima == 0;
+    /// <summary>US 302: qué vuelta es esa oleada (1 hasta la 10, 2 hasta la 20...).</summary>
+    public static int Vuelta(int oleada) => Mathf.Max(1, (oleada + Ultima - 1) / Ultima);
     /// <summary>Está la pantalla de "¡Sobreviviste!" (US 150: el marcador se oculta).</summary>
     public bool EnElFinal => fase == Fase.Final;
 
@@ -59,6 +71,7 @@ public class OleadasDeInvasion : MonoBehaviour
     private Fase fase = Fase.Descanso;
     private int total, muertos;
     private int salidosParaAlfa, alfasPerdidos; // US 301, CA1
+    private int escolta, escoltaPorSalir; // US 302, CA2: los Tanques que salen con el Jefe (cuántos en la oleada y cuántos faltan)
     private readonly Queue<TipoDeNpc> porAparecer = new Queue<TipoDeNpc>();
     private readonly List<PortalDeEnemigos> portales = new List<PortalDeEnemigos>(); // US 269
     private PortalDeEnemigos portalDelJefe;
@@ -113,6 +126,10 @@ public class OleadasDeInvasion : MonoBehaviour
         Oleada++;
         fase = Fase.Oleada;
         total = Mathf.Max(1, Mathf.RoundToInt(ConfigInvasion.Actual.Invasores(Oleada) * DificultadDeInvasion.Cantidad)); // US 299, CA1 (y CA7), US 161
+        // US 302, CA2: desde la 20, el Jefe llega con su escolta (cuentan en la oleada).
+        escolta = DeJefe && Vuelta(Oleada) >= 2 && tanque != null && tipoJefe != null ? ConfigInvasion.Actual.escoltaDelJefe : 0;
+        escoltaPorSalir = escolta;
+        total += escolta;
         muertos = 0;
         vivos.Clear();
         tipos.Clear();
@@ -120,9 +137,9 @@ public class OleadasDeInvasion : MonoBehaviour
         jefeSalio = jefeVivo = jefeMuerto = false;
         jefe = null;
         porAparecer.Clear();
-        foreach (TipoDeNpc t in Composicion(Oleada, total)) porAparecer.Enqueue(t);
+        foreach (TipoDeNpc t in Composicion(Oleada, total - escolta)) porAparecer.Enqueue(t);
         proximoPortal = Time.time + 1f;
-        MatchHud.ShowBanner("Modo Invasión", $"Oleada {Oleada}", ShopUIKit.Bad, Oleada == Ultima ? "Llega el jefe" : $"{total} enemigos", null, 2.5f);
+        MatchHud.ShowBanner("Modo Invasión", $"Oleada {Oleada}", ShopUIKit.Bad, DeJefe ? "Llega el jefe" : $"{total} enemigos", null, 2.5f);
         Empezo?.Invoke(Oleada);
     }
 
@@ -225,33 +242,44 @@ public class OleadasDeInvasion : MonoBehaviour
             else total--; // el tipo no tiene modelo: no cuenta
         }
 
-        // CA3 (US 146, CA1 y US 269, CA5): el Jefe, a mitad de la oleada 10, de un portal grande (que queda abierto hasta
-        // el final de la oleada).
+        // CA3 (US 146, CA1 y US 269, CA5): el Jefe, a mitad de la oleada 10 (US 302: y de la 20, la 30...), de un portal
+        // grande (que queda abierto hasta el final de la oleada).
         Vector3 dondeJefe = Vector3.zero;
-        if (Oleada == Ultima && !jefeSalio && (portalDelJefe == null || portalDelJefe.Fila.Count == 0) && tipoJefe != null
-            && muertos >= total / 2 && (portalDelJefe != null || LugarDePortal(jugador, out dondeJefe)))
+        if (DeJefe && !jefeSalio && (portalDelJefe == null || portalDelJefe.Fila.Count == 0) && tipoJefe != null
+            && muertos >= (total - escolta) / 2 && (portalDelJefe != null || LugarDePortal(jugador, out dondeJefe)))
         {
             if (portalDelJefe == null) portalDelJefe = PortalDeEnemigos.Abrir(dondeJefe, jugador.position, ConfigInvasion.Actual.escalaJefe);
             portalDelJefe.Fila.Enqueue(tipoJefe); // (si el jefe se perdió, vuelve a salir por el mismo portal)
-            MatchHud.ShowBanner("Oleada 10", "¡Llegó el jefe!", ShopUIKit.Bad, "", null, 3f);
+            MatchHud.ShowBanner($"Oleada {Oleada}", "¡Llegó el jefe!", ShopUIKit.Bad, escoltaPorSalir > 0 ? "Con su escolta" : "", null, 3f);
             LlegoElJefe?.Invoke();
         }
-        if (portalDelJefe != null && !portalDelJefe.Cerrando && portalDelJefe.Listo && portalDelJefe.Fila.Count > 0)
+        if (portalDelJefe != null && !portalDelJefe.Cerrando && portalDelJefe.Listo && portalDelJefe.Fila.Count > 0
+            && Time.time >= portalDelJefe.Proximo)
         {
             portalDelJefe.Fila.Dequeue();
             jefeSalio = true;
             jefe = Aparecer(tipoJefe, portalDelJefe.Salida, jugador);
             jefeVivo = jefe != null;
-            if (jefe != null) aparecio[jefe] = Time.time;
+            if (jefe != null) { aparecio[jefe] = Time.time; Endurecer(jefe); }
             portalDelJefe.Proximo = Time.time + 1.5f;
+        }
+        // US 302, CA2: la escolta sale del mismo portal, después del Jefe, de a uno (sin tope de vivos: viene con él).
+        if (jefeSalio && escoltaPorSalir > 0 && portalDelJefe != null && !portalDelJefe.Cerrando && portalDelJefe.Listo
+            && Time.time >= portalDelJefe.Proximo)
+        {
+            escoltaPorSalir--;
+            portalDelJefe.Proximo = Time.time + 1f;
+            Npc t = Aparecer(tanque, portalDelJefe.Salida, jugador);
+            if (t != null) { vivos.Add(t); tipos[t] = tanque; aparecio[t] = Time.time; }
+            else total--;
         }
 
         // El jefe: si murió, listo; si desapareció sin morir, vuelve a aparecer.
         if (jefeVivo && jefe != null && !jefe.Vivo) { jefeVivo = false; jefeMuerto = true; }
         else if (jefeVivo && (jefe == null || Perdido(jefe))) { if (jefe != null) Destroy(jefe.gameObject); jefe = null; jefeVivo = false; jefeSalio = false; }
 
-        // CA5: superada (en la 10, solo con el jefe muerto).
-        bool faltaJefe = Oleada == Ultima && tipoJefe != null && !jefeMuerto;
+        // CA5: superada (en las del Jefe, solo con el jefe muerto y su escolta afuera).
+        bool faltaJefe = DeJefe && tipoJefe != null && (!jefeMuerto || escoltaPorSalir > 0);
         int pendientes = 0;
         foreach (PortalDeEnemigos p in portales) if (p != null && !p.Cerrando) pendientes += p.Fila.Count;
         if (portalDelJefe != null) pendientes += portalDelJefe.Fila.Count;
@@ -279,7 +307,8 @@ public class OleadasDeInvasion : MonoBehaviour
         Npc npc = Npc.Crear(tipo, lugar, hacia.sqrMagnitude > 1e-4f ? Quaternion.LookRotation(hacia) : Quaternion.identity, true, alfa);
         if (npc == null) return null;
         // CA7: más vida en el modo infinito (sobre la de la dificultad, que ya pone Npc, US 161; y la del alfa, US 301).
-        if (Oleada > Ultima && npc.Vida != null)
+        // El Jefe no: su vida es la de su vuelta (US 302, Endurecer).
+        if (Oleada > Ultima && npc.Vida != null && !tipo.esJefe)
         {
             int vida = Mathf.RoundToInt(DificultadDeInvasion.VidaDeEnemigo(tipo.vida) * (1f + VidaExtra * (Oleada - Ultima))
                                         * (npc.Alfa != null ? npc.Alfa.vida : 1f));
@@ -287,6 +316,33 @@ public class OleadasDeInvasion : MonoBehaviour
             npc.Vida.SetState(vida, 0);
         }
         return npc;
+    }
+
+    // US 302, CA2 a CA4: el Jefe de esta vuelta.
+    private void Endurecer(Npc j)
+    {
+        int vuelta = Vuelta(Oleada);
+        if (vuelta <= 1 || j.Vida == null) return; // la 10: el Jefe de siempre
+        ConfigInvasion config = ConfigInvasion.Actual;
+        int vida = DificultadDeInvasion.VidaDeEnemigo(j.Tipo.vida + config.vidaDelJefePorVuelta * (vuelta - 1)); // US 161
+        j.Vida.maxHealth = vida;
+        j.Vida.SetState(vida, 0);
+
+        FuriaDeNpc furia = j.GetComponent<FuriaDeNpc>();
+        float umbral = vuelta >= 3 ? 1f : config.furiaDesdeLaVuelta2; // CA3: desde la 30 arranca enfurecido
+        if (furia != null) furia.Umbral = umbral;
+        if (j.Barra != null) j.Barra.MarcaDeFuria(umbral);
+
+        EmbestidaDeNpc embestida = j.GetComponent<EmbestidaDeNpc>();
+        if (embestida != null && vuelta >= 3) embestida.Seguidas = config.embestidasSeguidas; // CA3
+
+        VueloDeNpc vuelo = j.GetComponent<VueloDeNpc>();
+        if (vuelo != null && vuelta >= 4) // CA4
+        {
+            int extra = vuelta - 3;
+            vuelo.TamanioDeNubes = 1f + config.nubesMasGrandesPorVuelta * extra;
+            vuelo.EntreVuelos = Mathf.Pow(config.vuelosPorVuelta, extra);
+        }
     }
 
     // US 301, CA1: si el que sale ahora es un alfa (el que reemplaza a un alfa perdido, o 1 de cada 15 desde la oleada 4).
@@ -348,6 +404,7 @@ public class OleadasDeInvasion : MonoBehaviour
         porAparecer.Clear();
         jefe = null;
         jefeVivo = false;
+        escolta = escoltaPorSalir = 0;
         Oleada = Mathf.Max(0, n - 1);
         esperandoEleccion = false;
         fase = Fase.Descanso;

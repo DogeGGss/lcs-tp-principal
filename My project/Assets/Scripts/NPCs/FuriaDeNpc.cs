@@ -8,11 +8,14 @@ using UnityEngine;
 // - CA3: camina un 80 % más rápido y golpea un 50 % más rápido (la animación, el daño y la cadencia).
 // - CA4: embiste cada 6 s (en vez de 10, US 266) y vuela cada 15 s (en vez de 25, US 267) escupiendo 5 bolas.
 // - CA5: empieza una sola vez y dura hasta que muere.
+// US 302, CA2 y CA3: Umbral cambia dónde empieza (el Jefe de la oleada 20 se enfurece al 75 %; desde la 30, con 1,
+// arranca enfurecido: ruge apenas aparece).
 // Lo agrega Npc.Crear.
 [RequireComponent(typeof(Npc))]
 public class FuriaDeNpc : MonoBehaviour
 {
-    private const float Mitad = BarraDeJefe.Furia;      // CA1: la marca de la barra
+    /// <summary>CA1: con qué parte de la vida se enfurece (la mitad; US 302 lo cambia). La marca de la barra.</summary>
+    public float Umbral = BarraDeJefe.Furia;
     private const float Ruge = 2f;                      // CA1: s
     private const float MasRapido = 1.8f;               // CA3: al caminar
     private const float GolpeMasRapido = 1.5f;          // CA3: los golpes
@@ -45,7 +48,7 @@ public class FuriaDeNpc : MonoBehaviour
         if (!npc.Vivo) { Apagar(); enabled = false; return; }
 
         // CA1: llegó a la mitad.
-        if (!Furioso && !pendiente && npc.Vida.currentHealth <= npc.Vida.maxHealth * Mitad) pendiente = true;
+        if (!Furioso && !pendiente && npc.Vida.currentHealth <= npc.Vida.maxHealth * Umbral) pendiente = true;
         if (pendiente && !rugiendo && (persecucion == null || !persecucion.Ocupado)) Rugir();
 
         if (rugiendo && Time.time >= rugeHasta)

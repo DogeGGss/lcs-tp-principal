@@ -14,6 +14,8 @@ using UnityEngine.AI;
 // - CA6: se mueve por el NavMesh (no atraviesa paredes) y frena si choca con algo.
 // Mientras tanto la persecución lo deja quieto (PersecucionDeNpc.Ocupado) y no lo gira (Controlado), y el golpe
 // cuerpo a cuerpo no arranca. La flash o la muerte la cortan. CadaCuanto lo cambia la furia (US 268).
+// US 302, CA3: con Seguidas en 2 (el Jefe de la oleada 30 en adelante), al recuperarse de una embestida enseguida
+// prepara otra (con un aviso más corto), si el jugador sigue a tiro.
 // Lo agrega Npc.Crear.
 [RequireComponent(typeof(Npc))]
 public class EmbestidaDeNpc : MonoBehaviour
@@ -32,6 +34,11 @@ public class EmbestidaDeNpc : MonoBehaviour
 
     /// <summary>Segundos entre embestidas (CA2). La furia (US 268) lo baja a 6.</summary>
     public float CadaCuanto = 10f;
+
+    /// <summary>Cuántas embestidas hace seguidas cada vez (US 302, CA3: 2 desde la oleada 30).</summary>
+    public int Seguidas = 1;
+    private const float RecuperaEntreSeguidas = 0.5f, AvisoDeLaSeguida = 1f; // s
+    private int hechas; // las embestidas de esta tanda
 
     /// <summary>La furia (US 268): embiste más seguido desde ahora.</summary>
     public void MasSeguido(float cadaCuanto)
@@ -92,7 +99,16 @@ public class EmbestidaDeNpc : MonoBehaviour
                 Avanzar();
                 break;
             case Fase.Recupera:
-                if (Time.time >= faseHasta) Cortar(true);
+                if (Time.time < faseHasta) break;
+                // US 302, CA3: la siguiente de la tanda, enseguida (si no puede, termina la tanda).
+                if (++hechas < Seguidas && PuedeEmbestir(out Vector3 otra, out float largoOtra))
+                {
+                    Preparar(otra, largoOtra);
+                    faseHasta = Time.time + AvisoDeLaSeguida;
+                    break;
+                }
+                hechas = 0;
+                Cortar(true);
                 break;
         }
     }
@@ -242,7 +258,7 @@ public class EmbestidaDeNpc : MonoBehaviour
     private void Recuperarse()
     {
         fase = Fase.Recupera;
-        faseHasta = Time.time + Recupera;
+        faseHasta = Time.time + (hechas + 1 < Seguidas ? RecuperaEntreSeguidas : Recupera);
         Borrar();
         Animar(npc.Tipo.quietoEnCombate != null ? npc.Tipo.quietoEnCombate : npc.Tipo.quieto, true, 1f);
     }
@@ -256,6 +272,7 @@ public class EmbestidaDeNpc : MonoBehaviour
             persecucion.Controlado = false;
         }
         if (fase != Fase.Libre || !normal) proxima = Time.time + CadaCuanto;
+        if (!normal) hechas = 0;
         fase = Fase.Libre;
         Borrar();
         if (!normal && npc != null && npc.Modelo != null && bajado > 0f && npc.Vivo)
