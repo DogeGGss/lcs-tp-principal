@@ -320,6 +320,46 @@ Test("Cuenta: renovar al abrir, cerrar sesión y la carpeta del juego", async ()
     Equal(false, File.Exists(ok.RutaSesion));
     Equal(true, Cuentas.CarpetaDelJuego().EndsWith(Path.Combine("LocalLow", "Equipo 4", "Project Riftwalker")));
 });
+Test("Cuenta: recuperar la contraseña con el código del mail (US 271)", async () =>
+{
+    using var temp = new TestFolder();
+    var pedidos = new List<string>();
+    string verificar = SesionJson, cambiar = "{\"id\":\"u1\"}";
+    HttpStatusCode codigoVerificar = HttpStatusCode.OK, codigoCambiar = HttpStatusCode.OK;
+    var cuentas = NuevaCuenta(temp, req =>
+    {
+        string cuerpo = req.Content?.ReadAsStringAsync().Result ?? "";
+        pedidos.Add($"{req.Method} {req.RequestUri!.AbsolutePath} {req.Headers.Authorization} {cuerpo}");
+        return req.RequestUri!.AbsolutePath switch
+        {
+            "/auth/v1/recover" => Json(HttpStatusCode.OK, "{}"),
+            "/auth/v1/verify" => Json(codigoVerificar, verificar),
+            _ => Json(codigoCambiar, cambiar),
+        };
+    });
+    // CA1: pide el código (la respuesta es la misma exista o no la cuenta).
+    Equal<string?>(null, await cuentas.RecuperarAsync(" ulises@gmail.com ", default));
+    Equal("POST /auth/v1/recover  {\"email\":\"ulises@gmail.com\"}", pedidos.Last());
+    Equal<string?>(ReglasCuenta.MailInvalido, await cuentas.RecuperarAsync("no-es-un-mail", default));
+    // CA2: con el código entra y pone la contraseña nueva.
+    pedidos.Clear();
+    Equal<string?>(null, await cuentas.CambiarClaveAsync("ulises@gmail.com", "207 391", "nueva-clave", default));
+    Equal(true, pedidos[0].StartsWith("POST /auth/v1/verify ") && pedidos[0].Contains("\"type\":\"recovery\"") && pedidos[0].Contains("\"token\":\"207391\""));
+    Equal("PUT /auth/v1/user Bearer a1 {\"password\":\"nueva-clave\"}", pedidos[1]);
+    Equal(true, File.Exists(cuentas.RutaSesion));
+    // La misma contraseña de antes no es un error: la cuenta es suya.
+    File.Delete(cuentas.RutaSesion);
+    codigoCambiar = HttpStatusCode.UnprocessableEntity; cambiar = "{\"error_code\":\"same_password\"}";
+    Equal<string?>(null, await cuentas.CambiarClaveAsync("ulises@gmail.com", "207391", "nueva-clave", default));
+    Equal(true, File.Exists(cuentas.RutaSesion));
+    // CA3: un código vencido o mal escrito lo dice y no entra.
+    File.Delete(cuentas.RutaSesion);
+    codigoVerificar = HttpStatusCode.Forbidden; verificar = "{\"error_code\":\"otp_expired\"}";
+    Equal<string?>(ReglasCuenta.CodigoVencido, await cuentas.CambiarClaveAsync("ulises@gmail.com", "207391", "nueva-clave", default));
+    Equal(false, File.Exists(cuentas.RutaSesion));
+    Equal<string?>(ReglasCuenta.CodigoIncompleto, await cuentas.CambiarClaveAsync("ulises@gmail.com", "2073", "nueva-clave", default));
+    Equal<string?>(ReglasCuenta.ClaveCorta, await cuentas.CambiarClaveAsync("ulises@gmail.com", "207391", "corta", default));
+});
 Test("Cuenta: borrar pide la contraseña y saca de la PC la sesión y el archivo de la cuenta (US 273)", async () =>
 {
     using var temp = new TestFolder();

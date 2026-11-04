@@ -29,7 +29,7 @@ public static class ProgresoNube
     }
 
     private const string Minijuego = "minijuego.", Zombie = "zombie.record.", Perfil = "perfil.";
-    private const string Tactico = "estadisticas.tactico.", Deathmatch = "estadisticas.deathmatch.";
+    private const string Tactico = "estadisticas.tactico.", Deathmatch = "estadisticas.deathmatch.", Invasion = "estadisticas.invasion.";
     private static readonly string[] Tipos = { "comun", "raro", "epico" };
 
     // Antes de la primera escena: qué claves del archivo se juntan con las de otro juego abierto, y quién vuelve a
@@ -77,6 +77,7 @@ public static class ProgresoNube
         EstadisticasJugador.Totales e = EstadisticasJugador.Datos;
         SumarModo(d.contadores, Tactico, e.tactico);
         SumarModo(d.contadores, Deathmatch, e.deathmatch);
+        SumarModo(d.contadores, Invasion, e.invasion);
         Sumar(d.contadores, Tactico + "rondas_ganadas", e.rondasGanadas);
         Sumar(d.contadores, Tactico + "plantados", e.plantados);
         Sumar(d.contadores, Tactico + "desactivados", e.desactivados);
@@ -168,6 +169,7 @@ public static class ProgresoNube
         {
             tactico = LeerModo(Tactico),
             deathmatch = LeerModo(Deathmatch),
+            invasion = LeerModo(Invasion),
             rondasGanadas = (int)Leer(Tactico + "rondas_ganadas"),
             plantados = (int)Leer(Tactico + "plantados"),
             desactivados = (int)Leer(Tactico + "desactivados"),

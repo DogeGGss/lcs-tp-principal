@@ -44,7 +44,14 @@ public class PartidaDeInvasion : MonoBehaviour
     /// <summary>US 151, CA3: cuándo empezó la partida (Time.time: con la pausa no corre).</summary>
     public float Inicio { get; private set; }
 
-    private void Awake() => Actual = this;
+    /// <summary>US 222, CA3: identifica la partida para sumarla una sola vez a las estadísticas (la hora en que empezó).</summary>
+    public string Id { get; private set; }
+
+    private void Awake()
+    {
+        Actual = this;
+        Id = "invasion-" + System.DateTime.UtcNow.ToString("yyyyMMddHHmmssfff");
+    }
 
     private void OnDestroy()
     {
