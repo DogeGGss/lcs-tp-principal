@@ -74,7 +74,7 @@ public class CartaDeInvasion
         new CartaDeInvasion { nombre = "Filo", rareza = RarezaDeCarta.Comun, rindeCon = "Cuchillo", unaVez = true,
             efecto = "Matar con el cuchillo recarga la última arma que tuviste en la mano.", aplicar = EfectosDeCartas.EnElJuego },
         new CartaDeInvasion { nombre = "Carroñero", rareza = RarezaDeCarta.Rara, rindeCon = "Todas",
-            efecto = "1 de cada 5 invasores suelta un cargador al morir." },
+            efecto = "1 de cada 5 invasores suelta un cargador al morir.", aplicar = EfectosDeCartas.EnElJuego },
     };
 
     /// <summary>CA3: la rareza al azar según la oleada (común, rara y épica). US 303: despuesDelJefe, ya cayó algún
