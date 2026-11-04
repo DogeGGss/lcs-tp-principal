@@ -213,6 +213,19 @@ public class WeaponSwitcher : MonoBehaviour
         if (SecondaryObj != null) Rellenar(SecondaryObj);
     }
 
+    /// <summary>US 315 (Mochila): la reserva llena de todas las armas creció desde "antes" veces: se la suma a las que
+    /// lleva (las que agarre después ya vienen con la reserva más grande).</summary>
+    public void AgrandarReservas(float antes)
+    {
+        foreach (GameObject arma in new[] { PrimaryObj, SecondaryObj })
+        {
+            if (arma == null) continue;
+            arma.GetComponent<ArmaDeFuego>()?.AgrandarReserva(antes);
+            arma.GetComponent<Mitre>()?.AgrandarReserva(antes);
+            arma.GetComponent<Pistola>()?.AgrandarReserva(antes);
+        }
+    }
+
     /// <summary>US 293, CA2: suma a cada arma la mitad de su munición máxima (al abrirse el puesto de suministros).</summary>
     public void RecargarMitad()
     {
