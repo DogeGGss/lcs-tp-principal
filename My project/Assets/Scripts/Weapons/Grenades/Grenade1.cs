@@ -15,6 +15,8 @@ using UnityEngine.Audio;
 // La granada flash (US 075) usa este mismo script con su ficha: no hace daño y, al explotar, cada computadora
 // enceguece a su jugador según hacia dónde mire (FlashBlind).
 // La granada de humo (US 074) también: no hace daño y, al activarse, cada computadora arma la nube (HumoGranada).
+// US 287: el Gran Capitán (lanzagranadas) dispara granadas con este mismo script, que explotan al tocar algo (no rebotan
+// ni esperan la mecha) y a quien las tiró le hacen solo una parte del daño (ShopItem.autoDanio: la mitad).
 // Su mecha (CA2) recién empieza a correr cuando toca por primera vez el escenario (piso, pared u otro objeto; no los
 // jugadores, las armas tiradas ni otras granadas) y los rebotes siguientes no la reinician; si en MaxSinTocar segundos
 // desde que se lanzó no tocó nada, se activa igual donde esté.
@@ -31,6 +33,10 @@ public class Grenade1 : MonoBehaviour
 
     // Fuerza con la que se lanza la granada
     public float throwForce = 15f;
+
+    // US 287: la del lanzagranadas explota al tocar algo; y a quien la tiró le hace esta parte del daño.
+    [HideInInspector] public bool explotaAlTocar;
+    [HideInInspector] public float autoDanio = 1f;
 
     // Quién la tiró: sus compañeros no reciben el daño de la explosión (US 031, CA6).
     [HideInInspector] public Transform thrower;
@@ -136,6 +142,13 @@ public class Grenade1 : MonoBehaviour
     // US 074, CA2: el primer toque con el escenario arranca la mecha de la de humo; los rebotes no la reinician.
     void OnCollisionEnter(Collision choque)
     {
+        // US 287, CA2: la del lanzagranadas explota apenas toca algo (un invasor, el piso o una pared).
+        if (explotaAlTocar && !exploded && !cosmetic && choque.collider != null && !choque.collider.isTrigger)
+        {
+            exploded = true;
+            Explode();
+            return;
+        }
         if (exploded || tocoEscenario || !EsperaChoque) return;
         Collider otro = choque.collider;
         if (otro == null || otro.isTrigger) return;
@@ -150,6 +163,8 @@ public class Grenade1 : MonoBehaviour
     {
         if (item == null) return;
         Item = item;
+        explotaAlTocar = item.velocidadDelProyectil > 0f; // US 287
+        autoDanio = item.autoDanio;
         if (item.fuse > 0f) delay = item.fuse;
         if (item.effectRadius > 0f) radius = item.effectRadius;
         if (item.bands != null && item.bands.Length > 0)
@@ -279,6 +294,9 @@ public class Grenade1 : MonoBehaviour
         foreach (KeyValuePair<HealthSystem, float> entry in reached)
         {
             int damage = DamageAt(entry.Value);
+            // US 287, CA4: a quien la tiró, solo una parte (la del lanzagranadas, la mitad).
+            if (thrower != null && autoDanio < 1f && (entry.Key.transform == thrower || entry.Key.transform.IsChildOf(thrower) || thrower.IsChildOf(entry.Key.transform)))
+                damage = Mathf.RoundToInt(damage * autoDanio);
             if (damage <= 0) continue;
             bool lethal = entry.Key.WouldDie(damage);
             HealthSystem.DamageSource = WeaponName; // el aviso de baja dice la granada, no el arma que tiene en la mano

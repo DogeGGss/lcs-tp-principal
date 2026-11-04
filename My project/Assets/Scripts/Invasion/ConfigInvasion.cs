@@ -47,6 +47,10 @@ public class ConfigInvasion : ScriptableObject
     [Tooltip("Tamaño de la caja que cae.")]
     [Min(0.1f)] public float escalaCajaPuesto = 1.3f;
 
+    [Header("Armas solo de Invasión (US 287)")]
+    [Tooltip("Armas que no están en el catálogo de la tienda y salen en la elección del puesto (US 294), como el Gran Capitán.")]
+    public ShopItem[] armasSoloInvasion = new ShopItem[0];
+
     [Header("Mezcla por oleada y jaurías (US 300)")]
     [Tooltip("CA1: qué parte de cada tipo trae la oleada (en %), desde la oleada que dice cada fila hasta la siguiente. " +
              "Lo que no suma 100 (o los tipos que no están) se completa con Comunes.")]

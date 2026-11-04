@@ -1,6 +1,7 @@
 using UnityEngine;
 
-public enum ShopCategory { Pistols, SMGs, Shotguns, Rifles, Snipers, Shields, Grenades, Supplies }
+// Launchers: el lanzagranadas (US 287), que solo existe en Invasión y no está en el catálogo de la tienda.
+public enum ShopCategory { Pistols, SMGs, Shotguns, Rifles, Snipers, Shields, Grenades, Supplies, Launchers }
 public enum ShopItemKind { PrimaryWeapon, SecondaryWeapon, Grenade, Shield, Ammo }
 public enum GrenadeType { Frag, Smoke, Flash }
 
@@ -112,6 +113,14 @@ public class ShopItem : ScriptableObject
 
     [Tooltip("Granadas: prefab que se lanza (con el componente Grenade1).")]
     public GameObject grenadePrefab;
+
+    [Header("Lanzagranadas (US 287)")]
+    [Tooltip("Solo existe en el Modo Invasión (sale en la elección del puesto, US 294): no va en el catálogo de la tienda.")]
+    public bool soloInvasion;
+    [Tooltip("Armas que disparan granadas (grenadePrefab, que explotan al tocar algo): a cuántos m/s sale la granada. 0: dispara balas.")]
+    [Min(0f)] public float velocidadDelProyectil;
+    [Tooltip("Granadas: qué parte del daño de la explosión le hace a quien la tiró (1: todo; el Gran Capitán, la mitad).")]
+    [Range(0f, 1f)] public float autoDanio = 1f;
 
     public bool IsWeapon => kind == ShopItemKind.PrimaryWeapon || kind == ShopItemKind.SecondaryWeapon;
 

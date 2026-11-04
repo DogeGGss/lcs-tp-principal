@@ -5,6 +5,7 @@ using UnityEngine;
 // partida de Invasión:
 // - Riftwalker > Invasión > Ir a la oleada 10: saca a los enemigos que quedan y arranca la oleada 10 (la del jefe).
 //   Ir a la oleada 20, 30 y 40: lo mismo con el Jefe de cada vuelta (US 302).
+// - Riftwalker > Invasión > Darme el Gran Capitán: lo pone en la mano, sin esperar a que salga en la elección (US 287).
 // - Riftwalker > Invasión > Matar a todos los invasores: mata a los que están vivos, como si les hubiera disparado
 //   (suman sus puntos). La oleada se supera cuando ya aparecieron todos, así que puede hacer falta usarlo varias veces.
 // - Riftwalker > Invasión > Cargar el puesto: deja cargado el puesto de suministros que está en el mapa (US 292).
@@ -44,7 +45,17 @@ public static class InvasionDePrueba
         Debug.Log($"Invasión de prueba: puesto de {puesto.NombreDelLugar} cargado.");
     }
 
+    [MenuItem("Riftwalker/Invasión/Darme el Gran Capitán")]
+    private static void DarmeElCapitan()
+    {
+        PlayerLoadout equipo = Object.FindFirstObjectByType<PlayerLoadout>();
+        ShopItem[] armas = ConfigInvasion.Actual.armasSoloInvasion;
+        if (equipo == null || armas == null || armas.Length == 0 || armas[0] == null) { Debug.LogWarning("No hay jugador o no está la ficha del Gran Capitán en ConfigInvasion."); return; }
+        equipo.Recibir(armas[0]);
+    }
+
     [MenuItem("Riftwalker/Invasión/Ir a la oleada 10", true)]
+    [MenuItem("Riftwalker/Invasión/Darme el Gran Capitán", true)]
     [MenuItem("Riftwalker/Invasión/Ir a la oleada 20", true)]
     [MenuItem("Riftwalker/Invasión/Ir a la oleada 30", true)]
     [MenuItem("Riftwalker/Invasión/Ir a la oleada 40", true)]

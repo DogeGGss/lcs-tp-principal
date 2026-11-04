@@ -10,6 +10,8 @@ using UnityEngine.Audio;
 // Cadencia, cargador, reserva, recarga, tiempo para sacarla y velocidad al moverse salen de la ficha; el daño por zona
 // y distancia, la dispersión y el retroceso, del núcleo de disparo (WeaponFire y WeaponAim). Solo los francotiradores
 // apuntan: llevan además una MiraTelescopica (US 009).
+// US 287: el Gran Capitán (lanzagranadas) también: su ficha tiene una granada (grenadePrefab) y la velocidad con la que
+// sale (velocidadDelProyectil), y en vez de balas dispara esa granada (WeaponFire.FireProjectile).
 public class ArmaDeFuego : MonoBehaviour, IHudWeapon
 {
     [Tooltip("Ficha de la tienda de esta arma: de acá salen todos sus números.")]
@@ -74,6 +76,10 @@ public class ArmaDeFuego : MonoBehaviour, IHudWeapon
 
         mira = GetComponent<MiraTelescopica>();
         if (!loaded) Refill();
+
+        // Las piezas del modelo que vinieron en la capa por defecto van en la del arma (la cámara del arma las dibuja).
+        foreach (Transform parte in GetComponentsInChildren<Transform>(true))
+            if (parte.gameObject.layer == 0) parte.gameObject.layer = gameObject.layer;
     }
 
     // Al comprarla queda con el cargador lleno y la reserva completa (US 077, CA1).
@@ -146,7 +152,9 @@ public class ArmaDeFuego : MonoBehaviour, IHudWeapon
         // Cada perdigón hace su daño por separado; los perdigones y el cono salen de la ficha (US 070, CA1).
         // Con la mira telescópica puesta la dispersión es la de apuntar (US 167, CA5).
         bool conMira = mira != null && mira.ConLente;
-        WeaponFire.Fire(shopItem, playerCamera, shooter, conMira, alcance);
+        if (shopItem.velocidadDelProyectil > 0f && shopItem.grenadePrefab != null)
+            WeaponFire.FireProjectile(shopItem, playerCamera, shooter, conMira); // US 287: una granada
+        else WeaponFire.Fire(shopItem, playerCamera, shooter, conMira, alcance);
         if (pumpSound != null && currentAmmo > 0) StartCoroutine(PlayLater(pumpSound, pumpDelay, pumpSkip));
         // Cerrojo: sale de la mira y vuelve sola cuando se puede volver a disparar (US 068, CA3).
         if (mira != null) mira.AlDisparar(1f / Mathf.Max(0.01f, shopItem.fireRate));

@@ -153,6 +153,38 @@ public static class WeaponFire
     }
 
     // Desvío al azar dentro de un cono de "degrees" grados alrededor de la mira (US 167).
+    /// <summary>US 287: un disparo de un arma que lanza granadas (el Gran Capitán): sale de la boca del arma hacia donde
+    /// mira, con su dispersión y su retroceso, a la velocidad de la ficha; explota al tocar algo (Grenade1).</summary>
+    public static void FireProjectile(ShopItem weapon, Camera camera, Transform shooter, bool aiming)
+    {
+        if (weapon == null || camera == null || weapon.grenadePrefab == null) return;
+        WeaponAim aim = WeaponAim.For(camera);
+        Quaternion view = camera.transform.rotation * aim.RecoilRotation;
+        Vector3 direction = view * Deviation(aim.CurrentSpread(weapon, aiming)) * Vector3.forward;
+        Vector3 muzzle = Trazadora.BocaLocal(camera);
+        // Pegado a una pared, la granada sale de este lado (si no, aparecería del otro).
+        Vector3 desde = camera.transform.position, hacia = muzzle - desde;
+        foreach (RaycastHit h in Physics.RaycastAll(desde, hacia.normalized, hacia.magnitude, ~0, QueryTriggerInteraction.Ignore))
+            if (shooter == null || !h.collider.transform.IsChildOf(shooter))
+                if (Vector3.Distance(desde, h.point) < Vector3.Distance(desde, muzzle)) muzzle = h.point - hacia.normalized * 0.15f;
+        Trazadora.Fogonazo(muzzle);
+
+        GameObject thrown = Object.Instantiate(weapon.grenadePrefab, muzzle, Quaternion.LookRotation(direction));
+        Grenade1 grenade = thrown.GetComponent<Grenade1>();
+        if (grenade != null)
+        {
+            grenade.thrower = shooter;
+            grenade.Configure(weapon);
+            grenade.throwForce = 0f;
+            grenade.Throw(direction);
+        }
+        Rigidbody body = thrown.GetComponent<Rigidbody>();
+        if (body != null) body.linearVelocity = direction * weapon.velocidadDelProyectil;
+
+        aim.Kick(weapon);
+        Fired?.Invoke(shooter, camera.transform.position, new[] { direction });
+    }
+
     private static Quaternion Deviation(float degrees)
     {
         if (degrees <= 0f) return Quaternion.identity;
