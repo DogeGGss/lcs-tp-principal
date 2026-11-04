@@ -35,6 +35,9 @@ public class PlayerLoadout : MonoBehaviour
     // En el campo de práctica (US 119), igual: todas las armas gratis y sin zona de compra.
     public static bool Free => MatchSettings.Mode == GameMode.Deathmatch || CampoDePractica.Activo;
 
+    /// <summary>US 291: en Invasión no hay tienda (las armas y la munición salen del puesto de suministros, US 292).</summary>
+    public static bool SinTienda => MapMode.DeEstaEscena == GameMode.Zombie;
+
     // US 148, CA6: en Invasión no se vende ni se deshace nada, y reemplazar algo no devuelve lo que costó.
     public static bool SinVenta => PartidaDeInvasion.Actual != null;
 

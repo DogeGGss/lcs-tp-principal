@@ -232,6 +232,16 @@ public class ShopUI : MonoBehaviour
         // US 166: en el campo de práctica el aviso dice "Tienda" mientras corre el tutorial y "Cambiar arma" después.
         if (CampoDePractica.Activo && hudHintText != null && hudHintText.text != NombrePractica) SetHint(NombrePractica);
 
+        // US 291, CA2: en Invasión B no abre nada y no está el aviso de la tienda ni la plata.
+        if (PlayerLoadout.SinTienda)
+        {
+            if (open) SetOpen(false);
+            if (hudHint.activeSelf) hudHint.SetActive(false);
+            if (hudMoney.gameObject.activeSelf) hudMoney.gameObject.SetActive(false);
+            if (hudClock.activeSelf) hudClock.SetActive(false);
+            return;
+        }
+
         if (KeyBindings.Down(GameAction.Tienda) && !CharacterSelectScreen.IsOpen) // con la selección de personaje abierta, no
         {
             // US 138, CA5: en Deathmatch solo se abre muerto, en la cuenta inicial o recién reaparecido.

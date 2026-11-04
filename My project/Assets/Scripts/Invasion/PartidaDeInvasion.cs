@@ -8,6 +8,8 @@ using UnityEngine.SceneManagement;
 // - CA3: el jugador arranca con 100 de vida, sin escudo, La Porteña y el cuchillo (lo inicial de la tienda) y 500
 //   puntos (la billetera, que en este modo son puntos: US 147).
 // - CA4: antes de la oleada 1 hay un descanso de 20 s con la tienda (la fase de compra de la escena, BuyPhase).
+// US 291 (Invasión sin tienda): se arranca con 0 puntos, B no abre nada y no está el espacio de las granadas
+// (PlayerLoadout.SinTienda). Las armas y la munición salen del puesto de suministros (US 292 y US 293).
 // - CA5: Esc pausa el juego (PauseMenu: sin conexión, el tiempo se detiene y los enemigos también).
 // - CA6: suenan la música y el ambiente del modo, en loop por el grupo Música (ConfigRed: musicaInvasion y
 //   ambienteInvasion). Sin clips cargados no suena nada.
@@ -15,7 +17,7 @@ using UnityEngine.SceneManagement;
 // la US 149 (RegeneracionDeVida, se le suma al jugador). Se crea sola: no hace falta ponerla en la escena.
 public class PartidaDeInvasion : MonoBehaviour
 {
-    public const int PuntosIniciales = 500; // CA3
+    public const int PuntosIniciales = 0;   // CA3 (US 291, CA1: sin tienda se arranca con 0)
     public const int VidaInicial = 100;      // CA3
 
     /// <summary>La partida de Invasión en curso, o null si el mapa no es de Invasión.</summary>
