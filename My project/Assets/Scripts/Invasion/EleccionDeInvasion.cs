@@ -10,7 +10,7 @@ using static ShopUIKit;
 // - CA1: 3 opciones, cada una con su nombre, su rareza, qué hace y con qué armas rinde. Se elige con el mouse o con
 //   1, 2 y 3. Mientras se elige el respiro no corre (OleadasDeInvasion espera a TerminoLaEleccion). El color dice qué
 //   es: blanca común, azul rara, violeta épica y roja un arma.
-// - CA2: al abrirse, el puesto recarga todas las armas (Luka, 04/11: toda la munición, no la mitad).
+// - CA2: al abrirse, el puesto le suma a cada arma la mitad de su munición máxima (toda, con Logística: US 296).
 // La pantalla no aparece de golpe: espera a que se vaya el cartel de la oleada, oscurece de a poco y las cartas
 // entran de a una (también al volver a tirar).
 // - CA3: la rareza de cada carta según la oleada (CartaDeInvasion.RarezaAlAzar).
@@ -108,9 +108,9 @@ public class EleccionDeInvasion : MonoBehaviour
         if (equipo == null) equipo = FindFirstObjectByType<PlayerLoadout>();
         if (lienzo == null) Armar();
 
-        // CA2: recarga todas las armas.
+        // CA2: la mitad de la munición máxima de cada arma.
         WeaponSwitcher armas = equipo != null ? equipo.GetComponentInChildren<WeaponSwitcher>(true) : null;
-        if (armas != null) armas.RellenarTodas();
+        if (armas != null) armas.RecargarMitad();
 
         Abierta = true; // el respiro ya espera, aunque la pantalla todavía no se vea
         visible = false;
