@@ -155,13 +155,11 @@ public partial class ModeSelectScreen : MonoBehaviour
     private Vector2 crossPos = new Vector2(960f, 380f), crossFrom, crossTo = new Vector2(960f, 380f);
     private float crossT = 1f, crossDur = 0.6f, crossWait;
     private float hitAt = -10f;
-    // Invasión: el radar de oleadas
-    private const float RadarRadio = 220f;
-    private RectTransform barridoInvasion;
-    private TextMeshProUGUI oleadaTexto;
-    private readonly List<UIRing> blips = new List<UIRing>();
-    private readonly List<float> blipAngulo = new List<float>(), blipDistancia = new List<float>(), blipLuz = new List<float>();
-    private float anguloBarrido;
+    // Invasión: el Jefe (el escarabajo) volando
+    private RectTransform jefe, alaIzquierda, alaDerecha, furia;
+    private readonly List<RectTransform> patas = new List<RectTransform>();
+    private readonly List<UnityEngine.UI.Graphic> huecos = new List<UnityEngine.UI.Graphic>();
+    private readonly List<RectTransform> nieblas = new List<RectTransform>();
     private readonly UnityEngine.UI.Button[] difficultyButtons = new UnityEngine.UI.Button[3];
     private TextMeshProUGUI record;
 
@@ -452,48 +450,101 @@ public partial class ModeSelectScreen : MonoBehaviour
             Segment(hitRect, new Vector2(30f * sx, 30f * sy), new Vector2(14f * sx, 14f * sy), 5f, Color.white);
     }
 
-    // Andén 3: un radar, en la misma línea que el dispositivo del Táctico y la mira del Deathmatch. El barrido gira y va
-    // marcando a los enemigos que se acercan al centro (el jugador); el punto rojo grande es el Jefe. Arriba, la oleada.
+    // Andén 3: el Jefe de la Invasión (US 146), el escarabajo gigante, volando de frente hacia el jugador entre la niebla:
+    // las alas baten, las patas cuelgan y los huecos de la cabeza (su punto débil) brillan en rojo, como en la furia.
+    private Color rojoJefe, tinta, membrana;
+
     private void BuildInvasion(RectTransform m)
     {
-        Color green = ModeColor[2], rojo = Hex(0xFF4B4B);
-        RectTransform radar = Group("Radar", m, 0f, -170f);
+        rojoJefe = Hex(0xFF2A1F);
+        tinta = Hex(0x030503);
+        membrana = Hex(0x2A0B0A);
+        Color green = ModeColor[2];
 
-        Glow(radar, 0f, 0f, RadarRadio + 60f, WithAlpha(green, FadeAlpha(0.12f)), 0.3f);
-        Circle(radar, 0f, 0f, RadarRadio, Hex(0x07100A));
-        foreach (float r in new[] { 80f, 150f })
-            Circle(radar, 0f, 0f, r, WithAlpha(green, FadeAlpha(0.22f)), 2f);
-        Circle(radar, 0f, 0f, RadarRadio, WithAlpha(green, FadeAlpha(0.7f)), 3f);
-        UIRing marcas = Circle(radar, 0f, 0f, RadarRadio + 14f, WithAlpha(green, FadeAlpha(0.35f)), 2f);
-        marcas.dashCount = 48; marcas.dashFill = 0.25f;
-        Segment(radar, new Vector2(-RadarRadio, 0f), new Vector2(RadarRadio, 0f), 1.5f, WithAlpha(green, FadeAlpha(0.15f)));
-        Segment(radar, new Vector2(0f, -RadarRadio), new Vector2(0f, RadarRadio), 1.5f, WithAlpha(green, FadeAlpha(0.15f)));
+        furia = Glow(m, 0f, -250f, 470f, WithAlpha(rojoJefe, FadeAlpha(0.30f)), 0.28f);
+        nieblas.Add(Niebla(m, -200f, 380f, 560f, 0.22f, WithAlpha(Hex(0xB8E6A6), FadeAlpha(0.20f))));
 
-        // El barrido: una línea con su estela, que gira entera.
-        barridoInvasion = Group("Barrido", radar, 0f, 0f);
-        for (int k = 11; k >= 0; k--)
+        jefe = Group("Jefe", m, 0f, -235f);
+
+        // Alas: una membrana oscura con nervaduras, cada una con su eje en el hombro (baten girando).
+        alaIzquierda = Group("AlaIzquierda", jefe, -70f, -70f);
+        alaDerecha = Group("AlaDerecha", jefe, 70f, -70f);
+        foreach (var (ala, sx) in new[] { (alaIzquierda, -1f), (alaDerecha, 1f) })
         {
-            float a = -k * 3.5f * Mathf.Deg2Rad;
-            Line(barridoInvasion, WithAlpha(green, FadeAlpha(k == 0 ? 0.9f : 0.32f * (1f - k / 12f))), k == 0 ? 3f : 6f,
-                Vector2.zero, new Vector2(Mathf.Sin(a) * RadarRadio, -Mathf.Cos(a) * RadarRadio));
+            Vector2[] borde =
+            {
+                new Vector2(0f, 0f), new Vector2(120f * sx, -150f), new Vector2(260f * sx, -190f), new Vector2(370f * sx, -130f),
+                new Vector2(400f * sx, -30f), new Vector2(330f * sx, 50f), new Vector2(190f * sx, 60f), new Vector2(70f * sx, 40f)
+            };
+            Poly(ala, WithAlpha(membrana, FadeAlpha(0.85f)), borde);
+            UIPolyline contorno = Line(ala, WithAlpha(rojoJefe, FadeAlpha(0.35f)), 2f, borde);
+            contorno.closed = true;
+            foreach (Vector2 punta in new[] { new Vector2(260f * sx, -186f), new Vector2(390f * sx, -60f), new Vector2(300f * sx, 52f) })
+                Line(ala, WithAlpha(rojoJefe, FadeAlpha(0.25f)), 2f, Vector2.zero, punta * 0.55f, punta * 0.97f);
         }
 
-        // Los enemigos: se encienden cuando pasa el barrido y se apagan de a poco; el último es el Jefe.
-        for (int k = 0; k < 8; k++)
+        // Patas colgando (tres pares), por detrás del cuerpo.
+        var patasDe = new[] { (x: 70f, y: 10f, largo: 0.7f), (x: 90f, y: 50f, largo: 0.8f), (x: 70f, y: 90f, largo: 0.9f) };
+        foreach (var p in patasDe)
+            foreach (float sx in new[] { -1f, 1f })
+            {
+                RectTransform pata = Group("Pata", jefe, p.x * sx, p.y);
+                patas.Add(pata);
+                UIPolyline l = Line(pata, tinta, 13f, Vector2.zero, new Vector2(70f * sx, 60f * p.largo), new Vector2(60f * sx, 170f * p.largo),
+                    new Vector2(84f * sx, 200f * p.largo));
+                l.roundJoins = true;
+            }
+
+        // Caparazón (detrás de la cabeza), con la línea del medio.
+        scratch.Clear();
+        Bezier(scratch, new Vector2(-170f, 40f), new Vector2(-200f, -90f), new Vector2(-120f, -190f), new Vector2(0f, -190f), 12);
+        Bezier(scratch, new Vector2(0f, -190f), new Vector2(120f, -190f), new Vector2(200f, -90f), new Vector2(170f, 40f), 12);
+        Bezier(scratch, new Vector2(170f, 40f), new Vector2(120f, 140f), new Vector2(-120f, 140f), new Vector2(-170f, 40f), 12);
+        Poly(jefe, tinta, scratch.ToArray());
+        UIPolyline bordeCaparazon = Line(jefe, WithAlpha(rojoJefe, FadeAlpha(0.28f)), 2.5f, scratch.ToArray());
+        bordeCaparazon.closed = true;
+        Line(jefe, WithAlpha(rojoJefe, FadeAlpha(0.18f)), 2f, new Vector2(0f, -186f), new Vector2(0f, -60f));
+        foreach (float sx in new[] { -1f, 1f })
+            Line(jefe, WithAlpha(rojoJefe, FadeAlpha(0.12f)), 2f, new Vector2(150f * sx, -60f), new Vector2(90f * sx, -150f), new Vector2(30f * sx, -176f));
+
+        // Cabeza de frente, con un cuerno, antenas y mandíbulas.
+        Poly(jefe, tinta, new Vector2(-34f, -60f), new Vector2(-10f, -262f), new Vector2(0f, -280f), new Vector2(10f, -262f), new Vector2(34f, -60f));
+        Circle(jefe, 0f, 20f, 96f, tinta);
+        Circle(jefe, 0f, 20f, 96f, WithAlpha(rojoJefe, FadeAlpha(0.35f)), 2.5f);
+        foreach (float sx in new[] { -1f, 1f })
         {
-            bool jefe = k == 7;
-            blips.Add(Circle(radar, 0f, 0f, jefe ? 11f : 6f, jefe ? rojo : green));
-            blipAngulo.Add(UnityEngine.Random.Range(0f, 360f));
-            blipDistancia.Add(UnityEngine.Random.Range(60f, RadarRadio - 10f));
-            blipLuz.Add(0f);
+            UIPolyline antena = Line(jefe, tinta, 5f, new Vector2(40f * sx, -50f), new Vector2(110f * sx, -150f), new Vector2(170f * sx, -160f));
+            antena.roundJoins = true;
+            UIPolyline mandibula = Line(jefe, tinta, 16f, new Vector2(46f * sx, 90f), new Vector2(70f * sx, 140f), new Vector2(40f * sx, 186f),
+                new Vector2(12f * sx, 180f));
+            mandibula.roundJoins = true;
         }
 
-        // El jugador en el centro.
-        Circle(radar, 0f, 0f, 16f, WithAlpha(green, FadeAlpha(0.5f)), 2f);
-        Circle(radar, 0f, 0f, 6f, green);
+        // Los huecos de la cabeza, su punto débil: brillan en rojo y laten.
+        foreach (var (x, y, r) in new[] { (-36f, 0f, 15f), (36f, 0f, 15f), (-66f, 34f, 9f), (66f, 34f, 9f), (0f, 52f, 8f) })
+        {
+            huecos.Add(Glow(jefe, x, y, r * 3f, WithAlpha(rojoJefe, FadeAlpha(0.5f)), 0.3f).GetComponent<Img>());
+            huecos.Add(Circle(jefe, x, y, r, rojoJefe));
+        }
 
-        oleadaTexto = Text(Place(Node("Oleada", radar), -160f, -RadarRadio - 70f, 320f, 40f), monoFont, 26f, green, TextAlignmentOptions.Center, 6f);
-        oleadaTexto.text = "OLEADA 01 / 10";
+        nieblas.Add(Niebla(m, 160f, 470f, 640f, 0.2f, WithAlpha(Hex(0xB8E6A6), FadeAlpha(0.18f))));
+        Glow(m, 0f, 600f, 700f, WithAlpha(green, FadeAlpha(0.10f)), 0.35f);
+    }
+
+    private RectTransform Niebla(RectTransform parent, float x, float y, float rx, float ry, Color color)
+    {
+        RectTransform banco = Glow(parent, x, y, rx, color, 0.35f);
+        banco.localScale = new Vector3(1f, ry, 1f);
+        return banco;
+    }
+
+    private static void Bezier(List<Vector2> into, Vector2 a, Vector2 b, Vector2 c, Vector2 d, int steps = 8)
+    {
+        for (int i = 0; i <= steps; i++)
+        {
+            float t = i / (float)steps, u = 1f - t;
+            into.Add(u * u * u * a + 3f * u * u * t * b + 3f * u * t * t * c + t * t * t * d);
+        }
     }
 
     private void BuildBolt(int k)
@@ -1069,7 +1120,7 @@ public partial class ModeSelectScreen : MonoBehaviour
         AnimarBusqueda(now, dt);
         AnimateTactico(now, dt);
         AnimateDeathmatch(now, dt, centers);
-        AnimateInvasion(now, dt);
+        AnimateInvasion(now);
 
         if (now > nextStrike) { Strike(UnityEngine.Random.value < 0.5f ? 0 : 1, false); nextStrike = now + UnityEngine.Random.Range(2.6f, 5.6f); }
     }
@@ -1328,38 +1379,32 @@ public partial class ModeSelectScreen : MonoBehaviour
         hit.alpha = now - hitAt < 0.12f ? 1f : Mathf.Max(0f, 1f - (now - hitAt - 0.12f) / 0.35f);
     }
 
-    private void AnimateInvasion(float now, float dt)
+    private void AnimateInvasion(float now)
     {
         bool hot = hover == 2 || open == 2;
-        float antes = anguloBarrido;
-        anguloBarrido = Mathf.Repeat(anguloBarrido + dt * 360f / (hot ? 1.6f : 3.2f), 360f);
-        barridoInvasion.localEulerAngles = new Vector3(0f, 0f, -anguloBarrido);
-        float paso = Mathf.Repeat(anguloBarrido - antes, 360f);
+        // Vuela: sube y baja despacio, con un leve vaivén, y las alas baten (más rápido con el mouse encima).
+        float vuelo = Mathf.Sin(now * Mathf.PI * 2f / (hot ? 1.6f : 2.8f));
+        jefe.anchoredPosition = new Vector2(8f * Mathf.Sin(now * 0.7f), -(-235f + 18f * vuelo));
+        jefe.localEulerAngles = new Vector3(0f, 0f, 2f * Mathf.Sin(now * 0.9f));
+        float aleteo = Mathf.Sin(now * Mathf.PI * 2f / (hot ? 0.22f : 0.38f));
+        alaIzquierda.localEulerAngles = new Vector3(0f, 0f, 16f * aleteo);
+        alaDerecha.localEulerAngles = new Vector3(0f, 0f, -16f * aleteo);
+        alaIzquierda.localScale = alaDerecha.localScale = new Vector3(1f, 0.82f + 0.18f * Mathf.Abs(aleteo), 1f);
+        for (int k = 0; k < patas.Count; k++)
+            patas[k].localEulerAngles = new Vector3(0f, 0f, 6f * Mathf.Sin(now * 2.2f + k) * (k % 2 == 0 ? 1f : -1f));
 
-        for (int k = 0; k < blips.Count; k++)
+        // Los huecos laten en rojo y el resplandor de atrás acompaña (la furia, con el mouse encima).
+        float latido = 0.5f + 0.5f * Mathf.Sin(now * Mathf.PI * 2f / (hot ? 0.7f : 1.6f));
+        for (int k = 0; k < huecos.Count; k++)
+            huecos[k].color = WithAlpha(rojoJefe, FadeAlpha((k % 2 == 0 ? 0.25f : 0.55f) + (k % 2 == 0 ? 0.35f : 0.45f) * latido));
+        furia.localScale = Vector3.one * (0.92f + (hot ? 0.16f : 0.08f) * latido);
+
+        for (int f = 0; f < nieblas.Count; f++)
         {
-            bool jefe = k == blips.Count - 1;
-            // Se acerca al centro; al llegar, aparece otro en el borde.
-            blipDistancia[k] -= dt * (jefe ? 6f : 14f) * (hot ? 2.2f : 1f);
-            if (blipDistancia[k] < 24f)
-            {
-                blipDistancia[k] = RadarRadio - UnityEngine.Random.Range(4f, 30f);
-                blipAngulo[k] = UnityEngine.Random.Range(0f, 360f);
-                blipLuz[k] = 0f;
-            }
-            // El barrido lo encontró en este cuadro: se enciende.
-            if (Mathf.Repeat(blipAngulo[k] - antes, 360f) <= paso) blipLuz[k] = 1f;
-            else blipLuz[k] = Mathf.Max(0f, blipLuz[k] - dt / 2.4f);
-
-            float a = blipAngulo[k] * Mathf.Deg2Rad;
-            blips[k].rectTransform.anchoredPosition = new Vector2(Mathf.Sin(a) * blipDistancia[k], Mathf.Cos(a) * blipDistancia[k]);
-            Color c = jefe ? Hex(0xFF4B4B) : ModeColor[2];
-            blips[k].color = WithAlpha(c, FadeAlpha(0.08f + 0.92f * blipLuz[k]));
+            float periodo = f == 0 ? 11f : 7.5f;
+            float x = (f == 0 ? -200f : 160f) + 140f * Mathf.Sin(now * Mathf.PI * 2f / periodo * (f == 0 ? 1f : -1f));
+            nieblas[f].anchoredPosition = new Vector2(x, nieblas[f].anchoredPosition.y);
         }
-
-        int oleada = 1 + Mathf.FloorToInt(Mathf.Repeat(now / 5f, 10f));
-        string texto = "OLEADA " + oleada.ToString("00") + " / 10";
-        if (oleadaTexto.text != texto) oleadaTexto.text = texto;
     }
 
     private static float EaseOut(float t) => 1f - (1f - t) * (1f - t);
