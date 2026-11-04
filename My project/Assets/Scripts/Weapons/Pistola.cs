@@ -57,6 +57,9 @@ public class Pistola : MonoBehaviour, IHudWeapon
     /// <summary>US 293, CA2: la munición máxima del arma (cargador y reserva llenos).</summary>
     public int MunicionMaxima => maxAmmo + Mathf.Max(Municion.Reserva(fullReserve), reserveAmmo);
 
+    /// <summary>La reserva llena (con la Mochila, más: US 315).</summary>
+    public int ReservaLlena => Municion.Reserva(fullReserve < 0 ? reserveAmmo : fullReserve);
+
     /// <summary>US 315: la reserva llena creció (la Mochila): suma esas balas a la reserva.</summary>
     public void AgrandarReserva(float antes)
     {
