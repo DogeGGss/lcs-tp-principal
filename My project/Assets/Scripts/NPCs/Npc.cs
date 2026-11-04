@@ -170,6 +170,7 @@ public class Npc : MonoBehaviour
             Animador.applyRootMotion = false;                          // lo mueve el código (US 035)
             Animador.cullingMode = AnimatorCullingMode.CullUpdateTransforms; // lejos de la cámara no se anima de más
             Animaciones = new AnimadorDeNpc(Animador);
+            Animaciones.Preparar(tipo); // todas sus animaciones conectadas de una vez (no se agranda al cambiar)
             Animaciones.Poner(tipo.quieto != null ? tipo.quieto : tipo.quietoEnCombate, true, 0f);
         }
 

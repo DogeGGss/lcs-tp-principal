@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Animations;
 using UnityEngine.Playables;
@@ -9,36 +10,51 @@ using UnityEngine.Playables;
 // El tiempo es el del juego: en pausa (Time.timeScale 0) se frenan.
 // Encima, en otra capa, la de recibir un golpe (Golpe): solo del torso para arriba, mezclada con lo que esté haciendo,
 // así sigue caminando mientras se dobla por el impacto (US 038, CA3).
+// Todas las animaciones del tipo se conectan una sola vez, al armarlo (Preparar), y después solo se cambia cuánto pesa
+// cada una: conectar una animación nueva mientras juega hace que Unity vuelva a enlazar los huesos, y por un instante
+// el bicho quedaba en la pose de su modelo (más estirado y más grande). Cada clip tiene dos entradas, así se puede
+// volver a empezar uno que está sonando (dos ataques iguales seguidos) fundiéndolo con donde estaba.
 public class AnimadorDeNpc
 {
     private const float FundidoPorDefecto = 0.2f;
 
+    private class Entrada
+    {
+        public AnimationClip clip;
+        public AnimationClipPlayable reproductor;
+        public int indice;   // su entrada en la mezcla
+        public float peso;   // cuánto pesa ahora
+        public float desde;  // cuánto pesaba al empezar el fundido
+    }
+
     private PlayableGraph grafo;
     private AnimationMixerPlayable mezcla;
-    private readonly AnimationClipPlayable[] entradas = new AnimationClipPlayable[2];
-    private readonly AnimationClip[] clips = new AnimationClip[2];
-    private int actual = -1;      // la entrada que sube
+    private readonly List<Entrada> entradas = new List<Entrada>();
+    private readonly Dictionary<AnimationClip, Entrada[]> porClip = new Dictionary<AnimationClip, Entrada[]>();
+    private Entrada actual;      // la que sube
     private bool enLoop;
     private float fundido, duracionFundido;
     private float velocidad = 1f;
 
-    // La capa del golpe recibido (US 038, CA3).
+    // La capa del golpe recibido (US 038, CA3): una mezcla aparte, con una entrada por clip de golpe.
     private const float GolpeSube = 0.06f;   // s hasta que se ve entera
     private const float GolpeDuraMax = 0.55f; // s: si el clip es más largo, se acelera
     private AnimationLayerMixerPlayable capas;
-    private AnimationClipPlayable golpe;
+    private AnimationMixerPlayable golpes;
+    private readonly Dictionary<AnimationClip, int> golpePorClip = new Dictionary<AnimationClip, int>();
+    private int golpeActual = -1;
     private float golpeT = -1f, golpeDura, golpePeso;
 
     /// <summary>El clip que está sonando (o null).</summary>
-    public AnimationClip Clip => actual >= 0 ? clips[actual] : null;
+    public AnimationClip Clip => actual != null ? actual.clip : null;
 
     /// <summary>Cuánto va del clip actual (0 a 1; sin loop, 1 al terminar).</summary>
     public float Avance
     {
         get
         {
-            if (actual < 0 || clips[actual] == null || clips[actual].length <= 0f) return 1f;
-            return Mathf.Clamp01((float)entradas[actual].GetTime() / clips[actual].length);
+            if (actual == null || actual.clip.length <= 0f) return 1f;
+            return Mathf.Clamp01((float)actual.reproductor.GetTime() / actual.clip.length);
         }
     }
 
@@ -48,15 +64,60 @@ public class AnimadorDeNpc
         grafo = PlayableGraph.Create("NPC · " + animador.name);
         grafo.SetTimeUpdateMode(DirectorUpdateMode.GameTime);
         var salida = AnimationPlayableOutput.Create(grafo, "Animaciones", animador);
-        mezcla = AnimationMixerPlayable.Create(grafo, 2);
+        mezcla = AnimationMixerPlayable.Create(grafo, 0);
+        golpes = AnimationMixerPlayable.Create(grafo, 0);
         capas = AnimationLayerMixerPlayable.Create(grafo, 2);
         grafo.Connect(mezcla, 0, capas, 0);
+        grafo.Connect(golpes, 0, capas, 1);
         capas.SetInputWeight(0, 1f);
         capas.SetInputWeight(1, 0f);
         AvatarMask torso = MascaraDelTorso(animador.transform);
         if (torso != null) capas.SetLayerMaskFromAvatarMask(1, torso);
         salida.SetSourcePlayable(capas);
         grafo.Play();
+    }
+
+    /// <summary>Conecta de una vez todas las animaciones del tipo (antes de que se vea), así cambiar de una a otra no
+    /// vuelve a enlazar los huesos.</summary>
+    public void Preparar(TipoDeNpc tipo)
+    {
+        if (tipo == null || !grafo.IsValid()) return;
+        foreach (AnimationClip clip in new[] { tipo.quieto, tipo.quietoEnCombate, tipo.caminar, tipo.correr, tipo.morir,
+                     tipo.aturdido, tipo.preparaEmbestida, tipo.embestida, tipo.volar, tipo.escupir, tipo.rugido,
+                     tipo.animacionADistancia })
+            Entradas(clip);
+        if (tipo.ataques != null) foreach (AnimationClip clip in tipo.ataques) Entradas(clip);
+        if (tipo.golpeRecibido != null && tipo.golpeRecibido.length > 0f) EntradaDeGolpe(tipo.golpeRecibido);
+    }
+
+    // Las dos entradas de ese clip (las crea la primera vez).
+    private Entrada[] Entradas(AnimationClip clip)
+    {
+        if (clip == null) return null;
+        if (porClip.TryGetValue(clip, out Entrada[] par)) return par;
+        par = new Entrada[2];
+        for (int i = 0; i < 2; i++)
+        {
+            var reproductor = AnimationClipPlayable.Create(grafo, clip);
+            reproductor.SetApplyFootIK(false);
+            reproductor.Pause(); // sin peso, quieta
+            int indice = mezcla.AddInput(reproductor, 0, 0f);
+            par[i] = new Entrada { clip = clip, reproductor = reproductor, indice = indice };
+            entradas.Add(par[i]);
+        }
+        porClip[clip] = par;
+        return par;
+    }
+
+    private int EntradaDeGolpe(AnimationClip clip)
+    {
+        if (golpePorClip.TryGetValue(clip, out int i)) return i;
+        var reproductor = AnimationClipPlayable.Create(grafo, clip);
+        reproductor.SetApplyFootIK(false);
+        reproductor.Pause();
+        i = golpes.AddInput(reproductor, 0, 0f);
+        golpePorClip[clip] = i;
+        return i;
     }
 
     /// <summary>
@@ -67,16 +128,19 @@ public class AnimadorDeNpc
     {
         if (clip == null || !grafo.IsValid() || clip.length <= 0f) return;
         if (golpeT >= 0f && golpeT < golpeDura * 0.5f) return;
-        if (!golpe.IsValid() || golpe.GetAnimationClip() != clip)
+        int i = EntradaDeGolpe(clip);
+        if (golpeActual >= 0 && golpeActual != i)
         {
-            if (golpe.IsValid()) { grafo.Disconnect(capas, 1); golpe.Destroy(); }
-            golpe = AnimationClipPlayable.Create(grafo, clip);
-            golpe.SetApplyFootIK(false);
-            grafo.Connect(golpe, 0, capas, 1);
+            golpes.SetInputWeight(golpeActual, 0f);
+            golpes.GetInput(golpeActual).Pause();
         }
+        golpeActual = i;
+        golpes.SetInputWeight(i, 1f);
+        Playable reproductor = golpes.GetInput(i);
         golpeDura = Mathf.Min(clip.length, GolpeDuraMax);
-        golpe.SetSpeed(clip.length / golpeDura);
-        golpe.SetTime(0);
+        reproductor.SetSpeed(clip.length / golpeDura);
+        reproductor.SetTime(0);
+        reproductor.Play();
         golpePeso = Mathf.Clamp01(peso);
         golpeT = 0f;
     }
@@ -118,44 +182,50 @@ public class AnimadorDeNpc
     public void Poner(AnimationClip clip, bool loop, float fundidoSegundos = FundidoPorDefecto, bool reiniciar = false)
     {
         if (clip == null || !grafo.IsValid()) return;
-        if (actual >= 0 && clips[actual] == clip && !reiniciar) { enLoop = loop; return; }
-        int nueva = actual < 0 ? 0 : 1 - actual;
-        if (entradas[nueva].IsValid())
-        {
-            grafo.Disconnect(mezcla, nueva);
-            entradas[nueva].Destroy();
-        }
-        entradas[nueva] = AnimationClipPlayable.Create(grafo, clip);
-        entradas[nueva].SetApplyFootIK(false);
-        entradas[nueva].SetSpeed(velocidad);
-        grafo.Connect(entradas[nueva], 0, mezcla, nueva);
-        clips[nueva] = clip;
+        if (actual != null && actual.clip == clip && !reiniciar) { enLoop = loop; return; }
+        Entrada[] par = Entradas(clip);
+        // De las dos entradas del clip, la que no está sonando (para volver a empezarlo fundido con donde estaba), o la
+        // que menos se ve.
+        Entrada nueva = par[0] == actual ? par[1] : par[1] == actual ? par[0] : par[0].peso <= par[1].peso ? par[0] : par[1];
+        nueva.reproductor.SetTime(0);
+        nueva.reproductor.SetSpeed(velocidad);
+        nueva.reproductor.Play();
         enLoop = loop;
-        if (actual < 0 || fundidoSegundos <= 0f)
+        bool habiaAlgo = actual != null;
+        actual = nueva;
+
+        if (!habiaAlgo || fundidoSegundos <= 0f)
         {
-            mezcla.SetInputWeight(nueva, 1f);
-            mezcla.SetInputWeight(1 - nueva, 0f);
+            foreach (Entrada e in entradas) Pesar(e, e == actual ? 1f : 0f);
             duracionFundido = 0f;
         }
         else
         {
+            // Lo que sonaba baja parejo mientras la nueva sube: los pesos siempre suman 1.
+            foreach (Entrada e in entradas) e.desde = e.peso;
             duracionFundido = fundidoSegundos;
             fundido = 0f;
         }
-        actual = nueva;
+    }
+
+    private void Pesar(Entrada e, float peso)
+    {
+        e.peso = peso;
+        mezcla.SetInputWeight(e.indice, peso);
+        if (peso <= 0f && e != actual) e.reproductor.Pause();
     }
 
     /// <summary>Velocidad de la animación actual (1: la del clip). Para que los pies acompañen al moverse.</summary>
     public void Velocidad(float v)
     {
         velocidad = Mathf.Max(0f, v);
-        if (actual >= 0 && entradas[actual].IsValid()) entradas[actual].SetSpeed(velocidad);
+        if (actual != null) actual.reproductor.SetSpeed(velocidad);
     }
 
     /// <summary>Lo llama su NPC en cada cuadro: el fundido y el loop.</summary>
     public void Actualizar(float dt)
     {
-        if (actual < 0 || !grafo.IsValid()) return;
+        if (actual == null || !grafo.IsValid()) return;
         // El golpe: sube enseguida y se va apagando hasta el final.
         if (golpeT >= 0f)
         {
@@ -168,15 +238,18 @@ public class AnimadorDeNpc
         if (duracionFundido > 0f)
         {
             fundido = Mathf.Min(1f, fundido + dt / duracionFundido);
-            mezcla.SetInputWeight(actual, fundido);
-            mezcla.SetInputWeight(1 - actual, 1f - fundido);
+            foreach (Entrada e in entradas)
+            {
+                if (e != actual && e.desde <= 0f) continue;
+                Pesar(e, e == actual ? Mathf.Lerp(e.desde, 1f, fundido) : e.desde * (1f - fundido));
+            }
             if (fundido >= 1f) duracionFundido = 0f;
         }
-        AnimationClip clip = clips[actual];
-        if (clip == null || clip.length <= 0f) return;
-        double t = entradas[actual].GetTime();
-        if (enLoop && t >= clip.length) entradas[actual].SetTime(t % clip.length);
-        else if (!enLoop && t > clip.length) entradas[actual].SetTime(clip.length); // queda en el último cuadro
+        AnimationClip clip = actual.clip;
+        if (clip.length <= 0f) return;
+        double t = actual.reproductor.GetTime();
+        if (enLoop && t >= clip.length) actual.reproductor.SetTime(t % clip.length);
+        else if (!enLoop && t > clip.length) actual.reproductor.SetTime(clip.length); // queda en el último cuadro
     }
 
     /// <summary>Aplica ya la pose de la animación puesta (sin esperar al cuadro siguiente).</summary>
