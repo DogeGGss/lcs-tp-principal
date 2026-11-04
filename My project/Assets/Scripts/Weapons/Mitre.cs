@@ -123,6 +123,18 @@ public class Mitre : MonoBehaviour, IHudWeapon
         reserveAmmo = fullReserve;
     }
 
+    /// <summary>US 293, CA2: la munición máxima del arma (cargador y reserva llenos).</summary>
+    public int MunicionMaxima => maxAmmo + Mathf.Max(fullReserve, reserveAmmo);
+
+    /// <summary>US 293, CA2: suma balas a la reserva sin pasarse de la llena; lo que sobra va al cargador.</summary>
+    public void SumarBalas(int balas)
+    {
+        if (fullReserve < 0) fullReserve = reserveAmmo;
+        int aReserva = Mathf.Clamp(fullReserve - reserveAmmo, 0, balas);
+        reserveAmmo += aReserva;
+        currentAmmo = Mathf.Min(maxAmmo, currentAmmo + balas - aReserva);
+    }
+
     void Update()
     {
         // Bloqueos de estado
