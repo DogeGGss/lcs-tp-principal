@@ -132,6 +132,51 @@ public class EstadisticasTests
         Assert.AreEqual(mio, EstadisticasJugador.Juntar(mio, mio), "juntar sin cambios deja el mismo texto");
     }
 
+    private static EstadisticasJugador.Partida Invasion(string id, bool salvo, int invasores) =>
+        new EstadisticasJugador.Partida
+        {
+            id = id, invasion = true, gano = salvo, bajas = invasores, cabezas = 2, muertes = salvo ? 0 : 1, segundos = 600,
+        };
+
+    [Test, Category("US 222"), Description("CA2: Invasión suma sus invasores eliminados aparte de las bajas multijugador")]
+    public void Invasion_se_suma_aparte()
+    {
+        var t = new EstadisticasJugador.Totales();
+        EstadisticasJugador.Sumar(t, Tactico("ABCDE:100", true, 12, 4, 3));
+        Assert.IsTrue(EstadisticasJugador.Sumar(t, Invasion("invasion-1", false, 85)));
+        Assert.IsTrue(EstadisticasJugador.Sumar(t, Invasion("invasion-2", true, 140)));
+        Assert.IsFalse(EstadisticasJugador.Sumar(t, Invasion("invasion-2", true, 140)), "CA3: la misma partida una sola vez");
+
+        Assert.AreEqual(2, t.invasion.partidas);
+        Assert.AreEqual(1, t.invasion.victorias, "mundo salvado");
+        Assert.AreEqual(225, t.invasion.bajas, "invasores eliminados");
+        Assert.AreEqual(1200, t.invasion.segundos);
+        Assert.AreEqual(1, t.Partidas, "el General es solo Táctico y Deathmatch");
+        Assert.AreEqual(12, t.Bajas);
+        Assert.AreEqual(4, t.Muertes);
+        Assert.AreEqual(1, t.mvp, "Invasión no toca lo del Táctico");
+        Assert.AreEqual(7, t.rondasGanadas);
+        Assert.AreEqual(0, t.mejorRacha);
+    }
+
+    [Test, Category("US 222"), Category("US 162"), Description("CA2 y CA6: Invasión se junta con el máximo y lo viejo arranca en cero")]
+    public void Invasion_se_une_y_lo_viejo_arranca_en_cero()
+    {
+        var a = new EstadisticasJugador.Totales();
+        var b = new EstadisticasJugador.Totales();
+        EstadisticasJugador.Sumar(a, Invasion("invasion-1", false, 30));
+        EstadisticasJugador.Sumar(b, Invasion("invasion-2", true, 90));
+        Assert.IsTrue(EstadisticasJugador.Unir(a, b));
+        Assert.AreEqual(90, a.invasion.bajas);
+        Assert.AreEqual(1, a.invasion.victorias);
+        Assert.AreEqual(90, EstadisticasJugador.Leer(JsonUtility.ToJson(a)).invasion.bajas);
+
+        var viejo = EstadisticasJugador.Leer("{\"version\":1,\"tactico\":{\"partidas\":4}}");
+        Assert.IsNotNull(viejo.invasion);
+        Assert.AreEqual(0, viejo.invasion.partidas);
+        Assert.AreEqual(4, viejo.tactico.partidas, "no borra lo anterior");
+    }
+
     [Test, Category("US 226"), Description("Cada categoría del juego existe en la base (rw_stat_board) y su grupo no está vacío")]
     public void Cada_categoria_del_ranking_existe_en_la_base()
     {

@@ -87,6 +87,9 @@ El nombre de jugador lo pide el juego la primera vez y lo guarda en la cuenta (`
 - *Authentication › Emails › Templates*: el juego pide el **código** (`{{ .Token }}`), no el link. Plantilla **Confirm signup**:
   - Asunto: `Tu código para confirmar la cuenta`
   - Cuerpo: `<h2>Project Riftwalker</h2><p>¡Hola! Este es tu código para confirmar tu cuenta de Project Riftwalker:</p><p style="font-size:28px;letter-spacing:6px"><b>{{ .Token }}</b></p><p>Escribilo en el launcher, donde creaste la cuenta. Vence en 1 hora.</p><p>Si no creaste una cuenta, ignorá este mail.</p>`
+- Plantilla **Reset Password** (US 271, recuperar la contraseña desde el launcher):
+  - Asunto: `Tu código para cambiar la contraseña`
+  - Cuerpo: `<h2>Project Riftwalker</h2><p>Pediste cambiar la contraseña de tu cuenta de Project Riftwalker. Tu código es:</p><p style="font-size:28px;letter-spacing:6px"><b>{{ .Token }}</b></p><p>Escribilo en el launcher junto con la contraseña nueva. Vence en 1 hora.</p><p>Si no lo pediste, ignorá este mail: tu contraseña sigue igual.</p>`
 - *Authentication › Rate Limits*: con el SMTP propio, subir los mails por hora según los jugadores esperados.
 
 **Reset antes de abrir las cuentas (US 281, una sola vez):**

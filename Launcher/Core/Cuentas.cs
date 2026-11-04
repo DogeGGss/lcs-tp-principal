@@ -10,6 +10,8 @@ namespace Riftwalker.Launcher;
 // - Create (US 237): POST /auth/v1/signup; Supabase mails a 6-digit code (template «Confirm signup» with {{ .Token }})
 //   and POST /auth/v1/verify confirms it and returns the session.
 // - Log in (US 269): POST /auth/v1/token?grant_type=password.
+// - Forgot the password (US 271): POST /auth/v1/recover mails a code (template «Reset Password» with {{ .Token }}),
+//   POST /auth/v1/verify with type recovery logs in and PUT /auth/v1/user sets the new password.
 // - Log out (US 270): POST /auth/v1/logout, and the session file is deleted.
 // - Delete the account (US 273): POST /functions/v1/borrar-cuenta with the password (Backend/Supabase/functions).
 // The session (never the password) is saved in the game's save folder, in the format of LogrosOnline.Sesion: the game
@@ -97,6 +99,39 @@ public sealed class Cuentas(HttpClient http, ServicioCuentas servicio, string ca
             return ReglasCuenta.SinConfirmar;
         }
         return Entrar(r);
+    }
+
+    /// <summary>US 271, CA1: mails a code to choose a new password. Supabase answers the same whether the mail has an
+    /// account or not (so it does not reveal which mails exist), and so does this: null unless it could not ask.</summary>
+    public async Task<string?> RecuperarAsync(string mail, CancellationToken token)
+    {
+        mail = mail.Trim();
+        string? problema = ReglasCuenta.ValidarMail(mail);
+        if (problema != null) return problema;
+        var r = await PedirAsync(HttpMethod.Post, "/auth/v1/recover", new Recuperacion(mail), null, token);
+        return r.Bien ? null : ReglasCuenta.Mensaje(r.Codigo, r.Cuerpo);
+    }
+
+    /// <summary>
+    /// US 271, CA2 and CA3: the code from the mail logs in (POST /auth/v1/verify, type recovery) and then the new
+    /// password is set (PUT /auth/v1/user). null if it worked and the session is saved; otherwise, the message.
+    /// </summary>
+    public async Task<string?> CambiarClaveAsync(string mail, string codigo, string nueva, CancellationToken token)
+    {
+        string numeros = ReglasCuenta.SoloNumeros(codigo);
+        if (numeros.Length != ReglasCuenta.LargoCodigo) return ReglasCuenta.CodigoIncompleto;
+        string? problema = ReglasCuenta.ValidarClave(nueva, nueva);
+        if (problema != null) return problema;
+        var r = await PedirAsync(HttpMethod.Post, "/auth/v1/verify", new Verificacion("recovery", mail.Trim(), numeros), null, token);
+        if (!r.Bien) return ReglasCuenta.Mensaje(r.Codigo, r.Cuerpo);
+        var sesion = Leer<SesionCuenta>(r.Cuerpo);
+        if (sesion is not { AccessToken.Length: > 0, RefreshToken.Length: > 0, User.Id.Length: > 0 }) return ReglasCuenta.Generico;
+        var cambio = await PedirAsync(HttpMethod.Put, "/auth/v1/user", new ClaveNueva(nueva), sesion.AccessToken, token);
+        // The same password as before is not an error for the player: the account is theirs and they are in.
+        if (!cambio.Bien && !cambio.Cuerpo.Contains("same_password", StringComparison.OrdinalIgnoreCase))
+            return ReglasCuenta.Mensaje(cambio.Codigo, cambio.Cuerpo);
+        Guardar(sesion);
+        return null;
     }
 
     /// <summary>US 270: tells Supabase (if online) and deletes the session from the PC.</summary>
@@ -203,6 +238,8 @@ public sealed class Cuentas(HttpClient http, ServicioCuentas servicio, string ca
     private sealed record Reenvio([property: JsonPropertyName("type")] string Tipo, [property: JsonPropertyName("email")] string Mail);
     private sealed record Renovacion([property: JsonPropertyName("refresh_token")] string Token);
     private sealed record Borrado([property: JsonPropertyName("clave")] string Clave);
+    private sealed record Recuperacion([property: JsonPropertyName("email")] string Mail);
+    private sealed record ClaveNueva([property: JsonPropertyName("password")] string Clave);
 }
 
 /// <summary>The game's Supabase project: the same as Assets/Resources/LogrosOnline.asset. The publishable key is public on

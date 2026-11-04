@@ -14,6 +14,7 @@ using static ShopUIKit;
 //   superó, "¡Nuevo récord!"; si no, el récord actual (y la banderita en la vía).
 // - CA5: "Jugar de nuevo" (Enter) vuelve a cargar el mapa con la misma dificultad, y "Volver al menú" (Esc), el menú.
 // - CA6: caerse del mapa es una muerte (FueraDelMapa), así que termina igual que el CA1.
+// - US 222, CA2: la partida se suma una vez a las estadísticas de Invasión del jugador (EstadisticasJugador), que ve el Perfil.
 // Todo se congela (el tiempo se detiene) y no se puede pausar.
 public class ResultadoDeInvasion : MonoBehaviour
 {
@@ -62,6 +63,18 @@ public class ResultadoDeInvasion : MonoBehaviour
         int recordAntes = MatchSettings.ZombieRecord(dificultad);
         bool nuevo = oleada > recordAntes;
         MatchSettings.SubirZombieRecord(dificultad, oleada);
+        int segundos = Mathf.FloorToInt(Time.time - partida.Inicio);
+        // US 222, CA2: la partida se suma a las estadísticas de Invasión, aparte de las de multijugador.
+        EstadisticasJugador.Registrar(new EstadisticasJugador.Partida
+        {
+            id = partida.Id,
+            invasion = true,
+            gano = salvo,
+            bajas = puntos != null ? puntos.Bajas : 0,
+            cabezas = puntos != null ? puntos.BajasALaCabeza : 0,
+            muertes = murio ? 1 : 0,
+            segundos = segundos,
+        });
         Guardado.Save(); // la nube lo sube sola cuando ve el cambio (LogrosOnline)
 
         var canvas = GetComponent<Canvas>();
@@ -139,7 +152,6 @@ public class ResultadoDeInvasion : MonoBehaviour
                 $"Récord en {NombreDificultad[(int)dificultad]}: <color=#F3F4F6>oleada {recordAntes}</color>";
 
         // CA3: los números.
-        int segundos = Mathf.FloorToInt(Time.time - partida.Inicio);
         string[,] numeros =
         {
             { "Oleada", oleada.ToString() },

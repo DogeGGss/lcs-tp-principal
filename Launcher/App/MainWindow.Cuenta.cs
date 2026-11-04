@@ -7,13 +7,13 @@ using System.Windows.Threading;
 
 namespace Riftwalker.Launcher;
 
-// The player's account (F18: US 237, US 269, US 270, US 273 and US 282; design in the guide, #cuenta-launcher). The launcher
+// The player's account (F18: US 237, US 269, US 270, US 271, US 273 and US 282; design in the guide, #cuenta-launcher). The launcher
 // works like a game client: without a session the account panel covers the window (everything but the top bar) and
 // PLAY does nothing; with one, the top bar shows the account and its menu, and PLAY opens the game with that session
 // (the game reads the same file, see Cuentas). Each step of the panel is built in code, like the game's menus.
 public partial class MainWindow
 {
-    private enum PanelCuenta { Ninguno, Entrar, Crear, Confirmar, Privacidad, Cerrar, CerrarJuego, Borrar, BorrarJuego }
+    private enum PanelCuenta { Ninguno, Entrar, Crear, Confirmar, Recuperar, NuevaClave, Privacidad, Cerrar, CerrarJuego, Borrar, BorrarJuego }
     private const int SegundosParaReenviar = 60;
     private Cuentas? cuentas;
     private PanelCuenta panelCuenta;
@@ -103,7 +103,7 @@ public partial class MainWindow
     {
         if (e.Key != Key.Escape || SettingsPanel.Visibility == Visibility.Visible) return;
         if (CuentaMenuCapa.Visibility == Visibility.Visible) CerrarMenuCuenta();
-        else if (panelCuenta is PanelCuenta.Crear or PanelCuenta.Confirmar) AbrirCuenta(PanelCuenta.Entrar);
+        else if (panelCuenta is PanelCuenta.Crear or PanelCuenta.Confirmar or PanelCuenta.Recuperar or PanelCuenta.NuevaClave) AbrirCuenta(PanelCuenta.Entrar);
         else if (panelCuenta == PanelCuenta.Privacidad) AbrirCuenta(volverDePrivacidad);
         else if (panelCuenta is PanelCuenta.Cerrar or PanelCuenta.CerrarJuego or PanelCuenta.Borrar or PanelCuenta.BorrarJuego) AbrirCuenta(PanelCuenta.Ninguno);
         else return;
@@ -127,6 +127,8 @@ public partial class MainWindow
             case PanelCuenta.Entrar: Entrar(error); break;
             case PanelCuenta.Crear: Crear(error); break;
             case PanelCuenta.Confirmar: Confirmar(error); break;
+            case PanelCuenta.Recuperar: Recuperar(error); break;
+            case PanelCuenta.NuevaClave: NuevaClave(error); break;
             case PanelCuenta.Privacidad: Privacidad(); break;
             case PanelCuenta.Cerrar: Cerrar(); break;
             case PanelCuenta.CerrarJuego: CerrarJuego("Cerrar sesión"); break;
@@ -145,6 +147,10 @@ public partial class MainWindow
         if (error == ReglasCuenta.MailInvalido) mail.Marcar(error);
         else if (error != null) Franja(error, true);
         Agregar(mail.Raiz); Agregar(clave.Raiz);
+        // US 271, CA1: under the password, on the right.
+        var olvido = new StackPanel { Orientation = Orientation.Horizontal, HorizontalAlignment = HorizontalAlignment.Right, Margin = new Thickness(0, -6, 0, 12) };
+        olvido.Children.Add(Enlace("¿Te olvidaste la contraseña?", () => { mailCuenta = mail.Valor.Trim(); AbrirCuenta(PanelCuenta.Recuperar); }, 13));
+        Agregar(olvido);
         Button entrar = Principal("ENTRAR  →");
         async void Enviar()
         {
@@ -161,7 +167,6 @@ public partial class MainWindow
         entrar.Click += (_, _) => Enviar();
         mail.Enter += Enviar; clave.Enter += Enviar;
         Pie("¿No tenés cuenta?", "Crear cuenta", () => AbrirCuenta(PanelCuenta.Crear));
-        // «¿Te olvidaste la contraseña?» comes with US 271.
         (mailCuenta.Length == 0 ? mail : clave).Foco();
     }
 
@@ -263,7 +268,90 @@ public partial class MainWindow
         codigo.Foco();
     }
     private Action? reenviarActual;
-    private void TickCodigo(object? sender, EventArgs e) { if (panelCuenta == PanelCuenta.Confirmar) reenviarActual?.Invoke(); else relojCodigo?.Stop(); }
+
+    // US 271, CA1: the mail, and a code is sent. The answer is the same whether the mail has an account or not.
+    private void Recuperar(string? error)
+    {
+        Encabezado("TU CUENTA", "RECUPERAR LA CONTRASEÑA", "Escribí tu mail y te mandamos un código para elegir una contraseña nueva.");
+        Campo mail = new("MAIL", false) { Valor = mailCuenta };
+        if (error == ReglasCuenta.MailInvalido) mail.Marcar(error);
+        else if (error != null) Franja(error, true);
+        Agregar(mail.Raiz);
+        var (_, mandar) = Botones(("Volver", () => { mailCuenta = mail.Valor.Trim(); AbrirCuenta(PanelCuenta.Entrar); }), ("MANDAR CÓDIGO", null));
+        async void Enviar()
+        {
+            if (esperandoCuenta || cuentas == null) return;
+            mailCuenta = mail.Valor.Trim();
+            string? problema = ReglasCuenta.ValidarMail(mailCuenta);
+            mail.Marcar(problema);
+            if (problema != null || App.Preview) return;
+            string? r = await Esperar(mandar, "MANDANDO…", t => cuentas.RecuperarAsync(mailCuenta, t));
+            if (r != null) { AbrirCuenta(PanelCuenta.Recuperar, r); return; }
+            ultimoCodigo = DateTime.UtcNow;
+            AbrirCuenta(PanelCuenta.NuevaClave);
+        }
+        mandar.Click += (_, _) => Enviar();
+        mail.Enter += Enviar;
+        mail.Foco();
+    }
+
+    // US 271, CA2 and CA3: the code, the new password twice, and in. A wrong or expired code says so and another one can
+    // be asked for (after 60 s, like when confirming the mail).
+    private void NuevaClave(string? error)
+    {
+        Encabezado("TU CUENTA", "CONTRASEÑA NUEVA", "Si hay una cuenta con ese mail, te llegó un código de 6 números.");
+        if (error is ReglasCuenta.CodigoVencido or ReglasCuenta.CodigoIncompleto or ReglasCuenta.Espera or ReglasCuenta.SinInternet or ReglasCuenta.Generico) Franja(error, true);
+        else if (error != null) Franja(error, false); // «Te mandamos otro código.»
+        Agregar(new TextBlock { Text = "CÓDIGO", FontSize = 12, Margin = new Thickness(0, 0, 0, 8) });
+        var codigo = new Codigo();
+        Agregar(codigo.Raiz);
+        var reenviar = new WrapPanel { Margin = new Thickness(0, 0, 0, 14) };
+        Agregar(reenviar);
+        void PintarReenviar()
+        {
+            reenviar.Children.Clear();
+            int falta = SegundosParaReenviar - (int)(DateTime.UtcNow - ultimoCodigo).TotalSeconds;
+            if (falta > 0) { reenviar.Children.Add(Texto($"¿No te llegó? Podés pedir otro en 0:{falta:00}", Gris, 14)); return; }
+            reenviar.Children.Add(Texto("¿No te llegó? ", Gris, 14));
+            reenviar.Children.Add(Enlace("Pedí otro código", async () =>
+            {
+                if (esperandoCuenta || cuentas == null) return;
+                esperandoCuenta = true;
+                string? r = await cuentas.RecuperarAsync(mailCuenta, CancellationToken.None);
+                esperandoCuenta = false;
+                if (r == null) ultimoCodigo = DateTime.UtcNow;
+                if (panelCuenta == PanelCuenta.NuevaClave) AbrirCuenta(PanelCuenta.NuevaClave, r ?? "Te mandamos otro código.");
+            }));
+        }
+        PintarReenviar();
+        relojCodigo ??= new DispatcherTimer { Interval = TimeSpan.FromSeconds(1) };
+        relojCodigo.Tick -= TickCodigo; relojCodigo.Tick += TickCodigo;
+        reenviarActual = PintarReenviar;
+        relojCodigo.Start();
+        Campo clave = new("CONTRASEÑA NUEVA", true, "8 caracteres o más");
+        Campo repetida = new("REPETIR LA CONTRASEÑA", true);
+        if (error == ReglasCuenta.ClaveCorta) clave.Marcar(error);
+        Agregar(clave.Raiz); Agregar(repetida.Raiz);
+        var (_, cambiar) = Botones(("Volver", () => AbrirCuenta(PanelCuenta.Entrar)), ("CAMBIAR Y ENTRAR", null));
+        async void Enviar()
+        {
+            if (esperandoCuenta || cuentas == null || App.Preview) return;
+            if (codigo.Valor.Length != ReglasCuenta.LargoCodigo) { AbrirCuenta(PanelCuenta.NuevaClave, ReglasCuenta.CodigoIncompleto); return; }
+            string? problema = ReglasCuenta.ValidarClave(clave.Valor, repetida.Valor);
+            clave.Marcar(problema == ReglasCuenta.ClaveCorta ? problema : null);
+            repetida.Marcar(problema == ReglasCuenta.ClavesDistintas ? problema : null);
+            if (problema != null) return;
+            string valor = codigo.Valor, nueva = clave.Valor;
+            string? r = await Esperar(cambiar, "CAMBIANDO…", t => cuentas.CambiarClaveAsync(mailCuenta, valor, nueva, t));
+            if (r == null) Entrado("Contraseña cambiada. Entraste a tu cuenta.");
+            else if (r == ReglasCuenta.ClaveCorta) clave.Marcar(r);
+            else AbrirCuenta(PanelCuenta.NuevaClave, r);
+        }
+        cambiar.Click += (_, _) => Enviar();
+        clave.Enter += Enviar; repetida.Enter += Enviar;
+        codigo.Foco();
+    }
+    private void TickCodigo(object? sender, EventArgs e) { if (panelCuenta is PanelCuenta.Confirmar or PanelCuenta.NuevaClave) reenviarActual?.Invoke(); else relojCodigo?.Stop(); }
 
     // US 273, CA1: what is kept, what for, where, and the player's rights.
     private void Privacidad()
@@ -553,6 +641,7 @@ public partial class MainWindow
         cuentas = new Cuentas(http, ServicioCuentas.Juego, System.IO.Path.Combine(System.IO.Path.GetTempPath(), "riftwalker-vista-previa"));
         PreviewKeyDown += TeclaCuenta;
         mailCuenta = "ulises.fonseca@gmail.com";
+        // recuperar, recuperar-codigo and recuperar-error are without an account, like entrar
         bool conCuenta = paso is "listo" or "menu" or "cerrar" or "cerrar-juego" or "privacidad" or "borrar" or "borrar-error";
         if (conCuenta)
         {
@@ -568,6 +657,9 @@ public partial class MainWindow
             case "crear": AbrirCuenta(PanelCuenta.Crear); break;
             case "crear-error": AbrirCuenta(PanelCuenta.Crear, ReglasCuenta.MailUsado); break;
             case "confirmar": AbrirCuenta(PanelCuenta.Confirmar); break;
+            case "recuperar": AbrirCuenta(PanelCuenta.Recuperar); break;
+            case "recuperar-codigo": AbrirCuenta(PanelCuenta.NuevaClave); break;
+            case "recuperar-error": AbrirCuenta(PanelCuenta.NuevaClave, ReglasCuenta.CodigoVencido); break;
             case "privacidad": AbrirCuenta(PanelCuenta.Privacidad); break;
             case "cerrar": AbrirCuenta(PanelCuenta.Cerrar); break;
             case "cerrar-juego": AbrirCuenta(PanelCuenta.CerrarJuego); break;

@@ -207,8 +207,18 @@ public class PantallaPerfil : PantallaBase
             ("Bajas", N(e.deathmatch.bajas)),
             ("Mejor racha", N(e.mejorRacha)),
         });
-        // El Zombie todavía no tiene final: se va a registrar con la US 151.
-        Tarjeta(2, "Invasión", "#7DE05A", SinDatos + ". Las partidas de Invasión se van a registrar cuando el modo tenga final.", null);
+        // US 222, CA2: aparte del multijugador, con los récords de oleada por dificultad (US 151 y US 161).
+        int facil = MatchSettings.ZombieRecord(ZombieDifficulty.Facil), normal = MatchSettings.ZombieRecord(ZombieDifficulty.Normal),
+            dificil = MatchSettings.ZombieRecord(ZombieDifficulty.Dificil);
+        Tarjeta(2, "Invasión", "#7DE05A", e.invasion.partidas == 0 && facil + normal + dificil == 0 ? "Todavía no terminaste ninguna partida de Invasión." : null, new[]
+        {
+            ("Partidas", N(e.invasion.partidas)),
+            ("Mundo salvado", N(e.invasion.victorias)),
+            ("Invasores eliminados", N(e.invasion.bajas)),
+            ("Récord en Fácil", Oleada(facil)),
+            ("Récord en Normal", Oleada(normal)),
+            ("Récord en Difícil", Oleada(dificil)),
+        });
         RectTransform minijuego = Tarjeta(3, "Minijuego: cometas", "#4CC3FF", null, null);
         cuerpoMinijuego = Place(Node("Datos", minijuego), 0f, 60f, w, 236f);
         RefrescarMinijuego();
@@ -247,6 +257,9 @@ public class PantallaPerfil : PantallaBase
     }
 
     private static string N(long n) => PerfilDatos.Numero((int)Mathf.Min(n, int.MaxValue));
+    private static string Oleada(int oleada) => oleada > 0 ? oleada.ToString() : "—";
+    private static int MejorOleada() => Mathf.Max(MatchSettings.ZombieRecord(ZombieDifficulty.Facil),
+        Mathf.Max(MatchSettings.ZombieRecord(ZombieDifficulty.Normal), MatchSettings.ZombieRecord(ZombieDifficulty.Dificil)));
     private static string Porcentaje(int parte, int total) => total > 0 ? Mathf.RoundToInt(100f * parte / total) + " %" : SinDatos;
     // US 223, CA4: se calcula con los totales y solo se redondea para mostrarlo ("1,79").
     private static string Kda(EstadisticasJugador.Totales e) => e.Kda.ToString("0.00", Cultura).Replace(".", ",");
@@ -693,7 +706,7 @@ public class PantallaPerfil : PantallaBase
         resumen[0].text = N(e.Partidas);
         resumen[1].text = N(e.Victorias);
         resumen[2].text = e.SinDatos ? "—" : Kda(e);
-        resumen[3].text = "—"; // el Zombie todavía no registra la oleada récord (US 151)
+        resumen[3].text = Oleada(MejorOleada()); // la más alta de las tres dificultades (US 151)
         RefrescarEstadisticas();
         RefrescarInfo();
         RefrescarChips();
