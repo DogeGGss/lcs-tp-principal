@@ -256,12 +256,15 @@ public class EleccionDeInvasion : MonoBehaviour
         return posibles.Count > 0 ? posibles[Random.Range(0, posibles.Count)] : null;
     }
 
-    // US 294, CA1 y CA2: un arma del catálogo que no se tiene.
+    // US 294, CA1 y CA2: un arma del catálogo que no se tiene (o una de las que solo existen en Invasión, como el Gran
+    // Capitán: US 287).
     private ShopItem ArmaAlAzar()
     {
         if (equipo == null || equipo.Catalog == null) return null;
         var posibles = new List<ShopItem>();
-        foreach (ShopItem item in equipo.Catalog.items)
+        var armas = new List<ShopItem>(equipo.Catalog.items);
+        armas.AddRange(ConfigInvasion.Actual.armasSoloInvasion);
+        foreach (ShopItem item in armas)
         {
             if (item == null || equipo.IsEquipped(item)) continue;
             if (item.kind != ShopItemKind.PrimaryWeapon && item.kind != ShopItemKind.SecondaryWeapon) continue;

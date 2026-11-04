@@ -22,7 +22,8 @@ using UnityEngine;
 // sube hasta el ojo antes de que aparezca la lente (MiraTelescopica.Subida). El modelo no tiene manija de cerrojo:
 // se la agrega PiezasDelTren. Las granadas (US 258): el brazo derecho la lleva atrás, la arroja (sale de la mano al
 // final, GrenadeThrower) y baja; si quedan, saca la siguiente desde abajo. Y el cuchillo (US 256): quieto, caminando, al sacarlo y al mirar como las demás, y el
-// corte de costado al atacar, que mueve solo el cuchillo y el brazo derecho.
+// corte de costado al atacar, que mueve solo el cuchillo y el brazo derecho. El Gran Capitán (lanzagranadas, US 287): un
+// golpe pesado por granada y la recarga de siempre (baja, se inclina y vuelve), sin piezas que se muevan.
 // Cada una tiene su fuerza de retroceso y su tiempo para sacarla. Se apaga con "Activa" en el Inspector, para comparar.
 // El movimiento se suma al final del cuadro (después de BrazosEnCamara) y se saca al empezar el siguiente
 // (RestaurarPrimeraPersona), así ningún otro script ve el arma corrida.
@@ -80,6 +81,11 @@ public class AnimacionPrimeraPersona : MonoBehaviour
     public float belgranoResorte = 300f;
     [Tooltip("Al final de la recarga tira de la palanca de carga: el arma da un tirón hacia atrás (metros).")]
     public float belgranoPalanca = 0.03f;
+
+    [Header("Gran Capitán (lanzagranadas, US 287): pesado, un golpe fuerte por granada")]
+    public float capitanAtras = 0.08f;
+    public float capitanArriba = 13f;
+    public float capitanCostado = 2.5f;
 
     [Header("Último Tren (francotirador, US 254)")]
     public float trenAtras = 0.09f;
@@ -251,6 +257,7 @@ public class AnimacionPrimeraPersona : MonoBehaviour
     // Con ArmaDeFuego y categoría Fusiles: el Belgrano Sur (el Mitre es Fusiles pero tiene su propio script).
     private static bool EsBelgrano(GameObject arma) => EsDe(arma, ShopCategory.Rifles);
     private static bool EsTren(GameObject arma) => EsDe(arma, ShopCategory.Snipers);
+    private static bool EsCapitan(GameObject arma) => EsDe(arma, ShopCategory.Launchers); // US 287
     // El Mitre no es un ArmaDeFuego (tiene su propio script, Mitre): es el del WeaponSwitcher.
     private bool EsMitre(GameObject arma) => switcher != null && arma != null && arma == switcher.mitreObj;
 
@@ -261,7 +268,7 @@ public class AnimacionPrimeraPersona : MonoBehaviour
         GameObject arma = switcher.HeldSecondary;
         if (EsPortena(arma) || EsTrochita(arma)) return arma;
         arma = switcher.HeldPrimary;
-        if (EsUrquiza(arma) || EsRoca(arma) || EsMitre(arma) || EsBelgrano(arma) || EsTren(arma)) return arma;
+        if (EsUrquiza(arma) || EsRoca(arma) || EsMitre(arma) || EsBelgrano(arma) || EsTren(arma) || EsCapitan(arma)) return arma;
         if (arma != null) return null;
         // US 258: la granada (el lugar de la cámara donde se arma, con sus agarres).
         if (switcher.Granadas != null && switcher.Granadas.IsHolding)
@@ -360,6 +367,7 @@ public class AnimacionPrimeraPersona : MonoBehaviour
               : EsMitre(arma) ? new PiezasDelMitre(arma, transform)
               : EsBelgrano(arma) ? PiezasDelUrquiza.BelgranoSur(arma, transform)
               : EsTren(arma) ? new PiezasDelTren(arma, transform)
+              : EsCapitan(arma) ? new SinPiezas()
               : (IPiezasDelArma)new PiezasDeLaPistola(arma, transform);
             piezas[arma] = p;
         }
@@ -380,13 +388,13 @@ public class AnimacionPrimeraPersona : MonoBehaviour
         GameObject arma = Animable();
         if (arma == null) return;
         bool trochita = EsTrochita(arma), urquiza = EsUrquiza(arma), roca = EsRoca(arma), mitre = EsMitre(arma);
-        bool belgrano = EsBelgrano(arma), tren = EsTren(arma);
+        bool belgrano = EsBelgrano(arma), tren = EsTren(arma), capitan = EsCapitan(arma);
         float arriba = trochita ? trochitaArriba : urquiza ? urquizaArriba : roca ? rocaArriba : mitre ? mitreArriba
-                     : belgrano ? belgranoArriba : tren ? trenArriba : retrocesoArriba;
+                     : belgrano ? belgranoArriba : tren ? trenArriba : capitan ? capitanArriba : retrocesoArriba;
         float costado = trochita ? trochitaCostado : urquiza ? urquizaCostado : roca ? rocaCostado : mitre ? mitreCostado
-                      : belgrano ? belgranoCostado : tren ? trenCostado : retrocesoCostado;
+                      : belgrano ? belgranoCostado : tren ? trenCostado : capitan ? capitanCostado : retrocesoCostado;
         float atras = trochita ? trochitaAtras : urquiza ? urquizaAtras : roca ? rocaAtras : mitre ? mitreAtras
-                    : belgrano ? belgranoAtras : tren ? trenAtras : retrocesoAtras;
+                    : belgrano ? belgranoAtras : tren ? trenAtras : capitan ? capitanAtras : retrocesoAtras;
         golpeVel += new Vector3(-arriba, Random.Range(-costado, costado), atras) * 22f;
         // Último Tren: si le quedan balas, después del golpe hace el cerrojo (como el sonido de ArmaDeFuego).
         if (tren)
@@ -745,4 +753,13 @@ public class AnimacionPrimeraPersona : MonoBehaviour
         Guardar(t);
         t.SetLocalPositionAndRotation(pivote + girar * (t.localPosition - pivote) + mover, girar * t.localRotation);
     }
+}
+
+// US 287: un arma sin piezas que se muevan (el Gran Capitán).
+public class SinPiezas : IPiezasDelArma
+{
+    public void Disparo(int balasQueQuedan) { }
+    public void Actualizar(float recarga, int balas) { }
+    public void Quieta() { }
+    public void ActualizarSueltas(float dt) { }
 }

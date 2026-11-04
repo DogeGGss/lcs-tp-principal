@@ -21,3 +21,5 @@ MonoBehaviour:
   sonidoAbierto: {fileID: 0}
   cajaPuesto: {fileID: 121674, guid: 031729a7ef10c4aa1b5e0060c2f63acd, type: 3}
   escalaCajaPuesto: 1.3
+  armasSoloInvasion:
+  - {fileID: 11400000, guid: e26ef715a15a423fa1cff9d7d9c38290, type: 2}
