@@ -293,7 +293,7 @@ public class OleadasDeInvasion : MonoBehaviour
             return;
         }
         fase = Fase.Descanso;
-        MatchHud.ShowBanner("Modo Invasión", $"Oleada {Oleada} superada", ShopUIKit.Ok, "Descanso de 20 s: abrí la tienda", null, 3f);
+        MatchHud.ShowBanner("Modo Invasión", $"Oleada {Oleada} superada", ShopUIKit.Ok, "Descanso de 20 s", null, 3f);
         if (descanso != null) descanso.Begin(); else Invoke(nameof(Empezar), 20f);
     }
 

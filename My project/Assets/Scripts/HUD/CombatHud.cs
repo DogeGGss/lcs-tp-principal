@@ -998,6 +998,9 @@ public class CombatHud : MonoBehaviour
         SetSlot(1, hasSecondary, held == 1, secondaryName, secondary != null ? secondary.icon : null, KeyBindings.Label(GameAction.ArmaSecundaria));
         SetSlot(2, hasKnife, held == 2, knifeName, knifeIcon, KeyBindings.Label(GameAction.Cuchillo));
         SetSlot(3, grenade != null, held == 3, grenadeName, grenade != null ? grenade.icon : null, KeyBindings.Label(GameAction.Granadas));
+        // US 291, CA3: en Invasión el equipo es las dos armas y el cuchillo (1, 2 y 3), sin el espacio de las granadas.
+        bool grenadeSlot = !PlayerLoadout.SinTienda;
+        if (invSlots[3].rect.gameObject.activeSelf != grenadeSlot) invSlots[3].rect.gameObject.SetActive(grenadeSlot);
 
         // US 130: el dispositivo ocupa su propio espacio mientras lo lleva.
         bool device = switcher != null && switcher.LlevaDispositivo;
