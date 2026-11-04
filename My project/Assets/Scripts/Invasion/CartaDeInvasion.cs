@@ -66,7 +66,7 @@ public class CartaDeInvasion
             efecto = "Las granadas que tocan el piso quedan como minas (hasta 5)." },
         // Las de munición.
         new CartaDeInvasion { nombre = "Logística", rareza = RarezaDeCarta.Rara, rindeCon = "Todas", unaVez = true,
-            efecto = "Desde ahora, los puestos recargan toda la munición en vez de la mitad." },
+            efecto = "Desde ahora, los puestos recargan toda la munición en vez de la mitad.", aplicar = EfectosDeCartas.EnElJuego }, // US 314: EleccionDeInvasion.Abrir
         new CartaDeInvasion { nombre = "Mochila", rareza = RarezaDeCarta.Comun, rindeCon = "Todas",
             efecto = "40 % más de reserva en las dos armas.", aplicar = EfectosDeCartas.Mochila },
         new CartaDeInvasion { nombre = "Reciclador", rareza = RarezaDeCarta.Rara, rindeCon = "Todas",
