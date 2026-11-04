@@ -12,9 +12,12 @@ using UnityEngine.UI;
 // US 299 (más invasores) reemplaza CA1 y CA2: la oleada N trae 10 + 5 × (N − 1) invasores en Normal (10 en la 1, 55 en
 // la 10, 105 en la 20) y el tope de vivos a la vez es 15 en la 1 y sube de a uno por oleada hasta 30. Las cifras están
 // en ConfigInvasion para ajustarlas probando.
-// - CA3: en las oleadas 1 y 2 solo Comunes; desde la 3, el 25 % Rápidos; desde la 4, el 10 % Tiradores (Watcher verde,
-//   US 286); desde la 5, el 10 % Tanques; desde la 6, el 5 % Francotiradores (Watcher rojo, US 285). En la 10
-//   aparece el Jefe (US 146) cuando cayó la mitad de la oleada: va aparte (no cuenta entre los 33 ni en el tope de 12).
+// - CA3: en la 10 aparece el Jefe (US 146) cuando cayó la mitad de la oleada: va aparte (no cuenta en el tope de vivos).
+// US 300 reemplaza los tipos por oleada (CA3): cada oleada trae su mezcla, en % (ConfigInvasion.mezcla): en la 1 y la
+//   2, solo Comunes; en la 3, 75 % Comunes y 25 % Rápidos; en la 4 y la 5, 60 % Comunes, 25 % Rápidos, 10 % Watchers
+//   tiradores (US 286) y 5 % Tanques; de la 6 a la 10, 45 % Comunes, 25 % Rápidos, 10 % Tanques, 10 % tiradores y 10 %
+//   francotiradores (US 285); desde la 11, 35 %, 25 %, 15 %, 15 % y 10 %. Los Rápidos salen en jaurías de 4 a 6, todos
+//   por el mismo portal y uno atrás del otro (CA2).
 // - CA4 (US 269): salen de portales (PortalDeEnemigos) que se abren en lugares al azar del NavMesh entre 15 m y 50 m
 //   del jugador, conectados con él caminando y, si se puede, fuera de su vista. Cada vez se mandan de 3 a 5 enemigos a
 //   un portal, que los larga de a uno (con el tope de 12 vivos). Hay como mucho 3: los que ya están abiertos se vuelven
@@ -72,12 +75,14 @@ public class OleadasDeInvasion : MonoBehaviour
     private int total, muertos;
     private int salidosParaAlfa, alfasPerdidos; // US 301, CA1
     private int escolta, escoltaPorSalir; // US 302, CA2: los Tanques que salen con el Jefe (cuántos en la oleada y cuántos faltan)
-    private readonly Queue<TipoDeNpc> porAparecer = new Queue<TipoDeNpc>();
+    // Los que faltan mandar a un portal, en grupos: uno solo, o una jauría de Rápidos (US 300, CA2), que va entera a un portal.
+    private readonly Queue<List<TipoDeNpc>> porAparecer = new Queue<List<TipoDeNpc>>();
     private readonly List<PortalDeEnemigos> portales = new List<PortalDeEnemigos>(); // US 269
     private PortalDeEnemigos portalDelJefe;
     private float proximoPortal;
     private const int MaximoPortales = 3, PorPortalMin = 3, PorPortalMax = 5; // US 269, CA3
     private const float EntrePortales = 1.2f, EntreSalidas = 0.8f;             // s
+    private const float EntreSalidasDeJauria = 0.3f;                           // s: la jauría sale junta (US 300, CA2)
     private readonly List<Npc> vivos = new List<Npc>();
     private readonly Dictionary<Npc, TipoDeNpc> tipos = new Dictionary<Npc, TipoDeNpc>(); // de qué tipo es cada uno
     private bool jefeSalio, jefeVivo, jefeMuerto;
@@ -137,38 +142,81 @@ public class OleadasDeInvasion : MonoBehaviour
         jefeSalio = jefeVivo = jefeMuerto = false;
         jefe = null;
         porAparecer.Clear();
-        foreach (TipoDeNpc t in Composicion(Oleada, total - escolta)) porAparecer.Enqueue(t);
+        foreach (List<TipoDeNpc> grupo in Composicion(Oleada, total - escolta)) porAparecer.Enqueue(grupo);
         proximoPortal = Time.time + 1f;
         MatchHud.ShowBanner("Modo Invasión", $"Oleada {Oleada}", ShopUIKit.Bad, DeJefe ? "Llega el jefe" : $"{total} enemigos", null, 2.5f);
         Empezo?.Invoke(Oleada);
     }
 
-    // CA3: los tipos de la oleada, mezclados.
-    private List<TipoDeNpc> Composicion(int n, int cuantos)
+    // US 300, CA1 y CA2: los invasores de la oleada según su mezcla, mezclados, con los Rápidos en jaurías (cada jauría es
+    // un grupo). Las cantidades se redondean sin perder ninguno: los que faltan van a los que tienen la parte más grande
+    // que sobra. Lo de un tipo que no está (y lo que no llega a 100) va a los Comunes.
+    private List<List<TipoDeNpc>> Composicion(int n, int cuantos)
     {
-        int rapidos = n >= 3 ? Mathf.RoundToInt(cuantos * 0.25f) : 0;
-        int tanques = n >= 5 ? Mathf.RoundToInt(cuantos * 0.10f) : 0;
-        int tiradores = n >= 4 && tirador != null ? Mathf.Max(1, Mathf.RoundToInt(cuantos * 0.10f)) : 0;
-        int francos = n >= 6 && francotirador != null ? Mathf.Max(1, Mathf.RoundToInt(cuantos * 0.05f)) : 0;
-        var lista = new List<TipoDeNpc>();
-        for (int i = 0; i < cuantos; i++)
+        ConfigInvasion config = ConfigInvasion.Actual;
+        MezclaDeOleada m = config.MezclaDe(n);
+        TipoDeNpc[] tiposDeLaMezcla = { comun, rapido, tanque, tirador, francotirador };
+        float[] partes = { m.comunes, m.rapidos, m.tanques, m.tiradores, m.francotiradores };
+        for (int k = 1; k < partes.Length; k++)
+            if (tiposDeLaMezcla[k] == null) { partes[0] += partes[k]; partes[k] = 0f; }
+        float suma = 0f;
+        foreach (float p in partes) suma += Mathf.Max(0f, p);
+        if (suma < 100f) partes[0] += 100f - suma; // lo que falta, Comunes
+        suma = Mathf.Max(100f, suma);
+
+        var cantidad = new int[partes.Length];
+        var sobra = new float[partes.Length];
+        int usados = 0;
+        for (int k = 0; k < partes.Length; k++)
         {
-            int k = i;
-            if (k < rapidos) { lista.Add(rapido); continue; }
-            k -= rapidos;
-            if (k < tanques) { lista.Add(tanque); continue; }
-            k -= tanques;
-            if (k < tiradores) { lista.Add(tirador); continue; }
-            k -= tiradores;
-            lista.Add(k < francos ? francotirador : comun);
+            float exacto = cuantos * Mathf.Max(0f, partes[k]) / suma;
+            cantidad[k] = Mathf.FloorToInt(exacto);
+            sobra[k] = exacto - cantidad[k];
+            usados += cantidad[k];
         }
-        for (int i = lista.Count - 1; i > 0; i--)
+        for (; usados < cuantos; usados++)
+        {
+            int mayor = 0;
+            for (int k = 1; k < partes.Length; k++) if (sobra[k] > sobra[mayor]) mayor = k;
+            cantidad[mayor]++;
+            sobra[mayor] = -1f;
+        }
+
+        var grupos = new List<List<TipoDeNpc>>();
+        for (int k = 0; k < partes.Length; k++)
+        {
+            if (k == 1) continue; // los Rápidos, en jaurías
+            for (int i = 0; i < cantidad[k]; i++) grupos.Add(new List<TipoDeNpc> { tiposDeLaMezcla[k] });
+        }
+        grupos.AddRange(Jaurias(cantidad[1], config));
+
+        for (int i = grupos.Count - 1; i > 0; i--)
         {
             int j = Random.Range(0, i + 1);
-            (lista[i], lista[j]) = (lista[j], lista[i]);
+            (grupos[i], grupos[j]) = (grupos[j], grupos[i]);
         }
-        lista.RemoveAll(t => t == null);
-        return lista;
+        grupos.RemoveAll(g => g.Count == 0 || g[0] == null);
+        return grupos;
+    }
+
+    // US 300, CA2: los Rápidos repartidos en jaurías de 4 a 6, parejas. Si no alcanzan para que todas lleguen a 4 (por
+    // ejemplo, 7), alguna sale más chica: nunca pasan de 6.
+    private List<List<TipoDeNpc>> Jaurias(int rapidos, ConfigInvasion config)
+    {
+        var jaurias = new List<List<TipoDeNpc>>();
+        if (rapidos <= 0 || rapido == null) return jaurias;
+        int minima = Mathf.Max(1, config.jauriaMinima), maxima = Mathf.Max(minima, config.jauriaMaxima);
+        int pocas = Mathf.CeilToInt(rapidos / (float)maxima);          // las menos jaurías posibles (de hasta 6)
+        int muchas = Mathf.Max(pocas, rapidos / minima);                // las más (de al menos 4)
+        int cuantas = Random.Range(pocas, muchas + 1);
+        for (int i = 0; i < cuantas; i++)
+        {
+            int tam = rapidos / cuantas + (i < rapidos % cuantas ? 1 : 0);
+            var jauria = new List<TipoDeNpc>(tam);
+            for (int r = 0; r < tam; r++) jauria.Add(rapido);
+            jaurias.Add(jauria);
+        }
+        return jaurias;
     }
 
     private bool navMeshPedido;
@@ -196,7 +244,7 @@ public class OleadasDeInvasion : MonoBehaviour
             if (n != null && !n.Vivo) muertos++;
             else
             {
-                if (tipos.TryGetValue(n, out TipoDeNpc t) && t != null) porAparecer.Enqueue(t);
+                if (tipos.TryGetValue(n, out TipoDeNpc t) && t != null) porAparecer.Enqueue(new List<TipoDeNpc> { t });
                 if (n != null && n.Alfa != null) alfasPerdidos++; // US 301: vuelve a salir alfa
                 if (n != null) Destroy(n.gameObject);
             }
@@ -225,8 +273,14 @@ public class OleadasDeInvasion : MonoBehaviour
             if (portal != null)
             {
                 proximoPortal = Time.time + EntrePortales;
-                int cuantos = Mathf.Min(porAparecer.Count, Random.Range(PorPortalMin, PorPortalMax + 1));
-                for (int i = 0; i < cuantos; i++) portal.Fila.Enqueue(porAparecer.Dequeue());
+                // Una jauría va entera a un portal (US 300, CA2); si no, de 3 a 5 sueltos (sin cortar una jauría).
+                if (porAparecer.Peek().Count > 1) foreach (TipoDeNpc t in porAparecer.Dequeue()) portal.Fila.Enqueue(t);
+                else
+                {
+                    int cuantos = Random.Range(PorPortalMin, PorPortalMax + 1);
+                    for (int i = 0; i < cuantos && porAparecer.Count > 0 && porAparecer.Peek().Count == 1; i++)
+                        portal.Fila.Enqueue(porAparecer.Dequeue()[0]);
+                }
             }
         }
 
@@ -235,8 +289,9 @@ public class OleadasDeInvasion : MonoBehaviour
         {
             if (portal.Fila.Count == 0) continue;
             if (!portal.Listo || vivos.Count >= maximoVivos || Time.time < portal.Proximo) continue;
-            portal.Proximo = Time.time + EntreSalidas;
             TipoDeNpc tipo = portal.Fila.Dequeue();
+            // La jauría sale junta: el Rápido que sigue a otro, enseguida (US 300, CA2).
+            portal.Proximo = Time.time + (tipo == rapido && portal.Fila.Count > 0 && portal.Fila.Peek() == rapido ? EntreSalidasDeJauria : EntreSalidas);
             Npc npc = Aparecer(tipo, portal.Salida, jugador);
             if (npc != null) { vivos.Add(npc); tipos[npc] = tipo; aparecio[npc] = Time.time; }
             else total--; // el tipo no tiene modelo: no cuenta

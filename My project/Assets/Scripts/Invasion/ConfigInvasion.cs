@@ -2,7 +2,8 @@ using UnityEngine;
 
 // F08 (Modo Invasión): lo que se ajusta del modo desde el editor, en Resources/Invasion/ConfigInvasion: los portales de
 // donde salen los enemigos (US 269), cuántos invasores trae cada oleada (US 299), el puesto de suministros (US 292) y
-// los alfas (US 301) y cómo se endurece el Jefe en cada vuelta (US 302).
+// los alfas (US 301), cómo se endurece el Jefe en cada vuelta (US 302) y la mezcla de invasores de cada oleada con las
+// jaurías de Rápidos (US 300).
 [CreateAssetMenu(menuName = "Riftwalker/Invasión/Configuración", fileName = "ConfigInvasion")]
 public class ConfigInvasion : ScriptableObject
 {
@@ -46,6 +47,22 @@ public class ConfigInvasion : ScriptableObject
     [Tooltip("Tamaño de la caja que cae.")]
     [Min(0.1f)] public float escalaCajaPuesto = 1.3f;
 
+    [Header("Mezcla por oleada y jaurías (US 300)")]
+    [Tooltip("CA1: qué parte de cada tipo trae la oleada (en %), desde la oleada que dice cada fila hasta la siguiente. " +
+             "Lo que no suma 100 (o los tipos que no están) se completa con Comunes.")]
+    public MezclaDeOleada[] mezcla =
+    {
+        new MezclaDeOleada { desdeLaOleada = 1, comunes = 100 },
+        new MezclaDeOleada { desdeLaOleada = 3, comunes = 75, rapidos = 25 },
+        new MezclaDeOleada { desdeLaOleada = 4, comunes = 60, rapidos = 25, tanques = 5, tiradores = 10 },
+        new MezclaDeOleada { desdeLaOleada = 6, comunes = 45, rapidos = 25, tanques = 10, tiradores = 10, francotiradores = 10 },
+        new MezclaDeOleada { desdeLaOleada = 11, comunes = 35, rapidos = 25, tanques = 15, tiradores = 15, francotiradores = 10 },
+    };
+    [Tooltip("CA2: los Rápidos salen en jaurías de al menos tantos, por el mismo portal.")]
+    [Min(1)] public int jauriaMinima = 4;
+    [Tooltip("CA2: y de como mucho tantos.")]
+    [Min(1)] public int jauriaMaxima = 6;
+
     [Header("Alfas (US 301)")]
     [Tooltip("CA1: desde qué oleada salen alfas.")]
     [Min(1)] public int alfasDesdeLaOleada = 4;
@@ -68,6 +85,16 @@ public class ConfigInvasion : ScriptableObject
     [Tooltip("CA4: desde la oleada 40, por cuánto se multiplica el tiempo entre sus vuelos en cada vuelta (0,8 = 20 % más seguidos).")]
     [Range(0.3f, 1f)] public float vuelosPorVuelta = 0.8f;
 
+    /// <summary>US 300, CA1: la mezcla de esa oleada (la última fila que ya empezó).</summary>
+    public MezclaDeOleada MezclaDe(int oleada)
+    {
+        MezclaDeOleada m = null;
+        if (mezcla != null)
+            foreach (MezclaDeOleada f in mezcla)
+                if (f != null && f.desdeLaOleada <= oleada && (m == null || f.desdeLaOleada >= m.desdeLaOleada)) m = f;
+        return m ?? new MezclaDeOleada { comunes = 100 };
+    }
+
     /// <summary>US 299, CA1: los invasores de la oleada (sin la dificultad).</summary>
     public int Invasores(int oleada) => invasoresAlEmpezar + invasoresPorOleada * (Mathf.Max(1, oleada) - 1);
 
@@ -86,4 +113,12 @@ public class ConfigInvasion : ScriptableObject
             return actual;
         }
     }
+}
+
+/// <summary>US 300, CA1: qué parte de cada tipo trae la oleada, en % (desde esa oleada).</summary>
+[System.Serializable]
+public class MezclaDeOleada
+{
+    [Min(1)] public int desdeLaOleada = 1;
+    [Range(0, 100)] public int comunes, rapidos, tanques, tiradores, francotiradores;
 }
