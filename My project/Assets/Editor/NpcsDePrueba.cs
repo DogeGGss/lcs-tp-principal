@@ -6,6 +6,8 @@ using UnityEngine;
 // jugador (US 035 y 036). Los jefes (US 146) no entran en la fila: salen con Riftwalker > NPCs > Aparecer el jefe, un
 // poco más lejos. Los que atacan a distancia (los Watcher, US 285 y US 286) salen solos con Riftwalker > NPCs > Aparecer
 // los Watcher, más lejos (para que disparen). Se borran solos al salir del Play.
+// US 301: Riftwalker > NPCs > Aparecer los alfas pone cada tipo al lado de su alfa (con los números de ConfigInvasion),
+// para compararlos.
 public static class NpcsDePrueba
 {
     [MenuItem("Riftwalker/NPCs/Aparecer uno de cada tipo")]
@@ -78,4 +80,32 @@ public static class NpcsDePrueba
 
     [MenuItem("Riftwalker/NPCs/Aparecer los Watcher", true)]
     private static bool SePuedenWatchers() => Application.isPlaying;
+
+    [MenuItem("Riftwalker/NPCs/Aparecer los alfas")]
+    private static void AparecerAlfas()
+    {
+        TipoDeNpc[] tipos = System.Array.FindAll(TipoDeNpc.Todos(), t => !t.esJefe);
+        if (tipos.Length == 0) { Debug.LogWarning("No hay tipos de NPC en Resources/NPCs."); return; }
+        VarianteAlfa alfa = ConfigInvasion.Actual.alfa;
+        Camera cam = Camera.main;
+        Transform desde = cam != null ? cam.transform : null;
+        Vector3 adelante = desde != null ? Vector3.ProjectOnPlane(desde.forward, Vector3.up).normalized : Vector3.forward;
+        if (adelante.sqrMagnitude < 0.01f) adelante = Vector3.forward;
+        Vector3 costado = Vector3.Cross(Vector3.up, adelante);
+        Vector3 centro = (desde != null ? desde.position : Vector3.zero) + adelante * 10f;
+        for (int i = 0; i < tipos.Length; i++)
+        for (int k = 0; k < 2; k++)
+        {
+            // Cada tipo en su columna: el común adelante y el alfa atrás.
+            Vector3 lugar = centro + costado * ((i - (tipos.Length - 1) * 0.5f) * 4.5f) + adelante * (k * 4f);
+            if (Physics.Raycast(lugar + Vector3.up * 5f, Vector3.down, out RaycastHit piso, 20f, Physics.DefaultRaycastLayers, QueryTriggerInteraction.Ignore))
+                lugar = piso.point;
+            Npc npc = Npc.Crear(tipos[i], lugar, Quaternion.LookRotation(-adelante, Vector3.up), true, k == 1 ? alfa : null);
+            if (npc != null && k == 1)
+                Debug.Log($"Alfa de prueba: {tipos[i].nombre} ({npc.Vida.maxHealth} de vida, golpe {npc.Danio(tipos[i].danio)}, escala {tipos[i].escala * alfa.escala:0.##}, {alfa.puntos} puntos).");
+        }
+    }
+
+    [MenuItem("Riftwalker/NPCs/Aparecer los alfas", true)]
+    private static bool SePuedenAlfas() => Application.isPlaying;
 }

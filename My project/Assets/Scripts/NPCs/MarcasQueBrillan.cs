@@ -15,6 +15,7 @@ using UnityEngine;
 //   dibujo de la textura (la pupila oscura no brilla). Con delineado (TipoDeNpc.delineadoDeOjos), un anillo de
 //   manchitas que brillan alrededor de cada ojo. Con ojosOscuros brilla lo negro de esa zona en vez del iris: los
 //   huecos de la cabeza del Jefe, su punto débil (sin marcas en el cuerpo).
+// US 301, CA2: en el alfa, las marcas y los ojos son violetas (VarianteAlfa.color), más opacos y más brillantes.
 // Lo agrega Npc.Armar si el tipo tiene marcas.
 [RequireComponent(typeof(Npc))]
 public class MarcasQueBrillan : MonoBehaviour
@@ -47,8 +48,8 @@ public class MarcasQueBrillan : MonoBehaviour
     private Material material;
     private float golpeEn = -10f, murioEn = -1f;
 
-    /// <summary>Le pone al modelo las marcas de su tipo (si tiene).</summary>
-    public static void Poner(Npc npc, GameObject modelo, TipoDeNpc tipo)
+    /// <summary>Le pone al modelo las marcas de su tipo (si tiene); alfa: las del alfa (US 301).</summary>
+    public static void Poner(Npc npc, GameObject modelo, TipoDeNpc tipo, VarianteAlfa alfa = null)
     {
         if (npc == null || modelo == null || tipo == null) return;
         if (tipo.marcas == PatronDeMarcas.Ninguno && tipo.radioDelOjo <= 0f) return; // ni marcas ni ojos
@@ -59,20 +60,21 @@ public class MarcasQueBrillan : MonoBehaviour
             if (shader == null) return;
         }
 
-        var material = new Material(shader) { name = "Marcas que brillan (" + tipo.nombre + ")" };
-        material.SetColor(ColorId, tipo.colorDeMarcas);
+        var material = new Material(shader) { name = "Marcas que brillan (" + tipo.nombre + (alfa != null ? " alfa" : "") + ")" };
+        float masBrillo = alfa != null ? alfa.masBrillo : 1f;
+        material.SetColor(ColorId, alfa != null ? alfa.color : tipo.colorDeMarcas);
         material.SetFloat(PatronId, (float)tipo.marcas);
         material.SetFloat(CantidadId, tipo.cantidadDeMarcas);
         material.SetFloat(TamanioId, tipo.tamanioDeMarcas);
         material.SetFloat(HuecosId, tipo.huecosEntreMarcas);
         material.SetFloat(IrregularId, tipo.irregularidadDeMarcas);
-        material.SetFloat(BrilloId, tipo.brilloDeMarcas);
-        material.SetFloat(OpacidadId, tipo.opacidadDeMarcas);
+        material.SetFloat(BrilloId, tipo.brilloDeMarcas * masBrillo);
+        material.SetFloat(OpacidadId, alfa != null ? Mathf.Max(tipo.opacidadDeMarcas, alfa.opacidadDeMarcas) : tipo.opacidadDeMarcas);
         material.SetFloat(PulsoId, tipo.pulsoDeMarcas);
         material.SetFloat(SeparacionId, tipo.separacionDeRayas);
         material.SetFloat(AnchoRayasId, tipo.anchoDeRayas);
         material.SetFloat(LargoRayasId, tipo.largoDeRayas);
-        material.SetFloat(BrilloOjosId, tipo.radioDelOjo > 0f ? tipo.brilloDeOjos : 0f);
+        material.SetFloat(BrilloOjosId, tipo.radioDelOjo > 0f ? tipo.brilloDeOjos * masBrillo : 0f);
         material.SetFloat(OjosOscurosId, tipo.ojosOscuros ? 1f : 0f);
         material.SetVector(IrisId, new Vector4(tipo.centroDelIris.x, tipo.centroDelIris.y, tipo.radioDelIris, 0f));
 

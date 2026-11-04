@@ -13,10 +13,17 @@ using UnityEngine;
 //   039; la flash lo aturde (Aturdir).
 // Para el modo Zombie (F08) avisa cada impacto de bala (ImpactoDeBala, puntos de la US 147) y cada baja (Murio,
 // puntos y oleadas, US 144 y 147). Todos los NPCs de la escena están en Todos.: leen de acá el tipo (Tipo) y las animaciones.
+// US 301: puede salir alfa (VarianteAlfa): más grande, con más vida y más daño, violeta y con aura.
 public class Npc : MonoBehaviour
 {
     /// <summary>El tipo de este NPC (vida, daño, velocidad, puntos).</summary>
     public TipoDeNpc Tipo { get; private set; }
+    /// <summary>US 301: la variante alfa, o null si es uno común de su tipo.</summary>
+    public VarianteAlfa Alfa { get; private set; }
+    /// <summary>US 301, CA3: multiplica todo su daño (golpes, bolas y rayo).</summary>
+    public float MasDanio => Alfa != null ? Alfa.danio : 1f;
+    /// <summary>El daño que hace un ataque suyo: según la dificultad (US 161, CA3) y, si es alfa, más (US 301, CA3).</summary>
+    public int Danio(int danio) => Mathf.RoundToInt(DificultadDeInvasion.DanioDeEnemigo(danio) * MasDanio);
     /// <summary>El Animator de su modelo.</summary>
     public Animator Animador { get; private set; }
     /// <summary>Su vida.</summary>
@@ -110,17 +117,20 @@ public class Npc : MonoBehaviour
     /// <summary>Lo llama MuerteDeNpc al morir.</summary>
     public static void AvisarMuerte(Npc npc, int puntos, bool cabeza) => Murio?.Invoke(npc, puntos, cabeza);
 
-    /// <summary>Arma un NPC de ese tipo en ese lugar, mirando hacia ahí. persigue: sale a buscar al jugador (US 035).</summary>
-    public static Npc Crear(TipoDeNpc tipo, Vector3 lugar, Quaternion giro, bool persigue = true)
+    /// <summary>Arma un NPC de ese tipo en ese lugar, mirando hacia ahí. persigue: sale a buscar al jugador (US 035).
+    /// alfa: sale como alfa (US 301; el Jefe nunca).</summary>
+    public static Npc Crear(TipoDeNpc tipo, Vector3 lugar, Quaternion giro, bool persigue = true, VarianteAlfa alfa = null)
     {
         if (tipo == null || tipo.modelo == null)
         {
             Debug.LogWarning("Npc: el tipo " + (tipo != null ? tipo.name : "(ninguno)") + " no tiene modelo.");
             return null;
         }
-        var go = new GameObject("NPC · " + tipo.nombre);
+        if (tipo.esJefe) alfa = null;
+        var go = new GameObject("NPC · " + tipo.nombre + (alfa != null ? " alfa" : ""));
         go.transform.SetPositionAndRotation(lugar, giro);
         Npc npc = go.AddComponent<Npc>();
+        npc.Alfa = alfa;
         npc.Armar(tipo);
         go.AddComponent<ReaccionDeNpc>(); // US 038
         go.AddComponent<MuerteDeNpc>();   // US 039
@@ -150,7 +160,7 @@ public class Npc : MonoBehaviour
         contenedor.SetParent(transform, false);
         contenedor.localPosition = Vector3.up * tipo.alturaDeVuelo; // los que flotan (US 285 y US 286)
         contenedor.localRotation = Quaternion.Euler(0f, tipo.giroDelModelo, 0f); // los que vienen mirando para atrás
-        contenedor.localScale = Vector3.one * tipo.escala;
+        contenedor.localScale = Vector3.one * tipo.escala * (Alfa != null ? Alfa.escala : 1f); // US 301, CA2: el alfa, más grande
         GameObject m = Instantiate(tipo.modelo, contenedor);
         m.name = tipo.modelo.name;
         Modelo = contenedor;
@@ -164,7 +174,7 @@ public class Npc : MonoBehaviour
         }
 
         // La vida del tipo, sin escudo (CA1 a CA3). En Invasión, según la dificultad (US 161, CA3).
-        int vida = DificultadDeInvasion.VidaDeEnemigo(tipo.vida);
+        int vida = Mathf.RoundToInt(DificultadDeInvasion.VidaDeEnemigo(tipo.vida) * (Alfa != null ? Alfa.vida : 1f)); // US 301, CA3
         Vida = gameObject.AddComponent<HealthSystem>();
         Vida.maxHealth = vida;
         Vida.maxShield = 0;
@@ -184,8 +194,9 @@ public class Npc : MonoBehaviour
         // US 269, CA4: se dibuja después de la marca roja de los portales, así al pasar por delante de uno se ve normal.
         MarcaAtraves.DespuesDeLaMarca(m);
 
-        // US 283: las marcas que brillan de su tipo, para que se vea de noche.
-        MarcasQueBrillan.Poner(this, m, tipo);
+        // US 283: las marcas que brillan de su tipo, para que se vea de noche (el alfa, violetas y con aura: US 301).
+        MarcasQueBrillan.Poner(this, m, tipo, Alfa);
+        if (Alfa != null) AuraDeAlfa.Poner(this, m, Alfa, caja.size.y);
 
         // US 038, CA1: cabeza, cuerpo y piernas, sobre sus huesos (las del prefab, si las tiene).
         ZonasDeNpc.Asegurar(m.transform);

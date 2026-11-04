@@ -93,7 +93,7 @@ public class AtaqueDeNpc : MonoBehaviour
         if (vida == null || vida.currentHealth <= 0) return;
         if (persecucion.EntreCuerpos(objetivo) > llega || !DeFrente(objetivo)) return; // CA2: se alejó o quedó atrás: falla
 
-        int danio = DificultadDeInvasion.DanioDeEnemigo(npc.Tipo.danio); // US 161, CA3
+        int danio = npc.Danio(npc.Tipo.danio); // US 161, CA3 (y el alfa, US 301)
         HealthSystem.DamageOrigin = transform.position + Vector3.up; // CA5: el aviso de daño hacia el lado del golpe
         HealthSystem.DamageSource = npc.Tipo.nombre;
         vida.TakeDamage(danio); // CA3: primero el escudo y después la vida

@@ -1,7 +1,8 @@
 using UnityEngine;
 
 // F08 (Modo Invasión): lo que se ajusta del modo desde el editor, en Resources/Invasion/ConfigInvasion: los portales de
-// donde salen los enemigos (US 269), cuántos invasores trae cada oleada (US 299) y el puesto de suministros (US 292).
+// donde salen los enemigos (US 269), cuántos invasores trae cada oleada (US 299), el puesto de suministros (US 292) y
+// los alfas (US 301).
 [CreateAssetMenu(menuName = "Riftwalker/Invasión/Configuración", fileName = "ConfigInvasion")]
 public class ConfigInvasion : ScriptableObject
 {
@@ -44,6 +45,14 @@ public class ConfigInvasion : ScriptableObject
     public GameObject cajaPuesto;
     [Tooltip("Tamaño de la caja que cae.")]
     [Min(0.1f)] public float escalaCajaPuesto = 1.3f;
+
+    [Header("Alfas (US 301)")]
+    [Tooltip("CA1: desde qué oleada salen alfas.")]
+    [Min(1)] public int alfasDesdeLaOleada = 4;
+    [Tooltip("CA1: 1 de cada tantos invasores es un alfa (de cualquier tipo, salvo el Jefe).")]
+    [Min(1)] public int unAlfaCada = 15;
+    [Tooltip("CA2 a CA4: cómo es el alfa (tamaño, vida, daño, puntos, color y aura).")]
+    public VarianteAlfa alfa = new VarianteAlfa();
 
     /// <summary>US 299, CA1: los invasores de la oleada (sin la dificultad).</summary>
     public int Invasores(int oleada) => invasoresAlEmpezar + invasoresPorOleada * (Mathf.Max(1, oleada) - 1);
