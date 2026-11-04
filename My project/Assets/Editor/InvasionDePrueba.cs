@@ -6,6 +6,8 @@ using UnityEngine;
 // - Riftwalker > Invasión > Ir a la oleada 10: saca a los enemigos que quedan y arranca la oleada 10 (la del jefe).
 //   Ir a la oleada 20, 30 y 40: lo mismo con el Jefe de cada vuelta (US 302).
 // - Riftwalker > Invasión > Darme el Gran Capitán: lo pone en la mano, sin esperar a que salga en la elección (US 287).
+// - Riftwalker > Invasión > Darme una carta...: abre una ventana con todas las cartas; con el juego andando, cada botón
+//   la suma como si la hubieras elegido en el puesto (CartasDePrueba).
 // - Riftwalker > Invasión > Matar a todos los invasores: mata a los que están vivos, como si les hubiera disparado
 //   (suman sus puntos). La oleada se supera cuando ya aparecieron todos, así que puede hacer falta usarlo varias veces.
 // - Riftwalker > Invasión > Cargar el puesto: deja cargado el puesto de suministros que está en el mapa (US 292).
@@ -54,6 +56,9 @@ public static class InvasionDePrueba
         equipo.Recibir(armas[0]);
     }
 
+    [MenuItem("Riftwalker/Invasión/Darme una carta...")]
+    private static void DarmeUnaCarta() => CartasDePrueba.Abrir();
+
     [MenuItem("Riftwalker/Invasión/Ir a la oleada 10", true)]
     [MenuItem("Riftwalker/Invasión/Darme el Gran Capitán", true)]
     [MenuItem("Riftwalker/Invasión/Ir a la oleada 20", true)]
@@ -63,4 +68,30 @@ public static class InvasionDePrueba
     [MenuItem("Riftwalker/Invasión/Cargar el puesto", true)]
     private static bool SePuede() =>
         Application.isPlaying && PartidaDeInvasion.Actual != null && PartidaDeInvasion.Actual.GetComponent<OleadasDeInvasion>() != null;
+}
+
+// La ventana de Riftwalker > Invasión > Darme una carta...: un botón por carta (las que todavía no tienen efecto, marcadas).
+public class CartasDePrueba : EditorWindow
+{
+    private Vector2 scroll;
+
+    public static void Abrir() => GetWindow<CartasDePrueba>("Cartas de prueba").Show();
+
+    private void OnGUI()
+    {
+        bool sePuede = Application.isPlaying && EleccionDeInvasion.Actual != null;
+        if (!sePuede) EditorGUILayout.HelpBox("Arrancá una partida de Invasión para darte cartas.", MessageType.Info);
+        scroll = EditorGUILayout.BeginScrollView(scroll);
+        using (new EditorGUI.DisabledScope(!sePuede))
+            foreach (CartaDeInvasion carta in CartaDeInvasion.Todas)
+            {
+                int veces = sePuede ? EleccionDeInvasion.Veces(carta) : 0;
+                string texto = $"{carta.nombre} · {CartaDeInvasion.NombreDe(carta.rareza)}  ({veces}/{carta.Maximo})" +
+                               (carta.aplicar == null ? "  · sin efecto todavía" : "");
+                if (GUILayout.Button(texto)) EleccionDeInvasion.Actual.Dar(carta);
+            }
+        EditorGUILayout.EndScrollView();
+    }
+
+    private void OnInspectorUpdate() => Repaint();
 }

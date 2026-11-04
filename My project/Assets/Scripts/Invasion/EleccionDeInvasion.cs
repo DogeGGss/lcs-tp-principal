@@ -15,8 +15,9 @@ using static ShopUIKit;
 // entran de a una (también al volver a tirar).
 // - CA3: la rareza de cada carta según la oleada (CartaDeInvasion.RarezaAlAzar).
 // - CA4: «Volver a tirar» (R) cambia las 3 opciones por 150 puntos; en el mismo puesto, cada vez 100 más.
-// - CA5: las cartas duran toda la partida y, si se repiten, se suman (se ven con Tab: MarcadorInvasion.Cartas). Las
-//   de una sola vez no vuelven a salir.
+// - CA5: las cartas duran toda la partida y, si se repiten, se suman (se ven con Tab: MarcadorInvasion.Cartas), como
+//   mucho 3 veces: después de la tercera esa carta no vuelve a salir. Las de una sola vez no vuelven a salir. Cada
+//   carta sabe cuántas veces se tiene (Veces) para hacer más efecto la segunda y la tercera.
 // - CA6: después de elegir arranca el respiro de 20 s.
 // US 294 (provisional): en 1 de cada 3 tiradas una de las opciones es un arma que no se tiene, que reemplaza la del
 // mismo lugar y viene con la munición llena.
@@ -31,6 +32,19 @@ public class EleccionDeInvasion : MonoBehaviour
 
     /// <summary>La pantalla de la elección está abierta.</summary>
     public static bool Abierta { get; private set; }
+    /// <summary>La elección de la partida en curso (o null).</summary>
+    public static EleccionDeInvasion Actual { get; private set; }
+
+    /// <summary>CA5: cuántas veces se eligió esa carta en la partida (0 si no se tiene).</summary>
+    public static int Veces(CartaDeInvasion carta) =>
+        Actual != null && carta != null && Actual.elegidas.TryGetValue(carta, out int n) ? n : 0;
+
+    /// <summary>CA5: cuántas veces se eligió la carta con ese nombre en la partida (0 si no se tiene).</summary>
+    public static int Veces(string nombre)
+    {
+        foreach (CartaDeInvasion c in CartaDeInvasion.Todas) if (c.nombre == nombre) return Veces(c);
+        return 0;
+    }
 
     private class Opcion
     {
@@ -45,7 +59,6 @@ public class EleccionDeInvasion : MonoBehaviour
     private TextMeshProUGUI antetitulo;
     private int costo = PrimeraTirada;
     private readonly List<Opcion> opciones = new List<Opcion>();
-    private readonly HashSet<CartaDeInvasion> usadas = new HashSet<CartaDeInvasion>(); // CA5: las de una sola vez
     private readonly Dictionary<CartaDeInvasion, int> elegidas = new Dictionary<CartaDeInvasion, int>();
     private readonly List<CartaDeInvasion> orden = new List<CartaDeInvasion>();
     private readonly List<Behaviour> bloqueados = new List<Behaviour>();
@@ -64,6 +77,7 @@ public class EleccionDeInvasion : MonoBehaviour
 
     private void OnEnable()
     {
+        Actual = this;
         PuestoDeSuministros.Abrio += AlAbrirElPuesto;
         OleadasDeInvasion.Empezo += AlEmpezar;
         OleadasDeInvasion.Supero += AlSuperar;
@@ -71,6 +85,7 @@ public class EleccionDeInvasion : MonoBehaviour
 
     private void OnDisable()
     {
+        if (Actual == this) Actual = null;
         PuestoDeSuministros.Abrio -= AlAbrirElPuesto;
         OleadasDeInvasion.Empezo -= AlEmpezar;
         OleadasDeInvasion.Supero -= AlSuperar;
@@ -244,7 +259,7 @@ public class EleccionDeInvasion : MonoBehaviour
         int mejor = int.MaxValue;
         foreach (CartaDeInvasion c in CartaDeInvasion.Todas)
         {
-            if (yaSalieron.Contains(c) || (c.unaVez && usadas.Contains(c))) continue;
+            if (yaSalieron.Contains(c) || Veces(c) >= c.Maximo) continue; // CA5: ya la tiene todas las veces que se puede
             if (c.rareza == RarezaDeCarta.Legendaria && !despuesDelJefe) continue; // US 303, CA3
             if (c.rareza == RarezaDeCarta.Comun && delJefe) continue;              // US 303, CA2
             int d = (int)c.rareza - (int)buscada;
@@ -281,14 +296,27 @@ public class EleccionDeInvasion : MonoBehaviour
         if (o.arma != null) equipo.Recibir(o.arma); // US 294, CA4
         else if (o.carta != null)
         {
-            elegidas[o.carta] = elegidas.TryGetValue(o.carta, out int n) ? n + 1 : 1; // CA5: se suman
+            int veces = elegidas.TryGetValue(o.carta, out int n) ? n + 1 : 1; // CA5: se suman
+            elegidas[o.carta] = veces;
             if (!orden.Contains(o.carta)) orden.Add(o.carta);
-            if (o.carta.unaVez) usadas.Add(o.carta);
-            o.carta.aplicar?.Invoke(equipo != null ? equipo.gameObject : null);
+            o.carta.aplicar?.Invoke(equipo != null ? equipo.gameObject : null, veces);
             ActualizarCartas();
         }
         Cerrar();
         if (oleadas != null) oleadas.TerminoLaEleccion(); // CA6: arranca el respiro
+    }
+
+    /// <summary>Para probar (Riftwalker > Invasión > Darme una carta): la suma como si se la hubiera elegido.</summary>
+    public void Dar(CartaDeInvasion carta)
+    {
+        if (carta == null || Veces(carta) >= carta.Maximo) { Debug.Log($"Ya tenés {carta?.nombre} todas las veces que se puede."); return; }
+        if (equipo == null) equipo = FindFirstObjectByType<PlayerLoadout>(); // (sin haber abierto el puesto todavía)
+        int veces = Veces(carta) + 1;
+        elegidas[carta] = veces;
+        if (!orden.Contains(carta)) orden.Add(carta);
+        carta.aplicar?.Invoke(equipo != null ? equipo.gameObject : null, veces);
+        ActualizarCartas();
+        Debug.Log($"Carta de prueba: {carta.nombre} ({veces} de {carta.Maximo}).");
     }
 
     // US 298: la lista de «Tus cartas» (con Tab), con las repetidas sumadas.
