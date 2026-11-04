@@ -16,7 +16,8 @@ public struct GolpeDeNpc
     /// <summary>Metros que el cuerpo pasa, en el golpe, del frente que tiene quieto (Npc.Frente).</summary>
     public float avance;
 
-    private static readonly Dictionary<(TipoDeNpc, AnimationClip), GolpeDeNpc> medidos = new Dictionary<(TipoDeNpc, AnimationClip), GolpeDeNpc>();
+    // Por tipo, animación y si es alfa: el alfa es más grande (US 301) y llega más lejos.
+    private static readonly Dictionary<(TipoDeNpc, AnimationClip, bool), GolpeDeNpc> medidos = new Dictionary<(TipoDeNpc, AnimationClip, bool), GolpeDeNpc>();
 
     // Sin recarga de scripts al entrar al Play (Enter Play Mode Options): se vuelve a medir en cada partida, por si
     // cambiaron los datos.
@@ -26,7 +27,7 @@ public struct GolpeDeNpc
     /// <summary>Mide esa animación en el modelo del NPC (lo deja en la pose del final: hay que volver a poner la suya).</summary>
     public static GolpeDeNpc Medir(Npc npc, TipoDeNpc tipo, AnimationClip clip)
     {
-        if (medidos.TryGetValue((tipo, clip), out GolpeDeNpc ya)) return ya;
+        if (medidos.TryGetValue((tipo, clip, npc.Alfa != null), out GolpeDeNpc ya)) return ya;
         var g = new GolpeDeNpc { momento = Mathf.Min(0.5f, clip.length), avance = 0f };
         if (npc.Modelo == null || clip.length <= 0f) return g;
 
@@ -56,7 +57,7 @@ public struct GolpeDeNpc
         for (int i = 0; i < frentes.Count; i++)
             if (frentes[i] >= umbral) { g.momento = Mathf.Clamp(tiempos[i], 0.1f, clip.length); break; }
         g.avance = Mathf.Max(0f, maximo - npc.Frente);
-        medidos[(tipo, clip)] = g;
+        medidos[(tipo, clip, npc.Alfa != null)] = g;
         return g;
     }
 }

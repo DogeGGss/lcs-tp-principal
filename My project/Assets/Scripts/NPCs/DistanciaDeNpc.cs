@@ -279,7 +279,7 @@ public class DistanciaDeNpc : MonoBehaviour
             {
                 HealthSystem.DamageOrigin = desde;
                 HealthSystem.DamageSource = npc.Tipo.nombre;
-                vida.TakeDamage(DificultadDeInvasion.DanioDeEnemigo(npc.Tipo.danioADistancia)); // US 161, CA3
+                vida.TakeDamage(npc.Danio(npc.Tipo.danioADistancia)); // US 161, CA3 (y el alfa, US 301)
                 HealthSystem.DamageSource = null;
             }
         }
@@ -500,6 +500,7 @@ public class BolaDeEnergia : MonoBehaviour
     private Vector3 direccion;
     private TipoDeNpc tipo;
     private Transform quien;
+    private float masDanio = 1f; // el alfa pega más (US 301, CA3)
     private float muere;
 
     public static void Lanzar(Vector3 desde, Vector3 hacia, TipoDeNpc tipo, Transform quien)
@@ -512,6 +513,8 @@ public class BolaDeEnergia : MonoBehaviour
         bola.direccion = dir.normalized;
         bola.tipo = tipo;
         bola.quien = quien;
+        Npc de = quien != null ? quien.GetComponent<Npc>() : null;
+        bola.masDanio = de != null ? de.MasDanio : 1f;
         bola.muere = Time.time + Vive;
         Destellos.Bola(go.transform, tipo.colorADistancia, Radio);
     }
@@ -538,7 +541,7 @@ public class BolaDeEnergia : MonoBehaviour
                 {
                     HealthSystem.DamageOrigin = antes;
                     HealthSystem.DamageSource = tipo != null ? tipo.nombre : null;
-                    vida.TakeDamage(DificultadDeInvasion.DanioDeEnemigo(tipo != null ? tipo.danioADistancia : 10)); // US 161, CA3
+                    vida.TakeDamage(Mathf.RoundToInt(DificultadDeInvasion.DanioDeEnemigo(tipo != null ? tipo.danioADistancia : 10) * masDanio)); // US 161, CA3 (y el alfa, US 301)
                     HealthSystem.DamageSource = null;
                 }
             }
@@ -567,7 +570,8 @@ public static class Destellos
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
     private static void Reiniciar() => materiales.Clear();
 
-    private static Material Material(Color color)
+    /// <summary>El material de partículas que brillan de ese color (lo comparten todos; también el aura del alfa, US 301).</summary>
+    public static Material Material(Color color)
     {
         if (materiales.TryGetValue(color, out Material m) && m != null) return m;
         Shader shader = Resources.Load<Shader>("Efectos/ParticulaBrillante");

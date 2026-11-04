@@ -8,6 +8,7 @@ using UnityEngine.AI;
 //   DesintegracionDeNpc) y desaparece.
 // - CA3 y CA4: avisa la baja (Npc.Murio) con los puntos: los de su tipo, o los de cabeza si el último impacto fue a la
 //   cabeza. Con eso el modo Zombie suma los puntos (US 147) y descuenta un enemigo de la oleada (US 144, US 150).
+//   El alfa da los suyos (US 301, CA4: 300).
 // Lo agrega Npc.Crear.
 [RequireComponent(typeof(Npc))]
 public class MuerteDeNpc : MonoBehaviour
@@ -55,6 +56,7 @@ public class MuerteDeNpc : MonoBehaviour
         // CA3 y CA4: la baja, con sus puntos.
         bool cabeza = npc.Vida.KilledByHeadshot;
         int puntos = npc.Tipo == null ? 0 : cabeza ? npc.Tipo.puntosPorBajaALaCabeza : npc.Tipo.puntosPorBaja;
+        if (npc.Alfa != null) puntos = npc.Alfa.puntos; // US 301, CA4
         Npc.AvisarMuerte(npc, puntos, cabeza);
     }
 

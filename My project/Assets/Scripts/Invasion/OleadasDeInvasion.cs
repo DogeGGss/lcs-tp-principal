@@ -25,6 +25,9 @@ using UnityEngine.UI;
 // - CA6: al superar la 10, "¡Sobreviviste!" con "Seguir" (modo infinito) y "Terminar" (el resultado, US 151).
 // - CA7: desde la 11, la misma regla de cantidad y los enemigos con 10 % más de vida por cada oleada después de la 10.
 // US 161, CA3: la dificultad cambia la cantidad de cada oleada (la vida de cada enemigo la ajusta Npc).
+// US 301, CA1: desde la oleada 4, 1 de cada 15 invasores que salen (de cualquier tipo, salvo el Jefe) es un alfa
+// (VarianteAlfa, con los números en ConfigInvasion). La cuenta sigue de una oleada a la otra; si un alfa se pierde sin
+// morir, el que sale en su lugar también es alfa.
 // El marcador (la oleada, cuántos quedan, el descanso y los puntos) es la US 150: MarcadorInvasion.
 public class OleadasDeInvasion : MonoBehaviour
 {
@@ -55,6 +58,7 @@ public class OleadasDeInvasion : MonoBehaviour
 
     private Fase fase = Fase.Descanso;
     private int total, muertos;
+    private int salidosParaAlfa, alfasPerdidos; // US 301, CA1
     private readonly Queue<TipoDeNpc> porAparecer = new Queue<TipoDeNpc>();
     private readonly List<PortalDeEnemigos> portales = new List<PortalDeEnemigos>(); // US 269
     private PortalDeEnemigos portalDelJefe;
@@ -176,6 +180,7 @@ public class OleadasDeInvasion : MonoBehaviour
             else
             {
                 if (tipos.TryGetValue(n, out TipoDeNpc t) && t != null) porAparecer.Enqueue(t);
+                if (n != null && n.Alfa != null) alfasPerdidos++; // US 301: vuelve a salir alfa
                 if (n != null) Destroy(n.gameObject);
             }
             tipos.Remove(n);
@@ -270,16 +275,30 @@ public class OleadasDeInvasion : MonoBehaviour
     {
         Vector3 hacia = jugador.position - lugar;
         hacia.y = 0f;
-        Npc npc = Npc.Crear(tipo, lugar, hacia.sqrMagnitude > 1e-4f ? Quaternion.LookRotation(hacia) : Quaternion.identity);
+        VarianteAlfa alfa = tipo.esJefe ? null : SaleAlfa();
+        Npc npc = Npc.Crear(tipo, lugar, hacia.sqrMagnitude > 1e-4f ? Quaternion.LookRotation(hacia) : Quaternion.identity, true, alfa);
         if (npc == null) return null;
-        // CA7: más vida en el modo infinito (sobre la de la dificultad, que ya pone Npc, US 161).
+        // CA7: más vida en el modo infinito (sobre la de la dificultad, que ya pone Npc, US 161; y la del alfa, US 301).
         if (Oleada > Ultima && npc.Vida != null)
         {
-            int vida = Mathf.RoundToInt(DificultadDeInvasion.VidaDeEnemigo(tipo.vida) * (1f + VidaExtra * (Oleada - Ultima)));
+            int vida = Mathf.RoundToInt(DificultadDeInvasion.VidaDeEnemigo(tipo.vida) * (1f + VidaExtra * (Oleada - Ultima))
+                                        * (npc.Alfa != null ? npc.Alfa.vida : 1f));
             npc.Vida.maxHealth = vida;
             npc.Vida.SetState(vida, 0);
         }
         return npc;
+    }
+
+    // US 301, CA1: si el que sale ahora es un alfa (el que reemplaza a un alfa perdido, o 1 de cada 15 desde la oleada 4).
+    private VarianteAlfa SaleAlfa()
+    {
+        ConfigInvasion config = ConfigInvasion.Actual;
+        if (Oleada < config.alfasDesdeLaOleada) return null;
+        if (alfasPerdidos > 0) { alfasPerdidos--; return config.alfa; }
+        salidosParaAlfa++;
+        if (salidosParaAlfa < Mathf.Max(1, config.unAlfaCada)) return null;
+        salidosParaAlfa = 0;
+        return config.alfa;
     }
 
     private void Superar()
