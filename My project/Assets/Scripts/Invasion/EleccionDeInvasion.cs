@@ -20,6 +20,9 @@ using static ShopUIKit;
 // - CA6: después de elegir arranca el respiro de 20 s.
 // US 294 (provisional): en 1 de cada 3 tiradas una de las opciones es un arma que no se tiene, que reemplaza la del
 // mismo lugar y viene con la munición llena.
+// US 303: al superar una oleada del Jefe la elección se abre siempre, aunque el puesto no esté cargado (CA2), recién
+// después de "Seguir" (CA4): es la elección del Jefe, sin comunes y con más chance de raras, épicas y legendarias (vale
+// también al volver a tirar, solo en esa elección). Las legendarias no salen antes del primer Jefe (CA3).
 // De a varios (US 289) cada uno va a elegir lo suyo, con un tope de 30 s; por ahora se juega solo y no hay tope.
 public class EleccionDeInvasion : MonoBehaviour
 {
@@ -37,7 +40,9 @@ public class EleccionDeInvasion : MonoBehaviour
 
     private OleadasDeInvasion oleadas;
     private PlayerLoadout equipo;
-    private bool pendiente;           // el puesto se abrió en la oleada 10: se elige al seguir en modo infinito
+    private bool pendiente;           // US 303: superó una oleada del Jefe: se elige al seguir
+    private bool delJefe;             // US 303, CA2: la que está abierta es la elección del Jefe
+    private TextMeshProUGUI antetitulo;
     private int costo = PrimeraTirada;
     private readonly List<Opcion> opciones = new List<Opcion>();
     private readonly HashSet<CartaDeInvasion> usadas = new HashSet<CartaDeInvasion>(); // CA5: las de una sola vez
@@ -61,12 +66,14 @@ public class EleccionDeInvasion : MonoBehaviour
     {
         PuestoDeSuministros.Abrio += AlAbrirElPuesto;
         OleadasDeInvasion.Empezo += AlEmpezar;
+        OleadasDeInvasion.Supero += AlSuperar;
     }
 
     private void OnDisable()
     {
         PuestoDeSuministros.Abrio -= AlAbrirElPuesto;
         OleadasDeInvasion.Empezo -= AlEmpezar;
+        OleadasDeInvasion.Supero -= AlSuperar;
     }
 
     private void OnDestroy()
@@ -78,9 +85,16 @@ public class EleccionDeInvasion : MonoBehaviour
     private void AlAbrirElPuesto()
     {
         if (oleadas == null) oleadas = GetComponent<OleadasDeInvasion>();
-        // En la oleada 10 primero sale "¡Sobreviviste!": la elección espera a que se siga en modo infinito.
-        if (oleadas != null && oleadas.Oleada == OleadasDeInvasion.Ultima && !oleadas.Infinito) { pendiente = true; return; }
-        Abrir();
+        // En las oleadas del Jefe la elección es la del Jefe, que se abre siempre (AlSuperar).
+        if (oleadas != null && oleadas.DeJefe) return;
+        Abrir(false);
+    }
+
+    // US 303, CA2 y CA4: al superar una oleada del Jefe primero sale "Jefe derrotado"; la elección del Jefe espera a
+    // que se siga (Retener), esté o no cargado el puesto.
+    private void AlSuperar(int oleada)
+    {
+        if (OleadasDeInvasion.EsDeJefe(oleada)) pendiente = true;
     }
 
     // Ir a la oleada 10 (prueba) puede arrancar una oleada con la elección abierta.
@@ -96,14 +110,15 @@ public class EleccionDeInvasion : MonoBehaviour
         if (Abierta) return true;
         if (!pendiente) return false;
         pendiente = false;
-        Abrir();
+        Abrir(true);
         return Abierta;
     }
 
     // ---------- Abrir y cerrar ----------
 
-    private void Abrir()
+    private void Abrir(bool delJefe)
     {
+        this.delJefe = delJefe;
         if (MatchHud.Instance == null) return;
         if (equipo == null) equipo = FindFirstObjectByType<PlayerLoadout>();
         if (lienzo == null) Armar();
@@ -125,6 +140,7 @@ public class EleccionDeInvasion : MonoBehaviour
         mostradaEn = Time.unscaledTime;
         grupo.alpha = 0f;
         lienzo.gameObject.SetActive(true);
+        if (antetitulo != null) antetitulo.text = delJefe ? "Elección del Jefe" : "Puesto de suministros";
         Bloquear();
         Tirar();
     }
@@ -218,18 +234,26 @@ public class EleccionDeInvasion : MonoBehaviour
         Dibujar();
     }
 
+    // CA3 (y US 303, CA2 y CA3): una carta de la rareza que tocó; si no hay ninguna de esa, de la más cercana (con
+    // empate, la de abajo). Sin legendarias antes del primer Jefe y sin comunes en la elección del Jefe.
     private CartaDeInvasion CartaAlAzar(int oleada, HashSet<CartaDeInvasion> yaSalieron)
     {
-        RarezaDeCarta buscada = CartaDeInvasion.RarezaAlAzar(oleada);
-        var mismas = new List<CartaDeInvasion>();
-        var otras = new List<CartaDeInvasion>();
+        bool despuesDelJefe = oleadas != null && oleadas.JefesDerrotados > 0;
+        RarezaDeCarta buscada = CartaDeInvasion.RarezaAlAzar(oleada, despuesDelJefe, delJefe);
+        var posibles = new List<CartaDeInvasion>();
+        int mejor = int.MaxValue;
         foreach (CartaDeInvasion c in CartaDeInvasion.Todas)
         {
-            if (c.rareza == RarezaDeCarta.Legendaria || yaSalieron.Contains(c) || (c.unaVez && usadas.Contains(c))) continue;
-            (c.rareza == buscada ? mismas : otras).Add(c);
+            if (yaSalieron.Contains(c) || (c.unaVez && usadas.Contains(c))) continue;
+            if (c.rareza == RarezaDeCarta.Legendaria && !despuesDelJefe) continue; // US 303, CA3
+            if (c.rareza == RarezaDeCarta.Comun && delJefe) continue;              // US 303, CA2
+            int d = (int)c.rareza - (int)buscada;
+            int lejos = d >= 0 ? d * 2 : -d * 2 - 1; // la de abajo gana el empate
+            if (lejos > mejor) continue;
+            if (lejos < mejor) { mejor = lejos; posibles.Clear(); }
+            posibles.Add(c);
         }
-        List<CartaDeInvasion> de = mismas.Count > 0 ? mismas : otras;
-        return de.Count > 0 ? de[Random.Range(0, de.Count)] : null;
+        return posibles.Count > 0 ? posibles[Random.Range(0, posibles.Count)] : null;
     }
 
     // US 294, CA1 y CA2: un arma del catálogo que no se tiene.
@@ -332,8 +356,8 @@ public class EleccionDeInvasion : MonoBehaviour
         cabeza.anchorMin = cabeza.anchorMax = cabeza.pivot = new Vector2(0.5f, 1f);
         cabeza.anchoredPosition = new Vector2(0f, -110f);
         cabeza.sizeDelta = new Vector2(1200f, 110f);
-        Text(Place(Node("Antetitulo", cabeza), 0f, 0f, 1200f, 26f), label, 20f, MarcadorInvasion.Verde, TextAlignmentOptions.Center, 16f, true)
-            .text = "Puesto de suministros";
+        antetitulo = Text(Place(Node("Antetitulo", cabeza), 0f, 0f, 1200f, 26f), label, 20f, MarcadorInvasion.Verde, TextAlignmentOptions.Center, 16f, true);
+        antetitulo.text = "Puesto de suministros";
         Text(Place(Node("Elegi", cabeza), 0f, 30f, 1200f, 64f), display, 58f, Ink, TextAlignmentOptions.Center, 4f, true)
             .text = "Elegí una";
 

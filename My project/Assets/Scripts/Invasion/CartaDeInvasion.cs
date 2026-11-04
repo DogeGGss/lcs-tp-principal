@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-/// <summary>US 293, CA3: la rareza de una carta. Las legendarias llegan con la US 303.</summary>
+/// <summary>US 293, CA3: la rareza de una carta. Las legendarias salen recién después del primer Jefe (US 303).</summary>
 public enum RarezaDeCarta { Comun, Rara, Epica, Legendaria }
 
 // F08 (Modo Invasión), US 293: una carta del puesto de suministros, como datos (nombre, rareza, qué hace y con qué
@@ -69,14 +69,23 @@ public class CartaDeInvasion
             efecto = "1 de cada 5 invasores suelta un cargador al morir." },
     };
 
-    /// <summary>CA3: la rareza al azar según la oleada (común, rara y épica).</summary>
-    public static RarezaDeCarta RarezaAlAzar(int oleada)
+    /// <summary>CA3: la rareza al azar según la oleada (común, rara y épica). US 303: despuesDelJefe, ya cayó algún
+    /// Jefe (CA3: las legendarias, muy raras, se le restan a las comunes); delJefe, la elección del Jefe (CA2: sin
+    /// comunes, con más chance de raras, épicas y legendarias).</summary>
+    public static RarezaDeCarta RarezaAlAzar(int oleada, bool despuesDelJefe = false, bool delJefe = false)
     {
+        ConfigInvasion config = ConfigInvasion.Actual;
+        float r = Random.value;
+        if (delJefe)
+            return r < config.jefeRara ? RarezaDeCarta.Rara
+                 : r < config.jefeRara + config.jefeEpica ? RarezaDeCarta.Epica : RarezaDeCarta.Legendaria;
         float comun, rara;
         if (oleada <= 4) { comun = 0.70f; rara = 0.25f; }
         else if (oleada <= 7) { comun = 0.55f; rara = 0.35f; }
         else { comun = 0.40f; rara = 0.40f; }
-        float r = Random.value;
-        return r < comun ? RarezaDeCarta.Comun : r < comun + rara ? RarezaDeCarta.Rara : RarezaDeCarta.Epica;
+        float legendaria = despuesDelJefe ? Mathf.Min(config.legendariaNormal, comun) : 0f;
+        return r < legendaria ? RarezaDeCarta.Legendaria
+             : r < comun ? RarezaDeCarta.Comun
+             : r < comun + rara ? RarezaDeCarta.Rara : RarezaDeCarta.Epica;
     }
 }

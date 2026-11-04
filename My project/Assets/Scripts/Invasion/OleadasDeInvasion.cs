@@ -25,8 +25,11 @@ using UnityEngine.UI;
 //   Si no se encuentra lugar (o todavía no hay NavMesh), el portal se abre en los puntos de aparición del mapa (US 187,
 //   AparicionDeEnemigos), de reserva, y si no hay, alrededor del jugador.
 // - CA5: la oleada termina cuando mueren todos (en la 10, también el Jefe): "Oleada N superada" y descanso.
-// - CA6: al superar la 10, "¡Sobreviviste!" con "Seguir" (modo infinito) y "Terminar" (el resultado, US 151).
-// - CA7: desde la 11, la misma regla de cantidad y los enemigos con 10 % más de vida por cada oleada después de la 10.
+// US 303 reemplaza el final de la 10 (CA6) y el modo infinito (CA7):
+// - CA4: al superar cada oleada del Jefe, "Jefe derrotado" con "Seguir" (la elección del Jefe, EleccionDeInvasion, y
+//   el respiro) y "Retirarse" (el resultado y el récord, US 151).
+// - CA1: cada Jefe que cae hace que todos los invasores que salen después (salvo el Jefe, que tiene lo de su vuelta)
+//   tengan un 25 % más de vida y peguen un 10 % más, y se acumula (los números en ConfigInvasion).
 // US 161, CA3: la dificultad cambia la cantidad de cada oleada (la vida de cada enemigo la ajusta Npc).
 // US 301, CA1: desde la oleada 4, 1 de cada 15 invasores que salen (de cualquier tipo, salvo el Jefe) es un alfa
 // (VarianteAlfa, con los números en ConfigInvasion). La cuenta sigue de una oleada a la otra; si un alfa se pierde sin
@@ -42,7 +45,6 @@ public class OleadasDeInvasion : MonoBehaviour
 {
     public const int Ultima = 10;                         // CA6
     private const float Cerca = 15f, Lejos = 50f;         // CA4: m del jugador
-    private const float VidaExtra = 0.1f;                 // CA7: por oleada después de la 10
 
     /// <summary>La oleada en curso (0 antes de la primera).</summary>
     public int Oleada { get; private set; }
@@ -50,8 +52,10 @@ public class OleadasDeInvasion : MonoBehaviour
     public bool Descanso => fase == Fase.Descanso;
     /// <summary>Enemigos que quedan en la oleada, contando los que todavía no aparecieron (US 150, CA2).</summary>
     public int Quedan => Mathf.Max(0, total - muertos) + (jefeVivo ? 1 : 0);
-    /// <summary>Juega en modo infinito (siguió después de la 10).</summary>
-    public bool Infinito { get; private set; }
+    /// <summary>US 303: los Jefes que ya cayeron en la partida.</summary>
+    public int JefesDerrotados { get; private set; }
+    /// <summary>Ya cayó algún Jefe (siguió después de la 10).</summary>
+    public bool Infinito => JefesDerrotados > 0;
     /// <summary>Enemigos de la oleada en curso, con el Jefe en las de jefe (US 150: la barra de los que quedan).</summary>
     public int Total => total + (DeJefe && tipoJefe != null ? 1 : 0);
     /// <summary>US 302, CA1: la oleada en curso trae al Jefe (la 10, la 20, la 30...).</summary>
@@ -330,7 +334,7 @@ public class OleadasDeInvasion : MonoBehaviour
         }
 
         // El jefe: si murió, listo; si desapareció sin morir, vuelve a aparecer.
-        if (jefeVivo && jefe != null && !jefe.Vivo) { jefeVivo = false; jefeMuerto = true; }
+        if (jefeVivo && jefe != null && !jefe.Vivo) { jefeVivo = false; jefeMuerto = true; JefesDerrotados++; } // US 303, CA1
         else if (jefeVivo && (jefe == null || Perdido(jefe))) { if (jefe != null) Destroy(jefe.gameObject); jefe = null; jefeVivo = false; jefeSalio = false; }
 
         // CA5: superada (en las del Jefe, solo con el jefe muerto y su escolta afuera).
@@ -361,14 +365,16 @@ public class OleadasDeInvasion : MonoBehaviour
         VarianteAlfa alfa = tipo.esJefe ? null : SaleAlfa();
         Npc npc = Npc.Crear(tipo, lugar, hacia.sqrMagnitude > 1e-4f ? Quaternion.LookRotation(hacia) : Quaternion.identity, true, alfa);
         if (npc == null) return null;
-        // CA7: más vida en el modo infinito (sobre la de la dificultad, que ya pone Npc, US 161; y la del alfa, US 301).
-        // El Jefe no: su vida es la de su vuelta (US 302, Endurecer).
-        if (Oleada > Ultima && npc.Vida != null && !tipo.esJefe)
+        // US 303, CA1: más vida y más daño por cada Jefe que cayó (sobre la de la dificultad, que ya pone Npc, US 161; y la
+        // del alfa, US 301). El Jefe no: tiene lo de su vuelta (US 302, Endurecer).
+        if (JefesDerrotados > 0 && npc.Vida != null && !tipo.esJefe)
         {
-            int vida = Mathf.RoundToInt(DificultadDeInvasion.VidaDeEnemigo(tipo.vida) * (1f + VidaExtra * (Oleada - Ultima))
+            ConfigInvasion config = ConfigInvasion.Actual;
+            int vida = Mathf.RoundToInt(DificultadDeInvasion.VidaDeEnemigo(tipo.vida) * (1f + config.vidaPorJefe * JefesDerrotados)
                                         * (npc.Alfa != null ? npc.Alfa.vida : 1f));
             npc.Vida.maxHealth = vida;
             npc.Vida.SetState(vida, 0);
+            npc.MasDanioPorJefes = 1f + config.danioPorJefe * JefesDerrotados;
         }
         return npc;
     }
@@ -416,10 +422,10 @@ public class OleadasDeInvasion : MonoBehaviour
     {
         CerrarPortales();
         Supero?.Invoke(Oleada);
-        if (Oleada == Ultima && !Infinito)
+        if (DeJefe)
         {
             fase = Fase.Final;
-            Final(); // CA6
+            Final(); // US 303, CA4
             return;
         }
         MatchHud.ShowBanner("Modo Invasión", $"Oleada {Oleada} superada", ShopUIKit.Ok, "Descanso de 20 s", null, 3f);
@@ -461,6 +467,7 @@ public class OleadasDeInvasion : MonoBehaviour
         jefeVivo = false;
         escolta = escoltaPorSalir = 0;
         Oleada = Mathf.Max(0, n - 1);
+        JefesDerrotados = Oleada / Ultima; // como si hubiera bajado a los Jefes de antes (US 303)
         esperandoEleccion = false;
         fase = Fase.Descanso;
         if (descanso != null && descanso.IsActive) descanso.Terminar(); // al cerrar la compra arranca la oleada
@@ -598,7 +605,7 @@ public class OleadasDeInvasion : MonoBehaviour
         return vida != null && vida.currentHealth <= 0 ? null : p.transform;
     }
 
-    // ---------- CA6: ¡Sobreviviste! ----------
+    // ---------- US 303, CA4: Jefe derrotado: seguir o retirarse ----------
 
     private void Final()
     {
@@ -609,7 +616,7 @@ public class OleadasDeInvasion : MonoBehaviour
         CameraLook.Quieta = true;
         if (PauseMenu.Instance != null) PauseMenu.Instance.AllowPause = false;
 
-        finalUi = new GameObject("Invasión · ¡Sobreviviste!");
+        finalUi = new GameObject("Invasión · Jefe derrotado");
         var lienzo = finalUi.AddComponent<Canvas>();
         lienzo.renderMode = RenderMode.ScreenSpaceOverlay;
         lienzo.sortingOrder = 60;
@@ -624,22 +631,25 @@ public class OleadasDeInvasion : MonoBehaviour
         Image fondo = Pieza<Image>("Fondo", finalUi.transform, Vector2.zero, Vector2.one, Vector2.zero, Vector2.zero);
         fondo.color = new Color(0f, 0f, 0f, 0.7f);
         TextMeshProUGUI t = Pieza<TextMeshProUGUI>("Título", finalUi.transform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0f, 90f), new Vector2(900f, 120f));
-        Texto(t, "¡SOBREVIVISTE!", titulo, 84f, ShopUIKit.Ok);
-        TextMeshProUGUI s = Pieza<TextMeshProUGUI>("Detalle", finalUi.transform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0f, 10f), new Vector2(900f, 40f));
-        Texto(s, $"Superaste las {Ultima} oleadas. ¿Seguís en modo infinito para hacer récord?", texto, 26f, ShopUIKit.Soft);
-        Boton("Seguir", new Vector2(-150f, -80f), ShopUIKit.Accent, ShopUIKit.AccentInk, texto, Seguir);
-        Boton("Terminar", new Vector2(150f, -80f), ShopUIKit.ChipColor, ShopUIKit.Ink, texto, Terminar);
+        Texto(t, "JEFE DERROTADO", titulo, 84f, ShopUIKit.Ok);
+        ConfigInvasion config = ConfigInvasion.Actual;
+        int masVida = Mathf.RoundToInt(config.vidaPorJefe * JefesDerrotados * 100f), masDanio = Mathf.RoundToInt(config.danioPorJefe * JefesDerrotados * 100f);
+        TextMeshProUGUI s = Pieza<TextMeshProUGUI>("Detalle", finalUi.transform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0f, 10f), new Vector2(1100f, 80f));
+        Texto(s, $"Superaste la oleada {Oleada}. Si seguís, te espera la elección del Jefe, pero desde ahora los invasores " +
+                 $"tienen {masVida} % más de vida y pegan {masDanio} % más.", texto, 26f, ShopUIKit.Soft);
+        Boton("Seguir", new Vector2(-150f, -90f), ShopUIKit.Accent, ShopUIKit.AccentInk, texto, Seguir);
+        Boton("Retirarse", new Vector2(150f, -90f), ShopUIKit.ChipColor, ShopUIKit.Ink, texto, Retirarse);
     }
 
+    // US 303, CA4: sigue; antes del respiro se abre la elección del Jefe (EleccionDeInvasion la tiene pendiente).
     private void Seguir()
     {
-        Infinito = true;
         CerrarFinal();
         ArrancarDescanso();
     }
 
-    // US 151, CA2: el resultado de la partida.
-    private void Terminar()
+    // US 303, CA4 y US 151, CA2: se retira con el resultado y el récord (la oleada del Jefe que bajó, CA5).
+    private void Retirarse()
     {
         CerrarFinal();
         ResultadoDeInvasion.Mostrar(false);

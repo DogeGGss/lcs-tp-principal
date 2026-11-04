@@ -3,7 +3,7 @@ using UnityEngine;
 // F08 (Modo Invasión): lo que se ajusta del modo desde el editor, en Resources/Invasion/ConfigInvasion: los portales de
 // donde salen los enemigos (US 269), cuántos invasores trae cada oleada (US 299), el puesto de suministros (US 292) y
 // los alfas (US 301), cómo se endurece el Jefe en cada vuelta (US 302) y la mezcla de invasores de cada oleada con las
-// jaurías de Rápidos (US 300).
+// jaurías de Rápidos (US 300), y cómo se endurece la partida con cada Jefe y las rarezas después de él (US 303).
 [CreateAssetMenu(menuName = "Riftwalker/Invasión/Configuración", fileName = "ConfigInvasion")]
 public class ConfigInvasion : ScriptableObject
 {
@@ -62,6 +62,18 @@ public class ConfigInvasion : ScriptableObject
     [Min(1)] public int jauriaMinima = 4;
     [Tooltip("CA2: y de como mucho tantos.")]
     [Min(1)] public int jauriaMaxima = 6;
+
+    [Header("Vueltas de 10 oleadas (US 303)")]
+    [Tooltip("CA1: vida que suman todos los invasores (salvo el Jefe) por cada Jefe que cayó (0,25 = 25 %; se acumula).")]
+    [Min(0f)] public float vidaPorJefe = 0.25f;
+    [Tooltip("CA1: daño que suman todos los invasores (salvo el Jefe) por cada Jefe que cayó (0,1 = 10 %; se acumula).")]
+    [Min(0f)] public float danioPorJefe = 0.1f;
+    [Tooltip("CA2: en la elección del Jefe, la chance de que una carta salga rara (no hay comunes).")]
+    [Range(0f, 1f)] public float jefeRara = 0.55f;
+    [Tooltip("CA2: en la elección del Jefe, la chance de épica (el resto, legendaria).")]
+    [Range(0f, 1f)] public float jefeEpica = 0.30f;
+    [Tooltip("CA3: después del primer Jefe, la chance de legendaria en las elecciones normales (se le resta a las comunes).")]
+    [Range(0f, 1f)] public float legendariaNormal = 0.02f;
 
     [Header("Alfas (US 301)")]
     [Tooltip("CA1: desde qué oleada salen alfas.")]

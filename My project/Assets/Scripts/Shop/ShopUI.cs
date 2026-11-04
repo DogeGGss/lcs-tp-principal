@@ -677,7 +677,7 @@ public class ShopUI : MonoBehaviour
         OleadasDeInvasion oleadas = PartidaDeInvasion.Actual.GetComponent<OleadasDeInvasion>();
         if (oleadas == null) return "Invasión";
         int n = Mathf.Max(1, oleadas.Descanso ? oleadas.Oleada + 1 : oleadas.Oleada);
-        return n > OleadasDeInvasion.Ultima ? $"Invasión · Oleada {n} · modo infinito" : $"Invasión · Oleada {n} de {OleadasDeInvasion.Ultima}";
+        return n > OleadasDeInvasion.Ultima ? $"Invasión · Oleada {n} · vuelta {OleadasDeInvasion.Vuelta(n)}" : $"Invasión · Oleada {n} de {OleadasDeInvasion.Ultima}";
     }
 
     private void RenderCategories()
