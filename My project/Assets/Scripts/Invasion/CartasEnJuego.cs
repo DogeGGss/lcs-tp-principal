@@ -15,8 +15,8 @@ using UnityEngine;
 // - US 330, Bronca: cuando un invasor le pega al jugador (un golpe, una bola o un rayo), el próximo disparo suma 5 veces
 //   la vida que perdió en ese golpe (6 y 7 con la carta repetida); con la escopeta se reparte entre los perdigones y,
 //   con el Gran Capitán, va en la explosión. Las nubes y los charcos de veneno del Jefe no la cargan. El disparo con
-//   bronca se ve rojo (el fogonazo y la estela; la granada vuela con una luz roja). Guarda un solo golpe y, después de
-//   usarlo, espera 8 s para volver a cargarse.
+//   bronca se ve rojo (el fogonazo y la estela; la granada vuela con una luz roja) y, mientras está cargada, el arma en
+//   la mano tiene un brillo rojo que late. Guarda un solo golpe y, después de usarlo, espera 8 s para volver a cargarse.
 // - US 327, Filo voraz: cada cuchillazo a un invasor cura lo mismo que el daño que hizo, hasta 25 de vida por golpe (35
 //   y 45 con la carta repetida).
 public class CartasEnJuego : MonoBehaviour
@@ -31,6 +31,7 @@ public class CartasEnJuego : MonoBehaviour
 
     private int bronca;               // US 330: el daño de más guardado para el próximo disparo (0: nada)
     private float broncaListaDesde;   // US 330: desde cuándo puede volver a cargarse
+    private Light brilloDeBronca;     // US 330: el brillo rojo del arma mientras está cargada
 
     // US 329: desde cuándo está guardada cada arma (la principal y la secundaria).
     private readonly System.Collections.Generic.Dictionary<GameObject, float> guardadaDesde =
@@ -65,6 +66,34 @@ public class CartasEnJuego : MonoBehaviour
     private void Update()
     {
         if (EleccionDeInvasion.Veces("Reserva lista") > 0) RecargarLasGuardadas();
+        MostrarBronca();
+    }
+
+    // US 330: mientras la bronca está cargada, una luz roja que late sobre el arma en la mano (abajo a la derecha de la
+    // cámara, donde se ve el arma).
+    private void MostrarBronca()
+    {
+        bool cargada = bronca > 0;
+        if (!cargada)
+        {
+            if (brilloDeBronca != null) brilloDeBronca.enabled = false;
+            return;
+        }
+        if (brilloDeBronca == null)
+        {
+            Camera camara = Camera.main;
+            if (camara == null) return;
+            var go = new GameObject("Bronca cargada");
+            go.transform.SetParent(camara.transform, false);
+            go.transform.localPosition = new Vector3(0.18f, -0.1f, 0.45f);
+            brilloDeBronca = go.AddComponent<Light>();
+            brilloDeBronca.type = LightType.Point;
+            brilloDeBronca.color = Trazadora.Bronca;
+            brilloDeBronca.range = 1.2f;
+            brilloDeBronca.shadows = LightShadows.None;
+        }
+        brilloDeBronca.enabled = true;
+        brilloDeBronca.intensity = 2f + 1.5f * Mathf.Sin(Time.time * 7f);
     }
 
     // US 329: el arma que lleva guardada 2 s se recarga sola (una vez llena, no hace nada más).
