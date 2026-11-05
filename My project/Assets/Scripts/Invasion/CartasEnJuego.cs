@@ -10,11 +10,14 @@ using UnityEngine;
 //   repetida), que se junta pasando por encima (CargadorEnElPiso).
 // - US 328, Remate: el cuchillo mata de un golpe a un invasor con el 25 % de la vida o menos (30 % y 35 % con la carta
 //   repetida), salvo al Jefe.
+// - US 327, Filo voraz: cada cuchillazo a un invasor cura lo mismo que el daño que hizo, hasta 25 de vida por golpe (35
+//   y 45 con la carta repetida).
 public class CartasEnJuego : MonoBehaviour
 {
     public const int BalasDelReciclador = 5; // US 316, CA1: por cada vez
     public const int CarroneroCada = 5;      // US 318, CA1: 1 de cada 5 (uno menos por cada vez que se repite)
     public const float RemateDesde = 0.25f, RematePorVez = 0.05f; // US 328: 25 %, 30 % y 35 % de la vida
+    public const int FiloVorazTope = 25, FiloVorazPorVez = 10;      // US 327: hasta 25, 35 y 45 de vida por golpe
 
     private int muertesParaCarronero;
 
@@ -26,6 +29,7 @@ public class CartasEnJuego : MonoBehaviour
         MeleeAttack.Mato += AlMatarConElCuchillo;
         Npc.Murio += AlMorirUnInvasor;
         MeleeAttack.AjustarGolpe = Rematar;
+        MeleeAttack.Golpeo += AlAcuchillar;
     }
 
     private void OnDisable()
@@ -33,7 +37,20 @@ public class CartasEnJuego : MonoBehaviour
         WeaponFire.Killed -= AlMatar;
         MeleeAttack.Mato -= AlMatarConElCuchillo;
         Npc.Murio -= AlMorirUnInvasor;
+        MeleeAttack.Golpeo -= AlAcuchillar;
         if (MeleeAttack.AjustarGolpe == (System.Func<MeleeAttack, HealthSystem, int, int>)Rematar) MeleeAttack.AjustarGolpe = null;
+    }
+
+    // US 327: con Filo voraz, cada cuchillazo a un invasor cura lo que le sacó (solo el daño que de verdad hizo).
+    private void AlAcuchillar(MeleeAttack cuchillo, HealthSystem herido, int hecho)
+    {
+        int voraz = EleccionDeInvasion.Veces("Filo voraz");
+        if (voraz <= 0 || cuchillo == null || herido == null || herido.GetComponentInParent<Npc>() == null) return;
+        HealthSystem propia = cuchillo.GetComponentInParent<HealthSystem>();
+        if (propia == null) propia = cuchillo.transform.root.GetComponentInChildren<HealthSystem>();
+        if (propia == null || propia.currentHealth <= 0) return;
+        int cura = Mathf.Min(hecho, FiloVorazTope + FiloVorazPorVez * (voraz - 1));
+        propia.SetState(propia.currentHealth + cura, propia.currentShield);
     }
 
     // US 328: con Remate, un cuchillazo a un invasor (no al Jefe) que ya tiene poca vida lo mata.

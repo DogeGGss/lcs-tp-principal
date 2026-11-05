@@ -78,6 +78,8 @@ public class CartaDeInvasion
         // US 319 a 334 (la segunda tanda): se suman al catálogo a medida que tienen su efecto.
         new CartaDeInvasion { nombre = "Remate", rareza = RarezaDeCarta.Comun, rindeCon = "Cuchillo",
             efecto = "El cuchillo mata de un golpe a los invasores con 25 % de vida o menos (salvo al Jefe).", aplicar = EfectosDeCartas.EnElJuego },
+        new CartaDeInvasion { nombre = "Filo voraz", rareza = RarezaDeCarta.Rara, rindeCon = "Cuchillo",
+            efecto = "Cada cuchillazo cura lo mismo que el daño que hace, hasta 25 de vida por golpe.", aplicar = EfectosDeCartas.EnElJuego },
     };
 
     /// <summary>CA3: la rareza al azar según la oleada (común, rara y épica). US 303: despuesDelJefe, ya cayó algún
