@@ -20,6 +20,9 @@ using UnityEngine;
 // - US 334, Alimentación directa (legendaria): el cargador y la reserva son un solo depósito: después de cada disparo
 //   el cargador se vuelve a llenar desde la reserva, así no se recarga nunca hasta que se acaban las balas. Deja sin
 //   uso a las cartas que solo recargan (la elección lo avisa).
+// - US 333, Despeje: cuando el puesto llega al 100 % peleando, una burbuja holográfica verde sale del puesto y empuja
+//   10 m hacia afuera a los invasores del anillo, de tierra y en el aire (15 y 20 m con la carta repetida), salvo al
+//   Jefe (BurbujaDeDespeje y EmpujonDeNpc).
 // - US 327, Filo voraz: cada cuchillazo a un invasor cura lo mismo que el daño que hizo, hasta 25 de vida por golpe (35
 //   y 45 con la carta repetida).
 public class CartasEnJuego : MonoBehaviour
@@ -31,6 +34,7 @@ public class CartasEnJuego : MonoBehaviour
     public const float ReservaListaTarda = 2f;                      // US 329: s guardada hasta recargarse
     public const int BroncaPor = 5;                                 // US 330: veces la vida perdida (6 y 7 repetida)
     public const float BroncaEspera = 8f;                           // US 330: s hasta volver a cargarse
+    public const float DespejeMetros = 10f, DespejePorVez = 5f;     // US 333: 10, 15 y 20 m
 
     private int bronca;               // US 330: el daño de más guardado para el próximo disparo (0: nada)
     private float broncaListaDesde;   // US 330: desde cuándo puede volver a cargarse
@@ -54,6 +58,7 @@ public class CartasEnJuego : MonoBehaviour
         HealthSystem.Damaged += AlRecibirDanio;
         WeaponFire.DanioDeMas = TomarBronca;
         WeaponFire.Fired += AlDisparar;
+        PuestoDeSuministros.SeCargo += Despejar;
     }
 
     private void OnDisable()
@@ -64,6 +69,7 @@ public class CartasEnJuego : MonoBehaviour
         MeleeAttack.Golpeo -= AlAcuchillar;
         HealthSystem.Damaged -= AlRecibirDanio;
         WeaponFire.Fired -= AlDisparar;
+        PuestoDeSuministros.SeCargo -= Despejar;
         if (WeaponFire.DanioDeMas == (System.Func<int>)TomarBronca) WeaponFire.DanioDeMas = null;
         if (MeleeAttack.AjustarGolpe == (System.Func<MeleeAttack, HealthSystem, int, int>)Rematar) MeleeAttack.AjustarGolpe = null;
     }
@@ -79,6 +85,7 @@ public class CartasEnJuego : MonoBehaviour
     {
         if (EleccionDeInvasion.Veces(CartaDeInvasion.AlimentacionDirecta) > 0) AlimentarLasArmas();
         else if (EleccionDeInvasion.Veces("Reserva lista") > 0) RecargarLasGuardadas();
+        DespejarSiToca();
         MostrarBronca();
     }
 
@@ -116,6 +123,31 @@ public class CartasEnJuego : MonoBehaviour
         if (a == null) return;
         MunicionDelArma.LlenarCargador(a.PrimaryObj);
         MunicionDelArma.LlenarCargador(a.SecondaryObj);
+    }
+
+    // US 333: la burbuja del puesto cargado empuja hacia afuera a los invasores del anillo (no al Jefe).
+    // Si en ese momento se abre una elección (Entrega inmediata, US 332, pausa el juego), la burbuja sale al cerrarla,
+    // así se ve.
+    private PuestoDeSuministros despejePendiente;
+
+    private void Despejar(PuestoDeSuministros puesto)
+    {
+        if (EleccionDeInvasion.Veces("Despeje") <= 0 || puesto == null) return;
+        despejePendiente = puesto;
+    }
+
+    private void DespejarSiToca()
+    {
+        if (despejePendiente == null || EleccionDeInvasion.Abierta || Time.timeScale <= 0f) return;
+        PuestoDeSuministros puesto = despejePendiente;
+        despejePendiente = null;
+        int veces = EleccionDeInvasion.Veces("Despeje");
+        if (veces <= 0 || !puesto.Hay) return;
+        float metros = DespejeMetros + DespejePorVez * (veces - 1);
+        Vector3 centro = puesto.Lugar;
+        float radio = puesto.Radio;
+        int empujados = BurbujaDeDespeje.Lanzar(centro, radio, metros);
+        Debug.Log($"Despeje: {empujados} invasores empujados {metros:0} m.");
     }
 
     // US 329: el arma que lleva guardada 2 s se recarga sola (una vez llena, no hace nada más).
@@ -209,5 +241,115 @@ public class CartasEnJuego : MonoBehaviour
         int reciclador = EleccionDeInvasion.Veces("Reciclador");
         if (cabeza && reciclador > 0)
             MunicionDelArma.SumarAlCargador(MunicionDelArma.EnLaMano(Armas()), BalasDelReciclador * reciclador); // US 316
+    }
+}
+
+// US 333: el pulso de Despeje, una burbuja holográfica verde (el color del puesto) que sale del centro del puesto, se
+// agranda hasta el borde del anillo y se apaga. Empuja a cada invasor (de tierra o en el aire: cuenta la distancia en
+// el plano) cuando el frente de la burbuja lo alcanza. Se ve también desde adentro (una cara para afuera y otra para
+// adentro). Usa Efectos/Holograma, el material del perro del Callejero.
+public class BurbujaDeDespeje : MonoBehaviour
+{
+    private const float Crece = 0.55f, Apaga = 0.35f; // s: hasta el borde del anillo y después, apagándose
+    private static Mesh esfera, esferaAdentro;
+
+    private Vector3 centro;
+    private float radio, metros, desde;
+    private Material material;
+    private readonly System.Collections.Generic.List<(Npc npc, float distancia)> porEmpujar =
+        new System.Collections.Generic.List<(Npc, float)>();
+
+    /// <summary>Lanza la burbuja desde el centro del puesto: empuja esos metros a los invasores del anillo (no al Jefe).
+    /// Devuelve cuántos va a empujar.</summary>
+    public static int Lanzar(Vector3 centro, float radio, float metros)
+    {
+        var go = new GameObject("Burbuja de Despeje");
+        go.transform.position = centro;
+        var b = go.AddComponent<BurbujaDeDespeje>();
+        b.centro = centro;
+        b.radio = radio;
+        b.metros = metros;
+        b.desde = Time.time;
+        foreach (Npc npc in Npc.Todos)
+        {
+            if (npc == null || !npc.Vivo || (npc.Tipo != null && npc.Tipo.esJefe)) continue;
+            Vector3 d = npc.transform.position - centro;
+            d.y = 0f;
+            if (d.sqrMagnitude <= radio * radio) b.porEmpujar.Add((npc, d.magnitude));
+        }
+        b.Armar();
+        b.Update();
+        return b.porEmpujar.Count;
+    }
+
+    private void Armar()
+    {
+        Shader shader = Resources.Load<Shader>("Efectos/Holograma");
+        if (shader == null) shader = Shader.Find("Efectos/Holograma");
+        if (shader == null) return;
+        material = new Material(shader) { name = "Burbuja de Despeje" };
+        Color verde = MarcadorInvasion.Verde;
+        material.SetColor("_BaseColor", new Color(verde.r, verde.g, verde.b, 0.9f));
+        Mallas();
+        Cara(esfera);
+        Cara(esferaAdentro);
+    }
+
+    private void Cara(Mesh malla)
+    {
+        var go = new GameObject("Cara");
+        go.transform.SetParent(transform, false);
+        go.AddComponent<MeshFilter>().sharedMesh = malla;
+        var r = go.AddComponent<MeshRenderer>();
+        r.sharedMaterial = material;
+        r.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
+        r.receiveShadows = false;
+    }
+
+    // La esfera de Unity (radio 0,5) y una copia dada vuelta, para verla desde adentro.
+    private static void Mallas()
+    {
+        if (esfera != null && esferaAdentro != null) return;
+        GameObject p = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+        esfera = p.GetComponent<MeshFilter>().sharedMesh;
+        Destroy(p);
+        esferaAdentro = Instantiate(esfera);
+        esferaAdentro.name = "Esfera dada vuelta";
+        Vector3[] normales = esferaAdentro.normals;
+        for (int i = 0; i < normales.Length; i++) normales[i] = -normales[i];
+        esferaAdentro.normals = normales;
+        int[] t = esferaAdentro.triangles;
+        for (int i = 0; i < t.Length; i += 3) (t[i + 1], t[i + 2]) = (t[i + 2], t[i + 1]);
+        esferaAdentro.triangles = t;
+    }
+
+    private void Update()
+    {
+        float t = Time.time - desde;
+        float avance = Mathf.Clamp01(t / Crece);
+        float r = Mathf.Lerp(0.3f, radio, 1f - (1f - avance) * (1f - avance)); // sale rápido y frena en el borde
+        transform.localScale = Vector3.one * (r * 2f);
+
+        // Empuja a cada uno cuando lo alcanza el frente.
+        for (int i = porEmpujar.Count - 1; i >= 0; i--)
+        {
+            if (porEmpujar[i].distancia > r) continue;
+            Npc npc = porEmpujar[i].npc;
+            porEmpujar.RemoveAt(i);
+            if (npc == null || !npc.Vivo) continue;
+            Vector3 d = npc.transform.position - centro;
+            d.y = 0f;
+            if (d.sqrMagnitude < 0.01f) d = Quaternion.Euler(0f, Random.Range(0f, 360f), 0f) * Vector3.forward;
+            EmpujonDeNpc.Empujar(npc, d, metros);
+        }
+
+        float apagado = Mathf.Clamp01((t - Crece) / Apaga);
+        if (material != null) material.SetFloat("_Desvanecer", apagado);
+        if (apagado >= 1f) Destroy(gameObject);
+    }
+
+    private void OnDestroy()
+    {
+        if (material != null) Destroy(material);
     }
 }
