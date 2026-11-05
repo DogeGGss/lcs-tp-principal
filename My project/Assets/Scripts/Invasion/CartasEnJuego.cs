@@ -10,6 +10,8 @@ using UnityEngine;
 //   repetida), que se junta pasando por encima (CargadorEnElPiso).
 // - US 328, Remate: el cuchillo mata de un golpe a un invasor con el 25 % de la vida o menos (30 % y 35 % con la carta
 //   repetida), salvo al Jefe.
+// - US 329, Reserva lista: el arma guardada (la principal o la secundaria que no está en la mano) se recarga sola desde
+//   su reserva después de 2 s guardada (mientras está guardada no se puede disparar).
 // - US 327, Filo voraz: cada cuchillazo a un invasor cura lo mismo que el daño que hizo, hasta 25 de vida por golpe (35
 //   y 45 con la carta repetida).
 public class CartasEnJuego : MonoBehaviour
@@ -18,6 +20,11 @@ public class CartasEnJuego : MonoBehaviour
     public const int CarroneroCada = 5;      // US 318, CA1: 1 de cada 5 (uno menos por cada vez que se repite)
     public const float RemateDesde = 0.25f, RematePorVez = 0.05f; // US 328: 25 %, 30 % y 35 % de la vida
     public const int FiloVorazTope = 25, FiloVorazPorVez = 10;      // US 327: hasta 25, 35 y 45 de vida por golpe
+    public const float ReservaListaTarda = 2f;                      // US 329: s guardada hasta recargarse
+
+    // US 329: desde cuándo está guardada cada arma (la principal y la secundaria).
+    private readonly System.Collections.Generic.Dictionary<GameObject, float> guardadaDesde =
+        new System.Collections.Generic.Dictionary<GameObject, float>();
 
     private int muertesParaCarronero;
 
@@ -39,6 +46,25 @@ public class CartasEnJuego : MonoBehaviour
         Npc.Murio -= AlMorirUnInvasor;
         MeleeAttack.Golpeo -= AlAcuchillar;
         if (MeleeAttack.AjustarGolpe == (System.Func<MeleeAttack, HealthSystem, int, int>)Rematar) MeleeAttack.AjustarGolpe = null;
+    }
+
+    private void Update()
+    {
+        if (EleccionDeInvasion.Veces("Reserva lista") > 0) RecargarLasGuardadas();
+    }
+
+    // US 329: el arma que lleva guardada 2 s se recarga sola (una vez llena, no hace nada más).
+    private void RecargarLasGuardadas()
+    {
+        WeaponSwitcher a = Armas();
+        if (a == null) return;
+        foreach (GameObject arma in new[] { a.PrimaryObj, a.SecondaryObj })
+        {
+            if (arma == null) continue;
+            if (arma.activeInHierarchy) { guardadaDesde.Remove(arma); continue; }
+            if (!guardadaDesde.TryGetValue(arma, out float desde)) { guardadaDesde[arma] = Time.time; continue; }
+            if (Time.time - desde >= ReservaListaTarda) MunicionDelArma.LlenarCargador(arma);
+        }
     }
 
     // US 327: con Filo voraz, cada cuchillazo a un invasor cura lo que le sacó (solo el daño que de verdad hizo).
