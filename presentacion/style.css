@@ -109,3 +109,18 @@ body.cae-main #secreto .rebanadas{display:none}
 #secreto.abierto.sin-video .portal{width:64vmin;height:64vmin;box-shadow:none;background:radial-gradient(closest-side,#000 0 70%,#fff2d9 73%,#ffad55 79%,#ff6a1f 86%,#8a3cff00 100%);
   transition:width .8s cubic-bezier(.6,0,.4,1),height .8s cubic-bezier(.6,0,.4,1);animation:latido 1.8s ease-in-out infinite}
 @keyframes latido{50%{transform:translate(-50%,-50%) scale(1.06);filter:brightness(1.25)}}
+/* Escala: la línea con las tres paradas (hoy, la señal y tiempo completo) y lo que queda con el equipo completo. */
+.escala-linea{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;position:relative;margin-bottom:24px}
+.escala-linea::before,.escala-linea::after{content:'';position:absolute;top:13px;height:4px}
+.escala-linea::before{left:16.67%;right:50%;background:var(--line)}.escala-linea::after{left:50%;right:16.67%;background:var(--green)}
+.parada{position:relative;z-index:1;text-align:center;min-width:0}
+.parada i{display:block;width:30px;height:30px;border-radius:50%;margin:0 auto 12px;background:var(--bg);border:4px solid var(--muted)}
+.parada.senal i{border-color:var(--accent)}.parada.completo i{background:var(--green);border-color:var(--green)}
+.parada .eyebrow{color:var(--muted);margin-bottom:4px}.parada.senal .eyebrow{color:var(--accent)}.parada.completo .eyebrow{color:var(--green)}
+.parada b{display:block;font:700 76px Display,sans-serif;line-height:1;font-variant-numeric:tabular-nums}
+.parada span{display:block;color:var(--muted);font-size:21px;margin:6px auto 0;max-width:380px;line-height:1.3}
+.parada strong{display:block;font-size:22px;margin-top:8px}
+.grid.escala-fin{grid-template-columns:1fr 1fr 1.6fr}.escala-fin .card{min-height:0}.escala-fin .card p{margin-top:8px}
+@media(min-width:1001px) and (max-height:800px){.escala-linea{margin-bottom:14px}.parada i{width:24px;height:24px;margin-bottom:8px;border-width:3px}.escala-linea::before,.escala-linea::after{top:10px}.parada b{font-size:54px}.parada span{font-size:17px}.parada strong{font-size:18px;margin-top:4px}.escala-fin .card p{font-size:19px}}
+@media(max-width:1000px){.parada b{font-size:56px}.parada span{font-size:17px}.parada strong{font-size:18px}.escala-fin .card p{font-size:19px}}
+@media(max-width:700px){.escala-linea,.grid.escala-fin{grid-template-columns:1fr}.escala-linea::before,.escala-linea::after{display:none}}

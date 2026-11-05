@@ -1,6 +1,6 @@
 # Presentación del Sprint 3
 
-Abrir `/presentacion/` desde el enlace independiente de la guía. El recorrido suma 20 minutos y se divide en tres partes, en este orden: Juego (apertura, tráiler, historia, demos, arsenal, menú, perfil y cápsulas), Equipo (las métricas de cada sprint y lo que sumó cada uno) y Financiación (propuesta comercial, números, costos e inversión), y después el cierre. Cada diapositiva muestra arriba su parte, y el índice las agrupa. No avanza automáticamente: el operador controla el ritmo.
+Abrir `/presentacion/` desde el enlace independiente de la guía. El recorrido suma 20 minutos y se divide en tres partes, en este orden: Juego (apertura, tráiler, historia, demos, arsenal, menú, perfil y cápsulas), Equipo (las métricas de cada sprint y lo que sumó cada uno) y Financiación (propuesta comercial, números, costos y escala), y después el cierre. Cada diapositiva muestra arriba su parte, y el índice las agrupa. No avanza automáticamente: el operador controla el ritmo.
 
 ## Para exponer
 
@@ -24,7 +24,7 @@ El tráiler está en `media/trailer.mp4` (`trailer.src`), con un cuadro del prop
 
 `arsenal.js` es una instantánea de las siete armas marcadas En el juego por la guía al 05/10/2026. No equivale a validar una build. Al actualizar el balance, regenerar o ajustar esa instantánea y su fecha. La pistola usa la recarga de 1,5 s indicada por EXTRA en la guía. Las imágenes de `media/armas/` (una por `id`) son renders de los modelos de primera persona del juego, de costado y con fondo transparente, hechos desde Unity el 23/10/2026; si cambia un modelo, hay que volver a renderizarla.
 
-La propuesta comercial y los bloques Números, Costos e Inversión (antes del cierre) salen de la sección Modelo de negocio de la guía: juego gratuito en Steam con cristales de pago, solo cosméticos. `business` tiene los productos y precios propuestos, y `visual` elige la imagen de cada uno (tienda, pase, cápsulas o cristales); el pase y la tienda directa todavía no están en el juego. `economics` tiene los números del simulador de la guía: los tres escenarios (pesimista, promedio y optimista), todos con las mejoras del plan, y la inversión de los 5 sprints. Son simulaciones con supuestos, no resultados ni cifras de mercado. Al cambiar un supuesto en la guía, volver a copiar los números.
+La propuesta comercial y los bloques Números, Costos y Escala (antes del cierre) salen de la sección Modelo de negocio de la guía: juego gratuito en Steam con cristales de pago, solo cosméticos. `business` tiene los productos y precios propuestos, y `visual` elige la imagen de cada uno (tienda, pase, cápsulas o cristales); el pase y la tienda directa todavía no están en el juego. `economics` tiene los números del simulador de la guía: los tres escenarios (pesimista, promedio y optimista), todos con las mejoras del plan, y la inversión de los 5 sprints. Son simulaciones con supuestos, no resultados ni cifras de mercado. Al cambiar un supuesto en la guía, volver a copiar los números.
 
 ## Pendientes para el ensayo final
 
@@ -90,3 +90,7 @@ Se sacó la diapositiva Tiempo por estado. Quedan trece bloques; para seguir en 
 ## Números con la ganancia neta (27/10/2026)
 
 Cada escenario muestra en grande lo que queda después de todo: Steam, la retención de EE.UU., los gastos y el impuesto a las ganancias (`afterTax`), igual que la última línea de Costos. La fila «Steam, retención e impuestos» hace que la tarjeta cierre: ganancias − Steam e impuestos − costos = lo que queda. El recupero, los 3 años y el equilibrio ya usaban ese número (el equilibrio es igual antes y después del impuesto).
+
+## Escala (04/11/2026)
+
+Escala reemplaza a Inversión, que se sacó porque sus números ya están en Números y Costos (su código, `investment()`, queda). Muestra qué pasa si el juego funciona: el equipo pasa a tiempo completo. Son tres paradas (hoy, la señal y tiempo completo) y abajo lo que queda por mes con el equipo completo en el promedio y el optimista, más por qué hace falta: es un juego que también es un servicio. Hoy entre los 7 son 357 horas por sprint (el 64 % de un tiempo completo) y US$ 6.687 por mes en sueldos; a tiempo completo, 560 horas y US$ 9.851, cada uno con el sueldo junior completo de lo que hace. La señal es la inversión recuperada y 67.000 jugadores por mes, desde donde el equipo completo no pierde plata: en el promedio llega en el mes 10 y en el optimista en el mes 2; en el pesimista no llega. Los números (`economics.scale`) salen del modelo de la guía, con las mejoras del plan; si cambia un supuesto, volver a calcularlos. La lee Nicolás Gauna, como Costos, y dura el minuto de Inversión: siguen siendo trece bloques y 20 minutos.

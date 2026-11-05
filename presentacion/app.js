@@ -15,6 +15,11 @@ function investment(){
  const E=D.economics,I=E.investment,L=E.scenarios,mid=L[1];
  return `<div class="grid two invest"><article class="card"><p class="eyebrow">La inversión</p><div class="metric-number">${money(I.total)}</div><div class="uses">${I.items.map(([n,v])=>`<div><span>${esc(n)}</span><b>${money(v)}</b><i style="width:${Math.max(1,v/I.total*100)}%"></i></div>`).join('')}</div><p class="footnote">Después, el juego necesita ${money(I.monthlyFixed)} fijos por mes (${money(I.salaries)} son los sueldos de los 7) más los servidores.</p></article><article class="card"><p class="eyebrow">Lo que vuelve</p><table class="returns"><tr><th></th><th>Recupero</th><th>A los 3 años</th></tr>${L.map(x=>`<tr><td>${esc(x.name)}</td><td>${x.payback?'mes '+x.payback:'no se recupera'}</td><td>${x.perDollar?`US$&nbsp;${dec(x.perDollar)} por cada dólar`:`pierde ${money(-x.result)} por mes`}</td></tr>`).join('')}</table></article></div><div class="watch"><div><b>${num(mid.peak)}</b><span>a la vez en la hora pico, de los ${num(mid.players)} jugadores por mes del promedio</span></div><div><b>${thousands(mid.breakEven)}</b><span>jugadores por mes para no perder plata</span></div><div><b>${mid.conv.toLocaleString('es-AR')} %</b><span>de los jugadores paga algo en el mes</span></div><div><b>US$&nbsp;${dec(mid.arppu)}</b><span>por mes cada uno que paga: US$&nbsp;${dec(mid.arppuLatam)} en Latinoamérica (${mid.latam}&nbsp;%) y US$&nbsp;${dec(mid.arppuRest)} en el resto</span></div></div>`;
 }
+// Si funciona, los 7 a tiempo completo: tres paradas (hoy, la señal y tiempo completo) y lo que queda con el equipo completo.
+function scale(){
+ const S=D.economics.scale,pct=n=>Math.round(n*100)+' %',[a,b]=S.scenarios;
+ return `<div class="escala-linea"><div class="parada"><i></i><p class="eyebrow">Hoy</p><b>${num(Math.round(S.hours))} h</b><span>por sprint entre los 7: el ${pct(S.hours/S.fullHours)} de un tiempo completo</span><strong>${money(S.salaries)} por mes en sueldos</strong></div><div class="parada senal"><i></i><p class="eyebrow">La señal</p><b>${thousands(S.breakEven)}</b><span>jugadores por mes, con la inversión ya recuperada</span><strong>${esc(a.name)}: mes ${a.payback} · ${esc(b.name)}: mes ${b.payback}</strong></div><div class="parada completo"><i></i><p class="eyebrow">Tiempo completo</p><b>${num(S.fullHours)} h</b><span>por sprint: los 7 a 80 h, ${pct(S.fullHours/S.hours-1)} más</span><strong>${money(S.fullSalaries)} por mes en sueldos</strong></div></div><div class="grid escala-fin">${S.scenarios.map(x=>`<article class="card scenario"><p class="eyebrow">${esc(x.name)}</p><div class="result pos">${money(x.afterTax,true)}<small>por mes con los 7 completos · hoy ${money(x.now)}</small></div></article>`).join('')}<article class="card"><p class="eyebrow">Un juego que es un servicio</p><p>${esc(S.service)}</p></article></div>`;
+}
 // A dónde va la inversión y, cada mes del promedio, lo que pagan los jugadores.
 function costs(){
  const E=D.economics,I=E.investment,S=I.salary,M=E.month;
@@ -103,6 +108,7 @@ function content(s){
  case 'costos':return head(s)+costs();
  case 'avance':return head(s)+progress();
  case 'inversion':return head(s)+investment();
+ case 'escala':return head(s)+scale();
  case 'cierre':return `<div class="hero"><p class="eyebrow">Laboratorio de Construcción de Software · Sprint 3</p><img class="hero-logo" src="media/logo.png" alt="Project Riftwalker"><h1>¡Gracias!</h1><p class="lead">¿Preguntas?</p></div>`;
  }
 }
