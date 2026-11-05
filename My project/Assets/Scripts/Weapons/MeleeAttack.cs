@@ -16,6 +16,11 @@ public class MeleeAttack : MonoBehaviour
     public static event System.Action<MeleeAttack> Swung;
     // Cada baja con el cuchillo (la carta Filo de Invasión recarga el arma: US 317).
     public static event System.Action<MeleeAttack> Mato;
+    // Cambia el daño de un cuchillazo antes de aplicarlo (la carta Remate de Invasión: US 328). Recibe el cuchillo, a
+    // quién le pega y el daño del cuchillo; devuelve el daño que le hace.
+    public static System.Func<MeleeAttack, HealthSystem, int, int> AjustarGolpe;
+    // Cada cuchillazo que le sacó vida o escudo a alguien: el cuchillo, a quién y cuánto (la carta Filo voraz: US 327).
+    public static event System.Action<MeleeAttack, HealthSystem, int> Golpeo;
     public AudioClip SwingSound => swingSound;
 
     // US 256: el corte de costado. Lo dibuja AnimacionPrimeraPersona con el avance (AvanceDelCorte); acá solo se mide el
@@ -135,12 +140,16 @@ public class MeleeAttack : MonoBehaviour
         {
             // Se mira antes de aplicar el daño (a un jugador de otra computadora le llega después), para el marcador
             // de impacto y el aviso de baja: antes las bajas con cuchillo no salían en los avisos sin conexión.
-            bool lethal = best.WouldDie(data.damage);
+            int danio = AjustarGolpe != null ? AjustarGolpe(this, best, data.damage) : data.damage;
+            bool lethal = best.WouldDie(danio);
+            int antes = best.currentHealth + best.currentShield;
             HealthSystem.DamageOrigin = origin; // US 192
-            best.TakeDamage(data.damage);
+            best.TakeDamage(danio);
+            int hecho = Mathf.Max(0, antes - (best.currentHealth + best.currentShield));
             WeaponFire.ReportMelee(lethal);
+            if (hecho > 0) Golpeo?.Invoke(this, best, hecho);
             if (lethal) Mato?.Invoke(this);
-            Debug.Log($"Golpe cuerpo a cuerpo a {best.name}. Daño: {data.damage}");
+            Debug.Log($"Golpe cuerpo a cuerpo a {best.name}. Daño: {danio}");
         }
         // US 020, CA5: sin nadie a tiro, el cuchillo le pega a la Barrera que tenga adelante (si es de un rival).
         else if (Physics.Raycast(origin, forward, out RaycastHit pared, data.range, Physics.DefaultRaycastLayers, QueryTriggerInteraction.Ignore))
