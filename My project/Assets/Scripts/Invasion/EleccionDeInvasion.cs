@@ -24,6 +24,10 @@ using static ShopUIKit;
 // US 303: al superar una oleada del Jefe la elección se abre siempre, aunque el puesto no esté cargado (CA2), recién
 // después de "Seguir" (CA4): es la elección del Jefe, sin comunes y con más chance de raras, épicas y legendarias (vale
 // también al volver a tirar, solo en esa elección). Las legendarias no salen antes del primer Jefe (CA3).
+// US 332, Entrega inmediata: con la carta, la elección se abre apenas el puesto llega al 100 % peleando, sin esperar
+// al final de la oleada (no en las oleadas del Jefe, que tienen la suya). Jugando solo el juego se pausa mientras se
+// elige. La munición del puesto se sigue dando al terminar la oleada, cuando el puesto se abre (ya sin elección).
+// De a varios, si se pausa o no todavía no está decidido (el multijugador entra en otro sprint).
 // De a varios (US 289) cada uno va a elegir lo suyo, con un tope de 30 s; por ahora se juega solo y no hay tope.
 public class EleccionDeInvasion : MonoBehaviour
 {
@@ -56,6 +60,8 @@ public class EleccionDeInvasion : MonoBehaviour
     private PlayerLoadout equipo;
     private bool pendiente;           // US 303: superó una oleada del Jefe: se elige al seguir
     private bool delJefe;             // US 303, CA2: la que está abierta es la elección del Jefe
+    private bool inmediata;           // US 332: la que está abierta es en medio de la oleada (Entrega inmediata)
+    private float escalaDeTiempo = 1f; // US 332: la del juego antes de pausarlo
     private TextMeshProUGUI antetitulo;
     private int costo = PrimeraTirada;
     private readonly List<Opcion> opciones = new List<Opcion>();
@@ -79,6 +85,7 @@ public class EleccionDeInvasion : MonoBehaviour
     {
         Actual = this;
         PuestoDeSuministros.Abrio += AlAbrirElPuesto;
+        PuestoDeSuministros.SeCargo += AlCargarseElPuesto;
         OleadasDeInvasion.Empezo += AlEmpezar;
         OleadasDeInvasion.Supero += AlSuperar;
     }
@@ -87,6 +94,7 @@ public class EleccionDeInvasion : MonoBehaviour
     {
         if (Actual == this) Actual = null;
         PuestoDeSuministros.Abrio -= AlAbrirElPuesto;
+        PuestoDeSuministros.SeCargo -= AlCargarseElPuesto;
         OleadasDeInvasion.Empezo -= AlEmpezar;
         OleadasDeInvasion.Supero -= AlSuperar;
     }
@@ -102,7 +110,22 @@ public class EleccionDeInvasion : MonoBehaviour
         if (oleadas == null) oleadas = GetComponent<OleadasDeInvasion>();
         // En las oleadas del Jefe la elección es la del Jefe, que se abre siempre (AlSuperar).
         if (oleadas != null && oleadas.DeJefe) return;
+        // US 332: la elección ya se hizo apenas se cargó (Entrega inmediata): ahora solo la munición.
+        if (PuestoDeSuministros.Actual != null && PuestoDeSuministros.Actual.Entregado) { DarMunicion(); return; }
         Abrir(false);
+    }
+
+    // US 332: con Entrega inmediata, la elección se abre apenas se carga el puesto (salvo en las oleadas del Jefe).
+    private void AlCargarseElPuesto(PuestoDeSuministros puesto)
+    {
+        if (Abierta || Veces("Entrega inmediata") <= 0) return;
+        if (oleadas == null) oleadas = GetComponent<OleadasDeInvasion>();
+        if (oleadas != null && oleadas.DeJefe) return;
+        inmediata = true; // (antes de abrir: la munición se da al terminar la oleada)
+        Abrir(false);
+        if (!Abierta) { inmediata = false; return; }
+        escalaDeTiempo = Time.timeScale > 0f ? Time.timeScale : 1f;
+        Time.timeScale = 0f; // jugando solo, el juego se pausa mientras se elige
     }
 
     // US 303, CA2 y CA4: al superar una oleada del Jefe primero sale "Jefe derrotado"; la elección del Jefe espera a
@@ -116,6 +139,7 @@ public class EleccionDeInvasion : MonoBehaviour
     private void AlEmpezar(int oleada)
     {
         pendiente = false;
+        if (inmediata) { inmediata = false; Time.timeScale = escalaDeTiempo; } // (el puesto nuevo no se entrega)
         if (Abierta) Cerrar();
     }
 
@@ -138,18 +162,22 @@ public class EleccionDeInvasion : MonoBehaviour
         if (equipo == null) equipo = FindFirstObjectByType<PlayerLoadout>();
         if (lienzo == null) Armar();
 
-        // CA2: la mitad de la munición máxima de cada arma (con Logística, toda: US 314).
-        WeaponSwitcher armas = equipo != null ? equipo.GetComponentInChildren<WeaponSwitcher>(true) : null;
-        if (armas != null)
-        {
-            if (Veces("Logística") > 0) armas.RellenarTodas();
-            else armas.RecargarMitad();
-        }
+        if (!inmediata) DarMunicion(); // US 332: con Entrega inmediata, al terminar la oleada
 
         Abierta = true; // el respiro ya espera, aunque la pantalla todavía no se vea
         visible = false;
         costo = PrimeraTirada;
         mostrarEn = Time.unscaledTime + Espera;
+    }
+
+    // CA2: la mitad de la munición máxima de cada arma (con Logística, toda: US 314).
+    private void DarMunicion()
+    {
+        if (equipo == null) equipo = FindFirstObjectByType<PlayerLoadout>();
+        WeaponSwitcher armas = equipo != null ? equipo.GetComponentInChildren<WeaponSwitcher>(true) : null;
+        if (armas == null) return;
+        if (Veces("Logística") > 0) armas.RellenarTodas();
+        else armas.RecargarMitad();
     }
 
     // Cuando se fue el cartel de "Oleada N superada" (y un momento más), aparece la pantalla.
@@ -159,7 +187,7 @@ public class EleccionDeInvasion : MonoBehaviour
         mostradaEn = Time.unscaledTime;
         grupo.alpha = 0f;
         lienzo.gameObject.SetActive(true);
-        if (antetitulo != null) antetitulo.text = delJefe ? "Elección del Jefe" : "Puesto de suministros";
+        if (antetitulo != null) antetitulo.text = delJefe ? "Elección del Jefe" : inmediata ? "Entrega inmediata" : "Puesto de suministros";
         Bloquear();
         Tirar();
     }
@@ -193,6 +221,12 @@ public class EleccionDeInvasion : MonoBehaviour
 
     private void Cerrar()
     {
+        if (inmediata) // US 332: sigue la oleada
+        {
+            inmediata = false;
+            Time.timeScale = escalaDeTiempo;
+            if (PuestoDeSuministros.Actual != null) PuestoDeSuministros.Actual.Entregar();
+        }
         Abierta = false;
         visible = false;
         if (lienzo != null) lienzo.gameObject.SetActive(false);
@@ -306,8 +340,9 @@ public class EleccionDeInvasion : MonoBehaviour
             o.carta.aplicar?.Invoke(equipo != null ? equipo.gameObject : null, veces);
             ActualizarCartas();
         }
+        bool enLaOleada = inmediata;
         Cerrar();
-        if (oleadas != null) oleadas.TerminoLaEleccion(); // CA6: arranca el respiro
+        if (!enLaOleada && oleadas != null) oleadas.TerminoLaEleccion(); // CA6: arranca el respiro (US 332: en medio de la oleada no)
     }
 
     /// <summary>Para probar (Riftwalker > Invasión > Darme una carta): la suma como si se la hubiera elegido.</summary>

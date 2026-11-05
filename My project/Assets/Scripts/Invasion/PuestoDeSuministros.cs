@@ -210,6 +210,15 @@ public class PuestoDeSuministros : MonoBehaviour
 
     // ---------- CA7: se abre o se va ----------
 
+    /// <summary>US 332, Entrega inmediata: la elección de este puesto ya se hizo; al terminar la oleada se abre igual,
+    /// pero solo da la munición.</summary>
+    public bool Entregado { get; private set; }
+
+    public void Entregar()
+    {
+        if (Hay) Entregado = true;
+    }
+
     private void AlSuperar(int oleada)
     {
         if (!Hay) return;
@@ -228,6 +237,7 @@ public class PuestoDeSuministros : MonoBehaviour
         puesto = null;
         cuerpo = null;
         Adentro = false;
+        Entregado = false;
         Carga = Meta = 0;
     }
 
