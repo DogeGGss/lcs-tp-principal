@@ -23,6 +23,9 @@ public static class WeaponFire
     // Cada disparo, con quién tiró, desde dónde y la dirección de cada perdigón. El multijugador lo repite
     // en las demás computadoras (US 028).
     public static event System.Action<Transform, Vector3, Vector3[]> Fired;
+    // Daño de más para el disparo que sale ahora (la carta Bronca de Invasión: US 330): se pide una vez por disparo y
+    // se reparte entre los perdigones.
+    public static System.Func<int> DanioDeMas;
 
     private static readonly RaycastHit[] hits = new RaycastHit[32];
     private static readonly Dictionary<HealthSystem, bool> zoned = new Dictionary<HealthSystem, bool>();
@@ -49,18 +52,22 @@ public static class WeaponFire
         Vector3[] directions = new Vector3[pellets];
         // La bala se ve: fogonazo en la boca del arma y una estela por perdigón hasta donde pegó.
         Vector3 muzzle = Trazadora.BocaLocal(camera);
-        Trazadora.Fogonazo(muzzle);
         if (MinijuegoCometas.Activo)
         {
+            Trazadora.Fogonazo(muzzle);
             FirePractice(weapon, camera, aim, view, spread, pellets, muzzle, range);
             return;
         }
+        int deMas = DanioDeMas != null ? Mathf.Max(0, DanioDeMas()) : 0; // US 330
+        bool conBronca = deMas > 0; // US 330: el disparo con bronca se ve rojo
+        Trazadora.Fogonazo(muzzle, conBronca);
+        int deMasPorPerdigon = deMas / pellets, deMasSobra = deMas - deMasPorPerdigon * pellets;
         for (int i = 0; i < pellets; i++)
         {
             Vector3 direction = view * Deviation(spread) * Vector3.forward;
             directions[i] = direction;
             bool touched = Trace(camera.transform.position, direction, range, shooter, out RaycastHit hit, out HealthSystem target, out BodyZone zone);
-            Trazadora.Mostrar(muzzle, touched ? hit.point : camera.transform.position + direction * Mathf.Min(range, 300f));
+            Trazadora.Mostrar(muzzle, touched ? hit.point : camera.transform.position + direction * Mathf.Min(range, 300f), conBronca);
             if (!touched)
                 continue;
 
@@ -87,7 +94,7 @@ public static class WeaponFire
             if (EquiposTacticos.SonAliados(shooter, target)) continue;
 
             // Se mira antes de aplicar el daño: a un jugador de otra computadora el daño le llega después (US 029).
-            int damage = weapon.HitDamage(zone, hit.distance);
+            int damage = weapon.HitDamage(zone, hit.distance) + deMasPorPerdigon + (i == 0 ? deMasSobra : 0);
             bool lethal = target.WouldDie(damage);
             Impacto?.Invoke(target, damage, zone);
             HealthSystem.DamageOrigin = camera.transform.position; // US 192: desde dónde le dispararon
@@ -167,7 +174,8 @@ public static class WeaponFire
         foreach (RaycastHit h in Physics.RaycastAll(desde, hacia.normalized, hacia.magnitude, ~0, QueryTriggerInteraction.Ignore))
             if (shooter == null || !h.collider.transform.IsChildOf(shooter))
                 if (Vector3.Distance(desde, h.point) < Vector3.Distance(desde, muzzle)) muzzle = h.point - hacia.normalized * 0.15f;
-        Trazadora.Fogonazo(muzzle);
+        int deMas = DanioDeMas != null ? Mathf.Max(0, DanioDeMas()) : 0; // US 330: la bronca va en la explosión
+        Trazadora.Fogonazo(muzzle, deMas > 0);
 
         GameObject thrown = Object.Instantiate(weapon.grenadePrefab, muzzle, Quaternion.LookRotation(direction));
         Grenade1 grenade = thrown.GetComponent<Grenade1>();
@@ -176,13 +184,28 @@ public static class WeaponFire
             grenade.thrower = shooter;
             grenade.Configure(weapon);
             grenade.throwForce = 0f;
+            grenade.danioDeMas = deMas;
             grenade.Throw(direction);
         }
+        if (deMas > 0) Brasa(thrown.transform); // US 330: la granada con bronca vuela roja
         Rigidbody body = thrown.GetComponent<Rigidbody>();
         if (body != null) body.linearVelocity = direction * weapon.velocidadDelProyectil;
 
         aim.Kick(weapon);
         Fired?.Invoke(shooter, camera.transform.position, new[] { direction });
+    }
+
+    // US 330: una luz roja que acompaña a la granada con bronca hasta que explota.
+    private static void Brasa(Transform granada)
+    {
+        var go = new GameObject("Bronca");
+        go.transform.SetParent(granada, false);
+        Light luz = go.AddComponent<Light>();
+        luz.type = LightType.Point;
+        luz.color = Trazadora.Bronca;
+        luz.intensity = 4f;
+        luz.range = 3f;
+        luz.shadows = LightShadows.None;
     }
 
     private static Quaternion Deviation(float degrees)
