@@ -8,10 +8,13 @@ using UnityEngine;
 //   reserva), porque en ese momento la mano tiene el cuchillo.
 // - US 318, Carroñero: 1 de cada 5 invasores que mueren suelta un cargador (1 de cada 4 y 1 de cada 3 con la carta
 //   repetida), que se junta pasando por encima (CargadorEnElPiso).
+// - US 328, Remate: el cuchillo mata de un golpe a un invasor con el 25 % de la vida o menos (30 % y 35 % con la carta
+//   repetida), salvo al Jefe.
 public class CartasEnJuego : MonoBehaviour
 {
     public const int BalasDelReciclador = 5; // US 316, CA1: por cada vez
     public const int CarroneroCada = 5;      // US 318, CA1: 1 de cada 5 (uno menos por cada vez que se repite)
+    public const float RemateDesde = 0.25f, RematePorVez = 0.05f; // US 328: 25 %, 30 % y 35 % de la vida
 
     private int muertesParaCarronero;
 
@@ -22,6 +25,7 @@ public class CartasEnJuego : MonoBehaviour
         WeaponFire.Killed += AlMatar;
         MeleeAttack.Mato += AlMatarConElCuchillo;
         Npc.Murio += AlMorirUnInvasor;
+        MeleeAttack.AjustarGolpe = Rematar;
     }
 
     private void OnDisable()
@@ -29,6 +33,19 @@ public class CartasEnJuego : MonoBehaviour
         WeaponFire.Killed -= AlMatar;
         MeleeAttack.Mato -= AlMatarConElCuchillo;
         Npc.Murio -= AlMorirUnInvasor;
+        if (MeleeAttack.AjustarGolpe == (System.Func<MeleeAttack, HealthSystem, int, int>)Rematar) MeleeAttack.AjustarGolpe = null;
+    }
+
+    // US 328: con Remate, un cuchillazo a un invasor (no al Jefe) que ya tiene poca vida lo mata.
+    private int Rematar(MeleeAttack cuchillo, HealthSystem vida, int danio)
+    {
+        int remate = EleccionDeInvasion.Veces("Remate");
+        if (remate <= 0 || vida == null || vida.maxHealth <= 0) return danio;
+        Npc npc = vida.GetComponentInParent<Npc>();
+        if (npc == null || !npc.Vivo || (npc.Tipo != null && npc.Tipo.esJefe)) return danio;
+        float umbral = RemateDesde + RematePorVez * (remate - 1);
+        if (vida.currentHealth > vida.maxHealth * umbral) return danio;
+        return Mathf.Max(danio, vida.currentHealth + vida.currentShield); // de un golpe
     }
 
     // US 318: cada invasor que muere (por lo que sea) cuenta para el Carroñero.
