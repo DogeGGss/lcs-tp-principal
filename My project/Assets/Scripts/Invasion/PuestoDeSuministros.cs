@@ -28,6 +28,9 @@ public class PuestoDeSuministros : MonoBehaviour
 
     /// <summary>CA7: el puesto estaba cargado al terminar la oleada (la US 293 abre la elección).</summary>
     public static event System.Action Abrio;
+    /// <summary>El puesto llegó al 100 % peleando (no el de la oleada 2, que cae cargado): el puesto (cartas Despeje,
+    /// US 333, y Entrega inmediata, US 332).</summary>
+    public static event System.Action<PuestoDeSuministros> SeCargo;
 
     /// <summary>Hay un puesto en el mapa.</summary>
     public bool Hay => puesto != null;
@@ -175,7 +178,7 @@ public class PuestoDeSuministros : MonoBehaviour
         ActualizarAdentro();
         if (!Adentro) return; // afuera cuenta para el récord, no para el puesto
         Carga = Mathf.Min(Meta, Carga + puntos);
-        if (Cargado) Avisar("Puesto cargado");
+        if (Cargado) { Avisar("Puesto cargado"); SeCargo?.Invoke(this); }
     }
 
     /// <summary>Para probar (Riftwalker > Invasión > Cargar el puesto).</summary>
@@ -184,6 +187,7 @@ public class PuestoDeSuministros : MonoBehaviour
         if (!Hay || Cargado) return;
         Carga = Meta;
         Avisar("Puesto cargado");
+        SeCargo?.Invoke(this);
     }
 
     private void ActualizarAdentro()
