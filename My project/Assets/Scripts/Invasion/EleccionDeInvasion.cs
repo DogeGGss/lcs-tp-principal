@@ -444,6 +444,22 @@ public class EleccionDeInvasion : MonoBehaviour
         ActualizarTirar();
     }
 
+    // US 334: avisa cuando la carta queda sin uso con Alimentación directa (o, si es Alimentación directa, a cuáles de
+    // las que ya se tienen deja sin uso). null: no hay nada que avisar.
+    private static string AvisoDeAlimentacion(CartaDeInvasion carta)
+    {
+        if (carta == null) return null;
+        if (carta.nombre == CartaDeInvasion.AlimentacionDirecta)
+        {
+            var anuladas = new List<string>();
+            foreach (string n in CartaDeInvasion.SinUsoConAlimentacion) if (Veces(n) > 0) anuladas.Add(n);
+            return anuladas.Count > 0 ? "Deja sin uso: " + string.Join(", ", anuladas) : null;
+        }
+        if (Veces(CartaDeInvasion.AlimentacionDirecta) > 0 && System.Array.IndexOf(CartaDeInvasion.SinUsoConAlimentacion, carta.nombre) >= 0)
+            return "Sin uso con Alimentación directa";
+        return null;
+    }
+
     private void DibujarCarta(int i, Opcion o, float x)
     {
         bool esArma = o.arma != null;
@@ -453,6 +469,7 @@ public class EleccionDeInvasion : MonoBehaviour
         string efecto = esArma ? QueReemplaza(o.arma) : o.carta.efecto;
         string rinde = esArma ? (o.arma.kind == ShopItemKind.PrimaryWeapon ? "Arma principal" : "Arma secundaria")
                               : "Rinde con: " + o.carta.rindeCon;
+        if (!esArma) rinde = AvisoDeAlimentacion(o.carta) ?? rinde; // US 334
 
         RectTransform carta = Node("Opcion" + (i + 1), fila);
         carta.anchorMin = carta.anchorMax = carta.pivot = new Vector2(0.5f, 0.5f);

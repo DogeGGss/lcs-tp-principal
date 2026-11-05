@@ -17,6 +17,9 @@ using UnityEngine;
 //   con el Gran Capitán, va en la explosión. Las nubes y los charcos de veneno del Jefe no la cargan. El disparo con
 //   bronca se ve rojo (el fogonazo y la estela; la granada vuela con una luz roja) y, mientras está cargada, el arma en
 //   la mano tiene un brillo rojo que late. Guarda un solo golpe y, después de usarlo, espera 8 s para volver a cargarse.
+// - US 334, Alimentación directa (legendaria): el cargador y la reserva son un solo depósito: después de cada disparo
+//   el cargador se vuelve a llenar desde la reserva, así no se recarga nunca hasta que se acaban las balas. Deja sin
+//   uso a las cartas que solo recargan (la elección lo avisa).
 // - US 327, Filo voraz: cada cuchillazo a un invasor cura lo mismo que el daño que hizo, hasta 25 de vida por golpe (35
 //   y 45 con la carta repetida).
 public class CartasEnJuego : MonoBehaviour
@@ -50,6 +53,7 @@ public class CartasEnJuego : MonoBehaviour
         MeleeAttack.Golpeo += AlAcuchillar;
         HealthSystem.Damaged += AlRecibirDanio;
         WeaponFire.DanioDeMas = TomarBronca;
+        WeaponFire.Fired += AlDisparar;
     }
 
     private void OnDisable()
@@ -59,13 +63,22 @@ public class CartasEnJuego : MonoBehaviour
         Npc.Murio -= AlMorirUnInvasor;
         MeleeAttack.Golpeo -= AlAcuchillar;
         HealthSystem.Damaged -= AlRecibirDanio;
+        WeaponFire.Fired -= AlDisparar;
         if (WeaponFire.DanioDeMas == (System.Func<int>)TomarBronca) WeaponFire.DanioDeMas = null;
         if (MeleeAttack.AjustarGolpe == (System.Func<MeleeAttack, HealthSystem, int, int>)Rematar) MeleeAttack.AjustarGolpe = null;
     }
 
+    // US 334: con Alimentación directa, el disparo que salió se repone enseguida desde la reserva.
+    private void AlDisparar(Transform tirador, Vector3 desde, Vector3[] direcciones)
+    {
+        if (EleccionDeInvasion.Veces(CartaDeInvasion.AlimentacionDirecta) > 0)
+            MunicionDelArma.LlenarCargador(MunicionDelArma.EnLaMano(Armas()));
+    }
+
     private void Update()
     {
-        if (EleccionDeInvasion.Veces("Reserva lista") > 0) RecargarLasGuardadas();
+        if (EleccionDeInvasion.Veces(CartaDeInvasion.AlimentacionDirecta) > 0) AlimentarLasArmas();
+        else if (EleccionDeInvasion.Veces("Reserva lista") > 0) RecargarLasGuardadas();
         MostrarBronca();
     }
 
@@ -94,6 +107,15 @@ public class CartasEnJuego : MonoBehaviour
         }
         brilloDeBronca.enabled = true;
         brilloDeBronca.intensity = 2f + 1.5f * Mathf.Sin(Time.time * 7f);
+    }
+
+    // US 334: las dos armas, siempre con el cargador lleno desde la reserva (también la que se agarra después).
+    private void AlimentarLasArmas()
+    {
+        WeaponSwitcher a = Armas();
+        if (a == null) return;
+        MunicionDelArma.LlenarCargador(a.PrimaryObj);
+        MunicionDelArma.LlenarCargador(a.SecondaryObj);
     }
 
     // US 329: el arma que lleva guardada 2 s se recarga sola (una vez llena, no hace nada más).

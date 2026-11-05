@@ -84,7 +84,14 @@ public class CartaDeInvasion
             efecto = "El arma guardada se recarga sola desde su reserva después de 2 s.", aplicar = EfectosDeCartas.EnElJuego },
         new CartaDeInvasion { nombre = "Bronca", rareza = RarezaDeCarta.Comun, rindeCon = "Todas",
             efecto = "Cuando un invasor te pega, tu próximo disparo suma 5 veces la vida que perdiste.", aplicar = EfectosDeCartas.EnElJuego },
+        new CartaDeInvasion { nombre = "Alimentación directa", rareza = RarezaDeCarta.Legendaria, rindeCon = "Todas", unaVez = true,
+            efecto = "El cargador y la reserva son un solo depósito: no recargás nunca, hasta que se acaban las balas.", aplicar = EfectosDeCartas.EnElJuego },
     };
+
+    /// <summary>US 334: las cartas que quedan sin uso con Alimentación directa (solo recargan o piden el cargador
+    /// vacío); la elección lo avisa.</summary>
+    public static readonly string[] SinUsoConAlimentacion = { "Cargador gemelo", "Reserva lista", "Filo", "Tiro de reserva" };
+    public const string AlimentacionDirecta = "Alimentación directa";
 
     /// <summary>CA3: la rareza al azar según la oleada (común, rara y épica). US 303: despuesDelJefe, ya cayó algún
     /// Jefe (CA3: las legendarias, muy raras, se le restan a las comunes); delJefe, la elección del Jefe (CA2: sin
