@@ -37,6 +37,8 @@ public class Grenade1 : MonoBehaviour
     // US 287: la del lanzagranadas explota al tocar algo; y a quien la tiró le hace esta parte del daño.
     [HideInInspector] public bool explotaAlTocar;
     [HideInInspector] public float autoDanio = 1f;
+    // US 330 (la carta Bronca de Invasión): daño de más para cada uno que alcanza la explosión (no para quien la tiró).
+    [HideInInspector] public int danioDeMas;
 
     // Quién la tiró: sus compañeros no reciben el daño de la explosión (US 031, CA6).
     [HideInInspector] public Transform thrower;
@@ -294,6 +296,8 @@ public class Grenade1 : MonoBehaviour
         foreach (KeyValuePair<HealthSystem, float> entry in reached)
         {
             int damage = DamageAt(entry.Value);
+            bool deQuienLaTiro = thrower != null && (entry.Key.transform == thrower || entry.Key.transform.IsChildOf(thrower) || thrower.IsChildOf(entry.Key.transform));
+            if (damage > 0 && !deQuienLaTiro) damage += danioDeMas; // US 330
             // US 287, CA4: a quien la tiró, solo una parte (la del lanzagranadas, la mitad).
             if (thrower != null && autoDanio < 1f && (entry.Key.transform == thrower || entry.Key.transform.IsChildOf(thrower) || thrower.IsChildOf(entry.Key.transform)))
                 damage = Mathf.RoundToInt(damage * autoDanio);

@@ -12,6 +12,11 @@ using UnityEngine;
 //   repetida), salvo al Jefe.
 // - US 329, Reserva lista: el arma guardada (la principal o la secundaria que no está en la mano) se recarga sola desde
 //   su reserva después de 2 s guardada (mientras está guardada no se puede disparar).
+// - US 330, Bronca: cuando un invasor le pega al jugador (un golpe, una bola o un rayo), el próximo disparo suma 5 veces
+//   la vida que perdió en ese golpe (6 y 7 con la carta repetida); con la escopeta se reparte entre los perdigones y,
+//   con el Gran Capitán, va en la explosión. Las nubes y los charcos de veneno del Jefe no la cargan. El disparo con
+//   bronca se ve rojo (el fogonazo y la estela; la granada vuela con una luz roja). Guarda un solo golpe y, después de
+//   usarlo, espera 8 s para volver a cargarse.
 // - US 327, Filo voraz: cada cuchillazo a un invasor cura lo mismo que el daño que hizo, hasta 25 de vida por golpe (35
 //   y 45 con la carta repetida).
 public class CartasEnJuego : MonoBehaviour
@@ -21,6 +26,11 @@ public class CartasEnJuego : MonoBehaviour
     public const float RemateDesde = 0.25f, RematePorVez = 0.05f; // US 328: 25 %, 30 % y 35 % de la vida
     public const int FiloVorazTope = 25, FiloVorazPorVez = 10;      // US 327: hasta 25, 35 y 45 de vida por golpe
     public const float ReservaListaTarda = 2f;                      // US 329: s guardada hasta recargarse
+    public const int BroncaPor = 5;                                 // US 330: veces la vida perdida (6 y 7 repetida)
+    public const float BroncaEspera = 8f;                           // US 330: s hasta volver a cargarse
+
+    private int bronca;               // US 330: el daño de más guardado para el próximo disparo (0: nada)
+    private float broncaListaDesde;   // US 330: desde cuándo puede volver a cargarse
 
     // US 329: desde cuándo está guardada cada arma (la principal y la secundaria).
     private readonly System.Collections.Generic.Dictionary<GameObject, float> guardadaDesde =
@@ -37,6 +47,8 @@ public class CartasEnJuego : MonoBehaviour
         Npc.Murio += AlMorirUnInvasor;
         MeleeAttack.AjustarGolpe = Rematar;
         MeleeAttack.Golpeo += AlAcuchillar;
+        HealthSystem.Damaged += AlRecibirDanio;
+        WeaponFire.DanioDeMas = TomarBronca;
     }
 
     private void OnDisable()
@@ -45,6 +57,8 @@ public class CartasEnJuego : MonoBehaviour
         MeleeAttack.Mato -= AlMatarConElCuchillo;
         Npc.Murio -= AlMorirUnInvasor;
         MeleeAttack.Golpeo -= AlAcuchillar;
+        HealthSystem.Damaged -= AlRecibirDanio;
+        if (WeaponFire.DanioDeMas == (System.Func<int>)TomarBronca) WeaponFire.DanioDeMas = null;
         if (MeleeAttack.AjustarGolpe == (System.Func<MeleeAttack, HealthSystem, int, int>)Rematar) MeleeAttack.AjustarGolpe = null;
     }
 
@@ -65,6 +79,27 @@ public class CartasEnJuego : MonoBehaviour
             if (!guardadaDesde.TryGetValue(arma, out float desde)) { guardadaDesde[arma] = Time.time; continue; }
             if (Time.time - desde >= ReservaListaTarda) MunicionDelArma.LlenarCargador(arma);
         }
+    }
+
+    // US 330: un invasor le pegó al jugador (los ataques de los invasores dicen quién pega: DamageSource).
+    private void AlRecibirDanio(HealthSystem vida, int danio, Vector3? desde)
+    {
+        int veces = EleccionDeInvasion.Veces("Bronca");
+        if (veces <= 0 || danio <= 0 || bronca > 0 || Time.time < broncaListaDesde) return;
+        if (string.IsNullOrEmpty(HealthSystem.DamageSource) || NubeDeVeneno.Aplicando) return; // las nubes y charcos no cuentan
+        if (vida.GetComponentInParent<PlayerMovement>() == null) return;
+        int perdida = Mathf.Min(danio, vida.currentHealth + vida.currentShield); // lo que de verdad le saca
+        bronca = perdida * (BroncaPor + veces - 1);
+    }
+
+    // US 330: el disparo que sale se lleva la bronca guardada.
+    private int TomarBronca()
+    {
+        if (bronca <= 0) return 0;
+        int deMas = bronca;
+        bronca = 0;
+        broncaListaDesde = Time.time + BroncaEspera;
+        return deMas;
     }
 
     // US 327: con Filo voraz, cada cuchillazo a un invasor cura lo que le sacó (solo el daño que de verdad hizo).

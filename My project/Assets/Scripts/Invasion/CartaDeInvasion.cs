@@ -82,6 +82,8 @@ public class CartaDeInvasion
             efecto = "Cada cuchillazo cura lo mismo que el daño que hace, hasta 25 de vida por golpe.", aplicar = EfectosDeCartas.EnElJuego },
         new CartaDeInvasion { nombre = "Reserva lista", rareza = RarezaDeCarta.Rara, rindeCon = "Todas", unaVez = true,
             efecto = "El arma guardada se recarga sola desde su reserva después de 2 s.", aplicar = EfectosDeCartas.EnElJuego },
+        new CartaDeInvasion { nombre = "Bronca", rareza = RarezaDeCarta.Comun, rindeCon = "Todas",
+            efecto = "Cuando un invasor te pega, tu próximo disparo suma 5 veces la vida que perdiste.", aplicar = EfectosDeCartas.EnElJuego },
     };
 
     /// <summary>CA3: la rareza al azar según la oleada (común, rara y épica). US 303: despuesDelJefe, ya cayó algún

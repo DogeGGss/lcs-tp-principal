@@ -8,6 +8,10 @@ using UnityEngine;
 // vieja se va. US 302, CA4: el Jefe de la oleada 40 en adelante las deja más grandes (escala).
 public class NubeDeVeneno : MonoBehaviour
 {
+    /// <summary>Mientras una nube o un charco de veneno hace su daño (no es un golpe de un invasor: la carta Bronca de
+    /// Invasión no se carga con eso, US 330).</summary>
+    public static bool Aplicando { get; set; }
+
     private const float Radio = 4.5f, Dura = 10f;
     private const float Tic = 0.5f;
     private const int DanioPorTic = 5; // 10 por segundo
@@ -59,7 +63,9 @@ public class NubeDeVeneno : MonoBehaviour
             if (Vector3.Distance(pecho, humo.Centro) > radio * 0.9f) continue;
             HealthSystem.DamageOrigin = humo.Centro;
             HealthSystem.DamageSource = fuente;
+            Aplicando = true;
             vida.TakeDamage(DanioPorTic);
+            Aplicando = false;
             HealthSystem.DamageSource = null;
         }
     }

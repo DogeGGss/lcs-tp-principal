@@ -399,7 +399,9 @@ public class CharcoDeVeneno : MonoBehaviour
             if (rel.magnitude > radio) continue;
             HealthSystem.DamageOrigin = transform.position;
             HealthSystem.DamageSource = fuente;
+            NubeDeVeneno.Aplicando = true; // es una zona, no un golpe (US 330)
             vida.TakeDamage(DificultadDeInvasion.DanioDeEnemigo(DanioPorTic)); // US 161, CA3
+            NubeDeVeneno.Aplicando = false;
             HealthSystem.DamageSource = null;
         }
     }
