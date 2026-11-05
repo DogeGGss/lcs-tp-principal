@@ -7,6 +7,9 @@ using UnityEngine;
 // 1,5 m (daño completo) y uno amarillo de 5 m (hasta ahí llega el daño), y arriba de cada jugador que lastimó un
 // cartel con su distancia a la explosión y el daño que recibió (también sale en la Consola). Se ve en la
 // computadora del que la tiró, que es la que calcula el daño. En una build no existe.
+// US 287: sirve también para el Gran Capitán (lanzagranadas). Como su daño baja desde el centro (100 a 0 m, 20 a 4 m),
+// en vez del círculo rojo deja un círculo blanco por metro con el daño que tendría que hacer a esa distancia, y el
+// cartel de quien la tiró dice «vos» (recibe la mitad, CA4).
 public static class RadiosGranada
 {
 #if UNITY_EDITOR
@@ -58,18 +61,35 @@ public static class RadiosGranada
 
         GameObject grupo = MarcasDePrueba.Grupo("Radios de la granada (prueba)", Duracion);
         Vector3 piso = MarcasDePrueba.Piso(centro) + Vector3.up * 0.04f;
-        MarcasDePrueba.Circulo(grupo, piso, granada.fullDamageRadius, 0.06f, ColorCompleto);
+        if (granada.fullDamageRadius > 0.05f)
+        {
+            MarcasDePrueba.Circulo(grupo, piso, granada.fullDamageRadius, 0.06f, ColorCompleto);
+            MarcasDePrueba.Cartel(grupo, piso + new Vector3(granada.fullDamageRadius, 0.3f, 0f), $"{granada.fullDamageRadius:0.#} m", 0.25f, ColorCompleto);
+        }
+        else
+        {
+            // US 287: el daño baja desde el centro; un círculo por metro con el daño esperado a esa distancia.
+            MarcasDePrueba.Cartel(grupo, piso + Vector3.up * 0.3f, $"0 m · {granada.DamageAt(0f)}", 0.25f, ColorCompleto);
+            for (int m = 1; m < granada.radius - 0.05f; m++)
+            {
+                MarcasDePrueba.Circulo(grupo, piso, m, 0.03f, ColorDano);
+                MarcasDePrueba.Cartel(grupo, piso + new Vector3(m, 0.3f, 0f), $"{m} m · {granada.DamageAt(m)}", 0.25f, ColorDano);
+            }
+        }
         MarcasDePrueba.Circulo(grupo, piso, granada.radius, 0.06f, ColorAlcance);
-        MarcasDePrueba.Cartel(grupo, piso + new Vector3(granada.fullDamageRadius, 0.3f, 0f), $"{granada.fullDamageRadius:0.#} m", 0.25f, ColorCompleto);
-        MarcasDePrueba.Cartel(grupo, piso + new Vector3(granada.radius, 0.3f, 0f), $"{granada.radius:0.#} m", 0.25f, ColorAlcance);
+        string alcance = granada.fullDamageRadius > 0.05f ? $"{granada.radius:0.#} m" : $"{granada.radius:0.#} m · {granada.DamageAt(granada.radius)}";
+        MarcasDePrueba.Cartel(grupo, piso + new Vector3(granada.radius, 0.3f, 0f), alcance, 0.25f, ColorAlcance);
 
         if (heridos.Count == 0) Debug.Log("Granada: no lastimó a nadie");
         foreach (var (vida, distancia, dano) in heridos)
         {
             string nombre = vida != null ? vida.name : "?";
-            Debug.Log($"Granada: {nombre} a {distancia:0.00} m, {dano} de daño");
+            bool esQuienLaTiro = vida != null && granada.thrower != null &&
+                (vida.transform == granada.thrower || vida.transform.IsChildOf(granada.thrower) || granada.thrower.IsChildOf(vida.transform));
+            string quien = esQuienLaTiro ? " (vos)" : "";
+            Debug.Log($"Granada: {nombre}{quien} a {distancia:0.00} m, {dano} de daño");
             if (vida != null)
-                MarcasDePrueba.Cartel(grupo, vida.transform.position + Vector3.up * 1.5f, $"{distancia:0.0} m · {dano} de daño", 0.3f, ColorDano);
+                MarcasDePrueba.Cartel(grupo, vida.transform.position + Vector3.up * 1.5f, $"{distancia:0.0} m · {dano} de daño{quien}", 0.3f, ColorDano);
         }
         heridos.Clear();
     }
