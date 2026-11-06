@@ -50,6 +50,9 @@ using UnityEngine;
 // - US 313, Campo minado: las granadas del Gran Capitán que tocan el piso quedan como minas (MinaDeGranada) y explotan
 //   cuando pasa un invasor a menos de 2 m en horizontal; hasta 5 a la vez (7 y 9 con la carta repetida): al poner
 //   una de más, la más vieja explota sola (Grenade1.QuedaComoMina).
+// - US 326, Carga adherente: las granadas del Gran Capitán que le pegan directo a un invasor se le quedan pegadas 1 s
+//   (lo siguen) y explotan con el doble de daño; si muere antes, explotan igual donde estaban (Grenade1.SePegaAlInvasor
+//   y GranadaPegada). Con Campo minado, lo que pega directo se pega y lo que toca el escenario queda como mina.
 // - US 312, Sin intervalo: matar con el fusil de ráfaga saca la pausa entre sus próximas 3 ráfagas (5 y 7 con la carta
 //   repetida); entre las balas de cada ráfaga, la separación sigue igual (ArmaDeFuego.SinPausaEntreRafagas).
 // - US 324, Ráfaga creciente: cada baja con el fusil de ráfaga le suma una bala a sus ráfagas, hasta 6 (8 y 10 con la
@@ -120,6 +123,7 @@ public class CartasEnJuego : MonoBehaviour
         ArmaDeFuego.DescargaRapida = ConDescargaRapida;
         WeaponFire.Acerto += AlAcertar;
         Grenade1.QuedaComoMina = ConCampoMinado;
+        Grenade1.SePegaAlInvasor = ConCargaAdherente;
         ArmaDeFuego.TerminoDeRecargar += AlRecargar;
         WeaponFire.Fired += AlDisparar;
         PuestoDeSuministros.SeCargo += Despejar;
@@ -148,6 +152,7 @@ public class CartasEnJuego : MonoBehaviour
         if (ArmaDeFuego.DescargaRapida == (System.Func<ArmaDeFuego, bool>)ConDescargaRapida) ArmaDeFuego.DescargaRapida = null;
         WeaponFire.Acerto -= AlAcertar;
         if (Grenade1.QuedaComoMina == (System.Func<Grenade1, bool>)ConCampoMinado) Grenade1.QuedaComoMina = null;
+        if (Grenade1.SePegaAlInvasor == (System.Func<Grenade1, bool>)ConCargaAdherente) Grenade1.SePegaAlInvasor = null;
         ArmaDeFuego.TerminoDeRecargar -= AlRecargar;
         if (MeleeAttack.AjustarGolpe == (System.Func<MeleeAttack, HealthSystem, int, int>)Rematar) MeleeAttack.AjustarGolpe = null;
     }
@@ -310,6 +315,10 @@ public class CartasEnJuego : MonoBehaviour
         MinaDeGranada.Tope = 5 + 2 * (veces - 1);
         return true;
     }
+
+    // US 326: las granadas del lanzagranadas, con la carta, se pegan a los invasores.
+    private bool ConCargaAdherente(Grenade1 granada) =>
+        EleccionDeInvasion.Veces("Carga adherente") > 0 && granada.Item != null && granada.Item.category == ShopCategory.Launchers;
 
     // US 321: un tiro de pistola que acertó; cada 3, la principal dispara sola.
     private void AlAcertar(ShopItem arma)
