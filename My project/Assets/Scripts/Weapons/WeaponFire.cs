@@ -42,7 +42,21 @@ public static class WeaponFire
     /// <summary>US 325, Mira abierta: true si este disparo sale sin dispersión (el arma, si tiene la mira puesta).</summary>
     public static System.Func<ShopItem, bool, bool> SinDispersion;
 
-    public static void Fire(ShopItem weapon, Camera camera, Transform shooter, bool aiming, float range)
+    /// <summary>US 319, Bala compacta: true si los perdigones de este disparo salen juntos en un solo proyectil sin
+    /// dispersión, con el mismo daño total (el arma, si está apuntando).</summary>
+    public static System.Func<ShopItem, bool, bool> BalaCompacta;
+
+    /// <summary>La dispersión con la que saldría el próximo disparo (para la mira dinámica del HUD): 0 si una carta lo
+    /// hace salir sin dispersión (US 325, Mira abierta; US 319, Bala compacta).</summary>
+    public static float DispersionDelDisparo(ShopItem weapon, WeaponAim aim, bool aiming)
+    {
+        if (SinDispersion != null && SinDispersion(weapon, aiming)) return 0f;
+        if (weapon.pellets > 1 && BalaCompacta != null && BalaCompacta(weapon, aiming)) return 0f;
+        return aim.CurrentSpread(weapon, aiming);
+    }
+
+    /// <summary>cartuchos: cuántos cartuchos salen juntos (US 309, Doble cartucho: 2; los perdigones se multiplican).</summary>
+    public static void Fire(ShopItem weapon, Camera camera, Transform shooter, bool aiming, float range, int cartuchos = 1)
     {
         if (weapon == null || camera == null) return;
 
@@ -52,7 +66,15 @@ public static class WeaponFire
         if (SinDispersion != null && SinDispersion(weapon, aiming)) spread = 0f; // US 325
 
         bool anyHit = false, head = false, kill = false;
-        int pellets = Mathf.Max(1, weapon.pellets);
+        cartuchos = Mathf.Max(1, cartuchos);
+        int pellets = Mathf.Max(1, weapon.pellets) * cartuchos;
+        int porPerdigon = 1; // cuántos perdigones vale cada uno (US 319: el proyectil compacto, todos)
+        if (pellets > 1 && BalaCompacta != null && BalaCompacta(weapon, aiming))
+        {
+            porPerdigon = pellets;
+            pellets = 1;
+            spread = 0f;
+        }
         Vector3[] directions = new Vector3[pellets];
         // La bala se ve: fogonazo en la boca del arma y una estela por perdigón hasta donde pegó.
         Vector3 muzzle = Trazadora.BocaLocal(camera);
@@ -98,7 +120,7 @@ public static class WeaponFire
             if (EquiposTacticos.SonAliados(shooter, target)) continue;
 
             // Se mira antes de aplicar el daño: a un jugador de otra computadora el daño le llega después (US 029).
-            int damage = weapon.HitDamage(zone, hit.distance) + deMasPorPerdigon + (i == 0 ? deMasSobra : 0);
+            int damage = weapon.HitDamage(zone, hit.distance) * porPerdigon + deMasPorPerdigon + (i == 0 ? deMasSobra : 0);
             bool lethal = target.WouldDie(damage);
             Impacto?.Invoke(target, damage, zone);
             HealthSystem.DamageOrigin = camera.transform.position; // US 192: desde dónde le dispararon
@@ -112,7 +134,7 @@ public static class WeaponFire
             }
         }
 
-        aim.Kick(weapon);
+        aim.Kick(weapon); // (US 309: con el doble cartucho patea igual que uno)
         Fired?.Invoke(shooter, camera.transform.position, directions);
         if (anyHit) Hit?.Invoke(kill ? HitMarkerKind.Kill : head ? HitMarkerKind.Head : HitMarkerKind.Body);
     }

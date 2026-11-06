@@ -24,6 +24,18 @@ public class ArmaDeFuego : MonoBehaviour, IHudWeapon
     public static System.Func<ArmaDeFuego, bool> SinPausaEntreRafagas;
     /// <summary>US 310, Cargador gemelo: el cargador se acaba de vaciar; true si se recarga al instante desde la reserva.</summary>
     public static System.Func<ArmaDeFuego, bool> RecargaAlVaciarse;
+    /// <summary>US 319, Bala compacta: true si esta arma (sin mira telescópica) puede apuntar manteniendo el click
+    /// derecho (con un zoom chico).</summary>
+    public static System.Func<ArmaDeFuego, bool> ApuntaPorCarta;
+    private const float ZoomPorCarta = 1.2f, TiempoZoomPorCarta = 0.12f;
+    private bool apuntandoPorCarta, fovCambiado;
+    /// <summary>US 319: está apuntando con el click derecho (sin mira telescópica, por la carta).</summary>
+    public bool ApuntandoPorCarta => apuntandoPorCarta;
+    private float fovNormal;
+    private Camera camaraDelZoom;
+
+    /// <summary>US 309, Doble cartucho: true si este disparo de la escopeta sale con 2 cartuchos juntos.</summary>
+    public static System.Func<ArmaDeFuego, bool> DobleCartucho;
     /// <summary>US 325, Mira abierta: cuántas veces la cadencia de la ficha (según si tiene la mira puesta).</summary>
     public static System.Func<ArmaDeFuego, bool, float> CadenciaPorCarta;
     /// <summary>Terminó de recargar (no si la recarga se cortó; US 324: la ráfaga vuelve a su cantidad de balas).</summary>
@@ -161,11 +173,37 @@ public class ArmaDeFuego : MonoBehaviour, IHudWeapon
         reloading = false;
         bursting = false;
         equipping = false;
+        apuntandoPorCarta = false;
+        if (fovCambiado && camaraDelZoom != null) camaraDelZoom.fieldOfView = fovNormal; // US 319: vuelve el campo de visión
+        fovCambiado = false;
+    }
+
+    // US 319: apuntar con el click derecho (armas sin mira telescópica, con la carta): un zoom chico.
+    private void ApuntarPorCarta()
+    {
+        apuntandoPorCarta = mira == null && !reloading && !equipping && ApuntaPorCarta != null && ApuntaPorCarta(this)
+                            && KeyBindings.Held(GameAction.Apuntar) && !ShopUI.IsOpen;
+        camaraDelZoom = playerCamera != null ? playerCamera : Camera.main;
+        if (camaraDelZoom == null) return;
+        if (!apuntandoPorCarta && !fovCambiado)
+        {
+            fovNormal = camaraDelZoom.fieldOfView; // sigue los cambios de Opciones
+            return;
+        }
+        fovCambiado = true;
+        float objetivo = fovNormal / (apuntandoPorCarta ? ZoomPorCarta : 1f);
+        camaraDelZoom.fieldOfView = Mathf.Lerp(camaraDelZoom.fieldOfView, objetivo, 1f - Mathf.Exp(-3f * Time.deltaTime / TiempoZoomPorCarta));
+        if (!apuntandoPorCarta && Mathf.Abs(camaraDelZoom.fieldOfView - fovNormal) < 0.05f)
+        {
+            camaraDelZoom.fieldOfView = fovNormal;
+            fovCambiado = false;
+        }
     }
 
     private void Update()
     {
         if (shopItem == null) return;
+        ApuntarPorCarta(); // US 319
         if (equipping || bursting) return;
 
         bool press = KeyBindings.Down(GameAction.Disparar);
@@ -191,16 +229,23 @@ public class ArmaDeFuego : MonoBehaviour, IHudWeapon
     private void FireOne()
     {
         if (!MinijuegoCometas.Activo) currentAmmo--; // US 157, CA2: en la compra los disparos no gastan balas
+        // US 309: con la carta, sale también el cartucho de al lado (si queda uno).
+        int cartuchos = 1;
+        if (currentAmmo > 0 && DobleCartucho != null && DobleCartucho(this))
+        {
+            cartuchos = 2;
+            if (!MinijuegoCometas.Activo) currentAmmo--;
+        }
         if (shootSound != null) audioSource.PlayOneShot(shootSound);
         // Cada perdigón hace su daño por separado; los perdigones y el cono salen de la ficha (US 070, CA1).
         // Con la mira telescópica puesta la dispersión es la de apuntar (US 167, CA5).
-        bool conMira = mira != null && mira.ConLente;
+        bool conMira = (mira != null && mira.ConLente) || apuntandoPorCarta; // US 319: apuntando con el click derecho
         Disparando = this;
         try
         {
             if (shopItem.velocidadDelProyectil > 0f && shopItem.grenadePrefab != null)
                 WeaponFire.FireProjectile(shopItem, playerCamera, shooter, conMira); // US 287: una granada
-            else WeaponFire.Fire(shopItem, playerCamera, shooter, conMira, alcance);
+            else WeaponFire.Fire(shopItem, playerCamera, shooter, conMira, alcance, cartuchos);
         }
         finally { Disparando = null; }
         // US 310: con el cargador recién vaciado, la carta puede recargarlo al instante.
