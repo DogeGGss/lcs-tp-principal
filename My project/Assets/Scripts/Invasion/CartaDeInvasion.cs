@@ -54,6 +54,10 @@ public class CartaDeInvasion
     {
         // US 309 a 318 (antes US 295 y 296): las de una sola vez (unaVez) y las que se acumulan hasta 3 veces, según
         // cada historia.
+        new CartaDeInvasion { nombre = "Tiro de reserva", rareza = RarezaDeCarta.Rara, rindeCon = "Subfusil y fusil", unaVez = true,
+            efecto = "Con el cargador vacío, manteniendo el gatillo sigue disparando desde la reserva, a la mitad de la cadencia.", aplicar = EfectosDeCartas.EnElJuego },
+        new CartaDeInvasion { nombre = "Disparo concentrado", rareza = RarezaDeCarta.Epica, rindeCon = "Fusil", unaVez = true,
+            efecto = "Apuntando, el fusil dispara hasta 5 balas juntas en un solo impacto, cada 0,4 s.", aplicar = EfectosDeCartas.EnElJuego },
         new CartaDeInvasion { nombre = "Doble cartucho", rareza = RarezaDeCarta.Epica, rindeCon = "Escopeta", unaVez = true,
             efecto = "La escopeta dispara 2 cartuchos juntos, gastando los dos.", aplicar = EfectosDeCartas.EnElJuego },
         new CartaDeInvasion { nombre = "Bala compacta", rareza = RarezaDeCarta.Rara, rindeCon = "Escopeta", unaVez = true,

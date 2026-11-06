@@ -35,6 +35,11 @@ using UnityEngine;
 // - US 319, Bala compacta: con la carta, la escopeta apunta manteniendo el click derecho (un zoom chico, como no tiene
 //   mira); apuntando junta todos sus perdigones en un solo proyectil sin dispersión, con el mismo daño total; desde
 //   la cadera, los perdigones de siempre (ArmaDeFuego.ApuntaPorCarta y WeaponFire.BalaCompacta).
+// - US 322, Tiro de reserva: con el cargador vacío del subfusil o del Mitre, manteniendo el gatillo sigue disparando
+//   desde la reserva a la mitad de la cadencia hasta que se suelta (Municion.TiroDeReserva). Con Cargador gemelo,
+//   primero la recarga instantánea; con Alimentación directa, sin uso.
+// - US 323, Disparo concentrado: con la carta, el Mitre apunta con el click derecho (un zoom chico); apuntando, dispara
+//   hasta 5 balas juntas en un solo impacto que suma su daño, cada 0,4 s; desde la cadera, automático (Mitre.Concentrado).
 // - US 312, Sin intervalo: matar con el fusil de ráfaga saca la pausa entre sus próximas 3 ráfagas (5 y 7 con la carta
 //   repetida); entre las balas de cada ráfaga, la separación sigue igual (ArmaDeFuego.SinPausaEntreRafagas).
 // - US 324, Ráfaga creciente: cada baja con el fusil de ráfaga le suma una bala a sus ráfagas, hasta 6 (8 y 10 con la
@@ -98,6 +103,8 @@ public class CartasEnJuego : MonoBehaviour
         ArmaDeFuego.DobleCartucho = ConDobleCartucho;
         WeaponFire.BalaCompacta = ConBalaCompacta;
         ArmaDeFuego.ApuntaPorCarta = ApuntaConBalaCompacta;
+        Municion.TiroDeReserva = ConTiroDeReserva;
+        Mitre.Concentrado = ConDisparoConcentrado;
         ArmaDeFuego.TerminoDeRecargar += AlRecargar;
         WeaponFire.Fired += AlDisparar;
         PuestoDeSuministros.SeCargo += Despejar;
@@ -121,6 +128,8 @@ public class CartasEnJuego : MonoBehaviour
         if (ArmaDeFuego.DobleCartucho == (System.Func<ArmaDeFuego, bool>)ConDobleCartucho) ArmaDeFuego.DobleCartucho = null;
         if (WeaponFire.BalaCompacta == (System.Func<ShopItem, bool, bool>)ConBalaCompacta) WeaponFire.BalaCompacta = null;
         if (ArmaDeFuego.ApuntaPorCarta == (System.Func<ArmaDeFuego, bool>)ApuntaConBalaCompacta) ArmaDeFuego.ApuntaPorCarta = null;
+        if (Municion.TiroDeReserva == (System.Func<bool>)ConTiroDeReserva) Municion.TiroDeReserva = null;
+        if (Mitre.Concentrado == (System.Func<bool>)ConDisparoConcentrado) Mitre.Concentrado = null;
         ArmaDeFuego.TerminoDeRecargar -= AlRecargar;
         if (MeleeAttack.AjustarGolpe == (System.Func<MeleeAttack, HealthSystem, int, int>)Rematar) MeleeAttack.AjustarGolpe = null;
     }
@@ -221,6 +230,13 @@ public class CartasEnJuego : MonoBehaviour
     // US 309.
     private bool ConDobleCartucho(ArmaDeFuego arma) =>
         EsEscopeta(arma.shopItem) && EleccionDeInvasion.Veces("Doble cartucho") > 0;
+
+    // US 322 (sin uso con Alimentación directa, US 334).
+    private bool ConTiroDeReserva() =>
+        EleccionDeInvasion.Veces("Tiro de reserva") > 0 && EleccionDeInvasion.Veces(CartaDeInvasion.AlimentacionDirecta) <= 0;
+
+    // US 323.
+    private bool ConDisparoConcentrado() => EleccionDeInvasion.Veces("Disparo concentrado") > 0;
 
     // US 319: la escopeta puede apuntar con el click derecho.
     private bool ApuntaConBalaCompacta(ArmaDeFuego arma) =>

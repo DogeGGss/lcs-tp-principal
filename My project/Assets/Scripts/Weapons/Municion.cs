@@ -11,6 +11,11 @@ public static class Municion
     /// <summary>US 315: cuánto más grande es la reserva llena de todas las armas (1: la de cada arma).</summary>
     public static float MasReserva { get; set; } = 1f;
 
+    /// <summary>US 322, Tiro de reserva: con el cargador vacío del subfusil o del Mitre, manteniendo el gatillo se sigue
+    /// disparando desde la reserva a la mitad de la cadencia (true si se tiene la carta y le sirve).</summary>
+    public static System.Func<bool> TiroDeReserva;
+    public const float CadenciaDeReserva = 0.5f;
+
     /// <summary>US 315: la reserva llena de un arma que viene con esa (con la Mochila, más).</summary>
     public static int Reserva(int llena) => llena < 0 ? llena : UnityEngine.Mathf.RoundToInt(llena * MasReserva);
 

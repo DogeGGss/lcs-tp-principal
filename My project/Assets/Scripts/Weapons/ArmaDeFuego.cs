@@ -27,12 +27,10 @@ public class ArmaDeFuego : MonoBehaviour, IHudWeapon
     /// <summary>US 319, Bala compacta: true si esta arma (sin mira telescópica) puede apuntar manteniendo el click
     /// derecho (con un zoom chico).</summary>
     public static System.Func<ArmaDeFuego, bool> ApuntaPorCarta;
-    private const float ZoomPorCarta = 1.2f, TiempoZoomPorCarta = 0.12f;
-    private bool apuntandoPorCarta, fovCambiado;
+    private readonly ZoomPorCarta zoomPorCarta = new ZoomPorCarta();
+    private bool apuntandoPorCarta;
     /// <summary>US 319: está apuntando con el click derecho (sin mira telescópica, por la carta).</summary>
     public bool ApuntandoPorCarta => apuntandoPorCarta;
-    private float fovNormal;
-    private Camera camaraDelZoom;
 
     /// <summary>US 309, Doble cartucho: true si este disparo de la escopeta sale con 2 cartuchos juntos.</summary>
     public static System.Func<ArmaDeFuego, bool> DobleCartucho;
@@ -174,30 +172,14 @@ public class ArmaDeFuego : MonoBehaviour, IHudWeapon
         bursting = false;
         equipping = false;
         apuntandoPorCarta = false;
-        if (fovCambiado && camaraDelZoom != null) camaraDelZoom.fieldOfView = fovNormal; // US 319: vuelve el campo de visión
-        fovCambiado = false;
+        zoomPorCarta.Soltar(); // US 319: vuelve el campo de visión
     }
 
     // US 319: apuntar con el click derecho (armas sin mira telescópica, con la carta): un zoom chico.
     private void ApuntarPorCarta()
     {
-        apuntandoPorCarta = mira == null && !reloading && !equipping && ApuntaPorCarta != null && ApuntaPorCarta(this)
-                            && KeyBindings.Held(GameAction.Apuntar) && !ShopUI.IsOpen;
-        camaraDelZoom = playerCamera != null ? playerCamera : Camera.main;
-        if (camaraDelZoom == null) return;
-        if (!apuntandoPorCarta && !fovCambiado)
-        {
-            fovNormal = camaraDelZoom.fieldOfView; // sigue los cambios de Opciones
-            return;
-        }
-        fovCambiado = true;
-        float objetivo = fovNormal / (apuntandoPorCarta ? ZoomPorCarta : 1f);
-        camaraDelZoom.fieldOfView = Mathf.Lerp(camaraDelZoom.fieldOfView, objetivo, 1f - Mathf.Exp(-3f * Time.deltaTime / TiempoZoomPorCarta));
-        if (!apuntandoPorCarta && Mathf.Abs(camaraDelZoom.fieldOfView - fovNormal) < 0.05f)
-        {
-            camaraDelZoom.fieldOfView = fovNormal;
-            fovCambiado = false;
-        }
+        bool puede = mira == null && !reloading && !equipping && ApuntaPorCarta != null && ApuntaPorCarta(this);
+        apuntandoPorCarta = zoomPorCarta.Actualizar(puede, playerCamera);
     }
 
     private void Update()
@@ -215,6 +197,15 @@ public class ArmaDeFuego : MonoBehaviour, IHudWeapon
         if (reloading && shopItem.reloadPerShell && press && currentAmmo > 0) StopReload();
         if (reloading) return;
 
+        // US 322, Tiro de reserva: el subfusil con el cargador vacío sigue desde la reserva, a la mitad de la cadencia.
+        if (KeyBindings.Held(GameAction.Disparar) && currentAmmo == 0 && reserveAmmo > 0 && Time.time >= nextShot
+            && shopItem.category == ShopCategory.SMGs && Municion.TiroDeReserva != null && Municion.TiroDeReserva())
+        {
+            nextShot = Time.time + 1f / Mathf.Max(0.01f, shopItem.fireRate * Municion.CadenciaDeReserva);
+            FireOne(true);
+            return;
+        }
+
         if (trigger && currentAmmo > 0 && Time.time >= nextShot)
         {
             float cadencia = shopItem.fireRate * (CadenciaPorCarta?.Invoke(this, mira != null && mira.ConLente) ?? 1f); // US 325
@@ -226,12 +217,15 @@ public class ArmaDeFuego : MonoBehaviour, IHudWeapon
         if (KeyBindings.Down(GameAction.Recargar) && currentAmmo < MagazineSize && reserveAmmo > 0) StartReload();
     }
 
-    private void FireOne()
+    /// <param name="deLaReserva">US 322: la bala sale de la reserva (Tiro de reserva).</param>
+    private void FireOne(bool deLaReserva = false)
     {
-        if (!MinijuegoCometas.Activo) currentAmmo--; // US 157, CA2: en la compra los disparos no gastan balas
+        if (MinijuegoCometas.Activo) { } // US 157, CA2: en la compra los disparos no gastan balas
+        else if (deLaReserva) { if (!Municion.ReservaInfinita) reserveAmmo--; }
+        else currentAmmo--;
         // US 309: con la carta, sale también el cartucho de al lado (si queda uno).
         int cartuchos = 1;
-        if (currentAmmo > 0 && DobleCartucho != null && DobleCartucho(this))
+        if (!deLaReserva && currentAmmo > 0 && DobleCartucho != null && DobleCartucho(this))
         {
             cartuchos = 2;
             if (!MinijuegoCometas.Activo) currentAmmo--;
@@ -249,7 +243,7 @@ public class ArmaDeFuego : MonoBehaviour, IHudWeapon
         }
         finally { Disparando = null; }
         // US 310: con el cargador recién vaciado, la carta puede recargarlo al instante.
-        if (currentAmmo == 0 && reserveAmmo > 0 && RecargaAlVaciarse != null && RecargaAlVaciarse(this))
+        if (!deLaReserva && currentAmmo == 0 && reserveAmmo > 0 && RecargaAlVaciarse != null && RecargaAlVaciarse(this))
             MunicionDelArma.LlenarCargador(gameObject);
         if (pumpSound != null && currentAmmo > 0) StartCoroutine(PlayLater(pumpSound, pumpDelay, pumpSkip));
         // Cerrojo: sale de la mira y vuelve sola cuando se puede volver a disparar (US 068, CA3).
