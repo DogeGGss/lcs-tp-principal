@@ -55,8 +55,9 @@ public static class WeaponFire
         return aim.CurrentSpread(weapon, aiming);
     }
 
-    /// <summary>cartuchos: cuántos cartuchos salen juntos (US 309, Doble cartucho: 2; los perdigones se multiplican).</summary>
-    public static void Fire(ShopItem weapon, Camera camera, Transform shooter, bool aiming, float range, int cartuchos = 1)
+    /// <summary>cartuchos: cuántos cartuchos salen juntos (US 309, Doble cartucho: 2; los perdigones se multiplican).
+    /// balasJuntas: cuántas balas valen en un solo impacto (US 323, Disparo concentrado: el daño se multiplica).</summary>
+    public static void Fire(ShopItem weapon, Camera camera, Transform shooter, bool aiming, float range, int cartuchos = 1, int balasJuntas = 1)
     {
         if (weapon == null || camera == null) return;
 
@@ -68,10 +69,10 @@ public static class WeaponFire
         bool anyHit = false, head = false, kill = false;
         cartuchos = Mathf.Max(1, cartuchos);
         int pellets = Mathf.Max(1, weapon.pellets) * cartuchos;
-        int porPerdigon = 1; // cuántos perdigones vale cada uno (US 319: el proyectil compacto, todos)
+        int porPerdigon = Mathf.Max(1, balasJuntas); // cuántos perdigones (o balas) vale cada uno (US 319 y US 323)
         if (pellets > 1 && BalaCompacta != null && BalaCompacta(weapon, aiming))
         {
-            porPerdigon = pellets;
+            porPerdigon *= pellets;
             pellets = 1;
             spread = 0f;
         }

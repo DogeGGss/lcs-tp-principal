@@ -29,7 +29,13 @@ public class Mitre : MonoBehaviour, IHudWeapon
     public float speedMultiplier = 0.92f;
     private bool isEquipping = false;
 
-    // Sin mira: solo los francotiradores apuntan (US 009).
+    // Sin mira: solo los francotiradores apuntan (US 009). Con Disparo concentrado (US 323) apunta con el click derecho.
+
+    /// <summary>US 323, Disparo concentrado: se tiene la carta.</summary>
+    public static System.Func<bool> Concentrado;
+    public const int BalasConcentradas = 5;
+    public const float EntreConcentrados = 0.4f;
+    private readonly ZoomPorCarta zoom = new ZoomPorCarta();
 
     [Header("Referencias y Audio")]
     public Camera playerCamera;
@@ -104,6 +110,7 @@ public class Mitre : MonoBehaviour, IHudWeapon
     {
         isReloading = false;
         isEquipping = false;
+        zoom.Soltar(); // US 323: vuelve el campo de visión
 
         // Restaurar velocidad base al guardar el arma
         if (playerMovement != null)
@@ -147,14 +154,33 @@ public class Mitre : MonoBehaviour, IHudWeapon
 
     void Update()
     {
+        // US 323: con la carta, el click derecho apunta (un zoom chico). Con el cargador vacío deja de apuntar (vuelve la
+        // vista normal) y, con Tiro de reserva (US 322), dispara de a una bala de la reserva.
+        bool apuntando = zoom.Actualizar(!isReloading && !isEquipping && currentAmmo > 0 && Concentrado != null && Concentrado(), playerCamera);
+
         // Bloqueos de estado
         if (isReloading || isEquipping) return;
 
         // CA2: Disparo automático manteniendo presionado el clic izquierdo
         if (KeyBindings.Held(GameAction.Disparar) && Time.time >= nextTimeToFire)
         {
-            nextTimeToFire = Time.time + (1f / fireRate);
-            Shoot();
+            if (apuntando && currentAmmo > 0)
+            {
+                // US 323: apuntando, hasta 5 balas juntas en un solo impacto que suma su daño, cada 0,4 s.
+                nextTimeToFire = Time.time + EntreConcentrados;
+                Shoot(Mathf.Min(BalasConcentradas, currentAmmo), true);
+            }
+            else if (currentAmmo <= 0 && reserveAmmo > 0 && Municion.TiroDeReserva != null && Municion.TiroDeReserva())
+            {
+                // US 322, Tiro de reserva: con el cargador vacío sigue desde la reserva, a la mitad de la cadencia.
+                nextTimeToFire = Time.time + 1f / Mathf.Max(0.01f, fireRate * Municion.CadenciaDeReserva);
+                Shoot(1, false, true);
+            }
+            else
+            {
+                nextTimeToFire = Time.time + (1f / fireRate);
+                Shoot();
+            }
         }
 
         // CA4: Recarga con R
@@ -167,15 +193,20 @@ public class Mitre : MonoBehaviour, IHudWeapon
         }
     }
 
-    void Shoot()
+    /// <param name="balas">US 323: las balas que salen juntas en un solo impacto.</param>
+    /// <param name="deLaReserva">US 322: la bala sale de la reserva.</param>
+    void Shoot(int balas = 1, bool apuntando = false, bool deLaReserva = false)
     {
-        if (currentAmmo <= 0)
+        if (currentAmmo <= 0 && !deLaReserva)
         {
             Debug.Log("Mitre: Cargador vacío.");
             return;
         }
 
-        if (!MinijuegoCometas.Activo) currentAmmo--; // US 157, CA2: en la compra los disparos no gastan balas
+        // US 157, CA2: en la compra los disparos no gastan balas
+        if (MinijuegoCometas.Activo) { }
+        else if (deLaReserva) { if (!Municion.ReservaInfinita) reserveAmmo--; }
+        else currentAmmo -= balas;
 
         if (shootSound != null)
         {
@@ -183,7 +214,7 @@ public class Mitre : MonoBehaviour, IHudWeapon
         }
 
         // Retroceso, dispersión, zonas, daño por distancia, marcas y marcador de impacto (núcleo de disparo).
-        WeaponFire.Fire(Data, playerCamera, shooter, false, maxRange);
+        WeaponFire.Fire(Data, playerCamera, shooter, apuntando, maxRange, 1, balas);
     }
 
     private IEnumerator EquipRoutine()
