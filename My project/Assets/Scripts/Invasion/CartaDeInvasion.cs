@@ -61,7 +61,9 @@ public class CartaDeInvasion
         new CartaDeInvasion { nombre = "Cerrojo suelto", rareza = RarezaDeCarta.Rara, rindeCon = "Francotirador", unaVez = true,
             efecto = "Después de una baja a la cabeza, se puede volver a disparar a los 0,2 s." },
         new CartaDeInvasion { nombre = "Sin intervalo", rareza = RarezaDeCarta.Rara, rindeCon = "Fusil de ráfaga",
-            efecto = "Matar saca la pausa entre las próximas 3 ráfagas." },
+            efecto = "Matar saca la pausa entre las próximas 3 ráfagas.", aplicar = EfectosDeCartas.EnElJuego },
+        new CartaDeInvasion { nombre = "Ráfaga creciente", rareza = RarezaDeCarta.Rara, rindeCon = "Fusil de ráfaga",
+            efecto = "Cada baja le suma una bala a las ráfagas, hasta 6. Al recargar vuelven a 3.", aplicar = EfectosDeCartas.EnElJuego },
         new CartaDeInvasion { nombre = "Campo minado", rareza = RarezaDeCarta.Epica, rindeCon = "Gran Capitán",
             efecto = "Las granadas que tocan el piso quedan como minas (hasta 5)." },
         // Las de munición.

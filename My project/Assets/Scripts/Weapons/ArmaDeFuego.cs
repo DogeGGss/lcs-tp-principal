@@ -16,6 +16,19 @@ public class ArmaDeFuego : MonoBehaviour, IHudWeapon
 {
     [Tooltip("Ficha de la tienda de esta arma: de acá salen todos sus números.")]
     public ShopItem shopItem;
+
+    // Cartas de Invasión (CartasEnJuego) que cambian la ráfaga:
+    /// <summary>US 324, Ráfaga creciente: cuántas balas de más tira la ráfaga de esta arma.</summary>
+    public static System.Func<ArmaDeFuego, int> BalasDeMasEnLaRafaga;
+    /// <summary>US 312, Sin intervalo: al terminar una ráfaga, true si la próxima puede salir sin la pausa (gasta una).</summary>
+    public static System.Func<ArmaDeFuego, bool> SinPausaEntreRafagas;
+    /// <summary>Terminó de recargar (no si la recarga se cortó; US 324: la ráfaga vuelve a su cantidad de balas).</summary>
+    public static event System.Action<ArmaDeFuego> TerminoDeRecargar;
+    /// <summary>El arma que está disparando en este momento (mientras sale el tiro; si mata, es la que mató), o null.</summary>
+    public static ArmaDeFuego Disparando { get; private set; }
+
+    /// <summary>Es de ráfaga (el Belgrano Sur, US 069).</summary>
+    public bool DeRafaga => shopItem != null && shopItem.burstCount > 1;
     [Tooltip("Hasta dónde llegan las balas, en metros.")]
     public float alcance = 300f;
 
@@ -44,6 +57,7 @@ public class ArmaDeFuego : MonoBehaviour, IHudWeapon
     private Transform shooter;
     private MiraTelescopica mira;
     private float nextShot;
+    private bool encadenar; // US 312: la ráfaga que terminó deja salir la próxima sin pausa, manteniendo el gatillo
     private bool loaded, equipping, reloading, bursting;
     private float reloadStart, reloadDuration = 1f;
     private Coroutine reloadRoutine;
@@ -118,6 +132,7 @@ public class ArmaDeFuego : MonoBehaviour, IHudWeapon
     private void OnEnable()
     {
         bursting = false;
+        encadenar = false;
         reloading = false;
         StartCoroutine(Equip());
     }
@@ -139,6 +154,8 @@ public class ArmaDeFuego : MonoBehaviour, IHudWeapon
 
         bool press = KeyBindings.Down(GameAction.Disparar);
         bool trigger = shopItem.automatic ? KeyBindings.Held(GameAction.Disparar) : press;
+        if (encadenar && !KeyBindings.Held(GameAction.Disparar)) encadenar = false;
+        if (encadenar) trigger = true; // US 312: manteniendo el gatillo, la próxima ráfaga sale enseguida
 
         // Escopeta: disparar con cartuchos cargados corta la recarga (US 070, CA4).
         if (reloading && shopItem.reloadPerShell && press && currentAmmo > 0) StopReload();
@@ -161,9 +178,14 @@ public class ArmaDeFuego : MonoBehaviour, IHudWeapon
         // Cada perdigón hace su daño por separado; los perdigones y el cono salen de la ficha (US 070, CA1).
         // Con la mira telescópica puesta la dispersión es la de apuntar (US 167, CA5).
         bool conMira = mira != null && mira.ConLente;
-        if (shopItem.velocidadDelProyectil > 0f && shopItem.grenadePrefab != null)
-            WeaponFire.FireProjectile(shopItem, playerCamera, shooter, conMira); // US 287: una granada
-        else WeaponFire.Fire(shopItem, playerCamera, shooter, conMira, alcance);
+        Disparando = this;
+        try
+        {
+            if (shopItem.velocidadDelProyectil > 0f && shopItem.grenadePrefab != null)
+                WeaponFire.FireProjectile(shopItem, playerCamera, shooter, conMira); // US 287: una granada
+            else WeaponFire.Fire(shopItem, playerCamera, shooter, conMira, alcance);
+        }
+        finally { Disparando = null; }
         if (pumpSound != null && currentAmmo > 0) StartCoroutine(PlayLater(pumpSound, pumpDelay, pumpSkip));
         // Cerrojo: sale de la mira y vuelve sola cuando se puede volver a disparar (US 068, CA3).
         if (mira != null) mira.AlDisparar(1f / Mathf.Max(0.01f, shopItem.fireRate));
@@ -188,16 +210,21 @@ public class ArmaDeFuego : MonoBehaviour, IHudWeapon
         pumpSource.Play();
     }
 
-    // US 069, CA1 y CA3: la ráfaga tira sus balas seguidas; si quedan menos, las que queden.
+    // US 069, CA1 y CA3: la ráfaga tira sus balas seguidas; si quedan menos, las que queden. Con Ráfaga creciente
+    // (US 324) tira más balas; con Sin intervalo (US 312) la próxima sale sin la pausa entre ráfagas, con la misma
+    // separación que entre las balas.
     private IEnumerator Burst()
     {
         bursting = true;
         float gap = shopItem.burstRate > 0f ? 1f / shopItem.burstRate : 1f / 15f;
-        for (int i = 0; i < shopItem.burstCount && currentAmmo > 0; i++)
+        int balas = shopItem.burstCount + Mathf.Max(0, BalasDeMasEnLaRafaga?.Invoke(this) ?? 0);
+        for (int i = 0; i < balas && currentAmmo > 0; i++)
         {
             if (i > 0) yield return new WaitForSeconds(gap);
             FireOne();
         }
+        encadenar = false;
+        if (SinPausaEntreRafagas != null && SinPausaEntreRafagas(this)) { nextShot = Time.time + gap; encadenar = true; }
         bursting = false;
     }
 
@@ -234,6 +261,7 @@ public class ArmaDeFuego : MonoBehaviour, IHudWeapon
         currentAmmo += load;
         if (!Municion.ReservaInfinita) reserveAmmo -= load; // US 121, CA1 y Deathmatch: la reserva no se gasta
         reloading = false;
+        TerminoDeRecargar?.Invoke(this);
     }
 
     // US 070, CA4: de a un cartucho, cada uno con su tiempo; la barra del HUD muestra el cartucho que entra.
@@ -251,5 +279,6 @@ public class ArmaDeFuego : MonoBehaviour, IHudWeapon
             if (!Municion.ReservaInfinita) reserveAmmo--; // US 121, CA1 y Deathmatch: la reserva no se gasta
         }
         reloading = false;
+        TerminoDeRecargar?.Invoke(this);
     }
 }

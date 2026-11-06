@@ -23,6 +23,11 @@ using UnityEngine;
 // - US 333, Despeje: cuando el puesto llega al 100 % peleando, una burbuja holográfica verde sale del puesto y empuja
 //   10 m hacia afuera a los invasores del anillo, de tierra y en el aire (15 y 20 m con la carta repetida), salvo al
 //   Jefe (BurbujaDeDespeje y EmpujonDeNpc).
+// - US 312, Sin intervalo: matar con el fusil de ráfaga saca la pausa entre sus próximas 3 ráfagas (5 y 7 con la carta
+//   repetida); entre las balas de cada ráfaga, la separación sigue igual (ArmaDeFuego.SinPausaEntreRafagas).
+// - US 324, Ráfaga creciente: cada baja con el fusil de ráfaga le suma una bala a sus ráfagas, hasta 6 (8 y 10 con la
+//   carta repetida); al terminar de recargar vuelven a las de siempre (si la recarga se corta, no). Cada bala gasta
+//   munición (ArmaDeFuego.BalasDeMasEnLaRafaga).
 // - US 327, Filo voraz: cada cuchillazo a un invasor cura lo mismo que el daño que hizo, hasta 25 de vida por golpe (35
 //   y 45 con la carta repetida).
 public class CartasEnJuego : MonoBehaviour
@@ -34,6 +39,8 @@ public class CartasEnJuego : MonoBehaviour
     public const float ReservaListaTarda = 2f;                      // US 329: s guardada hasta recargarse
     public const int BroncaPor = 5;                                 // US 330: veces la vida perdida (6 y 7 repetida)
     public const float BroncaEspera = 8f;                           // US 330: s hasta volver a cargarse
+    public const int SinIntervaloRafagas = 3, SinIntervaloPorVez = 2;     // US 312: 3, 5 y 7 ráfagas
+    public const int RafagaCrecienteTope = 6, RafagaCrecientePorVez = 2;  // US 324: hasta 6, 8 y 10 balas
     public const float DespejeMetros = 10f, DespejePorVez = 5f;     // US 333: 10, 15 y 20 m
 
     private int bronca;               // US 330: el daño de más guardado para el próximo disparo (0: nada)
@@ -46,6 +53,11 @@ public class CartasEnJuego : MonoBehaviour
 
     private int muertesParaCarronero;
 
+    private int rafagasSinPausa; // US 312: cuántas ráfagas más salen sin la pausa
+    // US 324: las balas de más de la ráfaga de cada arma (hasta recargar).
+    private readonly System.Collections.Generic.Dictionary<ArmaDeFuego, int> balasDeMas =
+        new System.Collections.Generic.Dictionary<ArmaDeFuego, int>();
+
     private WeaponSwitcher armas;
 
     private void OnEnable()
@@ -57,6 +69,9 @@ public class CartasEnJuego : MonoBehaviour
         MeleeAttack.Golpeo += AlAcuchillar;
         HealthSystem.Damaged += AlRecibirDanio;
         WeaponFire.DanioDeMas = TomarBronca;
+        ArmaDeFuego.SinPausaEntreRafagas = SinPausa;
+        ArmaDeFuego.BalasDeMasEnLaRafaga = BalasDeMas;
+        ArmaDeFuego.TerminoDeRecargar += AlRecargar;
         WeaponFire.Fired += AlDisparar;
         PuestoDeSuministros.SeCargo += Despejar;
     }
@@ -71,6 +86,9 @@ public class CartasEnJuego : MonoBehaviour
         WeaponFire.Fired -= AlDisparar;
         PuestoDeSuministros.SeCargo -= Despejar;
         if (WeaponFire.DanioDeMas == (System.Func<int>)TomarBronca) WeaponFire.DanioDeMas = null;
+        if (ArmaDeFuego.SinPausaEntreRafagas == (System.Func<ArmaDeFuego, bool>)SinPausa) ArmaDeFuego.SinPausaEntreRafagas = null;
+        if (ArmaDeFuego.BalasDeMasEnLaRafaga == (System.Func<ArmaDeFuego, int>)BalasDeMas) ArmaDeFuego.BalasDeMasEnLaRafaga = null;
+        ArmaDeFuego.TerminoDeRecargar -= AlRecargar;
         if (MeleeAttack.AjustarGolpe == (System.Func<MeleeAttack, HealthSystem, int, int>)Rematar) MeleeAttack.AjustarGolpe = null;
     }
 
@@ -149,6 +167,35 @@ public class CartasEnJuego : MonoBehaviour
         int empujados = BurbujaDeDespeje.Lanzar(centro, radio, metros);
         Debug.Log($"Despeje: {empujados} invasores empujados {metros:0} m.");
     }
+
+    // US 312 y US 324: una baja con el fusil de ráfaga.
+    private void AlMatarConLaRafaga(ArmaDeFuego arma)
+    {
+        int sinIntervalo = EleccionDeInvasion.Veces("Sin intervalo");
+        if (sinIntervalo > 0) rafagasSinPausa = SinIntervaloRafagas + SinIntervaloPorVez * (sinIntervalo - 1);
+        int creciente = EleccionDeInvasion.Veces("Ráfaga creciente");
+        if (creciente > 0)
+        {
+            int tope = RafagaCrecienteTope + RafagaCrecientePorVez * (creciente - 1) - arma.shopItem.burstCount;
+            balasDeMas.TryGetValue(arma, out int n);
+            balasDeMas[arma] = Mathf.Min(Mathf.Max(0, tope), n + 1);
+        }
+    }
+
+    // US 312: la ráfaga que terminó gasta una de las que salen sin pausa.
+    private bool SinPausa(ArmaDeFuego arma)
+    {
+        if (rafagasSinPausa <= 0 || EleccionDeInvasion.Veces("Sin intervalo") <= 0) return false;
+        rafagasSinPausa--;
+        return true;
+    }
+
+    // US 324: las balas de más de esa arma.
+    private int BalasDeMas(ArmaDeFuego arma) =>
+        EleccionDeInvasion.Veces("Ráfaga creciente") > 0 && balasDeMas.TryGetValue(arma, out int n) ? n : 0;
+
+    // US 324: al terminar de recargar (no si se cortó), la ráfaga vuelve a sus balas de siempre.
+    private void AlRecargar(ArmaDeFuego arma) => balasDeMas.Remove(arma);
 
     // US 329: el arma que lleva guardada 2 s se recarga sola (una vez llena, no hace nada más).
     private void RecargarLasGuardadas()
@@ -238,6 +285,9 @@ public class CartasEnJuego : MonoBehaviour
     // Una baja con un disparo del jugador (a la cabeza o no).
     private void AlMatar(bool cabeza)
     {
+        ArmaDeFuego rafaga = ArmaDeFuego.Disparando;
+        if (rafaga != null && rafaga.DeRafaga) AlMatarConLaRafaga(rafaga);
+
         int reciclador = EleccionDeInvasion.Veces("Reciclador");
         if (cabeza && reciclador > 0)
             MunicionDelArma.SumarAlCargador(MunicionDelArma.EnLaMano(Armas()), BalasDelReciclador * reciclador); // US 316
