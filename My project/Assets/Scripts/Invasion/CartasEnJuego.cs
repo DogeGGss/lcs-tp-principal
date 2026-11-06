@@ -23,6 +23,9 @@ using UnityEngine;
 // - US 333, Despeje: cuando el puesto llega al 100 % peleando, una burbuja holográfica verde sale del puesto y empuja
 //   10 m hacia afuera a los invasores del anillo, de tierra y en el aire (15 y 20 m con la carta repetida), salvo al
 //   Jefe (BurbujaDeDespeje y EmpujonDeNpc).
+// - US 310, Cargador gemelo: la primera vez que se vacía el cargador del subfusil, se recarga al instante desde la
+//   reserva. Vuelve a estar lista después de terminar una recarga a mano (si la recarga se corta, no). Se nota con un
+//   sonido corto (Efectos/CargadorGemelo) y un destello naranja sobre el arma (ArmaDeFuego.RecargaAlVaciarse).
 // - US 312, Sin intervalo: matar con el fusil de ráfaga saca la pausa entre sus próximas 3 ráfagas (5 y 7 con la carta
 //   repetida); entre las balas de cada ráfaga, la separación sigue igual (ArmaDeFuego.SinPausaEntreRafagas).
 // - US 324, Ráfaga creciente: cada baja con el fusil de ráfaga le suma una bala a sus ráfagas, hasta 6 (8 y 10 con la
@@ -53,6 +56,13 @@ public class CartasEnJuego : MonoBehaviour
 
     private int muertesParaCarronero;
 
+    private readonly System.Collections.Generic.HashSet<ArmaDeFuego> gemeloUsado =
+        new System.Collections.Generic.HashSet<ArmaDeFuego>(); // US 310: ya se recargó solo (hasta la próxima recarga a mano)
+    private Light destelloGemelo;   // US 310: el destello naranja sobre el arma
+    private float destelloGemeloDesde = -10f;
+    private static AudioClip sonidoGemelo;
+    private static readonly Color Naranja = new Color(1f, 0.55f, 0.1f);
+    private const float DestelloGemeloDura = 0.6f;
     private int rafagasSinPausa; // US 312: cuántas ráfagas más salen sin la pausa
     // US 324: las balas de más de la ráfaga de cada arma (hasta recargar).
     private readonly System.Collections.Generic.Dictionary<ArmaDeFuego, int> balasDeMas =
@@ -71,6 +81,7 @@ public class CartasEnJuego : MonoBehaviour
         WeaponFire.DanioDeMas = TomarBronca;
         ArmaDeFuego.SinPausaEntreRafagas = SinPausa;
         ArmaDeFuego.BalasDeMasEnLaRafaga = BalasDeMas;
+        ArmaDeFuego.RecargaAlVaciarse = CargadorGemelo;
         ArmaDeFuego.TerminoDeRecargar += AlRecargar;
         WeaponFire.Fired += AlDisparar;
         PuestoDeSuministros.SeCargo += Despejar;
@@ -88,6 +99,7 @@ public class CartasEnJuego : MonoBehaviour
         if (WeaponFire.DanioDeMas == (System.Func<int>)TomarBronca) WeaponFire.DanioDeMas = null;
         if (ArmaDeFuego.SinPausaEntreRafagas == (System.Func<ArmaDeFuego, bool>)SinPausa) ArmaDeFuego.SinPausaEntreRafagas = null;
         if (ArmaDeFuego.BalasDeMasEnLaRafaga == (System.Func<ArmaDeFuego, int>)BalasDeMas) ArmaDeFuego.BalasDeMasEnLaRafaga = null;
+        if (ArmaDeFuego.RecargaAlVaciarse == (System.Func<ArmaDeFuego, bool>)CargadorGemelo) ArmaDeFuego.RecargaAlVaciarse = null;
         ArmaDeFuego.TerminoDeRecargar -= AlRecargar;
         if (MeleeAttack.AjustarGolpe == (System.Func<MeleeAttack, HealthSystem, int, int>)Rematar) MeleeAttack.AjustarGolpe = null;
     }
@@ -105,6 +117,7 @@ public class CartasEnJuego : MonoBehaviour
         else if (EleccionDeInvasion.Veces("Reserva lista") > 0) RecargarLasGuardadas();
         DespejarSiToca();
         MostrarBronca();
+        MostrarDestelloGemelo();
     }
 
     // US 330: mientras la bronca está cargada, una luz roja que late sobre el arma en la mano (abajo a la derecha de la
@@ -195,7 +208,49 @@ public class CartasEnJuego : MonoBehaviour
         EleccionDeInvasion.Veces("Ráfaga creciente") > 0 && balasDeMas.TryGetValue(arma, out int n) ? n : 0;
 
     // US 324: al terminar de recargar (no si se cortó), la ráfaga vuelve a sus balas de siempre.
-    private void AlRecargar(ArmaDeFuego arma) => balasDeMas.Remove(arma);
+    private void AlRecargar(ArmaDeFuego arma)
+    {
+        balasDeMas.Remove(arma);
+        gemeloUsado.Remove(arma); // US 310: vuelve a estar lista
+    }
+
+    // US 310: el subfusil se quedó sin balas en el cargador: la primera vez, se recarga solo.
+    private bool CargadorGemelo(ArmaDeFuego arma)
+    {
+        if (EleccionDeInvasion.Veces("Cargador gemelo") <= 0 || arma.shopItem == null || arma.shopItem.category != ShopCategory.SMGs) return false;
+        if (EleccionDeInvasion.Veces(CartaDeInvasion.AlimentacionDirecta) > 0) return false; // sin uso (US 334)
+        if (!gemeloUsado.Add(arma)) return false;
+        if (sonidoGemelo == null) sonidoGemelo = Resources.Load<AudioClip>("Efectos/CargadorGemelo");
+        arma.Sonar(sonidoGemelo);
+        destelloGemeloDesde = Time.time;
+        return true;
+    }
+
+    // US 310: una luz naranja sobre el arma en la mano (abajo a la derecha de la cámara), fuerte y que se apaga.
+    private void MostrarDestelloGemelo()
+    {
+        float t = (Time.time - destelloGemeloDesde) / DestelloGemeloDura;
+        if (t >= 1f || t < 0f)
+        {
+            if (destelloGemelo != null) destelloGemelo.enabled = false;
+            return;
+        }
+        if (destelloGemelo == null)
+        {
+            Camera camara = Camera.main;
+            if (camara == null) return;
+            var go = new GameObject("Cargador gemelo");
+            go.transform.SetParent(camara.transform, false);
+            go.transform.localPosition = new Vector3(0.18f, -0.1f, 0.4f);
+            destelloGemelo = go.AddComponent<Light>();
+            destelloGemelo.type = LightType.Point;
+            destelloGemelo.color = Naranja;
+            destelloGemelo.range = 1.4f;
+            destelloGemelo.shadows = LightShadows.None;
+        }
+        destelloGemelo.enabled = true;
+        destelloGemelo.intensity = 7f * (1f - t) * (1f - t);
+    }
 
     // US 329: el arma que lleva guardada 2 s se recarga sola (una vez llena, no hace nada más).
     private void RecargarLasGuardadas()

@@ -22,10 +22,18 @@ public class ArmaDeFuego : MonoBehaviour, IHudWeapon
     public static System.Func<ArmaDeFuego, int> BalasDeMasEnLaRafaga;
     /// <summary>US 312, Sin intervalo: al terminar una ráfaga, true si la próxima puede salir sin la pausa (gasta una).</summary>
     public static System.Func<ArmaDeFuego, bool> SinPausaEntreRafagas;
+    /// <summary>US 310, Cargador gemelo: el cargador se acaba de vaciar; true si se recarga al instante desde la reserva.</summary>
+    public static System.Func<ArmaDeFuego, bool> RecargaAlVaciarse;
     /// <summary>Terminó de recargar (no si la recarga se cortó; US 324: la ráfaga vuelve a su cantidad de balas).</summary>
     public static event System.Action<ArmaDeFuego> TerminoDeRecargar;
     /// <summary>El arma que está disparando en este momento (mientras sale el tiro; si mata, es la que mató), o null.</summary>
     public static ArmaDeFuego Disparando { get; private set; }
+
+    /// <summary>Suena por el audio del arma (como sus disparos).</summary>
+    public void Sonar(AudioClip clip, float volumen = 1f)
+    {
+        if (clip != null && audioSource != null) audioSource.PlayOneShot(clip, volumen);
+    }
 
     /// <summary>Es de ráfaga (el Belgrano Sur, US 069).</summary>
     public bool DeRafaga => shopItem != null && shopItem.burstCount > 1;
@@ -186,6 +194,9 @@ public class ArmaDeFuego : MonoBehaviour, IHudWeapon
             else WeaponFire.Fire(shopItem, playerCamera, shooter, conMira, alcance);
         }
         finally { Disparando = null; }
+        // US 310: con el cargador recién vaciado, la carta puede recargarlo al instante.
+        if (currentAmmo == 0 && reserveAmmo > 0 && RecargaAlVaciarse != null && RecargaAlVaciarse(this))
+            MunicionDelArma.LlenarCargador(gameObject);
         if (pumpSound != null && currentAmmo > 0) StartCoroutine(PlayLater(pumpSound, pumpDelay, pumpSkip));
         // Cerrojo: sale de la mira y vuelve sola cuando se puede volver a disparar (US 068, CA3).
         if (mira != null) mira.AlDisparar(1f / Mathf.Max(0.01f, shopItem.fireRate));
