@@ -77,7 +77,7 @@ public class CartaDeInvasion
         new CartaDeInvasion { nombre = "Ráfaga creciente", rareza = RarezaDeCarta.Rara, rindeCon = "Fusil de ráfaga",
             efecto = "Cada baja le suma una bala a las ráfagas, hasta 6. Al recargar vuelven a 3.", aplicar = EfectosDeCartas.EnElJuego },
         new CartaDeInvasion { nombre = "Campo minado", rareza = RarezaDeCarta.Epica, rindeCon = "Gran Capitán",
-            efecto = "Las granadas que tocan el piso quedan como minas (hasta 5)." },
+            efecto = "Las granadas que tocan el piso quedan como minas (hasta 5).", aplicar = EfectosDeCartas.EnElJuego },
         // Las de munición.
         new CartaDeInvasion { nombre = "Logística", rareza = RarezaDeCarta.Rara, rindeCon = "Todas", unaVez = true,
             efecto = "Desde ahora, los puestos recargan toda la munición en vez de la mitad.", aplicar = EfectosDeCartas.EnElJuego }, // US 314: EleccionDeInvasion.Abrir

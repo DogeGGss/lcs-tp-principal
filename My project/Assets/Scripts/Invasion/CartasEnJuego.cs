@@ -47,6 +47,9 @@ using UnityEngine;
 // - US 321, Acople: cada 3 tiros de pistola que aciertan, el arma principal (guardada) dispara sola un tiro hacia la
 //   mira, con sus balas y su cadencia; si está vacía (o recargando, o no le toca), ese tiro se pierde
 //   (WeaponFire.Acerto y DispararGuardada).
+// - US 313, Campo minado: las granadas del Gran Capitán que tocan el piso quedan como minas (MinaDeGranada) y explotan
+//   cuando pasa un invasor a menos de 2 m en horizontal; hasta 5 a la vez (7 y 9 con la carta repetida): al poner
+//   una de más, la más vieja explota sola (Grenade1.QuedaComoMina).
 // - US 312, Sin intervalo: matar con el fusil de ráfaga saca la pausa entre sus próximas 3 ráfagas (5 y 7 con la carta
 //   repetida); entre las balas de cada ráfaga, la separación sigue igual (ArmaDeFuego.SinPausaEntreRafagas).
 // - US 324, Ráfaga creciente: cada baja con el fusil de ráfaga le suma una bala a sus ráfagas, hasta 6 (8 y 10 con la
@@ -116,6 +119,7 @@ public class CartasEnJuego : MonoBehaviour
         Mitre.Concentrado = ConDisparoConcentrado;
         ArmaDeFuego.DescargaRapida = ConDescargaRapida;
         WeaponFire.Acerto += AlAcertar;
+        Grenade1.QuedaComoMina = ConCampoMinado;
         ArmaDeFuego.TerminoDeRecargar += AlRecargar;
         WeaponFire.Fired += AlDisparar;
         PuestoDeSuministros.SeCargo += Despejar;
@@ -143,6 +147,7 @@ public class CartasEnJuego : MonoBehaviour
         if (Mitre.Concentrado == (System.Func<bool>)ConDisparoConcentrado) Mitre.Concentrado = null;
         if (ArmaDeFuego.DescargaRapida == (System.Func<ArmaDeFuego, bool>)ConDescargaRapida) ArmaDeFuego.DescargaRapida = null;
         WeaponFire.Acerto -= AlAcertar;
+        if (Grenade1.QuedaComoMina == (System.Func<Grenade1, bool>)ConCampoMinado) Grenade1.QuedaComoMina = null;
         ArmaDeFuego.TerminoDeRecargar -= AlRecargar;
         if (MeleeAttack.AjustarGolpe == (System.Func<MeleeAttack, HealthSystem, int, int>)Rematar) MeleeAttack.AjustarGolpe = null;
     }
@@ -295,6 +300,15 @@ public class CartasEnJuego : MonoBehaviour
         float late = etapa >= 3 ? 0.75f + 0.25f * Mathf.Sin(Time.time * 40f) : 1f;
         brilloDeCarga.intensity = (0.25f + 2f * carga) * late + 5f * pulso * pulso;
         brilloDeCarga.range = 0.8f + 0.9f * carga + 1.2f * pulso;
+    }
+
+    // US 313: las granadas del lanzagranadas que tocan el piso, con la carta, quedan como minas (5, 7 y 9 a la vez).
+    private bool ConCampoMinado(Grenade1 granada)
+    {
+        int veces = EleccionDeInvasion.Veces("Campo minado");
+        if (veces <= 0 || granada.Item == null || granada.Item.category != ShopCategory.Launchers) return false;
+        MinaDeGranada.Tope = 5 + 2 * (veces - 1);
+        return true;
     }
 
     // US 321: un tiro de pistola que acertó; cada 3, la principal dispara sola.

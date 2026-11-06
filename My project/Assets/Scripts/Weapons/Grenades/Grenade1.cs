@@ -40,6 +40,12 @@ public class Grenade1 : MonoBehaviour
     // US 330 (la carta Bronca de Invasión): daño de más para cada uno que alcanza la explosión (no para quien la tiró).
     [HideInInspector] public int danioDeMas;
 
+    /// <summary>US 313, Campo minado (Invasión): true si esta granada del lanzagranadas, que tocó el escenario (el piso
+    /// o una pared), queda como mina en vez de explotar.</summary>
+    public static System.Func<Grenade1, bool> QuedaComoMina;
+    /// <summary>US 313: es una mina: la mecha no corre (explota cuando la pisa un invasor).</summary>
+    [HideInInspector] public bool esMina;
+
     // Quién la tiró: sus compañeros no reciben el daño de la explosión (US 031, CA6).
     [HideInInspector] public Transform thrower;
 
@@ -124,7 +130,7 @@ public class Grenade1 : MonoBehaviour
 
     void Update()
     {
-        if (exploded) return;
+        if (exploded || esMina) return;
         if (EsperaChoque && !tocoEscenario)
         {
             // US 074, CA2: la mecha no corre hasta el primer toque; a los MaxSinTocar segundos se activa igual.
@@ -147,6 +153,13 @@ public class Grenade1 : MonoBehaviour
         // US 287, CA2: la del lanzagranadas explota apenas toca algo (un invasor, el piso o una pared).
         if (explotaAlTocar && !exploded && !cosmetic && choque.collider != null && !choque.collider.isTrigger)
         {
+            // US 313: si tocó el escenario (el piso o una pared, no un invasor) puede quedar como mina.
+            if (esMina) return;
+            if (TocoElEscenario(choque) && QuedaComoMina != null && QuedaComoMina(this))
+            {
+                MinaDeGranada.Poner(this, choque.GetContact(0).point);
+                return;
+            }
             exploded = true;
             Explode();
             return;
@@ -166,6 +179,7 @@ public class Grenade1 : MonoBehaviour
         if (item == null) return;
         Item = item;
         explotaAlTocar = item.velocidadDelProyectil > 0f; // US 287
+        if (explotaAlTocar) CapsulaDeGranada.Poner(this); // el proyectil del lanzagranadas es una cápsula
         autoDanio = item.autoDanio;
         if (item.fuse > 0f) delay = item.fuse;
         if (item.effectRadius > 0f) radius = item.effectRadius;
@@ -210,6 +224,23 @@ public class Grenade1 : MonoBehaviour
         if (distance <= fullDamageRadius) return Mathf.RoundToInt(maxDamage);
         float t = (distance - fullDamageRadius) / (radius - fullDamageRadius);
         return Mathf.RoundToInt(Mathf.Lerp(maxDamage, minDamage, t));
+    }
+
+    // US 313: el escenario (el piso o una pared): no un personaje, un arma tirada ni otra granada.
+    private static bool TocoElEscenario(Collision choque)
+    {
+        if (choque.contactCount == 0) return false;
+        Collider otro = choque.collider;
+        return otro.GetComponentInParent<HealthSystem>() == null && otro.GetComponentInParent<ArmaEnPiso>() == null &&
+               otro.GetComponentInParent<Grenade1>() == null;
+    }
+
+    /// <summary>US 313: la mina explota (la pisó un invasor, o la sacó una mina nueva).</summary>
+    public void ExplotarAhora()
+    {
+        if (exploded) return;
+        exploded = true;
+        Explode();
     }
 
     void Explode()
