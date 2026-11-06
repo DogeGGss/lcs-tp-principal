@@ -57,7 +57,7 @@ public class CartaDeInvasion
         new CartaDeInvasion { nombre = "Doble cartucho", rareza = RarezaDeCarta.Epica, rindeCon = "Escopeta", unaVez = true,
             efecto = "La escopeta dispara 2 cartuchos juntos, gastando los dos." },
         new CartaDeInvasion { nombre = "Cargador gemelo", rareza = RarezaDeCarta.Rara, rindeCon = "Subfusil", unaVez = true,
-            efecto = "La primera vez que se vacía el cargador, se recarga al instante desde la reserva." },
+            efecto = "La primera vez que se vacía el cargador, se recarga al instante desde la reserva.", aplicar = EfectosDeCartas.EnElJuego },
         new CartaDeInvasion { nombre = "Cerrojo suelto", rareza = RarezaDeCarta.Rara, rindeCon = "Francotirador", unaVez = true,
             efecto = "Después de una baja a la cabeza, se puede volver a disparar a los 0,2 s." },
         new CartaDeInvasion { nombre = "Sin intervalo", rareza = RarezaDeCarta.Rara, rindeCon = "Fusil de ráfaga",
