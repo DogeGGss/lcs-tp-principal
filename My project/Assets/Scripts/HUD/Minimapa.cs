@@ -210,11 +210,13 @@ public class Minimapa : MonoBehaviour
             for (int i = n; i < invasores.Count; i++) invasores[i].gameObject.SetActive(false);
         }
 
-        // US 292, CA2 y CA3: el puesto de suministros y su anillo.
+        // US 292, CA2 y CA3: el puesto de suministros y su anillo. US 335, CA2: en el descanso, el próximo, más tenue.
+        private CanvasGroup puestoGrupo, anilloGrupo;
+
         private void Puesto(Vector3 centro, Quaternion derecho)
         {
             PuestoDeSuministros p = PuestoDeSuministros.Actual;
-            bool hay = p != null && p.Hay;
+            bool hay = p != null && p.HayDestino;
             if (!hay)
             {
                 if (puesto != null) { puesto.gameObject.SetActive(false); anilloPuesto.gameObject.SetActive(false); }
@@ -228,11 +230,15 @@ public class Minimapa : MonoBehaviour
                 Image(anilloPuesto, redondeado, WithAlpha(MarcadorInvasion.Verde, 0.25f), lado * 0.5f);
                 puesto = Marca("Puesto", 18f, new Color(0f, 0f, 0f, 0.75f));
                 Image(Centrado(Node("Color", puesto), 12f), redondeado, MarcadorInvasion.Verde, 3f);
+                puestoGrupo = puesto.gameObject.AddComponent<CanvasGroup>();
+                anilloGrupo = anilloPuesto.gameObject.AddComponent<CanvasGroup>();
             }
+            float tenue = p.Hay ? 1f : 0.5f;
+            puestoGrupo.alpha = anilloGrupo.alpha = tenue;
             anilloPuesto.gameObject.SetActive(true);
             puesto.gameObject.SetActive(true);
             anilloPuesto.sizeDelta = new Vector2(lado, lado);
-            anilloPuesto.anchoredPosition = puesto.anchoredPosition = EnMapa(p.Lugar, centro);
+            anilloPuesto.anchoredPosition = puesto.anchoredPosition = EnMapa(p.Destino, centro);
             puesto.localRotation = derecho;
             puesto.SetAsLastSibling();
         }

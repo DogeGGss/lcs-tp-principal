@@ -24,6 +24,9 @@ using UnityEngine.UI;
 //   a usar y quedan abiertos hasta que termina la oleada. El Jefe sale solo de un portal grande.
 //   Si no se encuentra lugar (o todavía no hay NavMesh), el portal se abre en los puntos de aparición del mapa (US 187,
 //   AparicionDeEnemigos), de reserva, y si no hay, alrededor del jugador.
+//   US 335, CA4 a CA7: mientras hay un puesto de suministros (US 292), los portales (también el del Jefe) se abren
+//   alrededor del puesto, entre 30 y 55 m de él, conectados caminando con el jugador y nunca a menos de 10 m de él
+//   (pueden verse); si no hay puesto o no se encuentra lugar ahí, como siempre.
 // - CA5: la oleada termina cuando mueren todos (en la 10, también el Jefe): "Oleada N superada" y descanso.
 // US 303 reemplaza el final de la 10 (CA6) y el modo infinito (CA7):
 // - CA4: al superar cada oleada del Jefe, "Jefe derrotado" con "Seguir" (la elección del Jefe, EleccionDeInvasion, y
@@ -69,6 +72,8 @@ public class OleadasDeInvasion : MonoBehaviour
 
     /// <summary>Avisa cada oleada que empieza y cada oleada superada (para el marcador y los puntos).</summary>
     public static event System.Action<int> Empezo, Supero;
+    /// <summary>US 335: arrancó el descanso de 20 s antes de esa oleada (después de la elección, si la hubo).</summary>
+    public static event System.Action<int> EmpezoElDescanso;
 
     /// <summary>Avisa cuando sale el cartel de "¡Llegó el jefe!" (US 298: el marcador se muestra un momento).</summary>
     public static event System.Action LlegoElJefe;
@@ -441,6 +446,7 @@ public class OleadasDeInvasion : MonoBehaviour
         EleccionDeInvasion eleccion = GetComponent<EleccionDeInvasion>();
         if (eleccion != null && eleccion.Retener()) { esperandoEleccion = true; return; }
         if (descanso != null) descanso.Begin(); else Invoke(nameof(Empezar), 20f);
+        EmpezoElDescanso?.Invoke(Oleada + 1);
     }
 
     /// <summary>US 293, CA6: se eligió en el puesto, arranca el respiro.</summary>
@@ -488,6 +494,7 @@ public class OleadasDeInvasion : MonoBehaviour
     // si no, a la vista; si no hay NavMesh o no se encuentra, en los puntos de aparición (US 187) o alrededor del jugador.
     private bool LugarDePortal(Transform jugador, out Vector3 lugar)
     {
+        if (CercaDelPuesto(jugador, out lugar)) return true; // US 335
         Camera cam = Camera.main;
         if (NavMeshEnVivo.Listo || NavMesh.SamplePosition(jugador.position, out _, 5f, NavMesh.AllAreas))
         {
@@ -506,6 +513,32 @@ public class OleadasDeInvasion : MonoBehaviour
             }
         }
         return Lugar(jugador, out lugar);
+    }
+
+    // US 335, CA4 y CA5: alrededor del puesto (afuera del anillo), conectado con el jugador y no encima de él.
+    private const float DelPuestoCerca = 30f, DelPuestoLejos = 55f, DelJugadorMinimo = 10f;
+
+    private static bool CercaDelPuesto(Transform jugador, out Vector3 lugar)
+    {
+        lugar = Vector3.zero;
+        PuestoDeSuministros puesto = PuestoDeSuministros.Actual;
+        if (puesto == null || !puesto.Hay) return false;
+        if (!NavMeshEnVivo.Listo && !NavMesh.SamplePosition(jugador.position, out _, 5f, NavMesh.AllAreas)) return false;
+        Vector3 centro = puesto.Lugar;
+        for (int intento = 0; intento < 30; intento++)
+        {
+            Vector2 c = Random.insideUnitCircle.normalized;
+            Vector3 p = centro + new Vector3(c.x, 0f, c.y) * Random.Range(DelPuestoCerca, DelPuestoLejos);
+            if (!Conectado(p, jugador.position, out Vector3 q)) continue;
+            Vector3 d = q - centro;
+            d.y = 0f;
+            if (d.magnitude < DelPuestoCerca * 0.85f || d.magnitude > DelPuestoLejos * 1.15f) continue;
+            if (Vector3.Distance(q, jugador.position) < DelJugadorMinimo) continue;
+            if (!HayLugar(q)) continue;
+            lugar = q;
+            return true;
+        }
+        return false;
     }
 
     // Lugar para el portal parado: nada sólido del mapa en un cilindro de 1,2 m de radio y 3 m de alto.

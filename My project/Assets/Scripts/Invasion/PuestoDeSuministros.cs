@@ -16,6 +16,10 @@ using static ShopUIKit;
 // - CA5: la meta es el 40 % de los puntos que da la oleada entera (la cuenta: invasores × puntos por invasor).
 // - CA6: el de la oleada 2 cae ya cargado.
 // - CA7: al superar la oleada, si está cargado se abre (Abrio, para la elección de la US 293); si no, se va sin dar nada.
+// US 335: el próximo puesto se elige al empezar el descanso (CA1: «Próximo puesto: <lugar>»; CA2: la marca y el
+// minimapa, más tenues, y la caja en el lugar exacto, verde y transparente, con el holograma; CA3: al empezar la
+// oleada cae ahí, con la misma vuelta). CA8 y CA9: el camino en el piso hasta el puesto
+// (CaminoAlPuesto).
 // El radio, la meta y los puntos por invasor están en ConfigInvasion. De a varios (US 289) la carga va a sumar lo de
 // todos; por ahora cuenta lo del jugador local.
 public class PuestoDeSuministros : MonoBehaviour
@@ -43,6 +47,17 @@ public class PuestoDeSuministros : MonoBehaviour
     public bool Cargado => Meta > 0 && Carga >= Meta;
     /// <summary>CA4: el jugador está adentro del anillo.</summary>
     public bool Adentro { get; private set; }
+    /// <summary>US 335: ya se sabe dónde cae el próximo (en el descanso).</summary>
+    public bool HayProximo { get; private set; }
+    public Vector3 LugarProximo { get; private set; }
+    public string NombreProximo { get; private set; }
+    private float giroProximo;     // US 335: la vuelta de la caja (la misma con la que cae)
+    private GameObject fantasma;   // US 335, CA2: la caja verde transparente donde va a caer
+    /// <summary>US 335: adonde hay que ir: el puesto que está, o el próximo.</summary>
+    public bool HayDestino => Hay || HayProximo;
+    public Vector3 Destino => Hay ? Lugar : LugarProximo;
+    /// <summary>US 335: el jugador está adentro del anillo del destino (el puesto o el próximo).</summary>
+    public bool AdentroDelDestino { get; private set; }
 
     private OleadasDeInvasion oleadas;
     private List<(string nombre, Vector3 lugar)> lugares;
@@ -65,6 +80,7 @@ public class PuestoDeSuministros : MonoBehaviour
     {
         OleadasDeInvasion.Empezo += AlEmpezar;
         OleadasDeInvasion.Supero += AlSuperar;
+        OleadasDeInvasion.EmpezoElDescanso += AlEmpezarElDescanso;
         PuntosDeInvasion.Sumo += AlSumar;
     }
 
@@ -72,6 +88,7 @@ public class PuestoDeSuministros : MonoBehaviour
     {
         OleadasDeInvasion.Empezo -= AlEmpezar;
         OleadasDeInvasion.Supero -= AlSuperar;
+        OleadasDeInvasion.EmpezoElDescanso -= AlEmpezarElDescanso;
         PuntosDeInvasion.Sumo -= AlSumar;
     }
 
@@ -79,6 +96,7 @@ public class PuestoDeSuministros : MonoBehaviour
     {
         if (Actual == this) Actual = null;
         Quitar();
+        QuitarFantasma();
         if (lienzo != null) Destroy(lienzo.gameObject);
     }
 
@@ -89,7 +107,13 @@ public class PuestoDeSuministros : MonoBehaviour
         Quitar(); // (Ir a la oleada 10 corta una oleada a la mitad)
         if (oleada < DesdeLaOleada) return;
         if (oleadas == null) oleadas = GetComponent<OleadasDeInvasion>();
-        if (!Elegir(out string nombre, out Vector3 lugar)) return;
+        string nombre;
+        Vector3 lugar;
+        float giro = Random.Range(0f, 360f);
+        if (HayProximo) { nombre = NombreProximo; lugar = LugarProximo; giro = giroProximo; } // US 335, CA3: donde se avisó
+        else if (!Elegir(out nombre, out lugar)) return;
+        HayProximo = false;
+        QuitarFantasma();
 
         ConfigInvasion config = ConfigInvasion.Actual;
         int total = oleadas != null ? oleadas.Total : 1;
@@ -98,8 +122,71 @@ public class PuestoDeSuministros : MonoBehaviour
         NombreDelLugar = nombre;
         Lugar = lugar;
         anterior = nombre;
-        Armar();
+        Armar(giro);
         Avisar($"Suministros en {nombre}"); // CA2
+    }
+
+    // US 335, CA1: al empezar el descanso se elige dónde cae el próximo y se avisa.
+    private void AlEmpezarElDescanso(int proxima)
+    {
+        HayProximo = false;
+        QuitarFantasma();
+        if (proxima < DesdeLaOleada || !Elegir(out string nombre, out Vector3 lugar)) return;
+        NombreProximo = nombre;
+        LugarProximo = lugar;
+        giroProximo = Random.Range(0f, 360f);
+        HayProximo = true;
+        ArmarFantasma();
+        Avisar($"Próximo puesto: {nombre}");
+    }
+
+    // US 335, CA2: la caja del puesto en el lugar exacto donde va a caer, verde y transparente (el holograma del perro
+    // del Callejero), sin colisión.
+    private static Material holograma;
+
+    private void ArmarFantasma()
+    {
+        GameObject modelo = ConfigInvasion.Actual.cajaPuesto;
+        if (holograma == null)
+        {
+            Shader shader = Resources.Load<Shader>("Efectos/Holograma");
+            if (shader == null) shader = Shader.Find("Efectos/Holograma");
+            if (shader == null) return;
+            holograma = new Material(shader) { name = "Próximo puesto" };
+            Color verde = MarcadorInvasion.Verde;
+            holograma.SetColor("_BaseColor", new Color(verde.r, verde.g, verde.b, 0.8f));
+        }
+        fantasma = new GameObject("Próximo puesto");
+        fantasma.transform.position = LugarProximo;
+        Transform caja;
+        if (modelo != null)
+        {
+            caja = Instantiate(modelo, fantasma.transform).transform;
+            caja.localScale = Vector3.one * ConfigInvasion.Actual.escalaCajaPuesto;
+        }
+        else
+        {
+            caja = GameObject.CreatePrimitive(PrimitiveType.Cube).transform;
+            caja.SetParent(fantasma.transform, false);
+            caja.localPosition = new Vector3(0f, 0.45f, 0f);
+            caja.localScale = new Vector3(1.4f, 0.9f, 1f);
+        }
+        caja.localRotation = Quaternion.Euler(0f, giroProximo, 0f);
+        foreach (Collider c in fantasma.GetComponentsInChildren<Collider>(true)) Destroy(c);
+        foreach (Renderer r in fantasma.GetComponentsInChildren<Renderer>(true))
+        {
+            var mats = new Material[r.sharedMaterials.Length];
+            for (int i = 0; i < mats.Length; i++) mats[i] = holograma;
+            r.sharedMaterials = mats;
+            r.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
+            r.receiveShadows = false;
+        }
+    }
+
+    private void QuitarFantasma()
+    {
+        if (fantasma != null) Destroy(fantasma);
+        fantasma = null;
     }
 
     // Un lugar al azar que no sea el anterior. Cerca de ese lugar se busca un punto a cielo abierto (nada encima: ni
@@ -198,6 +285,17 @@ public class PuestoDeSuministros : MonoBehaviour
         Adentro = new Vector2(d.x, d.z).sqrMagnitude <= Radio * Radio && Mathf.Abs(d.y) < 6f;
     }
 
+    private void ActualizarAdentroDelDestino()
+    {
+        Transform yo = Jugador();
+        if (!HayDestino || yo == null) { AdentroDelDestino = false; return; }
+        Vector3 d = yo.position - Destino;
+        AdentroDelDestino = new Vector2(d.x, d.z).sqrMagnitude <= Radio * Radio && Mathf.Abs(d.y) < 6f;
+    }
+
+    /// <summary>US 335: el jugador (para el camino).</summary>
+    public Transform ElJugador => Jugador();
+
     private Transform Jugador()
     {
         if (jugador == null)
@@ -243,7 +341,7 @@ public class PuestoDeSuministros : MonoBehaviour
 
     // ---------- El puesto en el mapa ----------
 
-    private void Armar()
+    private void Armar(float giro)
     {
         Color verde = MarcadorInvasion.Verde;
         puesto = new GameObject("Puesto de suministros");
@@ -256,7 +354,7 @@ public class PuestoDeSuministros : MonoBehaviour
         {
             Transform caja = Instantiate(modelo, cuerpo).transform;
             caja.localPosition = Vector3.zero;
-            caja.localRotation = Quaternion.Euler(0f, Random.Range(0f, 360f), 0f);
+            caja.localRotation = Quaternion.Euler(0f, giro, 0f);
             caja.localScale = Vector3.one * ConfigInvasion.Actual.escalaCajaPuesto;
         }
         else
@@ -334,6 +432,8 @@ public class PuestoDeSuministros : MonoBehaviour
     private void Update()
     {
         ActualizarAdentro();
+        ActualizarAdentroDelDestino();
+        if (GetComponent<CaminoAlPuesto>() == null) gameObject.AddComponent<CaminoAlPuesto>(); // US 335, CA8
         if (cuerpo != null)
         {
             float t = Mathf.Clamp01((Time.time - cayoEn) / Caida);
@@ -377,7 +477,7 @@ public class PuestoDeSuministros : MonoBehaviour
         adentro.offsetMin = new Vector2(3f, 3f);
         adentro.offsetMax = new Vector2(-3f, -3f);
         Image(adentro, redondeado, verde, 2f);
-        distancia = Text(Place(Node("Distancia", marca), 0f, 32f, 120f, 22f), label, 15f, verde, TextAlignmentOptions.Center, 8f);
+        distancia = Text(Place(Node("Distancia", marca), -30f, 32f, 180f, 22f), label, 15f, verde, TextAlignmentOptions.Center, 8f);
         distancia.rectTransform.anchorMin = distancia.rectTransform.anchorMax = new Vector2(0f, 1f);
         marca.gameObject.SetActive(false);
 
@@ -394,11 +494,11 @@ public class PuestoDeSuministros : MonoBehaviour
     private void ActualizarMarca()
     {
         Camera camara = Camera.main;
-        bool ver = Hay && camara != null && !ShopUI.IsOpen && ResultadoDeInvasion.Actual == null;
+        bool ver = HayDestino && camara != null && !ShopUI.IsOpen && ResultadoDeInvasion.Actual == null;
         if (marca.gameObject.activeSelf != ver) marca.gameObject.SetActive(ver);
         if (!ver) return;
 
-        Vector3 arriba = Lugar + Vector3.up * AlturaDeLaMarca;
+        Vector3 arriba = Destino + Vector3.up * AlturaDeLaMarca;
         Vector3 pantalla = camara.WorldToScreenPoint(arriba);
         if (pantalla.z < 0f) pantalla = new Vector3(Screen.width - pantalla.x, Screen.height - pantalla.y, 0f); // atrás: del lado opuesto
         bool afuera = pantalla.z <= 0f || pantalla.x < 0f || pantalla.x > Screen.width || pantalla.y < 0f || pantalla.y > Screen.height;
@@ -414,7 +514,13 @@ public class PuestoDeSuministros : MonoBehaviour
         }
         RectTransformUtility.ScreenPointToLocalPointInRectangle(lienzo, pantalla, null, out Vector2 local);
         marca.anchoredPosition = local;
-        float metros = Vector3.Distance(camara.transform.position, Lugar);
+        float metros = Vector3.Distance(camara.transform.position, Destino);
+        if (!Hay) // US 335, CA2: el próximo, más tenue
+        {
+            distancia.text = AdentroDelDestino ? "Próximo · acá" : $"Próximo · {metros:0} m";
+            marcaGrupo.alpha = 0.6f;
+            return;
+        }
         distancia.text = Adentro ? "Adentro" : $"{metros:0} m";
         marcaGrupo.alpha = Adentro ? 0.55f : 1f;
     }
