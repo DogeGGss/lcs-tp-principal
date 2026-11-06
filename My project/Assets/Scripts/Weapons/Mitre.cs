@@ -193,6 +193,20 @@ public class Mitre : MonoBehaviour, IHudWeapon
         }
     }
 
+    /// <summary>US 321, Acople: guardado, dispara solo un tiro hacia la mira, con sus balas y su cadencia. false si no
+    /// pudo (vacío, recargando o todavía no le toca): ese tiro se pierde.</summary>
+    public bool DispararGuardada()
+    {
+        if (currentAmmo <= 0 || isReloading || Time.time < nextTimeToFire) return false;
+        Camera cam = playerCamera != null ? playerCamera : Camera.main;
+        if (cam == null) return false;
+        nextTimeToFire = Time.time + 1f / fireRate;
+        if (!MinijuegoCometas.Activo) currentAmmo--;
+        if (shootSound != null) AudioSource.PlayClipAtPoint(shootSound, cam.transform.position, 0.7f); // (guardado no suena)
+        WeaponFire.Fire(Data, cam, shooter, false, maxRange);
+        return true;
+    }
+
     /// <param name="balas">US 323: las balas que salen juntas en un solo impacto.</param>
     /// <param name="deLaReserva">US 322: la bala sale de la reserva.</param>
     void Shoot(int balas = 1, bool apuntando = false, bool deLaReserva = false)

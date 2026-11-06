@@ -27,6 +27,9 @@ public static class WeaponFire
     // se reparte entre los perdigones.
     public static System.Func<int> DanioDeMas;
 
+    /// <summary>Un disparo de esa arma le pegó a alguien (US 321, Acople: cuenta los aciertos de pistola).</summary>
+    public static event System.Action<ShopItem> Acerto;
+
     private static readonly RaycastHit[] hits = new RaycastHit[32];
     private static readonly Dictionary<HealthSystem, bool> zoned = new Dictionary<HealthSystem, bool>();
     private static readonly IComparer<RaycastHit> byDistance =
@@ -138,6 +141,7 @@ public static class WeaponFire
         aim.Kick(weapon); // (US 309: con el doble cartucho patea igual que uno)
         Fired?.Invoke(shooter, camera.transform.position, directions);
         if (anyHit) Hit?.Invoke(kill ? HitMarkerKind.Kill : head ? HitMarkerKind.Head : HitMarkerKind.Body);
+        if (anyHit) Acerto?.Invoke(weapon);
     }
 
     // Fase de compra del Táctico (F21, US 157): el disparo es solo para el minijuego. Tiene la cadencia, la dispersión y

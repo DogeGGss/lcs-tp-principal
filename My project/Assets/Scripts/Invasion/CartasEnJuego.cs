@@ -40,6 +40,13 @@ using UnityEngine;
 //   primero la recarga instantánea; con Alimentación directa, sin uso.
 // - US 323, Disparo concentrado: con la carta, el Mitre apunta con el click derecho (un zoom chico); apuntando, dispara
 //   hasta 5 balas juntas en un solo impacto que suma su daño, cada 0,4 s; desde la cadera, automático (Mitre.Concentrado).
+// - US 320, Descarga rápida: La Trochita tiene un disparo cargado, que sale al soltar el gatillo: un toque, un tiro
+//   normal; manteniéndolo se carga en 3 etapas (2, 4 y 6 balas seguidas, a 0,1 s), con fogonazos y estelas doradas.
+//   Mientras carga, un brillo dorado sobre el arma que crece, con un pulso de luz en cada etapa y latiendo en la
+//   última (ArmaDeFuego.DescargaRapida, CargaDeDescarga y EtapaDeDescarga).
+// - US 321, Acople: cada 3 tiros de pistola que aciertan, el arma principal (guardada) dispara sola un tiro hacia la
+//   mira, con sus balas y su cadencia; si está vacía (o recargando, o no le toca), ese tiro se pierde
+//   (WeaponFire.Acerto y DispararGuardada).
 // - US 312, Sin intervalo: matar con el fusil de ráfaga saca la pausa entre sus próximas 3 ráfagas (5 y 7 con la carta
 //   repetida); entre las balas de cada ráfaga, la separación sigue igual (ArmaDeFuego.SinPausaEntreRafagas).
 // - US 324, Ráfaga creciente: cada baja con el fusil de ráfaga le suma una bala a sus ráfagas, hasta 6 (8 y 10 con la
@@ -79,6 +86,8 @@ public class CartasEnJuego : MonoBehaviour
     private static AudioClip sonidoGemelo;
     private static readonly Color Naranja = new Color(1f, 0.55f, 0.1f);
     private const float DestelloGemeloDura = 0.6f;
+    private int aciertosDePistola; // US 321
+    public const int AciertosParaAcople = 3;
     private int rafagasSinPausa; // US 312: cuántas ráfagas más salen sin la pausa
     // US 324: las balas de más de la ráfaga de cada arma (hasta recargar).
     private readonly System.Collections.Generic.Dictionary<ArmaDeFuego, int> balasDeMas =
@@ -105,6 +114,8 @@ public class CartasEnJuego : MonoBehaviour
         ArmaDeFuego.ApuntaPorCarta = ApuntaConBalaCompacta;
         Municion.TiroDeReserva = ConTiroDeReserva;
         Mitre.Concentrado = ConDisparoConcentrado;
+        ArmaDeFuego.DescargaRapida = ConDescargaRapida;
+        WeaponFire.Acerto += AlAcertar;
         ArmaDeFuego.TerminoDeRecargar += AlRecargar;
         WeaponFire.Fired += AlDisparar;
         PuestoDeSuministros.SeCargo += Despejar;
@@ -130,6 +141,8 @@ public class CartasEnJuego : MonoBehaviour
         if (ArmaDeFuego.ApuntaPorCarta == (System.Func<ArmaDeFuego, bool>)ApuntaConBalaCompacta) ArmaDeFuego.ApuntaPorCarta = null;
         if (Municion.TiroDeReserva == (System.Func<bool>)ConTiroDeReserva) Municion.TiroDeReserva = null;
         if (Mitre.Concentrado == (System.Func<bool>)ConDisparoConcentrado) Mitre.Concentrado = null;
+        if (ArmaDeFuego.DescargaRapida == (System.Func<ArmaDeFuego, bool>)ConDescargaRapida) ArmaDeFuego.DescargaRapida = null;
+        WeaponFire.Acerto -= AlAcertar;
         ArmaDeFuego.TerminoDeRecargar -= AlRecargar;
         if (MeleeAttack.AjustarGolpe == (System.Func<MeleeAttack, HealthSystem, int, int>)Rematar) MeleeAttack.AjustarGolpe = null;
     }
@@ -148,6 +161,7 @@ public class CartasEnJuego : MonoBehaviour
         DespejarSiToca();
         MostrarBronca();
         MostrarDestelloGemelo();
+        MostrarCargaDeDescarga();
     }
 
     // US 330: mientras la bronca está cargada, una luz roja que late sobre el arma en la mano (abajo a la derecha de la
@@ -241,6 +255,63 @@ public class CartasEnJuego : MonoBehaviour
     // US 319: la escopeta puede apuntar con el click derecho.
     private bool ApuntaConBalaCompacta(ArmaDeFuego arma) =>
         EsEscopeta(arma.shopItem) && EleccionDeInvasion.Veces("Bala compacta") > 0;
+
+    // US 320: la pistola pesada (La Trochita, la única pistola que es ArmaDeFuego).
+    private bool ConDescargaRapida(ArmaDeFuego arma) =>
+        arma.shopItem != null && arma.shopItem.category == ShopCategory.Pistols && EleccionDeInvasion.Veces("Descarga rápida") > 0;
+
+    // US 320: el brillo dorado del disparo cargado sobre el arma: crece con la carga, da un pulso de luz al llegar a
+    // cada etapa y late en la última.
+    private Light brilloDeCarga;
+    private int etapaVista;
+    private float pulsoDesde = -10f;
+    private const float PulsoDura = 0.25f;
+
+    private void MostrarCargaDeDescarga()
+    {
+        float carga = ArmaDeFuego.CargaDeDescarga;
+        int etapa = ArmaDeFuego.EtapaDeDescarga;
+        if (etapa > etapaVista) pulsoDesde = Time.time; // llegó a una etapa nueva
+        etapaVista = etapa;
+        float pulso = Mathf.Clamp01(1f - (Time.time - pulsoDesde) / PulsoDura);
+        if (carga <= 0f && pulso <= 0f)
+        {
+            if (brilloDeCarga != null) brilloDeCarga.enabled = false;
+            return;
+        }
+        if (brilloDeCarga == null)
+        {
+            Camera camara = Camera.main;
+            if (camara == null) return;
+            var go = new GameObject("Disparo cargado");
+            go.transform.SetParent(camara.transform, false);
+            go.transform.localPosition = new Vector3(0.16f, -0.1f, 0.45f);
+            brilloDeCarga = go.AddComponent<Light>();
+            brilloDeCarga.type = LightType.Point;
+            brilloDeCarga.color = ArmaDeFuego.ColorDeDescarga;
+            brilloDeCarga.shadows = LightShadows.None;
+        }
+        brilloDeCarga.enabled = true;
+        float late = etapa >= 3 ? 0.75f + 0.25f * Mathf.Sin(Time.time * 40f) : 1f;
+        brilloDeCarga.intensity = (0.25f + 2f * carga) * late + 5f * pulso * pulso;
+        brilloDeCarga.range = 0.8f + 0.9f * carga + 1.2f * pulso;
+    }
+
+    // US 321: un tiro de pistola que acertó; cada 3, la principal dispara sola.
+    private void AlAcertar(ShopItem arma)
+    {
+        if (arma == null || arma.category != ShopCategory.Pistols || EleccionDeInvasion.Veces("Acople") <= 0) return;
+        aciertosDePistola++;
+        if (aciertosDePistola < AciertosParaAcople) return;
+        aciertosDePistola = 0;
+        WeaponSwitcher a = Armas();
+        GameObject principal = a != null ? a.PrimaryObj : null;
+        if (principal == null) return;
+        ArmaDeFuego fuego = principal.GetComponent<ArmaDeFuego>();
+        if (fuego != null) { fuego.DispararGuardada(); return; }
+        Mitre mitre = principal.GetComponent<Mitre>();
+        if (mitre != null) mitre.DispararGuardada();
+    }
 
     // US 319: apuntando.
     private bool ConBalaCompacta(ShopItem arma, bool apuntando) =>

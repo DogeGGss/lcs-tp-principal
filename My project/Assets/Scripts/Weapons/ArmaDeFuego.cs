@@ -32,6 +32,22 @@ public class ArmaDeFuego : MonoBehaviour, IHudWeapon
     /// <summary>US 319: está apuntando con el click derecho (sin mira telescópica, por la carta).</summary>
     public bool ApuntandoPorCarta => apuntandoPorCarta;
 
+    /// <summary>US 320, Descarga rápida: true si esta arma (La Trochita) tiene el disparo cargado: el disparo sale al
+    /// soltar el gatillo; manteniéndolo se carga en 3 etapas (2, 4 y 6 balas, a 0,1 s entre balas).</summary>
+    public static System.Func<ArmaDeFuego, bool> DescargaRapida;
+    public static readonly float[] EtapasDeCarga = { 0.3f, 0.6f, 0.9f }; // s manteniendo el gatillo
+    public static readonly int[] BalasPorEtapa = { 2, 4, 6 };
+    public const float EntreBalasDeDescarga = 0.1f;                        // 6 en 0,6 s
+    public static readonly Color ColorDeDescarga = new Color(1f, 0.72f, 0.15f); // dorado
+    /// <summary>US 320: la carga del arma en la mano (0 a 1 hasta la última etapa; 0 si no está cargando), para el brillo.</summary>
+    public static float CargaDeDescarga { get; private set; }
+    /// <summary>US 320: la etapa a la que llegó la carga (0: todavía ninguna; 1 a 3).</summary>
+    public static int EtapaDeDescarga { get; private set; }
+    /// <summary>US 320: está saliendo la descarga (para el tambor).</summary>
+    public static bool Descargando { get; private set; }
+    private bool cargando;
+    private float cargaDesde;
+
     /// <summary>US 309, Doble cartucho: true si este disparo de la escopeta sale con 2 cartuchos juntos.</summary>
     public static System.Func<ArmaDeFuego, bool> DobleCartucho;
     /// <summary>US 325, Mira abierta: cuántas veces la cadencia de la ficha (según si tiene la mira puesta).</summary>
@@ -173,6 +189,11 @@ public class ArmaDeFuego : MonoBehaviour, IHudWeapon
         equipping = false;
         apuntandoPorCarta = false;
         zoomPorCarta.Soltar(); // US 319: vuelve el campo de visión
+        cargando = false;      // US 320
+        CargaDeDescarga = 0f;
+        EtapaDeDescarga = 0;
+        Descargando = false;
+        Trazadora.Tinte = null;
     }
 
     // US 319: apuntar con el click derecho (armas sin mira telescópica, con la carta): un zoom chico.
@@ -206,6 +227,37 @@ public class ArmaDeFuego : MonoBehaviour, IHudWeapon
             return;
         }
 
+        // US 320, Descarga rápida: el disparo sale al soltar el gatillo. Un toque: un tiro normal. Manteniéndolo se carga
+        // en 3 etapas (a los 0,3, 0,6 y 0,9 s): al soltar salen 2, 4 o 6 balas seguidas, doradas.
+        if (DescargaRapida != null && DescargaRapida(this))
+        {
+            if (press && currentAmmo > 0 && Time.time >= nextShot) { cargando = true; cargaDesde = Time.time; }
+            if (cargando)
+            {
+                float tiempo = Time.time - cargaDesde;
+                int etapa = 0;
+                while (etapa < EtapasDeCarga.Length && tiempo >= EtapasDeCarga[etapa]) etapa++;
+                EtapaDeDescarga = etapa;
+                CargaDeDescarga = Mathf.Clamp01(tiempo / EtapasDeCarga[EtapasDeCarga.Length - 1]);
+                if (!KeyBindings.Held(GameAction.Disparar)) // soltó: sale
+                {
+                    cargando = false;
+                    CargaDeDescarga = 0f;
+                    EtapaDeDescarga = 0;
+                    if (etapa == 0)
+                    {
+                        nextShot = Time.time + 1f / Mathf.Max(0.01f, shopItem.fireRate);
+                        FireOne();
+                    }
+                    else StartCoroutine(Descarga(BalasPorEtapa[etapa - 1]));
+                }
+            }
+            if (KeyBindings.Down(GameAction.Recargar) && !cargando && currentAmmo < MagazineSize && reserveAmmo > 0) StartReload();
+            return;
+        }
+        CargaDeDescarga = 0f;
+        EtapaDeDescarga = 0;
+
         if (trigger && currentAmmo > 0 && Time.time >= nextShot)
         {
             float cadencia = shopItem.fireRate * (CadenciaPorCarta?.Invoke(this, mira != null && mira.ConLente) ?? 1f); // US 325
@@ -215,6 +267,22 @@ public class ArmaDeFuego : MonoBehaviour, IHudWeapon
         }
 
         if (KeyBindings.Down(GameAction.Recargar) && currentAmmo < MagazineSize && reserveAmmo > 0) StartReload();
+    }
+
+    /// <summary>US 321, Acople: guardada, dispara sola un tiro hacia la mira, con sus balas y su cadencia. false si no
+    /// pudo (vacía, recargando o todavía no le toca): ese tiro se pierde. No cuenta para las cartas de esta arma.</summary>
+    public bool DispararGuardada()
+    {
+        if (shopItem == null || currentAmmo <= 0 || reloading || Time.time < nextShot) return false;
+        Camera cam = playerCamera != null ? playerCamera : Camera.main;
+        if (cam == null) return false;
+        nextShot = Time.time + 1f / Mathf.Max(0.01f, shopItem.fireRate);
+        if (!MinijuegoCometas.Activo) currentAmmo--;
+        if (shootSound != null) AudioSource.PlayClipAtPoint(shootSound, cam.transform.position, 0.7f); // (guardada no suena)
+        if (shopItem.velocidadDelProyectil > 0f && shopItem.grenadePrefab != null)
+            WeaponFire.FireProjectile(shopItem, cam, shooter, false);
+        else WeaponFire.Fire(shopItem, cam, shooter, false, alcance);
+        return true;
     }
 
     /// <param name="deLaReserva">US 322: la bala sale de la reserva (Tiro de reserva).</param>
@@ -268,6 +336,23 @@ public class ArmaDeFuego : MonoBehaviour, IHudWeapon
         pumpSource.clip = clip;
         pumpSource.time = skip;
         pumpSource.Play();
+    }
+
+    // US 320: la descarga del disparo cargado: las balas de la etapa, a 0,1 s, doradas.
+    private IEnumerator Descarga(int balas)
+    {
+        bursting = true;
+        Descargando = true;
+        for (int i = 0; i < balas && currentAmmo > 0; i++)
+        {
+            if (i > 0) yield return new WaitForSeconds(EntreBalasDeDescarga);
+            Trazadora.Tinte = ColorDeDescarga;
+            try { FireOne(); }
+            finally { Trazadora.Tinte = null; }
+        }
+        nextShot = Time.time + 1f / Mathf.Max(0.01f, shopItem.fireRate);
+        Descargando = false;
+        bursting = false;
     }
 
     // US 069, CA1 y CA3: la ráfaga tira sus balas seguidas; si quedan menos, las que queden. Con Ráfaga creciente

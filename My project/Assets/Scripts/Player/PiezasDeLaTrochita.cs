@@ -19,6 +19,8 @@ public interface IPiezasDelArma
 // girarlo. Las medidas de abajo están en las coordenadas del modelo (x hacia la boca, z hacia arriba, y hacia la
 // izquierda); Unity da vuelta la x al importarlo, así que en la malla un punto (x, y, z) del modelo está en
 // (-x, y, z) * escala. Para separar el tambor el modelo tiene que tener Read/Write prendido.
+// US 320, Descarga rápida (Invasión): mientras se carga el disparo cargado, el tambor gira cada vez más rápido (más
+// rápido en cada etapa); al soltar sigue girando hasta completar la vuelta (así las rayitas quedan en su lugar).
 public class PiezasDeLaTrochita : IPiezasDelArma
 {
     private const float LargoModelo = 0.934f; // de punta a punta en x (de -0.119 a 0.815)
@@ -46,8 +48,12 @@ public class PiezasDeLaTrochita : IPiezasDelArma
     private int balasAlRecargar;
     private static Material cargada, vacia;
 
+    private readonly bool propia;   // la del jugador (primera persona): la que carga el disparo cargado (US 320)
+    private float giroDeCarga;      // US 320: grados de más mientras carga
+
     public PiezasDeLaTrochita(GameObject trochita, Transform camara)
     {
+        propia = camara != null;
         MeshFilter filtro = trochita.GetComponent<MeshFilter>();
         if (filtro == null) filtro = trochita.GetComponentInChildren<MeshFilter>(true);
         arma = filtro != null ? filtro.transform : trochita.transform;
@@ -286,10 +292,25 @@ public class PiezasDeLaTrochita : IPiezasDelArma
         else
         {
             if (recargando) TerminarRecarga();
-            tambor.localRotation = Quaternion.AngleAxis(Angulo(), ejeDelTambor);
+            GirarCargando();
+            tambor.localRotation = Quaternion.AngleAxis(Angulo() + giroDeCarga, ejeDelTambor);
         }
         Marcas(Mathf.Clamp(encendidas, 0, Balas));
         if (tambor.gameObject.layer != Capa) foreach (Transform t in tambor.GetComponentsInChildren<Transform>(true)) t.gameObject.layer = Capa;
+    }
+
+    // US 320: cargando, el tambor gira (1, 2, 3 y 4 vueltas por segundo según la etapa); al soltar termina la vuelta.
+    private void GirarCargando()
+    {
+        if (propia && ArmaDeFuego.CargaDeDescarga > 0f)
+        {
+            giroDeCarga += 360f * (1f + ArmaDeFuego.EtapaDeDescarga) * Time.deltaTime;
+            return;
+        }
+        if (giroDeCarga <= 0f) return;
+        float vuelta = Mathf.Ceil(giroDeCarga / 360f - 0.0001f) * 360f;
+        giroDeCarga = Mathf.MoveTowards(giroDeCarga, vuelta, 1080f * Time.deltaTime);
+        if (giroDeCarga >= vuelta - 0.01f) giroDeCarga = 0f;
     }
 
     // Terminó (o se cortó) la recarga: el tambor vuelve a donde estaba (dio vueltas enteras, las rayitas no cambian).
@@ -304,6 +325,7 @@ public class PiezasDeLaTrochita : IPiezasDelArma
     public void Quieta()
     {
         if (recargando) TerminarRecarga();
+        giroDeCarga = 0f;
         anguloDesde = anguloHasta;
         if (tambor != null) tambor.localRotation = Quaternion.AngleAxis(anguloHasta, ejeDelTambor);
     }
