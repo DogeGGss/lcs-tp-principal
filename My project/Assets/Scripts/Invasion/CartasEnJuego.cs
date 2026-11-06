@@ -30,6 +30,11 @@ using UnityEngine;
 //   0,2 s (ArmaDeFuego.AcortarCerrojo; la mira vuelve también a los 0,2 s).
 // - US 325, Mira abierta: sin la mira puesta, el francotirador dispara sin dispersión y al doble de cadencia; con la
 //   mira, normal (WeaponFire.SinDispersion y ArmaDeFuego.CadenciaPorCarta).
+// - US 309, Doble cartucho: la escopeta dispara 2 cartuchos juntos (el doble de perdigones), gastando los dos; con
+//   uno solo en el cargador, sale simple (ArmaDeFuego.DobleCartucho).
+// - US 319, Bala compacta: con la carta, la escopeta apunta manteniendo el click derecho (un zoom chico, como no tiene
+//   mira); apuntando junta todos sus perdigones en un solo proyectil sin dispersión, con el mismo daño total; desde
+//   la cadera, los perdigones de siempre (ArmaDeFuego.ApuntaPorCarta y WeaponFire.BalaCompacta).
 // - US 312, Sin intervalo: matar con el fusil de ráfaga saca la pausa entre sus próximas 3 ráfagas (5 y 7 con la carta
 //   repetida); entre las balas de cada ráfaga, la separación sigue igual (ArmaDeFuego.SinPausaEntreRafagas).
 // - US 324, Ráfaga creciente: cada baja con el fusil de ráfaga le suma una bala a sus ráfagas, hasta 6 (8 y 10 con la
@@ -90,6 +95,9 @@ public class CartasEnJuego : MonoBehaviour
         ArmaDeFuego.RecargaAlVaciarse = CargadorGemelo;
         ArmaDeFuego.CadenciaPorCarta = CadenciaDeMiraAbierta;
         WeaponFire.SinDispersion = SinDispersionDeMiraAbierta;
+        ArmaDeFuego.DobleCartucho = ConDobleCartucho;
+        WeaponFire.BalaCompacta = ConBalaCompacta;
+        ArmaDeFuego.ApuntaPorCarta = ApuntaConBalaCompacta;
         ArmaDeFuego.TerminoDeRecargar += AlRecargar;
         WeaponFire.Fired += AlDisparar;
         PuestoDeSuministros.SeCargo += Despejar;
@@ -110,6 +118,9 @@ public class CartasEnJuego : MonoBehaviour
         if (ArmaDeFuego.RecargaAlVaciarse == (System.Func<ArmaDeFuego, bool>)CargadorGemelo) ArmaDeFuego.RecargaAlVaciarse = null;
         if (ArmaDeFuego.CadenciaPorCarta == (System.Func<ArmaDeFuego, bool, float>)CadenciaDeMiraAbierta) ArmaDeFuego.CadenciaPorCarta = null;
         if (WeaponFire.SinDispersion == (System.Func<ShopItem, bool, bool>)SinDispersionDeMiraAbierta) WeaponFire.SinDispersion = null;
+        if (ArmaDeFuego.DobleCartucho == (System.Func<ArmaDeFuego, bool>)ConDobleCartucho) ArmaDeFuego.DobleCartucho = null;
+        if (WeaponFire.BalaCompacta == (System.Func<ShopItem, bool, bool>)ConBalaCompacta) WeaponFire.BalaCompacta = null;
+        if (ArmaDeFuego.ApuntaPorCarta == (System.Func<ArmaDeFuego, bool>)ApuntaConBalaCompacta) ArmaDeFuego.ApuntaPorCarta = null;
         ArmaDeFuego.TerminoDeRecargar -= AlRecargar;
         if (MeleeAttack.AjustarGolpe == (System.Func<MeleeAttack, HealthSystem, int, int>)Rematar) MeleeAttack.AjustarGolpe = null;
     }
@@ -204,6 +215,20 @@ public class CartasEnJuego : MonoBehaviour
             balasDeMas[arma] = Mathf.Min(Mathf.Max(0, tope), n + 1);
         }
     }
+
+    private static bool EsEscopeta(ShopItem item) => item != null && item.category == ShopCategory.Shotguns;
+
+    // US 309.
+    private bool ConDobleCartucho(ArmaDeFuego arma) =>
+        EsEscopeta(arma.shopItem) && EleccionDeInvasion.Veces("Doble cartucho") > 0;
+
+    // US 319: la escopeta puede apuntar con el click derecho.
+    private bool ApuntaConBalaCompacta(ArmaDeFuego arma) =>
+        EsEscopeta(arma.shopItem) && EleccionDeInvasion.Veces("Bala compacta") > 0;
+
+    // US 319: apuntando.
+    private bool ConBalaCompacta(ShopItem arma, bool apuntando) =>
+        apuntando && EsEscopeta(arma) && EleccionDeInvasion.Veces("Bala compacta") > 0;
 
     private static bool EsFrancotirador(ShopItem item) => item != null && item.category == ShopCategory.Snipers;
 

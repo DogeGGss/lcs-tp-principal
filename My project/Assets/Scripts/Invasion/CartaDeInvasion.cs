@@ -55,7 +55,9 @@ public class CartaDeInvasion
         // US 309 a 318 (antes US 295 y 296): las de una sola vez (unaVez) y las que se acumulan hasta 3 veces, según
         // cada historia.
         new CartaDeInvasion { nombre = "Doble cartucho", rareza = RarezaDeCarta.Epica, rindeCon = "Escopeta", unaVez = true,
-            efecto = "La escopeta dispara 2 cartuchos juntos, gastando los dos." },
+            efecto = "La escopeta dispara 2 cartuchos juntos, gastando los dos.", aplicar = EfectosDeCartas.EnElJuego },
+        new CartaDeInvasion { nombre = "Bala compacta", rareza = RarezaDeCarta.Rara, rindeCon = "Escopeta", unaVez = true,
+            efecto = "Apuntando, los perdigones salen juntos en un solo proyectil sin dispersión, con el mismo daño.", aplicar = EfectosDeCartas.EnElJuego },
         new CartaDeInvasion { nombre = "Cargador gemelo", rareza = RarezaDeCarta.Rara, rindeCon = "Subfusil", unaVez = true,
             efecto = "La primera vez que se vacía el cargador, se recarga al instante desde la reserva.", aplicar = EfectosDeCartas.EnElJuego },
         new CartaDeInvasion { nombre = "Cerrojo suelto", rareza = RarezaDeCarta.Rara, rindeCon = "Francotirador", unaVez = true,

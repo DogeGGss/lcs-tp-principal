@@ -287,7 +287,11 @@ public class CombatHud : MonoBehaviour
         }
         if (weapon == null) return 0f;
 
-        float degrees = WeaponAim.For(view).CurrentSpread(weapon, false);
+        // Apuntando con la escopeta por Bala compacta (US 319), o con una carta que saca la dispersión, la mira se cierra.
+        GameObject enLaMano = held != null ? held : switcher.HeldSecondary;
+        ArmaDeFuego arma = enLaMano != null ? enLaMano.GetComponent<ArmaDeFuego>() : null;
+        bool apuntando = arma != null && arma.ApuntandoPorCarta;
+        float degrees = WeaponFire.DispersionDelDisparo(weapon, WeaponAim.For(view), apuntando);
         RectTransform canvas = crosshair.parent as RectTransform;
         float half = canvas != null && canvas.rect.height > 0f ? canvas.rect.height * 0.5f : 540f;
         return Mathf.Tan(degrees * Mathf.Deg2Rad) / Mathf.Tan(view.fieldOfView * 0.5f * Mathf.Deg2Rad) * half;
