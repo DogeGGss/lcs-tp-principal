@@ -26,6 +26,10 @@ using UnityEngine;
 // - US 310, Cargador gemelo: la primera vez que se vacía el cargador del subfusil, se recarga al instante desde la
 //   reserva. Vuelve a estar lista después de terminar una recarga a mano (si la recarga se corta, no). Se nota con un
 //   sonido corto (Efectos/CargadorGemelo) y un destello naranja sobre el arma (ArmaDeFuego.RecargaAlVaciarse).
+// - US 311, Cerrojo suelto: después de una baja a la cabeza con el francotirador, se puede volver a disparar a los
+//   0,2 s (ArmaDeFuego.AcortarCerrojo; la mira vuelve también a los 0,2 s).
+// - US 325, Mira abierta: sin la mira puesta, el francotirador dispara sin dispersión y al doble de cadencia; con la
+//   mira, normal (WeaponFire.SinDispersion y ArmaDeFuego.CadenciaPorCarta).
 // - US 312, Sin intervalo: matar con el fusil de ráfaga saca la pausa entre sus próximas 3 ráfagas (5 y 7 con la carta
 //   repetida); entre las balas de cada ráfaga, la separación sigue igual (ArmaDeFuego.SinPausaEntreRafagas).
 // - US 324, Ráfaga creciente: cada baja con el fusil de ráfaga le suma una bala a sus ráfagas, hasta 6 (8 y 10 con la
@@ -42,6 +46,8 @@ public class CartasEnJuego : MonoBehaviour
     public const float ReservaListaTarda = 2f;                      // US 329: s guardada hasta recargarse
     public const int BroncaPor = 5;                                 // US 330: veces la vida perdida (6 y 7 repetida)
     public const float BroncaEspera = 8f;                           // US 330: s hasta volver a cargarse
+    public const float CerrojoSuelto = 0.2f;                         // US 311: s hasta el próximo disparo
+    public const float MiraAbiertaCadencia = 2f;                     // US 325: veces la cadencia sin apuntar
     public const int SinIntervaloRafagas = 3, SinIntervaloPorVez = 2;     // US 312: 3, 5 y 7 ráfagas
     public const int RafagaCrecienteTope = 6, RafagaCrecientePorVez = 2;  // US 324: hasta 6, 8 y 10 balas
     public const float DespejeMetros = 10f, DespejePorVez = 5f;     // US 333: 10, 15 y 20 m
@@ -82,6 +88,8 @@ public class CartasEnJuego : MonoBehaviour
         ArmaDeFuego.SinPausaEntreRafagas = SinPausa;
         ArmaDeFuego.BalasDeMasEnLaRafaga = BalasDeMas;
         ArmaDeFuego.RecargaAlVaciarse = CargadorGemelo;
+        ArmaDeFuego.CadenciaPorCarta = CadenciaDeMiraAbierta;
+        WeaponFire.SinDispersion = SinDispersionDeMiraAbierta;
         ArmaDeFuego.TerminoDeRecargar += AlRecargar;
         WeaponFire.Fired += AlDisparar;
         PuestoDeSuministros.SeCargo += Despejar;
@@ -100,6 +108,8 @@ public class CartasEnJuego : MonoBehaviour
         if (ArmaDeFuego.SinPausaEntreRafagas == (System.Func<ArmaDeFuego, bool>)SinPausa) ArmaDeFuego.SinPausaEntreRafagas = null;
         if (ArmaDeFuego.BalasDeMasEnLaRafaga == (System.Func<ArmaDeFuego, int>)BalasDeMas) ArmaDeFuego.BalasDeMasEnLaRafaga = null;
         if (ArmaDeFuego.RecargaAlVaciarse == (System.Func<ArmaDeFuego, bool>)CargadorGemelo) ArmaDeFuego.RecargaAlVaciarse = null;
+        if (ArmaDeFuego.CadenciaPorCarta == (System.Func<ArmaDeFuego, bool, float>)CadenciaDeMiraAbierta) ArmaDeFuego.CadenciaPorCarta = null;
+        if (WeaponFire.SinDispersion == (System.Func<ShopItem, bool, bool>)SinDispersionDeMiraAbierta) WeaponFire.SinDispersion = null;
         ArmaDeFuego.TerminoDeRecargar -= AlRecargar;
         if (MeleeAttack.AjustarGolpe == (System.Func<MeleeAttack, HealthSystem, int, int>)Rematar) MeleeAttack.AjustarGolpe = null;
     }
@@ -194,6 +204,15 @@ public class CartasEnJuego : MonoBehaviour
             balasDeMas[arma] = Mathf.Min(Mathf.Max(0, tope), n + 1);
         }
     }
+
+    private static bool EsFrancotirador(ShopItem item) => item != null && item.category == ShopCategory.Snipers;
+
+    // US 325: sin la mira puesta, el doble de cadencia y sin dispersión.
+    private float CadenciaDeMiraAbierta(ArmaDeFuego arma, bool conMira) =>
+        !conMira && EsFrancotirador(arma.shopItem) && EleccionDeInvasion.Veces("Mira abierta") > 0 ? MiraAbiertaCadencia : 1f;
+
+    private bool SinDispersionDeMiraAbierta(ShopItem arma, bool conMira) =>
+        !conMira && EsFrancotirador(arma) && EleccionDeInvasion.Veces("Mira abierta") > 0;
 
     // US 312: la ráfaga que terminó gasta una de las que salen sin pausa.
     private bool SinPausa(ArmaDeFuego arma)
@@ -340,8 +359,11 @@ public class CartasEnJuego : MonoBehaviour
     // Una baja con un disparo del jugador (a la cabeza o no).
     private void AlMatar(bool cabeza)
     {
-        ArmaDeFuego rafaga = ArmaDeFuego.Disparando;
-        if (rafaga != null && rafaga.DeRafaga) AlMatarConLaRafaga(rafaga);
+        ArmaDeFuego conLa = ArmaDeFuego.Disparando; // el arma de fuego que mató (null: cuchillo, granada...)
+        if (conLa != null && conLa.DeRafaga) AlMatarConLaRafaga(conLa);
+        // US 311: baja a la cabeza con el francotirador.
+        if (cabeza && conLa != null && EsFrancotirador(conLa.shopItem) && EleccionDeInvasion.Veces("Cerrojo suelto") > 0)
+            conLa.AcortarCerrojo(CerrojoSuelto);
 
         int reciclador = EleccionDeInvasion.Veces("Reciclador");
         if (cabeza && reciclador > 0)
