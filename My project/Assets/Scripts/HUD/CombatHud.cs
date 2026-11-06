@@ -998,7 +998,11 @@ public class CombatHud : MonoBehaviour
         string grenadeName = grenade != null ? $"{ItemName(grenade)} ×{grenadeCount}" : "Vacío";
 
         SetSlot(0, hasPrimary, held == 0, primaryName, primaryIcon, KeyBindings.Label(GameAction.ArmaPrincipal));
-        SetSlot(1, hasSecondary, held == 1, secondaryName, secondary != null ? secondary.icon : null, KeyBindings.Label(GameAction.ArmaSecundaria));
+        // US 331, Sin respaldo (Invasión): la secundaria se perdió; el espacio se ve rojo, como una tele sin señal.
+        bool sinSenal = WeaponSwitcher.SinSecundaria;
+        if (sinSenal) SetSlot(1, false, false, "Sin señal", null, KeyBindings.Label(GameAction.ArmaSecundaria));
+        else SetSlot(1, hasSecondary, held == 1, secondaryName, secondary != null ? secondary.icon : null, KeyBindings.Label(GameAction.ArmaSecundaria));
+        SinSenal(invSlots[1], sinSenal);
         SetSlot(2, hasKnife, held == 2, knifeName, knifeIcon, KeyBindings.Label(GameAction.Cuchillo));
         SetSlot(3, grenade != null, held == 3, grenadeName, grenade != null ? grenade.icon : null, KeyBindings.Label(GameAction.Granadas));
         // US 291, CA3: en Invasión el equipo es las dos armas y el cuchillo (1, 2 y 3), sin el espacio de las granadas.
@@ -1009,6 +1013,64 @@ public class CombatHud : MonoBehaviour
         bool device = switcher != null && switcher.LlevaDispositivo;
         if (invSlots[DeviceSlot].rect.gameObject.activeSelf != device) invSlots[DeviceSlot].rect.gameObject.SetActive(device);
         if (device) SetSlot(DeviceSlot, true, held == DeviceSlot, "Dispositivo", null, KeyBindings.Label(GameAction.Dispositivo));
+    }
+
+    // US 331: la estática roja de "sin señal" sobre el espacio de la secundaria: ruido que salta en cada cuadro, una
+    // franja más clara que baja y un parpadeo, como una tele sin señal.
+    private UnityEngine.UI.RawImage estatica;
+    private RectTransform franjaDeEstatica;
+    private static Texture2D ruido;
+    private static readonly Color RojoSinSenal = new Color(0.95f, 0.12f, 0.1f);
+
+    private void SinSenal(InvSlot slot, bool mostrar)
+    {
+        if (!mostrar)
+        {
+            if (estatica != null && estatica.gameObject.activeSelf) estatica.gameObject.SetActive(false);
+            return;
+        }
+        if (estatica == null)
+        {
+            if (ruido == null)
+            {
+                ruido = new Texture2D(96, 32, TextureFormat.RGBA32, false) { filterMode = FilterMode.Point, wrapMode = TextureWrapMode.Repeat };
+                var px = new Color32[96 * 32];
+                for (int i = 0; i < px.Length; i++)
+                {
+                    byte v = (byte)Random.Range(0, 256);
+                    px[i] = new Color32(v, v, v, 255);
+                }
+                ruido.SetPixels32(px);
+                ruido.Apply();
+            }
+            RectTransform r = Stretch(Node("Sin señal", slot.rect));
+            r.offsetMin = new Vector2(2f, 2f);
+            r.offsetMax = new Vector2(-2f, -2f);
+            r.SetSiblingIndex(1); // arriba del fondo, abajo del nombre y la tecla
+            estatica = r.gameObject.AddComponent<UnityEngine.UI.RawImage>();
+            estatica.texture = ruido;
+            estatica.raycastTarget = false;
+            franjaDeEstatica = Node("Franja", r);
+            franjaDeEstatica.anchorMin = new Vector2(0f, 0f);
+            franjaDeEstatica.anchorMax = new Vector2(1f, 0f);
+            franjaDeEstatica.sizeDelta = new Vector2(0f, 7f);
+            UnityEngine.UI.Image franja = franjaDeEstatica.gameObject.AddComponent<UnityEngine.UI.Image>();
+            franja.color = new Color(1f, 0.45f, 0.4f, 0.35f);
+            franja.raycastTarget = false;
+        }
+        if (!estatica.gameObject.activeSelf) estatica.gameObject.SetActive(true);
+        slot.dash.gameObject.SetActive(false);
+        slot.name.color = RojoSinSenal;
+        // El ruido salta a otro lugar de la textura cada cuadro (y a veces se estira de costado).
+        float ancho = Random.value < 0.15f ? 0.5f : 1f;
+        estatica.uvRect = new Rect(Random.value, Random.value, ancho, 0.75f);
+        float parpadeo = Random.value < 0.08f ? 0.25f : 0.55f + 0.1f * Random.value;
+        estatica.color = new Color(RojoSinSenal.r, RojoSinSenal.g, RojoSinSenal.b, parpadeo);
+        // La franja baja de arriba a abajo cada 1,2 s.
+        RectTransform zona = (RectTransform)estatica.transform;
+        float alto = zona.rect.height;
+        float t = 1f - Mathf.Repeat(Time.unscaledTime / 1.2f, 1f);
+        franjaDeEstatica.anchoredPosition = new Vector2(0f, t * alto);
     }
 
     // La granada que tiene en la mano (US 073), o null.

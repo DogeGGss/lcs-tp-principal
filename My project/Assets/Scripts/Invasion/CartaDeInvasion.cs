@@ -20,6 +20,9 @@ public class CartaDeInvasion
     /// <summary>Lo que hace al elegirla: el jugador y cuántas veces la tiene ahora (1 a 3). Vacío: todavía no tiene
     /// efecto. Las que actúan después (por ejemplo, al matar) preguntan cuántas tiene con EleccionDeInvasion.Veces.</summary>
     public System.Action<GameObject, int> aplicar;
+    /// <summary>Si no es null, la carta sale en la elección solo si da true (por ejemplo, Sin respaldo y Acople no
+    /// salen juntas: US 331).</summary>
+    public System.Func<bool> puedeSalir;
 
     /// <summary>CA5: una carta se puede tener como mucho 3 veces (después de la tercera no vuelve a salir).</summary>
     public const int MaximoDeVeces = 3;
@@ -45,6 +48,13 @@ public class CartaDeInvasion
     /// <summary>El color de las opciones que son un arma (US 294).</summary>
     public static readonly Color ColorArma = ShopUIKit.Bad;
 
+    // US 331: Sin respaldo sale solo con una principal equipada.
+    private static bool TienePrincipal()
+    {
+        WeaponSwitcher armas = Object.FindFirstObjectByType<WeaponSwitcher>();
+        return armas != null && armas.PrimaryObj != null;
+    }
+
     private static List<CartaDeInvasion> todas;
 
     /// <summary>Todas las cartas que pueden salir en el puesto.</summary>
@@ -61,7 +71,11 @@ public class CartaDeInvasion
         new CartaDeInvasion { nombre = "Descarga rápida", rareza = RarezaDeCarta.Rara, rindeCon = "Pistola pesada", unaVez = true,
             efecto = "Disparo cargado: manteniendo el gatillo se carga en 3 etapas y, al soltar, salen 2, 4 o 6 balas seguidas.", aplicar = EfectosDeCartas.EnElJuego },
         new CartaDeInvasion { nombre = "Acople", rareza = RarezaDeCarta.Epica, rindeCon = "Pistolas y arma principal", unaVez = true,
-            efecto = "Cada 3 tiros de pistola que aciertan, el arma principal dispara sola un tiro hacia la mira.", aplicar = EfectosDeCartas.EnElJuego },
+            efecto = "Cada 3 tiros de pistola que aciertan, el arma principal dispara sola un tiro hacia la mira.", aplicar = EfectosDeCartas.EnElJuego,
+            puedeSalir = () => EleccionDeInvasion.Veces("Sin respaldo") == 0 }, // US 331
+        new CartaDeInvasion { nombre = "Sin respaldo", rareza = RarezaDeCarta.Rara, rindeCon = "Cualquier principal", unaVez = true,
+            efecto = "Tu arma principal tiene el doble de cargador, pero perdés la secundaria por el resto de la partida.", aplicar = EfectosDeCartas.SinRespaldo,
+            puedeSalir = () => EleccionDeInvasion.Veces("Acople") == 0 && TienePrincipal() },
         new CartaDeInvasion { nombre = "Carga adherente", rareza = RarezaDeCarta.Epica, rindeCon = "Gran Capitán", unaVez = true,
             efecto = "Las granadas que le pegan directo a un invasor se le pegan 1 s y explotan con el doble de daño.", aplicar = EfectosDeCartas.EnElJuego },
         new CartaDeInvasion { nombre = "Doble cartucho", rareza = RarezaDeCarta.Epica, rindeCon = "Escopeta", unaVez = true,

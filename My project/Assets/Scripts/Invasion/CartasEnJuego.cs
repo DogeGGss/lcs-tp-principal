@@ -53,6 +53,8 @@ using UnityEngine;
 // - US 326, Carga adherente: las granadas del Gran Capitán que le pegan directo a un invasor se le quedan pegadas 1 s
 //   (lo siguen) y explotan con el doble de daño; si muere antes, explotan igual donde estaban (Grenade1.SePegaAlInvasor
 //   y GranadaPegada). Con Campo minado, lo que pega directo se pega y lo que toca el escenario queda como mina.
+// - US 331, Sin respaldo: el doble de cargador en la principal y sin secundaria (EfectosDeCartas.SinRespaldo,
+//   Municion.MasCargadorPrincipal y WeaponSwitcher.SinSecundaria). No sale junto con Acople, ni al revés.
 // - US 312, Sin intervalo: matar con el fusil de ráfaga saca la pausa entre sus próximas 3 ráfagas (5 y 7 con la carta
 //   repetida); entre las balas de cada ráfaga, la separación sigue igual (ArmaDeFuego.SinPausaEntreRafagas).
 // - US 324, Ráfaga creciente: cada baja con el fusil de ráfaga le suma una bala a sus ráfagas, hasta 6 (8 y 10 con la

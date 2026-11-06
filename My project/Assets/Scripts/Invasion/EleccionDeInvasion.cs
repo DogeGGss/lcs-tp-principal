@@ -298,6 +298,7 @@ public class EleccionDeInvasion : MonoBehaviour
         foreach (CartaDeInvasion c in CartaDeInvasion.Todas)
         {
             if (yaSalieron.Contains(c) || Veces(c) >= c.Maximo) continue; // CA5: ya la tiene todas las veces que se puede
+            if (c.puedeSalir != null && !c.puedeSalir()) continue;          // US 331: Sin respaldo y Acople, por ejemplo
             if (c.rareza == RarezaDeCarta.Legendaria && !despuesDelJefe) continue; // US 303, CA3
             if (c.rareza == RarezaDeCarta.Comun && delJefe) continue;              // US 303, CA2
             int d = (int)c.rareza - (int)buscada;
@@ -322,6 +323,7 @@ public class EleccionDeInvasion : MonoBehaviour
             if (item == null || equipo.IsEquipped(item)) continue;
             if (item.kind != ShopItemKind.PrimaryWeapon && item.kind != ShopItemKind.SecondaryWeapon) continue;
             if (item == equipo.Catalog.starterSecondary) continue; // la del arranque no es una novedad
+            if (item.kind == ShopItemKind.SecondaryWeapon && Veces("Sin respaldo") > 0) continue; // US 331: ya no tiene secundaria
             posibles.Add(item);
         }
         return posibles.Count > 0 ? posibles[Random.Range(0, posibles.Count)] : null;

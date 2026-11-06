@@ -131,12 +131,31 @@ public class WeaponSwitcher : MonoBehaviour
         return lista;
     }
 
+    /// <summary>US 331, Sin respaldo (Invasión): no hay secundaria por el resto de la partida.</summary>
+    public static bool SinSecundaria { get; set; }
+
+    [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+    private static void OlvidarSinSecundaria() => SinSecundaria = false;
+
+    /// <summary>US 331: se pierde la secundaria. Si estaba en la mano, se pasa a la principal (o al cuchillo).</summary>
+    public void PerderSecundaria()
+    {
+        bool enMano = HeldSecondary != null;
+        SinSecundaria = true;
+        GuardarSecundarias(null);
+        teniaSecundaria = null;
+        if (!enMano) return;
+        if (PrimaryObj != null) EquipPrimary();
+        else if (meleeScript != null) EquipKnife();
+    }
+
     // El arma secundaria que tiene: la que compró en la tienda (por ejemplo, la Línea H) o, si no compró
     // ninguna, la Línea A. Si la soltó (US 184), ninguna.
     public GameObject SecondaryObj
     {
         get
         {
+            if (SinSecundaria) return null; // US 331, Sin respaldo: se perdió por el resto de la partida
             if (hayTienda && loadout != null && loadout.Secondary == null) return null;
             if (hayTienda && loadout != null && otrasSecundarias != null)
                 foreach (GameObject arma in otrasSecundarias)
