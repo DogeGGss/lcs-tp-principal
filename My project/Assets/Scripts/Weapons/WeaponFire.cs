@@ -39,6 +39,9 @@ public static class WeaponFire
         Hit?.Invoke(lethal ? HitMarkerKind.Kill : HitMarkerKind.Body);
     }
 
+    /// <summary>US 325, Mira abierta: true si este disparo sale sin dispersión (el arma, si tiene la mira puesta).</summary>
+    public static System.Func<ShopItem, bool, bool> SinDispersion;
+
     public static void Fire(ShopItem weapon, Camera camera, Transform shooter, bool aiming, float range)
     {
         if (weapon == null || camera == null) return;
@@ -46,6 +49,7 @@ public static class WeaponFire
         WeaponAim aim = WeaponAim.For(camera);
         Quaternion view = camera.transform.rotation * aim.RecoilRotation;
         float spread = aim.CurrentSpread(weapon, aiming);
+        if (SinDispersion != null && SinDispersion(weapon, aiming)) spread = 0f; // US 325
 
         bool anyHit = false, head = false, kill = false;
         int pellets = Mathf.Max(1, weapon.pellets);

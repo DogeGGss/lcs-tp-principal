@@ -24,6 +24,8 @@ public class ArmaDeFuego : MonoBehaviour, IHudWeapon
     public static System.Func<ArmaDeFuego, bool> SinPausaEntreRafagas;
     /// <summary>US 310, Cargador gemelo: el cargador se acaba de vaciar; true si se recarga al instante desde la reserva.</summary>
     public static System.Func<ArmaDeFuego, bool> RecargaAlVaciarse;
+    /// <summary>US 325, Mira abierta: cuántas veces la cadencia de la ficha (según si tiene la mira puesta).</summary>
+    public static System.Func<ArmaDeFuego, bool, float> CadenciaPorCarta;
     /// <summary>Terminó de recargar (no si la recarga se cortó; US 324: la ráfaga vuelve a su cantidad de balas).</summary>
     public static event System.Action<ArmaDeFuego> TerminoDeRecargar;
     /// <summary>El arma que está disparando en este momento (mientras sale el tiro; si mata, es la que mató), o null.</summary>
@@ -33,6 +35,12 @@ public class ArmaDeFuego : MonoBehaviour, IHudWeapon
     public void Sonar(AudioClip clip, float volumen = 1f)
     {
         if (clip != null && audioSource != null) audioSource.PlayOneShot(clip, volumen);
+    }
+
+    /// <summary>US 311, Cerrojo suelto: se puede volver a disparar dentro de esos segundos (si faltaba más).</summary>
+    public void AcortarCerrojo(float segundos)
+    {
+        nextShot = Mathf.Min(nextShot, Time.time + segundos);
     }
 
     /// <summary>Es de ráfaga (el Belgrano Sur, US 069).</summary>
@@ -171,7 +179,8 @@ public class ArmaDeFuego : MonoBehaviour, IHudWeapon
 
         if (trigger && currentAmmo > 0 && Time.time >= nextShot)
         {
-            nextShot = Time.time + 1f / Mathf.Max(0.01f, shopItem.fireRate);
+            float cadencia = shopItem.fireRate * (CadenciaPorCarta?.Invoke(this, mira != null && mira.ConLente) ?? 1f); // US 325
+            nextShot = Time.time + 1f / Mathf.Max(0.01f, cadencia);
             if (shopItem.burstCount > 1) StartCoroutine(Burst());
             else FireOne();
         }
@@ -199,7 +208,8 @@ public class ArmaDeFuego : MonoBehaviour, IHudWeapon
             MunicionDelArma.LlenarCargador(gameObject);
         if (pumpSound != null && currentAmmo > 0) StartCoroutine(PlayLater(pumpSound, pumpDelay, pumpSkip));
         // Cerrojo: sale de la mira y vuelve sola cuando se puede volver a disparar (US 068, CA3).
-        if (mira != null) mira.AlDisparar(1f / Mathf.Max(0.01f, shopItem.fireRate));
+        // (Lo que falta para el próximo: con Mira abierta, US 325, o Cerrojo suelto, US 311, es menos que la ficha.)
+        if (mira != null) mira.AlDisparar(Mathf.Max(0f, nextShot - Time.time));
     }
 
     private AudioSource pumpSource;
