@@ -11,6 +11,12 @@ public static class Municion
     /// <summary>US 315: cuánto más grande es la reserva llena de todas las armas (1: la de cada arma).</summary>
     public static float MasReserva { get; set; } = 1f;
 
+    /// <summary>US 331, Sin respaldo: cuántas veces el cargador de las armas principales (2 con la carta).</summary>
+    public static float MasCargadorPrincipal { get; set; } = 1f;
+    /// <summary>El cargador de un arma (el de la ficha, o más grande si es principal y se tiene Sin respaldo).</summary>
+    public static int Cargador(int deLaFicha, bool principal) =>
+        principal ? UnityEngine.Mathf.RoundToInt(deLaFicha * MasCargadorPrincipal) : deLaFicha;
+
     /// <summary>US 322, Tiro de reserva: con el cargador vacío del subfusil o del Mitre, manteniendo el gatillo se sigue
     /// disparando desde la reserva a la mitad de la cadencia (true si se tiene la carta y le sirve).</summary>
     public static System.Func<bool> TiroDeReserva;
@@ -25,5 +31,5 @@ public static class Municion
         llena <= 0 ? 0 : Reserva(llena) - UnityEngine.Mathf.RoundToInt(llena * antes);
 
     [UnityEngine.RuntimeInitializeOnLoadMethod(UnityEngine.RuntimeInitializeLoadType.SubsystemRegistration)]
-    private static void Limpiar() => MasReserva = 1f;
+    private static void Limpiar() { MasReserva = 1f; MasCargadorPrincipal = 1f; }
 }

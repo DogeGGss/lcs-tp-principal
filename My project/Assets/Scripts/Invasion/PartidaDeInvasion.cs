@@ -54,6 +54,8 @@ public class PartidaDeInvasion : MonoBehaviour
         Actual = this;
         Id = "invasion-" + System.DateTime.UtcNow.ToString("yyyyMMddHHmmssfff");
         Municion.MasReserva = 1f; // las cartas de la partida anterior no siguen (US 315)
+        Municion.MasCargadorPrincipal = 1f; // (US 331)
+        WeaponSwitcher.SinSecundaria = false;
     }
 
     private void OnDestroy()
@@ -61,6 +63,8 @@ public class PartidaDeInvasion : MonoBehaviour
         if (Actual == this) Actual = null;
         if (vidaJugador != null) vidaJugador.Died -= AlMorirElJugador;
         Municion.MasReserva = 1f; // ni en los otros modos (US 315)
+        Municion.MasCargadorPrincipal = 1f; // (US 331)
+        WeaponSwitcher.SinSecundaria = false;
     }
 
     private void Start()

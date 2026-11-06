@@ -17,7 +17,7 @@ public static class MunicionDelArma
         }
         else if (arma.TryGetComponent(out Mitre mitre))
         {
-            int entra = Mathf.Clamp(mitre.maxAmmo - mitre.currentAmmo, 0, balas);
+            int entra = Mathf.Clamp(mitre.MagazineSize - mitre.currentAmmo, 0, balas);
             mitre.currentAmmo += entra;
             mitre.reserveAmmo = Mathf.Max(mitre.reserveAmmo, Mathf.Min(mitre.ReservaLlena, mitre.reserveAmmo + balas - entra));
         }
@@ -35,7 +35,7 @@ public static class MunicionDelArma
         if (arma == null) return;
         if (arma.TryGetComponent(out ArmaDeFuego fuego) && fuego.MagazineSize > 0)
             Pasar(ref fuego.currentAmmo, ref fuego.reserveAmmo, fuego.MagazineSize);
-        else if (arma.TryGetComponent(out Mitre mitre)) Pasar(ref mitre.currentAmmo, ref mitre.reserveAmmo, mitre.maxAmmo);
+        else if (arma.TryGetComponent(out Mitre mitre)) Pasar(ref mitre.currentAmmo, ref mitre.reserveAmmo, mitre.MagazineSize);
         else if (arma.TryGetComponent(out Pistola pistola)) Pasar(ref pistola.currentAmmo, ref pistola.reserveAmmo, pistola.maxAmmo);
     }
 
@@ -51,7 +51,7 @@ public static class MunicionDelArma
     {
         if (arma == null) return;
         if (arma.TryGetComponent(out ArmaDeFuego fuego) && fuego.MagazineSize > 0) fuego.SumarBalas(fuego.MagazineSize);
-        else if (arma.TryGetComponent(out Mitre mitre)) mitre.SumarBalas(mitre.maxAmmo);
+        else if (arma.TryGetComponent(out Mitre mitre)) mitre.SumarBalas(mitre.MagazineSize);
         else if (arma.TryGetComponent(out Pistola pistola)) pistola.SumarBalas(pistola.maxAmmo);
     }
 

@@ -107,7 +107,7 @@ public class ArmaDeFuego : MonoBehaviour, IHudWeapon
     // Datos para el HUD (US 056).
     public string HudName => shopItem != null && !string.IsNullOrEmpty(shopItem.alias) ? shopItem.alias : name;
     public int Ammo => currentAmmo;
-    public int MagazineSize => shopItem != null ? shopItem.magazine : 0;
+    public int MagazineSize => shopItem != null ? Municion.Cargador(shopItem.magazine, shopItem.kind == ShopItemKind.PrimaryWeapon) : 0; // US 331
     public int Reserve => reserveAmmo;
     public float ReloadProgress => reloading ? Mathf.Clamp01((Time.time - reloadStart) / reloadDuration) : -1f;
 
@@ -140,7 +140,7 @@ public class ArmaDeFuego : MonoBehaviour, IHudWeapon
 
     // Al comprarla queda con el cargador lleno y la reserva completa (US 077, CA1).
     /// <summary>US 148: el cargador y la reserva están como al comprarla.</summary>
-    public bool Llena => shopItem == null || (currentAmmo >= shopItem.magazine && reserveAmmo >= ReservaLlena);
+    public bool Llena => shopItem == null || (currentAmmo >= MagazineSize && reserveAmmo >= ReservaLlena);
 
     /// <summary>La reserva llena (la de la ficha; con la Mochila, más: US 315).</summary>
     public int ReservaLlena => shopItem != null ? Municion.Reserva(shopItem.reserve) : 0;
@@ -148,13 +148,13 @@ public class ArmaDeFuego : MonoBehaviour, IHudWeapon
     public void Refill()
     {
         if (shopItem == null) return;
-        currentAmmo = shopItem.magazine;
+        currentAmmo = MagazineSize;
         reserveAmmo = ReservaLlena;
         loaded = true;
     }
 
     /// <summary>US 293, CA2: la munición máxima del arma (cargador y reserva llenos).</summary>
-    public int MunicionMaxima => shopItem != null ? shopItem.magazine + ReservaLlena : 0;
+    public int MunicionMaxima => shopItem != null ? MagazineSize + ReservaLlena : 0;
 
     /// <summary>US 315: la reserva llena creció (la Mochila): suma esas balas a la reserva.</summary>
     public void AgrandarReserva(float antes)
@@ -168,7 +168,7 @@ public class ArmaDeFuego : MonoBehaviour, IHudWeapon
         if (shopItem == null) return;
         int aReserva = Mathf.Clamp(ReservaLlena - reserveAmmo, 0, balas);
         reserveAmmo += aReserva;
-        currentAmmo = Mathf.Min(shopItem.magazine, currentAmmo + balas - aReserva);
+        currentAmmo = Mathf.Min(MagazineSize, currentAmmo + balas - aReserva);
     }
 
     private void OnEnable()

@@ -19,4 +19,17 @@ public static class EfectosDeCartas
         WeaponSwitcher armas = jugador != null ? jugador.GetComponentInChildren<WeaponSwitcher>(true) : null;
         if (armas != null) armas.AgrandarReservas(antes);
     }
+
+    /// <summary>US 331, Sin respaldo: el arma principal tiene el doble de cargador (también las que agarre después) y se
+    /// pierde la secundaria por el resto de la partida. Al elegirla, el cargador de la principal se llena desde la
+    /// reserva.</summary>
+    public static void SinRespaldo(GameObject jugador, int veces)
+    {
+        Municion.MasCargadorPrincipal = 2f;
+        WeaponSwitcher armas = jugador != null ? jugador.GetComponentInChildren<WeaponSwitcher>(true) : null;
+        if (armas == null) armas = Object.FindFirstObjectByType<WeaponSwitcher>();
+        if (armas == null) return;
+        armas.PerderSecundaria();
+        if (armas.PrimaryObj != null) MunicionDelArma.LlenarCargador(armas.PrimaryObj);
+    }
 }

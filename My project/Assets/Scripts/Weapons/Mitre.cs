@@ -66,13 +66,13 @@ public class Mitre : MonoBehaviour, IHudWeapon
     // Datos para el HUD (US 056): nombre de la tienda, cargador, reserva y recarga.
     public string HudName => Data != null && !string.IsNullOrEmpty(Data.alias) ? Data.alias : weaponName;
     public int Ammo => currentAmmo;
-    public int MagazineSize => maxAmmo;
+    public int MagazineSize => Municion.Cargador(maxAmmo, true); // US 331: con Sin respaldo, el doble
     public int Reserve => reserveAmmo;
     public float ReloadProgress => isReloading ? Mathf.Clamp01((Time.time - reloadStartTime) / reloadTime) : -1f;
 
     void Awake()
     {
-        currentAmmo = maxAmmo;
+        currentAmmo = MagazineSize;
         if (fullReserve < 0) fullReserve = reserveAmmo;
         // Quien dispara: sus balas nunca le pegan a él mismo (US 165)
         PlayerMovement owner = GetComponentInParent<PlayerMovement>();
@@ -121,17 +121,17 @@ public class Mitre : MonoBehaviour, IHudWeapon
 
     // Al comprarla en la tienda queda con el cargador lleno y la reserva completa (US 077, CA1).
     /// <summary>US 148: el cargador y la reserva están como al comprarla.</summary>
-    public bool Llena => currentAmmo >= maxAmmo && (fullReserve < 0 || reserveAmmo >= Municion.Reserva(fullReserve));
+    public bool Llena => currentAmmo >= MagazineSize && (fullReserve < 0 || reserveAmmo >= Municion.Reserva(fullReserve));
 
     public void Refill()
     {
         if (fullReserve < 0) fullReserve = reserveAmmo;
-        currentAmmo = maxAmmo;
+        currentAmmo = MagazineSize;
         reserveAmmo = Municion.Reserva(fullReserve); // con la Mochila, más (US 315)
     }
 
     /// <summary>US 293, CA2: la munición máxima del arma (cargador y reserva llenos).</summary>
-    public int MunicionMaxima => maxAmmo + Mathf.Max(Municion.Reserva(fullReserve), reserveAmmo);
+    public int MunicionMaxima => MagazineSize + Mathf.Max(Municion.Reserva(fullReserve), reserveAmmo);
 
     /// <summary>La reserva llena (con la Mochila, más: US 315).</summary>
     public int ReservaLlena => Municion.Reserva(fullReserve < 0 ? reserveAmmo : fullReserve);
@@ -149,7 +149,7 @@ public class Mitre : MonoBehaviour, IHudWeapon
         if (fullReserve < 0) fullReserve = reserveAmmo;
         int aReserva = Mathf.Clamp(Municion.Reserva(fullReserve) - reserveAmmo, 0, balas);
         reserveAmmo += aReserva;
-        currentAmmo = Mathf.Min(maxAmmo, currentAmmo + balas - aReserva);
+        currentAmmo = Mathf.Min(MagazineSize, currentAmmo + balas - aReserva);
     }
 
     void Update()
@@ -186,7 +186,7 @@ public class Mitre : MonoBehaviour, IHudWeapon
         // CA4: Recarga con R
         if (KeyBindings.Down(GameAction.Recargar))
         {
-            if (currentAmmo < maxAmmo && reserveAmmo > 0)
+            if (currentAmmo < MagazineSize && reserveAmmo > 0)
             {
                 StartCoroutine(ReloadRoutine());
             }
@@ -250,13 +250,13 @@ public class Mitre : MonoBehaviour, IHudWeapon
 
         yield return new WaitForSeconds(reloadTime); // Espera de 2.5 segundos
 
-        int neededAmmo = maxAmmo - currentAmmo;
+        int neededAmmo = MagazineSize - currentAmmo;
         int ammoToLoad = Mathf.Min(neededAmmo, reserveAmmo);
 
         currentAmmo += ammoToLoad;
         if (!Municion.ReservaInfinita) reserveAmmo -= ammoToLoad; // US 121, CA1 y Deathmatch: la reserva no se gasta
 
         isReloading = false;
-        Debug.Log($"Mitre recargado: {currentAmmo}/{maxAmmo} | Reserva restante: {reserveAmmo}");
+        Debug.Log($"Mitre recargado: {currentAmmo}/{MagazineSize} | Reserva restante: {reserveAmmo}");
     }
 }
