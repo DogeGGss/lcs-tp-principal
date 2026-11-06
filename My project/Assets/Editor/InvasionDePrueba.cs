@@ -11,8 +11,17 @@ using UnityEngine;
 // - Riftwalker > Invasión > Matar a todos los invasores: mata a los que están vivos, como si les hubiera disparado
 //   (suman sus puntos). La oleada se supera cuando ya aparecieron todos, así que puede hacer falta usarlo varias veces.
 // - Riftwalker > Invasión > Cargar el puesto: deja cargado el puesto de suministros que está en el mapa (US 292).
+// - Riftwalker > Invasión > Ir a la oleada 3: la primera con un puesto que cae sin cargar (para las cartas del puesto).
+// - Riftwalker > Invasión > Probar Despeje: te da la carta, pone 6 invasores en el anillo, carga el puesto y marca en
+//   el piso cuántos metros empujó a cada uno (US 333, PruebaDeDespeje).
 public static class InvasionDePrueba
 {
+    [MenuItem("Riftwalker/Invasión/Ir a la oleada 3")]
+    private static void IrALaTres() => PartidaDeInvasion.Actual.GetComponent<OleadasDeInvasion>().IrA(3);
+
+    [MenuItem("Riftwalker/Invasión/Probar Despeje")]
+    private static void ProbarDespeje() => PruebaDeDespeje.Arrancar();
+
     [MenuItem("Riftwalker/Invasión/Ir a la oleada 10")]
     private static void IrALaDiez() => PartidaDeInvasion.Actual.GetComponent<OleadasDeInvasion>().IrA(OleadasDeInvasion.Ultima);
 
@@ -59,6 +68,8 @@ public static class InvasionDePrueba
     [MenuItem("Riftwalker/Invasión/Darme una carta...")]
     private static void DarmeUnaCarta() => CartasDePrueba.Abrir();
 
+    [MenuItem("Riftwalker/Invasión/Ir a la oleada 3", true)]
+    [MenuItem("Riftwalker/Invasión/Probar Despeje", true)]
     [MenuItem("Riftwalker/Invasión/Ir a la oleada 10", true)]
     [MenuItem("Riftwalker/Invasión/Darme el Gran Capitán", true)]
     [MenuItem("Riftwalker/Invasión/Ir a la oleada 20", true)]
