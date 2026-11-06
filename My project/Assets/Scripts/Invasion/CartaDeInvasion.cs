@@ -62,6 +62,8 @@ public class CartaDeInvasion
             efecto = "Disparo cargado: manteniendo el gatillo se carga en 3 etapas y, al soltar, salen 2, 4 o 6 balas seguidas.", aplicar = EfectosDeCartas.EnElJuego },
         new CartaDeInvasion { nombre = "Acople", rareza = RarezaDeCarta.Epica, rindeCon = "Pistolas y arma principal", unaVez = true,
             efecto = "Cada 3 tiros de pistola que aciertan, el arma principal dispara sola un tiro hacia la mira.", aplicar = EfectosDeCartas.EnElJuego },
+        new CartaDeInvasion { nombre = "Carga adherente", rareza = RarezaDeCarta.Epica, rindeCon = "Gran Capitán", unaVez = true,
+            efecto = "Las granadas que le pegan directo a un invasor se le pegan 1 s y explotan con el doble de daño.", aplicar = EfectosDeCartas.EnElJuego },
         new CartaDeInvasion { nombre = "Doble cartucho", rareza = RarezaDeCarta.Epica, rindeCon = "Escopeta", unaVez = true,
             efecto = "La escopeta dispara 2 cartuchos juntos, gastando los dos.", aplicar = EfectosDeCartas.EnElJuego },
         new CartaDeInvasion { nombre = "Bala compacta", rareza = RarezaDeCarta.Rara, rindeCon = "Escopeta", unaVez = true,

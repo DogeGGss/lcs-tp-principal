@@ -43,8 +43,14 @@ public class Grenade1 : MonoBehaviour
     /// <summary>US 313, Campo minado (Invasión): true si esta granada del lanzagranadas, que tocó el escenario (el piso
     /// o una pared), queda como mina en vez de explotar.</summary>
     public static System.Func<Grenade1, bool> QuedaComoMina;
-    /// <summary>US 313: es una mina: la mecha no corre (explota cuando la pisa un invasor).</summary>
+    /// <summary>US 313: es una mina: la mecha no corre (explota cuando la pisa un invasor). US 326: o está pegada a un
+    /// invasor (explota sola al segundo).</summary>
     [HideInInspector] public bool esMina;
+    /// <summary>US 326, Carga adherente (Invasión): true si esta granada del lanzagranadas, que le pegó directo a un
+    /// invasor, se le queda pegada (y explota con más daño).</summary>
+    public static System.Func<Grenade1, bool> SePegaAlInvasor;
+    /// <summary>US 326: cuántas veces el daño de la explosión (para los que alcanza; no para quien la tiró).</summary>
+    [HideInInspector] public float multiplicadorDeDanio = 1f;
 
     // Quién la tiró: sus compañeros no reciben el daño de la explosión (US 031, CA6).
     [HideInInspector] public Transform thrower;
@@ -155,6 +161,13 @@ public class Grenade1 : MonoBehaviour
         {
             // US 313: si tocó el escenario (el piso o una pared, no un invasor) puede quedar como mina.
             if (esMina) return;
+            // US 326: si le pegó directo a un invasor, se le puede pegar.
+            Npc invasor = choque.collider.GetComponentInParent<Npc>();
+            if (invasor != null && invasor.Vivo && SePegaAlInvasor != null && SePegaAlInvasor(this))
+            {
+                GranadaPegada.Pegar(this, invasor, choque.collider.transform, choque.contactCount > 0 ? choque.GetContact(0).point : transform.position);
+                return;
+            }
             if (TocoElEscenario(choque) && QuedaComoMina != null && QuedaComoMina(this))
             {
                 MinaDeGranada.Poner(this, choque.GetContact(0).point);
@@ -328,7 +341,7 @@ public class Grenade1 : MonoBehaviour
         {
             int damage = DamageAt(entry.Value);
             bool deQuienLaTiro = thrower != null && (entry.Key.transform == thrower || entry.Key.transform.IsChildOf(thrower) || thrower.IsChildOf(entry.Key.transform));
-            if (damage > 0 && !deQuienLaTiro) damage += danioDeMas; // US 330
+            if (damage > 0 && !deQuienLaTiro) damage = Mathf.RoundToInt(damage * multiplicadorDeDanio) + danioDeMas; // US 326 y US 330
             // US 287, CA4: a quien la tiró, solo una parte (la del lanzagranadas, la mitad).
             if (thrower != null && autoDanio < 1f && (entry.Key.transform == thrower || entry.Key.transform.IsChildOf(thrower) || thrower.IsChildOf(entry.Key.transform)))
                 damage = Mathf.RoundToInt(damage * autoDanio);
