@@ -10,7 +10,10 @@ using UnityEngine.AI;
 // pasa por puertas ni pasillos angostos ni entra a los edificios (si no, embistiendo o volando se metía y se trababa).
 public static class NavMeshEnVivo
 {
-    private const float Alcance = 160f; // m alrededor del jugador: un terreno enorme no se procesa entero
+    // Hasta dónde se arma: todo el mapa (las colisiones del mapa, sin el terreno, más un margen), así no quedan zonas
+    // sin NavMesh en los mapas grandes (en la uni, a más de 160 m de donde se empezó, los enemigos se trababan contra un
+    // "muro invisible" y el camino al puesto no salía). El terreno no cuenta para medir: uno enorme no se procesa entero.
+    private const float Margen = 20f, MaximoDeLado = 900f, MaximoDeAlto = 200f;
 
     private const float RadioGrande = 1.6f, AltoGrande = 3f;
 
@@ -65,7 +68,7 @@ public static class NavMeshEnVivo
         ajustes.voxelSize = 0.1f;
         tipo = ajustes.agentTypeID;
 
-        Bounds limites = new Bounds(centro, new Vector3(Alcance * 2f, 80f, Alcance * 2f));
+        Bounds limites = Limites(centro);
         var fuentes = new List<NavMeshBuildSource>();
         NavMeshBuilder.CollectSources(limites, Physics.DefaultRaycastLayers, NavMeshCollectGeometry.PhysicsColliders, 0,
             new List<NavMeshBuildMarkup>(), fuentes);
@@ -89,6 +92,27 @@ public static class NavMeshEnVivo
         datosGrande = new NavMeshData(tipoGrande);
         instanciaGrande = NavMesh.AddNavMeshData(datosGrande);
         armandoGrande = NavMeshBuilder.UpdateNavMeshDataAsync(datosGrande, grande, fuentes, limites);
+    }
+
+    // Todo el mapa: la caja de todas sus colisiones (sin el terreno ni lo que no es mapa), con un margen y un tope.
+    private static Bounds Limites(Vector3 centro)
+    {
+        bool hay = false;
+        Bounds b = new Bounds(centro, Vector3.one);
+        foreach (Collider c in Object.FindObjectsByType<Collider>(FindObjectsInactive.Exclude, FindObjectsSortMode.None))
+        {
+            if (c is TerrainCollider || !DelMapa(c)) continue;
+            Bounds cb = c.bounds;
+            if (cb.size.x > MaximoDeLado || cb.size.z > MaximoDeLado) continue; // un plano gigante (el agua, un piso infinito)
+            if (!hay) { b = cb; hay = true; } else b.Encapsulate(cb);
+        }
+        b.Encapsulate(centro);
+        b.Expand(new Vector3(Margen * 2f, 10f, Margen * 2f));
+        // El tope, alrededor del jugador.
+        Vector3 min = Vector3.Max(b.min, centro - new Vector3(MaximoDeLado, MaximoDeAlto, MaximoDeLado) * 0.5f);
+        Vector3 max = Vector3.Min(b.max, centro + new Vector3(MaximoDeLado, MaximoDeAlto, MaximoDeLado) * 0.5f);
+        b.SetMinMax(min, max);
+        return b;
     }
 
     // Lo que cuenta como mapa: colisiones sólidas que no son de personajes ni se mueven con física. Las barreras
