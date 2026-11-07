@@ -30,7 +30,7 @@ public class LugarDeSuministros : MonoBehaviour
         Match m = Modulo.Match(objeto);
         if (m.Success) return "el Módulo " + m.Groups[1].Value + m.Groups[2].Value.ToUpperInvariant();
         if (objeto.StartsWith("Biblioteca")) return "la Biblioteca";
-        if (objeto == "Pasillo_Bar") return "el Bar";
+        if (objeto == "Patio_Bar") return "el Bar"; // el patio de la galería del Módulo 9
         return null;
     }
 

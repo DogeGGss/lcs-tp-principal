@@ -871,6 +871,7 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
         var soporte = new GameObject("Cargando jugador");
         soporte.SetActive(false);
         GameObject go = Instantiate(molde, posicion, rotacion, soporte.transform);
+        EscalaDelJugador.Aplicar(go.transform); // del mismo tamaño que el jugador local en este mapa
         go.name = "Jugador en red (" + dueno.NickName + ")";
         go.tag = "Untagged";
 

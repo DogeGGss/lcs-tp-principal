@@ -282,7 +282,7 @@ public class BrazosEnCamara : MonoBehaviour
         var malla = new Mesh { name = "Brazos con " + arma.name };
         DedosDelArma dedos = arma.GetComponent<DedosDelArma>(); // US 244: los dedos abiertos o cerrados para esta arma
         if (dedos != null) dedos.Aplicar(animador);
-        brazosCuerpo.BakeMesh(malla, true); // con la escala: la copia queda a escala 1
+        brazosCuerpo.BakeMesh(malla, true); // en el espacio del renderer, sin su escala: la foto lleva la misma escala
         Mesh derecha = SepararBrazoDerecho(malla);
 
         // Los dibuja la cámara de las armas: la principal no dibuja nada a menos de 30 cm y la mano quedaba cortada.
@@ -295,8 +295,10 @@ public class BrazosEnCamara : MonoBehaviour
         go.transform.SetParent(camara, false);
         go.transform.localPosition = camaraDerecha.inverse.MultiplyPoint3x4(brazosCuerpo.transform.position) + Corrimiento;
         go.transform.localRotation = Quaternion.Inverse(camaraDerecha.rotation) * brazosCuerpo.transform.rotation;
-        Vector3 escala = camara.lossyScale;
-        go.transform.localScale = new Vector3(1f / escala.x, 1f / escala.y, 1f / escala.z);
+        // La foto queda del tamaño de los brazos del cuerpo. Con el jugador de escala 1 es 1; con uno más chico
+        // (EscalaDelJugador) la malla horneada no trae su escala y salía más grande y corrida del arma.
+        Vector3 escala = camara.lossyScale, cuerpo = brazosCuerpo.transform.lossyScale;
+        go.transform.localScale = new Vector3(cuerpo.x / escala.x, cuerpo.y / escala.y, cuerpo.z / escala.z);
         arma.transform.localPosition += Corrimiento;
 
         go.AddComponent<MeshFilter>().sharedMesh = malla;
