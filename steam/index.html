@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="robots" content="noindex,nofollow">
+  <meta name="description" content="Simulación académica de una ficha de Steam para Project Riftwalker. Una experiencia interactiva para presentar el proyecto universitario.">
+  <meta name="theme-color" content="#171d25">
+  <title>Project Riftwalker — Steam · Simulación académica</title>
+  <link rel="stylesheet" href="steam.css">
+  <script src="steam.js" defer></script>
+</head>
+<body id="top">
+  <a class="skip" href="#producto">Ir al juego</a>
+  <div class="simulation-bar"><div class="shell"><span><b>SIMULACIÓN ACADÉMICA</b><span class="notice-detail"> · Sitio no oficial. Sin compras ni cuentas reales.</span></span><label>Vista <select id="publication-view" aria-label="Estado de publicación simulado"><option value="upcoming">Próximamente</option><option value="released">Juego lanzado</option></select></label></div></div>
+  <header class="global-header">
+    <div class="shell header-inner">
+      <a class="steam-brand" href="#top" aria-label="Steam, inicio de la simulación"><svg viewBox="0 0 64 64" aria-hidden="true"><circle cx="32" cy="32" r="30" fill="currentColor"/><path d="M4 40l17 7 7-5 15-15-7-9-14 22-17-6" fill="#171d25"/><circle cx="43" cy="22" r="13" fill="#171d25"/><circle cx="43" cy="22" r="8.5" fill="none" stroke="currentColor" stroke-width="3"/><circle cx="22" cy="45" r="8" fill="#171d25" stroke="currentColor" stroke-width="2.5"/></svg><span>STEAM<sup>®</sup></span></a>
+      <nav class="global-nav" aria-label="Navegación global de la simulación"><a class="active" href="#producto">TIENDA</a><a href="#comunidad">COMUNIDAD</a><a href="#acerca">ACERCA DE</a><button data-dialog="support">SOPORTE</button></nav>
+      <div class="account-menu"><button class="install-steam" data-dialog="steam">⇩ &nbsp;Instalar Steam</button><button data-dialog="account">iniciar sesión</button><span>|</span><button data-dialog="language">idioma ▾</button></div>
+    </div>
+  </header>
+  <div class="store-navigation">
+    <div class="shell store-nav-inner">
+      <nav aria-label="Menú de la tienda"><button class="menu-trigger" aria-expanded="false" aria-controls="store-popover">Explorar <span>⌄</span></button><a href="#acerca">Recomendaciones</a><a href="#modos">Categorías</a><a href="#personajes">Formas de jugar</a><a href="#requisitos">Miscelánea</a></nav>
+      <form id="store-search" role="search"><input id="search-input" type="search" aria-label="Buscar en la tienda simulada" placeholder="Buscar en la tienda" autocomplete="off"><button aria-label="Buscar">⌕</button></form>
+      <div id="store-popover" class="popover" hidden><a href="#producto">Página del juego</a><a href="#modos">Modos de juego</a><a href="#personajes">Personajes</a><a href="#requisitos">Requisitos</a></div>
+      <div id="search-result" class="search-result" hidden role="status"></div>
+    </div>
+  </div>
+  <div class="page-background" aria-hidden="true"></div>
+  <main class="shell product-page" id="producto">
+    <div class="breadcrumb"><a href="#producto">Todos los juegos</a><span> &gt; </span><a href="#modos">Acción</a><span> &gt; Project Riftwalker</span></div>
+    <div class="title-row"><h1>Project Riftwalker</h1><button class="blue-button" data-dialog="community">Centro de la comunidad</button></div>
+    <div class="highlights">
+      <section class="gallery" aria-label="Galería de Project Riftwalker">
+        <div class="media-stage" id="media-stage" tabindex="0" aria-label="Galería: usá las flechas izquierda y derecha para cambiar de imagen">
+          <img id="gallery-image" src="assets/trailer-poster.jpg" alt="Tráiler: los cuatro personajes de Riftwalker dentro de un tren" width="1280" height="720" fetchpriority="high">
+          <video id="gallery-video" controls playsinline preload="none" poster="assets/trailer-poster.jpg" hidden aria-label="Tráiler de Project Riftwalker"><source data-src="../presentacion/media/trailer.mp4" type="video/mp4"></video>
+          <button id="play-trailer" class="play-trailer" aria-label="Reproducir el tráiler"><span>▶</span><small>VER TRÁILER</small></button>
+          <button id="expand-media" class="expand-media" aria-label="Ampliar imagen" hidden>⛶</button>
+          <span class="media-kind" id="media-kind">TRÁILER DEL PROYECTO</span>
+        </div>
+        <div class="gallery-strip" aria-label="Miniaturas de la galería">
+          <button class="gallery-arrow" id="gallery-prev" aria-label="Anterior">‹</button>
+          <div class="thumbnails" id="thumbnails">
+            <button class="thumbnail selected" data-media="0" aria-pressed="true" aria-label="Ver tráiler"><img src="assets/trailer-poster.jpg" alt="" width="1280" height="720"><span class="thumb-play">▶</span></button>
+            <button class="thumbnail" data-media="1" aria-pressed="false" aria-label="Ver mapa Táctico"><img src="assets/tactico-vista.jpg" alt="" width="1280" height="720"></button>
+            <button class="thumbnail" data-media="2" aria-pressed="false" aria-label="Ver mapa Deathmatch"><img src="assets/deathmatch-vista.jpg" alt="" width="1280" height="720"></button>
+            <button class="thumbnail" data-media="3" aria-pressed="false" aria-label="Ver planta baja de MALVINAS-01"><img src="assets/tactico-planta-baja.jpg" alt="" width="1280" height="720"></button>
+            <button class="thumbnail" data-media="4" aria-pressed="false" aria-label="Ver nivel superior de MALVINAS-01"><img src="assets/tactico-nivel-alto.jpg" alt="" width="1280" height="720"></button>
+            <button class="thumbnail" data-media="5" aria-pressed="false" aria-label="Ver arte de personajes"><img src="assets/equipo.jpg" alt="" width="1600" height="900"></button>
+          </div>
+          <button class="gallery-arrow" id="gallery-next" aria-label="Siguiente">›</button>
+        </div>
+        <p id="media-description" class="media-description" aria-live="polite">Tráiler del proyecto universitario.</p>
+      </section>
+      <aside class="game-summary" aria-label="Información del juego">
+        <div class="game-capsule"><img class="capsule-art" src="assets/hero.jpg" alt="Arte promocional de los personajes de Riftwalker en una estación" width="1600" height="900"><img class="capsule-logo" src="assets/logo.png" alt="Project Riftwalker" width="2172" height="724"></div>
+        <p class="short-description">Un shooter de ciencia ficción con identidad argentina. Elegí tu personaje, coordiná con tu equipo en Táctico o competí por cada baja en Deathmatch. El próximo andén te espera.</p>
+        <dl class="metadata"><div><dt>TODAS LAS RESEÑAS:</dt><dd><a href="#comunidad">Sin reseñas todavía</a></dd></div><div><dt>LANZAMIENTO:</dt><dd id="release-status">Próximamente</dd></div><div class="metadata-gap"><dt>DESARROLLADOR:</dt><dd><a href="#acerca">Equipo Riftwalker</a></dd></div><div><dt>EDITOR:</dt><dd><a href="#acerca">Equipo Riftwalker</a></dd></div></dl>
+        <p class="tags-label">Etiquetas propuestas para este producto:</p><div class="tags" aria-label="Etiquetas del juego"><button data-tag="FPS">FPS</button><button data-tag="Multijugador">Multijugador</button><button data-tag="Ciencia ficción">Ciencia ficción</button><button data-dialog="tags" aria-label="Ver todas las etiquetas">+</button></div>
+      </aside>
+    </div>
+    <div class="queue-actions"><div><button id="wishlist" class="blue-button" aria-pressed="false">＋ Añadir a tu lista de deseados</button><button id="follow" class="blue-button" aria-pressed="false">Seguir</button><button id="ignore" class="blue-button" aria-pressed="false">Ignorar ▾</button></div><button class="blue-button" id="share">Compartir</button></div>
+    <div class="details-grid">
+      <div class="main-details">
+        <section class="purchase-panel" aria-labelledby="purchase-title"><span class="windows" title="Windows" aria-label="Windows">⊞</span><h2 id="purchase-title">Próximamente</h2><p id="purchase-description">Este sería el lugar para anunciar el lanzamiento y reunir a los próximos pasajeros.</p><div class="purchase-bottom"><span id="purchase-price">Fecha de lanzamiento por anunciar</span><button id="purchase-action" class="green-button">Añadir a deseados</button></div></section>
+        <section class="demo-panel"><div><h2>Probá la versión del proyecto</h2><p>La demo universitaria se distribuye desde GitHub, mediante nuestro launcher para Windows.</p></div><a class="blue-button launcher-download" href="https://github.com/DogeGGss/lcs-tp-principal/releases/download/launcher/Riftwalker-Launcher.exe">⇩ Descargar launcher</a></section>
+        <section class="about-section" id="acerca"><h2 class="section-heading">ACERCA DE ESTE JUEGO</h2>
+          <div class="about-art"><img src="assets/hero.jpg" alt="Arte del universo de Project Riftwalker" loading="lazy" width="1600" height="900"><img src="assets/logo.png" alt="" loading="lazy" width="2172" height="724"></div>
+          <p>Los trenes, las estaciones y el Rift conectan campos de batalla inesperados. En <strong>Project Riftwalker</strong>, elegís cómo encarar cada enfrentamiento: una jugada coordinada con tu equipo o un duelo en el que cada baja cuenta.</p>
+          <div id="modos" class="modes"><article><span>01 / POR EQUIPOS</span><h3>TÁCTICO</h3><img src="assets/tactico-vista.jpg" alt="Vista del escenario orbital MALVINAS-01" loading="lazy" width="1280" height="720"><p>Coordiná con tu equipo y usá la habilidad de tu personaje para cambiar el rumbo de la ronda en <strong>MALVINAS-01</strong>, una estación de entrenamiento militar orbital.</p></article><article><span>02 / TODOS CONTRA TODOS</span><h3>DEATHMATCH</h3><img src="assets/deathmatch-vista.jpg" alt="Colonia ARA San Juan, escenario del Deathmatch" loading="lazy" width="1280" height="720"><p>De <strong>2 a 8 jugadores</strong> en Colonia ARA San Juan. Gana quien llegue a 25 bajas o lidere al terminar los 8 minutos. Elegí tus armas y volvé al combate.</p></article></div>
+          <h3 id="personajes">CUATRO PERSONAJES. TU FORMA DE JUGAR.</h3><p>En Táctico, cada personaje aporta una habilidad distinta. Explorá el plantel:</p>
+          <div class="character-tabs" role="tablist" aria-label="Personajes"><button role="tab" id="tab-soledad" aria-selected="true" aria-controls="character-panel" data-character="soledad"><img src="assets/astra.png" alt="" width="360" height="360" loading="lazy"><span>Soledad</span></button><button role="tab" id="tab-unzue" aria-selected="false" aria-controls="character-panel" tabindex="-1" data-character="unzue"><img src="assets/alfa.png" alt="" width="360" height="360" loading="lazy"><span>Unzué</span></button><button role="tab" id="tab-necochea" aria-selected="false" aria-controls="character-panel" tabindex="-1" data-character="necochea"><img src="assets/bravo.png" alt="" width="360" height="360" loading="lazy"><span>Necochea</span></button><button role="tab" id="tab-goya" aria-selected="false" aria-controls="character-panel" tabindex="-1" data-character="goya"><img src="assets/charlie.png" alt="" width="360" height="360" loading="lazy"><span>Goya</span></button></div>
+          <div class="character-panel" id="character-panel" role="tabpanel" aria-labelledby="tab-soledad"><img id="character-portrait" src="assets/astra.png" alt="Soledad" loading="lazy" width="360" height="360"><div><span id="character-role">DUELISTA</span><h3 id="character-name">Soledad</h3><h4 id="character-ability">Trasbordo</h4><p id="character-description">Reposicionate con un trasbordo para sorprender desde otro ángulo.</p></div></div>
+          <h3>PREPARATE PARA EL PRÓXIMO ANDÉN</h3><p>Entrená en el campo de práctica con armas, blancos y bots. Personalizá tu perfil con avatares, banners, títulos y marcos, y seguí tu progreso con estadísticas, logros y rankings propios del juego.</p>
+          <p class="development-note">Proyecto universitario en desarrollo. Las capturas corresponden a versiones del proyecto; las ilustraciones están identificadas como arte promocional.</p>
+        </section>
+        <section id="requisitos"><h2 class="section-heading">REQUISITOS DEL SISTEMA</h2><div class="requirements-tabs"><span>Windows</span></div><div class="requirements"><div><h4>MÍNIMOS:</h4><ul><li><span>SO:</span> Windows de 64 bits</li><li><span>Procesador:</span> Por determinar</li><li><span>Memoria:</span> Por determinar</li><li><span>Gráficos:</span> Por determinar</li><li><span>Red:</span> Conexión a Internet para multijugador</li><li><span>Almacenamiento:</span> Por determinar</li></ul></div><div><h4>RECOMENDADOS:</h4><p>Se completarían después de las pruebas de rendimiento de la versión de lanzamiento.</p><p>Teclado y mouse. No se declara compatibilidad con mando ni con Steam Deck.</p></div></div></section>
+        <section id="comunidad" class="community"><h2 class="section-heading">RESEÑAS DE LOS USUARIOS</h2><div class="review-summary"><span>Sin reseñas de Steam</span><p>Esta ficha es una simulación: todavía no hay reseñas ni valoraciones reales en la plataforma.</p></div><p>Conocé cómo se está construyendo Project Riftwalker y consultá las novedades del proyecto.</p><div class="community-links"><a class="blue-button" href="https://github.com/DogeGGss/lcs-tp-principal" target="_blank" rel="noopener noreferrer">Ver el proyecto en GitHub ↗</a><a class="blue-button" href="../">Guía de diseño ↗</a><a class="blue-button" href="https://github.com/DogeGGss/lcs-tp-principal/releases" target="_blank" rel="noopener noreferrer">Versiones del proyecto ↗</a></div></section>
+      </div>
+      <aside class="sidebar" aria-label="Características e información adicional"><div class="sidebar-box interest"><h3>¿Te interesa este juego?</h3><p>Añadilo a deseados o seguí sus novedades para probar cómo se sentiría la ficha publicada.</p><p class="small">Los botones de esta simulación guardan tus elecciones únicamente en este navegador.</p></div><div class="sidebar-box feature-list"><a href="#modos"><span>♟</span> Multijugador en línea</a><a href="#acerca"><span>⌖</span> Campo de práctica</a><a href="#acerca"><span>▤</span> Estadísticas del jugador</a><a href="#acerca"><span>◇</span> Personalización cosmética</a></div><div class="sidebar-box language-box"><h3>Idiomas:</h3><table><thead><tr><th></th><th>Interfaz</th><th>Voces</th><th>Subtítulos</th></tr></thead><tbody><tr><td>Español</td><td>✔</td><td>—</td><td>—</td></tr></tbody></table></div><div class="sidebar-box product-facts"><p><b>TÍTULO:</b> Project Riftwalker</p><p><b>GÉNERO:</b> Acción, FPS, Ciencia ficción</p><p><b>DESARROLLADOR:</b> Equipo Riftwalker</p><p><b>EDITOR:</b> Equipo Riftwalker</p><p><b>LANZAMIENTO:</b> Por anunciar</p><a href="../">Visitar la guía del proyecto ↗</a><a href="https://github.com/DogeGGss/lcs-tp-principal/releases" target="_blank" rel="noopener noreferrer">Ver actualizaciones ↗</a><button data-dialog="share">Compartir esta simulación</button></div><div class="sidebar-box academic-note"><b>VISTA CONCEPTUAL</b><p>Creada para una presentación universitaria. No es una página oficial de Steam ni acredita una publicación, aprobación o integración con Valve.</p></div></aside>
+    </div>
+  </main>
+  <footer><div class="shell"><div class="footer-brand">PROJECT RIFTWALKER <span>SIMULACIÓN ACADÉMICA</span></div><p>Steam y sus marcas pertenecen a Valve Corporation. Esta demostración no está afiliada a Valve y no procesa compras, credenciales ni datos de cuentas de Steam.</p><a href="../">Volver a la guía de diseño</a><span> &nbsp;|&nbsp; </span><a href="#top">Volver arriba ↑</a></div></footer>
+  <div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
+  <dialog id="info-dialog" aria-labelledby="dialog-title"><button class="dialog-close" aria-label="Cerrar ventana">×</button><h2 id="dialog-title"></h2><div id="dialog-content"></div><button class="blue-button dialog-done">Entendido</button></dialog>
+  <dialog id="image-dialog" aria-label="Imagen ampliada"><button class="image-dialog-close" aria-label="Cerrar imagen">×</button><img id="lightbox-image" alt=""><p id="lightbox-caption"></p></dialog>
+  <noscript><p class="noscript">La galería interactiva y los botones simulados necesitan JavaScript. La descripción, las imágenes y la descarga del launcher siguen disponibles.</p></noscript>
+</body>
+</html>
