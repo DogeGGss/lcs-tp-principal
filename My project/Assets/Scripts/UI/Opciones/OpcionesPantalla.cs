@@ -449,7 +449,7 @@ public class OpcionesPantalla : MonoBehaviour
         lienzo.SetActive(true);
         ventana.gameObject.SetActive(true);
         L10n.BindSource(tituloVentana, titulo,"ui.");
-        textoVentana.text = texto;
+        textoVentana.text = L10n.Source(texto, "ui.");
 
         for (int i = botones.childCount - 1; i >= 0; i--) Destroy(botones.GetChild(i).gameObject);
 

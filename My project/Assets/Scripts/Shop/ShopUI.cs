@@ -634,15 +634,15 @@ public class ShopUI : MonoBehaviour
     }
 
     // US 166: mientras corre el tutorial del campo de práctica se la nombra "Tienda", como en las partidas.
-    private static string NombrePractica => TutorialDePractica.EnCurso ? "Tienda" : "Cambiar arma";
+    private static string NombrePractica => L10n.Source(TutorialDePractica.EnCurso ? "Tienda" : "Cambiar arma");
 
     private void RenderBar()
     {
-        barTitle.text = CampoDePractica.Activo ? NombrePractica : Dm ? "Elegí tu equipo" : "Tienda";
+        barTitle.text = CampoDePractica.Activo ? NombrePractica : L10n.Source(Dm ? "Elegí tu equipo" : "Tienda");
         if (Dm)
         {
             // US 138, CA1: sin plata ni precios.
-            barSub.text = CampoDePractica.Activo ? "Campo de práctica" : "Deathmatch";
+            barSub.text = L10n.Source(CampoDePractica.Activo ? "Campo de práctica" : "Deathmatch");
             barMoney.text = "Todo gratis";
             barNext.text = L10n.T(CampoDePractica.Activo ? "gameplay.shop.change_anytime" : "gameplay.shop.kept_next_life");
             banner.SetActive(false);
@@ -1165,7 +1165,7 @@ public class ShopUI : MonoBehaviour
             if (access != ShopResult.Ok) PaintButton(ButtonStyle.Locked, L10n.T("gameplay.shop.btn.not_now"), L10n.T("gameplay.shop.btn.look_only"));
             else if (loadout.IsEquipped(item))
                 PaintButton(ButtonStyle.Owned, L10n.T("gameplay.shop.btn.chosen"), L10n.T(CampoDePractica.Activo ? "gameplay.shop.btn.in_hand" : "gameplay.shop.btn.next_life"));
-            else PaintButton(ButtonStyle.Normal, "Elegir", "Enter · clic");
+            else PaintButton(ButtonStyle.Normal, L10n.Source("Elegir"), L10n.Source("Enter · clic"));
         }
         else if (access != ShopResult.Ok)
             PaintButton(ButtonStyle.Locked, L10n.T(access == ShopResult.BuyPhaseOver ? "gameplay.shop.buy_over" : "gameplay.shop.btn.outside"), L10n.T("gameplay.shop.btn.look_only"));
@@ -1257,7 +1257,7 @@ public class ShopUI : MonoBehaviour
         if (total == 0)
         {
             TextMeshProUGUI empty = Text(Place(Node("Vacio", loadoutCells[3]), loadoutWidths[3] - 112f, 21f, 100f, 24f), displayFont, 16f, Mute, TextAlignmentOptions.MidlineRight, 5f, true);
-            empty.text = "Vacío";
+            empty.text = L10n.Source("Vacío");
         }
         // Las fichas van en una fila que corta en el borde del espacio: nunca pisan al escudo.
         const float ChipPad = 23f + 7f, ChipGap = 8f;
@@ -1316,7 +1316,7 @@ public class ShopUI : MonoBehaviour
         else
         {
             TextMeshProUGUI none = Text(Place(Node("Valor", loadoutCells[4]), 158f, 51f, 90f, 40f), displayFont, 18f, Mute, TextAlignmentOptions.MidlineLeft, 5f, true);
-            none.text = "Vacío";
+            none.text = L10n.Source("Vacío");
         }
         Dim(4, loadout.Shield <= 0);
 
@@ -1353,7 +1353,7 @@ public class ShopUI : MonoBehaviour
         float x = 18f;
         if (key != null) x += Key(loadoutCells[cell], x, 21f, key, false, !inHand).width + 8f;
         TextMeshProUGUI text = Text(Place(Node("Titulo", loadoutCells[cell]), x, 21f, 220f, 24f), labelFont, 14f, inHand ? Accent : Mute, TextAlignmentOptions.MidlineLeft, 12f, true);
-        text.text = label;
+        text.text = L10n.Source(label);
     }
 
     // ---------- Compañeros (US 175, CA13) ----------
@@ -1584,7 +1584,7 @@ public class ShopUI : MonoBehaviour
     {
         TextMeshProUGUI text = Text(Place(Node("Nombre", loadoutCells[cell]), x, 51f, loadoutWidths[cell] - x - 12f, 40f), displayFont, 21f, color, TextAlignmentOptions.MidlineLeft, 5f, true);
         text.overflowMode = TextOverflowModes.Ellipsis;
-        text.text = label;
+        text.text = L10n.Source(label);
     }
 
     // ---------- Textos y estados derivados ----------
@@ -1640,7 +1640,9 @@ public class ShopUI : MonoBehaviour
         return item.icon.rect.width / item.icon.rect.height;
     }
 
-    private static string CategoryName(ShopCategory value)
+    private static string CategoryName(ShopCategory value) => L10n.Source(CategoryNameEs(value));
+
+    private static string CategoryNameEs(ShopCategory value)
     {
         switch (value)
         {
@@ -1968,7 +1970,7 @@ public class ShopUI : MonoBehaviour
     private void BuildCategoryPanel()
     {
         catsPanel = Panel("Categorias", CatsX, PanelTop, CatsW, HeadH + LegendH, out catsMask);
-        ColumnHeader(catsPanel, CatsW, "Número o clic").text = "Categoría";
+        ColumnHeader(catsPanel, CatsW, L10n.Source("Número o clic")).text = L10n.Source("Categoría");
         catRowsRoot = Place(Node("Filas", catsPanel), 0f, HeadH, CatsW, 10f);
         legendRoot = Place(Node("Atajos", catsPanel), 0f, HeadH, CatsW, LegendH);
         Line(legendRoot, 0f, 0f, CatsW);
@@ -1984,8 +1986,8 @@ public class ShopUI : MonoBehaviour
             float width = 0f;
             if (key != null) width = Key(item, 0f, 0f, key, false, true).width + 6f;
             TextMeshProUGUI text = Text(Place(Node("Texto", item), width, 0f, 200f, 24f), labelFont, 15f, Mute, TextAlignmentOptions.MidlineLeft, 6f, true);
-            text.text = label;
-            width += Width(text, label.ToUpperInvariant());
+            text.text = L10n.Source(label);
+            width += Width(text, text.text.ToUpperInvariant());
             if (x > 19f && x + width > CatsW - 19f)
             {
                 x = 19f;
@@ -2060,7 +2062,7 @@ public class ShopUI : MonoBehaviour
     private void BuildListPanel()
     {
         listPanel = Panel("Lista", ListX, PanelTop, ListW, HeadH, out listMask);
-        listTitle = ColumnHeader(listPanel, ListW, "Volver", backIcon);
+        listTitle = ColumnHeader(listPanel, ListW, L10n.Source("Volver"), backIcon);
         listRowsRoot = Place(Node("Filas", listPanel), 0f, HeadH, ListW, 10f);
         Border(listPanel, 10f, LineColor);
     }

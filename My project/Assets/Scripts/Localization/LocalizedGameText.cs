@@ -40,7 +40,12 @@ public sealed class LocalizedGameText : MonoBehaviour
     private void OnEnable() { L10n.LanguageChanged += Refresh; Refresh(); }
     private void OnDisable() { L10n.LanguageChanged -= Refresh; }
     private void OnDestroy() { L10n.LanguageChanged -= Refresh; if (localized != null) localized.OnUpdateString.RemoveListener(Apply); }
-    private void Refresh() { if (!string.IsNullOrEmpty(key) && !ReplacedFromOutside()) SetText(L10n.T(key, arguments)); }
+    private void Refresh()
+    {
+        // A text destroyed without ever being active never gets OnDestroy: it lets go of the event here.
+        if (this == null) { L10n.LanguageChanged -= Refresh; return; }
+        if (!string.IsNullOrEmpty(key) && !ReplacedFromOutside()) SetText(L10n.T(key, arguments));
+    }
     private void Apply(string value) { if (!string.IsNullOrEmpty(key) && !ReplacedFromOutside()) SetText(TranslationCatalog.FormatText(L10n.LanguageCode, value, arguments)); }
 
     // If other code wrote a different text into the label, that text wins: the binding lets go instead of

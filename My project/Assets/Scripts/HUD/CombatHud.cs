@@ -715,7 +715,7 @@ public class CombatHud : MonoBehaviour
         }
         if (melee != null && melee.CurrentViewModel != null && melee.CurrentViewModel.activeInHierarchy)
         {
-            name = melee.CurrentWeapon != null ? melee.CurrentWeapon.weaponName : "Cuchillo";
+            name = L10n.Source(melee.CurrentWeapon != null ? melee.CurrentWeapon.weaponName : "Cuchillo");
             WeaponIcon = knifeIcon; // para el aviso de baja con cuchillo
         }
     }
@@ -972,16 +972,16 @@ public class CombatHud : MonoBehaviour
         IHudWeapon alwaysHud = always != null ? always.GetComponent<IHudWeapon>() : null;
         ShopItem alwaysItem = WeaponSwitcher.FichaDe(always);
         bool hasPrimary = primary != null || alwaysHud != null;
-        string primaryName = primary != null ? ItemName(primary) : hasPrimary ? alwaysHud.HudName : "Vacío";
+        string primaryName = L10n.Source(primary != null ? ItemName(primary) : hasPrimary ? alwaysHud.HudName : "Vacío");
         Sprite primaryIcon = primary != null ? primary.icon : alwaysItem != null ? alwaysItem.icon : null;
 
         ShopItem secondary = loadout != null ? loadout.Secondary : null;
         // Con tienda, la que tiene en la tienda: si soltó la Línea A (US 184, CA4), el espacio queda vacío.
         bool hasSecondary = secondary != null || (!sceneHasShop && switcher != null && switcher.pistolObj != null);
-        string secondaryName = hasSecondary ? SecondaryName() : "Vacío";
+        string secondaryName = L10n.Source(hasSecondary ? SecondaryName() : "Vacío");
 
         bool hasKnife = melee != null && melee.CurrentWeapon != null;
-        string knifeName = hasKnife ? melee.CurrentWeapon.weaponName : "Vacío";
+        string knifeName = L10n.Source(hasKnife ? melee.CurrentWeapon.weaponName : "Vacío");
 
         // Granadas (CA5): la seleccionada (la que tiene en la mano o la última que eligió con la tecla 4, si todavía
         // la tiene; si no, la primera que tenga) y cuántas lleva de ese tipo.

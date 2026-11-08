@@ -49,6 +49,17 @@ public static class L10n
         EnsureCatalog();
         var host = new GameObject("Localization").AddComponent<LanguageStartup>();
         UnityEngine.Object.DontDestroyOnLoad(host.gameObject);
+        UnityEngine.SceneManagement.SceneManager.sceneLoaded -= LocalizeSceneTexts;
+        UnityEngine.SceneManagement.SceneManager.sceneLoaded += LocalizeSceneTexts;
+    }
+
+    // Texts typed into a scene (e.g. the practice range signs) follow the language when the catalog has them.
+    // Real-world signs of the maps are not in the catalog, so they stay as they are.
+    private static void LocalizeSceneTexts(UnityEngine.SceneManagement.Scene scene, UnityEngine.SceneManagement.LoadSceneMode mode)
+    {
+        foreach (GameObject root in scene.GetRootGameObjects())
+            foreach (TMP_Text text in root.GetComponentsInChildren<TMP_Text>(true))
+                if (text.GetComponent<LocalizedGameText>() == null && TrySourceKey(text.text, out string key)) Bind(text, key);
     }
 
     private static void EnsureCatalog()

@@ -1447,6 +1447,14 @@
     {
       "key": "ui.version.update_fmt",
       "text": "There's a new version ({0}). Update the game from the launcher to play online."
+    },
+    {
+      "key": "ui.text.buy",
+      "text": "Buy"
+    },
+    {
+      "key": "ui.text.close",
+      "text": "Close"
     }
   ]
 }

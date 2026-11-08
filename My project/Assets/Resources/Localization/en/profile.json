@@ -2119,6 +2119,18 @@
     {
       "key": "profile.text.destroy_0_1_comets_in",
       "text": "Destroy {0} {1} comets in total."
+    },
+    {
+      "key": "profile.station.for_fmt",
+      "text": "for {0}"
+    },
+    {
+      "key": "profile.text.business_simulation_there_are_no",
+      "text": "Business simulation: there are no real payments. Tickets are earned by playing (credits) or with crystals from the store. The odds are always shown."
+    },
+    {
+      "key": "profile.text.kda_kills_assists_deaths_with",
+      "text": "* KDA = (kills + assists) ÷ deaths; with no deaths, ÷ 1. Assist: you damaged an enemy that someone else eliminated within the next 10 s. Only finished matches count."
     }
   ]
 }

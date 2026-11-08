@@ -91,7 +91,7 @@ public void IrAlEscenario2()
     public void IrAlCampoDePractica()
     {
         // La captura del mapa está en Resources/Carga (así no hay que asignarla en la escena del menú).
-        PantallaDeCarga.Cargar(escenaPractica, "Campo de práctica", "Mapa de práctica", Resources.Load<Sprite>("Carga/MapaPractica"));
+        PantallaDeCarga.Cargar(escenaPractica, L10n.Source("Campo de práctica", "ui."), L10n.Source("Mapa de práctica", "ui."), Resources.Load<Sprite>("Carga/MapaPractica"));
     }
 
     public void MostrarMenuPrincipal()
