@@ -376,8 +376,8 @@ public class AnimacionPrimeraPersona : MonoBehaviour
 
     private float Sacar(GameObject arma)
     {
-        if (EsPortena(arma)) return sacarDuracion;
         if (EsGranada(arma)) return granadaSacar;
+        // La Porteña también tarda lo de su ficha (US 242, CA2: 1 s, lo mismo que tarda en estar lista).
         ShopItem ficha = WeaponSwitcher.FichaDe(arma);
         return ficha != null && ficha.equipTime > 0f ? ficha.equipTime : sacarDuracion;
     }

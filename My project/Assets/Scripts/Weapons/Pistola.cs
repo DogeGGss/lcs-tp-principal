@@ -29,13 +29,19 @@ public class Pistola : MonoBehaviour, IHudWeapon
     private bool isReloading = false;
     private int fullReserve = -1; // la reserva con la que viene el arma, para volver a llenarla
     private float reloadStartTime;
+    private bool sacandola;   // US 242, CA2: mientras la saca no dispara
+    private float nextShot;   // US 242, CA3: la cadencia de la ficha (6,75 disparos por segundo)
+
+    // US 242: los tiempos salen de la ficha de la tienda, como en las demás armas; si falta, los del prefab.
+    private float TiempoDeRecarga => Data.reloadTime > 0f ? Data.reloadTime : reloadTime;
+    private float TiempoDeSacarla => Data.equipTime > 0f ? Data.equipTime : 0f;
 
     // Datos para el HUD (US 056): el HUD le pone el nombre de la tienda (Línea A o Línea H).
     public string HudName => L10n.T("gameplay.ui.pistol");
     public int Ammo => currentAmmo;
     public int MagazineSize => maxAmmo;
     public int Reserve => reserveAmmo;
-    public float ReloadProgress => isReloading ? Mathf.Clamp01((Time.time - reloadStartTime) / reloadTime) : -1f;
+    public float ReloadProgress => isReloading ? Mathf.Clamp01((Time.time - reloadStartTime) / Mathf.Max(0.01f, TiempoDeRecarga)) : -1f;
 
     void Awake()
     {
@@ -103,21 +109,37 @@ public class Pistola : MonoBehaviour, IHudWeapon
         }
     }
 
+    void OnEnable()
+    {
+        // US 242, CA2: al sacarla tarda lo que dice la ficha (1 s) en estar lista, igual que la animación.
+        StartCoroutine(Sacarla());
+    }
+
     void OnDisable()
     {
         // Si el WeaponSwitcher oculta la pistola en plena recarga,
         // se cancela el estado.
         isReloading = false;
+        sacandola = false;
+    }
+
+    private IEnumerator Sacarla()
+    {
+        sacandola = true;
+        float espera = TiempoDeSacarla;
+        if (espera > 0f) yield return new WaitForSeconds(espera);
+        sacandola = false;
     }
 
     void Update()
     {
-        // Si está recargando, no procesa disparo ni nueva recarga.
-        if (isReloading) return;
+        // Si está recargando o sacándola, no procesa disparo ni nueva recarga.
+        if (isReloading || sacandola) return;
 
-        // Disparo con clic izquierdo.
-        if (KeyBindings.Down(GameAction.Disparar))
+        // Disparo con clic izquierdo, como mucho a la cadencia de la ficha (US 242, CA3).
+        if (KeyBindings.Down(GameAction.Disparar) && Time.time >= nextShot)
         {
+            if (currentAmmo > 0) nextShot = Time.time + 1f / Mathf.Max(0.01f, Data.fireRate > 0f ? Data.fireRate : 6.75f);
             Shoot();
         }
 
@@ -196,7 +218,7 @@ public class Pistola : MonoBehaviour, IHudWeapon
             audioSource.PlayOneShot(reloadSound);
         }
 
-        yield return new WaitForSeconds(reloadTime);
+        yield return new WaitForSeconds(TiempoDeRecarga); // US 242, CA4: 1,75 s, lo que dice la ficha
 
         // Cuántas balas faltan para llenar el cargador.
         int neededAmmo = maxAmmo - currentAmmo;
