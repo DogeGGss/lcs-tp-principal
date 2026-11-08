@@ -127,9 +127,9 @@ body.cae-main #secreto .rebanadas{display:none}
 
 /* El marco conserva el tamaño lógico de la pantalla al achicar la proyección. */
 html:has(body.fitted) { background: #000; overflow: hidden; }
-body.fitted { position: fixed; left: var(--frame-x); top: var(--frame-y); width: var(--frame-width); height: var(--frame-height); min-height: 0; overflow: hidden; transform-origin: top left; transform: scale(var(--frame-scale)); }
+body.fitted { position: fixed; inset: 0; height: 100dvh; overflow: hidden; transform: var(--projection); }
 body.fitted #slideScroll { height: 100%; overflow: auto; }
-body.fitted dialog[open] { max-width: var(--frame-width); max-height: var(--frame-height); transform: var(--projection); }
+body.fitted dialog[open] { transform: var(--projection); }
 #calibration { position: fixed; inset: 0; z-index: 10000; background: #0008; display: grid; place-items: center; }
 #calibration[hidden] { display: none; }
 .corner { position: absolute; width: 5vmin; height: 5vmin; border: 0 solid #ffe04c; }
@@ -144,8 +144,3 @@ body.trailer-expanded .trailer { position: fixed; inset: 0; width: 100%; height:
 .trailer video { object-fit: contain; }
 .trailer-exit { display: none; }
 body.trailer-expanded .trailer-exit { display: block; position: absolute; top: 12px; right: 12px; }
-
-.edge-controls { border: 1px solid var(--line); margin: 10px 0; text-align: left; }
-.edge-controls label { display: grid; grid-template-columns: 5em minmax(45px, 1fr) 3.5em; align-items: center; gap: 8px; font-size: 16px; }
-.edge-controls input { width: 100%; accent-color: var(--accent); }
-.adjust-panel { max-width: min(430px, 96%); max-height: 96%; overflow: auto; }
