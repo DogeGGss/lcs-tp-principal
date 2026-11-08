@@ -162,11 +162,26 @@ const questionTopics = [
     "Pelear dentro del anillo carga el puesto de suministros. Al completarlo, el jugador elige una de tres opciones. Algunas cartas se acumulan hasta tres veces y cambian cómo conviene usar cada arma."
   ]
 ];
+// Posiciones en porcentajes del tablero, compartidas por los trazos y sus botones.
+const questionSketch = [
+  [25, 13, -9, 'M49 48 C44 44 36 24 25 13'],
+  [71, 13, 12, 'M53 46 Q59 38 62 28 T71 13'],
+  [14, 39, 5, 'M46 49 C39 48 36 43 30 44 S19 40 14 39'],
+  [84, 38, -6, 'M54 49 C61 47 65 41 72 42 Q78 42 84 38'],
+  [18, 66, -13, 'M46 53 Q39 54 32 60 T18 66'],
+  [81, 67, 8, 'M54 52 C64 52 69 66 81 67'],
+  [33, 87, 16, 'M48 55 C45 62 43 64 41 71 S36 81 33 87'],
+  [68, 86, -16, 'M52 55 Q55 64 59 68 C63 75 63 82 68 86']
+];
 function questionsScreen() {
-  const buttons = questionTopics.map(([name], index) =>
-    `<button class="question-node" data-question="${index}">${esc(name)}</button>`).join('');
-  const lines = [12.5, 37.5, 62.5, 87.5].flatMap(y =>
-    [18, 82].map(x => `<line x1="50" y1="50" x2="${x}" y2="${y}"/>`)).join('');
+  const buttons = questionTopics.map(([name], index) => {
+    const [x, y, tilt] = questionSketch[index];
+    return `<button class="question-node" data-question="${index}" style="left:${x}%;top:${y}%;--tilt:${tilt}deg">
+      <svg viewBox="0 0 120 100" aria-hidden="true"><path class="ink-ring" d="M90 9 C67 1 35 5 19 18 C2 32 4 56 12 71 C23 91 50 97 78 91 C100 87 115 68 113 46 C112 28 103 14 83 9 C76 7 69 6 62 7"/>
+      <path class="ink-echo" d="M8 49 C7 66 19 84 37 89 M76 94 Q95 91 104 79"/></svg>
+      <span>${esc(name)}</span></button>`;
+  }).join('');
+  const lines = questionSketch.map(([, , , path]) => `<path d="${path}"/>`).join('');
   return `<section class="questions-board" aria-label="Preguntas del público">
     <svg aria-hidden="true" viewBox="0 0 100 100" preserveAspectRatio="none">${lines}</svg>
     <div class="question-center"><p>¡Gracias!</p><h1>¿Preguntas?</h1></div>
