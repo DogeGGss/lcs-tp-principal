@@ -521,7 +521,7 @@ public class ControlsPanel : MonoBehaviour, OpcionesPantalla.ISeccion
     {
         RectTransform rect = Place(Node(name, root), x, y, w, KeyRowH);
         Image(rect, rounded, rowColor, 4f);
-        Text(Place(Node("Accion", rect), 12f, 0f, w - 120f, KeyRowH), labelFont, 17f, Mute, TextAlignmentOptions.MidlineLeft, 4f, true).text = name;
+        Text(Place(Node("Accion", rect), 12f, 0f, w - 120f, KeyRowH), labelFont, 17f, Mute, TextAlignmentOptions.MidlineLeft, 4f, true).text = L10n.Source(name, "ui.");
         Img chip = Image(Place(Node("Tecla", rect), w - 104f, (KeyRowH - 28f) / 2f, 96f, 28f), rounded, ChipColor, 4f);
         Text(Stretch(Node("Texto", chip.rectTransform)), displayFont, 16f, Mute, TextAlignmentOptions.Center, 2f, true).text = key;
     }

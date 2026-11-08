@@ -214,8 +214,8 @@ public class CreditsScreen : MonoBehaviour
             float tw = Width(text, label.ToUpperInvariant());
             RectTransform keyRect = Node("Tecla", hint);
             TextMeshProUGUI keyText = Text(Stretch(Node("Letra", keyRect)), monoFont, 18f, Hex(0x111111), TextAlignmentOptions.Center, 4f, true);
-            keyText.text = key;
-            float kw = Width(keyText, key.ToUpperInvariant()) + 22f;
+            keyText.text = L10n.Source(key, "ui.");
+            float kw = Width(keyText, keyText.text.ToUpperInvariant()) + 22f;
             x -= tw;
             Place(text.rectTransform, x, 0f, tw, 36f);
             x -= 12f + kw;

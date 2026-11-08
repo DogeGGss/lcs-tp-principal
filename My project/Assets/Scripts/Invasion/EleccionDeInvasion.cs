@@ -562,8 +562,8 @@ public class EleccionDeInvasion : MonoBehaviour
         numero.text = (i + 1).ToString();
     }
 
-    private static string NombreDelArma(ShopItem arma) =>
-        !string.IsNullOrEmpty(arma.displayName) ? arma.displayName : !string.IsNullOrEmpty(arma.alias) ? arma.alias : arma.name;
+    private static string NombreDelArma(ShopItem arma) => L10n.Source(
+        !string.IsNullOrEmpty(arma.displayName) ? arma.displayName : !string.IsNullOrEmpty(arma.alias) ? arma.alias : arma.name);
 
     // US 294, CA4: la opción dice a cuál reemplaza.
     private string QueReemplaza(ShopItem arma)

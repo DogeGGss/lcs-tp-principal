@@ -169,7 +169,7 @@ public class GraficosUIController : MonoBehaviour, OpcionesPantalla.ISeccion
             Resolution r = resoluciones[Mathf.Clamp(e.resolucion, 0, resoluciones.Length - 1)];
             textoResolucion.text = r.width + " x " + r.height + "  ·  " + Forma(r.width, r.height);
         }
-        textoCalidad.text = NivelesCalidad[Mathf.Clamp(e.calidad, 0, NivelesCalidad.Length - 1)];
+        textoCalidad.text = L10n.Source(NivelesCalidad[Mathf.Clamp(e.calidad, 0, NivelesCalidad.Length - 1)], "ui.");
         segModo.Marcar(e.modo);
         segVSync.Marcar(e.vsync == 1 ? 0 : 1);
         segFPS.Marcar(e.fps);

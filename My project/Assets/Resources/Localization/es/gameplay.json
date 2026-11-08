@@ -1703,6 +1703,98 @@
     {
       "key": "gameplay.shop.body_full_fmt",
       "text": "{0} al cuerpo con escudo completo"
+    },
+    {
+      "key": "gameplay.text.number_or_click",
+      "text": "Número o clic"
+    },
+    {
+      "key": "gameplay.text.category",
+      "text": "Categoría"
+    },
+    {
+      "key": "gameplay.text.right_click_sell",
+      "text": "Clic der. vender"
+    },
+    {
+      "key": "gameplay.text.enter_click",
+      "text": "Enter · clic"
+    },
+    {
+      "key": "gameplay.text.tactical",
+      "text": "TÁCTICO"
+    },
+    {
+      "key": "gameplay.text.invasion",
+      "text": "INVASIÓN"
+    },
+    {
+      "key": "gameplay.text.deathmatch",
+      "text": "DEATHMATCH"
+    },
+    {
+      "key": "gameplay.text.practice_range",
+      "text": "CAMPO DE PRÁCTICA"
+    },
+    {
+      "key": "gameplay.text.firing_line",
+      "text": "LÍNEA DE TIRO"
+    },
+    {
+      "key": "gameplay.text.shooting_zone",
+      "text": "ZONA DE TIRO"
+    },
+    {
+      "key": "gameplay.text.practice_map",
+      "text": "MAPA DE PRÁCTICA"
+    },
+    {
+      "key": "gameplay.text.get_closer_to_see_the",
+      "text": "Acercate para ver el objetivo"
+    },
+    {
+      "key": "gameplay.text.change_weapon",
+      "text": "Cambiar arma"
+    },
+    {
+      "key": "gameplay.text.primary",
+      "text": "Principal"
+    },
+    {
+      "key": "gameplay.text.secondary",
+      "text": "Secundaria"
+    },
+    {
+      "key": "gameplay.text.pistols",
+      "text": "Pistolas"
+    },
+    {
+      "key": "gameplay.text.smgs",
+      "text": "Subfusiles"
+    },
+    {
+      "key": "gameplay.text.shotguns",
+      "text": "Escopetas"
+    },
+    {
+      "key": "gameplay.text.rifles",
+      "text": "Fusiles"
+    },
+    {
+      "key": "gameplay.text.snipers",
+      "text": "Francotiradores"
+    },
+    {
+      "key": "gameplay.text.shields",
+      "text": "Escudos"
+    },
+    {
+      "key": "gameplay.text.supplies",
+      "text": "Suministros"
+    },
+    {
+      "key": "gameplay.text.grenades",
+      "text": "Granadas"
     }
   ]
 }
