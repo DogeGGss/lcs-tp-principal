@@ -1,0 +1,31 @@
+US-347_CA2_Opciones_Sonido · idioma en · 2026-11-08 10:45:16
+Resultado: sin textos en español
+Textos en pantalla:
+  Project Riftwalker · Player
+  ​
+  Controls
+  Your name
+  Adjust a control to hear a preview. Press Apply to save.
+  Master
+  Volume
+  Q
+  3–16 characters: letters, numbers, spaces, hyphens and underscores.
+  Effects
+  Crosshair
+  Language
+  « Menu
+  E
+  Reset
+  Sound
+  Apply
+  100 %
+  0/16
+  Enter Confirm
+  Game settings
+  Confirm
+  Graphics
+  Music
+  Interface
+  Options
+  This is how you appear in rooms, the scoreboard and kill notifications.
+  What is your name?

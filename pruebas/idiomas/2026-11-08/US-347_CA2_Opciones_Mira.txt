@@ -1,0 +1,55 @@
+US-347_CA2_Opciones_Mira · idioma en · 2026-11-08 10:45:16
+Resultado: sin textos en español
+Textos en pantalla:
+  Apply
+  Your name
+  Dark background
+  Spread
+  Red
+  Q
+  Thickness
+  3–16 characters: letters, numbers, spaces, hyphens and underscores.
+  2
+  Crosshair
+  Length
+  Type
+  « Menu
+  Cross
+  Custom color
+  Center dot
+  Gap
+  0/16
+  Custom
+  Enter Confirm
+  No
+  Confirm
+  Sound
+  Options
+  151
+  Fixed
+  Project Riftwalker · Player
+  8
+  Green
+  ​
+  Controls
+  61
+  Blue
+  Color
+  Yes
+  Preview
+  Circle
+  Language
+  E
+  Color and spread
+  Dynamic
+  Light background
+  5
+  Borde
+  Dot
+  Game settings
+  220
+  Forma
+  Graphics
+  Reset
+  This is how you appear in rooms, the scoreboard and kill notifications.
+  What is your name?

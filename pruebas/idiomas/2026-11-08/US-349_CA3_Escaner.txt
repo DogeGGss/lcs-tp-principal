@@ -1,0 +1,3 @@
+US-349_CA3 · 2026-11-08 10:47:14
+Resultado: sin textos nuevos en español
+Revisados: 144 textos que no ve el jugador (TextosQueNoSeTraducen.txt)

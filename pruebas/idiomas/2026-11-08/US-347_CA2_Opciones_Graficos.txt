@@ -1,0 +1,50 @@
+US-347_CA2_Opciones_Graficos · idioma en · 2026-11-08 10:45:17
+Resultado: sin textos en español
+Textos en pantalla:
+  Hide
+  Borderless
+  Your name
+  FPS limit
+  <
+  FPS and ping
+  Q
+  Quality
+  3–16 characters: letters, numbers, spaces, hyphens and underscores.
+  60
+  Crosshair
+  « Menu
+  Resolution
+  80°
+  Press Apply to use your changes.
+  0/16
+  Enter Confirm
+  Confirm
+  Medium
+  144
+  Image
+  Sound
+  Options
+  Fullscreen
+  30
+  Project Riftwalker · Player
+  ​
+  Controls
+  Unlimited
+  1920 x 1080 · 16:9
+  No
+  Reset
+  Graphics
+  Language
+  Yes
+  Windowed
+  E
+  Mode
+  Apply
+  VSync
+  Field of view
+  Game settings
+  Screen
+  This is how you appear in rooms, the scoreboard and kill notifications.
+  >
+  What is your name?
+  Show

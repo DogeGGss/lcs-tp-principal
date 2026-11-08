@@ -1,0 +1,52 @@
+US-347_CA3_Perfil · idioma en · 2026-11-08 10:45:25
+Resultado: sin textos en español
+Textos en pantalla:
+  No data
+  Matches finished 0
+  Overall · Tactical and Deathmatch
+  Comet minigame
+  0
+  No title
+  KDA*
+  Player record
+  Account
+  +
+  Matches
+  You haven't finished a Tactical match yet.
+  Hours played
+  ​
+  Deaths
+  Assists
+  3–16 characters: letters, numbers, spaces, hyphens and underscores.
+  Invasion
+  You haven't shot any comets yet.
+  Deathmatch
+  —
+  Earned by playing
+  Kills
+  Premium currency
+  Headshots
+  Win rate
+  Tactical
+  Your name
+  Wins
+  Change name
+  0/16
+  You haven't finished a Tactical or Deathmatch match yet.
+  Customization
+  * KDA = (kills + assists) ÷ deaths; with no deaths, ÷ 1. Assist: you damaged an enemy that someone else eliminated within the next 10 s. Only finished matches count.
+  « Menu
+  This is how you appear in rooms, the scoreboard and kill notifications.
+  What is your name?
+  Best wave
+  Confirm
+  Open capsules
+  Player
+  You haven't finished a Deathmatch match yet.
+  Enter Confirm
+  Project Riftwalker · Player
+  0 min
+  Profile
+  Emotes
+  You haven't finished an Invasion match yet.
+  Statistics

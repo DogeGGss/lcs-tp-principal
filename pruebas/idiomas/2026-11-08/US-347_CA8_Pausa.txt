@@ -1,0 +1,72 @@
+US-347_CA8_Pausa · idioma en · 2026-11-08 10:45:47
+Resultado: sin textos en español
+Textos en pantalla:
+  Confirm
+  REINICIAR
+  35 m
+  SHOOTING ZONE
+  Mitre
+  Pause
+  10 m
+  Back
+  Move
+  20 m
+  3
+  45 m
+  Metralla ×1
+  DEATHMATCH
+  S
+  TACTICAL
+  50 m
+  4
+  1
+  Get closer to see the objective
+  Match paused
+  A
+  / ∞
+  15 m
+  · Sprint (in Tactical, walk slowly)
+  25 m
+  MOVING
+  Esc
+  Knife
+  Mouse
+  2
+  PRACTICE MAP
+  Ctrl
+  QUIETOS
+  Choose
+  La Porteña
+  Backspace
+  REACTION
+  PRACTICE RANGE
+  Restart match
+  DISTANCIAS
+  Quietos · Kills: 0 · Headshots: 0
+  Numbers
+  Resume
+  5 m
+  Tab Skip step Hold Tab Skip tutorial
+  INVASION
+  Pick a mode: look at a button and press E , or shoot it
+  30
+  30 m
+  H Map
+  Leave match
+  40 m
+  TUTORIAL
+  Tutorial · Step 1 of 6
+  Settings
+  Shift
+  FIRING LINE
+  · Move
+  · Look
+  Enter
+  · Skip
+  Tactical
+  Space
+  D
+  100
+  Time, enemies and audio are paused until you return.
+  W
+  · Agacharse

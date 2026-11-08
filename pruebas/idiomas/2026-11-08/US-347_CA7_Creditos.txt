@@ -1,0 +1,69 @@
+US-347_CA7_Creditos · idioma en · 2026-11-08 10:45:40
+Resultado: sin textos en español
+Textos en pantalla:
+  Scrum Master
+  Teleport, by fins (CC0, Freesound and OpenGameArt)
+  Fonts
+  Thanks for playing
+  · · ·
+  Your name
+  David Ramos
+  ​
+  JetBrains · SIL Open Font License 1.1
+  Flashbang blast
+  Sci-fi environment
+  Ulises Fonseca
+  To our teachers, everyone who tested broken builds and to you, for playing.
+  Course project "Último Tren a Retiro" Software Construction Laboratory University Technical Degree in Computing
+  Textures
+  Sci-fi Weapon - Game Ready Knife - FREE SAMPLE, by AF Creations (Unity Asset Store)
+  What is your name?
+  Barlow
+  Luka Gómez Franco Barreto
+  Weapon models
+  Lucas Huber Nicolás Gauna Luka Gómez
+  Credits
+  Jeremy Tribby · SIL Open Font License 1.1
+  External assets
+  0/16
+  Nicolás Gauna Franco Barreto Nahuel Velázquez Ulises Fonseca
+  JetBrains Mono
+  Sci-Fi Modular Gun Pack, by Quaternius (CC0)
+  Character and animations
+  Interface (UI/UX)
+  Respawn sound
+  Flashbang explode, by MadPanCake (CC BY-NC 4.0, Freesound)
+  Cartoon Texture Pack
+  Knife
+  Space
+  3D Scifi Kit Starter Kit, by Creepy Cat (Unity Asset Store)
+  Repository and Git
+  Speed up
+  The Free Firearm Sound Library, by Ben Jaszczak, Brian Nelson, Kevin Heras and Matthew Nanney (CC0)
+  Unity 6 · Universal Render Pipeline ProBuilder · TextMesh Pro · Input System · AI Navigation Photon PUN 2 (multiplayer) GitHub and GitHub Projects
+  Gunshots
+  Documentation and backlog
+  Project Riftwalker
+  Gun reload sounds, by SpringySpringo, and Shotgun Reload Sound Effects, by zer0_sol (CC0, OpenGameArt)
+  3–16 characters: letters, numbers, spaces, hyphens and underscores.
+  Lucas Huber David Ramos
+  Engine and tools
+  A tactical shooter, a deathmatch and an alien invasion at university. Made by seven students in ten weeks, with more coffee than sleep.
+  Reloads
+  Ulises Fonseca Nahuel Velázquez
+  Not so long ago, at a university very, very close by…
+  Sound and music
+  action track 4, A.I. fight & jumping cyborg, mixed by glitchart: action track 4, by Alexandr Zhelanov (CC BY 3.0), and A.I. fight & jumping cyborg, by tricksntraps (CC0, OpenGameArt)
+  Testing and QA
+  Course project
+  Development and gameplay
+  This is how you appear in rooms, the scoreboard and kill notifications.
+  Enter Confirm
+  Project Riftwalker · Player
+  Mixamo, by Adobe
+  Esc
+  Back
+  Special thanks
+  Confirm
+  Deathmatch music
+  2D/3D art and level design

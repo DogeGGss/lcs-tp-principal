@@ -1,0 +1,36 @@
+US-347_CA1_Menu_principal · idioma en · 2026-11-08 10:45:11
+Resultado: sin textos en español
+Textos en pantalla:
+  Premium currency
+  Confirm
+  Project
+  Play
+  Achievements
+  Project Riftwalker · Player
+  0
+  Platform 01 · Meeting point
+  Riftwalker
+  v0.4.0-exp.2
+  01 / Capsules
+  Enter Confirm
+  +
+  0/16
+  You have 0 tickets to open
+  Quit
+  Test areas:
+  Earned by playing
+  Tactical · Deathmatch · Zombie
+  »
+  Open capsules
+  Practice range
+  No title
+  Your name
+  Options
+  This is how you appear in rooms, the scoreboard and kill notifications.
+  Rift Station
+  Credits
+  3–16 characters: letters, numbers, spaces, hyphens and underscores.
+  Player
+  ​
+  Share your feedback
+  What is your name?

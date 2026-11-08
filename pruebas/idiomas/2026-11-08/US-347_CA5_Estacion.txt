@@ -1,0 +1,48 @@
+US-347_CA5_Estacion · idioma en · 2026-11-08 10:45:32
+Resultado: sin textos en español
+Textos en pantalla:
+  Out of crystals? Visit the store »
+  for 1 ticket
+  Earned by playing
+  Enter Confirm
+  Redeem
+  View capsule contents
+  Rare
+  • WAITING
+  One ticket, one capsule. Each contains an avatar, banner, title or frame.
+  « Menu
+  Legendary
+  RW · RIFT
+  No translation found for 'profile.text.business_simulation_there_are_no' in Riftwalker
+  ​
+  Recent rewards
+  RIFT CAPSULE · NO. 001
+  Get tickets
+  You haven't opened any capsules yet.
+  Common
+  Premium currency
+  +
+  12 %
+  0
+  900 cristales
+  What is your name?
+  Open 5 · 5 tickets
+  This is how you appear in rooms, the scoreboard and kill notifications.
+  Project Riftwalker · Player
+  Rift Station
+  Epic or better guaranteed in 10 capsules
+  for 10 tickets · 10% off
+  Confirm
+  0/16
+  Supplies from the other side
+  Open 1 · 1 ticket
+  Drop rates
+  Open capsules
+  55 %
+  100 cristales
+  3–16 characters: letters, numbers, spaces, hyphens and underscores.
+  3 %
+  30 %
+  600 credits
+  Epic
+  Your name

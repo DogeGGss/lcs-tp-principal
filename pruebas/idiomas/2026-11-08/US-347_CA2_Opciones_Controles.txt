@@ -1,0 +1,76 @@
+US-347_CA2_Opciones_Controles · idioma en · 2026-11-08 10:45:15
+Resultado: sin textos en español
+Textos en pantalla:
+  Key bindings
+  Skip
+  W
+  Correr / caminar despacio
+  Mapa completo
+  Project Riftwalker · Player
+  Derecha
+  ​
+  T
+  Controls
+  Your name
+  Adelante
+  H
+  Mouse
+  3
+  Reload
+  Ability
+  Device
+  Q
+  Soltar arma
+  Agacharse
+  While aiming
+  1,5
+  3–16 characters: letters, numbers, spaces, hyphens and underscores.
+  Shop
+  ×1,00
+  E
+  Crosshair
+  Yes
+  Language
+  Sensitivity
+  Apply
+  Knife
+  D
+  Plantar / desactivar
+  « Menu
+  A
+  Shoot
+  Back
+  Emotes
+  Reset
+  Right click
+  4
+  0/16
+  Invert Y axis
+  Secondary weapon
+  Ctrl
+  2
+  Enter Confirm
+  Grenades
+  Esc
+  Primary weapon
+  S
+  Game settings
+  G
+  R
+  No
+  Confirm
+  B
+  5
+  Apuntar
+  1
+  Izquierda
+  Sound
+  Shift
+  Graphics
+  Left click
+  Options
+  This is how you appear in rooms, the scoreboard and kill notifications.
+  What is your name?
+  Click an action and press the new key. Esc cancels.
+  Pause
+  Space

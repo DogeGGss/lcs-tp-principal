@@ -1,0 +1,52 @@
+US-347_CA5_Tienda · idioma en · 2026-11-08 10:45:33
+Resultado: sin textos en español
+Textos en pantalla:
+  +40 free
+  5 tickets + 200 crystals
+  Buy
+  Enter Confirm
+  80
+  $ 29.900
+  $ 1.200
+  $ 12.900
+  Simulated purchases
+  Crystal Vault
+  +
+  Crystal Box
+  crystals
+  Business simulation
+  ​
+  0
+  Crystal Pouch
+  +150 free
+  +500 free
+  « Menu
+  0 purchases
+  Welcome Offer
+  $ 3.300
+  Store
+  2.500
+  1.000
+  What is your name?
+  Best value
+  This is how you appear in rooms, the scoreboard and kill notifications.
+  Crystal Chest
+  400
+  $ 1.990
+  Project Riftwalker · Player
+  Once per account
+  Confirm
+  Reset test data
+  0/16
+  You haven't made any simulated purchases yet.
+  Simulated purchases. This is a university project: no real money is charged. It tests how the store of a free-to-play game would work.
+  $ 0
+  3–16 characters: letters, numbers, spaces, hyphens and underscores.
+  $ 5.500
+  Open capsules
+  Earned by playing
+  Most popular
+  -40 %
+  Total spent (simulated)
+  Premium currency
+  Your name

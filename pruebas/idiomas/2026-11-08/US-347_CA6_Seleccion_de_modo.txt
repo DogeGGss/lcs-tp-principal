@@ -1,0 +1,59 @@
+US-347_CA6_Seleccion_de_modo · idioma en · 2026-11-08 10:45:37
+Resultado: sin textos en español
+Textos en pantalla:
+  Tactical
+  This is how you appear in rooms, the scoreboard and kill notifications.
+  Private room · with friends
+  Normal
+  Switch sides in round 6
+  10 waves
+  4 vs 4
+  Invasion
+  Plant or defuse the device. No respawns.
+  Up to 8
+  First to 7
+  75% health and damage, with fewer enemies. Regenerate after 3 seconds.
+  Enter Confirm
+  20 s buy phase
+  As Jugador · your region · same version (v0.4.0-exp.2)
+  Create room
+  Online
+  8 min
+  3–16 characters: letters, numbers, spaces, hyphens and underscores.
+  Choose a mode
+  Free-for-all. Choose your weapons for free, heal 50 health per kill, and respawn after 3 seconds away from opponents.
+  Tactical · with players in your region
+  Face 10 waves alone at university. Then continue in endless mode to set a new record.
+  Free-for-all. Respawn after 3 seconds.
+  0:13
+  Project Riftwalker
+  Esc
+  Find match
+  Join with code
+  Platform 1
+  Hard
+  Free weapons
+  Play
+  Deathmatch
+  Project Riftwalker · Player
+  Local
+  The intended experience. Regenerate after 4 seconds.
+  Platform 3
+  Deathmatch · with players in your region
+  25 kills
+  Main menu
+  What is your name?
+  Survive the invasion at university.
+  Platform 2 · Online
+  1 player
+  One team plants the device at A or B while the other defends. No respawns: if you die, spectate a teammate until the next round.
+  Easy
+  Platform 3 · Local
+  Confirm
+  125% health, 150% damage and more enemies. +25% points.
+  Record on Normal: not played yet
+  Platform 1 · Online
+  ​
+  0/16
+  Platform 2
+  Your name

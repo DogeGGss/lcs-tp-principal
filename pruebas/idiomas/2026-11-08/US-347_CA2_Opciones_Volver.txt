@@ -1,0 +1,36 @@
+US-347_CA2_Opciones_Volver · idioma en · 2026-11-08 10:45:18
+Resultado: sin textos en español
+Textos en pantalla:
+  Test areas:
+  Your name
+  3–16 characters: letters, numbers, spaces, hyphens and underscores.
+  0
+  Practice range
+  Riftwalker
+  +
+  0/16
+  01 / Capsules
+  v0.4.0-exp.2
+  Credits
+  Enter Confirm
+  Confirm
+  Rift Station
+  Player
+  Play
+  »
+  Project
+  Earned by playing
+  Platform 01 · Meeting point
+  Project Riftwalker · Player
+  ​
+  No title
+  Premium currency
+  Tactical · Deathmatch · Zombie
+  Achievements
+  Share your feedback
+  Open capsules
+  Options
+  Quit
+  This is how you appear in rooms, the scoreboard and kill notifications.
+  What is your name?
+  You have 0 tickets to open

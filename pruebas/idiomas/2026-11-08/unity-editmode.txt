@@ -1,0 +1,127 @@
+Con_el_minimo	Passed	
+Durante_la_cuenta	Passed	
+Fin_de_la_cuenta	Passed	
+Sala_llena	Passed	
+Codigo_solo_numeros	Passed	
+Contrasena_de_8_y_repetida	Passed	
+Estado_de_la_cuenta	Passed	
+Mail_valido("ulises@gmail.com",True)	Passed	
+Mail_valido("  ulises.fonseca@alu.ungs.edu.ar  ",True)	Passed	
+Mail_valido("ulises",False)	Passed	
+Mail_valido("ulises@",False)	Passed	
+Mail_valido("ulises@gmail",False)	Passed	
+Mail_valido("uli ses@gmail.com",False)	Passed	
+Mail_valido("",False)	Passed	
+Mail_valido(null,False)	Passed	
+Mensajes_al_entrar(0,"","Hace falta internet para esto.")	Passed	
+Mensajes_al_entrar(400,"{\"code\":400,\"error_code\":\"invalid_credentials\",\"msg\":\"Invalid login credentials\"}","El mail o la contraseña no coinciden.")	Passed	
+Mensajes_al_entrar(400,"{\"code\":400,\"error_code\":\"email_not_confirmed\",\"msg\":\"Email not confirmed\"}","Tu mail todavía no está confirmado. Te mandamos otro código.")	Passed	
+Mensajes_de_error(0,"","Hace falta internet para esto.")	Passed	
+Mensajes_de_error(422,"{\"code\":422,\"error_code\":\"email_exists\",\"msg\":\"A user with this email address has already been registered\"}","Ese mail ya tiene una cuenta.")	Passed	
+Mensajes_de_error(400,"{\"error_code\":\"email_address_invalid\"}","Escribí un mail válido.")	Passed	
+Mensajes_de_error(422,"{\"error_code\":\"weak_password\",\"msg\":\"Password should be at least 8 characters.\"}","La contraseña tiene que tener 8 caracteres o más.")	Passed	
+Mensajes_de_error(403,"{\"error_code\":\"otp_expired\",\"msg\":\"Token has expired or is invalid\"}","El código venció o no es correcto. Pedí otro.")	Passed	
+Mensajes_de_error(429,"{\"error_code\":\"over_email_send_rate_limit\"}","Ya te mandamos un código hace poco. Esperá un minuto y pedí otro.")	Passed	
+Mensajes_de_error(400,"{\"error_code\":\"email_address_not_authorized\"}","No se pudo mandar el mail. Probá de nuevo en un rato.")	Passed	
+Mensajes_de_error(500,"{\"msg\":\"Error sending confirmation email\"}","No se pudo mandar el mail. Probá de nuevo en un rato.")	Passed	
+Mensajes_de_error(500,"{\"msg\":\"otra cosa\"}","No se pudo completar. Probá de nuevo en un rato.")	Passed	
+Dispersion_extra_por_tirar_seguido	Passed	
+Dispersion_multiplicadores	Passed	
+Dispersion_quieto_y_en_movimiento	Passed	
+El_danio_depende_de_la_distancia	Passed	
+El_danio_depende_de_la_zona	Passed	
+Francotirador_siempre_apunta	Passed	
+La_escopeta_suma_todos_los_perdigones	Passed	
+Retroceso_la_primera_bala_es_exacta	Passed	
+Retroceso_sube_por_bala_y_respeta_el_tope	Passed	
+Sin_retroceso_la_mira_no_se_mueve	Passed	
+Tiros_para_matar	Passed	
+Empate_en_bajas_desempata_por_muertes	Passed	
+Empate_total_gana_el_que_llego_primero	Passed	
+Gana_al_llegar_a_25_bajas	Passed	
+Mas_bajas_va_primero	Passed	
+Ordena_la_tabla	Passed	
+Quien_suma_la_baja	Passed	
+Cada_categoria_del_ranking_existe_en_la_base	Passed	
+Formatos_del_ranking("bajas",1204,"1.204")	Passed	
+Formatos_del_ranking("kda",1.789d,"1,79")	Passed	
+Formatos_del_ranking("precision",55.55d,"55,6 %")	Passed	
+Formatos_del_ranking("mejor_reaccion",650,"0,65 s")	Passed	
+Grupos_y_orden_del_ranking	Passed	
+Invasion_se_suma_aparte	Passed	
+Invasion_se_une_y_lo_viejo_arranca_en_cero	Passed	
+Kda_formula	Passed	
+Kda_sin_datos_y_sin_muertes	Passed	
+La_mejor_racha_es_el_maximo	Passed	
+La_misma_partida_no_se_suma_dos_veces	Passed	
+Leer_datos_rotos_o_viejos	Passed	
+Recuerda_solo_las_ultimas_30_partidas	Passed	
+Suma_por_modo_y_general	Passed	
+Unir_toma_el_maximo_y_junta_las_partidas	Passed	
+Danio_de_la_metralla_segun_la_distancia	Passed	
+Archivo_danado_se_recupera_de_la_copia	Passed	
+Archivo_y_copia_danados_arranca_de_cero	Passed	
+Borrar_una_clave_persiste	Passed	
+Documento_de_la_nube_ida_y_vuelta	Passed	
+Dos_juegos_no_se_pisan	Passed	
+El_modo_pruebas_usa_otro_archivo	Passed	
+Escritura_atomica_con_copia	Passed	
+Estadisticas_del_minijuego_se_unen	Passed	
+Formato_mas_nuevo_queda_intacto	Passed	
+Ida_y_vuelta_de_los_tres_tipos	Passed	
+Logros_se_juntan_en_el_guardado	Passed	
+Migracion_desde_PlayerPrefs	Passed	
+Tipo_distinto_devuelve_el_valor_por_defecto	Passed	
+BindingRefreshesWithUnityLocaleAndCanBeCleared	Passed	
+CatalogFallsBackToSpanishAndMarksUnknownKeys	Passed	
+CatalogRejectsMissingValuesAndDuplicateKeys	Passed	
+FormattingPreservesPlayerNamesAndUsesSelectedCulture	Passed	
+LanguagePreferenceIsIndependentOfPlayerDataAndSurvivesRestart	Passed	
+Cada_logro_existe_en_la_base	Passed	
+El_catalogo_tiene_9_de_cometas_y_16_de_combate	Passed	
+Guardados_de_otras_versiones_se_ajustan_al_catalogo	Passed	
+Juntar_toma_el_maximo_y_conserva_las_fechas	Passed	
+Los_cometas_no_desbloquean_logros_de_combate	Passed	
+Progreso_ida_y_vuelta_por_json	Passed	
+Solo_acepta_la_clave_publicable("sb_secret_fake",False)	Passed	
+Solo_acepta_la_clave_publicable("eyJ.legacy.jwt",False)	Passed	
+Solo_acepta_la_clave_publicable("sb_publishable_example",True)	Passed	
+Umbrales_de_combate	Passed	
+Umbrales_de_los_cometas	Passed	
+Un_contador_negativo_se_rechaza	Passed	
+Dos_miras_iguales_se_reconocen_y_un_cambio_se_detecta	Passed	
+Hay_cinco_colores_y_uno_propio	Passed	
+La_mira_por_defecto_es_la_de_la_US_171	Passed	
+Agrega_un_numero_si_el_nombre_ya_esta_en_la_sala	Passed	
+Limpia_los_espacios_de_mas	Passed	
+Rechaza_caracteres_raros	Passed	
+Valida_el_largo	Passed	
+Cada_baja_cura_50_en_deathmatch	Passed	
+Callejero_sin_rivales_mordida_y_marca	Passed	
+Deathmatch	Passed	
+Dispositivo	Passed	
+Economia_del_Tactico	Passed	
+Granadas_de_humo_y_flash	Passed	
+Habilidades	Passed	
+Proteccion_al_reaparecer	Passed	
+Recarga_y_cargas_de_cada_habilidad("Trasbordo",10.0f,2)	Passed	
+Recarga_y_cargas_de_cada_habilidad("Barrera",20.0f,1)	Passed	
+Recarga_y_cargas_de_cada_habilidad("VistaAerea",30.0f,1)	Passed	
+Recarga_y_cargas_de_cada_habilidad("Callejero",25.0f,1)	Passed	
+Rondas_del_Tactico	Passed	
+US349_CA1_Todo_texto_tiene_traduccion	Passed	
+US349_CA2_Datos_insertados_iguales	Passed	
+US349_CA3_Sin_textos_en_espanol_en_el_codigo	Passed	
+Acepta_la_v_adelante_y_detecta_experimental	Passed	
+Compara_por_numero_y_no_por_texto	Passed	
+Experimental_2_es_menor_que_experimental_10	Passed	
+Los_formatos_invalidos_se_rechazan("sprint-1")	Passed	
+Los_formatos_invalidos_se_rechazan("experimental-1")	Passed	
+Los_formatos_invalidos_se_rechazan("launcher")	Passed	
+Los_formatos_invalidos_se_rechazan("1.0")	Passed	
+Los_formatos_invalidos_se_rechazan("0.2.0-exp.01")	Passed	
+Los_formatos_invalidos_se_rechazan("0.2.0 exp.10")	Passed	
+Los_formatos_invalidos_se_rechazan("")	Passed	
+Una_estable_es_mayor_que_su_experimental	Passed	
+RequiredTest	Passed	
+FIN passed=126 failed=0

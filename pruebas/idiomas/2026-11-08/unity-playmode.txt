@@ -1,0 +1,15 @@
+US347_CA1_Menu_principal	Passed	
+US347_CA2_Opciones	Passed	
+US347_CA3_Perfil	Passed	
+US347_CA4_Logros	Passed	
+US347_CA5_Estacion_y_Tienda	Passed	
+US347_CA6_Seleccion_de_modo	Passed	
+US347_CA7_Creditos	Passed	
+US347_CA8_Pausa	Passed	
+US348_CA1_Invasion_HUD_y_oleada	Passed	
+US348_CA2_Invasion_eleccion_de_cartas	Passed	
+US348_CA3_Invasion_resultado	Passed	
+US348_CA4_Deathmatch	Passed	
+US348_CA5_Tactico	Passed	
+US348_CA6_Practica_tutorial_y_tienda	Passed	
+FIN passed=14 failed=0
