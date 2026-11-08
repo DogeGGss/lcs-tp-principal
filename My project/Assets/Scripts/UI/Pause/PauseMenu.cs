@@ -110,6 +110,7 @@ public class PauseMenu : MonoBehaviour
     private UIImage exitButton, cancelButton, confirmLine;
     private TextMeshProUGUI exitLabel, cancelLabel, confirmTitle;
 
+    private TextMeshProUGUI languageValue;
     private int selected, settingSelected, exitSelected = 1, screenMode;
     private float savedTimeScale = 1f;
     private readonly List<Behaviour> blocked = new List<Behaviour>();
@@ -120,6 +121,26 @@ public class PauseMenu : MonoBehaviour
     // Ciclo de vida
     // =====================================================================
 
+    private string LanguageName()
+    {
+        foreach (var language in L10n.Languages) if (language.code == L10n.LanguageCode) return language.name;
+        return "Español";
+    }
+    private void NextLanguage()
+    {
+        var languages = L10n.Languages;
+        int index = 0;
+        for (int i = 0; i < languages.Count; i++) if (languages[i].code == L10n.LanguageCode) index = i;
+        L10n.SetLanguage(languages[(index + 1) % languages.Count].code);
+    }
+    private void RefreshLanguage()
+    {
+        if (languageValue != null) languageValue.text = LanguageName() + "  ›";
+        RefreshTexts();
+        if (Current == Panel.Exit || Current == Panel.Restart) SetConfirmTexts(Current == Panel.Restart);
+
+    }
+
     private void Awake()
     {
         Instance = this;
@@ -128,6 +149,7 @@ public class PauseMenu : MonoBehaviour
         col2Color = Rgb(18, 21, 28, DarkAlpha(0.92f));
         badSelected = Over(Rgb(255, 92, 92, 0.13f), PanelBase);
         BuildCanvas();
+        L10n.LanguageChanged += RefreshLanguage;
         root.gameObject.SetActive(false);
     }
 
@@ -145,6 +167,7 @@ public class PauseMenu : MonoBehaviour
 
     private void OnDestroy()
     {
+        L10n.LanguageChanged -= RefreshLanguage;
         if (Instance != this) return;
         if (IsPaused) RestorePlayerControls();
         Instance = null;
@@ -583,21 +606,21 @@ public class PauseMenu : MonoBehaviour
     {
         string mode = MatchSettings.Mode == GameMode.Zombie ? "Invasión"
             : MatchSettings.Mode == GameMode.Deathmatch ? "Deathmatch" : "Táctico";
-        metaText.text = mode + (isMultiplayer ? " · Online" : "");
+        metaText.text = L10n.Source(mode,"ui.") + (isMultiplayer ? " · Online" : "");
 
-        statusText.text = isMultiplayer ? "La partida sigue" : "Partida en pausa";
+        L10n.BindSource(statusText, isMultiplayer ? "La partida sigue" : "Partida en pausa","ui.");
         statusText.color = isMultiplayer ? Accent : Ink;
         statusChip.color = isMultiplayer ? Over(Rgb(242, 154, 56, 0.14f), PanelBase) : ChipColor;
         statusDot.color = isMultiplayer ? Accent : Mute;
-        noteText.text = isMultiplayer
+        L10n.BindSource(noteText, isMultiplayer
             ? "El menú se ve solo en tu pantalla. Tu personaje queda quieto y puede recibir daño."
-            : "El tiempo, los enemigos y el audio están detenidos hasta que vuelvas.";
+            : "El tiempo, los enemigos y el audio están detenidos hasta que vuelvas.","ui.");
 
-        exitWarning.text = isMultiplayer
+        L10n.BindSource(exitWarning, isMultiplayer
             ? "Tu equipo se queda <color=#FF5C5C>con un jugador menos</color>."
             : MatchSettings.Mode == GameMode.Zombie
                 ? "Se pierde <color=#FF5C5C>el progreso de esta partida</color>. El récord guardado no cambia."
-                : "Se pierde <color=#FF5C5C>el progreso de esta partida</color>.";
+                : "Se pierde <color=#FF5C5C>el progreso de esta partida</color>.","ui.");
 
         shade.color = new Color(0f, 0f, 0f, DarkAlpha(isMultiplayer ? 0.45f : 0.6f));
     }
@@ -607,17 +630,17 @@ public class PauseMenu : MonoBehaviour
     {
         if (restart)
         {
-            confirmTitle.text = "¿Reiniciar la partida?";
-            exitLabel.text = "Reiniciar";
+            L10n.BindSource(confirmTitle, "¿Reiniciar la partida?","ui.");
+            L10n.BindSource(exitLabel, "Reiniciar","ui.");
             confirmLine.color = Accent;
-            exitWarning.text = MatchSettings.Mode == GameMode.Zombie
+            L10n.BindSource(exitWarning, MatchSettings.Mode == GameMode.Zombie
                 ? "Volvés a la primera oleada y se pierde <color=#F29A38>el progreso actual</color>."
-                : "Volvés al inicio de la partida y se pierde <color=#F29A38>el progreso actual</color>.";
+                : "Volvés al inicio de la partida y se pierde <color=#F29A38>el progreso actual</color>.","ui.");
         }
         else
         {
-            confirmTitle.text = "¿Salir de la partida?";
-            exitLabel.text = "Salir";
+            L10n.BindSource(confirmTitle, "¿Salir de la partida?","ui.");
+            L10n.BindSource(exitLabel, "Salir","ui.");
             confirmLine.color = Bad;
             RefreshTexts();
         }
@@ -743,7 +766,7 @@ public class PauseMenu : MonoBehaviour
         col1 = Column("Columna1", 0f, Col1W, PanelColor);
         float w = Col1W - PadX * 2f;
 
-        Text(Place(Node("Titulo", col1), PadX, PadTop, w, 84f), displayFont, 84f, Ink, TextAlignmentOptions.MidlineLeft, 2f, true).text = "Pausa";
+        L10n.BindSource(Text(Place(Node("Titulo", col1), PadX, PadTop, w, 84f), displayFont, 84f, Ink, TextAlignmentOptions.MidlineLeft, 2f, true), "Pausa","ui.");
         metaText = Text(Place(Node("Modo", col1), PadX, 150f, w, 26f), labelFont, 20f, Mute, TextAlignmentOptions.MidlineLeft, 16f, true);
         Image(Place(Node("LineaAnden", col1), PadX, 192f, 150f, 3f), null, Accent);
 
@@ -768,7 +791,7 @@ public class PauseMenu : MonoBehaviour
             option.key = Text(Stretch(Node("Numero", option.chip.rectTransform)), displayFont, 20f, Ink, TextAlignmentOptions.Center);
             option.key.text = (i + 1).ToString();
             option.label = Text(Place(Node("Texto", row), 80f, 0f, w - 60f, OptionH), displayFont, 33f, Ink, TextAlignmentOptions.MidlineLeft, 6f, true);
-            option.label.text = labels[i];
+            L10n.BindSource(option.label, labels[i],"ui.");
             options.Add(option);
 
             ShopPointerTarget pointer = row.gameObject.AddComponent<ShopPointerTarget>();
@@ -785,7 +808,7 @@ public class PauseMenu : MonoBehaviour
         settingsGroup = colSettings.GetComponent<CanvasGroup>();
         float w = Col2W - PadX * 2f;
 
-        Text(Place(Node("Titulo", colSettings), PadX, PadTop, w, 56f), displayFont, 50f, Ink, TextAlignmentOptions.MidlineLeft, 2f, true).text = "Configuración";
+        L10n.BindSource(Text(Place(Node("Titulo", colSettings), PadX, PadTop, w, 56f), displayFont, 50f, Ink, TextAlignmentOptions.MidlineLeft, 2f, true), "Configuración","ui.");
         Image(Place(Node("LineaAnden", colSettings), PadX, 130f, 150f, 3f), null, Accent);
 
         float y = 160f;
@@ -803,13 +826,14 @@ public class PauseMenu : MonoBehaviour
         OpenRow("Mira", "Personalizar mira", ref y, () => Show(Panel.Crosshair)); // US 172
         Group("Teclas", ref y);
         OpenRow("Controles", "Cambiar teclas", ref y, () => Show(Panel.Controls));
+        languageValue = OpenRow("Idioma", LanguageName(), ref y, NextLanguage);
 
         RectTransform back = Bottom(Node("Volver", colSettings), PadX, 90f, 150f, 52f);
         ButtonBox(back, "Volver", () => Back());
         RectTransform reset = Bottom(Node("Restablecer", colSettings), PadX + 166f, 90f, 190f, 52f);
         ButtonBox(reset, "Restablecer", ResetSettings);
         savedText = Text(Bottom(Node("Guardado", colSettings), PadX + 372f, 90f, 120f, 52f), labelFont, 17f, Ok, TextAlignmentOptions.MidlineLeft, 12f, true);
-        savedText.text = "Guardado";
+        L10n.BindSource(savedText, "Guardado","ui.");
         savedText.alpha = 0f;
 
         BuildShortcuts(colSettings, new[] { ("Flechas", "Elegir y cambiar"), ("Retroceso", "Volver") });
@@ -817,21 +841,23 @@ public class PauseMenu : MonoBehaviour
     }
 
     // Fila que abre otra pantalla: Configuración > Controles (teclas, sensibilidad al apuntar, eje Y).
-    private void OpenRow(string title, string action, ref float y, System.Action open)
+    private TextMeshProUGUI OpenRow(string title, string action, ref float y, System.Action open)
     {
         int index = settingRows.Count;
         RectTransform row = Place(Node(title, colSettings), PadX - 12f, y, Col2W - PadX * 2f + 24f, SetRowH);
         SettingRow setting = new SettingRow { activate = open };
         setting.bg = Image(row, rounded, Clear, 4f, true);
-        Text(Place(Node("Nombre", row), 12f, 0f, 190f, SetRowH), labelFont, 23f, Ink, TextAlignmentOptions.MidlineLeft, 5f, true).text = title;
+        L10n.BindSource(Text(Place(Node("Nombre", row), 12f, 0f, 190f, SetRowH), labelFont, 23f, Ink, TextAlignmentOptions.MidlineLeft, 5f, true), title,"ui.");
         UIImage chip = Image(Place(Node("Boton", row), 210f, (SetRowH - 34f) / 2f, 200f, 34f), rounded, ChipColor, 3f, true);
-        Text(Stretch(Node("Texto", chip.rectTransform)), labelFont, 17f, Ink, TextAlignmentOptions.Center, 8f, true).text = action + "  ›";
+        var actionText = Text(Stretch(Node("Texto", chip.rectTransform)), labelFont, 17f, Ink, TextAlignmentOptions.Center, 8f, true);
+        L10n.BindSource(actionText,L10n.Source(action,"ui.") + "  ›","ui.");
         settingRows.Add(setting);
 
         ShopPointerTarget pointer = row.gameObject.AddComponent<ShopPointerTarget>();
         pointer.Hovered = () => { settingSelected = index; Render(); };
         pointer.Clicked = open;
         y += SetRowH;
+        return actionText;
     }
 
     // La misma pestaña Controles del menú principal (US 155), dentro de la pausa.
@@ -891,7 +917,7 @@ public class PauseMenu : MonoBehaviour
     private void Group(string title, ref float y)
     {
         y += 14f;
-        Text(Place(Node("Grupo", colSettings), PadX, y, 300f, 24f), labelFont, 17f, Mute, TextAlignmentOptions.MidlineLeft, 16f, true).text = title;
+        L10n.BindSource(Text(Place(Node("Grupo", colSettings), PadX, y, 300f, 24f), labelFont, 17f, Mute, TextAlignmentOptions.MidlineLeft, 16f, true), title,"ui.");
         y += 30f;
     }
 
@@ -902,7 +928,7 @@ public class PauseMenu : MonoBehaviour
         RectTransform row = Place(Node(title, colSettings), PadX - 12f, y, Col2W - PadX * 2f + 24f, SetRowH);
         SettingRow setting = new SettingRow { step = step };
         setting.bg = Image(row, rounded, Clear, 4f, true);
-        Text(Place(Node("Nombre", row), 12f, 0f, 190f, SetRowH), labelFont, 23f, Ink, TextAlignmentOptions.MidlineLeft, 5f, true).text = title;
+        L10n.BindSource(Text(Place(Node("Nombre", row), 12f, 0f, 190f, SetRowH), labelFont, 23f, Ink, TextAlignmentOptions.MidlineLeft, 5f, true), title,"ui.");
         setting.value = Text(Place(Node("Valor", row), row.sizeDelta.x - 82f, 0f, 70f, SetRowH), labelFont, 21f, Ink, TextAlignmentOptions.MidlineRight);
         setting.slider = BuildSlider(row, 210f, 250f, min, max, whole);
         setting.slider.onValueChanged.AddListener(v => onChange(v, setting.value));
@@ -919,7 +945,7 @@ public class PauseMenu : MonoBehaviour
         RectTransform row = Place(Node("ModoPantalla", colSettings), PadX - 12f, y, Col2W - PadX * 2f + 24f, SetRowH);
         SettingRow setting = new SettingRow { segs = new UIImage[3], segLabels = new TextMeshProUGUI[3] };
         setting.bg = Image(row, rounded, Clear, 4f, true);
-        Text(Place(Node("Nombre", row), 12f, 0f, 190f, SetRowH), labelFont, 23f, Ink, TextAlignmentOptions.MidlineLeft, 5f, true).text = "Pantalla";
+        L10n.BindSource(Text(Place(Node("Nombre", row), 12f, 0f, 190f, SetRowH), labelFont, 23f, Ink, TextAlignmentOptions.MidlineLeft, 5f, true), "Pantalla","ui.");
 
         string[] names = { "Ventana", "Sin bordes", "Completa" };
         float[] widths = { 96f, 116f, 106f };
@@ -930,7 +956,7 @@ public class PauseMenu : MonoBehaviour
             RectTransform seg = Place(Node(names[i], row), x, (SetRowH - 34f) / 2f, widths[i], 34f);
             setting.segs[i] = Image(seg, rounded, ChipColor, 3f, true);
             setting.segLabels[i] = Text(Stretch(Node("Texto", seg)), labelFont, 17f, Mute, TextAlignmentOptions.Center, 8f, true);
-            setting.segLabels[i].text = names[i];
+            L10n.BindSource(setting.segLabels[i], names[i],"ui.");
             seg.gameObject.AddComponent<ShopPointerTarget>().Clicked = () => SetScreenMode(mode);
             x += widths[i] + 4f;
         }
@@ -988,7 +1014,7 @@ public class PauseMenu : MonoBehaviour
         float w = Col2W - PadX * 2f;
 
         confirmTitle = Text(Place(Node("Titulo", colExit), PadX, PadTop, w, 56f), displayFont, 46f, Ink, TextAlignmentOptions.MidlineLeft, 2f, true);
-        confirmTitle.text = "¿Salir de la partida?";
+        L10n.BindSource(confirmTitle, "¿Salir de la partida?","ui.");
         confirmLine = Image(Place(Node("LineaAnden", colExit), PadX, 130f, 150f, 3f), null, Bad);
 
         exitWarning = Text(Place(Node("Aviso", colExit), PadX, 160f, w, 70f), bodyFont, 23f, Ink, TextAlignmentOptions.TopLeft);
@@ -997,7 +1023,7 @@ public class PauseMenu : MonoBehaviour
         RectTransform exitRect = Place(Node("BotonSalir", colExit), PadX, 250f, 150f, 56f);
         exitButton = Image(exitRect, rounded, Bad, 4f, true);
         exitLabel = Text(Stretch(Node("Texto", exitRect)), displayFont, 22f, KeyInk, TextAlignmentOptions.Center, 10f, true);
-        exitLabel.text = "Salir";
+        L10n.BindSource(exitLabel, "Salir","ui.");
         ShopPointerTarget exitPointer = exitRect.gameObject.AddComponent<ShopPointerTarget>();
         exitPointer.Hovered = () => { exitSelected = 0; Render(); };
         exitPointer.Clicked = Confirm;
@@ -1005,7 +1031,7 @@ public class PauseMenu : MonoBehaviour
         RectTransform cancelRect = Place(Node("BotonCancelar", colExit), PadX + 166f, 250f, 180f, 56f);
         cancelButton = Image(cancelRect, rounded, ChipDim, 4f, true);
         cancelLabel = Text(Stretch(Node("Texto", cancelRect)), displayFont, 22f, Ink, TextAlignmentOptions.Center, 10f, true);
-        cancelLabel.text = "Cancelar";
+        L10n.BindSource(cancelLabel, "Cancelar","ui.");
         ShopPointerTarget cancelPointer = cancelRect.gameObject.AddComponent<ShopPointerTarget>();
         cancelPointer.Hovered = () => { exitSelected = 1; Render(); };
         cancelPointer.Clicked = () => Back();
@@ -1017,7 +1043,7 @@ public class PauseMenu : MonoBehaviour
     private UIImage ButtonBox(RectTransform rect, string label, System.Action onClick)
     {
         UIImage image = Image(rect, rounded, ChipColor, 4f, true);
-        Text(Stretch(Node("Texto", rect)), displayFont, 20f, Ink, TextAlignmentOptions.Center, 10f, true).text = label;
+        L10n.BindSource(Text(Stretch(Node("Texto", rect)), displayFont, 20f, Ink, TextAlignmentOptions.Center, 10f, true), label,"ui.");
         ShopPointerTarget pointer = rect.gameObject.AddComponent<ShopPointerTarget>();
         pointer.Hovered = () => image.color = ChipDim;
         pointer.Exited = () => image.color = ChipColor;
@@ -1037,7 +1063,7 @@ public class PauseMenu : MonoBehaviour
             TextMeshProUGUI keyText = Text(Stretch(Node("Tecla", chip)), displayFont, 15f, Ink, TextAlignmentOptions.Center);
             keyText.text = key;
             TextMeshProUGUI labelText = Text(Node("Nombre", column), labelFont, 15f, Mute, TextAlignmentOptions.MidlineLeft, 12f, true);
-            labelText.text = label;
+            L10n.BindSource(labelText, label,"ui.");
             chips.Add((chip, labelText, Mathf.Max(26f, Width(keyText, key) + 14f), Width(labelText, label)));
         }
 

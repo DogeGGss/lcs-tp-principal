@@ -28,8 +28,8 @@ public class LugarDeSuministros : MonoBehaviour
     public static string NombreDe(string objeto)
     {
         Match m = Modulo.Match(objeto);
-        if (m.Success) return "el Módulo " + m.Groups[1].Value + m.Groups[2].Value.ToUpperInvariant();
-        if (objeto.StartsWith("Biblioteca")) return "la Biblioteca";
+        if (m.Success) return L10n.T("gameplay.place.module_fmt", m.Groups[1].Value + m.Groups[2].Value.ToUpperInvariant());
+        if (objeto.StartsWith("Biblioteca")) return L10n.T("gameplay.place.library");
         if (objeto == "Patio_Bar") return "el Bar"; // el patio de la galería del Módulo 9
         return null;
     }

@@ -494,7 +494,7 @@ public static class PerfilDatos
     /// </summary>
     public static void Abrir(int cantidad, Action<List<Resultado>, string> listo)
     {
-        string falta = cantidad == 1 ? "No tenés boletos: canjeá créditos o cristales" : $"Te faltan boletos para abrir {cantidad}";
+        string falta = cantidad == 1 ? L10n.Source("No tenés boletos: canjeá créditos o cristales", "profile.") : L10n.T("profile.tickets.missing_fmt", cantidad);
         Gastar(Mover("capsula", boletos: -cantidad), falta, error => listo?.Invoke(error == null ? Sortear(cantidad) : null, error));
     }
 

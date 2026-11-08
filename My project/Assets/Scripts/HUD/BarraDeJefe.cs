@@ -87,7 +87,7 @@ public class BarraDeJefe : MonoBehaviour
         TextMeshProUGUI texto = Texto("Nombre", caja, nombre, titulo, 22f, ShopUIKit.Ink, TextAlignmentOptions.BottomLeft);
         nombreTexto = texto;
         texto.characterSpacing = 6f;
-        valor = Texto("Vida", caja, "", etiqueta, 16f, ShopUIKit.Mute, TextAlignmentOptions.BottomRight);
+        valor = Texto(L10n.T("gameplay.ui.health"), caja, "", etiqueta, 16f, ShopUIKit.Mute, TextAlignmentOptions.BottomRight);
 
         // La barra: fondo, tramo claro, vida y la marca de la furia.
         var fondo = Rect("Fondo", caja);
@@ -97,7 +97,7 @@ public class BarraDeJefe : MonoBehaviour
         fondo.sizeDelta = new Vector2(0f, Alto);
         Imagen(fondo, ShopUIKit.HudColor, redondo);
         tramo = Lleno("Tramo", fondo, ShopUIKit.Hot, redondo);
-        relleno = Lleno("Vida", fondo, ShopUIKit.Accent, redondo);
+        relleno = Lleno(L10n.T("gameplay.ui.health"), fondo, ShopUIKit.Accent, redondo);
         imagenRelleno = relleno.GetComponent<Image>();
 
         marca = Rect("Marca de la furia", fondo);
@@ -132,7 +132,7 @@ public class BarraDeJefe : MonoBehaviour
     public void Enfurecer()
     {
         PonerColor(ShopUIKit.Bad);
-        if (nombreTexto != null) nombreTexto.text = $"{nombre}  <color=#FF5C5C>FURIA</color>";
+        if (nombreTexto != null) nombreTexto.text = L10n.T("gameplay.hud.fury", nombre);
     }
 
     public void PonerColor(Color color)

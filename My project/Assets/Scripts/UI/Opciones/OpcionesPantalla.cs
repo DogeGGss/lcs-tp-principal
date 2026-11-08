@@ -95,6 +95,7 @@ public class OpcionesPantalla : MonoBehaviour
             paneles.Add(panel.gameObject);
         }
         CrearPestañaMira();
+        CrearPestañaIdioma();
         desplegables = GetComponentsInChildren<TMP_Dropdown>(true);
 
         // CA6: "Volver" pasa por acá para revisar si hay cambios sin aplicar.
@@ -185,7 +186,7 @@ public class OpcionesPantalla : MonoBehaviour
             Img fondo = Image(celda, PerfilUI.Rounded, Color.clear, 6f, true);
             string nombre = NombrePestaña(i);
             TextMeshProUGUI texto = Text(Stretch(Node("Texto", celda)), PerfilUI.FTitulo, 28f, Mute, TextAlignmentOptions.Center, 6f, true);
-            texto.text = nombre;
+            L10n.BindSource(texto,nombre,"ui.");
             float ancho = Width(texto, nombre.ToUpperInvariant());
             Img linea = Image(Place(Node("Linea", celda), (w - 8f - ancho) / 2f, h - 9f, ancho, 3f), null, Accent);
             ShopPointerTarget puntero = celda.gameObject.AddComponent<ShopPointerTarget>();
@@ -207,6 +208,7 @@ public class OpcionesPantalla : MonoBehaviour
             case "BtnControles": return "Controles";
             case "BtnSonido": return "Sonido";
             case "BtnMira": return "Mira";
+            case "BtnIdioma": return "Idioma";
         }
         TMP_Text t = b != null ? b.GetComponentInChildren<TMP_Text>(true) : null;
         return t != null ? t.text : "";
@@ -243,6 +245,7 @@ public class OpcionesPantalla : MonoBehaviour
 
     private void OnDisable()
     {
+        if (panelIdioma != null) panelIdioma.SetActive(false);
         if (panelMira != null) panelMira.SetActive(false); // el menú solo apaga las tres pestañas de la escena
         CerrarDialogo();
         if (lienzo != null) lienzo.SetActive(false);
@@ -298,7 +301,7 @@ public class OpcionesPantalla : MonoBehaviour
         rect.anchoredPosition = rectUltimo.anchoredPosition + paso;
         rect.SetSiblingIndex(rectUltimo.GetSiblingIndex() + 1);
         TMP_Text texto = clon.GetComponentInChildren<TMP_Text>(true);
-        if (texto != null) texto.text = texto.text == texto.text.ToUpperInvariant() ? "MIRA" : "Mira";
+        if (texto != null) L10n.BindSource(texto, texto.text == texto.text.ToUpperInvariant() ? "MIRA" : "Mira","ui.");
 
         panelMira = new GameObject("PanelMira", typeof(RectTransform));
         panelMira.layer = ultimoPanel.layer;
@@ -321,6 +324,36 @@ public class OpcionesPantalla : MonoBehaviour
 
         pestañas.Add(boton);
         paneles.Add(panelMira);
+    }
+
+    private GameObject panelIdioma;
+
+    private void CrearPestañaIdioma()
+    {
+        if (panelIdioma != null || pestañas.Count == 0) return;
+        UnityEngine.UI.Button ultimo = pestañas[pestañas.Count - 1];
+        if (ultimo == null) return;
+        GameObject clon = Instantiate(ultimo.gameObject, ultimo.transform.parent);
+        clon.name = "BtnIdioma";
+        TMP_Text texto = clon.GetComponentInChildren<TMP_Text>(true);
+        if (texto != null) L10n.BindSource(texto,"Idioma","ui.");
+        panelIdioma = new GameObject("PanelIdioma",typeof(RectTransform));
+        panelIdioma.layer = paneles[paneles.Count - 1].layer;
+        panelIdioma.SetActive(false);
+        panelIdioma.transform.SetParent(paneles[paneles.Count - 1].transform.parent,false);
+        panelIdioma.AddComponent<IdiomaUIController>();
+        foreach (UnityEngine.UI.Button b in pestañas)
+            if (b != null) b.onClick.AddListener(() => panelIdioma.SetActive(false));
+        var otros = new List<GameObject>(paneles);
+        var boton = clon.GetComponent<UnityEngine.UI.Button>();
+        boton.onClick = new UnityEngine.UI.Button.ButtonClickedEvent();
+        boton.onClick.AddListener(() =>
+        {
+            foreach (GameObject p in otros) p.SetActive(false);
+            panelIdioma.SetActive(true);
+        });
+        pestañas.Add(boton);
+        paneles.Add(panelIdioma);
     }
 
     private int PestañaActual()
@@ -392,7 +425,7 @@ public class OpcionesPantalla : MonoBehaviour
     /// <summary>CA4: pide confirmación antes de restablecer una pestaña.</summary>
     public void ConfirmarRestablecer(string pestaña, System.Action restablecer)
     {
-        Preguntar("¿Restablecer " + pestaña + "?",
+        Preguntar(L10n.T("ui.options.reset_confirm", L10n.Source(pestaña,"ui.")),
             "Los valores de esta pestaña vuelven a los de fábrica y se guardan.",
             new[] { ("Restablecer", true), ("Cancelar", false) },
             new System.Action[] { () => { restablecer?.Invoke(); AvisarGuardado(); }, null });
@@ -415,7 +448,7 @@ public class OpcionesPantalla : MonoBehaviour
         ArmarLienzo();
         lienzo.SetActive(true);
         ventana.gameObject.SetActive(true);
-        tituloVentana.text = titulo;
+        L10n.BindSource(tituloVentana, titulo,"ui.");
         textoVentana.text = texto;
 
         for (int i = botones.childCount - 1; i >= 0; i--) Destroy(botones.GetChild(i).gameObject);
@@ -470,7 +503,7 @@ public class OpcionesPantalla : MonoBehaviour
         avisoRect.anchoredPosition = new Vector2(0f, 60f);
         avisoRect.sizeDelta = new Vector2(600f, 40f);
         aviso = Text(avisoRect, labelFont, 22f, Ok, TextAlignmentOptions.Center, 12f, true);
-        aviso.text = "Cambios guardados";
+        L10n.BindSource(aviso, "Cambios guardados","ui.");
         aviso.alpha = 0f;
 
         // Ventana
@@ -490,7 +523,7 @@ public class OpcionesPantalla : MonoBehaviour
 
         botones = Place(Node("Botones", panel), 48f, H - 48f - 56f, W - 96f, 56f);
         TextMeshProUGUI ayuda = Text(Place(Node("Ayuda", panel), 48f, H - 30f, W - 96f, 20f), labelFont, 14f, Mute, TextAlignmentOptions.MidlineLeft, 10f, true);
-        ayuda.text = "Enter  Aceptar     Esc  Cancelar";
+        L10n.BindSource(ayuda, "Enter  Aceptar     Esc  Cancelar","ui.");
         ayuda.rectTransform.anchoredPosition += new Vector2(0f, 8f);
 
         ventana.gameObject.SetActive(false);
@@ -502,7 +535,7 @@ public class OpcionesPantalla : MonoBehaviour
         RectTransform rect = Place(Node(etiqueta, padre), x, y, w, h);
         Color normal = principal ? Accent : ChipColor;
         Img fondo = Image(rect, rounded, normal, 6f, true);
-        Text(Stretch(Node("Texto", rect)), displayFont, 22f, principal ? KeyInk : Ink, TextAlignmentOptions.Center, 10f, true).text = etiqueta;
+        L10n.BindSource(Text(Stretch(Node("Texto", rect)), displayFont, 22f, principal ? KeyInk : Ink, TextAlignmentOptions.Center, 10f, true), etiqueta,"ui.");
         ShopPointerTarget puntero = rect.gameObject.AddComponent<ShopPointerTarget>();
         puntero.Hovered = () => fondo.color = principal ? Hot : ChipDim;
         puntero.Exited = () => fondo.color = normal;

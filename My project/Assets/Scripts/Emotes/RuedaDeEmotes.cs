@@ -267,11 +267,11 @@ public class RuedaDeEmotes : MonoBehaviour
         {
             CatalogoDeEmotes.Emote e = catalogo.De(EmotesEquipados.En(i));
             bool conIcono = e != null && e.icono != null;
-            nombres[i].text = e == null ? "Vacío" : conIcono ? "" : e.nombre; // con ícono, el nombre va en el centro
+            nombres[i].text = e == null ? L10n.T("gameplay.ui.empty") : conIcono ? "" : e.nombre; // con ícono, el nombre va en el centro
             iconos[i].sprite = conIcono ? e.icono : null;
             iconos[i].enabled = conIcono;
         }
-        aviso.text = EmotesEquipados.Alguno ? "" : "No tenés emotes equipados: equipalos desde tu perfil.";
+        aviso.text = EmotesEquipados.Alguno ? "" : L10n.T("gameplay.ui.you_have_no_emotes_equipped_equip_them_from_your_profile");
         flecha.gameObject.SetActive(false);
         Pintar();
         raiz.gameObject.SetActive(true);
@@ -299,7 +299,7 @@ public class RuedaDeEmotes : MonoBehaviour
         }
         CatalogoDeEmotes.Emote e = marcado >= 0 ? CatalogoDeEmotes.Actual.De(EmotesEquipados.En(marcado)) : null;
         elegido.text = e != null ? e.nombre : "";
-        ayuda.text = e != null ? "Soltá " + KeyBindings.Label(GameAction.Emotes) : "Mové el mouse";
+        ayuda.text = e != null ? "Soltá " + KeyBindings.Label(GameAction.Emotes) : L10n.T("gameplay.ui.move_the_mouse");
     }
 
     private void OnDisable()

@@ -97,7 +97,7 @@ public class PantallaDeCarga : MonoBehaviour
     {
         Crear();
         string nombreModo = modo == GameMode.Tactico ? "Modo Táctico" : modo == GameMode.Deathmatch ? "Deathmatch" : "Modo Invasión";
-        actual.Mostrar(escena, nombreModo, mapa, string.IsNullOrEmpty(sala) ? "" : "Sala " + sala, imagen, modo, true);
+        actual.Mostrar(escena, nombreModo, mapa, string.IsNullOrEmpty(sala) ? "" : L10n.T("ui.loading.room_fmt", sala), imagen, modo, true);
         if (PhotonNetwork.CurrentRoom != null) actual.ultimaPartida = PhotonNetwork.CurrentRoom.Name + "/" + escena;
         // Lo que quedó de una partida anterior no cuenta.
         if (PhotonNetwork.LocalPlayer != null)
@@ -125,8 +125,8 @@ public class PantallaDeCarga : MonoBehaviour
         if (imagen != null) ajusteMapa.aspectRatio = imagen.rect.width / imagen.rect.height;
         consejoCaja.SetActive(consejosDe.HasValue);
         if (consejosDe.HasValue) consejoTexto.text = Consejo(consejosDe.Value); // CA3
-        listosTexto.text = "";
-        pieTexto.text = "";
+        L10n.BindSource(listosTexto, "","ui.");
+        L10n.BindSource(pieTexto, "","ui.");
         PonerAvance(0f);
         raiz.SetActive(true);
     }
@@ -214,9 +214,9 @@ public class PantallaDeCarga : MonoBehaviour
                 if (p.IsMasterClient) anfitrionListo = true;
             }
         listos = Mathf.Max(listos, 1);
-        listosTexto.text = $"<color=#3DDC97>{listos} / {total}</color> listos";
-        pieTexto.text = !anfitrionListo ? "Esperando al anfitrión  ·  la partida empieza cuando termine de cargar"
-            : listos < total ? "Esperando a los demás jugadores  ·  la partida empieza cuando cargaron todos" : "";
+        listosTexto.text = L10n.T("ui.loading.ready",listos,total);
+        L10n.BindSource(pieTexto, !anfitrionListo ? "Esperando al anfitrión  ·  la partida empieza cuando termine de cargar"
+            : listos < total ? "Esperando a los demás jugadores  ·  la partida empieza cuando cargaron todos" : "","ui.");
 
         // Los 20 s son para no esperar a otro jugador colgado. Al anfitrión se lo espera siempre: es el que arranca la
         // partida, y sin él los demás quedaban caminando por el mapa y empezaban la ronda desde donde estuvieran.
@@ -297,6 +297,7 @@ public class PantallaDeCarga : MonoBehaviour
         lista.AddRange(modo == GameMode.Tactico ? ConsejosTactico : modo == GameMode.Deathmatch ? ConsejosDeathmatch : ConsejosZombie);
         string texto = lista[Random.Range(0, lista.Count)];
         // {Recargar} se cambia por la tecla que el jugador tiene para esa acción.
+        texto = L10n.Source(texto,"ui.");
         foreach (GameAction accion in KeyBindings.All)
         {
             string marca = "{" + accion + "}";
@@ -358,7 +359,7 @@ public class PantallaDeCarga : MonoBehaviour
         consejoCaja = caja.gameObject;
         Image(caja, rounded, Rgb(10, 12, 17, 0.86f), 8f);
         Image(Place(Node("Borde", caja), 0f, 0f, 3f, 136f), null, Accent);
-        Text(Place(Node("Titulo", caja), 28f, 18f, 400f, 20f), labelFont, 15f, Mute, TextAlignmentOptions.MidlineLeft, 16f, true).text = "Consejo";
+        L10n.BindSource(Text(Place(Node("Titulo", caja), 28f, 18f, 400f, 20f), labelFont, 15f, Mute, TextAlignmentOptions.MidlineLeft, 16f, true), "Consejo","ui.");
         consejoTexto = Text(Place(Node("Texto", caja), 28f, 46f, 764f, 76f), bodyFont, 23f, Soft, TextAlignmentOptions.TopLeft);
         consejoTexto.textWrappingMode = TextWrappingModes.Normal;
         consejoTexto.lineSpacing = 12f;
@@ -388,7 +389,7 @@ public class PantallaDeCarga : MonoBehaviour
         int hasta = Mathf.RoundToInt(avance * Durmientes);
         for (int i = 0; i < Durmientes; i++) durmientes[i].color = i < hasta ? Ink : White(0.16f);
         string que = escena == EscenaMenu ? "Cargando el menú" : "Cargando el mapa";
-        estadoTexto.text = avance >= 1f && online ? "Mapa cargado" : $"{que} <color=#F29A38>{Mathf.RoundToInt(avance * 100f)} %</color>";
+        estadoTexto.text = avance >= 1f && online ? L10n.Source("Mapa cargado","ui.") : $"{L10n.Source(que,"ui.")} <color=#F29A38>{Mathf.RoundToInt(avance * 100f)} %</color>";
     }
 
     private void Girar()

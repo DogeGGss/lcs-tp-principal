@@ -536,26 +536,26 @@ public class MenuRiftwalker : MonoBehaviour
 
         if (conError)
         {
-            rotuloVolver.text = "No se pudo volver";
+            rotuloVolver.text = L10n.T("profile.menu.return_failed");
             rotuloVolver.color = Bad;
             salaVolver.text = errorVolver;
             salaVolver.color = Bad;
             detalleVolver.text = "";
             return;
         }
-        rotuloVolver.text = "Partida en curso";
+        rotuloVolver.text = L10n.T("profile.menu.in_progress");
         rotuloVolver.color = Accent;
         salaVolver.color = Ink;
         if (volviendo)
         {
-            salaVolver.text = "Volviendo…";
+            salaVolver.text = L10n.T("profile.menu.rejoining");
             detalleVolver.text = "";
             return;
         }
         int s = Mathf.CeilToInt(partida.restante);
         // Las salas privadas tienen un código de 5 letras; las de buscar partida (F28), un nombre largo que no sirve mostrar.
-        salaVolver.text = partida.sala.Length == 5 ? "Sala " + partida.sala : "Partida pública";
-        detalleVolver.text = $"Podés volver durante {s / 60}:{s % 60:00}";
+        salaVolver.text = partida.sala.Length == 5 ? L10n.T("profile.menu.room_fmt", partida.sala) : L10n.T("profile.menu.public_match");
+        detalleVolver.text = L10n.T("profile.menu.rejoin_window_fmt", s / 60, s % 60);
     }
 
     private void VolverALaPartida()
@@ -600,14 +600,14 @@ public class MenuRiftwalker : MonoBehaviour
         avatarMenu.sprite = PerfilDatos.Imagen(av);
         AjustarCubrir(avatarMenu, (RectTransform)avatarMenu.rectTransform.parent);
         marcoAvatar.color = Ink; // como en el Perfil: la rareza no cambia el color
-        nombreMenu.text = PlayerProfile.HasName ? PlayerProfile.Name : "Jugador";
-        tituloMenu.text = string.IsNullOrEmpty(ti.id) ? "Sin título" : ti.nombre;
+        nombreMenu.text = PlayerProfile.HasName ? PlayerProfile.Name : L10n.T("profile.player.default");
+        tituloMenu.text = string.IsNullOrEmpty(ti.id) ? L10n.T("profile.title.none") : L10n.Source(ti.nombre, "profile.");
         tituloMenu.color = string.IsNullOrEmpty(ti.id) ? Mute : Ink;
         int nuevos = PerfilDatos.CantidadNuevos(PerfilDatos.Tipo.Avatar) + PerfilDatos.CantidadNuevos(PerfilDatos.Tipo.Banner) +
                      PerfilDatos.CantidadNuevos(PerfilDatos.Tipo.Titulo) + PerfilDatos.CantidadNuevos(PerfilDatos.Tipo.Marco);
         chipNuevos.gameObject.SetActive(nuevos > 0);
-        nuevosMenu.text = nuevos == 1 ? "1 nuevo" : $"{nuevos} nuevos";
-        subEstacion.text = PerfilDatos.Boletos == 1 ? "Tenés 1 boleto para abrir" : $"Tenés {PerfilDatos.Boletos} boletos para abrir";
+        nuevosMenu.text = L10n.Plural("profile.new", nuevos);
+        subEstacion.text = L10n.Plural("profile.station.tickets", PerfilDatos.Boletos);
         monedasMenu.Refrescar();
     }
 

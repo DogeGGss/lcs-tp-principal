@@ -34,10 +34,10 @@ public class Multijugador : MonoBehaviourPunCallbacks, IOnEventCallback
     private const string Alfabeto = "ABCDEFGHJKMNPQRSTUVWXYZ23456789"; // sin O, I ni L (US 027, CA2)
     private const string EscenaMenu = "MenuPrincipal";
 
-    private const string ErrorCrear = "No se pudo crear la sala. Revisá tu conexión.";
-    private const string ErrorEntrar = "No se pudo entrar a la sala. Revisá tu conexión.";
-    private const string ErrorVolver = "No se pudo volver a la partida. Revisá tu conexión.";
-    private const string ErrorBuscar = "No se pudo buscar partida. Revisá tu internet y volvé a buscar.";
+    private static string ErrorCrear => L10n.T("ui.net.create_failed");
+    private static string ErrorEntrar => L10n.T("ui.net.join_failed");
+    private static string ErrorVolver => L10n.T("ui.net.rejoin_failed");
+    private static string ErrorBuscar => L10n.T("ui.net.search_failed");
 
     public struct Jugador
     {
@@ -152,7 +152,7 @@ public class Multijugador : MonoBehaviourPunCallbacks, IOnEventCallback
         if (ajustes != null) ajustes.AppVersion = Application.version;
         if (ajustes != null && volviendo && !string.IsNullOrEmpty(vuelta.region)) ajustes.FixedRegion = vuelta.region;
         if (ajustes == null || !PhotonNetwork.ConnectUsingSettings(ajustes, PhotonNetwork.PhotonServerSettings.StartInOfflineMode))
-            Fallar("No se pudo conectar. Revisá tu conexión.");
+            Fallar(L10n.T("gameplay.ui.could_not_connect_check_your_connection"));
     }
 
     public void CrearSala(GameMode modo)
@@ -203,7 +203,7 @@ public class Multijugador : MonoBehaviourPunCallbacks, IOnEventCallback
     {
         if (!Reconexion.HayPartida(out vuelta))
         {
-            Fallar("Ya no se puede volver a esa partida.");
+            Fallar(L10n.T("gameplay.ui.you_can_no_longer_rejoin_that_match"));
             return;
         }
         pedido = Pedido.Volver;
@@ -383,7 +383,7 @@ public class Multijugador : MonoBehaviourPunCallbacks, IOnEventCallback
         return lista;
     }
 
-    public static string Titulo(GameMode modo) => modo == GameMode.Deathmatch ? "Deathmatch" : modo == GameMode.Zombie ? "Invasión" : "Táctico";
+    public static string Titulo(GameMode modo) => modo == GameMode.Deathmatch ? "Deathmatch" : modo == GameMode.Zombie ? L10n.T("gameplay.ui.invasion") : L10n.T("gameplay.ui.tactical");
 
     // ================= Conexión =================
 
@@ -439,7 +439,7 @@ public class Multijugador : MonoBehaviourPunCallbacks, IOnEventCallback
         if (!PhotonNetwork.CreateRoom(codigo, opciones)) Fallar(ErrorCrear);
     }
 
-    private static string NombreBase() => PlayerProfile.HasName ? PlayerProfile.Name : "Jugador";
+    private static string NombreBase() => PlayerProfile.HasName ? PlayerProfile.Name : L10n.T("gameplay.ui.player");
 
     // US 277, CA3: en el juego publicado, el usuario de Photon es la cuenta, así la misma cuenta no puede estar dos veces en
     // una sala (Photon no deja entrar a un usuario que ya está). En el editor y en los builds de desarrollo es uno nuevo
@@ -500,7 +500,7 @@ public class Multijugador : MonoBehaviourPunCallbacks, IOnEventCallback
     {
         bool repetida = returnCode == ErrorCode.JoinFailedFoundActiveJoiner;
         UltimoFallo = repetida ? Fallo.CuentaRepetida : Fallo.Conexion;
-        Fallar(repetida ? "Tu cuenta ya está en esa partida, en otra PC." : ErrorBuscar);
+        Fallar(repetida ? L10n.T("ui.net.account_in_match") : ErrorBuscar);
     }
 
     public override void OnJoinRoomFailed(short returnCode, string message)
@@ -513,9 +513,9 @@ public class Multijugador : MonoBehaviourPunCallbacks, IOnEventCallback
             {
                 // Photon todavía no se dio cuenta de que se cortó la conexión: en unos segundos sí.
                 case ErrorCode.JoinFailedFoundActiveJoiner:
-                    FallarVuelta("Todavía figurás en la partida. Probá de nuevo en unos segundos.", false);
+                    FallarVuelta(L10n.T("ui.net.still_listed"), false);
                     break;
-                case ErrorCode.GameDoesNotExist: FallarVuelta("La partida ya terminó."); break;
+                case ErrorCode.GameDoesNotExist: FallarVuelta(L10n.T("ui.net.match_over")); break;
                 case ErrorCode.JoinFailedWithRejoinerNotFound: FallarVuelta("Ya no se puede volver a esa partida."); break;
                 default: FallarVuelta(ErrorVolver, false); break;
             }
@@ -525,8 +525,8 @@ public class Multijugador : MonoBehaviourPunCallbacks, IOnEventCallback
         switch (returnCode)
         {
             case ErrorCode.GameDoesNotExist: Fallar("No existe una sala con ese código."); break;
-            case ErrorCode.GameFull: Fallar("La sala está llena."); break;
-            case ErrorCode.GameClosed: Fallar("La partida ya empezó."); break;
+            case ErrorCode.GameFull: Fallar(L10n.T("ui.net.room_full")); break;
+            case ErrorCode.GameClosed: Fallar(L10n.T("ui.net.match_started")); break;
             default:
                 Debug.LogWarning($"Multijugador: no se pudo entrar a la sala ({returnCode}: {message}).");
                 Fallar(ErrorEntrar);
@@ -546,7 +546,7 @@ public class Multijugador : MonoBehaviourPunCallbacks, IOnEventCallback
         {
             // US 026, CA5: la sala es de otro modo.
             PhotonNetwork.LeaveRoom(false);
-            Error?.Invoke($"Esa sala es de {Titulo(modo)}.");
+            Error?.Invoke(L10n.T("ui.net.room_mode_fmt", L10n.Source(Titulo(modo), "ui.")));
             return;
         }
 
@@ -617,7 +617,7 @@ public class Multijugador : MonoBehaviourPunCallbacks, IOnEventCallback
         cambiandoUsuario = false;
         if (habia != Pedido.Nada) Fallar(habia == Pedido.Crear ? ErrorCrear : habia == Pedido.Volver ? ErrorVolver : habia == Pedido.Buscar ? ErrorBuscar : ErrorEntrar);
         else if (cause != DisconnectCause.DisconnectByClientLogic && cause != DisconnectCause.CustomAuthenticationFailed)
-            Error?.Invoke("Se perdió la conexión con el servidor."); // la cuenta rechazada ya avisó (OnCustomAuthenticationFailed)
+            Error?.Invoke(L10n.T("ui.net.connection_lost")); // la cuenta rechazada ya avisó (OnCustomAuthenticationFailed)
         Cambio?.Invoke();
 
         // Sin conexión no hay partida: se vuelve al menú.

@@ -157,8 +157,7 @@ public class MarcadorInvasion : MonoBehaviour
         cartasGrupo.alpha = 0f;
         Figura<FormaRedondeada>(Stretch(Node("Fondo", cartas)))
             .Pintar(Rgb(6, 10, 6, DarkAlpha(0.74f)), WithAlpha(Verde, FadeAlpha(0.28f)), 10f, 1f);
-        Text(Place(Node("Titulo", cartas), 14f, 10f, AnchoCartas - 28f, 18f), display, 13f, Verde, TextAlignmentOptions.TopLeft, 12f, true)
-            .text = "Tus cartas";
+        L10n.Bind(Text(Place(Node("Titulo", cartas), 14f, 10f, AnchoCartas - 28f, 18f), display, 13f, Verde, TextAlignmentOptions.TopLeft, 12f, true), "gameplay.ui.your_cards");
         cartasTexto = Text(Place(Node("Lista", cartas), 14f, 34f, AnchoCartas - 28f, 40f), label, 16f, Ink, TextAlignmentOptions.TopLeft);
         cartasTexto.lineSpacing = 8f;
     }
@@ -189,7 +188,7 @@ public class MarcadorInvasion : MonoBehaviour
         chipJefe = Node("Jefe", panel);
         Image(chipJefe, MatchHud.Instance.Rounded, Verde, 4f);
         TextMeshProUGUI jefe = Text(Stretch(Node("Texto", chipJefe)), display, 15f, Hex(0x10180C), TextAlignmentOptions.Center, 16f, true);
-        jefe.text = "Jefe";
+        L10n.Bind(jefe, "gameplay.ui.boss");
 
         // CA1 y CA5: la vía.
         RectTransform viaRect = Place(Node("Via", panel), 26f, 64f, 568f, 62f);
@@ -202,7 +201,7 @@ public class MarcadorInvasion : MonoBehaviour
             estaciones[i].text = i == OleadasDeInvasion.Ultima ? "∞" : (i + 1).ToString();
         }
         banderita = Text(Node("Record", viaRect), display, 11f, Accent, TextAlignmentOptions.BaselineLeft, 12f, true);
-        banderita.text = "Récord";
+        L10n.Bind(banderita, "gameplay.ui.record");
         int r = record > 0 ? Mathf.Min(record, OleadasDeInvasion.Ultima + 1) - 1 : -1;
         via.record = r;
         banderita.gameObject.SetActive(r >= 0);
@@ -232,7 +231,7 @@ public class MarcadorInvasion : MonoBehaviour
         puntosNumero = Text(Node("Numero", puntos), display, 44f, Ink, TextAlignmentOptions.BaselineLeft);
         Sombra(puntosNumero);
         puntosRotulo = Text(Node("Rotulo", puntos), display, 16f, Mute, TextAlignmentOptions.BaselineLeft, 14f, true);
-        puntosRotulo.text = "Pts";
+        L10n.Bind(puntosRotulo, "gameplay.ui.pts");
         Sombra(puntosRotulo);
         MostrarPuntos(0);
     }
@@ -274,8 +273,8 @@ public class MarcadorInvasion : MonoBehaviour
         if (cabeza != cabezaAntes)
         {
             cabezaAntes = cabeza;
-            titulo.text = $"Oleada {n}";
-            deCuantas.text = infinito ? $"· vuelta {OleadasDeInvasion.Vuelta(n)}" : $"de {OleadasDeInvasion.Ultima}"; // US 303
+            titulo.text = L10n.T("gameplay.wave.title_fmt", n);
+            deCuantas.text = infinito ? L10n.T("gameplay.wave.lap_fmt", OleadasDeInvasion.Vuelta(n)) : L10n.T("gameplay.wave.of_fmt", OleadasDeInvasion.Ultima); // US 303
             bool jefe = OleadasDeInvasion.EsDeJefe(n); // US 302: la 10, la 20, la 30...
             chipJefe.gameObject.SetActive(jefe);
             float w1 = Width(titulo, titulo.text), w2 = Width(deCuantas, deCuantas.text), w3 = 0f;
@@ -299,7 +298,7 @@ public class MarcadorInvasion : MonoBehaviour
             BuyPhase fase = BuyPhase.Current;
             float queda = fase != null ? fase.TimeLeft : 0f;
             int s = Mathf.Max(0, Mathf.CeilToInt(queda));
-            izquierda = "Próxima oleada en";
+            izquierda = L10n.T("gameplay.wave.next_in");
             centro = fase != null ? $"{s / 60}:{s % 60:00}" : "—";
             derecha = "";
             fraccion = fase != null && fase.Duration > 0f ? 1f - queda / fase.Duration : 0f;
@@ -422,7 +421,7 @@ public class MarcadorInvasion : MonoBehaviour
         var lineas = new List<string>();
         if (equipo != null && equipo.Primary != null) lineas.Add(Nombre(equipo.Primary));
         if (equipo != null && equipo.Secondary != null) lineas.Add(Nombre(equipo.Secondary));
-        if (Cartas.Count == 0) lineas.Add("<color=#9AA39A>Todavía no elegiste cartas</color>");
+        if (Cartas.Count == 0) lineas.Add(L10n.T("gameplay.wave.no_cards"));
         else foreach (string c in Cartas) lineas.Add("<color=#7DE05A>•</color> " + c);
         string texto = string.Join("\n", lineas);
         if (texto == cartasAntes) return;
@@ -443,7 +442,7 @@ public class MarcadorInvasion : MonoBehaviour
         if (avisoRecord || record <= 0 || oleada <= record || pildora == null) return;
         avisoRecord = true;
         recordDesde = Time.unscaledTime;
-        pildoraTexto.text = $"¡Nuevo récord! · Oleada {oleada}";
+        pildoraTexto.text = L10n.T("gameplay.result.new_record_fmt", oleada);
         pildora.sizeDelta = new Vector2(Width(pildoraTexto, pildoraTexto.text) + 44f, 44f);
         pildora.gameObject.SetActive(true);
     }

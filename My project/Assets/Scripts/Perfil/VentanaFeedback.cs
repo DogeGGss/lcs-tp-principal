@@ -77,7 +77,7 @@ public class VentanaFeedback
         area.offsetMax = new Vector2(-18f, -14f);
         area.gameObject.AddComponent<UnityEngine.UI.RectMask2D>();
         TextMeshProUGUI ejemplo = Text(Stretch(Node("Ejemplo", area)), FTexto, 22f, White(0.3f), TextAlignmentOptions.TopLeft);
-        ejemplo.text = "Contanos con tus palabras…";
+        ejemplo.text = L10n.T("profile.feedback.tell_us");
         ejemplo.textWrappingMode = TextWrappingModes.Normal;
         TextMeshProUGUI valor = Text(Stretch(Node("Texto", area)), FTexto, 22f, Ink, TextAlignmentOptions.TopLeft);
         valor.textWrappingMode = TextWrappingModes.Normal;
@@ -114,7 +114,7 @@ public class VentanaFeedback
             numerosValor[i].color = on ? Accent : Soft;
             textosValor[i].color = on ? Accent : Mute;
         }
-        pregunta.text = tipo == 2 ? "¿Qué pasó?" : tipo == 1 ? "¿Qué te gustaría que agreguemos o cambiemos?" : "Contanos qué te pareció";
+        pregunta.text = L10n.Source(tipo == 2 ? "¿Qué pasó?" : tipo == 1 ? "¿Qué te gustaría que agreguemos o cambiemos?" : "Contanos qué te pareció", "profile.");
         int largo = campo != null ? campo.text.Length : 0;
         if (contador != null) contador.text = $"{largo} / {Maximo}";
         enviar?.Habilitar(campo != null && campo.text.Trim().Length > 0);

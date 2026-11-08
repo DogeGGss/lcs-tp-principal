@@ -23,7 +23,7 @@ public static class LogrosCometas
         public Definicion(string id, string nombre, string color, int tipo, int meta)
         {
             this.id = id; this.nombre = nombre; this.color = color; this.tipo = tipo; this.meta = meta;
-            descripcion = "Destruí " + meta + " cometas " + color + " en total.";
+            descripcion = L10n.Source("Destruí {0} cometas {1} en total.", "profile.").Replace("{0}", meta.ToString()).Replace("{1}", color);
         }
         public Definicion(string id, string nombre, string estadistica, int meta, string descripcion)
         { this.id = id; this.nombre = nombre; this.estadistica = estadistica; tipo = -1; this.meta = meta; this.descripcion = descripcion; }

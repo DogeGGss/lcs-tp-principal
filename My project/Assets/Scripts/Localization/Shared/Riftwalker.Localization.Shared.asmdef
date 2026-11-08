@@ -1,0 +1,7 @@
+{
+  "name": "Riftwalker.Localization.Shared",
+  "rootNamespace": "Riftwalker.Localization",
+  "references": [],
+  "autoReferenced": true,
+  "noEngineReferences": true
+}

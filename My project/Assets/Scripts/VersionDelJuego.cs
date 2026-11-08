@@ -99,5 +99,5 @@ public static class VersionDelJuego
         if (ultima != null) encontrada(ultima);
     }
     private static string Aviso() => versionNueva == null ? null :
-        "Hay una versión nueva (" + versionNueva + "). Actualizá el juego desde el launcher para jugar online.";
+        L10n.T("ui.version.update_fmt", versionNueva);
 }

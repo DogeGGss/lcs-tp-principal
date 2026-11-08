@@ -113,7 +113,7 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
 
     /// <summary>US 133: el punto de vista del jugador (en la copia, con la mirada que llega por la red).</summary>
     public Transform Ojos => camara != null ? camara : transform;
-    public string Nombre => photonView != null && photonView.Owner != null ? photonView.Owner.NickName : "Jugador";
+    public string Nombre => photonView != null && photonView.Owner != null ? photonView.Owner.NickName : L10n.T("gameplay.ui.player");
 
     // Número de jugador de Photon y equipo táctico (US 031).
     public int Actor => photonView != null && photonView.Owner != null ? photonView.Owner.ActorNumber : -1;
@@ -342,14 +342,14 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
         AvisarBaja(ultimoAtacante, cabeza, ultimaArma, ultimoCodigo, asistentes); // US 057, CA4
 
         Player asesino = ultimoAtacante != 0 && PhotonNetwork.CurrentRoom != null ? PhotonNetwork.CurrentRoom.GetPlayer(ultimoAtacante) : null;
-        string titulo = asesino != null ? $"Te eliminó {asesino.NickName}" : ultimaArma == Caida ? "Te caíste del mapa"
-            : ultimaArma == VallaElectrica.Causa ? "Te electrocutó la valla" : "Te eliminaron";
+        string titulo = asesino != null ? L10n.T("gameplay.death.killed_by_fmt", asesino.NickName) : ultimaArma == Caida ? L10n.T("gameplay.death.fell")
+            : ultimaArma == VallaElectrica.Causa ? L10n.T("gameplay.death.fence") : L10n.T("gameplay.ui.you_were_eliminated");
 
         if (MatchSettings.Mode == GameMode.Deathmatch)
             StartCoroutine(Reaparecer(titulo, ConfigRed.Actual != null ? ConfigRed.Actual.reaparicion : 3f));
         // US 033: si la ronda ya terminó (por ejemplo, lo eliminó la explosión), el cartel de fin de ronda ya lo explica.
         else if (RondasTacticas.Actual == null || RondasTacticas.Actual.FaseActual == RondasTacticas.Fase.Combate)
-            partida.Aviso(titulo, "Reaparecés en la ronda siguiente.");
+            partida.Aviso(titulo, L10n.T("gameplay.death.respawn_next_round"));
     }
 
     private const float ReservaAntes = 0.5f; // s antes de reaparecer en que se reserva el punto (PartidaEnRed)
@@ -364,7 +364,7 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
         float reservadoEn = 0f;
         while (Time.time < fin)
         {
-            partida.Aviso(titulo, $"Reaparecés en {Mathf.CeilToInt(fin - Time.time)}. Apretá {tecla} para cambiar de equipo");
+            partida.Aviso(titulo, L10n.T("gameplay.death.respawn_in_fmt", Mathf.CeilToInt(fin - Time.time), tecla));
             // Medio segundo antes se reserva el punto, así otro que reaparece a la vez no elige el mismo.
             if (reservado < 0 && fin - Time.time <= ReservaAntes) { reservado = partida.ReservarPunto(); reservadoEn = Time.time; }
             yield return null;
@@ -464,12 +464,12 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
         if (MatchSettings.Mode == GameMode.Tactico && RondasTacticas.RondaEmpezada)
         {
             QuedarAfuera();
-            partida.Aviso("Volviste a la partida", "Reaparecés en la ronda siguiente.");
+            partida.Aviso(L10n.T("gameplay.death.rejoined"), L10n.T("gameplay.death.respawn_next_round"));
         }
         else if (MatchSettings.Mode == GameMode.Deathmatch && PartidaDeathmatch.EnCombate)
         {
             QuedarAfuera();
-            StartCoroutine(Reaparecer("Volviste a la partida", ConfigRed.Actual != null ? ConfigRed.Actual.reaparicion : 3f));
+            StartCoroutine(Reaparecer(L10n.T("gameplay.death.rejoined"), ConfigRed.Actual != null ? ConfigRed.Actual.reaparicion : 3f));
         }
     }
 
@@ -1527,7 +1527,7 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
 
     // US 021, CA6, CA7 y CA11: la Vista aérea se avisa a los demás: todos ven los ojos en el cielo arriba de este
     // jugador y los ojos verdes brillando en su personaje, y los rivales ven el aviso "Te están observando" y oyen un sonido mientras dura.
-    private const string TextoObservado = "Te están observando";
+    private static string TextoObservado => L10n.T("gameplay.hud.being_watched");
     private bool observando;
 
     private void AlCambiarVistaAerea(Transform jugador, bool activa)

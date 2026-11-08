@@ -191,7 +191,7 @@ public class NotaPO : MonoBehaviour
         float columnW = (w - ColumnGap) * 0.5f;
 
         eyebrowText.text = eyebrow;
-        titleText.text = title;
+        L10n.BindSource(titleText, title,"ui.");
         introText.text = intro;
         worksHeader.text = worksTitle;
         missingHeader.text = missingTitle;
@@ -312,12 +312,12 @@ public class NotaPO : MonoBehaviour
         chipBg = Image(chip, rounded, PanelColor, 8f, true);
 
         Img icon = Image(Place(Node("Icono", chip), 14f, 14f, 48f, 48f), rounded, Accent, 24f);
-        Text(Stretch(Node("Letra", icon.rectTransform)), displayFont, 30f, KeyInk, TextAlignmentOptions.Center).text = "i";
+        L10n.BindSource(Text(Stretch(Node("Letra", icon.rectTransform)), displayFont, 30f, KeyInk, TextAlignmentOptions.Center), "i","ui.");
 
         chipLabel = Text(Place(Node("Rotulo", chip), 80f, 14f, 300f, 18f), labelFont, 14f, Mute, TextAlignmentOptions.MidlineLeft, 16f, true);
-        chipLabel.text = "Antes de jugar";
+        L10n.BindSource(chipLabel, "Antes de jugar","ui.");
         TextMeshProUGUI chipName = Text(Place(Node("Nombre", chip), 80f, 30f, 300f, 34f), displayFont, 30f, Ink, TextAlignmentOptions.MidlineLeft, 3f, true);
-        chipName.text = "Nota para el PO";
+        L10n.BindSource(chipName, "Nota para el PO","ui.");
         float textW = Mathf.Max(Width(chipName, chipName.text), Width(chipLabel, chipLabel.text));
         chip.sizeDelta = new Vector2(80f + textW + 26f, 76f);
 
@@ -360,7 +360,7 @@ public class NotaPO : MonoBehaviour
         divider = Node("Division", panel);
         Image(divider, null, LineColor);
         controlsLabel = Node("RotuloControles", panel);
-        Text(controlsLabel, labelFont, 15f, Mute, TextAlignmentOptions.MidlineLeft, 16f, true).text = "Controles";
+        L10n.BindSource(Text(controlsLabel, labelFont, 15f, Mute, TextAlignmentOptions.MidlineLeft, 16f, true), "Controles","ui.");
         controlsText = Paragraph(Node("Controles", panel), 18f, Note);
         controlsText.font = labelFont;
         controlsText.characterSpacing = 4f;
@@ -368,15 +368,14 @@ public class NotaPO : MonoBehaviour
         // Entendido
         button = Node("Entendido", panel);
         Img buttonBg = Image(button, rounded, Accent, 6f, true);
-        Text(Stretch(Node("Texto", button)), displayFont, 22f, KeyInk, TextAlignmentOptions.Center, 10f, true).text = "Entendido";
+        L10n.BindSource(Text(Stretch(Node("Texto", button)), displayFont, 22f, KeyInk, TextAlignmentOptions.Center, 10f, true), "Entendido","ui.");
         ShopPointerTarget pointer = button.gameObject.AddComponent<ShopPointerTarget>();
         pointer.Hovered = () => buttonBg.color = Hot;
         pointer.Exited = () => buttonBg.color = Accent;
         pointer.Clicked = () => { pointer.Exited(); Close(); };
 
         keysHint = Node("Atajos", panel);
-        Text(keysHint, labelFont, 16f, Mute, TextAlignmentOptions.MidlineLeft, 10f, true)
-            .text = "<color=#F3F4F6>Enter</color>  o  <color=#F3F4F6>Esc</color>  Cerrar";
+        L10n.BindSource(Text(keysHint, labelFont, 16f, Mute, TextAlignmentOptions.MidlineLeft, 10f, true), "<color=#F3F4F6>Enter</color>  o  <color=#F3F4F6>Esc</color>  Cerrar","ui.");
     }
 
     private TextMeshProUGUI Paragraph(RectTransform rect, float size, Color color)

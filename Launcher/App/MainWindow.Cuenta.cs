@@ -189,7 +189,7 @@ public partial class MainWindow
         Agregar(mail.Raiz); Agregar(clave.Raiz); Agregar(repetida.Raiz);
         if (error != null) Mostrar(error);
         var legal = new TextBlock { Foreground = Gris, FontSize = 13, Margin = new Thickness(0, -4, 0, 4), TextWrapping = TextWrapping.Wrap };
-        legal.Inlines.Add("Al crear la cuenta aceptás el ");
+        legal.Inlines.Add(LauncherText.BindRun("Al crear la cuenta aceptás el "));
         legal.Inlines.Add(new InlineUIContainer(Enlace("aviso de privacidad", () => { Recordar(); volverDePrivacidad = PanelCuenta.Crear; AbrirCuenta(PanelCuenta.Privacidad); }, 13)) { BaselineAlignment = BaselineAlignment.TextBottom });
         legal.Inlines.Add(".");
         Agregar(legal);
@@ -220,9 +220,9 @@ public partial class MainWindow
     {
         Encabezado("TU CUENTA · FALTA UN PASO", "CONFIRMÁ TU MAIL", null);
         var ayuda = Ayuda("");
-        ayuda.Inlines.Add("Te mandamos un código de 6 números a ");
+        ayuda.Inlines.Add(LauncherText.BindRun("Te mandamos un código de 6 números a "));
         ayuda.Inlines.Add(new Run(mailCuenta) { Foreground = Tinta, FontWeight = FontWeights.SemiBold });
-        ayuda.Inlines.Add(". Si no lo ves, revisá el correo no deseado.");
+        ayuda.Inlines.Add(LauncherText.BindRun(". Si no lo ves, revisá el correo no deseado."));
         if (mensaje == ReglasCuenta.SinConfirmar) Franja(mensaje, false);
         else if (mensaje != null) Franja(mensaje, true);
         var codigo = new Codigo();
@@ -233,7 +233,7 @@ public partial class MainWindow
         {
             reenviar.Children.Clear();
             int falta = SegundosParaReenviar - (int)(DateTime.UtcNow - ultimoCodigo).TotalSeconds;
-            if (falta > 0) { reenviar.Children.Add(Texto($"¿No te llegó? Podés pedir otro en 0:{falta:00}", Gris, 14)); return; }
+            if (falta > 0) { reenviar.Children.Add(TextoFormato($"¿No te llegó? Podés pedir otro en 0:{falta:00}", Gris, 14)); return; }
             reenviar.Children.Add(Texto("¿No te llegó? ", Gris, 14));
             reenviar.Children.Add(Enlace("Pedí otro código", async () =>
             {
@@ -311,7 +311,7 @@ public partial class MainWindow
         {
             reenviar.Children.Clear();
             int falta = SegundosParaReenviar - (int)(DateTime.UtcNow - ultimoCodigo).TotalSeconds;
-            if (falta > 0) { reenviar.Children.Add(Texto($"¿No te llegó? Podés pedir otro en 0:{falta:00}", Gris, 14)); return; }
+            if (falta > 0) { reenviar.Children.Add(TextoFormato($"¿No te llegó? Podés pedir otro en 0:{falta:00}", Gris, 14)); return; }
             reenviar.Children.Add(Texto("¿No te llegó? ", Gris, 14));
             reenviar.Children.Add(Enlace("Pedí otro código", async () =>
             {
@@ -433,16 +433,20 @@ public partial class MainWindow
     private async Task<string?> Esperar(Button boton, string texto, Func<CancellationToken, Task<string?>> pedido)
     {
         esperandoCuenta = true;
-        object antes = boton.Content;
+        Action restaurarTexto = LauncherText.CaptureContent(boton);
         boton.Content = texto; boton.IsEnabled = false;
         try { return await pedido(CancellationToken.None); }
         catch (Exception ex) { Log(ex); return ReglasCuenta.Generico; }
-        finally { esperandoCuenta = false; boton.Content = antes; boton.IsEnabled = true; }
+        finally { esperandoCuenta = false; restaurarTexto(); boton.IsEnabled = true; }
     }
 
     // ---------- Pieces (like Ajustes: 12 px labels, 44 px boxes, the orange button) ----------
 
-    private void Agregar(UIElement e) => CuentaContenido.Children.Add(e);
+    private void Agregar(UIElement e)
+    {
+        LauncherText.Localize(e);
+        CuentaContenido.Children.Add(e);
+    }
     private void Encabezado(string ante, string titulo, string? ayuda)
     {
         Agregar(new TextBlock { Text = ante, Foreground = Naranja, FontSize = 12, FontWeight = FontWeights.SemiBold, Margin = new Thickness(0, 0, 0, 6) });
@@ -499,10 +503,12 @@ public partial class MainWindow
         pie.Children.Add(Enlace(enlace, accion, 13));
         Agregar(pie);
     }
-    private static TextBlock Texto(string texto, Brush color, double tam) => new() { Text = texto, Foreground = color, FontSize = tam, VerticalAlignment = VerticalAlignment.Center };
+    private static TextBlock Texto(string texto, Brush color, double tam) => LauncherText.Bind(new TextBlock { Foreground = color, FontSize = tam, VerticalAlignment = VerticalAlignment.Center }, texto);
+    private static TextBlock TextoFormato(FormattableString texto, Brush color, double tam) => LauncherText.BindFormat(new TextBlock { Foreground = color, FontSize = tam, VerticalAlignment = VerticalAlignment.Center }, texto);
     private static Button Enlace(string texto, Action accion, double tam = 14)
     {
-        var b = new Button { Content = texto, Style = (Style)Application.Current.FindResource("BotonEnlace"), FontSize = tam, VerticalAlignment = VerticalAlignment.Center };
+        var b = new Button { Style = (Style)Application.Current.FindResource("BotonEnlace"), FontSize = tam, VerticalAlignment = VerticalAlignment.Center };
+        LauncherText.BindContent(b, texto);
         b.Click += (_, _) => accion();
         return b;
     }
@@ -543,7 +549,7 @@ public partial class MainWindow
                     if (mostrar) texto.Text = clave.Password; else clave.Password = texto.Text;
                     texto.Visibility = mostrar ? Visibility.Visible : Visibility.Collapsed;
                     clave.Visibility = mostrar ? Visibility.Collapsed : Visibility.Visible;
-                    ver.Content = mostrar ? "OCULTAR" : "VER";
+                    LauncherText.BindValueContent(ver, () => LauncherText.Source(mostrar ? "OCULTAR" : "VER"));
                     Foco();
                 };
                 caja.Children.Add(ver);
@@ -554,7 +560,10 @@ public partial class MainWindow
             if (clave != null) clave.PasswordChanged += (_, _) => Marcar(null);
         }
 
-        private static void AutomationPropertiesName(DependencyObject o, string nombre) => System.Windows.Automation.AutomationProperties.SetName(o, nombre);
+        private static void AutomationPropertiesName(DependencyObject o, string nombre)
+        {
+            if (o is FrameworkElement element) LauncherText.BindName(element, nombre);
+        }
         private void Tecla(object sender, KeyEventArgs e) { if (e.Key == Key.Enter) { e.Handled = true; Enter?.Invoke(); } }
 
         public string Valor
@@ -604,7 +613,7 @@ public partial class MainWindow
                 fila.Children.Add(cajas[i]);
             }
             Raiz.Children.Add(fila);
-            System.Windows.Automation.AutomationProperties.SetName(entrada, "Código de 6 números");
+            LauncherText.BindName(entrada, "Código de 6 números");
             Raiz.Children.Add(entrada);
             entrada.TextChanged += (_, _) =>
             {

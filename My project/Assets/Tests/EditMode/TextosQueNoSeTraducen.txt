@@ -1,0 +1,147 @@
+# F30 (Idiomas), US 349 CA3: textos en español del código que el jugador no ve o que no se traducen a propósito
+# (nombres de objetos y sonidos, ayudas del inspector, menús del editor, depuración, la Nota para el PO, nombres
+# propios). Una línea por texto: "Ruta/Archivo.cs: texto". Si el jugador lo ve, no va acá: se traduce con L10n.
+Abilities/DestelloTrasbordo.cs: Núcleo
+Abilities/ReglaTrasbordo.cs: Riftwalker/Prueba: regla del Trasbordo
+Abilities/ReglaTrasbordo.cs: Regla del Trasbordo (prueba)
+Abilities/SonidoPerro.cs: Perro gruñido (generado)
+Abilities/SonidoVistaAerea.cs: Vista aérea (generado)
+Abilities/SonidoVistaAerea.cs: Vista aérea fin (generado)
+Abilities/VistaNublada.cs: Viñeta
+Characters/CharacterData.cs: Lo ven los demás jugadores; en primera persona se siguen viendo los brazos de siempre.
+Invasion/CartaDeInvasion.cs: Gran Capitán
+Invasion/ConfigInvasion.cs: Lo que no suma 100 (o los tipos que no están) se completa con Comunes.
+Mapas/NavesDePaso.cs: Zumbido de nave (generado)
+Mapas/VallaElectrica.cs: Valla eléctrica
+Minijuego/Cometa.cs: Núcleo
+Minijuego/Cometa.cs: Brillo nítido
+Minijuego/MinijuegoCometas.cs: (en total: {Sesion.Aciertos} cometas, {Sesion.puntos} puntos).
+Minijuego/MinijuegoCometas.cs: Acierto del minijuego
+Multijugador/AgarresTerceraPersona.cs: La Porteña
+Multijugador/BuyZone.cs: (MurosDeBase) no le pone paredes, así no tapan la vista. Igual cuenta como parte de la base.
+Multijugador/ConfigRed.cs: TextMeshPro, muestra la cuenta; si tiene un hijo \"Luz\", titila con cada pitido.
+Multijugador/ContornoRival.cs:  (máscara)
+Multijugador/EspejoTerceraPersona.cs: \"Cargador\" y \"Palanca\" dónde agarra la mano izquierda.
+Multijugador/EspejoTerceraPersona.cs: y muestra las manijas Atrás, Suelta, Envión e Izquierda apuntando.
+Multijugador/EspejoTerceraPersona.cs: las manijas Atrás y Corte.
+Multijugador/EspejoTerceraPersona.cs: puede con la pausa abierta. Se corta como siempre: moviéndose, disparando...
+Multijugador/EspejoTerceraPersona.cs: espacio de la rueda (arriba, derecha, abajo, izquierda); -1, vacío.
+Multijugador/EspejoTerceraPersona.cs: Granada: Atrás
+Multijugador/EspejoTerceraPersona.cs: Granada: Envión
+Multijugador/EspejoTerceraPersona.cs: Cuchillo: Atrás
+Multijugador/JugadorEnRed.cs: Caída
+Multijugador/JugadorEnRed.cs: (referencia {escalaDeReferencia:0.000}, escala {escala:0.00}), ojos a {alturaParado - pies:0.00} m de los pies 
+Multijugador/MarcasDePrueba.cs: Línea
+Multijugador/PruebaSolo.cs: Riftwalker/Prueba solo (Táctico)
+Multijugador/PruebaSolo.cs: Riftwalker/Prueba: todos en el mismo equipo
+Multijugador/RondasTacticas.cs: F10 gana el rival · F11 salta la fase · F8 pone 6 a 6.
+NPCs/DistanciaDeNpc.cs: Núcleo
+NPCs/EmbestidaDeNpc.cs: está ocupado (golpeando)
+NPCs/EmbestidaDeNpc.cs: no encuentra al jugador
+NPCs/EmbestidaDeNpc.cs: no está sobre el NavMesh
+NPCs/EmbestidaDeNpc.cs: estás a {entre:0.0} m entre los cuerpos ({d.magnitude:0.0} m entre los centros; su frente sale {npc.Frente:0.0} m), fuera de {DesdeLejos}–{HastaLejos} m
+NPCs/EmbestidaDeNpc.cs: no te ve (estás a {entre:0.0} m)
+NPCs/EmbestidaDeNpc.cs: no tiene lugar para lanzarse ({cuanto:0.0} m libres, necesita {Minimo})
+NPCs/TipoDeNpc.cs: Las rayas cruzan el eje adelante (z) y van arriba (y): por ejemplo, y 90 las pone a lo largo del cuerpo; 
+NPCs/TipoDeNpc.cs: x o z 90 cambian qué lado cuenta como lomo. Se ve en los enemigos que aparecen después.
+Perfil/CategoriasRanking.cs:  · gana el menor tiempo
+Perfil/LogrosOnline.Billetera.cs: Respuesta del saldo inválida.
+Perfil/LogrosOnline.cs: Respuesta del ranking inválida.
+Perfil/LogrosOnline.cs:  · falta actualizar la base para guardar el resto del progreso en la nube
+Perfil/LogrosOnline.cs:  · falta actualizar la base para el ranking por estadísticas
+Perfil/LogrosOnline.cs: Respuesta de progreso inválida.
+Perfil/LogrosOnline.cs:  · la sesión anterior se había anulado: se creó una nueva
+Perfil/LogrosOnline.cs: Respuesta de autenticación inválida.
+Perfil/LogrosOnline.cs: Servicio no disponible (HTTP 
+Perfil/LogrosOnline.cs: ). Se reintentará sin duplicar progreso.
+Perfil/MenuRiftwalker.cs: Debug: +{PerfilDatos.Numero(PerfilDatos.DebugCreditos)} créditos, +{PerfilDatos.DebugBoletos} boletos y +{PerfilDatos.DebugCristales} cristales
+Perfil/PantallaLogros.cs: Título lista
+Perfil/PerfilDatos.cs: Unzué
+Player/AnimacionPrimeraPersona.cs: Brazos con {0} (cámara)
+Player/AnimacionPrimeraPersona.cs: la punta cortada del brazo queda quieta, fuera de la pantalla.
+Player/AnimacionPrimeraPersona.cs: y la abre hacia afuera, z la inclina).
+Player/AnimacionPrimeraPersona.cs: derecho): 1 = 2 pasos por segundo.
+Player/AnimacionPrimeraPersona.cs: Apagada (Activa sin tildar)
+Player/AnimacionPrimeraPersona.cs: No está en la cámara del jugador
+Player/AnimacionPrimeraPersona.cs: La cámara está apagada (no es el jugador local)
+Player/AnimacionPrimeraPersona.cs: No encuentra el WeaponSwitcher
+Player/AnimacionPrimeraPersona.cs: Sin un arma con animación en la mano (en la mano: 
+Player/AnimacionPrimeraPersona.cs:  con sus brazos
+Player/AnimacionPrimeraPersona.cs:  (sin encontrar la foto de los brazos)
+Player/BrazosEnCamara.cs: Prendido, en vez de la foto se ven los brazos en vivo agarrando el arma, tal como va a quedar la foto: 
+Player/BrazosEnCamara.cs: al mover el arma o los agarres se ve al momento. Hay que mirar derecho. Al apagarlo se sacan las fotos de nuevo.
+Player/CuerpoCaido.cs:  (caído)
+Player/PiezasDeLaTrochita.cs: Bala cargada (La Trochita)
+Player/PiezasDeLaTrochita.cs: Bala vacía (La Trochita)
+Player/PiezasDelTren.cs: Vidrio atrás
+Player/PlayerMovement.cs: CharacterController está para que de frente llegue a esto; en diagonal lo frena SinTreparMasAlto.
+Pruebas/PistaDeDistancias.cs: Apagado: los muñecos muestran solo vida y escudo (para probar armas).
+Pruebas/PistaDeDistancias.cs: muñeco por zona, uno al lado del otro (piernas, cuerpo y cabeza: a cada uno se le tira a esa zona).
+Pruebas/PistaDeDistancias.cs: de los demás jugadores en el online (JugadorEnRed: de 3 m a 80 m, baja en línea recta). Supr lo pausa.
+Pruebas/PistaDeDistancias.cs: Miran hacia la pista. Por ejemplo, uno detrás de la pared roja.
+Pruebas/PistaDeDistancias.cs: de la pista. La flash también los enceguece (US 075, CA6).
+Pruebas/PistaDeDistancias.cs: Tirá una flash.
+Pruebas/PistaDeDistancias.cs: compañero {i + 1}
+Pruebas/PistaDeDistancias.cs: compañero
+Pruebas/PistaDeDistancias.cs: Dispara La Porteña{(tiradorPausado ? 
+Pruebas/PistaDeDistancias.cs: )}\nEstás a {d:0.0} m · volumen {volumen * 100f:0} %
+Pruebas/PistaDeDistancias.cs: Muerto (vuelve en 3 s)
+Pruebas/PistaDeDistancias.cs: \nÚltimo golpe: {m.ultimoGolpe} · Total: {m.dano} ({m.golpes})
+Pruebas/PistaDeDistancias.cs: \nSin golpes
+Pruebas/PistaDeDistancias.cs: de frente
+Pruebas/PistaDeDistancias.cs: de costado
+Pruebas/PistaDeDistancias.cs: de espaldas
+Pruebas/PistaDeDistancias.cs: Flash a {aLo:0.0} m del 0 (alcance {alcance:0} m)\nVos: {vos}\nMuñecos:{paraMunecos}
+Pruebas/PistaDeDistancias.cs: {distancia:0.0} m: nada (más lejos que el alcance)
+Pruebas/PistaDeDistancias.cs: {distancia:0.0} m: nada (hay una pared en el medio)
+Pruebas/PistaDeDistancias.cs: {distancia:0.0} m, {angulo:0}°: ciego {total:0.##} s + {vuelta:0.##} s para volver
+Pruebas/PistaDeDistancias.cs: {distancia:0.0} m, {angulo:0}°: de costado, ciego {total * 0.5f:0.##} s + {vuelta * 0.5f:0.##} s
+Pruebas/PistaDeDistancias.cs: {distancia:0.0} m, {angulo:0}°: de espaldas, solo se aclara 0,5 s
+Pruebas/PistaDeDistancias.cs:  · Supr: pausar al que dispara
+Pruebas/PistaDeDistancias.cs: Pista de distancias · vos: {vos} · muñecos {Nombre(mirada)}\n
+Pruebas/PistaDeDistancias.cs: Fin: hacia dónde miran los muñecos · Inicio: 100 de vida y 25 de escudo\n
+Pruebas/PruebaDeRendimiento.cs: Sin árboles ni pasto
+Pruebas/PruebaDeRendimiento.cs: Sin pasto (árboles sí)
+Pruebas/PruebaDeRendimiento.cs: Sin sombras
+Pruebas/PruebaDeRendimiento.cs: Sin luces chicas (vallas, puertas)
+Pruebas/PruebaDeRendimiento.cs: Sin partículas, naves ni viento
+Pruebas/PruebaDeRendimiento.cs: Sin postprocesado
+Pruebas/PruebaDeRendimiento.cs: Sin el suelo del terreno
+Pruebas/PruebaDeRendimiento.cs: Sin el resto del mapa (edificios, rocas...)
+Pruebas/PruebaDeRendimiento.cs: A media resolución
+Pruebas/PruebaDeRendimiento.cs: Prueba de rendimiento, {System.DateTime.Now:yyyy-MM-dd HH:mm}, escena {UnityEngine.SceneManagement.SceneManager.GetActiveScene().name}
+Pruebas/PruebaDeRendimiento.cs: en el editor
+Pruebas/PruebaDeRendimiento.cs: versión de desarrollo
+Pruebas/PruebaDeRendimiento.cs: Paso                                       | cuadro ms |  FPS | CPU ms | render ms | GPU ms | lotes | SetPass | triáng. (miles) | sombras
+Pruebas/PruebaDeRendimiento.cs: Prueba de rendimiento ({i + 1}/{pasos.Count}): {pasos[i].nombre}...\nQuedate quieto, sin mover el mouse.
+Pruebas/PruebaDeRendimiento.cs: \nGuardado en 
+Pruebas/PruebaDeRendimiento.cs:   (F2 de nuevo para repetir)
+Pruebas/PruebaDeRendimiento.cs: Con sombra ({conSombra.Count}):
+UI/Credits/CreditsScreen.cs: Nicolás Gauna\nFranco Barreto\nNahuel Velázquez\nUlises Fonseca
+UI/Credits/CreditsScreen.cs: Ulises Fonseca\nNahuel Velázquez
+UI/Credits/CreditsScreen.cs: Lucas Huber\nNicolás Gauna\nLuka Gómez
+UI/Credits/CreditsScreen.cs: Luka Gómez\nFranco Barreto
+UI/NotaPO/NotaPO.cs: Movimiento: caminar, correr, saltar y agacharse, con gravedad, colisiones y reaparición si caés del mapa.\n
+UI/NotaPO/NotaPO.cs: Armas: pistola La Porteña, fusil Mitre y cuchillo. Daño por zona (cabeza, cuerpo y piernas) y por distancia, dispersión, retroceso, recarga y marcas de bala en las paredes.\n
+UI/NotaPO/NotaPO.cs: Tienda: en la fase de compra y dentro de la zona de compra se puede comprar, vender y deshacer compras. Los escudos protegen de verdad.\n
+UI/NotaPO/NotaPO.cs: HUD: vida, escudo, arma y munición, mira y marcador de impacto. La habilidad muestra su tiempo de recarga.\n
+UI/NotaPO/NotaPO.cs: Resto de las armas: la tienda muestra todas, pero por ahora solo se usan la pistola La Porteña, el Mitre y el cuchillo. Las demás se pueden comprar, pero todavía no se pueden usar.\n
+UI/NotaPO/NotaPO.cs: Granadas: se compran, pero todavía no se pueden tirar.\n
+UI/NotaPO/NotaPO.cs: Habilidad: el Silbato carga y se ve en el HUD, pero todavía no tiene efecto.\n
+UI/NotaPO/NotaPO.cs: Modos y multijugador: Táctico y Deathmatch muestran la sala, pero falta la conexión online. Zombie todavía no tiene zombis: Jugar abre el mapa de la universidad para recorrerlo con las armas, la tienda y el HUD.\n
+UI/NotaPO/NotaPO.cs: Logros: la pantalla está, pero todavía no tiene logros.\n
+UI/NotaPO/NotaPO.cs:      <color=#{ColorUtility.ToHtmlStringRGB(Mute)}>(se cambian en Opciones, pestaña Controles)</color>
+UI/Opciones/CalidadGrafica.cs: {asset.shadowDistance} m en {asset.shadowCascadeCount} cascadas, MSAA x{asset.msaaSampleCount}, 
+UI/Opciones/CalidadGrafica.cs: texturas a 1/{1 << nivel.texturas}, árboles hasta {nivel.arboles} m, pasto hasta {nivel.pasto} m).
+UI/Pause/PauseMenu.cs: Español
+UI/PlayerName/PlayerProfile.cs: No se puede usar \"{invalid}\". Solo letras, números, espacio, guion y guion bajo.
+UI/PlayerName/PlayerProfile.cs: Faltan {count} caracteres: el mínimo es 3.
+UI/PlayerName/PlayerProfile.cs: Sobran {count} caracteres: el máximo es 16.
+Weapons/ArmaDeFuego.cs: ruido coincide con el guardamanos en la animación (US 248).
+Weapons/ArmaEnPiso.cs: Arma en el piso
+Weapons/Grenades/GrenadeThrower.cs: Mano con granada
+Weapons/Grenades/RadiosGranada.cs: Riftwalker/Prueba: radios de la granada
+Weapons/Grenades/RadiosGranada.cs: Radios de la granada (prueba)
+Weapons/Grenades/RadiosGranada.cs: {distancia:0.0} m · {dano} de daño
+Weapons/Pistola.cs: ¡PUM! Balas en cargador: 
+Weapons/Trazadora.cs:  (teñida)

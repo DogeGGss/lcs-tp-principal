@@ -75,7 +75,7 @@ public class PersonajesDeathmatch : MonoBehaviour
         MatchHud hud = MatchHud.Instance;
         pantalla = CharacterSelectScreen.Show(hud != null ? hud.DisplayFont : null, hud != null ? hud.LabelFont : null,
             hud != null ? hud.LabelFont : null, hud != null ? hud.Rounded : null,
-            "Modo Deathmatch  ·  Solo cambia el aspecto", Mathf.Max(1f, segundos - 0.5f), AlElegir, null, true);
+            L10n.T("gameplay.ui.deathmatch_mode_appearance_only"), Mathf.Max(1f, segundos - 0.5f), AlElegir, null, true);
         if (pantalla == null) return; // no hay personajes
         abierta = true;
         if (PauseMenu.Instance != null) PauseMenu.Instance.AllowPause = false;

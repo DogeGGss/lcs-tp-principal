@@ -75,7 +75,7 @@ public partial class ModeSelectScreen
         Circle(icono, 0f, 0f, 17f, WithAlpha(Oscuro, 0.55f), 3f);
         b.aguja = Group("Aguja", icono, 0f, 0f);
         Line(b.aguja, Oscuro, 4f, Vector2.zero, new Vector2(24f, 0f));
-        Text(Place(Node("Titulo", b.buscar), 118f, 20f, 520f, 64f), displayFont, 60f, Oscuro, TextAlignmentOptions.MidlineLeft, 5f, true).text = "Buscar partida";
+        L10n.BindSource(Text(Place(Node("Titulo", b.buscar), 118f, 20f, 520f, 64f), displayFont, 60f, Oscuro, TextAlignmentOptions.MidlineLeft, 5f, true), "Buscar partida","ui.");
         Text(Place(Node("Detalle", b.buscar), 120f, 84f, 520f, 24f), labelFont, 21f, WithAlpha(Oscuro, 0.72f), TextAlignmentOptions.MidlineLeft, 16f, true).text =
             Titles[mode] + " · con jugadores de tu región";
         UIPolyline flecha = Line(b.buscar, Oscuro, 5f, new Vector2(646f, 62f), new Vector2(690f, 62f));
@@ -92,8 +92,7 @@ public partial class ModeSelectScreen
         b.cuenta = Text(Place(Node("Cuenta", b.acciones), 24f, 143f, 860f, 30f), bodyFont, 22f, White(0.7f), TextAlignmentOptions.MidlineLeft);
 
         Image(Place(Node("Linea", b.acciones), 0f, 204f, AnchoBuscar, 1f), null, White(FadeAlpha(0.12f)));
-        Text(Place(Node("Privada", b.acciones), 0f, 226f, AnchoBuscar, 22f), labelFont, 20f, White(0.55f), TextAlignmentOptions.MidlineLeft, 16f, true).text =
-            "Sala privada · con amigos";
+        L10n.BindSource(Text(Place(Node("Privada", b.acciones), 0f, 226f, AnchoBuscar, 22f), labelFont, 20f, White(0.55f), TextAlignmentOptions.MidlineLeft, 16f, true), "Sala privada · con amigos","ui.");
         float x = ButtonAt(b.acciones, 0f, 262f, "Crear sala", false, c, () => CreateRoom(mode), 26f, 60f).x;
         ButtonAt(b.acciones, x + 14f, 262f, "Unirse con código", false, c, () => ShowJoin(mode), 26f, 60f);
     }
@@ -137,7 +136,7 @@ public partial class ModeSelectScreen
         Image(b.error, rounded, new Color(0f, 0f, 0f, DarkAlpha(0.62f)), 12f, true);
         Border(b.error, 8f, WithAlpha(Bad, 0.5f));
         Image(Place(Node("Barra", b.error), 0f, 0f, AnchoPanel, 5f), null, Bad);
-        Text(Place(Node("Rotulo", b.error), 30f, 26f, 520f, 26f), labelFont, 24f, Bad, TextAlignmentOptions.MidlineLeft, 16f, true).text = "Buscar partida";
+        L10n.BindSource(Text(Place(Node("Rotulo", b.error), 30f, 26f, 520f, 26f), labelFont, 24f, Bad, TextAlignmentOptions.MidlineLeft, 16f, true), "Buscar partida","ui.");
         b.errorTitulo = Text(Place(Node("Titulo", b.error), 30f, 58f, 800f, 72f), displayFont, 64f, Ink, TextAlignmentOptions.MidlineLeft, 2f, true);
         b.errorTexto = Text(Place(Node("Texto", b.error), 30f, 134f, 780f, 64f), bodyFont, 24f, White(0.82f), TextAlignmentOptions.TopLeft);
         b.errorTexto.textWrappingMode = TextWrappingModes.Normal;
@@ -198,7 +197,7 @@ public partial class ModeSelectScreen
     private void Buscar(int mode)
     {
         Detail d = details[mode];
-        d.status.text = "";
+        L10n.BindSource(d.status, "","ui.");
         MatchSettings.Mode = (GameMode)mode;
         Multijugador.Instancia.BuscarPartida((GameMode)mode);
         MostrarBloque(d, Bloque.Busqueda);
@@ -209,14 +208,14 @@ public partial class ModeSelectScreen
     {
         Multijugador.Instancia.CancelarBusqueda();
         MostrarBloque(details[mode], Bloque.Acciones);
-        details[mode].status.text = "Búsqueda cancelada.";
+        L10n.BindSource(details[mode].status, "Búsqueda cancelada.","ui.");
     }
 
     private void AbrirLauncher(int mode)
     {
         if (PantallaSinSesion.AbrirLauncher()) return;
         MostrarBloque(details[mode], Bloque.Acciones);
-        details[mode].status.text = "No encontramos el launcher en esta PC: te abrimos la guía del juego para bajarlo.";
+        L10n.BindSource(details[mode].status, "No encontramos el launcher en esta PC: te abrimos la guía del juego para bajarlo.","ui.");
         Application.OpenURL(PantallaSinSesion.GuiaLauncher);
     }
 
@@ -241,23 +240,23 @@ public partial class ModeSelectScreen
         b.panel.gameObject.SetActive(bloque == Bloque.Busqueda);
         b.error.gameObject.SetActive(bloque == Bloque.Error);
         if (bloque == Bloque.Acciones) PintarCuenta(d);
-        else d.status.text = "";
+        else L10n.BindSource(d.status, "","ui.");
         // La tecla de arriba dice qué hace Esc (Back).
         if (open < 0 || details[open] != d) return;
         string atras = bloque == Bloque.Busqueda ? "Cancelar búsqueda" : bloque == Bloque.Sala ? "Salir de la sala" : bloque == Bloque.Error ? "Volver" : "Volver a los modos";
-        if (backText.text != atras) { backText.text = atras; PlaceBackKey(); }
+        if (backText.text != atras) { L10n.BindSource(backText,atras,"ui."); PlaceBackKey(); }
     }
 
     private void MostrarError(Detail d, Multijugador.Fallo fallo)
     {
         Busqueda b = d.busqueda;
         bool version = fallo == Multijugador.Fallo.Version, cuenta = fallo == Multijugador.Fallo.Cuenta;
-        b.errorTitulo.text = version ? "Hay una versión nueva" : cuenta ? "No se pudo verificar tu cuenta"
-            : fallo == Multijugador.Fallo.CuentaRepetida ? "Tu cuenta ya está jugando" : "Se cortó la conexión";
-        b.errorTexto.text = version ? "Solo se juntan jugadores con la misma versión del juego. Actualizá desde el launcher y volvé a buscar."
+        L10n.BindSource(b.errorTitulo, version ? "Hay una versión nueva" : cuenta ? "No se pudo verificar tu cuenta"
+            : fallo == Multijugador.Fallo.CuentaRepetida ? "Tu cuenta ya está jugando" : "Se cortó la conexión","ui.");
+        L10n.BindSource(b.errorTexto, version ? "Solo se juntan jugadores con la misma versión del juego. Actualizá desde el launcher y volvé a buscar."
             : cuenta ? "Tu sesión venció o se cerró. Volvé a entrar en el launcher y buscá de nuevo."
             : fallo == Multijugador.Fallo.CuentaRepetida ? "Tu cuenta está en esa partida desde otra PC. Cerrá el juego ahí y volvé a buscar."
-            : "Revisá tu internet y volvé a buscar. No perdiste nada: tu progreso está guardado.";
+            : "Revisá tu internet y volvé a buscar. No perdiste nada: tu progreso está guardado.","ui.");
         b.reintentar.gameObject.SetActive(!version && !cuenta);
         b.launcher.gameObject.SetActive(version || cuenta);
         MostrarBloque(d, Bloque.Error);
@@ -270,16 +269,16 @@ public partial class ModeSelectScreen
         bool cuenta = online != null && online.Cuenta == ReglasCuenta.Estado.ConCuenta;
         string nombre = PlayerProfile.HasName ? PlayerProfile.Name : "Jugador";
         d.busqueda.puntoCuenta.gameObject.SetActive(cuenta);
-        d.busqueda.cuenta.text = (cuenta ? $"Con tu cuenta <color=#FFFFFF>{nombre}</color>" : $"Como <color=#FFFFFF>{nombre}</color>")
-            + $" · {Region()} · misma versión (v{Application.version})";
+        d.busqueda.cuenta.text = L10n.T(cuenta ? "ui.search.account" : "ui.search.guest",nombre)
+            + L10n.T("ui.search.version",Region(),Application.version);
     }
 
     private static string Region()
     {
         string r = PhotonNetwork.CloudRegion;
-        if (string.IsNullOrEmpty(r)) return "tu región";
+        if (string.IsNullOrEmpty(r)) return L10n.Source("tu región","ui.");
         r = r.Split('/')[0].ToLowerInvariant();
-        return r == "sa" ? "Sudamérica" : r == "us" || r == "usw" ? "Estados Unidos" : r == "eu" ? "Europa" : r == "asia" ? "Asia" : r.ToUpperInvariant();
+        return L10n.Source(r == "sa" ? "Sudamérica" : r == "us" || r == "usw" ? "Estados Unidos" : r == "eu" ? "Europa" : r == "asia" ? "Asia" : r.ToUpperInvariant(),"ui.");
     }
 
     private static string Reloj(float segundos)
@@ -329,34 +328,34 @@ public partial class ModeSelectScreen
         float empezar = net.FaltaParaEmpezar, conMinimo = net.FaltaConMinimo;
         bool encontrada = empezar >= 0f;
 
-        b.titulo.text = encontrada ? "Partida encontrada" : "Buscando partida";
+        L10n.BindSource(b.titulo, encontrada ? "Partida encontrada" : "Buscando partida","ui.");
         b.reloj.text = encontrada ? $"{n} / {Multijugador.MaxJugadores}" : Reloj(net.SegundosBuscando);
         int segundos = Mathf.CeilToInt(empezar);
         b.grande.text = encontrada
-            ? segundos > 0 ? $"Empieza en <color={ModeHex[mode]}>{segundos}</color>" : "Cargando el mapa…"
-            : $"<color={ModeHex[mode]}>{n}</color> / {Multijugador.MaxJugadores} jugadores";
+            ? segundos > 0 ? L10n.T("ui.search.starts",ModeHex[mode],segundos) : L10n.Source("Cargando el mapa…","ui.")
+            : L10n.T("ui.search.players",ModeHex[mode],n,Multijugador.MaxJugadores);
         ConfigRed.Mapa mapa = enSala ? net.MapaActual : null;
-        b.datos.text = !enSala ? "Conectando con el servidor…"
-            : encontrada && mapa != null ? $"{Titles[mode]} · {mapa.nombre} · {Region()}"
-            : $"{Titles[mode]} · {Region()} · misma versión (v{Application.version})";
+        b.datos.text = !enSala ? L10n.Source("Conectando con el servidor…","ui.")
+            : encontrada && mapa != null ? $"{L10n.Source(Titles[mode],"ui.")} · {mapa.nombre} · {Region()}"
+            : L10n.T("ui.search.mode_version",L10n.Source(Titles[mode],"ui."),Region(),Application.version);
 
         float latido = 0.3f + 0.7f * (0.5f + 0.5f * Mathf.Cos(now * Mathf.PI * 2f / 1.6f));
         for (int s = 0; s < 8; s++)
         {
             bool ocupado = s < n;
-            string nombre = ocupado ? jugadores[s].nombre + (jugadores[s].vos ? " <color=#FFFFFF80>(vos)</color>" : "") : "Buscando…";
+            string nombre = ocupado ? jugadores[s].nombre + (jugadores[s].vos ? L10n.Source(" <color=#FFFFFF80>(vos)</color>","ui.") : "") : L10n.Source("Buscando…","ui.");
             b.lugares[s].text = nombre;
             b.lugares[s].color = ocupado ? Ink : White(FadeAlpha(0.35f));
             b.puntos[s].color = ocupado ? c : White(FadeAlpha(0.28f * latido));
         }
 
         bool barra = !encontrada && conMinimo >= 0f;
-        b.pie.text = encontrada ? "Si entra alguien más, se suma. Si sale alguien y quedan menos que el mínimo, sigue buscando."
-            : barra ? $"Ya está el mínimo para {Titles[mode]}. Si no entra nadie más, arranca en {Reloj(Mathf.Ceil(conMinimo))}."
-            : $"Arranca sola con {Multijugador.MaxJugadores} jugadores, o con {Multijugador.MinimoPara((GameMode)mode)} si pasan {Multijugador.EsperaConMinimo} s sin que entre nadie.";
+        b.pie.text = encontrada ? L10n.Source("Si entra alguien más, se suma. Si sale alguien y quedan menos que el mínimo, sigue buscando.","ui.")
+            : barra ? L10n.T("ui.search.minimum_ready",L10n.Source(Titles[mode],"ui."),Reloj(Mathf.Ceil(conMinimo)))
+            : L10n.T("ui.search.minimum_wait",Multijugador.MaxJugadores,Multijugador.MinimoPara((GameMode)mode),Multijugador.EsperaConMinimo);
         b.progreso.gameObject.SetActive(barra);
         if (barra) b.progresoLleno.sizeDelta = new Vector2(520f * (1f - conMinimo / Multijugador.EsperaConMinimo), 6f);
-        b.salir.text = encontrada ? "Salir" : "Cancelar";
+        L10n.BindSource(b.salir, encontrada ? "Salir" : "Cancelar","ui.");
 
         // El radar: del color del modo, más rápido con la partida encontrada.
         if (radarModo != mode)

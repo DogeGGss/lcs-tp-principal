@@ -54,7 +54,7 @@ public static class PerfilUI
         Color color, string text, TextAlignmentOptions align = TextAlignmentOptions.MidlineLeft, float spacing = 0f, bool upper = false)
     {
         TextMeshProUGUI t = Text(Place(Node(name, parent), x, y, w, h), font, size, color, align, spacing, upper);
-        t.text = text;
+        L10n.BindSource(t, text, "profile.");   // los rótulos del catálogo se traducen y siguen el cambio de idioma
         return t;
     }
 
@@ -310,7 +310,7 @@ public static class PerfilUI
         b.fondo = Image(b.rect, Rounded, b.color, 6f, true);
         if (!primary) b.borde = Borde(b.rect, 6f, White(0.3f));
         b.texto = Text(Stretch(Node("Texto", b.rect)), FTitulo, size, Ink, TextAlignmentOptions.Center, 6f, true);
-        b.texto.text = label;
+        L10n.BindSource(b.texto, label, "profile.");
         b.button = b.rect.gameObject.AddComponent<UnityEngine.UI.Button>();
         b.button.transition = UnityEngine.UI.Selectable.Transition.None;
         if (onClick != null) b.button.onClick.AddListener(onClick);
@@ -448,7 +448,7 @@ public static class PerfilUI
 
         public void Mostrar(string mensaje, float segundos = 2.6f)
         {
-            texto.text = mensaje;
+            texto.text = L10n.Source(mensaje, "profile.");
             rect.SetAsLastSibling();
             hasta = Time.unscaledTime + segundos;
         }

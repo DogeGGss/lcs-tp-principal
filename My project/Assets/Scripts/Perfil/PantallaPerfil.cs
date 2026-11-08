@@ -129,19 +129,19 @@ public class PantallaPerfil : PantallaBase
 
     private void RefrescarInfo()
     {
-        if (pestana == 0) infoPestana.text = $"Partidas terminadas  <color=#F3F4F6>{N(EstadisticasJugador.Datos.Partidas)}</color>";
+        if (pestana == 0) infoPestana.text = L10n.T("profile.info.matches_fmt", N(EstadisticasJugador.Datos.Partidas));
         else if (pestana == 3) infoPestana.text = cuenta.Info;
         else if (pestana == 2)
         {
             int equipados = 0;
             for (int i = 0; i < EmotesEquipados.Espacios; i++) if (EmotesEquipados.En(i) >= 0) equipados++;
-            infoPestana.text = $"En la rueda  <color=#F3F4F6>{equipados} / {EmotesEquipados.Espacios}</color>";
+            infoPestana.text = L10n.T("profile.info.wheel_fmt", equipados, EmotesEquipados.Espacios);
         }
         else
         {
             int tiene = PerfilDatos.Obtenidos(Tipo.Avatar) + PerfilDatos.Obtenidos(Tipo.Banner) + PerfilDatos.Obtenidos(Tipo.Titulo) + PerfilDatos.Obtenidos(Tipo.Marco);
             int total = PerfilDatos.Total(Tipo.Avatar) + PerfilDatos.Total(Tipo.Banner) + PerfilDatos.Total(Tipo.Titulo) + PerfilDatos.Total(Tipo.Marco);
-            infoPestana.text = $"Colección  <color=#F3F4F6>{tiene} / {total}</color>";
+            infoPestana.text = L10n.T("profile.info.collection_fmt", tiene, total);
         }
     }
 
@@ -590,7 +590,7 @@ public class PantallaPerfil : PantallaBase
                 CrearBoton(carta, w - 118f, 64f, 100f, 40f, "Quitar", false, () =>
                 {
                     EmotesEquipados.Poner(k, -1);
-                    menu.Avisar($"Espacio {k + 1} vacío");
+                    menu.Avisar(L10n.T("profile.emotes.slot_empty_fmt", k + 1));
                     Refrescar();
                 }, 18f);
         }
@@ -620,7 +620,7 @@ public class PantallaPerfil : PantallaBase
             TextMeshProUGUI n = T(carta, "Nombre", 104f, 18f, cw - 120f, 40f, FTitulo, 30f, Ink, e.nombre, TextAlignmentOptions.MidlineLeft, 3f, true);
             n.overflowMode = TextOverflowModes.Ellipsis;
             T(carta, "Estado", 104f, 60f, cw - 120f, 24f, FRotulo, 16f, espacio >= 0 ? Ok : Mute,
-                espacio >= 0 ? $"En el espacio {espacio + 1}" : "Sin equipar", TextAlignmentOptions.MidlineLeft, 12f, true);
+                espacio >= 0 ? L10n.T("profile.emotes.in_slot_fmt", espacio + 1) : L10n.T("profile.ui.not_equipped"), TextAlignmentOptions.MidlineLeft, 12f, true);
             Img borde = Borde(carta, 8f, visto ? Accent : White(0.08f));
             var p = Clickeable(carta, () =>
             {
@@ -629,7 +629,7 @@ public class PantallaPerfil : PantallaBase
                 if (espacioElegido >= 0)
                 {
                     EmotesEquipados.Poner(espacioElegido, k);
-                    menu.Avisar($"{e.nombre} en el espacio {espacioElegido + 1} ({LugaresDeLaRueda[espacioElegido].ToLowerInvariant()})");
+                    menu.Avisar(L10n.T("profile.emote.equipped_fmt", L10n.Source(e.nombre, "profile."), espacioElegido + 1, L10n.Source(LugaresDeLaRueda[espacioElegido], "profile.").ToLowerInvariant()));
                 }
                 Refrescar();
             });
@@ -659,7 +659,7 @@ public class PantallaPerfil : PantallaBase
         vistaEmote.texture = VistaPreviaDeEmote.Textura;
         nombreVisto.text = e != null ? e.nombre : "";
         if (personajeVisto != null) personajeVisto.text = pj != null ? pj.displayName : "";
-        ayudaVista.text = e == null ? "Pasá el mouse por un baile para verlo." : pj != null ? pj.role : "";
+        ayudaVista.text = e == null ? L10n.Source("Pasá el mouse por un baile para verlo.", "profile.") : pj != null ? pj.role : "";
     }
 
     private CharacterData PersonajeDeLaVista()
@@ -698,9 +698,9 @@ public class PantallaPerfil : PantallaBase
         AjustarCubrir(banner, cajaBanner);
         fondoCabecera.enabled = !conMarco;
         if (bordeCabecera != null) bordeCabecera.enabled = !conMarco;
-        nombre.text = PlayerProfile.HasName ? PlayerProfile.Name : "Jugador";
+        nombre.text = PlayerProfile.HasName ? PlayerProfile.Name : L10n.T("profile.player.default");
         bool sinTitulo = string.IsNullOrEmpty(ti.id);
-        titulo.text = sinTitulo ? "Sin título" : ti.nombre;
+        titulo.text = sinTitulo ? L10n.T("profile.title.none") : L10n.Source(ti.nombre, "profile.");
         titulo.color = sinTitulo ? Mute : Ink;
         EstadisticasJugador.Totales e = EstadisticasJugador.Datos;
         resumen[0].text = N(e.Partidas);

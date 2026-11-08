@@ -31,7 +31,7 @@ public class Pistola : MonoBehaviour, IHudWeapon
     private float reloadStartTime;
 
     // Datos para el HUD (US 056): el HUD le pone el nombre de la tienda (Línea A o Línea H).
-    public string HudName => "Pistola";
+    public string HudName => L10n.T("gameplay.ui.pistol");
     public int Ammo => currentAmmo;
     public int MagazineSize => maxAmmo;
     public int Reserve => reserveAmmo;
@@ -178,7 +178,7 @@ public class Pistola : MonoBehaviour, IHudWeapon
     private ShopItem FallbackData()
     {
         ShopItem item = ScriptableObject.CreateInstance<ShopItem>();
-        item.alias = "Pistola";
+        item.alias = L10n.T("gameplay.ui.pistol");
         item.bands = new[] { new DamageBand { upTo = 0f, head = damage, body = damage, legs = damage } };
         return item;
     }

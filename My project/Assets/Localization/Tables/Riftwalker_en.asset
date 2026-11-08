@@ -1,0 +1,5657 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e9620f8c34305754d8cc9a7e49e852d9, type: 3}
+  m_Name: Riftwalker_en
+  m_EditorClassIdentifier: Unity.Localization::UnityEngine.Localization.Tables.StringTable
+  m_LocaleId:
+    m_Code: en
+  m_SharedData: {fileID: 11400000, guid: 4167d0cdf7163154ea1e87eb29081448, type: 2}
+  m_Metadata:
+    m_Items: []
+  m_TableData:
+  - m_Id: 7488761856
+    m_Localized: Choose your character
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7509733376
+    m_Localized: "<color=#F3F4F6>{0}</color>  Select     <color=#F3F4F6>\u2190 \u2192</color>  Navigate     <color=#F3F4F6>Enter</color>  Confirm"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927680
+    m_Localized: '     <color=#F3F4F6>Esc</color>  Back'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927681
+    m_Localized: Placeholder
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927682
+    m_Localized: Last selected
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927683
+    m_Localized: Appearance only
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927684
+    m_Localized: No ability
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927685
+    m_Localized: Abilities are disabled in Deathmatch
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927686
+    m_Localized: "{0} \xB7 Cooldown {1} s"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927687
+    m_Localized: Selected by {0}
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927688
+    m_Localized: Empty
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927689
+    m_Localized: You have no emotes equipped. Equip them from your profile.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927690
+    m_Localized: Move the mouse
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927691
+    m_Localized: Health
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927692
+    m_Localized: Your cards
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927693
+    m_Localized: Boss
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927694
+    m_Localized: Record
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927695
+    m_Localized: Pts
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927696
+    m_Localized: Buy phase
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927697
+    m_Localized: "MATCH OVER  \xB7  DEATHMATCH"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927698
+    m_Localized: Match over
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927699
+    m_Localized: "Match over  \xB7  Your opponents left"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927700
+    m_Localized: "Match over  \xB7  Your team left"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927701
+    m_Localized: Victory
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927702
+    m_Localized: Defeat
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927703
+    m_Localized: Boss reward
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927704
+    m_Localized: Supply station
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927705
+    m_Localized: Invasion mode
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927706
+    m_Localized: You survived!
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927707
+    m_Localized: You were eliminated
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927708
+    m_Localized: Player
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927709
+    m_Localized: Could not connect. Check your connection.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927710
+    m_Localized: You can no longer rejoin that match.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927711
+    m_Localized: Invasion
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927712
+    m_Localized: Tactical
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927713
+    m_Localized: Choose your loadout
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927714
+    m_Localized: Starts in
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927715
+    m_Localized: Close to respawn
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927716
+    m_Localized: You can change
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927717
+    m_Localized: Fight!
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927718
+    m_Localized: "Deathmatch mode  \xB7  Appearance only"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927719
+    m_Localized: Change your loadout while dead or just after respawning
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927720
+    m_Localized: Ammunition
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927721
+    m_Localized: Both weapons
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927722
+    m_Localized: Refills the magazine and reserve ammo of both weapons.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927723
+    m_Localized: Pistol
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927724
+    m_Localized: Device
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927725
+    m_Localized: Left click
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927726
+    m_Localized: Right click
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927727
+    m_Localized: Mouse wheel
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927728
+    m_Localized: Space
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927729
+    m_Localized: Backspace
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927730
+    m_Localized: Caps Lock
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927731
+    m_Localized: Up
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927732
+    m_Localized: Down
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927733
+    m_Localized: Reload
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927734
+    m_Localized: Reserve shot
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927735
+    m_Localized: Focused shot
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927736
+    m_Localized: Quick discharge
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927737
+    m_Localized: Coupling
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927738
+    m_Localized: No backup
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927739
+    m_Localized: Sticky charge
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927740
+    m_Localized: Double shell
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927741
+    m_Localized: Compact slug
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927742
+    m_Localized: Twin magazine
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927743
+    m_Localized: Loose bolt
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927744
+    m_Localized: Open sights
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927745
+    m_Localized: No interval
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927746
+    m_Localized: Growing burst
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927747
+    m_Localized: Minefield
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927748
+    m_Localized: Logistics
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927749
+    m_Localized: Backpack
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927750
+    m_Localized: Recycler
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927751
+    m_Localized: Edge
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927752
+    m_Localized: Scavenger
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927753
+    m_Localized: Finisher
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927754
+    m_Localized: Hungry edge
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927755
+    m_Localized: Ready reserve
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927756
+    m_Localized: Rage
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927757
+    m_Localized: Direct feed
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927758
+    m_Localized: Instant delivery
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927759
+    m_Localized: Clearance
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927760
+    m_Localized: SMG and rifle
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927761
+    m_Localized: Rifle
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927762
+    m_Localized: Heavy pistol
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927763
+    m_Localized: Pistols and primary weapon
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927764
+    m_Localized: Any primary
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927765
+    m_Localized: Shotgun
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927766
+    m_Localized: SMG
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927767
+    m_Localized: Sniper
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927768
+    m_Localized: Burst rifle
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927769
+    m_Localized: All
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927770
+    m_Localized: Knife
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927771
+    m_Localized: With an empty magazine, holding the trigger keeps firing from the reserve at half the fire rate.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927772
+    m_Localized: While aiming, the rifle fires up to 5 bullets together in a single hit, every 0.4 s.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927773
+    m_Localized: 'Charged shot: holding the trigger charges in 3 stages and, on release, fires 2, 4 or 6 bullets in a row.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927774
+    m_Localized: Every 3 pistol hits, your primary weapon fires one shot on its own toward the crosshair.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927775
+    m_Localized: Your primary weapon gets double the magazine, but you lose your secondary for the rest of the match.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927776
+    m_Localized: Grenades that hit an invader directly stick to it for 1 s and explode with double damage.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927777
+    m_Localized: The shotgun fires 2 shells at once, using both.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927778
+    m_Localized: While aiming, the pellets fly together as a single projectile with no spread and the same damage.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927779
+    m_Localized: The first time the magazine runs empty, it reloads instantly from the reserve.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927780
+    m_Localized: After a headshot kill, you can fire again after 0.2 s.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927781
+    m_Localized: Without aiming, it fires with no spread and at double the fire rate. While aiming, it fires normally.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927782
+    m_Localized: Killing removes the pause between the next 3 bursts.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927783
+    m_Localized: Each kill adds one bullet to your bursts, up to 6. Reloading resets them to 3.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927784
+    m_Localized: Grenades that touch the ground stay as mines (up to 5).
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927785
+    m_Localized: From now on, stations refill all your ammo instead of half.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927786
+    m_Localized: 40% more reserve ammo for both weapons.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927787
+    m_Localized: Each headshot kill returns 5 bullets to the magazine.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927788
+    m_Localized: Knife kills reload the last weapon you held.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927789
+    m_Localized: 1 in 5 invaders drops a magazine when it dies.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927790
+    m_Localized: The knife kills invaders with 25% health or less in one hit (except the Boss).
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927791
+    m_Localized: Each knife hit heals as much as the damage it deals, up to 25 health per hit.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927792
+    m_Localized: Your holstered weapon reloads itself from its reserve after 2 s.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927793
+    m_Localized: When an invader hits you, your next shot adds 5 times the health you lost.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927794
+    m_Localized: 'Magazine and reserve are a single pool: you never reload until you run out of bullets.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927795
+    m_Localized: The station's choice opens as soon as it's charged, without waiting for the wave to end.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927796
+    m_Localized: When the station is charged, a bubble pushes invaders in the ring back 10 m, except the Boss.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927797
+    m_Localized: Common
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927798
+    m_Localized: Rare
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927799
+    m_Localized: Epic
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927800
+    m_Localized: Legendary
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927801
+    m_Localized: Weapon
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927802
+    m_Localized: Primary weapon
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927803
+    m_Localized: Secondary weapon
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927804
+    m_Localized: 'Works with: {0}'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927805
+    m_Localized: 'Disables: {0}'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927806
+    m_Localized: No use with Direct feed
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927807
+    m_Localized: Replaces your {0}. Comes with full ammo.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927808
+    m_Localized: Goes in your empty {0} weapon slot. Comes with full ammo.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927809
+    m_Localized: Station choice
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927810
+    m_Localized: Pick one
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927811
+    m_Localized: "R  \xB7  Reroll  \xB7  {0} pts"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927812
+    m_Localized: You have {0} pts
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927813
+    m_Localized: You need more points to reroll ({0})
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927814
+    m_Localized: Wave {0}
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927815
+    m_Localized: The boss is coming
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927816
+    m_Localized: '{0} enemies'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927817
+    m_Localized: The boss is here!
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927818
+    m_Localized: With its escort
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927819
+    m_Localized: Wave {0} cleared
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927820
+    m_Localized: 20 s break
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927821
+    m_Localized: BOSS DEFEATED
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927822
+    m_Localized: You cleared wave {0}. If you keep going, the Boss's choice awaits, but from now on invaders have {1}% more health and hit {2}% harder.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927823
+    m_Localized: Next wave in
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927824
+    m_Localized: Next wave
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927825
+    m_Localized: "\xB7 lap {0}"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927826
+    m_Localized: of {0}
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927827
+    m_Localized: <color=#9AA39A>You haven't picked any cards yet</color>
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927828
+    m_Localized: Supplies at {0}
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927829
+    m_Localized: 'Next station: {0}'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927830
+    m_Localized: Next station
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927831
+    m_Localized: the surroundings
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927832
+    m_Localized: Station charged
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927833
+    m_Localized: Station open
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927834
+    m_Localized: The station left without charging
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927835
+    m_Localized: "Next \xB7 here"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927836
+    m_Localized: "Next \xB7 {0:0} m"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927837
+    m_Localized: Station charge
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927838
+    m_Localized: Outside the ring
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927839
+    m_Localized: Module 1
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927840
+    m_Localized: Module {0}
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927841
+    m_Localized: the Library
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927842
+    m_Localized: You survived {0} waves
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927843
+    m_Localized: You died
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927844
+    m_Localized: "Game over  \xB7  {0}"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927845
+    m_Localized: You saved the world
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927846
+    m_Localized: You didn't save the world
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927847
+    m_Localized: You retired after the wave {0} Boss
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927848
+    m_Localized: You fell on wave {0} of {1}
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927849
+    m_Localized: "New record! \xB7 Wave {0}"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927850
+    m_Localized: 'Record on {0}: <color=#F3F4F6>wave {1}</color>'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927851
+    m_Localized: Headshots
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927852
+    m_Localized: Play again
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927853
+    m_Localized: Back to menu
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927854
+    m_Localized: "Enter  \xB7  Play again          Esc  \xB7  Back to menu"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927855
+    m_Localized: '{0}  <color=#FF5C5C>FURY</color>'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927856
+    m_Localized: "Streak <color=#{0}>\xB7 Best {1}</color>"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927857
+    m_Localized: " \xB7 Reload"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927858
+    m_Localized: Out of ammo
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927859
+    m_Localized: No signal
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927860
+    m_Localized: First to {0} wins
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927861
+    m_Localized: Last minute
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927862
+    m_Localized: Your kills
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927863
+    m_Localized: You're leading  <color=#8E96A3>over {0}</color>
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927864
+    m_Localized: You're leading
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927865
+    m_Localized: Leading  <color=#F3F4F6>{0}</color>
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927866
+    m_Localized: Leading
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927867
+    m_Localized: "Deathmatch  \xB7  First to {0} kills wins"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927868
+    m_Localized: ' <color=#8E96A3>(you)</color>'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927869
+    m_Localized: ' <color=#8E96A3>(disconnected)</color>'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927870
+    m_Localized: Headshot kills
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927871
+    m_Localized: +{0} credits
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927872
+    m_Localized: BACK TO MENU
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927873
+    m_Localized: '#{0} PLACE'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927874
+    m_Localized: GAME OVER
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927875
+    m_Localized: '{0} kill'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518121984
+    m_Localized: '{0} kills'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518121985
+    m_Localized: The other players left the match
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518121986
+    m_Localized: You reached <color=#F29A38>{0}</color> first
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518121987
+    m_Localized: 'Time''s up: you won with <color=#F29A38>{0}</color>'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518121988
+    m_Localized: <color=#F29A38>{0}</color> won with {1}
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518121989
+    m_Localized: 'Time''s up: <color=#F29A38>{0}</color> won with {1}'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518121990
+    m_Localized: Your team
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518121991
+    m_Localized: "<color=#F3F4F6>Your team</color>  \xB7  {0}"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518121992
+    m_Localized: "Round {0} \xB7 first to {1}"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518121993
+    m_Localized: Device planted
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518121994
+    m_Localized: Selection
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518121995
+    m_Localized: Sudden death
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518121996
+    m_Localized: "Round {0} \xB7 {1} to {2}"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518121997
+    m_Localized: Round in progress
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518121998
+    m_Localized: "Round {0}  \xB7  {1} to {2}"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518121999
+    m_Localized: Round {0}
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518122000
+    m_Localized: '{0} <color=#8E96A3>(you)</color>'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518122001
+    m_Localized: '{0} <color=#8E96A3>(disconnected)</color>'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518122002
+    m_Localized: "<color=#58A6FF>Your team</color>   \xB7   <color=#FF5C5C>Enemies</color>"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518122003
+    m_Localized: The team that wins this round wins the match
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518122004
+    m_Localized: Halftime
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518122005
+    m_Localized: Side switch
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518122006
+    m_Localized: 'Weapons: pistol'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518122007
+    m_Localized: 'Money: {0}'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518122008
+    m_Localized: Everyone gets {0}
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518122009
+    m_Localized: Round won
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518122010
+    m_Localized: Round lost
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518122011
+    m_Localized: Next round in {0}
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518122012
+    m_Localized: 'No bonus: you didn''t plant'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518122013
+    m_Localized: 'Loss streak: {0}'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518122014
+    m_Localized: Time ran out and your team defended
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518122015
+    m_Localized: Time ran out and the enemies defended
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518122016
+    m_Localized: The device exploded
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518122017
+    m_Localized: The device was defused
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518122018
+    m_Localized: The enemies left the match
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518122019
+    m_Localized: Your team left the match
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518122020
+    m_Localized: Your team eliminated all enemies
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518122021
+    m_Localized: The enemies eliminated your team
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518122022
+    m_Localized: You can't leave the base during the buy phase
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518122023
+    m_Localized: The base exit opens in <color=#F29A38>{0}:{1:00}</color>
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518122024
+    m_Localized: Planting the device at {0}
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518122025
+    m_Localized: Defusing the device
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518122026
+    m_Localized: Hold {0} to plant the device at {1}
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518122027
+    m_Localized: Hold {0} to defuse the device
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518122028
+    m_Localized: Device planted at {0}
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518122029
+    m_Localized: Teammate
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518122030
+    m_Localized: Station ring
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518122031
+    m_Localized: <color=#F3F4F6>{0}</color>  Map
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518122032
+    m_Localized: Practice dummies
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518122033
+    m_Localized: Health {0}
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518122034
+    m_Localized: "Reaction: average {0:0.00} s \xB7 best {1:0.00} s"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518122035
+    m_Localized: " \xB7 {0} missed"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518122036
+    m_Localized: 'Reaction: you didn''t hit any'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518122037
+    m_Localized: Moving
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518122038
+    m_Localized: Reaction
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518122039
+    m_Localized: 'Reaction: {0} of {1}'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518122040
+    m_Localized: "{0} \xB7 Kills: {1} \xB7 Headshots: {2}"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518122041
+    m_Localized: 'Pick a mode: look at a button and press {0}, or shoot it'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518122042
+    m_Localized: Sprint (in Tactical, walk slowly)
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518122043
+    m_Localized: Hit a target
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518122044
+    m_Localized: Aim down sights
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518122045
+    m_Localized: Hit it in the head
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518122046
+    m_Localized: Switch weapon
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518122047
+    m_Localized: Use your ability
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518122048
+    m_Localized: Open the shop
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518122049
+    m_Localized: Pick another weapon
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518122050
+    m_Localized: 'Use your ability: {0}'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518122051
+    m_Localized: "Tutorial \xB7 Game modes \xB7 {0} of {1}"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518122052
+    m_Localized: Next mode
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518122053
+    m_Localized: <color=#{0}>Hold Tab</color>  Skip tutorial
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518122054
+    m_Localized: TUTORIAL COMPLETE
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518122055
+    m_Localized: Done! You know the basics
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518122056
+    m_Localized: The mode panels are on the left wall. You can reopen the tutorial from the panel.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518122057
+    m_Localized: Hold Tab
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518122058
+    m_Localized: Game mode
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518122059
+    m_Localized: "Tutorial \xB7 Step {0} of {1}"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518122060
+    m_Localized: '<color=#{0}>Tab</color>  Skip step     '
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518122061
+    m_Localized: '<color=#{0}>OBJECTIVE</color>
+
+      {1}
+
+
+'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518122062
+    m_Localized: '<color=#{0}>HOW TO WIN</color>
+
+      {1}
+
+
+'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518122063
+    m_Localized: '<color=#{0}>HOW TO LOSE</color>
+
+      {1}'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518122064
+    m_Localized: Time
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518122065
+    m_Localized: "You reached wave {0}  \xB7  {1}"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518122066
+    m_Localized: '{0} Boss defeated'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518122067
+    m_Localized: '{0} Bosses defeated'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518122068
+    m_Localized: Easy
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518122069
+    m_Localized: Normal
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518122070
+    m_Localized: Hard
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518122071
+    m_Localized: Inside
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518122072
+    m_Localized: VICTORY
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518122073
+    m_Localized: Kills
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518122074
+    m_Localized: Deaths
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518122075
+    m_Localized: 'Sides drawn: you attack'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518122076
+    m_Localized: 'Sides drawn: you defend'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518122077
+    m_Localized: Your team now <color=#F3F4F6>attacks</color>
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518122078
+    m_Localized: Your team now <color=#F3F4F6>defends</color>
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518122079
+    m_Localized: Shoot it
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518122080
+    m_Localized: Down
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518122081
+    m_Localized: head
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518122082
+    m_Localized: legs
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518122083
+    m_Localized: body
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518122084
+    m_Localized: Finish
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518122085
+    m_Localized: primary
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518122086
+    m_Localized: secondary
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518122087
+    m_Localized: Wave
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518122088
+    m_Localized: Points
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518122089
+    m_Localized: Continue
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518122090
+    m_Localized: Retire
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518122091
+    m_Localized: Move
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518122092
+    m_Localized: Look
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518122093
+    m_Localized: Shoot
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518122094
+    m_Localized: Ability
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518122095
+    m_Localized: Shop
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518122096
+    m_Localized: Streak
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518122097
+    m_Localized: 'The launcher may already be open in this installation.
+
+
+'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518122098
+    m_Localized: 'Could not open the launcher. '
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518122099
+    m_Localized: Choose a dedicated game folder, not the root of a drive.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518122100
+    m_Localized: Choose an empty folder to install Riftwalker.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518122101
+    m_Localized: "Account verified \xB7 since {0}"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518122102
+    m_Localized: Account verified
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518122103
+    m_Localized: Playing as {0}. Your progress is saved to your account.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518122104
+    m_Localized: 'Could not check for updates. You can play with your account: your progress will sync when you reconnect.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518122105
+    m_Localized: Sign out
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518122106
+    m_Localized: Delete account
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518122107
+    m_Localized: YOUR ACCOUNT
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518122108
+    m_Localized: SIGN IN
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518122109
+    m_Localized: You need an account to play. Your progress is saved to it so you can continue on any PC.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518122110
+    m_Localized: EMAIL
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518122111
+    m_Localized: PASSWORD
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518122112
+    m_Localized: Forgot your password?
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518122113
+    m_Localized: "SIGN IN  \u2192"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518122114
+    m_Localized: "SIGNING IN\u2026"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518122115
+    m_Localized: You are signed in.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518122116
+    m_Localized: No account yet?
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518122117
+    m_Localized: Create account
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518122118
+    m_Localized: NEW ACCOUNT
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518122119
+    m_Localized: CREATE ACCOUNT
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518122120
+    m_Localized: 'Your new account starts fresh: save your progress to the cloud and play on any PC.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518122121
+    m_Localized: 8 characters or more
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518122122
+    m_Localized: REPEAT PASSWORD
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518122123
+    m_Localized: Sign in
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518122124
+    m_Localized: 'By creating an account you accept the '
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518122125
+    m_Localized: privacy notice
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518122126
+    m_Localized: Back
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518122127
+    m_Localized: "CREATING\u2026"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518122128
+    m_Localized: Your account is now active.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518122129
+    m_Localized: "YOUR ACCOUNT \xB7 ONE MORE STEP"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518122130
+    m_Localized: VERIFY YOUR EMAIL
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518122131
+    m_Localized: 'We sent a 6-digit code to '
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518122132
+    m_Localized: . If you cannot find it, check your spam folder.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518122133
+    m_Localized: Did not receive it? Request another in 0:{0:00}
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518122134
+    m_Localized: 'Did not receive it? '
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518122135
+    m_Localized: Request another code
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518122136
+    m_Localized: We sent another code.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518122137
+    m_Localized: 'Wrong email address? '
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518122138
+    m_Localized: Change it
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518122139
+    m_Localized: CONFIRM
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518122140
+    m_Localized: "CONFIRMING\u2026"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518122141
+    m_Localized: RESET PASSWORD
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518122142
+    m_Localized: Enter your email and we will send you a code to choose a new password.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518122143
+    m_Localized: SEND CODE
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518122144
+    m_Localized: "SENDING\u2026"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518122145
+    m_Localized: NEW PASSWORD
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518122146
+    m_Localized: If an account exists for that email, a 6-digit code has been sent.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518122147
+    m_Localized: CODE
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518122148
+    m_Localized: CHANGE AND SIGN IN
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518122149
+    m_Localized: "CHANGING\u2026"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518122150
+    m_Localized: Password changed. You are signed in.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518122151
+    m_Localized: PRIVACY
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518122152
+    m_Localized: PRIVACY NOTICE
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518122153
+    m_Localized: WHAT WE STORE
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518122154
+    m_Localized: Your email and password (encrypted), your name, your progress (achievements, cosmetics and currency), your match statistics and the feedback you send.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518122155
+    m_Localized: WHY
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518122156
+    m_Localized: To recover your progress on any PC, for the global rankings and for matchmaking. We do not use it for advertising or share it with anyone.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518122157
+    m_Localized: WHERE
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518122158
+    m_Localized: In the game database (Supabase). Matches use Photon servers, which receive your player name, account ID and connection (IP address).
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518122159
+    m_Localized: YOUR RIGHTS
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518122160
+    m_Localized: You can view your data in your in-game Profile and delete your account and its data from this launcher (Argentine Personal Data Protection Law 25.326).
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518122161
+    m_Localized: GOT IT
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518122162
+    m_Localized: SIGN OUT?
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518122163
+    m_Localized: Your account will no longer be used on this PC. Sign in again to play. Your progress stays in your account and will return when you sign back in.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7522316288
+    m_Localized: SIGN OUT
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7522316289
+    m_Localized: "SIGNING OUT\u2026"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7522316290
+    m_Localized: You signed out. Your progress remains in your account.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7522316291
+    m_Localized: CLOSE THE GAME FIRST
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7522316292
+    m_Localized: "Project Riftwalker is running with your account. Close it, then select \u201C{0}\u201D again."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7522316293
+    m_Localized: THIS CANNOT BE UNDONE
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7522316294
+    m_Localized: DELETE ACCOUNT
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7522316295
+    m_Localized: Your account, progress, currency, cosmetics and ranking entry will be deleted. You can use the email address to create another account.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7522316296
+    m_Localized: YOUR PASSWORD, TO CONFIRM
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7522316297
+    m_Localized: "DELETING\u2026"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7522316298
+    m_Localized: Your account and all its data were deleted. You can use the email address to create another one.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7522316299
+    m_Localized: SHOW
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7522316300
+    m_Localized: HIDE
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7522316301
+    m_Localized: 6-digit code
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7522316302
+    m_Localized: READY TO PLAY
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7522316303
+    m_Localized: Version 0.3.0 installed
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7522316304
+    m_Localized: '## Preparing the news
+
+      Patch notes will appear here.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7522316305
+    m_Localized: YOUR TEAM IS WAITING
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7522316306
+    m_Localized: Design preview
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7522316307
+    m_Localized: Everything in one place. Update the game, read the news and join your next match.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7522316308
+    m_Localized: "PLAY  \u2192"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7522316309
+    m_Localized: "Preview \xB7 does not install or launch the game"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7522316310
+    m_Localized: PREVIEW
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7522316311
+    m_Localized: Preview
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7522316312
+    m_Localized: "## Your next crossing starts here\nA meeting point to prepare for your next match.\n### Keep your game up to date\n- Download new versions from this launcher.\n- Keep your settings and progress.\n- Read what changed before you play.\n### Choose your platform\n**Tactical \xB7 Deathmatch \xB7 Zombie**\n\nThis is an interface preview, not the patch notes of a published release."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7522316313
+    m_Localized: Game not installed
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7522316314
+    m_Localized: Version {0} installed
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7522316315
+    m_Localized: "SET UP  \u2192"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7522316316
+    m_Localized: "INSTALL  \u2193"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7522316317
+    m_Localized: "SWITCH TO STABLE  \u2193"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7522316318
+    m_Localized: "UPDATE  \u2193"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7522316319
+    m_Localized: "RETRY  \u21BB"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7522316320
+    m_Localized: WELCOME TO THE PLATFORM
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7522316321
+    m_Localized: FIRST STOP
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7522316322
+    m_Localized: SOMETHING NEW
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7522316323
+    m_Localized: '{0} {1}. Install this version to play from the launcher.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7522316324
+    m_Localized: Experimental
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7522316325
+    m_Localized: New version
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7522316326
+    m_Localized: "Version {0} \xB7 Up to date"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7522316327
+    m_Localized: Could not check for updates. You can play the installed version.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7522316328
+    m_Localized: Set up the installation to get started.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7522316329
+    m_Localized: EXPERIMENTAL
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7522316330
+    m_Localized: STABLE
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7522316331
+    m_Localized: "Checking for updates\u2026"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7522316332
+    m_Localized: Checking published versions
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7522316333
+    m_Localized: '## Notes currently unavailable
+
+      GitHub did not return the release list. The notes for this version are on [GitHub Releases]('
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7522316334
+    m_Localized: CONNECTED TO GITHUB
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7522316335
+    m_Localized: "CONNECTED \xB7 CACHED NOTES"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7522316336
+    m_Localized: "Updating the launcher\u2026"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7522316337
+    m_Localized: "UPDATING LAUNCHER\u2026"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7522316338
+    m_Localized: The launcher could not update itself. It will try again next time.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7522316339
+    m_Localized: There is no compatible release for this launcher yet.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7522316340
+    m_Localized: "{0} channel \xB7 v{1}"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7522316341
+    m_Localized: experimental
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7522316342
+    m_Localized: stable
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7522316343
+    m_Localized: The team has not published a version in the new format yet. Check again later.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7522316344
+    m_Localized: OFFLINE / CACHED DATA
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7522316345
+    m_Localized: You can try again when you are online.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7522316346
+    m_Localized: 'Could not check for updates. '
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7522316347
+    m_Localized: You can play the installed version.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7522316348
+    m_Localized: Try again to install the game.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7522316349
+    m_Localized: " \xB7 NEW"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7522316350
+    m_Localized: '## The platform is ready
+
+      Notes will appear when the team publishes the first compatible version.
+
+
+      You can find earlier versions on [GitHub Releases]('
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7522316351
+    m_Localized: '## No cached notes
+
+      Could not load the patch notes. Try again when you are online.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7522316352
+    m_Localized: Stable version
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7522316353
+    m_Localized: No notes for this version.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7522316354
+    m_Localized: " \xB7 {0:mm\\\\:ss} remaining"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7522316355
+    m_Localized: Close the game to update it, then select Update.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7522316356
+    m_Localized: "Downloading\u2026"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7522316357
+    m_Localized: "The file was corrupted. Downloading again\u2026"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7522316358
+    m_Localized: Installation complete
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7522316359
+    m_Localized: Version {0} installed. You can now play.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7522316360
+    m_Localized: Download cancelled. The previous installation is preserved.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7522316361
+    m_Localized: The download was interrupted. Select Update or Install to resume.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7522316362
+    m_Localized: YOUR FIRST STOP
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7522316363
+    m_Localized: YOUR PLATFORM, YOUR WAY
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7522316364
+    m_Localized: Install launcher
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7522316365
+    m_Localized: Save
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7522316366
+    m_Localized: Install the launcher and its shortcuts. You can then download the game.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7522316367
+    m_Localized: This folder contains the launcher and game. Your saved progress is stored separately.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7522316368
+    m_Localized: Choose the folder for Project Riftwalker
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7522316369
+    m_Localized: 'Could not save: '
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7522316370
+    m_Localized: Could not start the launcher update.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7522316371
+    m_Localized: Update is outside the installation.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7522316372
+    m_Localized: The launcher update is corrupted.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899200
+    m_Localized: Could not open the new launcher.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899201
+    m_Localized: The new launcher did not finish starting.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899202
+    m_Localized: The server returned an invalid file range.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899203
+    m_Localized: The download size does not match the release.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899204
+    m_Localized: The download exceeds the published size.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899205
+    m_Localized: The download was interrupted. You can resume where it stopped.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899206
+    m_Localized: The file is corrupted. Try again to download it again.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899207
+    m_Localized: The game folder is not a valid installation. Check it before continuing.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899208
+    m_Localized: Not enough disk space. {0:N0} MB more is needed.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899209
+    m_Localized: Close the game to update it.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899210
+    m_Localized: The downloaded file failed verification.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899211
+    m_Localized: "Verifying and installing\u2026"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899212
+    m_Localized: The ZIP contains too many files.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899213
+    m_Localized: The ZIP contains a forbidden path.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899214
+    m_Localized: The ZIP exceeds the published unpacked size.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899215
+    m_Localized: Invalid ZIP contents.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899216
+    m_Localized: Incomplete ZIP file.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899217
+    m_Localized: The ZIP does not contain the complete Project Riftwalker build at its root.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899218
+    m_Localized: The build version does not match the release.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899219
+    m_Localized: Install the game first.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899220
+    m_Localized: The release format is not compatible.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899221
+    m_Localized: Invalid launcher version.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899222
+    m_Localized: Invalid file size or verification data.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899223
+    m_Localized: The release manifest is missing.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899224
+    m_Localized: The launcher manifest is missing.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899225
+    m_Localized: The launcher manifest is invalid.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899226
+    m_Localized: Manifest is too large.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899227
+    m_Localized: The download does not belong to the Riftwalker releases.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899228
+    m_Localized: Path is outside the installation.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899229
+    m_Localized: The folder contains a link; choose a regular folder.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899230
+    m_Localized: Your account
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899231
+    m_Localized: "GAME GUIDE \u2197"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899232
+    m_Localized: "\u2699  SETTINGS"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899233
+    m_Localized: Open launcher settings
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899234
+    m_Localized: Minimize
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899235
+    m_Localized: Close
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899236
+    m_Localized: Close the launcher
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899237
+    m_Localized: THE NEXT CROSSING IS YOURS
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899238
+    m_Localized: Choose your team. Get ready for your next match.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899239
+    m_Localized: 01 / MEETING POINT
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899240
+    m_Localized: NEWS FROM THE PLATFORM
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899241
+    m_Localized: What is new, before you play.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899242
+    m_Localized: Patch notes version
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899243
+    m_Localized: "\u21BB Retry"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899244
+    m_Localized: Cancel
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899245
+    m_Localized: "CHECKING\u2026"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899246
+    m_Localized: YOUR NEXT MATCH
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899247
+    m_Localized: PREPARING THE PLATFORM
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899248
+    m_Localized: CONNECTING
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899249
+    m_Localized: Privacy notice
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899250
+    m_Localized: Choose where to install the game and which versions to receive.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899251
+    m_Localized: INSTALLATION FOLDER
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899252
+    m_Localized: Installation folder
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899253
+    m_Localized: "Browse\u2026"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899254
+    m_Localized: Experimental versions
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899255
+    m_Localized: Try features in development. You can only play online with people using the exact same version.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899256
+    m_Localized: WINDOW SIZE
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899257
+    m_Localized: Small
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899258
+    m_Localized: Normal
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899259
+    m_Localized: "Large \xB7 16:9"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899260
+    m_Localized: Large fills most of your screen.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899261
+    m_Localized: LANGUAGE
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899262
+    m_Localized: Also applies to the game.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899263
+    m_Localized: Launcher and game language
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899264
+    m_Localized: 'Could not save the language: {0}'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899265
+    m_Localized: Common
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899266
+    m_Localized: Rare
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899267
+    m_Localized: Epic
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899268
+    m_Localized: Legendary
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899269
+    m_Localized: Starter
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899270
+    m_Localized: Avatar
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899271
+    m_Localized: Banner
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899272
+    m_Localized: Frame
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899273
+    m_Localized: Title
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899274
+    m_Localized: "\xAB Menu"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899275
+    m_Localized: Credits
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899276
+    m_Localized: Tickets
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899277
+    m_Localized: Crystals
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899278
+    m_Localized: Earned by playing
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899279
+    m_Localized: Open capsules
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899280
+    m_Localized: Premium currency
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899281
+    m_Localized: Share your feedback
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899282
+    m_Localized: "Platform 01 \xB7 Meeting point"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899283
+    m_Localized: Play
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899284
+    m_Localized: "Tactical  \xB7  Deathmatch  \xB7  Zombie"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899285
+    m_Localized: Options
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899286
+    m_Localized: Achievements
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899287
+    m_Localized: Credits
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899288
+    m_Localized: Quit
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899289
+    m_Localized: 'Test areas:'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899290
+    m_Localized: Practice range
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899291
+    m_Localized: 01 / Capsules
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899292
+    m_Localized: Rift Station
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899293
+    m_Localized: Back
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899294
+    m_Localized: Could not rejoin
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899295
+    m_Localized: Match in progress
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899296
+    m_Localized: "Rejoining\u2026"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899297
+    m_Localized: Public match
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899298
+    m_Localized: Player
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899299
+    m_Localized: No title
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899300
+    m_Localized: No frame
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899301
+    m_Localized: Quit the game?
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899302
+    m_Localized: Project Riftwalker will close.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899303
+    m_Localized: Cancel
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899304
+    m_Localized: Close
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899305
+    m_Localized: Equip
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899306
+    m_Localized: Buy
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899307
+    m_Localized: Reset
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899308
+    m_Localized: Redeem
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899309
+    m_Localized: Skip
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899310
+    m_Localized: Player record
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899311
+    m_Localized: Profile
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899312
+    m_Localized: Statistics
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899313
+    m_Localized: Customization
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899314
+    m_Localized: Emotes
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899315
+    m_Localized: Account
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899316
+    m_Localized: Change name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899317
+    m_Localized: Matches
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899318
+    m_Localized: Wins
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899319
+    m_Localized: Best wave
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899320
+    m_Localized: No data
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899321
+    m_Localized: "Overall \xB7 Tactical and Deathmatch"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899322
+    m_Localized: You haven't finished a Tactical or Deathmatch match yet.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899323
+    m_Localized: Win rate
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899324
+    m_Localized: Kills
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899325
+    m_Localized: Deaths
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899326
+    m_Localized: Assists
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899327
+    m_Localized: Headshots
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899328
+    m_Localized: Hours played
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899329
+    m_Localized: You haven't finished a Tactical match yet.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899330
+    m_Localized: Rounds won
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899331
+    m_Localized: Devices planted
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899332
+    m_Localized: Devices defused
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899333
+    m_Localized: You haven't finished a Deathmatch match yet.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899334
+    m_Localized: First-place finishes
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899335
+    m_Localized: Best streak
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899336
+    m_Localized: You haven't finished an Invasion match yet.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899337
+    m_Localized: World saved
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899338
+    m_Localized: Invaders eliminated
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899339
+    m_Localized: Easy record
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899340
+    m_Localized: Normal record
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899341
+    m_Localized: Hard record
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899342
+    m_Localized: Comet minigame
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899343
+    m_Localized: You haven't shot any comets yet.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899344
+    m_Localized: Business simulation
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899345
+    m_Localized: Store
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899346
+    m_Localized: Simulated purchases
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899347
+    m_Localized: Once per account
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899348
+    m_Localized: crystals
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899349
+    m_Localized: Most popular
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899350
+    m_Localized: Best value
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899351
+    m_Localized: Total spent (simulated)
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899352
+    m_Localized: Reset test data
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899353
+    m_Localized: Menu test
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899354
+    m_Localized: Reset data
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899355
+    m_Localized: 'Resets the test to its initial state: currencies, collection, equipped items, purchases and opened capsules.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899356
+    m_Localized: Test data reset
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899357
+    m_Localized: Simulated purchase
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899358
+    m_Localized: Buy (simulated)
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899359
+    m_Localized: 'No payment is taken: this is a business simulation for the university project.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899360
+    m_Localized: Already purchased
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899361
+    m_Localized: Account data cannot be reset
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899362
+    m_Localized: You haven't made any simulated purchases yet.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899363
+    m_Localized: Supplies from the other side
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899364
+    m_Localized: "Open 1 \xB7 1 ticket"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899365
+    m_Localized: "Open 5 \xB7 5 tickets"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899366
+    m_Localized: "Open another \xB7 1 ticket"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899367
+    m_Localized: Drop rates
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899368
+    m_Localized: Get tickets
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899369
+    m_Localized: 1 ticket
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899370
+    m_Localized: "10 tickets \xB7 10% off"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899371
+    m_Localized: +1 ticket
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899372
+    m_Localized: +10 tickets
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899373
+    m_Localized: "Out of crystals? Visit the store \xBB"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899374
+    m_Localized: Recent rewards
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899375
+    m_Localized: View capsule contents
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899376
+    m_Localized: "Receiving cargo\u2026"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899377
+    m_Localized: One ticket, one capsule. Each contains an avatar, banner, title or frame.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899378
+    m_Localized: New
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899379
+    m_Localized: Capsule contents
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899380
+    m_Localized: "\u2022 OPENING"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899381
+    m_Localized: "\u2022 DELIVERED"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899382
+    m_Localized: "\u2022 WAITING"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899383
+    m_Localized: The next capsule guarantees <color=#B061FF>Epic or better</color>!
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899384
+    m_Localized: You haven't opened any capsules yet.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899385
+    m_Localized: Help us improve
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899386
+    m_Localized: Your feedback matters
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899387
+    m_Localized: What would you like to share?
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899388
+    m_Localized: Feedback
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899389
+    m_Localized: Suggestion
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899390
+    m_Localized: Bug report
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899391
+    m_Localized: Very poor
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899392
+    m_Localized: Poor
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899393
+    m_Localized: Average
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899394
+    m_Localized: Good
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899395
+    m_Localized: Excellent
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899396
+    m_Localized: "Tell us in your own words\u2026"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899397
+    m_Localized: What happened?
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899398
+    m_Localized: What would you like us to add or change?
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899399
+    m_Localized: Tell us what you thought
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899400
+    m_Localized: Send feedback
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899401
+    m_Localized: "Sending your feedback\u2026"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899402
+    m_Localized: Thank you! Your feedback was saved on this PC.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899403
+    m_Localized: "Soledad \xB7 Sky Blue"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899404
+    m_Localized: "Unzu\xE9 \xB7 Amber"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899405
+    m_Localized: "Goya \xB7 Crimson"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899406
+    m_Localized: "Necochea \xB7 Emerald"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899407
+    m_Localized: Steel Guard
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899408
+    m_Localized: Night Shift
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899409
+    m_Localized: Among Shadows
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899410
+    m_Localized: Undead
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899411
+    m_Localized: 8-Bit Shadow
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899412
+    m_Localized: Electric Soledad
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899413
+    m_Localized: Color Fury
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899414
+    m_Localized: Ink Silence
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899415
+    m_Localized: Heart of the Rift
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899416
+    m_Localized: Sky-Blue Tide
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899417
+    m_Localized: Ink Bastion
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899418
+    m_Localized: Floral Orbit
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899419
+    m_Localized: Fragmented Armor
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899420
+    m_Localized: Point Pulse
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899421
+    m_Localized: Riftwalker Platform
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899422
+    m_Localized: Sky-Blue Threshold
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899423
+    m_Localized: Amber Forge
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899424
+    m_Localized: Crimson Pulse
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899425
+    m_Localized: Emerald Veil
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899426
+    m_Localized: Last Wave
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899427
+    m_Localized: Rift Core
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899428
+    m_Localized: Icon
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899429
+    m_Localized: Original
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899430
+    m_Localized: Hyperrealism
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899431
+    m_Localized: Invasion Mode
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899432
+    m_Localized: Fauvism
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899433
+    m_Localized: Ink
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899434
+    m_Localized: Crystal
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899435
+    m_Localized: Watercolor
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899436
+    m_Localized: Chinese Ink
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899437
+    m_Localized: Cubism
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899438
+    m_Localized: Pointillism
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899439
+    m_Localized: Welcome Offer
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899440
+    m_Localized: 5 tickets + 200 crystals
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899441
+    m_Localized: Crystal Pouch
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899442
+    m_Localized: Crystal Chest
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899443
+    m_Localized: Crystal Box
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899444
+    m_Localized: Crystal Vault
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899445
+    m_Localized: Last Passenger
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899446
+    m_Localized: Smoker
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899447
+    m_Localized: Zombie Exterminator
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899448
+    m_Localized: ACE
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899449
+    m_Localized: Rift Traveler
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899450
+    m_Localized: 'Next Stop: Chaos'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899451
+    m_Localized: No Ticket
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899452
+    m_Localized: Apocalypse Engineer
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899453
+    m_Localized: First Class
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899454
+    m_Localized: Last Carriage
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899455
+    m_Localized: After Hours
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899456
+    m_Localized: Dead-End Track
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899457
+    m_Localized: Express to Hell
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899458
+    m_Localized: Ghost Passenger
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899459
+    m_Localized: Destination Unknown
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899460
+    m_Localized: Switching Tracks
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899461
+    m_Localized: No Return
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899462
+    m_Localized: Stationmaster
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899463
+    m_Localized: Missed the Train
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899464
+    m_Localized: Service Interrupted
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899465
+    m_Localized: One Bullet Is Enough
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899466
+    m_Localized: Out of Ammo
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899467
+    m_Localized: Finger on the Trigger
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899468
+    m_Localized: Point-Blank
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899469
+    m_Localized: "Coup de Gr\xE2ce"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899470
+    m_Localized: Clutch Player
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899471
+    m_Localized: Last One Standing
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899472
+    m_Localized: No Cover
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899473
+    m_Localized: Crossfire
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899474
+    m_Localized: "Reloading\u2026"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899475
+    m_Localized: Accidentally Aimed
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899476
+    m_Localized: One More Round
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899477
+    m_Localized: Horde's Nightmare
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899478
+    m_Localized: It Wasn't a Scratch
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899479
+    m_Localized: Survived by Dumb Luck
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899480
+    m_Localized: Head Collector
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899481
+    m_Localized: Zombies Again
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899482
+    m_Localized: Until the Last Wave
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899483
+    m_Localized: Left Behind
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899484
+    m_Localized: Still Breathing
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899485
+    m_Localized: Between Dimensions
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899486
+    m_Localized: Reality Glitch
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899487
+    m_Localized: On the Other Side
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899488
+    m_Localized: Living Rift
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899489
+    m_Localized: Lost in Time
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899490
+    m_Localized: I Shouldn't Have Crossed
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899491
+    m_Localized: Comet Hunter
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899492
+    m_Localized: Bad Aim, Good Attitude
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899493
+    m_Localized: I'm Here for Class
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899494
+    m_Localized: Final Exam Pending
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899495
+    m_Localized: It Was Lag
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899496
+    m_Localized: Clearly a Hacker
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899497
+    m_Localized: All According to Plan
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899498
+    m_Localized: Warning Shot
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899499
+    m_Localized: The Other Team's MVP
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899500
+    m_Localized: Respawn Specialist
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899501
+    m_Localized: Decorative Cover
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899502
+    m_Localized: Just Warming Up
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899503
+    m_Localized: My Mouse Doesn't Work
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899504
+    m_Localized: Almost Hit Them
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899505
+    m_Localized: Questionable Strategy
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899506
+    m_Localized: Just Here to Watch
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899507
+    m_Localized: Got Off at the Wrong Station
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899508
+    m_Localized: Even the Train Won't Wait
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899509
+    m_Localized: Right on Time to Die
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899510
+    m_Localized: One-Way Ticket to Respawn
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899511
+    m_Localized: Feeding the Horde
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899512
+    m_Localized: The Zombie Had Right of Way
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899513
+    m_Localized: Passed Out of Pity
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899514
+    m_Localized: This Wasn't on the Exam
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899515
+    m_Localized: At least 5 finished matches
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899516
+    m_Localized: At least 50 shots at comets
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899517
+    m_Localized: Headshot kills
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899518
+    m_Localized: Comets destroyed
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899519
+    m_Localized: Accuracy
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899520
+    m_Localized: Achievements earned
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899521
+    m_Localized: Couldn't read your achievement progress. It was kept as it was.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899522
+    m_Localized: This achievement progress needs a newer version of the game.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899523
+    m_Localized: Opening capsules and redeeming needs a connection
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899524
+    m_Localized: You're already signed in to an account. Sign out to create another one.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899525
+    m_Localized: Online ranking not configured. Progress is saved on this PC.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899526
+    m_Localized: Online achievements
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899527
+    m_Localized: Waiting for a connection.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899528
+    m_Localized: "Syncing\u2026"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899529
+    m_Localized: Couldn't send your feedback.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899530
+    m_Localized: Thanks! Your feedback reached the team.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899531
+    m_Localized: 'Your feedback stayed on this PC: the online service needs an update.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899532
+    m_Localized: Thanks! Your feedback will be sent in a moment.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899533
+    m_Localized: Couldn't recover your online identity. Your local progress is safe.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899534
+    m_Localized: Couldn't sign in. Check the project's anonymous access.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899535
+    m_Localized: Couldn't save your online identity. Check the permissions of the progress folder.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899536
+    m_Localized: Couldn't sign in.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899537
+    m_Localized: Offline. Your local progress and the last available ranking are kept.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899538
+    m_Localized: 'The Supabase project doesn''t allow anonymous players: enable Anonymous Sign-Ins (see Backend/Supabase/README.md).'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899539
+    m_Localized: The online ranking didn't accept your name. Try another one (letters, numbers, spaces, - or _).
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899540
+    m_Localized: 'Offline: your feedback will be sent when you''re back online.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899541
+    m_Localized: 'Couldn''t send it now: your feedback will be sent later.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899542
+    m_Localized: 1 new
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899543
+    m_Localized: You have 1 ticket to open
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899544
+    m_Localized: "RW \xB7 RIFT"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899545
+    m_Localized: 'Business simulation: there are no real payments. Tickets are earned by playing (credits) or with crystals from the store. '
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899546
+    m_Localized: Odds are always shown.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899547
+    m_Localized: an epic or better one is guaranteed. Duplicates turn into credits.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899548
+    m_Localized: "Total progress \xB7 Global ranking"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899549
+    m_Localized: Achievements and ranking
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899550
+    m_Localized: Your progress
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899551
+    m_Localized: YOUR PROGRESS
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899552
+    m_Localized: achievements earned
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899553
+    m_Localized: Progress is saved on this PC.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899554
+    m_Localized: "Create an account to show up in the ranking (Profile \xB7 Account).\n"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899555
+    m_Localized: 1 registered player
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899556
+    m_Localized: Connection
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899557
+    m_Localized: Comets of every color and combat in Tactical and Deathmatch
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899558
+    m_Localized: Back to the ranking
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899559
+    m_Localized: Percentages are based on players with an account.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899560
+    m_Localized: "Achievements earned \xB7 ties share a place"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899561
+    m_Localized: The ranking will be available once the online service is connected.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899562
+    m_Localized: "Looking up players\u2026"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899563
+    m_Localized: There are no players in this list yet.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899564
+    m_Localized: No data available. Try refreshing.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899565
+    m_Localized: All players
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899566
+    m_Localized: Page
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899567
+    m_Localized: ties share a place
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899568
+    m_Localized: 'This ranking isn''t available yet: the online service needs an update.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899569
+    m_Localized: There are no players in this category yet.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899570
+    m_Localized: Create an account to show up in the ranking.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899571
+    m_Localized: You don't show up in this category yet.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899572
+    m_Localized: Description
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899573
+    m_Localized: of players
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899574
+    m_Localized: See players
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899575
+    m_Localized: See achievements
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899576
+    m_Localized: "* KDA = (kills + assists) \xF7 deaths; with no deaths, \xF7 1. Assist: you damaged an enemy that someone else eliminated within the next 10 s. "
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899577
+    m_Localized: Only finished matches count.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899578
+    m_Localized: "Blue \xB7 green \xB7 gold"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899579
+    m_Localized: Average reaction
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899580
+    m_Localized: Best in one phase
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899581
+    m_Localized: Best reaction
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899582
+    m_Localized: Show locked
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899583
+    m_Localized: Titles
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899584
+    m_Localized: This is how the frame looks in your Profile header. Later on, also in the Tab scoreboard.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899585
+    m_Localized: 'This is how your header looks in the Profile.
+
+      The left side of the banner is kept for your avatar and your name.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899586
+    m_Localized: "Get it at the station \xBB"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899587
+    m_Localized: Pick a slot on the wheel and then the dance that goes there. Hold T during a match to open the wheel.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899588
+    m_Localized: Not equipped
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899589
+    m_Localized: Hover over a dance to preview it.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899590
+    m_Localized: Sign in on the launcher
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899591
+    m_Localized: Open the launcher
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899592
+    m_Localized: Sign in with your account
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899593
+    m_Localized: Press Play
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899594
+    m_Localized: If the launcher isn't on this PC, download it from the game's guide.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899595
+    m_Localized: Your session ended
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899596
+    m_Localized: 'Your account''s session was closed, for example from the launcher. Sign in there again to keep playing: your progress is saved in your account.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899597
+    m_Localized: 'You need an account to play. Open the launcher, sign in with your account and press Play: the game opens with it.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899598
+    m_Localized: '<color=#F29A38><b>Simulated purchases.</b></color>  This is a university project: no real money is charged. It tests how the store of a free-to-play game would work.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899599
+    m_Localized: 1 purchase
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899600
+    m_Localized: 'You have no tickets: redeem credits or crystals'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899601
+    m_Localized: With an account
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899602
+    m_Localized: Needs confirmation
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899603
+    m_Localized: No account
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899604
+    m_Localized: Didn't get it? <color=#F29A38><u>Request another code</u></color>
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899605
+    m_Localized: You're playing without an account
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899606
+    m_Localized: In the released game, the account is managed from the launcher. Here, in the editor, you can create one or sign in to test.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899607
+    m_Localized: 'The account is managed from the launcher: sign in there and press Play.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899608
+    m_Localized: Your progress in the cloud, on any PC
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899609
+    m_Localized: Show up in the global ranking
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899610
+    m_Localized: Find matches with other players
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899611
+    m_Localized: "Your account \xB7 One step left"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899612
+    m_Localized: Confirm your email
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899613
+    m_Localized: Wrong email? <color=#F29A38><u>Change it</u></color>
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899614
+    m_Localized: Meanwhile, you keep playing as usual.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899615
+    m_Localized: In the editor, the launcher's session or the one opened here is used.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899616
+    m_Localized: You signed in from the launcher.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899617
+    m_Localized: In the cloud
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899618
+    m_Localized: 'To switch accounts or sign out, use the <color=#F3F4F6>launcher</color>: the account menu is at the top, next to Settings.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899619
+    m_Localized: In the editor you go back to the progress without an account. The account's data stays saved in it and comes back when you sign in (in the released game, from the launcher).
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899620
+    m_Localized: You signed out
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899621
+    m_Localized: In the released game, the account is changed from the launcher.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899622
+    m_Localized: What we store
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899623
+    m_Localized: Your email, your name, your progress, your stats and your feedback. We use them to save your progress, build the ranking and find matches. We don't share them with anyone.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899624
+    m_Localized: Read the full notice
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899625
+    m_Localized: 'Done: your account is active'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899626
+    m_Localized: We sent you another code
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899627
+    m_Localized: New account
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899628
+    m_Localized: Password
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899629
+    m_Localized: Repeat the password
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899630
+    m_Localized: <u>Sign in</u>
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899631
+    m_Localized: By creating the account you accept the <color=#F29A38><u>privacy notice</u></color>.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899632
+    m_Localized: "Creating\u2026"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899633
+    m_Localized: We sent a code to your email
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899634
+    m_Localized: "Signing in\u2026"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899635
+    m_Localized: You signed in to your account
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899636
+    m_Localized: Don't have an account? <color=#F29A38><u>Create account</u></color>
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899637
+    m_Localized: Your email and your password (encrypted), your name, your progress (achievements, cosmetics, coins), your match stats and the feedback you send.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899638
+    m_Localized: What for
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899639
+    m_Localized: Where
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899640
+    m_Localized: In the game's database (Supabase). Matches go through Photon's servers, which receive your player name, your account id and your connection (IP), like any online game.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899641
+    m_Localized: Your rights
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899642
+    m_Localized: You can see your data in the Profile and delete your account with everything in it from the launcher, in the account menu (Argentine Personal Data Protection Law 25,326).
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899643
+    m_Localized: Enter a valid email.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899644
+    m_Localized: The password needs 8 characters or more.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899645
+    m_Localized: The passwords don't match.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899646
+    m_Localized: That email already has an account.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899647
+    m_Localized: The email or password don't match.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899648
+    m_Localized: Your email isn't confirmed yet. We sent you another code.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899649
+    m_Localized: Your session expired. Sign in again.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899650
+    m_Localized: Enter the 6 digits of the code.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899651
+    m_Localized: The code expired or isn't correct. Request another one.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899652
+    m_Localized: This needs an internet connection.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899653
+    m_Localized: We sent you a code a moment ago. Wait a minute and request another one.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899654
+    m_Localized: Accounts need the online service, which isn't configured in this version.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899655
+    m_Localized: Couldn't send the email. Try again in a while.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899656
+    m_Localized: Couldn't complete it. Try again in a while.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899657
+    m_Localized: The password isn't correct.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899658
+    m_Localized: Couldn't verify your account. Sign in again on the launcher.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899659
+    m_Localized: How was your experience? <color=#8E96A3><size=18>(optional)</size></color>
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899660
+    m_Localized: It reaches the team with your name and the version. No personal data, please.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899661
+    m_Localized: First blue trail
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899662
+    m_Localized: Sky-blue hunter
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899663
+    m_Localized: Blue mastery
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899664
+    m_Localized: Emerald flash
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899665
+    m_Localized: Emerald orbit
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899666
+    m_Localized: Green mastery
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899667
+    m_Localized: Gold dust
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899668
+    m_Localized: Gold rush
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899669
+    m_Localized: Gold mastery
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899670
+    m_Localized: Punched ticket
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899671
+    m_Localized: Rush hour
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899672
+    m_Localized: Locomotive
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899673
+    m_Localized: End of the line
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899674
+    m_Localized: Hawk eye
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899675
+    m_Localized: Platform sniper
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899676
+    m_Localized: Carriage buddy
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899677
+    m_Localized: First station
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899678
+    m_Localized: Owner of the line
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899679
+    m_Localized: Train driver
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899680
+    m_Localized: Non-stop
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899681
+    m_Localized: Bullet train
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899682
+    m_Localized: Suspicious package
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899683
+    m_Localized: Service restored
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899684
+    m_Localized: Frequent traveler
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899685
+    m_Localized: Destroy 10 blue comets in total.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899686
+    m_Localized: Destroy 50 blue comets in total.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899687
+    m_Localized: Destroy 100 blue comets in total.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899688
+    m_Localized: Destroy 10 green comets in total.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899689
+    m_Localized: Destroy 50 green comets in total.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899690
+    m_Localized: Destroy 100 green comets in total.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899691
+    m_Localized: Destroy 10 gold comets in total.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899692
+    m_Localized: Destroy 50 gold comets in total.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899693
+    m_Localized: Destroy 100 gold comets in total.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899694
+    m_Localized: Get 10 kills.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899695
+    m_Localized: Get 100 kills.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899696
+    m_Localized: Get 500 kills.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899697
+    m_Localized: Get 10 kills with headshots.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899698
+    m_Localized: Get 50 kills with headshots.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899699
+    m_Localized: Get 200 kills with headshots.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899700
+    m_Localized: Get 50 assists.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899701
+    m_Localized: Win your first match.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899702
+    m_Localized: Win 25 matches.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899703
+    m_Localized: Finish a Tactical match as MVP.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899704
+    m_Localized: Finish 10 Tactical matches as MVP.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899705
+    m_Localized: Get 5 kills in a row without dying in a Deathmatch match.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899706
+    m_Localized: Get 10 kills in a row without dying in a Deathmatch match.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899707
+    m_Localized: Plant the device 10 times.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899708
+    m_Localized: Defuse the device 10 times.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899709
+    m_Localized: Finish 50 matches.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899710
+    m_Localized: Earned
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899711
+    m_Localized: Pending
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899712
+    m_Localized: BLUE
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899713
+    m_Localized: GREEN
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899714
+    m_Localized: GOLD
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899715
+    m_Localized: COMBAT
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899716
+    m_Localized: '{0} destroyed'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899717
+    m_Localized: "{0} kills \xB7 {1} headshots"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899718
+    m_Localized: "ACHIEVEMENT RANK: \u2014"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899719
+    m_Localized: 'ACHIEVEMENT RANK: #{0}'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899720
+    m_Localized: '{0} registered player'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899721
+    m_Localized: '{0} registered players'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899722
+    m_Localized: '{0}''s achievements'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899723
+    m_Localized: 'Who earned it: {0}'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899724
+    m_Localized: Page {0}
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899725
+    m_Localized: "Your place: <color=#F3F4F6>#{0}</color> \xB7 {1}"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899726
+    m_Localized: '{0} (you)'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899727
+    m_Localized: '{0} / {1} achievements earned'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899728
+    m_Localized: 'Achievement unlocked: {0}'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899729
+    m_Localized: Blue
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899730
+    m_Localized: Green
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899731
+    m_Localized: Gold
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899732
+    m_Localized: Points
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899733
+    m_Localized: Minigame
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899734
+    m_Localized: General
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899735
+    m_Localized: Tactical
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899736
+    m_Localized: "At least 50 shots at comets \xB7 lowest time wins"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899737
+    m_Localized: Previous
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899738
+    m_Localized: Next
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899739
+    m_Localized: Room {0}
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899740
+    m_Localized: You can rejoin for {0}:{1:00}
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899741
+    m_Localized: '{0} new'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899742
+    m_Localized: '{0} new'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899743
+    m_Localized: You have {0} ticket to open
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899744
+    m_Localized: You have {0} tickets to open
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899745
+    m_Localized: New! <color={0}>{1}</color> is now in your collection.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899746
+    m_Localized: 'Duplicate: it turned into <color=#D6DAE0>{0} credits</color>.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899747
+    m_Localized: "{0} \xB7 duplicates turned into {1} credits"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899748
+    m_Localized: "RIFT CAPSULE \xB7 NO. {0:000}"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899749
+    m_Localized: Epic or better guaranteed in <color=#F3F4F6>{0} capsules</color>
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899750
+    m_Localized: <color={0}>{1}</color> equipped
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899751
+    m_Localized: '{0} credits'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899752
+    m_Localized: '{0} crystals'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899753
+    m_Localized: +{0} credits
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899754
+    m_Localized: Matches finished  <color=#F3F4F6>{0}</color>
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899755
+    m_Localized: On the wheel  <color=#F3F4F6>{0} / {1}</color>
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899756
+    m_Localized: Collection  <color=#F3F4F6>{0} / {1}</color>
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899757
+    m_Localized: Slot {0} empty
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899758
+    m_Localized: In slot {0}
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899759
+    m_Localized: '{0} purchase'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899760
+    m_Localized: '{0} purchases'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899761
+    m_Localized: +{0} free
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899762
+    m_Localized: Account  <color=#F3F4F6>{0}</color>
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899763
+    m_Localized: From the launcher
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899764
+    m_Localized: Editor  <color=#F3F4F6>{0}</color>
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899765
+    m_Localized: Didn't get it? You can request another in 0:{0:00}
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899766
+    m_Localized: We sent a 6-digit code to <color=#F3F4F6>{0}</color>. Enter it to activate the account.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899767
+    m_Localized: ' Your progress, your coins and your place in the ranking are in your account, and you keep them on any PC.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899768
+    m_Localized: Show
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899769
+    m_Localized: Hide
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899770
+    m_Localized: Create account
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899771
+    m_Localized: Sign in
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899772
+    m_Localized: Sign in
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899773
+    m_Localized: Sign out
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899774
+    m_Localized: Your account
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899775
+    m_Localized: Privacy
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899776
+    m_Localized: Privacy notice
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899777
+    m_Localized: Email
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899778
+    m_Localized: Since
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899779
+    m_Localized: Name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899780
+    m_Localized: Progress
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899781
+    m_Localized: We couldn't find the launcher on this PC, so we opened the game's guide to download it.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899782
+    m_Localized: You need more tickets to open {0}
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899783
+    m_Localized: Reset {0}?
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899784
+    m_Localized: <color=#F3F4F6>{0}</color> is already assigned to <color=#F3F4F6>{1}</color>. Swap them? {1} would move to {2}.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899785
+    m_Localized: <color=#3DDC97>{0} / {1}</color> ready
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899786
+    m_Localized: With your account <color=#FFFFFF>{0}</color>
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899787
+    m_Localized: As <color=#FFFFFF>{0}</color>
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899788
+    m_Localized: " \xB7 {0} \xB7 same version (v{1})"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899789
+    m_Localized: Starting in <color={0}>{1}</color>
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899790
+    m_Localized: <color={0}>{1}</color> / {2} players
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899791
+    m_Localized: "{0} \xB7 {1} \xB7 same version (v{2})"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899792
+    m_Localized: The minimum for {0} is met. If nobody else joins, the match starts in {1}.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899793
+    m_Localized: Starts automatically with {0} players, or {1} after {2} seconds without new players.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899794
+    m_Localized: 'Record on {0}: <color={1}>wave {2}</color>'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899795
+    m_Localized: 'Record on {0}: <color={1}>not played yet</color>'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899796
+    m_Localized: '"{0}" is not allowed. Use letters, numbers, spaces, hyphens and underscores.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899797
+    m_Localized: '{0} more characters required: the minimum is 3.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899798
+    m_Localized: '{0} too many characters: the maximum is 16.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899799
+    m_Localized: <nobr><color=#{0}>Esc</color> Pause</nobr>
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899800
+    m_Localized: '     <color=#{0}>(change these in Options, Controls tab)</color>'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899801
+    m_Localized: Practice range
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899802
+    m_Localized: Practice map
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899803
+    m_Localized: Achievement unlocked
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899804
+    m_Localized: Sound
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899805
+    m_Localized: Volume
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899806
+    m_Localized: Master
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899807
+    m_Localized: Music
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899808
+    m_Localized: Effects
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899809
+    m_Localized: Interface
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899810
+    m_Localized: Adjust a control to hear a preview. Press Apply to save.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899811
+    m_Localized: sound
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899812
+    m_Localized: Tactical mode
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899813
+    m_Localized: Invasion mode
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899814
+    m_Localized: 'Room '
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899815
+    m_Localized: "Waiting for the host  \xB7  the match starts when they finish loading"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899816
+    m_Localized: "Waiting for other players  \xB7  the match starts when everyone has loaded"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899817
+    m_Localized: Crouch with {Agacharse} before shooting to reduce bullet spread.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899818
+    m_Localized: Reload with {Recargar} before peeking, before the shooting starts.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899819
+    m_Localized: Moving increases bullet spread. Stop before shooting.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899820
+    m_Localized: Headshots deal more damage.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899821
+    m_Localized: Use your character ability with {Habilidad}.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899822
+    m_Localized: Change key bindings, sensitivity and your crosshair in Options or the pause menu.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899823
+    m_Localized: Hold Tab to view the scoreboard.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899824
+    m_Localized: Hold {Plantar} at a site to plant the device. Moving cancels planting.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899825
+    m_Localized: Open the shop with {Tienda} during the buy phase while inside your base.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899826
+    m_Localized: Drop your weapon with {Soltar} to give it to a teammate.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899827
+    m_Localized: If you carry the device, equip it with {Dispositivo}.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899828
+    m_Localized: You respawn at the start of the next round. Stay alive.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899829
+    m_Localized: Losing consecutive rounds gives you more money for the next one.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899830
+    m_Localized: Defenders defuse the device by holding {Plantar} beside it.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899831
+    m_Localized: You respawn after a few seconds in Deathmatch. Keep moving.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899832
+    m_Localized: Switch weapons with {ArmaPrincipal}, {ArmaSecundaria} and {Cuchillo}.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899833
+    m_Localized: Each wave is harder than the last. Save your ammo.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899834
+    m_Localized: If enemies surround you, switch to your knife with {Cuchillo} instead of reloading.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899835
+    m_Localized: Screen
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899836
+    m_Localized: Map
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899837
+    m_Localized: Mode
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899838
+    m_Localized: Loading
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899839
+    m_Localized: Tip
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899840
+    m_Localized: Loading menu
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899841
+    m_Localized: Loading map
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899842
+    m_Localized: Map loaded
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899843
+    m_Localized: controls
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899844
+    m_Localized: Press a key
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899845
+    m_Localized: Controls
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899846
+    m_Localized: Mouse
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899847
+    m_Localized: Sensitivity
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899848
+    m_Localized: While aiming
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899849
+    m_Localized: Click an action and press the new key. Esc cancels.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899850
+    m_Localized: Key bindings
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899851
+    m_Localized: Pause
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899852
+    m_Localized: Swap
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899853
+    m_Localized: Cancel
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899854
+    m_Localized: Back
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899855
+    m_Localized: Reset
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899856
+    m_Localized: Saved
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899857
+    m_Localized: Invert Y axis
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899858
+    m_Localized: "Not so long ago, at a university\nvery, very close by\u2026"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899859
+    m_Localized: A tactical shooter, a deathmatch and an alien invasion at university. Made by seven students in ten weeks, with more coffee than sleep.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899860
+    m_Localized: Development and gameplay
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899861
+    m_Localized: 2D/3D art and level design
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899862
+    m_Localized: Interface (UI/UX)
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899863
+    m_Localized: Sound and music
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899864
+    m_Localized: Testing and QA
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899865
+    m_Localized: Documentation and backlog
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899866
+    m_Localized: Repository and Git
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899867
+    m_Localized: "Unity 6 \xB7 Universal Render Pipeline\nProBuilder \xB7 TextMesh Pro \xB7 Input System \xB7 AI Navigation\nPhoton PUN 2 (multiplayer)\nGitHub and GitHub Projects"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899868
+    m_Localized: Character and animations
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899869
+    m_Localized: Mixamo, by Adobe
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899870
+    m_Localized: Sci-fi environment
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899871
+    m_Localized: 3D Scifi Kit Starter Kit, by Creepy Cat (Unity Asset Store)
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899872
+    m_Localized: Knife
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899873
+    m_Localized: Sci-fi Weapon - Game Ready Knife - FREE SAMPLE, by AF Creations (Unity Asset Store)
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899874
+    m_Localized: Textures
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899875
+    m_Localized: Weapon models
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899876
+    m_Localized: Sci-Fi Modular Gun Pack, by Quaternius (CC0)
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899877
+    m_Localized: Gunshots
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899878
+    m_Localized: The Free Firearm Sound Library, by Ben Jaszczak, Brian Nelson, Kevin Heras and Matthew Nanney (CC0)
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899879
+    m_Localized: Reloads
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899880
+    m_Localized: Gun reload sounds, by SpringySpringo, and Shotgun Reload Sound Effects, by zer0_sol (CC0, OpenGameArt)
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899881
+    m_Localized: Flashbang blast
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899882
+    m_Localized: Flashbang explode, by MadPanCake (CC BY-NC 4.0, Freesound)
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899883
+    m_Localized: Deathmatch music
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899884
+    m_Localized: 'action track 4, A.I. fight & jumping cyborg, mixed by glitchart: action track 4, by Alexandr Zhelanov (CC BY 3.0), and A.I. fight & jumping cyborg, by tricksntraps (CC0, OpenGameArt)'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899885
+    m_Localized: Respawn sound
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899886
+    m_Localized: Teleport, by fins (CC0, Freesound and OpenGameArt)
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899887
+    m_Localized: "Course project \"\xDAltimo Tren a Retiro\"\nSoftware Construction Laboratory\nUniversity Technical Degree in Computing"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899888
+    m_Localized: 'To our teachers, everyone who tested broken builds
+
+      and to you, for playing.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899889
+    m_Localized: Thanks for playing
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899890
+    m_Localized: Credits
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899891
+    m_Localized: Engine and tools
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899892
+    m_Localized: External assets
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899893
+    m_Localized: Fonts
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899894
+    m_Localized: Course project
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899895
+    m_Localized: Special thanks
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899896
+    m_Localized: Space
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899897
+    m_Localized: Speed up
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899898
+    m_Localized: Medium
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899899
+    m_Localized: Low
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899900
+    m_Localized: High
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899901
+    m_Localized: Windowed
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899902
+    m_Localized: Borderless
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899903
+    m_Localized: Fullscreen
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899904
+    m_Localized: Unlimited
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899905
+    m_Localized: Hide
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899906
+    m_Localized: Show
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899907
+    m_Localized: Graphics
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899908
+    m_Localized: Resolution
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899909
+    m_Localized: Image
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899910
+    m_Localized: Quality
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899911
+    m_Localized: FPS limit
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899912
+    m_Localized: FPS and ping
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899913
+    m_Localized: Field of view
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899914
+    m_Localized: Press Apply to use your changes.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899915
+    m_Localized: Graphics settings applied and saved.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899916
+    m_Localized: graphics
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899917
+    m_Localized: Graphics settings reset to defaults.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899918
+    m_Localized: Find match
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899919
+    m_Localized: " \xB7 with players in your region"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899920
+    m_Localized: "Private room \xB7 with friends"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899921
+    m_Localized: Create room
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899922
+    m_Localized: Join with code
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899923
+    m_Localized: Search again
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899924
+    m_Localized: Open launcher
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899925
+    m_Localized: Player
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899926
+    m_Localized: Search cancelled.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899927
+    m_Localized: The launcher was not found on this PC. We opened the game guide so you can download it.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899928
+    m_Localized: Cancel search
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899929
+    m_Localized: Leave room
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899930
+    m_Localized: Back to modes
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899931
+    m_Localized: A new version is available
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899932
+    m_Localized: Could not verify your account
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899933
+    m_Localized: Your account is already playing
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899934
+    m_Localized: Connection lost
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899935
+    m_Localized: Players must have the same game version. Update through the launcher and search again.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899936
+    m_Localized: Your session expired or was closed. Sign in again through the launcher and search again.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899937
+    m_Localized: Your account is in that match on another PC. Close the game there and search again.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899938
+    m_Localized: Check your internet connection and search again. Your progress is saved.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899939
+    m_Localized: your region
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899940
+    m_Localized: South America
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899941
+    m_Localized: United States
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899942
+    m_Localized: Europe
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899943
+    m_Localized: Asia
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899944
+    m_Localized: Match found
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899945
+    m_Localized: Finding match
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899946
+    m_Localized: "Loading map\u2026"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899947
+    m_Localized: "Connecting to server\u2026"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899948
+    m_Localized: ' <color=#FFFFFF80>(you)</color>'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899949
+    m_Localized: "Searching\u2026"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899950
+    m_Localized: New players can still join. If someone leaves and the minimum is no longer met, the search continues.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899951
+    m_Localized: Exit
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899952
+    m_Localized: Tactical
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899953
+    m_Localized: Invasion
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899954
+    m_Localized: Plant or defuse the device. No respawns.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899955
+    m_Localized: Free-for-all. Respawn after 3 seconds.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899956
+    m_Localized: Survive the invasion at university.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899957
+    m_Localized: First to 7
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899958
+    m_Localized: Up to 8
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899959
+    m_Localized: 25 kills
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899960
+    m_Localized: 1 player
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899961
+    m_Localized: 10 waves
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899962
+    m_Localized: "Platform 1 \xB7 Online"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899963
+    m_Localized: "Platform 2 \xB7 Online"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899964
+    m_Localized: "Platform 3 \xB7 Local"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899965
+    m_Localized: 'One team plants the device at A or B while the other defends. No respawns: if you die, spectate a teammate until the next round.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899966
+    m_Localized: Free-for-all. Choose your weapons for free, heal 50 health per kill, and respawn after 3 seconds away from opponents.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899967
+    m_Localized: Face 10 waves alone at university. Then continue in endless mode to set a new record.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899968
+    m_Localized: Switch sides in round 6
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899969
+    m_Localized: 20 s buy phase
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899970
+    m_Localized: Free weapons
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899971
+    m_Localized: Easy
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899972
+    m_Localized: Normal
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899973
+    m_Localized: Hard
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899974
+    m_Localized: 75% health and damage, with fewer enemies. Regenerate after 3 seconds.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899975
+    m_Localized: The intended experience. Regenerate after 4 seconds.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899976
+    m_Localized: 125% health, 150% damage and more enemies. +25% points.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899977
+    m_Localized: Choose a mode
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899978
+    m_Localized: Main menu
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899979
+    m_Localized: Join
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899980
+    m_Localized: Play
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899981
+    m_Localized: Room
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899982
+    m_Localized: Players
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899983
+    m_Localized: Copy
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899984
+    m_Localized: Change map
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899985
+    m_Localized: Start match
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899986
+    m_Localized: "Creating room\u2026"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899987
+    m_Localized: No room exists with that code.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899988
+    m_Localized: "Joining room\u2026"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899989
+    m_Localized: Copied
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899990
+    m_Localized: "Loading match\u2026"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899991
+    m_Localized: Empty
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899992
+    m_Localized: "  <color=#FFD2A1>\xB7 host</color>"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899993
+    m_Localized: No maps for this mode
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899994
+    m_Localized: "Waiting for the host\u2026"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899995
+    m_Localized: Share the code with your friends. At least 2 players are required.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899996
+    m_Localized: 'Ready: start the match whenever you want.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899997
+    m_Localized: "Invasion mode \xB7 "
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899998
+    m_Localized: Invasion mode is still in development (F08).
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899999
+    m_Localized: Before you play
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534900000
+    m_Localized: Note for the PO
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534900001
+    m_Localized: What works
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534900002
+    m_Localized: What is still missing
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534900003
+    m_Localized: Got it
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534900004
+    m_Localized: <color=#F3F4F6>Enter</color>  or  <color=#F3F4F6>Esc</color>  Close
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534900005
+    m_Localized: Fixed
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534900006
+    m_Localized: Dynamic
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534900007
+    m_Localized: Custom color
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534900008
+    m_Localized: Type
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534900009
+    m_Localized: Length
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534900010
+    m_Localized: Thickness
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534900011
+    m_Localized: Gap
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534900012
+    m_Localized: Center dot
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534900013
+    m_Localized: Color and spread
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534900014
+    m_Localized: Spread
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534900015
+    m_Localized: Preview
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534900016
+    m_Localized: Light background
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534900017
+    m_Localized: Dark background
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534900018
+    m_Localized: Color
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534900019
+    m_Localized: Custom
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534900020
+    m_Localized: Red
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534900021
+    m_Localized: Green
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534900022
+    m_Localized: Blue
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534900023
+    m_Localized: crosshair
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534900024
+    m_Localized: Previous
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534900025
+    m_Localized: Next
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534900026
+    m_Localized: Apply
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534900027
+    m_Localized: Game settings
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534900028
+    m_Localized: Options
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534900029
+    m_Localized: Crosshair
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534900030
+    m_Localized: Save changes?
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534900031
+    m_Localized: You have unapplied changes. Leaving without saving discards them.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534900032
+    m_Localized: Save
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534900033
+    m_Localized: Discard
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534900034
+    m_Localized: This tab will be reset to its default settings and saved.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534900035
+    m_Localized: Changes saved
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534900036
+    m_Localized: Enter  Confirm     Esc  Cancel
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534900037
+    m_Localized: Match in progress
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534900038
+    m_Localized: Match paused
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534900039
+    m_Localized: Only you can see this menu. Your character stays still and can take damage.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534900040
+    m_Localized: Time, enemies and audio are paused until you return.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534900041
+    m_Localized: Your team will have <color=#FF5C5C>one fewer player</color>.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534900042
+    m_Localized: You will lose <color=#FF5C5C>progress from this match</color>. Your saved record stays unchanged.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534900043
+    m_Localized: You will lose <color=#FF5C5C>progress from this match</color>.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534900044
+    m_Localized: Restart the match?
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534900045
+    m_Localized: Restart
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534900046
+    m_Localized: Return to the first wave and lose <color=#F29A38>your current progress</color>.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534900047
+    m_Localized: Return to the start of the match and lose <color=#F29A38>your current progress</color>.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534900048
+    m_Localized: Leave the match?
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534900049
+    m_Localized: Resume
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534900050
+    m_Localized: Restart match
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534900051
+    m_Localized: Settings
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534900052
+    m_Localized: Leave match
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534900053
+    m_Localized: Numbers
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534900054
+    m_Localized: Choose
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534900055
+    m_Localized: Confirm
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534900056
+    m_Localized: Backspace
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534900057
+    m_Localized: Audio
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534900058
+    m_Localized: Video
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534900059
+    m_Localized: Change graphics
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534900060
+    m_Localized: Customize crosshair
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534900061
+    m_Localized: Change keys
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534900062
+    m_Localized: Arrow keys
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534900063
+    m_Localized: Select and adjust
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534900064
+    m_Localized: "3\u201316 characters: letters, numbers, spaces, hyphens and underscores."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534900065
+    m_Localized: "Project Riftwalker \xB7 Player"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534900066
+    m_Localized: Change name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534900067
+    m_Localized: <color=#F3F4F6>Enter</color>  Confirm
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534900068
+    m_Localized: <color=#F3F4F6>Enter</color>  Confirm     <color=#F3F4F6>Esc</color>  Cancel
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534900069
+    m_Localized: This is how other players will see you.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534900070
+    m_Localized: What is your name?
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534900071
+    m_Localized: This is how you appear in rooms, the scoreboard and kill notifications.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534900072
+    m_Localized: Your name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534900073
+    m_Localized: '1 more character required: the minimum is 3.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534900074
+    m_Localized: Language
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534900075
+    m_Localized: Game language
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534900076
+    m_Localized: Changes apply immediately and are shared with the launcher.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534900077
+    m_Localized: Yes
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534900078
+    m_Localized: No
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534900079
+    m_Localized: "Note for the PO \xB7 Sprint 1"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534900080
+    m_Localized: Hi, Amin
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534900081
+    m_Localized: This is the Sprint 1 delivery of Project Riftwalker. Here is what already works and what is still missing so you know what to test.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534900082
+    m_Localized: 'Movement: walk, sprint, jump and crouch, with gravity, collisions and respawning if you fall off the map.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534900083
+    m_Localized: "Weapons: La Porte\xF1a pistol, Mitre rifle and knife. Damage by hit zone (head, body and legs) and range, spread, recoil, reloading and bullet marks on walls."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534900084
+    m_Localized: 'Shop: buy, sell and undo purchases during the buy phase while inside the buy zone. Shields provide protection.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534900085
+    m_Localized: 'HUD: health, shield, weapon and ammunition, crosshair and hit marker. Abilities show their cooldown.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534900086
+    m_Localized: 'Menus: main menu with music, video, sound and controls settings, player name, credits and pause menu (resume, restart, options and exit).'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534900087
+    m_Localized: "Other weapons: the shop shows them all, but only the La Porte\xF1a pistol, Mitre and knife are currently usable. The others can be bought but cannot be used yet."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534900088
+    m_Localized: 'Grenades: purchasable, but cannot be thrown yet.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534900089
+    m_Localized: 'Ability: Silbato charges and appears in the HUD, but has no effect yet.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534900090
+    m_Localized: 'Modes and multiplayer: Tactical and Deathmatch show a room, but online connectivity is still missing. Zombie does not have zombies yet: Play opens the university map to explore with weapons, the shop and the HUD.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534900091
+    m_Localized: 'Achievements: the screen exists but has no achievements yet.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534900092
+    m_Localized: 'Maps and opponents: Tests and Tests 2 open temporary maps to demonstrate gameplay. In Tests, enemies chase you and can be killed but do not attack yet.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534900093
+    m_Localized: Platform {0}
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534900094
+    m_Localized: ARE YOU SURE?
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534900095
+    m_Localized: CANCEL
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534900096
+    m_Localized: EXIT
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534900097
+    m_Localized: Do you want to exit the game?
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534900098
+    m_Localized: OPTIONS
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534900099
+    m_Localized: ACHIEVEMENTS
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534900100
+    m_Localized: PLAY
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534900101
+    m_Localized: Create Room
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534900102
+    m_Localized: Multiplayer
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534900103
+    m_Localized: Join Room
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534900104
+    m_Localized: BACK
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534900105
+    m_Localized: DIFFICULTY
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534900106
+    m_Localized: INVASION MODE
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534900107
+    m_Localized: Hard
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534900108
+    m_Localized: Easy
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534900109
+    m_Localized: GRAPHICS
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534900110
+    m_Localized: SOUND
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534900111
+    m_Localized: FPS LIMIT
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534900112
+    m_Localized: TESTS 2
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534900113
+    m_Localized: ' MASTER VOLUME'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534900114
+    m_Localized: RESET
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534900115
+    m_Localized: FULLSCREEN
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534900116
+    m_Localized: CONTROLS
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534900117
+    m_Localized: RESOLUTION
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534900118
+    m_Localized: APPLY
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534900119
+    m_Localized: '  EFFECTS VOLUME'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534900120
+    m_Localized: CREDITS
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534900121
+    m_Localized: MUSIC VOLUME
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534900122
+    m_Localized: FIELD OF VIEW
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534900123
+    m_Localized: TESTS
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534900124
+    m_Localized: UNLIMITED
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534900125
+    m_Localized: Borderless window
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534900126
+    m_Localized: Fullscreen
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534900127
+    m_Localized: Disabled
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534900128
+    m_Localized: Enabled
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1685575266304
+    m_Localized: 4 vs 4 in rounds, no respawns. Attackers plant the device at A or B ({Plantar}) and defenders guard it or defuse it. {Correr} walks slowly and silently (there's no sprinting). Your character's ability is used with {Habilidad}, and grenades are bought during the buy phase.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1685592043520
+    m_Localized: You win the round if the device explodes, if you defuse it, or if you eliminate the whole other team (if time runs out without a plant, the defenders win). The first team to reach 7 rounds wins the match.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1685592043521
+    m_Localized: The team that doesn't reach 7 rounds loses. If you die, you spectate a teammate until the next round.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1685592043522
+    m_Localized: Free for all, up to 8 players. You pick your weapons for free ({Tienda}), each kill heals you 50 and you respawn after 3 s. Your ability is used with {Habilidad}. There are no shields or grenades.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1685592043523
+    m_Localized: The first to reach 25 kills wins, or whoever has the most kills when the 8 minutes are up.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1685592043524
+    m_Localized: You lose if someone else reaches 25 kills first or has more kills than you when the clock runs out.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1685592043525
+    m_Localized: You alone against the horde at the university, for 10 waves. The boss appears on wave 10. With the points you earn you buy weapons, grenades and ammo between waves.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1685592043526
+    m_Localized: You win if you survive all 10 waves. After that you can keep going in endless mode to set a record.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1685592043527
+    m_Localized: You lose if the zombies kill you.
+    m_Metadata:
+      m_Items: []
+  references:
+    version: 2
+    RefIds: []

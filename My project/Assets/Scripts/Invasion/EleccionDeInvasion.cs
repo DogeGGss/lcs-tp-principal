@@ -187,7 +187,7 @@ public class EleccionDeInvasion : MonoBehaviour
         mostradaEn = Time.unscaledTime;
         grupo.alpha = 0f;
         lienzo.gameObject.SetActive(true);
-        if (antetitulo != null) antetitulo.text = delJefe ? "Elección del Jefe" : inmediata ? "Entrega inmediata" : "Puesto de suministros";
+        if (antetitulo != null) antetitulo.text = delJefe ? L10n.T("gameplay.ui.boss_choice") : inmediata ? "Entrega inmediata" : L10n.T("gameplay.ui.supply_station");
         Bloquear();
         Tirar();
     }
@@ -367,14 +367,14 @@ public class EleccionDeInvasion : MonoBehaviour
         foreach (CartaDeInvasion c in orden)
         {
             int n = elegidas[c];
-            MarcadorInvasion.Cartas.Add(n > 1 ? $"{c.nombre} ×{n}" : c.nombre);
+            MarcadorInvasion.Cartas.Add(n > 1 ? $"{L10n.Source(c.nombre)} ×{n}" : L10n.Source(c.nombre));
         }
     }
 
     private void VolverATirar()
     {
         if (!Abierta || !Lista || equipo == null || equipo.Wallet == null) return;
-        if (equipo.Wallet.Money < costo) { MatchHud.Warn($"Te faltan puntos para volver a tirar ({costo})", 2f); return; }
+        if (equipo.Wallet.Money < costo) { MatchHud.Warn(L10n.T("gameplay.card.reroll_missing_fmt", costo), 2f); return; }
         equipo.Wallet.Spend(costo);
         costo += MasPorTirada; // CA4
         Tirar();
@@ -429,9 +429,9 @@ public class EleccionDeInvasion : MonoBehaviour
         cabeza.anchoredPosition = new Vector2(0f, -110f);
         cabeza.sizeDelta = new Vector2(1200f, 110f);
         antetitulo = Text(Place(Node("Antetitulo", cabeza), 0f, 0f, 1200f, 26f), label, 20f, MarcadorInvasion.Verde, TextAlignmentOptions.Center, 16f, true);
-        antetitulo.text = "Puesto de suministros";
+        antetitulo.text = L10n.T("gameplay.ui.supply_station");
         Text(Place(Node("Elegi", cabeza), 0f, 30f, 1200f, 64f), display, 58f, Ink, TextAlignmentOptions.Center, 4f, true)
-            .text = "Elegí una";
+            .text = L10n.T("gameplay.card.pick_one");
 
         fila = Node("Opciones", lienzo);
         fila.anchorMin = fila.anchorMax = fila.pivot = new Vector2(0.5f, 0.5f);
@@ -461,10 +461,10 @@ public class EleccionDeInvasion : MonoBehaviour
     {
         int puntos = equipo != null && equipo.Wallet != null ? equipo.Wallet.Money : 0;
         bool alcanza = puntos >= costo;
-        string texto = $"R  ·  Volver a tirar  ·  {costo} pts";
+        string texto = L10n.T("gameplay.card.reroll_fmt", costo);
         if (tirarTexto.text != texto) tirarTexto.text = texto;
         tirarTexto.color = alcanza ? Ink : Mute;
-        string tenes = $"Tenés {puntos} pts";
+        string tenes = L10n.T("gameplay.card.points_fmt", puntos);
         if (puntosTexto.text != tenes) puntosTexto.text = tenes;
     }
 
@@ -489,11 +489,11 @@ public class EleccionDeInvasion : MonoBehaviour
         if (carta.nombre == CartaDeInvasion.AlimentacionDirecta)
         {
             var anuladas = new List<string>();
-            foreach (string n in CartaDeInvasion.SinUsoConAlimentacion) if (Veces(n) > 0) anuladas.Add(n);
-            return anuladas.Count > 0 ? "Deja sin uso: " + string.Join(", ", anuladas) : null;
+            foreach (string n in CartaDeInvasion.SinUsoConAlimentacion) if (Veces(n) > 0) anuladas.Add(L10n.Source(n));
+            return anuladas.Count > 0 ? L10n.T("gameplay.card.disables_fmt", string.Join(", ", anuladas)) : null;
         }
         if (Veces(CartaDeInvasion.AlimentacionDirecta) > 0 && System.Array.IndexOf(CartaDeInvasion.SinUsoConAlimentacion, carta.nombre) >= 0)
-            return "Sin uso con Alimentación directa";
+            return L10n.T("gameplay.card.unused_direct_feed");
         return null;
     }
 
@@ -501,11 +501,11 @@ public class EleccionDeInvasion : MonoBehaviour
     {
         bool esArma = o.arma != null;
         Color color = esArma ? CartaDeInvasion.ColorArma : CartaDeInvasion.ColorDe(o.carta.rareza);
-        string rareza = esArma ? "Arma" : CartaDeInvasion.NombreDe(o.carta.rareza);
-        string nombre = esArma ? NombreDelArma(o.arma) : o.carta.nombre;
-        string efecto = esArma ? QueReemplaza(o.arma) : o.carta.efecto;
-        string rinde = esArma ? (o.arma.kind == ShopItemKind.PrimaryWeapon ? "Arma principal" : "Arma secundaria")
-                              : "Rinde con: " + o.carta.rindeCon;
+        string rareza = esArma ? L10n.T("gameplay.card.weapon") : L10n.Source(CartaDeInvasion.NombreDe(o.carta.rareza));
+        string nombre = esArma ? NombreDelArma(o.arma) : L10n.Source(o.carta.nombre);
+        string efecto = esArma ? QueReemplaza(o.arma) : L10n.Source(o.carta.efecto);
+        string rinde = esArma ? L10n.T(o.arma.kind == ShopItemKind.PrimaryWeapon ? "gameplay.card.primary" : "gameplay.card.secondary")
+                              : L10n.T("gameplay.card.works_with_fmt", L10n.Source(o.carta.rindeCon));
         if (!esArma) rinde = AvisoDeAlimentacion(o.carta) ?? rinde; // US 334
 
         RectTransform carta = Node("Opcion" + (i + 1), fila);
@@ -569,9 +569,9 @@ public class EleccionDeInvasion : MonoBehaviour
     private string QueReemplaza(ShopItem arma)
     {
         ShopItem actual = equipo == null ? null : arma.kind == ShopItemKind.PrimaryWeapon ? equipo.Primary : equipo.Secondary;
-        string lugar = arma.kind == ShopItemKind.PrimaryWeapon ? "principal" : "secundaria";
+        string lugar = L10n.T(arma.kind == ShopItemKind.PrimaryWeapon ? "gameplay.card.slot.primary" : "gameplay.card.slot.secondary");
         return actual != null
-            ? $"Reemplaza a tu {NombreDelArma(actual)}. Viene con la munición llena."
-            : $"Va en tu espacio de arma {lugar}, que está vacío. Viene con la munición llena.";
+            ? L10n.T("gameplay.card.replaces_fmt", NombreDelArma(actual))
+            : L10n.T("gameplay.card.empty_slot_fmt", lugar);
     }
 }

@@ -82,20 +82,20 @@ public class ResultadoPartida : MonoBehaviour
         // US 195, CA6: si terminó porque se fueron todos los de un equipo, se dice.
         bool abandono = rondas.MotivoActual == RondasTacticas.Motivo.Abandono;
         Text(Place(Node("Antetitulo", root), 0f, 70f, 1920f, 30f), labelFont, 24f, Mute, TextAlignmentOptions.Center, 24f, true).text =
-            !abandono ? "Fin de la partida" : gane ? "Fin de la partida  ·  Los rivales abandonaron" : "Fin de la partida  ·  Tu equipo abandonó";
+            !abandono ? L10n.T("gameplay.ui.match_over") : gane ? L10n.T("gameplay.ui.match_over_your_opponents_left") : L10n.T("gameplay.ui.match_over_your_team_left");
         TextMeshProUGUI titulo = Text(Place(Node("Titulo", root), 0f, 100f, 1920f, 170f), displayFont, 150f, color, TextAlignmentOptions.Center, 6f, true);
-        titulo.text = gane ? "Victoria" : "Derrota";
+        titulo.text = gane ? L10n.T("gameplay.ui.victory_1") : L10n.T("gameplay.ui.defeat");
         Image(Place(Node("Linea", root), 870f, 280f, 180f, 4f), null, color);
         Text(Place(Node("Marcador", root), 0f, 300f, 1920f, 84f), displayFont, 72f, Ink, TextAlignmentOptions.Center).text =
             $"<color=#58A6FF>{rondas.RondasDe(mio)}</color>   <color=#8E96A3>–</color>   <color=#FF5C5C>{rondas.RondasDe(rival)}</color>";
         Text(Place(Node("Equipos", root), 0f, 398f, 1920f, 24f), labelFont, 20f, Mute, TextAlignmentOptions.Center, 16f, true).text =
-            "<color=#58A6FF>Tu equipo</color>   ·   <color=#FF5C5C>Rivales</color>";
+            L10n.T("gameplay.tac.teams_line");
 
         // Prueba del menú (Perfil y cápsulas): los créditos se ganan jugando.
         int creditos = PerfilDatos.GanarPorPartida(gane);
         RegistroDePartida.Tactico(rondas, gane); // F24: estadísticas del jugador
         Text(Place(Node("Creditos", root), 1420f, 40f, 460f, 34f), labelFont, 24f, Accent, TextAlignmentOptions.MidlineRight, 12f, true).text =
-            $"+{creditos} créditos";
+            L10n.T("gameplay.dm.credits_fmt", creditos);
 
         // CA3: tabla (se arma de nuevo cada tanto, por si llegan estadísticas atrasadas).
         tabla = Place(Node("Tabla", root), (1920f - TablaW) / 2f, 450f, TablaW, 100f);

@@ -66,9 +66,9 @@ public class PanelDeModo : MonoBehaviour
     public string Explicacion()
     {
         string amarillo = ColorUtility.ToHtmlStringRGB(Amarillo);
-        return $"<color=#{amarillo}>OBJETIVO</color>\n{Teclas(objetivo)}\n\n" +
-               $"<color=#{amarillo}>CÓMO SE GANA</color>\n{Teclas(comoSeGana)}\n\n" +
-               $"<color=#{amarillo}>CÓMO SE PIERDE</color>\n{Teclas(comoSePierde)}";
+        return L10n.T("gameplay.mode.objective_fmt", amarillo, Teclas(L10n.Source(objetivo))) +
+               L10n.T("gameplay.mode.how_win_fmt", amarillo, Teclas(L10n.Source(comoSeGana))) +
+               L10n.T("gameplay.mode.how_lose_fmt", amarillo, Teclas(L10n.Source(comoSePierde)));
     }
 
     // "{Plantar}" → la tecla de esa acción, resaltada.

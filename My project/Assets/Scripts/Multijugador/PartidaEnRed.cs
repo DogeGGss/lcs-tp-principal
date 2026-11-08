@@ -163,14 +163,14 @@ public class PartidaEnRed : MonoBehaviour
         if (jugador == null) return;
         QuitarJugador(jugador.ActorNumber);
         MatchHud.ReportEvent(jugador.NickName, JugadorEnRed.ColorDe(jugador.ActorNumber),
-            jugador.IsInactive ? "se desconectó" : "se fue de la partida");
+            L10n.T(jugador.IsInactive ? "gameplay.event.disconnected" : "gameplay.event.left"));
     }
 
     /// <summary>CA2: alguien volvió a la partida. Su copia aparece cuando avisa que terminó de cargar el mapa.</summary>
     public void AlVolver(Player jugador)
     {
         if (jugador == null) return;
-        MatchHud.ReportEvent(jugador.NickName, JugadorEnRed.ColorDe(jugador.ActorNumber), "volvió a la partida");
+        MatchHud.ReportEvent(jugador.NickName, JugadorEnRed.ColorDe(jugador.ActorNumber), L10n.T("gameplay.event.rejoined"));
     }
 
     // CA3: lo que el jugador había publicado en la sala antes de desconectarse. En el Táctico, la plata (el equipo se

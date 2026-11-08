@@ -32,8 +32,31 @@ public class MenuUIController : MonoBehaviour
 
     private static bool opcionesCargadas;
 
+    private void LocalizarTextosDePrefabs()
+    {
+        foreach (var panel in new[] { panelMenuPrincipal,panelSeleccionModo,panelSala,panelZombie,panelLogros,panelOpciones,panelDeseaSalir,panelCreditos })
+        {
+            if (panel == null) continue;
+            foreach (var text in panel.GetComponentsInChildren<TMPro.TMP_Text>(true))
+            {
+                var input = text.GetComponentInParent<TMPro.TMP_InputField>(true);
+                if (input != null && input.textComponent == text) continue;
+                if (L10n.TryAuthoredKey(text.text,out var key))
+                    L10n.Bind(text,key);
+            }
+            foreach (var text in panel.GetComponentsInChildren<UnityEngine.UI.Text>(true))
+            {
+                var input = text.GetComponentInParent<UnityEngine.UI.InputField>(true);
+                if (input != null && input.textComponent == text) continue;
+                if (L10n.TryAuthoredKey(text.text,out var key))
+                    L10n.Bind(text,key);
+            }
+        }
+    }
+
     private void Start()
     {
+        LocalizarTextosDePrefabs();
         OcultarTodosLosPaneles();
 
         // El menú principal lo dibuja MenuRiftwalker (con la versión y "Volver a la partida"); este panel queda vacío y
