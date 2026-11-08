@@ -97,7 +97,7 @@ function arsenal(){
 function content(s){
  switch(s.id){
  case 'inicio':return `<div class="hero"><p class="eyebrow">Laboratorio de Construcción de Software · Sprint 3</p><img class="hero-logo" src="media/logo.png" alt="Project Riftwalker"><h1>Del equipo<br>al juego.</h1><p class="lead">Decisiones, evidencia y una experiencia para jugar.</p></div>`;
- case 'trailer':{const t=D.trailer;return `<div class="head row trailer-head"><p class="eyebrow">${eyebrow(s)}</p>${t.src?'<button class="primary" data-trailer>▶ Pantalla completa</button>':''}</div><div class="trailer">${t.src?`<video id="trailerVideo" src="${esc(t.src)}"${t.poster?` poster="${esc(t.poster)}"`:''} controls playsinline preload="metadata"></video>`:'<strong>Tráiler</strong>'}</div>`}
+ case 'trailer':{const t=D.trailer;return `<div class="head row trailer-head"><p class="eyebrow">${eyebrow(s)}</p>${t.src?'<button class="primary" data-trailer>▶ Pantalla completa</button>':''}</div><div class="trailer">${t.src?`<video id="trailerVideo" src="${esc(t.src)}"${t.poster?` poster="${esc(t.poster)}"`:''} controls controlslist="nofullscreen" playsinline preload="metadata"></video><button class="trailer-exit" data-exit-trailer>Volver al recorrido</button>`:'<strong>Tráiler</strong>'}</div>`}
  case 'historia':return head(s)+story();
  case 'metricas':return head(s)+metrics();
  case 'menus':return head(s)+`<div class="grid"><button class="demo-card" data-demo="tienda"><strong>01 / Tienda</strong><span>Elegir, comparar y comprar.</span><em>Abrir demo →</em></button><button class="demo-card" data-demo="modos"><strong>02 / Modos</strong><span>Tres andenes. Una elección.</span><em>Abrir demo →</em></button><button class="demo-card" data-demo="hud"><strong>03 / HUD</strong><span>Información durante el combate.</span><em>Abrir demo →</em></button></div>`;
@@ -115,7 +115,9 @@ function content(s){
  case 'cierre':return `<div class="hero"><p class="eyebrow">Laboratorio de Construcción de Software · Sprint 3</p><img class="hero-logo" src="media/logo.png" alt="Project Riftwalker"><h1>¡Gracias!</h1><p class="lead">¿Preguntas?</p></div>`;
  }
 }
-function render(focus=false){const s=D.slides[current];$('#slide').innerHTML=content(s);$('#position').textContent=`${current+1} / ${D.slides.length}`;$('#prev').disabled=current===0;if(current>=D.slides.length-2)prepararSecreto();$('#progress').style.width=`${(current+1)/D.slides.length*100}%`;$('#speaker').textContent=s.speaker||D.speaker;$('#announcement').textContent=`${current+1} de ${D.slides.length}: ${s.title}`;history.replaceState(null,'','#'+s.id);if(focus){$('#slide').focus({preventScroll:true});scrollTo(0,0)}}
+function closeTrailer(){document.body.classList.remove('trailer-expanded');$('#trailerVideo')?.pause();$('#slide').focus({preventScroll:true})}
+document.addEventListener('fullscreenchange',()=>{if(!document.fullscreenElement&&document.body.classList.contains('trailer-expanded'))closeTrailer()});
+function render(focus=false){document.body.classList.remove('trailer-expanded');const s=D.slides[current];$('#slide').innerHTML=content(s);$('#position').textContent=`${current+1} / ${D.slides.length}`;$('#prev').disabled=current===0;if(current>=D.slides.length-2)prepararSecreto();$('#progress').style.width=`${(current+1)/D.slides.length*100}%`;$('#speaker').textContent=s.speaker||D.speaker;$('#announcement').textContent=`${current+1} de ${D.slides.length}: ${s.title}`;history.replaceState(null,'','#'+s.id);if(focus){$('#slide').focus({preventScroll:true});scrollTo(0,0);$('#slideScroll').scrollTop=0}}
 // Diapositiva secreta: Siguiente en el cierre rompe la página de a poco (temblor, cortes, grietas, la interfaz se cae), se abre el
 // portal y pasa el video del modo invasión. No cuenta en el índice, el contador ni el reloj; ← o Esc vuelve al cierre.
 const secreto={abierto:false,timers:[],tic:0,capa:null,video:null};
@@ -205,10 +207,15 @@ document.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)r
  if(d.go!==undefined){$('#indexDialog').close();go(+d.go)}
 
  if(d.demo)openDemo(d.demo);
- if(d.trailer!==undefined){const v=$('#trailerVideo');if(v){v.requestFullscreen?.().catch(()=>{});v.play().catch(()=>{})}}
+ if(d.trailer!==undefined){
+  document.body.classList.add('trailer-expanded');
+  if(!document.fullscreenElement)document.documentElement.requestFullscreen?.().catch(()=>{});
+  $('#trailerVideo').play().catch(()=>{});
+ }
+ if(d.exitTrailer!==undefined)closeTrailer();
 });
 document.addEventListener('change',e=>{if(e.target.id==='weaponSelect'){weaponId=e.target.value;render()}});
-document.addEventListener('keydown',e=>{if(secreto.abierto){if(['Escape','ArrowLeft','PageUp'].includes(e.key)){e.preventDefault();cerrarSecreto()}return}if(document.querySelector('dialog[open]')||document.fullscreenElement?.tagName==='VIDEO'||e.target.closest('input,select,textarea,button,a,video'))return;
+document.addEventListener('keydown',e=>{if(document.body.classList.contains('trailer-expanded')){if(e.key==='Escape'){e.preventDefault();closeTrailer()}return}if(secreto.abierto){if(['Escape','ArrowLeft','PageUp'].includes(e.key)){e.preventDefault();cerrarSecreto()}return}if(document.querySelector('dialog[open]')||document.fullscreenElement?.tagName==='VIDEO'||e.target.closest('input,select,textarea,button,a,video'))return;
  if(e.key==='ArrowRight'||e.key==='PageDown'){e.preventDefault();go(current+1)}if(e.key==='ArrowLeft'||e.key==='PageUp'){e.preventDefault();go(current-1)}if(e.key.toLowerCase()==='f')$('#fullscreen').click();
 });
 // Child demos use their own keyboard; only an explicit return message closes them.
