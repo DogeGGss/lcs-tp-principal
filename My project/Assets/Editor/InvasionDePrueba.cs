@@ -11,6 +11,8 @@ using UnityEngine;
 // - Riftwalker > Invasión > Matar a todos los invasores: mata a los que están vivos, como si les hubiera disparado
 //   (suman sus puntos). La oleada se supera cuando ya aparecieron todos, así que puede hacer falta usarlo varias veces.
 // - Riftwalker > Invasión > Cargar el puesto: deja cargado el puesto de suministros que está en el mapa (US 292).
+// - Riftwalker > Invasión > Contador de invasores: una ventana que cuenta sola los vivos contra el tope (US 299, CA2),
+//   los portales abiertos y cuántos se mandaron a cada portal, para probar la US 351 sin contar a mano.
 public static class InvasionDePrueba
 {
     [MenuItem("Riftwalker/Invasión/Ir a la oleada 10")]
@@ -59,6 +61,9 @@ public static class InvasionDePrueba
     [MenuItem("Riftwalker/Invasión/Darme una carta...")]
     private static void DarmeUnaCarta() => CartasDePrueba.Abrir();
 
+    [MenuItem("Riftwalker/Invasión/Contador de invasores")]
+    private static void Contador() => ContadorDeInvasores.Abrir();
+
     [MenuItem("Riftwalker/Invasión/Ir a la oleada 10", true)]
     [MenuItem("Riftwalker/Invasión/Darme el Gran Capitán", true)]
     [MenuItem("Riftwalker/Invasión/Ir a la oleada 20", true)]
@@ -90,6 +95,66 @@ public class CartasDePrueba : EditorWindow
                                (carta.aplicar == null ? "  · sin efecto todavía" : "");
                 if (GUILayout.Button(texto)) EleccionDeInvasion.Actual.Dar(carta);
             }
+        EditorGUILayout.EndScrollView();
+    }
+
+    private void OnInspectorUpdate() => Repaint();
+}
+
+// La ventana de Riftwalker > Invasión > Contador de invasores (US 351, CA3): cuenta sola lo que hay que mirar.
+// - Vivos a la vez contra el tope de la oleada (US 299, CA2: 15 en la 1 y uno más por oleada hasta 30), y lo más alto
+//   que llegó en la oleada. El Jefe no cuenta en el tope.
+// - Los portales abiertos (como mucho 3) con cuántos tiene cada uno en fila, y cuántos se mandaron a un portal cada vez
+//   (de 3 a 5; una jauría de Rápidos va entera).
+public class ContadorDeInvasores : EditorWindow
+{
+    private int irA = 5;
+    private Vector2 scroll;
+
+    public static void Abrir() => GetWindow<ContadorDeInvasores>("Contador de invasores").Show();
+
+    private void OnGUI()
+    {
+        OleadasDeInvasion oleadas = Application.isPlaying && PartidaDeInvasion.Actual != null
+            ? PartidaDeInvasion.Actual.GetComponent<OleadasDeInvasion>() : null;
+        if (oleadas == null) { EditorGUILayout.HelpBox("Arrancá una partida de Invasión para ver el contador.", MessageType.Info); return; }
+
+        scroll = EditorGUILayout.BeginScrollView(scroll);
+        GUIStyle grande = new GUIStyle(EditorStyles.boldLabel) { fontSize = 16 };
+        EditorGUILayout.LabelField($"Oleada {oleadas.Oleada}" + (oleadas.Descanso ? "  (descanso)" : ""), grande);
+        EditorGUILayout.LabelField($"Invasores de la oleada: {oleadas.Total}   ·   Quedan: {oleadas.Quedan}");
+        EditorGUILayout.Space();
+
+        int vivos = oleadas.Vivos, tope = oleadas.TopeDeVivos;
+        EditorGUILayout.LabelField($"Vivos a la vez: {vivos} / {tope}", grande);
+        EditorGUILayout.LabelField($"Lo más alto en esta oleada: {oleadas.PicoDeVivos}" +
+                                   (oleadas.PicoDeVivos >= tope ? "  (llegó al tope)" : ""));
+        if (oleadas.PicoDeVivos > tope && !oleadas.DeJefe)
+            EditorGUILayout.HelpBox($"Pasó el tope: llegó a {oleadas.PicoDeVivos} con tope {tope}.", MessageType.Error);
+        else if (oleadas.DeJefe)
+            EditorGUILayout.HelpBox("Oleada del Jefe: el Jefe no cuenta en el tope y su escolta (desde la 20) sale sin tope.", MessageType.Info);
+        if (oleadas.Total < tope)
+            EditorGUILayout.HelpBox($"Esta oleada trae {oleadas.Total} invasores y el tope es {tope}: nunca llega al tope. " +
+                                    "Probalo desde la oleada 3.", MessageType.Warning);
+        EditorGUILayout.Space();
+
+        int esperando = 0;
+        foreach (PortalDeEnemigos p in oleadas.Portales) if (p != null) esperando += p.Fila.Count;
+        EditorGUILayout.LabelField($"Portales abiertos: {oleadas.Portales.Count} / 3", grande);
+        int i = 1;
+        foreach (PortalDeEnemigos p in oleadas.Portales)
+            if (p != null) EditorGUILayout.LabelField($"   Portal {i++}: {p.Fila.Count} en fila" + (p.Listo ? "" : " (abriéndose)"));
+        EditorGUILayout.LabelField($"Esperando en los portales: {esperando}   ·   Sin portal todavía: {oleadas.SinPortal}");
+        string grupos = oleadas.Grupos.Count == 0 ? "-" : string.Join(", ", oleadas.Grupos);
+        EditorGUILayout.LabelField("Mandados a un portal cada vez:");
+        EditorGUILayout.LabelField(grupos, EditorStyles.wordWrappedLabel);
+        EditorGUILayout.Space();
+
+        using (new EditorGUILayout.HorizontalScope())
+        {
+            irA = Mathf.Max(1, EditorGUILayout.IntField("Ir a la oleada", irA));
+            if (GUILayout.Button("Ir", GUILayout.Width(50))) oleadas.IrA(irA);
+        }
         EditorGUILayout.EndScrollView();
     }
 

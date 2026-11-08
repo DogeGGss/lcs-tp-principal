@@ -70,6 +70,21 @@ public class OleadasDeInvasion : MonoBehaviour
     /// <summary>Está la pantalla de "¡Sobreviviste!" (US 150: el marcador se oculta).</summary>
     public bool EnElFinal => fase == Fase.Final;
 
+    // Para probar la US 351 (Riftwalker > Invasión > Contador de invasores): lo que pasa con el tope y los portales.
+    /// <summary>Invasores vivos ahora (sin el Jefe, que no cuenta en el tope).</summary>
+    public int Vivos => vivos.Count;
+    /// <summary>US 299, CA2: el tope de vivos a la vez de la oleada en curso.</summary>
+    public int TopeDeVivos => ConfigInvasion.Actual != null ? ConfigInvasion.Actual.TopeDeVivos(Mathf.Max(1, Oleada)) : 0;
+    /// <summary>Lo más alto que llegaron los vivos a la vez en la oleada en curso.</summary>
+    public int PicoDeVivos { get; private set; }
+    /// <summary>Los portales abiertos (sin el del Jefe).</summary>
+    public IReadOnlyList<PortalDeEnemigos> Portales => portales;
+    /// <summary>Cuántos se mandaron a un portal cada vez en la oleada en curso (de 3 a 5, o una jauría entera).</summary>
+    public IReadOnlyList<int> Grupos => grupos;
+    /// <summary>Los que todavía no se mandaron a ningún portal.</summary>
+    public int SinPortal { get { int n = 0; foreach (List<TipoDeNpc> g in porAparecer) n += g.Count; return n; } }
+    private readonly List<int> grupos = new List<int>();
+
     /// <summary>Avisa cada oleada que empieza y cada oleada superada (para el marcador y los puntos).</summary>
     public static event System.Action<int> Empezo, Supero;
     /// <summary>US 335: arrancó el descanso de 20 s antes de esa oleada (después de la elección, si la hubo).</summary>
@@ -148,6 +163,8 @@ public class OleadasDeInvasion : MonoBehaviour
         vivos.Clear();
         tipos.Clear();
         aparecio.Clear();
+        grupos.Clear();
+        PicoDeVivos = 0;
         jefeSalio = jefeVivo = jefeMuerto = false;
         jefe = null;
         porAparecer.Clear();
@@ -282,6 +299,7 @@ public class OleadasDeInvasion : MonoBehaviour
             if (portal != null)
             {
                 proximoPortal = Time.time + EntrePortales;
+                int antes = portal.Fila.Count;
                 // Una jauría va entera a un portal (US 300, CA2); si no, de 3 a 5 sueltos (sin cortar una jauría).
                 if (porAparecer.Peek().Count > 1) foreach (TipoDeNpc t in porAparecer.Dequeue()) portal.Fila.Enqueue(t);
                 else
@@ -290,6 +308,7 @@ public class OleadasDeInvasion : MonoBehaviour
                     for (int i = 0; i < cuantos && porAparecer.Count > 0 && porAparecer.Peek().Count == 1; i++)
                         portal.Fila.Enqueue(porAparecer.Dequeue()[0]);
                 }
+                grupos.Add(portal.Fila.Count - antes);
             }
         }
 
@@ -304,6 +323,7 @@ public class OleadasDeInvasion : MonoBehaviour
             Npc npc = Aparecer(tipo, portal.Salida, jugador);
             if (npc != null) { vivos.Add(npc); tipos[npc] = tipo; aparecio[npc] = Time.time; }
             else total--; // el tipo no tiene modelo: no cuenta
+            PicoDeVivos = Mathf.Max(PicoDeVivos, vivos.Count);
         }
 
         // CA3 (US 146, CA1 y US 269, CA5): el Jefe, a mitad de la oleada 10 (US 302: y de la 20, la 30...), de un portal
