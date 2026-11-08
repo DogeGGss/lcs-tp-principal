@@ -112,12 +112,78 @@ function content(s){
  case 'avance':return head(s)+progress();
  case 'inversion':return head(s)+investment();
  case 'escala':return head(s)+scale();
- case 'cierre':return `<div class="hero"><p class="eyebrow">Laboratorio de Construcción de Software · Sprint 3</p><img class="hero-logo" src="media/logo.png" alt="Project Riftwalker"><h1>¡Gracias!</h1><p class="lead">¿Preguntas?</p></div>`;
+ case 'cierre':return questionsScreen();
  }
 }
 function closeTrailer(){document.body.classList.remove('trailer-expanded');$('#trailerVideo')?.pause();$('#slide').focus({preventScroll:true})}
 document.addEventListener('fullscreenchange',()=>{if(!document.fullscreenElement&&document.body.classList.contains('trailer-expanded'))closeTrailer()});
-function render(focus=false){document.body.classList.remove('trailer-expanded');const s=D.slides[current];$('#slide').innerHTML=content(s);$('#position').textContent=`${current+1} / ${D.slides.length}`;$('#prev').disabled=current===0;if(current>=D.slides.length-2)prepararSecreto();$('#progress').style.width=`${(current+1)/D.slides.length*100}%`;$('#speaker').textContent=s.speaker||D.speaker;$('#announcement').textContent=`${current+1} de ${D.slides.length}: ${s.title}`;history.replaceState(null,'','#'+s.id);if(focus){$('#slide').focus({preventScroll:true});scrollTo(0,0);$('#slideScroll').scrollTop=0}}
+const questionTopics = [
+  [
+    "Campus UNGS",
+    "¿Cómo llevamos la universidad al juego?",
+    "Usamos el plano oficial a escala 1:500 y fotos del campus. La forma de L del Módulo 7, el bar del Módulo 9 y el cilindro de la entrada ayudan a reconocer la UNGS incluso de noche."
+  ],
+  [
+    "Steam",
+    "¿Cómo se vería Riftwalker en Steam?",
+    "Armamos una ficha de tienda para la presentación académica. Podés recorrer la galería, reproducir el tráiler y probar la lista de deseados.",
+    "../steam/"
+  ],
+  [
+    "Idiomas",
+    "¿Qué pasa si cambiás a inglés en el launcher?",
+    "El launcher y el juego comparten la elección. El juego abre en inglés y el cambio también alcanza al HUD, la tienda y los mensajes de partida."
+  ],
+  [
+    "Logros",
+    "¿Qué puede desbloquear un jugador?",
+    "Hay 25 logros. Nueve corresponden al minijuego de cometas y dieciséis al combate. Para estos últimos se usan las estadísticas de Táctico y Deathmatch.",
+    "../index.html#logros-catalogo"
+  ],
+  [
+    "Miras",
+    "¿Cómo armás una mira propia?",
+    "Desde Opciones o desde la pausa podés ajustar la mira. Largo, grosor, hueco y borde cambian cómo se distingue sobre el mapa. Aplicar guarda la elección.",
+    "../index.html#mira-personalizable"
+  ],
+  [
+    "Cometas",
+    "¿Cómo entra un minijuego en un shooter?",
+    "El minijuego de cometas tiene sus propios desafíos. Sus nueve logros forman parte del mismo catálogo que los de combate."
+  ],
+  [
+    "Guardado",
+    "¿Qué pasa con el progreso si cambiás de PC?",
+    "La cuenta vincula el progreso local con la nube. Al iniciar sesión en otra computadora se recuperan el perfil, las estadísticas, los logros y los cosméticos."
+  ],
+  [
+    "Cartas",
+    "¿Por qué dos partidas de Invasión pueden jugarse distinto?",
+    "Pelear dentro del anillo carga el puesto de suministros. Al completarlo, el jugador elige una de tres opciones. Algunas cartas se acumulan hasta tres veces y cambian cómo conviene usar cada arma."
+  ]
+];
+function questionsScreen() {
+  const buttons = questionTopics.map(([name], index) =>
+    `<button class="question-node" data-question="${index}">${esc(name)}</button>`).join('');
+  const lines = [12.5, 37.5, 62.5, 87.5].flatMap(y =>
+    [18, 82].map(x => `<line x1="50" y1="50" x2="${x}" y2="${y}"/>`)).join('');
+  return `<section class="questions-board" aria-label="Preguntas del público">
+    <svg aria-hidden="true" viewBox="0 0 100 100" preserveAspectRatio="none">${lines}</svg>
+    <div class="question-center"><p>¡Gracias!</p><h1>¿Preguntas?</h1></div>
+    ${buttons}
+    <dialog id="questionDialog"><div class="dialog-head"><h2 id="questionTitle"></h2><button data-close="questionDialog">Cerrar ×</button></div><div id="questionBody"></div></dialog>
+  </section>`;
+}
+function openQuestion(index) {
+  const [name, title, answer, url] = questionTopics[index];
+  $('#questionTitle').textContent = title;
+  $('#questionBody').innerHTML = `<p>${esc(answer)}</p>` + (url ?
+    `<iframe title="${esc(name)}" src="${esc(url)}"></iframe>` : '');
+  $('#questionDialog').showModal();
+  $('#questionDialog').onclose = () => { $('#questionBody').replaceChildren(); };
+}
+
+function render(focus=false){document.body.classList.remove('trailer-expanded');const s=D.slides[current];$('#slide').innerHTML=content(s);const questions=s.id==='cierre';if(questions&&running)$('#timerToggle').click();$('#timerToggle').disabled=questions;$('#position').textContent=`${current+1} / ${D.slides.length}`;$('#prev').disabled=current===0;if(current>=D.slides.length-2)prepararSecreto();$('#progress').style.width=`${(current+1)/D.slides.length*100}%`;$('#speaker').textContent=s.speaker||D.speaker;$('#announcement').textContent=`${current+1} de ${D.slides.length}: ${s.title}`;history.replaceState(null,'','#'+s.id);if(focus){$('#slide').focus({preventScroll:true});scrollTo(0,0);$('#slideScroll').scrollTop=0}}
 // Diapositiva secreta: Siguiente en el cierre rompe la página de a poco (temblor, cortes, grietas, la interfaz se cae), se abre el
 // portal y pasa el video del modo invasión. No cuenta en el índice, el contador ni el reloj; ← o Esc vuelve al cierre.
 const secreto={abierto:false,timers:[],tic:0,capa:null,video:null};
@@ -206,6 +272,7 @@ document.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)r
  if(d.close)$('#'+d.close).close();
  if(d.go!==undefined){$('#indexDialog').close();go(+d.go)}
 
+ if(d.question!==undefined)openQuestion(Number(d.question));
  if(d.demo)openDemo(d.demo);
  if(d.trailer!==undefined){
   document.body.classList.add('trailer-expanded');
