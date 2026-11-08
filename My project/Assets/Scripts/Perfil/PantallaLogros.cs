@@ -89,7 +89,7 @@ public class PantallaLogros : PantallaBase
         if (PorEstadistica) filas = DibujarEstadistica(out paso);
         else if (seccion == 0 || seleccionado != null)
         {
-            titulo.text = seleccionado == null ? "Cometas de cada color y combate en Táctico y Deathmatch" : L10n.T("profile.ach.of_fmt", seleccionado.display_name);
+            titulo.text = seleccionado == null ? L10n.T("profile.ui.comets_of_every_color_and") : L10n.T("profile.ach.of_fmt", seleccionado.display_name);
             filas = LogrosCometas.Catalogo.Length;
             for (int i = 0; i < filas; i++) FilaLogro(LogrosCometas.Catalogo[i], i);
             if (seleccionado != null) CrearBoton(acciones, 0, 0, 300, 48, "Volver al ranking", false, () => { seleccionado = null; Dibujar(true); }, 22);

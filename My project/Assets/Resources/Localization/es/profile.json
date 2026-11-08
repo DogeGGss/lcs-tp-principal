@@ -2119,6 +2119,18 @@
     {
       "key": "profile.text.destroy_0_1_comets_in",
       "text": "Destruí {0} cometas {1} en total."
+    },
+    {
+      "key": "profile.station.for_fmt",
+      "text": "por {0}"
+    },
+    {
+      "key": "profile.text.business_simulation_there_are_no",
+      "text": "Simulación de negocio: no hay pagos reales. Los boletos se consiguen jugando (créditos) o con cristales de la tienda. Las probabilidades se muestran siempre."
+    },
+    {
+      "key": "profile.text.kda_kills_assists_deaths_with",
+      "text": "* KDA = (bajas + asistencias) ÷ muertes; sin muertes, ÷ 1. Asistencia: dañaste a un rival que otro eliminó en los 10 s siguientes. Cuentan las partidas terminadas."
     }
   ]
 }

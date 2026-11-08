@@ -24,6 +24,14 @@ public static class DetectorDeIdioma
         "Nicolás", "Gauna", "Velázquez", "Gómez", "Huber", "Barreto", "Fonseca", "Ramos", "Lucas", "Luka", "Franco",
         "Nahuel", "Ulises", "David", "Unzué", "Porteña", "Capitán", "UNGS", "Riftwalker",
     };
+    // Carteles reales de los mapas (la UNGS, sus calles, el colectivo, los murales): son parte del lugar y no se traducen.
+    private static readonly HashSet<string> CartelesDelMapa = new HashSet<string>(StringComparer.Ordinal)
+    {
+        "Universidad Nacional de General Sarmiento", "Juan María Gutiérrez 1150", "Juan M. Gutiérrez", "NUNCA MÁS",
+        "ICO instituto del conurbano", "ICI instituto de ciencias", "IDH instituto de desarrollo humano", "IDEI instituto de industria",
+        "Módulo 7 Ingreso peatonal SECTOR A del Estacionamiento", "COMPAÑEROS DETENIDOS DESAPARECIDOS EN CAMPO DE MAYO",
+        "SOY DE POLVORINES NI DE BOCA NI DE RIVER", "TORT. - MALVINAS ARGENTINAS - ESTAC. MORENO - SAN MIGUEL LÍNEA 315/440",
+    };
     private static readonly Regex Etiqueta = new Regex("<[^>]+>");
     private static readonly Regex Espacios = new Regex(@"\s+");
     private static readonly Regex Palabra = new Regex(@"[\p{L}]+");
@@ -42,7 +50,7 @@ public static class DetectorDeIdioma
     {
         Cargar();
         string v = Visible(texto);
-        if (v.Length < 2 || ingles.Contains(v)) return false;
+        if (v.Length < 2 || ingles.Contains(v) || CartelesDelMapa.Contains(v)) return false;
         if (espanol.Contains(v)) return true;
         var palabras = Palabra.Matches(v).Cast<Match>().Select(m => m.Value).Where(p => !palabrasPropias.Contains(p)).ToList();
         if (palabras.Count == 0) return false;

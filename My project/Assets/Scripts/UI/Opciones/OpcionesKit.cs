@@ -144,7 +144,7 @@ public class OpcionesKit
 
     public void Ayuda(string texto, ref float y)
     {
-        Text(Place(Node("Ayuda", root), left, y, Inner, 22f), bodyFont, 16f, Mute, TextAlignmentOptions.MidlineLeft).text = texto;
+        Text(Place(Node("Ayuda", root), left, y, Inner, 22f), bodyFont, 16f, Mute, TextAlignmentOptions.MidlineLeft).text = L10n.Source(texto, "ui.");
         y += 32f;
     }
 

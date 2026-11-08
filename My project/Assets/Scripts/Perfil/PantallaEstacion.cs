@@ -190,7 +190,7 @@ public class PantallaEstacion : PantallaBase
         Image(Place(Node("Fila", parent), 16f, y, 558f, 58f), Rounded, White(0.03f), 6f);
         IconoMoneda(parent, moneda, 44f, y + 29f, 22f);
         T(parent, "Costo", 66f, y + 6f, 300f, 26f, FTitulo, 26f, Ink, costo);
-        T(parent, "Recibe", 66f, y + 32f, 300f, 20f, FRotulo, 15f, Mute, "por " + recibe, TextAlignmentOptions.MidlineLeft, 10f, true);
+        T(parent, "Recibe", 66f, y + 32f, 300f, 20f, FRotulo, 15f, Mute, L10n.T("profile.station.for_fmt", L10n.Source(recibe, "profile.")), TextAlignmentOptions.MidlineLeft, 10f, true);
         Boton b = CrearBoton(parent, 574f - 160f - 10f, y + 9f, 160f, 40f, "Canjear", false, () =>
         {
             if (pagando) return;

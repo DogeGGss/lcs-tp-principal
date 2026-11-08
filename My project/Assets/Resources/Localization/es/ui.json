@@ -1447,6 +1447,14 @@
     {
       "key": "ui.version.update_fmt",
       "text": "Hay una versión nueva ({0}). Actualizá el juego desde el launcher para jugar online."
+    },
+    {
+      "key": "ui.text.buy",
+      "text": "Comprar"
+    },
+    {
+      "key": "ui.text.close",
+      "text": "Cerrar"
     }
   ]
 }

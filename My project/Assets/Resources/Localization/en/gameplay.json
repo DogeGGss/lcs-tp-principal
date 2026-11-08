@@ -1703,6 +1703,98 @@
     {
       "key": "gameplay.shop.body_full_fmt",
       "text": "{0} body shots with full shield"
+    },
+    {
+      "key": "gameplay.text.number_or_click",
+      "text": "Number or click"
+    },
+    {
+      "key": "gameplay.text.category",
+      "text": "Category"
+    },
+    {
+      "key": "gameplay.text.right_click_sell",
+      "text": "Right click: sell"
+    },
+    {
+      "key": "gameplay.text.enter_click",
+      "text": "Enter · click"
+    },
+    {
+      "key": "gameplay.text.tactical",
+      "text": "TACTICAL"
+    },
+    {
+      "key": "gameplay.text.invasion",
+      "text": "INVASION"
+    },
+    {
+      "key": "gameplay.text.deathmatch",
+      "text": "DEATHMATCH"
+    },
+    {
+      "key": "gameplay.text.practice_range",
+      "text": "PRACTICE RANGE"
+    },
+    {
+      "key": "gameplay.text.firing_line",
+      "text": "FIRING LINE"
+    },
+    {
+      "key": "gameplay.text.shooting_zone",
+      "text": "SHOOTING ZONE"
+    },
+    {
+      "key": "gameplay.text.practice_map",
+      "text": "PRACTICE MAP"
+    },
+    {
+      "key": "gameplay.text.get_closer_to_see_the",
+      "text": "Get closer to see the objective"
+    },
+    {
+      "key": "gameplay.text.change_weapon",
+      "text": "Change weapon"
+    },
+    {
+      "key": "gameplay.text.primary",
+      "text": "Primary"
+    },
+    {
+      "key": "gameplay.text.secondary",
+      "text": "Secondary"
+    },
+    {
+      "key": "gameplay.text.pistols",
+      "text": "Pistols"
+    },
+    {
+      "key": "gameplay.text.smgs",
+      "text": "SMGs"
+    },
+    {
+      "key": "gameplay.text.shotguns",
+      "text": "Shotguns"
+    },
+    {
+      "key": "gameplay.text.rifles",
+      "text": "Rifles"
+    },
+    {
+      "key": "gameplay.text.snipers",
+      "text": "Snipers"
+    },
+    {
+      "key": "gameplay.text.shields",
+      "text": "Shields"
+    },
+    {
+      "key": "gameplay.text.supplies",
+      "text": "Supplies"
+    },
+    {
+      "key": "gameplay.text.grenades",
+      "text": "Grenades"
     }
   ]
 }

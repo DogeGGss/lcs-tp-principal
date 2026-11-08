@@ -77,7 +77,7 @@ public partial class ModeSelectScreen
         Line(b.aguja, Oscuro, 4f, Vector2.zero, new Vector2(24f, 0f));
         L10n.BindSource(Text(Place(Node("Titulo", b.buscar), 118f, 20f, 520f, 64f), displayFont, 60f, Oscuro, TextAlignmentOptions.MidlineLeft, 5f, true), "Buscar partida","ui.");
         Text(Place(Node("Detalle", b.buscar), 120f, 84f, 520f, 24f), labelFont, 21f, WithAlpha(Oscuro, 0.72f), TextAlignmentOptions.MidlineLeft, 16f, true).text =
-            Titles[mode] + " · con jugadores de tu región";
+            L10n.Source(Titles[mode], "ui.") + L10n.T("ui.source.aab7f54dacbc");
         UIPolyline flecha = Line(b.buscar, Oscuro, 5f, new Vector2(646f, 62f), new Vector2(690f, 62f));
         flecha.roundJoins = true;
         UIPolyline punta = Line(b.buscar, Oscuro, 5f, new Vector2(673f, 45f), new Vector2(690f, 62f), new Vector2(673f, 79f));
