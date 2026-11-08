@@ -106,6 +106,9 @@ public class CartasDePrueba : EditorWindow
 //   que llegó en la oleada. El Jefe no cuenta en el tope.
 // - Los portales abiertos (como mucho 3) con cuántos tiene cada uno en fila, y cuántos se mandaron a un portal cada vez
 //   (de 3 a 5; una jauría de Rápidos va entera).
+// - US 303, CA1: cuántos Jefes cayeron y, por tipo de los que están vivos, la vida y el daño contra los de la dificultad
+//   sin Jefes, con el % que suman (tiene que dar 25 % y 10 % por Jefe). "Ir a la oleada 11" cuenta como un Jefe caído y
+//   "Ir a la oleada 21" como dos (IrA), así no hace falta ganarle a los Jefes. Los alfas no entran en la cuenta.
 public class ContadorDeInvasores : EditorWindow
 {
     private int irA = 5;
@@ -150,6 +153,9 @@ public class ContadorDeInvasores : EditorWindow
         EditorGUILayout.LabelField(grupos, EditorStyles.wordWrappedLabel);
         EditorGUILayout.Space();
 
+        Endurecimiento(oleadas, grande);
+        EditorGUILayout.Space();
+
         using (new EditorGUILayout.HorizontalScope())
         {
             irA = Mathf.Max(1, EditorGUILayout.IntField("Ir a la oleada", irA));
@@ -157,6 +163,31 @@ public class ContadorDeInvasores : EditorWindow
         }
         EditorGUILayout.EndScrollView();
     }
+
+    // US 303, CA1: vida y daño de un invasor vivo de cada tipo (que no sea alfa) contra los de la dificultad sin Jefes.
+    private static void Endurecimiento(OleadasDeInvasion oleadas, GUIStyle grande)
+    {
+        ConfigInvasion config = ConfigInvasion.Actual;
+        int jefes = oleadas.JefesDerrotados;
+        EditorGUILayout.LabelField($"Jefes derrotados: {jefes}", grande);
+        if (config != null)
+            EditorGUILayout.LabelField($"Tiene que dar: +{Mathf.RoundToInt(config.vidaPorJefe * jefes * 100f)} % de vida y " +
+                                       $"+{Mathf.RoundToInt(config.danioPorJefe * jefes * 100f)} % de daño (el Jefe aparte).");
+        var vistos = new System.Collections.Generic.HashSet<TipoDeNpc>();
+        foreach (Npc npc in Npc.Todos)
+        {
+            if (npc == null || !npc.Vivo || npc.Tipo == null || npc.Alfa != null || npc.Tipo.esJefe || !vistos.Add(npc.Tipo)) continue;
+            TipoDeNpc t = npc.Tipo;
+            int vidaBase = DificultadDeInvasion.VidaDeEnemigo(t.vida), vida = npc.Vida.maxHealth;
+            int danioBase = DificultadDeInvasion.DanioDeEnemigo(t.danio), danio = npc.Danio(t.danio);
+            EditorGUILayout.LabelField($"   {t.nombre}:  vida {vidaBase} → {vida} ({Porcentaje(vidaBase, vida)})   ·   " +
+                                       $"daño {danioBase} → {danio} ({Porcentaje(danioBase, danio)})");
+        }
+        if (vistos.Count == 0) EditorGUILayout.LabelField("   (todavía no hay invasores vivos que no sean alfas)");
+    }
+
+    private static string Porcentaje(int antes, int ahora) =>
+        antes <= 0 ? "-" : $"{(ahora - antes) * 100f / antes:+0;-0;0} %";
 
     private void OnInspectorUpdate() => Repaint();
 }
