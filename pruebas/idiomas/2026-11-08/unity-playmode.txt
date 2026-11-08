@@ -1,4 +1,4 @@
-US347_CA1_Menu_principal	Passed	
+﻿US347_CA1_Menu_principal	Passed	
 US347_CA2_Opciones	Passed	
 US347_CA3_Perfil	Passed	
 US347_CA4_Logros	Passed	

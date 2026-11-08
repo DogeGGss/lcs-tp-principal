@@ -1,4 +1,4 @@
-Con_el_minimo	Passed	
+﻿Con_el_minimo	Passed	
 Durante_la_cuenta	Passed	
 Fin_de_la_cuenta	Passed	
 Sala_llena	Passed	
