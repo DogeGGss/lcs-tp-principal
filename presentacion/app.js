@@ -118,60 +118,48 @@ function content(s){
 function closeTrailer(){document.body.classList.remove('trailer-expanded');$('#trailerVideo')?.pause();$('#slide').focus({preventScroll:true})}
 document.addEventListener('fullscreenchange',()=>{if(!document.fullscreenElement&&document.body.classList.contains('trailer-expanded'))closeTrailer()});
 const questionTopics = [
-  [
-    "Campus UNGS",
-    "¿Cómo llevamos la universidad al juego?",
-    "Usamos el plano oficial a escala 1:500 y fotos del campus. La forma de L del Módulo 7, el bar del Módulo 9 y el cilindro de la entrada ayudan a reconocer la UNGS incluso de noche."
-  ],
-  [
-    "Steam",
-    "¿Cómo se vería Riftwalker en Steam?",
-    "Armamos una ficha de tienda para la presentación académica. Podés recorrer la galería, reproducir el tráiler y probar la lista de deseados.",
-    "../steam/"
-  ],
-  [
-    "Idiomas",
-    "¿Qué pasa si cambiás a inglés en el launcher?",
-    "El launcher y el juego comparten la elección. El juego abre en inglés y el cambio también alcanza al HUD, la tienda y los mensajes de partida."
-  ],
-  [
-    "Logros",
-    "¿Qué puede desbloquear un jugador?",
-    "Hay 25 logros. Nueve corresponden al minijuego de cometas y dieciséis al combate. Para estos últimos se usan las estadísticas de Táctico y Deathmatch.",
-    "../index.html#logros-catalogo"
-  ],
-  [
-    "Miras",
-    "¿Cómo armás una mira propia?",
-    "Desde Opciones o desde la pausa podés ajustar la mira. Largo, grosor, hueco y borde cambian cómo se distingue sobre el mapa. Aplicar guarda la elección.",
-    "../index.html#mira-personalizable"
-  ],
-  [
-    "Cometas",
-    "¿Cómo entra un minijuego en un shooter?",
-    "El minijuego de cometas tiene sus propios desafíos. Sus nueve logros forman parte del mismo catálogo que los de combate."
-  ],
-  [
-    "Guardado",
-    "¿Qué pasa con el progreso si cambiás de PC?",
-    "La cuenta vincula el progreso local con la nube. Al iniciar sesión en otra computadora se recuperan el perfil, las estadísticas, los logros y los cosméticos."
-  ],
-  [
-    "Cartas",
-    "¿Por qué dos partidas de Invasión pueden jugarse distinto?",
-    "Pelear dentro del anillo carga el puesto de suministros. Al completarlo, el jugador elige una de tres opciones. Algunas cartas se acumulan hasta tres veces y cambian cómo conviene usar cada arma."
-  ]
+  ['Nuevo mapa', 'La UNGS en Riftwalker', 'mapa'],
+  ['Steam', 'Project Riftwalker en Steam', 'steam'],
+  ['Idiomas', 'Idiomas', 'idiomas'],
+  ['Logros', 'Logros', 'logros'],
+  ['Miras', 'Elegí tu mira', 'miras'],
+  ['Modo Invasión', 'Modo Invasión · Roguelike de oleadas', 'invasion'],
+  ['Cuenta', 'Tu cuenta Riftwalker', 'cuenta']
 ];
+const proofImages = '../pruebas/idiomas/2026-11-08/';
+const invasionView = proofImages + 'US-348_CA1_Invasion_HUD_y_oleada.png';
+let campusPhotos = [invasionView];
+let campusPhoto = 0;
+function mapPhoto() {
+  const picture = $('#campusPicture');
+  picture.src = campusPhotos[campusPhoto];
+  picture.alt = 'Vista del mapa de la UNGS ' + (campusPhoto + 1);
+  $('#photoCount').textContent = (campusPhoto + 1) + ' / ' + campusPhotos.length;
+  for (const button of document.querySelectorAll('[data-photo]')) button.disabled = campusPhotos.length < 2;
+}
+function questionVisual(key) {
+  switch (key) {
+    case 'mapa': return `<img id="campusPicture" class="qa-picture" alt=""><div class="qa-actions"><button data-photo="-1" aria-label="Foto anterior">←</button><output id="photoCount"></output><button data-photo="1" aria-label="Foto siguiente">→</button><label class="photo-picker">Elegir fotos del mapa<input type="file" id="mapFiles" accept="image/*" multiple></label></div>`;
+    case 'steam': return '<iframe class="steam-showcase" title="Ficha de Steam" src="../steam/"></iframe>';
+    case 'logros': return `<img class="qa-picture" src="${proofImages}US-347_CA4_Logros.png" alt="Pantalla de logros del juego"><div class="qa-actions"><strong>25 logros</strong><span>9 de cometas</span><span>16 de combate</span></div>`;
+    case 'idiomas': {
+      const flag = (code,name) => `<figure><img alt="" src="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/${code}.svg"><figcaption>${name}</figcaption></figure>`;
+      return `<div class="qa-languages"><h3>En el juego y el launcher</h3><div>${flag('1f1e6-1f1f7','Español')}${flag('1f1ec-1f1e7','English')}</div><h3>Previstos para el Sprint 5</h3><div>${flag('1f1e7-1f1f7','Português')}${flag('1f1eb-1f1f7','Français')}${flag('1f1ee-1f1f9','Italiano')}</div></div>`;
+    }
+    case 'miras': return '<div class="aim-preview"><svg viewBox="0 0 100 100" aria-label="Vista previa de la mira"><g stroke="currentColor" stroke-width="3"><path id="aimLines" d="M50 28v13 M50 59v13 M28 50h13 M59 50h13"/></g><circle id="aimDot" cx="50" cy="50" r="3" fill="currentColor" visibility="hidden"/></svg></div><div class="qa-actions"><button data-aim="cross" aria-pressed="true">Cruz</button><button data-aim="dot" aria-pressed="false">Punto</button><button data-aim="both" aria-pressed="false">Cruz y punto</button><label>Color <input id="aimColor" type="color" value="#ffffff"></label></div>';
+    case 'invasion': return `<div class="qa-run"><figure><img src="${invasionView}" alt="Oleada en el campus"><figcaption>Sobreviví a la oleada</figcaption></figure><figure><img src="${proofImages}US-348_CA2_Invasion_eleccion_de_cartas.png" alt="Tres recompensas del puesto"><figcaption>Cargá el puesto y elegí 1 de 3</figcaption></figure></div><p class="qa-caption">Cada elección cambia tus armas o mejoras. Si caés, empieza una nueva partida.</p>`;
+    case 'cuenta': return '<div class="qa-account"><div><strong>Crear cuenta</strong><span>Mail y contraseña</span></div><div><strong>Ingresar con Steam</strong><span>Acceso previsto</span></div></div><p class="qa-caption">Tu perfil, logros y monedas te acompañan al cambiar de PC.</p>';
+  }
+}
 // Posiciones en porcentajes del tablero, compartidas por los trazos y sus botones.
 const questionSketch = [
-  [25, 13, -9, 'M49 48 C44 44 36 24 25 13'],
-  [71, 13, 12, 'M53 46 Q59 38 62 28 T71 13'],
-  [14, 39, 5, 'M46 49 C39 48 36 43 30 44 S19 40 14 39'],
-  [84, 38, -6, 'M54 49 C61 47 65 41 72 42 Q78 42 84 38'],
-  [18, 66, -13, 'M46 53 Q39 54 32 60 T18 66'],
-  [81, 67, 8, 'M54 52 C64 52 69 66 81 67'],
-  [33, 87, 16, 'M48 55 C45 62 43 64 41 71 S36 81 33 87'],
-  [68, 86, -16, 'M52 55 Q55 64 59 68 C63 75 63 82 68 86']
+  [25, 13, -9, 'M37 32 C34 28 36 24 25 13'],
+  [71, 13, 12, 'M64 32 Q64 31 62 28 T71 13'],
+  [14, 39, 5, 'M32 44 C30 45 36 43 30 44 S19 40 14 39'],
+  [84, 38, -6, 'M68 43 C69 43 65 41 72 42 Q78 42 84 38'],
+  [18, 66, -13, 'M35 61 Q34 61 32 60 T18 66'],
+  [81, 67, 8, 'M65 61 C70 60 69 66 81 67'],
+  [49, 86, 11, 'M50 70 Q48 74 49 86']
 ];
 function questionsScreen() {
   const buttons = questionTopics.map(([name], index) => {
@@ -190,10 +178,11 @@ function questionsScreen() {
   </section>`;
 }
 function openQuestion(index) {
-  const [name, title, answer, url] = questionTopics[index];
+  const [, title, key] = questionTopics[index];
   $('#questionTitle').textContent = title;
-  $('#questionBody').innerHTML = `<p>${esc(answer)}</p>` + (url ?
-    `<iframe title="${esc(name)}" src="${esc(url)}"></iframe>` : '');
+  $('#questionDialog').dataset.topic = key;
+  $('#questionBody').innerHTML = questionVisual(key);
+  if (key === 'mapa') mapPhoto();
   $('#questionDialog').showModal();
   $('#questionDialog').onclose = () => { $('#questionBody').replaceChildren(); };
 }
@@ -287,6 +276,12 @@ document.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)r
  if(d.close)$('#'+d.close).close();
  if(d.go!==undefined){$('#indexDialog').close();go(+d.go)}
 
+ if(d.photo){campusPhoto=(campusPhoto+Number(d.photo)+campusPhotos.length)%campusPhotos.length;mapPhoto()}
+ if(d.aim){
+   $('#aimDot').setAttribute('visibility',d.aim==='cross'?'hidden':'visible');
+   $('#aimLines').setAttribute('visibility',d.aim==='dot'?'hidden':'visible');
+   for(const button of document.querySelectorAll('[data-aim]'))button.setAttribute('aria-pressed',String(button===b));
+ }
  if(d.question!==undefined)openQuestion(Number(d.question));
  if(d.demo)openDemo(d.demo);
  if(d.trailer!==undefined){
@@ -295,6 +290,15 @@ document.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)r
   $('#trailerVideo').play().catch(()=>{});
  }
  if(d.exitTrailer!==undefined)closeTrailer();
+});
+document.addEventListener('input',event=>{
+  if(event.target.id==='aimColor')$('.aim-preview').style.color=event.target.value;
+  if(event.target.id==='mapFiles'&&event.target.files.length){
+    const files=Array.from(event.target.files).filter(file=>file.type.startsWith('image/'));
+    if(!files.length)return;
+    for(const url of campusPhotos)if(url.startsWith('blob:'))URL.revokeObjectURL(url);
+    campusPhotos=files.map(file=>URL.createObjectURL(file));campusPhoto=0;mapPhoto();
+  }
 });
 document.addEventListener('change',e=>{if(e.target.id==='weaponSelect'){weaponId=e.target.value;render()}});
 document.addEventListener('keydown',e=>{if(document.body.classList.contains('trailer-expanded')){if(e.key==='Escape'){e.preventDefault();closeTrailer()}return}if(secreto.abierto){if(['Escape','ArrowLeft','PageUp'].includes(e.key)){e.preventDefault();cerrarSecreto()}return}if(document.querySelector('dialog[open]')||document.fullscreenElement?.tagName==='VIDEO'||e.target.closest('input,select,textarea,button,a,video'))return;
