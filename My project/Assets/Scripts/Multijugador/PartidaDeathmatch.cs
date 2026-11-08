@@ -80,7 +80,7 @@ public class PartidaDeathmatch : MonoBehaviour
     /// </summary>
     public static bool PuedeElegir(out string texto, out float restante)
     {
-        texto = "Elegí tu equipo";
+        texto = L10n.T("gameplay.ui.choose_your_loadout");
         restante = -1f;
         PartidaDeathmatch p = Actual;
         if (p == null || !p.Lista) return true;
@@ -88,7 +88,7 @@ public class PartidaDeathmatch : MonoBehaviour
         if (fase == Fase.Terminada) return false;
         if (fase == Fase.Cuenta)
         {
-            texto = "Empieza en";
+            texto = L10n.T("gameplay.ui.starts_in");
             restante = p.Restante;
             return true;
         }
@@ -97,12 +97,12 @@ public class PartidaDeathmatch : MonoBehaviour
         if (!yo.Vivo)
         {
             bool esperando = yo.EsperaRestante > 0f;
-            texto = esperando ? "Reaparecés en" : "Cerrá para reaparecer";
+            texto = esperando ? "Reaparecés en" : L10n.T("gameplay.ui.close_to_respawn");
             restante = esperando ? yo.EsperaRestante : yo.TopeRestante;
             return true;
         }
         if (yo.AtacoDesdeReaparicion) return false;
-        texto = "Podés cambiar";
+        texto = L10n.T("gameplay.ui.you_can_change");
         restante = yo.ReaparecioEn + GraciaParaElegir - Time.time;
         return restante > 0f;
     }
@@ -283,7 +283,7 @@ public class PartidaDeathmatch : MonoBehaviour
                 {
                     HealthSystem vida = local != null ? local.GetComponent<HealthSystem>() : null;
                     if (vida != null && local.Vivo) vida.SetState(vida.maxHealth, 0);
-                    MatchHud.ShowBanner("Deathmatch", "¡A pelear!", ShopUIKit.Accent, $"Gana el primero en llegar a {BajasParaGanar} bajas", null, 1.6f);
+                    MatchHud.ShowBanner("Deathmatch", L10n.T("gameplay.ui.fight"), ShopUIKit.Accent, $"Gana el primero en llegar a {BajasParaGanar} bajas", null, 1.6f);
                 }
                 break;
             case Fase.Terminada:
@@ -305,7 +305,7 @@ public class PartidaDeathmatch : MonoBehaviour
         if (segundo == segundoVisto || segundo <= 0) return;
         segundoVisto = segundo;
         MatchHud.ShowBanner("Deathmatch  ·  Todos contra todos", segundo.ToString(), ShopUIKit.Accent,
-            $"Apretá {KeyBindings.Label(GameAction.Tienda)} para elegir tu equipo", null, 1.2f);
+            L10n.T("gameplay.dm.press_to_pick_fmt", KeyBindings.Label(GameAction.Tienda)), null, 1.2f);
     }
 
     // US 140, CA6: alguien llegó a 20 bajas o quedan 60 s.
@@ -321,8 +321,8 @@ public class PartidaDeathmatch : MonoBehaviour
         {
             if (Bajas(p.ActorNumber) < BajasDeAviso) continue;
             avisoBajas = true;
-            MatchHud.Warn(p.IsLocal ? $"Llegaste a {BajasDeAviso} bajas: te faltan {BajasParaGanar - Bajas(p.ActorNumber)}"
-                                    : $"{p.NickName} llegó a {BajasDeAviso} bajas", 3f);
+            MatchHud.Warn(p.IsLocal ? L10n.T("gameplay.dm.you_reached_fmt", BajasDeAviso, BajasParaGanar - Bajas(p.ActorNumber))
+                                    : L10n.T("gameplay.dm.other_reached_fmt", p.NickName, BajasDeAviso), 3f);
             break;
         }
     }

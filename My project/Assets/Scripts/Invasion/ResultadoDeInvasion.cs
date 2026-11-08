@@ -19,7 +19,8 @@ using static ShopUIKit;
 public class ResultadoDeInvasion : MonoBehaviour
 {
     private const string EscenaMenu = "MenuPrincipal";
-    private static readonly string[] NombreDificultad = { "Fácil", "Normal", "Difícil" };
+    private static readonly string[] ClaveDificultad = { "gameplay.difficulty.easy", "gameplay.difficulty.normal", "gameplay.difficulty.hard" };
+    private static string Dificultad(int i) => L10n.T(ClaveDificultad[i]);
 
     /// <summary>El resultado en pantalla, o null si la partida sigue.</summary>
     public static ResultadoDeInvasion Actual { get; private set; }
@@ -97,18 +98,18 @@ public class ResultadoDeInvasion : MonoBehaviour
 
         // Títulos.
         Color color = salvo ? MarcadorInvasion.Verde : Bad;
-        string titulo = !murio ? "¡Sobreviviste!" : infinito ? $"Sobreviviste {jefes * OleadasDeInvasion.Ultima} oleadas" : "Has muerto";
+        string titulo = !murio ? L10n.T("gameplay.ui.you_survived") : infinito ? L10n.T("gameplay.result.survived_fmt", jefes * OleadasDeInvasion.Ultima) : L10n.T("gameplay.result.dead");
         Text(Place(Node("Antetitulo", raiz), 0f, 70f, 1920f, 30f), label, 24f, Mute, TextAlignmentOptions.Center, 24f, true).text =
-            $"Fin de la partida  ·  {NombreDificultad[(int)dificultad]}";
+            L10n.T("gameplay.result.game_over_fmt", Dificultad((int)dificultad));
         Text(Place(Node("Titulo", raiz), 0f, 100f, 1920f, 170f), display, titulo.Length > 16 ? 120f : 150f, color,
             TextAlignmentOptions.Center, 6f, true).text = titulo;
         Image(Place(Node("Linea", raiz), 870f, 280f, 180f, 4f), null, color);
         Text(Place(Node("Lema", raiz), 0f, 296f, 1920f, 34f), label, 26f, color, TextAlignmentOptions.Center, 24f, true).text =
-            salvo ? "Salvaste al mundo" : "No salvaste al mundo";
+            L10n.T(salvo ? "gameplay.result.saved_world" : "gameplay.result.not_saved_world");
         Text(Place(Node("Detalle", raiz), 0f, 336f, 1920f, 36f), label, 30f, Ink, TextAlignmentOptions.Center, 12f, true).text =
-            !murio ? $"Te retiraste después del Jefe de la oleada {oleada}"
-            : infinito ? $"Llegaste a la oleada {oleada}  ·  {jefes} {(jefes == 1 ? "Jefe derrotado" : "Jefes derrotados")}"
-            : $"Caíste en la oleada {oleada} de {OleadasDeInvasion.Ultima}";
+            !murio ? L10n.T("gameplay.result.retired_fmt", oleada)
+            : infinito ? L10n.T("gameplay.result.reached_fmt", oleada, L10n.Plural("gameplay.result.bosses_defeated", jefes))
+            : L10n.T("gameplay.result.fell_fmt", oleada, OleadasDeInvasion.Ultima);
 
         // La vía, como en el marcador (US 150).
         MarcadorInvasion.Figura<FormaRedondeada>(Place(Node("Panel", raiz), 660f, 382f, 600f, 96f))
@@ -138,7 +139,7 @@ public class ResultadoDeInvasion : MonoBehaviour
         // CA4: el récord.
         if (nuevo)
         {
-            string texto = $"¡Nuevo récord! · Oleada {oleada}";
+            string texto = L10n.T("gameplay.result.new_record_fmt", oleada);
             RectTransform pildora = Node("NuevoRecord", raiz);
             TextMeshProUGUI t = Text(Stretch(Node("Texto", pildora)), display, 24f, MarcadorInvasion.Verde, TextAlignmentOptions.Center, 10f, true);
             t.text = texto;
@@ -150,16 +151,16 @@ public class ResultadoDeInvasion : MonoBehaviour
         }
         else
             Text(Place(Node("Record", raiz), 0f, 504f, 1920f, 36f), label, 22f, Mute, TextAlignmentOptions.Center, 12f, true).text =
-                $"Récord en {NombreDificultad[(int)dificultad]}: <color=#F3F4F6>oleada {recordAntes}</color>";
+                L10n.T("gameplay.result.record_fmt", Dificultad((int)dificultad), recordAntes);
 
         // CA3: los números.
         string[,] numeros =
         {
-            { "Oleada", oleada.ToString() },
-            { "Bajas", (puntos != null ? puntos.Bajas : 0).ToString() },
-            { "A la cabeza", (puntos != null ? puntos.BajasALaCabeza : 0).ToString() },
-            { "Puntos", Miles(puntos != null ? puntos.PuntosGanados : 0) },
-            { "Tiempo", $"{segundos / 60}:{segundos % 60:00}" },
+            { L10n.T("gameplay.result.wave"), oleada.ToString() },
+            { L10n.T("gameplay.dm.col.kills"), (puntos != null ? puntos.Bajas : 0).ToString() },
+            { L10n.T("gameplay.result.headshots"), (puntos != null ? puntos.BajasALaCabeza : 0).ToString() },
+            { L10n.T("gameplay.result.points"), Miles(puntos != null ? puntos.PuntosGanados : 0) },
+            { L10n.T("gameplay.result.time"), $"{segundos / 60}:{segundos % 60:00}" },
         };
         const float Ancho = 176f, Espacio = 16f;
         float x0 = (1920f - (5 * Ancho + 4 * Espacio)) / 2f;
@@ -173,10 +174,10 @@ public class ResultadoDeInvasion : MonoBehaviour
         }
 
         // CA5: los botones.
-        Boton("Jugar de nuevo", 676f, MarcadorInvasion.Verde, Hex(0x10180C), false, redondeado, JugarDeNuevo);
-        Boton("Volver al menú", 984f, Color.clear, Ink, true, redondeado, VolverAlMenu);
+        Boton(L10n.T("gameplay.result.play_again"), 676f, MarcadorInvasion.Verde, Hex(0x10180C), false, redondeado, JugarDeNuevo);
+        Boton(L10n.T("gameplay.result.back_menu"), 984f, Color.clear, Ink, true, redondeado, VolverAlMenu);
         Text(Place(Node("Teclas", raiz), 0f, 836f, 1920f, 24f), label, 15f, Mute, TextAlignmentOptions.Center, 12f, true).text =
-            "Enter  ·  Jugar de nuevo          Esc  ·  Volver al menú";
+            L10n.T("gameplay.result.keys_hint");
 
         void Boton(string texto, float x, Color fondo, Color tinta, bool borde, Sprite sprite, System.Action alApretar)
         {
@@ -237,7 +238,7 @@ public class ResultadoDeInvasion : MonoBehaviour
         if (ConfigRed.Actual != null)
             foreach (ConfigRed.Mapa m in ConfigRed.Actual.mapas)
                 if (m != null && m.escena == escena) { mapa = m.nombre; imagen = m.imagen; }
-        PantallaDeCarga.Cargar(escena, "Modo Invasión · " + NombreDificultad[(int)MatchSettings.Difficulty], mapa, imagen, GameMode.Zombie);
+        PantallaDeCarga.Cargar(escena, L10n.T("gameplay.ui.invasion_mode") + " · " + Dificultad((int)MatchSettings.Difficulty), mapa, imagen, GameMode.Zombie);
     }
 
     private void VolverAlMenu()

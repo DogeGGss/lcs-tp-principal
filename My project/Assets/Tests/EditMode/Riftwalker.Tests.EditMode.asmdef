@@ -3,6 +3,9 @@
     "rootNamespace": "",
     "references": [
         "Riftwalker",
+        "Riftwalker.Localization.Shared",
+        "Unity.Localization",
+        "Unity.ResourceManager",
         "UnityEngine.TestRunner",
         "UnityEditor.TestRunner",
         "Unity.TextMeshPro",

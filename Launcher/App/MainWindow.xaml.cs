@@ -45,6 +45,7 @@ public partial class MainWindow : Window
         AplicarTamano(pedido >= 0 && pedido + 1 < args.Length ? args[pedido + 1] : settings.Size, false);
         LauncherVersionText.Text = $"PROJECT RIFTWALKER / LAUNCHER {App.LauncherVersion}";
         Notes.Document = MarkdownNotes.Render("## Preparando las novedades\nLas notas del parche aparecerán acá.");
+        InitializeLanguages();
         Loaded += OnLoaded;
         Closing += OnClosing;
         Closed += (_, _) => { operation?.Cancel(); http.Dispose(); };

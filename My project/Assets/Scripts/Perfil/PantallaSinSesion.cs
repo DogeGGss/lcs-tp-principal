@@ -44,7 +44,7 @@ public class PantallaSinSesion
         if (lienzo.activeSelf != ver) lienzo.SetActive(ver);
         if (!ver || cerradaPintada == cerrada) return;
         cerradaPintada = cerrada;
-        rotulo.text = cerrada ? "Tu sesión se cerró" : "Project Riftwalker";
+        rotulo.text = cerrada ? L10n.Source("Tu sesión se cerró", "profile.") : "Project Riftwalker";
         rotulo.color = cerrada ? Bad : Accent;
         texto.text = cerrada
             ? "Se cerró la sesión de tu cuenta, por ejemplo desde el launcher. Volvé a entrar ahí para seguir jugando: tu progreso está guardado en la cuenta."
@@ -54,7 +54,7 @@ public class PantallaSinSesion
     private void Abrir()
     {
         if (AbrirLauncher()) return;
-        nota.text = "No encontramos el launcher en esta PC: te abrimos la guía del juego para bajarlo.";
+        nota.text = L10n.T("profile.session.no_launcher");
         Application.OpenURL(GuiaLauncher);
     }
 

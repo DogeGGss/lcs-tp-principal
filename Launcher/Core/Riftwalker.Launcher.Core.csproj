@@ -5,6 +5,9 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="../../My project/Assets/Scripts/Localization/Shared/*.cs" Link="Localization/Shared/%(Filename)%(Extension)" />
+    <EmbeddedResource Include="../../My project/Assets/Resources/Localization/locales.json" LogicalName="Localization/locales.json" />
+    <EmbeddedResource Include="../../My project/Assets/Resources/Localization/**/launcher.json" LogicalName="Localization/%(RecursiveDir)%(Filename)%(Extension)" />
     <Compile Include="../../My project/Assets/Scripts/ReleaseVersion.cs" Link="ReleaseVersion.cs" />
     <!-- Las reglas y los mensajes de la cuenta: el mismo archivo que usa el juego. -->
     <Compile Include="../../My project/Assets/Scripts/Perfil/ReglasCuenta.cs" Link="ReglasCuenta.cs" />

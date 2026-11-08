@@ -45,9 +45,9 @@ public class PestanaCuenta
         get
         {
             Estado e = EstadoActual;
-            if (!LogrosOnline.EntraEnElJuego) return $"Cuenta  <color=#F3F4F6>{(e == Estado.ConCuenta ? "Desde el launcher" : "Sin cuenta")}</color>";
+            if (!LogrosOnline.EntraEnElJuego) return L10n.T("profile.account.info_launcher_fmt", L10n.Source(e == Estado.ConCuenta ? "Desde el launcher" : "Sin cuenta", "profile."));
             string valor = e == Estado.ConCuenta ? "Con cuenta" : e == Estado.FaltaConfirmar ? "Falta confirmar" : "Sin cuenta";
-            return $"Editor  <color=#F3F4F6>{valor}</color>";
+            return L10n.T("profile.account.info_editor_fmt", L10n.Source(valor, "profile."));
         }
     }
 
@@ -80,7 +80,7 @@ public class PestanaCuenta
         if (reenviar == null) return;
         float falta = ultimoEnvio + SegundosParaReenviar - Time.unscaledTime;
         reenviar.text = falta > 0f
-            ? $"¿No te llegó? Podés pedir otro en 0:{Mathf.CeilToInt(falta):00}"
+            ? L10n.T("profile.account.resend_in_fmt", Mathf.CeilToInt(falta))
             : "¿No te llegó? <color=#F29A38><u>Pedí otro código</u></color>";
     }
 
@@ -123,7 +123,7 @@ public class PestanaCuenta
     {
         Encabezado(t, "Tu cuenta · Falta un paso", "Confirmá tu mail");
         Parrafo(t, "Texto", 44f, 136f, 1000f, 70f, 25f, Soft,
-            $"Te mandamos un código de 6 números a <color=#F3F4F6>{Escapar(Online.MailDeLaCuenta)}</color>. Escribilo para activar la cuenta.");
+            L10n.T("profile.account.code_sent_to_fmt", Escapar(Online.MailDeLaCuenta)));
         Codigo(t, 44f, 232f);
         confirmar = CrearBoton(t, 526f, 232f, 260f, 76f, "Confirmar", true, Confirmar, 28f);
         avisoCodigo = T(t, "Aviso", 44f, 318f, 1000f, 28f, FTexto, 20f, Bad, "");
@@ -149,8 +149,8 @@ public class PestanaCuenta
         Image(chip, Rounded, WithAlpha(Ok, 0.16f), 17f);
         T(chip, "Texto", 0f, 0f, 150f, 34f, FRotulo, 17f, Ok, "Confirmada", TextAlignmentOptions.Center, 12f, true);
         bool editor = LogrosOnline.EntraEnElJuego;
-        Parrafo(t, "Texto", 44f, 136f, 1000f, 70f, 25f, Soft, (editor ? "En el editor se usa la sesión del launcher o la que se abrió acá." : "Entraste desde el launcher.")
-            + " Tu progreso, tus monedas y tu lugar en el ranking están en la cuenta, y los seguís en cualquier PC.");
+        Parrafo(t, "Texto", 44f, 136f, 1000f, 70f, 25f, Soft, L10n.Source(editor ? "En el editor se usa la sesión del launcher o la que se abrió acá." : "Entraste desde el launcher.", "profile.")
+            + L10n.T("profile.account.signed_in_body"));
         string desde = Online.CreadaEl;
         string[,] datos = { { "Desde", desde == "" ? "—" : desde }, { "Nombre", PlayerProfile.HasName ? PlayerProfile.Name : "Jugador" }, { "Progreso", "En la nube" } };
         for (int i = 0; i < 3; i++)
@@ -337,7 +337,7 @@ public class PestanaCuenta
                 bool oculta = c.input.contentType == TMP_InputField.ContentType.Password;
                 c.input.contentType = oculta ? TMP_InputField.ContentType.Standard : TMP_InputField.ContentType.Password;
                 c.input.ForceLabelUpdate();
-                ver.text = oculta ? "Ocultar" : "Ver";
+                ver.text = L10n.T(oculta ? "profile.account.hide" : "profile.account.show");
             });
         }
         caja.gameObject.SetActive(true);
@@ -346,7 +346,7 @@ public class PestanaCuenta
 
     private static void Marcar(Campo c, string aviso)
     {
-        c.aviso.text = aviso ?? "";
+        c.aviso.text = L10n.Source(aviso ?? "", "profile.");
         if (c.borde != null) c.borde.color = aviso != null ? Bad : White(0.14f);
     }
 
@@ -392,7 +392,7 @@ public class PestanaCuenta
             Marcar(problemaClave == ReglasCuenta.ClavesDistintas ? repetida : clave, problemaClave);
             if (problemaMail != null || problemaClave != null) return;
             esperando = true;
-            crear.texto.text = "Creando…";
+            crear.texto.text = L10n.Source("Creando…", "profile.");
             crear.Habilitar(false);
             Online.CrearCuenta(mail.input.text, clave.input.text, resultado =>
             {
@@ -407,7 +407,7 @@ public class PestanaCuenta
                     Refrescar();
                     return;
                 }
-                crear.texto.text = "Crear cuenta";
+                crear.texto.text = L10n.T("profile.account.create");
                 crear.Habilitar(true);
                 mostrar(resultado);
             });
@@ -438,7 +438,7 @@ public class PestanaCuenta
         {
             bool delMail = problema == ReglasCuenta.MailInvalido;
             Marcar(mail, delMail ? problema : null);
-            textoBanda.text = delMail ? "" : problema ?? "";
+            textoBanda.text = delMail ? "" : L10n.Source(problema ?? "", "profile.");
             banda.gameObject.SetActive(!delMail && problema != null);
         };
         CrearBoton(p, 48f, 430f, 320f, 64f, "Cancelar", false, menu.CerrarModal, 24f);
@@ -451,7 +451,7 @@ public class PestanaCuenta
             if (problemaMail != null) { mostrar(problemaMail); return; }
             mostrar(null);
             esperando = true;
-            entrar.texto.text = "Entrando…";
+            entrar.texto.text = L10n.Source("Entrando…", "profile.");
             entrar.Habilitar(false);
             Online.IniciarSesion(mail.input.text, clave.input.text, resultado =>
             {
@@ -472,7 +472,7 @@ public class PestanaCuenta
                     Refrescar();
                     return;
                 }
-                entrar.texto.text = "Entrar";
+                entrar.texto.text = L10n.T("profile.account.enter");
                 entrar.Habilitar(true);
                 mostrar(resultado);
             });

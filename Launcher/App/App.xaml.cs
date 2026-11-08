@@ -13,6 +13,7 @@ public partial class App : Application
         base.OnStartup(e);
         try
         {
+            LauncherText.Initialize(e.Args);
             if (e.Args.Length == 4 && e.Args[0] == "--apply-update")
             {
                 ShutdownMode = ShutdownMode.OnExplicitShutdown;

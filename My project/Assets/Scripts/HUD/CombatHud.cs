@@ -554,7 +554,7 @@ public class CombatHud : MonoBehaviour
         for (int i = 0; i < streakTicks.Length; i++) streakTicks[i].color = i < lit ? line : dim;
         streakText.text = now.ToString();
         streakText.color = now > 0 ? Color.white : Mute;
-        streakLabel.text = best > 0 ? $"Racha <color=#{ColorUtility.ToHtmlStringRGB(Mute)}>· Mejor {best}</color>" : "Racha";
+        streakLabel.text = best > 0 ? L10n.T("gameplay.hud.streak_fmt", ColorUtility.ToHtmlStringRGB(Mute), best) : L10n.Source("Racha");
     }
 
     // ---------- US 297: la oleada de Invasión en el reloj de andén ----------
@@ -577,7 +577,7 @@ public class CombatHud : MonoBehaviour
             BuyPhase phase = BuyPhase.Current;
             float left = phase != null ? phase.TimeLeft : 0f;
             number = Mathf.Max(0, Mathf.CeilToInt(left)).ToString();
-            label = "Próxima oleada";
+            label = L10n.T("gameplay.wave.next");
             fraction = phase != null && phase.Duration > 0f ? Mathf.Clamp01(left / phase.Duration) : 0f;
         }
         else
@@ -610,7 +610,7 @@ public class CombatHud : MonoBehaviour
         if (!show) return;
         bool inside = puesto.Adentro;
         Color color = inside ? MarcadorInvasion.Verde : Mute;
-        supplyLabel.text = inside ? "Carga del puesto" : "Fuera del anillo";
+        supplyLabel.text = L10n.T(inside ? "gameplay.station.charge" : "gameplay.station.outside_ring");
         supplyLabel.color = color;
         supplyFill.color = color;
         supplyFill.rectTransform.sizeDelta = new Vector2(Mathf.Max(6f, SupplyBarW * puesto.Progreso), 6f);
@@ -661,7 +661,7 @@ public class CombatHud : MonoBehaviour
 
         bool empty = hasAmmo && ammo == 0 && !reloading;
         hint.SetActive(empty);
-        if (empty) hintText.text = reserve >= 0 ? KeyBindings.Label(GameAction.Recargar) + " · Recargar" : "Sin balas";
+        if (empty) hintText.text = reserve >= 0 ? KeyBindings.Label(GameAction.Recargar) + L10n.T("gameplay.hud.reload_suffix") : L10n.T("gameplay.hud.no_ammo");
     }
 
     // El arma en la mano: el arma principal o la secundaria (las dos implementan IHudWeapon); si no, el cuchillo.
@@ -995,12 +995,12 @@ public class CombatHud : MonoBehaviour
             foreach (ShopItem item in loadout.Catalog.items)
                 if (item != null && item.kind == ShopItemKind.Grenade && loadout.Count(item) > 0) { grenade = item; break; }
         int grenadeCount = grenade != null && loadout != null ? loadout.Count(grenade) : 0;
-        string grenadeName = grenade != null ? $"{ItemName(grenade)} ×{grenadeCount}" : "Vacío";
+        string grenadeName = grenade != null ? $"{ItemName(grenade)} ×{grenadeCount}" : L10n.T("gameplay.ui.empty");
 
         SetSlot(0, hasPrimary, held == 0, primaryName, primaryIcon, KeyBindings.Label(GameAction.ArmaPrincipal));
         // US 331, Sin respaldo (Invasión): la secundaria se perdió; el espacio se ve rojo, como una tele sin señal.
         bool sinSenal = WeaponSwitcher.SinSecundaria;
-        if (sinSenal) SetSlot(1, false, false, "Sin señal", null, KeyBindings.Label(GameAction.ArmaSecundaria));
+        if (sinSenal) SetSlot(1, false, false, L10n.T("gameplay.hud.no_signal"), null, KeyBindings.Label(GameAction.ArmaSecundaria));
         else SetSlot(1, hasSecondary, held == 1, secondaryName, secondary != null ? secondary.icon : null, KeyBindings.Label(GameAction.ArmaSecundaria));
         SinSenal(invSlots[1], sinSenal);
         SetSlot(2, hasKnife, held == 2, knifeName, knifeIcon, KeyBindings.Label(GameAction.Cuchillo));

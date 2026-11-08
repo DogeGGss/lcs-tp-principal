@@ -153,7 +153,7 @@ public class OleadasDeInvasion : MonoBehaviour
         porAparecer.Clear();
         foreach (List<TipoDeNpc> grupo in Composicion(Oleada, total - escolta)) porAparecer.Enqueue(grupo);
         proximoPortal = Time.time + 1f;
-        MatchHud.ShowBanner("Modo Invasión", $"Oleada {Oleada}", ShopUIKit.Bad, DeJefe ? "Llega el jefe" : $"{total} enemigos", null, 2.5f);
+        MatchHud.ShowBanner(L10n.T("gameplay.ui.invasion_mode"), L10n.T("gameplay.wave.title_fmt", Oleada), ShopUIKit.Bad, DeJefe ? L10n.T("gameplay.wave.boss_coming") : L10n.T("gameplay.wave.enemies_fmt", total), null, 2.5f);
         Empezo?.Invoke(Oleada);
     }
 
@@ -314,7 +314,7 @@ public class OleadasDeInvasion : MonoBehaviour
         {
             if (portalDelJefe == null) portalDelJefe = PortalDeEnemigos.Abrir(dondeJefe, jugador.position, ConfigInvasion.Actual.escalaJefe);
             portalDelJefe.Fila.Enqueue(tipoJefe); // (si el jefe se perdió, vuelve a salir por el mismo portal)
-            MatchHud.ShowBanner($"Oleada {Oleada}", "¡Llegó el jefe!", ShopUIKit.Bad, escoltaPorSalir > 0 ? "Con su escolta" : "", null, 3f);
+            MatchHud.ShowBanner(L10n.T("gameplay.wave.title_fmt", Oleada), L10n.T("gameplay.wave.boss_arrived"), ShopUIKit.Bad, escoltaPorSalir > 0 ? L10n.T("gameplay.wave.with_escort") : "", null, 3f);
             LlegoElJefe?.Invoke();
         }
         if (portalDelJefe != null && !portalDelJefe.Cerrando && portalDelJefe.Listo && portalDelJefe.Fila.Count > 0
@@ -433,7 +433,7 @@ public class OleadasDeInvasion : MonoBehaviour
             Final(); // US 303, CA4
             return;
         }
-        MatchHud.ShowBanner("Modo Invasión", $"Oleada {Oleada} superada", ShopUIKit.Ok, "Descanso de 20 s", null, 3f);
+        MatchHud.ShowBanner(L10n.T("gameplay.ui.invasion_mode"), L10n.T("gameplay.wave.cleared_fmt", Oleada), ShopUIKit.Ok, L10n.T("gameplay.wave.rest"), null, 3f);
         ArrancarDescanso();
     }
 
@@ -664,14 +664,13 @@ public class OleadasDeInvasion : MonoBehaviour
         Image fondo = Pieza<Image>("Fondo", finalUi.transform, Vector2.zero, Vector2.one, Vector2.zero, Vector2.zero);
         fondo.color = new Color(0f, 0f, 0f, 0.7f);
         TextMeshProUGUI t = Pieza<TextMeshProUGUI>("Título", finalUi.transform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0f, 90f), new Vector2(900f, 120f));
-        Texto(t, "JEFE DERROTADO", titulo, 84f, ShopUIKit.Ok);
+        Texto(t, L10n.T("gameplay.wave.boss_defeated"), titulo, 84f, ShopUIKit.Ok);
         ConfigInvasion config = ConfigInvasion.Actual;
         int masVida = Mathf.RoundToInt(config.vidaPorJefe * JefesDerrotados * 100f), masDanio = Mathf.RoundToInt(config.danioPorJefe * JefesDerrotados * 100f);
         TextMeshProUGUI s = Pieza<TextMeshProUGUI>("Detalle", finalUi.transform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0f, 10f), new Vector2(1100f, 80f));
-        Texto(s, $"Superaste la oleada {Oleada}. Si seguís, te espera la elección del Jefe, pero desde ahora los invasores " +
-                 $"tienen {masVida} % más de vida y pegan {masDanio} % más.", texto, 26f, ShopUIKit.Soft);
-        Boton("Seguir", new Vector2(-150f, -90f), ShopUIKit.Accent, ShopUIKit.AccentInk, texto, Seguir);
-        Boton("Retirarse", new Vector2(150f, -90f), ShopUIKit.ChipColor, ShopUIKit.Ink, texto, Retirarse);
+        Texto(s, L10n.T("gameplay.wave.boss_defeated_body_fmt", Oleada, masVida, masDanio), texto, 26f, ShopUIKit.Soft);
+        Boton(L10n.T("gameplay.wave.continue"), new Vector2(-150f, -90f), ShopUIKit.Accent, ShopUIKit.AccentInk, texto, Seguir);
+        Boton(L10n.T("gameplay.wave.retire"), new Vector2(150f, -90f), ShopUIKit.ChipColor, ShopUIKit.Ink, texto, Retirarse);
     }
 
     // US 303, CA4: sigue; antes del respiro se abre la elección del Jefe (EleccionDeInvasion la tiene pendiente).

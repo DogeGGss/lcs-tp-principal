@@ -123,7 +123,7 @@ public class PuestoDeSuministros : MonoBehaviour
         Lugar = lugar;
         anterior = nombre;
         Armar(giro);
-        Avisar($"Suministros en {nombre}"); // CA2
+        Avisar(L10n.T("gameplay.station.supplies_in_fmt", nombre)); // CA2
     }
 
     // US 335, CA1: al empezar el descanso se elige dónde cae el próximo y se avisa.
@@ -137,7 +137,7 @@ public class PuestoDeSuministros : MonoBehaviour
         giroProximo = Random.Range(0f, 360f);
         HayProximo = true;
         ArmarFantasma();
-        Avisar($"Próximo puesto: {nombre}");
+        Avisar(L10n.T("gameplay.station.next_fmt", nombre));
     }
 
     // US 335, CA2: la caja del puesto en el lugar exacto donde va a caer, verde y transparente (el holograma del perro
@@ -206,7 +206,7 @@ public class PuestoDeSuministros : MonoBehaviour
             if (Afuera(opciones[i].lugar, desde, BuscarHasta, out lugar)) { nombre = opciones[i].nombre; return true; }
             opciones.RemoveAt(i);
         }
-        nombre = "los alrededores";
+        nombre = L10n.T("gameplay.station.surroundings");
         return Afuera(desde, desde, BuscarHasta, out lugar);
     }
 
@@ -265,7 +265,7 @@ public class PuestoDeSuministros : MonoBehaviour
         ActualizarAdentro();
         if (!Adentro) return; // afuera cuenta para el récord, no para el puesto
         Carga = Mathf.Min(Meta, Carga + puntos);
-        if (Cargado) { Avisar("Puesto cargado"); SeCargo?.Invoke(this); }
+        if (Cargado) { Avisar(L10n.T("gameplay.station.charged")); SeCargo?.Invoke(this); }
     }
 
     /// <summary>Para probar (Riftwalker > Invasión > Cargar el puesto).</summary>
@@ -322,10 +322,10 @@ public class PuestoDeSuministros : MonoBehaviour
         if (!Hay) return;
         if (Cargado)
         {
-            Avisar("Puesto abierto");
+            Avisar(L10n.T("gameplay.station.open"));
             Abrio?.Invoke();
         }
-        else Avisar("El puesto se fue sin cargar");
+        else Avisar(L10n.T("gameplay.station.left"));
         Quitar();
     }
 
@@ -517,11 +517,11 @@ public class PuestoDeSuministros : MonoBehaviour
         float metros = Vector3.Distance(camara.transform.position, Destino);
         if (!Hay) // US 335, CA2: el próximo, más tenue
         {
-            distancia.text = AdentroDelDestino ? "Próximo · acá" : $"Próximo · {metros:0} m";
+            distancia.text = AdentroDelDestino ? L10n.T("gameplay.station.next_here") : L10n.T("gameplay.station.next_m_fmt", metros);
             marcaGrupo.alpha = 0.6f;
             return;
         }
-        distancia.text = Adentro ? "Adentro" : $"{metros:0} m";
+        distancia.text = Adentro ? L10n.T("gameplay.station.inside") : $"{metros:0} m";
         marcaGrupo.alpha = Adentro ? 0.55f : 1f;
     }
 

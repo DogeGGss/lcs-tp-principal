@@ -32,23 +32,34 @@ public static class PlayerProfile
     }
 
     /// <summary>CA2: null si el nombre sirve; si no, qué le falta, para mostrarlo en la ventana.</summary>
+    private enum NameIssue { None, Invalid, Short, Long }
+    private static NameIssue Inspect(string raw,out char invalid,out int count)
+    {
+        string name = Clean(raw); invalid = '\0'; count = 0;
+        foreach (char c in name) if (!IsAllowed(c)) { invalid = c; return NameIssue.Invalid; }
+        if (name.Length < MinLength) { count = MinLength - name.Length; return NameIssue.Short; }
+        if (name.Length > MaxLength) { count = name.Length - MaxLength; return NameIssue.Long; }
+        return NameIssue.None;
+    }
     public static string Validate(string raw)
     {
-        string name = Clean(raw);
-
-        foreach (char c in name)
-            if (!IsAllowed(c))
-                return $"No se puede usar \"{c}\". Solo letras, números, espacio, guion y guion bajo.";
-
-        if (name.Length < MinLength)
+        switch (Inspect(raw,out char invalid,out int count))
         {
-            int missing = MinLength - name.Length;
-            return missing == 1 ? "Falta 1 carácter: el mínimo es 3." : $"Faltan {missing} caracteres: el mínimo es 3.";
+            case NameIssue.Invalid: return $"No se puede usar \"{invalid}\". Solo letras, números, espacio, guion y guion bajo.";
+            case NameIssue.Short: return count == 1 ? "Falta 1 carácter: el mínimo es 3." : $"Faltan {count} caracteres: el mínimo es 3.";
+            case NameIssue.Long: return $"Sobran {count} caracteres: el máximo es 16.";
+            default: return null;
         }
-        if (name.Length > MaxLength)
-            return $"Sobran {name.Length - MaxLength} caracteres: el máximo es 16.";
-
-        return null;
+    }
+    public static string ValidationMessage(string raw)
+    {
+        switch (Inspect(raw,out char invalid,out int count))
+        {
+            case NameIssue.Invalid: return L10n.T("ui.name.invalid",invalid);
+            case NameIssue.Short: return count == 1 ? L10n.Source("Falta 1 carácter: el mínimo es 3.","ui.") : L10n.T("ui.name.short",count);
+            case NameIssue.Long: return L10n.T("ui.name.long",count);
+            default: return null;
+        }
     }
 
     public static bool IsAllowed(char c) => char.IsLetterOrDigit(c) || c == ' ' || c == '-' || c == '_';

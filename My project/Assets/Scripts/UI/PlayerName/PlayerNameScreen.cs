@@ -110,9 +110,9 @@ public class PlayerNameScreen : MonoBehaviour
         attempted = false;
         IsOpen = true;
 
-        eyebrow.text = firstTime ? "Project Riftwalker · Jugador" : "Cambiar nombre";
+        L10n.BindSource(eyebrow, firstTime ? "Project Riftwalker · Jugador" : "Cambiar nombre","ui.");
         cancelRect.gameObject.SetActive(!firstTime);
-        keysText.text = firstTime ? "<color=#F3F4F6>Enter</color>  Aceptar" : "<color=#F3F4F6>Enter</color>  Aceptar     <color=#F3F4F6>Esc</color>  Cancelar";
+        L10n.BindSource(keysText, firstTime ? "<color=#F3F4F6>Enter</color>  Aceptar" : "<color=#F3F4F6>Enter</color>  Aceptar     <color=#F3F4F6>Esc</color>  Cancelar","ui.");
 
         input.SetTextWithoutNotify(PlayerProfile.Name);
         UpdateValidation(input.text);
@@ -179,7 +179,7 @@ public class PlayerNameScreen : MonoBehaviour
             Close();
             return;
         }
-        ShowMessage(error, Bad);
+        ShowMessage(PlayerProfile.ValidationMessage(input.text), Bad);
         Shake();
         input.ActivateInputField();
     }
@@ -208,7 +208,7 @@ public class PlayerNameScreen : MonoBehaviour
         {
             // Un carácter no permitido se marca en rojo enseguida; lo que falta, en gris hasta que intente aceptar.
             bool badChar = error.StartsWith("No se puede");
-            ShowMessage(error, badChar || attempted ? Bad : Mute);
+            ShowMessage(PlayerProfile.ValidationMessage(text), badChar || attempted ? Bad : Mute);
         }
 
         acceptButton.color = valid ? Accent : ChipColor;
@@ -217,7 +217,7 @@ public class PlayerNameScreen : MonoBehaviour
 
     private void ShowMessage(string text, Color color)
     {
-        message.text = text;
+        L10n.BindSource(message,text,"ui.");
         message.color = color;
     }
 
@@ -290,12 +290,12 @@ public class PlayerNameScreen : MonoBehaviour
         avatarLetter = Text(Stretch(Node("Letra", avatar.rectTransform)), displayFont, 28f, KeyInk, TextAlignmentOptions.Center);
 
         chipLabel = Text(Place(Node("Rotulo", chip), 80f, 14f, 300f, 18f), labelFont, 14f, Mute, TextAlignmentOptions.MidlineLeft, 16f, true);
-        chipLabel.text = "Jugador";
+        L10n.BindSource(chipLabel, "Jugador","ui.");
         chipName = Text(Place(Node("Nombre", chip), 80f, 30f, 300f, 34f), displayFont, 30f, Ink, TextAlignmentOptions.MidlineLeft, 3f, true);
 
         ShopPointerTarget pointer = chip.gameObject.AddComponent<ShopPointerTarget>();
-        pointer.Hovered = () => { chipBg.color = chipHover; chipLabel.text = "Cambiar nombre"; chipLabel.color = Accent; };
-        pointer.Exited = () => { chipBg.color = PanelColor; chipLabel.text = "Jugador"; chipLabel.color = Mute; };
+        pointer.Hovered = () => { chipBg.color = chipHover; L10n.BindSource(chipLabel, "Cambiar nombre","ui."); chipLabel.color = Accent; };
+        pointer.Exited = () => { chipBg.color = PanelColor; L10n.BindSource(chipLabel, "Jugador","ui."); chipLabel.color = Mute; };
         pointer.Clicked = () => { pointer.Exited(); Open(false); };
     }
 
@@ -313,10 +313,9 @@ public class PlayerNameScreen : MonoBehaviour
 
         float w = PanelW - Pad * 2f;
         eyebrow = Text(Place(Node("Rotulo", panel), Pad, 44f, w, 20f), labelFont, 16f, Accent, TextAlignmentOptions.MidlineLeft, 16f, true);
-        Text(Place(Node("Titulo", panel), Pad, 70f, w, 66f), displayFont, 62f, Ink, TextAlignmentOptions.MidlineLeft, 2f, true).text = "¿Cómo te llamás?";
+        L10n.BindSource(Text(Place(Node("Titulo", panel), Pad, 70f, w, 66f), displayFont, 62f, Ink, TextAlignmentOptions.MidlineLeft, 2f, true), "¿Cómo te llamás?","ui.");
         Image(Place(Node("LineaAnden", panel), Pad, 146f, 150f, 3f), null, Accent);
-        Text(Place(Node("Bajada", panel), Pad, 166f, w, 28f), bodyFont, 20f, Soft, TextAlignmentOptions.MidlineLeft)
-            .text = "Así te van a ver en las salas, la tabla y los avisos de bajas.";
+        L10n.BindSource(Text(Place(Node("Bajada", panel), Pad, 166f, w, 28f), bodyFont, 20f, Soft, TextAlignmentOptions.MidlineLeft), "Así te van a ver en las salas, la tabla y los avisos de bajas.","ui.");
 
         BuildInput(w);
 
@@ -327,12 +326,12 @@ public class PlayerNameScreen : MonoBehaviour
         RectTransform acceptRect = Place(Node("Aceptar", panel), PanelW - Pad - 200f, 386f, 200f, 56f);
         acceptButton = Image(acceptRect, rounded, Accent, 6f, true);
         acceptLabel = Text(Stretch(Node("Texto", acceptRect)), displayFont, 22f, KeyInk, TextAlignmentOptions.Center, 10f, true);
-        acceptLabel.text = "Aceptar";
+        L10n.BindSource(acceptLabel, "Aceptar","ui.");
         acceptRect.gameObject.AddComponent<ShopPointerTarget>().Clicked = Submit;
 
         cancelRect = Place(Node("Cancelar", panel), PanelW - Pad - 200f - 16f - 170f, 386f, 170f, 56f);
         Img cancelBg = Image(cancelRect, rounded, ChipColor, 6f, true);
-        Text(Stretch(Node("Texto", cancelRect)), displayFont, 22f, Ink, TextAlignmentOptions.Center, 10f, true).text = "Cancelar";
+        L10n.BindSource(Text(Stretch(Node("Texto", cancelRect)), displayFont, 22f, Ink, TextAlignmentOptions.Center, 10f, true), "Cancelar","ui.");
         ShopPointerTarget cancelPointer = cancelRect.gameObject.AddComponent<ShopPointerTarget>();
         cancelPointer.Hovered = () => cancelBg.color = ChipDim;
         cancelPointer.Exited = () => cancelBg.color = ChipColor;
@@ -356,7 +355,7 @@ public class PlayerNameScreen : MonoBehaviour
         // Centrado por la altura de la línea (Left) y no por las letras (MidlineLeft): con el campo vacío
         // TextMeshPro no tiene letras para medir y el cursor quedaba más arriba que el texto.
         TextMeshProUGUI placeholder = Text(Stretch(Node("Ejemplo", area)), displayFont, 40f, White(0.25f), TextAlignmentOptions.Left, 3f);
-        placeholder.text = "Tu nombre";
+        L10n.BindSource(placeholder, "Tu nombre","ui.");
         TextMeshProUGUI value = Text(Stretch(Node("Texto", area)), displayFont, 40f, Ink, TextAlignmentOptions.Left, 3f);
 
         counter = Text(Place(Node("Contador", box), w - 86f, 0f, 66f, 78f), labelFont, 18f, Mute, TextAlignmentOptions.MidlineRight, 6f);

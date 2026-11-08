@@ -224,13 +224,13 @@ public class PanelDePractica : MonoBehaviour
     {
         if (d.cartel == null || d.bot == null) return;
         HealthSystem vida = d.bot.Vida;
-        string golpe = d.golpeado ? $"<color=#{ColorUtility.ToHtmlStringRGB(Amarillo)}>{d.ultimo}</color> {NombreZona(d.zona)}" : "Tirale";
-        string queda = vida == null ? "" : vida.currentHealth > 0 ? $"Vida {vida.currentHealth}" : "Abatido";
+        string golpe = d.golpeado ? $"<color=#{ColorUtility.ToHtmlStringRGB(Amarillo)}>{d.ultimo}</color> {NombreZona(d.zona)}" : L10n.T("gameplay.practice.shoot_it");
+        string queda = vida == null ? "" : vida.currentHealth > 0 ? L10n.T("gameplay.practice.health_fmt", vida.currentHealth) : L10n.T("gameplay.practice.down");
         d.cartel.text = $"{d.metros} m\n{golpe}\n<size=70%>{queda}</size>";
     }
 
     private static string NombreZona(BodyZone zona) =>
-        zona == BodyZone.Head ? "cabeza" : zona == BodyZone.Legs ? "piernas" : "cuerpo";
+        L10n.T(zona == BodyZone.Head ? "gameplay.practice.zone.head" : zona == BodyZone.Legs ? "gameplay.practice.zone.legs" : "gameplay.practice.zone.body");
 
     // ---------- Reacción ----------
 
@@ -266,10 +266,10 @@ public class PanelDePractica : MonoBehaviour
             {
                 float suma = 0f, mejor = float.MaxValue;
                 foreach (float t in tiempos) { suma += t; mejor = Mathf.Min(mejor, t); }
-                resultado = $"Reacción: promedio {suma / tiempos.Count:0.00} s · mejor {mejor:0.00} s";
-                if (fallos > 0) resultado += $" · {fallos} sin pegar";
+                resultado = L10n.T("gameplay.practice.reaction_avg_fmt", suma / tiempos.Count, mejor);
+                if (fallos > 0) resultado += L10n.T("gameplay.practice.misses_fmt", fallos);
             }
-            else resultado = "Reacción: no le pegaste a ninguno";
+            else resultado = L10n.T("gameplay.practice.reaction_none");
         }
         else proximoEn = Time.time + Random.Range(0.6f, 1.8f);
         Mostrar();
@@ -328,9 +328,9 @@ public class PanelDePractica : MonoBehaviour
     {
         switch (accion)
         {
-            case BotonDePractica.Accion.Movimiento: return "En movimiento";
+            case BotonDePractica.Accion.Movimiento: return L10n.T("gameplay.practice.moving");
             case BotonDePractica.Accion.Distancias: return "Distancias";
-            case BotonDePractica.Accion.Reaccion: return "Reacción";
+            case BotonDePractica.Accion.Reaccion: return L10n.T("gameplay.practice.reaction");
             case BotonDePractica.Accion.Reiniciar: return "Reiniciar";
             case BotonDePractica.Accion.Tutorial: return "Tutorial";
             default: return "Quietos";
@@ -348,13 +348,13 @@ public class PanelDePractica : MonoBehaviour
                 boton.Resaltar(boton == mirado || boton.accion == AccionDelModo());
             }
         if (marcador != null)
-            marcador.text = reaccion ? $"Reacción: {Mathf.Min(ronda + 1, Rondas)} de {Rondas}"
+            marcador.text = reaccion ? L10n.T("gameplay.practice.reaction_round_fmt", Mathf.Min(ronda + 1, Rondas), Rondas)
                           : resultado.Length > 0 ? resultado
-                          : $"{Nombre(AccionDelModo())} · Bajas: {bajas} · A la cabeza: {cabezas}";
+                          : L10n.T("gameplay.practice.mode_stats_fmt", Nombre(AccionDelModo()), bajas, cabezas);
         if (ayuda != null)
         {
             string tecla = $"<color=#{ColorUtility.ToHtmlStringRGB(Amarillo)}>{KeyBindings.Label(GameAction.Plantar)}</color>";
-            ayuda.text = mirado != null ? $"{tecla}  {Nombre(mirado.accion)}" : $"Elegí un modo: mirá un botón y apretá {tecla}, o pegale un tiro";
+            ayuda.text = mirado != null ? $"{tecla}  {Nombre(mirado.accion)}" : L10n.T("gameplay.practice.pick_mode_fmt", tecla);
         }
     }
 }

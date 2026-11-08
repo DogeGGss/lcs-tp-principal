@@ -15,13 +15,13 @@ public static class Suministros
             municion = ScriptableObject.CreateInstance<ShopItem>();
             municion.hideFlags = HideFlags.DontSave;
             municion.name = "Municion";
-            municion.displayName = "Munición";
+            municion.displayName = L10n.T("gameplay.ui.ammunition");
             municion.category = ShopCategory.Supplies;
             municion.kind = ShopItemKind.Ammo;
             municion.price = 300;
             municion.tint = ShopUIKit.Accent;
-            municion.shortEffect = "Las dos armas";
-            municion.description = "Llena el cargador y la reserva de tus dos armas.";
+            municion.shortEffect = L10n.T("gameplay.ui.both_weapons");
+            municion.description = L10n.T("gameplay.ui.refills_the_magazine_and_reserve_of_both_weapons");
             municion.icon = Icono();
             return municion;
         }

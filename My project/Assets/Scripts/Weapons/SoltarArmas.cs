@@ -142,8 +142,7 @@ public class SoltarArmas : MonoBehaviour
 
         if (mirada == null) { MostrarAviso(null); return; }
         ShopItem tengo = mirada.Item.kind == ShopItemKind.PrimaryWeapon ? loadout.Primary : loadout.Secondary;
-        MostrarAviso($"{ModeloReal.NombreDe(mirada.Item)}   ·   Soltá tu {ModeloReal.NombreDe(tengo)} con " +
-                     $"<color=#F29A38>{KeyBindings.Label(GameAction.Soltar)}</color> para levantarla");
+        MostrarAviso(L10n.T("gameplay.weapon.drop_to_pick_fmt", ModeloReal.NombreDe(mirada.Item), ModeloReal.NombreDe(tengo), KeyBindings.Label(GameAction.Soltar)));
     }
 
     private void MostrarAviso(string texto)

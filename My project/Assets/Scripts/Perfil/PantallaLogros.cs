@@ -66,16 +66,16 @@ public class PantallaLogros : PantallaBase
             int tipo = i < 3 ? i : -1, n = 0, de = 0;
             foreach (var d in LogrosCometas.Catalogo) if (d.tipo == tipo) { de++; if (LogrosCometas.Tiene(d)) n++; }
             Color c = i < 3 ? Cometa.ColorDe((TipoCometa)i) : Accent;
-            T(resumen, "Grupo", 28, 280 + i * 72, 384, 36, FTitulo, 29, c, new[] { "AZULES", "VERDES", "DORADOS", "COMBATE" }[i] + "   " + n + " / " + de);
-            T(resumen, "Detalle", 28, 316 + i * 72, 384, 28, FTexto, 21, Soft, i < 3 ? LogrosCometas.Datos.aciertos[i] + " destruidos"
-                : PerfilDatos.Numero(e.Bajas) + " bajas · " + PerfilDatos.Numero(e.Cabezas) + " a la cabeza");
+            T(resumen, "Grupo", 28, 280 + i * 72, 384, 36, FTitulo, 29, c, L10n.T(new[] { "profile.ach.group.blue", "profile.ach.group.green", "profile.ach.group.gold", "profile.ach.group.combat" }[i]) + "   " + n + " / " + de);
+            T(resumen, "Detalle", 28, 316 + i * 72, 384, 28, FTexto, 21, Soft, i < 3 ? L10n.T("profile.ach.destroyed_fmt", LogrosCometas.Datos.aciertos[i])
+                : L10n.T("profile.ach.kills_heads_fmt", PerfilDatos.Numero(e.Bajas), PerfilDatos.Numero(e.Cabezas)));
         }
         var datos = Servicio?.Datos;
-        T(resumen, "Puesto", 28, 592, 384, 40, FTitulo, 29, Ink, datos?.me == null ? "PUESTO EN LOGROS: —" : "PUESTO EN LOGROS: #" + datos.me.rank);
-        string estado = Servicio == null ? "El progreso se guarda en esta PC." : Servicio.Estado;
-        if (SinCuenta) estado = "Creá una cuenta para aparecer en el ranking (Perfil › Cuenta).\n" + estado;
-        if (datos != null) estado += "\n" + (datos.population == 1 ? "1 jugador registrado" : datos.population + " jugadores registrados") + Fecha(datos.fetched_at);
-        if (!string.IsNullOrEmpty(LogrosCometas.AvisoGuardado)) estado += "\n" + LogrosCometas.AvisoGuardado;
+        T(resumen, "Puesto", 28, 592, 384, 40, FTitulo, 29, Ink, datos?.me == null ? L10n.T("profile.ach.rank_none") : L10n.T("profile.ach.rank_fmt", datos.me.rank));
+        string estado = L10n.Source(Servicio == null ? "El progreso se guarda en esta PC." : Servicio.Estado, "profile.");
+        if (SinCuenta) estado = L10n.Source("Creá una cuenta para aparecer en el ranking (Perfil › Cuenta).\n", "profile.") + estado;
+        if (datos != null) estado += "\n" + L10n.Plural("profile.ach.registered", datos.population) + Fecha(datos.fetched_at);
+        if (!string.IsNullOrEmpty(LogrosCometas.AvisoGuardado)) estado += "\n" + L10n.Source(LogrosCometas.AvisoGuardado, "profile.");
         var texto = T(resumen, "Conexión", 28, 650, 384, 176, FTexto, 20, Mute, estado);
         texto.textWrappingMode = TextWrappingModes.Normal;
         CrearBoton(resumen, 28, 838, 384, 46, "Actualizar", false, Consultar, 22);
@@ -89,7 +89,7 @@ public class PantallaLogros : PantallaBase
         if (PorEstadistica) filas = DibujarEstadistica(out paso);
         else if (seccion == 0 || seleccionado != null)
         {
-            titulo.text = seleccionado == null ? "Cometas de cada color y combate en Táctico y Deathmatch" : "Logros de " + seleccionado.display_name;
+            titulo.text = seleccionado == null ? "Cometas de cada color y combate en Táctico y Deathmatch" : L10n.T("profile.ach.of_fmt", seleccionado.display_name);
             filas = LogrosCometas.Catalogo.Length;
             for (int i = 0; i < filas; i++) FilaLogro(LogrosCometas.Catalogo[i], i);
             if (seleccionado != null) CrearBoton(acciones, 0, 0, 300, 48, "Volver al ranking", false, () => { seleccionado = null; Dibujar(true); }, 22);
@@ -98,7 +98,7 @@ public class PantallaLogros : PantallaBase
         else
         {
             var definicion = Array.Find(LogrosCometas.Catalogo, d => d.id == filtro);
-            titulo.text = definicion == null ? "Logros obtenidos · empates comparten puesto" : "Quiénes consiguieron: " + definicion.nombre;
+            titulo.text = definicion == null ? "Logros obtenidos · empates comparten puesto" : L10n.T("profile.ach.who_fmt", L10n.Source(definicion.nombre, "profile."));
             bool coincide = datos != null && datos.offset == pagina && (datos.filter ?? "") == filtro;
             filas = coincide && datos.players != null ? datos.players.Length : 0;
             for (int i = 0; i < filas; i++) FilaJugador(datos.players[i], i);
@@ -108,7 +108,7 @@ public class PantallaLogros : PantallaBase
             var proximo = CrearBoton(acciones, 226, 0, 210, 48, "Siguiente", false, () => { pagina += 50; Consultar(); Dibujar(true); }, 22);
             proximo.button.interactable = coincide && datos.has_more;
             if (filtro != "") CrearBoton(acciones, 456, 0, 300, 48, "Todos los jugadores", false, () => Cambiar(1), 22);
-            T(acciones, "Página", 1000, 0, 330, 48, FTexto, 23, Soft, "Página " + (pagina / 50 + 1), TextAlignmentOptions.MidlineRight);
+            T(acciones, "Página", 1000, 0, 330, 48, FTexto, 23, Soft, L10n.T("profile.ach.page_fmt", pagina / 50 + 1), TextAlignmentOptions.MidlineRight);
         }
         lista.sizeDelta = new Vector2(1330, Mathf.Max(180, filas * paso));
         scroll.verticalNormalizedPosition = alInicio ? 1 : pos;
@@ -152,7 +152,7 @@ public class PantallaLogros : PantallaBase
         paso = 80;
         Categoria cat = CategoriasRanking.Buscar(categoria);
         LogrosOnline.Tabla tabla = Servicio?.Estadistica;
-        titulo.text = cat.grupo + ": " + cat.nombre + " · " + (cat.requisito ?? "empates comparten puesto");
+        titulo.text = L10n.Source(cat.grupo, "profile.") + ": " + L10n.Source(cat.nombre, "profile.") + " · " + L10n.Source(cat.requisito ?? "empates comparten puesto", "profile.");
         bool coincide = tabla != null && tabla.stat == categoria && tabla.offset == pagina && tabla.players != null;
         int filas = coincide ? tabla.players.Length : 0;
         string yo = coincide ? tabla.Propia?.player_id : null;
@@ -171,10 +171,10 @@ public class PantallaLogros : PantallaBase
         var proximo = CrearBoton(acciones, 226, 0, 210, 48, "Siguiente", false, () => { pagina += 50; Consultar(); Dibujar(true); }, 22);
         proximo.button.interactable = coincide && tabla.has_more;
         LogrosOnline.Fila mio = coincide ? tabla.Propia : null;
-        string puesto = !coincide ? "" : mio != null ? $"Tu puesto: <color=#F3F4F6>#{mio.rank}</color> · {CategoriasRanking.Mostrar(cat, mio.value)}"
+        string puesto = !coincide ? "" : mio != null ? L10n.T("profile.ach.your_place_fmt", mio.rank, CategoriasRanking.Mostrar(cat, mio.value))
             : SinCuenta ? "Creá una cuenta para aparecer en el ranking." : "Todavía no aparecés en esta categoría.";
         T(acciones, "Puesto", 456, 0, 520, 48, FTexto, 23, Soft, puesto + (coincide ? Fecha(tabla.fetched_at) : ""));
-        T(acciones, "Página", 1000, 0, 330, 48, FTexto, 23, Soft, "Página " + (pagina / 50 + 1), TextAlignmentOptions.MidlineRight);
+        T(acciones, "Página", 1000, 0, 330, 48, FTexto, 23, Soft, L10n.T("profile.ach.page_fmt", pagina / 50 + 1), TextAlignmentOptions.MidlineRight);
         return filas;
     }
 
@@ -185,7 +185,7 @@ public class PantallaLogros : PantallaBase
         Image(r, Rounded, mio ? Over(WithAlpha(Accent, .16f), PanelColor) : PanelColor, 6);
         if (mio) Borde(r, 6, WithAlpha(Accent, .6f));
         T(r, "Puesto", 22, 0, 110, 72, FTitulo, 34, p.rank <= 3 ? Accent : Soft, "#" + p.rank);
-        T(r, "Nombre", 150, 0, 800, 72, FTitulo, 30, Ink, mio ? p.display_name + " (vos)" : p.display_name).richText = false;
+        T(r, "Nombre", 150, 0, 800, 72, FTitulo, 30, Ink, mio ? L10n.T("profile.ach.you_suffix", p.display_name) : p.display_name).richText = false;
         T(r, "Valor", 960, 0, 346, 72, FTitulo, 36, Ink, CategoriasRanking.Mostrar(cat, p.value), TextAlignmentOptions.MidlineRight);
     }
     void FilaLogro(LogrosCometas.Definicion d, int i)
@@ -198,7 +198,7 @@ public class PantallaLogros : PantallaBase
         T(r, "Nombre", 22, 12, 630, 36, FTitulo, 29, obtenido ? Ink : Soft, d.nombre);
         T(r, "Descripción", 24, 53, 630, 30, FTexto, 21, Mute, d.descripcion);
         int cuenta = LogrosCometas.Valor(d);
-        T(r, "Progreso", 670, 12, 190, 34, FTitulo, 26, obtenido ? c : Soft, seleccionado == null ? Mathf.Min(cuenta, d.meta) + " / " + d.meta : obtenido ? "Obtenido" : "Pendiente");
+        T(r, "Progreso", 670, 12, 190, 34, FTitulo, 26, obtenido ? c : Soft, seleccionado == null ? Mathf.Min(cuenta, d.meta) + " / " + d.meta : L10n.T(obtenido ? "profile.ach.got" : "profile.ach.pending"));
         Barra(r, 670, 64, 190, seleccionado == null ? (float)cuenta / d.meta : obtenido ? 1 : 0, c);
         var stats = Servicio?.Datos?.stats;
         var p = stats == null ? null : Array.Find(stats, s => s.achievement_id == d.id);
@@ -212,7 +212,7 @@ public class PantallaLogros : PantallaBase
         T(r, "Puesto", 20, 20, 110, 50, FTitulo, 38, Accent, "#" + p.rank);
         T(r, "Nombre", 150, 15, 490, 38, FTitulo, 30, Ink, p.display_name).richText = false;
         var catalogo = LogrosCometas.Catalogo;
-        T(r, "Cantidad", 150, 57, 490, 28, FTexto, 22, Mute, p.total + " / " + catalogo.Length + " logros obtenidos");
+        T(r, "Cantidad", 150, 57, 490, 28, FTexto, 22, Mute, L10n.T("profile.ach.player_total_fmt", p.total, catalogo.Length));
         // Un cuadradito por logro, en el orden del catálogo: entran entre el nombre y el botón.
         float paso = Mathf.Min(40, 425f / catalogo.Length), lado = Mathf.Round(paso * 0.75f);
         for (int k = 0; k < catalogo.Length; k++)

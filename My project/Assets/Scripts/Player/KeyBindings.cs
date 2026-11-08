@@ -157,7 +157,7 @@ public static class KeyBindings
 
     // ---------- Textos (CA6: "R · Recargar" usa la tecla actual) ----------
 
-    public static string Name(GameAction action) => Names[action];
+    public static string Name(GameAction action) => L10n.Source(Names[action]);
 
     public static string Label(GameAction action) => Label(Key(action));
 
@@ -165,20 +165,20 @@ public static class KeyBindings
     {
         switch (key)
         {
-            case KeyCode.Mouse0: return "Clic izq.";
-            case KeyCode.Mouse1: return "Clic der.";
-            case KeyCode.Mouse2: return "Rueda";
+            case KeyCode.Mouse0: return L10n.T("gameplay.controls.mouse_left");
+            case KeyCode.Mouse1: return L10n.T("gameplay.controls.mouse_right");
+            case KeyCode.Mouse2: return L10n.T("gameplay.controls.wheel");
             case KeyCode.Mouse3: return "Mouse 4";
             case KeyCode.Mouse4: return "Mouse 5";
-            case KeyCode.Space: return "Espacio";
+            case KeyCode.Space: return L10n.T("gameplay.controls.space");
             case KeyCode.LeftShift: case KeyCode.RightShift: return "Shift";
             case KeyCode.LeftControl: case KeyCode.RightControl: return "Ctrl";
             case KeyCode.LeftAlt: case KeyCode.RightAlt: return "Alt";
             case KeyCode.Return: return "Enter";
-            case KeyCode.Backspace: return "Retroceso";
-            case KeyCode.CapsLock: return "Bloq Mayús";
-            case KeyCode.UpArrow: return "Arriba";
-            case KeyCode.DownArrow: return "Abajo";
+            case KeyCode.Backspace: return L10n.T("gameplay.controls.backspace");
+            case KeyCode.CapsLock: return L10n.T("gameplay.controls.caps");
+            case KeyCode.UpArrow: return L10n.T("gameplay.controls.up");
+            case KeyCode.DownArrow: return L10n.T("gameplay.controls.down");
             case KeyCode.LeftArrow: return "Izquierda";
             case KeyCode.RightArrow: return "Derecha";
             case KeyCode.None: return "—";

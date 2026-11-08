@@ -333,7 +333,7 @@ public class MatchHud : MonoBehaviour
     {
         BuyPhase phase = BuyPhase.Current;
         if (phase == null || !phase.IsActive) { marker.gameObject.SetActive(false); return; }
-        ShowCenter("Fase de compra", phase.TimeLeft, phase.Round > 0 ? $"Ronda {phase.Round}" : "", phase.TimeLeft <= 5f, null, false);
+        ShowCenter(L10n.T("gameplay.ui.buy_phase"), phase.TimeLeft, phase.Round > 0 ? L10n.T("gameplay.tac.round_fmt", phase.Round) : "", phase.TimeLeft <= 5f, null, false);
     }
 
     private void ShowCenter(string label, float? seconds, string sub, bool red, string counter, bool alert)

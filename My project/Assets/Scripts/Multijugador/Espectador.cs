@@ -473,7 +473,7 @@ public class Espectador : MonoBehaviour
         ShopUI.Spectated = mirando != null ? mirando.Dueno : null;
         if (mirando != null) OcultarCuerpo(mirando);
 
-        if (muerto && partida != null) partida.Aviso(null); // el "Te eliminaron" ya no hace falta
+        if (muerto && partida != null) partida.Aviso(null); // el L10n.T("gameplay.ui.you_were_eliminated") ya no hace falta
         MostrarCartel();
     }
 
@@ -493,8 +493,8 @@ public class Espectador : MonoBehaviour
         }
         else
         {
-            cartelTitulo.text = viendoDispositivo ? "Mirando el dispositivo" : "No quedan compañeros vivos";
-            cartelAyuda.text = "Reaparecés en la ronda siguiente";
+            cartelTitulo.text = L10n.T(viendoDispositivo ? "gameplay.spectator.watching_device" : "gameplay.spectator.no_teammates");
+            cartelAyuda.text = L10n.T("gameplay.spectator.respawn_next");
         }
     }
 

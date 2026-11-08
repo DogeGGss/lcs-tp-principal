@@ -290,7 +290,7 @@ public class Minimapa : MonoBehaviour
             }
             if (dispositivo == null)
             {
-                dispositivo = Marca("Dispositivo", 24f, new Color(0f, 0f, 0f, 0.75f));
+                dispositivo = Marca(L10n.T("gameplay.controls.device"), 24f, new Color(0f, 0f, 0f, 0.75f));
                 luzDispositivo = Image(Centrado(Node("Color", dispositivo), 18f), redondeado, Accent, 4f);
                 Image(Centrado(Node("Centro", dispositivo), 6f), redondeado, Rgb(14, 10, 12), 3f);
             }
@@ -519,7 +519,7 @@ public class Minimapa : MonoBehaviour
         if (tecla != teclaMostrada)
         {
             teclaMostrada = tecla;
-            ayuda.text = $"<color=#F3F4F6>{tecla}</color>  Mapa";
+            ayuda.text = L10n.T("gameplay.map.key_fmt", tecla);
         }
 
         // CA2: el radar gira con la mirada y el jugador queda en el centro.

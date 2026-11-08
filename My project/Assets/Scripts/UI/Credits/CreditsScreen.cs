@@ -123,7 +123,7 @@ public class CreditsScreen : MonoBehaviour
         stars.raycastTarget = false;
 
         prologueText = Text(Place(Node("Prologo", root), 0f, 400f, W, 160f), bodyFont, 44f, Hex(0x4BD5EE), TextAlignmentOptions.Center);
-        prologueText.text = prologue;
+        L10n.BindSource(prologueText,prologue,"ui.");
         prologueText.lineSpacing = 20f;
 
         logo = Text(Node("Titulo", root), displayFont, 240f, gold, TextAlignmentOptions.Center, 4f, true);
@@ -188,7 +188,7 @@ public class CreditsScreen : MonoBehaviour
         y += gap;
         TextMeshProUGUI text = Text(Place(Node("Linea", parent), 0f, 0f, PageW, 10f), font, size, color, TextAlignmentOptions.Top, spacing, upper);
         text.textWrappingMode = TextWrappingModes.Normal;
-        text.text = value;
+        L10n.BindSource(text,value,"ui.");
         float height = text.GetPreferredValues(upper ? value.ToUpperInvariant() : value, PageW, 0f).y;
         text.rectTransform.sizeDelta = new Vector2(PageW, height);
         text.ForceMeshUpdate();
@@ -210,7 +210,7 @@ public class CreditsScreen : MonoBehaviour
         foreach (var (key, label) in new[] { ("Esc", "Volver"), ("Espacio", "Acelerar") })
         {
             TextMeshProUGUI text = Text(Node("Accion", hint), labelFont, 22f, White(0.85f), TextAlignmentOptions.MidlineLeft, 8f, true);
-            text.text = label;
+            L10n.BindSource(text, label,"ui.");
             float tw = Width(text, label.ToUpperInvariant());
             RectTransform keyRect = Node("Tecla", hint);
             TextMeshProUGUI keyText = Text(Stretch(Node("Letra", keyRect)), monoFont, 18f, Hex(0x111111), TextAlignmentOptions.Center, 4f, true);
