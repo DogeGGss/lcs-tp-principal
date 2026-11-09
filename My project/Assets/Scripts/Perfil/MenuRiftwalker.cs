@@ -434,7 +434,7 @@ public class MenuRiftwalker : MonoBehaviour
         pj.Hovered = () => { textoJugar.color = Accent; flecha.color = Ink; };
         pj.Exited = () => { textoJugar.color = Ink; flecha.color = Accent; };
         jugar.gameObject.AddComponent<ButtonHoverAnimation>();
-        T(capaMenu, "Modos", 122f, 440f, 600f, 30f, FTexto, 25f, Mute, "Táctico  ·  Deathmatch  ·  Zombie");
+        T(capaMenu, "Modos", 122f, 440f, 600f, 30f, FTexto, 25f, Mute, "Táctico  ·  Deathmatch  ·  Invasión");
         Image(Place(Node("Linea", capaMenu), 122f, 486f, 440f, 3f), Degrade(true, 0f, 1f), Accent);
 
         string[] opciones = { "Opciones", "Logros", "Créditos", "Salir" };
