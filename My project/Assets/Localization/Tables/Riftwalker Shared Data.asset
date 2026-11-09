@@ -6267,6 +6267,90 @@ MonoBehaviour:
     m_Key: ui.text.close
     m_Metadata:
       m_Items: []
+  - m_Id: 601878452596736
+    m_Key: character.no_invasion_abilities
+    m_Metadata:
+      m_Items: []
+  - m_Id: 601878624563200
+    m_Key: gameplay.card.fx.no_interval.2
+    m_Metadata:
+      m_Items: []
+  - m_Id: 601878624563201
+    m_Key: gameplay.card.fx.no_interval.3
+    m_Metadata:
+      m_Items: []
+  - m_Id: 601878624563202
+    m_Key: gameplay.card.fx.growing_burst.2
+    m_Metadata:
+      m_Items: []
+  - m_Id: 601878624563203
+    m_Key: gameplay.card.fx.growing_burst.3
+    m_Metadata:
+      m_Items: []
+  - m_Id: 601878624563204
+    m_Key: gameplay.card.fx.minefield.2
+    m_Metadata:
+      m_Items: []
+  - m_Id: 601878624563205
+    m_Key: gameplay.card.fx.minefield.3
+    m_Metadata:
+      m_Items: []
+  - m_Id: 601878624563206
+    m_Key: gameplay.card.fx.backpack.2
+    m_Metadata:
+      m_Items: []
+  - m_Id: 601878624563207
+    m_Key: gameplay.card.fx.backpack.3
+    m_Metadata:
+      m_Items: []
+  - m_Id: 601878624563208
+    m_Key: gameplay.card.fx.recycler.2
+    m_Metadata:
+      m_Items: []
+  - m_Id: 601878624563209
+    m_Key: gameplay.card.fx.recycler.3
+    m_Metadata:
+      m_Items: []
+  - m_Id: 601878624563210
+    m_Key: gameplay.card.fx.scavenger.2
+    m_Metadata:
+      m_Items: []
+  - m_Id: 601878624563211
+    m_Key: gameplay.card.fx.scavenger.3
+    m_Metadata:
+      m_Items: []
+  - m_Id: 601878624563212
+    m_Key: gameplay.card.fx.finisher.2
+    m_Metadata:
+      m_Items: []
+  - m_Id: 601878624563213
+    m_Key: gameplay.card.fx.finisher.3
+    m_Metadata:
+      m_Items: []
+  - m_Id: 601878624563214
+    m_Key: gameplay.card.fx.hungry_edge.2
+    m_Metadata:
+      m_Items: []
+  - m_Id: 601878624563215
+    m_Key: gameplay.card.fx.hungry_edge.3
+    m_Metadata:
+      m_Items: []
+  - m_Id: 601878624563216
+    m_Key: gameplay.card.fx.rage.2
+    m_Metadata:
+      m_Items: []
+  - m_Id: 601878624563217
+    m_Key: gameplay.card.fx.rage.3
+    m_Metadata:
+      m_Items: []
+  - m_Id: 601878624563218
+    m_Key: gameplay.card.fx.clearance.2
+    m_Metadata:
+      m_Items: []
+  - m_Id: 601878624563219
+    m_Key: gameplay.card.fx.clearance.3
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

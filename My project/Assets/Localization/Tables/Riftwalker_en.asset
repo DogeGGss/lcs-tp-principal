@@ -1644,7 +1644,7 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 7522316312
-    m_Localized: "## Your next crossing starts here\nA meeting point to prepare for your next match.\n### Keep your game up to date\n- Download new versions from this launcher.\n- Keep your settings and progress.\n- Read what changed before you play.\n### Choose your platform\n**Tactical \xB7 Deathmatch \xB7 Zombie**\n\nThis is an interface preview, not the patch notes of a published release."
+    m_Localized: "## Your next crossing starts here\nA meeting point to prepare for your next match.\n### Keep your game up to date\n- Download new versions from this launcher.\n- Keep your settings and progress.\n- Read what changed before you play.\n### Choose your platform\n**Tactical \xB7 Deathmatch \xB7 Invasion**\n\nThis is an interface preview, not the patch notes of a published release."
     m_Metadata:
       m_Items: []
   - m_Id: 7522316313
@@ -6301,6 +6301,90 @@ MonoBehaviour:
       m_Items: []
   - m_Id: 380227458789408
     m_Localized: Close
+    m_Metadata:
+      m_Items: []
+  - m_Id: 601878452596736
+    m_Localized: Abilities are disabled in Invasion
+    m_Metadata:
+      m_Items: []
+  - m_Id: 601878624563200
+    m_Localized: Killing removes the pause between the next 5 bursts.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 601878624563201
+    m_Localized: Killing removes the pause between the next 7 bursts.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 601878624563202
+    m_Localized: Each kill adds one bullet to your bursts, up to 8. Reloading resets them to 3.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 601878624563203
+    m_Localized: Each kill adds one bullet to your bursts, up to 10. Reloading resets them to 3.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 601878624563204
+    m_Localized: Grenades that touch the ground stay as mines (up to 7).
+    m_Metadata:
+      m_Items: []
+  - m_Id: 601878624563205
+    m_Localized: Grenades that touch the ground stay as mines (up to 9).
+    m_Metadata:
+      m_Items: []
+  - m_Id: 601878624563206
+    m_Localized: 80% more reserve ammo for both weapons (40% more than now).
+    m_Metadata:
+      m_Items: []
+  - m_Id: 601878624563207
+    m_Localized: 120% more reserve ammo for both weapons (40% more than now).
+    m_Metadata:
+      m_Items: []
+  - m_Id: 601878624563208
+    m_Localized: Each headshot kill returns 10 bullets to the magazine.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 601878624563209
+    m_Localized: Each headshot kill returns 15 bullets to the magazine.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 601878624563210
+    m_Localized: 1 in 4 invaders drops a magazine when it dies.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 601878624563211
+    m_Localized: 1 in 3 invaders drops a magazine when it dies.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 601878624563212
+    m_Localized: The knife kills invaders with 30% health or less in one hit (except the Boss).
+    m_Metadata:
+      m_Items: []
+  - m_Id: 601878624563213
+    m_Localized: The knife kills invaders with 35% health or less in one hit (except the Boss).
+    m_Metadata:
+      m_Items: []
+  - m_Id: 601878624563214
+    m_Localized: Each knife hit heals as much as the damage it deals, up to 35 health per hit.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 601878624563215
+    m_Localized: Each knife hit heals as much as the damage it deals, up to 45 health per hit.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 601878624563216
+    m_Localized: When an invader hits you, your next shot adds 6 times the health you lost.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 601878624563217
+    m_Localized: When an invader hits you, your next shot adds 7 times the health you lost.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 601878624563218
+    m_Localized: When the station is charged, a bubble pushes invaders in the ring back 15 m, except the Boss.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 601878624563219
+    m_Localized: When the station is charged, a bubble pushes invaders in the ring back 20 m, except the Boss.
     m_Metadata:
       m_Items: []
   references:

@@ -1632,7 +1632,7 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 7522316312
-    m_Localized: "## El pr\xF3ximo cruce empieza ac\xE1\nUn punto de encuentro para preparar tu pr\xF3xima partida.\n### Tu juego, al d\xEDa\n- Descarg\xE1 las nuevas versiones desde este launcher.\n- Conserv\xE1 tus opciones y tu progreso.\n- Consult\xE1 qu\xE9 cambi\xF3 antes de jugar.\n### Eleg\xED tu and\xE9n\n**T\xE1ctico \xB7 Deathmatch \xB7 Zombie**\n\nEsta es una vista previa de la interfaz, no las notas de una versi\xF3n publicada."
+    m_Localized: "## El pr\xF3ximo cruce empieza ac\xE1\nUn punto de encuentro para preparar tu pr\xF3xima partida.\n### Tu juego, al d\xEDa\n- Descarg\xE1 las nuevas versiones desde este launcher.\n- Conserv\xE1 tus opciones y tu progreso.\n- Consult\xE1 qu\xE9 cambi\xF3 antes de jugar.\n### Eleg\xED tu and\xE9n\n**T\xE1ctico \xB7 Deathmatch \xB7 Invasi\xF3n**\n\nEsta es una vista previa de la interfaz, no las notas de una versi\xF3n publicada."
     m_Metadata:
       m_Items: []
   - m_Id: 7522316313
@@ -6273,6 +6273,90 @@ MonoBehaviour:
       m_Items: []
   - m_Id: 380227458789408
     m_Localized: Cerrar
+    m_Metadata:
+      m_Items: []
+  - m_Id: 601878452596736
+    m_Localized: "En Invasi\xF3n no hay habilidades"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 601878624563200
+    m_Localized: "Matar saca la pausa entre las pr\xF3ximas 5 r\xE1fagas."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 601878624563201
+    m_Localized: "Matar saca la pausa entre las pr\xF3ximas 7 r\xE1fagas."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 601878624563202
+    m_Localized: "Cada baja le suma una bala a las r\xE1fagas, hasta 8. Al recargar vuelven a 3."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 601878624563203
+    m_Localized: "Cada baja le suma una bala a las r\xE1fagas, hasta 10. Al recargar vuelven a 3."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 601878624563204
+    m_Localized: Las granadas que tocan el piso quedan como minas (hasta 7).
+    m_Metadata:
+      m_Items: []
+  - m_Id: 601878624563205
+    m_Localized: Las granadas que tocan el piso quedan como minas (hasta 9).
+    m_Metadata:
+      m_Items: []
+  - m_Id: 601878624563206
+    m_Localized: "80 % m\xE1s de reserva en las dos armas (40 % m\xE1s que ahora)."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 601878624563207
+    m_Localized: "120 % m\xE1s de reserva en las dos armas (40 % m\xE1s que ahora)."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 601878624563208
+    m_Localized: Cada baja a la cabeza devuelve 10 balas al cargador.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 601878624563209
+    m_Localized: Cada baja a la cabeza devuelve 15 balas al cargador.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 601878624563210
+    m_Localized: 1 de cada 4 invasores suelta un cargador al morir.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 601878624563211
+    m_Localized: 1 de cada 3 invasores suelta un cargador al morir.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 601878624563212
+    m_Localized: El cuchillo mata de un golpe a los invasores con 30 % de vida o menos (salvo al Jefe).
+    m_Metadata:
+      m_Items: []
+  - m_Id: 601878624563213
+    m_Localized: El cuchillo mata de un golpe a los invasores con 35 % de vida o menos (salvo al Jefe).
+    m_Metadata:
+      m_Items: []
+  - m_Id: 601878624563214
+    m_Localized: "Cada cuchillazo cura lo mismo que el da\xF1o que hace, hasta 35 de vida por golpe."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 601878624563215
+    m_Localized: "Cada cuchillazo cura lo mismo que el da\xF1o que hace, hasta 45 de vida por golpe."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 601878624563216
+    m_Localized: "Cuando un invasor te pega, tu pr\xF3ximo disparo suma 6 veces la vida que perdiste."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 601878624563217
+    m_Localized: "Cuando un invasor te pega, tu pr\xF3ximo disparo suma 7 veces la vida que perdiste."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 601878624563218
+    m_Localized: Cuando el puesto se carga, una burbuja empuja 15 m a los invasores del anillo, salvo al Jefe.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 601878624563219
+    m_Localized: Cuando el puesto se carga, una burbuja empuja 20 m a los invasores del anillo, salvo al Jefe.
     m_Metadata:
       m_Items: []
   references:

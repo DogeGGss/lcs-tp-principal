@@ -13,8 +13,8 @@ MonoBehaviour:
   m_Name: LocalizationSettings
   m_EditorClassIdentifier: Unity.Localization::UnityEngine.Localization.Settings.LocalizationSettings
   m_StartupSelectors:
-  - rid: 5833451426052571136
-  - rid: 5833451426052571137
+  - rid: 5833451462949601437
+  - rid: 5833451462949601438
   m_AvailableLocales:
     rid: 5833451425944829955
   m_AssetDatabase:
@@ -192,10 +192,10 @@ MonoBehaviour:
         - default
         - d
         - 
-    - rid: 5833451426052571136
+    - rid: 5833451462949601437
       type: {class: SavedLanguageSelector, ns: , asm: Riftwalker}
       data: 
-    - rid: 5833451426052571137
+    - rid: 5833451462949601438
       type: {class: SpecificLocaleSelector, ns: UnityEngine.Localization.Settings, asm: Unity.Localization}
       data:
         m_LocaleId:
