@@ -16,6 +16,7 @@ using Img = UnityEngine.UI.Image;
 // con ConfirmHandler, confirmar no cierra enseguida: espera a que el servidor diga si se lo quedó (Accept) o si
 // otro llegó primero (Reject, "Ya lo eligió …").
 // Deathmatch (PersonajesDeathmatch): con soloAspecto, el personaje es solo el aspecto; la tarjeta no muestra habilidad.
+// Invasión (US 297, sin habilidades): igual, solo el aspecto, con su propio aviso (sin la habilidad ni su descripción).
 // Se arma por código con las medidas de una pantalla de 1920 x 1080, como la tienda y la selección de modo.
 public class CharacterSelectScreen : MonoBehaviour
 {
@@ -53,6 +54,7 @@ public class CharacterSelectScreen : MonoBehaviour
     private System.Action onConfirm, onCancel;
     private float timeLimit, openedAt;
     private bool soloAspecto;
+    private string avisoSinHabilidad = "character.no_dm_abilities";
     private int selected = -1, lastUsed = -1;
     private TextMeshProUGUI timerText, hintText;
     private Img confirmBg;
@@ -74,10 +76,12 @@ public class CharacterSelectScreen : MonoBehaviour
     /// <summary>
     /// Abre la selección. eyebrow: texto chico arriba del título (por ejemplo "Modo Invasión · Normal").
     /// timeLimit: segundos para elegir (0 = sin límite). onCancel: null si no se puede volver.
-    /// soloAspecto: el personaje no trae habilidad (Deathmatch): la tarjeta lo dice en lugar de mostrar la habilidad.
+    /// soloAspecto: el personaje no trae habilidad (Deathmatch e Invasión): la tarjeta lo dice en lugar de mostrar la
+    /// habilidad y su descripción. avisoSinHabilidad: la clave del aviso de abajo (por defecto, el del Deathmatch).
     /// </summary>
     public static CharacterSelectScreen Show(TMP_FontAsset display, TMP_FontAsset label, TMP_FontAsset body, Sprite roundedSprite,
-        string eyebrow, float timeLimit, System.Action onConfirm, System.Action onCancel, bool soloAspecto = false)
+        string eyebrow, float timeLimit, System.Action onConfirm, System.Action onCancel, bool soloAspecto = false,
+        string avisoSinHabilidad = "character.no_dm_abilities")
     {
         if (CharacterRoster.All.Count == 0)
         {
@@ -106,6 +110,7 @@ public class CharacterSelectScreen : MonoBehaviour
         screen.onCancel = onCancel;
         screen.timeLimit = timeLimit;
         screen.soloAspecto = soloAspecto;
+        screen.avisoSinHabilidad = avisoSinHabilidad;
         screen.Build((RectTransform)go.transform, eyebrow);
         return screen;
     }
@@ -209,19 +214,24 @@ public class CharacterSelectScreen : MonoBehaviour
 
         // Habilidad (en Deathmatch no hay: es solo el aspecto)
         AbilityData ability = soloAspecto ? null : data.ability;
-        RectTransform icon = Place(Node("Icono", bodyRect), 22f, y, 48f, 48f);
-        Image(icon, rounded, Over(WithAlpha(data.color, 0.25f), Rgb(12, 14, 19)), 6f);
-        if (ability != null && ability.icon != null)
+        // Solo el aspecto: sin el cuadrado del ícono (no hay habilidad que mostrar), y el texto arranca en el margen.
+        float textoX = soloAspecto ? 22f : 84f;
+        if (!soloAspecto)
         {
-            Img pic = Image(Place(Node("Imagen", icon), 8f, 8f, 32f, 32f), ability.icon, Ink);
-            pic.preserveAspect = true;
+            RectTransform icon = Place(Node("Icono", bodyRect), 22f, y, 48f, 48f);
+            Image(icon, rounded, Over(WithAlpha(data.color, 0.25f), Rgb(12, 14, 19)), 6f);
+            if (ability != null && ability.icon != null)
+            {
+                Img pic = Image(Place(Node("Imagen", icon), 8f, 8f, 32f, 32f), ability.icon, Ink);
+                pic.preserveAspect = true;
+            }
         }
-        TMP_Text abilityLabel = Text(Place(Node("Habilidad", bodyRect), 84f, y - 2f, w - 106f, 28f), labelFont, 21f, Ink, TextAlignmentOptions.MidlineLeft, 4f, true);
-        TMP_Text cooldownLabel = Text(Place(Node("Recarga", bodyRect), 84f, y + 26f, w - 106f, 22f), labelFont, 15f, Mute, TextAlignmentOptions.MidlineLeft, 8f, true);
+        TMP_Text abilityLabel = Text(Place(Node("Habilidad", bodyRect), textoX, y - 2f, w - textoX - 22f, 28f), labelFont, 21f, Ink, TextAlignmentOptions.MidlineLeft, 4f, true);
+        TMP_Text cooldownLabel = Text(Place(Node("Recarga", bodyRect), textoX, y + 26f, w - textoX - 22f, 22f), labelFont, 15f, Mute, TextAlignmentOptions.MidlineLeft, 8f, true);
         System.Action refreshAbility = () =>
         {
             abilityLabel.text = soloAspecto ? L10n.T("character.appearance_only") : ability != null ? ability.displayName : L10n.T("character.no_ability");
-            cooldownLabel.text = soloAspecto ? L10n.T("character.no_dm_abilities")
+            cooldownLabel.text = soloAspecto ? L10n.T(avisoSinHabilidad)
                 : ability != null ? L10n.T("character.cooldown", KeyBindings.Label(GameAction.Habilidad), Number(ability.cooldown)) : "";
         };
         refreshLocalizedCards.Add(refreshAbility);

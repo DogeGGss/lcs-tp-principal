@@ -33,6 +33,10 @@
       "text": "En Deathmatch no hay habilidades"
     },
     {
+      "key": "character.no_invasion_abilities",
+      "text": "En Invasión no hay habilidades"
+    },
+    {
       "key": "character.cooldown",
       "text": "{0} · Recarga {1} s"
     },

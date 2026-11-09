@@ -33,6 +33,10 @@
       "text": "Abilities are disabled in Deathmatch"
     },
     {
+      "key": "character.no_invasion_abilities",
+      "text": "Abilities are disabled in Invasion"
+    },
+    {
       "key": "character.cooldown",
       "text": "{0} · Cooldown {1} s"
     },
