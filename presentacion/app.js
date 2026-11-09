@@ -17,17 +17,45 @@ function investment(){
 }
 // f(x): lo que queda por mes según los jugadores que pagan, con las zonas (pierde, se sostiene, va bien) y los escenarios.
 function payers(){
- const F=D.economics.fx,W=900,H=360,L=78,R=24,T=18,B=46,xmax=10000,ymin=-16000,ymax=35000;
- const X=x=>L+(W-L-R)*x/xmax,Y=v=>T+(H-T-B)*(ymax-v)/(ymax-ymin),k=v=>(v/1000).toLocaleString('es-AR')+' mil';
- const zona=(a,b,c)=>`<rect class="fx-zona ${c}" x="${X(a)}" y="${T}" width="${X(b)-X(a)}" height="${H-T-B}"/>`;
- const ys=[-10000,0,10000,20000,30000].map(v=>`<line class="grilla${v===0?' cero':''}" x1="${L}" x2="${W-R}" y1="${Y(v)}" y2="${Y(v)}"/><text class="eje" x="${L-10}" y="${Y(v)+6}" text-anchor="end">${v===0?'US$ 0':(v<0?'−':'')+k(Math.abs(v))}</text>`).join('');
- const xs=[0,2000,4000,6000,8000,10000].map(v=>`<text class="eje" x="${X(v)}" y="${H-B+26}" text-anchor="middle">${num(v)}</text>`).join('');
- const linea=`<polyline class="fx-linea" points="${F.points.map(([x,v])=>X(x)+','+Y(v)).join(' ')}"/>`;
- const punto=(x,v,t,c,a,dy=-12)=>`<circle class="fx-punto ${c}" cx="${X(x)}" cy="${Y(v)}" r="9"/><text class="fx-txt" x="${X(x)+(a==='end'?-14:14)}" y="${Y(v)+dy}" text-anchor="${a||'start'}">${t}</text>`;
- const e=F.example,[p,m,o]=F.marks;
- const svg=`<svg class="fx-chart" viewBox="0 0 ${W} ${H}" role="img" aria-label="Lo que queda por mes según los jugadores que pagan: pierde hasta ${num(F.breakEven)}, se sostiene hasta ${num(F.full)} y va bien desde ahí">${zona(0,F.breakEven,'mal')}${zona(F.breakEven,F.full,'justo')}${zona(F.full,xmax,'bien')}${ys}${xs}<text class="eje" x="${(L+W-R)/2}" y="${H-4}" text-anchor="middle">jugadores que pagan en el mes</text>${linea}${punto(e.payers,e.result,'20.000 jugadores al 1 %','ej','start',30)}${punto(p.payers,p.result,p.name,'neg','start',-16)}${punto(m.payers,m.result,m.name,'pos','start',32)}${punto(o.payers,Math.min(o.result,ymax-1500),o.name+' ↑ '+money(o.result,true),'pos','end')}</svg>`;
- return `<div class="fx">${svg}<div class="fx-zonas"><div class="mal"><b>Va mal</b><span>menos de ${num(F.breakEven)} pagadores: pierde plata</span></div><div class="justo"><b>Se sostiene</b><span>de ${num(F.breakEven)} a ${num(F.full)}: no pierde con el equipo de hoy</span></div><div class="bien"><b>Va bien</b><span>${num(F.full)} o más, 3 meses seguidos: también se paga el equipo completo</span></div><p class="footnote">Con el gasto por pagador del promedio (US$&nbsp;${dec(F.arppu)}), después de Steam, la retención y el impuesto. 20.000 jugadores de los que paga el 1 % son ${num(e.payers)} pagadores: ${money(e.result,true)} por mes.</p></div></div>`;
+ const F=D.economics.fx,W=900,H=390,L=84,R=24,T=40,B=56,xmax=4000,ymin=-10000,ymax=10000;
+ const X=x=>L+(W-L-R)*x/xmax,Y=v=>T+(H-T-B)*(ymax-v)/(ymax-ymin);
+ const plata=v=>(v<0?'−':v>0?'+':'')+'US$ '+num(Math.abs(Math.round(v)));
+ const eje=v=>v===0?'US$ 0':(v<0?'−':'+')+num(Math.abs(v)/1000)+' mil';
+ const zona=(a,b,c,t)=>`<rect class="fx-zona ${c}" x="${X(a)}" y="${T}" width="${X(b)-X(a)}" height="${H-T-B}"/><text class="fx-zona-txt ${c}" x="${(X(a)+X(b))/2}" y="${T+24}" text-anchor="middle">${t}</text>`;
+ const ys=[-10000,-5000,0,5000,10000].map(v=>`<line class="grilla${v===0?' cero':''}" x1="${L}" x2="${W-R}" y1="${Y(v)}" y2="${Y(v)}"/><text class="eje" x="${L-12}" y="${Y(v)+5}" text-anchor="end">${eje(v)}</text>`).join('');
+ const xs=[0,500,1000,1500,2000,2500,3000,3500,4000].map(v=>`<line class="tick" x1="${X(v)}" x2="${X(v)}" y1="${H-B}" y2="${H-B+6}"/><text class="eje" x="${X(v)}" y="${H-B+26}" text-anchor="middle">${num(v)}</text>`).join('');
+ const umbral=(x,t)=>`<line class="fx-umbral" x1="${X(x)}" x2="${X(x)}" y1="${T}" y2="${H-B}"/><text class="fx-umbral-txt" x="${X(x)}" y="${T-10}" text-anchor="middle">${t}</text>`;
+ const linea=`<polyline class="fx-linea" points="${F.points.map(([x,v])=>X(x).toFixed(1)+','+Y(v).toFixed(1)).join(' ')}"/>`;
+ const punto=(x,v,c)=>`<circle class="fx-punto ${c}" cx="${X(x)}" cy="${Y(v)}" r="7"/>`;
+ const e=F.example,m=F.average;
+ const svg=`<svg class="fx-chart" id="fxChart" viewBox="0 0 ${W} ${H}" role="img" aria-label="Lo que queda por mes según los jugadores que pagan, de ${plata(F.points[0][1])} con 0 a ${plata(F.points[F.points.length-1][1])} con ${num(xmax)}: pierde hasta ${num(Math.round(F.breakEven))} pagadores, se sostiene hasta ${num(Math.round(F.full))} y va bien desde ahí">
+  ${zona(0,F.breakEven,'mal','Pierde')}${zona(F.breakEven,F.full,'justo','Se sostiene')}${zona(F.full,xmax,'bien','Va bien')}${ys}${xs}
+  ${umbral(F.breakEven,num(Math.round(F.breakEven)))}${umbral(F.full,num(Math.round(F.full)))}
+  <text class="eje titulo" x="${(L+W-R)/2}" y="${H-6}" text-anchor="middle">Jugadores que pagan en el mes</text>
+  ${linea}${punto(e.payers,e.result,'ej')}${punto(F.breakEven,0,'cero')}${punto(m.payers,m.result,'pos')}
+  <text class="fx-txt" x="${X(e.payers)+14}" y="${Y(e.result)+28}">20.000 jugadores al 1 %: ${num(e.payers)} pagan · ${plata(e.result)}</text>
+  <text class="fx-txt" x="${X(m.payers)}" y="${Y(m.result)-18}" text-anchor="middle">Promedio: ${num(m.payers)} pagan · ${plata(m.result)}</text>
+  <g class="fx-hover" id="fxHover" visibility="hidden"><line id="fxHoverLine" y1="${T}" y2="${H-B}"/><circle id="fxHoverDot" r="6"/><rect id="fxHoverBox" rx="6" height="30"/><text id="fxHoverTxt"></text></g>
+  <rect class="fx-hit" x="${L}" y="${T}" width="${W-L-R}" height="${H-T-B}" data-fx="${L},${W-R},${xmax}"/></svg>`;
+ const fuera=F.outside.map(o=>`${o.name}: ${num(o.payers)} pagan, a US$&nbsp;${dec(o.arppu)} cada uno: ${plata(o.result)} por mes`).join('. ');
+ return `<div class="fx">${svg}<div class="fx-zonas"><div class="mal"><b>Va mal</b><span>menos de ${num(Math.round(F.breakEven))} pagadores: pierde plata</span></div><div class="justo"><b>Se sostiene</b><span>de ${num(Math.round(F.breakEven))} a ${num(Math.round(F.full))}: no pierde con el equipo de hoy</span></div><div class="bien"><b>Va bien</b><span>${num(Math.round(F.full))} o más, 3 meses seguidos: también se paga el equipo completo</span></div><p class="footnote">Lo que queda después de Steam, la retención de EE.UU., los gastos y el impuesto, con el gasto por pagador del promedio (US$&nbsp;${dec(F.arppu)}). Los escalones son cambios de plan de Photon. ${fuera}.</p></div></div>`;
 }
+// Valor de la f(x) bajo el mouse: la línea vertical, el punto sobre la curva y el número.
+document.addEventListener('pointermove',e=>{
+ const hit=e.target.closest&&e.target.closest('.fx-hit'),g=document.getElementById('fxHover');
+ if(!g)return;if(!hit){g.setAttribute('visibility','hidden');return}
+ const svg=hit.ownerSVGElement,pt=svg.createSVGPoint();pt.x=e.clientX;pt.y=e.clientY;const p=pt.matrixTransform(svg.getScreenCTM().inverse());
+ const [l,r,xmax]=hit.dataset.fx.split(',').map(Number),F=D.economics.fx,x=Math.max(0,Math.min(xmax,(p.x-l)/(r-l)*xmax));
+ const [px,pv]=F.points.reduce((a,q)=>Math.abs(q[0]-x)<Math.abs(a[0]-x)?q:a);
+ const W=900,H=390,L=84,R=24,T=40,B=56,X=v=>L+(W-L-R)*v/xmax,Y=v=>T+(H-T-B)*(10000-v)/20000;
+ const t=`${num(px)} pagan · ${(pv<0?'−':pv>0?'+':'')}US$ ${num(Math.abs(pv))} por mes`;
+ const txt=document.getElementById('fxHoverTxt'),box=document.getElementById('fxHoverBox');
+ document.getElementById('fxHoverLine').setAttribute('x1',X(px));document.getElementById('fxHoverLine').setAttribute('x2',X(px));
+ const dot=document.getElementById('fxHoverDot');dot.setAttribute('cx',X(px));dot.setAttribute('cy',Y(pv));
+ txt.textContent=t;const w=t.length*9+20,bx=Math.min(Math.max(X(px)-w/2,L),W-R-w),by=Math.max(T+34,Y(pv)-48);
+ box.setAttribute('x',bx);box.setAttribute('y',by);box.setAttribute('width',w);txt.setAttribute('x',bx+10);txt.setAttribute('y',by+21);
+ g.setAttribute('visibility','visible');
+});
 // Si no funciona: los puntos de control (en jugadores que pagan) y lo máximo que pierde el inversor.
 function guard(){
  const G=D.economics.guard;
