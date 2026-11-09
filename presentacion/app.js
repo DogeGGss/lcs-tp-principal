@@ -128,7 +128,7 @@ const questionTopics = [
 ];
 const proofImages = '../pruebas/idiomas/2026-11-08/';
 const invasionView = proofImages + 'US-348_CA1_Invasion_HUD_y_oleada.png';
-let campusPhotos = [invasionView];
+let campusPhotos = Array.from({ length: 11 }, (_, index) => `media/campus/campus-${index + 1}.jpg`);
 let campusPhoto = 0;
 function mapPhoto() {
   const picture = $('#campusPicture');
