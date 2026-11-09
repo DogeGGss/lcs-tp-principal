@@ -65,7 +65,7 @@ public class CartaDeInvasion
 
     // Con false no salen (ni en el puesto ni en los trucos) las cartas que se prueban en el Sprint 5 (F29), para las
     // entregas en las que todavía no entran.
-    public static readonly bool CartasDelSprint5 = true;
+    public static readonly bool CartasDelSprint5 = false; // Entrega del Sprint 4: las del Sprint 5 no entran
     private static readonly string[] DelSprint5 =
     {
         "Cargador gemelo", "Sin intervalo", "Campo minado", "Bala compacta", "Descarga rápida", "Acople", "Tiro de reserva",

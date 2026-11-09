@@ -23,30 +23,31 @@ public class NotaPO : MonoBehaviour
     [SerializeField] private CanvasGroup transitionOverlay;
 
     [Header("Textos")]
-    [SerializeField] private string eyebrow = "Nota para el PO · Sprint 1";
+    [SerializeField] private string eyebrow = "Nota para el PO · Sprint 4";
     [SerializeField] private string title = "Hola, Amin";
     [TextArea(2, 4)]
     [SerializeField] private string intro =
-        "Esta es la entrega del Sprint 1 de Project Riftwalker. Para que sepas qué probar, acá va lo que ya funciona y lo que todavía falta implementar.";
+        "Esta es la entrega del Sprint 4 de Project Riftwalker: el modo Invasión con sus invasores, el Jefe y las cartas, el mapa de la universidad, las cuentas con buscar partida, y las animaciones y los emotes.";
     [SerializeField] private string worksTitle = "Lo que funciona";
     [Tooltip("Un punto por renglón. Lo que va antes de \":\" sale resaltado.")]
     [TextArea(5, 12)]
     [SerializeField] private string works =
-        "Movimiento: caminar, correr, saltar y agacharse, con gravedad, colisiones y reaparición si caés del mapa.\n" +
-        "Armas: pistola La Porteña, fusil Mitre y cuchillo. Daño por zona (cabeza, cuerpo y piernas) y por distancia, dispersión, retroceso, recarga y marcas de bala en las paredes.\n" +
-        "Tienda: en la fase de compra y dentro de la zona de compra se puede comprar, vender y deshacer compras. Los escudos protegen de verdad.\n" +
-        "HUD: vida, escudo, arma y munición, mira y marcador de impacto. La habilidad muestra su tiempo de recarga.\n" +
-        "Menús: principal con música, opciones de video, sonido y controles, nombre de jugador, créditos y pausa (seguir, reiniciar, opciones y salir).";
+        "Invasión: oleadas de invasores en el mapa de la uni, con 3 dificultades. No hay tienda: matando se carga el puesto de suministros y ahí se elige 1 de 3 entre armas y cartas. Cada 10 oleadas viene un Jefe que vuela, tira veneno y se enfurece a la mitad de la vida.\n" +
+        "Invasores: común, rápido, tanque, alfas y los Watchers que tiran de lejos. Salen de portales, te detectan, te persiguen y se desintegran al morir.\n" +
+        "Trucos de Invasión: en la partida, F10 abre un menú con vida y balas infinitas, noclip, matar de un tiro, puntos, ir a cualquier oleada, cualquier arma y cualquier carta.\n" +
+        "Mapa de la universidad: de noche, con los módulos 1, 7 y 9, los centrales, la garita, el TUM y la ADIUNGS, hechos con fotos del campus.\n" +
+        "Cuentas: se crean en el launcher; se puede iniciar y cerrar sesión, recuperar la contraseña y borrar la cuenta. Las monedas, el perfil y el ranking van con la cuenta.\n" +
+        "Buscar partida: se elige el modo, se busca y la partida arranca sola.\n" +
+        "Animaciones y emotes: todas las armas, el cuchillo, las granadas y la muerte, en primera y en tercera persona, y una rueda de emotes con bailes y cámara en tercera persona.\n" +
+        "Estadísticas de Invasión: en el perfil.";
     [SerializeField] private string missingTitle = "Lo que todavía falta";
     [Tooltip("Un punto por renglón. Lo que va antes de \":\" sale resaltado.")]
     [TextArea(5, 12)]
     [SerializeField] private string missing =
-        "Resto de las armas: la tienda muestra todas, pero por ahora solo se usan la pistola La Porteña, el Mitre y el cuchillo. Las demás se pueden comprar, pero todavía no se pueden usar.\n" +
-        "Granadas: se compran, pero todavía no se pueden tirar.\n" +
-        "Habilidad: el Silbato carga y se ve en el HUD, pero todavía no tiene efecto.\n" +
-        "Modos y multijugador: Táctico y Deathmatch muestran la sala, pero falta la conexión online. Zombie todavía no tiene zombis: Jugar abre el mapa de la universidad para recorrerlo con las armas, la tienda y el HUD.\n" +
-        "Logros: la pantalla está, pero todavía no tiene logros.\n" +
-        "Mapas y rivales: Pruebas y Pruebas 2 abren dos mapas de prueba, temporales, para mostrar la jugabilidad. En Pruebas aparecen enemigos que te persiguen y se pueden matar, pero todavía no atacan.";
+        "Invasión de a varios: por ahora se juega solo.\n" +
+        "Más cartas: 16 cartas nuevas y las legendarias entran en el Sprint 5.\n" +
+        "Idiomas: el juego está en español; el inglés entra en el Sprint 5.\n" +
+        "Resto del campus: biblioteca, módulos 10, 2A y 3, auditorio y los demás edificios se ven sin detalle.";
 
     [Header("Tipografías (las mismas de la tienda)")]
     [SerializeField] private TMP_FontAsset displayFont; // Barlow Condensed Bold

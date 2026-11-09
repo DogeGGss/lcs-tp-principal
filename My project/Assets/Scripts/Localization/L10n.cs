@@ -21,7 +21,7 @@ public static class L10n
     public static event Action LanguageChanged;
     // F30 (Idiomas): con false el juego queda en español, sin el selector (Opciones y pausa) y sin leer ni guardar el
     // idioma elegido (ni el que comparte con el launcher). Para las entregas en las que el inglés todavía no entra.
-    public static readonly bool IdiomasDisponibles = true;
+    public static readonly bool IdiomasDisponibles = false; // Entrega del Sprint 4: el inglés entra en el Sprint 5
     /// <summary>El idioma con el que arranca el juego: el guardado o, si no hay idiomas, el español.</summary>
     public static string IdiomaGuardado => IdiomasDisponibles ? LanguagePreference.Load(PreferencePath) : TranslationCatalog.DefaultLanguage;
     // Los tests (ModoPruebas) usan su propio archivo, así no cambian el idioma elegido por el jugador.
