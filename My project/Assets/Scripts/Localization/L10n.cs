@@ -19,6 +19,11 @@ public static class L10n
     private static string startupLanguage;
     private static bool subscribed;
     public static event Action LanguageChanged;
+    // F30 (Idiomas): con false el juego queda en español, sin el selector (Opciones y pausa) y sin leer ni guardar el
+    // idioma elegido (ni el que comparte con el launcher). Para las entregas en las que el inglés todavía no entra.
+    public static readonly bool IdiomasDisponibles = true;
+    /// <summary>El idioma con el que arranca el juego: el guardado o, si no hay idiomas, el español.</summary>
+    public static string IdiomaGuardado => IdiomasDisponibles ? LanguagePreference.Load(PreferencePath) : TranslationCatalog.DefaultLanguage;
     // Los tests (ModoPruebas) usan su propio archivo, así no cambian el idioma elegido por el jugador.
     public static string PreferencePath => ModoPruebas.Activo
         ? Path.Combine(Path.GetTempPath(), "riftwalker-pruebas-" + LanguagePreference.FileName)
@@ -72,7 +77,7 @@ public static class L10n
         languages = manifest != null ? JsonUtility.FromJson<LocaleManifest>(manifest.text).locales : null;
         if (languages == null || languages.Length == 0)
             languages = new[] { new LocaleDefinition { code = "es", name = "Español" } };
-        startupLanguage = LanguagePreference.Load(PreferencePath);
+        startupLanguage = IdiomaGuardado;
         bool supported = false;
         foreach (var locale in languages)
         {
@@ -144,7 +149,7 @@ public static class L10n
         foreach (var language in languages)
         {
             if (!string.Equals(language.code, code, StringComparison.OrdinalIgnoreCase)) continue;
-            LanguagePreference.Save(PreferencePath, language.code);
+            if (IdiomasDisponibles) LanguagePreference.Save(PreferencePath, language.code);
             startupLanguage = language.code;
             var locale = LocalizationSettings.InitializationOperation.IsDone ? LocalizationSettings.AvailableLocales.GetLocale(language.code) : null;
             if (locale != null) LocalizationSettings.SelectedLocale = locale;

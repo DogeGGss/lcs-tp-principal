@@ -240,9 +240,16 @@ public class PuestoDeSuministros : MonoBehaviour
         return false;
     }
 
-    // Nada encima en 80 m (con un poco de ancho, para que la caja no roce un alero al caer).
-    private static bool CieloAbierto(Vector3 piso) =>
-        !Physics.SphereCast(piso + Vector3.up * 1.2f, 0.9f, Vector3.up, out RaycastHit _, 80f, Physics.DefaultRaycastLayers, QueryTriggerInteraction.Ignore);
+    // Nada encima en 80 m (con un poco de ancho, para que la caja no roce un alero al caer). También se mira desde
+    // arriba hacia abajo: los techos de malla no se ven desde adentro del edificio, así que solo con el rayo hacia
+    // arriba el puesto podía caer adentro de un edificio. Desde arriba, lo primero que se toca tiene que ser el piso.
+    private static bool CieloAbierto(Vector3 piso)
+    {
+        if (Physics.SphereCast(piso + Vector3.up * 1.2f, 0.9f, Vector3.up, out RaycastHit _, 80f, Physics.DefaultRaycastLayers, QueryTriggerInteraction.Ignore))
+            return false;
+        return !Physics.SphereCast(piso + Vector3.up * 80f, 0.9f, Vector3.down, out RaycastHit arriba, 78.3f, Physics.DefaultRaycastLayers, QueryTriggerInteraction.Ignore)
+            || arriba.point.y <= piso.y + 1.5f;
+    }
 
     private void BuscarLugares()
     {

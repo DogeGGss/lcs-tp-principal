@@ -14,7 +14,7 @@ public sealed class LanguageStartup : MonoBehaviour
             Debug.LogError("Localization initialization failed: " + LocalizationSettings.InitializationOperation.OperationException);
             yield break;
         }
-        L10n.SetLanguage(LanguagePreference.Load(L10n.PreferencePath));
+        L10n.SetLanguage(L10n.IdiomaGuardado);
         L10n.NotifyInitialized();
         Destroy(gameObject);
     }

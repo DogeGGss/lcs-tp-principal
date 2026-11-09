@@ -61,7 +61,17 @@ public class CartaDeInvasion
     private static List<CartaDeInvasion> todas;
 
     /// <summary>Todas las cartas que pueden salir en el puesto.</summary>
-    public static IReadOnlyList<CartaDeInvasion> Todas => todas ??= Armar();
+    public static IReadOnlyList<CartaDeInvasion> Todas => todas ??= Armar().FindAll(c => CartasDelSprint5 || System.Array.IndexOf(DelSprint5, c.nombre) < 0);
+
+    // Con false no salen (ni en el puesto ni en los trucos) las cartas que se prueban en el Sprint 5 (F29), para las
+    // entregas en las que todavía no entran.
+    public static readonly bool CartasDelSprint5 = true;
+    private static readonly string[] DelSprint5 =
+    {
+        "Cargador gemelo", "Sin intervalo", "Campo minado", "Bala compacta", "Descarga rápida", "Acople", "Tiro de reserva",
+        "Disparo concentrado", "Ráfaga creciente", "Mira abierta", "Carga adherente", "Remate", "Bronca", "Sin respaldo",
+        "Entrega inmediata", "Alimentación directa",
+    };
 
     private static List<CartaDeInvasion> Armar() => new List<CartaDeInvasion>
     {

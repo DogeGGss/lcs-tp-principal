@@ -7,5 +7,5 @@ using UnityEngine.Localization.Settings;
 public sealed class SavedLanguageSelector : IStartupLocaleSelector
 {
     public Locale GetStartupLocale(ILocalesProvider availableLocales) =>
-        availableLocales.GetLocale(LanguagePreference.Load(L10n.PreferencePath));
+        availableLocales.GetLocale(L10n.IdiomaGuardado);
 }

@@ -618,16 +618,38 @@ public class OleadasDeInvasion : MonoBehaviour
     // todavía no hay NavMesh (se está armando), el punto sirve tal cual: el enemigo se sube cuando esté listo.
     private static bool Conectado(Vector3 p, Vector3 jugador, out Vector3 sobreNavMesh)
     {
+        // Siempre en la planta baja: el punto se baja al piso más bajo de ese lugar, así un jugador en un segundo piso
+        // (el del bar) no hace que los portales se abran en techos o en otros pisos altos.
+        float suelo = Suelo(p);
+        p.y = suelo;
         sobreNavMesh = p;
         int tipo = NavMeshEnVivo.Listo ? NavMeshEnVivo.Tipo : NavMesh.GetSettingsByIndex(0).agentTypeID;
         var filtro = new NavMeshQueryFilter { agentTypeID = tipo, areaMask = NavMesh.AllAreas };
         if (!NavMeshEnVivo.Listo && !NavMesh.SamplePosition(jugador, out _, 5f, filtro)) return true; // sin NavMesh todavía
         if (!NavMesh.SamplePosition(p, out NavMeshHit aca, 2f, filtro)) return false;
+        if (aca.position.y > suelo + AlturaDePlantaBaja) return false;
         if (!NavMesh.SamplePosition(jugador, out NavMeshHit alla, 3f, filtro)) { sobreNavMesh = aca.position; return true; }
         var camino = new NavMeshPath();
         if (!NavMesh.CalculatePath(aca.position, alla.position, filtro, camino) || camino.status != NavMeshPathStatus.PathComplete) return false;
         sobreNavMesh = aca.position;
         return true;
+    }
+
+    // Cuánto más alto que el piso más bajo puede quedar un portal (escalones y desniveles de la planta baja).
+    private const float AlturaDePlantaBaja = 1.2f;
+
+    // La altura del piso más bajo en ese x/z: lo último que se toca bajando desde bien arriba (el suelo de afuera o la
+    // planta baja de un edificio). Sin nada debajo, la altura del punto.
+    private static float Suelo(Vector3 p)
+    {
+        RaycastHit[] golpes = Physics.RaycastAll(new Vector3(p.x, p.y + 200f, p.z), Vector3.down, 400f, Physics.DefaultRaycastLayers, QueryTriggerInteraction.Ignore);
+        float suelo = float.PositiveInfinity;
+        foreach (RaycastHit g in golpes)
+        {
+            if (g.collider.GetComponentInParent<Npc>() != null || g.collider.GetComponentInParent<PlayerMovement>() != null) continue;
+            if (g.point.y < suelo) suelo = g.point.y;
+        }
+        return float.IsPositiveInfinity(suelo) ? p.y : suelo;
     }
 
     private static Transform Jugador()
