@@ -146,7 +146,7 @@ function questionVisual(key) {
       const flag = (code,name) => `<figure><img alt="" src="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/${code}.svg"><figcaption>${name}</figcaption></figure>`;
       return `<div class="qa-languages"><h3>En el juego y el launcher</h3><div>${flag('1f1e6-1f1f7','Español')}${flag('1f1ec-1f1e7','English')}</div><h3>Previstos para el Sprint 5</h3><div>${flag('1f1e7-1f1f7','Português')}${flag('1f1eb-1f1f7','Français')}${flag('1f1ee-1f1f9','Italiano')}</div></div>`;
     }
-    case 'miras': return '<div class="aim-preview"><svg viewBox="0 0 100 100" aria-label="Vista previa de la mira"><g stroke="currentColor" stroke-width="3"><path id="aimLines" d="M50 28v13 M50 59v13 M28 50h13 M59 50h13"/></g><circle id="aimDot" cx="50" cy="50" r="3" fill="currentColor" visibility="hidden"/></svg></div><div class="qa-actions"><button data-aim="cross" aria-pressed="true">Cruz</button><button data-aim="dot" aria-pressed="false">Punto</button><button data-aim="both" aria-pressed="false">Cruz y punto</button><label>Color <input id="aimColor" type="color" value="#ffffff"></label></div>';
+    case 'miras': return '<img class="qa-picture" style="height:auto;max-height:70dvh;object-fit:contain" src="media/mira-opciones.png" alt="Opciones de mira con forma, tamaño, color y vista previa sobre fondo claro y oscuro">';
     case 'invasion': return `<div class="qa-run"><figure><img src="${invasionView}" alt="Oleada en el campus"><figcaption>Sobreviví a la oleada</figcaption></figure><figure><img src="${proofImages}US-348_CA2_Invasion_eleccion_de_cartas.png" alt="Tres recompensas del puesto"><figcaption>Cargá el puesto y elegí 1 de 3</figcaption></figure></div><p class="qa-caption">Cada elección cambia tus armas o mejoras. Si caés, empieza una nueva partida.</p>`;
     case 'cuenta': return '<div class="qa-account"><div><strong>Crear cuenta</strong><span>Mail y contraseña</span></div><div><strong>Ingresar con Steam</strong><span>Acceso previsto</span></div></div><p class="qa-caption">Tu perfil, logros y monedas te acompañan al cambiar de PC.</p>';
   }
@@ -277,11 +277,6 @@ document.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)r
  if(d.go!==undefined){$('#indexDialog').close();go(+d.go)}
 
  if(d.photo){campusPhoto=(campusPhoto+Number(d.photo)+campusPhotos.length)%campusPhotos.length;mapPhoto()}
- if(d.aim){
-   $('#aimDot').setAttribute('visibility',d.aim==='cross'?'hidden':'visible');
-   $('#aimLines').setAttribute('visibility',d.aim==='dot'?'hidden':'visible');
-   for(const button of document.querySelectorAll('[data-aim]'))button.setAttribute('aria-pressed',String(button===b));
- }
  if(d.question!==undefined)openQuestion(Number(d.question));
  if(d.demo)openDemo(d.demo);
  if(d.trailer!==undefined){
@@ -292,7 +287,6 @@ document.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)r
  if(d.exitTrailer!==undefined)closeTrailer();
 });
 document.addEventListener('input',event=>{
-  if(event.target.id==='aimColor')$('.aim-preview').style.color=event.target.value;
   if(event.target.id==='mapFiles'&&event.target.files.length){
     const files=Array.from(event.target.files).filter(file=>file.type.startsWith('image/'));
     if(!files.length)return;
