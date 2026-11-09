@@ -205,3 +205,4 @@ body.trailer-expanded .trailer-exit { display: block; position: absolute; top: 1
 .fx-zonas{display:grid;gap:12px}.fx-zonas>div{border-left:6px solid;border-radius:6px;background:var(--panel);padding:14px 18px}.fx-zonas b{display:block;font:700 30px Display,sans-serif}.fx-zonas span{display:block;color:var(--muted);font-size:19px;margin-top:4px;line-height:1.3}
 .fx-zonas .mal{border-color:var(--red)}.fx-zonas .mal b{color:var(--red)}.fx-zonas .justo{border-color:var(--accent)}.fx-zonas .justo b{color:var(--accent)}.fx-zonas .bien{border-color:var(--green)}.fx-zonas .bien b{color:var(--green)}.fx-zonas .footnote{margin-top:4px}
 @media(max-width:1000px){.fx{grid-template-columns:1fr}}
+.fx-nota{fill:var(--muted);font:700 14px Barlow,sans-serif;paint-order:stroke;stroke:var(--panel);stroke-width:4px}
