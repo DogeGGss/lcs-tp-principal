@@ -187,3 +187,6 @@ body.trailer-expanded .trailer-exit { display: block; position: absolute; top: 1
 .qa-account span { display:block; margin-top:8px; color:var(--muted); }
 .aim-preview { background:linear-gradient(#131c2755,#131c2755),url('../steam/assets/tactico-vista.jpg') center/cover; display:grid;place-items:center;height:48dvh;color:white; }
 .aim-preview svg { width:140px; filter:drop-shadow(0 1px 2px black); }
+/* Sprint 4: cuatro tarjetas en la diapositiva de avance */
+.grid.avance{grid-template-columns:repeat(4,1fr)}.avance h3{font-size:26px}.avance li{font-size:17px}main .avance h3{font-size:22px}main .avance li{font-size:15px}
+@media(max-width:1000px){.grid.avance{grid-template-columns:repeat(2,1fr)}}@media(max-width:600px){.grid.avance{grid-template-columns:1fr}}
