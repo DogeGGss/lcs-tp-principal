@@ -190,3 +190,5 @@ body.trailer-expanded .trailer-exit { display: block; position: absolute; top: 1
 /* Sprint 4: cuatro tarjetas en la diapositiva de avance */
 .grid.avance{grid-template-columns:repeat(4,1fr)}.avance h3{font-size:26px}.avance li{font-size:17px}main .avance h3{font-size:22px}main .avance li{font-size:15px}
 @media(max-width:1000px){.grid.avance{grid-template-columns:repeat(2,1fr)}}@media(max-width:600px){.grid.avance{grid-template-columns:1fr}}
+
+.grid.metricas{grid-template-columns:repeat(4,1fr)}.metricas .metric-number{font-size:64px}.metricas .card p{font-size:19px}.metricas .legend{font-size:16px;gap:12px}@media(max-width:1000px){.grid.metricas{grid-template-columns:repeat(2,1fr)}}@media(max-width:600px){.grid.metricas{grid-template-columns:1fr}}
