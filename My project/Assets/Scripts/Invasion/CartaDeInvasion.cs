@@ -13,6 +13,9 @@ public class CartaDeInvasion
     public string nombre;
     public RarezaDeCarta rareza;
     public string efecto;
+    /// <summary>Si se acumula y el efecto cambia: el texto cuando sale por segunda y por tercera vez (con lo que da en
+    /// total), así se ve que mejora. null: siempre el mismo texto.</summary>
+    public string[] efectoRepetida;
     public string rindeCon;
     /// <summary>CA5: de una sola vez (como Logística): una vez elegida no vuelve a salir. Las demás se acumulan hasta
     /// MaximoDeVeces.</summary>
@@ -89,43 +92,50 @@ public class CartaDeInvasion
         new CartaDeInvasion { nombre = "Mira abierta", rareza = RarezaDeCarta.Rara, rindeCon = "Francotirador", unaVez = true,
             efecto = "Sin apuntar, dispara sin dispersión y al doble de cadencia. Apuntando, dispara normal.", aplicar = EfectosDeCartas.EnElJuego },
         new CartaDeInvasion { nombre = "Sin intervalo", rareza = RarezaDeCarta.Rara, rindeCon = "Fusil de ráfaga",
-            efecto = "Matar saca la pausa entre las próximas 3 ráfagas.", aplicar = EfectosDeCartas.EnElJuego },
+            efecto = "Matar saca la pausa entre las próximas 3 ráfagas.", efectoRepetida = new[] { "Matar saca la pausa entre las próximas 5 ráfagas.", "Matar saca la pausa entre las próximas 7 ráfagas." }, aplicar = EfectosDeCartas.EnElJuego },
         new CartaDeInvasion { nombre = "Ráfaga creciente", rareza = RarezaDeCarta.Rara, rindeCon = "Fusil de ráfaga",
-            efecto = "Cada baja le suma una bala a las ráfagas, hasta 6. Al recargar vuelven a 3.", aplicar = EfectosDeCartas.EnElJuego },
+            efecto = "Cada baja le suma una bala a las ráfagas, hasta 6. Al recargar vuelven a 3.", efectoRepetida = new[] { "Cada baja le suma una bala a las ráfagas, hasta 8. Al recargar vuelven a 3.", "Cada baja le suma una bala a las ráfagas, hasta 10. Al recargar vuelven a 3." }, aplicar = EfectosDeCartas.EnElJuego },
         new CartaDeInvasion { nombre = "Campo minado", rareza = RarezaDeCarta.Epica, rindeCon = "Gran Capitán",
-            efecto = "Las granadas que tocan el piso quedan como minas (hasta 5).", aplicar = EfectosDeCartas.EnElJuego },
+            efecto = "Las granadas que tocan el piso quedan como minas (hasta 5).", efectoRepetida = new[] { "Las granadas que tocan el piso quedan como minas (hasta 7).", "Las granadas que tocan el piso quedan como minas (hasta 9)." }, aplicar = EfectosDeCartas.EnElJuego },
         // Las de munición.
         new CartaDeInvasion { nombre = "Logística", rareza = RarezaDeCarta.Rara, rindeCon = "Todas", unaVez = true,
             efecto = "Desde ahora, los puestos recargan toda la munición en vez de la mitad.", aplicar = EfectosDeCartas.EnElJuego }, // US 314: EleccionDeInvasion.Abrir
         new CartaDeInvasion { nombre = "Mochila", rareza = RarezaDeCarta.Comun, rindeCon = "Todas",
-            efecto = "40 % más de reserva en las dos armas.", aplicar = EfectosDeCartas.Mochila },
+            efecto = "40 % más de reserva en las dos armas.", efectoRepetida = new[] { "80 % más de reserva en las dos armas (40 % más que ahora).", "120 % más de reserva en las dos armas (40 % más que ahora)." }, aplicar = EfectosDeCartas.Mochila },
         new CartaDeInvasion { nombre = "Reciclador", rareza = RarezaDeCarta.Rara, rindeCon = "Todas",
-            efecto = "Cada baja a la cabeza devuelve 5 balas al cargador.", aplicar = EfectosDeCartas.EnElJuego },
+            efecto = "Cada baja a la cabeza devuelve 5 balas al cargador.", efectoRepetida = new[] { "Cada baja a la cabeza devuelve 10 balas al cargador.", "Cada baja a la cabeza devuelve 15 balas al cargador." }, aplicar = EfectosDeCartas.EnElJuego },
         new CartaDeInvasion { nombre = "Filo", rareza = RarezaDeCarta.Comun, rindeCon = "Cuchillo", unaVez = true,
             efecto = "Matar con el cuchillo recarga la última arma que tuviste en la mano.", aplicar = EfectosDeCartas.EnElJuego },
         new CartaDeInvasion { nombre = "Carroñero", rareza = RarezaDeCarta.Rara, rindeCon = "Todas",
-            efecto = "1 de cada 5 invasores suelta un cargador al morir.", aplicar = EfectosDeCartas.EnElJuego },
+            efecto = "1 de cada 5 invasores suelta un cargador al morir.", efectoRepetida = new[] { "1 de cada 4 invasores suelta un cargador al morir.", "1 de cada 3 invasores suelta un cargador al morir." }, aplicar = EfectosDeCartas.EnElJuego },
         // US 319 a 334 (la segunda tanda): se suman al catálogo a medida que tienen su efecto.
         new CartaDeInvasion { nombre = "Remate", rareza = RarezaDeCarta.Comun, rindeCon = "Cuchillo",
-            efecto = "El cuchillo mata de un golpe a los invasores con 25 % de vida o menos (salvo al Jefe).", aplicar = EfectosDeCartas.EnElJuego },
+            efecto = "El cuchillo mata de un golpe a los invasores con 25 % de vida o menos (salvo al Jefe).", efectoRepetida = new[] { "El cuchillo mata de un golpe a los invasores con 30 % de vida o menos (salvo al Jefe).", "El cuchillo mata de un golpe a los invasores con 35 % de vida o menos (salvo al Jefe)." }, aplicar = EfectosDeCartas.EnElJuego },
         new CartaDeInvasion { nombre = "Filo voraz", rareza = RarezaDeCarta.Rara, rindeCon = "Cuchillo",
-            efecto = "Cada cuchillazo cura lo mismo que el daño que hace, hasta 25 de vida por golpe.", aplicar = EfectosDeCartas.EnElJuego },
+            efecto = "Cada cuchillazo cura lo mismo que el daño que hace, hasta 25 de vida por golpe.", efectoRepetida = new[] { "Cada cuchillazo cura lo mismo que el daño que hace, hasta 35 de vida por golpe.", "Cada cuchillazo cura lo mismo que el daño que hace, hasta 45 de vida por golpe." }, aplicar = EfectosDeCartas.EnElJuego },
         new CartaDeInvasion { nombre = "Reserva lista", rareza = RarezaDeCarta.Rara, rindeCon = "Todas", unaVez = true,
             efecto = "El arma guardada se recarga sola desde su reserva después de 2 s.", aplicar = EfectosDeCartas.EnElJuego },
         new CartaDeInvasion { nombre = "Bronca", rareza = RarezaDeCarta.Comun, rindeCon = "Todas",
-            efecto = "Cuando un invasor te pega, tu próximo disparo suma 5 veces la vida que perdiste.", aplicar = EfectosDeCartas.EnElJuego },
+            efecto = "Cuando un invasor te pega, tu próximo disparo suma 5 veces la vida que perdiste.", efectoRepetida = new[] { "Cuando un invasor te pega, tu próximo disparo suma 6 veces la vida que perdiste.", "Cuando un invasor te pega, tu próximo disparo suma 7 veces la vida que perdiste." }, aplicar = EfectosDeCartas.EnElJuego },
         new CartaDeInvasion { nombre = "Alimentación directa", rareza = RarezaDeCarta.Legendaria, rindeCon = "Todas", unaVez = true,
             efecto = "El cargador y la reserva son un solo depósito: no recargás nunca, hasta que se acaban las balas.", aplicar = EfectosDeCartas.EnElJuego },
         new CartaDeInvasion { nombre = "Entrega inmediata", rareza = RarezaDeCarta.Epica, rindeCon = "Todas", unaVez = true,
             efecto = "La elección del puesto se abre apenas se carga, sin esperar a que termine la oleada.", aplicar = EfectosDeCartas.EnElJuego },
         new CartaDeInvasion { nombre = "Despeje", rareza = RarezaDeCarta.Comun, rindeCon = "Todas",
-            efecto = "Cuando el puesto se carga, una burbuja empuja 10 m a los invasores del anillo, salvo al Jefe.", aplicar = EfectosDeCartas.EnElJuego },
+            efecto = "Cuando el puesto se carga, una burbuja empuja 10 m a los invasores del anillo, salvo al Jefe.", efectoRepetida = new[] { "Cuando el puesto se carga, una burbuja empuja 15 m a los invasores del anillo, salvo al Jefe.", "Cuando el puesto se carga, una burbuja empuja 20 m a los invasores del anillo, salvo al Jefe." }, aplicar = EfectosDeCartas.EnElJuego },
     };
 
     /// <summary>US 334: las cartas que quedan sin uso con Alimentación directa (solo recargan o piden el cargador
     /// vacío); la elección lo avisa.</summary>
     public static readonly string[] SinUsoConAlimentacion = { "Cargador gemelo", "Reserva lista", "Filo", "Tiro de reserva" };
     public const string AlimentacionDirecta = "Alimentación directa";
+
+    /// <summary>El texto del efecto para la vez que se va a elegir: si ya se tiene, el de la segunda o la tercera vez.</summary>
+    public string EfectoParaLaProxima(int yaLaTiene)
+    {
+        if (yaLaTiene <= 0 || efectoRepetida == null || efectoRepetida.Length == 0) return efecto;
+        return efectoRepetida[Mathf.Min(yaLaTiene, efectoRepetida.Length) - 1];
+    }
 
     /// <summary>CA3: la rareza al azar según la oleada (común, rara y épica). US 303: despuesDelJefe, ya cayó algún
     /// Jefe (CA3: las legendarias, muy raras, se le restan a las comunes); delJefe, la elección del Jefe (CA2: sin
