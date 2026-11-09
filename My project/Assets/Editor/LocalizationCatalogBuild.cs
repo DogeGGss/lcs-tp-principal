@@ -14,10 +14,13 @@ using UnityEditor.Build;
 using UnityEditor.Build.Reporting;
 
 /// <summary>The JSON catalogs are the source of truth for both executables.</summary>
-public sealed class LocalizationCatalogBuild : IPreprocessBuildWithReport
+// Antes de cada build (PrepareForBuild corre antes de que empiece el build del jugador): se sincronizan las tablas
+// con los JSON y se arma el contenido de Addressables. En OnPreprocessBuild no se puede: Unity no deja armar
+// Addressables con el build ya empezado ("Cannot build asset bundles while a build is in progress").
+public sealed class LocalizationCatalogBuild : BuildPlayerProcessor
 {
-    public int callbackOrder => -1000;
-    public void OnPreprocessBuild(BuildReport report) { Sync(); AddressableAssetSettings.BuildPlayerContent(); }
+    public override int callbackOrder => -1000;
+    public override void PrepareForBuild(BuildPlayerContext buildPlayerContext) { Sync(); AddressableAssetSettings.BuildPlayerContent(); }
 
     [MenuItem("Riftwalker/Idiomas/Sincronizar catálogos")]
     public static void Sync()
