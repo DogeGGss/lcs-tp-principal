@@ -16,6 +16,7 @@ using Img = UnityEngine.UI.Image;
 // con ConfirmHandler, confirmar no cierra enseguida: espera a que el servidor diga si se lo quedó (Accept) o si
 // otro llegó primero (Reject, "Ya lo eligió …").
 // Deathmatch (PersonajesDeathmatch): con soloAspecto, el personaje es solo el aspecto; la tarjeta no muestra habilidad.
+// Invasión (US 297, sin habilidades): igual, solo el aspecto, con su propio aviso (sin la habilidad ni su descripción).
 // Se arma por código con las medidas de una pantalla de 1920 x 1080, como la tienda y la selección de modo.
 public class CharacterSelectScreen : MonoBehaviour
 {
@@ -47,22 +48,40 @@ public class CharacterSelectScreen : MonoBehaviour
     private float warnUntil;
 
     private readonly List<Card> cards = new List<Card>();
+    private readonly List<System.Action> refreshLocalizedCards = new List<System.Action>();
     private TMP_FontAsset displayFont, labelFont, bodyFont;
     private Sprite rounded;
     private System.Action onConfirm, onCancel;
     private float timeLimit, openedAt;
     private bool soloAspecto;
+    private string avisoSinHabilidad = "character.no_dm_abilities";
     private int selected = -1, lastUsed = -1;
     private TextMeshProUGUI timerText, hintText;
     private Img confirmBg;
 
+    private void OnEnable() => L10n.LanguageChanged += RefreshLanguage;
+
+    private void RefreshKeyboardHint(string keys)
+    {
+        hintText.text = L10n.T("character.keyboard_hint", keys) +
+                        (onCancel != null ? L10n.T("character.keyboard_back") : "");
+    }
+
+    private void RefreshLanguage()
+    {
+        if (hintText != null) RefreshKeyboardHint(cards.Count > 1 ? $"1–{cards.Count}" : "1");
+        foreach (System.Action refresh in refreshLocalizedCards) refresh();
+    }
+
     /// <summary>
-    /// Abre la selección. eyebrow: texto chico arriba del título (por ejemplo "Modo Zombie · Normal").
+    /// Abre la selección. eyebrow: texto chico arriba del título (por ejemplo "Modo Invasión · Normal").
     /// timeLimit: segundos para elegir (0 = sin límite). onCancel: null si no se puede volver.
-    /// soloAspecto: el personaje no trae habilidad (Deathmatch): la tarjeta lo dice en lugar de mostrar la habilidad.
+    /// soloAspecto: el personaje no trae habilidad (Deathmatch e Invasión): la tarjeta lo dice en lugar de mostrar la
+    /// habilidad y su descripción. avisoSinHabilidad: la clave del aviso de abajo (por defecto, el del Deathmatch).
     /// </summary>
     public static CharacterSelectScreen Show(TMP_FontAsset display, TMP_FontAsset label, TMP_FontAsset body, Sprite roundedSprite,
-        string eyebrow, float timeLimit, System.Action onConfirm, System.Action onCancel, bool soloAspecto = false)
+        string eyebrow, float timeLimit, System.Action onConfirm, System.Action onCancel, bool soloAspecto = false,
+        string avisoSinHabilidad = "character.no_dm_abilities")
     {
         if (CharacterRoster.All.Count == 0)
         {
@@ -91,6 +110,7 @@ public class CharacterSelectScreen : MonoBehaviour
         screen.onCancel = onCancel;
         screen.timeLimit = timeLimit;
         screen.soloAspecto = soloAspecto;
+        screen.avisoSinHabilidad = avisoSinHabilidad;
         screen.Build((RectTransform)go.transform, eyebrow);
         return screen;
     }
@@ -114,7 +134,7 @@ public class CharacterSelectScreen : MonoBehaviour
 
         // Encabezado
         Text(Place(Node("Contexto", root), 96f, 84f, 900f, 24f), labelFont, 20f, Accent, TextAlignmentOptions.MidlineLeft, 16f, true).text = eyebrow;
-        Text(Place(Node("Titulo", root), 96f, 110f, 1200f, 80f), displayFont, 76f, Ink, TextAlignmentOptions.MidlineLeft, 2f, true).text = "Elegí tu personaje";
+        L10n.Bind(Text(Place(Node("Titulo", root), 96f, 110f, 1200f, 80f), displayFont, 76f, Ink, TextAlignmentOptions.MidlineLeft, 2f, true), "character.choose");
         Image(Place(Node("Linea", root), 96f, 196f, 160f, 4f), null, Accent);
         timerText = Text(Place(Node("Tiempo", root), 1920f - 96f - 300f, 110f, 300f, 80f), displayFont, 64f, Ink, TextAlignmentOptions.MidlineRight, 2f);
         timerText.gameObject.SetActive(timeLimit > 0f);
@@ -130,8 +150,7 @@ public class CharacterSelectScreen : MonoBehaviour
         hintText = Text(Place(Node("Ayuda", root), 96f, footY, 1000f, 56f), labelFont, 18f, Mute, TextAlignmentOptions.MidlineLeft, 10f, true);
         hintText.richText = true;
         string keys = n > 1 ? $"1–{n}" : "1";
-        hintText.text = $"<color=#F3F4F6>{keys}</color>  Elegir     <color=#F3F4F6>← →</color>  Mover     <color=#F3F4F6>Enter</color>  Confirmar" +
-                        (onCancel != null ? "     <color=#F3F4F6>Esc</color>  Volver" : "");
+        RefreshKeyboardHint(keys);
 
         warnText = Text(Place(Node("Aviso", root), 0f, CardTop + CardH + 40f, 1920f, 34f), labelFont, 24f, Bad, TextAlignmentOptions.Center, 8f, true);
         warnText.gameObject.SetActive(false);
@@ -177,36 +196,46 @@ public class CharacterSelectScreen : MonoBehaviour
         {
             RectTransform tag = Place(Node("Provisorio", bodyRect), w - 16f - 110f, 16f, 110f, 28f);
             Image(tag, rounded, new Color(0f, 0f, 0f, DarkAlpha(0.6f)), 4f);
-            Text(Stretch(Node("Texto", tag)), labelFont, 13f, Mute, TextAlignmentOptions.Center, 10f, true).text = "Provisorio";
+            L10n.Bind(Text(Stretch(Node("Texto", tag)), labelFont, 13f, Mute, TextAlignmentOptions.Center, 10f, true), "character.provisional");
         }
         if (index == lastUsed)
         {
             RectTransform tag = Place(Node("Ultimo", bodyRect), 16f, PortraitH - 16f - 28f, 140f, 28f);
             Image(tag, rounded, new Color(0f, 0f, 0f, DarkAlpha(0.6f)), 4f);
-            Text(Stretch(Node("Texto", tag)), labelFont, 13f, Soft, TextAlignmentOptions.Center, 10f, true).text = "Último elegido";
+            L10n.Bind(Text(Stretch(Node("Texto", tag)), labelFont, 13f, Soft, TextAlignmentOptions.Center, 10f, true), "character.last_used");
         }
 
         // Nombre y rol
         float y = PortraitH + 20f;
         Text(Place(Node("Nombre", bodyRect), 22f, y, w - 44f, 46f), displayFont, 42f, Ink, TextAlignmentOptions.MidlineLeft, 3f, true).text = data.displayName;
         y += 46f;
-        Text(Place(Node("Rol", bodyRect), 22f, y, w - 44f, 22f), labelFont, 16f, data.color, TextAlignmentOptions.MidlineLeft, 14f, true).text = data.role;
+        L10n.BindSource(Text(Place(Node("Rol", bodyRect), 22f, y, w - 44f, 22f), labelFont, 16f, data.color, TextAlignmentOptions.MidlineLeft, 14f, true), data.role);
         y += 34f;
 
         // Habilidad (en Deathmatch no hay: es solo el aspecto)
         AbilityData ability = soloAspecto ? null : data.ability;
-        RectTransform icon = Place(Node("Icono", bodyRect), 22f, y, 48f, 48f);
-        Image(icon, rounded, Over(WithAlpha(data.color, 0.25f), Rgb(12, 14, 19)), 6f);
-        if (ability != null && ability.icon != null)
+        // Solo el aspecto: sin el cuadrado del ícono (no hay habilidad que mostrar), y el texto arranca en el margen.
+        float textoX = soloAspecto ? 22f : 84f;
+        if (!soloAspecto)
         {
-            Img pic = Image(Place(Node("Imagen", icon), 8f, 8f, 32f, 32f), ability.icon, Ink);
-            pic.preserveAspect = true;
+            RectTransform icon = Place(Node("Icono", bodyRect), 22f, y, 48f, 48f);
+            Image(icon, rounded, Over(WithAlpha(data.color, 0.25f), Rgb(12, 14, 19)), 6f);
+            if (ability != null && ability.icon != null)
+            {
+                Img pic = Image(Place(Node("Imagen", icon), 8f, 8f, 32f, 32f), ability.icon, Ink);
+                pic.preserveAspect = true;
+            }
         }
-        Text(Place(Node("Habilidad", bodyRect), 84f, y - 2f, w - 106f, 28f), labelFont, 21f, Ink, TextAlignmentOptions.MidlineLeft, 4f, true).text =
-            soloAspecto ? "Solo aspecto" : ability != null ? ability.displayName : "Sin habilidad";
-        Text(Place(Node("Recarga", bodyRect), 84f, y + 26f, w - 106f, 22f), labelFont, 15f, Mute, TextAlignmentOptions.MidlineLeft, 8f, true).text =
-            soloAspecto ? "En Deathmatch no hay habilidades"
-            : ability != null ? $"{KeyBindings.Label(GameAction.Habilidad)} · Recarga {Number(ability.cooldown)} s" : "";
+        TMP_Text abilityLabel = Text(Place(Node("Habilidad", bodyRect), textoX, y - 2f, w - textoX - 22f, 28f), labelFont, 21f, Ink, TextAlignmentOptions.MidlineLeft, 4f, true);
+        TMP_Text cooldownLabel = Text(Place(Node("Recarga", bodyRect), textoX, y + 26f, w - textoX - 22f, 22f), labelFont, 15f, Mute, TextAlignmentOptions.MidlineLeft, 8f, true);
+        System.Action refreshAbility = () =>
+        {
+            abilityLabel.text = soloAspecto ? L10n.T("character.appearance_only") : ability != null ? ability.displayName : L10n.T("character.no_ability");
+            cooldownLabel.text = soloAspecto ? L10n.T(avisoSinHabilidad)
+                : ability != null ? L10n.T("character.cooldown", KeyBindings.Label(GameAction.Habilidad), Number(ability.cooldown)) : "";
+        };
+        refreshLocalizedCards.Add(refreshAbility);
+        refreshAbility();
         y += 64f;
 
         // Descripción (del personaje; si no tiene, la de la habilidad)
@@ -214,7 +243,7 @@ public class CharacterSelectScreen : MonoBehaviour
         TextMeshProUGUI description = Text(Place(Node("Descripcion", bodyRect), 22f, y, w - 44f, CardH - 6f - y - 18f), bodyFont, 17f, Soft, TextAlignmentOptions.TopLeft);
         description.textWrappingMode = TextWrappingModes.Normal;
         description.overflowMode = TextOverflowModes.Ellipsis;
-        description.text = text;
+        L10n.BindSource(description, text);
 
         // US 016: capa de "Elegido por …" (se prende cuando un compañero lo elige).
         RectTransform lockRect = Stretch(Node("Bloqueado", card.rect));
@@ -237,7 +266,7 @@ public class CharacterSelectScreen : MonoBehaviour
         RectTransform rect = Place(Node(label, parent), x, y, w, h);
         Color normal = primary ? Accent : ChipColor;
         Img bg = Image(rect, rounded, normal, 6f, true);
-        Text(Stretch(Node("Texto", rect)), displayFont, 24f, primary ? KeyInk : Ink, TextAlignmentOptions.Center, 10f, true).text = label;
+        L10n.BindSource(Text(Stretch(Node("Texto", rect)), displayFont, 24f, primary ? KeyInk : Ink, TextAlignmentOptions.Center, 10f, true), label);
         ShopPointerTarget pointer = rect.gameObject.AddComponent<ShopPointerTarget>();
         pointer.Hovered = () => { if (!primary || selected >= 0) bg.color = primary ? Hot : ChipDim; };
         pointer.Exited = () => Refresh();
@@ -291,7 +320,8 @@ public class CharacterSelectScreen : MonoBehaviour
             if (who == c.lockedBy) continue;
             c.lockedBy = who;
             c.lockLayer.SetActive(who != null);
-            c.lockText.text = who != null ? $"Elegido por {who}" : "";
+            if (who != null) L10n.Bind(c.lockText, "character.selected_by", who);
+            else c.lockText.text = "";
             changed = true;
         }
         if (!changed) return;
@@ -388,6 +418,7 @@ public class CharacterSelectScreen : MonoBehaviour
 
     private void OnDestroy()
     {
+        L10n.LanguageChanged -= RefreshLanguage;
         if (IsOpen) { IsOpen = false; ClosedFrame = Time.frameCount; }
     }
 }

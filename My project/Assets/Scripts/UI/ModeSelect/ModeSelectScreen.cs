@@ -11,9 +11,10 @@ using Img = UnityEngine.UI.Image;
 
 // Selección de modo (US 047), diseño "Andenes": la pantalla se parte en tres con dos rayos y cada andén es un modo.
 // Al pasar el mouse el andén se agranda; al hacer clic ocupa toda la pantalla y muestra sus opciones:
-// Táctico y Deathmatch crean o se unen a una sala (US 026, US 027); Zombie elige la dificultad (US 161) y juega.
+// Táctico y Deathmatch buscan partida (F28, en ModeSelectScreen.Busqueda.cs) o crean o se unen a una sala privada
+// (US 026, US 027); Invasión elige la dificultad (US 161) y juega.
 // Se arma por código con las medidas de la maqueta (pantalla de referencia de 1920 x 1080), como el HUD y la tienda.
-public class ModeSelectScreen : MonoBehaviour
+public partial class ModeSelectScreen : MonoBehaviour
 {
     [Serializable] public class ModeEvent : UnityEvent<GameMode> { }
     [Serializable] public class JoinEvent : UnityEvent<GameMode, string> { }
@@ -29,11 +30,11 @@ public class ModeSelectScreen : MonoBehaviour
     [SerializeField] private Sprite rounded;
     [Tooltip("Bordes de 1 px para los radios 6 y 8, en ese orden.")]
     [SerializeField] private Sprite[] borders = new Sprite[2];
-    [Tooltip("Captura del mapa de cada modo (Táctico, Deathmatch, Zombie), en gris. Se ve difuminada detrás del andén.")]
+    [Tooltip("Captura del mapa de cada modo (Táctico, Deathmatch, Invasión), en gris. Se ve difuminada detrás del andén.")]
     [SerializeField] private Sprite[] mapBackgrounds = new Sprite[3];
 
     [Header("Partida")]
-    [Tooltip("Escena que carga Jugar en Zombie. Vacío: todavía no hay escena.")]
+    [Tooltip("Escena que carga Jugar en Invasión. Vacío: todavía no hay escena.")]
     [SerializeField] private string zombieScene = "";
 
     [Header("Eventos (para conectar el multijugador y las partidas)")]
@@ -50,12 +51,12 @@ public class ModeSelectScreen : MonoBehaviour
     // Se arman en Awake: ShopUIKit consulta el espacio de color y Unity no deja hacerlo al crear el componente.
     private static Color[] ModeColor, ModeBg;
     private static readonly string[] ModeHex = { "#F29A38", "#FF4B4B", "#7DE05A" };
-    private static readonly string[] Titles = { "Táctico", "Deathmatch", "Zombie" };
+    private static readonly string[] Titles = { "Táctico", "Deathmatch", "Invasión" };
     private static readonly string[] Blurbs =
     {
         "Plantá o desactivá el dispositivo. Sin reaparición.",
         "Todos contra todos. Reaparecés a los 3 s.",
-        "Sobreviví a la horda en la universidad."
+        "Resistí la invasión en la universidad."
     };
     private static readonly string[][] Chips =
     {
@@ -79,9 +80,9 @@ public class ModeSelectScreen : MonoBehaviour
     private static readonly string[] DifficultyName = { "Fácil", "Normal", "Difícil" };
     private static readonly string[] DifficultyText =
     {
-        "Zombis con 75 % de vida y daño. Regenerás a los 3 s.",
+        "75 % de vida y daño y menos enemigos. Regenerás a los 3 s.",
         "Como está pensado. Regenerás a los 4 s.",
-        "125 % de vida, 150 % de daño y más zombis. +25 % de puntos."
+        "125 % de vida, 150 % de daño y más enemigos. +25 % de puntos."
     };
 
     // ---------- Piezas ----------
@@ -100,6 +101,7 @@ public class ModeSelectScreen : MonoBehaviour
         public CanvasGroup group;
         public UIPolygon shape;
         public RectTransform motif;
+        public CanvasGroup figura; // el dibujo del modo (sin el mapa de fondo): se apaga mientras se ve el radar de buscar partida
         public Img dim, flash;
         public float flashAt = -10f;
     }
@@ -125,6 +127,7 @@ public class ModeSelectScreen : MonoBehaviour
         public UnityEngine.UI.Button startButton;
         public CanvasGroup startGroup;
         public float actionsY;
+        public Busqueda busqueda; // Táctico y Deathmatch: buscar partida (null en Zombie)
     }
 
     private RectTransform root;
@@ -152,12 +155,11 @@ public class ModeSelectScreen : MonoBehaviour
     private Vector2 crossPos = new Vector2(960f, 380f), crossFrom, crossTo = new Vector2(960f, 380f);
     private float crossT = 1f, crossDur = 0.6f, crossWait;
     private float hitAt = -10f;
-    // Zombie
-    private readonly List<RectTransform> fogs = new List<RectTransform>();
-    private readonly List<RectTransform> zombies = new List<RectTransform>();
-    private readonly List<float> zombieDelay = new List<float>();
-    private readonly List<UIRing> eyes = new List<UIRing>();
-    private readonly List<Vector2> zombieBase = new List<Vector2>();
+    // Invasión: el Jefe (el escarabajo) volando
+    private RectTransform jefe, alaIzquierda, alaDerecha, furia;
+    private readonly List<RectTransform> patas = new List<RectTransform>();
+    private readonly List<UnityEngine.UI.Graphic> huecos = new List<UnityEngine.UI.Graphic>();
+    private readonly List<RectTransform> nieblas = new List<RectTransform>();
     private readonly UnityEngine.UI.Button[] difficultyButtons = new UnityEngine.UI.Button[3];
     private TextMeshProUGUI record;
 
@@ -205,9 +207,9 @@ public class ModeSelectScreen : MonoBehaviour
         root.sizeDelta = new Vector2(W, H);
 
         for (int i = 0; i < 3; i++) andenes[i] = BuildAnden(i);
-        BuildTactico(andenes[0].motif);
+        BuildTactico(Figura(andenes[0], andenes[0].motif));
         BuildDeathmatch(andenes[1]);
-        BuildZombie(andenes[2].motif);
+        BuildInvasion(andenes[2].motif);
         foreach (Anden a in andenes) { a.dim.transform.SetAsLastSibling(); a.flash.transform.SetAsLastSibling(); }
 
         for (int k = 0; k < 2; k++) BuildBolt(k);
@@ -224,6 +226,7 @@ public class ModeSelectScreen : MonoBehaviour
         shadeGroup.blocksRaycasts = false;
         shadeImg.raycastTarget = false;
 
+        BuildRadar();
         BuildTop();
         for (int i = 0; i < 3; i++) details[i] = BuildDetail(i);
     }
@@ -247,6 +250,15 @@ public class ModeSelectScreen : MonoBehaviour
         rect.anchorMin = rect.anchorMax = rect.pivot = new Vector2(0f, 1f);
         rect.anchoredPosition = new Vector2(x, -y);
         rect.sizeDelta = Vector2.zero;
+        return rect;
+    }
+
+    // El dibujo de un andén online, en su propio grupo: el radar de buscar partida lo reemplaza (si no, quedaban encimados).
+    private RectTransform Figura(Anden a, Transform parent)
+    {
+        RectTransform rect = Group("Figura", parent, 0f, 0f);
+        a.figura = rect.gameObject.AddComponent<CanvasGroup>();
+        a.figura.blocksRaycasts = false;
         return rect;
     }
 
@@ -370,7 +382,7 @@ public class ModeSelectScreen : MonoBehaviour
             Line(holoRect, hot, 3f, new Vector2(cx, cy - 14f * sy), new Vector2(cx, cy), new Vector2(cx - 14f * sx, cy));
         }
         lcd = Text(Place(Node("Cuenta", holoRect), -104f, -232f, 208f, 64f), monoFont, 30f, acc, TextAlignmentOptions.Center, 6f);
-        lcd.text = "0:45";
+        L10n.BindSource(lcd, "0:45","ui.");
 
         // Cuerpo hexagonal con las líneas de energía.
         Vector2[] hex = { new Vector2(-150f, 0f), new Vector2(-84f, -86f), new Vector2(84f, -86f), new Vector2(150f, 0f), new Vector2(84f, 86f), new Vector2(-84f, 86f) };
@@ -410,8 +422,9 @@ public class ModeSelectScreen : MonoBehaviour
     private void BuildDeathmatch(Anden a)
     {
         Color red = ModeColor[1];
+        RectTransform figura = Figura(a, a.shape.transform);
         // Trazadoras que cruzan en diagonal (en coordenadas de pantalla, no se mueven con el andén).
-        RectTransform tr = Group("Trazadoras", a.shape.transform, 0f, 0f);
+        RectTransform tr = Group("Trazadoras", figura, 0f, 0f);
         for (int i = 0; i < 7; i++)
         {
             float y = 250f + i * 150f;
@@ -422,7 +435,7 @@ public class ModeSelectScreen : MonoBehaviour
             tracerPhase.Add(UnityEngine.Random.value);
         }
 
-        cross = Group("Mira", a.shape.transform, 960f, 380f);
+        cross = Group("Mira", figura, 960f, 380f);
         UIRing outer = Circle(cross, 0f, 0f, 96f, WithAlpha(red, FadeAlpha(0.35f)), 2f); outer.dashCount = 26; outer.dashFill = 0.45f;
         Circle(cross, 0f, 0f, 56f, red, 4f);
         Segment(cross, new Vector2(-84f, 0f), new Vector2(-34f, 0f), 4f, red);
@@ -437,62 +450,92 @@ public class ModeSelectScreen : MonoBehaviour
             Segment(hitRect, new Vector2(30f * sx, 30f * sy), new Vector2(14f * sx, 14f * sy), 5f, Color.white);
     }
 
-    private void BuildZombie(RectTransform m)
-    {
-        Color green = ModeColor[2], moon = Hex(0xD8EFCB), fog = WithAlpha(Hex(0xB8E6A6), FadeAlpha(0.30f));
-        Circle(m, 170f, -330f, 88f, WithAlpha(moon, FadeAlpha(0.16f)));
-        Glow(m, 170f, -330f, 170f, WithAlpha(moon, FadeAlpha(0.14f)), 0.4f);
+    // Andén 3: el Jefe de la Invasión (US 146), el escarabajo gigante, volando de frente hacia el jugador entre la niebla:
+    // las alas baten, las patas cuelgan y los huecos de la cabeza (su punto débil) brillan en rojo, como en la furia.
+    private Color rojoJefe, tinta, membrana;
 
-        fogs.Add(FogBank(m, -160f, 420f, 520f, 120f, fog));
-        var figures = new[]
+    private void BuildInvasion(RectTransform m)
+    {
+        rojoJefe = Hex(0xFF2A1F);
+        tinta = Hex(0x030503);
+        membrana = Hex(0x2A0B0A);
+        Color green = ModeColor[2];
+
+        furia = Glow(m, 0f, -250f, 470f, WithAlpha(rojoJefe, FadeAlpha(0.30f)), 0.28f);
+        nieblas.Add(Niebla(m, -200f, 380f, 560f, 0.22f, WithAlpha(Hex(0xB8E6A6), FadeAlpha(0.20f))));
+
+        jefe = Group("Jefe", m, 0f, -235f);
+
+        // Alas: una membrana oscura con nervaduras, cada una con su eje en el hombro (baten girando).
+        alaIzquierda = Group("AlaIzquierda", jefe, -70f, -70f);
+        alaDerecha = Group("AlaDerecha", jefe, 70f, -70f);
+        foreach (var (ala, sx) in new[] { (alaIzquierda, -1f), (alaDerecha, 1f) })
         {
-            (x: -230f, y: 560f, s: 0.8f, delay: 0.4f, arms: 1),
-            (x: -40f, y: 540f, s: 1.05f, delay: 2.1f, arms: 0),
-            (x: 170f, y: 570f, s: 0.7f, delay: 3.6f, arms: 2),
-            (x: 330f, y: 560f, s: 0.9f, delay: 1.2f, arms: 0)
-        };
-        foreach (var f in figures) BuildZombieFigure(m, f.x, f.y, f.s, f.delay, f.arms, green);
-        fogs.Add(FogBank(m, 120f, 470f, 620f, 130f, fog));
-    }
-
-    private RectTransform FogBank(RectTransform parent, float x, float y, float rx, float ry, Color color)
-    {
-        RectTransform bank = Glow(parent, x, y, rx, color, 0.35f);
-        bank.localScale = new Vector3(1f, ry / rx, 1f);
-        return bank;
-    }
-
-    private void BuildZombieFigure(RectTransform parent, float x, float y, float scale, float delay, int arms, Color eye)
-    {
-        Color ink = Hex(0x020402);
-        RectTransform figure = Group("Zombi", parent, x, y);
-        figure.localScale = Vector3.one * scale;
-        zombies.Add(figure);
-        zombieBase.Add(new Vector2(x, y));
-        zombieDelay.Add(delay);
-
-        // Torso con hombros (sigue por debajo de la pantalla, así nunca se ve cortado).
-        scratch.Clear();
-        scratch.Add(new Vector2(-86f, 320f));
-        Bezier(scratch, new Vector2(-86f, 0f), new Vector2(-86f, -66f), new Vector2(-74f, -108f), new Vector2(-34f, -118f));
-        Bezier(scratch, new Vector2(34f, -118f), new Vector2(74f, -108f), new Vector2(86f, -66f), new Vector2(86f, 0f));
-        scratch.Add(new Vector2(86f, 320f));
-        Poly(figure, ink, scratch.ToArray());
-        Poly(figure, ink, RectPts(-16f, -138f, 32f, 30f));
-        Circle(figure, 0f, -170f, 44f, ink);
-        foreach (float ex in new[] { -15f, 15f }) eyes.Add(Circle(figure, ex, -176f, 5.5f, eye));
-
-        if (arms >= 1) Arm(figure, ink, new Vector2(60f, -96f), new Vector2(120f, -196f), new Vector2(150f, -214f));
-        if (arms >= 2)
-        {
-            Arm(figure, ink, new Vector2(-60f, -96f), new Vector2(-120f, -196f), new Vector2(-150f, -214f));
+            Vector2[] borde =
+            {
+                new Vector2(0f, 0f), new Vector2(120f * sx, -150f), new Vector2(260f * sx, -190f), new Vector2(370f * sx, -130f),
+                new Vector2(400f * sx, -30f), new Vector2(330f * sx, 50f), new Vector2(190f * sx, 60f), new Vector2(70f * sx, 40f)
+            };
+            Poly(ala, WithAlpha(membrana, FadeAlpha(0.85f)), borde);
+            UIPolyline contorno = Line(ala, WithAlpha(rojoJefe, FadeAlpha(0.35f)), 2f, borde);
+            contorno.closed = true;
+            foreach (Vector2 punta in new[] { new Vector2(260f * sx, -186f), new Vector2(390f * sx, -60f), new Vector2(300f * sx, 52f) })
+                Line(ala, WithAlpha(rojoJefe, FadeAlpha(0.25f)), 2f, Vector2.zero, punta * 0.55f, punta * 0.97f);
         }
+
+        // Patas colgando (tres pares), por detrás del cuerpo.
+        var patasDe = new[] { (x: 70f, y: 10f, largo: 0.7f), (x: 90f, y: 50f, largo: 0.8f), (x: 70f, y: 90f, largo: 0.9f) };
+        foreach (var p in patasDe)
+            foreach (float sx in new[] { -1f, 1f })
+            {
+                RectTransform pata = Group("Pata", jefe, p.x * sx, p.y);
+                patas.Add(pata);
+                UIPolyline l = Line(pata, tinta, 13f, Vector2.zero, new Vector2(70f * sx, 60f * p.largo), new Vector2(60f * sx, 170f * p.largo),
+                    new Vector2(84f * sx, 200f * p.largo));
+                l.roundJoins = true;
+            }
+
+        // Caparazón (detrás de la cabeza), con la línea del medio.
+        scratch.Clear();
+        Bezier(scratch, new Vector2(-170f, 40f), new Vector2(-200f, -90f), new Vector2(-120f, -190f), new Vector2(0f, -190f), 12);
+        Bezier(scratch, new Vector2(0f, -190f), new Vector2(120f, -190f), new Vector2(200f, -90f), new Vector2(170f, 40f), 12);
+        Bezier(scratch, new Vector2(170f, 40f), new Vector2(120f, 140f), new Vector2(-120f, 140f), new Vector2(-170f, 40f), 12);
+        Poly(jefe, tinta, scratch.ToArray());
+        UIPolyline bordeCaparazon = Line(jefe, WithAlpha(rojoJefe, FadeAlpha(0.28f)), 2.5f, scratch.ToArray());
+        bordeCaparazon.closed = true;
+        Line(jefe, WithAlpha(rojoJefe, FadeAlpha(0.18f)), 2f, new Vector2(0f, -186f), new Vector2(0f, -60f));
+        foreach (float sx in new[] { -1f, 1f })
+            Line(jefe, WithAlpha(rojoJefe, FadeAlpha(0.12f)), 2f, new Vector2(150f * sx, -60f), new Vector2(90f * sx, -150f), new Vector2(30f * sx, -176f));
+
+        // Cabeza de frente, con un cuerno, antenas y mandíbulas.
+        Poly(jefe, tinta, new Vector2(-34f, -60f), new Vector2(-10f, -262f), new Vector2(0f, -280f), new Vector2(10f, -262f), new Vector2(34f, -60f));
+        Circle(jefe, 0f, 20f, 96f, tinta);
+        Circle(jefe, 0f, 20f, 96f, WithAlpha(rojoJefe, FadeAlpha(0.35f)), 2.5f);
+        foreach (float sx in new[] { -1f, 1f })
+        {
+            UIPolyline antena = Line(jefe, tinta, 5f, new Vector2(40f * sx, -50f), new Vector2(110f * sx, -150f), new Vector2(170f * sx, -160f));
+            antena.roundJoins = true;
+            UIPolyline mandibula = Line(jefe, tinta, 16f, new Vector2(46f * sx, 90f), new Vector2(70f * sx, 140f), new Vector2(40f * sx, 186f),
+                new Vector2(12f * sx, 180f));
+            mandibula.roundJoins = true;
+        }
+
+        // Los huecos de la cabeza, su punto débil: brillan en rojo y laten.
+        foreach (var (x, y, r) in new[] { (-36f, 0f, 15f), (36f, 0f, 15f), (-66f, 34f, 9f), (66f, 34f, 9f), (0f, 52f, 8f) })
+        {
+            huecos.Add(Glow(jefe, x, y, r * 3f, WithAlpha(rojoJefe, FadeAlpha(0.5f)), 0.3f).GetComponent<Img>());
+            huecos.Add(Circle(jefe, x, y, r, rojoJefe));
+        }
+
+        nieblas.Add(Niebla(m, 160f, 470f, 640f, 0.2f, WithAlpha(Hex(0xB8E6A6), FadeAlpha(0.18f))));
+        Glow(m, 0f, 600f, 700f, WithAlpha(green, FadeAlpha(0.10f)), 0.35f);
     }
 
-    private void Arm(RectTransform parent, Color ink, params Vector2[] points)
+    private RectTransform Niebla(RectTransform parent, float x, float y, float rx, float ry, Color color)
     {
-        UIPolyline arm = Line(parent, ink, 26f, points);
-        arm.roundJoins = true;
+        RectTransform banco = Glow(parent, x, y, rx, color, 0.35f);
+        banco.localScale = new Vector3(1f, ry, 1f);
+        return banco;
     }
 
     private static void Bezier(List<Vector2> into, Vector2 a, Vector2 b, Vector2 c, Vector2 d, int steps = 8)
@@ -532,20 +575,20 @@ public class ModeSelectScreen : MonoBehaviour
         l.group = l.rect.gameObject.AddComponent<CanvasGroup>();
         l.group.blocksRaycasts = false;
 
-        TextMeshProUGUI eyebrow = Text(Place(Node("Anden", l.rect), 0f, 0f, 600f, 24f), labelFont, 22f, ModeColor[i], TextAlignmentOptions.Center, 32f, true);
-        eyebrow.text = "Andén " + (i + 1);
+        TextMeshProUGUI eyebrow = Text(Place(Node("Anden", l.rect), 0f, 0f, 600f, 24f), labelFont, 22f, ModeColor[i], TextAlignmentOptions.Center, 30f, true);
+        L10n.Bind(eyebrow,"ui.mode.platform",i + 1);
         eyebrow.rectTransform.anchorMax = new Vector2(1f, 1f);
         eyebrow.rectTransform.sizeDelta = new Vector2(0f, 24f);
 
         l.title = Text(Place(Node("Nombre", l.rect), 0f, 34f, 600f, 116f), displayFont, 124f, Ink, TextAlignmentOptions.Center, 1f, true);
-        l.title.text = Titles[i];
+        L10n.BindSource(l.title, Titles[i],"ui.");
         l.title.rectTransform.anchorMax = new Vector2(1f, 1f);
         l.title.rectTransform.sizeDelta = new Vector2(0f, 116f);
         l.natural = Width(l.title, Titles[i].ToUpperInvariant());
 
         l.blurb = Text(Place(Node("Texto", l.rect), 0f, 162f, 600f, 80f), bodyFont, 26f, White(0.82f), TextAlignmentOptions.Top);
         l.blurb.textWrappingMode = TextWrappingModes.Normal;
-        l.blurb.text = Blurbs[i];
+        L10n.BindSource(l.blurb, Blurbs[i],"ui.");
 
         for (int c = 0; c < Chips[i].Length; c++)
             l.chips.Add(Chip(l.rect, Chips[i][c], 19f, c == 0 ? ModeColor[i] : Ink, c == 0 ? ModeColor[i] : White(0.22f), 0.4f));
@@ -556,7 +599,7 @@ public class ModeSelectScreen : MonoBehaviour
     {
         RectTransform chip = Node("Etiqueta", parent);
         TextMeshProUGUI text = Text(Stretch(Node("Texto", chip)), monoFont, size, ink, TextAlignmentOptions.Center);
-        text.text = value;
+        L10n.BindSource(text,value,"ui.");
         float w = Width(text, value) + 28f, h = size + 20f;
         Place(chip, 0f, 0f, w, h);
         Img bg = Image(chip, rounded, new Color(0f, 0f, 0f, DarkAlpha(darkness)), 6f);
@@ -582,18 +625,18 @@ public class ModeSelectScreen : MonoBehaviour
         RectTransform titleRect = Place(Node("Titulo", top), 64f, 50f, 700f, 90f);
         titleGroup = titleRect.gameObject.AddComponent<CanvasGroup>();
         titleGroup.blocksRaycasts = false;
-        Text(Place(Node("Juego", titleRect), 0f, 0f, 700f, 22f), labelFont, 20f, White(0.6f), TextAlignmentOptions.MidlineLeft, 30f, true).text = "Project Riftwalker";
-        Text(Place(Node("Pantalla", titleRect), 0f, 26f, 700f, 60f), displayFont, 54f, Ink, TextAlignmentOptions.MidlineLeft, 2f, true).text = "Elegí el modo";
+        L10n.BindSource(Text(Place(Node("Juego", titleRect), 0f, 0f, 700f, 22f), labelFont, 20f, White(0.6f), TextAlignmentOptions.MidlineLeft, 30f, true), "Project Riftwalker","ui.");
+        L10n.BindSource(Text(Place(Node("Pantalla", titleRect), 0f, 26f, 700f, 60f), displayFont, 54f, Ink, TextAlignmentOptions.MidlineLeft, 2f, true), "Elegí el modo","ui.");
 
         // Esc: vuelve a los modos o al menú principal.
         RectTransform back = Place(Node("Volver", top), W - 64f - 330f, 50f, 330f, 36f);
         backButton = back;
         Image(back, null, White(0f), 0f, true);
-        backText = Text(Place(Node("Texto", back), 0f, 0f, 330f, 36f), labelFont, 22f, White(0.85f), TextAlignmentOptions.MidlineRight, 8f, true);
-        backText.text = "Menú principal";
+        backText = Text(Place(Node("Texto", back), 0f, 0f, 330f, 36f), labelFont, 22f, White(0.85f), TextAlignmentOptions.MidlineRight, 16f, true);
+        L10n.BindSource(backText, "Menú principal","ui.");
         RectTransform key = Place(Node("Tecla", back), 0f, 0f, 56f, 36f);
         Image(key, rounded, Ink, 6f);
-        Text(Stretch(Node("Esc", key)), monoFont, 18f, Hex(0x111111), TextAlignmentOptions.Center, 4f, true).text = "Esc";
+        L10n.BindSource(Text(Stretch(Node("Esc", key)), monoFont, 18f, Hex(0x111111), TextAlignmentOptions.Center, 4f, true), "Esc","ui.");
         key.GetComponent<Img>().color = Color.white;
         var button = back.gameObject.AddComponent<UnityEngine.UI.Button>();
         button.transition = UnityEngine.UI.Selectable.Transition.None;
@@ -615,12 +658,12 @@ public class ModeSelectScreen : MonoBehaviour
         d.group = d.rect.gameObject.AddComponent<CanvasGroup>();
         Color c = ModeColor[i];
 
-        Text(Place(Node("Anden", d.rect), 0f, 0f, 900f, 26f), labelFont, 24f, c, TextAlignmentOptions.MidlineLeft, 32f, true).text = DetailEyebrow[i];
-        Text(Place(Node("Nombre", d.rect), 0f, 36f, 900f, 118f), displayFont, 128f, Ink, TextAlignmentOptions.MidlineLeft, 1f, true).text = Titles[i];
+        L10n.BindSource(Text(Place(Node("Anden", d.rect), 0f, 0f, 900f, 26f), labelFont, 24f, c, TextAlignmentOptions.MidlineLeft, 30f, true), DetailEyebrow[i],"ui.");
+        L10n.BindSource(Text(Place(Node("Nombre", d.rect), 0f, 36f, 900f, 118f), displayFont, 128f, Ink, TextAlignmentOptions.MidlineLeft, 1f, true), Titles[i],"ui.");
         TextMeshProUGUI body = Text(Place(Node("Texto", d.rect), 0f, 166f, 760f, 120f), bodyFont, 28f, White(0.85f), TextAlignmentOptions.TopLeft);
         body.textWrappingMode = TextWrappingModes.Normal;
-        body.text = DetailText[i];
-        float y = 166f + body.GetPreferredValues(DetailText[i], 760f, 0f).y + 24f;
+        L10n.BindSource(body, DetailText[i],"ui.");
+        float y = 166f + body.GetPreferredValues(body.text, 760f, 0f).y + 24f;
 
         if (i < 2)
         {
@@ -634,17 +677,20 @@ public class ModeSelectScreen : MonoBehaviour
             y += 41f + 30f;
             d.actionsY = y;
             int mode = i;
-            float bx = ButtonAt(d.rect, 0f, y, "Crear sala", true, c, () => CreateRoom(mode)).x;
-            ButtonAt(d.rect, bx + 18f, y, "Unirse con código", false, c, () => ShowJoin(mode));
-
-            d.codeRow = Place(Node("Codigo", d.rect), 0f, y + 78f + 24f, 900f, 72f);
+            // F28: «Buscar partida» grande y, abajo, la sala privada. La búsqueda, la sala y el error van en el mismo
+            // lugar que los botones y los reemplazan (MostrarBloque).
+            d.busqueda = new Busqueda();
+            BuildBuscar(d, mode, c, y);
+            d.codeRow = Place(Node("Codigo", d.busqueda.acciones), 0f, 340f, 900f, 72f);
             d.code = CodeInput(d.codeRow, c);
             ButtonAt(d.codeRow, 318f, 0f, "Entrar", false, c, () => Join(mode), 30f, 72f);
             d.codeRow.gameObject.SetActive(false);
 
-            d.room = BuildRoom(d, y + 78f + 22f, c);
+            d.room = BuildRoom(d, y, c);
             d.room.gameObject.SetActive(false);
-            d.status = Text(Place(Node("Aviso", d.rect), 0f, y + 78f + 24f + 72f + 16f, 900f, 30f), bodyFont, 22f, White(0.7f), TextAlignmentOptions.MidlineLeft);
+            BuildPanelBusqueda(d, mode, c, y);
+            BuildPanelError(d, mode, c, y);
+            d.status = Text(Place(Node("Aviso", d.rect), 0f, y + 428f, 900f, 30f), bodyFont, 22f, White(0.7f), TextAlignmentOptions.MidlineLeft);
         }
         else
         {
@@ -655,10 +701,10 @@ public class ModeSelectScreen : MonoBehaviour
                 RectTransform card = Place(Node("Dificultad" + DifficultyName[k], d.rect), k * (bw + 14f), y + 6f, bw, 150f);
                 Image(card, rounded, new Color(0f, 0f, 0f, DarkAlpha(0.45f)), 10f, true);
                 Border(card, 8f, White(0.16f));
-                Text(Place(Node("Nombre", card), 20f, 18f, bw - 40f, 36f), displayFont, 34f, Ink, TextAlignmentOptions.MidlineLeft, 4f, true).text = DifficultyName[k];
+                L10n.BindSource(Text(Place(Node("Nombre", card), 20f, 18f, bw - 40f, 36f), displayFont, 34f, Ink, TextAlignmentOptions.MidlineLeft, 4f, true), DifficultyName[k],"ui.");
                 TextMeshProUGUI detail = Text(Place(Node("Texto", card), 20f, 60f, bw - 40f, 80f), bodyFont, 18f, White(0.7f), TextAlignmentOptions.TopLeft);
                 detail.textWrappingMode = TextWrappingModes.Normal;
-                detail.text = DifficultyText[k];
+                L10n.BindSource(detail, DifficultyText[k],"ui.");
                 var button = card.gameObject.AddComponent<UnityEngine.UI.Button>();
                 button.transition = UnityEngine.UI.Selectable.Transition.None;
                 button.onClick.AddListener(() => SelectDifficulty((ZombieDifficulty)level));
@@ -684,9 +730,9 @@ public class ModeSelectScreen : MonoBehaviour
         RectTransform room = Place(Node("Sala", d.rect), 0f, y, 720f, 390f);
         Image(room, rounded, new Color(0f, 0f, 0f, DarkAlpha(0.55f)), 10f);
         Border(room, 8f, White(0.18f));
-        Text(Place(Node("Sala", room), 26f, 22f, 200f, 40f), labelFont, 22f, White(0.7f), TextAlignmentOptions.MidlineLeft, 10f, true).text = "Sala";
+        L10n.BindSource(Text(Place(Node("Sala", room), 26f, 22f, 200f, 40f), labelFont, 22f, White(0.7f), TextAlignmentOptions.MidlineLeft, 16f, true), "Sala","ui.");
         d.roomCode = Text(Place(Node("Codigo", room), 160f, 22f, 400f, 40f), monoFont, 40f, c, TextAlignmentOptions.Center, 30f);
-        d.roomCount = Text(Place(Node("Jugadores", room), 494f, 22f, 200f, 40f), labelFont, 22f, White(0.7f), TextAlignmentOptions.MidlineRight, 10f, true);
+        d.roomCount = Text(Place(Node("Jugadores", room), 494f, 22f, 200f, 40f), labelFont, 22f, White(0.7f), TextAlignmentOptions.MidlineRight, 16f, true);
         RectTransform copy = ButtonRect(room, 462f, 24f, "Copiar", false, c, CopyCode, 20f, 36f);
         d.copyLabel = copy.GetComponentInChildren<TextMeshProUGUI>();
         for (int s = 0; s < 8; s++)
@@ -696,7 +742,7 @@ public class ModeSelectScreen : MonoBehaviour
             d.slots[s] = Text(Place(Node("Lugar", room), x, sy, 324f, 36f), bodyFont, 21f, Ink, TextAlignmentOptions.MidlineLeft);
         }
 
-        Text(Place(Node("Mapa", room), 26f, 256f, 120f, 40f), labelFont, 22f, White(0.7f), TextAlignmentOptions.MidlineLeft, 10f, true).text = "Mapa";
+        L10n.BindSource(Text(Place(Node("Mapa", room), 26f, 256f, 120f, 40f), labelFont, 22f, White(0.7f), TextAlignmentOptions.MidlineLeft, 16f, true), "Mapa","ui.");
         d.roomMap = Text(Place(Node("NombreMapa", room), 120f, 256f, 330f, 40f), bodyFont, 24f, Ink, TextAlignmentOptions.MidlineLeft);
         d.mapButton = ButtonRect(room, 462f, 258f, "Cambiar mapa", false, c, NextMap, 20f, 36f);
 
@@ -722,8 +768,8 @@ public class ModeSelectScreen : MonoBehaviour
     {
         RectTransform rect = Node("Boton" + label, parent);
         TextMeshProUGUI text = Text(Stretch(Node("Texto", rect)), displayFont, size, primary ? Hex(0x111111) : Ink, TextAlignmentOptions.Center, 6f, true);
-        text.text = label;
-        float w = Width(text, label.ToUpperInvariant()) + (size > 30f ? 76f : 48f);
+        L10n.BindSource(text, label,"ui.");
+        float w = Width(text, text.text.ToUpperInvariant()) + (size > 30f ? 76f : 48f);
         Place(rect, x, y, w, height);
         Image(rect, rounded, primary ? c : new Color(0f, 0f, 0f, DarkAlpha(0.25f)), 8f, true);
         if (!primary) Border(rect, 8f, White(0.4f));
@@ -754,7 +800,7 @@ public class ModeSelectScreen : MonoBehaviour
         area.offsetMax = new Vector2(-12f, 0f);
         area.gameObject.AddComponent<UnityEngine.UI.RectMask2D>();
         TextMeshProUGUI placeholder = Text(Stretch(Node("Ejemplo", area)), monoFont, 44f, White(0.25f), TextAlignmentOptions.MidlineLeft, 35f);
-        placeholder.text = "KX7QM";
+        L10n.BindSource(placeholder, "KX7QM","ui.");
         TextMeshProUGUI value = Text(Stretch(Node("Texto", area)), monoFont, 44f, Ink, TextAlignmentOptions.MidlineLeft, 35f);
 
         TMP_InputField input = box.gameObject.AddComponent<TMP_InputField>();
@@ -798,7 +844,7 @@ public class ModeSelectScreen : MonoBehaviour
         openAt = Time.unscaledTime;
         MatchSettings.Mode = (GameMode)i;
         ResetDetail(i);
-        backText.text = "Volver a los modos";
+        L10n.BindSource(backText, "Volver a los modos","ui.");
         PlaceBackKey();
         Strike(0, true);
         Strike(1, true);
@@ -816,9 +862,10 @@ public class ModeSelectScreen : MonoBehaviour
         if (open < 0) return;
         // US 026 y US 027, CA9: con Esc se sale de la sala y se vuelve a los andenes.
         Multijugador.SalirDeLaSala();
+        MostrarBloque(details[open], Bloque.Acciones);
         open = -1;
         if (EventSystem.current != null) EventSystem.current.SetSelectedGameObject(null);
-        backText.text = "Menú principal";
+        L10n.BindSource(backText, "Menú principal","ui.");
         PlaceBackKey();
         Strike(0, true);
         Strike(1, true);
@@ -826,6 +873,13 @@ public class ModeSelectScreen : MonoBehaviour
 
     private void Back()
     {
+        // F28 (US 275, CA2): Esc cancela la búsqueda (sin salir del andén) o cierra el aviso de error.
+        if ((open == 0 || open == 1) && details[open].busqueda != null)
+        {
+            Bloque bloque = details[open].busqueda.bloque;
+            if (bloque == Bloque.Busqueda) { CancelarBusqueda(open); return; }
+            if (bloque == Bloque.Error) { MostrarBloque(details[open], Bloque.Acciones); return; }
+        }
         if (open >= 0) CloseMode();
         else if (menu != null) menu.MostrarMenuPrincipal();
     }
@@ -836,7 +890,8 @@ public class ModeSelectScreen : MonoBehaviour
         if (d.codeRow != null) d.codeRow.gameObject.SetActive(false);
         if (d.room != null) d.room.gameObject.SetActive(false);
         if (d.code != null) d.code.text = "";
-        d.status.text = "";
+        L10n.BindSource(d.status, "","ui.");
+        MostrarBloque(d, Bloque.Acciones);
     }
 
     // US 027: crea la sala en Photon; la sala aparece cuando Photon confirma (OnNetworkChanged).
@@ -848,7 +903,7 @@ public class ModeSelectScreen : MonoBehaviour
 
         d.codeRow.gameObject.SetActive(false);
         d.room.gameObject.SetActive(false);
-        d.status.text = "Creando la sala…";
+        L10n.BindSource(d.status, "Creando la sala…","ui.");
         Multijugador.Instancia.CrearSala((GameMode)mode);
     }
 
@@ -858,7 +913,7 @@ public class ModeSelectScreen : MonoBehaviour
         Multijugador.SalirDeLaSala();
         d.room.gameObject.SetActive(false);
         d.codeRow.gameObject.SetActive(true);
-        d.status.text = "";
+        L10n.BindSource(d.status, "","ui.");
         if (EventSystem.current != null) EventSystem.current.SetSelectedGameObject(d.code.gameObject);
         d.code.ActivateInputField();
     }
@@ -869,10 +924,10 @@ public class ModeSelectScreen : MonoBehaviour
         if (mode < 0 || mode > 1) return;
         Detail d = details[mode];
         string code = d.code.text.ToUpperInvariant();
-        if (code.Length != 5) { d.status.text = "No existe una sala con ese código."; d.code.ActivateInputField(); return; }
+        if (code.Length != 5) { L10n.BindSource(d.status, "No existe una sala con ese código.","ui."); d.code.ActivateInputField(); return; }
         MatchSettings.Mode = (GameMode)mode;
         onJoinRoom.Invoke((GameMode)mode, code);
-        d.status.text = "Entrando a la sala…";
+        L10n.BindSource(d.status, "Entrando a la sala…","ui.");
         Multijugador.Instancia.UnirseASala(code, (GameMode)mode);
     }
 
@@ -880,7 +935,7 @@ public class ModeSelectScreen : MonoBehaviour
     {
         if (!Multijugador.EnSala || open < 0) return;
         GUIUtility.systemCopyBuffer = Multijugador.Instancia.Codigo;
-        details[open].copyLabel.text = "Copiado";
+        L10n.BindSource(details[open].copyLabel, "Copiado","ui.");
         copiedAt = Time.unscaledTime;
     }
 
@@ -892,7 +947,7 @@ public class ModeSelectScreen : MonoBehaviour
     private void StartMatch()
     {
         if (!Multijugador.EnSala || !Multijugador.Instancia.PuedeIniciar) return;
-        if (open >= 0) details[open].roomFoot.text = "Cargando la partida…";
+        if (open >= 0) L10n.BindSource(details[open].roomFoot, "Cargando la partida…","ui.");
         Multijugador.Instancia.Iniciar();
     }
 
@@ -913,14 +968,16 @@ public class ModeSelectScreen : MonoBehaviour
 
     private void OnNetworkChanged()
     {
-        if (open == 0 || open == 1) RefreshRoom(details[open], open);
+        if (open == 0 || open == 1) Refrescar(details[open], open);
     }
 
     private void OnNetworkError(string message)
     {
         if (open != 0 && open != 1) return;
         Detail d = details[open];
-        d.status.text = message;
+        // Buscando partida, el error va en su panel (US 275, CA3); si no, debajo de los botones, como siempre.
+        if (d.busqueda != null && d.busqueda.bloque == Bloque.Busqueda) { MostrarError(d, Multijugador.Instancia.UltimoFallo); return; }
+        L10n.BindSource(d.status,message,"ui.");
         if (d.codeRow.gameObject.activeSelf && d.code != null) d.code.ActivateInputField();
     }
 
@@ -936,7 +993,7 @@ public class ModeSelectScreen : MonoBehaviour
 
         List<Multijugador.Jugador> players = net.Jugadores();
         d.codeRow.gameObject.SetActive(false);
-        d.status.text = "";
+        L10n.BindSource(d.status, "","ui.");
         d.roomCode.text = net.Codigo;
         d.roomCount.text = $"{players.Count} / {Multijugador.MaxJugadores}";
         for (int s = 0; s < 8; s++)
@@ -944,22 +1001,22 @@ public class ModeSelectScreen : MonoBehaviour
             bool taken = s < players.Count;
             string name = taken ? players[s].nombre : "Libre";
             if (taken && players[s].vos) name += " <color=#FFFFFF80>(vos)</color>";
-            if (taken && players[s].anfitrion) name += "  <color=#FFD2A1>· anfitrión</color>";
+            if (taken && players[s].anfitrion) name += L10n.Source("  <color=#FFD2A1>· anfitrión</color>","ui.");
             d.slots[s].text = name;
             d.slots[s].color = taken ? Ink : White(FadeAlpha(0.35f));
         }
 
         ConfigRed.Mapa map = net.MapaActual;
-        d.roomMap.text = map != null ? map.nombre : "No hay mapas para este modo";
+        d.roomMap.text = map != null ? map.nombre : L10n.Source("No hay mapas para este modo","ui.");
         d.mapButton.gameObject.SetActive(net.EsAnfitrion && net.CantidadMapas > 1);
 
         bool host = net.EsAnfitrion, ready = net.PuedeIniciar;
         d.startButton.gameObject.SetActive(host);
         d.startButton.interactable = ready;
         d.startGroup.alpha = ready ? 1f : 0.4f;
-        d.roomFoot.text = !host ? "Esperando al anfitrión…"
+        L10n.BindSource(d.roomFoot, !host ? "Esperando al anfitrión…"
             : players.Count < Multijugador.MinJugadores && !PruebaSolo.Activa ? "Pasale el código a tus amigos. Se necesitan al menos 2 jugadores."
-            : "Todo listo: iniciá la partida cuando quieras.";
+            : "Todo listo: iniciá la partida cuando quieras.","ui.");
         d.room.gameObject.SetActive(true);
     }
 
@@ -977,16 +1034,18 @@ public class ModeSelectScreen : MonoBehaviour
         int best = MatchSettings.ZombieRecord(difficulty);
         string name = DifficultyName[(int)difficulty];
         record.text = best > 0
-            ? $"Récord en {name}: <color={ModeHex[2]}>oleada {best}</color>"
-            : $"Récord en {name}: <color={ModeHex[2]}>todavía no jugaste</color>";
+            ? L10n.T("ui.mode.record",L10n.Source(name,"ui."),ModeHex[2],best)
+            : L10n.T("ui.mode.unplayed",L10n.Source(name,"ui."),ModeHex[2]);
     }
 
-    // US 015, CA1: en el Zombie, el personaje se elige después de la dificultad y antes de entrar al mapa.
+    // US 015, CA1: en el Zombie, el personaje se elige después de la dificultad y antes de entrar al mapa. En Invasión
+    // no hay habilidades (US 297): el personaje es solo el aspecto y las tarjetas no muestran la habilidad.
     private void PlayZombie()
     {
         if (CharacterSelectScreen.IsOpen) return;
         CharacterSelectScreen.Show(displayFont, labelFont, bodyFont, rounded,
-            "Modo Zombie · " + DifficultyName[(int)MatchSettings.Difficulty], 0f, StartZombie, () => { });
+            L10n.T("gameplay.ui.invasion_mode") + " · " + L10n.Source(DifficultyName[(int)MatchSettings.Difficulty], "ui."), 0f, StartZombie, () => { },
+            true, "character.no_invasion_abilities");
     }
 
     private void StartZombie()
@@ -1001,10 +1060,10 @@ public class ModeSelectScreen : MonoBehaviour
             if (ConfigRed.Actual != null)
                 foreach (ConfigRed.Mapa m in ConfigRed.Actual.mapas)
                     if (m != null && m.escena == zombieScene) { mapa = m.nombre; imagen = m.imagen; }
-            PantallaDeCarga.Cargar(zombieScene, "Modo Zombie · " + DifficultyName[(int)MatchSettings.Difficulty], mapa, imagen, GameMode.Zombie);
+            PantallaDeCarga.Cargar(zombieScene, L10n.T("gameplay.ui.invasion_mode") + " · " + L10n.Source(DifficultyName[(int)MatchSettings.Difficulty], "ui."), mapa, imagen, GameMode.Zombie);
         }
         else if (onPlayZombie.GetPersistentEventCount() == 0)
-            details[2].status.text = "El modo Zombie todavía está en desarrollo (F08).";
+            L10n.BindSource(details[2].status, "El Modo Invasión todavía está en desarrollo (F08).","ui.");
     }
 
     // ================= Cuadro a cuadro =================
@@ -1017,7 +1076,7 @@ public class ModeSelectScreen : MonoBehaviour
         if (copiedAt > 0f && now - copiedAt > 1.5f)
         {
             copiedAt = -10f;
-            foreach (Detail d in details) if (d.copyLabel != null) d.copyLabel.text = "Copiar";
+            foreach (Detail d in details) if (d.copyLabel != null) L10n.BindSource(d.copyLabel, "Copiar","ui.");
         }
 
         ComputeTargets();
@@ -1060,9 +1119,10 @@ public class ModeSelectScreen : MonoBehaviour
         UpdateLabels(intro, dt);
         UpdateTop(intro, dt);
         UpdateDetails(now, dt);
+        AnimarBusqueda(now, dt);
         AnimateTactico(now, dt);
         AnimateDeathmatch(now, dt, centers);
-        AnimateZombie(now);
+        AnimateInvasion(now);
 
         if (now > nextStrike) { Strike(UnityEngine.Random.value < 0.5f ? 0 : 1, false); nextStrike = now + UnityEngine.Random.Range(2.6f, 5.6f); }
     }
@@ -1321,26 +1381,32 @@ public class ModeSelectScreen : MonoBehaviour
         hit.alpha = now - hitAt < 0.12f ? 1f : Mathf.Max(0f, 1f - (now - hitAt - 0.12f) / 0.35f);
     }
 
-    private void AnimateZombie(float now)
+    private void AnimateInvasion(float now)
     {
         bool hot = hover == 2 || open == 2;
-        for (int f = 0; f < fogs.Count; f++)
+        // Vuela: sube y baja despacio, con un leve vaivén, y las alas baten (más rápido con el mouse encima).
+        float vuelo = Mathf.Sin(now * Mathf.PI * 2f / (hot ? 1.6f : 2.8f));
+        jefe.anchoredPosition = new Vector2(8f * Mathf.Sin(now * 0.7f), -(-235f + 18f * vuelo));
+        jefe.localEulerAngles = new Vector3(0f, 0f, 2f * Mathf.Sin(now * 0.9f));
+        float aleteo = Mathf.Sin(now * Mathf.PI * 2f / (hot ? 0.22f : 0.38f));
+        alaIzquierda.localEulerAngles = new Vector3(0f, 0f, 16f * aleteo);
+        alaDerecha.localEulerAngles = new Vector3(0f, 0f, -16f * aleteo);
+        alaIzquierda.localScale = alaDerecha.localScale = new Vector3(1f, 0.82f + 0.18f * Mathf.Abs(aleteo), 1f);
+        for (int k = 0; k < patas.Count; k++)
+            patas[k].localEulerAngles = new Vector3(0f, 0f, 6f * Mathf.Sin(now * 2.2f + k) * (k % 2 == 0 ? 1f : -1f));
+
+        // Los huecos laten en rojo y el resplandor de atrás acompaña (la furia, con el mouse encima).
+        float latido = 0.5f + 0.5f * Mathf.Sin(now * Mathf.PI * 2f / (hot ? 0.7f : 1.6f));
+        for (int k = 0; k < huecos.Count; k++)
+            huecos[k].color = WithAlpha(rojoJefe, FadeAlpha((k % 2 == 0 ? 0.25f : 0.55f) + (k % 2 == 0 ? 0.35f : 0.45f) * latido));
+        furia.localScale = Vector3.one * (0.92f + (hot ? 0.16f : 0.08f) * latido);
+
+        for (int f = 0; f < nieblas.Count; f++)
         {
-            float periodFog = f == 0 ? 11f : 7.5f;
-            float x = (f == 0 ? -160f : 120f) + 140f * Mathf.Sin(now * Mathf.PI * 2f / periodFog * (f == 0 ? 1f : -1f));
-            fogs[f].anchoredPosition = new Vector2(x, fogs[f].anchoredPosition.y);
+            float periodo = f == 0 ? 11f : 7.5f;
+            float x = (f == 0 ? -200f : 160f) + 140f * Mathf.Sin(now * Mathf.PI * 2f / periodo * (f == 0 ? 1f : -1f));
+            nieblas[f].anchoredPosition = new Vector2(x, nieblas[f].anchoredPosition.y);
         }
-        for (int z = 0; z < zombies.Count; z++)
-        {
-            float period = hot ? 3.2f : 5.5f;
-            float p = Mathf.Repeat((now + zombieDelay[z]) / period, 1f);
-            float low = hot ? 130f : 200f, high = hot ? 10f : 40f;
-            float a = hot ? 0.4f : 0.45f, b = hot ? 0.7f : 0.6f;
-            float off = p < a ? Mathf.Lerp(low, high, Smooth(p / a)) : p < b ? high : Mathf.Lerp(high, low, Smooth((p - b) / (1f - b)));
-            zombies[z].anchoredPosition = new Vector2(zombieBase[z].x, -(zombieBase[z].y + off));
-        }
-        float eye = 0.25f + 0.75f * (0.5f + 0.5f * Mathf.Cos(now * Mathf.PI * 2f / 2.2f));
-        foreach (UIRing e in eyes) e.color = WithAlpha(ModeColor[2], eye);
     }
 
     private static float EaseOut(float t) => 1f - (1f - t) * (1f - t);

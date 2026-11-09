@@ -13,8 +13,8 @@
     <SelfContained>true</SelfContained>
     <IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
     <EnableCompressionInSingleFile>true</EnableCompressionInSingleFile>
-    <!-- Only the Spanish WPF resources: the other languages add a few MB to a launcher that is all in Spanish. -->
-    <SatelliteResourceLanguages>es</SatelliteResourceLanguages>
+    <!-- Ship the WPF resources for both initial locales. -->
+    <SatelliteResourceLanguages>es;en</SatelliteResourceLanguages>
     <DebugType>embedded</DebugType>
     <RuntimeIdentifier>win-x64</RuntimeIdentifier>
   </PropertyGroup>

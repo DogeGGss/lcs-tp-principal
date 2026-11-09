@@ -1,0 +1,80 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6cb6d8d75b8640af90d2c5f369da01c4, type: 3}
+  m_Name: Tanque
+  m_EditorClassIdentifier: 
+  nombre: Tanque
+  modelo: {fileID: 6697294229898335401, guid: 7dc7b54399d54194e9f2619f1832e8d5, type: 3}
+  escala: 1.2
+  giroDelModelo: 0
+  marcas: 1
+  colorDeMarcas: {r: 1, g: 0.45, b: 0.05, a: 1}
+  cantidadDeMarcas: 8
+  tamanioDeMarcas: 0.75
+  huecosEntreMarcas: 0.3
+  irregularidadDeMarcas: 0.75
+  brilloDeMarcas: 2.2
+  opacidadDeMarcas: 0.13
+  pulsoDeMarcas: 0.3
+  huesosSinMarcas: []
+  separacionDeRayas: 0.05
+  anchoDeRayas: 0.015
+  largoDeRayas: 0.08
+  giroDeMarcas: {x: 0, y: 0, z: 0}
+  ojoEnLaTextura: {x: 0.613, y: 0.273}
+  radioDelOjo: 0.03
+  brilloDeOjos: 8
+  delineadoDeOjos: 0.7
+  vida: 400
+  danio: 40
+  alcance: 0.5
+  velocidadDeAtaque: 1
+  cadencia: 1
+  frenaAlRecibirImpacto: 0
+  velocidad: 2.5
+  corre: 0
+  quieto: {fileID: 1827226128182048838, guid: 7af4d73ab07918f4fbf078cab489e4b8, type: 3}
+  quietoEnCombate: {fileID: 1827226128182048838, guid: d2e25d5293bd3c04a9278b305c0f0efe, type: 3}
+  caminar: {fileID: 1827226128182048838, guid: cca0042ae7bbbc94c999043722c6906b, type: 3}
+  correr: {fileID: 1827226128182048838, guid: a7ef05839d8269640b6e5424b6114fd6, type: 3}
+  ataques:
+  - {fileID: 1827226128182048838, guid: 2e0c5e6b121ff8047a09822e4ecf7c08, type: 3}
+  - {fileID: 0}
+  golpeRecibido: {fileID: 1827226128182048838, guid: ec8e909a44cd1614897f965eedb6c14e, type: 3}
+  morir: {fileID: 1827226128182048838, guid: 688d54156d330eb48b69f546ee8691e1, type: 3}
+  aturdido: {fileID: 0}
+  grito: {fileID: 8300000, guid: d3794f886d2049c8a3855eea2196ea45, type: 3}
+  otrosGritos:
+  - {fileID: 8300000, guid: 863d4da23df349ae84f4ee93660d0322, type: 3}
+  - {fileID: 8300000, guid: a5b1b366b3344beb96453e3a75638587, type: 3}
+  - {fileID: 8300000, guid: 0ca3d213864449d8aa5e7022c7ed436a, type: 3}
+  pasos:
+  - {fileID: 8300000, guid: 49d158c2781c4bd3ac0298877c3fb9dd, type: 3}
+  - {fileID: 8300000, guid: 3bf0ee73cc2747319a2e7ae3b37d946b, type: 3}
+  - {fileID: 8300000, guid: b446d09fe29946998fe5bf60ef35f6c6, type: 3}
+  - {fileID: 8300000, guid: b7b2e9597acd4829b340599c3ca17652, type: 3}
+  largoDelPaso: 1.6
+  sonidoDeAtaque: {fileID: 8300000, guid: 1c01e9de43874de7b39980ff349fe9a8, type: 3}
+  esJefe: 0
+  titulo: 
+  embiste: 0
+  preparaEmbestida: {fileID: 0}
+  embestida: {fileID: 0}
+  vuela: 0
+  volar: {fileID: 0}
+  escupir: {fileID: 0}
+  veneno: 0
+  materialDeNube: {fileID: 0}
+  furia: 0
+  rugido: {fileID: 0}
+  puntosPorBaja: 60
+  puntosPorBajaALaCabeza: 100

@@ -62,7 +62,7 @@ public class ShopUI : MonoBehaviour
 
     private static readonly int[] BorderRadii = { 4, 5, 6, 8, 10, 24 };
     private static readonly int[] Targets = { 100, 125, 150 };
-    private static readonly string[] TargetNames = { "Sin escudo", "Liviano", "Completo" };
+    private static string[] TargetNames => new[] { L10n.Source("Sin escudo"), L10n.Source("Liviano"), L10n.Source("Completo") };
     private static readonly BodyZone[] Zones = { BodyZone.Head, BodyZone.Body, BodyZone.Legs };
     private static readonly string[] ZoneNames = { "Cabeza", "Cuerpo", "Piernas" };
 
@@ -232,12 +232,22 @@ public class ShopUI : MonoBehaviour
         // US 166: en el campo de práctica el aviso dice "Tienda" mientras corre el tutorial y "Cambiar arma" después.
         if (CampoDePractica.Activo && hudHintText != null && hudHintText.text != NombrePractica) SetHint(NombrePractica);
 
+        // US 291, CA2: en Invasión B no abre nada y no está el aviso de la tienda ni la plata.
+        if (PlayerLoadout.SinTienda)
+        {
+            if (open) SetOpen(false);
+            if (hudHint.activeSelf) hudHint.SetActive(false);
+            if (hudMoney.gameObject.activeSelf) hudMoney.gameObject.SetActive(false);
+            if (hudClock.activeSelf) hudClock.SetActive(false);
+            return;
+        }
+
         if (KeyBindings.Down(GameAction.Tienda) && !CharacterSelectScreen.IsOpen) // con la selección de personaje abierta, no
         {
             // US 138, CA5: en Deathmatch solo se abre muerto, en la cuenta inicial o recién reaparecido.
             if (!open && Dm && loadout.CheckAccess() != ShopResult.Ok)
             {
-                if (!PartidaDeathmatch.YaTermino) MatchHud.Warn("Cambiás de equipo al morir o recién reaparecido", 2f);
+                if (!PartidaDeathmatch.YaTermino) MatchHud.Warn(L10n.T("gameplay.ui.change_your_loadout_while_dead_or_just_after_respawning"), 2f);
             }
             else SetOpen(!open);
         }
@@ -442,7 +452,7 @@ public class ShopUI : MonoBehaviour
         ShopResult result = loadout.Buy(item);
         if (result == ShopResult.Ok)
         {
-            ShowToast(item.price > 0 && !Dm ? $"{ItemName(item)} <color=#F29A38>−{Money(item.price)}</color>" : $"Elegiste {ItemName(item)}");
+            ShowToast(item.Price > 0 && !Dm ? $"{ItemName(item)} <color=#F29A38>−{Money(item.Price)}</color>" : $"Elegiste {ItemName(item)}");
             Play(buySound);
             return;
         }
@@ -455,10 +465,18 @@ public class ShopUI : MonoBehaviour
     {
         if (Dm) return; // US 138: no hay nada que vender
         if (loadout.CheckAccess() != ShopResult.Ok) return;
+        if (PlayerLoadout.SinVenta)
+        {
+            // US 148, CA6: en Invasión no se vende.
+            ShowToast(L10n.T("gameplay.shop.invasion_no_sell"));
+            Shake();
+            Play(errorSound);
+            return;
+        }
         ShopResult result = loadout.Sell(item);
         if (result == ShopResult.Ok)
         {
-            ShowToast($"Vendiste {ItemName(item)} <color=#3DDC97>+{Money(item.price)}</color>");
+            ShowToast($"Vendiste {ItemName(item)} <color=#3DDC97>+{Money(item.Price)}</color>");
             Play(sellSound);
             return;
         }
@@ -471,15 +489,15 @@ public class ShopUI : MonoBehaviour
     {
         switch (result)
         {
-            case ShopResult.NotEnoughMoney: return $"Te faltan {Money(loadout.CostOf(item) - loadout.Wallet.Money)}";
-            case ShopResult.AlreadyEquipped: return $"Ya tenés {ItemName(item)}";
-            case ShopResult.MaxReached: return $"Máximo de {item.displayName.ToLowerInvariant()}";
-            case ShopResult.ShieldFull: return "Tu escudo ya está lleno";
-            case ShopResult.BuyPhaseOver: return Dm ? "Ahora no podés cambiar de equipo" : "Terminó la fase de compra";
-            case ShopResult.OutsideBuyZone: return "Fuera de la zona de compra";
+            case ShopResult.NotEnoughMoney: return L10n.T("gameplay.shop.missing_fmt", Money(loadout.CostOf(item) - loadout.Wallet.Money));
+            case ShopResult.AlreadyEquipped: return L10n.T("gameplay.shop.already_have_fmt", ItemName(item));
+            case ShopResult.MaxReached: return item.kind == ShopItemKind.Ammo ? L10n.T("gameplay.shop.ammo_max") : L10n.T("gameplay.shop.max_of_fmt", ItemName(item).ToLowerInvariant());
+            case ShopResult.ShieldFull: return L10n.T("gameplay.shop.shield_full");
+            case ShopResult.BuyPhaseOver: return L10n.T(Dm ? "gameplay.shop.cant_change_now" : "gameplay.shop.buy_phase_over");
+            case ShopResult.OutsideBuyZone: return L10n.T("gameplay.shop.outside_zone");
             case ShopResult.NotSellable:
                 bool owned = loadout.IsEquipped(item) || loadout.Count(item) > 0 || (item.kind == ShopItemKind.Shield && loadout.Shield > 0);
-                return owned ? "Solo se vende lo que compraste esta ronda" : "No lo tenés";
+                return L10n.T(owned ? "gameplay.shop.only_this_round" : "gameplay.shop.dont_have");
             default: return "";
         }
     }
@@ -503,15 +521,20 @@ public class ShopUI : MonoBehaviour
         if (open && Dm && access != ShopResult.Ok)
         {
             SetOpen(false);
-            MatchHud.Warn("Se terminó el tiempo para cambiar de equipo", 2f);
+            MatchHud.Warn(L10n.T("gameplay.shop.change_time_over"), 2f);
         }
 
         // Con marcador (US 057) el tiempo de la compra ya está en su centro: este reloj quedaba abajo, asomándose.
         hudClock.SetActive(!open && !Dm && phase != null && phase.IsActive && MatchHud.Instance == null);
         // US 166: durante el tutorial del campo de práctica, solo en su paso (el de la tienda).
+        // US 150: en Invasión arriba al centro está el marcador del modo: el aviso va debajo de él.
+        RectTransform hintRect = (RectTransform)hudHint.transform;
+        float hintY = PartidaDeInvasion.Actual != null ? -238f : -150f;
+        if (hintRect.anchoredPosition.y != hintY) hintRect.anchoredPosition = new Vector2(hintRect.anchoredPosition.x, hintY);
         hudHint.SetActive(!open && (phaseActive || Dm) && access == ShopResult.Ok && !PantallaDeCarga.Visible &&
                           !TutorialDePractica.OcultaAvisoTienda);
-        hudMoney.gameObject.SetActive(!open && !Dm); // US 138, CA1: sin plata
+        // US 138, CA1: sin plata. US 150: en Invasión los puntos tienen su propio lugar (MarcadorInvasion).
+        hudMoney.gameObject.SetActive(!open && !Dm && PartidaDeInvasion.Actual == null);
         if (Spectated != null || showedSpectated)
         {
             // La plata del compañero cambia sin avisar (llega por la red): se revisa en cada cuadro. Al dejar de
@@ -561,7 +584,7 @@ public class ShopUI : MonoBehaviour
             }
             else
             {
-                barPhase.text = "Terminó la compra";
+                barPhase.text = L10n.T("gameplay.shop.buy_over");
                 barPhase.color = Mute;
                 barTime.text = "0:00";
                 SetProgress(0f);
@@ -611,30 +634,50 @@ public class ShopUI : MonoBehaviour
     }
 
     // US 166: mientras corre el tutorial del campo de práctica se la nombra "Tienda", como en las partidas.
-    private static string NombrePractica => TutorialDePractica.EnCurso ? "Tienda" : "Cambiar arma";
+    private static string NombrePractica => L10n.Source(TutorialDePractica.EnCurso ? "Tienda" : "Cambiar arma");
 
     private void RenderBar()
     {
-        barTitle.text = CampoDePractica.Activo ? NombrePractica : Dm ? "Elegí tu equipo" : "Tienda";
+        barTitle.text = CampoDePractica.Activo ? NombrePractica : L10n.Source(Dm ? "Elegí tu equipo" : "Tienda");
         if (Dm)
         {
             // US 138, CA1: sin plata ni precios.
-            barSub.text = CampoDePractica.Activo ? "Campo de práctica" : "Deathmatch";
+            barSub.text = L10n.Source(CampoDePractica.Activo ? "Campo de práctica" : "Deathmatch");
             barMoney.text = "Todo gratis";
-            barNext.text = CampoDePractica.Activo ? "Cambiala cuando quieras" : "Se guarda para la próxima vida";
+            barNext.text = L10n.T(CampoDePractica.Activo ? "gameplay.shop.change_anytime" : "gameplay.shop.kept_next_life");
             banner.SetActive(false);
             return;
         }
-        barSub.text = phase != null ? $"Táctico · Ronda {phase.Round}" : "Táctico";
-        barMoney.text = Money(loadout.Wallet.Money);
-        barNext.text = $"Próxima ronda: mínimo {Money(minimumNextRound)}";
+        if (PartidaDeInvasion.Actual != null)
+        {
+            // US 148, CA2: los puntos y la oleada que viene.
+            barSub.text = InvasionSub();
+            barMoney.text = Money(loadout.Wallet.Money);
+            float mas = DificultadDeInvasion.Puntos;
+            barNext.text = L10n.T("gameplay.shop.points_per_kill_fmt", Mathf.CeilToInt(60 * mas), Mathf.CeilToInt(100 * mas));
+        }
+        else
+        {
+            barSub.text = phase != null ? L10n.T("gameplay.shop.tactical_round_fmt", phase.Round) : L10n.T("gameplay.ui.tactical");
+            barMoney.text = Money(loadout.Wallet.Money);
+            barNext.text = L10n.T("gameplay.shop.next_round_min_fmt", Money(minimumNextRound));
+        }
 
         ShopResult access = loadout.CheckAccess();
         banner.SetActive(access != ShopResult.Ok);
         if (access == ShopResult.OutsideBuyZone)
-            bannerText.text = "Estás fuera de la zona de compra. Volvé al punto de aparición para comprar.";
+            bannerText.text = L10n.T("gameplay.shop.outside_zone_banner");
         else if (access == ShopResult.BuyPhaseOver)
-            bannerText.text = "La fase de compra terminó. Podés mirar, pero no comprar.";
+            bannerText.text = L10n.T("gameplay.shop.phase_over_banner");
+    }
+
+    // US 148, CA2: "Invasión · Oleada 4 de 10" (en el descanso, la que viene).
+    private static string InvasionSub()
+    {
+        OleadasDeInvasion oleadas = PartidaDeInvasion.Actual.GetComponent<OleadasDeInvasion>();
+        if (oleadas == null) return "Invasión";
+        int n = Mathf.Max(1, oleadas.Descanso ? oleadas.Oleada + 1 : oleadas.Oleada);
+        return n > OleadasDeInvasion.Ultima ? L10n.T("gameplay.shop.invasion_wave_lap_fmt", n, OleadasDeInvasion.Vuelta(n)) : L10n.T("gameplay.shop.invasion_wave_of_fmt", n, OleadasDeInvasion.Ultima);
     }
 
     private void RenderCategories()
@@ -690,7 +733,7 @@ public class ShopUI : MonoBehaviour
             }
             else
             {
-                row.rightText.text = Dm ? "" : item.price <= 0 ? "Gratis" : Money(item.price);
+                row.rightText.text = Dm ? "" : item.Price <= 0 ? "Gratis" : Money(item.Price);
                 row.rightText.color = cant ? Bad : Ink;
                 stateWidth = Mathf.Max(84f, Width(row.rightText, row.rightText.text));
                 Place(row.rightText.rectTransform, 461f - stateWidth, 0f, stateWidth, ItemRowH);
@@ -742,7 +785,7 @@ public class ShopUI : MonoBehaviour
         string title = ItemName(item);
         float nameSize = title.Length > 15 ? 36f : 46f;
 
-        detailPrice.text = Dm ? "" : item.price <= 0 ? "Gratis" : Money(item.price);
+        detailPrice.text = Dm ? "" : item.Price <= 0 ? "Gratis" : Money(item.Price);
         detailPrice.color = cant ? Bad : Ink;
         float priceWidth = Width(detailPrice, detailPrice.text);
         detailName.text = title;
@@ -784,8 +827,8 @@ public class ShopUI : MonoBehaviour
         }
 
         string role = item.kind == ShopItemKind.Shield
-            ? $"Absorbe los primeros {item.shieldPoints} puntos de daño, antes que la vida. Si sobrevivís, te lo llevás a la próxima ronda con lo que le quede."
-            : item.description;
+            ? L10n.T("gameplay.shop.shield_desc_fmt", item.shieldPoints)
+            : L10n.Source(item.description);
         detailRole.text = role;
         float roleHeight = Mathf.Max(46f, detailRole.GetPreferredValues(role, ContentW, 400f).y);
         Place(detailRole.rectTransform, Pad, roleTop, ContentW, roleHeight);
@@ -793,7 +836,7 @@ public class ShopUI : MonoBehaviour
         Clear(detailBody);
         if (item.IsWeapon) BuildWeaponBody(item);
         else if (item.kind == ShopItemKind.Shield) BuildShieldBody(item, roleTop + roleHeight);
-        else BuildGrenadeBody(item, roleTop + roleHeight);
+        else if (item.kind != ShopItemKind.Ammo) BuildGrenadeBody(item, roleTop + roleHeight);
         RenderBuyButton(item);
     }
 
@@ -828,7 +871,7 @@ public class ShopUI : MonoBehaviour
         RectTransform table = Place(Node("TirosParaMatar", detailBody), 170f, top, 368f, 133f);
         float[] columns = { 0f, 134f, 212f, 290f, 368f };
         TextMeshProUGUI corner = Text(Place(Node("Titulo", table), 6f, 4f, 128f, 14f), labelFont, 13f, Mute, TextAlignmentOptions.MidlineLeft, 8f, true);
-        corner.text = "Tiros para matar";
+        corner.text = L10n.T("gameplay.shop.shots_to_kill");
         for (int c = 0; c < 3; c++)
         {
             float x = columns[c + 1], width = columns[c + 2] - x;
@@ -872,13 +915,13 @@ public class ShopUI : MonoBehaviour
             $"{Mathf.RoundToInt(item.mobility * 100f)}%",
             item.zoom > 0f ? $"{Number(item.zoom)}×" + (item.zoom2 > 0f ? $"/{Number(item.zoom2)}×" : "") : "—",
         };
-        string[] labels = { item.burstCount > 1 ? "ráfagas/s" : "disparos/s", "cargador", item.reloadPerShell ? "por cartucho" : "recarga", "movilidad", "mira" };
+        string[] labels = { L10n.T(item.burstCount > 1 ? "gameplay.shop.stat.bursts" : "gameplay.shop.stat.shots"), L10n.T("gameplay.shop.stat.mag"), L10n.T(item.reloadPerShell ? "gameplay.shop.stat.per_shell" : "gameplay.shop.stat.reload"), L10n.T("gameplay.shop.stat.mobility"), L10n.T("gameplay.shop.stat.sight") };
         Stats(detailBody, 543f, values, labels);
 
         TextMeshProUGUI note = Text(Place(Node("Manejo", detailBody), Pad, 606f, ContentW, 60f), bodyFont, 15f, Note, TextAlignmentOptions.TopLeft);
         note.textWrappingMode = TextWrappingModes.Normal;
         note.lineSpacing = 16f;
-        note.text = $"<color=#D6DAE0><b>Retroceso:</b></color> {item.recoil}\n<color=#D6DAE0><b>Dispersión:</b></color> {Number(item.spread.x)}° quieto · {Number(item.spread.y)}° en movimiento · penetración {item.penetration.ToLowerInvariant()}";
+        note.text = L10n.T("gameplay.shop.note_fmt", L10n.Source(item.recoil), Number(item.spread.x), Number(item.spread.y), L10n.Source(item.penetration).ToLowerInvariant());
     }
 
     private void FigureNumber(RectTransform figure, float centerY, int value, Color color)
@@ -943,7 +986,7 @@ public class ShopUI : MonoBehaviour
         y += 12f;
         RectTransform table = Place(Node("Tabla", detailBody), Pad, y, ContentW, 120f);
         float[] columns = { 0f, 271f, 402f, ContentW };
-        string[] headers = { "Contra", "Sin escudo", "Con este" };
+        string[] headers = { L10n.T("gameplay.shop.col.against"), L10n.Source("Sin escudo"), L10n.T("gameplay.shop.col.with_this") };
         for (int c = 0; c < 3; c++)
         {
             TextMeshProUGUI header = Text(Place(Node("Columna", table), columns[c] + (c == 0 ? 6f : 0f), 4f, columns[c + 1] - columns[c], 14f),
@@ -952,9 +995,9 @@ public class ShopUI : MonoBehaviour
         }
         Line(table, 0f, 22f, ContentW);
         List<(string label, int damage)> rows = new List<(string label, int damage)>();
-        if (rifle != null) rows.Add(($"{ItemName(rifle)} al cuerpo", rifle.ShotDamage(rifle.bands[0], BodyZone.Body)));
-        if (smg != null) rows.Add(($"{ItemName(smg)} al cuerpo", smg.ShotDamage(smg.bands[0], BodyZone.Body)));
-        if (frag != null && frag.bands != null && frag.bands.Length > 0) rows.Add(("Metralla (centro)", frag.bands[0].body));
+        if (rifle != null) rows.Add((L10n.T("gameplay.shop.to_body_fmt", ItemName(rifle)), rifle.ShotDamage(rifle.bands[0], BodyZone.Body)));
+        if (smg != null) rows.Add((L10n.T("gameplay.shop.to_body_fmt", ItemName(smg)), smg.ShotDamage(smg.bands[0], BodyZone.Body)));
+        if (frag != null && frag.bands != null && frag.bands.Length > 0) rows.Add((L10n.Source("Metralla (centro)"), frag.bands[0].body));
         for (int r = 0; r < rows.Count; r++)
         {
             float rowY = 23f + r * 32f;
@@ -995,7 +1038,7 @@ public class ShopUI : MonoBehaviour
         Flow(detailBody, Pad, y, ContentW, new List<KeyValuePair<string, bool>>
         {
             new KeyValuePair<string, bool>($"Vida efectiva {withShield}", true),
-            new KeyValuePair<string, bool>($"Tenés {loadout.Shield}", false),
+            new KeyValuePair<string, bool>(L10n.T("gameplay.shop.you_have_fmt", loadout.Shield), false),
         });
     }
 
@@ -1018,12 +1061,12 @@ public class ShopUI : MonoBehaviour
         int totalMax = 0;
         foreach (ShopItem other in catalog.ItemsIn(ShopCategory.Grenades)) totalMax += other.maxCarry;
         Stats(detailBody, y, new[] { $"{loadout.Count(item)}/{item.maxCarry}", $"{Number(item.fuse)} s", totalMax.ToString() },
-            new[] { "llevás", "mecha", "máx. en total" });
+            new[] { L10n.T("gameplay.shop.col.carry"), L10n.T("gameplay.shop.col.fuse"), L10n.T("gameplay.shop.col.max_total") });
         y += 55f + 10f;
 
         Flow(detailBody, Pad, y, ContentW, new List<KeyValuePair<string, bool>>
         {
-            new KeyValuePair<string, bool>("Espacio 4 · apretá 4 de nuevo para cambiar", false),
+            new KeyValuePair<string, bool>(L10n.T("gameplay.shop.slot4_hint"), false),
         });
     }
 
@@ -1053,7 +1096,7 @@ public class ShopUI : MonoBehaviour
         SvgText(fx, left + 28f * FxScale, P(0f, edge.body).y + 4f * FxScale, edge.body.ToString(), monoFont, 13f, Ink, 1, 0f, false);
         SvgText(fx, P(center.upTo, 0f).x, top + 128f * FxScale, $"{Number(center.upTo)} m", monoFont, 13f, Ink, 0, 0f, false);
         SvgText(fx, P(edge.upTo, 0f).x, top + 128f * FxScale, $"{Number(edge.upTo)} m", monoFont, 13f, Ink, 0, 0f, false);
-        SvgText(fx, P(2.4f, 0f).x, P(0f, center.body).y - 6f * FxScale, "Mata solo sin escudo, y de muy cerca", labelFont, 13f, Mute, -1);
+        SvgText(fx, P(2.4f, 0f).x, P(0f, center.body).y - 6f * FxScale, L10n.T("gameplay.shop.molotov_note"), labelFont, 13f, Mute, -1);
     }
 
     // Radio y duración del humo.
@@ -1073,7 +1116,7 @@ public class ShopUI : MonoBehaviour
         Image(Place(Node("Duracion", fx), P(140f, 0f).x, P(0f, 46f).y, 340f * FxScale, 18f * FxScale), rounded, Over(WithAlpha(item.tint, 0.55f), FxColor), 3f);
         SvgText(fx, P(140f, 0f).x, P(0f, 84f).y, "0", monoFont, 13f, Ink, -1, 0f, false);
         SvgText(fx, P(480f, 0f).x, P(0f, 84f).y, $"{Number(item.effectDuration)} s", monoFont, 13f, Ink, 1, 0f, false);
-        SvgText(fx, P(140f, 0f).x, P(0f, 108f).y, "Tapa la visión de adentro hacia afuera y al revés", labelFont, 13f, Mute, -1);
+        SvgText(fx, P(140f, 0f).x, P(0f, 108f).y, L10n.T("gameplay.shop.smoke_note"), labelFont, 13f, Mute, -1);
     }
 
     // Ceguera de la flash según hacia dónde mirás: total (barra llena) y recuperación (degradé).
@@ -1081,9 +1124,9 @@ public class ShopUI : MonoBehaviour
     {
         const float left = 12f, top = 10f;
         float full = item.effectDuration, back = item.recovery;
-        FlashBar(fx, left, top + 4f * FxScale, "De frente (< 15 m)", full, back, item.tint);
-        FlashBar(fx, left, top + 40f * FxScale, "De costado", full / 2f, back / 2f, item.tint);
-        FlashBar(fx, left, top + 76f * FxScale, "De espaldas", 0.5f, 0f, item.tint);
+        FlashBar(fx, left, top + 4f * FxScale, L10n.T("gameplay.shop.flash_front"), full, back, item.tint);
+        FlashBar(fx, left, top + 40f * FxScale, L10n.T("gameplay.shop.flash_side"), full / 2f, back / 2f, item.tint);
+        FlashBar(fx, left, top + 76f * FxScale, L10n.T("gameplay.shop.flash_back"), 0.5f, 0f, item.tint);
     }
 
     private void FlashBar(RectTransform fx, float left, float y, string label, float full, float back, Color color)
@@ -1119,26 +1162,30 @@ public class ShopUI : MonoBehaviour
         if (Dm)
         {
             // US 138, CA3: elegir equipa gratis; la que ya está en uso dice "Elegida".
-            if (access != ShopResult.Ok) PaintButton(ButtonStyle.Locked, "Ahora no", "solo mirar");
+            if (access != ShopResult.Ok) PaintButton(ButtonStyle.Locked, L10n.T("gameplay.shop.btn.not_now"), L10n.T("gameplay.shop.btn.look_only"));
             else if (loadout.IsEquipped(item))
-                PaintButton(ButtonStyle.Owned, "Elegida", CampoDePractica.Activo ? "la tenés en la mano" : "se guarda para la próxima vida");
-            else PaintButton(ButtonStyle.Normal, "Elegir", "Enter · clic");
+                PaintButton(ButtonStyle.Owned, L10n.T("gameplay.shop.btn.chosen"), L10n.T(CampoDePractica.Activo ? "gameplay.shop.btn.in_hand" : "gameplay.shop.btn.next_life"));
+            else PaintButton(ButtonStyle.Normal, L10n.Source("Elegir"), L10n.Source("Enter · clic"));
         }
         else if (access != ShopResult.Ok)
-            PaintButton(ButtonStyle.Locked, access == ShopResult.BuyPhaseOver ? "Terminó la compra" : "Fuera de la zona", "solo mirar");
+            PaintButton(ButtonStyle.Locked, L10n.T(access == ShopResult.BuyPhaseOver ? "gameplay.shop.buy_over" : "gameplay.shop.btn.outside"), L10n.T("gameplay.shop.btn.look_only"));
+        else if (item.IsWeapon && loadout.IsEquipped(item) && PlayerLoadout.SinVenta)
+            PaintButton(ButtonStyle.Owned, L10n.T("gameplay.shop.btn.have_it"), L10n.T("gameplay.shop.btn.until_replaced")); // US 148, CA6
+        else if (item.kind == ShopItemKind.Shield && loadout.Shield >= item.shieldPoints && PlayerLoadout.SinVenta)
+            PaintButton(ButtonStyle.Owned, "Escudo lleno", "—");
         else if (item.IsWeapon && loadout.IsEquipped(item))
-            PaintButton(ButtonStyle.Owned, "Ya la tenés", loadout.BoughtThisPhase(item)
-                ? $"clic derecho: vender +{Money(item.price)}"
-                : item.price <= 0 ? "la tenés siempre" : "la trajiste de la ronda anterior");
+            PaintButton(ButtonStyle.Owned, L10n.T("gameplay.shop.btn.have_it"), loadout.BoughtThisPhase(item)
+                ? L10n.T("gameplay.shop.btn.sell_fmt", Money(item.Price))
+                : L10n.T(item.Price <= 0 ? "gameplay.shop.btn.always" : "gameplay.shop.btn.from_last_round"));
         else if (item.kind == ShopItemKind.Shield && loadout.Shield >= item.shieldPoints)
-            PaintButton(ButtonStyle.Owned, "Escudo lleno", loadout.BoughtThisPhase(item) ? $"clic derecho: vender +{Money(item.price)}" : "—");
+            PaintButton(ButtonStyle.Owned, "Escudo lleno", loadout.BoughtThisPhase(item) ? $"clic derecho: vender +{Money(item.Price)}" : "—");
         else if (item.kind == ShopItemKind.Grenade && loadout.Count(item) >= item.maxCarry)
-            PaintButton(ButtonStyle.Locked, "Máximo alcanzado", $"{item.maxCarry} por jugador");
+            PaintButton(ButtonStyle.Locked, L10n.T("gameplay.shop.btn.max_reached"), L10n.T("gameplay.shop.btn.per_player_fmt", item.maxCarry));
         else if (cost > money)
-            PaintButton(ButtonStyle.Cant, $"Te faltan {Money(cost - money)}", Money(item.price));
+            PaintButton(ButtonStyle.Cant, L10n.T("gameplay.shop.missing_fmt", Money(cost - money)), Money(item.Price));
         else
-            PaintButton(ButtonStyle.Normal, item.price <= 0 ? "Elegir · Gratis" : $"Comprar · {Money(item.price)}",
-                cost == item.price ? "Enter · clic" : cost < 0 ? $"te devuelven {Money(-cost)}" : $"pagás {Money(cost)}");
+            PaintButton(ButtonStyle.Normal, item.Price <= 0 ? "Elegir · Gratis" : $"Comprar · {Money(item.Price)}",
+                cost == item.Price ? "Enter · clic" : cost < 0 ? L10n.T("gameplay.shop.btn.refund_fmt", Money(-cost)) : L10n.T("gameplay.shop.btn.pay_fmt", Money(cost)));
     }
 
     private void PaintButton(ButtonStyle style, string label, string sub)
@@ -1210,7 +1257,7 @@ public class ShopUI : MonoBehaviour
         if (total == 0)
         {
             TextMeshProUGUI empty = Text(Place(Node("Vacio", loadoutCells[3]), loadoutWidths[3] - 112f, 21f, 100f, 24f), displayFont, 16f, Mute, TextAlignmentOptions.MidlineRight, 5f, true);
-            empty.text = "Vacío";
+            empty.text = L10n.Source("Vacío");
         }
         // Las fichas van en una fila que corta en el borde del espacio: nunca pisan al escudo.
         const float ChipPad = 23f + 7f, ChipGap = 8f;
@@ -1269,22 +1316,22 @@ public class ShopUI : MonoBehaviour
         else
         {
             TextMeshProUGUI none = Text(Place(Node("Valor", loadoutCells[4]), 158f, 51f, 90f, 40f), displayFont, 18f, Mute, TextAlignmentOptions.MidlineLeft, 5f, true);
-            none.text = "Vacío";
+            none.text = L10n.Source("Vacío");
         }
         Dim(4, loadout.Shield <= 0);
 
         // Gastado esta ronda y "Deshacer" (US 076, CA10), alineados a la derecha.
         float right = loadoutWidths[5] - 18f;
         TextMeshProUGUI title = Text(Place(Node("Titulo", loadoutCells[5]), 0f, 21f, right, 24f), labelFont, 14f, Mute, TextAlignmentOptions.MidlineRight, 12f, true);
-        title.text = Dm ? "Tu equipo" : "Gastado esta ronda";
+        title.text = L10n.T(Dm ? "gameplay.tac.your_team" : PlayerLoadout.SinVenta ? "gameplay.shop.spent_rest" : "gameplay.shop.spent_round");
         if (Dm)
         {
             // US 138, CA4: no hay gasto; se avisa que lo elegido queda.
             TextMeshProUGUI keep = Text(Place(Node("Guardado", loadoutCells[5]), 0f, 51f, right, 40f), labelFont, 17f, Ink, TextAlignmentOptions.MidlineRight, 6f, true);
-            keep.text = CampoDePractica.Activo ? "Cambiala cuando quieras" : "Se guarda para la próxima vida";
+            keep.text = L10n.T(CampoDePractica.Activo ? "gameplay.shop.change_anytime" : "gameplay.shop.kept_next_life");
             return;
         }
-        if (loadout.HasPurchases && loadout.CheckAccess() == ShopResult.Ok)
+        if (loadout.HasPurchases && loadout.CheckAccess() == ShopResult.Ok && !PlayerLoadout.SinVenta) // US 148, CA6
         {
             RectTransform undo = Place(Node("Deshacer", loadoutCells[5]), 0f, 54f, 10f, 34f);
             Image(undo, rounded, Over(White(0.08f), PanelBase), 6f, true);
@@ -1306,7 +1353,7 @@ public class ShopUI : MonoBehaviour
         float x = 18f;
         if (key != null) x += Key(loadoutCells[cell], x, 21f, key, false, !inHand).width + 8f;
         TextMeshProUGUI text = Text(Place(Node("Titulo", loadoutCells[cell]), x, 21f, 220f, 24f), labelFont, 14f, inHand ? Accent : Mute, TextAlignmentOptions.MidlineLeft, 12f, true);
-        text.text = label;
+        text.text = L10n.Source(label);
     }
 
     // ---------- Compañeros (US 175, CA13) ----------
@@ -1366,7 +1413,7 @@ public class ShopUI : MonoBehaviour
         {
             TextMeshProUGUI none = Text(Place(Node("SinPrincipal", teamRowsRoot), x, y + 45f, 140f, 28f), displayFont, 14f, Mute,
                 TextAlignmentOptions.MidlineLeft, 10f, true);
-            none.text = primary != null ? ListName(primary) : "Sin principal";
+            none.text = primary != null ? ListName(primary) : L10n.T("gameplay.shop.no_primary");
             x += Width(none, none.text.ToUpperInvariant()) + 10f;
         }
         if (shield > 0)
@@ -1387,7 +1434,7 @@ public class ShopUI : MonoBehaviour
         if (primary != null && shield >= MaxShield()) { state = "Compra completa"; color = Ok; }
         else if (spent > 0) { state = "Comprando"; color = Mute; }
         else if (primary == null) { state = "Ahorra · pistola"; color = Accent; }
-        else { state = "Sin comprar"; color = Accent; }
+        else { state = L10n.T("gameplay.shop.not_bought"); color = Accent; }
         TextMeshProUGUI status = Text(Place(Node("Estado", teamRowsRoot), 18f, y + 80f, TeamW - 36f, 14f), labelFont, 13f, color,
             TextAlignmentOptions.MidlineLeft, 12f, true);
         status.text = state;
@@ -1537,7 +1584,7 @@ public class ShopUI : MonoBehaviour
     {
         TextMeshProUGUI text = Text(Place(Node("Nombre", loadoutCells[cell]), x, 51f, loadoutWidths[cell] - x - 12f, 40f), displayFont, 21f, color, TextAlignmentOptions.MidlineLeft, 5f, true);
         text.overflowMode = TextOverflowModes.Ellipsis;
-        text.text = label;
+        text.text = L10n.Source(label);
     }
 
     // ---------- Textos y estados derivados ----------
@@ -1567,7 +1614,7 @@ public class ShopUI : MonoBehaviour
         {
             ink = Mute;
             fill = Over(White(0.1f), PanelBase);
-            return "Máximo";
+            return L10n.T("gameplay.shop.max");
         }
         return null;
     }
@@ -1593,7 +1640,9 @@ public class ShopUI : MonoBehaviour
         return item.icon.rect.width / item.icon.rect.height;
     }
 
-    private static string CategoryName(ShopCategory value)
+    private static string CategoryName(ShopCategory value) => L10n.Source(CategoryNameEs(value));
+
+    private static string CategoryNameEs(ShopCategory value)
     {
         switch (value)
         {
@@ -1603,6 +1652,7 @@ public class ShopUI : MonoBehaviour
             case ShopCategory.Rifles: return "Fusiles";
             case ShopCategory.Snipers: return "Francotiradores";
             case ShopCategory.Shields: return "Escudos";
+            case ShopCategory.Supplies: return "Suministros";
             default: return "Granadas";
         }
     }
@@ -1613,8 +1663,8 @@ public class ShopUI : MonoBehaviour
         int low = int.MaxValue, high = int.MinValue;
         foreach (ShopItem item in items)
         {
-            low = Mathf.Min(low, item.price);
-            high = Mathf.Max(high, item.price);
+            low = Mathf.Min(low, item.Price);
+            high = Mathf.Max(high, item.Price);
         }
         return low == high ? Money(low, false) : $"{Money(low, false)}+";
     }
@@ -1627,7 +1677,7 @@ public class ShopUI : MonoBehaviour
     private string ListSubtitle(ShopItem item)
     {
         if (item.IsWeapon) return $"{item.displayName} · {item.fireMode}";
-        if (item.kind == ShopItemKind.Shield) return item.shortEffect;
+        if (item.kind == ShopItemKind.Shield || item.kind == ShopItemKind.Ammo) return item.shortEffect;
         return $"{loadout.Count(item)}/{item.maxCarry} · {item.shortEffect}";
     }
 
@@ -1638,6 +1688,7 @@ public class ShopUI : MonoBehaviour
             case ShopItemKind.PrimaryWeapon: return $"Principal · {item.fireMode}";
             case ShopItemKind.SecondaryWeapon: return $"Secundaria · {item.fireMode}";
             case ShopItemKind.Shield: return $"Escudo · {item.shieldPoints} puntos";
+            case ShopItemKind.Ammo: return "Suministros";
             default: return "Granada · espacio 4";
         }
     }
@@ -1646,7 +1697,7 @@ public class ShopUI : MonoBehaviour
     {
         ShopItem best = null;
         foreach (ShopItem item in catalog.ItemsIn(value))
-            if (item.bands != null && item.bands.Length > 0 && (best == null || item.price > best.price)) best = item;
+            if (item.bands != null && item.bands.Length > 0 && (best == null || item.Price > best.Price)) best = item;
         return best;
     }
 
@@ -1659,22 +1710,22 @@ public class ShopUI : MonoBehaviour
         if (item.pellets > 1)
         {
             int all = item.ShotDamage(first, BodyZone.Body);
-            result.Add(new KeyValuePair<string, bool>($"Todo al cuerpo a menos de {Number(first.upTo)} m: {all}", all >= 100));
-            result.Add(new KeyValuePair<string, bool>(all >= 125 ? "Mata de 1 sin escudo o con liviano" : all >= 100 ? "Mata de 1 sin escudo" : "Nunca mata de 1", all >= 100));
+            result.Add(new KeyValuePair<string, bool>(L10n.T("gameplay.shop.all_body_fmt", Number(first.upTo), all), all >= 100));
+            result.Add(new KeyValuePair<string, bool>(L10n.T(all >= 125 ? "gameplay.shop.one_shot_light" : all >= 100 ? "gameplay.shop.one_shot_none" : "gameplay.shop.never_one_shot"), all >= 100));
             return result;
         }
 
         int head = first.head;
         bool headEverywhere = System.Array.TrueForAll(item.bands, b => b.head >= 150);
-        if (head >= 150) result.Add(new KeyValuePair<string, bool>(headEverywhere ? "1 a la cabeza mata a cualquiera" : $"1 a la cabeza mata a cualquiera ({item.BandLabel(0)})", true));
-        else if (head >= 125) result.Add(new KeyValuePair<string, bool>("1 a la cabeza mata con escudo liviano", true));
-        else if (head >= 100) result.Add(new KeyValuePair<string, bool>("1 a la cabeza mata sin escudo", true));
-        else result.Add(new KeyValuePair<string, bool>($"{DamageMath.ShotsToKill(head, 150)} a la cabeza con escudo completo", false));
+        if (head >= 150) result.Add(new KeyValuePair<string, bool>(headEverywhere ? L10n.T("gameplay.shop.head_any") : L10n.T("gameplay.shop.head_any_fmt", item.BandLabel(0)), true));
+        else if (head >= 125) result.Add(new KeyValuePair<string, bool>(L10n.T("gameplay.shop.head_light"), true));
+        else if (head >= 100) result.Add(new KeyValuePair<string, bool>(L10n.T("gameplay.shop.head_none"), true));
+        else result.Add(new KeyValuePair<string, bool>(L10n.T("gameplay.shop.head_full_fmt", DamageMath.ShotsToKill(head, 150)), false));
 
         int body = first.body;
-        if (body >= 150) result.Add(new KeyValuePair<string, bool>("1 al cuerpo mata a cualquiera", true));
-        else if (body >= 100) result.Add(new KeyValuePair<string, bool>("1 al cuerpo mata sin escudo", true));
-        else result.Add(new KeyValuePair<string, bool>($"{DamageMath.ShotsToKill(body, 150)} al cuerpo con escudo completo", false));
+        if (body >= 150) result.Add(new KeyValuePair<string, bool>(L10n.T("gameplay.shop.body_any"), true));
+        else if (body >= 100) result.Add(new KeyValuePair<string, bool>(L10n.T("gameplay.shop.body_none"), true));
+        else result.Add(new KeyValuePair<string, bool>(L10n.T("gameplay.shop.body_full_fmt", DamageMath.ShotsToKill(body, 150)), false));
         return result;
     }
 
@@ -1919,14 +1970,15 @@ public class ShopUI : MonoBehaviour
     private void BuildCategoryPanel()
     {
         catsPanel = Panel("Categorias", CatsX, PanelTop, CatsW, HeadH + LegendH, out catsMask);
-        ColumnHeader(catsPanel, CatsW, "Número o clic").text = "Categoría";
+        ColumnHeader(catsPanel, CatsW, L10n.Source("Número o clic")).text = L10n.Source("Categoría");
         catRowsRoot = Place(Node("Filas", catsPanel), 0f, HeadH, CatsW, 10f);
         legendRoot = Place(Node("Atajos", catsPanel), 0f, HeadH, CatsW, LegendH);
         Line(legendRoot, 0f, 0f, CatsW);
         Border(catsPanel, 10f, LineColor);
 
         // Atajos en renglones que se acomodan solos, como el ".legend" de la maqueta.
-        (string key, string label)[] shortcuts = { (KeyBindings.Label(GameAction.Tienda), "Cerrar"), ("1–9", "Elegir"), ("↵", "Comprar"), ("⌫", "Volver"), (null, "Clic der. vender") };
+        var shortcuts = new List<(string key, string label)> { (KeyBindings.Label(GameAction.Tienda), "Cerrar"), ("1–9", "Elegir"), ("↵", "Comprar"), ("⌫", "Volver") };
+        if (MatchSettings.Mode != GameMode.Zombie) shortcuts.Add((null, "Clic der. vender")); // US 148, CA6: en Invasión no se vende (se arma en Awake: todavía no hay PartidaDeInvasion)
         float x = 19f, y = 15f;
         foreach ((string key, string label) in shortcuts)
         {
@@ -1934,8 +1986,8 @@ public class ShopUI : MonoBehaviour
             float width = 0f;
             if (key != null) width = Key(item, 0f, 0f, key, false, true).width + 6f;
             TextMeshProUGUI text = Text(Place(Node("Texto", item), width, 0f, 200f, 24f), labelFont, 15f, Mute, TextAlignmentOptions.MidlineLeft, 6f, true);
-            text.text = label;
-            width += Width(text, label.ToUpperInvariant());
+            text.text = L10n.Source(label);
+            width += Width(text, text.text.ToUpperInvariant());
             if (x > 19f && x + width > CatsW - 19f)
             {
                 x = 19f;
@@ -2010,7 +2062,7 @@ public class ShopUI : MonoBehaviour
     private void BuildListPanel()
     {
         listPanel = Panel("Lista", ListX, PanelTop, ListW, HeadH, out listMask);
-        listTitle = ColumnHeader(listPanel, ListW, "Volver", backIcon);
+        listTitle = ColumnHeader(listPanel, ListW, L10n.Source("Volver"), backIcon);
         listRowsRoot = Place(Node("Filas", listPanel), 0f, HeadH, ListW, 10f);
         Border(listPanel, 10f, LineColor);
     }

@@ -547,9 +547,9 @@ public class RondasTacticas : MonoBehaviour
         {
             // CA6
             if (billetera != null) billetera.Set(PlataMuerteSubita);
-            MatchHud.ShowBanner($"{RondasDe(0)} a {RondasDe(1)}", "Muerte súbita", MatchHud.RivalColor,
-                "El equipo que gane esta ronda gana la partida",
-                new[] { $"Lados sorteados: {(ataca ? "atacás" : "defendés")}", $"Todos reciben {ShopUIKit.Money(PlataMuerteSubita)}" },
+            MatchHud.ShowBanner($"{RondasDe(0)} a {RondasDe(1)}", L10n.T("gameplay.tac.sudden_death"), MatchHud.RivalColor,
+                L10n.T("gameplay.tac.decisive_round"),
+                new[] { L10n.T(ataca ? "gameplay.tac.sides_drawn_attack" : "gameplay.tac.sides_drawn_defend"), L10n.T("gameplay.tac.everyone_gets_fmt", ShopUIKit.Money(PlataMuerteSubita)) },
                 DuracionAviso);
         }
         else if (ronda == EquiposTacticos.RondaDeCambio)
@@ -557,9 +557,9 @@ public class RondasTacticas : MonoBehaviour
             // CA5
             if (billetera != null) billetera.Set(PlataInicial);
             if (equipo != null) equipo.LoseEquipment();
-            MatchHud.ShowBanner("Mitad de la partida", "Cambio de lado", ShopUIKit.Accent,
-                $"Ahora tu equipo <color=#F3F4F6>{(ataca ? "ataca" : "defiende")}</color>",
-                new[] { $"Plata: {ShopUIKit.Money(PlataInicial)}", "Armas: pistola" }, DuracionAviso);
+            MatchHud.ShowBanner(L10n.T("gameplay.tac.halftime"), L10n.T("gameplay.tac.side_switch"), ShopUIKit.Accent,
+                L10n.T(ataca ? "gameplay.tac.now_attacks" : "gameplay.tac.now_defends"),
+                new[] { L10n.T("gameplay.tac.money_fmt", ShopUIKit.Money(PlataInicial)), L10n.T("gameplay.tac.weapons_pistol") }, DuracionAviso);
         }
     }
 
@@ -567,9 +567,9 @@ public class RondasTacticas : MonoBehaviour
     {
         int mio = Mathf.Max(0, EquiposTacticos.Local);
         bool gane = Ganador == mio;
-        MatchHud.ShowBanner($"Ronda {ronda}", gane ? "Ronda ganada" : "Ronda perdida",
+        MatchHud.ShowBanner(L10n.T("gameplay.tac.round_fmt", ronda), L10n.T(gane ? "gameplay.tac.round_won" : "gameplay.tac.round_lost"),
             gane ? MatchHud.TeamColor : MatchHud.RivalColor, $"{TextoMotivo(gane)}  ·  {Resultado(mio)}",
-            plata, Mathf.Max(0.5f, Restante), "Siguiente ronda en {0}");
+            plata, Mathf.Max(0.5f, Restante), L10n.T("gameplay.tac.next_round_in"));
     }
 
     // =====================================================================
@@ -607,12 +607,12 @@ public class RondasTacticas : MonoBehaviour
         bool vivo = partida != null && partida.Local != null && partida.Local.Vivo;
 
         if (gane) Premio(detalle, PremioGanada, "Ronda ganada");                                    // CA3
-        else if (MotivoActual == Motivo.Tiempo && ataca && vivo) detalle.Add("Sin premio: no plantaron"); // CA6
+        else if (MotivoActual == Motivo.Tiempo && ataca && vivo) detalle.Add(L10n.T("gameplay.tac.no_prize")); // CA6
         else
         {
             // CA4: 1.900, 2.400 y desde la tercera derrota seguida 2.900.
             int racha = Mathf.Clamp(Leer(mio == 0 ? PropRacha0 : PropRacha1, 1), 1, PremiosDerrota.Length);
-            Premio(detalle, PremiosDerrota[racha - 1], racha == 1 ? "Ronda perdida" : $"{racha}.ª derrota seguida");
+            Premio(detalle, PremiosDerrota[racha - 1], racha == 1 ? L10n.T("gameplay.tac.round_lost") : L10n.T("gameplay.tac.loss_streak_fmt", racha));
         }
         if (HayDispositivo && ataca) Premio(detalle, PremioPlantar, "Dispositivo plantado");       // CA5
         return detalle;
@@ -650,11 +650,11 @@ public class RondasTacticas : MonoBehaviour
         switch (MotivoActual)
         {
             case Motivo.Tiempo:
-                return gane ? "Se terminó el tiempo y tu equipo defendió" : "Se terminó el tiempo y los rivales defendieron";
-            case Motivo.DispositivoExploto: return "Explotó el dispositivo";
-            case Motivo.DispositivoDesactivado: return "Se desactivó el dispositivo";
-            case Motivo.Abandono: return gane ? "Los rivales abandonaron la partida" : "Tu equipo abandonó la partida";
-            default: return gane ? "Tu equipo eliminó a todos los rivales" : "Los rivales eliminaron a tu equipo";
+                return L10n.T(gane ? "gameplay.tac.time_defended_us" : "gameplay.tac.time_defended_them");
+            case Motivo.DispositivoExploto: return L10n.T("gameplay.tac.exploded");
+            case Motivo.DispositivoDesactivado: return L10n.T("gameplay.tac.defused");
+            case Motivo.Abandono: return L10n.T(gane ? "gameplay.tac.enemies_left" : "gameplay.tac.team_left");
+            default: return L10n.T(gane ? "gameplay.tac.team_wiped_them" : "gameplay.tac.team_wiped_us");
         }
     }
 
@@ -693,7 +693,7 @@ public class RondasTacticas : MonoBehaviour
         // Si arrancó afuera (el mapa no tiene la zona donde aparece), no se lo traba.
         if (!ultimoDentro.HasValue) return;
         JugadorEnRed.Teletransportar(jugador, ultimoDentro.Value, jugador.rotation);
-        MatchHud.Warn("No podés salir de la base durante la compra");
+        MatchHud.Warn(L10n.T("gameplay.tac.no_leaving_base"));
     }
 
     // No se dispara, no se acuchilla ni se tiran granadas durante la compra (los cometas del minijuego son de la US 157).
@@ -719,7 +719,7 @@ public class RondasTacticas : MonoBehaviour
     {
         int s = Mathf.CeilToInt(Restante);
         // La tecla de la tienda ya la muestra la tienda arriba ("B Tienda").
-        MatchHud.SetHint($"La salida de la base se abre en <color=#F29A38>{s / 60}:{s % 60:00}</color>");
+        MatchHud.SetHint(L10n.T("gameplay.tac.base_opens_fmt", s / 60, s % 60));
     }
 
     // =====================================================================

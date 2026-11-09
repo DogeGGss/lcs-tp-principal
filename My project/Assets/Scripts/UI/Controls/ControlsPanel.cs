@@ -160,11 +160,13 @@ public class ControlsPanel : MonoBehaviour, OpcionesPantalla.ISeccion
 
     private void OnEnable()
     {
+        L10n.LanguageChanged += RefreshAll;
         if (root != null) RefreshAll();
     }
 
     private void OnDisable()
     {
+        L10n.LanguageChanged -= RefreshAll;
         CancelCapture();
         CloseConflict();
         Guardar();
@@ -227,9 +229,7 @@ public class ControlsPanel : MonoBehaviour, OpcionesPantalla.ISeccion
         {
             pendingAction = action;
             pendingOther = other.Value;
-            conflictText.text = $"<color=#F3F4F6>{KeyBindings.Label(key)}</color> ya está en " +
-                                $"<color=#F3F4F6>{KeyBindings.Name(other.Value)}</color>. ¿Querés intercambiarlas? " +
-                                $"{KeyBindings.Name(other.Value)} pasaría a {KeyBindings.Label(action)}.";
+            L10n.Bind(conflictText,"ui.controls.conflict",KeyBindings.Label(key),KeyBindings.Name(other.Value),KeyBindings.Label(action));
             conflictOpen = true;
             conflictShown = true;
             conflictBar.gameObject.SetActive(true);
@@ -362,7 +362,7 @@ public class ControlsPanel : MonoBehaviour, OpcionesPantalla.ISeccion
         float w = parent.rect.width > 0f ? parent.rect.width : 600f;
         float inner = w - Pad * 2f;
 
-        Text(Place(Node("Titulo", root), Pad, 36f, inner, 50f), displayFont, 46f, Ink, TextAlignmentOptions.MidlineLeft, 2f, true).text = "Controles";
+        L10n.BindSource(Text(Place(Node("Titulo", root), Pad, 36f, inner, 50f), displayFont, 46f, Ink, TextAlignmentOptions.MidlineLeft, 2f, true), "Controles","ui.");
         Image(Place(Node("LineaAnden", root), Pad, 92f, 120f, 3f), null, Accent);
 
         // En las opciones del menú principal todo tiene que entrar en el alto de las otras pestañas (ver Start): las dos
@@ -396,14 +396,14 @@ public class ControlsPanel : MonoBehaviour, OpcionesPantalla.ISeccion
         if (enMenu)
         {
             y += 6f;
-            Text(Place(Node("Ayuda", root), Pad + 200f, y - 2f, inner - 200f, 24f), bodyFont, 16f, Mute, TextAlignmentOptions.MidlineRight).text = ayuda;
+            L10n.BindSource(Text(Place(Node("Ayuda", root), Pad + 200f, y - 2f, inner - 200f, 24f), bodyFont, 16f, Mute, TextAlignmentOptions.MidlineRight), ayuda,"ui.");
             Group("Teclas", ref y);
         }
         else
         {
             y += 10f;
             Group("Teclas", ref y);
-            Text(Place(Node("Ayuda", root), Pad, y, inner, 22f), bodyFont, 16f, Mute, TextAlignmentOptions.MidlineLeft).text = ayuda;
+            L10n.BindSource(Text(Place(Node("Ayuda", root), Pad, y, inner, 22f), bodyFont, 16f, Mute, TextAlignmentOptions.MidlineLeft), ayuda,"ui.");
             y += 32f;
         }
 
@@ -460,7 +460,7 @@ public class ControlsPanel : MonoBehaviour, OpcionesPantalla.ISeccion
         }
         Button(root, footX, y, 170f, 40f, "Restablecer", false, PedirRestablecer);
         savedText = Text(Place(Node("Guardado", root), footX + 186f, y, 140f, 40f), labelFont, 16f, Ok, TextAlignmentOptions.MidlineLeft, 12f, true);
-        savedText.text = "Guardado";
+        L10n.BindSource(savedText, "Guardado","ui.");
         savedText.alpha = 0f;
 
         RefreshAll();
@@ -468,21 +468,21 @@ public class ControlsPanel : MonoBehaviour, OpcionesPantalla.ISeccion
 
     private void Group(string title, ref float y)
     {
-        Text(Place(Node("Grupo", root), Pad, y, 300f, 20f), labelFont, 15f, Mute, TextAlignmentOptions.MidlineLeft, 16f, true).text = title;
+        L10n.BindSource(Text(Place(Node("Grupo", root), Pad, y, 300f, 20f), labelFont, 15f, Mute, TextAlignmentOptions.MidlineLeft, 16f, true), title,"ui.");
         y += 24f;
     }
 
     // Nombre, slider y valor en un tramo de "ancho" desde x.
     private Slider SliderRow(string title, float x, float y, float ancho, float min, float max, out TextMeshProUGUI value)
     {
-        Text(Place(Node(title, root), x, y, 190f, RowH), labelFont, 19f, Ink, TextAlignmentOptions.MidlineLeft, 5f, true).text = title;
+        L10n.BindSource(Text(Place(Node(title, root), x, y, 190f, RowH), labelFont, 19f, Ink, TextAlignmentOptions.MidlineLeft, 5f, true), title,"ui.");
         value = Text(Place(Node("Valor", root), x + ancho - 60f, y, 60f, RowH), labelFont, 18f, Ink, TextAlignmentOptions.MidlineRight);
         return BuildSlider(root, x + 190f, y + (RowH - 26f) / 2f, ancho - 190f - 76f, min, max);
     }
 
     private void InvertRow(ref float y)
     {
-        Text(Place(Node("InvertirY", root), Pad, y, 190f, RowH), labelFont, 19f, Ink, TextAlignmentOptions.MidlineLeft, 5f, true).text = "Invertir eje Y";
+        L10n.BindSource(Text(Place(Node("InvertirY", root), Pad, y, 190f, RowH), labelFont, 19f, Ink, TextAlignmentOptions.MidlineLeft, 5f, true), "Invertir eje Y","ui.");
         string[] names = { "Sí", "No" };
         for (int i = 0; i < 2; i++)
         {
@@ -490,7 +490,7 @@ public class ControlsPanel : MonoBehaviour, OpcionesPantalla.ISeccion
             RectTransform seg = Place(Node(names[i], root), Pad + 190f + i * 64f, y + (RowH - 30f) / 2f, 60f, 30f);
             invertSegs[i] = Image(seg, rounded, ChipColor, 3f, true);
             invertLabels[i] = Text(Stretch(Node("Texto", seg)), labelFont, 16f, Mute, TextAlignmentOptions.Center, 8f, true);
-            invertLabels[i].text = names[i];
+            L10n.BindSource(invertLabels[i], names[i],"ui.");
             seg.gameObject.AddComponent<ShopPointerTarget>().Clicked = () => { KeyBindings.InvertY = value; Guardar(); RefreshInvert(); };
         }
         y += RowH;
@@ -521,7 +521,7 @@ public class ControlsPanel : MonoBehaviour, OpcionesPantalla.ISeccion
     {
         RectTransform rect = Place(Node(name, root), x, y, w, KeyRowH);
         Image(rect, rounded, rowColor, 4f);
-        Text(Place(Node("Accion", rect), 12f, 0f, w - 120f, KeyRowH), labelFont, 17f, Mute, TextAlignmentOptions.MidlineLeft, 4f, true).text = name;
+        Text(Place(Node("Accion", rect), 12f, 0f, w - 120f, KeyRowH), labelFont, 17f, Mute, TextAlignmentOptions.MidlineLeft, 4f, true).text = L10n.Source(name, "ui.");
         Img chip = Image(Place(Node("Tecla", rect), w - 104f, (KeyRowH - 28f) / 2f, 96f, 28f), rounded, ChipColor, 4f);
         Text(Stretch(Node("Texto", chip.rectTransform)), displayFont, 16f, Mute, TextAlignmentOptions.Center, 2f, true).text = key;
     }
@@ -531,7 +531,7 @@ public class ControlsPanel : MonoBehaviour, OpcionesPantalla.ISeccion
         RectTransform rect = Place(Node(label, parent), x, y, w, h);
         Color normal = primary ? Accent : ChipColor;
         Img bg = Image(rect, rounded, normal, 4f, true);
-        Text(Stretch(Node("Texto", rect)), displayFont, 17f, primary ? KeyInk : Ink, TextAlignmentOptions.Center, 8f, true).text = label;
+        L10n.BindSource(Text(Stretch(Node("Texto", rect)), displayFont, 17f, primary ? KeyInk : Ink, TextAlignmentOptions.Center, 8f, true), label,"ui.");
         ShopPointerTarget pointer = rect.gameObject.AddComponent<ShopPointerTarget>();
         pointer.Hovered = () => bg.color = primary ? Hot : ChipDim;
         pointer.Exited = () => bg.color = normal;

@@ -29,7 +29,13 @@ public class Mitre : MonoBehaviour, IHudWeapon
     public float speedMultiplier = 0.92f;
     private bool isEquipping = false;
 
-    // Sin mira: solo los francotiradores apuntan (US 009).
+    // Sin mira: solo los francotiradores apuntan (US 009). Con Disparo concentrado (US 323) apunta con el click derecho.
+
+    /// <summary>US 323, Disparo concentrado: se tiene la carta.</summary>
+    public static System.Func<bool> Concentrado;
+    public const int BalasConcentradas = 5;
+    public const float EntreConcentrados = 0.4f;
+    private readonly ZoomPorCarta zoom = new ZoomPorCarta();
 
     [Header("Referencias y Audio")]
     public Camera playerCamera;
@@ -60,13 +66,13 @@ public class Mitre : MonoBehaviour, IHudWeapon
     // Datos para el HUD (US 056): nombre de la tienda, cargador, reserva y recarga.
     public string HudName => Data != null && !string.IsNullOrEmpty(Data.alias) ? Data.alias : weaponName;
     public int Ammo => currentAmmo;
-    public int MagazineSize => maxAmmo;
+    public int MagazineSize => Municion.Cargador(maxAmmo, true); // US 331: con Sin respaldo, el doble
     public int Reserve => reserveAmmo;
     public float ReloadProgress => isReloading ? Mathf.Clamp01((Time.time - reloadStartTime) / reloadTime) : -1f;
 
     void Awake()
     {
-        currentAmmo = maxAmmo;
+        currentAmmo = MagazineSize;
         if (fullReserve < 0) fullReserve = reserveAmmo;
         // Quien dispara: sus balas nunca le pegan a él mismo (US 165)
         PlayerMovement owner = GetComponentInParent<PlayerMovement>();
@@ -104,6 +110,7 @@ public class Mitre : MonoBehaviour, IHudWeapon
     {
         isReloading = false;
         isEquipping = false;
+        zoom.Soltar(); // US 323: vuelve el campo de visión
 
         // Restaurar velocidad base al guardar el arma
         if (playerMovement != null)
@@ -113,44 +120,107 @@ public class Mitre : MonoBehaviour, IHudWeapon
     }
 
     // Al comprarla en la tienda queda con el cargador lleno y la reserva completa (US 077, CA1).
+    /// <summary>US 148: el cargador y la reserva están como al comprarla.</summary>
+    public bool Llena => currentAmmo >= MagazineSize && (fullReserve < 0 || reserveAmmo >= Municion.Reserva(fullReserve));
+
     public void Refill()
     {
         if (fullReserve < 0) fullReserve = reserveAmmo;
-        currentAmmo = maxAmmo;
-        reserveAmmo = fullReserve;
+        currentAmmo = MagazineSize;
+        reserveAmmo = Municion.Reserva(fullReserve); // con la Mochila, más (US 315)
+    }
+
+    /// <summary>US 293, CA2: la munición máxima del arma (cargador y reserva llenos).</summary>
+    public int MunicionMaxima => MagazineSize + Mathf.Max(Municion.Reserva(fullReserve), reserveAmmo);
+
+    /// <summary>La reserva llena (con la Mochila, más: US 315).</summary>
+    public int ReservaLlena => Municion.Reserva(fullReserve < 0 ? reserveAmmo : fullReserve);
+
+    /// <summary>US 315: la reserva llena creció (la Mochila): suma esas balas a la reserva.</summary>
+    public void AgrandarReserva(float antes)
+    {
+        if (fullReserve < 0) fullReserve = reserveAmmo;
+        reserveAmmo += Municion.Agrandada(fullReserve, antes);
+    }
+
+    /// <summary>US 293, CA2: suma balas a la reserva sin pasarse de la llena; lo que sobra va al cargador.</summary>
+    public void SumarBalas(int balas)
+    {
+        if (fullReserve < 0) fullReserve = reserveAmmo;
+        int aReserva = Mathf.Clamp(Municion.Reserva(fullReserve) - reserveAmmo, 0, balas);
+        reserveAmmo += aReserva;
+        currentAmmo = Mathf.Min(MagazineSize, currentAmmo + balas - aReserva);
     }
 
     void Update()
     {
+        // US 323: con la carta, el click derecho apunta (un zoom chico). Con el cargador vacío deja de apuntar (vuelve la
+        // vista normal) y, con Tiro de reserva (US 322), dispara de a una bala de la reserva.
+        bool apuntando = zoom.Actualizar(!isReloading && !isEquipping && currentAmmo > 0 && Concentrado != null && Concentrado(), playerCamera);
+
         // Bloqueos de estado
         if (isReloading || isEquipping) return;
 
         // CA2: Disparo automático manteniendo presionado el clic izquierdo
         if (KeyBindings.Held(GameAction.Disparar) && Time.time >= nextTimeToFire)
         {
-            nextTimeToFire = Time.time + (1f / fireRate);
-            Shoot();
+            if (apuntando && currentAmmo > 0)
+            {
+                // US 323: apuntando, hasta 5 balas juntas en un solo impacto que suma su daño, cada 0,4 s.
+                nextTimeToFire = Time.time + EntreConcentrados;
+                Shoot(Mathf.Min(BalasConcentradas, currentAmmo), true);
+            }
+            else if (currentAmmo <= 0 && reserveAmmo > 0 && Municion.TiroDeReserva != null && Municion.TiroDeReserva())
+            {
+                // US 322, Tiro de reserva: con el cargador vacío sigue desde la reserva, a la mitad de la cadencia.
+                nextTimeToFire = Time.time + 1f / Mathf.Max(0.01f, fireRate * Municion.CadenciaDeReserva);
+                Shoot(1, false, true);
+            }
+            else
+            {
+                nextTimeToFire = Time.time + (1f / fireRate);
+                Shoot();
+            }
         }
 
         // CA4: Recarga con R
         if (KeyBindings.Down(GameAction.Recargar))
         {
-            if (currentAmmo < maxAmmo && reserveAmmo > 0)
+            if (currentAmmo < MagazineSize && reserveAmmo > 0)
             {
                 StartCoroutine(ReloadRoutine());
             }
         }
     }
 
-    void Shoot()
+    /// <summary>US 321, Acople: guardado, dispara solo un tiro hacia la mira, con sus balas y su cadencia. false si no
+    /// pudo (vacío, recargando o todavía no le toca): ese tiro se pierde.</summary>
+    public bool DispararGuardada()
     {
-        if (currentAmmo <= 0)
+        if (currentAmmo <= 0 || isReloading || Time.time < nextTimeToFire) return false;
+        Camera cam = playerCamera != null ? playerCamera : Camera.main;
+        if (cam == null) return false;
+        nextTimeToFire = Time.time + 1f / fireRate;
+        if (!MinijuegoCometas.Activo) currentAmmo--;
+        if (shootSound != null) AudioSource.PlayClipAtPoint(shootSound, cam.transform.position, 0.7f); // (guardado no suena)
+        WeaponFire.Fire(Data, cam, shooter, false, maxRange);
+        return true;
+    }
+
+    /// <param name="balas">US 323: las balas que salen juntas en un solo impacto.</param>
+    /// <param name="deLaReserva">US 322: la bala sale de la reserva.</param>
+    void Shoot(int balas = 1, bool apuntando = false, bool deLaReserva = false)
+    {
+        if (currentAmmo <= 0 && !deLaReserva)
         {
             Debug.Log("Mitre: Cargador vacío.");
             return;
         }
 
-        if (!MinijuegoCometas.Activo) currentAmmo--; // US 157, CA2: en la compra los disparos no gastan balas
+        // US 157, CA2: en la compra los disparos no gastan balas
+        if (MinijuegoCometas.Activo) { }
+        else if (deLaReserva) { if (!Municion.ReservaInfinita) reserveAmmo--; }
+        else currentAmmo -= balas;
 
         if (shootSound != null)
         {
@@ -158,7 +228,7 @@ public class Mitre : MonoBehaviour, IHudWeapon
         }
 
         // Retroceso, dispersión, zonas, daño por distancia, marcas y marcador de impacto (núcleo de disparo).
-        WeaponFire.Fire(Data, playerCamera, shooter, false, maxRange);
+        WeaponFire.Fire(Data, playerCamera, shooter, apuntando, maxRange, 1, balas);
     }
 
     private IEnumerator EquipRoutine()
@@ -180,13 +250,13 @@ public class Mitre : MonoBehaviour, IHudWeapon
 
         yield return new WaitForSeconds(reloadTime); // Espera de 2.5 segundos
 
-        int neededAmmo = maxAmmo - currentAmmo;
+        int neededAmmo = MagazineSize - currentAmmo;
         int ammoToLoad = Mathf.Min(neededAmmo, reserveAmmo);
 
         currentAmmo += ammoToLoad;
         if (!Municion.ReservaInfinita) reserveAmmo -= ammoToLoad; // US 121, CA1 y Deathmatch: la reserva no se gasta
 
         isReloading = false;
-        Debug.Log($"Mitre recargado: {currentAmmo}/{maxAmmo} | Reserva restante: {reserveAmmo}");
+        Debug.Log($"Mitre recargado: {currentAmmo}/{MagazineSize} | Reserva restante: {reserveAmmo}");
     }
 }

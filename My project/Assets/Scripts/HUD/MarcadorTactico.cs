@@ -92,29 +92,29 @@ public class MarcadorTactico : MonoBehaviour
         int ronda = EquiposTacticos.Ronda;
 
         // CA1 y CA6: tus rondas a la izquierda con "TU EQUIPO · Atacantes/Defensores", las del rival a la derecha.
-        MatchHud.SetSide(true, rondas[mio].ToString(), $"<color=#F3F4F6>Tu equipo</color>  ·  {Lado(mio)}", MatchHud.TeamColor, RondasParaGanar, rondas[mio]);
+        MatchHud.SetSide(true, rondas[mio].ToString(), L10n.T("gameplay.tac.team_side_fmt", Lado(mio)), MatchHud.TeamColor, RondasParaGanar, rondas[mio]);
         MatchHud.SetSide(false, rondas[rival].ToString(), Lado(rival), MatchHud.RivalColor, RondasParaGanar, rondas[rival]);
 
         // CA2 y CA3: el centro.
-        string detalle = $"Ronda {ronda} · a {RondasParaGanar}";
+        string detalle = L10n.T("gameplay.tac.round_to_fmt", ronda, RondasParaGanar);
         BuyPhase compra = BuyPhase.Current;
         float? tiempo = TiempoDeRonda != null ? TiempoDeRonda() : null;
         if (dispositivo.HasValue)
-            MatchHud.SetCenterDevice("Dispositivo plantado", dispositivo.Value, detalle); // CA3
+            MatchHud.SetCenterDevice(L10n.T("gameplay.tac.planted"), dispositivo.Value, detalle); // CA3
         else if (RondasTacticas.Actual != null && RondasTacticas.Actual.FaseActual == RondasTacticas.Fase.Seleccion)
             // US 016: antes de la ronda 1, el tiempo para elegir personaje.
-            MatchHud.SetCenter("Selección", RondasTacticas.Actual.Restante, "Elegí tu personaje");
+            MatchHud.SetCenter(L10n.T("gameplay.tac.selection"), RondasTacticas.Actual.Restante, L10n.T("character.choose"));
         else if (RondasTacticas.Actual != null && RondasTacticas.Actual.EsMuerteSubita &&
                  RondasTacticas.Actual.FaseActual != RondasTacticas.Fase.Terminada)
             // US 032, CA6: en la muerte súbita el centro queda en rojo.
-            MatchHud.SetCenter("Muerte súbita", compra != null && compra.IsActive ? compra.TimeLeft : tiempo,
-                $"Ronda {ronda} · {rondas[mio]} a {rondas[rival]}", true, "—", true);
+            MatchHud.SetCenter(L10n.T("gameplay.tac.sudden_death"), compra != null && compra.IsActive ? compra.TimeLeft : tiempo,
+                L10n.T("gameplay.tac.round_score_fmt", ronda, rondas[mio], rondas[rival]), true, "—", true);
         else if (compra != null && compra.IsActive)
             MatchHud.SetCenter("Fase de compra", compra.TimeLeft, detalle, compra.TimeLeft <= 5f);
         else if (tiempo.HasValue)
-            MatchHud.SetCenter("Ronda en curso", tiempo.Value, detalle, tiempo.Value <= 10f);
+            MatchHud.SetCenter(L10n.T("gameplay.tac.round_in_progress"), tiempo.Value, detalle, tiempo.Value <= 10f);
         else
-            MatchHud.SetCenter("Ronda en curso", null, detalle, false, "—");
+            MatchHud.SetCenter(L10n.T("gameplay.tac.round_in_progress"), null, detalle, false, "—");
 
         // CA4 y CA5: los jugadores de cada equipo.
         aliados.Clear();
@@ -145,7 +145,7 @@ public class MarcadorTactico : MonoBehaviour
     }
 
     private static string Lado(int equipo) =>
-        EquiposTacticos.LadoDeEquipo(equipo) == LadoTactico.Atacante ? "Atacantes" : "Defensores";
+        L10n.T(EquiposTacticos.LadoDeEquipo(equipo) == LadoTactico.Atacante ? "gameplay.tac.attackers" : "gameplay.tac.defenders");
 
     private bool EstaVivo(int actor)
     {
@@ -169,11 +169,11 @@ public class MarcadorTactico : MonoBehaviour
         int rival = mio == 0 ? 1 : 0;
         var tabla = new MatchHud.Table
         {
-            corner = $"Ronda {EquiposTacticos.Ronda}  ·  {rondas[mio]} a {rondas[rival]}",
+            corner = L10n.T("gameplay.tac.round_score_wide_fmt", EquiposTacticos.Ronda, rondas[mio], rondas[rival]),
             columns = new[] { "", "Jugador", "Bajas", "Muertes", "Plata" },
             widths = new[] { 30f, 452f, 110f, 110f, 110f }
         };
-        tabla.sections.Add(Seccion("Tu equipo", MatchHud.TeamColor, mio, true));
+        tabla.sections.Add(Seccion(L10n.T("gameplay.tac.your_team"), MatchHud.TeamColor, mio, true));
         tabla.sections.Add(Seccion("Rivales", MatchHud.RivalColor, rival, false));
         return tabla;
     }
@@ -196,8 +196,8 @@ public class MarcadorTactico : MonoBehaviour
                 cells = new[]
                 {
                     (i + 1).ToString(),
-                    p.IsLocal ? $"{p.NickName} <color=#8E96A3>(vos)</color>"
-                        : p.IsInactive ? $"{p.NickName} <color=#8E96A3>(desconectado)</color>" : p.NickName,
+                    p.IsLocal ? L10n.T("gameplay.tac.you_fmt", p.NickName)
+                        : p.IsInactive ? L10n.T("gameplay.tac.disconnected_fmt", p.NickName) : p.NickName,
                     RondasTacticas.BajasDe(p).ToString(),
                     RondasTacticas.MuertesDe(p).ToString(),
                     plata

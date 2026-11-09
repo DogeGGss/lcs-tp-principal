@@ -1,0 +1,6364 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e9620f8c34305754d8cc9a7e49e852d9, type: 3}
+  m_Name: Riftwalker_es
+  m_EditorClassIdentifier: Unity.Localization::UnityEngine.Localization.Tables.StringTable
+  m_LocaleId:
+    m_Code: es
+  m_SharedData: {fileID: 11400000, guid: 4167d0cdf7163154ea1e87eb29081448, type: 2}
+  m_Metadata:
+    m_Items: []
+  m_TableData:
+  - m_Id: 7488761856
+    m_Localized: "Eleg\xED tu personaje"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7509733376
+    m_Localized: "<color=#F3F4F6>{0}</color>  Elegir     <color=#F3F4F6>\u2190 \u2192</color>  Mover     <color=#F3F4F6>Enter</color>  Confirmar"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927680
+    m_Localized: '     <color=#F3F4F6>Esc</color>  Volver'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927681
+    m_Localized: Provisorio
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927682
+    m_Localized: "\xDAltimo elegido"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927683
+    m_Localized: Solo aspecto
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927684
+    m_Localized: Sin habilidad
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927685
+    m_Localized: En Deathmatch no hay habilidades
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927686
+    m_Localized: "{0} \xB7 Recarga {1} s"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927687
+    m_Localized: Elegido por {0}
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927688
+    m_Localized: "Vac\xEDo"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927689
+    m_Localized: "No ten\xE9s emotes equipados: equipalos desde tu perfil."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927690
+    m_Localized: "Mov\xE9 el mouse"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927691
+    m_Localized: Vida
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927692
+    m_Localized: Tus cartas
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927693
+    m_Localized: Jefe
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927694
+    m_Localized: "R\xE9cord"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927695
+    m_Localized: Pts
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927696
+    m_Localized: Fase de compra
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927697
+    m_Localized: "FIN DE LA PARTIDA  \xB7  DEATHMATCH"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927698
+    m_Localized: Fin de la partida
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927699
+    m_Localized: "Fin de la partida  \xB7  Los rivales abandonaron"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927700
+    m_Localized: "Fin de la partida  \xB7  Tu equipo abandon\xF3"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927701
+    m_Localized: Victoria
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927702
+    m_Localized: Derrota
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927703
+    m_Localized: "Elecci\xF3n del Jefe"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927704
+    m_Localized: Puesto de suministros
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927705
+    m_Localized: "Modo Invasi\xF3n"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927706
+    m_Localized: "\xA1Sobreviviste!"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927707
+    m_Localized: Te eliminaron
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927708
+    m_Localized: Jugador
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927709
+    m_Localized: "No se pudo conectar. Revis\xE1 tu conexi\xF3n."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927710
+    m_Localized: Ya no se puede volver a esa partida.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927711
+    m_Localized: "Invasi\xF3n"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927712
+    m_Localized: "T\xE1ctico"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927713
+    m_Localized: "Eleg\xED tu equipo"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927714
+    m_Localized: Empieza en
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927715
+    m_Localized: "Cerr\xE1 para reaparecer"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927716
+    m_Localized: "Pod\xE9s cambiar"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927717
+    m_Localized: "\xA1A pelear!"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927718
+    m_Localized: "Modo Deathmatch  \xB7  Solo cambia el aspecto"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927719
+    m_Localized: "Cambi\xE1s de equipo al morir o reci\xE9n reaparecido"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927720
+    m_Localized: "Munici\xF3n"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927721
+    m_Localized: Las dos armas
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927722
+    m_Localized: Llena el cargador y la reserva de tus dos armas.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927723
+    m_Localized: Pistola
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927724
+    m_Localized: Dispositivo
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927725
+    m_Localized: Clic izq.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927726
+    m_Localized: Clic der.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927727
+    m_Localized: Rueda
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927728
+    m_Localized: Espacio
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927729
+    m_Localized: Retroceso
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927730
+    m_Localized: "Bloq May\xFAs"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927731
+    m_Localized: Arriba
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927732
+    m_Localized: Abajo
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927733
+    m_Localized: Recargar
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927734
+    m_Localized: Tiro de reserva
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927735
+    m_Localized: Disparo concentrado
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927736
+    m_Localized: "Descarga r\xE1pida"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927737
+    m_Localized: Acople
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927738
+    m_Localized: Sin respaldo
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927739
+    m_Localized: Carga adherente
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927740
+    m_Localized: Doble cartucho
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927741
+    m_Localized: Bala compacta
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927742
+    m_Localized: Cargador gemelo
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927743
+    m_Localized: Cerrojo suelto
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927744
+    m_Localized: Mira abierta
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927745
+    m_Localized: Sin intervalo
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927746
+    m_Localized: "R\xE1faga creciente"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927747
+    m_Localized: Campo minado
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927748
+    m_Localized: "Log\xEDstica"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927749
+    m_Localized: Mochila
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927750
+    m_Localized: Reciclador
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927751
+    m_Localized: Filo
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927752
+    m_Localized: "Carro\xF1ero"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927753
+    m_Localized: Remate
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927754
+    m_Localized: Filo voraz
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927755
+    m_Localized: Reserva lista
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927756
+    m_Localized: Bronca
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927757
+    m_Localized: "Alimentaci\xF3n directa"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927758
+    m_Localized: Entrega inmediata
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927759
+    m_Localized: Despeje
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927760
+    m_Localized: Subfusil y fusil
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927761
+    m_Localized: Fusil
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927762
+    m_Localized: Pistola pesada
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927763
+    m_Localized: Pistolas y arma principal
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927764
+    m_Localized: Cualquier principal
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927765
+    m_Localized: Escopeta
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927766
+    m_Localized: Subfusil
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927767
+    m_Localized: Francotirador
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927768
+    m_Localized: "Fusil de r\xE1faga"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927769
+    m_Localized: Todas
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927770
+    m_Localized: Cuchillo
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927771
+    m_Localized: "Con el cargador vac\xEDo, manteniendo el gatillo sigue disparando desde la reserva, a la mitad de la cadencia."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927772
+    m_Localized: Apuntando, el fusil dispara hasta 5 balas juntas en un solo impacto, cada 0,4 s.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927773
+    m_Localized: 'Disparo cargado: manteniendo el gatillo se carga en 3 etapas y, al soltar, salen 2, 4 o 6 balas seguidas.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927774
+    m_Localized: Cada 3 tiros de pistola que aciertan, el arma principal dispara sola un tiro hacia la mira.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927775
+    m_Localized: "Tu arma principal tiene el doble de cargador, pero perd\xE9s la secundaria por el resto de la partida."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927776
+    m_Localized: "Las granadas que le pegan directo a un invasor se le pegan 1 s y explotan con el doble de da\xF1o."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927777
+    m_Localized: La escopeta dispara 2 cartuchos juntos, gastando los dos.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927778
+    m_Localized: "Apuntando, los perdigones salen juntos en un solo proyectil sin dispersi\xF3n, con el mismo da\xF1o."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927779
+    m_Localized: "La primera vez que se vac\xEDa el cargador, se recarga al instante desde la reserva."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927780
+    m_Localized: "Despu\xE9s de una baja a la cabeza, se puede volver a disparar a los 0,2 s."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927781
+    m_Localized: "Sin apuntar, dispara sin dispersi\xF3n y al doble de cadencia. Apuntando, dispara normal."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927782
+    m_Localized: "Matar saca la pausa entre las pr\xF3ximas 3 r\xE1fagas."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927783
+    m_Localized: "Cada baja le suma una bala a las r\xE1fagas, hasta 6. Al recargar vuelven a 3."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927784
+    m_Localized: Las granadas que tocan el piso quedan como minas (hasta 5).
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927785
+    m_Localized: "Desde ahora, los puestos recargan toda la munici\xF3n en vez de la mitad."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927786
+    m_Localized: "40 % m\xE1s de reserva en las dos armas."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927787
+    m_Localized: Cada baja a la cabeza devuelve 5 balas al cargador.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927788
+    m_Localized: "Matar con el cuchillo recarga la \xFAltima arma que tuviste en la mano."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927789
+    m_Localized: 1 de cada 5 invasores suelta un cargador al morir.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927790
+    m_Localized: El cuchillo mata de un golpe a los invasores con 25 % de vida o menos (salvo al Jefe).
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927791
+    m_Localized: "Cada cuchillazo cura lo mismo que el da\xF1o que hace, hasta 25 de vida por golpe."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927792
+    m_Localized: "El arma guardada se recarga sola desde su reserva despu\xE9s de 2 s."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927793
+    m_Localized: "Cuando un invasor te pega, tu pr\xF3ximo disparo suma 5 veces la vida que perdiste."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927794
+    m_Localized: "El cargador y la reserva son un solo dep\xF3sito: no recarg\xE1s nunca, hasta que se acaban las balas."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927795
+    m_Localized: "La elecci\xF3n del puesto se abre apenas se carga, sin esperar a que termine la oleada."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927796
+    m_Localized: Cuando el puesto se carga, una burbuja empuja 10 m a los invasores del anillo, salvo al Jefe.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927797
+    m_Localized: "Com\xFAn"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927798
+    m_Localized: Rara
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927799
+    m_Localized: "\xC9pica"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927800
+    m_Localized: Legendaria
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927801
+    m_Localized: Arma
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927802
+    m_Localized: Arma principal
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927803
+    m_Localized: Arma secundaria
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927804
+    m_Localized: 'Rinde con: {0}'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927805
+    m_Localized: 'Deja sin uso: {0}'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927806
+    m_Localized: "Sin uso con Alimentaci\xF3n directa"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927807
+    m_Localized: "Reemplaza a tu {0}. Viene con la munici\xF3n llena."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927808
+    m_Localized: "Va en tu espacio de arma {0}, que est\xE1 vac\xEDo. Viene con la munici\xF3n llena."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927809
+    m_Localized: "Elecci\xF3n del puesto"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927810
+    m_Localized: "Eleg\xED una"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927811
+    m_Localized: "R  \xB7  Volver a tirar  \xB7  {0} pts"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927812
+    m_Localized: "Ten\xE9s {0} pts"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927813
+    m_Localized: Te faltan puntos para volver a tirar ({0})
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927814
+    m_Localized: Oleada {0}
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927815
+    m_Localized: Llega el jefe
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927816
+    m_Localized: '{0} enemigos'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927817
+    m_Localized: "\xA1Lleg\xF3 el jefe!"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927818
+    m_Localized: Con su escolta
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927819
+    m_Localized: Oleada {0} superada
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927820
+    m_Localized: Descanso de 20 s
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927821
+    m_Localized: JEFE DERROTADO
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927822
+    m_Localized: "Superaste la oleada {0}. Si segu\xEDs, te espera la elecci\xF3n del Jefe, pero desde ahora los invasores tienen {1} % m\xE1s de vida y pegan {2} % m\xE1s."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927823
+    m_Localized: "Pr\xF3xima oleada en"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927824
+    m_Localized: "Pr\xF3xima oleada"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927825
+    m_Localized: "\xB7 vuelta {0}"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927826
+    m_Localized: de {0}
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927827
+    m_Localized: "<color=#9AA39A>Todav\xEDa no elegiste cartas</color>"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927828
+    m_Localized: Suministros en {0}
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927829
+    m_Localized: "Pr\xF3ximo puesto: {0}"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927830
+    m_Localized: "Pr\xF3ximo puesto"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927831
+    m_Localized: los alrededores
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927832
+    m_Localized: Puesto cargado
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927833
+    m_Localized: Puesto abierto
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927834
+    m_Localized: El puesto se fue sin cargar
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927835
+    m_Localized: "Pr\xF3ximo \xB7 ac\xE1"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927836
+    m_Localized: "Pr\xF3ximo \xB7 {0:0} m"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927837
+    m_Localized: Carga del puesto
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927838
+    m_Localized: Fuera del anillo
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927839
+    m_Localized: "el M\xF3dulo 1"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927840
+    m_Localized: "el M\xF3dulo {0}"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927841
+    m_Localized: la Biblioteca
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927842
+    m_Localized: Sobreviviste {0} oleadas
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927843
+    m_Localized: Has muerto
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927844
+    m_Localized: "Fin de la partida  \xB7  {0}"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927845
+    m_Localized: Salvaste al mundo
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927846
+    m_Localized: No salvaste al mundo
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927847
+    m_Localized: "Te retiraste despu\xE9s del Jefe de la oleada {0}"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927848
+    m_Localized: "Ca\xEDste en la oleada {0} de {1}"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927849
+    m_Localized: "\xA1Nuevo r\xE9cord! \xB7 Oleada {0}"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927850
+    m_Localized: "R\xE9cord en {0}: <color=#F3F4F6>oleada {1}</color>"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927851
+    m_Localized: A la cabeza
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927852
+    m_Localized: Jugar de nuevo
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927853
+    m_Localized: "Volver al men\xFA"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927854
+    m_Localized: "Enter  \xB7  Jugar de nuevo          Esc  \xB7  Volver al men\xFA"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927855
+    m_Localized: '{0}  <color=#FF5C5C>FURIA</color>'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927856
+    m_Localized: "Racha <color=#{0}>\xB7 Mejor {1}</color>"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927857
+    m_Localized: " \xB7 Recargar"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927858
+    m_Localized: Sin balas
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927859
+    m_Localized: "Sin se\xF1al"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927860
+    m_Localized: Gana el primero a {0}
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927861
+    m_Localized: "\xDAltimo minuto"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927862
+    m_Localized: Tus bajas
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927863
+    m_Localized: Vas primero  <color=#8E96A3>sobre {0}</color>
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927864
+    m_Localized: Vas primero
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927865
+    m_Localized: Va primero  <color=#F3F4F6>{0}</color>
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927866
+    m_Localized: Va primero
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927867
+    m_Localized: "Deathmatch  \xB7  Gana el primero a {0} bajas"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927868
+    m_Localized: ' <color=#8E96A3>(vos)</color>'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927869
+    m_Localized: ' <color=#8E96A3>(desconectado)</color>'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927870
+    m_Localized: Bajas de cabeza
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927871
+    m_Localized: "+{0} cr\xE9ditos"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927872
+    m_Localized: "VOLVER AL MEN\xDA"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927873
+    m_Localized: "{0}.\xBA PUESTO"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927874
+    m_Localized: FIN DE LA PARTIDA
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7513927875
+    m_Localized: '{0} baja'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518121984
+    m_Localized: '{0} bajas'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518121985
+    m_Localized: "Los dem\xE1s jugadores abandonaron la partida"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518121986
+    m_Localized: Llegaste primero a <color=#F29A38>{0}</color>
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518121987
+    m_Localized: "Se acab\xF3 el tiempo: ganaste con <color=#F29A38>{0}</color>"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518121988
+    m_Localized: "Gan\xF3 <color=#F29A38>{0}</color> con {1}"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518121989
+    m_Localized: "Se acab\xF3 el tiempo: gan\xF3 <color=#F29A38>{0}</color> con {1}"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518121990
+    m_Localized: Tu equipo
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518121991
+    m_Localized: "<color=#F3F4F6>Tu equipo</color>  \xB7  {0}"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518121992
+    m_Localized: "Ronda {0} \xB7 a {1}"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518121993
+    m_Localized: Dispositivo plantado
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518121994
+    m_Localized: "Selecci\xF3n"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518121995
+    m_Localized: "Muerte s\xFAbita"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518121996
+    m_Localized: "Ronda {0} \xB7 {1} a {2}"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518121997
+    m_Localized: Ronda en curso
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518121998
+    m_Localized: "Ronda {0}  \xB7  {1} a {2}"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518121999
+    m_Localized: Ronda {0}
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518122000
+    m_Localized: '{0} <color=#8E96A3>(vos)</color>'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518122001
+    m_Localized: '{0} <color=#8E96A3>(desconectado)</color>'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518122002
+    m_Localized: "<color=#58A6FF>Tu equipo</color>   \xB7   <color=#FF5C5C>Rivales</color>"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518122003
+    m_Localized: El equipo que gane esta ronda gana la partida
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518122004
+    m_Localized: Mitad de la partida
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518122005
+    m_Localized: Cambio de lado
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518122006
+    m_Localized: 'Armas: pistola'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518122007
+    m_Localized: 'Plata: {0}'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518122008
+    m_Localized: Todos reciben {0}
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518122009
+    m_Localized: Ronda ganada
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518122010
+    m_Localized: Ronda perdida
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518122011
+    m_Localized: Siguiente ronda en {0}
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518122012
+    m_Localized: 'Sin premio: no plantaron'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518122013
+    m_Localized: "{0}.\xAA derrota seguida"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518122014
+    m_Localized: "Se termin\xF3 el tiempo y tu equipo defendi\xF3"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518122015
+    m_Localized: "Se termin\xF3 el tiempo y los rivales defendieron"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518122016
+    m_Localized: "Explot\xF3 el dispositivo"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518122017
+    m_Localized: "Se desactiv\xF3 el dispositivo"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518122018
+    m_Localized: Los rivales abandonaron la partida
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518122019
+    m_Localized: "Tu equipo abandon\xF3 la partida"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518122020
+    m_Localized: "Tu equipo elimin\xF3 a todos los rivales"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518122021
+    m_Localized: Los rivales eliminaron a tu equipo
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518122022
+    m_Localized: "No pod\xE9s salir de la base durante la compra"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518122023
+    m_Localized: La salida de la base se abre en <color=#F29A38>{0}:{1:00}</color>
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518122024
+    m_Localized: Plantando el dispositivo en {0}
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518122025
+    m_Localized: Desactivando el dispositivo
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518122026
+    m_Localized: "Manten\xE9 {0} para plantar el dispositivo en {1}"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518122027
+    m_Localized: "Manten\xE9 {0} para desactivar el dispositivo"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518122028
+    m_Localized: Dispositivo plantado en {0}
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518122029
+    m_Localized: "Compa\xF1ero"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518122030
+    m_Localized: Anillo del puesto
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518122031
+    m_Localized: <color=#F3F4F6>{0}</color>  Mapa
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518122032
+    m_Localized: "Mu\xF1ecos de pr\xE1ctica"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518122033
+    m_Localized: Vida {0}
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518122034
+    m_Localized: "Reacci\xF3n: promedio {0:0.00} s \xB7 mejor {1:0.00} s"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518122035
+    m_Localized: " \xB7 {0} sin pegar"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518122036
+    m_Localized: "Reacci\xF3n: no le pegaste a ninguno"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518122037
+    m_Localized: En movimiento
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518122038
+    m_Localized: "Reacci\xF3n"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518122039
+    m_Localized: "Reacci\xF3n: {0} de {1}"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518122040
+    m_Localized: "{0} \xB7 Bajas: {1} \xB7 A la cabeza: {2}"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518122041
+    m_Localized: "Eleg\xED un modo: mir\xE1 un bot\xF3n y apret\xE1 {0}, o pegale un tiro"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518122042
+    m_Localized: "Correr (en T\xE1ctico, caminar despacio)"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518122043
+    m_Localized: Pegale a un blanco
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518122044
+    m_Localized: Apuntar con la mira
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518122045
+    m_Localized: Pegale en la cabeza
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518122046
+    m_Localized: Cambiar de arma
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518122047
+    m_Localized: Usar la habilidad
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518122048
+    m_Localized: Abrir la tienda
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518122049
+    m_Localized: "Eleg\xED otra arma"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518122050
+    m_Localized: 'Usar la habilidad: {0}'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518122051
+    m_Localized: "Tutorial \xB7 Modos de juego \xB7 {0} de {1}"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518122052
+    m_Localized: Siguiente modo
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518122053
+    m_Localized: "<color=#{0}>Manten\xE9 Tab</color>  Saltear tutorial"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518122054
+    m_Localized: TUTORIAL COMPLETO
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518122055
+    m_Localized: "\xA1Listo! Ya sab\xE9s lo b\xE1sico"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518122056
+    m_Localized: "Los paneles de los modos est\xE1n en la pared izquierda. El tutorial se vuelve a abrir desde el panel."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518122057
+    m_Localized: Mantener Tab
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518122058
+    m_Localized: Modo de juego
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518122059
+    m_Localized: "Tutorial \xB7 Paso {0} de {1}"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518122060
+    m_Localized: '<color=#{0}>Tab</color>  Saltear paso     '
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518122061
+    m_Localized: '<color=#{0}>OBJETIVO</color>
+
+      {1}
+
+
+'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518122062
+    m_Localized: "<color=#{0}>C\xD3MO SE GANA</color>\n{1}\n\n"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518122063
+    m_Localized: "<color=#{0}>C\xD3MO SE PIERDE</color>\n{1}"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518122064
+    m_Localized: Tiempo
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518122065
+    m_Localized: "Llegaste a la oleada {0}  \xB7  {1}"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518122066
+    m_Localized: '{0} Jefe derrotado'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518122067
+    m_Localized: '{0} Jefes derrotados'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518122068
+    m_Localized: "F\xE1cil"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518122069
+    m_Localized: Normal
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518122070
+    m_Localized: "Dif\xEDcil"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518122071
+    m_Localized: Adentro
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518122072
+    m_Localized: VICTORIA
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518122073
+    m_Localized: Bajas
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518122074
+    m_Localized: Muertes
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518122075
+    m_Localized: "Lados sorteados: atac\xE1s"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518122076
+    m_Localized: "Lados sorteados: defend\xE9s"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518122077
+    m_Localized: Ahora tu equipo <color=#F3F4F6>ataca</color>
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518122078
+    m_Localized: Ahora tu equipo <color=#F3F4F6>defiende</color>
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518122079
+    m_Localized: Tirale
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518122080
+    m_Localized: Abatido
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518122081
+    m_Localized: cabeza
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518122082
+    m_Localized: piernas
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518122083
+    m_Localized: cuerpo
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518122084
+    m_Localized: Terminar
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518122085
+    m_Localized: principal
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518122086
+    m_Localized: secundaria
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518122087
+    m_Localized: Oleada
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518122088
+    m_Localized: Puntos
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518122089
+    m_Localized: Seguir
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518122090
+    m_Localized: Retirarse
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518122091
+    m_Localized: Moverse
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518122092
+    m_Localized: Mirar
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518122093
+    m_Localized: Disparar
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518122094
+    m_Localized: Habilidad
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518122095
+    m_Localized: Tienda
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518122096
+    m_Localized: Racha
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518122097
+    m_Localized: "Puede que el launcher ya est\xE9 abierto en esta instalaci\xF3n.\n\n"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518122098
+    m_Localized: 'No se pudo abrir el launcher. '
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518122099
+    m_Localized: "Eleg\xED una carpeta propia para el juego, no la ra\xEDz del disco."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518122100
+    m_Localized: "Eleg\xED una carpeta vac\xEDa para instalar Riftwalker."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518122101
+    m_Localized: "Cuenta confirmada \xB7 desde el {0}"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518122102
+    m_Localized: Cuenta confirmada
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518122103
+    m_Localized: "Entr\xE1s como {0}. Tu progreso est\xE1 en la cuenta."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518122104
+    m_Localized: "No se pudo buscar actualizaciones. Pod\xE9s jugar con tu cuenta: lo que juegues se sube cuando vuelva la conexi\xF3n."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518122105
+    m_Localized: "Cerrar sesi\xF3n"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518122106
+    m_Localized: Borrar cuenta
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518122107
+    m_Localized: TU CUENTA
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518122108
+    m_Localized: "INICI\xC1 SESI\xD3N"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518122109
+    m_Localized: "Para jugar hace falta una cuenta. Tu progreso queda en ella y lo segu\xEDs en cualquier PC."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518122110
+    m_Localized: MAIL
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518122111
+    m_Localized: "CONTRASE\xD1A"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518122112
+    m_Localized: "\xBFTe olvidaste la contrase\xF1a?"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518122113
+    m_Localized: "ENTRAR  \u2192"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518122114
+    m_Localized: "ENTRANDO\u2026"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518122115
+    m_Localized: Entraste a tu cuenta.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518122116
+    m_Localized: "\xBFNo ten\xE9s cuenta?"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518122117
+    m_Localized: Crear cuenta
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518122118
+    m_Localized: CUENTA NUEVA
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518122119
+    m_Localized: CREAR CUENTA
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518122120
+    m_Localized: "La cuenta arranca de cero: con ella guard\xE1s tu progreso en la nube y jug\xE1s en cualquier PC."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518122121
+    m_Localized: "8 caracteres o m\xE1s"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518122122
+    m_Localized: "REPETIR LA CONTRASE\xD1A"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518122123
+    m_Localized: "Iniciar sesi\xF3n"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518122124
+    m_Localized: "Al crear la cuenta acept\xE1s el "
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518122125
+    m_Localized: aviso de privacidad
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518122126
+    m_Localized: Volver
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518122127
+    m_Localized: "CREANDO\u2026"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518122128
+    m_Localized: "Listo: tu cuenta est\xE1 activa."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518122129
+    m_Localized: "TU CUENTA \xB7 FALTA UN PASO"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518122130
+    m_Localized: "CONFIRM\xC1 TU MAIL"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518122131
+    m_Localized: "Te mandamos un c\xF3digo de 6 n\xFAmeros a "
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518122132
+    m_Localized: ". Si no lo ves, revis\xE1 el correo no deseado."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518122133
+    m_Localized: "\xBFNo te lleg\xF3? Pod\xE9s pedir otro en 0:{0:00}"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518122134
+    m_Localized: "\xBFNo te lleg\xF3? "
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518122135
+    m_Localized: "Ped\xED otro c\xF3digo"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518122136
+    m_Localized: "Te mandamos otro c\xF3digo."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518122137
+    m_Localized: "\xBFTe equivocaste de mail? "
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518122138
+    m_Localized: Cambialo
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518122139
+    m_Localized: CONFIRMAR
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518122140
+    m_Localized: "CONFIRMANDO\u2026"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518122141
+    m_Localized: "RECUPERAR LA CONTRASE\xD1A"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518122142
+    m_Localized: "Escrib\xED tu mail y te mandamos un c\xF3digo para elegir una contrase\xF1a nueva."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518122143
+    m_Localized: "MANDAR C\xD3DIGO"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518122144
+    m_Localized: "MANDANDO\u2026"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518122145
+    m_Localized: "CONTRASE\xD1A NUEVA"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518122146
+    m_Localized: "Si hay una cuenta con ese mail, te lleg\xF3 un c\xF3digo de 6 n\xFAmeros."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518122147
+    m_Localized: "C\xD3DIGO"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518122148
+    m_Localized: CAMBIAR Y ENTRAR
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518122149
+    m_Localized: "CAMBIANDO\u2026"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518122150
+    m_Localized: "Contrase\xF1a cambiada. Entraste a tu cuenta."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518122151
+    m_Localized: PRIVACIDAD
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518122152
+    m_Localized: AVISO DE PRIVACIDAD
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518122153
+    m_Localized: "QU\xC9 GUARDAMOS"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518122154
+    m_Localized: "Tu mail y tu contrase\xF1a (cifrada), tu nombre, tu progreso (logros, cosm\xE9ticos y monedas), tus estad\xEDsticas de partida y las opiniones que mandes."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518122155
+    m_Localized: "PARA QU\xC9"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518122156
+    m_Localized: Para que recuperes tu progreso en cualquier PC, para el ranking global y para buscar partida. No lo usamos para publicidad ni lo compartimos con nadie.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518122157
+    m_Localized: "D\xD3NDE"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518122158
+    m_Localized: "En la base del juego (Supabase). Las partidas pasan por los servidores de Photon, que reciben tu nombre de jugador, tu id de cuenta y tu conexi\xF3n (IP)."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518122159
+    m_Localized: TUS DERECHOS
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518122160
+    m_Localized: "Pod\xE9s ver tus datos en el Perfil del juego y borrar la cuenta con todo lo que tiene desde este launcher (Ley 25.326 de Protecci\xF3n de Datos Personales)."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518122161
+    m_Localized: ENTENDIDO
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518122162
+    m_Localized: "\xBFCERRAR SESI\xD3N?"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7518122163
+    m_Localized: "En esta PC se deja de usar tu cuenta, y para jugar hay que volver a iniciar sesi\xF3n. Tu progreso queda en la cuenta y vuelve cuando entres de nuevo."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7522316288
+    m_Localized: "CERRAR SESI\xD3N"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7522316289
+    m_Localized: "CERRANDO\u2026"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7522316290
+    m_Localized: "Cerraste la sesi\xF3n. Tu progreso qued\xF3 en la cuenta."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7522316291
+    m_Localized: "CERR\xC1 EL JUEGO PRIMERO"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7522316292
+    m_Localized: "Project Riftwalker est\xE1 abierto con tu cuenta. Cerralo y volv\xE9 a tocar \xAB{0}\xBB."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7522316293
+    m_Localized: ESTO NO SE PUEDE DESHACER
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7522316294
+    m_Localized: BORRAR CUENTA
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7522316295
+    m_Localized: "Se borran tu cuenta, su progreso, sus monedas, sus cosm\xE9ticos y tu lugar en el ranking. El mail queda libre para crear otra cuenta."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7522316296
+    m_Localized: "TU CONTRASE\xD1A, PARA CONFIRMAR"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7522316297
+    m_Localized: "BORRANDO\u2026"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7522316298
+    m_Localized: "Borraste tu cuenta y todo lo que ten\xEDa. El mail qued\xF3 libre para crear otra."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7522316299
+    m_Localized: VER
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7522316300
+    m_Localized: OCULTAR
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7522316301
+    m_Localized: "C\xF3digo de 6 n\xFAmeros"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7522316302
+    m_Localized: LISTO PARA ENTRAR
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7522316303
+    m_Localized: "Versi\xF3n 0.3.0 instalada"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7522316304
+    m_Localized: "## Preparando las novedades\nLas notas del parche aparecer\xE1n ac\xE1."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7522316305
+    m_Localized: TU EQUIPO TE ESPERA
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7522316306
+    m_Localized: "Vista previa del dise\xF1o"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7522316307
+    m_Localized: "Todo en un lugar. Actualiz\xE1 el juego, le\xE9 las novedades y entr\xE1 a la pr\xF3xima partida."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7522316308
+    m_Localized: "JUGAR  \u2192"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7522316309
+    m_Localized: "Vista previa \xB7 no instala ni abre el juego"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7522316310
+    m_Localized: VISTA PREVIA
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7522316311
+    m_Localized: Vista previa
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7522316312
+    m_Localized: "## El pr\xF3ximo cruce empieza ac\xE1\nUn punto de encuentro para preparar tu pr\xF3xima partida.\n### Tu juego, al d\xEDa\n- Descarg\xE1 las nuevas versiones desde este launcher.\n- Conserv\xE1 tus opciones y tu progreso.\n- Consult\xE1 qu\xE9 cambi\xF3 antes de jugar.\n### Eleg\xED tu and\xE9n\n**T\xE1ctico \xB7 Deathmatch \xB7 Invasi\xF3n**\n\nEsta es una vista previa de la interfaz, no las notas de una versi\xF3n publicada."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7522316313
+    m_Localized: Juego sin instalar
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7522316314
+    m_Localized: "Versi\xF3n {0} instalada"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7522316315
+    m_Localized: "CONFIGURAR  \u2192"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7522316316
+    m_Localized: "INSTALAR  \u2193"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7522316317
+    m_Localized: "VOLVER A LA ESTABLE  \u2193"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7522316318
+    m_Localized: "ACTUALIZAR  \u2193"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7522316319
+    m_Localized: "REINTENTAR  \u21BB"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7522316320
+    m_Localized: "BIENVENIDO AL AND\xC9N"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7522316321
+    m_Localized: PRIMERA PARADA
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7522316322
+    m_Localized: HAY ALGO NUEVO
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7522316323
+    m_Localized: "{0} {1}. Instal\xE1 esta versi\xF3n para jugar desde el launcher."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7522316324
+    m_Localized: Experimental
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7522316325
+    m_Localized: "Nueva versi\xF3n"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7522316326
+    m_Localized: "Versi\xF3n {0} \xB7 Actualizado"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7522316327
+    m_Localized: "No se pudo buscar actualizaciones. Pod\xE9s jugar con la versi\xF3n instalada."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7522316328
+    m_Localized: "Configur\xE1 la instalaci\xF3n para comenzar."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7522316329
+    m_Localized: EXPERIMENTAL
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7522316330
+    m_Localized: ESTABLE
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7522316331
+    m_Localized: "Buscando actualizaciones\u2026"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7522316332
+    m_Localized: Consultando las versiones publicadas
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7522316333
+    m_Localized: "## Notas no disponibles por ahora\nGitHub no devolvi\xF3 la lista de versiones. Las notas de esta versi\xF3n est\xE1n en [GitHub Releases]("
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7522316334
+    m_Localized: CONECTADO A GITHUB
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7522316335
+    m_Localized: "CONECTADO \xB7 NOTAS GUARDADAS"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7522316336
+    m_Localized: "Actualizando el launcher\u2026"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7522316337
+    m_Localized: "ACTUALIZANDO LAUNCHER\u2026"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7522316338
+    m_Localized: "El launcher no pudo actualizarse. Lo intentar\xE1 la pr\xF3xima vez."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7522316339
+    m_Localized: "Todav\xEDa no hay un release compatible con este launcher."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7522316340
+    m_Localized: "Canal {0} \xB7 v{1}"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7522316341
+    m_Localized: experimental
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7522316342
+    m_Localized: estable
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7522316343
+    m_Localized: "El equipo todav\xEDa no public\xF3 una versi\xF3n con el nuevo formato. Volv\xE9 a comprobar m\xE1s tarde."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7522316344
+    m_Localized: "SIN CONEXI\xD3N / DATOS GUARDADOS"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7522316345
+    m_Localized: "Pod\xE9s volver a intentarlo cuando tengas conexi\xF3n."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7522316346
+    m_Localized: 'No se pudo buscar actualizaciones. '
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7522316347
+    m_Localized: "Pod\xE9s jugar con la versi\xF3n instalada."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7522316348
+    m_Localized: "Reintent\xE1 para instalar el juego."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7522316349
+    m_Localized: " \xB7 NUEVO"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7522316350
+    m_Localized: "## El and\xE9n est\xE1 listo\nLas notas aparecer\xE1n cuando el equipo publique la primera versi\xF3n compatible.\n\nPod\xE9s consultar las versiones anteriores en [GitHub Releases]("
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7522316351
+    m_Localized: "## Sin notas guardadas\nNo se pudieron cargar las notas del parche. Volv\xE9 a intentarlo cuando tengas conexi\xF3n."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7522316352
+    m_Localized: "Versi\xF3n estable"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7522316353
+    m_Localized: "Sin notas para esta versi\xF3n."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7522316354
+    m_Localized: " \xB7 {0:mm\\\\:ss} restantes"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7522316355
+    m_Localized: "Cerr\xE1 el juego para actualizar. Despu\xE9s toc\xE1 Actualizar."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7522316356
+    m_Localized: "Descargando\u2026"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7522316357
+    m_Localized: "El archivo estaba da\xF1ado. Descargando otra vez\u2026"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7522316358
+    m_Localized: "Instalaci\xF3n completada"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7522316359
+    m_Localized: "Versi\xF3n {0} instalada. Ya pod\xE9s jugar."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7522316360
+    m_Localized: "Descarga cancelada. La instalaci\xF3n anterior se conserva."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7522316361
+    m_Localized: "Se interrumpi\xF3 la descarga. Toc\xE1 Actualizar o Instalar para continuar desde donde qued\xF3."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7522316362
+    m_Localized: TU PRIMERA PARADA
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7522316363
+    m_Localized: "TU AND\xC9N, A TU MANERA"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7522316364
+    m_Localized: Instalar launcher
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7522316365
+    m_Localized: Guardar
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7522316366
+    m_Localized: "Instal\xE1 el launcher y sus accesos directos. Despu\xE9s podr\xE1s descargar el juego."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7522316367
+    m_Localized: La carpeta contiene el launcher y el juego. Tus partidas guardadas se conservan por separado.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7522316368
+    m_Localized: "Eleg\xED la carpeta para Project Riftwalker"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7522316369
+    m_Localized: 'No se pudo guardar: '
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7522316370
+    m_Localized: "No se pudo iniciar la actualizaci\xF3n del launcher."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7522316371
+    m_Localized: "Actualizaci\xF3n fuera de la instalaci\xF3n."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7522316372
+    m_Localized: "La actualizaci\xF3n del launcher est\xE1 da\xF1ada."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899200
+    m_Localized: No se pudo abrir el nuevo launcher.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899201
+    m_Localized: "El nuevo launcher no termin\xF3 de iniciar."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899202
+    m_Localized: "El servidor devolvi\xF3 un fragmento incorrecto."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899203
+    m_Localized: "El tama\xF1o de la descarga no coincide con el release."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899204
+    m_Localized: "La descarga supera el tama\xF1o publicado."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899205
+    m_Localized: "Se interrumpi\xF3 la descarga. Pod\xE9s reintentar desde donde qued\xF3."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899206
+    m_Localized: "El archivo est\xE1 da\xF1ado. Reintent\xE1 para descargarlo de nuevo."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899207
+    m_Localized: "La carpeta game no es una instalaci\xF3n v\xE1lida. Revisala antes de continuar."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899208
+    m_Localized: No hay espacio suficiente. Faltan {0:N0} MB.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899209
+    m_Localized: "Cerr\xE1 el juego para actualizar."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899210
+    m_Localized: "El archivo descargado no pas\xF3 la verificaci\xF3n."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899211
+    m_Localized: "Verificando e instalando\u2026"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899212
+    m_Localized: El ZIP contiene demasiados archivos.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899213
+    m_Localized: El ZIP contiene una ruta no permitida.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899214
+    m_Localized: "El ZIP supera el tama\xF1o descomprimido publicado."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899215
+    m_Localized: "Contenido ZIP inv\xE1lido."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899216
+    m_Localized: Archivo ZIP incompleto.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899217
+    m_Localized: "El ZIP no contiene el build completo de Project Riftwalker en su ra\xEDz."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899218
+    m_Localized: "La versi\xF3n del build no coincide con el release."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899219
+    m_Localized: "Primero instal\xE1 el juego."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899220
+    m_Localized: El release no tiene un formato compatible.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899221
+    m_Localized: "Versi\xF3n del launcher inv\xE1lida."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899222
+    m_Localized: "Tama\xF1o o verificaci\xF3n del archivo inv\xE1lidos."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899223
+    m_Localized: Falta el manifiesto del release.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899224
+    m_Localized: Falta el manifiesto del launcher.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899225
+    m_Localized: "El manifiesto del launcher no es v\xE1lido."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899226
+    m_Localized: Manifiesto demasiado grande.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899227
+    m_Localized: La descarga no pertenece a los releases de Riftwalker.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899228
+    m_Localized: "Ruta fuera de la instalaci\xF3n."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899229
+    m_Localized: "La carpeta contiene un enlace; eleg\xED una carpeta normal."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899230
+    m_Localized: Tu cuenta
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899231
+    m_Localized: "GU\xCDA DEL JUEGO \u2197"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899232
+    m_Localized: "\u2699  AJUSTES"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899233
+    m_Localized: Abrir ajustes del launcher
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899234
+    m_Localized: Minimizar
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899235
+    m_Localized: Cerrar
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899236
+    m_Localized: Cerrar el launcher
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899237
+    m_Localized: "EL PR\xD3XIMO CRUCE ES TUYO"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899238
+    m_Localized: "Eleg\xED tu equipo. Prepar\xE1 tu pr\xF3xima partida."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899239
+    m_Localized: 01 / PUNTO DE ENCUENTRO
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899240
+    m_Localized: "NOVEDADES DEL AND\xC9N"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899241
+    m_Localized: Lo nuevo, antes de entrar.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899242
+    m_Localized: "Versi\xF3n de las notas del parche"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899243
+    m_Localized: "\u21BB Reintentar"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899244
+    m_Localized: Cancelar
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899245
+    m_Localized: "BUSCANDO\u2026"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899246
+    m_Localized: "TU PR\xD3XIMA PARTIDA"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899247
+    m_Localized: "PREPARANDO EL AND\xC9N"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899248
+    m_Localized: CONECTANDO
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899249
+    m_Localized: Aviso de privacidad
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899250
+    m_Localized: "Eleg\xED d\xF3nde guardar el juego y qu\xE9 versiones recibir."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899251
+    m_Localized: "CARPETA DE INSTALACI\xD3N"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899252
+    m_Localized: "Carpeta de instalaci\xF3n"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899253
+    m_Localized: "Elegir\u2026"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899254
+    m_Localized: Versiones experimentales
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899255
+    m_Localized: "Prob\xE1 lo que est\xE1 en desarrollo. Solo podr\xE1s jugar online con personas que tengan exactamente tu versi\xF3n."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899256
+    m_Localized: "TAMA\xD1O DE LA VENTANA"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899257
+    m_Localized: Chica
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899258
+    m_Localized: Normal
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899259
+    m_Localized: "Grande \xB7 16:9"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899260
+    m_Localized: Grande ocupa casi toda la pantalla.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899261
+    m_Localized: IDIOMA
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899262
+    m_Localized: "Tambi\xE9n se aplica al juego."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899263
+    m_Localized: Idioma del launcher y del juego
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899264
+    m_Localized: 'No se pudo guardar el idioma: {0}'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899265
+    m_Localized: "Com\xFAn"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899266
+    m_Localized: Raro
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899267
+    m_Localized: "\xC9pico"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899268
+    m_Localized: Legendario
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899269
+    m_Localized: Inicial
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899270
+    m_Localized: Avatar
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899271
+    m_Localized: Banner
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899272
+    m_Localized: Marco
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899273
+    m_Localized: "T\xEDtulo"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899274
+    m_Localized: "\xAB Men\xFA"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899275
+    m_Localized: "Cr\xE9ditos"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899276
+    m_Localized: Boletos
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899277
+    m_Localized: Cristales
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899278
+    m_Localized: Se ganan jugando
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899279
+    m_Localized: "Abren c\xE1psulas"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899280
+    m_Localized: Moneda de pago
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899281
+    m_Localized: "Danos tu opini\xF3n"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899282
+    m_Localized: "And\xE9n 01 \xB7 Punto de encuentro"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899283
+    m_Localized: Jugar
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899284
+    m_Localized: "T\xE1ctico  \xB7  Deathmatch  \xB7  Invasi\xF3n"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899285
+    m_Localized: Opciones
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899286
+    m_Localized: Logros
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899287
+    m_Localized: "Cr\xE9ditos"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899288
+    m_Localized: Salir
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899289
+    m_Localized: 'Campos de prueba:'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899290
+    m_Localized: "Campo de pr\xE1ctica"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899291
+    m_Localized: "01 / C\xE1psulas"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899292
+    m_Localized: "Estaci\xF3n del Rift"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899293
+    m_Localized: Volver
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899294
+    m_Localized: No se pudo volver
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899295
+    m_Localized: Partida en curso
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899296
+    m_Localized: "Volviendo\u2026"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899297
+    m_Localized: "Partida p\xFAblica"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899298
+    m_Localized: Jugador
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899299
+    m_Localized: "Sin t\xEDtulo"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899300
+    m_Localized: Sin marco
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899301
+    m_Localized: "\xBFSalir del juego?"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899302
+    m_Localized: Se cierra Project Riftwalker.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899303
+    m_Localized: Cancelar
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899304
+    m_Localized: Cerrar
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899305
+    m_Localized: Equipar
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899306
+    m_Localized: Comprar
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899307
+    m_Localized: Reiniciar
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899308
+    m_Localized: Canjear
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899309
+    m_Localized: Saltar
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899310
+    m_Localized: Registro del jugador
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899311
+    m_Localized: Perfil
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899312
+    m_Localized: "Estad\xEDsticas"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899313
+    m_Localized: "Personalizaci\xF3n"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899314
+    m_Localized: Emotes
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899315
+    m_Localized: Cuenta
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899316
+    m_Localized: Cambiar nombre
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899317
+    m_Localized: Partidas
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899318
+    m_Localized: Victorias
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899319
+    m_Localized: "Oleada r\xE9cord"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899320
+    m_Localized: Sin datos
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899321
+    m_Localized: "General \xB7 T\xE1ctico y Deathmatch"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899322
+    m_Localized: "Todav\xEDa no terminaste ninguna partida de T\xE1ctico o Deathmatch."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899323
+    m_Localized: '% de victorias'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899324
+    m_Localized: Bajas
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899325
+    m_Localized: Muertes
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899326
+    m_Localized: Asistencias
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899327
+    m_Localized: Tiros a la cabeza
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899328
+    m_Localized: Horas jugadas
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899329
+    m_Localized: "Todav\xEDa no terminaste ninguna partida de T\xE1ctico."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899330
+    m_Localized: Rondas ganadas
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899331
+    m_Localized: Plantados
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899332
+    m_Localized: Desactivados
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899333
+    m_Localized: "Todav\xEDa no terminaste ninguna partida de Deathmatch."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899334
+    m_Localized: Primer puesto
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899335
+    m_Localized: Mejor racha
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899336
+    m_Localized: "Todav\xEDa no terminaste ninguna partida de Invasi\xF3n."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899337
+    m_Localized: Mundo salvado
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899338
+    m_Localized: Invasores eliminados
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899339
+    m_Localized: "R\xE9cord en F\xE1cil"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899340
+    m_Localized: "R\xE9cord en Normal"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899341
+    m_Localized: "R\xE9cord en Dif\xEDcil"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899342
+    m_Localized: 'Minijuego: cometas'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899343
+    m_Localized: "Todav\xEDa no le disparaste a ning\xFAn cometa."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899344
+    m_Localized: "Simulaci\xF3n de negocio"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899345
+    m_Localized: Tienda
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899346
+    m_Localized: Compras simuladas
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899347
+    m_Localized: Una sola vez por cuenta
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899348
+    m_Localized: cristales
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899349
+    m_Localized: "M\xE1s elegido"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899350
+    m_Localized: Mejor valor
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899351
+    m_Localized: Total gastado (simulado)
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899352
+    m_Localized: Reiniciar datos de prueba
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899353
+    m_Localized: "Prueba del men\xFA"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899354
+    m_Localized: Reiniciar datos
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899355
+    m_Localized: "Vuelve todo a como arranca la prueba: monedas, colecci\xF3n, equipado, compras y c\xE1psulas abiertas."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899356
+    m_Localized: Datos de prueba reiniciados
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899357
+    m_Localized: Compra simulada
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899358
+    m_Localized: Comprar (simulado)
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899359
+    m_Localized: "No se cobra nada: es una simulaci\xF3n del negocio para el TP."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899360
+    m_Localized: Ya la compraste
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899361
+    m_Localized: Con cuenta no se reinicia
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899362
+    m_Localized: "Todav\xEDa no hiciste ninguna compra simulada."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899363
+    m_Localized: Suministros del otro lado
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899364
+    m_Localized: "Abrir 1 \xB7 1 boleto"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899365
+    m_Localized: "Abrir 5 \xB7 5 boletos"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899366
+    m_Localized: "Abrir otra \xB7 1 boleto"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899367
+    m_Localized: Probabilidades
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899368
+    m_Localized: Conseguir boletos
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899369
+    m_Localized: 1 boleto
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899370
+    m_Localized: "10 boletos \xB7 10 % menos"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899371
+    m_Localized: +1 boleto
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899372
+    m_Localized: +10 boletos
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899373
+    m_Localized: "\xBFSin cristales? Ir a la tienda \xBB"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899374
+    m_Localized: "\xDAltimos premios"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899375
+    m_Localized: "Ver contenido de la c\xE1psula"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899376
+    m_Localized: "Recibiendo la carga\u2026"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899377
+    m_Localized: "Un boleto, una c\xE1psula. Cada una trae un avatar, un banner, un t\xEDtulo o un marco."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899378
+    m_Localized: Nuevo
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899379
+    m_Localized: "Contenido de la c\xE1psula"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899380
+    m_Localized: "\u2022 ABRIENDO"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899381
+    m_Localized: "\u2022 ENTREGADO"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899382
+    m_Localized: "\u2022 EN ESPERA"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899383
+    m_Localized: "\xA1La pr\xF3xima trae <color=#B061FF>\xE9pico o mejor</color> asegurado!"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899384
+    m_Localized: "Todav\xEDa no abriste ninguna c\xE1psula."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899385
+    m_Localized: Ayudanos a mejorar
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899386
+    m_Localized: "Tu opini\xF3n importa"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899387
+    m_Localized: "\xBFQu\xE9 quer\xE9s contarnos?"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899388
+    m_Localized: "Opini\xF3n"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899389
+    m_Localized: Sugerencia
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899390
+    m_Localized: Error
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899391
+    m_Localized: Muy mala
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899392
+    m_Localized: Mala
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899393
+    m_Localized: Regular
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899394
+    m_Localized: Buena
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899395
+    m_Localized: Muy buena
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899396
+    m_Localized: "Contanos con tus palabras\u2026"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899397
+    m_Localized: "\xBFQu\xE9 pas\xF3?"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899398
+    m_Localized: "\xBFQu\xE9 te gustar\xEDa que agreguemos o cambiemos?"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899399
+    m_Localized: "Contanos qu\xE9 te pareci\xF3"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899400
+    m_Localized: "Enviar opini\xF3n"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899401
+    m_Localized: "Enviando tu opini\xF3n\u2026"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899402
+    m_Localized: "\xA1Gracias! Tu opini\xF3n qued\xF3 guardada en esta PC."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899403
+    m_Localized: "Soledad \xB7 Celeste"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899404
+    m_Localized: "Unzu\xE9 \xB7 \xC1mbar"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899405
+    m_Localized: "Goya \xB7 Carmes\xED"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899406
+    m_Localized: "Necochea \xB7 Esmeralda"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899407
+    m_Localized: Guardia de acero
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899408
+    m_Localized: Turno nocturno
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899409
+    m_Localized: Entre sombras
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899410
+    m_Localized: No muerto
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899411
+    m_Localized: Sombra de 8 bits
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899412
+    m_Localized: "Soledad el\xE9ctrica"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899413
+    m_Localized: Furia de color
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899414
+    m_Localized: Silencio de tinta
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899415
+    m_Localized: "Coraz\xF3n del Rift"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899416
+    m_Localized: Marea celeste
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899417
+    m_Localized: "Basti\xF3n de tinta"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899418
+    m_Localized: "\xD3rbita floral"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899419
+    m_Localized: Blindaje fragmentado
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899420
+    m_Localized: Pulso de puntos
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899421
+    m_Localized: "And\xE9n Riftwalker"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899422
+    m_Localized: Umbral celeste
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899423
+    m_Localized: "Forja \xE1mbar"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899424
+    m_Localized: "Pulso carmes\xED"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899425
+    m_Localized: Velo esmeralda
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899426
+    m_Localized: "\xDAltima oleada"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899427
+    m_Localized: "N\xFAcleo del Rift"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899428
+    m_Localized: "\xCDcono"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899429
+    m_Localized: Original
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899430
+    m_Localized: Hiperrealismo
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899431
+    m_Localized: "Modo Invasi\xF3n"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899432
+    m_Localized: Fauvismo
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899433
+    m_Localized: Tinta
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899434
+    m_Localized: Cristal
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899435
+    m_Localized: Acuarela
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899436
+    m_Localized: Tinta china
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899437
+    m_Localized: Cubismo
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899438
+    m_Localized: Puntillismo
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899439
+    m_Localized: Oferta de bienvenida
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899440
+    m_Localized: 5 boletos + 200 cristales
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899441
+    m_Localized: Bolsa de cristales
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899442
+    m_Localized: Cofre de cristales
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899443
+    m_Localized: Caja de cristales
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899444
+    m_Localized: "B\xF3veda de cristales"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899445
+    m_Localized: "\xDAltimo pasajero"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899446
+    m_Localized: Fumador
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899447
+    m_Localized: Exterminador de zombies
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899448
+    m_Localized: ACE
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899449
+    m_Localized: Viajero del Rift
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899450
+    m_Localized: "Pr\xF3xima estaci\xF3n: caos"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899451
+    m_Localized: Sin boleto
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899452
+    m_Localized: Maquinista del apocalipsis
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899453
+    m_Localized: Primera clase
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899454
+    m_Localized: "\xDAltimo vag\xF3n"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899455
+    m_Localized: Fuera de horario
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899456
+    m_Localized: "V\xEDa muerta"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899457
+    m_Localized: Expreso al infierno
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899458
+    m_Localized: Pasajero fantasma
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899459
+    m_Localized: Destino desconocido
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899460
+    m_Localized: "Cambio de v\xEDa"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899461
+    m_Localized: Sin retorno
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899462
+    m_Localized: "Jefe de estaci\xF3n"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899463
+    m_Localized: "Perd\xED el tren"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899464
+    m_Localized: Servicio interrumpido
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899465
+    m_Localized: Una bala alcanza
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899466
+    m_Localized: "Cero munici\xF3n"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899467
+    m_Localized: Dedo en el gatillo
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899468
+    m_Localized: A quemarropa
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899469
+    m_Localized: Tiro de gracia
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899470
+    m_Localized: El del clutch
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899471
+    m_Localized: "\xDAltimo en pie"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899472
+    m_Localized: Sin cobertura
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899473
+    m_Localized: Fuego cruzado
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899474
+    m_Localized: "Recargando\u2026"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899475
+    m_Localized: "Apunt\xE9 sin querer"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899476
+    m_Localized: "Una ronda m\xE1s"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899477
+    m_Localized: Pesadilla de la horda
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899478
+    m_Localized: "No era un rasgu\xF1o"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899479
+    m_Localized: "Sobreviv\xED de pedo"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899480
+    m_Localized: Coleccionista de cabezas
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899481
+    m_Localized: Otra vez los zombies
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899482
+    m_Localized: "Hasta la \xFAltima oleada"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899483
+    m_Localized: "El que qued\xF3 atr\xE1s"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899484
+    m_Localized: "Todav\xEDa respiro"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899485
+    m_Localized: Entre dimensiones
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899486
+    m_Localized: Error en la realidad
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899487
+    m_Localized: Del otro lado
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899488
+    m_Localized: Grieta viviente
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899489
+    m_Localized: Perdido en el tiempo
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899490
+    m_Localized: "No deb\xED cruzar"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899491
+    m_Localized: Cazador de cometas
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899492
+    m_Localized: "Mala punter\xEDa, buena actitud"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899493
+    m_Localized: Vine por la cursada
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899494
+    m_Localized: Final pendiente
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899495
+    m_Localized: Era lag
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899496
+    m_Localized: Claramente era hacker
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899497
+    m_Localized: "Lo ten\xEDa calculado"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899498
+    m_Localized: Disparo de advertencia
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899499
+    m_Localized: MVP del equipo contrario
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899500
+    m_Localized: Especialista en reaparecer
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899501
+    m_Localized: Cobertura decorativa
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899502
+    m_Localized: Estoy calentando
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899503
+    m_Localized: Mi mouse no anda
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899504
+    m_Localized: Casi le pego
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899505
+    m_Localized: Estrategia cuestionable
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899506
+    m_Localized: Vine a mirar
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899507
+    m_Localized: "Me baj\xE9 en la estaci\xF3n equivocada"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899508
+    m_Localized: El tren tampoco me espera
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899509
+    m_Localized: Puntual para morir
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899510
+    m_Localized: Boleto de ida al respawn
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899511
+    m_Localized: Alimentando a la horda
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899512
+    m_Localized: "El zombie ten\xEDa prioridad"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899513
+    m_Localized: "Aprobado por l\xE1stima"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899514
+    m_Localized: Esto no entraba en el parcial
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899515
+    m_Localized: "M\xEDnimo 5 partidas terminadas"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899516
+    m_Localized: "M\xEDnimo 50 disparos a cometas"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899517
+    m_Localized: Bajas a la cabeza
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899518
+    m_Localized: Cometas destruidos
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899519
+    m_Localized: "Precisi\xF3n"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899520
+    m_Localized: Logros obtenidos
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899521
+    m_Localized: "No se pudo leer el progreso de los logros. Se conserv\xF3 tal como estaba."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899522
+    m_Localized: "Este progreso de logros requiere una versi\xF3n m\xE1s reciente del juego."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899523
+    m_Localized: "Para abrir c\xE1psulas y canjear hace falta conexi\xF3n"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899524
+    m_Localized: "Ya est\xE1s en una cuenta. Cerr\xE1 la sesi\xF3n para crear otra."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899525
+    m_Localized: Ranking online sin configurar. El progreso se guarda en esta PC.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899526
+    m_Localized: Logros online
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899527
+    m_Localized: "Pendiente de conexi\xF3n."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899528
+    m_Localized: "Sincronizando\u2026"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899529
+    m_Localized: "No se pudo enviar tu opini\xF3n."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899530
+    m_Localized: "\xA1Gracias! Tu opini\xF3n le lleg\xF3 al equipo."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899531
+    m_Localized: "Tu opini\xF3n qued\xF3 en la PC: falta actualizar el servicio online."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899532
+    m_Localized: "\xA1Gracias! Tu opini\xF3n se env\xEDa en un momento."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899533
+    m_Localized: "No se pudo recuperar la identidad online. El progreso local est\xE1 conservado."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899534
+    m_Localized: "No se pudo autenticar. Revis\xE1 el acceso an\xF3nimo del proyecto."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899535
+    m_Localized: "No se pudo guardar la identidad online. Revis\xE1 los permisos de la carpeta de progreso."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899536
+    m_Localized: No se pudo autenticar.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899537
+    m_Localized: "Sin conexi\xF3n. Se conserva el progreso local y el \xFAltimo ranking disponible."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899538
+    m_Localized: "El proyecto de Supabase no permite jugadores an\xF3nimos: hay que activar Anonymous Sign-Ins (ver Backend/Supabase/README.md)."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899539
+    m_Localized: "El ranking online no acept\xF3 tu nombre. Prob\xE1 con otro (letras, n\xFAmeros, espacio, - o _)."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899540
+    m_Localized: "Sin conexi\xF3n: tu opini\xF3n se env\xEDa cuando vuelva."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899541
+    m_Localized: "No se pudo enviar ahora: tu opini\xF3n se manda m\xE1s tarde."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899542
+    m_Localized: 1 nuevo
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899543
+    m_Localized: "Ten\xE9s 1 boleto para abrir"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899544
+    m_Localized: "RW \xB7 RIFT"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899545
+    m_Localized: "Simulaci\xF3n de negocio: no hay pagos reales. Los boletos se consiguen jugando (cr\xE9ditos) o con cristales de la tienda. "
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899546
+    m_Localized: Las probabilidades se muestran siempre.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899547
+    m_Localized: "hay uno \xE9pico o mejor asegurado. Los repetidos se convierten en cr\xE9ditos."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899548
+    m_Localized: "Progreso acumulado \xB7 Ranking global"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899549
+    m_Localized: Logros y ranking
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899550
+    m_Localized: Tu progreso
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899551
+    m_Localized: TU PROGRESO
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899552
+    m_Localized: logros obtenidos
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899553
+    m_Localized: El progreso se guarda en esta PC.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899554
+    m_Localized: "Cre\xE1 una cuenta para aparecer en el ranking (Perfil \u203A Cuenta).\n"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899555
+    m_Localized: 1 jugador registrado
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899556
+    m_Localized: "Conexi\xF3n"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899557
+    m_Localized: "Cometas de cada color y combate en T\xE1ctico y Deathmatch"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899558
+    m_Localized: Volver al ranking
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899559
+    m_Localized: Los porcentajes corresponden a los jugadores con cuenta.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899560
+    m_Localized: "Logros obtenidos \xB7 empates comparten puesto"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899561
+    m_Localized: "El ranking estar\xE1 disponible al conectar el servicio online."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899562
+    m_Localized: "Consultando jugadores\u2026"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899563
+    m_Localized: "Todav\xEDa no hay jugadores en esta lista."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899564
+    m_Localized: "No hay datos disponibles. Prob\xE1 actualizar."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899565
+    m_Localized: Todos los jugadores
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899566
+    m_Localized: "P\xE1gina"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899567
+    m_Localized: empates comparten puesto
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899568
+    m_Localized: "Este ranking todav\xEDa no est\xE1 disponible: falta actualizar el servicio online."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899569
+    m_Localized: "Todav\xEDa no hay jugadores en esta categor\xEDa."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899570
+    m_Localized: "Cre\xE1 una cuenta para aparecer en el ranking."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899571
+    m_Localized: "Todav\xEDa no aparec\xE9s en esta categor\xEDa."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899572
+    m_Localized: "Descripci\xF3n"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899573
+    m_Localized: de jugadores
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899574
+    m_Localized: Ver jugadores
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899575
+    m_Localized: Ver logros
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899576
+    m_Localized: "* KDA = (bajas + asistencias) \xF7 muertes; sin muertes, \xF7 1. Asistencia: da\xF1aste a un rival que otro elimin\xF3 en los 10 s siguientes. "
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899577
+    m_Localized: Cuentan las partidas terminadas.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899578
+    m_Localized: "Azules \xB7 verdes \xB7 dorados"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899579
+    m_Localized: "Reacci\xF3n promedio"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899580
+    m_Localized: "R\xE9cord en una fase"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899581
+    m_Localized: "Mejor reacci\xF3n"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899582
+    m_Localized: Mostrar bloqueados
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899583
+    m_Localized: "T\xEDtulos"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899584
+    m_Localized: "As\xED queda el marco en la cabecera de tu Perfil. M\xE1s adelante, tambi\xE9n en la tabla con Tab."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899585
+    m_Localized: "As\xED se ve tu cabecera en el Perfil.\nEl lado izquierdo del banner queda para tu avatar y tu nombre."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899586
+    m_Localized: "Conseguilo en la estaci\xF3n \xBB"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899587
+    m_Localized: "Eleg\xED un espacio de la rueda y despu\xE9s el baile que va ah\xED. Manten\xE9 T en la partida para abrir la rueda."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899588
+    m_Localized: Sin equipar
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899589
+    m_Localized: "Pas\xE1 el mouse por un baile para verlo."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899590
+    m_Localized: "Inici\xE1 sesi\xF3n en el launcher"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899591
+    m_Localized: "Abr\xED el launcher"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899592
+    m_Localized: "Entr\xE1 con tu cuenta"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899593
+    m_Localized: "Toc\xE1 Jugar"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899594
+    m_Localized: "Si el launcher no est\xE1 en esta PC, bajalo desde la gu\xEDa del juego."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899595
+    m_Localized: "Tu sesi\xF3n se cerr\xF3"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899596
+    m_Localized: "Se cerr\xF3 la sesi\xF3n de tu cuenta, por ejemplo desde el launcher. Volv\xE9 a entrar ah\xED para seguir jugando: tu progreso est\xE1 guardado en la cuenta."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899597
+    m_Localized: "Para jugar hace falta una cuenta. Abr\xED el launcher, entr\xE1 con tu cuenta y toc\xE1 Jugar: el juego se abre con ella."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899598
+    m_Localized: "<color=#F29A38><b>Compras simuladas.</b></color>  Es un proyecto universitario: no se cobra dinero real. Se prueba c\xF3mo funcionar\xEDa la tienda de un juego gratuito."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899599
+    m_Localized: 1 compra
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899600
+    m_Localized: "No ten\xE9s boletos: canje\xE1 cr\xE9ditos o cristales"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899601
+    m_Localized: Con cuenta
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899602
+    m_Localized: Falta confirmar
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899603
+    m_Localized: Sin cuenta
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899604
+    m_Localized: "\xBFNo te lleg\xF3? <color=#F29A38><u>Ped\xED otro c\xF3digo</u></color>"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899605
+    m_Localized: "Jug\xE1s sin cuenta"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899606
+    m_Localized: "En el juego publicado, la cuenta se maneja desde el launcher. Ac\xE1, en el editor, pod\xE9s crearla o entrar para probar."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899607
+    m_Localized: "La cuenta se maneja desde el launcher: entr\xE1 ah\xED y toc\xE1 Jugar."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899608
+    m_Localized: Tu progreso en la nube, en cualquier PC
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899609
+    m_Localized: "Aparec\xE9 en el ranking global"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899610
+    m_Localized: "Busc\xE1 partida con otros jugadores"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899611
+    m_Localized: "Tu cuenta \xB7 Falta un paso"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899612
+    m_Localized: "Confirm\xE1 tu mail"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899613
+    m_Localized: "\xBFTe equivocaste de mail? <color=#F29A38><u>Cambialo</u></color>"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899614
+    m_Localized: "Mientras tanto segu\xEDs jugando como siempre."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899615
+    m_Localized: "En el editor se usa la sesi\xF3n del launcher o la que se abri\xF3 ac\xE1."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899616
+    m_Localized: Entraste desde el launcher.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899617
+    m_Localized: En la nube
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899618
+    m_Localized: "Para cambiar de cuenta o cerrar sesi\xF3n, us\xE1 el <color=#F3F4F6>launcher</color>: el men\xFA de la cuenta est\xE1 arriba, al lado de Ajustes."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899619
+    m_Localized: "En el editor volv\xE9s al progreso sin cuenta. Lo de la cuenta queda guardado en ella y vuelve cuando inicies sesi\xF3n (en el juego publicado, desde el launcher)."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899620
+    m_Localized: "Cerraste la sesi\xF3n"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899621
+    m_Localized: En el juego publicado, la cuenta se cambia desde el launcher.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899622
+    m_Localized: "Qu\xE9 guardamos"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899623
+    m_Localized: "Tu mail, tu nombre, tu progreso, tus estad\xEDsticas y tus opiniones. Los usamos para guardar tu progreso, armar el ranking y buscar partida. No los compartimos con nadie."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899624
+    m_Localized: Ver el aviso completo
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899625
+    m_Localized: "Listo: tu cuenta est\xE1 activa"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899626
+    m_Localized: "Te mandamos otro c\xF3digo"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899627
+    m_Localized: Cuenta nueva
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899628
+    m_Localized: "Contrase\xF1a"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899629
+    m_Localized: "Repetir la contrase\xF1a"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899630
+    m_Localized: "<u>Iniciar sesi\xF3n</u>"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899631
+    m_Localized: "Al crear la cuenta acept\xE1s el <color=#F29A38><u>aviso de privacidad</u></color>."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899632
+    m_Localized: "Creando\u2026"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899633
+    m_Localized: "Te mandamos un c\xF3digo a tu mail"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899634
+    m_Localized: "Entrando\u2026"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899635
+    m_Localized: Entraste a tu cuenta
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899636
+    m_Localized: "\xBFNo ten\xE9s cuenta? <color=#F29A38><u>Crear cuenta</u></color>"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899637
+    m_Localized: "Tu mail y tu contrase\xF1a (cifrada), tu nombre, tu progreso (logros, cosm\xE9ticos, monedas), tus estad\xEDsticas de partida y las opiniones que mandes."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899638
+    m_Localized: "Para qu\xE9"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899639
+    m_Localized: "D\xF3nde"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899640
+    m_Localized: "En la base del juego (Supabase). Las partidas pasan por los servidores de Photon, que reciben tu nombre de jugador, tu id de cuenta y tu conexi\xF3n (IP), como cualquier juego en l\xEDnea."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899641
+    m_Localized: Tus derechos
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899642
+    m_Localized: "Pod\xE9s ver tus datos en el Perfil y borrar tu cuenta con todo lo que tiene desde el launcher, en el men\xFA de la cuenta (Ley 25.326 de Protecci\xF3n de Datos Personales)."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899643
+    m_Localized: "Escrib\xED un mail v\xE1lido."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899644
+    m_Localized: "La contrase\xF1a tiene que tener 8 caracteres o m\xE1s."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899645
+    m_Localized: "Las contrase\xF1as no coinciden."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899646
+    m_Localized: Ese mail ya tiene una cuenta.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899647
+    m_Localized: "El mail o la contrase\xF1a no coinciden."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899648
+    m_Localized: "Tu mail todav\xEDa no est\xE1 confirmado. Te mandamos otro c\xF3digo."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899649
+    m_Localized: "Tu sesi\xF3n venci\xF3. Volv\xE9 a iniciar sesi\xF3n."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899650
+    m_Localized: "Escrib\xED los 6 n\xFAmeros del c\xF3digo."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899651
+    m_Localized: "El c\xF3digo venci\xF3 o no es correcto. Ped\xED otro."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899652
+    m_Localized: Hace falta internet para esto.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899653
+    m_Localized: "Ya te mandamos un c\xF3digo hace poco. Esper\xE1 un minuto y ped\xED otro."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899654
+    m_Localized: "Las cuentas necesitan el servicio online, que no est\xE1 configurado en esta versi\xF3n."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899655
+    m_Localized: "No se pudo mandar el mail. Prob\xE1 de nuevo en un rato."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899656
+    m_Localized: "No se pudo completar. Prob\xE1 de nuevo en un rato."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899657
+    m_Localized: "La contrase\xF1a no es correcta."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899658
+    m_Localized: "No se pudo verificar tu cuenta. Volv\xE9 a entrar en el launcher."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899659
+    m_Localized: "\xBFC\xF3mo fue tu experiencia? <color=#8E96A3><size=18>(opcional)</size></color>"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899660
+    m_Localized: "Le llega al equipo con tu nombre y la versi\xF3n. Sin datos personales, por favor."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899661
+    m_Localized: Primer rastro azul
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899662
+    m_Localized: Cazador celeste
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899663
+    m_Localized: Dominio azul
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899664
+    m_Localized: Destello esmeralda
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899665
+    m_Localized: "\xD3rbita esmeralda"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899666
+    m_Localized: Dominio verde
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899667
+    m_Localized: Polvo de oro
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899668
+    m_Localized: Fiebre del oro
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899669
+    m_Localized: Dominio dorado
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899670
+    m_Localized: Boleto picado
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899671
+    m_Localized: Hora pico
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899672
+    m_Localized: Locomotora
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899673
+    m_Localized: "Cabeza de l\xEDnea"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899674
+    m_Localized: "Ojo de halc\xF3n"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899675
+    m_Localized: "Francotirador del and\xE9n"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899676
+    m_Localized: "Compa\xF1ero de vag\xF3n"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899677
+    m_Localized: "Primera estaci\xF3n"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899678
+    m_Localized: "Due\xF1o de la l\xEDnea"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899679
+    m_Localized: Maquinista
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899680
+    m_Localized: Sin escalas
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899681
+    m_Localized: Tren bala
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899682
+    m_Localized: Paquete sospechoso
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899683
+    m_Localized: Servicio restablecido
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899684
+    m_Localized: Viajero frecuente
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899685
+    m_Localized: "Destru\xED 10 cometas azules en total."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899686
+    m_Localized: "Destru\xED 50 cometas azules en total."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899687
+    m_Localized: "Destru\xED 100 cometas azules en total."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899688
+    m_Localized: "Destru\xED 10 cometas verdes en total."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899689
+    m_Localized: "Destru\xED 50 cometas verdes en total."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899690
+    m_Localized: "Destru\xED 100 cometas verdes en total."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899691
+    m_Localized: "Destru\xED 10 cometas dorados en total."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899692
+    m_Localized: "Destru\xED 50 cometas dorados en total."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899693
+    m_Localized: "Destru\xED 100 cometas dorados en total."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899694
+    m_Localized: "Hac\xE9 10 bajas."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899695
+    m_Localized: "Hac\xE9 100 bajas."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899696
+    m_Localized: "Hac\xE9 500 bajas."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899697
+    m_Localized: "Hac\xE9 10 bajas con tiros a la cabeza."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899698
+    m_Localized: "Hac\xE9 50 bajas con tiros a la cabeza."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899699
+    m_Localized: "Hac\xE9 200 bajas con tiros a la cabeza."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899700
+    m_Localized: "Consegu\xED 50 asistencias."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899701
+    m_Localized: "Gan\xE1 tu primera partida."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899702
+    m_Localized: "Gan\xE1 25 partidas."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899703
+    m_Localized: "Termin\xE1 una partida de T\xE1ctico como MVP."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899704
+    m_Localized: "Termin\xE1 10 partidas de T\xE1ctico como MVP."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899705
+    m_Localized: "Hac\xE9 5 bajas seguidas sin morir en una partida de Deathmatch."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899706
+    m_Localized: "Hac\xE9 10 bajas seguidas sin morir en una partida de Deathmatch."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899707
+    m_Localized: "Plant\xE1 el dispositivo 10 veces."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899708
+    m_Localized: "Desactiv\xE1 el dispositivo 10 veces."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899709
+    m_Localized: "Termin\xE1 50 partidas."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899710
+    m_Localized: Obtenido
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899711
+    m_Localized: Pendiente
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899712
+    m_Localized: AZULES
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899713
+    m_Localized: VERDES
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899714
+    m_Localized: DORADOS
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899715
+    m_Localized: COMBATE
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899716
+    m_Localized: '{0} destruidos'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899717
+    m_Localized: "{0} bajas \xB7 {1} a la cabeza"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899718
+    m_Localized: "PUESTO EN LOGROS: \u2014"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899719
+    m_Localized: 'PUESTO EN LOGROS: #{0}'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899720
+    m_Localized: '{0} jugador registrado'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899721
+    m_Localized: '{0} jugadores registrados'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899722
+    m_Localized: Logros de {0}
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899723
+    m_Localized: "Qui\xE9nes consiguieron: {0}"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899724
+    m_Localized: "P\xE1gina {0}"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899725
+    m_Localized: "Tu puesto: <color=#F3F4F6>#{0}</color> \xB7 {1}"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899726
+    m_Localized: '{0} (vos)'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899727
+    m_Localized: '{0} / {1} logros obtenidos'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899728
+    m_Localized: 'Logro desbloqueado: {0}'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899729
+    m_Localized: Azules
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899730
+    m_Localized: Verdes
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899731
+    m_Localized: Dorados
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899732
+    m_Localized: Puntos
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899733
+    m_Localized: Minijuego
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899734
+    m_Localized: General
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899735
+    m_Localized: "T\xE1ctico"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899736
+    m_Localized: "M\xEDnimo 50 disparos a cometas \xB7 gana el menor tiempo"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899737
+    m_Localized: Anterior
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899738
+    m_Localized: Siguiente
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899739
+    m_Localized: Sala {0}
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899740
+    m_Localized: "Pod\xE9s volver durante {0}:{1:00}"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899741
+    m_Localized: '{0} nuevo'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899742
+    m_Localized: '{0} nuevos'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899743
+    m_Localized: "Ten\xE9s {0} boleto para abrir"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899744
+    m_Localized: "Ten\xE9s {0} boletos para abrir"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899745
+    m_Localized: "\xA1Nuevo! <color={0}>{1}</color> ya est\xE1 en tu colecci\xF3n."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899746
+    m_Localized: "Repetido: se convirti\xF3 en <color=#D6DAE0>{0} cr\xE9ditos</color>."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899747
+    m_Localized: "{0} \xB7 repetidos convertidos en {1} cr\xE9ditos"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899748
+    m_Localized: "C\xC1PSULA DEL RIFT \xB7 N\xBA {0:000}"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899749
+    m_Localized: "\xC9pico o mejor asegurado en <color=#F3F4F6>{0} c\xE1psulas</color>"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899750
+    m_Localized: <color={0}>{1}</color> equipado
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899751
+    m_Localized: "{0} cr\xE9ditos"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899752
+    m_Localized: '{0} cristales'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899753
+    m_Localized: "+{0} cr\xE9ditos"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899754
+    m_Localized: Partidas terminadas  <color=#F3F4F6>{0}</color>
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899755
+    m_Localized: En la rueda  <color=#F3F4F6>{0} / {1}</color>
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899756
+    m_Localized: "Colecci\xF3n  <color=#F3F4F6>{0} / {1}</color>"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899757
+    m_Localized: "Espacio {0} vac\xEDo"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899758
+    m_Localized: En el espacio {0}
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899759
+    m_Localized: '{0} compra'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899760
+    m_Localized: '{0} compras'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899761
+    m_Localized: +{0} de regalo
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899762
+    m_Localized: Cuenta  <color=#F3F4F6>{0}</color>
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899763
+    m_Localized: Desde el launcher
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899764
+    m_Localized: Editor  <color=#F3F4F6>{0}</color>
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899765
+    m_Localized: "\xBFNo te lleg\xF3? Pod\xE9s pedir otro en 0:{0:00}"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899766
+    m_Localized: "Te mandamos un c\xF3digo de 6 n\xFAmeros a <color=#F3F4F6>{0}</color>. Escribilo para activar la cuenta."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899767
+    m_Localized: " Tu progreso, tus monedas y tu lugar en el ranking est\xE1n en la cuenta, y los segu\xEDs en cualquier PC."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899768
+    m_Localized: Ver
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899769
+    m_Localized: Ocultar
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899770
+    m_Localized: Crear cuenta
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899771
+    m_Localized: "Iniciar sesi\xF3n"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899772
+    m_Localized: Entrar
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899773
+    m_Localized: "Cerrar sesi\xF3n"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899774
+    m_Localized: Tu cuenta
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899775
+    m_Localized: Privacidad
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899776
+    m_Localized: Aviso de privacidad
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899777
+    m_Localized: Mail
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899778
+    m_Localized: Desde
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899779
+    m_Localized: Nombre
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899780
+    m_Localized: Progreso
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899781
+    m_Localized: "No encontramos el launcher en esta PC: te abrimos la gu\xEDa del juego para bajarlo."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899782
+    m_Localized: Te faltan boletos para abrir {0}
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899783
+    m_Localized: "\xBFRestablecer {0}?"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899784
+    m_Localized: "<color=#F3F4F6>{0}</color> ya est\xE1 en <color=#F3F4F6>{1}</color>. \xBFQuer\xE9s intercambiarlas? {1} pasar\xEDa a {2}."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899785
+    m_Localized: <color=#3DDC97>{0} / {1}</color> listos
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899786
+    m_Localized: Con tu cuenta <color=#FFFFFF>{0}</color>
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899787
+    m_Localized: Como <color=#FFFFFF>{0}</color>
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899788
+    m_Localized: " \xB7 {0} \xB7 misma versi\xF3n (v{1})"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899789
+    m_Localized: Empieza en <color={0}>{1}</color>
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899790
+    m_Localized: <color={0}>{1}</color> / {2} jugadores
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899791
+    m_Localized: "{0} \xB7 {1} \xB7 misma versi\xF3n (v{2})"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899792
+    m_Localized: "Ya est\xE1 el m\xEDnimo para {0}. Si no entra nadie m\xE1s, arranca en {1}."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899793
+    m_Localized: Arranca sola con {0} jugadores, o con {1} si pasan {2} s sin que entre nadie.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899794
+    m_Localized: "R\xE9cord en {0}: <color={1}>oleada {2}</color>"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899795
+    m_Localized: "R\xE9cord en {0}: <color={1}>todav\xEDa no jugaste</color>"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899796
+    m_Localized: "No se puede usar \"{0}\". Solo letras, n\xFAmeros, espacio, guion y guion bajo."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899797
+    m_Localized: "Faltan {0} caracteres: el m\xEDnimo es 3."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899798
+    m_Localized: "Sobran {0} caracteres: el m\xE1ximo es 16."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899799
+    m_Localized: <nobr><color=#{0}>Esc</color> Pausa</nobr>
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899800
+    m_Localized: "     <color=#{0}>(se cambian en Opciones, pesta\xF1a Controles)</color>"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899801
+    m_Localized: "Campo de pr\xE1ctica"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899802
+    m_Localized: "Mapa de pr\xE1ctica"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899803
+    m_Localized: Logro desbloqueado
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899804
+    m_Localized: Sonido
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899805
+    m_Localized: Volumen
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899806
+    m_Localized: General
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899807
+    m_Localized: "M\xFAsica"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899808
+    m_Localized: Efectos
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899809
+    m_Localized: Interfaz
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899810
+    m_Localized: Al mover un control suena una muestra. Se guarda al apretar Aplicar.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899811
+    m_Localized: el sonido
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899812
+    m_Localized: "Modo T\xE1ctico"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899813
+    m_Localized: "Modo Invasi\xF3n"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899814
+    m_Localized: 'Sala '
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899815
+    m_Localized: "Esperando al anfitri\xF3n  \xB7  la partida empieza cuando termine de cargar"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899816
+    m_Localized: "Esperando a los dem\xE1s jugadores  \xB7  la partida empieza cuando cargaron todos"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899817
+    m_Localized: "Agachate con {Agacharse} antes de tirar: las balas se desv\xEDan menos."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899818
+    m_Localized: "Recarg\xE1 con {Recargar} antes de asomarte, no en medio del tiroteo."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899819
+    m_Localized: "Disparar en movimiento abre la dispersi\xF3n: fren\xE1 antes de tirar."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899820
+    m_Localized: "Los tiros a la cabeza hacen m\xE1s da\xF1o."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899821
+    m_Localized: "Us\xE1 la habilidad de tu personaje con {Habilidad}."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899822
+    m_Localized: Las teclas, la sensibilidad y la mira se cambian en Opciones o desde la pausa.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899823
+    m_Localized: "Manten\xE9 apretada la tecla Tab para ver la tabla de jugadores."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899824
+    m_Localized: "Manten\xE9 apretada {Plantar} sobre una zona para plantar el dispositivo. Si te mov\xE9s, se corta."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899825
+    m_Localized: "Abr\xED la tienda con {Tienda} durante la fase de compra, dentro de tu base."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899826
+    m_Localized: "Solt\xE1 tu arma con {Soltar} para pas\xE1rsela a un compa\xF1ero."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899827
+    m_Localized: "Si llev\xE1s el dispositivo, sacalo con {Dispositivo}."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899828
+    m_Localized: "Al morir no reaparec\xE9s hasta la ronda siguiente: cuid\xE1 la vida."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899829
+    m_Localized: "Perder varias rondas seguidas da m\xE1s plata para la siguiente."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899830
+    m_Localized: Los defensores desactivan el dispositivo manteniendo apretada {Plantar} al lado.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899831
+    m_Localized: "En Deathmatch reaparec\xE9s a los pocos segundos: no te quedes quieto."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899832
+    m_Localized: "Cambi\xE1 de arma con {ArmaPrincipal}, {ArmaSecundaria} y {Cuchillo}."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899833
+    m_Localized: "Cada oleada es m\xE1s dif\xEDcil que la anterior: guard\xE1 balas."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899834
+    m_Localized: "Si te rodean, pas\xE1 al cuchillo con {Cuchillo} en vez de recargar."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899835
+    m_Localized: Pantalla
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899836
+    m_Localized: Mapa
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899837
+    m_Localized: Modo
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899838
+    m_Localized: Cargando
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899839
+    m_Localized: Consejo
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899840
+    m_Localized: "Cargando el men\xFA"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899841
+    m_Localized: Cargando el mapa
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899842
+    m_Localized: Mapa cargado
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899843
+    m_Localized: los controles
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899844
+    m_Localized: "Apret\xE1 una tecla"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899845
+    m_Localized: Controles
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899846
+    m_Localized: Mouse
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899847
+    m_Localized: Sensibilidad
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899848
+    m_Localized: Al apuntar
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899849
+    m_Localized: "Hac\xE9 clic en una acci\xF3n y apret\xE1 la tecla nueva. Esc cancela."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899850
+    m_Localized: Teclas
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899851
+    m_Localized: Pausa
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899852
+    m_Localized: Intercambiar
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899853
+    m_Localized: Cancelar
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899854
+    m_Localized: Volver
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899855
+    m_Localized: Restablecer
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899856
+    m_Localized: Guardado
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899857
+    m_Localized: Invertir eje Y
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899858
+    m_Localized: "Hace no tanto tiempo, en una universidad\nmuy, muy cercana\u2026"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899859
+    m_Localized: "Un shooter t\xE1ctico, un deathmatch y una invasi\xF3n alien\xEDgena en la universidad. Hecho por siete estudiantes en diez semanas, con m\xE1s caf\xE9 que horas de sue\xF1o."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899860
+    m_Localized: "Desarrollo y mec\xE1nicas"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899861
+    m_Localized: "Arte 2D/3D y dise\xF1o de niveles"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899862
+    m_Localized: Interfaz (UI/UX)
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899863
+    m_Localized: "Sonido y m\xFAsica"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899864
+    m_Localized: Testing y QA
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899865
+    m_Localized: "Documentaci\xF3n y backlog"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899866
+    m_Localized: Repositorio y Git
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899867
+    m_Localized: "Unity 6 \xB7 Universal Render Pipeline\nProBuilder \xB7 TextMesh Pro \xB7 Input System \xB7 AI Navigation\nPhoton PUN 2 (multijugador)\nGitHub y GitHub Projects"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899868
+    m_Localized: Personaje y animaciones
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899869
+    m_Localized: Mixamo, de Adobe
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899870
+    m_Localized: Escenario sci-fi
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899871
+    m_Localized: 3D Scifi Kit Starter Kit, de Creepy Cat (Unity Asset Store)
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899872
+    m_Localized: Cuchillo
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899873
+    m_Localized: Sci-fi Weapon - Game Ready Knife - FREE SAMPLE, de AF Creations (Unity Asset Store)
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899874
+    m_Localized: Texturas
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899875
+    m_Localized: Modelos de las armas
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899876
+    m_Localized: Sci-Fi Modular Gun Pack, de Quaternius (CC0)
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899877
+    m_Localized: Disparos
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899878
+    m_Localized: The Free Firearm Sound Library, de Ben Jaszczak, Brian Nelson, Kevin Heras y Matthew Nanney (CC0)
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899879
+    m_Localized: Recargas
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899880
+    m_Localized: Gun reload sounds, de SpringySpringo, y Shotgun Reload Sound Effects, de zer0_sol (CC0, OpenGameArt)
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899881
+    m_Localized: Estallido de la flash
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899882
+    m_Localized: Flashbang explode, de MadPanCake (CC BY-NC 4.0, Freesound)
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899883
+    m_Localized: "M\xFAsica del Modo Deathmatch"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899884
+    m_Localized: 'action track 4, A.I. fight & jumping cyborg, mezcla de glitchart: action track 4, de Alexandr Zhelanov (CC BY 3.0), y A.I. fight & jumping cyborg, de tricksntraps (CC0, OpenGameArt)'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899885
+    m_Localized: "Sonido de reaparici\xF3n"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899886
+    m_Localized: Teleport, de fins (CC0, Freesound y OpenGameArt)
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899887
+    m_Localized: "Trabajo pr\xE1ctico \"\xDAltimo Tren a Retiro\"\nLaboratorio de Construcci\xF3n de Software\nTecnicatura Universitaria en Inform\xE1tica"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899888
+    m_Localized: "A la c\xE1tedra, a los que probaron las builds rotas\ny a vos, por jugar."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899889
+    m_Localized: Gracias por jugar
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899890
+    m_Localized: "Cr\xE9ditos"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899891
+    m_Localized: Motor y herramientas
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899892
+    m_Localized: Recursos externos
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899893
+    m_Localized: "Tipograf\xEDas"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899894
+    m_Localized: "Trabajo pr\xE1ctico"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899895
+    m_Localized: Agradecimientos
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899896
+    m_Localized: Espacio
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899897
+    m_Localized: Acelerar
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899898
+    m_Localized: Media
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899899
+    m_Localized: Baja
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899900
+    m_Localized: Alta
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899901
+    m_Localized: Ventana
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899902
+    m_Localized: Sin bordes
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899903
+    m_Localized: Completa
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899904
+    m_Localized: "Sin l\xEDmite"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899905
+    m_Localized: Ocultar
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899906
+    m_Localized: Mostrar
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899907
+    m_Localized: "Gr\xE1ficos"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899908
+    m_Localized: "Resoluci\xF3n"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899909
+    m_Localized: Imagen
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899910
+    m_Localized: Calidad
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899911
+    m_Localized: "L\xEDmite de FPS"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899912
+    m_Localized: FPS y ping
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899913
+    m_Localized: "Campo de visi\xF3n"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899914
+    m_Localized: Los cambios se usan al apretar Aplicar.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899915
+    m_Localized: "Configuraci\xF3n gr\xE1fica aplicada y guardada."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899916
+    m_Localized: "los gr\xE1ficos"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899917
+    m_Localized: "Configuraci\xF3n gr\xE1fica restablecida a los valores por defecto."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899918
+    m_Localized: Buscar partida
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899919
+    m_Localized: " \xB7 con jugadores de tu regi\xF3n"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899920
+    m_Localized: "Sala privada \xB7 con amigos"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899921
+    m_Localized: Crear sala
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899922
+    m_Localized: "Unirse con c\xF3digo"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899923
+    m_Localized: Volver a buscar
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899924
+    m_Localized: Abrir el launcher
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899925
+    m_Localized: Jugador
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899926
+    m_Localized: "B\xFAsqueda cancelada."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899927
+    m_Localized: "No encontramos el launcher en esta PC: te abrimos la gu\xEDa del juego para bajarlo."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899928
+    m_Localized: "Cancelar b\xFAsqueda"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899929
+    m_Localized: Salir de la sala
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899930
+    m_Localized: Volver a los modos
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899931
+    m_Localized: "Hay una versi\xF3n nueva"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899932
+    m_Localized: No se pudo verificar tu cuenta
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899933
+    m_Localized: "Tu cuenta ya est\xE1 jugando"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899934
+    m_Localized: "Se cort\xF3 la conexi\xF3n"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899935
+    m_Localized: "Solo se juntan jugadores con la misma versi\xF3n del juego. Actualiz\xE1 desde el launcher y volv\xE9 a buscar."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899936
+    m_Localized: "Tu sesi\xF3n venci\xF3 o se cerr\xF3. Volv\xE9 a entrar en el launcher y busc\xE1 de nuevo."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899937
+    m_Localized: "Tu cuenta est\xE1 en esa partida desde otra PC. Cerr\xE1 el juego ah\xED y volv\xE9 a buscar."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899938
+    m_Localized: "Revis\xE1 tu internet y volv\xE9 a buscar. No perdiste nada: tu progreso est\xE1 guardado."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899939
+    m_Localized: "tu regi\xF3n"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899940
+    m_Localized: "Sudam\xE9rica"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899941
+    m_Localized: Estados Unidos
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899942
+    m_Localized: Europa
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899943
+    m_Localized: Asia
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899944
+    m_Localized: Partida encontrada
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899945
+    m_Localized: Buscando partida
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899946
+    m_Localized: "Cargando el mapa\u2026"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899947
+    m_Localized: "Conectando con el servidor\u2026"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899948
+    m_Localized: ' <color=#FFFFFF80>(vos)</color>'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899949
+    m_Localized: "Buscando\u2026"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899950
+    m_Localized: "Si entra alguien m\xE1s, se suma. Si sale alguien y quedan menos que el m\xEDnimo, sigue buscando."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899951
+    m_Localized: Salir
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899952
+    m_Localized: "T\xE1ctico"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899953
+    m_Localized: "Invasi\xF3n"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899954
+    m_Localized: "Plant\xE1 o desactiv\xE1 el dispositivo. Sin reaparici\xF3n."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899955
+    m_Localized: "Todos contra todos. Reaparec\xE9s a los 3\_s."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899956
+    m_Localized: "Resist\xED la invasi\xF3n en la universidad."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899957
+    m_Localized: Primero a 7
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899958
+    m_Localized: Hasta 8
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899959
+    m_Localized: 25 bajas
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899960
+    m_Localized: 1 jugador
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899961
+    m_Localized: 10 oleadas
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899962
+    m_Localized: "And\xE9n 1 \xB7 Online"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899963
+    m_Localized: "And\xE9n 2 \xB7 Online"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899964
+    m_Localized: "And\xE9n 3 \xB7 Local"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899965
+    m_Localized: "Un equipo planta el dispositivo en A o B y el otro lo defiende. Sin reaparici\xF3n: si mor\xEDs, mir\xE1s a un compa\xF1ero hasta la ronda siguiente."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899966
+    m_Localized: "Todos contra todos. Eleg\xEDs tus armas gratis, cada baja te cura 50 y reaparec\xE9s a los 3 s lejos de los rivales."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899967
+    m_Localized: "Vos solo contra 10 oleadas en la universidad. Despu\xE9s pod\xE9s seguir en modo infinito para hacer r\xE9cord."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899968
+    m_Localized: Cambio de lado en la 6
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899969
+    m_Localized: Compra 20 s
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899970
+    m_Localized: Armas gratis
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899971
+    m_Localized: "F\xE1cil"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899972
+    m_Localized: Normal
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899973
+    m_Localized: "Dif\xEDcil"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899974
+    m_Localized: "75 % de vida y da\xF1o y menos enemigos. Regener\xE1s a los 3 s."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899975
+    m_Localized: "Como est\xE1 pensado. Regener\xE1s a los 4 s."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899976
+    m_Localized: "125 % de vida, 150 % de da\xF1o y m\xE1s enemigos. +25 % de puntos."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899977
+    m_Localized: "Eleg\xED el modo"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899978
+    m_Localized: "Men\xFA principal"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899979
+    m_Localized: Entrar
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899980
+    m_Localized: Jugar
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899981
+    m_Localized: Sala
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899982
+    m_Localized: Jugadores
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899983
+    m_Localized: Copiar
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899984
+    m_Localized: Cambiar mapa
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899985
+    m_Localized: Iniciar partida
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899986
+    m_Localized: "Creando la sala\u2026"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899987
+    m_Localized: "No existe una sala con ese c\xF3digo."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899988
+    m_Localized: "Entrando a la sala\u2026"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899989
+    m_Localized: Copiado
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899990
+    m_Localized: "Cargando la partida\u2026"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899991
+    m_Localized: Libre
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899992
+    m_Localized: "  <color=#FFD2A1>\xB7 anfitri\xF3n</color>"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899993
+    m_Localized: No hay mapas para este modo
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899994
+    m_Localized: "Esperando al anfitri\xF3n\u2026"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899995
+    m_Localized: "Pasale el c\xF3digo a tus amigos. Se necesitan al menos 2 jugadores."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899996
+    m_Localized: "Todo listo: inici\xE1 la partida cuando quieras."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899997
+    m_Localized: "Modo Invasi\xF3n \xB7 "
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899998
+    m_Localized: "El Modo Invasi\xF3n todav\xEDa est\xE1 en desarrollo (F08)."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534899999
+    m_Localized: Antes de jugar
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534900000
+    m_Localized: Nota para el PO
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534900001
+    m_Localized: Lo que funciona
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534900002
+    m_Localized: "Lo que todav\xEDa falta"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534900003
+    m_Localized: Entendido
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534900004
+    m_Localized: <color=#F3F4F6>Enter</color>  o  <color=#F3F4F6>Esc</color>  Cerrar
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534900005
+    m_Localized: Fija
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534900006
+    m_Localized: Se abre
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534900007
+    m_Localized: Color propio
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534900008
+    m_Localized: Tipo
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534900009
+    m_Localized: Largo
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534900010
+    m_Localized: Grosor
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534900011
+    m_Localized: Hueco
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534900012
+    m_Localized: Punto central
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534900013
+    m_Localized: "Color y dispersi\xF3n"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534900014
+    m_Localized: "Dispersi\xF3n"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534900015
+    m_Localized: Vista previa
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534900016
+    m_Localized: Fondo claro
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534900017
+    m_Localized: Fondo oscuro
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534900018
+    m_Localized: Color
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534900019
+    m_Localized: Propio
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534900020
+    m_Localized: Rojo
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534900021
+    m_Localized: Verde
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534900022
+    m_Localized: Azul
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534900023
+    m_Localized: la mira
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534900024
+    m_Localized: Anterior
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534900025
+    m_Localized: Siguiente
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534900026
+    m_Localized: Aplicar
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534900027
+    m_Localized: Ajustes del juego
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534900028
+    m_Localized: Opciones
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534900029
+    m_Localized: Mira
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534900030
+    m_Localized: "\xBFGuardar los cambios?"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534900031
+    m_Localized: "Hay cambios sin aplicar. Si sal\xEDs sin guardarlos, se pierden."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534900032
+    m_Localized: Guardar
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534900033
+    m_Localized: Descartar
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534900034
+    m_Localized: "Los valores de esta pesta\xF1a vuelven a los de f\xE1brica y se guardan."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534900035
+    m_Localized: Cambios guardados
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534900036
+    m_Localized: Enter  Aceptar     Esc  Cancelar
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534900037
+    m_Localized: La partida sigue
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534900038
+    m_Localized: Partida en pausa
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534900039
+    m_Localized: "El men\xFA se ve solo en tu pantalla. Tu personaje queda quieto y puede recibir da\xF1o."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534900040
+    m_Localized: "El tiempo, los enemigos y el audio est\xE1n detenidos hasta que vuelvas."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534900041
+    m_Localized: Tu equipo se queda <color=#FF5C5C>con un jugador menos</color>.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534900042
+    m_Localized: "Se pierde <color=#FF5C5C>el progreso de esta partida</color>. El r\xE9cord guardado no cambia."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534900043
+    m_Localized: Se pierde <color=#FF5C5C>el progreso de esta partida</color>.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534900044
+    m_Localized: "\xBFReiniciar la partida?"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534900045
+    m_Localized: Reiniciar
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534900046
+    m_Localized: "Volv\xE9s a la primera oleada y se pierde <color=#F29A38>el progreso actual</color>."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534900047
+    m_Localized: "Volv\xE9s al inicio de la partida y se pierde <color=#F29A38>el progreso actual</color>."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534900048
+    m_Localized: "\xBFSalir de la partida?"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534900049
+    m_Localized: Reanudar
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534900050
+    m_Localized: Reiniciar partida
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534900051
+    m_Localized: "Configuraci\xF3n"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534900052
+    m_Localized: Salir de la partida
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534900053
+    m_Localized: "N\xFAmeros"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534900054
+    m_Localized: Elegir
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534900055
+    m_Localized: Aceptar
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534900056
+    m_Localized: Retroceso
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534900057
+    m_Localized: Audio
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534900058
+    m_Localized: Video
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534900059
+    m_Localized: "Cambiar gr\xE1ficos"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534900060
+    m_Localized: Personalizar mira
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534900061
+    m_Localized: Cambiar teclas
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534900062
+    m_Localized: Flechas
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534900063
+    m_Localized: Elegir y cambiar
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534900064
+    m_Localized: "De 3 a 16 caracteres: letras, n\xFAmeros, espacio, guion y guion bajo."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534900065
+    m_Localized: "Project Riftwalker \xB7 Jugador"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534900066
+    m_Localized: Cambiar nombre
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534900067
+    m_Localized: <color=#F3F4F6>Enter</color>  Aceptar
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534900068
+    m_Localized: <color=#F3F4F6>Enter</color>  Aceptar     <color=#F3F4F6>Esc</color>  Cancelar
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534900069
+    m_Localized: "As\xED te van a ver los dem\xE1s jugadores."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534900070
+    m_Localized: "\xBFC\xF3mo te llam\xE1s?"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534900071
+    m_Localized: "As\xED te van a ver en las salas, la tabla y los avisos de bajas."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534900072
+    m_Localized: Tu nombre
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534900073
+    m_Localized: "Falta 1 car\xE1cter: el m\xEDnimo es 3."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534900074
+    m_Localized: Idioma
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534900075
+    m_Localized: Idioma del juego
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534900076
+    m_Localized: El cambio se aplica al instante y se comparte con el launcher.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534900077
+    m_Localized: "S\xED"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534900078
+    m_Localized: No
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534900079
+    m_Localized: "Nota para el PO \xB7 Sprint 1"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534900080
+    m_Localized: Hola, Amin
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534900081
+    m_Localized: "Esta es la entrega del Sprint 1 de Project Riftwalker. Para que sepas qu\xE9 probar, ac\xE1 va lo que ya funciona y lo que todav\xEDa falta implementar."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534900082
+    m_Localized: "Movimiento: caminar, correr, saltar y agacharse, con gravedad, colisiones y reaparici\xF3n si ca\xE9s del mapa."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534900083
+    m_Localized: "Armas: pistola La Porte\xF1a, fusil Mitre y cuchillo. Da\xF1o por zona (cabeza, cuerpo y piernas) y por distancia, dispersi\xF3n, retroceso, recarga y marcas de bala en las paredes."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534900084
+    m_Localized: 'Tienda: en la fase de compra y dentro de la zona de compra se puede comprar, vender y deshacer compras. Los escudos protegen de verdad.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534900085
+    m_Localized: "HUD: vida, escudo, arma y munici\xF3n, mira y marcador de impacto. La habilidad muestra su tiempo de recarga."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534900086
+    m_Localized: "Men\xFAs: principal con m\xFAsica, opciones de video, sonido y controles, nombre de jugador, cr\xE9ditos y pausa (seguir, reiniciar, opciones y salir)."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534900087
+    m_Localized: "Resto de las armas: la tienda muestra todas, pero por ahora solo se usan la pistola La Porte\xF1a, el Mitre y el cuchillo. Las dem\xE1s se pueden comprar, pero todav\xEDa no se pueden usar."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534900088
+    m_Localized: "Granadas: se compran, pero todav\xEDa no se pueden tirar."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534900089
+    m_Localized: "Habilidad: el Silbato carga y se ve en el HUD, pero todav\xEDa no tiene efecto."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534900090
+    m_Localized: "Modos y multijugador: T\xE1ctico y Deathmatch muestran la sala, pero falta la conexi\xF3n online. Zombie todav\xEDa no tiene zombis: Jugar abre el mapa de la universidad para recorrerlo con las armas, la tienda y el HUD."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534900091
+    m_Localized: "Logros: la pantalla est\xE1, pero todav\xEDa no tiene logros."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534900092
+    m_Localized: "Mapas y rivales: Pruebas y Pruebas 2 abren dos mapas de prueba, temporales, para mostrar la jugabilidad. En Pruebas aparecen enemigos que te persiguen y se pueden matar, pero todav\xEDa no atacan."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534900093
+    m_Localized: "And\xE9n {0}"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534900094
+    m_Localized: "\xBFEST\xC1S SEGURO?"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534900095
+    m_Localized: CANCELAR
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534900096
+    m_Localized: SALIR
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534900097
+    m_Localized: "\xBFDese\xE1s salir del juego?"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534900098
+    m_Localized: OPCIONES
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534900099
+    m_Localized: LOGROS
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534900100
+    m_Localized: JUGAR
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534900101
+    m_Localized: Crear Sala
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534900102
+    m_Localized: Multijugador
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534900103
+    m_Localized: Unirse Sala
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534900104
+    m_Localized: VOLVER
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534900105
+    m_Localized: DIFICULTAD
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534900106
+    m_Localized: "MODO INVASI\xD3N"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534900107
+    m_Localized: Dificil
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534900108
+    m_Localized: Facil
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534900109
+    m_Localized: GRAFICOS
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534900110
+    m_Localized: SONIDO
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534900111
+    m_Localized: LIMITE DE FPS
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534900112
+    m_Localized: PRUEBAS 2
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534900113
+    m_Localized: ' VOLUMEN GENERAL'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534900114
+    m_Localized: RESTABLECER
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534900115
+    m_Localized: PANTALLA COMPLETA
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534900116
+    m_Localized: CONTROLES
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534900117
+    m_Localized: RESOLUCION
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534900118
+    m_Localized: APLICAR
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534900119
+    m_Localized: '  VOLUMEN EFECTOS'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534900120
+    m_Localized: CREDITOS
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534900121
+    m_Localized: VOLUMEN MUSICA
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534900122
+    m_Localized: VISION
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534900123
+    m_Localized: PRUEBAS
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534900124
+    m_Localized: SIN LIMITE
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534900125
+    m_Localized: Ventana sin bordes
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534900126
+    m_Localized: Pantalla completa
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534900127
+    m_Localized: Desactivado
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7534900128
+    m_Localized: Activado
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1685575266304
+    m_Localized: 4 contra 4 por rondas, sin reaparecer. Los atacantes plantan el dispositivo en A o B ({Plantar}) y los defensores lo defienden o lo desactivan. {Correr} camina despacio y sin hacer ruido (no se corre). La habilidad de tu personaje se usa con {Habilidad} y las granadas se compran en la fase de compra.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1685592043520
+    m_Localized: "Gan\xE1s la ronda si el dispositivo explota, si lo desactiv\xE1s o si elimin\xE1s a todo el otro equipo (si se acaba el tiempo sin plantar, ganan los defensores). Gana la partida el primer equipo en llegar a 7 rondas."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1685592043521
+    m_Localized: "Pierde el equipo que no llega a 7 rondas. Si mor\xEDs, mir\xE1s a un compa\xF1ero hasta la ronda siguiente."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1685592043522
+    m_Localized: "Todos contra todos, hasta 8 jugadores. Eleg\xEDs tus armas gratis ({Tienda}), cada baja te cura 50 y reaparec\xE9s a los 3 s. Tu habilidad se usa con {Habilidad}. No hay escudos ni granadas."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1685592043523
+    m_Localized: "Gana el primero en llegar a 25 bajas, o el que m\xE1s bajas tenga cuando se terminan los 8 minutos."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1685592043524
+    m_Localized: "Perd\xE9s si otro llega antes a 25 bajas o tiene m\xE1s bajas que vos al terminar el reloj."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1685592043525
+    m_Localized: "Vos solo contra la horda en la universidad, durante 10 oleadas. En la oleada 10 aparece el jefe. Con los puntos que gan\xE1s compr\xE1s armas, granadas y munici\xF3n entre oleadas."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1685592043526
+    m_Localized: "Gan\xE1s si sobreviv\xEDs a las 10 oleadas. Despu\xE9s pod\xE9s seguir en el modo infinito para hacer r\xE9cord."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1685592043527
+    m_Localized: "Perd\xE9s si los zombis te matan."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380226879975424
+    m_Localized: Atacantes
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227454595072
+    m_Localized: Defensores
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227454595073
+    m_Localized: "Atr\xE1s"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227454595074
+    m_Localized: Mirando el dispositivo
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227454595075
+    m_Localized: "No quedan compa\xF1eros vivos"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227454595076
+    m_Localized: "Reaparec\xE9s en la ronda siguiente"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227454595077
+    m_Localized: "Te elimin\xF3 {0}"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227454595078
+    m_Localized: "Te ca\xEDste del mapa"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227454595079
+    m_Localized: "Te electrocut\xF3 la valla"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227454595080
+    m_Localized: "Reaparec\xE9s en la ronda siguiente."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227454595081
+    m_Localized: "Reaparec\xE9s en {0}. Apret\xE1 {1} para cambiar de equipo"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227454595082
+    m_Localized: Volviste a la partida
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227454595083
+    m_Localized: "Te est\xE1n observando"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227454595084
+    m_Localized: "Apret\xE1 {0} para elegir tu equipo"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227454595085
+    m_Localized: 'Llegaste a {0} bajas: te faltan {1}'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227454595086
+    m_Localized: "{0} lleg\xF3 a {1} bajas"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227454595087
+    m_Localized: "se desconect\xF3"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227454595088
+    m_Localized: se fue de la partida
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227454595089
+    m_Localized: "volvi\xF3 a la partida"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227454595090
+    m_Localized: "Esperando a los dem\xE1s   \xB7   <color=#F29A38>{0}</color>"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227454595091
+    m_Localized: "Modo T\xE1ctico  \xB7  Tu equipo: {0}"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227454595092
+    m_Localized: "un compa\xF1ero"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227454595093
+    m_Localized: "Ya lo eligi\xF3 {0}"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227454595094
+    m_Localized: "No se pudo confirmar, prob\xE1 de nuevo"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227454595095
+    m_Localized: "{0}   \xB7   Solt\xE1 tu {1} con <color=#F29A38>{2}</color> para levantarla"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227454595096
+    m_Localized: Sin escudo
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227454595097
+    m_Localized: Liviano
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227454595098
+    m_Localized: Completo
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227454595099
+    m_Localized: "<color=#FF5C5C>En Invasi\xF3n no se vende: lo comprado se queda hasta que lo reemplaces</color>"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227454595100
+    m_Localized: Te faltan {0}
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227454595101
+    m_Localized: "Ya ten\xE9s {0}"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227454595102
+    m_Localized: "Ya ten\xE9s las balas al m\xE1ximo"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227454595103
+    m_Localized: "M\xE1ximo de {0}"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227454595104
+    m_Localized: "Tu escudo ya est\xE1 lleno"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227454595105
+    m_Localized: "Ahora no pod\xE9s cambiar de equipo"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227454595106
+    m_Localized: "Termin\xF3 la fase de compra"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227454595107
+    m_Localized: Fuera de la zona de compra
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227454595108
+    m_Localized: Solo se vende lo que compraste esta ronda
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227454595109
+    m_Localized: "No lo ten\xE9s"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227454595110
+    m_Localized: "Se termin\xF3 el tiempo para cambiar de equipo"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227454595111
+    m_Localized: "Termin\xF3 la compra"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227454595112
+    m_Localized: Cambiala cuando quieras
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227454595113
+    m_Localized: "Se guarda para la pr\xF3xima vida"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227454595114
+    m_Localized: "+{0} por invasor \xB7 +{1} a la cabeza"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227454595115
+    m_Localized: "T\xE1ctico \xB7 Ronda {0}"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227454595116
+    m_Localized: "Pr\xF3xima ronda: m\xEDnimo {0}"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227454595117
+    m_Localized: "Est\xE1s fuera de la zona de compra. Volv\xE9 al punto de aparici\xF3n para comprar."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227454595118
+    m_Localized: "La fase de compra termin\xF3. Pod\xE9s mirar, pero no comprar."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227454595119
+    m_Localized: "Invasi\xF3n \xB7 Oleada {0} \xB7 vuelta {1}"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227454595120
+    m_Localized: "Invasi\xF3n \xB7 Oleada {0} de {1}"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227454595121
+    m_Localized: "Absorbe los primeros {0} puntos de da\xF1o, antes que la vida. Si sobreviv\xEDs, te lo llev\xE1s a la pr\xF3xima ronda con lo que le quede."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227454595122
+    m_Localized: Tiros para matar
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227454595123
+    m_Localized: "r\xE1fagas/s"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227454595124
+    m_Localized: disparos/s
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227454595125
+    m_Localized: cargador
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227454595126
+    m_Localized: por cartucho
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227454595127
+    m_Localized: recarga
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227454595128
+    m_Localized: movilidad
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227454595129
+    m_Localized: mira
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227454595130
+    m_Localized: "<color=#D6DAE0><b>Retroceso:</b></color> {0}\n<color=#D6DAE0><b>Dispersi\xF3n:</b></color> {1}\xB0 quieto \xB7 {2}\xB0 en movimiento \xB7 penetraci\xF3n {3}"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227454595131
+    m_Localized: Contra
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227454595132
+    m_Localized: Con este
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227454595133
+    m_Localized: '{0} al cuerpo'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227454595134
+    m_Localized: Metralla (centro)
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227454595135
+    m_Localized: "Ten\xE9s {0}"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227454595136
+    m_Localized: "llev\xE1s"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227454595137
+    m_Localized: mecha
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227454595138
+    m_Localized: "m\xE1x. en total"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227454595139
+    m_Localized: "Espacio 4 \xB7 apret\xE1 4 de nuevo para cambiar"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227454595140
+    m_Localized: Mata solo sin escudo, y de muy cerca
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227454595141
+    m_Localized: "Tapa la visi\xF3n de adentro hacia afuera y al rev\xE9s"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227454595142
+    m_Localized: De frente (< 15 m)
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227454595143
+    m_Localized: De costado
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227454595144
+    m_Localized: De espaldas
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227454595145
+    m_Localized: Ahora no
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227454595146
+    m_Localized: solo mirar
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227454595147
+    m_Localized: Elegida
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227454595148
+    m_Localized: "la ten\xE9s en la mano"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227454595149
+    m_Localized: "se guarda para la pr\xF3xima vida"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227454595150
+    m_Localized: Fuera de la zona
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227454595151
+    m_Localized: "Ya la ten\xE9s"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227454595152
+    m_Localized: se queda hasta que la reemplaces
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227454595153
+    m_Localized: 'clic derecho: vender +{0}'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227454595154
+    m_Localized: "la ten\xE9s siempre"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227454595155
+    m_Localized: la trajiste de la ronda anterior
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227454595156
+    m_Localized: "M\xE1ximo alcanzado"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227454595157
+    m_Localized: '{0} por jugador'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227454595158
+    m_Localized: te devuelven {0}
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227454595159
+    m_Localized: "pag\xE1s {0}"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227454595160
+    m_Localized: Gastado en el descanso
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227454595161
+    m_Localized: Gastado esta ronda
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227454595162
+    m_Localized: Sin principal
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227454595163
+    m_Localized: Sin comprar
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227454595164
+    m_Localized: "M\xE1ximo"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227454595165
+    m_Localized: 'Todo al cuerpo a menos de {0} m: {1}'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227454595166
+    m_Localized: Mata de 1 sin escudo o con liviano
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227454595167
+    m_Localized: Mata de 1 sin escudo
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227454595168
+    m_Localized: Nunca mata de 1
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227454595169
+    m_Localized: 1 a la cabeza mata a cualquiera
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227454595170
+    m_Localized: 1 a la cabeza mata a cualquiera ({0})
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227454595171
+    m_Localized: 1 a la cabeza mata con escudo liviano
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227454595172
+    m_Localized: 1 a la cabeza mata sin escudo
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227454595173
+    m_Localized: '{0} a la cabeza con escudo completo'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227454595174
+    m_Localized: 1 al cuerpo mata a cualquiera
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227454595175
+    m_Localized: 1 al cuerpo mata sin escudo
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227454595176
+    m_Localized: '{0} al cuerpo con escudo completo'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227454595177
+    m_Localized: "N\xFAmero o clic"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227454595178
+    m_Localized: "Categor\xEDa"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227454595179
+    m_Localized: Clic der. vender
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227454595180
+    m_Localized: "Enter \xB7 clic"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227454595181
+    m_Localized: "T\xC1CTICO"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227454595182
+    m_Localized: "INVASI\xD3N"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227454595183
+    m_Localized: DEATHMATCH
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227454595184
+    m_Localized: "CAMPO DE PR\xC1CTICA"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227454595185
+    m_Localized: "L\xCDNEA DE TIRO"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227454595186
+    m_Localized: ZONA DE TIRO
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227454595187
+    m_Localized: "MAPA DE PR\xC1CTICA"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227454595188
+    m_Localized: Acercate para ver el objetivo
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227454595189
+    m_Localized: Cambiar arma
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227454595190
+    m_Localized: Principal
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227454595191
+    m_Localized: Secundaria
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227454595192
+    m_Localized: Pistolas
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227454595193
+    m_Localized: Subfusiles
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227454595194
+    m_Localized: Escopetas
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227454595195
+    m_Localized: Fusiles
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227454595196
+    m_Localized: Francotiradores
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227454595197
+    m_Localized: Escudos
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227454595198
+    m_Localized: Suministros
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227454595199
+    m_Localized: Granadas
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227458789376
+    m_Localized: No se pudo guardar tu progreso; se va a volver a intentar.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227458789377
+    m_Localized: "Tu progreso se recuper\xF3 de la copia de respaldo."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227458789378
+    m_Localized: "No se pudo cargar tu progreso: el juego arranc\xF3 de cero y el archivo da\xF1ado qued\xF3 guardado aparte."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227458789379
+    m_Localized: "Tu progreso es de una versi\xF3n m\xE1s nueva del juego: actualizalo para seguir guardando. Mientras tanto no se guarda nada."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227458789380
+    m_Localized: "Te faltan cr\xE9ditos: se ganan jugando partidas"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227458789381
+    m_Localized: Te faltan cristales
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227458789382
+    m_Localized: " \xB7 garant\xEDa"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227458789383
+    m_Localized: "Primero sale la rareza (con estas probabilidades), despu\xE9s el tipo ({0} % avatar, {1} % banner, {2} % t\xEDtulo, {3} % marco) y por \xFAltimo un objeto al azar. Cada {4} c\xE1psulas hay uno \xE9pico o mejor asegurado. Los repetidos se convierten en cr\xE9ditos."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227458789384
+    m_Localized: '{0} en el espacio {1} ({2})'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227458789385
+    m_Localized: ' + {0} de regalo'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227458789386
+    m_Localized: "Recib\xEDs <color=#F3F4F6>{0}</color> por <color=#F3F4F6>{1}</color>.\n\n"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227458789387
+    m_Localized: "Destru\xED {0} cometas {1} en total."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227458789388
+    m_Localized: por {0}
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227458789389
+    m_Localized: "Simulaci\xF3n de negocio: no hay pagos reales. Los boletos se consiguen jugando (cr\xE9ditos) o con cristales de la tienda. Las probabilidades se muestran siempre."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227458789390
+    m_Localized: "* KDA = (bajas + asistencias) \xF7 muertes; sin muertes, \xF7 1. Asistencia: da\xF1aste a un rival que otro elimin\xF3 en los 10 s siguientes. Cuentan las partidas terminadas."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227458789391
+    m_Localized: Sala {0}
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227458789392
+    m_Localized: Cruz
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227458789393
+    m_Localized: "C\xEDrculo"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227458789394
+    m_Localized: Punto
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227458789395
+    m_Localized: "No se pudo crear la sala. Revis\xE1 tu conexi\xF3n."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227458789396
+    m_Localized: "No se pudo entrar a la sala. Revis\xE1 tu conexi\xF3n."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227458789397
+    m_Localized: "No se pudo volver a la partida. Revis\xE1 tu conexi\xF3n."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227458789398
+    m_Localized: "No se pudo buscar partida. Revis\xE1 tu internet y volv\xE9 a buscar."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227458789399
+    m_Localized: "Tu cuenta ya est\xE1 en esa partida, en otra PC."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227458789400
+    m_Localized: "Todav\xEDa figur\xE1s en la partida. Prob\xE1 de nuevo en unos segundos."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227458789401
+    m_Localized: "La partida ya termin\xF3."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227458789402
+    m_Localized: "La sala est\xE1 llena."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227458789403
+    m_Localized: "La partida ya empez\xF3."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227458789404
+    m_Localized: Esa sala es de {0}.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227458789405
+    m_Localized: "Se perdi\xF3 la conexi\xF3n con el servidor."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227458789406
+    m_Localized: "Hay una versi\xF3n nueva ({0}). Actualiz\xE1 el juego desde el launcher para jugar online."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227458789407
+    m_Localized: Comprar
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227458789408
+    m_Localized: Cerrar
+    m_Metadata:
+      m_Items: []
+  - m_Id: 601878452596736
+    m_Localized: "En Invasi\xF3n no hay habilidades"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 601878624563200
+    m_Localized: "Matar saca la pausa entre las pr\xF3ximas 5 r\xE1fagas."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 601878624563201
+    m_Localized: "Matar saca la pausa entre las pr\xF3ximas 7 r\xE1fagas."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 601878624563202
+    m_Localized: "Cada baja le suma una bala a las r\xE1fagas, hasta 8. Al recargar vuelven a 3."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 601878624563203
+    m_Localized: "Cada baja le suma una bala a las r\xE1fagas, hasta 10. Al recargar vuelven a 3."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 601878624563204
+    m_Localized: Las granadas que tocan el piso quedan como minas (hasta 7).
+    m_Metadata:
+      m_Items: []
+  - m_Id: 601878624563205
+    m_Localized: Las granadas que tocan el piso quedan como minas (hasta 9).
+    m_Metadata:
+      m_Items: []
+  - m_Id: 601878624563206
+    m_Localized: "80 % m\xE1s de reserva en las dos armas (40 % m\xE1s que ahora)."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 601878624563207
+    m_Localized: "120 % m\xE1s de reserva en las dos armas (40 % m\xE1s que ahora)."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 601878624563208
+    m_Localized: Cada baja a la cabeza devuelve 10 balas al cargador.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 601878624563209
+    m_Localized: Cada baja a la cabeza devuelve 15 balas al cargador.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 601878624563210
+    m_Localized: 1 de cada 4 invasores suelta un cargador al morir.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 601878624563211
+    m_Localized: 1 de cada 3 invasores suelta un cargador al morir.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 601878624563212
+    m_Localized: El cuchillo mata de un golpe a los invasores con 30 % de vida o menos (salvo al Jefe).
+    m_Metadata:
+      m_Items: []
+  - m_Id: 601878624563213
+    m_Localized: El cuchillo mata de un golpe a los invasores con 35 % de vida o menos (salvo al Jefe).
+    m_Metadata:
+      m_Items: []
+  - m_Id: 601878624563214
+    m_Localized: "Cada cuchillazo cura lo mismo que el da\xF1o que hace, hasta 35 de vida por golpe."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 601878624563215
+    m_Localized: "Cada cuchillazo cura lo mismo que el da\xF1o que hace, hasta 45 de vida por golpe."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 601878624563216
+    m_Localized: "Cuando un invasor te pega, tu pr\xF3ximo disparo suma 6 veces la vida que perdiste."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 601878624563217
+    m_Localized: "Cuando un invasor te pega, tu pr\xF3ximo disparo suma 7 veces la vida que perdiste."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 601878624563218
+    m_Localized: Cuando el puesto se carga, una burbuja empuja 15 m a los invasores del anillo, salvo al Jefe.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 601878624563219
+    m_Localized: Cuando el puesto se carga, una burbuja empuja 20 m a los invasores del anillo, salvo al Jefe.
+    m_Metadata:
+      m_Items: []
+  references:
+    version: 2
+    RefIds: []

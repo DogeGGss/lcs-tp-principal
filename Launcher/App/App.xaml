@@ -57,7 +57,55 @@
     </ControlTemplate.Triggers>
    </ControlTemplate></Setter.Value></Setter>
   </Style>
-  <Style TargetType="TextBox"><Setter Property="Background" Value="#0A0C11"/><Setter Property="Foreground" Value="#F3F4F6"/><Setter Property="CaretBrush" Value="#F29A38"/><Setter Property="BorderBrush" Value="#343B47"/><Setter Property="Padding" Value="12"/><Setter Property="FontFamily" Value="{StaticResource BodyFont}"/></Style>
+  <!-- Text and password boxes: orange border with the focus, red with Tag="mal" (a field with an error). -->
+  <ControlTemplate x:Key="CajaDeTexto" TargetType="Control">
+   <Border x:Name="Caja" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}"><ScrollViewer x:Name="PART_ContentHost" VerticalAlignment="Center" Focusable="False"/></Border>
+   <ControlTemplate.Triggers>
+    <Trigger Property="IsKeyboardFocusWithin" Value="True"><Setter TargetName="Caja" Property="BorderBrush" Value="#F29A38"/></Trigger>
+    <Trigger Property="Tag" Value="mal"><Setter TargetName="Caja" Property="BorderBrush" Value="#FF5C5C"/></Trigger>
+   </ControlTemplate.Triggers>
+  </ControlTemplate>
+  <Style TargetType="TextBox"><Setter Property="Background" Value="#0A0C11"/><Setter Property="Foreground" Value="#F3F4F6"/><Setter Property="CaretBrush" Value="#F29A38"/><Setter Property="SelectionBrush" Value="#F29A38"/><Setter Property="BorderBrush" Value="#343B47"/><Setter Property="BorderThickness" Value="1"/><Setter Property="Padding" Value="12"/><Setter Property="FontFamily" Value="{StaticResource BodyFont}"/><Setter Property="Template" Value="{StaticResource CajaDeTexto}"/></Style>
+  <Style TargetType="PasswordBox"><Setter Property="Background" Value="#0A0C11"/><Setter Property="Foreground" Value="#F3F4F6"/><Setter Property="CaretBrush" Value="#F29A38"/><Setter Property="SelectionBrush" Value="#F29A38"/><Setter Property="BorderBrush" Value="#343B47"/><Setter Property="BorderThickness" Value="1"/><Setter Property="Padding" Value="12"/><Setter Property="FontFamily" Value="{StaticResource BodyFont}"/><Setter Property="Template" Value="{StaticResource CajaDeTexto}"/></Style>
+  <!-- The account panel's main action: like the launcher's big button, a bit lower. -->
+  <Style x:Key="BotonPrincipal" TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
+   <Setter Property="Background" Value="#F29A38"/><Setter Property="BorderBrush" Value="#F29A38"/><Setter Property="Foreground" Value="#1A1106"/>
+   <Setter Property="FontFamily" Value="{StaticResource DisplayFont}"/><Setter Property="FontWeight" Value="Bold"/><Setter Property="FontSize" Value="22"/><Setter Property="Height" Value="52"/><Setter Property="Padding" Value="20,0"/>
+  </Style>
+  <!-- A link inside a text: orange and underlined. -->
+  <Style x:Key="BotonEnlace" TargetType="Button">
+   <Setter Property="Foreground" Value="#F29A38"/><Setter Property="FontFamily" Value="{StaticResource BodyFont}"/><Setter Property="FontSize" Value="14"/><Setter Property="Cursor" Value="Hand"/>
+   <Setter Property="Template"><Setter.Value><ControlTemplate TargetType="Button">
+    <TextBlock x:Name="Texto" Text="{Binding Content, RelativeSource={RelativeSource TemplatedParent}}" TextDecorations="Underline" Background="Transparent"/>
+    <ControlTemplate.Triggers>
+     <Trigger Property="IsMouseOver" Value="True"><Setter TargetName="Texto" Property="Opacity" Value="0.8"/></Trigger>
+     <Trigger Property="IsKeyboardFocused" Value="True"><Setter TargetName="Texto" Property="Background" Value="#33F29A38"/></Trigger>
+    </ControlTemplate.Triggers>
+   </ControlTemplate></Setter.Value></Setter>
+  </Style>
+  <!-- An item of the account menu: flat, it lights up on hover. -->
+  <Style x:Key="ItemMenu" TargetType="Button">
+   <Setter Property="Foreground" Value="{StaticResource Ink}"/><Setter Property="FontFamily" Value="{StaticResource BodyFont}"/><Setter Property="FontSize" Value="14"/><Setter Property="Cursor" Value="Hand"/>
+   <Setter Property="Template"><Setter.Value><ControlTemplate TargetType="Button">
+    <Border x:Name="Fondo" Background="Transparent" Padding="16,11"><ContentPresenter HorizontalAlignment="Left"/></Border>
+    <ControlTemplate.Triggers>
+     <Trigger Property="IsMouseOver" Value="True"><Setter TargetName="Fondo" Property="Background" Value="#1B2029"/></Trigger>
+     <Trigger Property="IsKeyboardFocused" Value="True"><Setter TargetName="Fondo" Property="Background" Value="#1B2029"/></Trigger>
+    </ControlTemplate.Triggers>
+   </ControlTemplate></Setter.Value></Setter>
+  </Style>
+  <!-- The account in the top bar: initial, name and mail, and the arrow of its menu (Tag="abierto" with the menu open). -->
+  <Style x:Key="ChipCuenta" TargetType="Button">
+   <Setter Property="Foreground" Value="{StaticResource Ink}"/><Setter Property="Cursor" Value="Hand"/>
+   <Setter Property="Template"><Setter.Value><ControlTemplate TargetType="Button">
+    <Border x:Name="Chip" Height="46" Background="#1B2029" BorderBrush="#343B47" BorderThickness="1" CornerRadius="3" Padding="8,0,12,0"><ContentPresenter VerticalAlignment="Center"/></Border>
+    <ControlTemplate.Triggers>
+     <Trigger Property="IsMouseOver" Value="True"><Setter TargetName="Chip" Property="BorderBrush" Value="#F29A38"/></Trigger>
+     <Trigger Property="IsKeyboardFocused" Value="True"><Setter TargetName="Chip" Property="BorderBrush" Value="#F29A38"/></Trigger>
+     <Trigger Property="Tag" Value="abierto"><Setter TargetName="Chip" Property="BorderBrush" Value="#F29A38"/></Trigger>
+    </ControlTemplate.Triggers>
+   </ControlTemplate></Setter.Value></Setter>
+  </Style>
   <Style TargetType="CheckBox">
    <Setter Property="Foreground" Value="#F3F4F6"/><Setter Property="FontFamily" Value="{StaticResource BodyFont}"/><Setter Property="FontSize" Value="16"/><Setter Property="Cursor" Value="Hand"/>
    <Setter Property="Template"><Setter.Value><ControlTemplate TargetType="CheckBox">

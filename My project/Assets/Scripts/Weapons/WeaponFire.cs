@@ -23,6 +23,12 @@ public static class WeaponFire
     // Cada disparo, con quién tiró, desde dónde y la dirección de cada perdigón. El multijugador lo repite
     // en las demás computadoras (US 028).
     public static event System.Action<Transform, Vector3, Vector3[]> Fired;
+    // Daño de más para el disparo que sale ahora (la carta Bronca de Invasión: US 330): se pide una vez por disparo y
+    // se reparte entre los perdigones.
+    public static System.Func<int> DanioDeMas;
+
+    /// <summary>Un disparo de esa arma le pegó a alguien (US 321, Acople: cuenta los aciertos de pistola).</summary>
+    public static event System.Action<ShopItem> Acerto;
 
     private static readonly RaycastHit[] hits = new RaycastHit[32];
     private static readonly Dictionary<HealthSystem, bool> zoned = new Dictionary<HealthSystem, bool>();
@@ -36,31 +42,62 @@ public static class WeaponFire
         Hit?.Invoke(lethal ? HitMarkerKind.Kill : HitMarkerKind.Body);
     }
 
-    public static void Fire(ShopItem weapon, Camera camera, Transform shooter, bool aiming, float range)
+    /// <summary>US 325, Mira abierta: true si este disparo sale sin dispersión (el arma, si tiene la mira puesta).</summary>
+    public static System.Func<ShopItem, bool, bool> SinDispersion;
+
+    /// <summary>US 319, Bala compacta: true si los perdigones de este disparo salen juntos en un solo proyectil sin
+    /// dispersión, con el mismo daño total (el arma, si está apuntando).</summary>
+    public static System.Func<ShopItem, bool, bool> BalaCompacta;
+
+    /// <summary>La dispersión con la que saldría el próximo disparo (para la mira dinámica del HUD): 0 si una carta lo
+    /// hace salir sin dispersión (US 325, Mira abierta; US 319, Bala compacta).</summary>
+    public static float DispersionDelDisparo(ShopItem weapon, WeaponAim aim, bool aiming)
+    {
+        if (SinDispersion != null && SinDispersion(weapon, aiming)) return 0f;
+        if (weapon.pellets > 1 && BalaCompacta != null && BalaCompacta(weapon, aiming)) return 0f;
+        return aim.CurrentSpread(weapon, aiming);
+    }
+
+    /// <summary>cartuchos: cuántos cartuchos salen juntos (US 309, Doble cartucho: 2; los perdigones se multiplican).
+    /// balasJuntas: cuántas balas valen en un solo impacto (US 323, Disparo concentrado: el daño se multiplica).</summary>
+    public static void Fire(ShopItem weapon, Camera camera, Transform shooter, bool aiming, float range, int cartuchos = 1, int balasJuntas = 1)
     {
         if (weapon == null || camera == null) return;
 
         WeaponAim aim = WeaponAim.For(camera);
         Quaternion view = camera.transform.rotation * aim.RecoilRotation;
         float spread = aim.CurrentSpread(weapon, aiming);
+        if (SinDispersion != null && SinDispersion(weapon, aiming)) spread = 0f; // US 325
 
         bool anyHit = false, head = false, kill = false;
-        int pellets = Mathf.Max(1, weapon.pellets);
+        cartuchos = Mathf.Max(1, cartuchos);
+        int pellets = Mathf.Max(1, weapon.pellets) * cartuchos;
+        int porPerdigon = Mathf.Max(1, balasJuntas); // cuántos perdigones (o balas) vale cada uno (US 319 y US 323)
+        if (pellets > 1 && BalaCompacta != null && BalaCompacta(weapon, aiming))
+        {
+            porPerdigon *= pellets;
+            pellets = 1;
+            spread = 0f;
+        }
         Vector3[] directions = new Vector3[pellets];
         // La bala se ve: fogonazo en la boca del arma y una estela por perdigón hasta donde pegó.
         Vector3 muzzle = Trazadora.BocaLocal(camera);
-        Trazadora.Fogonazo(muzzle);
         if (MinijuegoCometas.Activo)
         {
+            Trazadora.Fogonazo(muzzle);
             FirePractice(weapon, camera, aim, view, spread, pellets, muzzle, range);
             return;
         }
+        int deMas = DanioDeMas != null ? Mathf.Max(0, DanioDeMas()) : 0; // US 330
+        bool conBronca = deMas > 0; // US 330: el disparo con bronca se ve rojo
+        Trazadora.Fogonazo(muzzle, conBronca);
+        int deMasPorPerdigon = deMas / pellets, deMasSobra = deMas - deMasPorPerdigon * pellets;
         for (int i = 0; i < pellets; i++)
         {
             Vector3 direction = view * Deviation(spread) * Vector3.forward;
             directions[i] = direction;
             bool touched = Trace(camera.transform.position, direction, range, shooter, out RaycastHit hit, out HealthSystem target, out BodyZone zone);
-            Trazadora.Mostrar(muzzle, touched ? hit.point : camera.transform.position + direction * Mathf.Min(range, 300f));
+            Trazadora.Mostrar(muzzle, touched ? hit.point : camera.transform.position + direction * Mathf.Min(range, 300f), conBronca);
             if (!touched)
                 continue;
 
@@ -87,7 +124,7 @@ public static class WeaponFire
             if (EquiposTacticos.SonAliados(shooter, target)) continue;
 
             // Se mira antes de aplicar el daño: a un jugador de otra computadora el daño le llega después (US 029).
-            int damage = weapon.HitDamage(zone, hit.distance);
+            int damage = weapon.HitDamage(zone, hit.distance) * porPerdigon + deMasPorPerdigon + (i == 0 ? deMasSobra : 0);
             bool lethal = target.WouldDie(damage);
             Impacto?.Invoke(target, damage, zone);
             HealthSystem.DamageOrigin = camera.transform.position; // US 192: desde dónde le dispararon
@@ -101,9 +138,10 @@ public static class WeaponFire
             }
         }
 
-        aim.Kick(weapon);
+        aim.Kick(weapon); // (US 309: con el doble cartucho patea igual que uno)
         Fired?.Invoke(shooter, camera.transform.position, directions);
         if (anyHit) Hit?.Invoke(kill ? HitMarkerKind.Kill : head ? HitMarkerKind.Head : HitMarkerKind.Body);
+        if (anyHit) Acerto?.Invoke(weapon);
     }
 
     // Fase de compra del Táctico (F21, US 157): el disparo es solo para el minijuego. Tiene la cadencia, la dispersión y
@@ -153,6 +191,54 @@ public static class WeaponFire
     }
 
     // Desvío al azar dentro de un cono de "degrees" grados alrededor de la mira (US 167).
+    /// <summary>US 287: un disparo de un arma que lanza granadas (el Gran Capitán): sale de la boca del arma hacia donde
+    /// mira, con su dispersión y su retroceso, a la velocidad de la ficha; explota al tocar algo (Grenade1).</summary>
+    public static void FireProjectile(ShopItem weapon, Camera camera, Transform shooter, bool aiming)
+    {
+        if (weapon == null || camera == null || weapon.grenadePrefab == null) return;
+        WeaponAim aim = WeaponAim.For(camera);
+        Quaternion view = camera.transform.rotation * aim.RecoilRotation;
+        Vector3 direction = view * Deviation(aim.CurrentSpread(weapon, aiming)) * Vector3.forward;
+        Vector3 muzzle = Trazadora.BocaLocal(camera);
+        // Pegado a una pared, la granada sale de este lado (si no, aparecería del otro).
+        Vector3 desde = camera.transform.position, hacia = muzzle - desde;
+        foreach (RaycastHit h in Physics.RaycastAll(desde, hacia.normalized, hacia.magnitude, ~0, QueryTriggerInteraction.Ignore))
+            if (shooter == null || !h.collider.transform.IsChildOf(shooter))
+                if (Vector3.Distance(desde, h.point) < Vector3.Distance(desde, muzzle)) muzzle = h.point - hacia.normalized * 0.15f;
+        int deMas = DanioDeMas != null ? Mathf.Max(0, DanioDeMas()) : 0; // US 330: la bronca va en la explosión
+        Trazadora.Fogonazo(muzzle, deMas > 0);
+
+        GameObject thrown = Object.Instantiate(weapon.grenadePrefab, muzzle, Quaternion.LookRotation(direction));
+        Grenade1 grenade = thrown.GetComponent<Grenade1>();
+        if (grenade != null)
+        {
+            grenade.thrower = shooter;
+            grenade.Configure(weapon);
+            grenade.throwForce = 0f;
+            grenade.danioDeMas = deMas;
+            grenade.Throw(direction);
+        }
+        if (deMas > 0) Brasa(thrown.transform); // US 330: la granada con bronca vuela roja
+        Rigidbody body = thrown.GetComponent<Rigidbody>();
+        if (body != null) body.linearVelocity = direction * weapon.velocidadDelProyectil;
+
+        aim.Kick(weapon);
+        Fired?.Invoke(shooter, camera.transform.position, new[] { direction });
+    }
+
+    // US 330: una luz roja que acompaña a la granada con bronca hasta que explota.
+    private static void Brasa(Transform granada)
+    {
+        var go = new GameObject("Bronca");
+        go.transform.SetParent(granada, false);
+        Light luz = go.AddComponent<Light>();
+        luz.type = LightType.Point;
+        luz.color = Trazadora.Bronca;
+        luz.intensity = 4f;
+        luz.range = 3f;
+        luz.shadows = LightShadows.None;
+    }
+
     private static Quaternion Deviation(float degrees)
     {
         if (degrees <= 0f) return Quaternion.identity;

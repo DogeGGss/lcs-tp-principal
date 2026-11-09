@@ -1,0 +1,16 @@
+fileFormatVersion: 2
+guid: 340fab5d5eafc6a4bbb588b87f761091
+timeCreated: 1500052348
+licenseType: Store
+NativeFormatImporter:
+  mainObjectFileID: 2100000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 95575
+  packageName: Flying carnivorous beetle
+  packageVersion: 1.0
+  assetPath: Assets/Flying Beetle/animation/Materials/tbeetle texture orange_Albedo.mat
+  uploadId: 189967

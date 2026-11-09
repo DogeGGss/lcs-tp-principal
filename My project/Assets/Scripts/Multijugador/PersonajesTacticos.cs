@@ -67,7 +67,7 @@ public class PersonajesTacticos : MonoBehaviour
         {
             Trabar();
             if (!elegido && !abierta && LibresListos()) Abrir(rondas.Restante);
-            if (elegido) MatchHud.SetHint($"Esperando a los demás   ·   <color=#F29A38>{Reloj(rondas.Restante)}</color>");
+            if (elegido) MatchHud.SetHint(L10n.T("gameplay.tac.waiting_others_fmt", Reloj(rondas.Restante)));
         }
         else
         {
@@ -93,10 +93,10 @@ public class PersonajesTacticos : MonoBehaviour
     private void Abrir(float segundos)
     {
         MatchHud hud = MatchHud.Instance;
-        string lado = EquiposTacticos.LadoLocal == LadoTactico.Atacante ? "Atacantes" : "Defensores";
+        string lado = L10n.T(EquiposTacticos.LadoLocal == LadoTactico.Atacante ? "gameplay.tac.attackers" : "gameplay.tac.defenders");
         pantalla = CharacterSelectScreen.Show(hud != null ? hud.DisplayFont : null, hud != null ? hud.LabelFont : null,
             hud != null ? hud.LabelFont : null, hud != null ? hud.Rounded : null,
-            $"Modo Táctico  ·  Tu equipo: {lado}", Mathf.Max(1f, segundos), AlElegir, null);
+            L10n.T("gameplay.tac.pick_header_fmt", lado), Mathf.Max(1f, segundos), AlElegir, null);
         if (pantalla == null) { elegido = true; return; } // no hay personajes
         abierta = true;
         pantalla.LockedBy = ElegidoPor;
@@ -109,7 +109,7 @@ public class PersonajesTacticos : MonoBehaviour
         int actor = Dueno(EquiposTacticos.Local, p);
         if (actor == 0 || actor == PhotonNetwork.LocalPlayer.ActorNumber) return null;
         Player jugador = Sala != null ? Sala.GetPlayer(actor) : null;
-        return jugador != null ? jugador.NickName : "un compañero";
+        return jugador != null ? jugador.NickName : L10n.T("gameplay.tac.a_teammate");
     }
 
     /// <summary>El personaje que eligió ese jugador en su equipo, o null si todavía no eligió (para el marcador).</summary>
@@ -135,7 +135,7 @@ public class PersonajesTacticos : MonoBehaviour
         string clave = Clave(equipo, p);
         int dueno = Dueno(equipo, p);
         if (dueno == yo) { pantalla.Accept(); return; }
-        if (dueno != 0) { pantalla.Reject($"Ya lo eligió {ElegidoPor(p)}"); return; }
+        if (dueno != 0) { pantalla.Reject(L10n.T("gameplay.tac.already_picked_fmt", ElegidoPor(p))); return; }
 
         // Se cambia solo si en el servidor sigue libre (0): si otro llegó antes, no pasa nada y se ve su número.
         pedido = clave;
@@ -150,9 +150,9 @@ public class PersonajesTacticos : MonoBehaviour
         int yo = PhotonNetwork.LocalPlayer.ActorNumber;
         int dueno = Dueno(EquiposTacticos.Local, pedidoDe);
         if (dueno == yo) { pedido = null; pantalla.Accept(); return; }
-        if (dueno != 0) { string quien = ElegidoPor(pedidoDe); pedido = null; pantalla.Reject($"Ya lo eligió {quien}"); return; }
+        if (dueno != 0) { string quien = ElegidoPor(pedidoDe); pedido = null; pantalla.Reject(L10n.T("gameplay.tac.already_picked_fmt", quien)); return; }
         // Sin respuesta (por ejemplo, se cortó la conexión un momento): se deja elegir de nuevo.
-        if (Time.unscaledTime >= pedidoHasta) { pedido = null; pantalla.Reject("No se pudo confirmar, probá de nuevo"); }
+        if (Time.unscaledTime >= pedidoHasta) { pedido = null; pantalla.Reject(L10n.T("gameplay.tac.confirm_failed")); }
     }
 
     // US 195, CA3: el personaje que tiene en la sala (lo eligió antes de desconectarse), con su habilidad.

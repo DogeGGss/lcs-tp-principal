@@ -1,0 +1,872 @@
+{
+  "entries": [
+    {
+      "key": "launcher.already_open",
+      "text": "The launcher may already be open in this installation.\n\n"
+    },
+    {
+      "key": "launcher.startup_error",
+      "text": "Could not open the launcher. "
+    },
+    {
+      "key": "launcher.install_not_root",
+      "text": "Choose a dedicated game folder, not the root of a drive."
+    },
+    {
+      "key": "launcher.install_empty",
+      "text": "Choose an empty folder to install Riftwalker."
+    },
+    {
+      "key": "launcher.account_since",
+      "text": "Account verified · since {0}"
+    },
+    {
+      "key": "launcher.account_verified",
+      "text": "Account verified"
+    },
+    {
+      "key": "launcher.account_ready",
+      "text": "Playing as {0}. Your progress is saved to your account."
+    },
+    {
+      "key": "launcher.account_offline",
+      "text": "Could not check for updates. You can play with your account: your progress will sync when you reconnect."
+    },
+    {
+      "key": "launcher.sign_out",
+      "text": "Sign out"
+    },
+    {
+      "key": "launcher.delete_account",
+      "text": "Delete account"
+    },
+    {
+      "key": "launcher.your_account",
+      "text": "YOUR ACCOUNT"
+    },
+    {
+      "key": "launcher.sign_in_heading",
+      "text": "SIGN IN"
+    },
+    {
+      "key": "launcher.account_required",
+      "text": "You need an account to play. Your progress is saved to it so you can continue on any PC."
+    },
+    {
+      "key": "launcher.email",
+      "text": "EMAIL"
+    },
+    {
+      "key": "launcher.password",
+      "text": "PASSWORD"
+    },
+    {
+      "key": "launcher.forgot_password",
+      "text": "Forgot your password?"
+    },
+    {
+      "key": "launcher.sign_in_action",
+      "text": "SIGN IN  →"
+    },
+    {
+      "key": "launcher.signing_in",
+      "text": "SIGNING IN…"
+    },
+    {
+      "key": "launcher.signed_in",
+      "text": "You are signed in."
+    },
+    {
+      "key": "launcher.no_account",
+      "text": "No account yet?"
+    },
+    {
+      "key": "launcher.create_account",
+      "text": "Create account"
+    },
+    {
+      "key": "launcher.new_account",
+      "text": "NEW ACCOUNT"
+    },
+    {
+      "key": "launcher.create_heading",
+      "text": "CREATE ACCOUNT"
+    },
+    {
+      "key": "launcher.new_account_help",
+      "text": "Your new account starts fresh: save your progress to the cloud and play on any PC."
+    },
+    {
+      "key": "launcher.password_hint",
+      "text": "8 characters or more"
+    },
+    {
+      "key": "launcher.repeat_password",
+      "text": "REPEAT PASSWORD"
+    },
+    {
+      "key": "launcher.sign_in_link",
+      "text": "Sign in"
+    },
+    {
+      "key": "launcher.privacy_accept",
+      "text": "By creating an account you accept the "
+    },
+    {
+      "key": "launcher.privacy_link",
+      "text": "privacy notice"
+    },
+    {
+      "key": "launcher.back",
+      "text": "Back"
+    },
+    {
+      "key": "launcher.creating",
+      "text": "CREATING…"
+    },
+    {
+      "key": "launcher.account_active",
+      "text": "Your account is now active."
+    },
+    {
+      "key": "launcher.account_one_step",
+      "text": "YOUR ACCOUNT · ONE MORE STEP"
+    },
+    {
+      "key": "launcher.verify_email",
+      "text": "VERIFY YOUR EMAIL"
+    },
+    {
+      "key": "launcher.code_sent_prefix",
+      "text": "We sent a 6-digit code to "
+    },
+    {
+      "key": "launcher.code_sent_suffix",
+      "text": ". If you cannot find it, check your spam folder."
+    },
+    {
+      "key": "launcher.code_wait",
+      "text": "Did not receive it? Request another in 0:{0:00}"
+    },
+    {
+      "key": "launcher.code_not_received",
+      "text": "Did not receive it? "
+    },
+    {
+      "key": "launcher.code_request",
+      "text": "Request another code"
+    },
+    {
+      "key": "launcher.code_resent",
+      "text": "We sent another code."
+    },
+    {
+      "key": "launcher.wrong_email",
+      "text": "Wrong email address? "
+    },
+    {
+      "key": "launcher.change_email",
+      "text": "Change it"
+    },
+    {
+      "key": "launcher.confirm",
+      "text": "CONFIRM"
+    },
+    {
+      "key": "launcher.confirming",
+      "text": "CONFIRMING…"
+    },
+    {
+      "key": "launcher.recover_password",
+      "text": "RESET PASSWORD"
+    },
+    {
+      "key": "launcher.recover_help",
+      "text": "Enter your email and we will send you a code to choose a new password."
+    },
+    {
+      "key": "launcher.send_code",
+      "text": "SEND CODE"
+    },
+    {
+      "key": "launcher.sending",
+      "text": "SENDING…"
+    },
+    {
+      "key": "launcher.new_password",
+      "text": "NEW PASSWORD"
+    },
+    {
+      "key": "launcher.recovery_sent",
+      "text": "If an account exists for that email, a 6-digit code has been sent."
+    },
+    {
+      "key": "launcher.code",
+      "text": "CODE"
+    },
+    {
+      "key": "launcher.change_sign_in",
+      "text": "CHANGE AND SIGN IN"
+    },
+    {
+      "key": "launcher.changing",
+      "text": "CHANGING…"
+    },
+    {
+      "key": "launcher.password_changed",
+      "text": "Password changed. You are signed in."
+    },
+    {
+      "key": "launcher.privacy",
+      "text": "PRIVACY"
+    },
+    {
+      "key": "launcher.privacy_heading",
+      "text": "PRIVACY NOTICE"
+    },
+    {
+      "key": "launcher.privacy_what",
+      "text": "WHAT WE STORE"
+    },
+    {
+      "key": "launcher.privacy_what_body",
+      "text": "Your email and password (encrypted), your name, your progress (achievements, cosmetics and currency), your match statistics and the feedback you send."
+    },
+    {
+      "key": "launcher.privacy_why",
+      "text": "WHY"
+    },
+    {
+      "key": "launcher.privacy_why_body",
+      "text": "To recover your progress on any PC, for the global rankings and for matchmaking. We do not use it for advertising or share it with anyone."
+    },
+    {
+      "key": "launcher.privacy_where",
+      "text": "WHERE"
+    },
+    {
+      "key": "launcher.privacy_where_body",
+      "text": "In the game database (Supabase). Matches use Photon servers, which receive your player name, account ID and connection (IP address)."
+    },
+    {
+      "key": "launcher.privacy_rights",
+      "text": "YOUR RIGHTS"
+    },
+    {
+      "key": "launcher.privacy_rights_body",
+      "text": "You can view your data in your in-game Profile and delete your account and its data from this launcher (Argentine Personal Data Protection Law 25.326)."
+    },
+    {
+      "key": "launcher.understood",
+      "text": "GOT IT"
+    },
+    {
+      "key": "launcher.sign_out_confirm",
+      "text": "SIGN OUT?"
+    },
+    {
+      "key": "launcher.sign_out_body",
+      "text": "Your account will no longer be used on this PC. Sign in again to play. Your progress stays in your account and will return when you sign back in."
+    },
+    {
+      "key": "launcher.sign_out_action",
+      "text": "SIGN OUT"
+    },
+    {
+      "key": "launcher.signing_out",
+      "text": "SIGNING OUT…"
+    },
+    {
+      "key": "launcher.signed_out",
+      "text": "You signed out. Your progress remains in your account."
+    },
+    {
+      "key": "launcher.close_game_first",
+      "text": "CLOSE THE GAME FIRST"
+    },
+    {
+      "key": "launcher.close_account_game",
+      "text": "Project Riftwalker is running with your account. Close it, then select “{0}” again."
+    },
+    {
+      "key": "launcher.irreversible",
+      "text": "THIS CANNOT BE UNDONE"
+    },
+    {
+      "key": "launcher.delete_heading",
+      "text": "DELETE ACCOUNT"
+    },
+    {
+      "key": "launcher.delete_body",
+      "text": "Your account, progress, currency, cosmetics and ranking entry will be deleted. You can use the email address to create another account."
+    },
+    {
+      "key": "launcher.delete_password",
+      "text": "YOUR PASSWORD, TO CONFIRM"
+    },
+    {
+      "key": "launcher.deleting",
+      "text": "DELETING…"
+    },
+    {
+      "key": "launcher.account_deleted",
+      "text": "Your account and all its data were deleted. You can use the email address to create another one."
+    },
+    {
+      "key": "launcher.show_password",
+      "text": "SHOW"
+    },
+    {
+      "key": "launcher.hide_password",
+      "text": "HIDE"
+    },
+    {
+      "key": "launcher.code_accessibility",
+      "text": "6-digit code"
+    },
+    {
+      "key": "launcher.ready",
+      "text": "READY TO PLAY"
+    },
+    {
+      "key": "launcher.preview_version",
+      "text": "Version 0.3.0 installed"
+    },
+    {
+      "key": "launcher.notes_preparing",
+      "text": "## Preparing the news\nPatch notes will appear here."
+    },
+    {
+      "key": "launcher.team_waits",
+      "text": "YOUR TEAM IS WAITING"
+    },
+    {
+      "key": "launcher.design_preview",
+      "text": "Design preview"
+    },
+    {
+      "key": "launcher.preview_intro",
+      "text": "Everything in one place. Update the game, read the news and join your next match."
+    },
+    {
+      "key": "launcher.play",
+      "text": "PLAY  →"
+    },
+    {
+      "key": "launcher.preview_no_install",
+      "text": "Preview · does not install or launch the game"
+    },
+    {
+      "key": "launcher.preview_badge",
+      "text": "PREVIEW"
+    },
+    {
+      "key": "launcher.preview",
+      "text": "Preview"
+    },
+    {
+      "key": "launcher.preview_notes",
+      "text": "## Your next crossing starts here\nA meeting point to prepare for your next match.\n### Keep your game up to date\n- Download new versions from this launcher.\n- Keep your settings and progress.\n- Read what changed before you play.\n### Choose your platform\n**Tactical · Deathmatch · Invasion**\n\nThis is an interface preview, not the patch notes of a published release."
+    },
+    {
+      "key": "launcher.not_installed",
+      "text": "Game not installed"
+    },
+    {
+      "key": "launcher.installed_version",
+      "text": "Version {0} installed"
+    },
+    {
+      "key": "launcher.configure",
+      "text": "SET UP  →"
+    },
+    {
+      "key": "launcher.install",
+      "text": "INSTALL  ↓"
+    },
+    {
+      "key": "launcher.return_stable",
+      "text": "SWITCH TO STABLE  ↓"
+    },
+    {
+      "key": "launcher.update",
+      "text": "UPDATE  ↓"
+    },
+    {
+      "key": "launcher.retry_action",
+      "text": "RETRY  ↻"
+    },
+    {
+      "key": "launcher.welcome",
+      "text": "WELCOME TO THE PLATFORM"
+    },
+    {
+      "key": "launcher.first_stop",
+      "text": "FIRST STOP"
+    },
+    {
+      "key": "launcher.something_new",
+      "text": "SOMETHING NEW"
+    },
+    {
+      "key": "launcher.release_available",
+      "text": "{0} {1}. Install this version to play from the launcher."
+    },
+    {
+      "key": "launcher.experimental_title",
+      "text": "Experimental"
+    },
+    {
+      "key": "launcher.new_version",
+      "text": "New version"
+    },
+    {
+      "key": "launcher.updated_version",
+      "text": "Version {0} · Up to date"
+    },
+    {
+      "key": "launcher.updates_offline_play",
+      "text": "Could not check for updates. You can play the installed version."
+    },
+    {
+      "key": "launcher.configure_start",
+      "text": "Set up the installation to get started."
+    },
+    {
+      "key": "launcher.experimental_badge",
+      "text": "EXPERIMENTAL"
+    },
+    {
+      "key": "launcher.stable_badge",
+      "text": "STABLE"
+    },
+    {
+      "key": "launcher.checking_updates",
+      "text": "Checking for updates…"
+    },
+    {
+      "key": "launcher.query_versions",
+      "text": "Checking published versions"
+    },
+    {
+      "key": "launcher.notes_unavailable_prefix",
+      "text": "## Notes currently unavailable\nGitHub did not return the release list. The notes for this version are on [GitHub Releases]("
+    },
+    {
+      "key": "launcher.connected",
+      "text": "CONNECTED TO GITHUB"
+    },
+    {
+      "key": "launcher.connected_cache",
+      "text": "CONNECTED · CACHED NOTES"
+    },
+    {
+      "key": "launcher.updating_launcher",
+      "text": "Updating the launcher…"
+    },
+    {
+      "key": "launcher.updating_launcher_action",
+      "text": "UPDATING LAUNCHER…"
+    },
+    {
+      "key": "launcher.self_update_retry",
+      "text": "The launcher could not update itself. It will try again next time."
+    },
+    {
+      "key": "launcher.no_compatible_release",
+      "text": "There is no compatible release for this launcher yet."
+    },
+    {
+      "key": "launcher.channel_version",
+      "text": "{0} channel · v{1}"
+    },
+    {
+      "key": "launcher.experimental",
+      "text": "experimental"
+    },
+    {
+      "key": "launcher.stable",
+      "text": "stable"
+    },
+    {
+      "key": "launcher.no_new_format",
+      "text": "The team has not published a version in the new format yet. Check again later."
+    },
+    {
+      "key": "launcher.offline_cached",
+      "text": "OFFLINE / CACHED DATA"
+    },
+    {
+      "key": "launcher.retry_when_online",
+      "text": "You can try again when you are online."
+    },
+    {
+      "key": "launcher.updates_error_prefix",
+      "text": "Could not check for updates. "
+    },
+    {
+      "key": "launcher.play_installed",
+      "text": "You can play the installed version."
+    },
+    {
+      "key": "launcher.retry_install",
+      "text": "Try again to install the game."
+    },
+    {
+      "key": "launcher.new_badge",
+      "text": " · NEW"
+    },
+    {
+      "key": "launcher.notes_ready_prefix",
+      "text": "## The platform is ready\nNotes will appear when the team publishes the first compatible version.\n\nYou can find earlier versions on [GitHub Releases]("
+    },
+    {
+      "key": "launcher.no_cached_notes",
+      "text": "## No cached notes\nCould not load the patch notes. Try again when you are online."
+    },
+    {
+      "key": "launcher.stable_version",
+      "text": "Stable version"
+    },
+    {
+      "key": "launcher.no_version_notes",
+      "text": "No notes for this version."
+    },
+    {
+      "key": "launcher.remaining",
+      "text": " · {0:mm\\\\:ss} remaining"
+    },
+    {
+      "key": "launcher.close_for_update_help",
+      "text": "Close the game to update it, then select Update."
+    },
+    {
+      "key": "launcher.downloading",
+      "text": "Downloading…"
+    },
+    {
+      "key": "launcher.corrupt_retry",
+      "text": "The file was corrupted. Downloading again…"
+    },
+    {
+      "key": "launcher.install_complete",
+      "text": "Installation complete"
+    },
+    {
+      "key": "launcher.installed_can_play",
+      "text": "Version {0} installed. You can now play."
+    },
+    {
+      "key": "launcher.download_cancelled",
+      "text": "Download cancelled. The previous installation is preserved."
+    },
+    {
+      "key": "launcher.download_resume",
+      "text": "The download was interrupted. Select Update or Install to resume."
+    },
+    {
+      "key": "launcher.first_setup",
+      "text": "YOUR FIRST STOP"
+    },
+    {
+      "key": "launcher.settings_title",
+      "text": "YOUR PLATFORM, YOUR WAY"
+    },
+    {
+      "key": "launcher.install_launcher",
+      "text": "Install launcher"
+    },
+    {
+      "key": "launcher.save",
+      "text": "Save"
+    },
+    {
+      "key": "launcher.first_setup_help",
+      "text": "Install the launcher and its shortcuts. You can then download the game."
+    },
+    {
+      "key": "launcher.settings_help",
+      "text": "This folder contains the launcher and game. Your saved progress is stored separately."
+    },
+    {
+      "key": "launcher.choose_game_folder",
+      "text": "Choose the folder for Project Riftwalker"
+    },
+    {
+      "key": "launcher.save_error_prefix",
+      "text": "Could not save: "
+    },
+    {
+      "key": "launcher.self_update_start_error",
+      "text": "Could not start the launcher update."
+    },
+    {
+      "key": "launcher.self_update_outside",
+      "text": "Update is outside the installation."
+    },
+    {
+      "key": "launcher.self_update_corrupt",
+      "text": "The launcher update is corrupted."
+    },
+    {
+      "key": "launcher.self_update_open_error",
+      "text": "Could not open the new launcher."
+    },
+    {
+      "key": "launcher.self_update_start_timeout",
+      "text": "The new launcher did not finish starting."
+    },
+    {
+      "key": "launcher.bad_server_range",
+      "text": "The server returned an invalid file range."
+    },
+    {
+      "key": "launcher.download_wrong_size",
+      "text": "The download size does not match the release."
+    },
+    {
+      "key": "launcher.download_too_large",
+      "text": "The download exceeds the published size."
+    },
+    {
+      "key": "launcher.download_interrupted",
+      "text": "The download was interrupted. You can resume where it stopped."
+    },
+    {
+      "key": "launcher.download_corrupt",
+      "text": "The file is corrupted. Try again to download it again."
+    },
+    {
+      "key": "launcher.invalid_game_folder",
+      "text": "The game folder is not a valid installation. Check it before continuing."
+    },
+    {
+      "key": "launcher.not_enough_space",
+      "text": "Not enough disk space. {0:N0} MB more is needed."
+    },
+    {
+      "key": "launcher.close_for_update",
+      "text": "Close the game to update it."
+    },
+    {
+      "key": "launcher.verification_failed",
+      "text": "The downloaded file failed verification."
+    },
+    {
+      "key": "launcher.verifying_installing",
+      "text": "Verifying and installing…"
+    },
+    {
+      "key": "launcher.zip_many_files",
+      "text": "The ZIP contains too many files."
+    },
+    {
+      "key": "launcher.zip_bad_path",
+      "text": "The ZIP contains a forbidden path."
+    },
+    {
+      "key": "launcher.zip_too_large",
+      "text": "The ZIP exceeds the published unpacked size."
+    },
+    {
+      "key": "launcher.zip_invalid",
+      "text": "Invalid ZIP contents."
+    },
+    {
+      "key": "launcher.zip_incomplete",
+      "text": "Incomplete ZIP file."
+    },
+    {
+      "key": "launcher.zip_missing_build",
+      "text": "The ZIP does not contain the complete Project Riftwalker build at its root."
+    },
+    {
+      "key": "launcher.build_version_mismatch",
+      "text": "The build version does not match the release."
+    },
+    {
+      "key": "launcher.install_first",
+      "text": "Install the game first."
+    },
+    {
+      "key": "launcher.incompatible_release",
+      "text": "The release format is not compatible."
+    },
+    {
+      "key": "launcher.invalid_launcher_version",
+      "text": "Invalid launcher version."
+    },
+    {
+      "key": "launcher.invalid_file_metadata",
+      "text": "Invalid file size or verification data."
+    },
+    {
+      "key": "launcher.missing_release_manifest",
+      "text": "The release manifest is missing."
+    },
+    {
+      "key": "launcher.missing_launcher_manifest",
+      "text": "The launcher manifest is missing."
+    },
+    {
+      "key": "launcher.invalid_launcher_manifest",
+      "text": "The launcher manifest is invalid."
+    },
+    {
+      "key": "launcher.manifest_too_large",
+      "text": "Manifest is too large."
+    },
+    {
+      "key": "launcher.download_foreign",
+      "text": "The download does not belong to the Riftwalker releases."
+    },
+    {
+      "key": "launcher.outside_install",
+      "text": "Path is outside the installation."
+    },
+    {
+      "key": "launcher.symlink_folder",
+      "text": "The folder contains a link; choose a regular folder."
+    },
+    {
+      "key": "launcher.your_account_accessibility",
+      "text": "Your account"
+    },
+    {
+      "key": "launcher.guide",
+      "text": "GAME GUIDE ↗"
+    },
+    {
+      "key": "launcher.settings",
+      "text": "⚙  SETTINGS"
+    },
+    {
+      "key": "launcher.settings_accessibility",
+      "text": "Open launcher settings"
+    },
+    {
+      "key": "launcher.minimize",
+      "text": "Minimize"
+    },
+    {
+      "key": "launcher.close",
+      "text": "Close"
+    },
+    {
+      "key": "launcher.close_accessibility",
+      "text": "Close the launcher"
+    },
+    {
+      "key": "launcher.next_crossing",
+      "text": "THE NEXT CROSSING IS YOURS"
+    },
+    {
+      "key": "launcher.choose_team",
+      "text": "Choose your team. Get ready for your next match."
+    },
+    {
+      "key": "launcher.meeting_point",
+      "text": "01 / MEETING POINT"
+    },
+    {
+      "key": "launcher.platform_news",
+      "text": "NEWS FROM THE PLATFORM"
+    },
+    {
+      "key": "launcher.notes_subtitle",
+      "text": "What is new, before you play."
+    },
+    {
+      "key": "launcher.notes_version_accessibility",
+      "text": "Patch notes version"
+    },
+    {
+      "key": "launcher.retry",
+      "text": "↻ Retry"
+    },
+    {
+      "key": "launcher.cancel",
+      "text": "Cancel"
+    },
+    {
+      "key": "launcher.checking",
+      "text": "CHECKING…"
+    },
+    {
+      "key": "launcher.next_match",
+      "text": "YOUR NEXT MATCH"
+    },
+    {
+      "key": "launcher.preparing_platform",
+      "text": "PREPARING THE PLATFORM"
+    },
+    {
+      "key": "launcher.connecting",
+      "text": "CONNECTING"
+    },
+    {
+      "key": "launcher.privacy_menu",
+      "text": "Privacy notice"
+    },
+    {
+      "key": "launcher.setup_choose",
+      "text": "Choose where to install the game and which versions to receive."
+    },
+    {
+      "key": "launcher.installation_folder",
+      "text": "INSTALLATION FOLDER"
+    },
+    {
+      "key": "launcher.installation_folder_accessibility",
+      "text": "Installation folder"
+    },
+    {
+      "key": "launcher.browse",
+      "text": "Browse…"
+    },
+    {
+      "key": "launcher.experimental_versions",
+      "text": "Experimental versions"
+    },
+    {
+      "key": "launcher.experimental_help",
+      "text": "Try features in development. You can only play online with people using the exact same version."
+    },
+    {
+      "key": "launcher.window_size",
+      "text": "WINDOW SIZE"
+    },
+    {
+      "key": "launcher.small",
+      "text": "Small"
+    },
+    {
+      "key": "launcher.normal",
+      "text": "Normal"
+    },
+    {
+      "key": "launcher.large",
+      "text": "Large · 16:9"
+    },
+    {
+      "key": "launcher.large_help",
+      "text": "Large fills most of your screen."
+    },
+    {
+      "key": "launcher.language",
+      "text": "LANGUAGE"
+    },
+    {
+      "key": "launcher.language_hint",
+      "text": "Also applies to the game."
+    },
+    {
+      "key": "launcher.language_accessible",
+      "text": "Launcher and game language"
+    },
+    {
+      "key": "launcher.language_save_error",
+      "text": "Could not save the language: {0}"
+    }
+  ]
+}

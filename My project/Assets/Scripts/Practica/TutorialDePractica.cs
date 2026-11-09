@@ -152,7 +152,7 @@ public class TutorialDePractica : MonoBehaviour
                 partes = new[]
                 {
                     P("Moverse", GameAction.Adelante, GameAction.Izquierda, GameAction.Atras, GameAction.Derecha),
-                    new Parte { teclas = () => new[] { "Mouse" }, frase = "Mirar" },
+                    new Parte { teclas = () => new[] { "Mouse" }, frase = L10n.T("gameplay.tutorial.look") },
                     P("Saltar", GameAction.Saltar),
                     P("Agacharse", GameAction.Agacharse),
                     P("Correr (en Táctico, caminar despacio)", GameAction.Correr),
@@ -161,7 +161,7 @@ public class TutorialDePractica : MonoBehaviour
             new Paso
             {
                 titulo = "Disparar",
-                partes = new[] { P("Pegale a un blanco", GameAction.Disparar), P("Recargar", GameAction.Recargar) },
+                partes = new[] { P("Pegale a un blanco", GameAction.Disparar), P(L10n.T("gameplay.controls.reload"), GameAction.Recargar) },
             },
             new Paso
             {
@@ -191,7 +191,7 @@ public class TutorialDePractica : MonoBehaviour
                 partes = new[]
                 {
                     P("Abrir la tienda", GameAction.Tienda),
-                    new Parte { teclas = () => new[] { KeyBindings.Label(GameAction.Disparar) }, frase = "Elegí otra arma" },
+                    new Parte { teclas = () => new[] { KeyBindings.Label(GameAction.Disparar) }, frase = L10n.T("gameplay.tutorial.pick_weapon") },
                 },
                 alEmpezar = () =>
                 {
@@ -204,7 +204,7 @@ public class TutorialDePractica : MonoBehaviour
 
     private static Parte P(string frase, params GameAction[] acciones) => new Parte
     {
-        frase = frase,
+        frase = L10n.Source(frase),
         teclas = () =>
         {
             string[] t = new string[acciones.Length];
@@ -319,7 +319,7 @@ public class TutorialDePractica : MonoBehaviour
         }
         AbilityData datos = habilidadDePrueba != null ? habilidadDePrueba : CharacterRoster.Selected?.ability;
         Parte parte = pasos[4].partes[0];
-        parte.frase = datos != null ? $"Usar la habilidad: {datos.displayName}" : "Usar la habilidad";
+        parte.frase = datos != null ? L10n.T("gameplay.tutorial.use_ability_fmt", datos.displayName) : L10n.T("gameplay.tutorial.use_ability");
         if (habilidad == null || datos == null || !CampoDePractica.Activo) return;
         habilidad.Prestar(datos);
         prestada = true;
@@ -394,7 +394,7 @@ public class TutorialDePractica : MonoBehaviour
         tabDesde = -1f;
         caja.gameObject.SetActive(true);
         saltear.gameObject.SetActive(true);
-        ceja.text = $"Tutorial · Modos de juego · {i + 1} de {modos.Count}";
+        ceja.text = L10n.T("gameplay.tutorial.modes_step_fmt", i + 1, modos.Count);
         titulo.text = modos[i].Nombre;
         Limpiar();
 
@@ -405,10 +405,10 @@ public class TutorialDePractica : MonoBehaviour
         Place(tecla, 0f, 0f, anchoTecla, AltoTecla);
         Image(tecla, rounded, Ink, 6f);
         TextMeshProUGUI frase = Text(Node("Frase", fila), bodyFont, 22f, Soft);
-        frase.text = "· " + (i + 1 < modos.Count ? "Siguiente modo" : "Terminar");
+        frase.text = "· " + L10n.T(i + 1 < modos.Count ? "gameplay.tutorial.next_mode" : "gameplay.tutorial.finish");
         float anchoFrase = Width(frase, frase.text) + 4f;
         Place(frase.rectTransform, anchoTecla + 8f, 0f, anchoFrase, AltoTecla);
-        textoSaltear.text = $"<color=#{ColorUtility.ToHtmlStringRGB(Soft)}>Mantené Tab</color>  Saltear tutorial";
+        textoSaltear.text = L10n.T("gameplay.tutorial.hold_tab_skip_fmt", ColorUtility.ToHtmlStringRGB(Soft));
         Ajustar(anchoTecla + 8f + anchoFrase);
 
         MostrarModo(modos[i], modos[i].Nombre, modos[i].Explicacion());
@@ -436,11 +436,11 @@ public class TutorialDePractica : MonoBehaviour
         Cerrar(true);
         caja.gameObject.SetActive(true);
         saltear.gameObject.SetActive(false);
-        ceja.text = "TUTORIAL COMPLETO";
-        titulo.text = "¡Listo! Ya sabés lo básico";
+        ceja.text = L10n.T("gameplay.tutorial.complete");
+        titulo.text = L10n.T("gameplay.tutorial.done");
         Limpiar();
         TextMeshProUGUI t = Text(Node("Final", fila), bodyFont, 22f, Soft, TextAlignmentOptions.Center);
-        t.text = "Los paneles de los modos están en la pared izquierda. El tutorial se vuelve a abrir desde el panel.";
+        t.text = L10n.T("gameplay.tutorial.panels_note");
         float ancho = Width(t, t.text) + 4f;
         Place(t.rectTransform, 0f, 0f, ancho, AltoTecla);
         Ajustar(ancho);
@@ -519,7 +519,7 @@ public class TutorialDePractica : MonoBehaviour
         bordeModo.rectTransform.offsetMin = bordeModo.rectTransform.offsetMax = Vector2.zero;
         bordeModo.rectTransform.sizeDelta = new Vector2(4f, 0f);
         Text(Place(Node("Ceja", tarjeta), Margen, 22f, AnchoTarjeta - Margen * 2f, 20f), labelFont, 17f, Accent,
-            TextAlignmentOptions.MidlineLeft, 12f, true).text = "Modo de juego";
+            TextAlignmentOptions.MidlineLeft, 12f, true).text = L10n.T("gameplay.tutorial.game_mode");
         tarjetaTitulo = Text(Place(Node("Título", tarjeta), Margen, 44f, AnchoTarjeta - Margen * 2f, 40f), displayFont, 36f, Ink,
             TextAlignmentOptions.MidlineLeft, 0f, true);
         tarjetaTexto = Text(Place(Node("Texto", tarjeta), Margen, 96f, AnchoTarjeta - Margen * 2f, 100f), bodyFont, 20f, Soft,
@@ -562,8 +562,8 @@ public class TutorialDePractica : MonoBehaviour
         if (!Abierto || caja == null) return;
         if (paso < 0) { Repaso(modo); return; }
         Paso p = pasos[paso];
-        ceja.text = $"Tutorial · Paso {paso + 1} de {pasos.Length}";
-        titulo.text = p.titulo;
+        ceja.text = L10n.T("gameplay.tutorial.step_fmt", paso + 1, pasos.Length);
+        titulo.text = L10n.Source(p.titulo);
         Limpiar();
 
         float x = 0f;
@@ -588,8 +588,8 @@ public class TutorialDePractica : MonoBehaviour
             Place(parte.texto.rectTransform, x + 2f, 0f, anchoFrase, AltoTecla);
             x += anchoFrase + Separacion;
         }
-        textoSaltear.text = $"<color=#{ColorUtility.ToHtmlStringRGB(Soft)}>Tab</color>  Saltear paso     " +
-                            $"<color=#{ColorUtility.ToHtmlStringRGB(Soft)}>Mantené Tab</color>  Saltear tutorial";
+        textoSaltear.text = L10n.T("gameplay.tutorial.tab_skip_step_fmt", ColorUtility.ToHtmlStringRGB(Soft)) +
+                            L10n.T("gameplay.tutorial.hold_tab_skip_fmt", ColorUtility.ToHtmlStringRGB(Soft));
         Ajustar(Mathf.Max(0f, x - Separacion));
         Pintar(p.partes);
     }

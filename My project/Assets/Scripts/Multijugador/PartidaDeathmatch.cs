@@ -17,6 +17,8 @@ using UnityEngine;
 // - CA4: si el reloj llega a 0, gana el que más bajas tenga.
 // - CA5: con empate en bajas, gana el de menos muertes; si siguen, el que llegó primero a esa cantidad.
 // - CA6: aviso para todos cuando alguien llega a 20 bajas o cuando quedan 60 s.
+// US 195 (abandono): si se van todos los demás y queda uno solo en la sala, la partida termina en el momento y gana
+// el que queda (como en el Táctico, el desconectado cuenta hasta que pasan los 2 minutos sin volver).
 // El estado va en las propiedades de la sala y lo maneja el anfitrión, con la hora del servidor de Photon: todos
 // ven el mismo reloj y los mismos números, aunque cambie el anfitrión. El marcador es MarcadorDeathmatch (US 141).
 // Lo agrega PartidaEnRed al empezar una partida del Modo Deathmatch.
@@ -28,7 +30,7 @@ public class PartidaDeathmatch : MonoBehaviour
     public const int BajasParaGanar = 25, BajasDeAviso = 20;
     public const float SegundosDeAviso = 60f;
 
-    private const string PropFase = "dm.fase", PropFin = "dm.fin", PropGanador = "dm.gan";
+    private const string PropFase = "dm.fase", PropFin = "dm.fin", PropGanador = "dm.gan", PropAbandono = "dm.ab";
     private const string PropBajas = "dm.k", PropMuertes = "dm.d", PropCabezas = "dm.c", PropCuando = "dm.t";
     // F24 (US 222): asistencias, bajas que tenía al morir por última vez (de ahí sale la racha), mejor racha y la hora
     // del servidor en que empezó la partida (la identifica y mide cuánto duró).
@@ -43,6 +45,7 @@ public class PartidaDeathmatch : MonoBehaviour
     private int faseVista = -1, segundoVisto = -1;
     private bool avisoBajas, avisoTiempo;
     private float proximoArranque;
+    private int maximoDeJugadores; // los que llegó a haber en la sala: solo se termina por abandono si hubo rivales
     private readonly List<Behaviour> trabados = new List<Behaviour>();
 
     private static Room Sala => PhotonNetwork.CurrentRoom;
@@ -59,6 +62,8 @@ public class PartidaDeathmatch : MonoBehaviour
     public bool Lista => Sala != null && Sala.CustomProperties.ContainsKey(PropFase);
     public Fase FaseActual => (Fase)Leer(PropFase, 0);
     public int Ganador => Leer(PropGanador, 0);
+    /// <summary>US 195: terminó porque se fueron todos los demás.</summary>
+    public bool PorAbandono => Leer(PropAbandono, 0) == 1;
     public static bool YaTermino => Actual != null && Actual.Lista && Actual.FaseActual == Fase.Terminada;
 
     /// <summary>US 195: la partida ya está en combate, según la sala (se puede leer antes de que exista PartidaDeathmatch).</summary>
@@ -75,7 +80,7 @@ public class PartidaDeathmatch : MonoBehaviour
     /// </summary>
     public static bool PuedeElegir(out string texto, out float restante)
     {
-        texto = "Elegí tu equipo";
+        texto = L10n.T("gameplay.ui.choose_your_loadout");
         restante = -1f;
         PartidaDeathmatch p = Actual;
         if (p == null || !p.Lista) return true;
@@ -83,7 +88,7 @@ public class PartidaDeathmatch : MonoBehaviour
         if (fase == Fase.Terminada) return false;
         if (fase == Fase.Cuenta)
         {
-            texto = "Empieza en";
+            texto = L10n.T("gameplay.ui.starts_in");
             restante = p.Restante;
             return true;
         }
@@ -92,12 +97,12 @@ public class PartidaDeathmatch : MonoBehaviour
         if (!yo.Vivo)
         {
             bool esperando = yo.EsperaRestante > 0f;
-            texto = esperando ? "Reaparecés en" : "Cerrá para reaparecer";
+            texto = esperando ? "Reaparecés en" : L10n.T("gameplay.ui.close_to_respawn");
             restante = esperando ? yo.EsperaRestante : yo.TopeRestante;
             return true;
         }
         if (yo.AtacoDesdeReaparicion) return false;
-        texto = "Podés cambiar";
+        texto = L10n.T("gameplay.ui.you_can_change");
         restante = yo.ReaparecioEn + GraciaParaElegir - Time.time;
         return restante > 0f;
     }
@@ -206,6 +211,8 @@ public class PartidaDeathmatch : MonoBehaviour
 
     private void Update()
     {
+        // Se cuenta en todas las computadoras: si el anfitrión se va, el que queda ya sabe que hubo rivales.
+        if (Sala != null) maximoDeJugadores = Mathf.Max(maximoDeJugadores, PhotonNetwork.PlayerList.Length);
         if (PhotonNetwork.IsMasterClient) Anfitrion();
         if (!Lista) { Trabar(false); return; } // todavía no arrancó: nadie se mueve
 
@@ -236,6 +243,14 @@ public class PartidaDeathmatch : MonoBehaviour
 
         Atajos();
         Fase fase = FaseActual;
+        int enLaSala = PhotonNetwork.PlayerList.Length;
+        if (fase != Fase.Terminada && enLaSala == 1 && maximoDeJugadores > 1 && !PruebaSolo.Activa && Time.unscaledTime >= proximoArranque)
+        {
+            // US 195: se fueron todos los demás; gana el que queda.
+            proximoArranque = Time.unscaledTime + 2f;
+            Sala.SetCustomProperties(new Hashtable { { PropFase, (int)Fase.Terminada }, { PropGanador, PhotonNetwork.LocalPlayer.ActorNumber }, { PropAbandono, 1 } });
+            return;
+        }
         if (fase == Fase.Cuenta && Restante <= 0f && Time.unscaledTime >= proximoArranque)
         {
             proximoArranque = Time.unscaledTime + 2f;
@@ -268,7 +283,7 @@ public class PartidaDeathmatch : MonoBehaviour
                 {
                     HealthSystem vida = local != null ? local.GetComponent<HealthSystem>() : null;
                     if (vida != null && local.Vivo) vida.SetState(vida.maxHealth, 0);
-                    MatchHud.ShowBanner("Deathmatch", "¡A pelear!", ShopUIKit.Accent, $"Gana el primero en llegar a {BajasParaGanar} bajas", null, 1.6f);
+                    MatchHud.ShowBanner("Deathmatch", L10n.T("gameplay.ui.fight"), ShopUIKit.Accent, $"Gana el primero en llegar a {BajasParaGanar} bajas", null, 1.6f);
                 }
                 break;
             case Fase.Terminada:
@@ -290,7 +305,7 @@ public class PartidaDeathmatch : MonoBehaviour
         if (segundo == segundoVisto || segundo <= 0) return;
         segundoVisto = segundo;
         MatchHud.ShowBanner("Deathmatch  ·  Todos contra todos", segundo.ToString(), ShopUIKit.Accent,
-            $"Apretá {KeyBindings.Label(GameAction.Tienda)} para elegir tu equipo", null, 1.2f);
+            L10n.T("gameplay.dm.press_to_pick_fmt", KeyBindings.Label(GameAction.Tienda)), null, 1.2f);
     }
 
     // US 140, CA6: alguien llegó a 20 bajas o quedan 60 s.
@@ -306,8 +321,8 @@ public class PartidaDeathmatch : MonoBehaviour
         {
             if (Bajas(p.ActorNumber) < BajasDeAviso) continue;
             avisoBajas = true;
-            MatchHud.Warn(p.IsLocal ? $"Llegaste a {BajasDeAviso} bajas: te faltan {BajasParaGanar - Bajas(p.ActorNumber)}"
-                                    : $"{p.NickName} llegó a {BajasDeAviso} bajas", 3f);
+            MatchHud.Warn(p.IsLocal ? L10n.T("gameplay.dm.you_reached_fmt", BajasDeAviso, BajasParaGanar - Bajas(p.ActorNumber))
+                                    : L10n.T("gameplay.dm.other_reached_fmt", p.NickName, BajasDeAviso), 3f);
             break;
         }
     }

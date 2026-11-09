@@ -46,6 +46,8 @@ returns jsonb language plpgsql security definer set search_path = '' as $$
 declare uid uuid := auth.uid(); p public.rw_achievement_players;
 begin
  if uid is null then raise exception 'Authentication required' using errcode='28000'; end if;
+ -- US 281: la nube y el ranking son solo de las cuentas; la sesion anonima queda para las opiniones y para ver el ranking.
+ if coalesce((auth.jwt()->>'is_anonymous')::boolean,false) then raise exception 'Account required' using errcode='42501'; end if;
  if p_name is null or char_length(btrim(p_name)) not between 3 and 16
     or btrim(p_name) !~ '^[[:alnum:] _-]+$' then raise exception 'Invalid name'; end if;
  if p_blue is null or p_green is null or p_gold is null or least(p_blue,p_green,p_gold)<0 then raise exception 'Invalid progress'; end if;
@@ -122,6 +124,8 @@ declare
  e jsonb;
 begin
  if uid is null then raise exception 'Authentication required' using errcode='28000'; end if;
+ -- US 281: la nube y el ranking son solo de las cuentas; la sesion anonima queda para las opiniones y para ver el ranking.
+ if coalesce((auth.jwt()->>'is_anonymous')::boolean,false) then raise exception 'Account required' using errcode='42501'; end if;
  if p is null or jsonb_typeof(p) <> 'object' or octet_length(p::text) > 65536 then raise exception 'Invalid progress'; end if;
  -- Claves cortas y simples; numeros enteros no negativos; textos y elementos de hasta 64 caracteres.
  for e in select * from jsonb_array_elements(coalesce(p->'contadores','[]'::jsonb)) loop

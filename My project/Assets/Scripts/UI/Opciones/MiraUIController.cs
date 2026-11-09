@@ -141,8 +141,8 @@ public class MiraUIController : MonoBehaviour, OpcionesPantalla.ISeccion
             RectTransform caja = Place(Node(nombres[i], kit.root), kit.Left + i * (w + 16f), y, w, alto);
             Image(caja, kit.Rounded, fondos[i], 6f);
             muestras[i] = new MiraDibujo(caja);
-            Text(Place(Node("Nombre", kit.root), kit.Left + i * (w + 16f), y + alto + 4f, w, 16f), kit.LabelFont, 13f, Mute,
-                TextAlignmentOptions.Center, 14f, true).text = nombres[i];
+            L10n.BindSource(Text(Place(Node("Nombre", kit.root), kit.Left + i * (w + 16f), y + alto + 4f, w, 16f), kit.LabelFont, 13f, Mute,
+                TextAlignmentOptions.Center, 14f, true), nombres[i],"ui.");
         }
         y += alto + 24f;
     }
@@ -167,7 +167,7 @@ public class MiraUIController : MonoBehaviour, OpcionesPantalla.ISeccion
         RectTransform propio = Place(Node("Propio", kit.root), x, top, w, 30f);
         fondoPropio = Image(propio, kit.Rounded, ChipColor, 3f, true);
         textoPropio = Text(Stretch(Node("Texto", propio)), kit.LabelFont, 16f, Mute, TextAlignmentOptions.Center, 6f, true);
-        textoPropio.text = "Propio";
+        L10n.BindSource(textoPropio, "Propio","ui.");
         propio.gameObject.AddComponent<ShopPointerTarget>().Clicked = () => { pendiente.color = MiraConfig.ColorPropio; Mostrar(); };
         y += OpcionesKit.RowH;
     }

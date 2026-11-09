@@ -1,4 +1,4 @@
-<Window x:Class="Riftwalker.Launcher.MainWindow" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+<Window x:Class="Riftwalker.Launcher.MainWindow" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:loc="clr-namespace:Riftwalker.Launcher"
  Title="Project Riftwalker" Icon="pack://application:,,,/Assets/riftwalker.ico" SizeToContent="WidthAndHeight" WindowStyle="None" AllowsTransparency="True" ResizeMode="CanMinimize" WindowStartupLocation="CenterScreen" Background="Transparent" Foreground="#F3F4F6" FontFamily="{StaticResource BodyFont}" FontSize="15" UseLayoutRounding="True">
  <!-- Own frame instead of Windows': a panel with cut corners (large top-left and bottom-right, small at the other two),
       12 px bigger on each side for the shadow; that margin is transparent and lets clicks through. The panel has a
@@ -17,15 +17,22 @@
    <Grid><StackPanel Orientation="Horizontal" VerticalAlignment="Center">
     <Path Data="M 16,0 L 3,19 L 13,19 L 7,35 L 29,12 L 18,12 L 24,0 Z" Fill="#F29A38" Width="30" Height="36" Margin="0,0,14,0"/>
     <TextBlock Text="RIFTWALKER" FontFamily="{StaticResource DisplayFont}" FontWeight="Bold" FontSize="27" VerticalAlignment="Center"/>
-    <Border Background="#1E241E" CornerRadius="3" Margin="22,0,0,0" Padding="10,4" VerticalAlignment="Center"><TextBlock x:Name="ChannelBadge" Text="ESTABLE" Foreground="#3DDC97" FontSize="11" FontWeight="SemiBold"/></Border>
+    <Border Background="#1E241E" CornerRadius="3" Margin="22,0,0,0" Padding="10,4" VerticalAlignment="Center"><TextBlock x:Name="ChannelBadge" Text="{DynamicResource loc.launcher.stable_badge}" Foreground="#3DDC97" FontSize="11" FontWeight="SemiBold"/></Border>
    </StackPanel><StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
-    <Button Content="GUÍA DEL JUEGO ↗" Click="Guide_Click" Background="Transparent" BorderThickness="0" Margin="0,0,12,0"/>
-    <Button Content="⚙  AJUSTES" Click="Settings_Click" AutomationProperties.Name="Abrir ajustes del launcher"/>
+    <Button x:Name="CuentaChip" Style="{StaticResource ChipCuenta}" Click="CuentaChip_Click" Visibility="Collapsed" Margin="0,0,12,0" AutomationProperties.Name="{DynamicResource loc.launcher.your_account_accessibility}">
+     <StackPanel Orientation="Horizontal">
+      <Grid Width="30" Height="30"><Ellipse Fill="#F29A38"/><TextBlock x:Name="CuentaInicial" FontFamily="{StaticResource DisplayFont}" FontWeight="Bold" FontSize="18" Foreground="#1A1106" HorizontalAlignment="Center" VerticalAlignment="Center"/></Grid>
+      <StackPanel Margin="10,0,0,0" VerticalAlignment="Center"><TextBlock x:Name="CuentaNombre" FontFamily="{StaticResource DisplayFont}" FontWeight="Bold" FontSize="16"/><TextBlock x:Name="CuentaMail" FontSize="11" Foreground="#8E96A3"/></StackPanel>
+      <TextBlock Text="⌄" Foreground="#F29A38" FontSize="14" Margin="10,0,0,5" VerticalAlignment="Center"/>
+     </StackPanel>
+    </Button>
+    <Button Content="{DynamicResource loc.launcher.guide}" Click="Guide_Click" Background="Transparent" BorderThickness="0" Margin="0,0,12,0"/>
+    <Button Content="{DynamicResource loc.launcher.settings}" Click="Settings_Click" AutomationProperties.Name="{DynamicResource loc.launcher.settings_accessibility}"/>
     <Border Width="1" Height="26" Background="#303743" Margin="18,0,8,0"/>
-    <Button Style="{StaticResource BotonVentana}" Click="Minimizar_Click" ToolTip="Minimizar" AutomationProperties.Name="Minimizar">
+    <Button Style="{StaticResource BotonVentana}" Click="Minimizar_Click" ToolTip="{DynamicResource loc.launcher.minimize}" AutomationProperties.Name="{DynamicResource loc.launcher.minimize}">
      <Path Data="M 0,0.5 L 12,0.5" Stroke="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}" StrokeThickness="1.5" Width="12" Height="2"/>
     </Button>
-    <Button Style="{StaticResource BotonCerrar}" Click="Cerrar_Click" ToolTip="Cerrar" AutomationProperties.Name="Cerrar el launcher">
+    <Button Style="{StaticResource BotonCerrar}" Click="Cerrar_Click" ToolTip="{DynamicResource loc.launcher.close}" AutomationProperties.Name="{DynamicResource loc.launcher.close_accessibility}">
      <Path Data="M 0,0 L 11,11 M 11,0 L 0,11" Stroke="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}" StrokeThickness="1.5" Width="11" Height="11"/>
     </Button>
    </StackPanel></Grid>
@@ -54,19 +61,19 @@
      </Viewbox>
      <Border><Border.Background><LinearGradientBrush><GradientStop Color="#F20A0C11"/><GradientStop Color="#A00A0C11" Offset="0.43"/><GradientStop Color="#000A0C11" Offset="1"/></LinearGradientBrush></Border.Background></Border>
      <StackPanel Margin="34,22,0,0" HorizontalAlignment="Left">
-      <TextBlock Text="EL PRÓXIMO CRUCE ES TUYO" Foreground="#F29A38" FontSize="12" FontWeight="SemiBold"/>
+      <TextBlock Text="{DynamicResource loc.launcher.next_crossing}" Foreground="#F29A38" FontSize="12" FontWeight="SemiBold"/>
       <TextBlock Text="PROJECT" FontSize="28" FontWeight="Bold" FontFamily="{StaticResource DisplayFont}" Margin="0,6,0,-11"/>
       <TextBlock Text="RIFTWALKER" FontSize="66" FontWeight="Bold" FontFamily="{StaticResource DisplayFont}"/>
-      <TextBlock Text="Elegí tu equipo. Prepará tu próxima partida." Foreground="#AEB5C0" FontSize="16" Margin="2,3,0,0"/>
+      <TextBlock Text="{DynamicResource loc.launcher.choose_team}" Foreground="#AEB5C0" FontSize="16" Margin="2,3,0,0"/>
      </StackPanel>
-     <TextBlock Text="01 / PUNTO DE ENCUENTRO" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="0,0,28,20" Foreground="#8E96A3" FontSize="11"/>
+     <TextBlock Text="{DynamicResource loc.launcher.meeting_point}" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="0,0,28,20" Foreground="#8E96A3" FontSize="11"/>
     </Grid>
    </Border>
    <Grid Grid.Row="1" Margin="32,25,32,20">
     <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="30"/><ColumnDefinition Width="340"/></Grid.ColumnDefinitions>
     <Grid><Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="*"/></Grid.RowDefinitions>
-     <Grid Margin="0,0,0,14"><StackPanel><TextBlock Text="NOVEDADES DEL ANDÉN" FontFamily="{StaticResource DisplayFont}" FontWeight="Bold" FontSize="23"/><TextBlock x:Name="NotesSubtitle" Text="Lo nuevo, antes de entrar." Foreground="#8E96A3" FontSize="13" Margin="0,3,0,0"/></StackPanel>
-      <ComboBox x:Name="ReleasePicker" HorizontalAlignment="Right" Width="180" VerticalAlignment="Center" SelectionChanged="Release_Changed" DisplayMemberPath="Label" AutomationProperties.Name="Versión de las notas del parche"/>
+     <Grid Margin="0,0,0,14"><StackPanel><TextBlock Text="{DynamicResource loc.launcher.platform_news}" FontFamily="{StaticResource DisplayFont}" FontWeight="Bold" FontSize="23"/><TextBlock x:Name="NotesSubtitle" Text="{DynamicResource loc.launcher.notes_subtitle}" Foreground="#8E96A3" FontSize="13" Margin="0,3,0,0"/></StackPanel>
+      <ComboBox x:Name="ReleasePicker" HorizontalAlignment="Right" Width="180" VerticalAlignment="Center" SelectionChanged="Release_Changed" DisplayMemberPath="Label" AutomationProperties.Name="{DynamicResource loc.launcher.notes_version_accessibility}"/>
      </Grid>
      <Border Grid.Row="1" Background="#10141B" BorderBrush="#272C35" BorderThickness="1" CornerRadius="4" Padding="20,15">
       <FlowDocumentScrollViewer x:Name="Notes" VerticalScrollBarVisibility="Auto" IsToolBarVisible="False" Foreground="#F3F4F6" Background="Transparent"/>
@@ -76,20 +83,20 @@
          text above scrolls if it does not fit. -->
     <Border Grid.Column="2" Background="#141922" BorderBrush="#303743" BorderThickness="1" CornerRadius="4" Padding="23,21">
      <DockPanel LastChildFill="True">
-      <Grid DockPanel.Dock="Bottom" Margin="0,6,0,0"><Button x:Name="Retry" Content="↻ Reintentar" Click="Retry_Click" Padding="5,5" BorderThickness="0" Background="Transparent" HorizontalAlignment="Left"/>
-       <Button x:Name="Cancel" Content="Cancelar" Click="Cancel_Click" Visibility="Collapsed" Padding="5,5" BorderThickness="0" Background="Transparent" HorizontalAlignment="Right"/>
+      <Grid DockPanel.Dock="Bottom" Margin="0,6,0,0"><Button x:Name="Retry" Content="{DynamicResource loc.launcher.retry}" Click="Retry_Click" Padding="5,5" BorderThickness="0" Background="Transparent" HorizontalAlignment="Left"/>
+       <Button x:Name="Cancel" Content="{DynamicResource loc.launcher.cancel}" Click="Cancel_Click" Visibility="Collapsed" Padding="5,5" BorderThickness="0" Background="Transparent" HorizontalAlignment="Right"/>
       </Grid>
-      <Button x:Name="MainAction" DockPanel.Dock="Bottom" Content="BUSCANDO…" Click="Main_Click" Background="#F29A38" Foreground="#1A1106" BorderBrush="#F29A38" FontFamily="{StaticResource DisplayFont}" FontSize="25" FontWeight="Bold" Height="57" IsEnabled="False"/>
+      <Button x:Name="MainAction" DockPanel.Dock="Bottom" Content="{DynamicResource loc.launcher.checking}" Click="Main_Click" Background="#F29A38" Foreground="#1A1106" BorderBrush="#F29A38" FontFamily="{StaticResource DisplayFont}" FontSize="25" FontWeight="Bold" Height="57" IsEnabled="False"/>
       <StackPanel DockPanel.Dock="Bottom" Margin="0,12,0,14">
        <ProgressBar x:Name="Progress" Height="5" Minimum="0" Maximum="100" Foreground="#F29A38" Background="#303743" BorderThickness="0" IsIndeterminate="True"/>
        <TextBlock x:Name="ProgressText" Foreground="#8E96A3" FontSize="12" Margin="0,8,0,0" TextWrapping="Wrap"/>
       </StackPanel>
       <ScrollViewer VerticalScrollBarVisibility="Auto" Focusable="False">
-       <StackPanel><TextBlock Text="TU PRÓXIMA PARTIDA" FontSize="12" Foreground="#8E96A3" FontWeight="SemiBold"/>
-        <TextBlock x:Name="StateTitle" Text="PREPARANDO EL ANDÉN" FontFamily="{StaticResource DisplayFont}" FontWeight="Bold" FontSize="28" TextWrapping="Wrap" Margin="0,8,0,8"/>
-        <TextBlock x:Name="InstalledText" Text="Juego sin instalar" Foreground="#AEB5C0" FontSize="14"/>
+       <StackPanel><TextBlock Text="{DynamicResource loc.launcher.next_match}" FontSize="12" Foreground="#8E96A3" FontWeight="SemiBold"/>
+        <TextBlock x:Name="StateTitle" Text="{DynamicResource loc.launcher.preparing_platform}" FontFamily="{StaticResource DisplayFont}" FontWeight="Bold" FontSize="28" TextWrapping="Wrap" Margin="0,8,0,8"/>
+        <TextBlock x:Name="InstalledText" Text="{DynamicResource loc.launcher.not_installed}" Foreground="#AEB5C0" FontSize="14"/>
         <Border Background="#272C35" Height="1" Margin="0,14"/>
-        <TextBlock x:Name="StatusText" Text="Buscando actualizaciones…" TextWrapping="Wrap" LineHeight="20" AutomationProperties.LiveSetting="Polite"/>
+        <TextBlock x:Name="StatusText" Text="{DynamicResource loc.launcher.checking_updates}" TextWrapping="Wrap" LineHeight="20" AutomationProperties.LiveSetting="Polite"/>
        </StackPanel>
       </ScrollViewer>
      </DockPanel>
@@ -97,26 +104,49 @@
    </Grid>
   </Grid>
   <Border Grid.Row="2" BorderBrush="#272C35" BorderThickness="0,1,0,0" Padding="32,0"><Grid>
-   <StackPanel Orientation="Horizontal" VerticalAlignment="Center"><Ellipse x:Name="ConnectionDot" Width="6" Height="6" Fill="#8E96A3" Margin="0,0,9,0"/><TextBlock x:Name="ConnectionText" Text="CONECTANDO" FontSize="11" Foreground="#8E96A3"/></StackPanel>
+   <StackPanel Orientation="Horizontal" VerticalAlignment="Center"><Ellipse x:Name="ConnectionDot" Width="6" Height="6" Fill="#8E96A3" Margin="0,0,9,0"/><TextBlock x:Name="ConnectionText" Text="{DynamicResource loc.launcher.connecting}" FontSize="11" Foreground="#8E96A3"/></StackPanel>
    <TextBlock x:Name="LauncherVersionText" HorizontalAlignment="Right" VerticalAlignment="Center" Text="PROJECT RIFTWALKER / LAUNCHER" FontSize="11" Foreground="#8E96A3"/>
   </Grid></Border>
+  <!-- The account (MainWindow.Cuenta.cs): without a session this panel covers everything but the top bar, which keeps
+       Ajustes, minimize and close; the card's content is built in code for each step. -->
+  <Border x:Name="CuentaPanel" Grid.Row="1" Grid.RowSpan="2" Visibility="Collapsed" Background="#E6090B10">
+   <Border x:Name="CuentaTarjeta" Width="570" VerticalAlignment="Center" HorizontalAlignment="Center" Background="#141922" BorderBrush="#F29A38" BorderThickness="1,3,1,1" Padding="32,28">
+    <StackPanel x:Name="CuentaContenido"/>
+   </Border>
+  </Border>
+  <!-- The account menu, under the chip. A click outside it closes it. -->
+  <Canvas x:Name="CuentaMenuCapa" Grid.RowSpan="3" Visibility="Collapsed" Background="Transparent" MouseLeftButtonDown="CuentaMenuCapa_MouseDown">
+   <Border x:Name="CuentaMenu" Width="300" Background="#141922" BorderBrush="#303743" BorderThickness="1" CornerRadius="4" Padding="0,6">
+    <Border.Effect><DropShadowEffect Color="#000000" BlurRadius="24" ShadowDepth="6" Opacity="0.55"/></Border.Effect>
+    <StackPanel>
+     <StackPanel Margin="16,6,16,12"><TextBlock x:Name="CuentaMenuMail" FontWeight="SemiBold" FontSize="14"/><TextBlock x:Name="CuentaMenuDesde" Foreground="#3DDC97" FontSize="12" Margin="0,3,0,0"/></StackPanel>
+     <Border Height="1" Background="#272C35" Margin="0,0,0,6"/>
+     <Button Style="{StaticResource ItemMenu}" Content="{DynamicResource loc.launcher.privacy_menu}" Click="MenuPrivacidad_Click"/>
+     <Button Style="{StaticResource ItemMenu}" Content="{DynamicResource loc.launcher.sign_out}" Click="MenuCerrar_Click"/>
+     <Border Height="1" Background="#272C35" Margin="0,6"/>
+     <Button Style="{StaticResource ItemMenu}" Content="{DynamicResource loc.launcher.delete_account}" Foreground="#FF5C5C" Click="MenuBorrar_Click"/>
+    </StackPanel>
+   </Border>
+  </Canvas>
   <Border x:Name="SettingsPanel" Grid.RowSpan="3" Visibility="Collapsed" Background="#E6090B10">
    <Border Width="570" VerticalAlignment="Center" HorizontalAlignment="Center" Background="#141922" BorderBrush="#F29A38" BorderThickness="1,3,1,1" Padding="32">
-    <StackPanel><TextBlock x:Name="SettingsTitle" Text="TU ANDÉN, A TU MANERA" FontSize="32" FontWeight="Bold" FontFamily="{StaticResource DisplayFont}"/>
-     <TextBlock x:Name="SetupHint" Text="Elegí dónde guardar el juego y qué versiones recibir." Foreground="#8E96A3" TextWrapping="Wrap" Margin="0,8,0,22"/>
-     <TextBlock Text="CARPETA DE INSTALACIÓN" FontSize="12" Margin="0,0,0,8"/>
-     <Grid><Grid.ColumnDefinitions><ColumnDefinition/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions><TextBox x:Name="InstallPath" AutomationProperties.Name="Carpeta de instalación"/><Button x:Name="Browse" Grid.Column="1" Content="Elegir…" Click="Browse_Click" Margin="8,0,0,0"/></Grid>
-     <CheckBox x:Name="Experimental" Content="Versiones experimentales" Margin="0,25,0,8"/>
-     <TextBlock Text="Probá lo que está en desarrollo. Solo podrás jugar online con personas que tengan exactamente tu versión." TextWrapping="Wrap" Foreground="#8E96A3" LineHeight="21"/>
-     <TextBlock Text="TAMAÑO DE LA VENTANA" FontSize="12" Margin="0,24,0,8"/>
+    <StackPanel><TextBlock x:Name="SettingsTitle" Text="{DynamicResource loc.launcher.settings_title}" FontSize="32" FontWeight="Bold" FontFamily="{StaticResource DisplayFont}"/>
+     <TextBlock x:Name="SetupHint" Text="{DynamicResource loc.launcher.setup_choose}" Foreground="#8E96A3" TextWrapping="Wrap" Margin="0,8,0,22"/>
+     <TextBlock Text="{loc:Tr Source='IDIOMA'}" FontSize="12" Margin="0,0,0,8"/>
+     <ComboBox x:Name="LanguagePicker" DisplayMemberPath="Label" SelectionChanged="Language_Changed" AutomationProperties.Name="{loc:Tr Source='Idioma del launcher y del juego'}" Margin="0,0,0,18"/>
+     <TextBlock Text="{DynamicResource loc.launcher.installation_folder}" FontSize="12" Margin="0,0,0,8"/>
+     <Grid><Grid.ColumnDefinitions><ColumnDefinition/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions><TextBox x:Name="InstallPath" AutomationProperties.Name="{DynamicResource loc.launcher.installation_folder_accessibility}"/><Button x:Name="Browse" Grid.Column="1" Content="{DynamicResource loc.launcher.browse}" Click="Browse_Click" Margin="8,0,0,0"/></Grid>
+     <CheckBox x:Name="Experimental" Content="{DynamicResource loc.launcher.experimental_versions}" Margin="0,25,0,8"/>
+     <TextBlock Text="{DynamicResource loc.launcher.experimental_help}" TextWrapping="Wrap" Foreground="#8E96A3" LineHeight="21"/>
+     <TextBlock Text="{DynamicResource loc.launcher.window_size}" FontSize="12" Margin="0,24,0,8"/>
      <UniformGrid Rows="1" Columns="3">
-      <RadioButton x:Name="TamanoChica" GroupName="Tamano" Content="Chica" Style="{StaticResource Segmento}"/>
-      <RadioButton x:Name="TamanoNormal" GroupName="Tamano" Content="Normal" Style="{StaticResource Segmento}" Margin="6,0"/>
-      <RadioButton x:Name="TamanoGrande" GroupName="Tamano" Content="Grande · 16:9" Style="{StaticResource Segmento}"/>
+      <RadioButton x:Name="TamanoChica" GroupName="Tamano" Content="{DynamicResource loc.launcher.small}" Style="{StaticResource Segmento}"/>
+      <RadioButton x:Name="TamanoNormal" GroupName="Tamano" Content="{DynamicResource loc.launcher.normal}" Style="{StaticResource Segmento}" Margin="6,0"/>
+      <RadioButton x:Name="TamanoGrande" GroupName="Tamano" Content="{DynamicResource loc.launcher.large}" Style="{StaticResource Segmento}"/>
      </UniformGrid>
-     <TextBlock Text="Grande ocupa casi toda la pantalla." TextWrapping="Wrap" Foreground="#8E96A3" FontSize="13" Margin="0,8,0,0"/>
+     <TextBlock Text="{DynamicResource loc.launcher.large_help}" TextWrapping="Wrap" Foreground="#8E96A3" FontSize="13" Margin="0,8,0,0"/>
      <TextBlock x:Name="SettingsError" Foreground="#FF5C5C" TextWrapping="Wrap" Margin="0,15,0,0"/>
-     <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,22,0,0"><Button Content="Volver" Click="CloseSettings_Click" Margin="0,0,10,0"/><Button x:Name="SaveSettings" Content="Guardar" Click="SaveSettings_Click" Background="#F29A38" Foreground="#1A1106"/></StackPanel>
+     <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,22,0,0"><Button Content="{DynamicResource loc.launcher.back}" Click="CloseSettings_Click" Margin="0,0,10,0"/><Button x:Name="SaveSettings" Content="{DynamicResource loc.launcher.save}" Click="SaveSettings_Click" Background="#F29A38" Foreground="#1A1106"/></StackPanel>
     </StackPanel>
    </Border>
   </Border>

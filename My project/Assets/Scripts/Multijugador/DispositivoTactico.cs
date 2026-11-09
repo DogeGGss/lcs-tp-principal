@@ -356,14 +356,14 @@ public class DispositivoTactico : MonoBehaviour
                 if (accion == Accion.Plantando && enMano != null)
                     // El dispositivo baja hacia el piso mientras se planta.
                     enMano.transform.localPosition = enManoLugar + new Vector3(-0.08f, -0.12f, 0.1f) * Mathf.SmoothStep(0f, 1f, t);
-                MostrarAccion(accion == Accion.Plantando ? $"Plantando el dispositivo en {zona.nombre}" : "Desactivando el dispositivo", t);
+                MostrarAccion(accion == Accion.Plantando ? L10n.T("gameplay.tac.planting_at_fmt", zona.nombre) : L10n.T("gameplay.tac.defusing"), t);
                 return;
             }
         }
 
         string tecla = $"<color=#F29A38>{KeyBindings.Label(GameAction.Plantar)}</color>";
-        string texto = puedePlantar ? $"Mantené {tecla} para plantar el dispositivo en {zona.nombre}"
-            : puedeDesactivar ? $"Mantené {tecla} para desactivar el dispositivo" : null;
+        string texto = puedePlantar ? L10n.T("gameplay.tac.hold_plant_fmt", tecla, zona.nombre)
+            : puedeDesactivar ? L10n.T("gameplay.tac.hold_defuse_fmt", tecla) : null;
         MostrarAccion(texto, null);
         if ((puedePlantar || puedeDesactivar) && apretada && libre && !SeMueve() && EnElSuelo())
             Empezar(puedePlantar ? Accion.Plantando : Accion.Desactivando);
@@ -641,7 +641,7 @@ public class DispositivoTactico : MonoBehaviour
         // CA4: todos escuchan el aviso.
         Sonar2D(config != null ? config.sonidoPlantado : null, 0.9f);
         ZonaDePlantado zona = ZonaDePlantado.En(lugar);
-        MatchHud.Warn(zona != null ? $"Dispositivo plantado en {zona.nombre}" : "Dispositivo plantado", 3f);
+        MatchHud.Warn(zona != null ? L10n.T("gameplay.tac.planted_at_fmt", zona.nombre) : L10n.T("gameplay.tac.planted"), 3f);
     }
 
     private void AlDesactivar()

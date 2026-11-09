@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-// Nube de la granada de humo (US 074). La crea Grenade1.PlayExplosion cuando la granada se activa, en todas las
+// Nube de la granada de humo (US 074). La nube venenosa del jefe (US 267, NubeDeVeneno) es la misma, verde. La crea Grenade1.PlayExplosion cuando la granada se activa, en todas las
 // computadoras (la de verdad y la de muestra que manda la red), así que no hace falta mandar nada más por la red.
 //   CA3: 4 m de radio (effectRadius de la ficha) y 15 s (effectDuration). Tarda CrecerEn en armarse y los últimos
 //        DisiparEn (2 s) se va disipando.
@@ -27,6 +27,12 @@ public class HumoGranada : MonoBehaviour
 
     private Vector3 centro;
     private float radio, duracion, tiempo;
+    private Color pantalla = PantallaGris; // el color de la pantalla de quien está adentro
+
+    private static readonly Color PantallaGris = new Color(0.62f, 0.64f, 0.68f); // el gris de la nube vista de cerca
+
+    /// <summary>El centro de la nube (ya levantada del piso).</summary>
+    public Vector3 Centro => centro;
 
     // Cuánto tapa la nube ahora (0 a 1): crece al principio y baja en los últimos DisiparEn segundos.
     public float Opacidad
@@ -61,6 +67,24 @@ public class HumoGranada : MonoBehaviour
         return humo;
     }
 
+    /// <summary>
+    /// Una nube con otros números y colores (la nube venenosa del jefe, US 267: verde, y la pantalla verde desde adentro).
+    /// </summary>
+    public static HumoGranada Crear(Vector3 lugar, float radio, float duracion, Color color, Color pantalla, Material material)
+    {
+        var go = new GameObject("Nube");
+        HumoGranada humo = go.AddComponent<HumoGranada>();
+        humo.radio = radio;
+        humo.duracion = duracion;
+        humo.pantalla = pantalla;
+        humo.centro = Levantar(lugar);
+        go.transform.position = humo.centro;
+        if (material != null) humo.ArmarParticulas(material, color);
+        activas.Add(humo);
+        PantallaDeHumo.Asegurar();
+        return humo;
+    }
+
     // ¿La nube tapa la línea entre "desde" y "hasta"? Sirve para cualquier cosa que se vea a través del humo
     // (por ejemplo, el contorno de los rivales). Si uno de los dos puntos está adentro de la nube, también tapa.
     public static bool TapaVista(Vector3 desde, Vector3 hasta)
@@ -83,15 +107,20 @@ public class HumoGranada : MonoBehaviour
     }
 
     // Cuánto gris tiene la pantalla de quien mira desde "ojo" (0 afuera, 1 bien adentro de alguna nube).
-    public static float GrisEn(Vector3 ojo)
+    public static float GrisEn(Vector3 ojo) => GrisEn(ojo, out _);
+
+    /// <summary>Lo mismo, y de qué color se ve (el de la nube en la que más adentro está: gris, o verde la venenosa).</summary>
+    public static float GrisEn(Vector3 ojo, out Color color)
     {
         float gris = 0f;
+        color = PantallaGris;
         foreach (HumoGranada humo in activas)
         {
             if (humo == null) continue;
             float distancia = Vector3.Distance(ojo, humo.centro);
             float adentro = 1f - Mathf.InverseLerp(humo.radio * 0.65f, humo.radio * RadioQueTapa, distancia);
-            gris = Mathf.Max(gris, adentro * humo.Opacidad);
+            float cuanto = adentro * humo.Opacidad;
+            if (cuanto > gris) { gris = cuanto; color = humo.pantalla; }
         }
         return gris;
     }
@@ -213,7 +242,6 @@ public class HumoGranada : MonoBehaviour
     private class PantallaDeHumo : MonoBehaviour
     {
         private const int Orden = 38; // debajo de la mira telescópica (39) y del HUD de combate (40)
-        private static readonly Color Gris = new Color(0.62f, 0.64f, 0.68f); // el gris de la nube vista de cerca
         private static PantallaDeHumo instancia;
 
         private Canvas canvas;
@@ -246,10 +274,11 @@ public class HumoGranada : MonoBehaviour
         private void LateUpdate()
         {
             Camera cam = Camera.main;
-            float cuanto = cam != null ? GrisEn(cam.transform.position) : 0f;
+            Color tono = PantallaGris;
+            float cuanto = cam != null ? GrisEn(cam.transform.position, out tono) : 0f;
             canvas.enabled = cuanto > 0f;
             if (!canvas.enabled) return;
-            gris.color = new Color(Gris.r, Gris.g, Gris.b, cuanto);
+            gris.color = new Color(tono.r, tono.g, tono.b, cuanto);
         }
 
         private void OnDestroy()

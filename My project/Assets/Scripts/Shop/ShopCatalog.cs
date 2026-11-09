@@ -12,6 +12,12 @@ public class ShopCatalog : ScriptableObject
     public List<ShopItem> ItemsIn(ShopCategory category)
     {
         List<ShopItem> result = new List<ShopItem>();
+        // US 148, CA4: los suministros (la munición) solo existen en Invasión y no están en el catálogo.
+        if (category == ShopCategory.Supplies)
+        {
+            if (PartidaDeInvasion.Actual != null) result.Add(Suministros.Municion);
+            return result;
+        }
         foreach (ShopItem item in items)
             if (item != null && item.category == category) result.Add(item);
         return result;

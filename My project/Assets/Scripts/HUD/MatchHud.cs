@@ -263,6 +263,14 @@ public class MatchHud : MonoBehaviour
         Instance.deviceLight.color = WithAlpha(RivalColor, 0.35f + 0.65f * Mathf.Abs(Mathf.Sin(Time.unscaledTime * speed)));
     }
 
+    /// <summary>US 150: el modo tiene su propio marcador (Invasión): el centro no se muestra, ni en la fase de compra.</summary>
+    public static void HideCenter()
+    {
+        if (Instance == null) return;
+        Instance.modeSetCenter = true;
+        Instance.marker.gameObject.SetActive(false);
+    }
+
     /// <summary>Vuelve al comportamiento por defecto (fase de compra, si la hay).</summary>
     public static void ClearCenter()
     {
@@ -325,7 +333,7 @@ public class MatchHud : MonoBehaviour
     {
         BuyPhase phase = BuyPhase.Current;
         if (phase == null || !phase.IsActive) { marker.gameObject.SetActive(false); return; }
-        ShowCenter("Fase de compra", phase.TimeLeft, phase.Round > 0 ? $"Ronda {phase.Round}" : "", phase.TimeLeft <= 5f, null, false);
+        ShowCenter(L10n.T("gameplay.ui.buy_phase"), phase.TimeLeft, phase.Round > 0 ? L10n.T("gameplay.tac.round_fmt", phase.Round) : "", phase.TimeLeft <= 5f, null, false);
     }
 
     private void ShowCenter(string label, float? seconds, string sub, bool red, string counter, bool alert)
@@ -564,6 +572,9 @@ public class MatchHud : MonoBehaviour
         if (Instance == null) return;
         Instance.BuildBanner(eyebrow, title, color, sub, chips, seconds, footer);
     }
+
+    /// <summary>Hay un cartel grande en pantalla (US 292: los avisos del puesto esperan a que se vaya).</summary>
+    public static bool BannerVisible => Instance != null && Instance.banner != null && Instance.banner.gameObject.activeSelf;
 
     public static void HideBanner()
     {

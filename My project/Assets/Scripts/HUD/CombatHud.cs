@@ -16,6 +16,8 @@ public interface IHudWeapon
 // derecha, abajo al centro y unidas por una vía. Se arma por código con las medidas de la maqueta
 // (pantalla de referencia de 1920 x 1080) y lee todo del jugador: HealthSystem, PlayerAbility y el arma en la mano.
 // En Deathmatch no hay habilidades: en el medio va la racha de bajas, con el mismo reloj de andén.
+// US 297: en Invasión tampoco. En el medio va la oleada en el reloj (CA2), con el aro que se vacía a medida que mueren
+// los invasores y la línea del andén verde, y en el respiro (CA3) se pone verde y cuenta los segundos a la siguiente.
 public class CombatHud : MonoBehaviour
 {
     [Header("Tipografías")]
@@ -89,6 +91,9 @@ public class CombatHud : MonoBehaviour
     /// <summary>Nombre del arma en la mano, para los avisos de bajas (US 057).</summary>
     public string WeaponName { get; private set; }
 
+    /// <summary>La tipografía mono del HUD, para otras pantallas (US 150: los números de la vía de Invasión).</summary>
+    public TMP_FontAsset MonoFont => monoFont;
+
     /// <summary>Ícono del arma en la mano (de su ficha de la tienda), para los avisos de bajas (US 057).</summary>
     public Sprite WeaponIcon { get; private set; }
 
@@ -102,6 +107,7 @@ public class CombatHud : MonoBehaviour
 
     private CanvasGroup group;
     private GameObject crit, hint, skill;
+    private UnityEngine.UI.Image critImage;
     private CanvasGroup[] hiddenWhenScoped;
     private TextMeshProUGUI hintText;
     private TextMeshProUGUI hpText, shieldText;
@@ -163,6 +169,18 @@ public class CombatHud : MonoBehaviour
     private TextMeshProUGUI streakText, streakLabel;
     private int lastStreak = -1, lastStreakState = int.MinValue;
     private float streakAt = -10f;
+    // US 297: la oleada de Invasión en el lugar de la habilidad.
+    private GameObject wave;
+    private UnityEngine.UI.Image waveFill;
+    private readonly UnityEngine.UI.Image[] waveTicks = new UnityEngine.UI.Image[12];
+    private TextMeshProUGUI waveText, waveLabel;
+    private OleadasDeInvasion waves;
+    // US 292, CA4: la carga del puesto de suministros, arriba del reloj.
+    private GameObject supply;
+    private TextMeshProUGUI supplyLabel;
+    private UnityEngine.UI.Image supplyFill;
+    private const float SupplyBarW = 200f;
+    private string lastWaveState;
     private RectTransform sleepersRoot;
     private UnityEngine.UI.Image[] sleepers = new UnityEngine.UI.Image[0];
     private float usedAt = -10f;
@@ -215,6 +233,7 @@ public class CombatHud : MonoBehaviour
         UpdateHeal();
         UpdateSkill();
         UpdateStreak();
+        UpdateWave();
         UpdateAmmo();
         UpdateInventory();
         UpdateHitMarker();
@@ -259,10 +278,19 @@ public class CombatHud : MonoBehaviour
         ShopItem weapon = null;
         GameObject held = switcher.HeldPrimary;
         if (held != null) weapon = WeaponSwitcher.FichaDe(held);
-        else if (switcher.pistolObj != null && switcher.pistolObj.activeInHierarchy && loadout != null) weapon = loadout.Secondary;
+        else
+        {
+            // La secundaria en la mano: La Porteña (pistolObj) o la que se compró, como La Trochita (otrasSecundarias).
+            GameObject secundaria = switcher.HeldSecondary;
+            if (secundaria != null) weapon = WeaponSwitcher.FichaDe(secundaria);
+            if (weapon == null && secundaria != null && secundaria == switcher.pistolObj && loadout != null) weapon = loadout.Secondary;
+        }
         if (weapon == null) return 0f;
 
-        float degrees = WeaponAim.For(view).CurrentSpread(weapon, false);
+        // Apuntando con el click derecho por una carta (US 319 y US 323) la mira es la de apuntar; si la carta saca la
+        // dispersión, se cierra.
+        bool apuntando = ZoomPorCarta.AlgunaApuntando;
+        float degrees = WeaponFire.DispersionDelDisparo(weapon, WeaponAim.For(view), apuntando);
         RectTransform canvas = crosshair.parent as RectTransform;
         float half = canvas != null && canvas.rect.height > 0f ? canvas.rect.height * 0.5f : 540f;
         return Mathf.Tan(degrees * Mathf.Deg2Rad) / Mathf.Tan(view.fieldOfView * 0.5f * Mathf.Deg2Rad) * half;
@@ -418,6 +446,9 @@ public class CombatHud : MonoBehaviour
         markHalfShield.gameObject.SetActive(maxShield > 0);
         markHalfShield.anchoredPosition = new Vector2(BlockW * (maxHp + maxShield / 2f) / total - 1f, 4f);
         crit.SetActive(low);
+        // US 149, CA5: en Invasión, mientras la vida se regenera, los bordes se van aclarando a medida que sube.
+        float fuerza = shown.GetComponent<RegeneracionDeVida>() != null ? Mathf.Clamp01(1.25f - hp / (maxHp * criticalHealth)) : 1f;
+        critImage.color = new Color(1f, 0.24f, 0.24f, 0.6f * fuerza);
     }
 
     // US 139, CA3: el "+50" aparece a la derecha del número, sube un poco y se apaga.
@@ -523,7 +554,67 @@ public class CombatHud : MonoBehaviour
         for (int i = 0; i < streakTicks.Length; i++) streakTicks[i].color = i < lit ? line : dim;
         streakText.text = now.ToString();
         streakText.color = now > 0 ? Color.white : Mute;
-        streakLabel.text = best > 0 ? $"Racha <color=#{ColorUtility.ToHtmlStringRGB(Mute)}>· Mejor {best}</color>" : "Racha";
+        streakLabel.text = best > 0 ? L10n.T("gameplay.hud.streak_fmt", ColorUtility.ToHtmlStringRGB(Mute), best) : L10n.Source("Racha");
+    }
+
+    // ---------- US 297: la oleada de Invasión en el reloj de andén ----------
+
+    // CA2: el número de la oleada con «Oleada» abajo; el aro arranca lleno y se vacía a medida que mueren los invasores.
+    // CA3: en el respiro el reloj se pone verde, cuenta los segundos a la oleada siguiente y el aro se vacía con el tiempo.
+    private void UpdateWave()
+    {
+        if (waves == null && PartidaDeInvasion.Actual != null) waves = PartidaDeInvasion.Actual.GetComponent<OleadasDeInvasion>();
+        bool show = waves != null && !waves.EnElFinal && !skill.activeSelf;
+        if (wave.activeSelf != show) wave.SetActive(show);
+        if (!show) return;
+
+        bool rest = waves.Descanso;
+        UpdateSupply(rest);
+        float fraction;
+        string number, label;
+        if (rest)
+        {
+            BuyPhase phase = BuyPhase.Current;
+            float left = phase != null ? phase.TimeLeft : 0f;
+            number = Mathf.Max(0, Mathf.CeilToInt(left)).ToString();
+            label = L10n.T("gameplay.wave.next");
+            fraction = phase != null && phase.Duration > 0f ? Mathf.Clamp01(left / phase.Duration) : 0f;
+        }
+        else
+        {
+            number = waves.Oleada.ToString();
+            label = "Oleada";
+            fraction = waves.Total > 0 ? Mathf.Clamp01(waves.Quedan / (float)waves.Total) : 0f;
+        }
+        int lit = Mathf.CeilToInt(fraction * waveTicks.Length - 0.001f);
+        string state = $"{rest}|{number}|{lit}|{Mathf.RoundToInt(fraction * 200f)}";
+        if (state == lastWaveState) return;
+        lastWaveState = state;
+
+        Color line = rest ? MarcadorInvasion.Verde : Ink, dim = White(FadeAlpha(0.22f));
+        waveFill.fillAmount = fraction;
+        waveFill.color = line;
+        for (int i = 0; i < waveTicks.Length; i++) waveTicks[i].color = i < lit ? line : dim;
+        waveText.text = number;
+        waveText.color = rest ? MarcadorInvasion.Verde : Color.white;
+        waveLabel.text = label;
+        waveLabel.color = rest ? MarcadorInvasion.Verde : Ink;
+    }
+
+    // US 292, CA4: verde con «Carga del puesto» adentro del anillo; gris con «Fuera del anillo» afuera.
+    private void UpdateSupply(bool rest)
+    {
+        PuestoDeSuministros puesto = PuestoDeSuministros.Actual;
+        bool show = !rest && puesto != null && puesto.Hay;
+        if (supply.activeSelf != show) supply.SetActive(show);
+        if (!show) return;
+        bool inside = puesto.Adentro;
+        Color color = inside ? MarcadorInvasion.Verde : Mute;
+        supplyLabel.text = L10n.T(inside ? "gameplay.station.charge" : "gameplay.station.outside_ring");
+        supplyLabel.color = color;
+        supplyFill.color = color;
+        supplyFill.rectTransform.sizeDelta = new Vector2(Mathf.Max(6f, SupplyBarW * puesto.Progreso), 6f);
+        supplyFill.enabled = puesto.Progreso > 0f;
     }
 
     // Marcas cortas centradas debajo del aro, como los vagones de una formación.
@@ -570,7 +661,7 @@ public class CombatHud : MonoBehaviour
 
         bool empty = hasAmmo && ammo == 0 && !reloading;
         hint.SetActive(empty);
-        if (empty) hintText.text = reserve >= 0 ? KeyBindings.Label(GameAction.Recargar) + " · Recargar" : "Sin balas";
+        if (empty) hintText.text = reserve >= 0 ? KeyBindings.Label(GameAction.Recargar) + L10n.T("gameplay.hud.reload_suffix") : L10n.T("gameplay.hud.no_ammo");
     }
 
     // El arma en la mano: el arma principal o la secundaria (las dos implementan IHudWeapon); si no, el cuchillo.
@@ -624,7 +715,7 @@ public class CombatHud : MonoBehaviour
         }
         if (melee != null && melee.CurrentViewModel != null && melee.CurrentViewModel.activeInHierarchy)
         {
-            name = melee.CurrentWeapon != null ? melee.CurrentWeapon.weaponName : "Cuchillo";
+            name = L10n.Source(melee.CurrentWeapon != null ? melee.CurrentWeapon.weaponName : "Cuchillo");
             WeaponIcon = knifeIcon; // para el aviso de baja con cuchillo
         }
     }
@@ -657,7 +748,8 @@ public class CombatHud : MonoBehaviour
         group.blocksRaycasts = false;
         group.interactable = false;
 
-        crit = Image(Stretch(Node("VidaCritica", root)), vignette, new Color(1f, 0.24f, 0.24f, 0.6f)).gameObject;
+        critImage = Image(Stretch(Node("VidaCritica", root)), vignette, new Color(1f, 0.24f, 0.24f, 0.6f));
+        crit = critImage.gameObject;
         crit.SetActive(false);
 
         RectTransform shadeRect = Node("Sombra", root);
@@ -686,11 +778,13 @@ public class CombatHud : MonoBehaviour
         GameObject railsLeft = Image(Place(Node("Rieles", bar), RailLeftX, 160f, 120f, 12f), rails, Color.white).gameObject;
         BuildSkill(bar);
         BuildStreak(bar);
+        BuildWave(bar);
         GameObject railsRight = Image(Place(Node("Rieles", bar), RailRightX, 160f, 120f, 12f), rails, Color.white).gameObject;
         // Con la mira telescópica puesta (US 009) se oculta el centro del andén: la habilidad y sus rieles tapan la lente.
         hiddenWhenScoped = new[]
         {
             railsLeft.AddComponent<CanvasGroup>(), skill.AddComponent<CanvasGroup>(), streak.AddComponent<CanvasGroup>(),
+            wave.AddComponent<CanvasGroup>(),
             railsRight.AddComponent<CanvasGroup>(),
         };
         BuildAmmo(bar);
@@ -786,10 +880,34 @@ public class CombatHud : MonoBehaviour
     }
 
     // La línea de seguridad del borde del andén.
-    private void PlatformLine(RectTransform block)
+    private void PlatformLine(RectTransform block) => PlatformLine(block, Accent);
+
+    private void PlatformLine(RectTransform block, Color color)
     {
-        if (glow != null) Image(Place(Node("Brillo", block), -20f, 157f, SkillW + 40f, 23f), glow, WithAlpha(Accent, FadeAlpha(0.5f)));
-        Image(Place(Node("LineaDelAnden", block), 0f, 167f, SkillW, 3f), null, Accent);
+        if (glow != null) Image(Place(Node("Brillo", block), -20f, 157f, SkillW + 40f, 23f), glow, WithAlpha(color, FadeAlpha(0.5f)));
+        Image(Place(Node("LineaDelAnden", block), 0f, 167f, SkillW, 3f), null, color);
+    }
+
+    // US 297, CA2: el mismo reloj para la oleada de Invasión, con la línea del andén verde (el color del modo).
+    private void BuildWave(RectTransform bar)
+    {
+        RectTransform block = Place(Node("Oleada", bar), SkillX, 0f, SkillW, BarH);
+        wave = block.gameObject;
+        RectTransform ringRect = BuildRing(block, waveTicks, out waveFill);
+        waveText = Text(Stretch(Node("Numero", ringRect)), displayFont, 40f, Color.white, TextAlignmentOptions.Midline);
+        AddShadow(waveText);
+        waveLabel = Text(Place(Node("Nombre", block), 0f, 133f, SkillW, 24f), labelFont, 15f, Ink, TextAlignmentOptions.Midline, 14f, true);
+        PlatformLine(block, MarcadorInvasion.Verde);
+
+        // US 292, CA4: arriba del reloj, la carga del puesto.
+        RectTransform carga = Place(Node("CargaDelPuesto", block), (SkillW - SupplyBarW) / 2f, -46f, SupplyBarW, 36f);
+        supply = carga.gameObject;
+        supplyLabel = Text(Place(Node("Texto", carga), 0f, 0f, SupplyBarW, 20f), labelFont, 14f, Ink, TextAlignmentOptions.Midline, 12f, true);
+        AddShadow(supplyLabel);
+        Image(Place(Node("Fondo", carga), 0f, 26f, SupplyBarW, 6f), rounded, White(FadeAlpha(0.18f)), 3f);
+        supplyFill = Image(Place(Node("Relleno", carga), 0f, 26f, SupplyBarW, 6f), rounded, MarcadorInvasion.Verde, 3f);
+        supply.SetActive(false);
+        wave.SetActive(false);
     }
 
     private void BuildAmmo(RectTransform bar)
@@ -854,16 +972,16 @@ public class CombatHud : MonoBehaviour
         IHudWeapon alwaysHud = always != null ? always.GetComponent<IHudWeapon>() : null;
         ShopItem alwaysItem = WeaponSwitcher.FichaDe(always);
         bool hasPrimary = primary != null || alwaysHud != null;
-        string primaryName = primary != null ? ItemName(primary) : hasPrimary ? alwaysHud.HudName : "Vacío";
+        string primaryName = L10n.Source(primary != null ? ItemName(primary) : hasPrimary ? alwaysHud.HudName : "Vacío");
         Sprite primaryIcon = primary != null ? primary.icon : alwaysItem != null ? alwaysItem.icon : null;
 
         ShopItem secondary = loadout != null ? loadout.Secondary : null;
         // Con tienda, la que tiene en la tienda: si soltó la Línea A (US 184, CA4), el espacio queda vacío.
         bool hasSecondary = secondary != null || (!sceneHasShop && switcher != null && switcher.pistolObj != null);
-        string secondaryName = hasSecondary ? SecondaryName() : "Vacío";
+        string secondaryName = L10n.Source(hasSecondary ? SecondaryName() : "Vacío");
 
         bool hasKnife = melee != null && melee.CurrentWeapon != null;
-        string knifeName = hasKnife ? melee.CurrentWeapon.weaponName : "Vacío";
+        string knifeName = L10n.Source(hasKnife ? melee.CurrentWeapon.weaponName : "Vacío");
 
         // Granadas (CA5): la seleccionada (la que tiene en la mano o la última que eligió con la tecla 4, si todavía
         // la tiene; si no, la primera que tenga) y cuántas lleva de ese tipo.
@@ -877,17 +995,82 @@ public class CombatHud : MonoBehaviour
             foreach (ShopItem item in loadout.Catalog.items)
                 if (item != null && item.kind == ShopItemKind.Grenade && loadout.Count(item) > 0) { grenade = item; break; }
         int grenadeCount = grenade != null && loadout != null ? loadout.Count(grenade) : 0;
-        string grenadeName = grenade != null ? $"{ItemName(grenade)} ×{grenadeCount}" : "Vacío";
+        string grenadeName = grenade != null ? $"{ItemName(grenade)} ×{grenadeCount}" : L10n.T("gameplay.ui.empty");
 
         SetSlot(0, hasPrimary, held == 0, primaryName, primaryIcon, KeyBindings.Label(GameAction.ArmaPrincipal));
-        SetSlot(1, hasSecondary, held == 1, secondaryName, secondary != null ? secondary.icon : null, KeyBindings.Label(GameAction.ArmaSecundaria));
+        // US 331, Sin respaldo (Invasión): la secundaria se perdió; el espacio se ve rojo, como una tele sin señal.
+        bool sinSenal = WeaponSwitcher.SinSecundaria;
+        if (sinSenal) SetSlot(1, false, false, L10n.T("gameplay.hud.no_signal"), null, KeyBindings.Label(GameAction.ArmaSecundaria));
+        else SetSlot(1, hasSecondary, held == 1, secondaryName, secondary != null ? secondary.icon : null, KeyBindings.Label(GameAction.ArmaSecundaria));
+        SinSenal(invSlots[1], sinSenal);
         SetSlot(2, hasKnife, held == 2, knifeName, knifeIcon, KeyBindings.Label(GameAction.Cuchillo));
         SetSlot(3, grenade != null, held == 3, grenadeName, grenade != null ? grenade.icon : null, KeyBindings.Label(GameAction.Granadas));
+        // US 291, CA3: en Invasión el equipo es las dos armas y el cuchillo (1, 2 y 3), sin el espacio de las granadas.
+        bool grenadeSlot = !PlayerLoadout.SinTienda;
+        if (invSlots[3].rect.gameObject.activeSelf != grenadeSlot) invSlots[3].rect.gameObject.SetActive(grenadeSlot);
 
         // US 130: el dispositivo ocupa su propio espacio mientras lo lleva.
         bool device = switcher != null && switcher.LlevaDispositivo;
         if (invSlots[DeviceSlot].rect.gameObject.activeSelf != device) invSlots[DeviceSlot].rect.gameObject.SetActive(device);
         if (device) SetSlot(DeviceSlot, true, held == DeviceSlot, "Dispositivo", null, KeyBindings.Label(GameAction.Dispositivo));
+    }
+
+    // US 331: la estática roja de "sin señal" sobre el espacio de la secundaria: ruido que salta en cada cuadro, una
+    // franja más clara que baja y un parpadeo, como una tele sin señal.
+    private UnityEngine.UI.RawImage estatica;
+    private RectTransform franjaDeEstatica;
+    private static Texture2D ruido;
+    private static readonly Color RojoSinSenal = new Color(0.95f, 0.12f, 0.1f);
+
+    private void SinSenal(InvSlot slot, bool mostrar)
+    {
+        if (!mostrar)
+        {
+            if (estatica != null && estatica.gameObject.activeSelf) estatica.gameObject.SetActive(false);
+            return;
+        }
+        if (estatica == null)
+        {
+            if (ruido == null)
+            {
+                ruido = new Texture2D(96, 32, TextureFormat.RGBA32, false) { filterMode = FilterMode.Point, wrapMode = TextureWrapMode.Repeat };
+                var px = new Color32[96 * 32];
+                for (int i = 0; i < px.Length; i++)
+                {
+                    byte v = (byte)Random.Range(0, 256);
+                    px[i] = new Color32(v, v, v, 255);
+                }
+                ruido.SetPixels32(px);
+                ruido.Apply();
+            }
+            RectTransform r = Stretch(Node("Sin señal", slot.rect));
+            r.offsetMin = new Vector2(2f, 2f);
+            r.offsetMax = new Vector2(-2f, -2f);
+            r.SetSiblingIndex(1); // arriba del fondo, abajo del nombre y la tecla
+            estatica = r.gameObject.AddComponent<UnityEngine.UI.RawImage>();
+            estatica.texture = ruido;
+            estatica.raycastTarget = false;
+            franjaDeEstatica = Node("Franja", r);
+            franjaDeEstatica.anchorMin = new Vector2(0f, 0f);
+            franjaDeEstatica.anchorMax = new Vector2(1f, 0f);
+            franjaDeEstatica.sizeDelta = new Vector2(0f, 7f);
+            UnityEngine.UI.Image franja = franjaDeEstatica.gameObject.AddComponent<UnityEngine.UI.Image>();
+            franja.color = new Color(1f, 0.45f, 0.4f, 0.35f);
+            franja.raycastTarget = false;
+        }
+        if (!estatica.gameObject.activeSelf) estatica.gameObject.SetActive(true);
+        slot.dash.gameObject.SetActive(false);
+        slot.name.color = RojoSinSenal;
+        // El ruido salta a otro lugar de la textura cada cuadro (y a veces se estira de costado).
+        float ancho = Random.value < 0.15f ? 0.5f : 1f;
+        estatica.uvRect = new Rect(Random.value, Random.value, ancho, 0.75f);
+        float parpadeo = Random.value < 0.08f ? 0.25f : 0.55f + 0.1f * Random.value;
+        estatica.color = new Color(RojoSinSenal.r, RojoSinSenal.g, RojoSinSenal.b, parpadeo);
+        // La franja baja de arriba a abajo cada 1,2 s.
+        RectTransform zona = (RectTransform)estatica.transform;
+        float alto = zona.rect.height;
+        float t = 1f - Mathf.Repeat(Time.unscaledTime / 1.2f, 1f);
+        franjaDeEstatica.anchoredPosition = new Vector2(0f, t * alto);
     }
 
     // La granada que tiene en la mano (US 073), o null.

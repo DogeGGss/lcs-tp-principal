@@ -128,7 +128,7 @@ public class OpcionesKit
         left = Pad;
         colW = width - Pad * 2f;
 
-        Text(Place(Node("Titulo", root), Pad, 36f, Inner, 50f), displayFont, 46f, Ink, TextAlignmentOptions.MidlineLeft, 2f, true).text = titulo;
+        L10n.BindSource(Text(Place(Node("Titulo", root), Pad, 36f, Inner, 50f), displayFont, 46f, Ink, TextAlignmentOptions.MidlineLeft, 2f, true), titulo,"ui.");
         Image(Place(Node("LineaAnden", root), Pad, 92f, 120f, 3f), null, Accent);
     }
 
@@ -138,19 +138,19 @@ public class OpcionesKit
 
     public void Grupo(string titulo, ref float y)
     {
-        Text(Place(Node("Grupo", root), left, y, 300f, 20f), labelFont, 15f, Mute, TextAlignmentOptions.MidlineLeft, 16f, true).text = titulo;
+        L10n.BindSource(Text(Place(Node("Grupo", root), left, y, 300f, 20f), labelFont, 15f, Mute, TextAlignmentOptions.MidlineLeft, 16f, true), titulo,"ui.");
         y += 24f;
     }
 
     public void Ayuda(string texto, ref float y)
     {
-        Text(Place(Node("Ayuda", root), left, y, Inner, 22f), bodyFont, 16f, Mute, TextAlignmentOptions.MidlineLeft).text = texto;
+        Text(Place(Node("Ayuda", root), left, y, Inner, 22f), bodyFont, 16f, Mute, TextAlignmentOptions.MidlineLeft).text = L10n.Source(texto, "ui.");
         y += 32f;
     }
 
     public void Etiqueta(string titulo, float y)
     {
-        Text(Place(Node(titulo, root), left, y, LabelW, RowH), labelFont, 19f, Ink, TextAlignmentOptions.MidlineLeft, 5f, true).text = titulo;
+        L10n.BindSource(Text(Place(Node(titulo, root), left, y, LabelW, RowH), labelFont, 19f, Ink, TextAlignmentOptions.MidlineLeft, 5f, true), titulo,"ui.");
     }
 
     /// <summary>Slider con forma de vía y el valor a la derecha, como Sensibilidad en Controles.</summary>
@@ -177,7 +177,7 @@ public class OpcionesKit
             RectTransform seg = Place(Node(opciones[i], root), ControlX + i * (w + gap), y + (RowH - 30f) / 2f, w, 30f);
             s.fondos[i] = Image(seg, rounded, ChipColor, 3f, true);
             s.textos[i] = Text(Stretch(Node("Texto", seg)), labelFont, letra, Mute, TextAlignmentOptions.Center, 6f, true);
-            s.textos[i].text = opciones[i];
+            L10n.BindSource(s.textos[i], opciones[i],"ui.");
             seg.gameObject.AddComponent<ShopPointerTarget>().Clicked = () => alElegir(indice);
         }
         y += RowH;
@@ -259,7 +259,7 @@ public class OpcionesKit
         Color normal = principal ? Accent : ChipColor, borde = White(0.16f);
         Img fondo = Image(rect, redondeado, normal, 6f, true);
         Img linea = principal ? null : PerfilUI.Borde(rect, 6f, borde);
-        Text(Stretch(Node("Texto", rect)), fuente, 19f * f, principal ? AccentInk : Ink, TextAlignmentOptions.Center, 10f, true).text = etiqueta;
+        L10n.BindSource(Text(Stretch(Node("Texto", rect)), fuente, 19f * f, principal ? AccentInk : Ink, TextAlignmentOptions.Center, 10f, true), etiqueta,"ui.");
         ShopPointerTarget puntero = rect.gameObject.AddComponent<ShopPointerTarget>();
         puntero.Hovered = () => { fondo.color = principal ? Hot : ChipDim; if (linea != null) linea.color = Accent; };
         puntero.Exited = () => { fondo.color = normal; if (linea != null) linea.color = borde; };
@@ -275,7 +275,7 @@ public class OpcionesKit
         RectTransform rect = Place(Node(etiqueta, root), x, y, w, h);
         Color normal = principal ? Accent : ChipColor;
         Img fondo = Image(rect, rounded, normal, 4f, true);
-        Text(Stretch(Node("Texto", rect)), displayFont, 17f, principal ? KeyInk : Ink, TextAlignmentOptions.Center, 8f, true).text = etiqueta;
+        L10n.BindSource(Text(Stretch(Node("Texto", rect)), displayFont, 17f, principal ? KeyInk : Ink, TextAlignmentOptions.Center, 8f, true), etiqueta,"ui.");
         ShopPointerTarget puntero = rect.gameObject.AddComponent<ShopPointerTarget>();
         puntero.Hovered = () => fondo.color = principal ? Hot : ChipDim;
         puntero.Exited = () => fondo.color = normal;

@@ -1,0 +1,1460 @@
+{
+  "entries": [
+    {
+      "key": "ui.options.reset_confirm",
+      "text": "Reset {0}?"
+    },
+    {
+      "key": "ui.controls.conflict",
+      "text": "<color=#F3F4F6>{0}</color> is already assigned to <color=#F3F4F6>{1}</color>. Swap them? {1} would move to {2}."
+    },
+    {
+      "key": "ui.loading.ready",
+      "text": "<color=#3DDC97>{0} / {1}</color> ready"
+    },
+    {
+      "key": "ui.search.account",
+      "text": "With your account <color=#FFFFFF>{0}</color>"
+    },
+    {
+      "key": "ui.search.guest",
+      "text": "As <color=#FFFFFF>{0}</color>"
+    },
+    {
+      "key": "ui.search.version",
+      "text": " · {0} · same version (v{1})"
+    },
+    {
+      "key": "ui.search.starts",
+      "text": "Starting in <color={0}>{1}</color>"
+    },
+    {
+      "key": "ui.search.players",
+      "text": "<color={0}>{1}</color> / {2} players"
+    },
+    {
+      "key": "ui.search.mode_version",
+      "text": "{0} · {1} · same version (v{2})"
+    },
+    {
+      "key": "ui.search.minimum_ready",
+      "text": "The minimum for {0} is met. If nobody else joins, the match starts in {1}."
+    },
+    {
+      "key": "ui.search.minimum_wait",
+      "text": "Starts automatically with {0} players, or {1} after {2} seconds without new players."
+    },
+    {
+      "key": "ui.mode.record",
+      "text": "Record on {0}: <color={1}>wave {2}</color>"
+    },
+    {
+      "key": "ui.mode.unplayed",
+      "text": "Record on {0}: <color={1}>not played yet</color>"
+    },
+    {
+      "key": "ui.name.invalid",
+      "text": "\"{0}\" is not allowed. Use letters, numbers, spaces, hyphens and underscores."
+    },
+    {
+      "key": "ui.name.short",
+      "text": "{0} more characters required: the minimum is 3."
+    },
+    {
+      "key": "ui.name.long",
+      "text": "{0} too many characters: the maximum is 16."
+    },
+    {
+      "key": "ui.po.pause",
+      "text": "<nobr><color=#{0}>Esc</color> Pause</nobr>"
+    },
+    {
+      "key": "ui.po.options",
+      "text": "     <color=#{0}>(change these in Options, Controls tab)</color>"
+    },
+    {
+      "key": "ui.source.153ae1728463",
+      "text": "Practice range"
+    },
+    {
+      "key": "ui.source.cdf64dc97d34",
+      "text": "Practice map"
+    },
+    {
+      "key": "ui.source.e7400b35c242",
+      "text": "Achievement unlocked"
+    },
+    {
+      "key": "ui.source.25ab720915f5",
+      "text": "Sound"
+    },
+    {
+      "key": "ui.source.2b7e443d9918",
+      "text": "Volume"
+    },
+    {
+      "key": "ui.source.c910d474dcd7",
+      "text": "Master"
+    },
+    {
+      "key": "ui.source.0e0cc1a93fe5",
+      "text": "Music"
+    },
+    {
+      "key": "ui.source.097eb1da61c2",
+      "text": "Effects"
+    },
+    {
+      "key": "ui.source.1528a9545c77",
+      "text": "Interface"
+    },
+    {
+      "key": "ui.source.79e4cac1daa9",
+      "text": "Adjust a control to hear a preview. Press Apply to save."
+    },
+    {
+      "key": "ui.source.81cf595bb929",
+      "text": "sound"
+    },
+    {
+      "key": "ui.source.416e91fcab21",
+      "text": "Tactical mode"
+    },
+    {
+      "key": "ui.source.acabc2c4f4c8",
+      "text": "Invasion mode"
+    },
+    {
+      "key": "ui.source.90797c7dce81",
+      "text": "Room "
+    },
+    {
+      "key": "ui.source.33e166676072",
+      "text": "Waiting for the host  ·  the match starts when they finish loading"
+    },
+    {
+      "key": "ui.source.5cd100bc1db8",
+      "text": "Waiting for other players  ·  the match starts when everyone has loaded"
+    },
+    {
+      "key": "ui.source.cf73b31f016a",
+      "text": "Crouch with {Agacharse} before shooting to reduce bullet spread."
+    },
+    {
+      "key": "ui.source.964d0a404f4a",
+      "text": "Reload with {Recargar} before peeking, before the shooting starts."
+    },
+    {
+      "key": "ui.source.f7c33a1f57bf",
+      "text": "Moving increases bullet spread. Stop before shooting."
+    },
+    {
+      "key": "ui.source.7c9a7aa1ce00",
+      "text": "Headshots deal more damage."
+    },
+    {
+      "key": "ui.source.c1a37bc01675",
+      "text": "Use your character ability with {Habilidad}."
+    },
+    {
+      "key": "ui.source.53fffdfafbc1",
+      "text": "Change key bindings, sensitivity and your crosshair in Options or the pause menu."
+    },
+    {
+      "key": "ui.source.1507bc1df18f",
+      "text": "Hold Tab to view the scoreboard."
+    },
+    {
+      "key": "ui.source.f57ccbe15609",
+      "text": "Hold {Plantar} at a site to plant the device. Moving cancels planting."
+    },
+    {
+      "key": "ui.source.f590c58c9fcc",
+      "text": "Open the shop with {Tienda} during the buy phase while inside your base."
+    },
+    {
+      "key": "ui.source.d736f2d6cc07",
+      "text": "Drop your weapon with {Soltar} to give it to a teammate."
+    },
+    {
+      "key": "ui.source.0d04ac611154",
+      "text": "If you carry the device, equip it with {Dispositivo}."
+    },
+    {
+      "key": "ui.source.00deb0ea7e50",
+      "text": "You respawn at the start of the next round. Stay alive."
+    },
+    {
+      "key": "ui.source.3c81f53a7dc9",
+      "text": "Losing consecutive rounds gives you more money for the next one."
+    },
+    {
+      "key": "ui.source.0f540b9fc332",
+      "text": "Defenders defuse the device by holding {Plantar} beside it."
+    },
+    {
+      "key": "ui.source.a4a36b824a8a",
+      "text": "You respawn after a few seconds in Deathmatch. Keep moving."
+    },
+    {
+      "key": "ui.source.a44b4e91fd74",
+      "text": "Switch weapons with {ArmaPrincipal}, {ArmaSecundaria} and {Cuchillo}."
+    },
+    {
+      "key": "ui.source.19a717d04b63",
+      "text": "Each wave is harder than the last. Save your ammo."
+    },
+    {
+      "key": "ui.source.32359472c07f",
+      "text": "If enemies surround you, switch to your knife with {Cuchillo} instead of reloading."
+    },
+    {
+      "key": "ui.source.8b09102ef42a",
+      "text": "Screen"
+    },
+    {
+      "key": "ui.source.d2f671e0a601",
+      "text": "Map"
+    },
+    {
+      "key": "ui.source.6efe5e3c0bcc",
+      "text": "Mode"
+    },
+    {
+      "key": "ui.source.8a8aad457bb9",
+      "text": "Loading"
+    },
+    {
+      "key": "ui.source.b18dd065ae9f",
+      "text": "Tip"
+    },
+    {
+      "key": "ui.source.a6634c5e9d5a",
+      "text": "Loading menu"
+    },
+    {
+      "key": "ui.source.66608fa9afa7",
+      "text": "Loading map"
+    },
+    {
+      "key": "ui.source.1cc32e377815",
+      "text": "Map loaded"
+    },
+    {
+      "key": "ui.source.d9a2f984a05d",
+      "text": "controls"
+    },
+    {
+      "key": "ui.source.9d6a29a0a2e9",
+      "text": "Press a key"
+    },
+    {
+      "key": "ui.source.80b26f920e37",
+      "text": "Controls"
+    },
+    {
+      "key": "ui.source.55c1520824a8",
+      "text": "Mouse"
+    },
+    {
+      "key": "ui.source.809853d64fec",
+      "text": "Sensitivity"
+    },
+    {
+      "key": "ui.source.ec70aa839662",
+      "text": "While aiming"
+    },
+    {
+      "key": "ui.source.ffa6a1dfffbe",
+      "text": "Click an action and press the new key. Esc cancels."
+    },
+    {
+      "key": "ui.source.b367a7b98923",
+      "text": "Key bindings"
+    },
+    {
+      "key": "ui.source.9bd4d1e04ad5",
+      "text": "Pause"
+    },
+    {
+      "key": "ui.source.64df4bd0b5e0",
+      "text": "Swap"
+    },
+    {
+      "key": "ui.source.bb9dbb406dcb",
+      "text": "Cancel"
+    },
+    {
+      "key": "ui.source.ab26ae7bca36",
+      "text": "Back"
+    },
+    {
+      "key": "ui.source.9b0c3e4077f8",
+      "text": "Reset"
+    },
+    {
+      "key": "ui.source.3a660ff5fb7c",
+      "text": "Saved"
+    },
+    {
+      "key": "ui.source.0368c1371c14",
+      "text": "Invert Y axis"
+    },
+    {
+      "key": "ui.source.0a029ed5a4ec",
+      "text": "Not so long ago, at a university\nvery, very close by…"
+    },
+    {
+      "key": "ui.source.bb3b6a1a43dd",
+      "text": "A tactical shooter, a deathmatch and an alien invasion at university. Made by seven students in ten weeks, with more coffee than sleep."
+    },
+    {
+      "key": "ui.source.4c574f230e12",
+      "text": "Development and gameplay"
+    },
+    {
+      "key": "ui.source.2bd7479257b5",
+      "text": "2D/3D art and level design"
+    },
+    {
+      "key": "ui.source.d0f435f93705",
+      "text": "Interface (UI/UX)"
+    },
+    {
+      "key": "ui.source.e02f0ba34dff",
+      "text": "Sound and music"
+    },
+    {
+      "key": "ui.source.f6fa1f21f857",
+      "text": "Testing and QA"
+    },
+    {
+      "key": "ui.source.499acbcf6230",
+      "text": "Documentation and backlog"
+    },
+    {
+      "key": "ui.source.8b8e6b098a76",
+      "text": "Repository and Git"
+    },
+    {
+      "key": "ui.source.5dc4e77ff9df",
+      "text": "Unity 6 · Universal Render Pipeline\nProBuilder · TextMesh Pro · Input System · AI Navigation\nPhoton PUN 2 (multiplayer)\nGitHub and GitHub Projects"
+    },
+    {
+      "key": "ui.source.e67678470e04",
+      "text": "Character and animations"
+    },
+    {
+      "key": "ui.source.3bb1bc4737c1",
+      "text": "Mixamo, by Adobe"
+    },
+    {
+      "key": "ui.source.16043e03bb85",
+      "text": "Sci-fi environment"
+    },
+    {
+      "key": "ui.source.c9d5587df17a",
+      "text": "3D Scifi Kit Starter Kit, by Creepy Cat (Unity Asset Store)"
+    },
+    {
+      "key": "ui.source.7954fdb2c047",
+      "text": "Knife"
+    },
+    {
+      "key": "ui.source.3244d64bcf31",
+      "text": "Sci-fi Weapon - Game Ready Knife - FREE SAMPLE, by AF Creations (Unity Asset Store)"
+    },
+    {
+      "key": "ui.source.43a2db17ec31",
+      "text": "Textures"
+    },
+    {
+      "key": "ui.source.57e1618ab718",
+      "text": "Weapon models"
+    },
+    {
+      "key": "ui.source.fec8fe8d2670",
+      "text": "Sci-Fi Modular Gun Pack, by Quaternius (CC0)"
+    },
+    {
+      "key": "ui.source.3aaa16eb605b",
+      "text": "Gunshots"
+    },
+    {
+      "key": "ui.source.168146bfe8ba",
+      "text": "The Free Firearm Sound Library, by Ben Jaszczak, Brian Nelson, Kevin Heras and Matthew Nanney (CC0)"
+    },
+    {
+      "key": "ui.source.5fd0e7b860a5",
+      "text": "Reloads"
+    },
+    {
+      "key": "ui.source.2728c4ba3595",
+      "text": "Gun reload sounds, by SpringySpringo, and Shotgun Reload Sound Effects, by zer0_sol (CC0, OpenGameArt)"
+    },
+    {
+      "key": "ui.source.14e090fa5f39",
+      "text": "Flashbang blast"
+    },
+    {
+      "key": "ui.source.edb154f1d2aa",
+      "text": "Flashbang explode, by MadPanCake (CC BY-NC 4.0, Freesound)"
+    },
+    {
+      "key": "ui.source.726223bf1ced",
+      "text": "Deathmatch music"
+    },
+    {
+      "key": "ui.source.63ea9651eebe",
+      "text": "action track 4, A.I. fight & jumping cyborg, mixed by glitchart: action track 4, by Alexandr Zhelanov (CC BY 3.0), and A.I. fight & jumping cyborg, by tricksntraps (CC0, OpenGameArt)"
+    },
+    {
+      "key": "ui.source.ea6918aa1694",
+      "text": "Respawn sound"
+    },
+    {
+      "key": "ui.source.1e0f670d8bfc",
+      "text": "Teleport, by fins (CC0, Freesound and OpenGameArt)"
+    },
+    {
+      "key": "ui.source.5c1c869d7942",
+      "text": "Course project \"Último Tren a Retiro\"\nSoftware Construction Laboratory\nUniversity Technical Degree in Computing"
+    },
+    {
+      "key": "ui.source.d6e9bddb7a8a",
+      "text": "To our teachers, everyone who tested broken builds\nand to you, for playing."
+    },
+    {
+      "key": "ui.source.16ab313b7913",
+      "text": "Thanks for playing"
+    },
+    {
+      "key": "ui.source.49076adae25c",
+      "text": "Credits"
+    },
+    {
+      "key": "ui.source.8432846981c5",
+      "text": "Engine and tools"
+    },
+    {
+      "key": "ui.source.315f4e3e20a0",
+      "text": "External assets"
+    },
+    {
+      "key": "ui.source.b50dbb34990d",
+      "text": "Fonts"
+    },
+    {
+      "key": "ui.source.343dc127e0fa",
+      "text": "Course project"
+    },
+    {
+      "key": "ui.source.cf291ffa3322",
+      "text": "Special thanks"
+    },
+    {
+      "key": "ui.source.cd50fe8f86b0",
+      "text": "Space"
+    },
+    {
+      "key": "ui.source.a88536f37007",
+      "text": "Speed up"
+    },
+    {
+      "key": "ui.source.d357175cfe89",
+      "text": "Medium"
+    },
+    {
+      "key": "ui.source.0b6af7d377da",
+      "text": "Low"
+    },
+    {
+      "key": "ui.source.42719229fd62",
+      "text": "High"
+    },
+    {
+      "key": "ui.source.09c101d2650e",
+      "text": "Windowed"
+    },
+    {
+      "key": "ui.source.cdeddd731cd0",
+      "text": "Borderless"
+    },
+    {
+      "key": "ui.source.e13942698a59",
+      "text": "Fullscreen"
+    },
+    {
+      "key": "ui.source.553f5b2ff5d0",
+      "text": "Unlimited"
+    },
+    {
+      "key": "ui.source.dd680772877e",
+      "text": "Hide"
+    },
+    {
+      "key": "ui.source.5c492f37a63f",
+      "text": "Show"
+    },
+    {
+      "key": "ui.source.3f3a9f9e67b3",
+      "text": "Graphics"
+    },
+    {
+      "key": "ui.source.c7d72431d939",
+      "text": "Resolution"
+    },
+    {
+      "key": "ui.source.58d6f29b0633",
+      "text": "Image"
+    },
+    {
+      "key": "ui.source.aad67f106a08",
+      "text": "Quality"
+    },
+    {
+      "key": "ui.source.378711fbd0e4",
+      "text": "FPS limit"
+    },
+    {
+      "key": "ui.source.d81e674b5478",
+      "text": "FPS and ping"
+    },
+    {
+      "key": "ui.source.56ce994f5e7d",
+      "text": "Field of view"
+    },
+    {
+      "key": "ui.source.1f34799e8e64",
+      "text": "Press Apply to use your changes."
+    },
+    {
+      "key": "ui.source.599070f85bc6",
+      "text": "Graphics settings applied and saved."
+    },
+    {
+      "key": "ui.source.7f4de2797543",
+      "text": "graphics"
+    },
+    {
+      "key": "ui.source.ba25ff776d84",
+      "text": "Graphics settings reset to defaults."
+    },
+    {
+      "key": "ui.source.8ae5261402b3",
+      "text": "Find match"
+    },
+    {
+      "key": "ui.source.aab7f54dacbc",
+      "text": " · with players in your region"
+    },
+    {
+      "key": "ui.source.b30593eb5232",
+      "text": "Private room · with friends"
+    },
+    {
+      "key": "ui.source.2750bd2f99ad",
+      "text": "Create room"
+    },
+    {
+      "key": "ui.source.ce6fc7dc8eaf",
+      "text": "Join with code"
+    },
+    {
+      "key": "ui.source.e616c2466dc7",
+      "text": "Search again"
+    },
+    {
+      "key": "ui.source.f674d306a0c6",
+      "text": "Open launcher"
+    },
+    {
+      "key": "ui.source.e47ce2a916e0",
+      "text": "Player"
+    },
+    {
+      "key": "ui.source.8215d0adeaa3",
+      "text": "Search cancelled."
+    },
+    {
+      "key": "ui.source.351d2bbeeffa",
+      "text": "The launcher was not found on this PC. We opened the game guide so you can download it."
+    },
+    {
+      "key": "ui.source.66b0e5784678",
+      "text": "Cancel search"
+    },
+    {
+      "key": "ui.source.ceabcf3eef35",
+      "text": "Leave room"
+    },
+    {
+      "key": "ui.source.fabab14234b2",
+      "text": "Back to modes"
+    },
+    {
+      "key": "ui.source.50716d4cbd8d",
+      "text": "A new version is available"
+    },
+    {
+      "key": "ui.source.1e290698f084",
+      "text": "Could not verify your account"
+    },
+    {
+      "key": "ui.source.20812e99701a",
+      "text": "Your account is already playing"
+    },
+    {
+      "key": "ui.source.29aaabb5e604",
+      "text": "Connection lost"
+    },
+    {
+      "key": "ui.source.811dc87efeed",
+      "text": "Players must have the same game version. Update through the launcher and search again."
+    },
+    {
+      "key": "ui.source.785ca8f737f7",
+      "text": "Your session expired or was closed. Sign in again through the launcher and search again."
+    },
+    {
+      "key": "ui.source.0a536de09daa",
+      "text": "Your account is in that match on another PC. Close the game there and search again."
+    },
+    {
+      "key": "ui.source.906b58a64933",
+      "text": "Check your internet connection and search again. Your progress is saved."
+    },
+    {
+      "key": "ui.source.9648dfdc9eb4",
+      "text": "your region"
+    },
+    {
+      "key": "ui.source.4de82dfd7d3b",
+      "text": "South America"
+    },
+    {
+      "key": "ui.source.20d1a5eb0b1a",
+      "text": "United States"
+    },
+    {
+      "key": "ui.source.fc30e2a579cd",
+      "text": "Europe"
+    },
+    {
+      "key": "ui.source.7ac02ec1c874",
+      "text": "Asia"
+    },
+    {
+      "key": "ui.source.7f2bdfffa20c",
+      "text": "Match found"
+    },
+    {
+      "key": "ui.source.8a28f95ff297",
+      "text": "Finding match"
+    },
+    {
+      "key": "ui.source.3779bf0441c7",
+      "text": "Loading map…"
+    },
+    {
+      "key": "ui.source.f4cb1ffad13c",
+      "text": "Connecting to server…"
+    },
+    {
+      "key": "ui.source.7860f97d560d",
+      "text": " <color=#FFFFFF80>(you)</color>"
+    },
+    {
+      "key": "ui.source.82d69149e2c1",
+      "text": "Searching…"
+    },
+    {
+      "key": "ui.source.9c573aa510ad",
+      "text": "New players can still join. If someone leaves and the minimum is no longer met, the search continues."
+    },
+    {
+      "key": "ui.source.93fffbf7ce79",
+      "text": "Exit"
+    },
+    {
+      "key": "ui.source.a64249139d0d",
+      "text": "Tactical"
+    },
+    {
+      "key": "ui.source.af61688462fc",
+      "text": "Invasion"
+    },
+    {
+      "key": "ui.source.feec439bd19e",
+      "text": "Plant or defuse the device. No respawns."
+    },
+    {
+      "key": "ui.source.622cc159ad92",
+      "text": "Free-for-all. Respawn after 3 seconds."
+    },
+    {
+      "key": "ui.source.db0595d76630",
+      "text": "Survive the invasion at university."
+    },
+    {
+      "key": "ui.source.3142609f3640",
+      "text": "First to 7"
+    },
+    {
+      "key": "ui.source.28b6816f8adb",
+      "text": "Up to 8"
+    },
+    {
+      "key": "ui.source.30f330d5be66",
+      "text": "25 kills"
+    },
+    {
+      "key": "ui.source.f82bbd03f447",
+      "text": "1 player"
+    },
+    {
+      "key": "ui.source.809270a4adfe",
+      "text": "10 waves"
+    },
+    {
+      "key": "ui.source.3882aa653eb3",
+      "text": "Platform 1 · Online"
+    },
+    {
+      "key": "ui.source.9efa41f18d21",
+      "text": "Platform 2 · Online"
+    },
+    {
+      "key": "ui.source.0dfbb275aeb3",
+      "text": "Platform 3 · Local"
+    },
+    {
+      "key": "ui.source.06bea83f1caa",
+      "text": "One team plants the device at A or B while the other defends. No respawns: if you die, spectate a teammate until the next round."
+    },
+    {
+      "key": "ui.source.2cd59b33d55d",
+      "text": "Free-for-all. Choose your weapons for free, heal 50 health per kill, and respawn after 3 seconds away from opponents."
+    },
+    {
+      "key": "ui.source.edb1f952e2fd",
+      "text": "Face 10 waves alone at university. Then continue in endless mode to set a new record."
+    },
+    {
+      "key": "ui.source.b7003361f10e",
+      "text": "Switch sides in round 6"
+    },
+    {
+      "key": "ui.source.90106cd60e43",
+      "text": "20 s buy phase"
+    },
+    {
+      "key": "ui.source.3d67d2e48cb3",
+      "text": "Free weapons"
+    },
+    {
+      "key": "ui.source.7a6eabd661bb",
+      "text": "Easy"
+    },
+    {
+      "key": "ui.source.a7248eeb45eb",
+      "text": "Normal"
+    },
+    {
+      "key": "ui.source.fc3a43cb5e1f",
+      "text": "Hard"
+    },
+    {
+      "key": "ui.source.2e3374e9d6a7",
+      "text": "75% health and damage, with fewer enemies. Regenerate after 3 seconds."
+    },
+    {
+      "key": "ui.source.32215f843657",
+      "text": "The intended experience. Regenerate after 4 seconds."
+    },
+    {
+      "key": "ui.source.cd05ca2e563a",
+      "text": "125% health, 150% damage and more enemies. +25% points."
+    },
+    {
+      "key": "ui.source.afa55750f5e5",
+      "text": "Choose a mode"
+    },
+    {
+      "key": "ui.source.1e9c027c8f80",
+      "text": "Main menu"
+    },
+    {
+      "key": "ui.source.4105811890ae",
+      "text": "Join"
+    },
+    {
+      "key": "ui.source.b61eda6f4b63",
+      "text": "Play"
+    },
+    {
+      "key": "ui.source.46a6407e52eb",
+      "text": "Room"
+    },
+    {
+      "key": "ui.source.a9fa23dfd4b8",
+      "text": "Players"
+    },
+    {
+      "key": "ui.source.39dcf1cbeb5a",
+      "text": "Copy"
+    },
+    {
+      "key": "ui.source.2fdbb49ce922",
+      "text": "Change map"
+    },
+    {
+      "key": "ui.source.e95e91ae3791",
+      "text": "Start match"
+    },
+    {
+      "key": "ui.source.2fbf9375e1ad",
+      "text": "Creating room…"
+    },
+    {
+      "key": "ui.source.5fe4a00dce58",
+      "text": "No room exists with that code."
+    },
+    {
+      "key": "ui.source.37891c7a08ad",
+      "text": "Joining room…"
+    },
+    {
+      "key": "ui.source.d8dd878fb143",
+      "text": "Copied"
+    },
+    {
+      "key": "ui.source.d592d5da0bf9",
+      "text": "Loading match…"
+    },
+    {
+      "key": "ui.source.162d92c98acd",
+      "text": "Empty"
+    },
+    {
+      "key": "ui.source.d38ff634ec37",
+      "text": "  <color=#FFD2A1>· host</color>"
+    },
+    {
+      "key": "ui.source.b1c8db52ae3e",
+      "text": "No maps for this mode"
+    },
+    {
+      "key": "ui.source.4fc3bc93335b",
+      "text": "Waiting for the host…"
+    },
+    {
+      "key": "ui.source.f9b8a7b10a14",
+      "text": "Share the code with your friends. At least 2 players are required."
+    },
+    {
+      "key": "ui.source.0a2368c48168",
+      "text": "Ready: start the match whenever you want."
+    },
+    {
+      "key": "ui.source.92080239e1d4",
+      "text": "Invasion mode · "
+    },
+    {
+      "key": "ui.source.0ed1d856189a",
+      "text": "Invasion mode is still in development (F08)."
+    },
+    {
+      "key": "ui.source.6f44df3aba76",
+      "text": "Before you play"
+    },
+    {
+      "key": "ui.source.c1aea6315e28",
+      "text": "Note for the PO"
+    },
+    {
+      "key": "ui.source.eeb3832dacd5",
+      "text": "What works"
+    },
+    {
+      "key": "ui.source.36295f9588b6",
+      "text": "What is still missing"
+    },
+    {
+      "key": "ui.source.3f3f7d88e05a",
+      "text": "Got it"
+    },
+    {
+      "key": "ui.source.13caa2989015",
+      "text": "<color=#F3F4F6>Enter</color>  or  <color=#F3F4F6>Esc</color>  Close"
+    },
+    {
+      "key": "ui.source.f5d2a65e1e59",
+      "text": "Fixed"
+    },
+    {
+      "key": "ui.source.50e6b570fb27",
+      "text": "Dynamic"
+    },
+    {
+      "key": "ui.source.322f558435e3",
+      "text": "Custom color"
+    },
+    {
+      "key": "ui.source.3868d2843d59",
+      "text": "Type"
+    },
+    {
+      "key": "ui.source.060bda593b21",
+      "text": "Length"
+    },
+    {
+      "key": "ui.source.6bb2637bf8fb",
+      "text": "Thickness"
+    },
+    {
+      "key": "ui.source.061a75d54f08",
+      "text": "Gap"
+    },
+    {
+      "key": "ui.source.9889c1f6fd48",
+      "text": "Center dot"
+    },
+    {
+      "key": "ui.source.2be607bc990e",
+      "text": "Color and spread"
+    },
+    {
+      "key": "ui.source.cd89a436cdad",
+      "text": "Spread"
+    },
+    {
+      "key": "ui.source.c5341f198fc2",
+      "text": "Preview"
+    },
+    {
+      "key": "ui.source.cf1cb8303500",
+      "text": "Light background"
+    },
+    {
+      "key": "ui.source.150df8354c60",
+      "text": "Dark background"
+    },
+    {
+      "key": "ui.source.6b73191a0a4b",
+      "text": "Color"
+    },
+    {
+      "key": "ui.source.ee27f6a048e8",
+      "text": "Custom"
+    },
+    {
+      "key": "ui.source.7069e90c206b",
+      "text": "Red"
+    },
+    {
+      "key": "ui.source.40598e1cb1d2",
+      "text": "Green"
+    },
+    {
+      "key": "ui.source.b0bf526b23af",
+      "text": "Blue"
+    },
+    {
+      "key": "ui.source.b72f58ad6080",
+      "text": "crosshair"
+    },
+    {
+      "key": "ui.source.e4ce7c09d51e",
+      "text": "Previous"
+    },
+    {
+      "key": "ui.source.49683b71c6ac",
+      "text": "Next"
+    },
+    {
+      "key": "ui.source.3a04898a6b8b",
+      "text": "Apply"
+    },
+    {
+      "key": "ui.source.c6c50c1cc280",
+      "text": "Game settings"
+    },
+    {
+      "key": "ui.source.81db3b5709d0",
+      "text": "Options"
+    },
+    {
+      "key": "ui.source.ef9ee12da914",
+      "text": "Crosshair"
+    },
+    {
+      "key": "ui.source.d3e35417f099",
+      "text": "Save changes?"
+    },
+    {
+      "key": "ui.source.d3fc27215fcb",
+      "text": "You have unapplied changes. Leaving without saving discards them."
+    },
+    {
+      "key": "ui.source.13e51a210f45",
+      "text": "Save"
+    },
+    {
+      "key": "ui.source.1a878a55c594",
+      "text": "Discard"
+    },
+    {
+      "key": "ui.source.2d79b3654b66",
+      "text": "This tab will be reset to its default settings and saved."
+    },
+    {
+      "key": "ui.source.a184979c9c67",
+      "text": "Changes saved"
+    },
+    {
+      "key": "ui.source.a937e9f3728a",
+      "text": "Enter  Confirm     Esc  Cancel"
+    },
+    {
+      "key": "ui.source.ab9892fdd889",
+      "text": "Match in progress"
+    },
+    {
+      "key": "ui.source.3c07cc2db9f9",
+      "text": "Match paused"
+    },
+    {
+      "key": "ui.source.b05607bfad0b",
+      "text": "Only you can see this menu. Your character stays still and can take damage."
+    },
+    {
+      "key": "ui.source.d1d0949b326e",
+      "text": "Time, enemies and audio are paused until you return."
+    },
+    {
+      "key": "ui.source.922266230561",
+      "text": "Your team will have <color=#FF5C5C>one fewer player</color>."
+    },
+    {
+      "key": "ui.source.d49930e58a5c",
+      "text": "You will lose <color=#FF5C5C>progress from this match</color>. Your saved record stays unchanged."
+    },
+    {
+      "key": "ui.source.3f3dec0d09b1",
+      "text": "You will lose <color=#FF5C5C>progress from this match</color>."
+    },
+    {
+      "key": "ui.source.ef351711c0e7",
+      "text": "Restart the match?"
+    },
+    {
+      "key": "ui.source.4d1e6caec772",
+      "text": "Restart"
+    },
+    {
+      "key": "ui.source.68323510257a",
+      "text": "Return to the first wave and lose <color=#F29A38>your current progress</color>."
+    },
+    {
+      "key": "ui.source.364eed285d97",
+      "text": "Return to the start of the match and lose <color=#F29A38>your current progress</color>."
+    },
+    {
+      "key": "ui.source.484874031952",
+      "text": "Leave the match?"
+    },
+    {
+      "key": "ui.source.5685e1faf0b3",
+      "text": "Resume"
+    },
+    {
+      "key": "ui.source.741114f9b233",
+      "text": "Restart match"
+    },
+    {
+      "key": "ui.source.bb507137e363",
+      "text": "Settings"
+    },
+    {
+      "key": "ui.source.4aae0e1a642c",
+      "text": "Leave match"
+    },
+    {
+      "key": "ui.source.18685946d8d4",
+      "text": "Numbers"
+    },
+    {
+      "key": "ui.source.f213c041507f",
+      "text": "Choose"
+    },
+    {
+      "key": "ui.source.640d6761c178",
+      "text": "Confirm"
+    },
+    {
+      "key": "ui.source.a86f3abc7d6b",
+      "text": "Backspace"
+    },
+    {
+      "key": "ui.source.bc1b88907d3b",
+      "text": "Audio"
+    },
+    {
+      "key": "ui.source.d534be829e32",
+      "text": "Video"
+    },
+    {
+      "key": "ui.source.34ee7506d3ef",
+      "text": "Change graphics"
+    },
+    {
+      "key": "ui.source.37846d28c575",
+      "text": "Customize crosshair"
+    },
+    {
+      "key": "ui.source.2bbd7f1f1d9b",
+      "text": "Change keys"
+    },
+    {
+      "key": "ui.source.006da31f9c29",
+      "text": "Arrow keys"
+    },
+    {
+      "key": "ui.source.239ef284d537",
+      "text": "Select and adjust"
+    },
+    {
+      "key": "ui.source.c3195a68f28e",
+      "text": "3–16 characters: letters, numbers, spaces, hyphens and underscores."
+    },
+    {
+      "key": "ui.source.83df5462b879",
+      "text": "Project Riftwalker · Player"
+    },
+    {
+      "key": "ui.source.dd7e82b29ac7",
+      "text": "Change name"
+    },
+    {
+      "key": "ui.source.72609b83fdce",
+      "text": "<color=#F3F4F6>Enter</color>  Confirm"
+    },
+    {
+      "key": "ui.source.9490787570ea",
+      "text": "<color=#F3F4F6>Enter</color>  Confirm     <color=#F3F4F6>Esc</color>  Cancel"
+    },
+    {
+      "key": "ui.source.0ef0a6e6fd62",
+      "text": "This is how other players will see you."
+    },
+    {
+      "key": "ui.source.a1ef9fe3a6b0",
+      "text": "What is your name?"
+    },
+    {
+      "key": "ui.source.3e216191090e",
+      "text": "This is how you appear in rooms, the scoreboard and kill notifications."
+    },
+    {
+      "key": "ui.source.d36ae2c1bf45",
+      "text": "Your name"
+    },
+    {
+      "key": "ui.source.c3a7aa50a467",
+      "text": "1 more character required: the minimum is 3."
+    },
+    {
+      "key": "ui.source.7ae9d418353b",
+      "text": "Language"
+    },
+    {
+      "key": "ui.source.b0623970bc7b",
+      "text": "Game language"
+    },
+    {
+      "key": "ui.source.5f21f971ee06",
+      "text": "Changes apply immediately and are shared with the launcher."
+    },
+    {
+      "key": "ui.source.739215889580",
+      "text": "Yes"
+    },
+    {
+      "key": "ui.source.1ea442a134b2",
+      "text": "No"
+    },
+    {
+      "key": "ui.source.e80d6e8aa591",
+      "text": "Note for the PO · Sprint 1"
+    },
+    {
+      "key": "ui.source.49d93243ca5c",
+      "text": "Hi, Amin"
+    },
+    {
+      "key": "ui.source.db3b5f70585e",
+      "text": "This is the Sprint 1 delivery of Project Riftwalker. Here is what already works and what is still missing so you know what to test."
+    },
+    {
+      "key": "ui.source.4ddad75ba8a8",
+      "text": "Movement: walk, sprint, jump and crouch, with gravity, collisions and respawning if you fall off the map."
+    },
+    {
+      "key": "ui.source.6ce4700c7eaf",
+      "text": "Weapons: La Porteña pistol, Mitre rifle and knife. Damage by hit zone (head, body and legs) and range, spread, recoil, reloading and bullet marks on walls."
+    },
+    {
+      "key": "ui.source.b8350f3e484c",
+      "text": "Shop: buy, sell and undo purchases during the buy phase while inside the buy zone. Shields provide protection."
+    },
+    {
+      "key": "ui.source.704f433e9618",
+      "text": "HUD: health, shield, weapon and ammunition, crosshair and hit marker. Abilities show their cooldown."
+    },
+    {
+      "key": "ui.source.973710256b48",
+      "text": "Menus: main menu with music, video, sound and controls settings, player name, credits and pause menu (resume, restart, options and exit)."
+    },
+    {
+      "key": "ui.source.708bb918ebf5",
+      "text": "Other weapons: the shop shows them all, but only the La Porteña pistol, Mitre and knife are currently usable. The others can be bought but cannot be used yet."
+    },
+    {
+      "key": "ui.source.07ea9330f86b",
+      "text": "Grenades: purchasable, but cannot be thrown yet."
+    },
+    {
+      "key": "ui.source.9f341de02316",
+      "text": "Ability: Silbato charges and appears in the HUD, but has no effect yet."
+    },
+    {
+      "key": "ui.source.fd23727140c4",
+      "text": "Modes and multiplayer: Tactical and Deathmatch show a room, but online connectivity is still missing. Zombie does not have zombies yet: Play opens the university map to explore with weapons, the shop and the HUD."
+    },
+    {
+      "key": "ui.source.719ab0dcfc1e",
+      "text": "Achievements: the screen exists but has no achievements yet."
+    },
+    {
+      "key": "ui.source.e963f4d7372a",
+      "text": "Maps and opponents: Tests and Tests 2 open temporary maps to demonstrate gameplay. In Tests, enemies chase you and can be killed but do not attack yet."
+    },
+    {
+      "key": "ui.mode.platform",
+      "text": "Platform {0}"
+    },
+    {
+      "key": "ui.scene.f6b42a74de58",
+      "text": "ARE YOU SURE?"
+    },
+    {
+      "key": "ui.scene.b1a5fe65d180",
+      "text": "CANCEL"
+    },
+    {
+      "key": "ui.scene.a75a52d014b5",
+      "text": "EXIT"
+    },
+    {
+      "key": "ui.scene.dcead48ae36f",
+      "text": "Do you want to exit the game?"
+    },
+    {
+      "key": "ui.scene.9d380f327d51",
+      "text": "OPTIONS"
+    },
+    {
+      "key": "ui.scene.83c8b91890ea",
+      "text": "ACHIEVEMENTS"
+    },
+    {
+      "key": "ui.scene.bf4705377b42",
+      "text": "PLAY"
+    },
+    {
+      "key": "ui.scene.25bae53ca291",
+      "text": "Create Room"
+    },
+    {
+      "key": "ui.scene.b35db8f5fa2e",
+      "text": "Multiplayer"
+    },
+    {
+      "key": "ui.scene.03dd1e126e49",
+      "text": "Join Room"
+    },
+    {
+      "key": "ui.scene.bd62e781ec4e",
+      "text": "BACK"
+    },
+    {
+      "key": "ui.scene.9d7a5d755c74",
+      "text": "DIFFICULTY"
+    },
+    {
+      "key": "ui.scene.72ed8585d409",
+      "text": "INVASION MODE"
+    },
+    {
+      "key": "ui.scene.c425bf662041",
+      "text": "Hard"
+    },
+    {
+      "key": "ui.scene.794b62510ba9",
+      "text": "Easy"
+    },
+    {
+      "key": "ui.scene.000a0602b41b",
+      "text": "GRAPHICS"
+    },
+    {
+      "key": "ui.scene.4cdb40b1553e",
+      "text": "SOUND"
+    },
+    {
+      "key": "ui.scene.21b81f30b963",
+      "text": "FPS LIMIT"
+    },
+    {
+      "key": "ui.scene.38a945a2f681",
+      "text": "TESTS 2"
+    },
+    {
+      "key": "ui.scene.7ff1e38f9165",
+      "text": " MASTER VOLUME"
+    },
+    {
+      "key": "ui.scene.72a1f3e10c23",
+      "text": "RESET"
+    },
+    {
+      "key": "ui.scene.9a048910b7ae",
+      "text": "FULLSCREEN"
+    },
+    {
+      "key": "ui.scene.d23e4bc17a4f",
+      "text": "CONTROLS"
+    },
+    {
+      "key": "ui.scene.5a205973971e",
+      "text": "RESOLUTION"
+    },
+    {
+      "key": "ui.scene.3db550736ade",
+      "text": "APPLY"
+    },
+    {
+      "key": "ui.scene.f7c3a5724930",
+      "text": "  EFFECTS VOLUME"
+    },
+    {
+      "key": "ui.scene.39c2a6b96eb1",
+      "text": "CREDITS"
+    },
+    {
+      "key": "ui.scene.bfa9cbe001c0",
+      "text": "MUSIC VOLUME"
+    },
+    {
+      "key": "ui.scene.82fb9cd0b771",
+      "text": "FIELD OF VIEW"
+    },
+    {
+      "key": "ui.scene.5fb15a724911",
+      "text": "TESTS"
+    },
+    {
+      "key": "ui.scene.e93d0ef5f610",
+      "text": "UNLIMITED"
+    },
+    {
+      "key": "ui.scene.77459d47988e",
+      "text": "Borderless window"
+    },
+    {
+      "key": "ui.scene.93f2f9113746",
+      "text": "Fullscreen"
+    },
+    {
+      "key": "ui.scene.e252efe69747",
+      "text": "Disabled"
+    },
+    {
+      "key": "ui.scene.0a0ca661486c",
+      "text": "Enabled"
+    },
+    {
+      "key": "ui.loading.room_fmt",
+      "text": "Room {0}"
+    },
+    {
+      "key": "ui.crosshair.cross",
+      "text": "Cross"
+    },
+    {
+      "key": "ui.crosshair.circle",
+      "text": "Circle"
+    },
+    {
+      "key": "ui.crosshair.dot",
+      "text": "Dot"
+    },
+    {
+      "key": "ui.net.create_failed",
+      "text": "Couldn't create the room. Check your connection."
+    },
+    {
+      "key": "ui.net.join_failed",
+      "text": "Couldn't join the room. Check your connection."
+    },
+    {
+      "key": "ui.net.rejoin_failed",
+      "text": "Couldn't rejoin the match. Check your connection."
+    },
+    {
+      "key": "ui.net.search_failed",
+      "text": "Couldn't search for a match. Check your internet and search again."
+    },
+    {
+      "key": "ui.net.account_in_match",
+      "text": "Your account is already in that match, on another PC."
+    },
+    {
+      "key": "ui.net.still_listed",
+      "text": "You're still listed in the match. Try again in a few seconds."
+    },
+    {
+      "key": "ui.net.match_over",
+      "text": "The match is already over."
+    },
+    {
+      "key": "ui.net.room_full",
+      "text": "The room is full."
+    },
+    {
+      "key": "ui.net.match_started",
+      "text": "The match has already started."
+    },
+    {
+      "key": "ui.net.room_mode_fmt",
+      "text": "That room is for {0}."
+    },
+    {
+      "key": "ui.net.connection_lost",
+      "text": "Lost connection to the server."
+    },
+    {
+      "key": "ui.version.update_fmt",
+      "text": "There's a new version ({0}). Update the game from the launcher to play online."
+    },
+    {
+      "key": "ui.text.buy",
+      "text": "Buy"
+    },
+    {
+      "key": "ui.text.close",
+      "text": "Close"
+    }
+  ]
+}

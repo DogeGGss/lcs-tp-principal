@@ -162,15 +162,12 @@ public class PantallaEstacion : PantallaBase
         Image(canje, Rounded, PanelColor, 8f);
         Borde(canje, 8f, White(0.06f));
         T(canje, "Rotulo", 24f, 18f, 400f, 22f, FRotulo, 17f, Accent, "Conseguir boletos", TextAlignmentOptions.MidlineLeft, 16f, true);
-        Canje(canje, 52f, 0, $"{PerfilDatos.Numero(PerfilDatos.CreditosPorBoleto)} créditos", "1 boleto",
-            () => PerfilDatos.Creditos >= PerfilDatos.CreditosPorBoleto,
-            () => PerfilDatos.CanjearCreditos() ? "+1 boleto" : "Te faltan créditos: se ganan jugando partidas");
+        Canje(canje, 52f, 0, L10n.T("profile.station.credits_fmt", PerfilDatos.Numero(PerfilDatos.CreditosPorBoleto)), L10n.T("profile.station.one_ticket"),
+            () => PerfilDatos.Creditos >= PerfilDatos.CreditosPorBoleto, PerfilDatos.CanjearCreditos, L10n.T("profile.station.add_one_ticket"));
         Canje(canje, 120f, 2, $"{PerfilDatos.CristalesPorBoleto} cristales", "1 boleto",
-            () => PerfilDatos.Cristales >= PerfilDatos.CristalesPorBoleto,
-            () => PerfilDatos.CanjearCristales(1) ? "+1 boleto" : "Te faltan cristales");
+            () => PerfilDatos.Cristales >= PerfilDatos.CristalesPorBoleto, listo => PerfilDatos.CanjearCristales(1, listo), "+1 boleto");
         Canje(canje, 188f, 2, $"{PerfilDatos.CristalesPorDiez} cristales", "10 boletos · 10 % menos",
-            () => PerfilDatos.Cristales >= PerfilDatos.CristalesPorDiez,
-            () => PerfilDatos.CanjearCristales(10) ? "+10 boletos" : "Te faltan cristales");
+            () => PerfilDatos.Cristales >= PerfilDatos.CristalesPorDiez, listo => PerfilDatos.CanjearCristales(10, listo), "+10 boletos");
         TextMeshProUGUI tienda = T(canje, "Tienda", 24f, 252f, 540f, 26f, FRotulo, 18f, ColorCristales, "¿Sin cristales? Ir a la tienda »", TextAlignmentOptions.MidlineLeft, 8f, true);
         tienda.raycastTarget = true;
         var pt = tienda.gameObject.AddComponent<ShopPointerTarget>();
@@ -186,27 +183,42 @@ public class PantallaEstacion : PantallaBase
         CrearBoton(rect, x, 952f, w, 56f, "Ver contenido de la cápsula", false, VerContenido, 24f);
     }
 
-    private void Canje(RectTransform parent, float y, int moneda, string costo, string recibe, System.Func<bool> puede, System.Func<string> hacer)
+    // hacer canjea y avisa cómo le fue (null si se pudo): con cuenta, la base lo confirma antes (US 272).
+    private void Canje(RectTransform parent, float y, int moneda, string costo, string recibe, System.Func<bool> puede,
+        System.Action<System.Action<string>> hacer, string hecho)
     {
         Image(Place(Node("Fila", parent), 16f, y, 558f, 58f), Rounded, White(0.03f), 6f);
         IconoMoneda(parent, moneda, 44f, y + 29f, 22f);
         T(parent, "Costo", 66f, y + 6f, 300f, 26f, FTitulo, 26f, Ink, costo);
-        T(parent, "Recibe", 66f, y + 32f, 300f, 20f, FRotulo, 15f, Mute, "por " + recibe, TextAlignmentOptions.MidlineLeft, 10f, true);
-        Boton b = CrearBoton(parent, 574f - 160f - 10f, y + 9f, 160f, 40f, "Canjear", false, () => menu.Avisar(hacer()), 22f);
+        T(parent, "Recibe", 66f, y + 32f, 300f, 20f, FRotulo, 15f, Mute, L10n.T("profile.station.for_fmt", L10n.Source(recibe, "profile.")), TextAlignmentOptions.MidlineLeft, 10f, true);
+        Boton b = CrearBoton(parent, 574f - 160f - 10f, y + 9f, 160f, 40f, "Canjear", false, () =>
+        {
+            if (pagando) return;
+            pagando = true;
+            hacer(error => { pagando = false; menu.Avisar(error ?? hecho); Refrescar(); });
+        }, 22f);
         canjes.Add((b, puede));
     }
 
     // ================= Acciones =================
 
+    private bool pagando; // con cuenta, el gasto espera la confirmación de la base (US 272)
+
     private void Abrir(int cantidad)
     {
-        if (estado == Estado.Abriendo) return;
-        if (!PerfilDatos.PuedeAbrir(cantidad))
+        if (estado == Estado.Abriendo || pagando) return;
+        pagando = true;
+        PerfilDatos.Abrir(cantidad, (lista, error) =>
         {
-            menu.Avisar(cantidad == 1 ? "No tenés boletos: canjeá créditos o cristales" : $"Te faltan boletos para abrir {cantidad}");
-            return;
-        }
-        resultados = PerfilDatos.Abrir(cantidad);
+            pagando = false;
+            if (lista == null) { menu.Avisar(error); Refrescar(); return; }
+            Mostrar(lista);
+        });
+    }
+
+    private void Mostrar(List<PerfilDatos.Resultado> lista)
+    {
+        resultados = lista;
         Rareza mejor = Rareza.Comun;
         foreach (var r in resultados) if (r.cosmetico.rareza > mejor) mejor = r.cosmetico.rareza;
         colorFinal = ColorRareza(mejor);
@@ -217,7 +229,7 @@ public class PantallaEstacion : PantallaBase
         estado = Estado.Abriendo;
         t = 0f;
         capsula.gameObject.SetActive(true);
-        leyenda.text = "Recibiendo la carga…";
+        leyenda.text = L10n.T("profile.station.receiving");
         Refrescar();
     }
 
@@ -247,7 +259,7 @@ public class PantallaEstacion : PantallaBase
         capsula.gameObject.SetActive(true);
         grieta.SetTime(0f);
         destello.color = new Color(1f, 1f, 1f, 0f);
-        leyenda.text = "Un boleto, una cápsula. Cada una trae un avatar, un banner, un título o un marco.";
+        leyenda.text = L10n.T("profile.station.explanation");
     }
 
     // ================= Animación =================
@@ -333,10 +345,10 @@ public class PantallaEstacion : PantallaBase
         {
             var r = resultados[0];
             leyenda.text = r.nuevo
-                ? $"¡Nuevo! <color={Rich(ColorRareza(r.cosmetico.rareza))}>{r.cosmetico.nombre}</color> ya está en tu colección."
-                : $"Repetido: se convirtió en <color=#D6DAE0>{r.creditos} créditos</color>.";
+                ? L10n.T("profile.station.new_item_fmt", Rich(ColorRareza(r.cosmetico.rareza)), L10n.Source(r.cosmetico.nombre, "profile."))
+                : L10n.T("profile.station.duplicate_fmt", r.creditos);
         }
-        else leyenda.text = $"{nuevos} {(nuevos == 1 ? "nuevo" : "nuevos")}" + (creditos > 0 ? $" · repetidos convertidos en {creditos} créditos" : "");
+        else leyenda.text = creditos > 0 ? L10n.T("profile.station.duplicates_fmt", L10n.Plural("profile.new", nuevos), creditos) : L10n.Plural("profile.new", nuevos);
         Refrescar();
     }
 
@@ -349,7 +361,7 @@ public class PantallaEstacion : PantallaBase
         RectTransform carta = Place(Node("Carta", premio), CX - 190f, CY - 250f, 380f, 500f);
         Image(carta, Rounded, colorR, 12f);
         Image(Place(Node("Interior", carta), 4f, 4f, 372f, 492f), Rounded, Hex(0x0E1117), 10f);
-        T(carta, "Rareza", 0f, 18f, 380f, 26f, FRotulo, 22f, colorR, PerfilUI.NombreRareza(c.rareza) + (r.garantia ? " · garantía" : ""), TextAlignmentOptions.Center, 16f, true);
+        T(carta, "Rareza", 0f, 18f, 380f, 26f, FRotulo, 22f, colorR, PerfilUI.NombreRareza(c.rareza) + (r.garantia ? L10n.T("profile.station.guarantee_tag") : ""), TextAlignmentOptions.Center, 16f, true);
         Arte(carta, c, 40f, 56f, 300f);
         TextMeshProUGUI n = T(carta, "Nombre", 20f, 372f, 340f, 46f, FTitulo, 40f, Ink, c.nombre, TextAlignmentOptions.Center, 3f, true);
         n.enableAutoSizing = true;
@@ -412,7 +424,7 @@ public class PantallaEstacion : PantallaBase
 
     private static void Etiqueta(RectTransform carta, PerfilDatos.Resultado r, float cx, float y)
     {
-        string texto = r.nuevo ? "Nuevo" : $"+{r.creditos} créditos";
+        string texto = r.nuevo ? L10n.T("profile.station.new") : L10n.T("profile.station.plus_credits_fmt", r.creditos);
         float w = r.nuevo ? 110f : 170f;
         RectTransform chip = Place(Node("Etiqueta", carta), cx - w / 2f, y, w, 30f);
         Image(chip, Rounded, r.nuevo ? Accent : White(0.12f), 6f);
@@ -427,9 +439,7 @@ public class PantallaEstacion : PantallaBase
         T(p, "Rotulo", 48f, 36f, 900f, 22f, FRotulo, 18f, Accent, "Estación del Rift", TextAlignmentOptions.MidlineLeft, 16f, true);
         T(p, "Titulo", 46f, 60f, 900f, 54f, FTitulo, 48f, Ink, "Contenido de la cápsula", TextAlignmentOptions.MidlineLeft, 3f, true);
         TextMeshProUGUI ayuda = T(p, "Ayuda", 48f, 118f, 1064f, 74f, FTexto, 20f, Mute,
-            $"Primero sale la rareza (con estas probabilidades), después el tipo ({PerfilDatos.ProbabilidadTipo[0]} % avatar, " +
-            $"{PerfilDatos.ProbabilidadTipo[1]} % banner, {PerfilDatos.ProbabilidadTipo[2]} % título, {PerfilDatos.ProbabilidadTipo[3]} % marco) y por último un objeto al azar. Cada {PerfilDatos.Garantia} cápsulas " +
-            "hay uno épico o mejor asegurado. Los repetidos se convierten en créditos.", TextAlignmentOptions.TopLeft);
+            L10n.T("profile.station.odds_fmt", PerfilDatos.ProbabilidadTipo[0], PerfilDatos.ProbabilidadTipo[1], PerfilDatos.ProbabilidadTipo[2], PerfilDatos.ProbabilidadTipo[3], PerfilDatos.Garantia), TextAlignmentOptions.TopLeft);
         ayuda.textWrappingMode = TextWrappingModes.Normal;
         Scroll(p, 48f, 200f, 1064f, 556f, out RectTransform lista);
         float y = 0f;
@@ -466,19 +476,19 @@ public class PantallaEstacion : PantallaBase
         bool abriendo = estado == Estado.Abriendo;
         abrir1.Habilitar(!abriendo && PerfilDatos.PuedeAbrir(1));
         abrir5.Habilitar(!abriendo && PerfilDatos.PuedeAbrir(5));
-        abrir1.texto.text = estado == Estado.Revelado ? "Abrir otra · 1 boleto" : "Abrir 1 · 1 boleto";
+        abrir1.texto.text = L10n.T(estado == Estado.Revelado ? "profile.station.open_another" : "profile.station.open_one");
         saltar.rect.gameObject.SetActive(abriendo);
         bool puedeEquipar = estado == Estado.Revelado && resultados != null && resultados.Count == 1 && !PerfilDatos.Equipado(resultados[0].cosmetico);
         equipar.rect.gameObject.SetActive(puedeEquipar);
         foreach (var (boton, puede) in canjes) boton.Habilitar(puede());
 
-        numeroTexto.text = $"CÁPSULA DEL RIFT · Nº {PerfilDatos.Aperturas + (abriendo ? 0 : 1):000}";
-        estadoTexto.text = abriendo ? "• ABRIENDO" : estado == Estado.Revelado ? "• ENTREGADO" : "• EN ESPERA";
+        numeroTexto.text = L10n.T("profile.station.capsule_number_fmt", PerfilDatos.Aperturas + (abriendo ? 0 : 1));
+        estadoTexto.text = L10n.T(abriendo ? "profile.station.opening" : estado == Estado.Revelado ? "profile.station.delivered" : "profile.station.waiting");
         estadoTexto.color = abriendo ? Accent : Ok;
 
         int faltan = PerfilDatos.FaltanParaGarantia;
-        garantiaTexto.text = faltan <= 1 ? "¡La próxima trae <color=#B061FF>épico o mejor</color> asegurado!"
-                                         : $"Épico o mejor asegurado en <color=#F3F4F6>{faltan} cápsulas</color>";
+        garantiaTexto.text = faltan <= 1 ? L10n.T("profile.station.next_guaranteed")
+                                         : L10n.T("profile.station.guarantee_in_fmt", faltan);
         BorrarHijos(barraGarantia);
         float paso = 542f / PerfilDatos.Garantia;
         for (int i = 0; i < PerfilDatos.Garantia; i++)

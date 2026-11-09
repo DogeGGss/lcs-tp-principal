@@ -94,6 +94,21 @@ public class PlayerMovement : MonoBehaviour
         if (GetComponent<FueraDelMapa>() == null) gameObject.AddComponent<FueraDelMapa>();
     }
 
+    // Truco de Invasión (TrucosDeInvasion): WASD hacia donde se mira, Espacio sube, Agacharse baja y Correr va más rápido.
+    private void Volar()
+    {
+        if (controller.enabled) controller.enabled = false;
+        verticalVelocity = 0f;
+        if (SinControles) return;
+        Transform mira = cameraTransform != null ? cameraTransform : transform;
+        Vector3 v = mira.forward * KeyBindings.Axis(GameAction.Atras, GameAction.Adelante)
+                  + mira.right * KeyBindings.Axis(GameAction.Izquierda, GameAction.Derecha);
+        if (KeyBindings.Held(GameAction.Saltar)) v += Vector3.up;
+        if (KeyBindings.Held(GameAction.Agacharse)) v += Vector3.down;
+        float rapidez = KeyBindings.Held(GameAction.Correr) ? 30f : 12f;
+        transform.position += Vector3.ClampMagnitude(v, 1f) * rapidez * Time.deltaTime;
+    }
+
     /// <summary>US 006, CA4: al reaparecer no conserva la velocidad de la caída ni lo que venía moviéndose.</summary>
     public void Frenar()
     {
@@ -107,6 +122,10 @@ public class PlayerMovement : MonoBehaviour
 
     private void Update()
     {
+        // Truco de Invasión: noclip (vuela y atraviesa las paredes, sin gravedad).
+        if (TrucosDeInvasion.Noclip) { Volar(); return; }
+        if (!controller.enabled) controller.enabled = true;
+
         // =====================================================
         // MOVIMIENTO
         // =====================================================
@@ -387,7 +406,8 @@ public class PlayerMovement : MonoBehaviour
     // Un poco más angosta que el cuerpo, para no contar las paredes que ya está tocando.
     private bool HayLugarParaPararse()
     {
-        float radio = controller.radius * 0.95f;
+        // El radio va en metros: en un mapa con el jugador más chico (EscalaDelJugador) la cápsula se achica con él.
+        float radio = controller.radius * 0.95f * transform.lossyScale.y;
         Vector3 abajo = transform.TransformPoint(crounchCenter + Vector3.up * (crounchHeight * 0.5f - controller.radius));
         Vector3 arriba = transform.TransformPoint(standingCenter + Vector3.up * (standingHeight * 0.5f - controller.radius));
         foreach (Collider c in Physics.OverlapCapsule(abajo, arriba, radio, Physics.DefaultRaycastLayers, QueryTriggerInteraction.Ignore))
@@ -407,9 +427,11 @@ public class PlayerMovement : MonoBehaviour
         const float RadioSonda = 0.05f;
         Transform cuerpo = cc.transform;
         Vector3 centro = cuerpo.TransformPoint(cc.center);
-        float piso = centro.y - cc.height * 0.5f - cc.skinWidth;
+        // Alto y radio en metros (la cápsula se escala con el jugador, EscalaDelJugador).
+        float escala = cuerpo.lossyScale.y, medioAlto = cc.height * 0.5f * escala, radioCuerpo = cc.radius * escala;
+        float piso = centro.y - medioAlto - cc.skinWidth;
         float altura = piso + alturaMaxima + 0.03f + RadioSonda;
-        if (altura + RadioSonda > centro.y + cc.height * 0.5f) return horizontal; // la cápsula no llega a la franja
+        if (altura + RadioSonda > centro.y + medioAlto) return horizontal; // la cápsula no llega a la franja
 
         Vector3 hacia = horizontal / largo;
         float alcance = largo + cc.skinWidth + 0.02f;
@@ -418,7 +440,7 @@ public class PlayerMovement : MonoBehaviour
         for (int i = -2; i <= 2; i++)
         {
             Vector3 lado = Quaternion.Euler(0f, i * 40f, 0f) * hacia;
-            Vector3 origen = new Vector3(centro.x, altura, centro.z) + lado * (cc.radius - RadioSonda);
+            Vector3 origen = new Vector3(centro.x, altura, centro.z) + lado * (radioCuerpo - RadioSonda);
             foreach (RaycastHit golpe in Physics.SphereCastAll(origen, RadioSonda, hacia, alcance, Physics.DefaultRaycastLayers, QueryTriggerInteraction.Ignore))
             {
                 if (golpe.distance <= 0f || golpe.collider.transform.IsChildOf(cuerpo)) continue;
@@ -440,12 +462,14 @@ public class PlayerMovement : MonoBehaviour
     {
         if (controller == null) controller = GetComponent<CharacterController>();
         float maximo = avance * Mathf.Tan(controller.slopeLimit * Mathf.Deg2Rad) + controller.skinWidth + 0.05f;
-        float radio = controller.radius * 0.9f;
+        float escala = transform.lossyScale.y; // la cápsula en metros (EscalaDelJugador)
+        float radioCuerpo = controller.radius * escala;
+        float radio = radioCuerpo * 0.9f;
         Vector3 centro = transform.TransformPoint(controller.center);
-        Vector3 pie = centro + Vector3.down * (controller.height * 0.5f - controller.radius); // centro de la esfera de abajo
+        Vector3 pie = centro + Vector3.down * (controller.height * 0.5f * escala - radioCuerpo); // centro de la esfera de abajo
 
         float mejor = float.MaxValue;
-        foreach (RaycastHit golpe in Physics.SphereCastAll(pie, radio, Vector3.down, maximo + (controller.radius - radio), ~0, QueryTriggerInteraction.Ignore))
+        foreach (RaycastHit golpe in Physics.SphereCastAll(pie, radio, Vector3.down, maximo + (radioCuerpo - radio), ~0, QueryTriggerInteraction.Ignore))
         {
             if (golpe.collider.transform.IsChildOf(transform)) continue;       // el propio cuerpo, las armas
             if (golpe.distance <= 0f) continue;                                 // ya lo tocaba al empezar

@@ -254,6 +254,141 @@ if (args.Contains("--live-install"))
         Console.WriteLine($"Installed {manifest.Version}: {manifest.Game.Size / 1048576d:N0} MB ZIP, {manifest.Game.UnpackedSize / 1048576d:N0} MB unpacked, SHA-256 verified");
         Console.WriteLine("Notes shown in the launcher end with: " + ReleaseClient.NotesForLauncher(target.Body).Split('\n').Last());
     });
+// ---------- Cuenta (US 237, US 269, US 270 y US 282): un Supabase de mentira, sin conexión ----------
+const string SesionJson = "{\"access_token\":\"a1\",\"refresh_token\":\"r1\",\"expires_in\":3600,\"expires_at\":1,\"user\":{\"id\":\"u1\",\"email\":\"ulises@gmail.com\",\"created_at\":\"2026-10-29T12:00:00Z\",\"user_metadata\":{},\"identities\":[{\"id\":\"i1\"}]}}";
+HttpResponseMessage Json(HttpStatusCode code, string body) => new(code) { Content = new StringContent(body, Encoding.UTF8, "application/json") };
+Cuentas NuevaCuenta(TestFolder temp, Func<HttpRequestMessage, HttpResponseMessage> responder) =>
+    new(new HttpClient(new Handler(responder)), new ServicioCuentas("https://prueba.supabase.co", "sb_publishable_prueba"), temp.Path);
+Test("Cuenta: confirmar guarda la sesión con el formato que lee el juego", async () =>
+{
+    using var temp = new TestFolder();
+    string? pedido = null;
+    var cuentas = NuevaCuenta(temp, req => { pedido = req.RequestUri!.PathAndQuery + " " + req.Content!.ReadAsStringAsync().Result; Equal("sb_publishable_prueba", req.Headers.GetValues("apikey").Single()); return Json(HttpStatusCode.OK, SesionJson); });
+    Equal<string?>(null, await cuentas.ConfirmarAsync("ulises@gmail.com", "481 902", default));
+    Equal(true, pedido!.StartsWith("/auth/v1/verify ") && pedido.Contains("\"type\":\"signup\"") && pedido.Contains("\"token\":\"481902\""));
+    Equal(Path.Combine(temp.Path, "cuenta-sesion-prueba.supabase.co.json"), cuentas.RutaSesion);
+    string guardada = File.ReadAllText(cuentas.RutaSesion);
+    foreach (string campo in new[] { "\"access_token\":\"a1\"", "\"refresh_token\":\"r1\"", "\"expires_at\":", "\"user\":{\"id\":\"u1\"" }) Equal(true, guardada.Contains(campo));
+    Equal(false, guardada.Contains("null")); // JsonUtility, en el juego, no quiere null en las clases
+    Equal(false, guardada.Contains("Nombre") || guardada.Contains("Desde")); // solo los campos de Supabase
+    Equal(true, cuentas.LeerSesion()!.ExpiresAt > DateTimeOffset.UtcNow.ToUnixTimeSeconds() + 3000);
+    Equal("ulises", cuentas.Sesion!.User!.Nombre);
+});
+Test("Cuenta: crear manda el código, y con un mail usado lo dice", async () =>
+{
+    using var temp = new TestFolder();
+    string identidades = "[{\"id\":\"i1\"}]";
+    var cuentas = NuevaCuenta(temp, req => { Equal("/auth/v1/signup", req.RequestUri!.AbsolutePath); return Json(HttpStatusCode.OK, "{\"id\":\"u1\",\"email\":\"a@b.com\",\"identities\":" + identidades + "}"); });
+    Equal<string?>(null, await cuentas.CrearAsync(" a@b.com ", "riftwalker", default));
+    Equal(false, File.Exists(cuentas.RutaSesion)); // falta el código
+    identidades = "[]";
+    Equal<string?>(ReglasCuenta.MailUsado, await cuentas.CrearAsync("a@b.com", "riftwalker", default));
+    Equal<string?>(ReglasCuenta.ClaveCorta, await cuentas.CrearAsync("a@b.com", "corta", default));
+});
+Test("Cuenta: errores al entrar y sin conexión", async () =>
+{
+    using var temp = new TestFolder();
+    var pedidos = new List<string>();
+    string error = "invalid_credentials";
+    var cuentas = NuevaCuenta(temp, req => { pedidos.Add(req.RequestUri!.PathAndQuery); return Json(HttpStatusCode.BadRequest, "{\"error_code\":\"" + error + "\"}"); });
+    Equal<string?>(ReglasCuenta.NoCoinciden, await cuentas.EntrarAsync("a@b.com", "riftwalkr", default));
+    error = "email_not_confirmed"; pedidos.Clear();
+    Equal<string?>(ReglasCuenta.SinConfirmar, await cuentas.EntrarAsync("a@b.com", "riftwalker", default));
+    Equal("/auth/v1/resend", pedidos.Last()); // manda otro código para confirmarla
+    var sinRed = NuevaCuenta(temp, _ => throw new HttpRequestException("sin red"));
+    Equal<string?>(ReglasCuenta.SinInternet, await sinRed.EntrarAsync("a@b.com", "riftwalker", default));
+});
+Test("Cuenta: renovar al abrir, cerrar sesión y la carpeta del juego", async () =>
+{
+    using var temp = new TestFolder();
+    var ok = NuevaCuenta(temp, _ => Json(HttpStatusCode.OK, SesionJson));
+    await ok.ConfirmarAsync("ulises@gmail.com", "481902", default);
+    // Vencida y sin conexión: se sigue con la guardada (el juego abre igual, US 282 CA4).
+    File.WriteAllText(ok.RutaSesion, File.ReadAllText(ok.RutaSesion).Replace("\"expires_at\":", "\"expires_at\":1,\"x\":"));
+    Equal(true, await NuevaCuenta(temp, _ => throw new HttpRequestException("sin red")).RenovarAsync(default));
+    Equal(true, File.Exists(ok.RutaSesion));
+    // Vencida y rechazada (se cerró desde otro lado): se borra y hay que entrar de nuevo.
+    Equal(false, await NuevaCuenta(temp, _ => Json(HttpStatusCode.BadRequest, "{\"error_code\":\"refresh_token_not_found\"}")).RenovarAsync(default));
+    Equal(false, File.Exists(ok.RutaSesion));
+    // Cerrar sesión avisa a Supabase con la sesión y borra el archivo.
+    await ok.ConfirmarAsync("ulises@gmail.com", "481902", default);
+    string? salir = null;
+    var cerrar = NuevaCuenta(temp, req => { salir = req.RequestUri!.PathAndQuery + " " + req.Headers.Authorization; return new HttpResponseMessage(HttpStatusCode.NoContent); });
+    cerrar.Cargar();
+    await cerrar.CerrarAsync(default);
+    Equal("/auth/v1/logout?scope=local Bearer a1", salir);
+    Equal(false, File.Exists(ok.RutaSesion));
+    Equal(true, Cuentas.CarpetaDelJuego().EndsWith(Path.Combine("LocalLow", "Equipo 4", "Project Riftwalker")));
+});
+Test("Cuenta: recuperar la contraseña con el código del mail (US 271)", async () =>
+{
+    using var temp = new TestFolder();
+    var pedidos = new List<string>();
+    string verificar = SesionJson, cambiar = "{\"id\":\"u1\"}";
+    HttpStatusCode codigoVerificar = HttpStatusCode.OK, codigoCambiar = HttpStatusCode.OK;
+    var cuentas = NuevaCuenta(temp, req =>
+    {
+        string cuerpo = req.Content?.ReadAsStringAsync().Result ?? "";
+        pedidos.Add($"{req.Method} {req.RequestUri!.AbsolutePath} {req.Headers.Authorization} {cuerpo}");
+        return req.RequestUri!.AbsolutePath switch
+        {
+            "/auth/v1/recover" => Json(HttpStatusCode.OK, "{}"),
+            "/auth/v1/verify" => Json(codigoVerificar, verificar),
+            _ => Json(codigoCambiar, cambiar),
+        };
+    });
+    // CA1: pide el código (la respuesta es la misma exista o no la cuenta).
+    Equal<string?>(null, await cuentas.RecuperarAsync(" ulises@gmail.com ", default));
+    Equal("POST /auth/v1/recover  {\"email\":\"ulises@gmail.com\"}", pedidos.Last());
+    Equal<string?>(ReglasCuenta.MailInvalido, await cuentas.RecuperarAsync("no-es-un-mail", default));
+    // CA2: con el código entra y pone la contraseña nueva.
+    pedidos.Clear();
+    Equal<string?>(null, await cuentas.CambiarClaveAsync("ulises@gmail.com", "207 391", "nueva-clave", default));
+    Equal(true, pedidos[0].StartsWith("POST /auth/v1/verify ") && pedidos[0].Contains("\"type\":\"recovery\"") && pedidos[0].Contains("\"token\":\"207391\""));
+    Equal("PUT /auth/v1/user Bearer a1 {\"password\":\"nueva-clave\"}", pedidos[1]);
+    Equal(true, File.Exists(cuentas.RutaSesion));
+    // La misma contraseña de antes no es un error: la cuenta es suya.
+    File.Delete(cuentas.RutaSesion);
+    codigoCambiar = HttpStatusCode.UnprocessableEntity; cambiar = "{\"error_code\":\"same_password\"}";
+    Equal<string?>(null, await cuentas.CambiarClaveAsync("ulises@gmail.com", "207391", "nueva-clave", default));
+    Equal(true, File.Exists(cuentas.RutaSesion));
+    // CA3: un código vencido o mal escrito lo dice y no entra.
+    File.Delete(cuentas.RutaSesion);
+    codigoVerificar = HttpStatusCode.Forbidden; verificar = "{\"error_code\":\"otp_expired\"}";
+    Equal<string?>(ReglasCuenta.CodigoVencido, await cuentas.CambiarClaveAsync("ulises@gmail.com", "207391", "nueva-clave", default));
+    Equal(false, File.Exists(cuentas.RutaSesion));
+    Equal<string?>(ReglasCuenta.CodigoIncompleto, await cuentas.CambiarClaveAsync("ulises@gmail.com", "2073", "nueva-clave", default));
+    Equal<string?>(ReglasCuenta.ClaveCorta, await cuentas.CambiarClaveAsync("ulises@gmail.com", "207391", "corta", default));
+});
+Test("Cuenta: borrar pide la contraseña y saca de la PC la sesión y el archivo de la cuenta (US 273)", async () =>
+{
+    using var temp = new TestFolder();
+    await NuevaCuenta(temp, _ => Json(HttpStatusCode.OK, SesionJson)).ConfirmarAsync("ulises@gmail.com", "481902", default);
+    foreach (string a in new[] { "jugador-u1.json", "jugador-editor-u1.json", "jugador-otra.json" }) File.WriteAllText(Path.Combine(temp.Path, a), "{}");
+    File.WriteAllText(Path.Combine(temp.Path, "cuenta-activa.txt"), "u1");
+    // Contraseña mal: no se borra nada.
+    var mal = NuevaCuenta(temp, _ => Json(HttpStatusCode.Unauthorized, "{\"error\":\"clave\"}"));
+    mal.Cargar();
+    Equal<string?>(ReglasCuenta.ClaveIncorrecta, await mal.BorrarAsync("otra-clave", default));
+    Equal(true, File.Exists(mal.RutaSesion));
+    // Bien: la función recibe la sesión y la contraseña, y la PC queda sin la cuenta.
+    string? pedido = null;
+    var bien = NuevaCuenta(temp, req => { pedido = req.RequestUri!.AbsolutePath + " " + req.Headers.Authorization + " " + req.Content!.ReadAsStringAsync().Result; return Json(HttpStatusCode.OK, "{\"borrada\":true}"); });
+    bien.Cargar();
+    Equal<string?>(null, await bien.BorrarAsync("riftwalker", default));
+    Equal("/functions/v1/borrar-cuenta Bearer a1 {\"clave\":\"riftwalker\"}", pedido);
+    Equal(false, File.Exists(bien.RutaSesion));
+    Equal(false, File.Exists(Path.Combine(temp.Path, "jugador-u1.json")) || File.Exists(Path.Combine(temp.Path, "jugador-editor-u1.json")));
+    Equal(true, File.Exists(Path.Combine(temp.Path, "jugador-otra.json"))); // las otras cuentas de la PC quedan
+    Equal(false, File.Exists(Path.Combine(temp.Path, "cuenta-activa.txt")));
+    Equal<SesionCuenta?>(null, bien.Sesion);
+    // Sin conexión lo dice y la sesión queda.
+    await NuevaCuenta(temp, _ => Json(HttpStatusCode.OK, SesionJson)).ConfirmarAsync("ulises@gmail.com", "481902", default);
+    var sinRed = NuevaCuenta(temp, _ => throw new HttpRequestException("sin red"));
+    sinRed.Cargar();
+    Equal<string?>(ReglasCuenta.SinInternet, await sinRed.BorrarAsync("riftwalker", default));
+    Equal(true, File.Exists(sinRed.RutaSesion));
+});
 int failures = 0;
 foreach (var test in tests)
 {

@@ -33,18 +33,18 @@ public class MarcadorDeathmatch : MonoBehaviour
         if (MatchHud.Instance == null || dm == null || !PhotonNetwork.InRoom) return;
 
         // CA1: el reloj.
-        string detalle = $"Gana el primero a {Meta}";
+        string detalle = L10n.T("gameplay.dm.first_to_fmt", Meta);
         PartidaDeathmatch.Fase fase = dm.Lista ? dm.FaseActual : PartidaDeathmatch.Fase.Cuenta;
         if (fase == PartidaDeathmatch.Fase.Cuenta) MatchHud.SetCenter("Empieza en", dm.Restante, detalle);
         else if (fase == PartidaDeathmatch.Fase.Terminada) MatchHud.SetCenter("Fin de la partida", null, detalle);
-        else if (dm.Restante <= UltimoMinuto) MatchHud.SetCenter("Último minuto", dm.Restante, detalle, true, null, true);
+        else if (dm.Restante <= UltimoMinuto) MatchHud.SetCenter(L10n.T("gameplay.dm.last_minute"), dm.Restante, detalle, true, null, true);
         else MatchHud.SetCenter("Deathmatch", dm.Restante, detalle);
 
         // CA2: tus bajas.
         List<Player> puestos = PartidaDeathmatch.Puestos();
         Player yo = PhotonNetwork.LocalPlayer;
         int mias = PartidaDeathmatch.Bajas(yo.ActorNumber);
-        MatchHud.SetSide(true, $"{mias}{Sobre()}", "Tus bajas", ShopUIKit.Ink, Meta, mias, true);
+        MatchHud.SetSide(true, $"{mias}{Sobre()}", L10n.T("gameplay.dm.your_kills"), ShopUIKit.Ink, Meta, mias, true);
 
         // CA3: el que va primero.
         Player lider = puestos.Count > 0 ? puestos[0] : null;
@@ -53,15 +53,15 @@ public class MarcadorDeathmatch : MonoBehaviour
         if (lider != null && lider.IsLocal && mias > 0)
         {
             int ventaja = otro != null ? mias - PartidaDeathmatch.Bajas(otro.ActorNumber) : mias;
-            MatchHud.SetSide(false, $"+{ventaja}", otro != null ? $"Vas primero  <color=#8E96A3>sobre {otro.NickName}</color>" : "Vas primero",
+            MatchHud.SetSide(false, $"+{ventaja}", otro != null ? L10n.T("gameplay.dm.leading_over_fmt", otro.NickName) : L10n.T("gameplay.dm.leading"),
                 ShopUIKit.Ink, Meta, mias, true);
         }
         else if (lider != null && !lider.IsLocal && PartidaDeathmatch.Bajas(lider.ActorNumber) > 0)
         {
             int suyas = PartidaDeathmatch.Bajas(lider.ActorNumber);
-            MatchHud.SetSide(false, $"{suyas}{Sobre()}", $"Va primero  <color=#F3F4F6>{lider.NickName}</color>", MatchHud.RivalColor, Meta, suyas, true);
+            MatchHud.SetSide(false, $"{suyas}{Sobre()}", L10n.T("gameplay.dm.leader_fmt", lider.NickName), MatchHud.RivalColor, Meta, suyas, true);
         }
-        else MatchHud.SetSide(false, "—", "Va primero", ShopUIKit.Mute, Meta, 0, true);
+        else MatchHud.SetSide(false, "—", L10n.T("gameplay.dm.leader"), ShopUIKit.Mute, Meta, 0, true);
     }
 
     private static string Sobre() => $"<size=55%><color=#8E96A3> / {Meta}</color></size>";
@@ -72,7 +72,7 @@ public class MarcadorDeathmatch : MonoBehaviour
         List<Player> puestos = PartidaDeathmatch.Puestos();
         var tabla = new MatchHud.Table
         {
-            corner = $"Deathmatch  ·  Gana el primero a {Meta} bajas",
+            corner = L10n.T("gameplay.dm.header_fmt", Meta),
             columns = new[] { "Jugador", "Bajas", "Muertes", "Diferencia" },
             widths = new[] { 470f, 110f, 110f, 110f }
         };
@@ -81,8 +81,8 @@ public class MarcadorDeathmatch : MonoBehaviour
         {
             Player p = puestos[i];
             int b = PartidaDeathmatch.Bajas(p.ActorNumber), m = PartidaDeathmatch.Muertes(p.ActorNumber), dif = b - m;
-            string nombre = $"<color=#8E96A3>{i + 1}.</color>  {p.NickName}" + (p.IsLocal ? " <color=#8E96A3>(vos)</color>"
-                : p.IsInactive ? " <color=#8E96A3>(desconectado)</color>" : ""); // US 195, CA1
+            string nombre = $"<color=#8E96A3>{i + 1}.</color>  {p.NickName}" + (p.IsLocal ? L10n.T("gameplay.dm.you_tag")
+                : p.IsInactive ? L10n.T("gameplay.dm.disconnected_tag") : ""); // US 195, CA1
             seccion.rows.Add(new MatchHud.Row
             {
                 cells = new[] { nombre, b.ToString(), m.ToString(), dif > 0 ? $"+{dif}" : dif.ToString() },

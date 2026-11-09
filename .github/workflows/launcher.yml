@@ -2,9 +2,9 @@ name: Launcher Windows
 on:
   workflow_dispatch:
   push:
-    paths: ['Launcher/**', 'My project/Assets/Scripts/ReleaseVersion.cs', '.github/workflows/launcher.yml']
+    paths: ['Launcher/**', 'My project/Assets/Scripts/ReleaseVersion.cs', 'My project/Assets/Scripts/Perfil/ReglasCuenta.cs', '.github/workflows/launcher.yml']
   pull_request:
-    paths: ['Launcher/**', 'My project/Assets/Scripts/ReleaseVersion.cs', '.github/workflows/launcher.yml']
+    paths: ['Launcher/**', 'My project/Assets/Scripts/ReleaseVersion.cs', 'My project/Assets/Scripts/Perfil/ReglasCuenta.cs', '.github/workflows/launcher.yml']
 permissions:
   contents: read
 jobs:

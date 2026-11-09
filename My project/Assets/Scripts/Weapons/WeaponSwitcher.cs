@@ -131,12 +131,31 @@ public class WeaponSwitcher : MonoBehaviour
         return lista;
     }
 
+    /// <summary>US 331, Sin respaldo (Invasión): no hay secundaria por el resto de la partida.</summary>
+    public static bool SinSecundaria { get; set; }
+
+    [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+    private static void OlvidarSinSecundaria() => SinSecundaria = false;
+
+    /// <summary>US 331: se pierde la secundaria. Si estaba en la mano, se pasa a la principal (o al cuchillo).</summary>
+    public void PerderSecundaria()
+    {
+        bool enMano = HeldSecondary != null;
+        SinSecundaria = true;
+        GuardarSecundarias(null);
+        teniaSecundaria = null;
+        if (!enMano) return;
+        if (PrimaryObj != null) EquipPrimary();
+        else if (meleeScript != null) EquipKnife();
+    }
+
     // El arma secundaria que tiene: la que compró en la tienda (por ejemplo, la Línea H) o, si no compró
     // ninguna, la Línea A. Si la soltó (US 184), ninguna.
     public GameObject SecondaryObj
     {
         get
         {
+            if (SinSecundaria) return null; // US 331, Sin respaldo: se perdió por el resto de la partida
             if (hayTienda && loadout != null && loadout.Secondary == null) return null;
             if (hayTienda && loadout != null && otrasSecundarias != null)
                 foreach (GameObject arma in otrasSecundarias)
@@ -206,6 +225,57 @@ public class WeaponSwitcher : MonoBehaviour
         }
     }
 
+    /// <summary>US 148, CA4: la munición de la tienda de Invasión llena las dos armas (cargador y reserva).</summary>
+    public void RellenarTodas()
+    {
+        if (PrimaryObj != null) Rellenar(PrimaryObj);
+        if (SecondaryObj != null) Rellenar(SecondaryObj);
+    }
+
+    /// <summary>US 315 (Mochila): la reserva llena de todas las armas creció desde "antes" veces: se la suma a las que
+    /// lleva (las que agarre después ya vienen con la reserva más grande).</summary>
+    public void AgrandarReservas(float antes)
+    {
+        foreach (GameObject arma in new[] { PrimaryObj, SecondaryObj })
+        {
+            if (arma == null) continue;
+            arma.GetComponent<ArmaDeFuego>()?.AgrandarReserva(antes);
+            arma.GetComponent<Mitre>()?.AgrandarReserva(antes);
+            arma.GetComponent<Pistola>()?.AgrandarReserva(antes);
+        }
+    }
+
+    /// <summary>US 293, CA2: suma a cada arma la mitad de su munición máxima (al abrirse el puesto de suministros).</summary>
+    public void RecargarMitad()
+    {
+        if (PrimaryObj != null) Mitad(PrimaryObj);
+        if (SecondaryObj != null) Mitad(SecondaryObj);
+    }
+
+    static void Mitad(GameObject arma)
+    {
+        ArmaDeFuego fuego = arma.GetComponent<ArmaDeFuego>();
+        if (fuego != null) fuego.SumarBalas(fuego.MunicionMaxima / 2);
+        Mitre mitre = arma.GetComponent<Mitre>();
+        if (mitre != null) mitre.SumarBalas(mitre.MunicionMaxima / 2);
+        Pistola pistola = arma.GetComponent<Pistola>();
+        if (pistola != null) pistola.SumarBalas(pistola.MunicionMaxima / 2);
+    }
+
+    /// <summary>US 148: si las armas que lleva ya tienen el cargador y la reserva llenos (no hace falta munición).</summary>
+    public bool MunicionLlena() => (PrimaryObj == null || Llena(PrimaryObj)) && (SecondaryObj == null || Llena(SecondaryObj));
+
+    static bool Llena(GameObject arma)
+    {
+        ArmaDeFuego fuego = arma.GetComponent<ArmaDeFuego>();
+        if (fuego != null && !fuego.Llena) return false;
+        Mitre mitre = arma.GetComponent<Mitre>();
+        if (mitre != null && !mitre.Llena) return false;
+        Pistola pistola = arma.GetComponent<Pistola>();
+        if (pistola != null && !pistola.Llena) return false;
+        return true;
+    }
+
     static void Rellenar(GameObject arma)
     {
         ArmaDeFuego fuego = arma.GetComponent<ArmaDeFuego>();
@@ -224,6 +294,8 @@ public class WeaponSwitcher : MonoBehaviour
 
     void Update()
     {
+        SeguirArmaDeFuego(); // US 318: la última arma usada, sin contar las que se pasan de largo
+
         // Configuración inicial al arrancar: con el arma principal si la tiene; si no, con la pistola
         if (!setupInicialListo && meleeScript != null && meleeScript.CurrentViewModel != null)
         {
@@ -349,6 +421,28 @@ public class WeaponSwitcher : MonoBehaviour
         GuardarPrincipales(null);
         GuardarSecundarias(null);
         if (meleeScript != null && meleeScript.CurrentViewModel != null) meleeScript.CurrentViewModel.SetActive(false);
+    }
+
+    /// <summary>La última arma de fuego que tuvo en la mano (la principal o la secundaria), aunque ahora tenga el
+    /// cuchillo o una granada. La usan las cartas de Invasión que dan munición (Filo, US 317; Carroñero, US 318).
+    /// Un arma por la que solo se pasó (menos de medio segundo, como la pistola al ir con la rueda del Mitre al
+    /// cuchillo) no cuenta: sigue siendo la anterior.</summary>
+    public GameObject UltimaDeFuego => deFuegoEnLaMano != null ? deFuegoEnLaMano : ultimaDeFuegoFirme;
+
+    public const float TiempoParaContarComoUsada = 0.5f;
+    private GameObject deFuegoEnLaMano, ultimaDeFuegoFirme;
+    private float deFuegoEnLaManoDesde;
+
+    // Se fija cada frame qué arma de fuego está en la mano. La que se deja después de tenerla al menos medio segundo
+    // pasa a ser la última usada; la que se deja antes (se pasó de largo con la rueda) no.
+    void SeguirArmaDeFuego()
+    {
+        GameObject ahora = HeldPrimary ?? HeldSecondary;
+        if (ahora == deFuegoEnLaMano) return;
+        if (deFuegoEnLaMano != null && Time.time - deFuegoEnLaManoDesde >= TiempoParaContarComoUsada)
+            ultimaDeFuegoFirme = deFuegoEnLaMano;
+        deFuegoEnLaMano = ahora;
+        deFuegoEnLaManoDesde = Time.time;
     }
 
     // Vuelve al arma principal si la tiene; si no, a la secundaria (o al cuchillo).

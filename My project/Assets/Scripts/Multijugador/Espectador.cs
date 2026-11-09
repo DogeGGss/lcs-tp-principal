@@ -15,6 +15,9 @@ using static ShopUIKit;
 // Mirando a un compañero se ve en primera persona lo que tiene en la mano: una copia del arma de primera persona
 // propia que corresponde (y la mano, si BrazosEnCamara tiene la foto de los brazos con esa arma), que se sacude un
 // poco con cada disparo suyo. La dibuja la cámara de las armas, como la propia.
+// Animación de la copia (por código, con lo que llega por la red; sin las piezas que se mueven, como la corredera o el
+// tambor): el golpe de cada disparo con la fuerza de su tipo de arma, la recarga (baja, se inclina y vuelve, siguiendo
+// el avance que manda el compañero), sacar el arma desde abajo cuando cambia y el balanceo al caminar o correr.
 // US 262: si el compañero que se mira baila (un emote), la cámara sale de sus ojos a tercera persona, atrás y un poco
 // arriba (como la del que baila, CamaraDeEmotes), para ver el baile: se ve su cuerpo y no el arma en primera persona,
 // el mouse gira alrededor y no atraviesa paredes. Al terminar el baile vuelve a sus ojos.
@@ -51,6 +54,18 @@ public class Espectador : MonoBehaviour
     private Transform vistaDispositivo;  // modelo propio: el del jugador solo existe si alguna vez lo llevó él
     private float sacudon;
     private const float SacudonAtras = 0.035f, SacudonArriba = 3f, SacudonVuelta = 8f;
+    private float fuerzaDelGolpe = 1f;   // según el tipo de arma (FuerzaDelGolpe)
+    // Sacar el arma: sube desde abajo de la pantalla.
+    private float sacadaEn = -10f;
+    private const float SacarTarda = 0.35f, SacarAbajo = 0.22f, SacarGiro = 28f;
+    // Recarga: baja y se inclina mientras dura (el avance llega por la red).
+    private float recargaVista;          // 0 a 1, suavizado
+    private const float RecargaAbajo = 0.11f, RecargaGiro = 24f, RecargaLado = 12f;
+    // Caminar: balanceo según la velocidad del compañero.
+    private Vector3 posAnterior;
+    private bool hayPosAnterior;
+    private float velocidadVista, pasoFase;
+    private const float BalanceoLado = 0.012f, BalanceoArriba = 0.008f, PasosPorMetro = 0.9f, VelocidadCorrer = 6f;
     // La puñalada del compañero: el cuchillo va para adelante y vuelve, como en su pantalla.
     private float punaladaEn = -10f;
     private const float PunaladaIda = 0.08f, PunaladaVuelta = 0.12f, PunaladaLargo = 0.3f;
@@ -243,6 +258,8 @@ public class Espectador : MonoBehaviour
             vistaArma = granada != null ? VistaDeGranada(granada) : dispositivo ? VistaDeDispositivo() : arma != null ? VistaDe(arma) : null;
             if (vistaArma != null) vistaArma.gameObject.SetActive(true);
             sacudon = 0f;
+            sacadaEn = Time.time; // la saca desde abajo
+            fuerzaDelGolpe = FuerzaDelGolpe(arma, granada != null || dispositivo);
         }
         if (camaraArmas != null) camaraArmas.enabled = vistaArma != null;
         if (vistaArma == null) return;
@@ -251,8 +268,63 @@ public class Espectador : MonoBehaviour
         float t = Time.time - punaladaEn, estocada = 0f;
         if (t >= 0f && t < PunaladaIda + PunaladaVuelta)
             estocada = t < PunaladaIda ? t / PunaladaIda : 1f - (t - PunaladaIda) / PunaladaVuelta;
-        vistaArma.localPosition = new Vector3(0f, 0f, -SacudonAtras * sacudon + PunaladaLargo * estocada);
-        vistaArma.localRotation = Quaternion.Euler(-SacudonArriba * sacudon, 0f, 0f);
+
+        // Sacar: sube desde abajo y se endereza.
+        float sacar = Mathf.Clamp01((Time.time - sacadaEn) / SacarTarda);
+        float falta = (1f - sacar) * (1f - sacar);
+
+        // Recarga: con el avance que manda el compañero (0 a 1): baja enseguida, se queda abajo mientras cambia el
+        // cargador y vuelve al final.
+        mirando.Balas(out _, out _, out _, out float avance);
+        float objetivo = avance < 0f ? 0f : Mathf.Clamp01(Mathf.Min(avance / 0.15f, (1f - avance) / 0.15f));
+        recargaVista = Mathf.MoveTowards(recargaVista, objetivo, 5f * Time.deltaTime);
+        float r = recargaVista * recargaVista * (3f - 2f * recargaVista);
+
+        // Caminar: cuánto se movió el compañero (en el plano) desde el cuadro anterior.
+        Vector3 pos = mirando.transform.position;
+        if (hayPosAnterior && Time.deltaTime > 0f)
+        {
+            Vector3 d = pos - posAnterior;
+            d.y = 0f;
+            float v = d.magnitude / Time.deltaTime;
+            velocidadVista = Mathf.Lerp(velocidadVista, Mathf.Min(v, 12f), 1f - Mathf.Exp(-8f * Time.deltaTime));
+            pasoFase += d.magnitude * PasosPorMetro * Mathf.PI * 2f;
+        }
+        posAnterior = pos;
+        hayPosAnterior = true;
+        float camina = Mathf.Clamp01(velocidadVista / VelocidadCorrer) * (1f - r);
+        float balanceoX = Mathf.Sin(pasoFase * 0.5f) * BalanceoLado * camina * 1.6f;
+        float balanceoY = -Mathf.Abs(Mathf.Cos(pasoFase * 0.5f)) * BalanceoArriba * camina * 1.6f;
+
+        vistaArma.localPosition = new Vector3(
+            balanceoX,
+            balanceoY - SacarAbajo * falta - RecargaAbajo * r,
+            -SacudonAtras * sacudon * fuerzaDelGolpe + PunaladaLargo * estocada);
+        vistaArma.localRotation = Quaternion.Euler(
+            -SacudonArriba * sacudon * fuerzaDelGolpe + SacarGiro * falta + RecargaGiro * r,
+            balanceoX * 60f,
+            -RecargaLado * r);
+    }
+
+    // La fuerza del golpe de cada disparo según el tipo de arma, como en la pantalla del que dispara (más fuerte el
+    // francotirador, la escopeta y la pistola pesada; más suave el subfusil y el fusil, que son automáticos).
+    private static float FuerzaDelGolpe(GameObject arma, bool sinArmaDeFuego)
+    {
+        if (sinArmaDeFuego || arma == null) return 1f;
+        if (arma.GetComponentInChildren<Mitre>(true) != null) return 0.7f;
+        ArmaDeFuego fuego = arma.GetComponentInChildren<ArmaDeFuego>(true);
+        ShopItem item = fuego != null ? fuego.shopItem : null;
+        if (item == null) return 1f;
+        switch (item.category)
+        {
+            case ShopCategory.SMGs: return 0.6f;
+            case ShopCategory.Rifles: return 0.8f;
+            case ShopCategory.Shotguns: return 2f;
+            case ShopCategory.Snipers: return 2.5f;
+            case ShopCategory.Launchers: return 2.2f;
+            case ShopCategory.Pistols: return 1.6f; // La Trochita (La Porteña no es ArmaDeFuego: 1)
+            default: return 1f;
+        }
     }
 
     // La copia (en primera persona) de un arma propia, con la mano si hay foto de los brazos con esa arma.
@@ -460,6 +532,9 @@ public class Espectador : MonoBehaviour
         mirando = jugador;
         if (mirando != null) { mirando.Disparo += AlDispararElCompanero; mirando.Punalada += AlAcuchillarElCompanero; }
         punaladaEn = -10f;
+        hayPosAnterior = false; // el balanceo arranca de nuevo con el que se mira
+        velocidadVista = 0f;
+        recargaVista = 0f;
         tercera = 0f; // US 262: si el nuevo baila, la cámara sale de sus ojos
         // Su arma se arma de nuevo en el próximo LateUpdate; sin nadie a quien mirar, no se ve ninguna.
         armaMirada = null;
@@ -473,7 +548,7 @@ public class Espectador : MonoBehaviour
         ShopUI.Spectated = mirando != null ? mirando.Dueno : null;
         if (mirando != null) OcultarCuerpo(mirando);
 
-        if (muerto && partida != null) partida.Aviso(null); // el "Te eliminaron" ya no hace falta
+        if (muerto && partida != null) partida.Aviso(null); // el L10n.T("gameplay.ui.you_were_eliminated") ya no hace falta
         MostrarCartel();
     }
 
@@ -493,8 +568,8 @@ public class Espectador : MonoBehaviour
         }
         else
         {
-            cartelTitulo.text = viendoDispositivo ? "Mirando el dispositivo" : "No quedan compañeros vivos";
-            cartelAyuda.text = "Reaparecés en la ronda siguiente";
+            cartelTitulo.text = L10n.T(viendoDispositivo ? "gameplay.spectator.watching_device" : "gameplay.spectator.no_teammates");
+            cartelAyuda.text = L10n.T("gameplay.spectator.respawn_next");
         }
     }
 

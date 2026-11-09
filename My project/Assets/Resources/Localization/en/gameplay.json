@@ -1,0 +1,1884 @@
+{
+  "entries": [
+    {
+      "key": "character.choose",
+      "text": "Choose your character"
+    },
+    {
+      "key": "character.keyboard_hint",
+      "text": "<color=#F3F4F6>{0}</color>  Select     <color=#F3F4F6>← →</color>  Navigate     <color=#F3F4F6>Enter</color>  Confirm"
+    },
+    {
+      "key": "character.keyboard_back",
+      "text": "     <color=#F3F4F6>Esc</color>  Back"
+    },
+    {
+      "key": "character.provisional",
+      "text": "Placeholder"
+    },
+    {
+      "key": "character.last_used",
+      "text": "Last selected"
+    },
+    {
+      "key": "character.appearance_only",
+      "text": "Appearance only"
+    },
+    {
+      "key": "character.no_ability",
+      "text": "No ability"
+    },
+    {
+      "key": "character.no_dm_abilities",
+      "text": "Abilities are disabled in Deathmatch"
+    },
+    {
+      "key": "character.no_invasion_abilities",
+      "text": "Abilities are disabled in Invasion"
+    },
+    {
+      "key": "character.cooldown",
+      "text": "{0} · Cooldown {1} s"
+    },
+    {
+      "key": "character.selected_by",
+      "text": "Selected by {0}"
+    },
+    {
+      "key": "gameplay.ui.empty",
+      "text": "Empty"
+    },
+    {
+      "key": "gameplay.ui.you_have_no_emotes_equipped_equip_them_from_your_profile",
+      "text": "You have no emotes equipped. Equip them from your profile."
+    },
+    {
+      "key": "gameplay.ui.move_the_mouse",
+      "text": "Move the mouse"
+    },
+    {
+      "key": "gameplay.ui.health",
+      "text": "Health"
+    },
+    {
+      "key": "gameplay.ui.your_cards",
+      "text": "Your cards"
+    },
+    {
+      "key": "gameplay.ui.boss",
+      "text": "Boss"
+    },
+    {
+      "key": "gameplay.ui.record",
+      "text": "Record"
+    },
+    {
+      "key": "gameplay.ui.pts",
+      "text": "Pts"
+    },
+    {
+      "key": "gameplay.ui.buy_phase",
+      "text": "Buy phase"
+    },
+    {
+      "key": "gameplay.ui.match_over_deathmatch",
+      "text": "MATCH OVER  ·  DEATHMATCH"
+    },
+    {
+      "key": "gameplay.ui.match_over",
+      "text": "Match over"
+    },
+    {
+      "key": "gameplay.ui.match_over_your_opponents_left",
+      "text": "Match over  ·  Your opponents left"
+    },
+    {
+      "key": "gameplay.ui.match_over_your_team_left",
+      "text": "Match over  ·  Your team left"
+    },
+    {
+      "key": "gameplay.ui.victory_1",
+      "text": "Victory"
+    },
+    {
+      "key": "gameplay.ui.defeat",
+      "text": "Defeat"
+    },
+    {
+      "key": "gameplay.ui.boss_choice",
+      "text": "Boss reward"
+    },
+    {
+      "key": "gameplay.ui.supply_station",
+      "text": "Supply station"
+    },
+    {
+      "key": "gameplay.ui.invasion_mode",
+      "text": "Invasion mode"
+    },
+    {
+      "key": "gameplay.ui.you_survived",
+      "text": "You survived!"
+    },
+    {
+      "key": "gameplay.ui.you_were_eliminated",
+      "text": "You were eliminated"
+    },
+    {
+      "key": "gameplay.ui.player",
+      "text": "Player"
+    },
+    {
+      "key": "gameplay.ui.could_not_connect_check_your_connection",
+      "text": "Could not connect. Check your connection."
+    },
+    {
+      "key": "gameplay.ui.you_can_no_longer_rejoin_that_match",
+      "text": "You can no longer rejoin that match."
+    },
+    {
+      "key": "gameplay.ui.invasion",
+      "text": "Invasion"
+    },
+    {
+      "key": "gameplay.ui.tactical",
+      "text": "Tactical"
+    },
+    {
+      "key": "gameplay.ui.choose_your_loadout",
+      "text": "Choose your loadout"
+    },
+    {
+      "key": "gameplay.ui.starts_in",
+      "text": "Starts in"
+    },
+    {
+      "key": "gameplay.ui.close_to_respawn",
+      "text": "Close to respawn"
+    },
+    {
+      "key": "gameplay.ui.you_can_change",
+      "text": "You can change"
+    },
+    {
+      "key": "gameplay.ui.fight",
+      "text": "Fight!"
+    },
+    {
+      "key": "gameplay.ui.deathmatch_mode_appearance_only",
+      "text": "Deathmatch mode  ·  Appearance only"
+    },
+    {
+      "key": "gameplay.ui.change_your_loadout_while_dead_or_just_after_respawning",
+      "text": "Change your loadout while dead or just after respawning"
+    },
+    {
+      "key": "gameplay.ui.ammunition",
+      "text": "Ammunition"
+    },
+    {
+      "key": "gameplay.ui.both_weapons",
+      "text": "Both weapons"
+    },
+    {
+      "key": "gameplay.ui.refills_the_magazine_and_reserve_of_both_weapons",
+      "text": "Refills the magazine and reserve ammo of both weapons."
+    },
+    {
+      "key": "gameplay.ui.pistol",
+      "text": "Pistol"
+    },
+    {
+      "key": "gameplay.controls.device",
+      "text": "Device"
+    },
+    {
+      "key": "gameplay.controls.mouse_left",
+      "text": "Left click"
+    },
+    {
+      "key": "gameplay.controls.mouse_right",
+      "text": "Right click"
+    },
+    {
+      "key": "gameplay.controls.wheel",
+      "text": "Mouse wheel"
+    },
+    {
+      "key": "gameplay.controls.space",
+      "text": "Space"
+    },
+    {
+      "key": "gameplay.controls.backspace",
+      "text": "Backspace"
+    },
+    {
+      "key": "gameplay.controls.caps",
+      "text": "Caps Lock"
+    },
+    {
+      "key": "gameplay.controls.up",
+      "text": "Up"
+    },
+    {
+      "key": "gameplay.controls.down",
+      "text": "Down"
+    },
+    {
+      "key": "gameplay.controls.reload",
+      "text": "Reload"
+    },
+    {
+      "key": "gameplay.card.reserve_shot",
+      "text": "Reserve shot"
+    },
+    {
+      "key": "gameplay.card.focused_shot",
+      "text": "Focused shot"
+    },
+    {
+      "key": "gameplay.card.quick_discharge",
+      "text": "Quick discharge"
+    },
+    {
+      "key": "gameplay.card.coupling",
+      "text": "Coupling"
+    },
+    {
+      "key": "gameplay.card.no_backup",
+      "text": "No backup"
+    },
+    {
+      "key": "gameplay.card.sticky_charge",
+      "text": "Sticky charge"
+    },
+    {
+      "key": "gameplay.card.double_shell",
+      "text": "Double shell"
+    },
+    {
+      "key": "gameplay.card.compact_slug",
+      "text": "Compact slug"
+    },
+    {
+      "key": "gameplay.card.twin_mag",
+      "text": "Twin magazine"
+    },
+    {
+      "key": "gameplay.card.loose_bolt",
+      "text": "Loose bolt"
+    },
+    {
+      "key": "gameplay.card.open_sights",
+      "text": "Open sights"
+    },
+    {
+      "key": "gameplay.card.no_interval",
+      "text": "No interval"
+    },
+    {
+      "key": "gameplay.card.growing_burst",
+      "text": "Growing burst"
+    },
+    {
+      "key": "gameplay.card.minefield",
+      "text": "Minefield"
+    },
+    {
+      "key": "gameplay.card.logistics",
+      "text": "Logistics"
+    },
+    {
+      "key": "gameplay.card.backpack",
+      "text": "Backpack"
+    },
+    {
+      "key": "gameplay.card.recycler",
+      "text": "Recycler"
+    },
+    {
+      "key": "gameplay.card.edge",
+      "text": "Edge"
+    },
+    {
+      "key": "gameplay.card.scavenger",
+      "text": "Scavenger"
+    },
+    {
+      "key": "gameplay.card.finisher",
+      "text": "Finisher"
+    },
+    {
+      "key": "gameplay.card.hungry_edge",
+      "text": "Hungry edge"
+    },
+    {
+      "key": "gameplay.card.ready_reserve",
+      "text": "Ready reserve"
+    },
+    {
+      "key": "gameplay.card.rage",
+      "text": "Rage"
+    },
+    {
+      "key": "gameplay.card.direct_feed",
+      "text": "Direct feed"
+    },
+    {
+      "key": "gameplay.card.instant_delivery",
+      "text": "Instant delivery"
+    },
+    {
+      "key": "gameplay.card.clearance",
+      "text": "Clearance"
+    },
+    {
+      "key": "gameplay.weapon.smg_and_rifle",
+      "text": "SMG and rifle"
+    },
+    {
+      "key": "gameplay.weapon.rifle",
+      "text": "Rifle"
+    },
+    {
+      "key": "gameplay.weapon.heavy_pistol",
+      "text": "Heavy pistol"
+    },
+    {
+      "key": "gameplay.weapon.pistols_and_primary",
+      "text": "Pistols and primary weapon"
+    },
+    {
+      "key": "gameplay.weapon.any_primary",
+      "text": "Any primary"
+    },
+    {
+      "key": "gameplay.weapon.shotgun",
+      "text": "Shotgun"
+    },
+    {
+      "key": "gameplay.weapon.smg",
+      "text": "SMG"
+    },
+    {
+      "key": "gameplay.weapon.sniper",
+      "text": "Sniper"
+    },
+    {
+      "key": "gameplay.weapon.burst_rifle",
+      "text": "Burst rifle"
+    },
+    {
+      "key": "gameplay.weapon.all",
+      "text": "All"
+    },
+    {
+      "key": "gameplay.weapon.knife",
+      "text": "Knife"
+    },
+    {
+      "key": "gameplay.card.fx.reserve_shot",
+      "text": "With an empty magazine, holding the trigger keeps firing from the reserve at half the fire rate."
+    },
+    {
+      "key": "gameplay.card.fx.focused_shot",
+      "text": "While aiming, the rifle fires up to 5 bullets together in a single hit, every 0.4 s."
+    },
+    {
+      "key": "gameplay.card.fx.quick_discharge",
+      "text": "Charged shot: holding the trigger charges in 3 stages and, on release, fires 2, 4 or 6 bullets in a row."
+    },
+    {
+      "key": "gameplay.card.fx.coupling",
+      "text": "Every 3 pistol hits, your primary weapon fires one shot on its own toward the crosshair."
+    },
+    {
+      "key": "gameplay.card.fx.no_backup",
+      "text": "Your primary weapon gets double the magazine, but you lose your secondary for the rest of the match."
+    },
+    {
+      "key": "gameplay.card.fx.sticky_charge",
+      "text": "Grenades that hit an invader directly stick to it for 1 s and explode with double damage."
+    },
+    {
+      "key": "gameplay.card.fx.double_shell",
+      "text": "The shotgun fires 2 shells at once, using both."
+    },
+    {
+      "key": "gameplay.card.fx.compact_slug",
+      "text": "While aiming, the pellets fly together as a single projectile with no spread and the same damage."
+    },
+    {
+      "key": "gameplay.card.fx.twin_mag",
+      "text": "The first time the magazine runs empty, it reloads instantly from the reserve."
+    },
+    {
+      "key": "gameplay.card.fx.loose_bolt",
+      "text": "After a headshot kill, you can fire again after 0.2 s."
+    },
+    {
+      "key": "gameplay.card.fx.open_sights",
+      "text": "Without aiming, it fires with no spread and at double the fire rate. While aiming, it fires normally."
+    },
+    {
+      "key": "gameplay.card.fx.no_interval",
+      "text": "Killing removes the pause between the next 3 bursts."
+    },
+    {
+      "key": "gameplay.card.fx.no_interval.2",
+      "text": "Killing removes the pause between the next 5 bursts."
+    },
+    {
+      "key": "gameplay.card.fx.no_interval.3",
+      "text": "Killing removes the pause between the next 7 bursts."
+    },
+    {
+      "key": "gameplay.card.fx.growing_burst",
+      "text": "Each kill adds one bullet to your bursts, up to 6. Reloading resets them to 3."
+    },
+    {
+      "key": "gameplay.card.fx.growing_burst.2",
+      "text": "Each kill adds one bullet to your bursts, up to 8. Reloading resets them to 3."
+    },
+    {
+      "key": "gameplay.card.fx.growing_burst.3",
+      "text": "Each kill adds one bullet to your bursts, up to 10. Reloading resets them to 3."
+    },
+    {
+      "key": "gameplay.card.fx.minefield",
+      "text": "Grenades that touch the ground stay as mines (up to 5)."
+    },
+    {
+      "key": "gameplay.card.fx.minefield.2",
+      "text": "Grenades that touch the ground stay as mines (up to 7)."
+    },
+    {
+      "key": "gameplay.card.fx.minefield.3",
+      "text": "Grenades that touch the ground stay as mines (up to 9)."
+    },
+    {
+      "key": "gameplay.card.fx.logistics",
+      "text": "From now on, stations refill all your ammo instead of half."
+    },
+    {
+      "key": "gameplay.card.fx.backpack",
+      "text": "40% more reserve ammo for both weapons."
+    },
+    {
+      "key": "gameplay.card.fx.backpack.2",
+      "text": "80% more reserve ammo for both weapons (40% more than now)."
+    },
+    {
+      "key": "gameplay.card.fx.backpack.3",
+      "text": "120% more reserve ammo for both weapons (40% more than now)."
+    },
+    {
+      "key": "gameplay.card.fx.recycler",
+      "text": "Each headshot kill returns 5 bullets to the magazine."
+    },
+    {
+      "key": "gameplay.card.fx.recycler.2",
+      "text": "Each headshot kill returns 10 bullets to the magazine."
+    },
+    {
+      "key": "gameplay.card.fx.recycler.3",
+      "text": "Each headshot kill returns 15 bullets to the magazine."
+    },
+    {
+      "key": "gameplay.card.fx.edge",
+      "text": "Knife kills reload the last weapon you held."
+    },
+    {
+      "key": "gameplay.card.fx.scavenger",
+      "text": "1 in 5 invaders drops a magazine when it dies."
+    },
+    {
+      "key": "gameplay.card.fx.scavenger.2",
+      "text": "1 in 4 invaders drops a magazine when it dies."
+    },
+    {
+      "key": "gameplay.card.fx.scavenger.3",
+      "text": "1 in 3 invaders drops a magazine when it dies."
+    },
+    {
+      "key": "gameplay.card.fx.finisher",
+      "text": "The knife kills invaders with 25% health or less in one hit (except the Boss)."
+    },
+    {
+      "key": "gameplay.card.fx.finisher.2",
+      "text": "The knife kills invaders with 30% health or less in one hit (except the Boss)."
+    },
+    {
+      "key": "gameplay.card.fx.finisher.3",
+      "text": "The knife kills invaders with 35% health or less in one hit (except the Boss)."
+    },
+    {
+      "key": "gameplay.card.fx.hungry_edge",
+      "text": "Each knife hit heals as much as the damage it deals, up to 25 health per hit."
+    },
+    {
+      "key": "gameplay.card.fx.hungry_edge.2",
+      "text": "Each knife hit heals as much as the damage it deals, up to 35 health per hit."
+    },
+    {
+      "key": "gameplay.card.fx.hungry_edge.3",
+      "text": "Each knife hit heals as much as the damage it deals, up to 45 health per hit."
+    },
+    {
+      "key": "gameplay.card.fx.ready_reserve",
+      "text": "Your holstered weapon reloads itself from its reserve after 2 s."
+    },
+    {
+      "key": "gameplay.card.fx.rage",
+      "text": "When an invader hits you, your next shot adds 5 times the health you lost."
+    },
+    {
+      "key": "gameplay.card.fx.rage.2",
+      "text": "When an invader hits you, your next shot adds 6 times the health you lost."
+    },
+    {
+      "key": "gameplay.card.fx.rage.3",
+      "text": "When an invader hits you, your next shot adds 7 times the health you lost."
+    },
+    {
+      "key": "gameplay.card.fx.direct_feed",
+      "text": "Magazine and reserve are a single pool: you never reload until you run out of bullets."
+    },
+    {
+      "key": "gameplay.card.fx.instant_delivery",
+      "text": "The station's choice opens as soon as it's charged, without waiting for the wave to end."
+    },
+    {
+      "key": "gameplay.card.fx.clearance",
+      "text": "When the station is charged, a bubble pushes invaders in the ring back 10 m, except the Boss."
+    },
+    {
+      "key": "gameplay.card.fx.clearance.2",
+      "text": "When the station is charged, a bubble pushes invaders in the ring back 15 m, except the Boss."
+    },
+    {
+      "key": "gameplay.card.fx.clearance.3",
+      "text": "When the station is charged, a bubble pushes invaders in the ring back 20 m, except the Boss."
+    },
+    {
+      "key": "gameplay.card.rarity.common",
+      "text": "Common"
+    },
+    {
+      "key": "gameplay.card.rarity.rare",
+      "text": "Rare"
+    },
+    {
+      "key": "gameplay.card.rarity.epic",
+      "text": "Epic"
+    },
+    {
+      "key": "gameplay.card.rarity.legendary",
+      "text": "Legendary"
+    },
+    {
+      "key": "gameplay.card.weapon",
+      "text": "Weapon"
+    },
+    {
+      "key": "gameplay.card.primary",
+      "text": "Primary weapon"
+    },
+    {
+      "key": "gameplay.card.secondary",
+      "text": "Secondary weapon"
+    },
+    {
+      "key": "gameplay.card.works_with_fmt",
+      "text": "Works with: {0}"
+    },
+    {
+      "key": "gameplay.card.disables_fmt",
+      "text": "Disables: {0}"
+    },
+    {
+      "key": "gameplay.card.unused_direct_feed",
+      "text": "No use with Direct feed"
+    },
+    {
+      "key": "gameplay.card.replaces_fmt",
+      "text": "Replaces your {0}. Comes with full ammo."
+    },
+    {
+      "key": "gameplay.card.empty_slot_fmt",
+      "text": "Goes in your empty {0} weapon slot. Comes with full ammo."
+    },
+    {
+      "key": "gameplay.card.station_choice",
+      "text": "Station choice"
+    },
+    {
+      "key": "gameplay.card.pick_one",
+      "text": "Pick one"
+    },
+    {
+      "key": "gameplay.card.reroll_fmt",
+      "text": "R  ·  Reroll  ·  {0} pts"
+    },
+    {
+      "key": "gameplay.card.points_fmt",
+      "text": "You have {0} pts"
+    },
+    {
+      "key": "gameplay.card.reroll_missing_fmt",
+      "text": "You need more points to reroll ({0})"
+    },
+    {
+      "key": "gameplay.wave.title_fmt",
+      "text": "Wave {0}"
+    },
+    {
+      "key": "gameplay.wave.boss_coming",
+      "text": "The boss is coming"
+    },
+    {
+      "key": "gameplay.wave.enemies_fmt",
+      "text": "{0} enemies"
+    },
+    {
+      "key": "gameplay.wave.boss_arrived",
+      "text": "The boss is here!"
+    },
+    {
+      "key": "gameplay.wave.with_escort",
+      "text": "With its escort"
+    },
+    {
+      "key": "gameplay.wave.cleared_fmt",
+      "text": "Wave {0} cleared"
+    },
+    {
+      "key": "gameplay.wave.rest",
+      "text": "20 s break"
+    },
+    {
+      "key": "gameplay.wave.boss_defeated",
+      "text": "BOSS DEFEATED"
+    },
+    {
+      "key": "gameplay.wave.boss_defeated_body_fmt",
+      "text": "You cleared wave {0}. If you keep going, the Boss's choice awaits, but from now on invaders have {1}% more health and hit {2}% harder."
+    },
+    {
+      "key": "gameplay.wave.next_in",
+      "text": "Next wave in"
+    },
+    {
+      "key": "gameplay.wave.next",
+      "text": "Next wave"
+    },
+    {
+      "key": "gameplay.wave.lap_fmt",
+      "text": "· lap {0}"
+    },
+    {
+      "key": "gameplay.wave.of_fmt",
+      "text": "of {0}"
+    },
+    {
+      "key": "gameplay.wave.no_cards",
+      "text": "<color=#9AA39A>You haven't picked any cards yet</color>"
+    },
+    {
+      "key": "gameplay.station.supplies_in_fmt",
+      "text": "Supplies at {0}"
+    },
+    {
+      "key": "gameplay.station.next_fmt",
+      "text": "Next station: {0}"
+    },
+    {
+      "key": "gameplay.station.next",
+      "text": "Next station"
+    },
+    {
+      "key": "gameplay.station.surroundings",
+      "text": "the surroundings"
+    },
+    {
+      "key": "gameplay.station.charged",
+      "text": "Station charged"
+    },
+    {
+      "key": "gameplay.station.open",
+      "text": "Station open"
+    },
+    {
+      "key": "gameplay.station.left",
+      "text": "The station left without charging"
+    },
+    {
+      "key": "gameplay.station.next_here",
+      "text": "Next · here"
+    },
+    {
+      "key": "gameplay.station.next_m_fmt",
+      "text": "Next · {0:0} m"
+    },
+    {
+      "key": "gameplay.station.charge",
+      "text": "Station charge"
+    },
+    {
+      "key": "gameplay.station.outside_ring",
+      "text": "Outside the ring"
+    },
+    {
+      "key": "gameplay.place.module_1",
+      "text": "Module 1"
+    },
+    {
+      "key": "gameplay.place.module_fmt",
+      "text": "Module {0}"
+    },
+    {
+      "key": "gameplay.place.library",
+      "text": "the Library"
+    },
+    {
+      "key": "gameplay.result.survived_fmt",
+      "text": "You survived {0} waves"
+    },
+    {
+      "key": "gameplay.result.dead",
+      "text": "You died"
+    },
+    {
+      "key": "gameplay.result.game_over_fmt",
+      "text": "Game over  ·  {0}"
+    },
+    {
+      "key": "gameplay.result.saved_world",
+      "text": "You saved the world"
+    },
+    {
+      "key": "gameplay.result.not_saved_world",
+      "text": "You didn't save the world"
+    },
+    {
+      "key": "gameplay.result.retired_fmt",
+      "text": "You retired after the wave {0} Boss"
+    },
+    {
+      "key": "gameplay.result.fell_fmt",
+      "text": "You fell on wave {0} of {1}"
+    },
+    {
+      "key": "gameplay.result.new_record_fmt",
+      "text": "New record! · Wave {0}"
+    },
+    {
+      "key": "gameplay.result.record_fmt",
+      "text": "Record on {0}: <color=#F3F4F6>wave {1}</color>"
+    },
+    {
+      "key": "gameplay.result.headshots",
+      "text": "Headshots"
+    },
+    {
+      "key": "gameplay.result.play_again",
+      "text": "Play again"
+    },
+    {
+      "key": "gameplay.result.back_menu",
+      "text": "Back to menu"
+    },
+    {
+      "key": "gameplay.result.keys_hint",
+      "text": "Enter  ·  Play again          Esc  ·  Back to menu"
+    },
+    {
+      "key": "gameplay.hud.fury",
+      "text": "{0}  <color=#FF5C5C>FURY</color>"
+    },
+    {
+      "key": "gameplay.hud.streak_fmt",
+      "text": "Streak <color=#{0}>· Best {1}</color>"
+    },
+    {
+      "key": "gameplay.hud.reload_suffix",
+      "text": " · Reload"
+    },
+    {
+      "key": "gameplay.hud.no_ammo",
+      "text": "Out of ammo"
+    },
+    {
+      "key": "gameplay.hud.no_signal",
+      "text": "No signal"
+    },
+    {
+      "key": "gameplay.dm.first_to_fmt",
+      "text": "First to {0} wins"
+    },
+    {
+      "key": "gameplay.dm.last_minute",
+      "text": "Last minute"
+    },
+    {
+      "key": "gameplay.dm.your_kills",
+      "text": "Your kills"
+    },
+    {
+      "key": "gameplay.dm.leading_over_fmt",
+      "text": "You're leading  <color=#8E96A3>over {0}</color>"
+    },
+    {
+      "key": "gameplay.dm.leading",
+      "text": "You're leading"
+    },
+    {
+      "key": "gameplay.dm.leader_fmt",
+      "text": "Leading  <color=#F3F4F6>{0}</color>"
+    },
+    {
+      "key": "gameplay.dm.leader",
+      "text": "Leading"
+    },
+    {
+      "key": "gameplay.dm.header_fmt",
+      "text": "Deathmatch  ·  First to {0} kills wins"
+    },
+    {
+      "key": "gameplay.dm.you_tag",
+      "text": " <color=#8E96A3>(you)</color>"
+    },
+    {
+      "key": "gameplay.dm.disconnected_tag",
+      "text": " <color=#8E96A3>(disconnected)</color>"
+    },
+    {
+      "key": "gameplay.dm.headshot_kills",
+      "text": "Headshot kills"
+    },
+    {
+      "key": "gameplay.dm.credits_fmt",
+      "text": "+{0} credits"
+    },
+    {
+      "key": "gameplay.dm.back_menu_caps",
+      "text": "BACK TO MENU"
+    },
+    {
+      "key": "gameplay.dm.place_fmt",
+      "text": "#{0} PLACE"
+    },
+    {
+      "key": "gameplay.dm.game_over_caps",
+      "text": "GAME OVER"
+    },
+    {
+      "key": "gameplay.dm.kills.one",
+      "text": "{0} kill"
+    },
+    {
+      "key": "gameplay.dm.kills.other",
+      "text": "{0} kills"
+    },
+    {
+      "key": "gameplay.dm.others_left",
+      "text": "The other players left the match"
+    },
+    {
+      "key": "gameplay.dm.reached_first_fmt",
+      "text": "You reached <color=#F29A38>{0}</color> first"
+    },
+    {
+      "key": "gameplay.dm.time_up_won_fmt",
+      "text": "Time's up: you won with <color=#F29A38>{0}</color>"
+    },
+    {
+      "key": "gameplay.dm.winner_fmt",
+      "text": "<color=#F29A38>{0}</color> won with {1}"
+    },
+    {
+      "key": "gameplay.dm.time_up_winner_fmt",
+      "text": "Time's up: <color=#F29A38>{0}</color> won with {1}"
+    },
+    {
+      "key": "gameplay.tac.your_team",
+      "text": "Your team"
+    },
+    {
+      "key": "gameplay.tac.team_side_fmt",
+      "text": "<color=#F3F4F6>Your team</color>  ·  {0}"
+    },
+    {
+      "key": "gameplay.tac.round_to_fmt",
+      "text": "Round {0} · first to {1}"
+    },
+    {
+      "key": "gameplay.tac.planted",
+      "text": "Device planted"
+    },
+    {
+      "key": "gameplay.tac.selection",
+      "text": "Selection"
+    },
+    {
+      "key": "gameplay.tac.sudden_death",
+      "text": "Sudden death"
+    },
+    {
+      "key": "gameplay.tac.round_score_fmt",
+      "text": "Round {0} · {1} to {2}"
+    },
+    {
+      "key": "gameplay.tac.round_in_progress",
+      "text": "Round in progress"
+    },
+    {
+      "key": "gameplay.tac.round_score_wide_fmt",
+      "text": "Round {0}  ·  {1} to {2}"
+    },
+    {
+      "key": "gameplay.tac.round_fmt",
+      "text": "Round {0}"
+    },
+    {
+      "key": "gameplay.tac.you_fmt",
+      "text": "{0} <color=#8E96A3>(you)</color>"
+    },
+    {
+      "key": "gameplay.tac.disconnected_fmt",
+      "text": "{0} <color=#8E96A3>(disconnected)</color>"
+    },
+    {
+      "key": "gameplay.tac.teams_line",
+      "text": "<color=#58A6FF>Your team</color>   ·   <color=#FF5C5C>Enemies</color>"
+    },
+    {
+      "key": "gameplay.tac.decisive_round",
+      "text": "The team that wins this round wins the match"
+    },
+    {
+      "key": "gameplay.tac.halftime",
+      "text": "Halftime"
+    },
+    {
+      "key": "gameplay.tac.side_switch",
+      "text": "Side switch"
+    },
+    {
+      "key": "gameplay.tac.weapons_pistol",
+      "text": "Weapons: pistol"
+    },
+    {
+      "key": "gameplay.tac.money_fmt",
+      "text": "Money: {0}"
+    },
+    {
+      "key": "gameplay.tac.everyone_gets_fmt",
+      "text": "Everyone gets {0}"
+    },
+    {
+      "key": "gameplay.tac.round_won",
+      "text": "Round won"
+    },
+    {
+      "key": "gameplay.tac.round_lost",
+      "text": "Round lost"
+    },
+    {
+      "key": "gameplay.tac.next_round_in",
+      "text": "Next round in {0}"
+    },
+    {
+      "key": "gameplay.tac.no_prize",
+      "text": "No bonus: you didn't plant"
+    },
+    {
+      "key": "gameplay.tac.loss_streak_fmt",
+      "text": "Loss streak: {0}"
+    },
+    {
+      "key": "gameplay.tac.time_defended_us",
+      "text": "Time ran out and your team defended"
+    },
+    {
+      "key": "gameplay.tac.time_defended_them",
+      "text": "Time ran out and the enemies defended"
+    },
+    {
+      "key": "gameplay.tac.exploded",
+      "text": "The device exploded"
+    },
+    {
+      "key": "gameplay.tac.defused",
+      "text": "The device was defused"
+    },
+    {
+      "key": "gameplay.tac.enemies_left",
+      "text": "The enemies left the match"
+    },
+    {
+      "key": "gameplay.tac.team_left",
+      "text": "Your team left the match"
+    },
+    {
+      "key": "gameplay.tac.team_wiped_them",
+      "text": "Your team eliminated all enemies"
+    },
+    {
+      "key": "gameplay.tac.team_wiped_us",
+      "text": "The enemies eliminated your team"
+    },
+    {
+      "key": "gameplay.tac.no_leaving_base",
+      "text": "You can't leave the base during the buy phase"
+    },
+    {
+      "key": "gameplay.tac.base_opens_fmt",
+      "text": "The base exit opens in <color=#F29A38>{0}:{1:00}</color>"
+    },
+    {
+      "key": "gameplay.tac.planting_at_fmt",
+      "text": "Planting the device at {0}"
+    },
+    {
+      "key": "gameplay.tac.defusing",
+      "text": "Defusing the device"
+    },
+    {
+      "key": "gameplay.tac.hold_plant_fmt",
+      "text": "Hold {0} to plant the device at {1}"
+    },
+    {
+      "key": "gameplay.tac.hold_defuse_fmt",
+      "text": "Hold {0} to defuse the device"
+    },
+    {
+      "key": "gameplay.tac.planted_at_fmt",
+      "text": "Device planted at {0}"
+    },
+    {
+      "key": "gameplay.map.teammate",
+      "text": "Teammate"
+    },
+    {
+      "key": "gameplay.map.station_ring",
+      "text": "Station ring"
+    },
+    {
+      "key": "gameplay.map.key_fmt",
+      "text": "<color=#F3F4F6>{0}</color>  Map"
+    },
+    {
+      "key": "gameplay.practice.dummies",
+      "text": "Practice dummies"
+    },
+    {
+      "key": "gameplay.practice.health_fmt",
+      "text": "Health {0}"
+    },
+    {
+      "key": "gameplay.practice.reaction_avg_fmt",
+      "text": "Reaction: average {0:0.00} s · best {1:0.00} s"
+    },
+    {
+      "key": "gameplay.practice.misses_fmt",
+      "text": " · {0} missed"
+    },
+    {
+      "key": "gameplay.practice.reaction_none",
+      "text": "Reaction: you didn't hit any"
+    },
+    {
+      "key": "gameplay.practice.moving",
+      "text": "Moving"
+    },
+    {
+      "key": "gameplay.practice.reaction",
+      "text": "Reaction"
+    },
+    {
+      "key": "gameplay.practice.reaction_round_fmt",
+      "text": "Reaction: {0} of {1}"
+    },
+    {
+      "key": "gameplay.practice.mode_stats_fmt",
+      "text": "{0} · Kills: {1} · Headshots: {2}"
+    },
+    {
+      "key": "gameplay.practice.pick_mode_fmt",
+      "text": "Pick a mode: look at a button and press {0}, or shoot it"
+    },
+    {
+      "key": "gameplay.tutorial.sprint",
+      "text": "Sprint (in Tactical, walk slowly)"
+    },
+    {
+      "key": "gameplay.tutorial.hit_target",
+      "text": "Hit a target"
+    },
+    {
+      "key": "gameplay.tutorial.aim",
+      "text": "Aim down sights"
+    },
+    {
+      "key": "gameplay.tutorial.headshot",
+      "text": "Hit it in the head"
+    },
+    {
+      "key": "gameplay.tutorial.switch_weapon",
+      "text": "Switch weapon"
+    },
+    {
+      "key": "gameplay.tutorial.use_ability",
+      "text": "Use your ability"
+    },
+    {
+      "key": "gameplay.tutorial.open_shop",
+      "text": "Open the shop"
+    },
+    {
+      "key": "gameplay.tutorial.pick_weapon",
+      "text": "Pick another weapon"
+    },
+    {
+      "key": "gameplay.tutorial.use_ability_fmt",
+      "text": "Use your ability: {0}"
+    },
+    {
+      "key": "gameplay.tutorial.modes_step_fmt",
+      "text": "Tutorial · Game modes · {0} of {1}"
+    },
+    {
+      "key": "gameplay.tutorial.next_mode",
+      "text": "Next mode"
+    },
+    {
+      "key": "gameplay.tutorial.hold_tab_skip_fmt",
+      "text": "<color=#{0}>Hold Tab</color>  Skip tutorial"
+    },
+    {
+      "key": "gameplay.tutorial.complete",
+      "text": "TUTORIAL COMPLETE"
+    },
+    {
+      "key": "gameplay.tutorial.done",
+      "text": "Done! You know the basics"
+    },
+    {
+      "key": "gameplay.tutorial.panels_note",
+      "text": "The mode panels are on the left wall. You can reopen the tutorial from the panel."
+    },
+    {
+      "key": "gameplay.tutorial.hold_tab",
+      "text": "Hold Tab"
+    },
+    {
+      "key": "gameplay.tutorial.game_mode",
+      "text": "Game mode"
+    },
+    {
+      "key": "gameplay.tutorial.step_fmt",
+      "text": "Tutorial · Step {0} of {1}"
+    },
+    {
+      "key": "gameplay.tutorial.tab_skip_step_fmt",
+      "text": "<color=#{0}>Tab</color>  Skip step     "
+    },
+    {
+      "key": "gameplay.mode.objective_fmt",
+      "text": "<color=#{0}>OBJECTIVE</color>\n{1}\n\n"
+    },
+    {
+      "key": "gameplay.mode.how_win_fmt",
+      "text": "<color=#{0}>HOW TO WIN</color>\n{1}\n\n"
+    },
+    {
+      "key": "gameplay.mode.how_lose_fmt",
+      "text": "<color=#{0}>HOW TO LOSE</color>\n{1}"
+    },
+    {
+      "key": "gameplay.result.time",
+      "text": "Time"
+    },
+    {
+      "key": "gameplay.result.reached_fmt",
+      "text": "You reached wave {0}  ·  {1}"
+    },
+    {
+      "key": "gameplay.result.bosses_defeated.one",
+      "text": "{0} Boss defeated"
+    },
+    {
+      "key": "gameplay.result.bosses_defeated.other",
+      "text": "{0} Bosses defeated"
+    },
+    {
+      "key": "gameplay.difficulty.easy",
+      "text": "Easy"
+    },
+    {
+      "key": "gameplay.difficulty.normal",
+      "text": "Normal"
+    },
+    {
+      "key": "gameplay.difficulty.hard",
+      "text": "Hard"
+    },
+    {
+      "key": "gameplay.station.inside",
+      "text": "Inside"
+    },
+    {
+      "key": "gameplay.dm.victory",
+      "text": "VICTORY"
+    },
+    {
+      "key": "gameplay.dm.col.kills",
+      "text": "Kills"
+    },
+    {
+      "key": "gameplay.dm.col.deaths",
+      "text": "Deaths"
+    },
+    {
+      "key": "gameplay.tac.sides_drawn_attack",
+      "text": "Sides drawn: you attack"
+    },
+    {
+      "key": "gameplay.tac.sides_drawn_defend",
+      "text": "Sides drawn: you defend"
+    },
+    {
+      "key": "gameplay.tac.now_attacks",
+      "text": "Your team now <color=#F3F4F6>attacks</color>"
+    },
+    {
+      "key": "gameplay.tac.now_defends",
+      "text": "Your team now <color=#F3F4F6>defends</color>"
+    },
+    {
+      "key": "gameplay.practice.shoot_it",
+      "text": "Shoot it"
+    },
+    {
+      "key": "gameplay.practice.down",
+      "text": "Down"
+    },
+    {
+      "key": "gameplay.practice.zone.head",
+      "text": "head"
+    },
+    {
+      "key": "gameplay.practice.zone.legs",
+      "text": "legs"
+    },
+    {
+      "key": "gameplay.practice.zone.body",
+      "text": "body"
+    },
+    {
+      "key": "gameplay.tutorial.finish",
+      "text": "Finish"
+    },
+    {
+      "key": "gameplay.card.slot.primary",
+      "text": "primary"
+    },
+    {
+      "key": "gameplay.card.slot.secondary",
+      "text": "secondary"
+    },
+    {
+      "key": "gameplay.result.wave",
+      "text": "Wave"
+    },
+    {
+      "key": "gameplay.result.points",
+      "text": "Points"
+    },
+    {
+      "key": "gameplay.wave.continue",
+      "text": "Continue"
+    },
+    {
+      "key": "gameplay.wave.retire",
+      "text": "Retire"
+    },
+    {
+      "key": "gameplay.tutorial.move",
+      "text": "Move"
+    },
+    {
+      "key": "gameplay.tutorial.look",
+      "text": "Look"
+    },
+    {
+      "key": "gameplay.tutorial.shoot",
+      "text": "Shoot"
+    },
+    {
+      "key": "gameplay.tutorial.ability",
+      "text": "Ability"
+    },
+    {
+      "key": "gameplay.tutorial.shop",
+      "text": "Shop"
+    },
+    {
+      "key": "gameplay.hud.streak",
+      "text": "Streak"
+    },
+    {
+      "key": "gameplay.mode.tactical.objective",
+      "text": "4 vs 4 in rounds, no respawns. Attackers plant the device at A or B ({Plantar}) and defenders guard it or defuse it. {Correr} walks slowly and silently (there's no sprinting). Your character's ability is used with {Habilidad}, and grenades are bought during the buy phase."
+    },
+    {
+      "key": "gameplay.mode.tactical.win",
+      "text": "You win the round if the device explodes, if you defuse it, or if you eliminate the whole other team (if time runs out without a plant, the defenders win). The first team to reach 7 rounds wins the match."
+    },
+    {
+      "key": "gameplay.mode.tactical.lose",
+      "text": "The team that doesn't reach 7 rounds loses. If you die, you spectate a teammate until the next round."
+    },
+    {
+      "key": "gameplay.mode.deathmatch.objective",
+      "text": "Free for all, up to 8 players. You pick your weapons for free ({Tienda}), each kill heals you 50 and you respawn after 3 s. Your ability is used with {Habilidad}. There are no shields or grenades."
+    },
+    {
+      "key": "gameplay.mode.deathmatch.win",
+      "text": "The first to reach 25 kills wins, or whoever has the most kills when the 8 minutes are up."
+    },
+    {
+      "key": "gameplay.mode.deathmatch.lose",
+      "text": "You lose if someone else reaches 25 kills first or has more kills than you when the clock runs out."
+    },
+    {
+      "key": "gameplay.mode.invasion.objective",
+      "text": "You alone against the horde at the university, for 10 waves. The boss appears on wave 10. With the points you earn you buy weapons, grenades and ammo between waves."
+    },
+    {
+      "key": "gameplay.mode.invasion.win",
+      "text": "You win if you survive all 10 waves. After that you can keep going in endless mode to set a record."
+    },
+    {
+      "key": "gameplay.mode.invasion.lose",
+      "text": "You lose if the zombies kill you."
+    },
+    {
+      "key": "gameplay.tac.attackers",
+      "text": "Attackers"
+    },
+    {
+      "key": "gameplay.tac.defenders",
+      "text": "Defenders"
+    },
+    {
+      "key": "gameplay.controls.back_label",
+      "text": "Back"
+    },
+    {
+      "key": "gameplay.spectator.watching_device",
+      "text": "Watching the device"
+    },
+    {
+      "key": "gameplay.spectator.no_teammates",
+      "text": "No teammates left alive"
+    },
+    {
+      "key": "gameplay.spectator.respawn_next",
+      "text": "You respawn next round"
+    },
+    {
+      "key": "gameplay.death.killed_by_fmt",
+      "text": "{0} eliminated you"
+    },
+    {
+      "key": "gameplay.death.fell",
+      "text": "You fell off the map"
+    },
+    {
+      "key": "gameplay.death.fence",
+      "text": "The fence electrocuted you"
+    },
+    {
+      "key": "gameplay.death.respawn_next_round",
+      "text": "You respawn next round."
+    },
+    {
+      "key": "gameplay.death.respawn_in_fmt",
+      "text": "You respawn in {0}. Press {1} to change your loadout"
+    },
+    {
+      "key": "gameplay.death.rejoined",
+      "text": "You're back in the match"
+    },
+    {
+      "key": "gameplay.hud.being_watched",
+      "text": "You're being watched"
+    },
+    {
+      "key": "gameplay.dm.press_to_pick_fmt",
+      "text": "Press {0} to pick your loadout"
+    },
+    {
+      "key": "gameplay.dm.you_reached_fmt",
+      "text": "You reached {0} kills: {1} to go"
+    },
+    {
+      "key": "gameplay.dm.other_reached_fmt",
+      "text": "{0} reached {1} kills"
+    },
+    {
+      "key": "gameplay.event.disconnected",
+      "text": "disconnected"
+    },
+    {
+      "key": "gameplay.event.left",
+      "text": "left the match"
+    },
+    {
+      "key": "gameplay.event.rejoined",
+      "text": "rejoined the match"
+    },
+    {
+      "key": "gameplay.tac.waiting_others_fmt",
+      "text": "Waiting for the others   ·   <color=#F29A38>{0}</color>"
+    },
+    {
+      "key": "gameplay.tac.pick_header_fmt",
+      "text": "Tactical Mode  ·  Your team: {0}"
+    },
+    {
+      "key": "gameplay.tac.a_teammate",
+      "text": "a teammate"
+    },
+    {
+      "key": "gameplay.tac.already_picked_fmt",
+      "text": "Already picked by {0}"
+    },
+    {
+      "key": "gameplay.tac.confirm_failed",
+      "text": "Couldn't confirm, try again"
+    },
+    {
+      "key": "gameplay.weapon.drop_to_pick_fmt",
+      "text": "{0}   ·   Drop your {1} with <color=#F29A38>{2}</color> to pick it up"
+    },
+    {
+      "key": "gameplay.text.no_shield",
+      "text": "No shield"
+    },
+    {
+      "key": "gameplay.text.light",
+      "text": "Light"
+    },
+    {
+      "key": "gameplay.text.full",
+      "text": "Full"
+    },
+    {
+      "key": "gameplay.shop.invasion_no_sell",
+      "text": "<color=#FF5C5C>No selling in Invasion: what you buy stays until you replace it</color>"
+    },
+    {
+      "key": "gameplay.shop.missing_fmt",
+      "text": "You need {0} more"
+    },
+    {
+      "key": "gameplay.shop.already_have_fmt",
+      "text": "You already have {0}"
+    },
+    {
+      "key": "gameplay.shop.ammo_max",
+      "text": "Your ammo is already full"
+    },
+    {
+      "key": "gameplay.shop.max_of_fmt",
+      "text": "Max {0}"
+    },
+    {
+      "key": "gameplay.shop.shield_full",
+      "text": "Your shield is already full"
+    },
+    {
+      "key": "gameplay.shop.cant_change_now",
+      "text": "You can't change your loadout now"
+    },
+    {
+      "key": "gameplay.shop.buy_phase_over",
+      "text": "The buy phase is over"
+    },
+    {
+      "key": "gameplay.shop.outside_zone",
+      "text": "Outside the buy zone"
+    },
+    {
+      "key": "gameplay.shop.only_this_round",
+      "text": "You can only sell what you bought this round"
+    },
+    {
+      "key": "gameplay.shop.dont_have",
+      "text": "You don't have it"
+    },
+    {
+      "key": "gameplay.shop.change_time_over",
+      "text": "Time to change your loadout is over"
+    },
+    {
+      "key": "gameplay.shop.buy_over",
+      "text": "Buying is over"
+    },
+    {
+      "key": "gameplay.shop.change_anytime",
+      "text": "Change it whenever you want"
+    },
+    {
+      "key": "gameplay.shop.kept_next_life",
+      "text": "Kept for your next life"
+    },
+    {
+      "key": "gameplay.shop.points_per_kill_fmt",
+      "text": "+{0} per invader · +{1} headshot"
+    },
+    {
+      "key": "gameplay.shop.tactical_round_fmt",
+      "text": "Tactical · Round {0}"
+    },
+    {
+      "key": "gameplay.shop.next_round_min_fmt",
+      "text": "Next round: at least {0}"
+    },
+    {
+      "key": "gameplay.shop.outside_zone_banner",
+      "text": "You're outside the buy zone. Go back to the spawn point to buy."
+    },
+    {
+      "key": "gameplay.shop.phase_over_banner",
+      "text": "The buy phase is over. You can look, but not buy."
+    },
+    {
+      "key": "gameplay.shop.invasion_wave_lap_fmt",
+      "text": "Invasion · Wave {0} · lap {1}"
+    },
+    {
+      "key": "gameplay.shop.invasion_wave_of_fmt",
+      "text": "Invasion · Wave {0} of {1}"
+    },
+    {
+      "key": "gameplay.shop.shield_desc_fmt",
+      "text": "Absorbs the first {0} points of damage, before your health. If you survive, you keep what's left of it next round."
+    },
+    {
+      "key": "gameplay.shop.shots_to_kill",
+      "text": "Shots to kill"
+    },
+    {
+      "key": "gameplay.shop.stat.bursts",
+      "text": "bursts/s"
+    },
+    {
+      "key": "gameplay.shop.stat.shots",
+      "text": "shots/s"
+    },
+    {
+      "key": "gameplay.shop.stat.mag",
+      "text": "magazine"
+    },
+    {
+      "key": "gameplay.shop.stat.per_shell",
+      "text": "per shell"
+    },
+    {
+      "key": "gameplay.shop.stat.reload",
+      "text": "reload"
+    },
+    {
+      "key": "gameplay.shop.stat.mobility",
+      "text": "mobility"
+    },
+    {
+      "key": "gameplay.shop.stat.sight",
+      "text": "sight"
+    },
+    {
+      "key": "gameplay.shop.note_fmt",
+      "text": "<color=#D6DAE0><b>Recoil:</b></color> {0}\n<color=#D6DAE0><b>Spread:</b></color> {1}° still · {2}° moving · penetration {3}"
+    },
+    {
+      "key": "gameplay.shop.col.against",
+      "text": "Against"
+    },
+    {
+      "key": "gameplay.shop.col.with_this",
+      "text": "With this"
+    },
+    {
+      "key": "gameplay.shop.to_body_fmt",
+      "text": "{0} to the body"
+    },
+    {
+      "key": "gameplay.text.shrapnel_center",
+      "text": "Shrapnel (center)"
+    },
+    {
+      "key": "gameplay.shop.you_have_fmt",
+      "text": "You have {0}"
+    },
+    {
+      "key": "gameplay.shop.col.carry",
+      "text": "carried"
+    },
+    {
+      "key": "gameplay.shop.col.fuse",
+      "text": "fuse"
+    },
+    {
+      "key": "gameplay.shop.col.max_total",
+      "text": "max total"
+    },
+    {
+      "key": "gameplay.shop.slot4_hint",
+      "text": "Slot 4 · press 4 again to switch"
+    },
+    {
+      "key": "gameplay.shop.molotov_note",
+      "text": "Only kills without a shield, and up close"
+    },
+    {
+      "key": "gameplay.shop.smoke_note",
+      "text": "Blocks vision from inside out and the other way around"
+    },
+    {
+      "key": "gameplay.shop.flash_front",
+      "text": "Facing (< 15 m)"
+    },
+    {
+      "key": "gameplay.shop.flash_side",
+      "text": "Sideways"
+    },
+    {
+      "key": "gameplay.shop.flash_back",
+      "text": "Facing away"
+    },
+    {
+      "key": "gameplay.shop.btn.not_now",
+      "text": "Not now"
+    },
+    {
+      "key": "gameplay.shop.btn.look_only",
+      "text": "look only"
+    },
+    {
+      "key": "gameplay.shop.btn.chosen",
+      "text": "Chosen"
+    },
+    {
+      "key": "gameplay.shop.btn.in_hand",
+      "text": "it's in your hand"
+    },
+    {
+      "key": "gameplay.shop.btn.next_life",
+      "text": "kept for your next life"
+    },
+    {
+      "key": "gameplay.shop.btn.outside",
+      "text": "Outside the zone"
+    },
+    {
+      "key": "gameplay.shop.btn.have_it",
+      "text": "You have it"
+    },
+    {
+      "key": "gameplay.shop.btn.until_replaced",
+      "text": "stays until you replace it"
+    },
+    {
+      "key": "gameplay.shop.btn.sell_fmt",
+      "text": "right click: sell +{0}"
+    },
+    {
+      "key": "gameplay.shop.btn.always",
+      "text": "you always have it"
+    },
+    {
+      "key": "gameplay.shop.btn.from_last_round",
+      "text": "carried over from last round"
+    },
+    {
+      "key": "gameplay.shop.btn.max_reached",
+      "text": "Max reached"
+    },
+    {
+      "key": "gameplay.shop.btn.per_player_fmt",
+      "text": "{0} per player"
+    },
+    {
+      "key": "gameplay.shop.btn.refund_fmt",
+      "text": "you get back {0}"
+    },
+    {
+      "key": "gameplay.shop.btn.pay_fmt",
+      "text": "you pay {0}"
+    },
+    {
+      "key": "gameplay.shop.spent_rest",
+      "text": "Spent during the break"
+    },
+    {
+      "key": "gameplay.shop.spent_round",
+      "text": "Spent this round"
+    },
+    {
+      "key": "gameplay.shop.no_primary",
+      "text": "No primary"
+    },
+    {
+      "key": "gameplay.shop.not_bought",
+      "text": "Not bought"
+    },
+    {
+      "key": "gameplay.shop.max",
+      "text": "Max"
+    },
+    {
+      "key": "gameplay.shop.all_body_fmt",
+      "text": "All to the body under {0} m: {1}"
+    },
+    {
+      "key": "gameplay.shop.one_shot_light",
+      "text": "One-shot kill with no or light shield"
+    },
+    {
+      "key": "gameplay.shop.one_shot_none",
+      "text": "One-shot kill with no shield"
+    },
+    {
+      "key": "gameplay.shop.never_one_shot",
+      "text": "Never a one-shot kill"
+    },
+    {
+      "key": "gameplay.shop.head_any",
+      "text": "1 headshot kills anyone"
+    },
+    {
+      "key": "gameplay.shop.head_any_fmt",
+      "text": "1 headshot kills anyone ({0})"
+    },
+    {
+      "key": "gameplay.shop.head_light",
+      "text": "1 headshot kills with light shield"
+    },
+    {
+      "key": "gameplay.shop.head_none",
+      "text": "1 headshot kills with no shield"
+    },
+    {
+      "key": "gameplay.shop.head_full_fmt",
+      "text": "{0} headshots with full shield"
+    },
+    {
+      "key": "gameplay.shop.body_any",
+      "text": "1 body shot kills anyone"
+    },
+    {
+      "key": "gameplay.shop.body_none",
+      "text": "1 body shot kills with no shield"
+    },
+    {
+      "key": "gameplay.shop.body_full_fmt",
+      "text": "{0} body shots with full shield"
+    },
+    {
+      "key": "gameplay.text.number_or_click",
+      "text": "Number or click"
+    },
+    {
+      "key": "gameplay.text.category",
+      "text": "Category"
+    },
+    {
+      "key": "gameplay.text.right_click_sell",
+      "text": "Right click: sell"
+    },
+    {
+      "key": "gameplay.text.enter_click",
+      "text": "Enter · click"
+    },
+    {
+      "key": "gameplay.text.tactical",
+      "text": "TACTICAL"
+    },
+    {
+      "key": "gameplay.text.invasion",
+      "text": "INVASION"
+    },
+    {
+      "key": "gameplay.text.deathmatch",
+      "text": "DEATHMATCH"
+    },
+    {
+      "key": "gameplay.text.practice_range",
+      "text": "PRACTICE RANGE"
+    },
+    {
+      "key": "gameplay.text.firing_line",
+      "text": "FIRING LINE"
+    },
+    {
+      "key": "gameplay.text.shooting_zone",
+      "text": "SHOOTING ZONE"
+    },
+    {
+      "key": "gameplay.text.practice_map",
+      "text": "PRACTICE MAP"
+    },
+    {
+      "key": "gameplay.text.get_closer_to_see_the",
+      "text": "Get closer to see the objective"
+    },
+    {
+      "key": "gameplay.text.change_weapon",
+      "text": "Change weapon"
+    },
+    {
+      "key": "gameplay.text.primary",
+      "text": "Primary"
+    },
+    {
+      "key": "gameplay.text.secondary",
+      "text": "Secondary"
+    },
+    {
+      "key": "gameplay.text.pistols",
+      "text": "Pistols"
+    },
+    {
+      "key": "gameplay.text.smgs",
+      "text": "SMGs"
+    },
+    {
+      "key": "gameplay.text.shotguns",
+      "text": "Shotguns"
+    },
+    {
+      "key": "gameplay.text.rifles",
+      "text": "Rifles"
+    },
+    {
+      "key": "gameplay.text.snipers",
+      "text": "Snipers"
+    },
+    {
+      "key": "gameplay.text.shields",
+      "text": "Shields"
+    },
+    {
+      "key": "gameplay.text.supplies",
+      "text": "Supplies"
+    },
+    {
+      "key": "gameplay.text.grenades",
+      "text": "Grenades"
+    }
+  ]
+}

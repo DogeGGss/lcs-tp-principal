@@ -9,7 +9,7 @@ using Pack = PerfilDatos.Pack;
 // "comprar" pide confirmación, suma los cristales y anota la compra, pero no se cobra nada.
 public class PantallaTienda : PantallaBase
 {
-    private Boton botonOferta;
+    private Boton botonOferta, botonReiniciar;
     private TextMeshProUGUI precioOferta;
     private readonly Boton[] botonesPack = new Boton[4];
     private RectTransform historial;
@@ -66,7 +66,7 @@ public class PantallaTienda : PantallaBase
         }
         T(carta, "Cantidad", 0f, 262f, w, 80f, FTitulo, 76f, Ink, PerfilDatos.Numero(p.cristales), TextAlignmentOptions.Center, 2f);
         T(carta, "Cristales", 0f, 338f, w, 24f, FRotulo, 18f, Mute, "cristales", TextAlignmentOptions.Center, 12f, true);
-        if (p.bonus > 0) T(carta, "Bonus", 0f, 366f, w, 26f, FRotulo, 20f, Accent, $"+{PerfilDatos.Numero(p.bonus)} de regalo", TextAlignmentOptions.Center, 10f, true);
+        if (p.bonus > 0) T(carta, "Bonus", 0f, 366f, w, 26f, FRotulo, 20f, Accent, L10n.T("profile.store.gift_fmt", PerfilDatos.Numero(p.bonus)), TextAlignmentOptions.Center, 10f, true);
         T(carta, "Nombre", 0f, 404f, w, 26f, FTexto, 20f, Soft, p.nombre, TextAlignmentOptions.Center);
         T(carta, "Precio", 0f, 432f, w, 52f, FTitulo, 44f, Ink, PerfilDatos.Pesos(p.precio), TextAlignmentOptions.Center, 2f);
         botonesPack[i] = CrearBoton(carta, 20f, 494f, w - 40f, 50f, "Comprar", false, () => Comprar(p), 24f, ColorCristales);
@@ -94,7 +94,7 @@ public class PantallaTienda : PantallaBase
         T(r, "Rotulo", 24f, 18f, 560f, 22f, FRotulo, 17f, Accent, "Total gastado (simulado)", TextAlignmentOptions.MidlineLeft, 16f, true);
         total = T(r, "Total", 22f, 46f, 560f, 70f, FTitulo, 66f, Ink, "");
         cuenta = T(r, "Cuenta", 24f, 118f, 560f, 28f, FTexto, 20f, Mute, "");
-        CrearBoton(r, 24f, 170f, 552f, 56f, "Reiniciar datos de prueba", false, () =>
+        botonReiniciar = CrearBoton(r, 24f, 170f, 552f, 56f, "Reiniciar datos de prueba", false, () =>
             menu.Confirmar("Prueba del menú", "Reiniciar datos",
                 "Vuelve todo a como arranca la prueba: monedas, colección, equipado, compras y cápsulas abiertas.",
                 "Reiniciar", () => { PerfilDatos.Reiniciar(); menu.Avisar("Datos de prueba reiniciados"); }), 22f);
@@ -103,9 +103,9 @@ public class PantallaTienda : PantallaBase
     private void Comprar(Pack p)
     {
         if (!PerfilDatos.PackDisponible(p)) return;
-        string recibe = p.boletos > 0 ? p.detalle : $"{PerfilDatos.Numero(p.cristales)} cristales" + (p.bonus > 0 ? $" + {PerfilDatos.Numero(p.bonus)} de regalo" : "");
+        string recibe = p.boletos > 0 ? L10n.Source(p.detalle, "profile.") : L10n.T("profile.station.crystals_fmt", PerfilDatos.Numero(p.cristales)) + (p.bonus > 0 ? L10n.T("profile.store.gift_suffix_fmt", PerfilDatos.Numero(p.bonus)) : "");
         menu.Confirmar("Compra simulada", p.nombre,
-            $"Recibís <color=#F3F4F6>{recibe}</color> por <color=#F3F4F6>{PerfilDatos.Pesos(p.precio)}</color>.\n\n" +
+            L10n.T("profile.store.receive_fmt", recibe, PerfilDatos.Pesos(p.precio)) +
             "No se cobra nada: es una simulación del negocio para el TP.",
             "Comprar (simulado)", () =>
             {
@@ -119,8 +119,11 @@ public class PantallaTienda : PantallaBase
         base.Refrescar();
         bool oferta = PerfilDatos.PackDisponible(PerfilDatos.Packs[0]);
         botonOferta.Habilitar(oferta);
-        botonOferta.texto.text = oferta ? "Comprar" : "Ya la compraste";
+        botonOferta.texto.text = L10n.T(oferta ? "profile.action.buy" : "profile.store.already_bought");
         precioOferta.color = oferta ? Ink : Mute;
+        // Solo sin cuenta: con cuenta, la nube devolvería todo (US 272).
+        botonReiniciar.Habilitar(PerfilDatos.PuedeReiniciar);
+        botonReiniciar.texto.text = L10n.T(PerfilDatos.PuedeReiniciar ? "profile.store.reset_data" : "profile.store.account_no_reset");
 
         BorrarHijos(historial);
         int n = 0;
@@ -137,6 +140,6 @@ public class PantallaTienda : PantallaBase
         }
         if (n == 0) T(historial, "Vacio", 0f, 0f, 1100f, 30f, FTexto, 21f, Mute, "Todavía no hiciste ninguna compra simulada.");
         total.text = PerfilDatos.Pesos(PerfilDatos.Gastado);
-        cuenta.text = n == 1 ? "1 compra" : $"{n} compras";
+        cuenta.text = L10n.Plural("profile.store.purchases", n);
     }
 }

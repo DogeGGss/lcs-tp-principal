@@ -13,21 +13,31 @@ using Hashtable = ExitGames.Client.Photon.Hashtable;
 // del mapa, PartidaEnRed arma los jugadores (US 025 a US 030).
 // US 195: al iniciar, la sala pasa a guardar 2 minutos a quien se desconecta. "Volver a la partida" (la tarjeta del menú
 // principal, en MenuRiftwalker) se conecta con el usuario y la región anotados por Reconexion y vuelve a entrar a esa sala.
+// F28 (US 274 a US 276): buscar partida junta con jugadores del mismo modo, la misma versión (AppVersion, US 204) y la
+// misma región: entra a una sala pública con lugar o crea una. Las públicas son visibles y llevan "pub" en el lobby; las
+// de código siguen invisibles, así nunca se mezclan (US 274, CA4). La partida arranca sola (US 276): con 8 jugadores, o
+// con el mínimo del modo si pasan 45 s sin que entre nadie, después de una cuenta regresiva de 10 s. El reloj lo lleva
+// el anfitrión con la hora del servidor guardada en la sala, así sigue igual si cambia el anfitrión.
 public class Multijugador : MonoBehaviourPunCallbacks, IOnEventCallback
 {
     public const int MaxJugadores = 8;
     public const int MinJugadores = 2;
+    public const int EsperaConMinimo = 45, SegundosCuentaRegresiva = 10;
 
     // Un jugador avisa que entró a la partida, con el id de su PhotonView y dónde aparece.
     public const byte EventoJugador = 1;
 
     private const string PropModo = "modo", PropMapa = "mapa";
+    // Buscar partida: la sala es pública, desde cuándo se espera con el mínimo y cuándo empezó la cuenta regresiva
+    // (PhotonNetwork.ServerTimestamp; 0, todavía no).
+    private const string PropPublica = "pub", PropEspera = "esp", PropInicio = "ini";
     private const string Alfabeto = "ABCDEFGHJKMNPQRSTUVWXYZ23456789"; // sin O, I ni L (US 027, CA2)
     private const string EscenaMenu = "MenuPrincipal";
 
-    private const string ErrorCrear = "No se pudo crear la sala. Revisá tu conexión.";
-    private const string ErrorEntrar = "No se pudo entrar a la sala. Revisá tu conexión.";
-    private const string ErrorVolver = "No se pudo volver a la partida. Revisá tu conexión.";
+    private static string ErrorCrear => L10n.T("ui.net.create_failed");
+    private static string ErrorEntrar => L10n.T("ui.net.join_failed");
+    private static string ErrorVolver => L10n.T("ui.net.rejoin_failed");
+    private static string ErrorBuscar => L10n.T("ui.net.search_failed");
 
     public struct Jugador
     {
@@ -59,9 +69,16 @@ public class Multijugador : MonoBehaviourPunCallbacks, IOnEventCallback
     // No se pudo conectar, crear la sala o entrar: el mensaje es para mostrarlo tal cual.
     public event Action<string> Error;
 
-    private enum Pedido { Nada, Crear, Unirse, Volver }
+    private enum Pedido { Nada, Crear, Unirse, Volver, Buscar }
+
+    public enum Fallo { Conexion, Version, CuentaRepetida, Cuenta }
+
+    /// <summary>Por qué falló lo último que se pidió: la búsqueda muestra un aviso para cada caso (US 275, CA3). Con una
+    /// versión vieja (US 204) ofrece abrir el launcher.</summary>
+    public Fallo UltimoFallo { get; private set; }
 
     private Pedido pedido;
+    private float buscandoDesde, ultimoAjuste = -10f;
     private GameMode modoPedido;
     private string codigoPedido;
     private int intentos;
@@ -93,10 +110,24 @@ public class Multijugador : MonoBehaviourPunCallbacks, IOnEventCallback
         string aviso = null;
         yield return VersionDelJuego.Comprobar(resultado => aviso = resultado);
         if (aviso != null) { Fallar(aviso); yield break; }
-        ConectarAhora();
+        // US 277, CA1: en el juego publicado, Photon verifica la cuenta con la base: se conecta con la sesión al día.
+        string sesion = null;
+        if (ConCuentaVerificada)
+        {
+            bool listo = false;
+            LogrosOnline.Instancia.SesionParaPhoton(s => { sesion = s; listo = true; });
+            while (!listo) yield return null;
+            if (sesion == null) { UltimoFallo = Fallo.Cuenta; Fallar(ReglasCuenta.CuentaSinVerificar); yield break; }
+        }
+        ConectarAhora(sesion);
     }
 
-    private void ConectarAhora()
+    // En el juego publicado (con cuenta): en el editor y en los builds de desarrollo se entra sin verificar, para poder
+    // probar con dos copias del juego (ver UsuarioPhoton). Riftwalker > Cuenta > Como en el juego publicado lo prueba.
+    private static bool ConCuentaVerificada =>
+        !LogrosOnline.EntraEnElJuego && LogrosOnline.Instancia != null && !string.IsNullOrEmpty(LogrosOnline.Instancia.IdDeLaCuenta);
+
+    private void ConectarAhora(string sesion)
     {
         if (PhotonNetwork.IsConnected) return;
         PhotonNetwork.AutomaticallySyncScene = true;
@@ -106,14 +137,22 @@ public class Multijugador : MonoBehaviourPunCallbacks, IOnEventCallback
         // US 195: Photon reconoce al que vuelve a una sala por su usuario. Para volver se usan el usuario y la región
         // con los que se jugó esa partida.
         bool volviendo = pedido == Pedido.Volver;
-        PhotonNetwork.AuthValues = new AuthenticationValues(volviendo ? vuelta.usuario : Reconexion.UsuarioDeEstaVez);
+        var auth = new AuthenticationValues(volviendo ? vuelta.usuario : UsuarioPhoton());
+        if (sesion != null)
+        {
+            // US 277, CA1: Photon le pasa la sesión a la Edge Function photon-auth (Backend/Supabase/functions), que la
+            // valida con Supabase y le devuelve el id y el nombre de la cuenta. Sin una sesión válida, Photon no deja entrar.
+            auth.AuthType = CustomAuthenticationType.Custom;
+            auth.SetAuthPostData(new Dictionary<string, object> { { "token", sesion } });
+        }
+        PhotonNetwork.AuthValues = auth;
         // Solo se juntan jugadores con la misma versión del juego (US 204). ConnectUsingSettings pisa GameVersion con la
         // AppVersion de PhotonServerSettings (vacía), así que la versión va en una copia de esa configuración.
         var ajustes = PhotonNetwork.PhotonServerSettings == null ? null : PhotonNetwork.PhotonServerSettings.AppSettings.CopyTo(new AppSettings());
         if (ajustes != null) ajustes.AppVersion = Application.version;
         if (ajustes != null && volviendo && !string.IsNullOrEmpty(vuelta.region)) ajustes.FixedRegion = vuelta.region;
         if (ajustes == null || !PhotonNetwork.ConnectUsingSettings(ajustes, PhotonNetwork.PhotonServerSettings.StartInOfflineMode))
-            Fallar("No se pudo conectar. Revisá tu conexión.");
+            Fallar(L10n.T("gameplay.ui.could_not_connect_check_your_connection"));
     }
 
     public void CrearSala(GameMode modo)
@@ -132,11 +171,30 @@ public class Multijugador : MonoBehaviourPunCallbacks, IOnEventCallback
         StartCoroutine(SeguirConVersion());
     }
 
+    /// <summary>US 274: busca una partida pública de ese modo (o la crea) y espera ahí a que se llene (US 276).</summary>
+    public void BuscarPartida(GameMode modo)
+    {
+        pedido = Pedido.Buscar;
+        modoPedido = modo;
+        buscandoDesde = Time.unscaledTime;
+        StartCoroutine(SeguirConVersion());
+        Cambio?.Invoke();
+    }
+
+    /// <summary>US 275, CA2: deja de buscar y sale de la sala pública. Se puede hasta que empieza la partida.</summary>
+    public void CancelarBusqueda()
+    {
+        if (pedido == Pedido.Buscar) pedido = Pedido.Nada;
+        if (EnPartidaPublica) SalirDeLaSala();
+        Cambio?.Invoke();
+    }
+
     private System.Collections.IEnumerator SeguirConVersion()
     {
+        UltimoFallo = Fallo.Conexion;
         string aviso = null;
         yield return VersionDelJuego.Comprobar(resultado => aviso = resultado);
-        if (aviso != null) { Fallar(aviso); yield break; }
+        if (aviso != null) { UltimoFallo = Fallo.Version; Fallar(aviso); yield break; }
         Seguir();
     }
 
@@ -145,7 +203,7 @@ public class Multijugador : MonoBehaviourPunCallbacks, IOnEventCallback
     {
         if (!Reconexion.HayPartida(out vuelta))
         {
-            Fallar("Ya no se puede volver a esa partida.");
+            Fallar(L10n.T("gameplay.ui.you_can_no_longer_rejoin_that_match"));
             return;
         }
         pedido = Pedido.Volver;
@@ -185,9 +243,104 @@ public class Multijugador : MonoBehaviourPunCallbacks, IOnEventCallback
         // (por ejemplo, se cortó la red de todos).
         PhotonNetwork.CurrentRoom.PlayerTtl = Reconexion.SegundosParaVolver * 1000;
         PhotonNetwork.CurrentRoom.EmptyRoomTtl = Reconexion.SegundosParaVolver * 1000;
-        // US 196: pantalla de carga (los demás la ven cuando Photon les manda cargar el mapa).
-        PantallaDeCarga.MostrarOnline(MapaActual.escena, ModoSala, MapaActual.nombre, MapaActual.imagen, Codigo);
+        // US 196: pantalla de carga (los demás la ven cuando Photon les manda cargar el mapa). Las públicas no tienen código.
+        PantallaDeCarga.MostrarOnline(MapaActual.escena, ModoSala, MapaActual.nombre, MapaActual.imagen, EnPartidaPublica ? "" : Codigo);
         PhotonNetwork.LoadLevel(MapaActual.escena);
+    }
+
+    // ================= Buscar partida (US 274 a US 276) =================
+
+    /// <summary>Está conectándose o entrando a una sala pública (todavía no está en ella).</summary>
+    public bool Buscando => pedido == Pedido.Buscar;
+
+    /// <summary>Está en una sala de buscar partida, esperando que se llene o en la cuenta regresiva.</summary>
+    public bool EnPartidaPublica =>
+        PhotonNetwork.CurrentRoom != null && PhotonNetwork.CurrentRoom.CustomProperties.TryGetValue(PropPublica, out object p) && p is bool b && b;
+
+    public float SegundosBuscando => Time.unscaledTime - buscandoDesde;
+
+    /// <summary>Con cuántos arranca la partida si no entra nadie más: 2 en Deathmatch y 4 en Táctico (2 contra 2).</summary>
+    public static int MinimoPara(GameMode modo) => PruebaSolo.Activa ? 1 : modo == GameMode.Tactico ? 4 : MinJugadores;
+
+    /// <summary>US 276, CA2: segundos que faltan para arrancar con el mínimo; -1 si no hay el mínimo o ya empezó la cuenta.</summary>
+    public float FaltaConMinimo =>
+        !EnPartidaPublica || MarcaSala(PropInicio) != 0 || CantidadJugadores < MinimoPara(ModoSala) ? -1f
+            : Mathf.Max(0f, EsperaConMinimo - SegundosDesde(MarcaSala(PropEspera)));
+
+    /// <summary>US 276, CA1: segundos de la cuenta regresiva que faltan; -1 si no empezó.</summary>
+    public float FaltaParaEmpezar =>
+        !EnPartidaPublica || MarcaSala(PropInicio) == 0 ? -1f : Mathf.Max(0f, SegundosCuentaRegresiva - SegundosDesde(MarcaSala(PropInicio)));
+
+    private static int MarcaSala(string clave) =>
+        PhotonNetwork.CurrentRoom != null && PhotonNetwork.CurrentRoom.CustomProperties.TryGetValue(clave, out object v) && v is int t ? t : 0;
+
+    // La hora del servidor da la vuelta (es un int en milisegundos): la resta sin control de desborde sigue siendo correcta.
+    private static float SegundosDesde(int marca) => unchecked(PhotonNetwork.ServerTimestamp - marca) / 1000f;
+
+    private void Update()
+    {
+        // US 276: el anfitrión de una sala pública arranca la partida. Cada cambio de la sala tarda en volver del servidor:
+        // entre uno y otro espera medio segundo, así no los repite.
+        if (!EnPartidaPublica || !PhotonNetwork.IsMasterClient || !PhotonNetwork.CurrentRoom.IsOpen) return;
+        if (Time.unscaledTime - ultimoAjuste < 0.5f) return;
+        int inicio = MarcaSala(PropInicio);
+        switch (QueHacer(PhotonNetwork.CurrentRoom.PlayerCount, MinimoPara(ModoSala), inicio != 0, SegundosDesde(MarcaSala(PropEspera)), SegundosDesde(inicio)))
+        {
+            case Arranque.EmpezarCuenta: Ajustar(new Hashtable { { PropInicio, MarcaAhora() } }); break;
+            case Arranque.CancelarCuenta: Ajustar(new Hashtable { { PropInicio, 0 }, { PropEspera, MarcaAhora() } }); break;
+            case Arranque.Iniciar:
+                if (!PuedeIniciar) break;
+                ultimoAjuste = Time.unscaledTime;
+                Iniciar();
+                break;
+        }
+    }
+
+    public enum Arranque { Nada, EmpezarCuenta, CancelarCuenta, Iniciar }
+
+    /// <summary>US 276: qué hace el anfitrión de una sala pública. Sin la cuenta regresiva, la empieza con 8 jugadores, o
+    /// con el mínimo si pasaron 45 s sin que entre nadie (CA1 y CA2). Durante la cuenta, si quedan menos que el mínimo la
+    /// cancela y sigue buscando (CA3); a los 10 s, inicia la partida.</summary>
+    public static Arranque QueHacer(int cantidad, int minimo, bool enCuenta, float segundosEsperando, float segundosDeCuenta)
+    {
+        if (!enCuenta)
+            return cantidad >= MaxJugadores || (cantidad >= minimo && segundosEsperando >= EsperaConMinimo) ? Arranque.EmpezarCuenta : Arranque.Nada;
+        if (cantidad < minimo) return Arranque.CancelarCuenta;
+        return segundosDeCuenta >= SegundosCuentaRegresiva ? Arranque.Iniciar : Arranque.Nada;
+    }
+
+    private void Ajustar(Hashtable cambios)
+    {
+        ultimoAjuste = Time.unscaledTime;
+        PhotonNetwork.CurrentRoom.SetCustomProperties(cambios);
+    }
+
+    // 0 quiere decir "todavía no": si justo la hora del servidor es 0, se usa 1 (un milisegundo no se nota).
+    private static int MarcaAhora() => PhotonNetwork.ServerTimestamp == 0 ? 1 : PhotonNetwork.ServerTimestamp;
+
+    // US 274, CA3: el mismo modo y sala pública (la versión ya la separa Photon, US 204; la región es la de la conexión).
+    // Si no hay ninguna con lugar, crea una con un mapa del modo al azar.
+    private void BuscarAhora()
+    {
+        int mapas = ConfigRed.Actual != null ? ConfigRed.Actual.MapasDe(modoPedido).Count : 0;
+        var opciones = new RoomOptions
+        {
+            MaxPlayers = MaxJugadores,
+            IsVisible = true,
+            IsOpen = true,
+            CleanupCacheOnLeave = true,
+            PublishUserId = true,
+            CustomRoomProperties = new Hashtable
+            {
+                { PropModo, (int)modoPedido }, { PropMapa, mapas > 0 ? UnityEngine.Random.Range(0, mapas) : 0 },
+                { PropPublica, true }, { PropEspera, MarcaAhora() }, { PropInicio, 0 }
+            },
+            CustomRoomPropertiesForLobby = new[] { PropModo, PropPublica }
+        };
+        var esperadas = new Hashtable { { PropModo, (int)modoPedido }, { PropPublica, true } };
+        PhotonNetwork.NickName = NombreBase();
+        if (!PhotonNetwork.JoinRandomOrCreateRoom(esperadas, MaxJugadores, MatchmakingMode.FillRoom, TypedLobby.Default, null, null, opciones))
+            Fallar(ErrorBuscar);
     }
 
     // ================= Estado de la sala =================
@@ -230,7 +383,7 @@ public class Multijugador : MonoBehaviourPunCallbacks, IOnEventCallback
         return lista;
     }
 
-    public static string Titulo(GameMode modo) => modo == GameMode.Deathmatch ? "Deathmatch" : modo == GameMode.Zombie ? "Zombie" : "Táctico";
+    public static string Titulo(GameMode modo) => modo == GameMode.Deathmatch ? "Deathmatch" : modo == GameMode.Zombie ? L10n.T("gameplay.ui.invasion") : L10n.T("gameplay.ui.tactical");
 
     // ================= Conexión =================
 
@@ -265,6 +418,7 @@ public class Multijugador : MonoBehaviourPunCallbacks, IOnEventCallback
         // con lo de la partida anterior. Al volver a la misma partida (arriba) no se borran: las devuelve la sala.
         PhotonNetwork.LocalPlayer.CustomProperties = new Hashtable();
         if (pedido == Pedido.Crear) CrearAhora();
+        else if (pedido == Pedido.Buscar) BuscarAhora();
         else if (!PhotonNetwork.JoinRoom(codigoPedido)) Fallar(ErrorEntrar);
     }
 
@@ -285,7 +439,16 @@ public class Multijugador : MonoBehaviourPunCallbacks, IOnEventCallback
         if (!PhotonNetwork.CreateRoom(codigo, opciones)) Fallar(ErrorCrear);
     }
 
-    private static string NombreBase() => PlayerProfile.HasName ? PlayerProfile.Name : "Jugador";
+    private static string NombreBase() => PlayerProfile.HasName ? PlayerProfile.Name : L10n.T("gameplay.ui.player");
+
+    // US 277, CA3: en el juego publicado, el usuario de Photon es la cuenta, así la misma cuenta no puede estar dos veces en
+    // una sala (Photon no deja entrar a un usuario que ya está). En el editor y en los builds de desarrollo es uno nuevo
+    // cada vez, para poder probar con dos copias del juego en la misma PC y la misma cuenta.
+    private static string UsuarioPhoton()
+    {
+        string cuenta = LogrosOnline.Instancia != null ? LogrosOnline.Instancia.IdDeLaCuenta : null;
+        return !LogrosOnline.EntraEnElJuego && !string.IsNullOrEmpty(cuenta) ? cuenta : Reconexion.UsuarioDeEstaVez;
+    }
 
     private bool ConectadoComoEnLaPartida() =>
         PhotonNetwork.AuthValues != null && PhotonNetwork.AuthValues.UserId == vuelta.usuario &&
@@ -312,9 +475,32 @@ public class Multijugador : MonoBehaviourPunCallbacks, IOnEventCallback
     public override void OnCreateRoomFailed(short returnCode, string message)
     {
         // Otra sala ya usa ese código: se prueba con otro.
-        if (returnCode == ErrorCode.GameIdAlreadyExists && ++intentos < 5) { CrearAhora(); return; }
+        if (pedido == Pedido.Crear && returnCode == ErrorCode.GameIdAlreadyExists && ++intentos < 5) { CrearAhora(); return; }
         Debug.LogWarning($"Multijugador: no se pudo crear la sala ({returnCode}: {message}).");
-        Fallar(ErrorCrear);
+        if (pedido == Pedido.Buscar) FallarBusqueda(returnCode);
+        else Fallar(ErrorCrear);
+    }
+
+    // US 277, CA1: la base no reconoció la sesión (venció, se cerró o se borró la cuenta).
+    public override void OnCustomAuthenticationFailed(string debugMessage)
+    {
+        Debug.LogWarning($"Multijugador: Photon no aceptó la cuenta ({debugMessage}).");
+        UltimoFallo = Fallo.Cuenta;
+        Fallar(ReglasCuenta.CuentaSinVerificar);
+    }
+
+    public override void OnJoinRandomFailed(short returnCode, string message)
+    {
+        Debug.LogWarning($"Multijugador: no se pudo buscar partida ({returnCode}: {message}).");
+        if (pedido == Pedido.Buscar) FallarBusqueda(returnCode);
+    }
+
+    // US 277, CA3: si la cuenta ya está en esa sala (desde otra PC), Photon no la deja entrar de nuevo.
+    private void FallarBusqueda(short returnCode)
+    {
+        bool repetida = returnCode == ErrorCode.JoinFailedFoundActiveJoiner;
+        UltimoFallo = repetida ? Fallo.CuentaRepetida : Fallo.Conexion;
+        Fallar(repetida ? L10n.T("ui.net.account_in_match") : ErrorBuscar);
     }
 
     public override void OnJoinRoomFailed(short returnCode, string message)
@@ -327,9 +513,9 @@ public class Multijugador : MonoBehaviourPunCallbacks, IOnEventCallback
             {
                 // Photon todavía no se dio cuenta de que se cortó la conexión: en unos segundos sí.
                 case ErrorCode.JoinFailedFoundActiveJoiner:
-                    FallarVuelta("Todavía figurás en la partida. Probá de nuevo en unos segundos.", false);
+                    FallarVuelta(L10n.T("ui.net.still_listed"), false);
                     break;
-                case ErrorCode.GameDoesNotExist: FallarVuelta("La partida ya terminó."); break;
+                case ErrorCode.GameDoesNotExist: FallarVuelta(L10n.T("ui.net.match_over")); break;
                 case ErrorCode.JoinFailedWithRejoinerNotFound: FallarVuelta("Ya no se puede volver a esa partida."); break;
                 default: FallarVuelta(ErrorVolver, false); break;
             }
@@ -339,8 +525,8 @@ public class Multijugador : MonoBehaviourPunCallbacks, IOnEventCallback
         switch (returnCode)
         {
             case ErrorCode.GameDoesNotExist: Fallar("No existe una sala con ese código."); break;
-            case ErrorCode.GameFull: Fallar("La sala está llena."); break;
-            case ErrorCode.GameClosed: Fallar("La partida ya empezó."); break;
+            case ErrorCode.GameFull: Fallar(L10n.T("ui.net.room_full")); break;
+            case ErrorCode.GameClosed: Fallar(L10n.T("ui.net.match_started")); break;
             default:
                 Debug.LogWarning($"Multijugador: no se pudo entrar a la sala ({returnCode}: {message}).");
                 Fallar(ErrorEntrar);
@@ -360,7 +546,7 @@ public class Multijugador : MonoBehaviourPunCallbacks, IOnEventCallback
         {
             // US 026, CA5: la sala es de otro modo.
             PhotonNetwork.LeaveRoom(false);
-            Error?.Invoke($"Esa sala es de {Titulo(modo)}.");
+            Error?.Invoke(L10n.T("ui.net.room_mode_fmt", L10n.Source(Titulo(modo), "ui.")));
             return;
         }
 
@@ -398,6 +584,9 @@ public class Multijugador : MonoBehaviourPunCallbacks, IOnEventCallback
     {
         Debug.Log($"Multijugador: {(newPlayer.HasRejoined ? "volvió" : "entró")} {newPlayer.NickName}.");
         if (newPlayer.HasRejoined && PartidaEnRed.Actual != null) PartidaEnRed.Actual.AlVolver(newPlayer); // US 195
+        // US 276, CA2: en buscar partida, si entra alguien la espera con el mínimo vuelve a empezar.
+        if (EnPartidaPublica && PhotonNetwork.IsMasterClient && PhotonNetwork.CurrentRoom.IsOpen && MarcaSala(PropInicio) == 0)
+            Ajustar(new Hashtable { { PropEspera, MarcaAhora() } });
         Cambio?.Invoke();
     }
 
@@ -426,8 +615,9 @@ public class Multijugador : MonoBehaviourPunCallbacks, IOnEventCallback
             return;
         }
         cambiandoUsuario = false;
-        if (habia != Pedido.Nada) Fallar(habia == Pedido.Crear ? ErrorCrear : habia == Pedido.Volver ? ErrorVolver : ErrorEntrar);
-        else if (cause != DisconnectCause.DisconnectByClientLogic) Error?.Invoke("Se perdió la conexión con el servidor.");
+        if (habia != Pedido.Nada) Fallar(habia == Pedido.Crear ? ErrorCrear : habia == Pedido.Volver ? ErrorVolver : habia == Pedido.Buscar ? ErrorBuscar : ErrorEntrar);
+        else if (cause != DisconnectCause.DisconnectByClientLogic && cause != DisconnectCause.CustomAuthenticationFailed)
+            Error?.Invoke(L10n.T("ui.net.connection_lost")); // la cuenta rechazada ya avisó (OnCustomAuthenticationFailed)
         Cambio?.Invoke();
 
         // Sin conexión no hay partida: se vuelve al menú.

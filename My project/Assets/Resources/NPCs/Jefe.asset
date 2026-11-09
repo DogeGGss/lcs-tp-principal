@@ -1,0 +1,74 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6cb6d8d75b8640af90d2c5f369da01c4, type: 3}
+  m_Name: Jefe
+  m_EditorClassIdentifier: 
+  nombre: Jefe
+  modelo: {fileID: 1174681552261998, guid: cda9515b23e2f454b9c8d645acee645e, type: 3}
+  escala: 2.5
+  giroDelModelo: 180
+  marcas: 0
+  colorDeMarcas: {r: 0.45, g: 1, b: 0.2, a: 1}
+  cantidadDeMarcas: 9
+  tamanioDeMarcas: 0.6
+  huecosEntreMarcas: 0.35
+  irregularidadDeMarcas: 0
+  brilloDeMarcas: 2.2
+  opacidadDeMarcas: 0.5
+  pulsoDeMarcas: 0.35
+  huesosSinMarcas: []
+  separacionDeRayas: 0.05
+  anchoDeRayas: 0.015
+  largoDeRayas: 0.08
+  giroDeMarcas: {x: 0, y: 0, z: 0}
+  ojoEnLaTextura: {x: 0.797, y: 0.143}
+  radioDelOjo: 0.08
+  brilloDeOjos: 2
+  delineadoDeOjos: 0
+  ojosOscuros: 1
+  vida: 2000
+  danio: 50
+  alcance: 0.5
+  velocidadDeAtaque: 1.5
+  cadencia: 1.5
+  frenaAlRecibirImpacto: 0
+  velocidad: 3.5
+  corre: 0
+  quieto: {fileID: 7400000, guid: 12032f68da0993d41bcee7217e8288f7, type: 3}
+  quietoEnCombate: {fileID: 7400000, guid: f6145ecde24cdf54b89e3e4990dd0f11, type: 3}
+  caminar: {fileID: 7400000, guid: 8f8ad413d2c254e4b8e5bd1ee79e356b, type: 3}
+  correr: {fileID: 7400000, guid: 8f8ad413d2c254e4b8e5bd1ee79e356b, type: 3}
+  ataques:
+  - {fileID: 7400000, guid: 049efb7b4fef0ca4db6974da3489132d, type: 3}
+  golpeRecibido: {fileID: 0}
+  morir: {fileID: 7400000, guid: bf34b5e8e3924f043bc6c995d99928e6, type: 3}
+  aturdido: {fileID: 0}
+  grito: {fileID: 8300000, guid: 088a0273948441a4802940d3648b87a5, type: 3}
+  sonidoDeAtaque: {fileID: 8300000, guid: a5e2403c5d5f49e599287bebf756c21b, type: 3}
+  sonidoDeRugido: {fileID: 8300000, guid: 088a0273948441a4802940d3648b87a5, type: 3}
+  sonidoDeVuelo: {fileID: 8300000, guid: f1f3e2534e724d72ac7e833c927a2f6b, type: 3}
+  sonidoDeEscupir: {fileID: 8300000, guid: 5f2e0b32b11f476ebedea7c386175493, type: 3}
+  sonidoDeImpactoDeVeneno: {fileID: 8300000, guid: 03a836ce61c6449b8a7b54686f8159c8, type: 3}
+  esJefe: 1
+  titulo: El Escarabajo
+  embiste: 1
+  preparaEmbestida: {fileID: 7400000, guid: 693eb987195b4674690a3b04d565c310, type: 3}
+  embestida: {fileID: 7400000, guid: 8f8ad413d2c254e4b8e5bd1ee79e356b, type: 3}
+  vuela: 1
+  volar: {fileID: 7400000, guid: 8f8ad413d2c254e4b8e5bd1ee79e356b, type: 3}
+  escupir: {fileID: 7400000, guid: 495488b67c58bcd48b6e41fd3cc7a8a7, type: 3}
+  veneno: 0
+  materialDeNube: {fileID: 2100000, guid: 34d513672558fe0478dd3a29e7f55db4, type: 2}
+  furia: 1
+  rugido: {fileID: 7400000, guid: 693eb987195b4674690a3b04d565c310, type: 3}
+  puntosPorBaja: 500
+  puntosPorBajaALaCabeza: 500

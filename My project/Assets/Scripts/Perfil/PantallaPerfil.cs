@@ -8,8 +8,9 @@ using Tipo = PerfilDatos.Tipo;
 using Cosmetico = PerfilDatos.Cosmetico;
 
 // Perfil del jugador (menú principal). Arriba, la cabecera con el banner, el avatar, el nombre, el título y un
-// resumen; abajo, tres pestañas: Estadísticas (US 221: las del jugador, F24, y las del minijuego, US 159), Personalización
-// (avatares, banners, títulos y marcos) y Emotes (US 264: los bailes que se llevan en la rueda).
+// resumen; abajo, cuatro pestañas: Estadísticas (US 221: las del jugador, F24, y las del minijuego, US 159), Personalización
+// (avatares, banners, títulos y marcos), Emotes (US 264: los bailes que se llevan en la rueda) y Cuenta (US 237,
+// PestanaCuenta).
 public class PantallaPerfil : PantallaBase
 {
     private const float Y0 = 520f, AnchoGrilla = 1260f;
@@ -20,10 +21,10 @@ public class PantallaPerfil : PantallaBase
     private Transform bajoMarco;
     private TextMeshProUGUI nombre, titulo, infoPestana;
     private readonly TextMeshProUGUI[] resumen = new TextMeshProUGUI[4];
-    // Entrega del Sprint 3: sin emotes (Emotes.Disponibles) no está la pestaña Emotes.
-    private readonly TextMeshProUGUI[] pestanas = new TextMeshProUGUI[Emotes.Disponibles ? 3 : 2];
+    private readonly TextMeshProUGUI[] pestanas = new TextMeshProUGUI[4];
     private Img subrayado;
-    private RectTransform panelEstad, panelPers, panelEmotes, grilla, vista;
+    private RectTransform panelEstad, panelPers, panelEmotes, panelCuenta, grilla, vista;
+    private PestanaCuenta cuenta;
     private RectTransform cuerpoMinijuego;
     private float anchoTarjeta;
     private UnityEngine.UI.ScrollRect scroll;
@@ -42,7 +43,9 @@ public class PantallaPerfil : PantallaBase
         ArmarPestanas();
         ArmarEstadisticas();
         ArmarPersonalizacion();
-        if (Emotes.Disponibles) ArmarEmotes();
+        ArmarEmotes();
+        panelCuenta = Place(Node("Cuenta", rect), 60f, Y0, 1800f, 540f);
+        cuenta = new PestanaCuenta(menu, panelCuenta);
         ElegirPestana(0);
     }
 
@@ -88,8 +91,7 @@ public class PantallaPerfil : PantallaBase
 
     private void ArmarPestanas()
     {
-        string[] nombres = Emotes.Disponibles ? new[] { "Estadísticas", "Personalización", "Emotes" }
-                                              : new[] { "Estadísticas", "Personalización" };
+        string[] nombres = { "Estadísticas", "Personalización", "Emotes", "Cuenta" };
         float x = 60f;
         for (int i = 0; i < nombres.Length; i++)
         {
@@ -118,25 +120,28 @@ public class PantallaPerfil : PantallaBase
         subrayado.rectTransform.sizeDelta = new Vector2(t.sizeDelta.x, 4f);
         panelEstad.gameObject.SetActive(i == 0);
         panelPers.gameObject.SetActive(i == 1);
-        if (panelEmotes != null) panelEmotes.gameObject.SetActive(i == 2);
+        panelEmotes.gameObject.SetActive(i == 2);
+        panelCuenta.gameObject.SetActive(i == 3);
+        if (i == 3) cuenta.Refrescar();
         if (i == 2) VerEmote(emoteVisto); else VistaPreviaDeEmote.Apagar(); // la vista previa solo dibuja si se ve
         RefrescarInfo();
     }
 
     private void RefrescarInfo()
     {
-        if (pestana == 0) infoPestana.text = $"Partidas terminadas  <color=#F3F4F6>{N(EstadisticasJugador.Datos.Partidas)}</color>";
+        if (pestana == 0) infoPestana.text = L10n.T("profile.info.matches_fmt", N(EstadisticasJugador.Datos.Partidas));
+        else if (pestana == 3) infoPestana.text = cuenta.Info;
         else if (pestana == 2)
         {
             int equipados = 0;
             for (int i = 0; i < EmotesEquipados.Espacios; i++) if (EmotesEquipados.En(i) >= 0) equipados++;
-            infoPestana.text = $"En la rueda  <color=#F3F4F6>{equipados} / {EmotesEquipados.Espacios}</color>";
+            infoPestana.text = L10n.T("profile.info.wheel_fmt", equipados, EmotesEquipados.Espacios);
         }
         else
         {
             int tiene = PerfilDatos.Obtenidos(Tipo.Avatar) + PerfilDatos.Obtenidos(Tipo.Banner) + PerfilDatos.Obtenidos(Tipo.Titulo) + PerfilDatos.Obtenidos(Tipo.Marco);
             int total = PerfilDatos.Total(Tipo.Avatar) + PerfilDatos.Total(Tipo.Banner) + PerfilDatos.Total(Tipo.Titulo) + PerfilDatos.Total(Tipo.Marco);
-            infoPestana.text = $"Colección  <color=#F3F4F6>{tiene} / {total}</color>";
+            infoPestana.text = L10n.T("profile.info.collection_fmt", tiene, total);
         }
     }
 
@@ -202,8 +207,18 @@ public class PantallaPerfil : PantallaBase
             ("Bajas", N(e.deathmatch.bajas)),
             ("Mejor racha", N(e.mejorRacha)),
         });
-        // El Zombie todavía no tiene final: se va a registrar con la US 151.
-        Tarjeta(2, "Zombie", "#7DE05A", SinDatos + ". Las partidas Zombie se van a registrar cuando el modo tenga final.", null);
+        // US 222, CA2: aparte del multijugador, con los récords de oleada por dificultad (US 151 y US 161).
+        int facil = MatchSettings.ZombieRecord(ZombieDifficulty.Facil), normal = MatchSettings.ZombieRecord(ZombieDifficulty.Normal),
+            dificil = MatchSettings.ZombieRecord(ZombieDifficulty.Dificil);
+        Tarjeta(2, "Invasión", "#7DE05A", e.invasion.partidas == 0 && facil + normal + dificil == 0 ? "Todavía no terminaste ninguna partida de Invasión." : null, new[]
+        {
+            ("Partidas", N(e.invasion.partidas)),
+            ("Mundo salvado", N(e.invasion.victorias)),
+            ("Invasores eliminados", N(e.invasion.bajas)),
+            ("Récord en Fácil", Oleada(facil)),
+            ("Récord en Normal", Oleada(normal)),
+            ("Récord en Difícil", Oleada(dificil)),
+        });
         RectTransform minijuego = Tarjeta(3, "Minijuego: cometas", "#4CC3FF", null, null);
         cuerpoMinijuego = Place(Node("Datos", minijuego), 0f, 60f, w, 236f);
         RefrescarMinijuego();
@@ -242,6 +257,9 @@ public class PantallaPerfil : PantallaBase
     }
 
     private static string N(long n) => PerfilDatos.Numero((int)Mathf.Min(n, int.MaxValue));
+    private static string Oleada(int oleada) => oleada > 0 ? oleada.ToString() : "—";
+    private static int MejorOleada() => Mathf.Max(MatchSettings.ZombieRecord(ZombieDifficulty.Facil),
+        Mathf.Max(MatchSettings.ZombieRecord(ZombieDifficulty.Normal), MatchSettings.ZombieRecord(ZombieDifficulty.Dificil)));
     private static string Porcentaje(int parte, int total) => total > 0 ? Mathf.RoundToInt(100f * parte / total) + " %" : SinDatos;
     // US 223, CA4: se calcula con los totales y solo se redondea para mostrarlo ("1,79").
     private static string Kda(EstadisticasJugador.Totales e) => e.Kda.ToString("0.00", Cultura).Replace(".", ",");
@@ -572,7 +590,7 @@ public class PantallaPerfil : PantallaBase
                 CrearBoton(carta, w - 118f, 64f, 100f, 40f, "Quitar", false, () =>
                 {
                     EmotesEquipados.Poner(k, -1);
-                    menu.Avisar($"Espacio {k + 1} vacío");
+                    menu.Avisar(L10n.T("profile.emotes.slot_empty_fmt", k + 1));
                     Refrescar();
                 }, 18f);
         }
@@ -602,7 +620,7 @@ public class PantallaPerfil : PantallaBase
             TextMeshProUGUI n = T(carta, "Nombre", 104f, 18f, cw - 120f, 40f, FTitulo, 30f, Ink, e.nombre, TextAlignmentOptions.MidlineLeft, 3f, true);
             n.overflowMode = TextOverflowModes.Ellipsis;
             T(carta, "Estado", 104f, 60f, cw - 120f, 24f, FRotulo, 16f, espacio >= 0 ? Ok : Mute,
-                espacio >= 0 ? $"En el espacio {espacio + 1}" : "Sin equipar", TextAlignmentOptions.MidlineLeft, 12f, true);
+                espacio >= 0 ? L10n.T("profile.emotes.in_slot_fmt", espacio + 1) : L10n.T("profile.ui.not_equipped"), TextAlignmentOptions.MidlineLeft, 12f, true);
             Img borde = Borde(carta, 8f, visto ? Accent : White(0.08f));
             var p = Clickeable(carta, () =>
             {
@@ -611,7 +629,7 @@ public class PantallaPerfil : PantallaBase
                 if (espacioElegido >= 0)
                 {
                     EmotesEquipados.Poner(espacioElegido, k);
-                    menu.Avisar($"{e.nombre} en el espacio {espacioElegido + 1} ({LugaresDeLaRueda[espacioElegido].ToLowerInvariant()})");
+                    menu.Avisar(L10n.T("profile.emote.equipped_fmt", L10n.Source(e.nombre, "profile."), espacioElegido + 1, L10n.Source(LugaresDeLaRueda[espacioElegido], "profile.").ToLowerInvariant()));
                 }
                 Refrescar();
             });
@@ -641,7 +659,7 @@ public class PantallaPerfil : PantallaBase
         vistaEmote.texture = VistaPreviaDeEmote.Textura;
         nombreVisto.text = e != null ? e.nombre : "";
         if (personajeVisto != null) personajeVisto.text = pj != null ? pj.displayName : "";
-        ayudaVista.text = e == null ? "Pasá el mouse por un baile para verlo." : pj != null ? pj.role : "";
+        ayudaVista.text = e == null ? L10n.Source("Pasá el mouse por un baile para verlo.", "profile.") : pj != null ? pj.role : "";
     }
 
     private CharacterData PersonajeDeLaVista()
@@ -680,20 +698,27 @@ public class PantallaPerfil : PantallaBase
         AjustarCubrir(banner, cajaBanner);
         fondoCabecera.enabled = !conMarco;
         if (bordeCabecera != null) bordeCabecera.enabled = !conMarco;
-        nombre.text = PlayerProfile.HasName ? PlayerProfile.Name : "Jugador";
+        nombre.text = PlayerProfile.HasName ? PlayerProfile.Name : L10n.T("profile.player.default");
         bool sinTitulo = string.IsNullOrEmpty(ti.id);
-        titulo.text = sinTitulo ? "Sin título" : ti.nombre;
+        titulo.text = sinTitulo ? L10n.T("profile.title.none") : L10n.Source(ti.nombre, "profile.");
         titulo.color = sinTitulo ? Mute : Ink;
         EstadisticasJugador.Totales e = EstadisticasJugador.Datos;
         resumen[0].text = N(e.Partidas);
         resumen[1].text = N(e.Victorias);
         resumen[2].text = e.SinDatos ? "—" : Kda(e);
-        resumen[3].text = "—"; // el Zombie todavía no registra la oleada récord (US 151)
+        resumen[3].text = Oleada(MejorOleada()); // la más alta de las tres dificultades (US 151)
         RefrescarEstadisticas();
         RefrescarInfo();
         RefrescarChips();
         RefrescarGrilla();
         RefrescarVista();
         RefrescarEmotes();
+        if (pestana == 3) cuenta.Refrescar();
+    }
+
+    public override void Tick()
+    {
+        base.Tick();
+        if (pestana == 3) { cuenta.Tick(); RefrescarInfo(); }
     }
 }

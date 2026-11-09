@@ -32,6 +32,7 @@ public class FueraDelMapa : MonoBehaviour
     {
         // El límite se calcula un cuadro después, con toda la escena ya cargada.
         if (!limiteListo) { CalcularLimite(); return; }
+        if (TrucosDeInvasion.Noclip) return; // volando con el truco se puede pasar por debajo del mapa
         if (transform.position.y < limite || transform.position.y < LimiteAbsoluto) Caer(null);
     }
 

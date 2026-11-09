@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 8951071eec71cd944b09879123037783
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 190473
+  packageName: 'Monster: Catfish'
+  packageVersion: 1.0
+  assetPath: Assets/Hatogame_new/Catfish/Controller/Catfish_Controller.controller
+  uploadId: 626344

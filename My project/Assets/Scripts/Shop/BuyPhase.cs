@@ -71,6 +71,16 @@ public class BuyPhase : MonoBehaviour
         Started?.Invoke();
     }
 
+    /// <summary>
+    /// Modo Invasión (US 148): los descansos los abre OleadasDeInvasion al terminar cada oleada. Sin esto, la "ronda" de
+    /// prueba de la escena volvía a abrir la compra en medio de la oleada.
+    /// </summary>
+    public void SinRondasDePrueba()
+    {
+        StopAllCoroutines();
+        testRoundLength = 0f;
+    }
+
     /// <summary>US 032: cierra la compra ya (empieza el combate).</summary>
     public void Terminar()
     {

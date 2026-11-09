@@ -3,7 +3,7 @@
 ## Activación (por el dueño del proyecto)
 
 1. Crear cuenta en https://supabase.com/dashboard/sign-up y crear un proyecto.
-2. En Authentication, habilitar Anonymous Sign-Ins. El juego crea una identidad anónima por instalación y conserva su sesión; no pide correo al jugador.
+2. En Authentication, habilitar Anonymous Sign-Ins. Para jugar hace falta una cuenta (ver «Cuentas»); la identidad anónima queda para el editor sin cuenta y las versiones viejas del juego, que pueden mandar opiniones y ver el ranking, pero no suben progreso ni aparecen en él.
 3. En SQL Editor ejecutar el contenido completo de `Backend/Supabase/logros.sql`. **Cada vez que cambie** (por ejemplo, al sumarse `rw_sync_progress` para el resto del progreso, US 162, o `rw_stat_board` para el ranking por estadísticas, US 226) hay que volver a ejecutarlo: es reejecutable y no borra nada. Mientras no se ejecute, el juego sigue sincronizando los logros y avisa en la pantalla de Logros que falta actualizar la base.
 4. En los ajustes de conexión del proyecto copiar **Project URL** y la **publishable key** (`sb_publishable_...`). Nunca usar la contraseña de la base, `service_role` ni `sb_secret_` en Unity.
 5. En Unity seleccionar `Assets/Resources/LogrosOnline.asset`, completar `Url` y `Clave Publica`, activar `Habilitado` y generar una nueva build. No necesita modificaciones manuales a escenas.
@@ -53,19 +53,87 @@ Los logros nuevos se agregan siempre **al final** de `LogrosCometas.Catalogo`: l
 
 **Dos juegos abiertos en la misma PC** (dos builds) comparten el archivo. Antes de guardar, cada uno junta su progreso con el del archivo (el máximo de cada color y de cada estadística del minijuego), así ninguno pisa al otro; los aciertos que hagan al mismo tiempo no se suman entre sí. El editor usa su propio archivo, pero comparte la sesión online con los builds: sus pruebas también cuentan para el ranking.
 
-**Resto del progreso en la nube** (`rw_sync_progress`, tabla `rw_player_progress`): estadísticas del jugador (F24) y del minijuego (US 159), récords de Zombie y cosméticos del Perfil. El juego manda listas `{clave, valor}` y la base junta: contadores con el máximo, mejores tiempos con el mínimo, cosméticos obtenidos con la unión y equipados con lo último. Las opciones y las monedas no se suben: las monedas bajan al gastarse y juntarlas con el máximo devolvería lo gastado (con cuentas, US 237, el saldo lo tiene que manejar la base).
+**Resto del progreso en la nube** (`rw_sync_progress`, tabla `rw_player_progress`): estadísticas del jugador (F24) y del minijuego (US 159), récords de Zombie y el Perfil: cosméticos, cápsulas abiertas, pity, total gastado, compras, packs de una sola vez y últimos premios. El juego manda listas `{clave, valor}` y la base junta: contadores con el máximo, mejores tiempos con el mínimo, cosméticos, packs y compras con la unión, y equipados y últimos premios con lo último. El pity se manda como «la cápsula del último épico», que solo sube, así también se junta con el máximo. En una PC nueva el juego no manda lo equipado hasta traer lo de la nube: si no, lo de entrada pisaría lo que el jugador tenía. Las opciones no se suben. Las monedas tienen su propio saldo (ver «Monedas de la cuenta»).
 
 La sesión anónima y la última consulta del ranking se guardan por dominio del proyecto en esa misma carpeta. No compartir esos archivos de sesión. El JSON local no es una copia portable de una cuenta: borrar la sesión crea otra identidad, y no hay recuperación por correo ni fusión de cuentas en esta entrega.
 
 Supabase cambia el token de renovación cada vez que se usa y anula la sesión si alguien reusa uno viejo. Por eso, antes de renovar, el juego vuelve a leer el archivo de sesión (otro juego abierto en la PC pudo renovarla). Si aun así la sesión quedó anulada, crea otra identidad anónima y lo avisa en la pantalla de Logros; la anterior queda en el ranking con el mismo nombre y lo que tenía.
 
-El progreso local funciona sin internet. Se sincronizan totales acumulados, usando el máximo entre nube y PC: reintentar no duplica puntos. Los cambios se envían como máximo cada 15 segundos; el ranking se consulta al abrir, al cambiar de página/filtro, manualmente y cada 60 segundos mientras la pantalla permanece abierta. Errores de red aplican espera creciente de 10 a 120 segundos y conservan la caché visible con su fecha.
+El progreso local funciona sin internet. Se sincronizan totales acumulados, usando el máximo entre nube y PC: reintentar no duplica puntos. Los cambios se envían enseguida (con 2 segundos entre una sincronización y la siguiente) y, al cerrar el juego, si queda algo sin subir, el juego espera hasta 4 segundos a que salga; el ranking se consulta al abrir, al cambiar de página/filtro, manualmente y cada 60 segundos mientras la pantalla permanece abierta. Errores de red aplican espera creciente de 10 a 120 segundos y conservan la caché visible con su fecha.
 
+## Cuentas (US 237, US 269, US 270, US 281 y US 282)
+
+La cuenta se maneja en el launcher, como en un cliente (`Launcher/Core/Cuentas.cs`; diseño en la guía, `#cuenta-launcher`): ahí se crea, se inicia sesión y se cierra. Para jugar hace falta una cuenta, y JUGAR abre el juego con ella. Las cuentas arrancan de cero: el progreso que había en la PC antes de las cuentas no pasa a ninguna.
+
+- El launcher guarda la sesión (nunca la contraseña) en la carpeta de guardado del juego: `%USERPROFILE%\AppData\LocalLow\Equipo 4\Project Riftwalker\cuenta-sesion-<host>.json`. El juego la lee al abrir (`LogrosOnline.Cuenta.cs`), aunque se lo abra sin el launcher. Supabase cambia el token de renovación cada vez que se usa: los dos leen el archivo antes de renovarla.
+- Con la cuenta, el progreso va a su propio archivo (`jugador-<id>.json`) y a la nube. Las opciones siguen en `jugador.json`.
+- Sin una sesión, el juego publicado muestra «Iniciá sesión en el launcher» y no deja jugar. En el editor (y en los builds de desarrollo) el Perfil deja crear la cuenta y entrar, para probar sin launcher; *Riftwalker > Cuenta > Como en el juego publicado* hace que el editor se comporte como el juego publicado.
+
+El launcher (y el Perfil, en el editor) hace estos pedidos a Supabase Auth:
+
+1. Crear: `POST /auth/v1/signup` con el mail y la contraseña. Supabase manda un código de 6 números. Si el mail ya tiene cuenta, Supabase responde sin identidades y se ofrece iniciar sesión.
+2. Confirmar: `POST /auth/v1/verify` con `type: signup`, el mail y el código. Devuelve la sesión de la cuenta.
+3. Pedir otro código: `POST /auth/v1/resend` con `type: signup`.
+4. Iniciar sesión: `POST /auth/v1/token?grant_type=password`. Si el mail no está confirmado, se manda otro código y se pide confirmarlo.
+5. Cerrar sesión: `POST /auth/v1/logout?scope=local`.
+
+El nombre de jugador lo pide el juego la primera vez y lo guarda en la cuenta (`PUT /auth/v1/user` con `data.nombre`): así aparece en el launcher y en otra PC. Si no se pudo guardar (sin conexión), el juego lo reintenta en cada sincronización.
+
+**Configuración en el panel de Supabase (una sola vez):**
+
+- *Authentication › Sign In / Providers › Email*: habilitado, con *Confirm email* prendido. La contraseña mínima del juego es de 8 caracteres; conviene poner el mismo mínimo en *Password Requirements*.
+- *Anonymous Sign-Ins* queda habilitado mientras haya versiones viejas del juego en uso (y para el editor sin cuenta). Las sesiones anónimas no suben progreso ni entran al ranking.
+- *Authentication › Emails › SMTP Settings*: un SMTP propio. El mail que trae Supabase solo les escribe a los miembros del proyecto y manda muy pocos por hora. El proyecto usa una cuenta de Gmail con una contraseña de aplicación, que se escribe solo en ese panel (nunca en el juego ni en el repositorio).
+- *Authentication › Emails › Templates*: el juego pide el **código** (`{{ .Token }}`), no el link. Plantilla **Confirm signup**:
+  - Asunto: `Tu código para confirmar la cuenta`
+  - Cuerpo: `<h2>Project Riftwalker</h2><p>¡Hola! Este es tu código para confirmar tu cuenta de Project Riftwalker:</p><p style="font-size:28px;letter-spacing:6px"><b>{{ .Token }}</b></p><p>Escribilo en el launcher, donde creaste la cuenta. Vence en 1 hora.</p><p>Si no creaste una cuenta, ignorá este mail.</p>`
+- Plantilla **Reset Password** (US 271, recuperar la contraseña desde el launcher):
+  - Asunto: `Tu código para cambiar la contraseña`
+  - Cuerpo: `<h2>Project Riftwalker</h2><p>Pediste cambiar la contraseña de tu cuenta de Project Riftwalker. Tu código es:</p><p style="font-size:28px;letter-spacing:6px"><b>{{ .Token }}</b></p><p>Escribilo en el launcher junto con la contraseña nueva. Vence en 1 hora.</p><p>Si no lo pediste, ignorá este mail: tu contraseña sigue igual.</p>`
+- *Authentication › Rate Limits*: con el SMTP propio, subir los mails por hora según los jugadores esperados.
+
+**Reset antes de abrir las cuentas (US 281, una sola vez):**
+
+1. Volver a correr `logros.sql`: `rw_sync_comets` y `rw_sync_progress` pasan a rechazar las sesiones anónimas (`Account required`).
+2. Correr `reset-cuentas.sql`. **No se puede deshacer.** Muestra primero qué va a borrar y después borra el ranking, los logros y el progreso de las pruebas, y los jugadores anónimos sin opiniones. Los anónimos con opiniones quedan, porque borrarlos borraría sus opiniones.
+
+## Monedas de la cuenta (US 272)
+
+El saldo de créditos, boletos y cristales de una cuenta lo lleva la base: en SQL Editor ejecutar `Backend/Supabase/monedas.sql` (después de `logros.sql`; es reejecutable y no borra nada). La prueba opcional `monedas.test.sql` revierte sus datos al terminar.
+
+- Tablas `rw_wallet` (el saldo) y `rw_wallet_moves` (cada movimiento con un id que genera el juego), con RLS y sin acceso directo. La RPC `rw_wallet_apply` aplica los movimientos en orden y devuelve el saldo y los ids rechazados.
+- Lo ganado (partidas, repetidos de las cápsulas, compras simuladas y F9) se suma enseguida en el juego y espera en una fila (en el archivo de la cuenta) hasta que sube; sin conexión espera hasta que vuelva.
+- Para gastar (abrir cápsulas y canjear) la base confirma antes: si no alcanza el saldo de la cuenta (se gastó en otra PC), lo rechaza y no cambia nada. Sin conexión no se gasta y la Estación lo avisa.
+- Reintentar no repite: un movimiento que ya llegó no se vuelve a aplicar, y uno rechazado sigue rechazado.
+- Las cuentas arrancan en cero. Las monedas que había en la PC (o en el archivo de una cuenta antes de esta versión) no pasan a la cuenta: la primera vez que se conecta, el juego toma el saldo de la base.
+- «Reiniciar datos de prueba» (Tienda) es solo sin cuenta.
+- Mientras no se corra `monedas.sql`, el juego sigue con las monedas en la PC, como antes.
+- Como el resto, no es a prueba de trampas: el sorteo de las cápsulas sigue en el juego y la base acepta lo que el juego dice que ganó (con topes por movimiento).
+## Funciones (Edge Functions): verificar la cuenta en Photon y borrar la cuenta
+
+Dos funciones en `Backend/Supabase/functions`, que se publican desde el panel de Supabase (no hace falta instalar nada):
+
+- **`photon-auth`** (US 277, CA1): Photon le pasa la sesión de la cuenta con la que se conecta el juego publicado y la función la valida con Supabase Auth. Devuelve el id de la cuenta como usuario de Photon (así la misma cuenta no entra dos veces a una sala) y su nombre. Una sesión vencida, cerrada o de una cuenta borrada no entra.
+- **`borrar-cuenta`** (US 273, CA2): la llama el launcher con la sesión y la contraseña. Comprueba la contraseña y borra el usuario con la clave de servicio; sus datos se van en cascada (progreso, monedas, logros, ranking y opiniones).
+
+**Publicarlas (una vez, y de nuevo si cambian):**
+
+1. En el panel de Supabase: *Edge Functions › Deploy a new function › Via Editor*.
+2. Nombre `photon-auth`; pegar todo `functions/photon-auth/index.ts` y *Deploy*. Después, en esa función, *Settings*: **apagar «Verify JWT with legacy secret»** y *Save changes*. Photon no manda el encabezado de Supabase; la sesión la verifica la función.
+3. Nombre `borrar-cuenta`; pegar `functions/borrar-cuenta/index.ts`, *Deploy*, y **también apagar «Verify JWT with legacy secret»**. La función valida la sesión y la contraseña por su cuenta; con la opción prendida, las sesiones firmadas con las claves nuevas de Supabase quedarían rechazadas.
+4. Las dos usan `SUPABASE_URL`, `SUPABASE_ANON_KEY` y `SUPABASE_SERVICE_ROLE_KEY`, que Supabase les da solas. Si el proyecto tiene apagadas las claves viejas (*legacy API keys*), cargar en *Edge Functions › Secrets* `CLAVE_PUBLICA` (la `sb_publishable_...`) y `CLAVE_SERVICIO` (la `sb_secret_...`). La clave de servicio va solo ahí: nunca en el juego, el launcher ni el repositorio.
+
+**Photon (una vez):** en https://dashboard.photonengine.com, la aplicación del juego › *Manage* › *Authentication* › agregar un proveedor **Custom Server**:
+
+- *Authentication URL*: `https://linroadyovelwuaxjjhk.supabase.co/functions/v1/photon-auth`
+- **Dejar prendido «Allow anonymous clients to connect»**: el editor y los builds de desarrollo entran sin verificar (para probar con dos copias del juego), y los builds publicados antes de este cambio también.
+
+Orden: primero las funciones, después Photon. Para probar la verificación en el editor: *Riftwalker › Cuenta › Como en el juego publicado*, y buscar partida. Si la sesión no vale, la búsqueda dice «No se pudo verificar tu cuenta» y ofrece abrir el launcher.
 ## Seguridad y límites de esta entrega
 
 Las tablas tienen RLS y no permiten acceso directo desde el cliente. Las RPC identifican al jugador por su sesión, no por un ID enviado en el cuerpo; los desbloqueos se calculan en la base a partir de los contadores. No se distribuyen claves administrativas.
 
-Los contadores siguen siendo declarados por el cliente: esto **no es un ranking resistente a trampas**. Para el proyecto universitario permite demostrar persistencia compartida. Una publicación competitiva requiere validar los eventos en un servidor autoritativo y añadir protección contra altas abusivas. El flujo actual no incorpora CAPTCHA ni vinculación a cuentas recuperables; si se exige CAPTCHA en Supabase habrá que integrar ese flujo antes de permitir nuevas identidades.
+Los contadores siguen siendo declarados por el cliente: esto **no es un ranking resistente a trampas**. Para el proyecto universitario permite demostrar persistencia compartida. Una publicación competitiva requiere validar los eventos en un servidor autoritativo y añadir protección contra altas abusivas. El flujo actual no incorpora CAPTCHA; si se exige CAPTCHA en Supabase habrá que integrar ese flujo antes de permitir nuevas identidades.
 
 La base valida el nombre (3 a 16 caracteres: letras, números, espacio, `-` y `_`, como el juego). Si lo rechaza, el juego lo dice en Logros ("El ranking online no aceptó tu nombre"). Conviene probar una vez un nombre con ñ o tildes: que las acepte depende de la configuración regional de la base.
 

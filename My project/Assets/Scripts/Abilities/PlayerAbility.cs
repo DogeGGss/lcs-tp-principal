@@ -51,8 +51,10 @@ public class PlayerAbility : MonoBehaviour
         Preparar();
     }
 
-    // En el Deathmatch no hay habilidades: el personaje es solo el aspecto (PersonajesDeathmatch).
-    private static bool SinHabilidades => MatchSettings.Mode == GameMode.Deathmatch && Photon.Pun.PhotonNetwork.InRoom;
+    // En el Deathmatch no hay habilidades: el personaje es solo el aspecto (PersonajesDeathmatch). US 297, CA1: en
+    // Invasión tampoco (se mira el mapa, que se sabe desde que carga la escena).
+    private static bool SinHabilidades => MatchSettings.Mode == GameMode.Deathmatch && Photon.Pun.PhotonNetwork.InRoom
+        || MapMode.DeEstaEscena == GameMode.Zombie;
 
     /// <summary>US 016: el personaje se eligió con la partida ya cargada (Modo Táctico): se usa su habilidad.</summary>
     public void UsarPersonaje(CharacterData character)

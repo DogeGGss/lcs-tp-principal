@@ -38,6 +38,8 @@ public class MenuRiftwalker : MonoBehaviour
     [SerializeField] private UnityEngine.Audio.AudioMixerGroup grupoInterfaz;
 
     private const float Fundido = 0.22f, AnchoTarjeta = 580f;
+    private PantallaSinSesion sinSesion;
+    private RectTransform rootSinSesion;
     public const float Afuera = 2000f; // cuánto siguen los fondos de las pantallas fuera del 16:9 (pantallas más anchas o más altas)
     private const float DuracionFondo = 9f, FundidoFondo = 2.2f; // cada imagen de fondo y el cruce entre dos
 
@@ -98,6 +100,7 @@ public class MenuRiftwalker : MonoBehaviour
         PerfilDatos.Cambio += RefrescarTodo;
         EstadisticasJugador.Cambio += RefrescarTodo; // F24: lo que trae la nube
         PlayerProfile.NameChanged += NombreCambiado;
+        Guardado.CambioDeJugador += RefrescarTodo; // se entró o se salió de una cuenta
         RefrescarTodo();
         // US 163, CA3 y CA4: si el guardado se recuperó del respaldo, estaba dañado o es de una versión más nueva.
         if (Guardado.Aviso != null) Avisar(Guardado.Aviso);
@@ -108,6 +111,7 @@ public class MenuRiftwalker : MonoBehaviour
         PerfilDatos.Cambio -= RefrescarTodo;
         EstadisticasJugador.Cambio -= RefrescarTodo;
         PlayerProfile.NameChanged -= NombreCambiado;
+        Guardado.CambioDeJugador -= RefrescarTodo;
         PlayerNameScreen.ChipOculto = false;
         if (escuchandoRed && Multijugador.Existe) Multijugador.Instancia.Error -= AlFallarVolver;
     }
@@ -135,6 +139,7 @@ public class MenuRiftwalker : MonoBehaviour
     {
         Encajar();
         AnimarFondos(); // se ven en el menú y detrás de Opciones (y de los otros paneles transparentes)
+        if (BloqueadoSinSesion()) return;
         bool enMenu = panelPrincipal != null && panelPrincipal.activeInHierarchy && actual == null;
         if (capaMenu.gameObject.activeSelf != enMenu) capaMenu.gameObject.SetActive(enMenu);
         if (enMenu)
@@ -164,7 +169,24 @@ public class MenuRiftwalker : MonoBehaviour
         Vector2 size = canvasRoot.rect.size;
         if (size.x <= 0f || size.y <= 0f) return;
         root.localScale = Vector3.one * Mathf.Min(size.x / 1920f, size.y / 1080f);
+        if (rootSinSesion != null) rootSinSesion.localScale = root.localScale;
         rootFondo.localScale = Vector3.one * Mathf.Max(size.x / 1920f, size.y / 1080f); // el fondo cubre toda la pantalla
+    }
+
+    // US 282, CA3: sin una sesión de cuenta, un build publicado no deja jugar: la pantalla tapa todo (también el nombre
+    // de jugador y la nota para el PO) hasta entrar en el launcher.
+    private bool BloqueadoSinSesion()
+    {
+        LogrosOnline online = LogrosOnline.Instancia;
+        bool bloqueado = online != null && online.SinSesion;
+        if (bloqueado && sinSesion == null)
+        {
+            rootSinSesion = Lienzo("MenuRiftwalkerSinSesion", 120, true, out RectTransform lienzo);
+            sinSesion = new PantallaSinSesion(lienzo, rootSinSesion);
+            Encajar();
+        }
+        sinSesion?.Mostrar(bloqueado, online != null && online.SesionCerrada);
+        return bloqueado;
     }
 
     private static GameObject BuscarEnEscena(string nombre)
@@ -412,7 +434,7 @@ public class MenuRiftwalker : MonoBehaviour
         pj.Hovered = () => { textoJugar.color = Accent; flecha.color = Ink; };
         pj.Exited = () => { textoJugar.color = Ink; flecha.color = Accent; };
         jugar.gameObject.AddComponent<ButtonHoverAnimation>();
-        T(capaMenu, "Modos", 122f, 440f, 600f, 30f, FTexto, 25f, Mute, "Táctico  ·  Deathmatch  ·  Zombie");
+        T(capaMenu, "Modos", 122f, 440f, 600f, 30f, FTexto, 25f, Mute, "Táctico  ·  Deathmatch  ·  Invasión");
         Image(Place(Node("Linea", capaMenu), 122f, 486f, 440f, 3f), Degrade(true, 0f, 1f), Accent);
 
         string[] opciones = { "Opciones", "Logros", "Créditos", "Salir" };
@@ -514,25 +536,26 @@ public class MenuRiftwalker : MonoBehaviour
 
         if (conError)
         {
-            rotuloVolver.text = "No se pudo volver";
+            rotuloVolver.text = L10n.T("profile.menu.return_failed");
             rotuloVolver.color = Bad;
             salaVolver.text = errorVolver;
             salaVolver.color = Bad;
             detalleVolver.text = "";
             return;
         }
-        rotuloVolver.text = "Partida en curso";
+        rotuloVolver.text = L10n.T("profile.menu.in_progress");
         rotuloVolver.color = Accent;
         salaVolver.color = Ink;
         if (volviendo)
         {
-            salaVolver.text = "Volviendo…";
+            salaVolver.text = L10n.T("profile.menu.rejoining");
             detalleVolver.text = "";
             return;
         }
         int s = Mathf.CeilToInt(partida.restante);
-        salaVolver.text = "Sala " + partida.sala;
-        detalleVolver.text = $"Podés volver durante {s / 60}:{s % 60:00}";
+        // Las salas privadas tienen un código de 5 letras; las de buscar partida (F28), un nombre largo que no sirve mostrar.
+        salaVolver.text = partida.sala.Length == 5 ? L10n.T("profile.menu.room_fmt", partida.sala) : L10n.T("profile.menu.public_match");
+        detalleVolver.text = L10n.T("profile.menu.rejoin_window_fmt", s / 60, s % 60);
     }
 
     private void VolverALaPartida()
@@ -577,14 +600,14 @@ public class MenuRiftwalker : MonoBehaviour
         avatarMenu.sprite = PerfilDatos.Imagen(av);
         AjustarCubrir(avatarMenu, (RectTransform)avatarMenu.rectTransform.parent);
         marcoAvatar.color = Ink; // como en el Perfil: la rareza no cambia el color
-        nombreMenu.text = PlayerProfile.HasName ? PlayerProfile.Name : "Jugador";
-        tituloMenu.text = string.IsNullOrEmpty(ti.id) ? "Sin título" : ti.nombre;
+        nombreMenu.text = PlayerProfile.HasName ? PlayerProfile.Name : L10n.T("profile.player.default");
+        tituloMenu.text = string.IsNullOrEmpty(ti.id) ? L10n.T("profile.title.none") : L10n.Source(ti.nombre, "profile.");
         tituloMenu.color = string.IsNullOrEmpty(ti.id) ? Mute : Ink;
         int nuevos = PerfilDatos.CantidadNuevos(PerfilDatos.Tipo.Avatar) + PerfilDatos.CantidadNuevos(PerfilDatos.Tipo.Banner) +
                      PerfilDatos.CantidadNuevos(PerfilDatos.Tipo.Titulo) + PerfilDatos.CantidadNuevos(PerfilDatos.Tipo.Marco);
         chipNuevos.gameObject.SetActive(nuevos > 0);
-        nuevosMenu.text = nuevos == 1 ? "1 nuevo" : $"{nuevos} nuevos";
-        subEstacion.text = PerfilDatos.Boletos == 1 ? "Tenés 1 boleto para abrir" : $"Tenés {PerfilDatos.Boletos} boletos para abrir";
+        nuevosMenu.text = L10n.Plural("profile.new", nuevos);
+        subEstacion.text = L10n.Plural("profile.station.tickets", PerfilDatos.Boletos);
         monedasMenu.Refrescar();
     }
 

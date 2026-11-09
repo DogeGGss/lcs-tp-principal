@@ -83,8 +83,7 @@ public class ResultadoDeathmatch : MonoBehaviour
         root.anchorMin = root.anchorMax = root.pivot = new Vector2(0.5f, 0.5f);
         root.sizeDelta = new Vector2(1920f, 1080f);
 
-        Text(Place(Node("Antetitulo", root), 0f, 70f, 1920f, 30f), labelFont, 24f, Mute, TextAlignmentOptions.Center, 16f).text =
-            "FIN DE LA PARTIDA  ·  DEATHMATCH";
+        L10n.Bind(Text(Place(Node("Antetitulo", root), 0f, 70f, 1920f, 30f), labelFont, 24f, Mute, TextAlignmentOptions.Center, 16f), "gameplay.ui.match_over_deathmatch");
         titulo = Text(Place(Node("Titulo", root), 0f, 100f, 1920f, 170f), displayFont, 150f, Ink, TextAlignmentOptions.Center, 6f);
         linea = Image(Place(Node("Linea", root), 870f, 280f, 180f, 4f), null, Ink);
         detalle = Text(Place(Node("Detalle", root), 0f, 298f, 1920f, 48f), displayFont, 34f, Ink, TextAlignmentOptions.Center, 2f);
@@ -95,7 +94,7 @@ public class ResultadoDeathmatch : MonoBehaviour
         int creditos = PerfilDatos.GanarPorPartida(gane);
         RegistroDePartida.Deathmatch(gane); // F24: estadísticas del jugador
         Text(Place(Node("Creditos", root), 1420f, 40f, 460f, 34f), labelFont, 24f, Accent, TextAlignmentOptions.MidlineRight, 12f, true).text =
-            $"+{creditos} créditos";
+            L10n.T("gameplay.dm.credits_fmt", creditos);
 
         tabla = Place(Node("Tabla", root), (1920f - TablaW) / 2f, TablaY, TablaW, 100f);
 
@@ -130,17 +129,19 @@ public class ResultadoDeathmatch : MonoBehaviour
         // CA2: "Victoria" o el puesto.
         bool gane = mio == 0;
         Color color = gane ? Accent : Ink;
-        titulo.text = gane ? "VICTORIA" : mio > 0 ? $"{mio + 1}.º PUESTO" : "FIN DE LA PARTIDA";
+        titulo.text = gane ? L10n.T("gameplay.dm.victory") : mio > 0 ? L10n.T("gameplay.dm.place_fmt", mio + 1) : L10n.T("gameplay.dm.game_over_caps");
         titulo.color = color;
         linea.color = color;
         int bajas = primero != null ? PartidaDeathmatch.Bajas(primero.ActorNumber) : 0;
         bool porBajas = bajas >= PartidaDeathmatch.BajasParaGanar;
-        string cuantas = bajas == 1 ? "1 baja" : $"{bajas} bajas";
-        if (gane)
-            detalle.text = porBajas ? $"Llegaste primero a <color=#F29A38>{cuantas}</color>"
-                                    : $"Se acabó el tiempo: ganaste con <color=#F29A38>{cuantas}</color>";
+        string cuantas = L10n.Plural("gameplay.dm.kills", bajas);
+        if (gane && PartidaDeathmatch.Actual != null && PartidaDeathmatch.Actual.PorAbandono)
+            detalle.text = L10n.T("gameplay.dm.others_left");
+        else if (gane)
+            detalle.text = porBajas ? L10n.T("gameplay.dm.reached_first_fmt", cuantas)
+                                    : L10n.T("gameplay.dm.time_up_won_fmt", cuantas);
         else if (primero != null)
-            detalle.text = (porBajas ? "Ganó " : "Se acabó el tiempo: ganó ") + $"<color=#F29A38>{primero.NickName}</color> con {cuantas}";
+            detalle.text = L10n.T(porBajas ? "gameplay.dm.winner_fmt" : "gameplay.dm.time_up_winner_fmt", primero.NickName, cuantas);
         else detalle.text = "";
 
         // CA3: tabla.

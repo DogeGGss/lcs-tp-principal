@@ -33,5 +33,7 @@ EditorBuildSettings:
     path: Assets/Scenes/Mapa_deathmatch.unity
     guid: a0bc73fe15d7c1c77b545cee1fd08295
   m_configObjects:
+    com.unity.addressableassets: {fileID: 11400000, guid: 8fa126b1c7597a04ba9dfd5648b5f51b, type: 2}
     com.unity.dt.app-ui: {fileID: 11400000, guid: 1b1c20d82303e4b5781c3ef50ac1449f, type: 2}
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 052faaac586de48259a63d0c4782560b, type: 3}
+    com.unity.localization.settings: {fileID: 11400000, guid: 9b1c54ee2e84282489709ff0b459d773, type: 2}

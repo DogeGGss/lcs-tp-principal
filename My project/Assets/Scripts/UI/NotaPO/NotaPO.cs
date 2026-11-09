@@ -23,29 +23,31 @@ public class NotaPO : MonoBehaviour
     [SerializeField] private CanvasGroup transitionOverlay;
 
     [Header("Textos")]
-    [SerializeField] private string eyebrow = "Nota para el PO · Sprint 3";
+    [SerializeField] private string eyebrow = "Nota para el PO · Sprint 4";
     [SerializeField] private string title = "Hola, Amin";
     [TextArea(2, 4)]
     [SerializeField] private string intro =
-        "Esta es la entrega del Sprint 3 de Project Riftwalker: el Deathmatch online en su propio mapa, los cuatro personajes con su habilidad y el progreso del jugador. Para jugar online hacen falta al menos 2 jugadores, cada uno en su computadora.";
+        "Esta es la entrega del Sprint 4 de Project Riftwalker: el modo Invasión con sus invasores, el Jefe y las cartas, el mapa de la universidad, las cuentas con buscar partida, y las animaciones y los emotes.";
     [SerializeField] private string worksTitle = "Lo que funciona";
     [Tooltip("Un punto por renglón. Lo que va antes de \":\" sale resaltado.")]
     [TextArea(5, 12)]
     [SerializeField] private string works =
-        "Deathmatch online: todos contra todos, de 2 a 8 jugadores, en Colonia ARA San Juan. Gana el primero en llegar a 25 bajas o el que más tenga a los 8 minutos. Las armas se eligen gratis y cada baja cura 50.\n" +
-        "Personajes: Unzué (Barrera), Necochea (Vista aérea), Goya (Callejero) y Soledad (Trasbordo), cada uno con su modelo y su habilidad, que se usa en el Táctico.\n" +
-        "Campo de práctica: desde el menú, con todas las armas, blancos, bots y un tutorial que enseña los controles paso a paso.\n" +
-        "Minijuego y logros: en la compra del Táctico se les dispara a los cometas. Hay 25 logros, con aviso al conseguirlos, y un ranking global.\n" +
-        "Perfil: avatar, banner, título y marco, y estadísticas por modo con el KDA. Con los créditos de cada partida se abren cápsulas en la Estación del Rift; la tienda de cristales es una simulación y no cobra.\n" +
-        "Guardado y launcher: el progreso se guarda solo, también en la nube, y el launcher instala y actualiza el juego.";
+        "Invasión: oleadas de invasores en el mapa de la uni, con 3 dificultades. No hay tienda: matando se carga el puesto de suministros y ahí se elige 1 de 3 entre armas y cartas. Cada 10 oleadas viene un Jefe que vuela, tira veneno y se enfurece a la mitad de la vida.\n" +
+        "Invasores: común, rápido, tanque, alfas y los Watchers que tiran de lejos. Salen de portales, te detectan, te persiguen y se desintegran al morir.\n" +
+        "Trucos de Invasión: en la partida, F10 abre un menú con vida y balas infinitas, noclip, matar de un tiro, puntos, ir a cualquier oleada, cualquier arma y cualquier carta.\n" +
+        "Mapa de la universidad: de noche, con los módulos 1, 7 y 9, los centrales, la garita, el TUM y la ADIUNGS, hechos con fotos del campus.\n" +
+        "Cuentas: se crean en el launcher; se puede iniciar y cerrar sesión, recuperar la contraseña y borrar la cuenta. Las monedas, el perfil y el ranking van con la cuenta.\n" +
+        "Buscar partida: se elige el modo, se busca y la partida arranca sola.\n" +
+        "Animaciones y emotes: todas las armas, el cuchillo, las granadas y la muerte, en primera y en tercera persona, y una rueda de emotes con bailes y cámara en tercera persona.\n" +
+        "Estadísticas de Invasión: en el perfil.";
     [SerializeField] private string missingTitle = "Lo que todavía falta";
     [Tooltip("Un punto por renglón. Lo que va antes de \":\" sale resaltado.")]
     [TextArea(5, 12)]
     [SerializeField] private string missing =
-        "Zombie: todavía no hay zombis. Jugar abre el mapa de la universidad, que está en construcción, para recorrerlo.\n" +
-        "Estadísticas del Zombie: dicen \"Sin datos\" hasta que el modo tenga partidas (US 222).\n" +
-        "Animaciones: por ahora solo La Porteña tiene animación en primera persona.\n" +
-        "Penetración de superficies: las balas todavía no atraviesan paredes ni objetos (US 169).";
+        "Invasión de a varios: por ahora se juega solo.\n" +
+        "Más cartas: 16 cartas nuevas y las legendarias entran en el Sprint 5.\n" +
+        "Idiomas: el juego está en español; el inglés entra en el Sprint 5.\n" +
+        "Resto del campus: biblioteca, módulos 10, 2A y 3, auditorio y los demás edificios se ven sin detalle.";
 
     [Header("Tipografías (las mismas de la tienda)")]
     [SerializeField] private TMP_FontAsset displayFont; // Barlow Condensed Bold
@@ -74,19 +76,15 @@ public class NotaPO : MonoBehaviour
     private static readonly (string label, GameAction[] keys, string join)[] Controls =
     {
         ("Mover", new[] { GameAction.Adelante, GameAction.Izquierda, GameAction.Atras, GameAction.Derecha }, ""),
-        ("Correr (en el Táctico, caminar despacio)", new[] { GameAction.Correr }, ""),
+        ("Correr", new[] { GameAction.Correr }, ""),
         ("Saltar", new[] { GameAction.Saltar }, ""),
         ("Agacharse", new[] { GameAction.Agacharse }, ""),
         ("Disparar", new[] { GameAction.Disparar }, ""),
         ("Apuntar", new[] { GameAction.Apuntar }, ""),
         ("Recargar", new[] { GameAction.Recargar }, ""),
-        ("Principal / secundaria / cuchillo / granadas", new[] { GameAction.ArmaPrincipal, GameAction.ArmaSecundaria, GameAction.Cuchillo, GameAction.Granadas }, " / "),
+        ("Mitre / pistola / cuchillo", new[] { GameAction.ArmaPrincipal, GameAction.ArmaSecundaria, GameAction.Cuchillo }, " / "),
         ("Tienda", new[] { GameAction.Tienda }, ""),
         ("Habilidad", new[] { GameAction.Habilidad }, ""),
-        ("Dispositivo", new[] { GameAction.Dispositivo }, ""),
-        ("Plantar y desactivar", new[] { GameAction.Plantar }, ""),
-        ("Soltar el arma", new[] { GameAction.Soltar }, ""),
-        ("Mapa", new[] { GameAction.Mapa }, ""),
     };
 
     private RectTransform canvasRoot, chip, modal, panel;
@@ -194,7 +192,7 @@ public class NotaPO : MonoBehaviour
         float columnW = (w - ColumnGap) * 0.5f;
 
         eyebrowText.text = eyebrow;
-        titleText.text = title;
+        L10n.BindSource(titleText, title,"ui.");
         introText.text = intro;
         worksHeader.text = worksTitle;
         missingHeader.text = missingTitle;
@@ -315,12 +313,12 @@ public class NotaPO : MonoBehaviour
         chipBg = Image(chip, rounded, PanelColor, 8f, true);
 
         Img icon = Image(Place(Node("Icono", chip), 14f, 14f, 48f, 48f), rounded, Accent, 24f);
-        Text(Stretch(Node("Letra", icon.rectTransform)), displayFont, 30f, KeyInk, TextAlignmentOptions.Center).text = "i";
+        L10n.BindSource(Text(Stretch(Node("Letra", icon.rectTransform)), displayFont, 30f, KeyInk, TextAlignmentOptions.Center), "i","ui.");
 
         chipLabel = Text(Place(Node("Rotulo", chip), 80f, 14f, 300f, 18f), labelFont, 14f, Mute, TextAlignmentOptions.MidlineLeft, 16f, true);
-        chipLabel.text = "Antes de jugar";
+        L10n.BindSource(chipLabel, "Antes de jugar","ui.");
         TextMeshProUGUI chipName = Text(Place(Node("Nombre", chip), 80f, 30f, 300f, 34f), displayFont, 30f, Ink, TextAlignmentOptions.MidlineLeft, 3f, true);
-        chipName.text = "Nota para el PO";
+        L10n.BindSource(chipName, "Nota para el PO","ui.");
         float textW = Mathf.Max(Width(chipName, chipName.text), Width(chipLabel, chipLabel.text));
         chip.sizeDelta = new Vector2(80f + textW + 26f, 76f);
 
@@ -363,7 +361,7 @@ public class NotaPO : MonoBehaviour
         divider = Node("Division", panel);
         Image(divider, null, LineColor);
         controlsLabel = Node("RotuloControles", panel);
-        Text(controlsLabel, labelFont, 15f, Mute, TextAlignmentOptions.MidlineLeft, 16f, true).text = "Controles";
+        L10n.BindSource(Text(controlsLabel, labelFont, 15f, Mute, TextAlignmentOptions.MidlineLeft, 16f, true), "Controles","ui.");
         controlsText = Paragraph(Node("Controles", panel), 18f, Note);
         controlsText.font = labelFont;
         controlsText.characterSpacing = 4f;
@@ -371,15 +369,14 @@ public class NotaPO : MonoBehaviour
         // Entendido
         button = Node("Entendido", panel);
         Img buttonBg = Image(button, rounded, Accent, 6f, true);
-        Text(Stretch(Node("Texto", button)), displayFont, 22f, KeyInk, TextAlignmentOptions.Center, 10f, true).text = "Entendido";
+        L10n.BindSource(Text(Stretch(Node("Texto", button)), displayFont, 22f, KeyInk, TextAlignmentOptions.Center, 10f, true), "Entendido","ui.");
         ShopPointerTarget pointer = button.gameObject.AddComponent<ShopPointerTarget>();
         pointer.Hovered = () => buttonBg.color = Hot;
         pointer.Exited = () => buttonBg.color = Accent;
         pointer.Clicked = () => { pointer.Exited(); Close(); };
 
         keysHint = Node("Atajos", panel);
-        Text(keysHint, labelFont, 16f, Mute, TextAlignmentOptions.MidlineLeft, 10f, true)
-            .text = "<color=#F3F4F6>Enter</color>  o  <color=#F3F4F6>Esc</color>  Cerrar";
+        L10n.BindSource(Text(keysHint, labelFont, 16f, Mute, TextAlignmentOptions.MidlineLeft, 10f, true), "<color=#F3F4F6>Enter</color>  o  <color=#F3F4F6>Esc</color>  Cerrar","ui.");
     }
 
     private TextMeshProUGUI Paragraph(RectTransform rect, float size, Color color)

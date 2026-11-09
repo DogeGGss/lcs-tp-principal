@@ -11,7 +11,9 @@ using UnityEngine;
 // - KDA = (bajas + asistencias) ÷ muertes; sin muertes, ÷ 1. Se calcula con los totales y solo se redondea al mostrarlo.
 // - MVP (Táctico): terminó con más bajas que todos (con las mismas, menos muertes). Mejor racha (Deathmatch): más
 //   bajas seguidas sin morir en una partida.
-// - El Zombie no cuenta hasta que sus partidas tengan final (US 151); el minijuego tiene las suyas (US 159).
+// - Invasión (CA2): cuenta cuando aparece su resultado (ResultadoDeInvasion, US 151), aparte del multijugador: sus bajas
+//   son invasores eliminados y no suman a las bajas, al KDA ni a los logros de combate. Victoria: salvó al mundo. Los
+//   récords de oleada por dificultad siguen en MatchSettings (US 151 y US 161). El minijuego tiene las suyas (US 159).
 // Se guardan con el progreso del jugador (Guardado, US 222, CA5) y en la nube (ProgresoNube), juntando con el máximo.
 public static class EstadisticasJugador
 {
@@ -31,6 +33,7 @@ public static class EstadisticasJugador
     {
         public int version = 1;
         public Modo tactico = new Modo(), deathmatch = new Modo();
+        public Modo invasion = new Modo();                      // aparte: no entra en los totales de abajo (CA1)
         public int rondasGanadas, plantados, desactivados, mvp; // Táctico
         public int mejorRacha;                                  // Deathmatch
         public List<string> contadas = new List<string>();      // las últimas partidas sumadas (CA3)
@@ -50,7 +53,7 @@ public static class EstadisticasJugador
     public sealed class Partida
     {
         public string id;
-        public bool deathmatch, gano, mvp;
+        public bool deathmatch, invasion, gano, mvp;
         public int bajas, muertes, asistencias, cabezas;
         public int rondasGanadas, plantados, desactivados; // Táctico
         public int mejorRacha;                             // Deathmatch
@@ -105,7 +108,7 @@ public static class EstadisticasJugador
     public static bool Sumar(Totales t, Partida p)
     {
         if (t == null || p == null || string.IsNullOrEmpty(p.id) || t.contadas.Contains(p.id)) return false;
-        Modo m = p.deathmatch ? t.deathmatch : t.tactico;
+        Modo m = p.invasion ? t.invasion : p.deathmatch ? t.deathmatch : t.tactico;
         m.partidas++;
         if (p.gano) m.victorias++;
         m.bajas += Math.Max(0, p.bajas);
@@ -114,7 +117,7 @@ public static class EstadisticasJugador
         m.cabezas += Math.Max(0, p.cabezas);
         m.segundos += Math.Max(0, p.segundos);
         if (p.deathmatch) t.mejorRacha = Math.Max(t.mejorRacha, p.mejorRacha);
-        else
+        else if (!p.invasion)
         {
             t.rondasGanadas += Math.Max(0, p.rondasGanadas);
             t.plantados += Math.Max(0, p.plantados);
@@ -133,6 +136,7 @@ public static class EstadisticasJugador
         if (t == null) return new Totales();
         t.tactico ??= new Modo();
         t.deathmatch ??= new Modo();
+        t.invasion ??= new Modo();
         t.contadas ??= new List<string>();
         return t;
     }
@@ -157,6 +161,7 @@ public static class EstadisticasJugador
         }
         UnirModo(a.tactico, b.tactico);
         UnirModo(a.deathmatch, b.deathmatch);
+        UnirModo(a.invasion ??= new Modo(), b.invasion);
         Max(ref a.rondasGanadas, b.rondasGanadas);
         Max(ref a.plantados, b.plantados);
         Max(ref a.desactivados, b.desactivados);
