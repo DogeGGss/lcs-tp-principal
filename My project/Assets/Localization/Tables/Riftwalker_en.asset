@@ -5652,6 +5652,657 @@ MonoBehaviour:
     m_Localized: You lose if the zombies kill you.
     m_Metadata:
       m_Items: []
+  - m_Id: 380226879975424
+    m_Localized: Attackers
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227454595072
+    m_Localized: Defenders
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227454595073
+    m_Localized: Back
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227454595074
+    m_Localized: Watching the device
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227454595075
+    m_Localized: No teammates left alive
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227454595076
+    m_Localized: You respawn next round
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227454595077
+    m_Localized: '{0} eliminated you'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227454595078
+    m_Localized: You fell off the map
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227454595079
+    m_Localized: The fence electrocuted you
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227454595080
+    m_Localized: You respawn next round.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227454595081
+    m_Localized: You respawn in {0}. Press {1} to change your loadout
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227454595082
+    m_Localized: You're back in the match
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227454595083
+    m_Localized: You're being watched
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227454595084
+    m_Localized: Press {0} to pick your loadout
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227454595085
+    m_Localized: 'You reached {0} kills: {1} to go'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227454595086
+    m_Localized: '{0} reached {1} kills'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227454595087
+    m_Localized: disconnected
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227454595088
+    m_Localized: left the match
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227454595089
+    m_Localized: rejoined the match
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227454595090
+    m_Localized: "Waiting for the others   \xB7   <color=#F29A38>{0}</color>"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227454595091
+    m_Localized: "Tactical Mode  \xB7  Your team: {0}"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227454595092
+    m_Localized: a teammate
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227454595093
+    m_Localized: Already picked by {0}
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227454595094
+    m_Localized: Couldn't confirm, try again
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227454595095
+    m_Localized: "{0}   \xB7   Drop your {1} with <color=#F29A38>{2}</color> to pick it up"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227454595096
+    m_Localized: No shield
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227454595097
+    m_Localized: Light
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227454595098
+    m_Localized: Full
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227454595099
+    m_Localized: '<color=#FF5C5C>No selling in Invasion: what you buy stays until you replace it</color>'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227454595100
+    m_Localized: You need {0} more
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227454595101
+    m_Localized: You already have {0}
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227454595102
+    m_Localized: Your ammo is already full
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227454595103
+    m_Localized: Max {0}
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227454595104
+    m_Localized: Your shield is already full
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227454595105
+    m_Localized: You can't change your loadout now
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227454595106
+    m_Localized: The buy phase is over
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227454595107
+    m_Localized: Outside the buy zone
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227454595108
+    m_Localized: You can only sell what you bought this round
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227454595109
+    m_Localized: You don't have it
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227454595110
+    m_Localized: Time to change your loadout is over
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227454595111
+    m_Localized: Buying is over
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227454595112
+    m_Localized: Change it whenever you want
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227454595113
+    m_Localized: Kept for your next life
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227454595114
+    m_Localized: "+{0} per invader \xB7 +{1} headshot"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227454595115
+    m_Localized: "Tactical \xB7 Round {0}"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227454595116
+    m_Localized: 'Next round: at least {0}'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227454595117
+    m_Localized: You're outside the buy zone. Go back to the spawn point to buy.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227454595118
+    m_Localized: The buy phase is over. You can look, but not buy.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227454595119
+    m_Localized: "Invasion \xB7 Wave {0} \xB7 lap {1}"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227454595120
+    m_Localized: "Invasion \xB7 Wave {0} of {1}"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227454595121
+    m_Localized: Absorbs the first {0} points of damage, before your health. If you survive, you keep what's left of it next round.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227454595122
+    m_Localized: Shots to kill
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227454595123
+    m_Localized: bursts/s
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227454595124
+    m_Localized: shots/s
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227454595125
+    m_Localized: magazine
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227454595126
+    m_Localized: per shell
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227454595127
+    m_Localized: reload
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227454595128
+    m_Localized: mobility
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227454595129
+    m_Localized: sight
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227454595130
+    m_Localized: "<color=#D6DAE0><b>Recoil:</b></color> {0}\n<color=#D6DAE0><b>Spread:</b></color> {1}\xB0 still \xB7 {2}\xB0 moving \xB7 penetration {3}"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227454595131
+    m_Localized: Against
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227454595132
+    m_Localized: With this
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227454595133
+    m_Localized: '{0} to the body'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227454595134
+    m_Localized: Shrapnel (center)
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227454595135
+    m_Localized: You have {0}
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227454595136
+    m_Localized: carried
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227454595137
+    m_Localized: fuse
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227454595138
+    m_Localized: max total
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227454595139
+    m_Localized: "Slot 4 \xB7 press 4 again to switch"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227454595140
+    m_Localized: Only kills without a shield, and up close
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227454595141
+    m_Localized: Blocks vision from inside out and the other way around
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227454595142
+    m_Localized: Facing (< 15 m)
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227454595143
+    m_Localized: Sideways
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227454595144
+    m_Localized: Facing away
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227454595145
+    m_Localized: Not now
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227454595146
+    m_Localized: look only
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227454595147
+    m_Localized: Chosen
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227454595148
+    m_Localized: it's in your hand
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227454595149
+    m_Localized: kept for your next life
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227454595150
+    m_Localized: Outside the zone
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227454595151
+    m_Localized: You have it
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227454595152
+    m_Localized: stays until you replace it
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227454595153
+    m_Localized: 'right click: sell +{0}'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227454595154
+    m_Localized: you always have it
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227454595155
+    m_Localized: carried over from last round
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227454595156
+    m_Localized: Max reached
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227454595157
+    m_Localized: '{0} per player'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227454595158
+    m_Localized: you get back {0}
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227454595159
+    m_Localized: you pay {0}
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227454595160
+    m_Localized: Spent during the break
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227454595161
+    m_Localized: Spent this round
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227454595162
+    m_Localized: No primary
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227454595163
+    m_Localized: Not bought
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227454595164
+    m_Localized: Max
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227454595165
+    m_Localized: 'All to the body under {0} m: {1}'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227454595166
+    m_Localized: One-shot kill with no or light shield
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227454595167
+    m_Localized: One-shot kill with no shield
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227454595168
+    m_Localized: Never a one-shot kill
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227454595169
+    m_Localized: 1 headshot kills anyone
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227454595170
+    m_Localized: 1 headshot kills anyone ({0})
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227454595171
+    m_Localized: 1 headshot kills with light shield
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227454595172
+    m_Localized: 1 headshot kills with no shield
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227454595173
+    m_Localized: '{0} headshots with full shield'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227454595174
+    m_Localized: 1 body shot kills anyone
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227454595175
+    m_Localized: 1 body shot kills with no shield
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227454595176
+    m_Localized: '{0} body shots with full shield'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227454595177
+    m_Localized: Number or click
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227454595178
+    m_Localized: Category
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227454595179
+    m_Localized: 'Right click: sell'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227454595180
+    m_Localized: "Enter \xB7 click"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227454595181
+    m_Localized: TACTICAL
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227454595182
+    m_Localized: INVASION
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227454595183
+    m_Localized: DEATHMATCH
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227454595184
+    m_Localized: PRACTICE RANGE
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227454595185
+    m_Localized: FIRING LINE
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227454595186
+    m_Localized: SHOOTING ZONE
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227454595187
+    m_Localized: PRACTICE MAP
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227454595188
+    m_Localized: Get closer to see the objective
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227454595189
+    m_Localized: Change weapon
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227454595190
+    m_Localized: Primary
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227454595191
+    m_Localized: Secondary
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227454595192
+    m_Localized: Pistols
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227454595193
+    m_Localized: SMGs
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227454595194
+    m_Localized: Shotguns
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227454595195
+    m_Localized: Rifles
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227454595196
+    m_Localized: Snipers
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227454595197
+    m_Localized: Shields
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227454595198
+    m_Localized: Supplies
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227454595199
+    m_Localized: Grenades
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227458789376
+    m_Localized: Couldn't save your progress; it will try again.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227458789377
+    m_Localized: Your progress was restored from the backup.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227458789378
+    m_Localized: 'Couldn''t load your progress: the game started from scratch and the damaged file was saved separately.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227458789379
+    m_Localized: 'Your progress is from a newer version of the game: update it to keep saving. Nothing is saved in the meantime.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227458789380
+    m_Localized: 'Not enough credits: you earn them by playing matches'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227458789381
+    m_Localized: Not enough crystals
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227458789382
+    m_Localized: " \xB7 guaranteed"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227458789383
+    m_Localized: First the rarity is rolled (with these odds), then the type ({0}% avatar, {1}% banner, {2}% title, {3}% frame) and finally a random item. Every {4} capsules an epic or better is guaranteed. Duplicates turn into credits.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227458789384
+    m_Localized: '{0} in slot {1} ({2})'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227458789385
+    m_Localized: ' + {0} free'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227458789386
+    m_Localized: 'You get <color=#F3F4F6>{0}</color> for <color=#F3F4F6>{1}</color>.
+
+
+'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227458789387
+    m_Localized: Destroy {0} {1} comets in total.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227458789388
+    m_Localized: for {0}
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227458789389
+    m_Localized: 'Business simulation: there are no real payments. Tickets are earned by playing (credits) or with crystals from the store. The odds are always shown.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227458789390
+    m_Localized: "* KDA = (kills + assists) \xF7 deaths; with no deaths, \xF7 1. Assist: you damaged an enemy that someone else eliminated within the next 10 s. Only finished matches count."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227458789391
+    m_Localized: Room {0}
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227458789392
+    m_Localized: Cross
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227458789393
+    m_Localized: Circle
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227458789394
+    m_Localized: Dot
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227458789395
+    m_Localized: Couldn't create the room. Check your connection.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227458789396
+    m_Localized: Couldn't join the room. Check your connection.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227458789397
+    m_Localized: Couldn't rejoin the match. Check your connection.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227458789398
+    m_Localized: Couldn't search for a match. Check your internet and search again.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227458789399
+    m_Localized: Your account is already in that match, on another PC.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227458789400
+    m_Localized: You're still listed in the match. Try again in a few seconds.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227458789401
+    m_Localized: The match is already over.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227458789402
+    m_Localized: The room is full.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227458789403
+    m_Localized: The match has already started.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227458789404
+    m_Localized: That room is for {0}.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227458789405
+    m_Localized: Lost connection to the server.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227458789406
+    m_Localized: There's a new version ({0}). Update the game from the launcher to play online.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227458789407
+    m_Localized: Buy
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227458789408
+    m_Localized: Close
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []
