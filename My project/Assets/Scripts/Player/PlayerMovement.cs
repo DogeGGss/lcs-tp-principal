@@ -94,6 +94,21 @@ public class PlayerMovement : MonoBehaviour
         if (GetComponent<FueraDelMapa>() == null) gameObject.AddComponent<FueraDelMapa>();
     }
 
+    // Truco de Invasión (TrucosDeInvasion): WASD hacia donde se mira, Espacio sube, Agacharse baja y Correr va más rápido.
+    private void Volar()
+    {
+        if (controller.enabled) controller.enabled = false;
+        verticalVelocity = 0f;
+        if (SinControles) return;
+        Transform mira = cameraTransform != null ? cameraTransform : transform;
+        Vector3 v = mira.forward * KeyBindings.Axis(GameAction.Atras, GameAction.Adelante)
+                  + mira.right * KeyBindings.Axis(GameAction.Izquierda, GameAction.Derecha);
+        if (KeyBindings.Held(GameAction.Saltar)) v += Vector3.up;
+        if (KeyBindings.Held(GameAction.Agacharse)) v += Vector3.down;
+        float rapidez = KeyBindings.Held(GameAction.Correr) ? 30f : 12f;
+        transform.position += Vector3.ClampMagnitude(v, 1f) * rapidez * Time.deltaTime;
+    }
+
     /// <summary>US 006, CA4: al reaparecer no conserva la velocidad de la caída ni lo que venía moviéndose.</summary>
     public void Frenar()
     {
@@ -107,6 +122,10 @@ public class PlayerMovement : MonoBehaviour
 
     private void Update()
     {
+        // Truco de Invasión: noclip (vuela y atraviesa las paredes, sin gravedad).
+        if (TrucosDeInvasion.Noclip) { Volar(); return; }
+        if (!controller.enabled) controller.enabled = true;
+
         // =====================================================
         // MOVIMIENTO
         // =====================================================

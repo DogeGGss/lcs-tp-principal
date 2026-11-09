@@ -95,7 +95,7 @@ public class OpcionesPantalla : MonoBehaviour
             paneles.Add(panel.gameObject);
         }
         CrearPestañaMira();
-        CrearPestañaIdioma();
+        if (L10n.IdiomasDisponibles) CrearPestañaIdioma();
         desplegables = GetComponentsInChildren<TMP_Dropdown>(true);
 
         // CA6: "Volver" pasa por acá para revisar si hay cambios sin aplicar.

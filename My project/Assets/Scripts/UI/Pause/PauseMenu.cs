@@ -826,7 +826,7 @@ public class PauseMenu : MonoBehaviour
         OpenRow("Mira", "Personalizar mira", ref y, () => Show(Panel.Crosshair)); // US 172
         Group("Teclas", ref y);
         OpenRow("Controles", "Cambiar teclas", ref y, () => Show(Panel.Controls));
-        languageValue = OpenRow("Idioma", LanguageName(), ref y, NextLanguage);
+        if (L10n.IdiomasDisponibles) languageValue = OpenRow("Idioma", LanguageName(), ref y, NextLanguage);
 
         RectTransform back = Bottom(Node("Volver", colSettings), PadX, 90f, 150f, 52f);
         ButtonBox(back, "Volver", () => Back());
