@@ -503,7 +503,7 @@ public class EleccionDeInvasion : MonoBehaviour
         Color color = esArma ? CartaDeInvasion.ColorArma : CartaDeInvasion.ColorDe(o.carta.rareza);
         string rareza = esArma ? L10n.T("gameplay.card.weapon") : L10n.Source(CartaDeInvasion.NombreDe(o.carta.rareza));
         string nombre = esArma ? NombreDelArma(o.arma) : L10n.Source(o.carta.nombre);
-        string efecto = esArma ? QueReemplaza(o.arma) : L10n.Source(o.carta.efecto);
+        string efecto = esArma ? QueReemplaza(o.arma) : L10n.Source(o.carta.EfectoParaLaProxima(Veces(o.carta))); // repetida: lo que da en total
         string rinde = esArma ? L10n.T(o.arma.kind == ShopItemKind.PrimaryWeapon ? "gameplay.card.primary" : "gameplay.card.secondary")
                               : L10n.T("gameplay.card.works_with_fmt", L10n.Source(o.carta.rindeCon));
         if (!esArma) rinde = AvisoDeAlimentacion(o.carta) ?? rinde; // US 334

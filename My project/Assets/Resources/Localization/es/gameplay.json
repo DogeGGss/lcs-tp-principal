@@ -425,12 +425,36 @@
       "text": "Matar saca la pausa entre las próximas 3 ráfagas."
     },
     {
+      "key": "gameplay.card.fx.no_interval.2",
+      "text": "Matar saca la pausa entre las próximas 5 ráfagas."
+    },
+    {
+      "key": "gameplay.card.fx.no_interval.3",
+      "text": "Matar saca la pausa entre las próximas 7 ráfagas."
+    },
+    {
       "key": "gameplay.card.fx.growing_burst",
       "text": "Cada baja le suma una bala a las ráfagas, hasta 6. Al recargar vuelven a 3."
     },
     {
+      "key": "gameplay.card.fx.growing_burst.2",
+      "text": "Cada baja le suma una bala a las ráfagas, hasta 8. Al recargar vuelven a 3."
+    },
+    {
+      "key": "gameplay.card.fx.growing_burst.3",
+      "text": "Cada baja le suma una bala a las ráfagas, hasta 10. Al recargar vuelven a 3."
+    },
+    {
       "key": "gameplay.card.fx.minefield",
       "text": "Las granadas que tocan el piso quedan como minas (hasta 5)."
+    },
+    {
+      "key": "gameplay.card.fx.minefield.2",
+      "text": "Las granadas que tocan el piso quedan como minas (hasta 7)."
+    },
+    {
+      "key": "gameplay.card.fx.minefield.3",
+      "text": "Las granadas que tocan el piso quedan como minas (hasta 9)."
     },
     {
       "key": "gameplay.card.fx.logistics",
@@ -441,8 +465,24 @@
       "text": "40 % más de reserva en las dos armas."
     },
     {
+      "key": "gameplay.card.fx.backpack.2",
+      "text": "80 % más de reserva en las dos armas (40 % más que ahora)."
+    },
+    {
+      "key": "gameplay.card.fx.backpack.3",
+      "text": "120 % más de reserva en las dos armas (40 % más que ahora)."
+    },
+    {
       "key": "gameplay.card.fx.recycler",
       "text": "Cada baja a la cabeza devuelve 5 balas al cargador."
+    },
+    {
+      "key": "gameplay.card.fx.recycler.2",
+      "text": "Cada baja a la cabeza devuelve 10 balas al cargador."
+    },
+    {
+      "key": "gameplay.card.fx.recycler.3",
+      "text": "Cada baja a la cabeza devuelve 15 balas al cargador."
     },
     {
       "key": "gameplay.card.fx.edge",
@@ -453,12 +493,36 @@
       "text": "1 de cada 5 invasores suelta un cargador al morir."
     },
     {
+      "key": "gameplay.card.fx.scavenger.2",
+      "text": "1 de cada 4 invasores suelta un cargador al morir."
+    },
+    {
+      "key": "gameplay.card.fx.scavenger.3",
+      "text": "1 de cada 3 invasores suelta un cargador al morir."
+    },
+    {
       "key": "gameplay.card.fx.finisher",
       "text": "El cuchillo mata de un golpe a los invasores con 25 % de vida o menos (salvo al Jefe)."
     },
     {
+      "key": "gameplay.card.fx.finisher.2",
+      "text": "El cuchillo mata de un golpe a los invasores con 30 % de vida o menos (salvo al Jefe)."
+    },
+    {
+      "key": "gameplay.card.fx.finisher.3",
+      "text": "El cuchillo mata de un golpe a los invasores con 35 % de vida o menos (salvo al Jefe)."
+    },
+    {
       "key": "gameplay.card.fx.hungry_edge",
       "text": "Cada cuchillazo cura lo mismo que el daño que hace, hasta 25 de vida por golpe."
+    },
+    {
+      "key": "gameplay.card.fx.hungry_edge.2",
+      "text": "Cada cuchillazo cura lo mismo que el daño que hace, hasta 35 de vida por golpe."
+    },
+    {
+      "key": "gameplay.card.fx.hungry_edge.3",
+      "text": "Cada cuchillazo cura lo mismo que el daño que hace, hasta 45 de vida por golpe."
     },
     {
       "key": "gameplay.card.fx.ready_reserve",
@@ -467,6 +531,14 @@
     {
       "key": "gameplay.card.fx.rage",
       "text": "Cuando un invasor te pega, tu próximo disparo suma 5 veces la vida que perdiste."
+    },
+    {
+      "key": "gameplay.card.fx.rage.2",
+      "text": "Cuando un invasor te pega, tu próximo disparo suma 6 veces la vida que perdiste."
+    },
+    {
+      "key": "gameplay.card.fx.rage.3",
+      "text": "Cuando un invasor te pega, tu próximo disparo suma 7 veces la vida que perdiste."
     },
     {
       "key": "gameplay.card.fx.direct_feed",
@@ -479,6 +551,14 @@
     {
       "key": "gameplay.card.fx.clearance",
       "text": "Cuando el puesto se carga, una burbuja empuja 10 m a los invasores del anillo, salvo al Jefe."
+    },
+    {
+      "key": "gameplay.card.fx.clearance.2",
+      "text": "Cuando el puesto se carga, una burbuja empuja 15 m a los invasores del anillo, salvo al Jefe."
+    },
+    {
+      "key": "gameplay.card.fx.clearance.3",
+      "text": "Cuando el puesto se carga, una burbuja empuja 20 m a los invasores del anillo, salvo al Jefe."
     },
     {
       "key": "gameplay.card.rarity.common",

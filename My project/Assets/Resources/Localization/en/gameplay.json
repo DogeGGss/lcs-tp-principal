@@ -425,12 +425,36 @@
       "text": "Killing removes the pause between the next 3 bursts."
     },
     {
+      "key": "gameplay.card.fx.no_interval.2",
+      "text": "Killing removes the pause between the next 5 bursts."
+    },
+    {
+      "key": "gameplay.card.fx.no_interval.3",
+      "text": "Killing removes the pause between the next 7 bursts."
+    },
+    {
       "key": "gameplay.card.fx.growing_burst",
       "text": "Each kill adds one bullet to your bursts, up to 6. Reloading resets them to 3."
     },
     {
+      "key": "gameplay.card.fx.growing_burst.2",
+      "text": "Each kill adds one bullet to your bursts, up to 8. Reloading resets them to 3."
+    },
+    {
+      "key": "gameplay.card.fx.growing_burst.3",
+      "text": "Each kill adds one bullet to your bursts, up to 10. Reloading resets them to 3."
+    },
+    {
       "key": "gameplay.card.fx.minefield",
       "text": "Grenades that touch the ground stay as mines (up to 5)."
+    },
+    {
+      "key": "gameplay.card.fx.minefield.2",
+      "text": "Grenades that touch the ground stay as mines (up to 7)."
+    },
+    {
+      "key": "gameplay.card.fx.minefield.3",
+      "text": "Grenades that touch the ground stay as mines (up to 9)."
     },
     {
       "key": "gameplay.card.fx.logistics",
@@ -441,8 +465,24 @@
       "text": "40% more reserve ammo for both weapons."
     },
     {
+      "key": "gameplay.card.fx.backpack.2",
+      "text": "80% more reserve ammo for both weapons (40% more than now)."
+    },
+    {
+      "key": "gameplay.card.fx.backpack.3",
+      "text": "120% more reserve ammo for both weapons (40% more than now)."
+    },
+    {
       "key": "gameplay.card.fx.recycler",
       "text": "Each headshot kill returns 5 bullets to the magazine."
+    },
+    {
+      "key": "gameplay.card.fx.recycler.2",
+      "text": "Each headshot kill returns 10 bullets to the magazine."
+    },
+    {
+      "key": "gameplay.card.fx.recycler.3",
+      "text": "Each headshot kill returns 15 bullets to the magazine."
     },
     {
       "key": "gameplay.card.fx.edge",
@@ -453,12 +493,36 @@
       "text": "1 in 5 invaders drops a magazine when it dies."
     },
     {
+      "key": "gameplay.card.fx.scavenger.2",
+      "text": "1 in 4 invaders drops a magazine when it dies."
+    },
+    {
+      "key": "gameplay.card.fx.scavenger.3",
+      "text": "1 in 3 invaders drops a magazine when it dies."
+    },
+    {
       "key": "gameplay.card.fx.finisher",
       "text": "The knife kills invaders with 25% health or less in one hit (except the Boss)."
     },
     {
+      "key": "gameplay.card.fx.finisher.2",
+      "text": "The knife kills invaders with 30% health or less in one hit (except the Boss)."
+    },
+    {
+      "key": "gameplay.card.fx.finisher.3",
+      "text": "The knife kills invaders with 35% health or less in one hit (except the Boss)."
+    },
+    {
       "key": "gameplay.card.fx.hungry_edge",
       "text": "Each knife hit heals as much as the damage it deals, up to 25 health per hit."
+    },
+    {
+      "key": "gameplay.card.fx.hungry_edge.2",
+      "text": "Each knife hit heals as much as the damage it deals, up to 35 health per hit."
+    },
+    {
+      "key": "gameplay.card.fx.hungry_edge.3",
+      "text": "Each knife hit heals as much as the damage it deals, up to 45 health per hit."
     },
     {
       "key": "gameplay.card.fx.ready_reserve",
@@ -467,6 +531,14 @@
     {
       "key": "gameplay.card.fx.rage",
       "text": "When an invader hits you, your next shot adds 5 times the health you lost."
+    },
+    {
+      "key": "gameplay.card.fx.rage.2",
+      "text": "When an invader hits you, your next shot adds 6 times the health you lost."
+    },
+    {
+      "key": "gameplay.card.fx.rage.3",
+      "text": "When an invader hits you, your next shot adds 7 times the health you lost."
     },
     {
       "key": "gameplay.card.fx.direct_feed",
@@ -479,6 +551,14 @@
     {
       "key": "gameplay.card.fx.clearance",
       "text": "When the station is charged, a bubble pushes invaders in the ring back 10 m, except the Boss."
+    },
+    {
+      "key": "gameplay.card.fx.clearance.2",
+      "text": "When the station is charged, a bubble pushes invaders in the ring back 15 m, except the Boss."
+    },
+    {
+      "key": "gameplay.card.fx.clearance.3",
+      "text": "When the station is charged, a bubble pushes invaders in the ring back 20 m, except the Boss."
     },
     {
       "key": "gameplay.card.rarity.common",
