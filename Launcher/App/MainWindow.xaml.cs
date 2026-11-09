@@ -62,7 +62,7 @@ public partial class MainWindow : Window
             Progress.IsIndeterminate = false; Progress.Value = 100; ProgressText.Text = "Vista previa · no instala ni abre el juego";
             ConnectionText.Text = "VISTA PREVIA"; Retry.Visibility = Visibility.Collapsed;
             ReleasePicker.Items.Add(new { Label = "Vista previa" }); ReleasePicker.SelectedIndex = 0;
-            Notes.Document = MarkdownNotes.Render("## El próximo cruce empieza acá\nUn punto de encuentro para preparar tu próxima partida.\n### Tu juego, al día\n- Descargá las nuevas versiones desde este launcher.\n- Conservá tus opciones y tu progreso.\n- Consultá qué cambió antes de jugar.\n### Elegí tu andén\n**Táctico · Deathmatch · Zombie**\n\nEsta es una vista previa de la interfaz, no las notas de una versión publicada.");
+            Notes.Document = MarkdownNotes.Render("## El próximo cruce empieza acá\nUn punto de encuentro para preparar tu próxima partida.\n### Tu juego, al día\n- Descargá las nuevas versiones desde este launcher.\n- Conservá tus opciones y tu progreso.\n- Consultá qué cambió antes de jugar.\n### Elegí tu andén\n**Táctico · Deathmatch · Invasión**\n\nEsta es una vista previa de la interfaz, no las notas de una versión publicada.");
             if (args.Contains("--settings-preview")) OpenSettings(true);
             int cuenta = Array.IndexOf(args, "--cuenta"); // the account's steps: --cuenta entrar|crear|confirmar|listo|menu…
             if (cuenta >= 0) VistaPreviaCuenta(cuenta + 1 < args.Length ? args[cuenta + 1] : "entrar");

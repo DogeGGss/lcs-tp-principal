@@ -1038,12 +1038,14 @@ public partial class ModeSelectScreen : MonoBehaviour
             : L10n.T("ui.mode.unplayed",L10n.Source(name,"ui."),ModeHex[2]);
     }
 
-    // US 015, CA1: en el Zombie, el personaje se elige después de la dificultad y antes de entrar al mapa.
+    // US 015, CA1: en el Zombie, el personaje se elige después de la dificultad y antes de entrar al mapa. En Invasión
+    // no hay habilidades (US 297): el personaje es solo el aspecto y las tarjetas no muestran la habilidad.
     private void PlayZombie()
     {
         if (CharacterSelectScreen.IsOpen) return;
         CharacterSelectScreen.Show(displayFont, labelFont, bodyFont, rounded,
-            L10n.T("gameplay.ui.invasion_mode") + " · " + L10n.Source(DifficultyName[(int)MatchSettings.Difficulty], "ui."), 0f, StartZombie, () => { });
+            L10n.T("gameplay.ui.invasion_mode") + " · " + L10n.Source(DifficultyName[(int)MatchSettings.Difficulty], "ui."), 0f, StartZombie, () => { },
+            true, "character.no_invasion_abilities");
     }
 
     private void StartZombie()

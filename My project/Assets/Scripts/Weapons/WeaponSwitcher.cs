@@ -294,6 +294,8 @@ public class WeaponSwitcher : MonoBehaviour
 
     void Update()
     {
+        SeguirArmaDeFuego(); // US 318: la última arma usada, sin contar las que se pasan de largo
+
         // Configuración inicial al arrancar: con el arma principal si la tiene; si no, con la pistola
         if (!setupInicialListo && meleeScript != null && meleeScript.CurrentViewModel != null)
         {
@@ -422,8 +424,26 @@ public class WeaponSwitcher : MonoBehaviour
     }
 
     /// <summary>La última arma de fuego que tuvo en la mano (la principal o la secundaria), aunque ahora tenga el
-    /// cuchillo o una granada. La usa la carta Filo de Invasión (US 317).</summary>
-    public GameObject UltimaDeFuego { get; private set; }
+    /// cuchillo o una granada. La usan las cartas de Invasión que dan munición (Filo, US 317; Carroñero, US 318).
+    /// Un arma por la que solo se pasó (menos de medio segundo, como la pistola al ir con la rueda del Mitre al
+    /// cuchillo) no cuenta: sigue siendo la anterior.</summary>
+    public GameObject UltimaDeFuego => deFuegoEnLaMano != null ? deFuegoEnLaMano : ultimaDeFuegoFirme;
+
+    public const float TiempoParaContarComoUsada = 0.5f;
+    private GameObject deFuegoEnLaMano, ultimaDeFuegoFirme;
+    private float deFuegoEnLaManoDesde;
+
+    // Se fija cada frame qué arma de fuego está en la mano. La que se deja después de tenerla al menos medio segundo
+    // pasa a ser la última usada; la que se deja antes (se pasó de largo con la rueda) no.
+    void SeguirArmaDeFuego()
+    {
+        GameObject ahora = HeldPrimary ?? HeldSecondary;
+        if (ahora == deFuegoEnLaMano) return;
+        if (deFuegoEnLaMano != null && Time.time - deFuegoEnLaManoDesde >= TiempoParaContarComoUsada)
+            ultimaDeFuegoFirme = deFuegoEnLaMano;
+        deFuegoEnLaMano = ahora;
+        deFuegoEnLaManoDesde = Time.time;
+    }
 
     // Vuelve al arma principal si la tiene; si no, a la secundaria (o al cuchillo).
     public void VolverAlArma()
@@ -445,7 +465,6 @@ public class WeaponSwitcher : MonoBehaviour
         bool yaEnMano = principal != null && principal.activeSelf;
         GuardarPrincipales(principal);
         if (principal != null) principal.SetActive(true);
-        if (principal != null) UltimaDeFuego = principal;
         if (!yaEnMano) SonarSacar(principal);
         GuardarSecundarias(null);
         if (meleeScript != null && meleeScript.CurrentViewModel != null)
@@ -470,7 +489,6 @@ public class WeaponSwitcher : MonoBehaviour
         bool yaEnMano = secundaria != null && secundaria.activeSelf;
         GuardarSecundarias(secundaria);
         if (secundaria != null) secundaria.SetActive(true);
-        if (secundaria != null) UltimaDeFuego = secundaria;
         if (!yaEnMano) SonarSacar(secundaria);
         if (meleeScript != null && meleeScript.CurrentViewModel != null)
         {
