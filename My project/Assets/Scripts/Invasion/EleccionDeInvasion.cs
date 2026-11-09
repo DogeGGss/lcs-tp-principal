@@ -300,6 +300,7 @@ public class EleccionDeInvasion : MonoBehaviour
             if (yaSalieron.Contains(c) || Veces(c) >= c.Maximo) continue; // CA5: ya la tiene todas las veces que se puede
             if (c.puedeSalir != null && !c.puedeSalir()) continue;          // US 331: Sin respaldo y Acople, por ejemplo
             if (c.rareza == RarezaDeCarta.Legendaria && !despuesDelJefe) continue; // US 303, CA3
+            if (c.rareza == RarezaDeCarta.Legendaria && !CartaDeInvasion.LegendariasDisponibles) continue; // Sprint 4: todavía no hay (US 352)
             if (c.rareza == RarezaDeCarta.Comun && delJefe) continue;              // US 303, CA2
             int d = (int)c.rareza - (int)buscada;
             int lejos = d >= 0 ? d * 2 : -d * 2 - 1; // la de abajo gana el empate

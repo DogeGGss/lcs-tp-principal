@@ -127,6 +127,11 @@ public class CartaDeInvasion
     public static readonly string[] SinUsoConAlimentacion = { "Cargador gemelo", "Reserva lista", "Filo", "Tiro de reserva" };
     public const string AlimentacionDirecta = "Alimentación directa";
 
+    /// <summary>US 303 / US 352: en el Sprint 4 no se entrega ninguna legendaria (Alimentación directa es de US 334,
+    /// Sprint 5). Mientras esté en false no salen en la elección: las chances de rareza no cambian (CA2 y CA3), pero
+    /// cuando toca legendaria sale la carta de la rareza más cercana (una épica). Para el Sprint 5, ponerlo en true.</summary>
+    public static bool LegendariasDisponibles = false;
+
     /// <summary>CA3: la rareza al azar según la oleada (común, rara y épica). US 303: despuesDelJefe, ya cayó algún
     /// Jefe (CA3: las legendarias, muy raras, se le restan a las comunes); delJefe, la elección del Jefe (CA2: sin
     /// comunes, con más chance de raras, épicas y legendarias).</summary>
