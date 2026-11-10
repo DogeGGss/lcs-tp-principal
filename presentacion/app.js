@@ -172,7 +172,8 @@ const questionTopics = [
   ['Logros', 'Logros', 'logros'],
   ['Miras', 'Elegí tu mira', 'miras'],
   ['Modo Invasión', 'Modo Invasión · Roguelike de oleadas', 'invasion'],
-  ['Cuenta', 'Tu cuenta Riftwalker', 'cuenta']
+  ['Cuenta', 'Tu cuenta Riftwalker', 'cuenta'],
+  ['Launcher', 'El launcher de Riftwalker', 'launcher']
 ];
 const proofImages = '../pruebas/idiomas/2026-11-08/';
 const invasionView = proofImages + 'US-348_CA1_Invasion_HUD_y_oleada.png';
@@ -200,6 +201,7 @@ function questionVisual(key) {
       const cartas=D.cards.map(c=>`<article class="qa-carta ${rar[c.rarity]}"><span class="qa-rareza">${esc(c.rarity)}</span><strong>${esc(c.name)}</strong><p>${esc(c.text)}</p><small>${esc(c.with)} · ${c.max>1?'hasta 3 veces':'una sola vez'}</small></article>`).join('');
       return `<div class="qa-run qa-invasion"><figure><img src="${invasionView}" alt="Oleada en el campus"><figcaption>Sobreviví a la oleada</figcaption></figure><figure><img src="${proofImages}US-348_CA2_Invasion_eleccion_de_cartas.png" alt="Tres recompensas del puesto"><figcaption>Cargá el puesto y elegí 1 de 3</figcaption></figure></div><p class="qa-caption">Matando se carga el puesto de suministros y ahí se elige 1 de 3: un arma o una carta. Las cartas cambian cómo rinde cada arma; algunas se acumulan hasta 3 veces. Cuanto más avanzan las oleadas, más salen las raras y las épicas. Volver a tirar cuesta 150 puntos.</p><div class="qa-cartas">${cartas}</div>`;
     }
+    case 'launcher': return '<img class="qa-picture" style="display:block;width:100%;height:auto;max-height:56dvh;object-fit:contain" src="media/launcher.png" alt="Launcher de Project Riftwalker con las novedades de la versión 0.4.0 y el botón Jugar"><div class="qa-actions"><strong>Instala y actualiza</strong><span>Novedades de cada versión</span><span>Entrás con tu cuenta</span><span>Canal estable y experimental</span></div>';
     case 'cuenta': return '<div class="qa-account"><div><strong>Crear cuenta</strong><span>Mail y contraseña</span></div><div><strong>Ingresar con Steam</strong><span>Acceso previsto</span></div></div><img class="qa-picture" style="display:block;width:100%;height:auto;max-height:38dvh;object-fit:contain" src="media/cuenta-confirmacion.png" alt="Correo de Project Riftwalker para confirmar el registro de una cuenta"><p class="qa-caption">Tu perfil, logros y monedas te acompañan al cambiar de PC.</p>';
   }
 }
@@ -211,7 +213,8 @@ const questionSketch = [
   [84, 38, -6, 'M68 43 C69 43 65 41 72 42 Q78 42 84 38'],
   [18, 66, -13, 'M35 61 Q34 61 32 60 T18 66'],
   [81, 67, 8, 'M65 61 C70 60 69 66 81 67'],
-  [49, 86, 11, 'M50 70 Q48 74 49 86']
+  [49, 86, 11, 'M50 70 Q48 74 49 86'],
+  [48, 11, -4, 'M50 34 C51 28 47 22 48 11']
 ];
 function questionsScreen() {
   const buttons = questionTopics.map(([name], index) => {
