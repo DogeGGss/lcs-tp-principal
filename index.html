@@ -477,14 +477,9 @@ body.capture .focus-hint{display:none}
 .ms-hit line{stroke:#fff;stroke-width:5;stroke-linecap:round}
 .ms-hit{opacity:0;transition:opacity .35s ease}
 .ms-hit.on{opacity:1;transition:none}
-/* Zombie */
+/* Invasión: el Jefe volando entre la niebla (lo anima el script, como ModeSelectScreen.AnimateInvasion) */
 .ms-fog{animation:msFog 9s ease-in-out infinite alternate}
 @keyframes msFog{from{transform:translateX(-140px)}to{transform:translateX(140px)}}
-.ms-zb{animation:msRise 5.5s ease-in-out infinite;transform:translateY(190px)}
-.ms-p.hot .ms-zb{animation-name:msRiseHot;animation-duration:3.2s}
-@keyframes msRise{0%,100%{transform:translateY(200px)}45%,60%{transform:translateY(40px)}}
-@keyframes msRiseHot{0%,100%{transform:translateY(130px)}40%,70%{transform:translateY(10px)}}
-.ms-eye{fill:#9BFF6E;animation:msLed 2.2s ease-in-out infinite}
 
 /* Textos sobre las franjas */
 .ms-label{position:absolute;top:610px;color:#fff;text-align:center;pointer-events:none;transition:opacity .22s ease}
@@ -538,9 +533,79 @@ body.capture .focus-hint{display:none}
 .ms-diff span{display:block;font:500 18px/1.35 var(--body);color:rgba(255,255,255,.7);margin-top:8px}
 .ms-record{font:600 24px/1 var(--mono);color:rgba(255,255,255,.8);margin-bottom:28px}
 .ms-record em{font-style:normal;color:var(--c)}
+
+/* Buscar partida (F28, ModeSelectScreen.Busqueda): lo principal del andén de Táctico y Deathmatch */
+.ms-detail .ms-rules{margin-bottom:34px}
+.ms-detail[data-i="0"] .d,.ms-detail[data-i="1"] .d{max-width:760px}
+.ms-buscar{position:relative;display:flex;align-items:center;gap:26px;width:720px;height:124px;padding:0 34px 0 30px;border:0;border-radius:12px;background:rgb(var(--rgb));color:#111;cursor:pointer;text-align:left;overflow:hidden;
+  box-shadow:0 0 0 0 rgb(var(--rgb)/.55),0 18px 50px rgb(var(--rgb)/.28);animation:msLatir 2.2s ease-out infinite;transition:transform .12s ease,filter .12s ease}
+.ms-buscar:hover{filter:brightness(1.07);transform:translateY(-2px)}
+@keyframes msLatir{0%{box-shadow:0 0 0 0 rgb(var(--rgb)/.55),0 18px 50px rgb(var(--rgb)/.28)}70%,100%{box-shadow:0 0 0 22px rgb(var(--rgb)/0),0 18px 50px rgb(var(--rgb)/.28)}}
+.ms-buscar::after{content:'';position:absolute;top:0;bottom:0;width:120px;left:-160px;background:linear-gradient(100deg,transparent,rgba(255,255,255,.45),transparent);animation:msBrillo 3.4s ease-in-out infinite}
+@keyframes msBrillo{0%,55%{left:-160px}100%{left:760px}}
+.ms-buscar .icono{flex:none;width:64px;height:64px;border-radius:50%;border:4px solid #111;position:relative}
+.ms-buscar .icono::before{content:'';position:absolute;inset:11px;border-radius:50%;border:3px solid #111;opacity:.55}
+.ms-buscar .icono::after{content:'';position:absolute;left:50%;top:50%;width:26px;height:4px;background:#111;transform-origin:0 50%;animation:msGira 2.4s linear infinite}
+@keyframes msGira{to{transform:rotate(1turn)}}
+.ms-buscar .txt{flex:1}
+.ms-buscar .txt b{display:block;font:700 60px/1 var(--display);letter-spacing:.05em;text-transform:uppercase}
+.ms-buscar .txt small{display:block;font:600 21px/1.1 var(--display);letter-spacing:.12em;text-transform:uppercase;opacity:.72;margin-top:6px}
+.ms-buscar .flecha{font:700 54px/1 var(--display)}
+.ms-cuenta{display:flex;align-items:center;gap:12px;margin-top:18px;font:400 22px/1.3 var(--body);color:rgba(255,255,255,.7)}
+.ms-cuenta .ok{width:12px;height:12px;border-radius:50%;background:#3DDC97;box-shadow:0 0 10px #3DDC97}
+.ms-cuenta b{color:#fff;font-weight:600}
+.ms-privada{margin-top:46px;padding-top:24px;border-top:1px solid rgba(255,255,255,.12);width:720px}
+.ms-privada .r{font:600 20px/1 var(--display);letter-spacing:.3em;text-transform:uppercase;color:rgba(255,255,255,.55);margin-bottom:16px}
+.ms-privada .ms-actions{gap:14px}
+.ms-privada .ms-code{margin-top:16px}
+.ms-privada .ms-code input{width:280px;font-size:40px;padding:12px 16px}
+.ms-chico{font:700 26px/1 var(--display);letter-spacing:.06em;text-transform:uppercase;padding:15px 26px;border-radius:8px;border:2px solid rgba(255,255,255,.4);background:rgba(0,0,0,.25);color:#fff;cursor:pointer}
+.ms-chico:hover{border-color:#fff}
+.ms-chico.color{background:rgb(var(--rgb));border-color:rgb(var(--rgb));color:#111}
+.ms-detail.sala .ms-acc,.ms-detail.busca .ms-acc{display:none}
+.ms-detail.sala .ms-room{display:block}
+.ms-busq{display:none;width:860px;border-radius:12px;background:rgba(0,0,0,.62);box-shadow:inset 0 0 0 1px rgba(255,255,255,.18);overflow:hidden}
+.ms-detail.busca .ms-busq{display:block}
+.ms-busq .barra{height:5px;background:rgb(var(--rgb));position:relative;overflow:hidden}
+.ms-busq .barra::after{content:'';position:absolute;top:0;bottom:0;width:220px;background:linear-gradient(90deg,transparent,rgba(255,255,255,.8),transparent);animation:msCorre 1.6s linear infinite}
+@keyframes msCorre{from{left:-220px}to{left:100%}}
+.ms-busq .in{padding:24px 30px 26px}
+.ms-busq .cab{display:flex;justify-content:space-between;align-items:center}
+.ms-busq .cab .e{font:600 24px/1 var(--display);letter-spacing:.24em;text-transform:uppercase;color:rgb(var(--rgb))}
+.ms-busq .cab .reloj{font:400 46px/1 var(--mono);color:#fff}
+.ms-busq .grande{font:700 72px/1 var(--display);text-transform:uppercase;letter-spacing:.02em;margin:10px 0 6px}
+.ms-busq .grande em{font-style:normal;color:rgb(var(--rgb))}
+.ms-busq .datos{font:600 20px/1 var(--mono);color:rgba(255,255,255,.62)}
+.ms-lugares{display:grid;grid-template-columns:1fr 1fr;gap:8px 28px;margin:22px 0;padding:0;list-style:none}
+.ms-lugares li{display:flex;align-items:center;gap:14px;height:46px;font:600 24px/1 var(--body);border-bottom:1px solid rgba(255,255,255,.08)}
+.ms-lugares li i{width:12px;height:12px;border-radius:50%;background:rgb(var(--rgb));flex:none}
+.ms-lugares li small{color:rgba(255,255,255,.5);font-weight:400}
+.ms-lugares li.libre{color:rgba(255,255,255,.35);font-weight:400}
+.ms-lugares li.libre i{background:transparent;box-shadow:inset 0 0 0 2px rgba(255,255,255,.28);animation:msPulso 1.6s ease-in-out infinite}
+.ms-lugares li.nuevo{animation:msEntra .6s ease-out}
+@keyframes msPulso{50%{opacity:.3}}
+@keyframes msEntra{from{background:rgb(var(--rgb)/.35)}to{background:transparent}}
+.ms-busq .pie{display:flex;justify-content:space-between;align-items:flex-end;gap:24px}
+.ms-busq .pie p{margin:0;font:400 21px/1.35 var(--body);color:rgba(255,255,255,.72);max-width:520px}
+.ms-busq .pie p b{color:#fff;font:400 21px/1 var(--mono)}
+.ms-busq .progreso{height:6px;border-radius:3px;background:rgba(255,255,255,.12);margin-top:12px;overflow:hidden;width:520px}
+.ms-busq .progreso i{display:block;height:100%;background:rgb(var(--rgb));transition:width 1s linear}
+/* El radar de la búsqueda, a la derecha (640 en 1180, 200): anillos que salen del centro y un punto por cada jugador */
+.ms-radar{position:absolute;left:1180px;top:200px;width:640px;height:640px;opacity:0;transition:opacity .35s ease;pointer-events:none}
+.ms-radar.on{opacity:1}
+.ms-radar .guia{position:absolute;border-radius:50%;border:1px solid rgb(var(--rgb)/.18)}
+.ms-radar .aro{position:absolute;inset:0;border-radius:50%;border:2px solid rgb(var(--rgb)/.55);animation:msAro 2.6s ease-out infinite;opacity:0}
+.ms-radar .aro.b{animation-delay:-.87s}.ms-radar .aro.c{animation-delay:-1.73s}
+@keyframes msAro{0%{transform:scale(.12);opacity:.9}100%{transform:scale(1);opacity:0}}
+.ms-radar .barrido{position:absolute;inset:0;border-radius:50%;background:conic-gradient(from 0deg,rgb(var(--rgb)/.32),transparent 22%);animation:msGira 3.2s linear infinite}
+.ms-radar .centro{position:absolute;left:304px;top:304px;width:32px;height:32px;border-radius:50%;background:rgb(var(--rgb));box-shadow:0 0 40px rgb(var(--rgb))}
+.ms-radar .pj{position:absolute;width:18px;height:18px;margin:-9px 0 0 -9px;border-radius:50%;background:#fff;box-shadow:0 0 0 4px rgb(var(--rgb)/.6),0 0 24px rgb(var(--rgb))}
+.ms-radar .pj span{position:absolute;left:26px;top:-4px;white-space:nowrap;font:600 20px/1 var(--display);letter-spacing:.08em;text-transform:uppercase;color:rgba(255,255,255,.8)}
+.ms-radar.listo .barrido,.ms-radar.listo .aro{animation-duration:1.1s}
+.ms-busca .ms-p .ms-fig{opacity:0}
 @media (prefers-reduced-motion: reduce){
   .ms-stage *{animation:none !important}
-  .ms-ring{opacity:.3}.ms-zb{transform:translateY(40px)}
+  .ms-ring{opacity:.3}
 }
 body.capture-ms{padding:0;background:#000}
 body.capture-ms .wrap{max-width:none}
@@ -1363,8 +1428,8 @@ body.capture,body.capture-ms,body.capture-cr{padding-left:0!important}
 
 <section id="modos">
   <div class="sec-head"><h2>Selección de modo</h2><span class="sub">Pantalla "Jugar" · US 177</span> <span class="st st-ok">En el juego</span></div>
-  <p>Aparece al apretar <b>Jugar</b> en el menú principal. Tres andenes separados por dos rayos, uno por modo. El modo se elige solo acá: la sala lo hereda (US 026 y US 027) y en Zombie aparecen la dificultad y el récord (US 161).</p>
-  <p class="soft">Pasá el mouse para agrandar un andén y hacé clic para entrar; <span class="kbd">Esc</span> vuelve. También funcionan <span class="kbd">1</span> <span class="kbd">2</span> <span class="kbd">3</span>, las flechas y <span class="kbd">Enter</span>.</p>
+  <p>Aparece al apretar <b>Jugar</b> en el menú principal. Tres andenes separados por dos rayos, uno por modo. El modo se elige solo acá. En Táctico y Deathmatch lo principal es <b>Buscar partida</b> (US 274 a 276), con la sala privada abajo (US 026 y US 027); en Invasión, con el Jefe volando en su andén (US 146), aparecen la dificultad y el récord (US 161).</p>
+  <p class="soft">Pasá el mouse para agrandar un andén y hacé clic para entrar; <span class="kbd">Esc</span> vuelve (o cancela la búsqueda). También funcionan <span class="kbd">1</span> <span class="kbd">2</span> <span class="kbd">3</span>, las flechas y <span class="kbd">Enter</span>.</p>
   <div class="controls">
     <div><span class="ctl-label">Animación</span><span class="seg"><button id="msReplay" aria-pressed="false">Repetir entrada</button></span></div>
   </div>
@@ -1381,6 +1446,7 @@ body.capture,body.capture-ms,body.capture-cr{padding-left:0!important}
           <radialGradient id="msLightD"><stop offset="0" stop-color="#FF4B4B" stop-opacity=".32"/><stop offset=".55" stop-color="#FF4B4B" stop-opacity=".07"/><stop offset="1" stop-color="#FF4B4B" stop-opacity="0"/></radialGradient>
           <radialGradient id="msLightZ"><stop offset="0" stop-color="#7DE05A" stop-opacity=".26"/><stop offset=".55" stop-color="#7DE05A" stop-opacity=".06"/><stop offset="1" stop-color="#7DE05A" stop-opacity="0"/></radialGradient>
           <radialGradient id="msCore"><stop offset="0" stop-color="#FFF4E6"/><stop offset=".45" stop-color="#FFB45C"/><stop offset="1" stop-color="#F29A38"/></radialGradient>
+          <radialGradient id="msJefeGlow"><stop offset="0" stop-color="#FF2A1F"/><stop offset=".3" stop-color="#FF2A1F" stop-opacity=".45"/><stop offset="1" stop-color="#FF2A1F" stop-opacity="0"/></radialGradient>
           <radialGradient id="msFogG"><stop offset="0" stop-color="#B8E6A6" stop-opacity=".30"/><stop offset="1" stop-color="#B8E6A6" stop-opacity="0"/></radialGradient>
           <linearGradient id="msG0" gradientUnits="userSpaceOnUse" x1="480" y1="0" x2="800" y2="0"><stop offset="0" stop-color="#F29A38"/><stop offset="1" stop-color="#FF4B4B"/></linearGradient>
           <linearGradient id="msG1" gradientUnits="userSpaceOnUse" x1="1120" y1="0" x2="1440" y2="0"><stop offset="0" stop-color="#FF4B4B"/><stop offset="1" stop-color="#7DE05A"/></linearGradient>
@@ -1449,19 +1515,56 @@ body.capture,body.capture-ms,body.capture-cr{padding-left:0!important}
           <rect class="ms-flash" width="1920" height="1080" fill="#fff" opacity="0"/>
         </g>
 
-        <!-- Andén 3 · Zombie -->
+        <!-- Andén 3 · Invasión: el Jefe (el escarabajo) volando -->
         <g class="ms-p" data-i="2" clip-path="url(#msClip2)">
           <rect width="1920" height="1080" fill="#060906"/>
           <g id="msMot2" transform="translate(1600,540)"><image class="ms-map" href="img/mapa_bg.jpg" x="-1400" y="-540" width="2800" height="1080" preserveAspectRatio="xMidYMid slice"/>
             <circle r="720" fill="url(#msLightZ)"/>
-            <circle cx="170" cy="-330" r="88" fill="#d8efcb" opacity=".16"/>
-            <circle cx="170" cy="-330" r="150" fill="#d8efcb" opacity=".08" filter="url(#msSoft)"/>
-            <ellipse class="ms-fog" cx="-160" cy="420" rx="520" ry="120" fill="url(#msFogG)" style="animation-duration:11s"/>
-            <g class="ms-zb" style="animation-delay:-.4s"><g transform="translate(-230,560) scale(.8)"><path d="M-86 320 L-86 0 C-86 -66 -74 -108 -34 -118 L34 -118 C74 -108 86 -66 86 0 L86 320 Z" fill="#020402"/><rect x="-16" y="-138" width="32" height="30" fill="#020402"/><circle cy="-170" r="44" fill="#020402"/><circle class="ms-eye" cx="-15" cy="-176" r="5.5"/><circle class="ms-eye" cx="15" cy="-176" r="5.5"/><path d="M60 -96 L120 -196 L150 -214" fill="none" stroke="#020402" stroke-width="26" stroke-linecap="round" stroke-linejoin="round"/></g></g>
-            <g class="ms-zb" style="animation-delay:-2.1s"><g transform="translate(-40,540) scale(1.05)"><path d="M-86 320 L-86 0 C-86 -66 -74 -108 -34 -118 L34 -118 C74 -108 86 -66 86 0 L86 320 Z" fill="#020402"/><rect x="-16" y="-138" width="32" height="30" fill="#020402"/><circle cy="-170" r="44" fill="#020402"/><circle class="ms-eye" cx="-15" cy="-176" r="5.5"/><circle class="ms-eye" cx="15" cy="-176" r="5.5"/></g></g>
-            <g class="ms-zb" style="animation-delay:-3.6s"><g transform="translate(170,570) scale(.7)"><path d="M-86 320 L-86 0 C-86 -66 -74 -108 -34 -118 L34 -118 C74 -108 86 -66 86 0 L86 320 Z" fill="#020402"/><rect x="-16" y="-138" width="32" height="30" fill="#020402"/><circle cy="-170" r="44" fill="#020402"/><circle class="ms-eye" cx="-15" cy="-176" r="5.5"/><circle class="ms-eye" cx="15" cy="-176" r="5.5"/><path d="M-60 -96 L-120 -196 L-150 -214" fill="none" stroke="#020402" stroke-width="26" stroke-linecap="round" stroke-linejoin="round"/><path d="M60 -96 L112 -178 L144 -192" fill="none" stroke="#020402" stroke-width="26" stroke-linecap="round" stroke-linejoin="round"/></g></g>
-            <g class="ms-zb" style="animation-delay:-1.2s"><g transform="translate(330,560) scale(.9)"><path d="M-86 320 L-86 0 C-86 -66 -74 -108 -34 -118 L34 -118 C74 -108 86 -66 86 0 L86 320 Z" fill="#020402"/><rect x="-16" y="-138" width="32" height="30" fill="#020402"/><circle cy="-170" r="44" fill="#020402"/><circle class="ms-eye" cx="-15" cy="-176" r="5.5"/><circle class="ms-eye" cx="15" cy="-176" r="5.5"/></g></g>
-            <ellipse class="ms-fog" cx="120" cy="470" rx="620" ry="130" fill="url(#msFogG)" style="animation-duration:7.5s;animation-direction:alternate-reverse"/>
+            <circle id="msFuria" cx="0" cy="-250" r="470" fill="url(#msJefeGlow)" opacity=".30"/>
+            <ellipse class="ms-fog" cx="-200" cy="380" rx="560" ry="123" fill="url(#msFogG)" style="animation-duration:11s"/>
+            <g id="msJefe" transform="translate(0,-235)">
+            <g transform="translate(-70,-70)"><g id="msAlaI">
+            <polygon points="0,0 -120,-150 -260,-190 -370,-130 -400,-30 -330,50 -190,60 -70,40" fill="#2A0B0A" fill-opacity=".85" stroke="#FF2A1F" stroke-opacity=".35" stroke-width="2" stroke-linejoin="round"/>
+            <polyline points="0,0 -143,-102.3 -252.2,-180.4" fill="none" stroke="#FF2A1F" stroke-opacity=".25" stroke-width="2"/>
+            <polyline points="0,0 -214.5,-33 -378.3,-58.2" fill="none" stroke="#FF2A1F" stroke-opacity=".25" stroke-width="2"/>
+            <polyline points="0,0 -165,28.6 -291,50.4" fill="none" stroke="#FF2A1F" stroke-opacity=".25" stroke-width="2"/>
+            </g></g>
+            <g transform="translate(70,-70)"><g id="msAlaD">
+            <polygon points="0,0 120,-150 260,-190 370,-130 400,-30 330,50 190,60 70,40" fill="#2A0B0A" fill-opacity=".85" stroke="#FF2A1F" stroke-opacity=".35" stroke-width="2" stroke-linejoin="round"/>
+            <polyline points="0,0 143,-102.3 252.2,-180.4" fill="none" stroke="#FF2A1F" stroke-opacity=".25" stroke-width="2"/>
+            <polyline points="0,0 214.5,-33 378.3,-58.2" fill="none" stroke="#FF2A1F" stroke-opacity=".25" stroke-width="2"/>
+            <polyline points="0,0 165,28.6 291,50.4" fill="none" stroke="#FF2A1F" stroke-opacity=".25" stroke-width="2"/>
+            </g></g>
+            <g transform="translate(-70,10)"><polyline class="ms-pata" data-k="0" points="0,0 -70,42 -60,119 -84,140" fill="none" stroke="#030503" stroke-width="13" stroke-linejoin="round" stroke-linecap="round"/></g>
+            <g transform="translate(70,10)"><polyline class="ms-pata" data-k="1" points="0,0 70,42 60,119 84,140" fill="none" stroke="#030503" stroke-width="13" stroke-linejoin="round" stroke-linecap="round"/></g>
+            <g transform="translate(-90,50)"><polyline class="ms-pata" data-k="2" points="0,0 -70,48 -60,136 -84,160" fill="none" stroke="#030503" stroke-width="13" stroke-linejoin="round" stroke-linecap="round"/></g>
+            <g transform="translate(90,50)"><polyline class="ms-pata" data-k="3" points="0,0 70,48 60,136 84,160" fill="none" stroke="#030503" stroke-width="13" stroke-linejoin="round" stroke-linecap="round"/></g>
+            <g transform="translate(-70,90)"><polyline class="ms-pata" data-k="4" points="0,0 -70,54 -60,153 -84,180" fill="none" stroke="#030503" stroke-width="13" stroke-linejoin="round" stroke-linecap="round"/></g>
+            <g transform="translate(70,90)"><polyline class="ms-pata" data-k="5" points="0,0 70,54 60,153 84,180" fill="none" stroke="#030503" stroke-width="13" stroke-linejoin="round" stroke-linecap="round"/></g>
+            <polygon points="-170,40 -175.2,8.2 -176.2,-22.2 -173,-50.8 -165.9,-77.4 -155.3,-101.8 -141.2,-123.8 -124.1,-143 -104.1,-159.3 -81.4,-172.3 -56.3,-182 -29.1,-188 0,-190 0,-190 29.1,-188 56.3,-182 81.4,-172.3 104.1,-159.3 124.1,-143 141.2,-123.8 155.3,-101.8 165.9,-77.4 173,-50.8 176.2,-22.2 175.2,8.2 170,40 170,40 153.8,62.9 130.9,81.7 102.8,96.2 70.7,106.7 36,112.9 0,115 -36,112.9 -70.7,106.7 -102.8,96.2 -130.9,81.7 -153.8,62.9 -170,40" fill="#030503" stroke="#FF2A1F" stroke-opacity=".28" stroke-width="2.5"/>
+            <line x1="0" y1="-186" x2="0" y2="-60" stroke="#FF2A1F" stroke-opacity=".18" stroke-width="2"/>
+            <polyline points="-150,-60 -90,-150 -30,-176" fill="none" stroke="#FF2A1F" stroke-opacity=".12" stroke-width="2"/>
+            <polyline points="150,-60 90,-150 30,-176" fill="none" stroke="#FF2A1F" stroke-opacity=".12" stroke-width="2"/>
+            <polygon points="-34,-60 -10,-262 0,-280 10,-262 34,-60" fill="#030503"/>
+            <circle cy="20" r="96" fill="#030503" stroke="#FF2A1F" stroke-opacity=".35" stroke-width="2.5"/>
+            <polyline points="-40,-50 -110,-150 -170,-160" fill="none" stroke="#030503" stroke-width="5" stroke-linejoin="round" stroke-linecap="round"/>
+            <polyline points="-46,90 -70,140 -40,186 -12,180" fill="none" stroke="#030503" stroke-width="16" stroke-linejoin="round" stroke-linecap="round"/>
+            <polyline points="40,-50 110,-150 170,-160" fill="none" stroke="#030503" stroke-width="5" stroke-linejoin="round" stroke-linecap="round"/>
+            <polyline points="46,90 70,140 40,186 12,180" fill="none" stroke="#030503" stroke-width="16" stroke-linejoin="round" stroke-linecap="round"/>
+            <circle class="ms-hueco-g" cx="-36" cy="0" r="45" fill="url(#msJefeGlow)" opacity=".5"/>
+            <circle class="ms-hueco" cx="-36" cy="0" r="15" fill="#FF2A1F"/>
+            <circle class="ms-hueco-g" cx="36" cy="0" r="45" fill="url(#msJefeGlow)" opacity=".5"/>
+            <circle class="ms-hueco" cx="36" cy="0" r="15" fill="#FF2A1F"/>
+            <circle class="ms-hueco-g" cx="-66" cy="34" r="27" fill="url(#msJefeGlow)" opacity=".5"/>
+            <circle class="ms-hueco" cx="-66" cy="34" r="9" fill="#FF2A1F"/>
+            <circle class="ms-hueco-g" cx="66" cy="34" r="27" fill="url(#msJefeGlow)" opacity=".5"/>
+            <circle class="ms-hueco" cx="66" cy="34" r="9" fill="#FF2A1F"/>
+            <circle class="ms-hueco-g" cx="0" cy="52" r="24" fill="url(#msJefeGlow)" opacity=".5"/>
+            <circle class="ms-hueco" cx="0" cy="52" r="8" fill="#FF2A1F"/>
+            </g>
+            <ellipse class="ms-fog" cx="160" cy="470" rx="640" ry="128" fill="url(#msFogG)" style="animation-duration:7.5s;animation-direction:alternate-reverse"/>
+            <circle cy="600" r="700" fill="url(#msLightZ)" opacity=".45"/>
+
           </g>
           <rect class="ms-dim" width="1920" height="1080" fill="#000" opacity="0"/>
           <rect class="ms-flash" width="1920" height="1080" fill="#fff" opacity="0"/>
@@ -1475,38 +1578,53 @@ body.capture,body.capture-ms,body.capture-cr{padding-left:0!important}
 
       <div class="ms-label" data-i="0" style="--c:#F29A38"><div class="n">Andén 1</div><div class="t">Táctico</div><div class="d">Plantá o desactivá el dispositivo. Sin reaparición.</div><div class="chips"><span class="ms-chip c">4 vs 4</span><span class="ms-chip">Primero a 7</span><span class="ms-chip">Online</span></div></div>
       <div class="ms-label" data-i="1" style="--c:#FF4B4B"><div class="n">Andén 2</div><div class="t">Deathmatch</div><div class="d">Todos contra todos. Reaparecés a los 3 s.</div><div class="chips"><span class="ms-chip c">Hasta 8</span><span class="ms-chip">25 bajas</span><span class="ms-chip">Online</span></div></div>
-      <div class="ms-label" data-i="2" style="--c:#7DE05A"><div class="n">Andén 3</div><div class="t">Zombie</div><div class="d">Sobreviví a la horda en la universidad.</div><div class="chips"><span class="ms-chip c">1 jugador</span><span class="ms-chip">10 oleadas</span><span class="ms-chip">Local</span></div></div>
+      <div class="ms-label" data-i="2" style="--c:#7DE05A"><div class="n">Andén 3</div><div class="t">Invasión</div><div class="d">Resistí la invasión en la universidad.</div><div class="chips"><span class="ms-chip c">1 jugador</span><span class="ms-chip">10 oleadas</span><span class="ms-chip">Local</span></div></div>
 
       <div class="ms-shade"></div>
+      <div class="ms-radar" id="msRadar"></div>
 
       <div class="ms-top">
         <div class="ttl-wrap"><div class="brand">Project Riftwalker</div><div class="ttl">Elegí el modo</div></div>
         <button class="ms-back ms-key" id="msBack" type="button"><b>Esc</b><span id="msBackTxt">Menú principal</span></button>
       </div>
 
-      <div class="ms-detail" data-i="0" style="--c:#F29A38">
+      <div class="ms-detail" data-i="0" style="--c:#F29A38;--rgb:242 154 56">
         <div class="n">Andén 1 · Online</div><div class="t">Táctico</div>
         <div class="d">Un equipo planta el dispositivo en A o B y el otro lo defiende. Sin reaparición: si morís, mirás a un compañero hasta la ronda siguiente.</div>
         <div class="ms-rules"><span>4 vs 4</span><span>Primero a 7</span><span>Cambio de lado en la 6</span><span>Compra 20 s</span></div>
-        <div class="ms-actions"><button class="ms-btn" data-act="create" type="button">Crear sala</button><button class="ms-btn ghost" data-act="join" type="button">Unirse con código</button></div>
-        <div class="ms-code"><input maxlength="5" placeholder="KX7QM" aria-label="Código de sala" spellcheck="false"><button class="ms-btn ghost" data-act="enter" type="button">Entrar</button></div>
+        <div class="ms-acc">
+          <button class="ms-buscar" data-act="search" type="button"><span class="icono"></span><span class="txt"><b>Buscar partida</b><small>Táctico · con jugadores de tu región</small></span><span class="flecha">→</span></button>
+          <div class="ms-cuenta"><span class="ok"></span>Con tu cuenta <b>Nahuel</b> · Sudamérica · misma versión</div>
+          <div class="ms-privada"><div class="r">Sala privada · con amigos</div>
+            <div class="ms-actions"><button class="ms-chico" data-act="create" type="button">Crear sala</button><button class="ms-chico" data-act="join" type="button">Unirse con código</button></div>
+            <div class="ms-code"><input maxlength="5" placeholder="KX7QM" aria-label="Código de sala" spellcheck="false"><button class="ms-chico" data-act="enter" type="button">Entrar</button></div>
+          </div>
+        </div>
         <div class="ms-room"></div>
+        <div class="ms-busq"></div>
       </div>
-      <div class="ms-detail" data-i="1" style="--c:#FF4B4B">
+      <div class="ms-detail" data-i="1" style="--c:#FF4B4B;--rgb:255 75 75">
         <div class="n">Andén 2 · Online</div><div class="t">Deathmatch</div>
         <div class="d">Todos contra todos. Elegís tus armas gratis, cada baja te cura 50 y reaparecés a los 3 s lejos de los rivales.</div>
         <div class="ms-rules"><span>Hasta 8</span><span>25 bajas</span><span>8 min</span><span>Armas gratis</span></div>
-        <div class="ms-actions"><button class="ms-btn" data-act="create" type="button">Crear sala</button><button class="ms-btn ghost" data-act="join" type="button">Unirse con código</button></div>
-        <div class="ms-code"><input maxlength="5" placeholder="KX7QM" aria-label="Código de sala" spellcheck="false"><button class="ms-btn ghost" data-act="enter" type="button">Entrar</button></div>
+        <div class="ms-acc">
+          <button class="ms-buscar" data-act="search" type="button"><span class="icono"></span><span class="txt"><b>Buscar partida</b><small>Deathmatch · con jugadores de tu región</small></span><span class="flecha">→</span></button>
+          <div class="ms-cuenta"><span class="ok"></span>Con tu cuenta <b>Nahuel</b> · Sudamérica · misma versión</div>
+          <div class="ms-privada"><div class="r">Sala privada · con amigos</div>
+            <div class="ms-actions"><button class="ms-chico" data-act="create" type="button">Crear sala</button><button class="ms-chico" data-act="join" type="button">Unirse con código</button></div>
+            <div class="ms-code"><input maxlength="5" placeholder="KX7QM" aria-label="Código de sala" spellcheck="false"><button class="ms-chico" data-act="enter" type="button">Entrar</button></div>
+          </div>
+        </div>
         <div class="ms-room"></div>
+        <div class="ms-busq"></div>
       </div>
       <div class="ms-detail" data-i="2" style="--c:#7DE05A">
-        <div class="n">Andén 3 · Local</div><div class="t">Zombie</div>
+        <div class="n">Andén 3 · Local</div><div class="t">Invasión</div>
         <div class="d">Vos solo contra 10 oleadas en la universidad. Después podés seguir en modo infinito para hacer récord.</div>
         <div class="ms-diff" role="group" aria-label="Dificultad">
-          <button type="button" data-d="facil" aria-pressed="false"><b>Fácil</b><span>Zombis con 75 % de vida y daño. Regenerás a los 3 s.</span></button>
+          <button type="button" data-d="facil" aria-pressed="false"><b>Fácil</b><span>75 % de vida y daño y menos enemigos. Regenerás a los 3 s.</span></button>
           <button type="button" data-d="normal" aria-pressed="true"><b>Normal</b><span>Como está pensado. Regenerás a los 4 s.</span></button>
-          <button type="button" data-d="dificil" aria-pressed="false"><b>Difícil</b><span>125 % de vida, 150 % de daño y más zombis. +25 % de puntos.</span></button>
+          <button type="button" data-d="dificil" aria-pressed="false"><b>Difícil</b><span>125 % de vida, 150 % de daño y más enemigos. +25 % de puntos.</span></button>
         </div>
         <div class="ms-record">Récord en <span id="msDiffName">Normal</span>: <em id="msRec">oleada 7</em></div>
         <div class="ms-actions"><button class="ms-btn" data-act="play" type="button">Jugar</button></div>
@@ -1518,6 +1636,7 @@ body.capture,body.capture-ms,body.capture-cr{padding-left:0!important}
     <h3 id="modos-codigo">Cómo está hecha</h3>
     <div class="files">
       <code>ModeSelectScreen.cs</code><span>Arma los andenes, los rayos, los motivos animados y el detalle de cada modo por código, sin imágenes de fondo.</span>
+      <code>ModeSelectScreen.Busqueda.cs</code><span>«Buscar partida», la sala privada más chica, el panel de la búsqueda, el error y el radar (F28).</span>
       <code>UIShapes.cs</code><span>Figuras vectoriales de UI (polígonos, líneas, aros) que se dibujan con su propia malla. Sirven para cualquier pantalla nueva.</span>
       <code>MatchSettings</code><span>Guarda el modo y la dificultad elegidos para la escena de la partida.</span>
       <code>Multijugador.cs</code><span>La sala online con Photon PUN 2: región Sudamérica, código de 5 caracteres sin O, I ni L, de 2 a 8 jugadores. El anfitrión elige el mapa (<code>ConfigRed</code>).</span>
@@ -4404,6 +4523,26 @@ renderRules(); renderOneShot(); renderArsenal(); renderCalcOptions(); renderCalc
     ch.t = 0; ch.dur = rnd(420, 760);
   }
 
+  /* Invasión: el Jefe vuela, bate las alas, mueve las patas y los huecos de la cabeza laten (AnimateInvasion) */
+  const jefe = document.getElementById('msJefe'), alas = [document.getElementById('msAlaI'), document.getElementById('msAlaD')];
+  const patas = qa('.ms-pata'), huecos = qa('.ms-hueco'), huecosG = qa('.ms-hueco-g'), furia = document.getElementById('msFuria');
+  function animarJefe(t) {
+    const hot = hover === 2 || open === 2;
+    const vuelo = Math.sin(t * Math.PI * 2 / (hot ? 1.6 : 2.8));
+    jefe.setAttribute('transform', `translate(${(8 * Math.sin(t * 0.7)).toFixed(1)},${(-235 + 18 * vuelo).toFixed(1)}) rotate(${(-2 * Math.sin(t * 0.9)).toFixed(2)})`);
+    const aleteo = Math.sin(t * Math.PI * 2 / (hot ? 0.22 : 0.38)), esc = (0.82 + 0.18 * Math.abs(aleteo)).toFixed(3);
+    alas[0].setAttribute('transform', `rotate(${(-16 * aleteo).toFixed(1)}) scale(1,${esc})`);
+    alas[1].setAttribute('transform', `rotate(${(16 * aleteo).toFixed(1)}) scale(1,${esc})`);
+    patas.forEach((p, k) => p.setAttribute('transform', `rotate(${(-6 * Math.sin(t * 2.2 + k) * (k % 2 === 0 ? 1 : -1)).toFixed(1)})`));
+    const latido = 0.5 + 0.5 * Math.sin(t * Math.PI * 2 / (hot ? 0.7 : 1.6));
+    huecosG.forEach(h => h.setAttribute('opacity', (0.25 + 0.35 * latido).toFixed(2)));
+    huecos.forEach(h => h.setAttribute('opacity', (0.55 + 0.45 * latido).toFixed(2)));
+    furia.setAttribute('transform', `translate(0,-250) scale(${(0.92 + (hot ? 0.16 : 0.08) * latido).toFixed(3)}) translate(0,250)`);
+  }
+  // El dibujo de cada modo (sin el mapa de fondo): se apaga mientras se ve el radar de buscar partida
+  const figuras = [[mots[0].querySelector('g[transform="translate(0,-110)"]')], [document.getElementById('msTracers'), document.getElementById('msCross')]];
+  figuras.flat().forEach(f => { f.style.transition = 'opacity .35s ease'; });
+
   /* Táctico: la pantallita del dispositivo */
   const lcd = document.getElementById('msLcd');
   let secs = 45;
@@ -4433,6 +4572,7 @@ renderRules(); renderOneShot(); renderArsenal(); renderCalcOptions(); renderCalc
       if (ch.wait <= 0) aimNext(centers);
     }
     cross.setAttribute('transform', `translate(${ch.x.toFixed(1)},${ch.y.toFixed(1)})`);
+    if (!reduce) animarJefe(now / 1000);
     requestAnimationFrame(frame);
   }
 
@@ -4452,11 +4592,21 @@ renderRules(); renderOneShot(); renderArsenal(); renderCalcOptions(); renderCalc
     panels.forEach((p, j) => { p.classList.toggle('hot', j === i); p.classList.remove('dim'); });
     details.forEach((d, j) => d.classList.toggle('on', j === i));
     inner.classList.add('ms-open');
-    document.getElementById('msBackTxt').textContent = 'Volver a los modos';
+    backTxt();
     if (!reduce) { strike(0, true); strike(1, true); }
+  }
+  // La tecla de arriba dice qué hace Esc: cancelar la búsqueda, salir de la sala o volver a los modos (ModeSelectScreen.Busqueda)
+  function backTxt() {
+    const d = details[open];
+    document.getElementById('msBackTxt').textContent = open < 0 ? 'Menú principal'
+      : d.classList.contains('busca') ? (busq && busq.encontrada ? 'Salir' : 'Cancelar búsqueda')
+      : d.classList.contains('sala') ? 'Salir de la sala' : 'Volver a los modos';
   }
   function closeMode() {
     if (open < 0) return;
+    const d = details[open];
+    if (d.classList.contains('busca')) { cancelarBusqueda(); return; }
+    if (d.classList.contains('sala')) { d.classList.remove('sala'); d.querySelector('.ms-room').classList.remove('on'); backTxt(); return; }
     const was = open;
     open = -1;
     details.forEach(d => d.classList.remove('on'));
@@ -4503,16 +4653,83 @@ renderRules(); renderOneShot(); renderArsenal(); renderCalcOptions(); renderCalc
     det.addEventListener('click', e => {
       const b = e.target.closest('[data-act]'); if (!b) return;
       const act = b.dataset.act, codeRow = det.querySelector('.ms-code');
-      if (act === 'create') { codeRow && codeRow.classList.remove('on'); renderRoom(det, code(), true, ['Vos ★ anfitrión']); }
-      else if (act === 'join') { det.querySelector('.ms-room') && det.querySelector('.ms-room').classList.remove('on'); codeRow.classList.add('on'); codeRow.querySelector('input').focus(); }
+      // Los botones que se esconden se llevan el foco: se lo devolvemos al escenario para que Esc siga andando
+      if (act !== 'join') setTimeout(() => stage.focus({ preventScroll: true }), 0);
+      if (act === 'search') { buscar(details.indexOf(det)); return; }
+      if (act === 'cancel') { cancelarBusqueda(); return; }
+      if (act === 'create') { codeRow && codeRow.classList.remove('on'); renderRoom(det, code(), true, ['Vos ★ anfitrión']); det.classList.add('sala'); backTxt(); }
+      else if (act === 'join') { codeRow.classList.toggle('on'); if (codeRow.classList.contains('on')) codeRow.querySelector('input').focus(); }
       else if (act === 'enter') {
         const v = codeRow.querySelector('input').value.toUpperCase().replace(/[^A-Z0-9]/g, '');
-        if (v.length === 5) { codeRow.classList.remove('on'); renderRoom(det, v, false, ['Nahuel ★ anfitrión', 'Luka', 'Vos']); }
+        if (v.length === 5) { codeRow.classList.remove('on'); renderRoom(det, v, false, ['Nahuel ★ anfitrión', 'Luka', 'Vos']); det.classList.add('sala'); backTxt(); }
         else codeRow.querySelector('input').focus();
       } else if (act === 'play') { b.textContent = 'Cargando la universidad…'; setTimeout(() => { b.textContent = 'Jugar'; }, 1600); }
     });
     det.querySelectorAll('input').forEach(inp => inp.addEventListener('input', () => { inp.value = inp.value.toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 5); }));
   });
+  /* Buscar partida (US 274 a 276): el panel reemplaza a los botones y a la derecha aparece el radar. Van entrando
+     jugadores; con el mínimo (2 en Deathmatch, 4 en Táctico) arranca la espera de 45 s (acá, acortada) y después
+     «Partida encontrada» con la cuenta regresiva de 10 s. */
+  const radarEl = document.getElementById('msRadar');
+  const OTROS = ['Luka', 'David', 'Agus', 'Lucas', 'Ulises', 'Nico', 'Mati'];
+  const LUGAR = [[150, 210], [470, 160], [520, 430], [200, 470], [330, 90], [90, 340], [560, 290]];
+  const NOMBRE = ['Táctico', 'Deathmatch'], MINIMO = [4, 2], MAPA = ['MALVINAS-01', 'Colonia ARA San Juan'];
+  let busq = null;
+  const mmss = x => `${Math.floor(x / 60)}:${String(x % 60).padStart(2, '0')}`;
+  function pintarRadar() {
+    radarEl.style.setProperty('--rgb', details[busq.modo].style.getPropertyValue('--rgb'));
+    radarEl.classList.toggle('listo', busq.encontrada);
+    radarEl.innerHTML = [640, 440, 240].map(d => `<div class="guia" style="left:${320 - d / 2}px;top:${320 - d / 2}px;width:${d}px;height:${d}px"></div>`).join('')
+      + '<div class="barrido"></div><div class="aro"></div><div class="aro b"></div><div class="aro c"></div><div class="centro"></div>'
+      + busq.jugadores.slice(1).map((j, k) => `<div class="pj" style="left:${LUGAR[k][0]}px;top:${LUGAR[k][1]}px"><span>${j}</span></div>`).join('');
+  }
+  function pintarBusqueda(nuevo) {
+    const b = busq, det = details[b.modo], n = b.jugadores.length;
+    const lugares = Array.from({ length: 8 }, (_, k) => b.jugadores[k]
+      ? `<li class="${k === nuevo ? 'nuevo' : ''}"><i></i>${b.jugadores[k]}${k === 0 ? ' <small>(vos)</small>' : ''}</li>` : '<li class="libre"><i></i>Buscando…</li>').join('');
+    const conMinimo = !b.encontrada && n >= MINIMO[b.modo];
+    const pie = b.encontrada ? '<p>Si entra alguien más, se suma. Si sale alguien y quedan menos que el mínimo, sigue buscando.</p>'
+      : conMinimo ? `<div><p>Ya está el mínimo para ${NOMBRE[b.modo]}. Si no entra nadie más, arranca en <b>${mmss(b.falta)}</b></p><div class="progreso"><i style="width:${(45 - b.falta) / 45 * 100}%"></i></div></div>`
+      : `<p>Arranca sola con 8 jugadores, o con ${MINIMO[b.modo]} si pasan 45 s sin que entre nadie.</p>`;
+    det.querySelector('.ms-busq').innerHTML = `<div class="barra"></div><div class="in">
+      <div class="cab"><span class="e">${b.encontrada ? 'Partida encontrada' : 'Buscando partida'}</span><span class="reloj">${b.encontrada ? n + ' / 8' : mmss(b.s)}</span></div>
+      <div class="grande">${b.encontrada ? (b.cuenta ? `Empieza en <em>${b.cuenta}</em>` : 'Cargando el mapa…') : `<em>${n}</em> / 8 jugadores`}</div>
+      <div class="datos">${b.encontrada ? `${NOMBRE[b.modo]} · ${MAPA[b.modo]} · Sudamérica` : `${NOMBRE[b.modo]} · Sudamérica · misma versión`}</div>
+      <ul class="ms-lugares">${lugares}</ul>
+      <div class="pie">${pie}<button class="ms-chico" data-act="cancel" type="button">${b.encontrada ? 'Salir' : 'Cancelar'}</button></div></div>`;
+    if (nuevo !== undefined) pintarRadar();
+  }
+  function buscar(modo) {
+    if (busq) return;
+    const det = details[modo];
+    busq = { modo, s: 0, falta: 45, encontrada: false, cuenta: 10, jugadores: ['Nahuel'] };
+    det.classList.add('busca'); inner.classList.add('ms-busca');
+    figuras[modo].forEach(f => { f.style.opacity = 0; });
+    pintarBusqueda(-1); radarEl.classList.add('on'); backTxt();
+    busq.timer = setInterval(() => {
+      const b = busq;
+      if (b.encontrada) { b.cuenta = Math.max(0, b.cuenta - 1); pintarBusqueda(); if (!b.cuenta) clearInterval(b.timer); return; }
+      b.s++;
+      const n = b.jugadores.length;
+      let nuevo;
+      // Entra alguien cada tanto; con el mínimo, la espera corre de a 5 s para no hacer esperar 45 s en la maqueta
+      if (b.s % 3 === 0 && n < (b.modo === 0 ? 5 : 3)) { b.jugadores.push(OTROS[n - 1]); nuevo = n; b.falta = 45; }
+      else if (n >= MINIMO[b.modo]) b.falta = Math.max(0, b.falta - 5);
+      if (n >= MINIMO[b.modo] && b.falta === 0) { b.encontrada = true; nuevo = -1; backTxt(); }
+      pintarBusqueda(nuevo);
+    }, 1000);
+    pintarRadar();
+  }
+  function cancelarBusqueda() {
+    if (!busq) return;
+    clearInterval(busq.timer);
+    const det = details[busq.modo];
+    det.classList.remove('busca'); inner.classList.remove('ms-busca');
+    figuras[busq.modo].forEach(f => { f.style.opacity = ''; });
+    radarEl.classList.remove('on');
+    busq = null; backTxt();
+  }
+
   const REC = { facil: 'oleada 12', normal: 'oleada 7', dificil: 'oleada 3' };
   const DN = { facil: 'Fácil', normal: 'Normal', dificil: 'Difícil' };
   inner.querySelectorAll('.ms-diff button').forEach(b => b.addEventListener('click', () => {
@@ -4522,6 +4739,7 @@ renderRules(); renderOneShot(); renderArsenal(); renderCalcOptions(); renderCalc
   }));
 
   document.getElementById('msReplay').addEventListener('click', () => {
+    cancelarBusqueda(); details.forEach(d => { d.classList.remove('sala'); d.querySelector('.ms-room') && d.querySelector('.ms-room').classList.remove('on'); });
     closeMode(); setHover(-1);
     inner.classList.remove('intro'); void inner.offsetWidth; inner.classList.add('intro');
     cur = [W / 2, W / 2]; bolts.forEach(newJit);
@@ -4531,7 +4749,7 @@ renderRules(); renderOneShot(); renderArsenal(); renderCalcOptions(); renderCalc
   const hp = location.hash.slice(1).split("~");
   if (hp[0] === "msfull") {
     document.body.classList.add("capture-ms"); inner.classList.remove("intro");
-    hp.forEach(p => { const m = p.match(/^(hover|open)-([0-2])$/); if (m) (m[1] === "hover" ? setHover : openMode)(+m[2]); if (p === "room") inner.querySelector(".ms-detail.on [data-act=create]").click(); });
+    hp.forEach(p => { const m = p.match(/^(hover|open)-([0-2])$/); if (m) (m[1] === "hover" ? setHover : openMode)(+m[2]); if (p === "room") inner.querySelector(".ms-detail.on [data-act=create]").click(); if (p === "busca") inner.querySelector(".ms-detail.on [data-act=search]").click(); });
   }
   draw();
   requestAnimationFrame(frame);
