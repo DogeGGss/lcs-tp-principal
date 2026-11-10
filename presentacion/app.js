@@ -142,7 +142,7 @@ function arsenal(){
 }
 function content(s){
  switch(s.id){
- case 'inicio':return `<div class="hero"><p class="eyebrow">Laboratorio de Construcción de Software · Sprint 3</p><img class="hero-logo" src="media/logo.png" alt="Project Riftwalker"><h1>Del equipo<br>al juego.</h1><p class="lead">Decisiones, evidencia y una experiencia para jugar.</p></div>`;
+ case 'inicio':return `<div class="hero"><p class="eyebrow">Laboratorio de Construcción de Software · Sprint 4</p><img class="hero-logo" src="media/logo.png" alt="Project Riftwalker"><h1>Del equipo<br>al juego.</h1><p class="lead">Decisiones, evidencia y una experiencia para jugar.</p></div>`;
  case 'trailer':{const t=D.trailer;return `<div class="head row trailer-head"><p class="eyebrow">${eyebrow(s)}</p>${t.src?'<button class="primary" data-trailer>▶ Pantalla completa</button>':''}</div><div class="trailer">${t.src?`<video id="trailerVideo" src="${esc(t.src)}"${t.poster?` poster="${esc(t.poster)}"`:''} controls controlslist="nofullscreen" playsinline preload="metadata"></video><button class="trailer-exit" data-exit-trailer>Volver al recorrido</button>`:'<strong>Tráiler</strong>'}</div>`}
  case 'historia':return head(s)+story();
  case 'metricas':return head(s)+metrics();
@@ -189,7 +189,7 @@ function questionVisual(key) {
   switch (key) {
     case 'mapa': return `<img id="campusPicture" class="qa-picture" alt=""><div class="qa-actions"><button data-photo="-1" aria-label="Foto anterior">←</button><output id="photoCount"></output><button data-photo="1" aria-label="Foto siguiente">→</button><label class="photo-picker">Elegir fotos del mapa<input type="file" id="mapFiles" accept="image/*" multiple></label></div>`;
     case 'steam': return '<iframe class="steam-showcase" title="Ficha de Steam" src="../steam/"></iframe>';
-    case 'logros': return `<img class="qa-picture" src="${proofImages}US-347_CA4_Logros.png" alt="Pantalla de logros del juego"><div class="qa-actions"><strong>25 logros</strong><span>9 de cometas</span><span>16 de combate</span></div>`;
+    case 'logros': return `<div class="qa-run"><figure><img src="media/logros-progreso.png" alt="Pestaña Logros: 7 de 25 logros obtenidos, con el avance de cada uno y el porcentaje de jugadores que lo tiene"><figcaption>Tu progreso y el porcentaje de jugadores que tiene cada logro</figcaption></figure><figure><img src="media/logros-ranking.png" alt="Pestaña Ranking: ranking global del minijuego por cometas destruidos"><figcaption>Ranking global por modo y categoría</figcaption></figure></div><div class="qa-actions"><strong>25 logros</strong><span>9 de cometas</span><span>16 de combate</span></div>`;
     case 'idiomas': {
       const flag = (code,name) => `<figure><img alt="" src="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/${code}.svg"><figcaption>${name}</figcaption></figure>`;
       return `<div class="qa-languages"><h3>En el juego y el launcher</h3><div>${flag('1f1e6-1f1f7','Español')}${flag('1f1ec-1f1e7','English')}</div><h3>Previstos para el Sprint 5</h3><div>${flag('1f1e7-1f1f7','Português')}${flag('1f1eb-1f1f7','Français')}${flag('1f1ee-1f1f9','Italiano')}</div></div>`;
