@@ -78,6 +78,20 @@ window.PRESENTATION = {
   statusTime: {queue:[['26/09',19],['27/09',5],['28/09',5],['29/09',15],['30/09',22],['01/10',31],['02/10',37],['03/10',44],['04/10',44],['05/10',57],['06/10',87],['07/10',77],['08/10',75],['09/10',63],['10/10',55],['11/10',53],['12/10',25],['13/10',25],['14/10',28],['15/10',26],['16/10',46],['17/10',30],['18/10',24],['19/10',18],['20/10',22],['21/10',23],['22/10',26]],
     sprints:[{name:'Sprint 1', from:'26/09', to:'28/09', wait:'15 h', note:'Datos incompletos: el script se creó a mitad del sprint.'}, {name:'Sprint 2', from:'29/09', to:'12/10', wait:'5,7 días'}, {name:'Sprint 3', from:'13/10', to:'22/10', wait:'3,1 días'}],
     decision:'Pasamos gente de desarrollo a testing.'},
+  // Las 10 cartas de Invasión que entran en el Sprint 4 (CartaDeInvasion.cs, sin las del Sprint 5), para la pregunta
+  // Modo Invasión. max: cuántas veces se puede tener (1 = de una sola vez).
+  cards: [
+    {name:'Doble cartucho', rarity:'Épica', with:'Escopeta', max:1, text:'La escopeta dispara 2 cartuchos juntos, gastando los dos.'},
+    {name:'Cerrojo suelto', rarity:'Rara', with:'Francotirador', max:1, text:'Después de una baja a la cabeza, se puede volver a disparar a los 0,2 s.'},
+    {name:'Reciclador', rarity:'Rara', with:'Todas', max:3, text:'Cada baja a la cabeza devuelve 5 balas al cargador.'},
+    {name:'Carroñero', rarity:'Rara', with:'Todas', max:3, text:'1 de cada 5 invasores suelta un cargador al morir.'},
+    {name:'Logística', rarity:'Rara', with:'Todas', max:1, text:'Los puestos recargan toda la munición en vez de la mitad.'},
+    {name:'Reserva lista', rarity:'Rara', with:'Todas', max:1, text:'El arma guardada se recarga sola desde su reserva después de 2 s.'},
+    {name:'Filo voraz', rarity:'Rara', with:'Cuchillo', max:3, text:'Cada cuchillazo cura lo mismo que el daño que hace, hasta 25 de vida.'},
+    {name:'Mochila', rarity:'Común', with:'Todas', max:3, text:'40 % más de reserva en las dos armas.'},
+    {name:'Filo', rarity:'Común', with:'Cuchillo', max:1, text:'Matar con el cuchillo recarga la última arma que tuviste en la mano.'},
+    {name:'Despeje', rarity:'Común', with:'Todas', max:3, text:'Cuando el puesto se carga, una burbuja empuja 10 m a los invasores del anillo, salvo al Jefe.'}
+  ],
   // Tráiler de la diapositiva 2: el MP4 va en presentacion/media/ (GitHub no acepta más de 100 MB). poster: cuadro del tráiler.
   trailer: {src:'media/trailer.mp4', poster:'media/trailer-poster.jpg'},
   // Diapositiva secreta, después del cierre: Siguiente en «16 / 16» rompe la página y pasa el video del portal abriéndose en la
