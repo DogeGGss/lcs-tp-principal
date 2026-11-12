@@ -1971,6 +1971,38 @@
     {
       "key": "gameplay.card.match_continues",
       "text": "La partida sigue"
+    },
+    {
+      "key": "gameplay.down.you_are_down",
+      "text": "¡Caíste! Esperá que te revivan"
+    },
+    {
+      "key": "gameplay.down.bleeding_fmt",
+      "text": "Caído · {0} s para que te revivan"
+    },
+    {
+      "key": "gameplay.down.reviving_you_fmt",
+      "text": "{0} te está reviviendo"
+    },
+    {
+      "key": "gameplay.down.revived",
+      "text": "¡Te levantaste!"
+    },
+    {
+      "key": "gameplay.down.hold_to_revive_fmt",
+      "text": "Mantené {0} para revivir a {1}"
+    },
+    {
+      "key": "gameplay.down.reviving_fmt",
+      "text": "Reviviendo a {0}"
+    },
+    {
+      "key": "gameplay.down.being_revived",
+      "text": "Reviviendo"
+    },
+    {
+      "key": "gameplay.down.overhead_fmt",
+      "text": "Caído · {0} s"
     }
   ]
 }

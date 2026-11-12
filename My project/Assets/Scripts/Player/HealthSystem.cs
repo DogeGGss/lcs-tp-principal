@@ -16,6 +16,12 @@ public class HealthSystem : MonoBehaviour
     public System.Action<int, bool> DamageRedirect;
     public bool Invulnerable;
 
+    // F31 (US 357): en Invasión cooperativa, al quedarse sin vida primero cae (CaidaEnInvasion). Si devuelve true, queda
+    // con 0 de vida pero sin morir: no recibe más daño y se lo puede revivir. Rematar lo mata de verdad.
+    public System.Func<bool> AntesDeMorir;
+    // Mientras es true, la muerte es directa aunque pueda caer (por ejemplo, al caerse del mapa).
+    public static bool MuerteDirecta;
+
     // Si el golpe que lo dejó en 0 fue a la cabeza: el aviso de baja lo marca (US 057, CA4).
     public bool KilledByHeadshot { get; private set; }
 
@@ -123,8 +129,16 @@ public class HealthSystem : MonoBehaviour
         if (currentHealth <= 0)
         {
             KilledByHeadshot = head;
+            if (!MuerteDirecta && AntesDeMorir != null && AntesDeMorir()) return; // US 357: cae
             Die();
         }
+    }
+
+    /// <summary>F31 (US 357): el que estaba caído (con 0 de vida) muere de verdad.</summary>
+    public void Rematar()
+    {
+        currentHealth = 0;
+        Die();
     }
 
     private void Die()

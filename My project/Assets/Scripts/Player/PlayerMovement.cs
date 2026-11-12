@@ -43,6 +43,14 @@ public class PlayerMovement : MonoBehaviour
     /// </summary>
     public bool SinControles { get; set; }
 
+    /// <summary>F31 (US 357, CA1): caído en Invasión cooperativa: se arrastra despacio, con la cámara casi en el piso,
+    /// sin saltar ni correr (lo pone CaidaEnInvasion).</summary>
+    public bool Caido { get; set; }
+    /// <summary>US 357, CA3: agachado sin apretar la tecla (el que revive a un compañero).</summary>
+    public bool ForzarAgachado { get; set; }
+    public float caidoSpeed = 0.9f;
+    public float caidoCameraHeight = -0.35f;
+
     private float verticalVelocity;
 
     // En el aire sigue con la velocidad que tenía al despegar: agacharse o caminar despacio en el aire no lo frena.
@@ -151,7 +159,7 @@ public class PlayerMovement : MonoBehaviour
 
         // US 004: si suelta Ctrl con algo encima, sigue agachado hasta que haya lugar para pararse (si no, la cápsula
         // de 2 m quedaba metida en el objeto y no se podía mover).
-        bool quiereAgacharse = SinControles ? Agachado : KeyBindings.Held(GameAction.Agacharse);
+        bool quiereAgacharse = Caido || ForzarAgachado || (SinControles ? Agachado : KeyBindings.Held(GameAction.Agacharse));
         bool isCrounching = quiereAgacharse || (Agachado && !HayLugarParaPararse());
         animator.SetBool("isCrouching", isCrounching);
         Agachado = isCrounching;
@@ -172,7 +180,7 @@ public class PlayerMovement : MonoBehaviour
         // CÁMARA
         // =====================================================
 
-        float targetCameraHeight = isCrounching ? crouchCameraHeight : standingCameraHeight;
+        float targetCameraHeight = Caido ? caidoCameraHeight : isCrounching ? crouchCameraHeight : standingCameraHeight;
         Vector3 cameraPosition = cameraTransform.localPosition;
 
         cameraPosition.y = Mathf.Lerp(cameraPosition.y, targetCameraHeight, cameraCrouchSpeed * Time.deltaTime);
@@ -188,7 +196,11 @@ public class PlayerMovement : MonoBehaviour
         bool isSprinting = false;
         bool despacio = false;
 
-        if (isCrounching)
+        if (Caido)
+        {
+            currentSpeed = caidoSpeed; // US 357, CA1: se arrastra
+        }
+        else if (isCrounching)
         {
             currentSpeed = crounchSpeed;
         }
@@ -247,7 +259,7 @@ public class PlayerMovement : MonoBehaviour
         // SALTO
         // =====================================================
 
-        if (!SinControles && KeyBindings.Down(GameAction.Saltar) && controller.isGrounded && !arribaDeOtro)
+        if (!SinControles && !Caido && KeyBindings.Down(GameAction.Saltar) && controller.isGrounded && !arribaDeOtro)
         {
             verticalVelocity = jumpForce;
             saltoEsteCuadro = true;

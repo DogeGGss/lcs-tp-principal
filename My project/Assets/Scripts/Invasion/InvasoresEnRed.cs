@@ -356,18 +356,8 @@ public class InvasoresEnRed : MonoBehaviourPunCallbacks, IOnEventCallback
         return true;
     }
 
-    private static bool EstaMuerto(Player p)
-    {
-        if (p.IsLocal)
-        {
-            PlayerMovement yo = FindFirstObjectByType<PlayerMovement>();
-            HealthSystem vida = yo != null ? yo.GetComponent<HealthSystem>() : null;
-            return vida != null && vida.currentHealth <= 0;
-        }
-        foreach (JugadorEnRed j in FindObjectsByType<JugadorEnRed>(FindObjectsSortMode.None))
-            if (j != null && j.photonView != null && !j.photonView.IsMine && j.Actor == p.ActorNumber) return !j.Vivo;
-        return false;
-    }
+    // US 357: los muertos (que esperan la oleada siguiente) no eligen; los caídos sí.
+    private static bool EstaMuerto(Player p) => CaidaEnInvasion.EstadoDe(p) == CaidaEnInvasion.Estado.Muerto;
 
     /// <summary>US 356, CA2: eligieron todos: arranca el descanso antes de la oleada siguiente a esa.</summary>
     public static void AvisarDescanso(int oleada)
