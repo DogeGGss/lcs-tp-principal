@@ -362,7 +362,7 @@ public class Multijugador : MonoBehaviourPunCallbacks, IOnEventCallback
             esperadas[PropDificultad] = (int)MatchSettings.Difficulty;
         }
         PhotonNetwork.NickName = NombreBase();
-        if (!PhotonNetwork.JoinRandomOrCreateRoom(esperadas, maximo, MatchmakingMode.FillRoom, TypedLobby.Default, null, null, opciones))
+        if (!PhotonNetwork.JoinRandomOrCreateRoom(esperadas, (byte)maximo, MatchmakingMode.FillRoom, TypedLobby.Default, null, null, opciones))
             Fallar(ErrorBuscar);
     }
 
