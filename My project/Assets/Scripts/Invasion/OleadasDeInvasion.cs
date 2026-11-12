@@ -300,10 +300,13 @@ public class OleadasDeInvasion : MonoBehaviour
         if (jefeVivo) { jefeSalio = true; aparecio[jefe] = Time.time; }
         else if (!jefeMuerto) jefeSalio = false; // si estaba por salir, vuelve a salir
         proximoPortal = Time.time + 1f;
-        // En el descanso: sigue el de esta computadora (al terminar arranca la oleada siguiente, ahora desde acá).
-        if (fase == Fase.Descanso && !esperandoEleccion && finalUi == null && (descanso == null || !descanso.IsActive))
+        // En el descanso: sigue el de esta computadora (al terminar arranca la oleada siguiente, ahora desde acá). Si
+        // todavía no había arrancado, espera a que elijan todos (US 356).
+        if (fase == Fase.Descanso && !esperandoEleccion && finalUi == null && (descanso == null || !descanso.IsActive)
+            && descansoDe != Oleada)
         {
-            if (descanso != null) descanso.Begin(); else Invoke(nameof(Empezar), 20f);
+            esperandoATodos = true;
+            esperandoDesde = Time.unscaledTime;
         }
     }
 
@@ -382,6 +385,7 @@ public class OleadasDeInvasion : MonoBehaviour
 
     private void Update()
     {
+        RevisarSiEligieronTodos(); // US 356
         // El NavMesh del mapa se arma con el juego andando (NavMeshEnVivo) recién cuando alguien lo pide: se pide ya,
         // durante el primer descanso, así está listo cuando aparecen los enemigos (sin él no se podía elegir dónde).
         if (!navMeshPedido)
@@ -600,8 +604,56 @@ public class OleadasDeInvasion : MonoBehaviour
         fase = Fase.Descanso;
         EleccionDeInvasion eleccion = GetComponent<EleccionDeInvasion>();
         if (eleccion != null && eleccion.Retener()) { esperandoEleccion = true; return; }
+        if (CooperativoDeInvasion.Activo) { EsperarATodos(); return; } // F31 (US 356, CA2)
+        EmpezarElDescanso();
+    }
+
+    private void EmpezarElDescanso()
+    {
         if (descanso != null) descanso.Begin(); else Invoke(nameof(Empezar), 20f);
         EmpezoElDescanso?.Invoke(Oleada + 1);
+    }
+
+    // ---------- F31 (US 356, CA2): el descanso espera a que elijan todos ----------
+
+    private const float EsperaMaxima = 40f; // s: por si alguien no avisa (se trabó o se fue sin que se sepa)
+    private bool esperandoATodos;
+    private float esperandoDesde;
+    private int descansoDe = -1; // la oleada cuyo descanso ya arrancó
+
+    // Esta computadora ya eligió (o no tenía nada que elegir): lo avisa. El anfitrión arranca el descanso cuando
+    // eligieron todos; los demás, cuando él avisa (DescansoDelAnfitrion).
+    private void EsperarATodos()
+    {
+        if (descansoDe == Oleada) // el anfitrión ya lo arrancó (se terminó la espera mientras esta elegía)
+        {
+            InvasoresEnRed.AvisarListo(Oleada);
+            if (descanso == null || !descanso.IsActive) EmpezarElDescanso();
+            return;
+        }
+        esperandoATodos = true;
+        esperandoDesde = Time.unscaledTime;
+        InvasoresEnRed.AvisarListo(Oleada);
+    }
+
+    private void RevisarSiEligieronTodos()
+    {
+        if (!esperandoATodos || Espejo || fase != Fase.Descanso) return;
+        if (!InvasoresEnRed.TodosListos(Oleada) && Time.unscaledTime - esperandoDesde < EsperaMaxima) return;
+        esperandoATodos = false;
+        descansoDe = Oleada;
+        InvasoresEnRed.AvisarDescanso(Oleada);
+        EmpezarElDescanso();
+    }
+
+    /// <summary>US 356, CA2: el anfitrión arrancó el descanso (eligieron todos).</summary>
+    public void DescansoDelAnfitrion(int oleada)
+    {
+        if (!Espejo || oleada != Oleada || fase != Fase.Descanso || descansoDe == oleada) return;
+        descansoDe = oleada;
+        if (esperandoEleccion) return; // todavía elige: al terminar arranca el suyo (EsperarATodos)
+        esperandoATodos = false;
+        EmpezarElDescanso();
     }
 
     /// <summary>US 293, CA6: se eligió en el puesto, arranca el respiro.</summary>
@@ -823,7 +875,7 @@ public class OleadasDeInvasion : MonoBehaviour
     private void Final()
     {
         MatchHud.ClearCenter();
-        Time.timeScale = 0f;
+        if (!CooperativoDeInvasion.Activo) Time.timeScale = 0f; // US 356: en cooperativo la partida sigue
         Cursor.lockState = CursorLockMode.None;
         Cursor.visible = true;
         CameraLook.Quieta = true;

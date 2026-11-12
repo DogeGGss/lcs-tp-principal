@@ -1967,6 +1967,10 @@
     {
       "key": "gameplay.controls.cards",
       "text": "Cards (Invasion)"
+    },
+    {
+      "key": "gameplay.card.match_continues",
+      "text": "The match goes on"
     }
   ]
 }
