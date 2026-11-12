@@ -61,16 +61,6 @@ public class EspejoTerceraPersona : MonoBehaviour
     [Tooltip("En qué momento del ataque queda (0 a 1): atrás en 0,22, el final del corte en 0,44.")]
     [Range(0f, 1f)] public float momentoDelAtaque = 0.22f;
 
-    [Header("Caído (F31, US 357: para ver las animaciones sin jugar de a varios)")]
-    [Tooltip("Prendido: cae y queda en el piso. Al apagarlo se levanta. También con Riftwalker > Muñeco espejo: caer o levantarse.")]
-    public bool caido;
-    [Tooltip("Caído: se arrastra hacia adelante (si no, queda quieto en el piso). También con Riftwalker > Muñeco espejo: arrastrarse.")]
-    public bool arrastrarse;
-    [Tooltip("A cuántos m/s se arrastra (como el jugador caído).")]
-    [Range(0.2f, 3f)] public float velocidadDeArrastre = 0.9f;
-    [Tooltip("Velocidad del juego (1 normal): más baja, para ver despacio las transiciones.")]
-    [Range(0.05f, 1f)] public float camaraLenta = 1f;
-
     [Header("Emotes (F27, para probar hasta que esté la rueda)")]
     [Tooltip("El número del baile en el catálogo (Resources/Emotes): 0 es el primero.")]
     [Min(0)] public int baileDePrueba;
@@ -102,7 +92,6 @@ public class EspejoTerceraPersona : MonoBehaviour
     private LanzamientoDeGranada lanzamiento;
     private CuchilloEnTerceraPersona cuchillo;
     private BaileEnTerceraPersona baile;
-    private CaidoEnTerceraPersona caidoVisto; // US 357
     private GameObject enMano, modeloEnMano;
     private float listoEn;
 
@@ -218,7 +207,6 @@ public class EspejoTerceraPersona : MonoBehaviour
         lanzamiento = LanzamientoDeGranada.Crear(raiz.gameObject, arma);
         cuchillo = CuchilloEnTerceraPersona.Crear(raiz.gameObject, arma);
         baile = BaileEnTerceraPersona.Crear(raiz.gameObject, copia, arma);
-        caidoVisto = CaidoEnTerceraPersona.Crear(raiz.gameObject, copia, arma, null); // US 357
         Ubicar();
     }
 
@@ -253,7 +241,6 @@ public class EspejoTerceraPersona : MonoBehaviour
             // Camina, corre, salta y se agacha como él.
             foreach (AnimatorControllerParameter p in original.parameters)
             {
-                if (p.name == CaidoEnTerceraPersona.Parametro) continue; // (lo maneja el caído, US 357)
                 if (p.type == AnimatorControllerParameterType.Float) copia.SetFloat(p.nameHash, original.GetFloat(p.nameHash));
                 else if (p.type == AnimatorControllerParameterType.Bool) copia.SetBool(p.nameHash, original.GetBool(p.nameHash));
             }
@@ -271,20 +258,12 @@ public class EspejoTerceraPersona : MonoBehaviour
             else ojos.localRotation = Quaternion.Euler(mirarArribaOAbajo, 0f, 0f);
             foreach (AnimatorControllerParameter p in copia.parameters)
             {
-                if (p.name == CaidoEnTerceraPersona.Parametro) continue; // (lo maneja el caído, US 357)
                 if (p.type == AnimatorControllerParameterType.Float) copia.SetFloat(p.nameHash, 0f);
                 else if (p.type == AnimatorControllerParameterType.Bool) copia.SetBool(p.nameHash, false);
             }
         }
 
         if (agregarArmaEnMano) { agregarArmaEnMano = false; AgregarArma(); }
-        // US 357: caer, arrastrarse y levantarse, sin otro jugador.
-        if (caidoVisto != null)
-        {
-            caidoVisto.Caido = caido;
-            if (caido && arrastrarse) raiz.position += raiz.forward * velocidadDeArrastre * Time.deltaTime;
-        }
-        if (!Mathf.Approximately(Time.timeScale, camaraLenta) && !PauseMenu.IsPaused && Time.timeScale > 0f) Time.timeScale = camaraLenta;
         // US 262: baila lo mismo que el jugador (y, para probar, se lo hace bailar desde acá).
         if (bailar)
         {
@@ -331,8 +310,7 @@ public class EspejoTerceraPersona : MonoBehaviour
     {
         PonerManijas();
         // US 262, CA3: bailando, el arma no se ve.
-        bool sinArma = (baile != null && baile.Bailando) || (caidoVisto != null && caidoVisto.Activo); // US 357: caído, tampoco
-        if (soporte != null && soporte.gameObject.activeSelf == sinArma) soporte.gameObject.SetActive(!sinArma);
+        if (baile != null && soporte != null && soporte.gameObject.activeSelf == baile.Bailando) soporte.gameObject.SetActive(!baile.Bailando);
         // US 259: con la granada en la mano, la pose de sostenerla; sale de la mano al final del lanzamiento.
         bool conGranada = ConGranada;
         if (lanzamiento != null)

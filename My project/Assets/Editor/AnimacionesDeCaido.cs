@@ -12,7 +12,8 @@ using UnityEngine;
 // - en el Animator de los personajes (AnimatorControllerAlienSoldier) arma la capa "Caido" (todo el cuerpo, peso 0: la
 //   prende CaidoEnTerceraPersona mientras está caído), con Caer, que sigue sola con Arrastrarse (quieta con el parámetro
 //   Arrastre en 0), y Levantarse.
-// También desde el menú: Riftwalker > Invasión > Armar las animaciones de caído.
+// También desde el menú: Riftwalker > Invasión > Armar las animaciones de caído. Para verlas: Riftwalker > Invasión >
+// Muñeco de caído (MunecoDeCaido).
 public class AnimacionesDeCaido : AssetPostprocessor
 {
     public const string Carpeta = "Assets/Personajes/Caido/";
@@ -63,6 +64,14 @@ public class AnimacionesDeCaido : AssetPostprocessor
     {
         string ruta = Carpeta + nombre + ".fbx";
         return AssetDatabase.LoadAllAssetsAtPath(ruta).OfType<AnimationClip>().FirstOrDefault(c => !c.name.StartsWith("__preview__"));
+    }
+
+    // Para ver las transiciones sin jugar de a varios: un muñeco que cae, se arrastra y se levanta en loop.
+    [MenuItem("Riftwalker/Invasión/Muñeco de caído (animaciones en loop)")]
+    private static void Muneco()
+    {
+        if (!EditorApplication.isPlaying) { Debug.Log("Muñeco de caído: dale Play primero (en cualquier escena con el jugador)."); return; }
+        MunecoDeCaido.Cambiar();
     }
 
     [MenuItem("Riftwalker/Invasión/Armar las animaciones de caído")]
