@@ -30,8 +30,10 @@ public class InvasoresEnRed : MonoBehaviourPunCallbacks, IOnEventCallback
     private const byte EvAparece = 40, EvEstados = 41, EvMuere = 42, EvDanio = 43, EvPedir = 44, EvEfecto = 45,
         EvEmpujon = 46, EvPedidoNpc = 47, EvOleada = 48, EvEstadoOleada = 49, EvPortal = 50,
         // US 353: el puesto de suministros.
-        EvPuesto = 51, EvProximoPuesto = 52, EvCargaDelPuesto = 53, EvPuntosAlPuesto = 54;
-    private const byte PrimerEvento = EvAparece, UltimoEvento = EvPuntosAlPuesto;
+        EvPuesto = 51, EvProximoPuesto = 52, EvCargaDelPuesto = 53, EvPuntosAlPuesto = 54,
+        // US 356: quién ya eligió en el puesto y cuándo arranca el descanso.
+        EvListo = 55, EvDescanso = 56;
+    private const byte PrimerEvento = EvAparece, UltimoEvento = EvDescanso;
 
     // Lo que se ve de los ataques (EvEfecto).
     private const byte EfCargaRayo = 1, EfRayo = 2, EfBolaDeEnergia = 3, EfBolaDeVeneno = 4, EfEmbestida = 5,
@@ -73,12 +75,14 @@ public class InvasoresEnRed : MonoBehaviourPunCallbacks, IOnEventCallback
     {
         Actual = null;
         tipos.Clear();
+        listos.Clear();
     }
 
     public override void OnEnable()
     {
         base.OnEnable(); // (se anota para los eventos de Photon)
         Actual = this;
+        listos.Clear(); // (una partida nueva)
         Npc.Murio += AlMorir;
     }
 
@@ -314,6 +318,64 @@ public class InvasoresEnRed : MonoBehaviourPunCallbacks, IOnEventCallback
         PhotonNetwork.RaiseEvent(EvPuntosAlPuesto, puntos, new RaiseEventOptions { Receivers = ReceiverGroup.MasterClient }, SendOptions.SendReliable);
     }
 
+    // ---------- US 356: la elección de todos ----------
+
+    private static readonly Dictionary<int, HashSet<int>> listos = new Dictionary<int, HashSet<int>>();
+
+    /// <summary>US 356, CA2: ya elegí (o no tenía nada que elegir) al terminar esa oleada: se avisa a todos.</summary>
+    public static void AvisarListo(int oleada)
+    {
+        if (!CooperativoDeInvasion.Activo) return;
+        Anotar(oleada, Yo);
+        PhotonNetwork.RaiseEvent(EvListo, oleada, new RaiseEventOptions { Receivers = ReceiverGroup.Others }, SendOptions.SendReliable);
+    }
+
+    private static void Anotar(int oleada, int actor)
+    {
+        if (!listos.TryGetValue(oleada, out HashSet<int> quienes)) listos[oleada] = quienes = new HashSet<int>();
+        quienes.Add(actor);
+    }
+
+    /// <summary>US 356, CA3: ese jugador ya eligió al terminar esa oleada.</summary>
+    public static bool Listo(int oleada, int actor) => listos.TryGetValue(oleada, out HashSet<int> quienes) && quienes.Contains(actor);
+
+    /// <summary>US 356, CA2 y CA3: los que eligen: los que están en la partida, menos los muertos.</summary>
+    public static List<Player> QuienesEligen()
+    {
+        var lista = new List<Player>();
+        if (!PhotonNetwork.InRoom) return lista;
+        foreach (Player p in PhotonNetwork.PlayerList)
+            if (!p.IsInactive && !EstaMuerto(p)) lista.Add(p);
+        return lista;
+    }
+
+    /// <summary>US 356, CA2: ya eligieron todos (los que se fueron de la partida no cuentan).</summary>
+    public static bool TodosListos(int oleada)
+    {
+        foreach (Player p in QuienesEligen()) if (!Listo(oleada, p.ActorNumber)) return false;
+        return true;
+    }
+
+    private static bool EstaMuerto(Player p)
+    {
+        if (p.IsLocal)
+        {
+            PlayerMovement yo = FindFirstObjectByType<PlayerMovement>();
+            HealthSystem vida = yo != null ? yo.GetComponent<HealthSystem>() : null;
+            return vida != null && vida.currentHealth <= 0;
+        }
+        foreach (JugadorEnRed j in FindObjectsByType<JugadorEnRed>(FindObjectsSortMode.None))
+            if (j != null && j.photonView != null && !j.photonView.IsMine && j.Actor == p.ActorNumber) return !j.Vivo;
+        return false;
+    }
+
+    /// <summary>US 356, CA2: eligieron todos: arranca el descanso antes de la oleada siguiente a esa.</summary>
+    public static void AvisarDescanso(int oleada)
+    {
+        if (!Anfitrion || Actual == null) return;
+        Actual.Mandar(EvDescanso, oleada, ReceiverGroup.Others, true);
+    }
+
     /// <summary>Cómo va la oleada (empezó, se superó, llegó el Jefe).</summary>
     public static void AvisarOleada(byte que, int oleada, int total, int jefesDerrotados)
     {
@@ -383,6 +445,12 @@ public class InvasoresEnRed : MonoBehaviourPunCallbacks, IOnEventCallback
             case EvCargaDelPuesto:
                 if (EsCopia && d != null && PuestoDeSuministros.Actual != null)
                     PuestoDeSuministros.Actual.CargaDelAnfitrion((int)d[0], (int)d[1], (bool)d[2]);
+                break;
+            case EvListo:
+                if (ev.CustomData is int oleadaLista) Anotar(oleadaLista, ev.Sender);
+                break;
+            case EvDescanso:
+                if (EsCopia && ev.CustomData is int oleadaDelDescanso && Oleadas != null) Oleadas.DescansoDelAnfitrion(oleadaDelDescanso);
                 break;
             case EvPuntosAlPuesto:
                 if (Anfitrion && ev.CustomData is int puntos && PuestoDeSuministros.Actual != null)

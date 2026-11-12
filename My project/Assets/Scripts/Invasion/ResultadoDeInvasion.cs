@@ -217,7 +217,8 @@ public class ResultadoDeInvasion : MonoBehaviour
     // Todo se detiene: los invasores, el jugador y la cámara. No se puede pausar ni abrir la tienda.
     private static void Congelar()
     {
-        Time.timeScale = 0f;
+        // F31 (US 356): en cooperativo la partida sigue para los demás (y si es el anfitrión, lleva a los invasores).
+        if (!CooperativoDeInvasion.Activo) Time.timeScale = 0f;
         CameraLook.Quieta = true;
         if (PauseMenu.Instance != null) PauseMenu.Instance.AllowPause = false;
         MatchHud.HideBanner();
