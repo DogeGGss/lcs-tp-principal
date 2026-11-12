@@ -245,6 +245,18 @@ public class WeaponSwitcher : MonoBehaviour
         }
     }
 
+    /// <summary>US 360, CA6: al descartar una carta que agrandaba cargadores o reservas, las armas vuelven a su tamaño.</summary>
+    public void RecortarMunicion()
+    {
+        foreach (GameObject arma in new[] { PrimaryObj, SecondaryObj })
+        {
+            if (arma == null) continue;
+            arma.GetComponent<ArmaDeFuego>()?.RecortarMunicion();
+            arma.GetComponent<Mitre>()?.RecortarMunicion();
+            arma.GetComponent<Pistola>()?.RecortarMunicion();
+        }
+    }
+
     /// <summary>US 293, CA2: suma a cada arma la mitad de su munición máxima (al abrirse el puesto de suministros).</summary>
     public void RecargarMitad()
     {

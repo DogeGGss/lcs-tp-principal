@@ -76,6 +76,7 @@ public class PartidaDeInvasion : MonoBehaviour
         gameObject.AddComponent<PuntosDeInvasion>();  // US 147
         gameObject.AddComponent<PuestoDeSuministros>(); // US 292
         gameObject.AddComponent<EleccionDeInvasion>();  // US 293
+        gameObject.AddComponent<MisCartasInvasion>();   // US 361: tus cartas (con la C) y el descarte (US 360)
         gameObject.AddComponent<CartasEnJuego>();       // las cartas que actúan durante el juego (US 316 y otras)
         if (TrucosDeInvasion.Disponibles) gameObject.AddComponent<TrucosDeInvasion>(); // F10: menú de trucos
     }

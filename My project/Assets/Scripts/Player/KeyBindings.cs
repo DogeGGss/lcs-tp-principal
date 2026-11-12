@@ -12,6 +12,7 @@ public enum GameAction
     ArmaPrincipal, ArmaSecundaria, Cuchillo, Granadas,
     Tienda, Plantar, Soltar, Dispositivo, Mapa,
     Emotes, // F27 (US 261): mientras se mantiene, la rueda de emotes
+    Cartas, // F29 (US 361): mientras se mantiene, tus cartas de Invasión
 }
 
 // Teclas del jugador (US 155). Sigue usando el Input clásico: los scripts preguntan
@@ -45,6 +46,7 @@ public static class KeyBindings
         { GameAction.Dispositivo, KeyCode.Alpha5 }, // US 130: sacar el dispositivo (solo el portador, en Táctico)
         { GameAction.Mapa, KeyCode.H }, // US 194, CA6: mientras se mantiene, el mapa completo
         { GameAction.Emotes, KeyCode.T }, // US 261: mientras se mantiene, la rueda de emotes (la B es la tienda)
+        { GameAction.Cartas, KeyCode.C }, // US 361: mientras se mantiene, tus cartas (solo en Invasión)
     };
 
     private static readonly Dictionary<GameAction, string> Names = new Dictionary<GameAction, string>
@@ -70,6 +72,7 @@ public static class KeyBindings
         { GameAction.Dispositivo, "Dispositivo" },
         { GameAction.Mapa, "Mapa completo" },
         { GameAction.Emotes, "Emotes" },
+        { GameAction.Cartas, "Cartas (Invasión)" },
     };
 
     // ---------- Opciones del mouse (CA1, CA2) ----------

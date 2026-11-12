@@ -1879,6 +1879,94 @@
     {
       "key": "gameplay.text.grenades",
       "text": "Grenades"
+    },
+    {
+      "key": "gameplay.card.no_room",
+      "text": "No room: discard a card to pick a new one"
+    },
+    {
+      "key": "gameplay.card.no_room_short",
+      "text": "No room · discard one"
+    },
+    {
+      "key": "gameplay.card.discarded_fmt",
+      "text": "You discarded {0}"
+    },
+    {
+      "key": "gameplay.card.discard",
+      "text": "Discard a card"
+    },
+    {
+      "key": "gameplay.card.skip",
+      "text": "Continue without picking"
+    },
+    {
+      "key": "gameplay.card.no_options",
+      "text": "No cards to pick this time"
+    },
+    {
+      "key": "gameplay.card.slots_fmt",
+      "text": "Your cards {0} / {1}"
+    },
+    {
+      "key": "gameplay.card.occupied_fmt",
+      "text": "{0} / {1} slots used"
+    },
+    {
+      "key": "gameplay.card.your_cards",
+      "text": "Your cards"
+    },
+    {
+      "key": "gameplay.card.pick_discard",
+      "text": "Pick one to discard"
+    },
+    {
+      "key": "gameplay.card.discard_hint",
+      "text": "You lose the card and its upgrades, and you don't pick this time  ·  Esc to go back"
+    },
+    {
+      "key": "gameplay.card.hold_hint",
+      "text": "Release {0} to close"
+    },
+    {
+      "key": "gameplay.card.back",
+      "text": "Back"
+    },
+    {
+      "key": "gameplay.card.cancel",
+      "text": "Cancel"
+    },
+    {
+      "key": "gameplay.card.discard_confirm",
+      "text": "Discard"
+    },
+    {
+      "key": "gameplay.card.discard_question_fmt",
+      "text": "Discard {0}? You lose its upgrades and you don't pick this time."
+    },
+    {
+      "key": "gameplay.card.free_slot",
+      "text": "Free"
+    },
+    {
+      "key": "gameplay.card.times_fmt",
+      "text": "{0} of {1}"
+    },
+    {
+      "key": "gameplay.card.single",
+      "text": "Single"
+    },
+    {
+      "key": "gameplay.card.unused",
+      "text": "No use"
+    },
+    {
+      "key": "gameplay.card.unused_weapon_fmt",
+      "text": "Works with: {0}"
+    },
+    {
+      "key": "gameplay.controls.cards",
+      "text": "Cards (Invasion)"
     }
   ]
 }

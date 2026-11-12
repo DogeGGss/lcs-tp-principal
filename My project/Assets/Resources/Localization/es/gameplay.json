@@ -1879,6 +1879,94 @@
     {
       "key": "gameplay.text.grenades",
       "text": "Granadas"
+    },
+    {
+      "key": "gameplay.card.no_room",
+      "text": "No tenés lugar: descartá una carta para elegir una nueva"
+    },
+    {
+      "key": "gameplay.card.no_room_short",
+      "text": "Sin lugar · descartá una"
+    },
+    {
+      "key": "gameplay.card.discarded_fmt",
+      "text": "Descartaste {0}"
+    },
+    {
+      "key": "gameplay.card.discard",
+      "text": "Descartar una carta"
+    },
+    {
+      "key": "gameplay.card.skip",
+      "text": "Seguir sin elegir"
+    },
+    {
+      "key": "gameplay.card.no_options",
+      "text": "No hay cartas para elegir esta vez"
+    },
+    {
+      "key": "gameplay.card.slots_fmt",
+      "text": "Tus cartas {0} / {1}"
+    },
+    {
+      "key": "gameplay.card.occupied_fmt",
+      "text": "{0} / {1} lugares ocupados"
+    },
+    {
+      "key": "gameplay.card.your_cards",
+      "text": "Tus cartas"
+    },
+    {
+      "key": "gameplay.card.pick_discard",
+      "text": "Elegí cuál descartar"
+    },
+    {
+      "key": "gameplay.card.discard_hint",
+      "text": "Perdés la carta con sus mejoras y esta vez no elegís  ·  Esc para volver"
+    },
+    {
+      "key": "gameplay.card.hold_hint",
+      "text": "Soltá {0} para cerrar"
+    },
+    {
+      "key": "gameplay.card.back",
+      "text": "Volver"
+    },
+    {
+      "key": "gameplay.card.cancel",
+      "text": "Cancelar"
+    },
+    {
+      "key": "gameplay.card.discard_confirm",
+      "text": "Descartar"
+    },
+    {
+      "key": "gameplay.card.discard_question_fmt",
+      "text": "¿Descartar {0}? Perdés sus mejoras y esta vez no elegís."
+    },
+    {
+      "key": "gameplay.card.free_slot",
+      "text": "Libre"
+    },
+    {
+      "key": "gameplay.card.times_fmt",
+      "text": "{0} de {1}"
+    },
+    {
+      "key": "gameplay.card.single",
+      "text": "Única"
+    },
+    {
+      "key": "gameplay.card.unused",
+      "text": "Sin uso"
+    },
+    {
+      "key": "gameplay.card.unused_weapon_fmt",
+      "text": "Rinde con: {0}"
+    },
+    {
+      "key": "gameplay.controls.cards",
+      "text": "Cartas (Invasión)"
     }
   ]
 }
