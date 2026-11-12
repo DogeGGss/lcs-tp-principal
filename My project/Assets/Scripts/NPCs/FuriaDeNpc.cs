@@ -70,7 +70,7 @@ public class FuriaDeNpc : MonoBehaviour
             npc.Animaciones.Poner(npc.Tipo.rugido, false, 0.15f, true);
             npc.Animaciones.Velocidad(npc.Tipo.rugido.length > Ruge ? npc.Tipo.rugido.length / Ruge : 1f);
         }
-        SonidoDeNpc.Uno(npc.Tipo.sonidoDeRugido, transform, 60f, 1f); // CA1: con su sonido
+        if (!npc.EsEspejo) SonidoDeNpc.Uno(npc.Tipo.sonidoDeRugido, transform, 60f, 1f); // CA1: con su sonido (la copia lo oye del anfitrión, US 290)
         Enfurecer();
     }
 

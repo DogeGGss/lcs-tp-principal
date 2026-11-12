@@ -96,7 +96,9 @@ public class AtaqueDeNpc : MonoBehaviour
         int danio = npc.Danio(npc.Tipo.danio); // US 161, CA3 (y el alfa, US 301)
         HealthSystem.DamageOrigin = transform.position + Vector3.up; // CA5: el aviso de daño hacia el lado del golpe
         HealthSystem.DamageSource = npc.Tipo.nombre;
+        Npc.Pegando = true; // F31 (US 290): a la copia de un compañero le llega a su dueño
         vida.TakeDamage(danio); // CA3: primero el escudo y después la vida
+        Npc.Pegando = false;
         HealthSystem.DamageSource = null;
         Golpeo?.Invoke(npc, vida, danio);
     }

@@ -17,6 +17,8 @@ public class PortalDeEnemigos : MonoBehaviour
 
     /// <summary>Los enemigos que le quedan por largar (CA3).</summary>
     public readonly Queue<TipoDeNpc> Fila = new Queue<TipoDeNpc>();
+    /// <summary>F31 (US 290): su número en la partida en red (0: jugando solo).</summary>
+    public int IdRed { get; set; }
     /// <summary>Cuándo puede largar el próximo (lo maneja OleadasDeInvasion).</summary>
     public float Proximo { get; set; }
     /// <summary>Ya terminó de abrirse y todavía no se está cerrando: puede largar enemigos.</summary>
@@ -43,6 +45,7 @@ public class PortalDeEnemigos : MonoBehaviour
         var portal = go.AddComponent<PortalDeEnemigos>();
         portal.escala = escala;
         portal.Armar();
+        InvasoresEnRed.AvisarPortal(portal, piso, mira, escala); // F31 (US 290, CA1): todos ven los mismos portales
         return portal;
     }
 
@@ -111,6 +114,7 @@ public class PortalDeEnemigos : MonoBehaviour
         if (cerrando) return;
         cerrando = true;
         Fila.Clear();
+        InvasoresEnRed.AvisarCierre(this); // F31 (US 290)
     }
 
     private void Update()

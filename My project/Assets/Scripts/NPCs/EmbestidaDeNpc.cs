@@ -195,8 +195,21 @@ public class EmbestidaDeNpc : MonoBehaviour
         transform.rotation = Quaternion.LookRotation(direccion, Vector3.up);
         Animar(npc.Tipo.preparaEmbestida != null ? npc.Tipo.preparaEmbestida : npc.Tipo.quietoEnCombate, false, 1f);
         SonidoDeNpc.Uno(npc.Tipo.sonidoDeRugido, transform, 50f); // CA: ruge antes de embestir
-        Dibujar();
+        Dibujar(transform.position);
+        InvasoresEnRed.AvisarEmbestida(npc, transform.position, direccion, largo); // F31 (US 290, CA4): todos ven la línea
     }
+
+    /// <summary>F31 (US 290, CA4): en la copia de otra computadora, la línea de la embestida que preparó el del anfitrión.</summary>
+    public void LineaRemota(Vector3 origen, Vector3 hacia, float cuanto)
+    {
+        direccion = hacia;
+        largo = cuanto;
+        Dibujar(origen);
+        Pintar(0.5f);
+    }
+
+    /// <summary>F31 (US 290): saca la línea de la copia (terminó la embestida).</summary>
+    public void BorrarLineaRemota() => Borrar();
 
     private void Lanzar()
     {
@@ -204,12 +217,7 @@ public class EmbestidaDeNpc : MonoBehaviour
         desde = transform.position;
         recorrido = 0f;
         golpeados.Clear();
-        jugadores.Clear();
-        foreach (PlayerMovement p in FindObjectsByType<PlayerMovement>(FindObjectsSortMode.None))
-        {
-            HealthSystem v = p.GetComponent<HealthSystem>();
-            if (v != null) jugadores.Add(v);
-        }
+        PersecucionDeNpc.Jugadores(jugadores); // también los compañeros (US 290)
         Pintar(0.55f);
         AnimationClip clip = npc.Tipo.embestida != null ? npc.Tipo.embestida : npc.Tipo.correr != null ? npc.Tipo.correr : npc.Tipo.caminar;
         Animar(clip, true, AnimacionMasRapida);
@@ -248,7 +256,9 @@ public class EmbestidaDeNpc : MonoBehaviour
             golpeados.Add(vida);
             HealthSystem.DamageOrigin = transform.position + Vector3.up;
             HealthSystem.DamageSource = npc.Tipo.nombre;
+            Npc.Pegando = true; // US 290: a la copia de un compañero le llega a su dueño
             vida.TakeDamage(DificultadDeInvasion.DanioDeEnemigo(Danio)); // US 161, CA3
+            Npc.Pegando = false;
             HealthSystem.DamageSource = null;
             Vector3 lado = Vector3.Cross(Vector3.up, direccion) * (costado >= 0f ? 1f : -1f);
             EmpujonAlJugador.Empujar(vida.transform, (lado + direccion * 0.35f).normalized * Empujon, EmpujonDura);
@@ -305,7 +315,7 @@ public class EmbestidaDeNpc : MonoBehaviour
 
     // ---------- La línea roja (CA2) ----------
 
-    private void Dibujar()
+    private void Dibujar(Vector3 origen)
     {
         Borrar();
         linea = GameObject.CreatePrimitive(PrimitiveType.Quad);
@@ -314,7 +324,7 @@ public class EmbestidaDeNpc : MonoBehaviour
         if (c != null) Destroy(c);
         float total = largo + npc.Frente;
         float ancho = Mathf.Max(1f, npc.Ancho * 2f * MasAncho);
-        Vector3 piso = transform.position;
+        Vector3 piso = origen;
         if (Physics.Raycast(piso + Vector3.up * 1f, Vector3.down, out RaycastHit g, 3f, Physics.DefaultRaycastLayers, QueryTriggerInteraction.Ignore))
             piso.y = g.point.y;
         linea.transform.position = piso + direccion * (total * 0.5f) + Vector3.up * 0.05f;
@@ -339,6 +349,7 @@ public class EmbestidaDeNpc : MonoBehaviour
 
     private void Borrar()
     {
+        if (linea != null && npc != null && !npc.EsEspejo) InvasoresEnRed.AvisarFinDeEmbestida(npc);
         if (linea != null) Destroy(linea);
         linea = null;
     }
@@ -354,6 +365,7 @@ public class EmpujonAlJugador : MonoBehaviour
 
     public static void Empujar(Transform jugador, Vector3 cuanto, float segundos)
     {
+        if (InvasoresEnRed.EmpujarCompanero(jugador, cuanto, segundos)) return; // US 290: la copia de un compañero: a su dueño
         CharacterController cc = jugador != null ? jugador.GetComponent<CharacterController>() : null;
         PlayerMovement mov = jugador != null ? jugador.GetComponent<PlayerMovement>() : null;
         if (cc == null || mov == null || !mov.enabled) return;

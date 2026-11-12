@@ -18,6 +18,7 @@ public class EmpujonDeNpc : MonoBehaviour
         if (npc == null || !npc.Vivo) return;
         direccion.y = 0f;
         if (direccion.sqrMagnitude < 0.0001f) return;
+        if (npc.EsEspejo) { InvasoresEnRed.PedirEmpujon(npc, direccion, metros); return; } // F31 (US 290): lo mueve el anfitrión
         EmpujonDeNpc e = npc.GetComponent<EmpujonDeNpc>();
         if (e == null) e = npc.gameObject.AddComponent<EmpujonDeNpc>();
         e.npc = npc;

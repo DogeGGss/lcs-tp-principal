@@ -76,6 +76,13 @@ public class HealthSystem : MonoBehaviour
         currentShield = Mathf.Clamp(value, 0, maxShield);
     }
 
+    // F31 (US 290): avisa un golpe sin tocar la vida. Lo usa la copia de un invasor en otra computadora (la vida la
+    // decide el anfitrión): así quien le pegó ve enseguida su reacción, la sangre y el destello.
+    public void AvisarGolpe(int damageAmount, Vector3? origin)
+    {
+        if (damageAmount > 0) Damaged?.Invoke(this, damageAmount, origin);
+    }
+
     // head: el golpe fue a la cabeza (zona de impacto, US 165).
     public void TakeDamage(int damageAmount, bool head = false)
     {
