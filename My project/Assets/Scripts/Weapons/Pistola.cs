@@ -73,6 +73,12 @@ public class Pistola : MonoBehaviour, IHudWeapon
         reserveAmmo += Municion.Agrandada(fullReserve, antes);
     }
 
+    /// <summary>US 360, CA6: al descartar Mochila, lo que sobra de la reserva se pierde.</summary>
+    public void RecortarMunicion()
+    {
+        if (fullReserve >= 0) reserveAmmo = Mathf.Min(reserveAmmo, Municion.Reserva(fullReserve));
+    }
+
     /// <summary>US 293, CA2: suma balas a la reserva sin pasarse de la llena; lo que sobra va al cargador.</summary>
     public void SumarBalas(int balas)
     {

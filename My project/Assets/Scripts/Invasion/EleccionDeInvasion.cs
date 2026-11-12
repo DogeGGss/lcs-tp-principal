@@ -29,9 +29,18 @@ using static ShopUIKit;
 // elige. La munición del puesto se sigue dando al terminar la oleada, cuando el puesto se abre (ya sin elección).
 // De a varios, si se pausa o no todavía no está decidido (el multijugador entra en otro sprint).
 // De a varios (US 289) cada uno va a elegir lo suyo, con un tope de 30 s; por ahora se juega solo y no hay tope.
+// US 360 (límite de 8 cartas, F29):
+// - CA1: 8 lugares; cada carta distinta ocupa uno (también las legendarias). Repetirla (mejorarla) y las armas no ocupan.
+// - CA2: abajo se ven los lugares ocupados ("6 / 8") y las cartas que se tienen, con cuántas veces.
+// - CA3: con los 8 ocupados salen solo mejoras de las que se tienen y armas (si no alcanzan, menos de 3). Si no hay
+//   ninguna, quedan "Descartar una carta" y "Seguir sin elegir".
+// - CA4: en la elección del Jefe la legendaria sale aunque no haya lugar, apagada ("Sin lugar"): no se puede elegir.
+// - CA5: en cualquier elección se puede "Descartar una carta" (con la pantalla de las cartas, US 361): se pierde con sus
+//   mejoras y esa vez no se elige. CA6: su efecto termina en el momento (CartaDeInvasion.quitar).
 public class EleccionDeInvasion : MonoBehaviour
 {
     public const int PrimeraTirada = 150, MasPorTirada = 100; // CA4
+    public const int Lugares = 8; // US 360, CA1
     private const float AnchoCarta = 360f, AltoCarta = 470f, Separacion = 36f;
 
     /// <summary>La pantalla de la elección está abierta.</summary>
@@ -42,6 +51,12 @@ public class EleccionDeInvasion : MonoBehaviour
     /// <summary>CA5: cuántas veces se eligió esa carta en la partida (0 si no se tiene).</summary>
     public static int Veces(CartaDeInvasion carta) =>
         Actual != null && carta != null && Actual.elegidas.TryGetValue(carta, out int n) ? n : 0;
+
+    /// <summary>US 360: cuántos lugares están ocupados (cartas distintas que se tienen).</summary>
+    public static int Ocupados => Actual != null ? Actual.elegidas.Count : 0;
+
+    /// <summary>US 361: las cartas que se tienen, en el orden en que se eligieron.</summary>
+    public static IReadOnlyList<CartaDeInvasion> Tenidas => Actual != null ? Actual.orden : (IReadOnlyList<CartaDeInvasion>)new CartaDeInvasion[0];
 
     /// <summary>CA5: cuántas veces se eligió la carta con ese nombre en la partida (0 si no se tiene).</summary>
     public static int Veces(string nombre)
@@ -54,6 +69,7 @@ public class EleccionDeInvasion : MonoBehaviour
     {
         public CartaDeInvasion carta;
         public ShopItem arma;
+        public bool sinLugar; // US 360, CA4: una legendaria nueva con los lugares llenos (se ve, no se elige)
     }
 
     private OleadasDeInvasion oleadas;
@@ -76,7 +92,8 @@ public class EleccionDeInvasion : MonoBehaviour
     private RectTransform cabeza;
     private readonly List<(CanvasGroup grupo, RectTransform rect, float x)> cartas = new List<(CanvasGroup, RectTransform, float)>();
     private RectTransform lienzo, fila;
-    private TextMeshProUGUI tirarTexto, puntosTexto;
+    private TextMeshProUGUI tirarTexto, puntosTexto, tusCartas, vacia;
+    private RectTransform descartarBoton, seguirBoton;
     private UnityEngine.UI.Image tirarFondo;
     private TMP_FontAsset display, label;
     private Sprite redondeado;
@@ -276,20 +293,23 @@ public class EleccionDeInvasion : MonoBehaviour
         ShopItem arma = Random.value < 1f / 3f ? ArmaAlAzar() : null;
         int lugarArma = arma != null ? Random.Range(0, 3) : -1;
         var yaSalieron = new HashSet<CartaDeInvasion>();
+        bool lleno = elegidas.Count >= Lugares; // US 360, CA3
         for (int i = 0; i < 3; i++)
         {
             if (i == lugarArma) { opciones.Add(new Opcion { arma = arma }); continue; }
-            CartaDeInvasion carta = CartaAlAzar(oleada, yaSalieron);
+            CartaDeInvasion carta = CartaAlAzar(oleada, yaSalieron, lleno);
             if (carta == null) continue;
             yaSalieron.Add(carta);
-            opciones.Add(new Opcion { carta = carta });
+            opciones.Add(new Opcion { carta = carta, sinLugar = lleno && Veces(carta) == 0 });
         }
         Dibujar();
     }
 
     // CA3 (y US 303, CA2 y CA3): una carta de la rareza que tocó; si no hay ninguna de esa, de la más cercana (con
     // empate, la de abajo). Sin legendarias antes del primer Jefe y sin comunes en la elección del Jefe.
-    private CartaDeInvasion CartaAlAzar(int oleada, HashSet<CartaDeInvasion> yaSalieron)
+    // US 360, CA3 y CA4: con los lugares llenos, solo las que ya se tienen (mejoras); en la elección del Jefe, también
+    // una legendaria nueva, que se ve pero no se puede elegir.
+    private CartaDeInvasion CartaAlAzar(int oleada, HashSet<CartaDeInvasion> yaSalieron, bool lleno)
     {
         bool despuesDelJefe = oleadas != null && oleadas.JefesDerrotados > 0;
         RarezaDeCarta buscada = CartaDeInvasion.RarezaAlAzar(oleada, despuesDelJefe, delJefe);
@@ -298,6 +318,7 @@ public class EleccionDeInvasion : MonoBehaviour
         foreach (CartaDeInvasion c in CartaDeInvasion.Todas)
         {
             if (yaSalieron.Contains(c) || Veces(c) >= c.Maximo) continue; // CA5: ya la tiene todas las veces que se puede
+            if (lleno && Veces(c) == 0 && !(delJefe && c.rareza == RarezaDeCarta.Legendaria)) continue; // US 360, CA3
             if (c.puedeSalir != null && !c.puedeSalir()) continue;          // US 331: Sin respaldo y Acople, por ejemplo
             if (c.rareza == RarezaDeCarta.Legendaria && !despuesDelJefe) continue; // US 303, CA3
             if (c.rareza == RarezaDeCarta.Legendaria && !CartaDeInvasion.LegendariasDisponibles) continue; // Sprint 4: todavía no hay (US 352)
@@ -332,8 +353,9 @@ public class EleccionDeInvasion : MonoBehaviour
 
     private void Elegir(int i)
     {
-        if (!Abierta || !Lista || i < 0 || i >= opciones.Count) return;
+        if (!Abierta || !Lista || i < 0 || i >= opciones.Count || MisCartasInvasion.Abierta) return;
         Opcion o = opciones[i];
+        if (o.sinLugar) { MatchHud.Warn(L10n.T("gameplay.card.no_room"), 2f); return; } // US 360, CA4
         if (o.arma != null) equipo.Recibir(o.arma); // US 294, CA4
         else if (o.carta != null)
         {
@@ -343,15 +365,55 @@ public class EleccionDeInvasion : MonoBehaviour
             o.carta.aplicar?.Invoke(equipo != null ? equipo.gameObject : null, veces);
             ActualizarCartas();
         }
+        Terminar();
+    }
+
+    // CA6: arranca el respiro (US 332: en medio de la oleada no).
+    private void Terminar()
+    {
         bool enLaOleada = inmediata;
         Cerrar();
-        if (!enLaOleada && oleadas != null) oleadas.TerminoLaEleccion(); // CA6: arranca el respiro (US 332: en medio de la oleada no)
+        if (!enLaOleada && oleadas != null) oleadas.TerminoLaEleccion();
+    }
+
+    // US 360, CA3: sin opciones, se sigue sin elegir nada.
+    private void SeguirSinElegir()
+    {
+        if (!Abierta || !Lista || MisCartasInvasion.Abierta) return;
+        Terminar();
+    }
+
+    // US 360, CA5: abre la pantalla de las cartas (US 361) para elegir cuál se descarta.
+    private void AbrirDescarte()
+    {
+        if (!Abierta || !Lista || MisCartasInvasion.Abierta || orden.Count == 0) return;
+        MisCartasInvasion.AbrirParaDescartar(AlDescartar);
+    }
+
+    // US 360, CA5: se descartó una carta: esa vez no se elige.
+    private void AlDescartar(CartaDeInvasion carta)
+    {
+        if (!Abierta || carta == null || !elegidas.ContainsKey(carta)) return;
+        Descartar(carta);
+        Terminar();
+    }
+
+    /// <summary>US 360, CA5 y CA6: la carta se pierde con sus mejoras, su lugar queda libre y su efecto termina.</summary>
+    public void Descartar(CartaDeInvasion carta)
+    {
+        if (carta == null || !elegidas.Remove(carta)) return;
+        orden.Remove(carta);
+        if (equipo == null) equipo = FindFirstObjectByType<PlayerLoadout>();
+        carta.quitar?.Invoke(equipo != null ? equipo.gameObject : null);
+        ActualizarCartas();
+        MatchHud.Warn(L10n.T("gameplay.card.discarded_fmt", L10n.Source(carta.nombre)), 2f);
     }
 
     /// <summary>Para probar (Riftwalker > Invasión > Darme una carta): la suma como si se la hubiera elegido.</summary>
     public void Dar(CartaDeInvasion carta)
     {
         if (carta == null || Veces(carta) >= carta.Maximo) { Debug.Log($"Ya tenés {carta?.nombre} todas las veces que se puede."); return; }
+        if (Veces(carta) == 0 && orden.Count >= Lugares) { Debug.Log($"No hay lugar para {carta.nombre}: tenés {Lugares} cartas. Descartá una."); return; }
         if (equipo == null) equipo = FindFirstObjectByType<PlayerLoadout>(); // (sin haber abierto el puesto todavía)
         int veces = Veces(carta) + 1;
         elegidas[carta] = veces;
@@ -392,12 +454,14 @@ public class EleccionDeInvasion : MonoBehaviour
         }
         Animar();
         if (!Lista) return;
-        if (Input.GetKeyDown(KeyCode.Alpha1) || Input.GetKeyDown(KeyCode.Keypad1)) Elegir(0);
+        if (MisCartasInvasion.Abierta) { } // US 361: descartando, las teclas son de esa pantalla
+        else if (Input.GetKeyDown(KeyCode.Alpha1) || Input.GetKeyDown(KeyCode.Keypad1)) Elegir(0);
         else if (Input.GetKeyDown(KeyCode.Alpha2) || Input.GetKeyDown(KeyCode.Keypad2)) Elegir(1);
         else if (Input.GetKeyDown(KeyCode.Alpha3) || Input.GetKeyDown(KeyCode.Keypad3)) Elegir(2);
         else if (Input.GetKeyDown(KeyCode.R)) VolverATirar();
         if (Abierta && Cursor.lockState != CursorLockMode.None) { Cursor.lockState = CursorLockMode.None; Cursor.visible = true; }
         if (Abierta) ActualizarTirar();
+        if (Abierta && lienzo != null) lienzo.gameObject.SetActive(!MisCartasInvasion.Abierta); // la de las cartas va encima
     }
 
     // ---------- Pantalla ----------
@@ -455,7 +519,53 @@ public class EleccionDeInvasion : MonoBehaviour
         pr.anchoredPosition = new Vector2(0f, 84f);
         pr.sizeDelta = new Vector2(600f, 26f);
 
+        // US 360, CA5 y CA3: «Descartar una carta» (a la izquierda de volver a tirar) y «Seguir sin elegir» (a la derecha,
+        // solo si no hay opciones).
+        descartarBoton = BotonAbajo("Descartar", -400f, L10n.T("gameplay.card.discard"), AbrirDescarte);
+        seguirBoton = BotonAbajo("SeguirSinElegir", 400f, L10n.T("gameplay.card.skip"), SeguirSinElegir);
+        // US 360, CA2: los lugares ocupados y las cartas que se tienen.
+        tusCartas = Text(Node("TusCartas", lienzo), label, 18f, Soft, TextAlignmentOptions.Center, 4f);
+        RectTransform tc = tusCartas.rectTransform;
+        tc.anchorMin = tc.anchorMax = tc.pivot = new Vector2(0.5f, 0f);
+        tc.anchoredPosition = new Vector2(0f, 196f);
+        tc.sizeDelta = new Vector2(1500f, 30f);
+        // US 360, CA3: sin opciones.
+        vacia = Text(Node("SinOpciones", lienzo), label, 26f, Mute, TextAlignmentOptions.Center, 2f);
+        RectTransform va = vacia.rectTransform;
+        va.anchorMin = va.anchorMax = va.pivot = new Vector2(0.5f, 0.5f);
+        va.anchoredPosition = new Vector2(0f, -10f);
+        va.sizeDelta = new Vector2(1000f, 120f);
+        vacia.textWrappingMode = TextWrappingModes.Normal;
+        vacia.text = L10n.T("gameplay.card.no_options");
+
         lienzo.gameObject.SetActive(false);
+    }
+
+    private RectTransform BotonAbajo(string nombre, float x, string texto, UnityEngine.Events.UnityAction alHacerClic)
+    {
+        RectTransform rect = Node(nombre, lienzo);
+        rect.anchorMin = rect.anchorMax = rect.pivot = new Vector2(0.5f, 0f);
+        rect.anchoredPosition = new Vector2(x, 120f);
+        rect.sizeDelta = new Vector2(320f, 52f);
+        UnityEngine.UI.Image fondo = Image(rect, redondeado, ChipColor, 8f, true);
+        var boton = rect.gameObject.AddComponent<UnityEngine.UI.Button>();
+        boton.targetGraphic = fondo;
+        boton.onClick.AddListener(alHacerClic);
+        Text(Stretch(Node("Texto", rect)), label, 20f, Ink, TextAlignmentOptions.Center, 8f, true).text = texto;
+        return rect;
+    }
+
+    // US 360, CA2: "Tus cartas 6 / 8 · Mochila ×2 · Filo…", cada una del color de su rareza.
+    private void PintarTusCartas()
+    {
+        var sb = new System.Text.StringBuilder(L10n.T("gameplay.card.slots_fmt", orden.Count, Lugares));
+        foreach (CartaDeInvasion c in orden)
+        {
+            int n = elegidas[c];
+            sb.Append("  ·  <color=#").Append(ColorUtility.ToHtmlStringRGB(CartaDeInvasion.ColorDe(c.rareza))).Append('>')
+              .Append(L10n.Source(c.nombre)).Append(n > 1 ? " ×" + n : "").Append("</color>");
+        }
+        tusCartas.text = sb.ToString();
     }
 
     private void ActualizarTirar()
@@ -480,6 +590,11 @@ public class EleccionDeInvasion : MonoBehaviour
             DibujarCarta(i, opciones[i], x);
         }
         ActualizarTirar();
+        // US 360: sin opciones, el aviso y «Seguir sin elegir»; «Descartar» si tiene alguna carta.
+        vacia.gameObject.SetActive(opciones.Count == 0);
+        seguirBoton.gameObject.SetActive(opciones.Count == 0);
+        descartarBoton.gameObject.SetActive(orden.Count > 0);
+        PintarTusCartas();
     }
 
     // US 334: avisa cuando la carta queda sin uso con Alimentación directa (o, si es Alimentación directa, a cuáles de
@@ -508,6 +623,7 @@ public class EleccionDeInvasion : MonoBehaviour
         string rinde = esArma ? L10n.T(o.arma.kind == ShopItemKind.PrimaryWeapon ? "gameplay.card.primary" : "gameplay.card.secondary")
                               : L10n.T("gameplay.card.works_with_fmt", L10n.Source(o.carta.rindeCon));
         if (!esArma) rinde = AvisoDeAlimentacion(o.carta) ?? rinde; // US 334
+        if (o.sinLugar) rinde = L10n.T("gameplay.card.no_room_short"); // US 360, CA4
 
         RectTransform carta = Node("Opcion" + (i + 1), fila);
         carta.anchorMin = carta.anchorMax = carta.pivot = new Vector2(0.5f, 0.5f);
@@ -561,6 +677,13 @@ public class EleccionDeInvasion : MonoBehaviour
         Image(tecla, redondeado, color, 6f);
         TextMeshProUGUI numero = Text(Stretch(Node("Numero", tecla)), display, 18f, KeyInk, TextAlignmentOptions.Center);
         numero.text = (i + 1).ToString();
+
+        // US 360, CA4: sin lugar, la carta se ve apagada (no se puede elegir).
+        if (o.sinLugar)
+        {
+            Image(Stretch(Node("SinLugar", carta)), null, new Color(0f, 0f, 0f, DarkAlpha(0.55f)), 0f).raycastTarget = false;
+            tecla.gameObject.SetActive(false);
+        }
     }
 
     private static string NombreDelArma(ShopItem arma) => L10n.Source(

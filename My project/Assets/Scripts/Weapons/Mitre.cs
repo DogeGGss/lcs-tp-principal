@@ -143,6 +143,13 @@ public class Mitre : MonoBehaviour, IHudWeapon
         reserveAmmo += Municion.Agrandada(fullReserve, antes);
     }
 
+    /// <summary>US 360, CA6: al descartar Sin respaldo o Mochila (ver ArmaDeFuego.RecortarMunicion).</summary>
+    public void RecortarMunicion()
+    {
+        if (currentAmmo > MagazineSize) { reserveAmmo += currentAmmo - MagazineSize; currentAmmo = MagazineSize; }
+        if (fullReserve >= 0) reserveAmmo = Mathf.Min(reserveAmmo, ReservaLlena);
+    }
+
     /// <summary>US 293, CA2: suma balas a la reserva sin pasarse de la llena; lo que sobra va al cargador.</summary>
     public void SumarBalas(int balas)
     {
