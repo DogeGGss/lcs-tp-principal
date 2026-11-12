@@ -23,11 +23,15 @@ using UnityEngine;
 // - CA5: si el anfitrión se va, Photon elige otro: en esa computadora las copias pasan a ser invasores de verdad
 //   (Npc.Activar) y la oleada sigue desde donde estaba (OleadasDeInvasion.TomarElMando).
 // Si una copia no se conoce (se perdió el aviso, o se entró tarde), se le pide al anfitrión (Pedir).
+// US 353: también va por acá el puesto de suministros (dónde cae, el próximo y la carga, PuestoDeSuministros).
 public class InvasoresEnRed : MonoBehaviourPunCallbacks, IOnEventCallback
 {
     // Los eventos de Photon (el 1 es el de los jugadores, Multijugador.EventoJugador).
     private const byte EvAparece = 40, EvEstados = 41, EvMuere = 42, EvDanio = 43, EvPedir = 44, EvEfecto = 45,
-        EvEmpujon = 46, EvPedidoNpc = 47, EvOleada = 48, EvEstadoOleada = 49, EvPortal = 50;
+        EvEmpujon = 46, EvPedidoNpc = 47, EvOleada = 48, EvEstadoOleada = 49, EvPortal = 50,
+        // US 353: el puesto de suministros.
+        EvPuesto = 51, EvProximoPuesto = 52, EvCargaDelPuesto = 53, EvPuntosAlPuesto = 54;
+    private const byte PrimerEvento = EvAparece, UltimoEvento = EvPuntosAlPuesto;
 
     // Lo que se ve de los ataques (EvEfecto).
     private const byte EfCargaRayo = 1, EfRayo = 2, EfBolaDeEnergia = 3, EfBolaDeVeneno = 4, EfEmbestida = 5,
@@ -282,6 +286,34 @@ public class InvasoresEnRed : MonoBehaviourPunCallbacks, IOnEventCallback
         Actual.Mandar(EvPortal, new object[] { (byte)2, portal.IdRed }, ReceiverGroup.Others, true);
     }
 
+    /// <summary>US 353, CA1: cayó el puesto de esta oleada.</summary>
+    public static void AvisarPuesto(string nombre, Vector3 lugar, float giro, int meta, int carga)
+    {
+        if (!Anfitrion || Actual == null) return;
+        Actual.Mandar(EvPuesto, new object[] { nombre ?? "", lugar, giro, meta, carga }, ReceiverGroup.Others, true);
+    }
+
+    /// <summary>US 353, CA3: dónde cae el próximo puesto.</summary>
+    public static void AvisarProximoPuesto(string nombre, Vector3 lugar, float giro)
+    {
+        if (!Anfitrion || Actual == null) return;
+        Actual.Mandar(EvProximoPuesto, new object[] { nombre ?? "", lugar, giro }, ReceiverGroup.Others, true);
+    }
+
+    /// <summary>US 353, CA2: la carga del puesto (seCargo: llegó al 100 %).</summary>
+    public static void AvisarCargaDelPuesto(int carga, int meta, bool seCargo)
+    {
+        if (!Anfitrion || Actual == null) return;
+        Actual.Mandar(EvCargaDelPuesto, new object[] { carga, meta, seCargo }, ReceiverGroup.Others, true);
+    }
+
+    /// <summary>US 353, CA2: los puntos que gané adentro del anillo, para la carga que lleva el anfitrión.</summary>
+    public static void MandarPuntosAlPuesto(int puntos)
+    {
+        if (puntos <= 0 || !PhotonNetwork.InRoom) return;
+        PhotonNetwork.RaiseEvent(EvPuntosAlPuesto, puntos, new RaiseEventOptions { Receivers = ReceiverGroup.MasterClient }, SendOptions.SendReliable);
+    }
+
     /// <summary>Cómo va la oleada (empezó, se superó, llegó el Jefe).</summary>
     public static void AvisarOleada(byte que, int oleada, int total, int jefesDerrotados)
     {
@@ -325,7 +357,7 @@ public class InvasoresEnRed : MonoBehaviourPunCallbacks, IOnEventCallback
 
     public void OnEvent(EventData ev)
     {
-        if (ev.Code < EvAparece || ev.Code > EvPortal) return;
+        if (ev.Code < PrimerEvento || ev.Code > UltimoEvento) return;
         object[] d = ev.CustomData as object[];
         switch (ev.Code)
         {
@@ -340,6 +372,22 @@ public class InvasoresEnRed : MonoBehaviourPunCallbacks, IOnEventCallback
             case EvOleada: if (EsCopia && d != null) Oleada(d); break;
             case EvEstadoOleada: if (EsCopia && d != null && Oleadas != null) Oleadas.EstadoDelAnfitrion(d); break;
             case EvPortal: if (EsCopia && d != null) Portal(d); break;
+            case EvPuesto:
+                if (EsCopia && d != null && PuestoDeSuministros.Actual != null)
+                    PuestoDeSuministros.Actual.CaeEnElAnfitrion((string)d[0], (Vector3)d[1], (float)d[2], (int)d[3], (int)d[4]);
+                break;
+            case EvProximoPuesto:
+                if (EsCopia && d != null && PuestoDeSuministros.Actual != null)
+                    PuestoDeSuministros.Actual.ProximoEnElAnfitrion((string)d[0], (Vector3)d[1], (float)d[2]);
+                break;
+            case EvCargaDelPuesto:
+                if (EsCopia && d != null && PuestoDeSuministros.Actual != null)
+                    PuestoDeSuministros.Actual.CargaDelAnfitrion((int)d[0], (int)d[1], (bool)d[2]);
+                break;
+            case EvPuntosAlPuesto:
+                if (Anfitrion && ev.CustomData is int puntos && PuestoDeSuministros.Actual != null)
+                    PuestoDeSuministros.Actual.SumarDeUnCompanero(puntos);
+                break;
         }
     }
 
