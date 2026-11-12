@@ -139,7 +139,8 @@ public class OleadasDeInvasion : MonoBehaviour
         if (fase != Fase.Descanso) return; // solo desde el descanso: una oleada no corta a la anterior
         Oleada++;
         fase = Fase.Oleada;
-        total = Mathf.Max(1, Mathf.RoundToInt(ConfigInvasion.Actual.Invasores(Oleada) * DificultadDeInvasion.Cantidad)); // US 299, CA1 (y CA7), US 161
+        total = Mathf.Max(1, Mathf.RoundToInt(ConfigInvasion.Actual.Invasores(Oleada) * DificultadDeInvasion.Cantidad
+                                              * CooperativoDeInvasion.MasInvasores)); // US 299, CA1 (y CA7), US 161, US 289 (CA4)
         // US 302, CA2: desde la 20, el Jefe llega con su escolta (cuentan en la oleada).
         escolta = DeJefe && Vuelta(Oleada) >= 2 && tanque != null && tipoJefe != null ? ConfigInvasion.Actual.escoltaDelJefe : 0;
         escoltaPorSalir = escolta;
@@ -268,7 +269,7 @@ public class OleadasDeInvasion : MonoBehaviour
         portales.RemoveAll(p => p == null || p.Cerrando);
         int esperando = 0;
         foreach (PortalDeEnemigos p in portales) esperando += p.Fila.Count;
-        int maximoVivos = ConfigInvasion.Actual.TopeDeVivos(Oleada); // US 299, CA2
+        int maximoVivos = ConfigInvasion.Actual.TopeDeVivos(Oleada) + CooperativoDeInvasion.MasTope; // US 299, CA2 (US 289, CA4)
         if (porAparecer.Count > 0 && Time.time >= proximoPortal && vivos.Count + esperando < maximoVivos)
         {
             PortalDeEnemigos portal = null;
@@ -388,11 +389,14 @@ public class OleadasDeInvasion : MonoBehaviour
     private void Endurecer(Npc j)
     {
         int vuelta = Vuelta(Oleada);
-        if (vuelta <= 1 || j.Vida == null) return; // la 10: el Jefe de siempre
+        if (j.Vida == null) return;
         ConfigInvasion config = ConfigInvasion.Actual;
-        int vida = DificultadDeInvasion.VidaDeEnemigo(j.Tipo.vida + config.vidaDelJefePorVuelta * (vuelta - 1)); // US 161
+        // US 161; US 289, CA4: un 50 % más de vida por cada jugador de más (con uno solo, la de siempre).
+        int vida = Mathf.RoundToInt(DificultadDeInvasion.VidaDeEnemigo(j.Tipo.vida + config.vidaDelJefePorVuelta * Mathf.Max(0, vuelta - 1))
+                                    * CooperativoDeInvasion.VidaDelJefe);
         j.Vida.maxHealth = vida;
         j.Vida.SetState(vida, 0);
+        if (vuelta <= 1) return; // la 10: el Jefe de siempre (solo con más vida si son varios)
 
         FuriaDeNpc furia = j.GetComponent<FuriaDeNpc>();
         float umbral = vuelta >= 3 ? 1f : config.furiaDesdeLaVuelta2; // CA3: desde la 30 arranca enfurecido

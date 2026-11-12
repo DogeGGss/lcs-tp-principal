@@ -1455,6 +1455,34 @@
     {
       "key": "ui.text.close",
       "text": "Close"
+    },
+    {
+      "key": "ui.source.65ed8b5d8dd1",
+      "text": "1 to 4 players"
+    },
+    {
+      "key": "ui.source.3c67bb4867c6",
+      "text": "Platform 3 · Online"
+    },
+    {
+      "key": "ui.source.48eab30f8694",
+      "text": "1 to 4 players against the waves at the university. Every 10 waves the Boss arrives; beat it and you can keep going for a record."
+    },
+    {
+      "key": "ui.source.a4bca35542b6",
+      "text": "Play solo"
+    },
+    {
+      "key": "ui.source.32f4bec04ced",
+      "text": "Share the code with your friends (up to 4). You can start whenever you want."
+    },
+    {
+      "key": "ui.mode.record_coop",
+      "text": " · Co-op: <color={0}>wave {1}</color>"
+    },
+    {
+      "key": "ui.search.minimum_wait_invasion",
+      "text": "Starts automatically with {0} players, or with whoever is here after {1} seconds without new players."
     }
   ]
 }

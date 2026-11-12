@@ -1455,6 +1455,34 @@
     {
       "key": "ui.text.close",
       "text": "Cerrar"
+    },
+    {
+      "key": "ui.source.65ed8b5d8dd1",
+      "text": "1 a 4 jugadores"
+    },
+    {
+      "key": "ui.source.3c67bb4867c6",
+      "text": "Andén 3 · Online"
+    },
+    {
+      "key": "ui.source.48eab30f8694",
+      "text": "De 1 a 4 jugadores contra las oleadas de la universidad. Cada 10 oleadas llega el Jefe; si lo bajan, pueden seguir para hacer récord."
+    },
+    {
+      "key": "ui.source.a4bca35542b6",
+      "text": "Jugar solo"
+    },
+    {
+      "key": "ui.source.32f4bec04ced",
+      "text": "Pasale el código a tus amigos (hasta 4). Podés arrancar cuando quieras."
+    },
+    {
+      "key": "ui.mode.record_coop",
+      "text": " · En equipo: <color={0}>oleada {1}</color>"
+    },
+    {
+      "key": "ui.search.minimum_wait_invasion",
+      "text": "Arranca sola con {0} jugadores, o con los que haya si pasan {1} s sin que entre nadie."
     }
   ]
 }

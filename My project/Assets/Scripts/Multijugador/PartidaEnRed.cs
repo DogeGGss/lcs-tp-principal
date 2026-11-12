@@ -108,6 +108,7 @@ public class PartidaEnRed : MonoBehaviour
         gameObject.AddComponent<Reconexion>();                       // US 195: anota la partida para poder volver
         gameObject.AddComponent<MarcasDeCompaneros>().Iniciar(this); // US 193: solo se ven cuando hay equipos
         gameObject.AddComponent<RivalesVistos>().Iniciar(this);      // US 194, CA4: rivales vistos, para el minimapa
+        if (MatchSettings.Mode == GameMode.Zombie) gameObject.AddComponent<PersonajesInvasion>(); // F31: se elige el aspecto al entrar
         if (MatchSettings.Mode == GameMode.Tactico)
         {
             gameObject.AddComponent<MarcadorTactico>().Iniciar(this); // US 134
@@ -293,6 +294,9 @@ public class PartidaEnRed : MonoBehaviour
         }
 
         int indice = Mathf.Max(0, actores.IndexOf(local));
+        // F31 (US 289, CA12): en Invasión arrancan juntos, uno al lado del otro, alrededor del inicio del mapa (los puntos
+        // en su orden, sin repartirlos lejos como en el Deathmatch).
+        if (MatchSettings.Mode == GameMode.Zombie) return puntos[indice % puntos.Count];
         List<Pose> repartidos = PuntosRepartidos();
         return repartidos[indice % repartidos.Count];
     }

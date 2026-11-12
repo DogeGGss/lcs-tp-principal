@@ -122,6 +122,8 @@ public static class EquiposTacticos
     public static bool SonAliados(int actorA, int actorB)
     {
         if (actorA == actorB) return false;
+        // F31 (US 289, CA10): en Invasión cooperativa todos son compañeros: sin fuego amigo (balas, cuchillo, granadas).
+        if (PhotonNetwork.InRoom && MatchSettings.Mode == GameMode.Zombie) return true;
         int a = DeActor(actorA), b = DeActor(actorB);
         return a >= 0 && a == b;
     }

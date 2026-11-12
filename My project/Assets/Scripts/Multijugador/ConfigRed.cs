@@ -17,6 +17,8 @@ public class ConfigRed : ScriptableObject
         public string escena;
         public bool tactico = true;
         public bool deathmatch = true;
+        [Tooltip("F31 (US 289): se juega Invasión cooperativa en este mapa.")]
+        public bool invasion;
         [Tooltip("Captura del mapa para el fondo de la pantalla de carga (US 196). Sin imagen, el fondo queda liso.")]
         public Sprite imagen;
     }
@@ -149,7 +151,7 @@ public class ConfigRed : ScriptableObject
         var lista = new List<Mapa>();
         foreach (Mapa mapa in mapas)
             if (mapa != null && !string.IsNullOrEmpty(mapa.escena) &&
-                (modo == GameMode.Tactico ? mapa.tactico : modo == GameMode.Deathmatch && mapa.deathmatch))
+                (modo == GameMode.Tactico ? mapa.tactico : modo == GameMode.Deathmatch ? mapa.deathmatch : mapa.invasion))
                 lista.Add(mapa);
         return lista;
     }

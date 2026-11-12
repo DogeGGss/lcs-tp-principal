@@ -16,6 +16,8 @@ using static ShopUIKit;
 // - CA6: caerse del mapa es una muerte (FueraDelMapa), así que termina igual que el CA1.
 // - US 222, CA2: la partida se suma una vez a las estadísticas de Invasión del jugador (EstadisticasJugador), que ve el Perfil.
 // Todo se congela (el tiempo se detiene) y no se puede pausar.
+// F31 (US 289): en cooperativo el récord va aparte (CA13: MatchSettings.ZombieRecordCoop) y "Jugar de nuevo" vuelve al
+// menú, porque la partida de los demás sigue (para jugar otra se vuelve a buscar o a armar la sala).
 public class ResultadoDeInvasion : MonoBehaviour
 {
     private const string EscenaMenu = "MenuPrincipal";
@@ -62,9 +64,11 @@ public class ResultadoDeInvasion : MonoBehaviour
         int jefes = oleadas != null ? oleadas.JefesDerrotados : 0;
         bool salvo = !murio || infinito;
         ZombieDifficulty dificultad = MatchSettings.Difficulty;
-        int recordAntes = MatchSettings.ZombieRecord(dificultad);
+        bool coop = CooperativoDeInvasion.Activo; // US 289, CA13: el récord del cooperativo, aparte
+        int recordAntes = coop ? MatchSettings.ZombieRecordCoop(dificultad) : MatchSettings.ZombieRecord(dificultad);
         bool nuevo = oleada > recordAntes;
-        MatchSettings.SubirZombieRecord(dificultad, oleada);
+        if (coop) MatchSettings.SubirZombieRecordCoop(dificultad, oleada);
+        else MatchSettings.SubirZombieRecord(dificultad, oleada);
         int segundos = Mathf.FloorToInt(Time.time - partida.Inicio);
         // US 222, CA2: la partida se suma a las estadísticas de Invasión, aparte de las de multijugador.
         EstadisticasJugador.Registrar(new EstadisticasJugador.Partida
@@ -230,6 +234,7 @@ public class ResultadoDeInvasion : MonoBehaviour
     // Con la pantalla de carga (US 196), con el nombre y la imagen del mapa como desde la selección de modo.
     private void JugarDeNuevo()
     {
+        if (CooperativoDeInvasion.Activo) { VolverAlMenu(); return; } // F31: la partida de los demás sigue
         if (saliendo) return;
         saliendo = true;
         Soltar();

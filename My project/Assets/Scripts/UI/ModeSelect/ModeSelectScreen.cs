@@ -12,7 +12,8 @@ using Img = UnityEngine.UI.Image;
 // Selección de modo (US 047), diseño "Andenes": la pantalla se parte en tres con dos rayos y cada andén es un modo.
 // Al pasar el mouse el andén se agranda; al hacer clic ocupa toda la pantalla y muestra sus opciones:
 // Táctico y Deathmatch buscan partida (F28, en ModeSelectScreen.Busqueda.cs) o crean o se unen a una sala privada
-// (US 026, US 027); Invasión elige la dificultad (US 161) y juega.
+// (US 026, US 027); Invasión elige la dificultad (US 161) y también busca partida o arma una sala (F31, US 289: de 1 a 4
+// jugadores, CA11), o juega solo, como antes.
 // Se arma por código con las medidas de la maqueta (pantalla de referencia de 1920 x 1080), como el HUD y la tienda.
 public partial class ModeSelectScreen : MonoBehaviour
 {
@@ -62,14 +63,14 @@ public partial class ModeSelectScreen : MonoBehaviour
     {
         new[] { "4 vs 4", "Primero a 7", "Online" },
         new[] { "Hasta 8", "25 bajas", "Online" },
-        new[] { "1 jugador", "10 oleadas", "Local" }
+        new[] { "1 a 4 jugadores", "10 oleadas", "Online" }
     };
-    private static readonly string[] DetailEyebrow = { "Andén 1 · Online", "Andén 2 · Online", "Andén 3 · Local" };
+    private static readonly string[] DetailEyebrow = { "Andén 1 · Online", "Andén 2 · Online", "Andén 3 · Online" };
     private static readonly string[] DetailText =
     {
         "Un equipo planta el dispositivo en A o B y el otro lo defiende. Sin reaparición: si morís, mirás a un compañero hasta la ronda siguiente.",
         "Todos contra todos. Elegís tus armas gratis, cada baja te cura 50 y reaparecés a los 3 s lejos de los rivales.",
-        "Vos solo contra 10 oleadas en la universidad. Después podés seguir en modo infinito para hacer récord."
+        "De 1 a 4 jugadores contra las oleadas de la universidad. Cada 10 oleadas llega el Jefe; si lo bajan, pueden seguir para hacer récord."
     };
     private static readonly string[][] Rules =
     {
@@ -127,7 +128,7 @@ public partial class ModeSelectScreen : MonoBehaviour
         public UnityEngine.UI.Button startButton;
         public CanvasGroup startGroup;
         public float actionsY;
-        public Busqueda busqueda; // Táctico y Deathmatch: buscar partida (null en Zombie)
+        public Busqueda busqueda; // buscar partida (los tres modos: en Invasión, F31)
     }
 
     private RectTransform root;
@@ -209,7 +210,7 @@ public partial class ModeSelectScreen : MonoBehaviour
         for (int i = 0; i < 3; i++) andenes[i] = BuildAnden(i);
         BuildTactico(Figura(andenes[0], andenes[0].motif));
         BuildDeathmatch(andenes[1]);
-        BuildInvasion(andenes[2].motif);
+        BuildInvasion(Figura(andenes[2], andenes[2].motif)); // F31: el Jefe también se apaga detrás del radar
         foreach (Anden a in andenes) { a.dim.transform.SetAsLastSibling(); a.flash.transform.SetAsLastSibling(); }
 
         for (int k = 0; k < 2; k++) BuildBolt(k);
@@ -694,15 +695,16 @@ public partial class ModeSelectScreen : MonoBehaviour
         }
         else
         {
+            // F31 (US 289): las tarjetas de dificultad, más bajas, para que entren abajo buscar partida y la sala.
             float bw = 280f;
             for (int k = 0; k < 3; k++)
             {
                 int level = k;
-                RectTransform card = Place(Node("Dificultad" + DifficultyName[k], d.rect), k * (bw + 14f), y + 6f, bw, 150f);
+                RectTransform card = Place(Node("Dificultad" + DifficultyName[k], d.rect), k * (bw + 14f), y + 6f, bw, 116f);
                 Image(card, rounded, new Color(0f, 0f, 0f, DarkAlpha(0.45f)), 10f, true);
                 Border(card, 8f, White(0.16f));
-                L10n.BindSource(Text(Place(Node("Nombre", card), 20f, 18f, bw - 40f, 36f), displayFont, 34f, Ink, TextAlignmentOptions.MidlineLeft, 4f, true), DifficultyName[k],"ui.");
-                TextMeshProUGUI detail = Text(Place(Node("Texto", card), 20f, 60f, bw - 40f, 80f), bodyFont, 18f, White(0.7f), TextAlignmentOptions.TopLeft);
+                L10n.BindSource(Text(Place(Node("Nombre", card), 20f, 12f, bw - 40f, 34f), displayFont, 32f, Ink, TextAlignmentOptions.MidlineLeft, 4f, true), DifficultyName[k],"ui.");
+                TextMeshProUGUI detail = Text(Place(Node("Texto", card), 20f, 50f, bw - 40f, 60f), bodyFont, 17f, White(0.7f), TextAlignmentOptions.TopLeft);
                 detail.textWrappingMode = TextWrappingModes.Normal;
                 L10n.BindSource(detail, DifficultyText[k],"ui.");
                 var button = card.gameObject.AddComponent<UnityEngine.UI.Button>();
@@ -712,12 +714,25 @@ public partial class ModeSelectScreen : MonoBehaviour
                 CenterPivot(card);
                 difficultyButtons[k] = button;
             }
-            y += 6f + 150f + 30f;
+            y += 6f + 116f + 20f;
             record = Text(Place(Node("Record", d.rect), 0f, y, 900f, 30f), monoFont, 24f, White(0.8f), TextAlignmentOptions.MidlineLeft);
-            y += 30f + 28f;
+            y += 30f + 24f;
             d.actionsY = y;
-            ButtonAt(d.rect, 0f, y, "Jugar", true, c, PlayZombie);
-            d.status = Text(Place(Node("Aviso", d.rect), 0f, y + 78f + 20f, 900f, 30f), bodyFont, 22f, White(0.7f), TextAlignmentOptions.MidlineLeft);
+            // F31 (US 289, CA1 y CA11): como en los otros andenes, «Buscar partida» y la sala privada; y «Jugar solo».
+            d.busqueda = new Busqueda();
+            BuildBuscar(d, i, c, y);
+            Transform unirse = d.busqueda.acciones.Find("BotonUnirse con código");
+            float xSolo = unirse != null ? ((RectTransform)unirse).anchoredPosition.x + ((RectTransform)unirse).sizeDelta.x / 2f + 14f : 420f;
+            ButtonAt(d.busqueda.acciones, xSolo, 262f, "Jugar solo", false, c, PlayZombie, 26f, 60f);
+            d.codeRow = Place(Node("Codigo", d.busqueda.acciones), 0f, 340f, 900f, 72f);
+            d.code = CodeInput(d.codeRow, c);
+            ButtonAt(d.codeRow, 318f, 0f, "Entrar", false, c, () => Join(2), 30f, 72f);
+            d.codeRow.gameObject.SetActive(false);
+            d.room = BuildRoom(d, y, c);
+            d.room.gameObject.SetActive(false);
+            BuildPanelBusqueda(d, i, c, y);
+            BuildPanelError(d, i, c, y);
+            d.status = Text(Place(Node("Aviso", d.rect), 0f, y + 420f, 900f, 30f), bodyFont, 22f, White(0.7f), TextAlignmentOptions.MidlineLeft);
             SelectDifficulty(MatchSettings.Difficulty);
         }
         return d;
@@ -849,12 +864,9 @@ public partial class ModeSelectScreen : MonoBehaviour
         Strike(0, true);
         Strike(1, true);
 
-        // Táctico y Deathmatch son online: se conecta ya, así crear o entrar a la sala es más rápido.
-        if (i < 2)
-        {
-            ListenNetwork(true);
-            Multijugador.Instancia.Conectar();
-        }
+        // Los tres son online (Invasión también, F31): se conecta ya, así crear o entrar a la sala es más rápido.
+        ListenNetwork(true);
+        Multijugador.Instancia.Conectar();
     }
 
     private void CloseMode()
@@ -874,7 +886,7 @@ public partial class ModeSelectScreen : MonoBehaviour
     private void Back()
     {
         // F28 (US 275, CA2): Esc cancela la búsqueda (sin salir del andén) o cierra el aviso de error.
-        if ((open == 0 || open == 1) && details[open].busqueda != null)
+        if (open >= 0 && details[open].busqueda != null)
         {
             Bloque bloque = details[open].busqueda.bloque;
             if (bloque == Bloque.Busqueda) { CancelarBusqueda(open); return; }
@@ -921,7 +933,7 @@ public partial class ModeSelectScreen : MonoBehaviour
     // US 026: entra con el código. Los errores (no existe, llena, ya empezó, otro modo) llegan por OnNetworkError.
     private void Join(int mode)
     {
-        if (mode < 0 || mode > 1) return;
+        if (mode < 0 || mode > 2) return;
         Detail d = details[mode];
         string code = d.code.text.ToUpperInvariant();
         if (code.Length != 5) { L10n.BindSource(d.status, "No existe una sala con ese código.","ui."); d.code.ActivateInputField(); return; }
@@ -968,12 +980,12 @@ public partial class ModeSelectScreen : MonoBehaviour
 
     private void OnNetworkChanged()
     {
-        if (open == 0 || open == 1) Refrescar(details[open], open);
+        if (open >= 0) Refrescar(details[open], open);
     }
 
     private void OnNetworkError(string message)
     {
-        if (open != 0 && open != 1) return;
+        if (open < 0) return;
         Detail d = details[open];
         // Buscando partida, el error va en su panel (US 275, CA3); si no, debajo de los botones, como siempre.
         if (d.busqueda != null && d.busqueda.bloque == Bloque.Busqueda) { MostrarError(d, Multijugador.Instancia.UltimoFallo); return; }
@@ -995,9 +1007,11 @@ public partial class ModeSelectScreen : MonoBehaviour
         d.codeRow.gameObject.SetActive(false);
         L10n.BindSource(d.status, "","ui.");
         d.roomCode.text = net.Codigo;
-        d.roomCount.text = $"{players.Count} / {Multijugador.MaxJugadores}";
+        int maximo = Multijugador.MaxPara((GameMode)mode); // 4 en Invasión (US 289, CA1)
+        d.roomCount.text = $"{players.Count} / {maximo}";
         for (int s = 0; s < 8; s++)
         {
+            d.slots[s].gameObject.SetActive(s < maximo);
             bool taken = s < players.Count;
             string name = taken ? players[s].nombre : "Libre";
             if (taken && players[s].vos) name += " <color=#FFFFFF80>(vos)</color>";
@@ -1008,6 +1022,8 @@ public partial class ModeSelectScreen : MonoBehaviour
 
         ConfigRed.Mapa map = net.MapaActual;
         d.roomMap.text = map != null ? map.nombre : L10n.Source("No hay mapas para este modo","ui.");
+        // US 289, CA3: en Invasión, la dificultad de la sala (la eligió quien la creó), para que la vean todos.
+        if (mode == 2 && map != null) d.roomMap.text += " · " + L10n.Source(DifficultyName[(int)net.DificultadSala], "ui.");
         d.mapButton.gameObject.SetActive(net.EsAnfitrion && net.CantidadMapas > 1);
 
         bool host = net.EsAnfitrion, ready = net.PuedeIniciar;
@@ -1015,14 +1031,23 @@ public partial class ModeSelectScreen : MonoBehaviour
         d.startButton.interactable = ready;
         d.startGroup.alpha = ready ? 1f : 0.4f;
         L10n.BindSource(d.roomFoot, !host ? "Esperando al anfitrión…"
-            : players.Count < Multijugador.MinJugadores && !PruebaSolo.Activa ? "Pasale el código a tus amigos. Se necesitan al menos 2 jugadores."
+            : mode == 2 && players.Count < Multijugador.MaxInvasion ? "Pasale el código a tus amigos (hasta 4). Podés arrancar cuando quieras."
+            : players.Count < Multijugador.MinimoParaIniciar((GameMode)mode) ? "Pasale el código a tus amigos. Se necesitan al menos 2 jugadores."
             : "Todo listo: iniciá la partida cuando quieras.","ui.");
         d.room.gameObject.SetActive(true);
     }
 
     private void SelectDifficulty(ZombieDifficulty difficulty)
     {
+        // US 289, CA3: en una sala (o buscando) la dificultad ya quedó elegida: es la de la sala.
+        if (Multijugador.Existe && (Multijugador.Instancia.Buscando || (Multijugador.EnSala && Multijugador.Instancia.ModoSala == GameMode.Zombie))) return;
         MatchSettings.Difficulty = difficulty;
+        PintarDificultad(difficulty);
+    }
+
+    // Las tarjetas con la dificultad marcada y el récord de esa dificultad (solo y en cooperativo, US 289, CA13).
+    private void PintarDificultad(ZombieDifficulty difficulty)
+    {
         for (int k = 0; k < 3; k++)
         {
             bool on = k == (int)difficulty;
@@ -1031,11 +1056,12 @@ public partial class ModeSelectScreen : MonoBehaviour
             Transform edge = card.Find("Borde");
             if (edge != null) edge.GetComponent<Img>().color = on ? ModeColor[2] : White(0.16f);
         }
-        int best = MatchSettings.ZombieRecord(difficulty);
+        int best = MatchSettings.ZombieRecord(difficulty), coop = MatchSettings.ZombieRecordCoop(difficulty);
         string name = DifficultyName[(int)difficulty];
-        record.text = best > 0
+        record.text = (best > 0
             ? L10n.T("ui.mode.record",L10n.Source(name,"ui."),ModeHex[2],best)
-            : L10n.T("ui.mode.unplayed",L10n.Source(name,"ui."),ModeHex[2]);
+            : L10n.T("ui.mode.unplayed",L10n.Source(name,"ui."),ModeHex[2]))
+            + (coop > 0 ? L10n.T("ui.mode.record_coop",ModeHex[2],coop) : "");
     }
 
     // US 015, CA1: en el Zombie, el personaje se elige después de la dificultad y antes de entrar al mapa. En Invasión

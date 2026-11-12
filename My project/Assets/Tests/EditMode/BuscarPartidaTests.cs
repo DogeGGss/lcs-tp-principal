@@ -43,4 +43,18 @@ public class BuscarPartidaTests
         Assert.AreEqual(Arranque.Iniciar, Multijugador.QueHacer(6, 2, true, 0f, 10f));
         Assert.AreEqual(Arranque.Iniciar, Multijugador.QueHacer(8, 4, true, 0f, 12f));
     }
+
+    [Test, Category("US 289"), Description("F31, CA1 y CA2: en Invasión entran 4; con 4 arranca la cuenta, y si pasan 30 s sin que entre nadie, con los que haya")]
+    public void Invasion_cooperativa()
+    {
+        Assert.AreEqual(4, Multijugador.MaxPara(GameMode.Zombie));
+        Assert.AreEqual(8, Multijugador.MaxPara(GameMode.Deathmatch));
+        Assert.AreEqual(1, Multijugador.MinimoPara(GameMode.Zombie), "arranca aunque haya uno solo");
+        Assert.AreEqual(30, Multijugador.EsperaPara(GameMode.Zombie));
+        Assert.AreEqual(Arranque.EmpezarCuenta, Multijugador.QueHacer(4, 1, false, 0f, 0f, 4, 30f), "llena: sin esperar");
+        Assert.AreEqual(Arranque.Nada, Multijugador.QueHacer(1, 1, false, 29.9f, 0f, 4, 30f));
+        Assert.AreEqual(Arranque.EmpezarCuenta, Multijugador.QueHacer(1, 1, false, 30f, 0f, 4, 30f));
+        Assert.AreEqual(Arranque.EmpezarCuenta, Multijugador.QueHacer(3, 1, false, 30f, 0f, 4, 30f));
+        Assert.AreEqual(Arranque.Iniciar, Multijugador.QueHacer(2, 1, true, 0f, 10f, 4, 30f));
+    }
 }
