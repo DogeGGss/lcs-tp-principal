@@ -44,8 +44,13 @@ using UnityEngine.UI;
 // - CA4: desde la 40, 1.500 de vida más cada vez, y sus nubes de veneno más grandes y sus vuelos más seguidos.
 // Lo de cada vuelta se suma a lo de las anteriores (la escolta y las embestidas dobles siguen después).
 // El marcador (la oleada, cuántos quedan, el descanso y los puntos) es la US 150: MarcadorInvasion.
+// F31 (US 290): en Invasión cooperativa las oleadas las lleva el anfitrión. En las demás computadoras esto queda como
+// espejo (Espejo): no larga invasores (las copias las arma InvasoresEnRed) y la oleada empieza y se supera cuando avisa
+// el anfitrión. Si el anfitrión se va, el nuevo sigue la oleada desde donde estaba (TomarElMando, CA5).
 public class OleadasDeInvasion : MonoBehaviour
 {
+    /// <summary>US 290: las oleadas las lleva otra computadora (el anfitrión): acá solo se repiten.</summary>
+    public static bool Espejo => InvasoresEnRed.EsCopia;
     public const int Ultima = 10;                         // CA6
     private const float Cerca = 15f, Lejos = 50f;         // CA4: m del jugador
 
@@ -130,7 +135,11 @@ public class OleadasDeInvasion : MonoBehaviour
         if (finalUi != null) Destroy(finalUi);
     }
 
-    private void AlTerminarDescanso() => Empezar();
+    private void AlTerminarDescanso()
+    {
+        if (Espejo) return; // US 290: la oleada arranca cuando avisa el anfitrión
+        Empezar();
+    }
 
     // ---------- La oleada ----------
 
@@ -156,6 +165,146 @@ public class OleadasDeInvasion : MonoBehaviour
         proximoPortal = Time.time + 1f;
         MatchHud.ShowBanner(L10n.T("gameplay.ui.invasion_mode"), L10n.T("gameplay.wave.title_fmt", Oleada), ShopUIKit.Bad, DeJefe ? L10n.T("gameplay.wave.boss_coming") : L10n.T("gameplay.wave.enemies_fmt", total), null, 2.5f);
         Empezo?.Invoke(Oleada);
+        InvasoresEnRed.AvisarOleada(InvasoresEnRed.OleadaEmpezo, Oleada, Total, JefesDerrotados); // US 290
+    }
+
+    // ---------- F31 (US 290): las oleadas del anfitrión ----------
+
+    /// <summary>US 290: el anfitrión arrancó la oleada n (con total invasores): acá arranca igual, sin largar a nadie.</summary>
+    public void EmpezoEnElAnfitrion(int n, int totalConJefe, int jefesDerrotados)
+    {
+        if (!Espejo || (fase == Fase.Oleada && Oleada == n)) return;
+        CancelInvoke(nameof(Empezar));
+        esperandoEleccion = false;
+        if (finalUi != null) CerrarFinal();
+        JefesDerrotados = Mathf.Max(JefesDerrotados, jefesDerrotados);
+        Oleada = n;
+        fase = Fase.Oleada;
+        bool conJefe = DeJefe && tipoJefe != null;
+        total = Mathf.Max(0, totalConJefe - (conJefe ? 1 : 0));
+        escolta = escoltaPorSalir = 0;
+        muertos = 0;
+        jefeSalio = jefeVivo = jefeMuerto = false;
+        // El descanso de esta computadora se corta (si todavía estaba comprando, la tienda se cierra).
+        if (descanso != null && descanso.IsActive) descanso.Terminar();
+        MatchHud.ShowBanner(L10n.T("gameplay.ui.invasion_mode"), L10n.T("gameplay.wave.title_fmt", Oleada), ShopUIKit.Bad, DeJefe ? L10n.T("gameplay.wave.boss_coming") : L10n.T("gameplay.wave.enemies_fmt", total), null, 2.5f);
+        Empezo?.Invoke(Oleada);
+    }
+
+    /// <summary>US 290: el anfitrión superó la oleada n.</summary>
+    public void SuperoEnElAnfitrion(int n, int jefesDerrotados)
+    {
+        if (!Espejo || fase != Fase.Oleada || Oleada != n) return;
+        JefesDerrotados = Mathf.Max(JefesDerrotados, jefesDerrotados);
+        if (DeJefe) { jefeVivo = false; jefeMuerto = true; }
+        muertos = total;
+        Superar();
+    }
+
+    /// <summary>US 290: en el anfitrión llegó el Jefe.</summary>
+    public void LlegoElJefeEnElAnfitrion()
+    {
+        if (!Espejo || fase != Fase.Oleada) return;
+        jefeSalio = jefeVivo = true;
+        MatchHud.ShowBanner(L10n.T("gameplay.wave.title_fmt", Oleada), L10n.T("gameplay.wave.boss_arrived"), ShopUIKit.Bad, "", null, 3f);
+        LlegoElJefe?.Invoke();
+    }
+
+    /// <summary>US 290: en el anfitrión cayó un invasor (para que "quedan" baje enseguida).</summary>
+    public void MurioEnElAnfitrion(bool esJefe)
+    {
+        if (!Espejo || fase != Fase.Oleada) return;
+        if (esJefe) { jefeVivo = false; jefeMuerto = true; }
+        else muertos = Mathf.Min(total, muertos + 1);
+    }
+
+    /// <summary>US 290: cómo va la oleada, para las demás computadoras (y para seguirla si el anfitrión se va, CA5).</summary>
+    public object[] EstadoParaLaRed()
+    {
+        var pendientes = new List<string>();
+        foreach (List<TipoDeNpc> grupo in porAparecer) foreach (TipoDeNpc t in grupo) if (t != null) pendientes.Add(t.name);
+        foreach (PortalDeEnemigos p in portales) if (p != null) foreach (TipoDeNpc t in p.Fila) if (t != null) pendientes.Add(t.name);
+        int jefeEnFila = portalDelJefe != null && portalDelJefe.Fila.Count > 0 ? 1 : 0;
+        return new object[]
+        {
+            Oleada, (byte)fase, total, muertos, JefesDerrotados, pendientes.ToArray(),
+            jefeSalio && jefeEnFila == 0, jefeVivo, jefeMuerto, escolta, escoltaPorSalir, salidosParaAlfa, alfasPerdidos
+        };
+    }
+
+    private object[] ultimoEstado;
+
+    /// <summary>US 290: lo que mandó el anfitrión. Acá corrige la cuenta (por si se perdió un aviso).</summary>
+    public void EstadoDelAnfitrion(object[] e)
+    {
+        if (!Espejo || e == null || e.Length < 13) return;
+        ultimoEstado = e;
+        int n = (int)e[0];
+        var suFase = (Fase)(byte)e[1];
+        JefesDerrotados = Mathf.Max(JefesDerrotados, (int)e[4]);
+        if (suFase == Fase.Oleada && (fase != Fase.Oleada || Oleada != n))
+        {
+            bool conJefe = EsDeJefe(n) && tipoJefe != null;
+            EmpezoEnElAnfitrion(n, (int)e[2] + (conJefe ? 1 : 0), (int)e[4]);
+        }
+        if (fase == Fase.Oleada && Oleada == n)
+        {
+            total = (int)e[2];
+            muertos = (int)e[3];
+            jefeSalio = (bool)e[6];
+            jefeVivo = (bool)e[7];
+            jefeMuerto = (bool)e[8];
+        }
+    }
+
+    /// <summary>
+    /// US 290, CA5: el anfitrión se fue y esta computadora pasa a llevar la partida: sigue la oleada desde donde estaba,
+    /// con los invasores que ya estaban (las copias pasan a ser de verdad) y los que faltaban salir.
+    /// </summary>
+    public void TomarElMando(List<Npc> invasores)
+    {
+        object[] e = ultimoEstado;
+        vivos.Clear();
+        tipos.Clear();
+        aparecio.Clear();
+        porAparecer.Clear();
+        CerrarPortales();
+        jefe = null;
+        foreach (Npc n in invasores)
+        {
+            if (n == null || !n.Vivo) continue;
+            if (n.Tipo != null && n.Tipo.esJefe) { jefe = n; continue; }
+            vivos.Add(n);
+            tipos[n] = n.Tipo;
+            aparecio[n] = Time.time;
+        }
+        if (e != null && e.Length >= 13 && (int)e[0] == Oleada)
+        {
+            total = (int)e[2];
+            muertos = (int)e[3];
+            foreach (string nombre in (string[])e[5])
+            {
+                TipoDeNpc t = TipoDeNpc.Buscar(nombre);
+                if (t != null) porAparecer.Enqueue(new List<TipoDeNpc> { t });
+            }
+            jefeSalio = (bool)e[6];
+            jefeMuerto = (bool)e[8];
+            escolta = (int)e[9];
+            escoltaPorSalir = (int)e[10];
+            salidosParaAlfa = (int)e[11];
+            alfasPerdidos = (int)e[12];
+        }
+        // Lo que no se sabe (se perdió el último estado): los que están, más los que se sabe que murieron.
+        muertos = Mathf.Max(0, Mathf.Min(muertos, total - vivos.Count - porAparecer.Count));
+        jefeVivo = jefe != null;
+        if (jefeVivo) { jefeSalio = true; aparecio[jefe] = Time.time; }
+        else if (!jefeMuerto) jefeSalio = false; // si estaba por salir, vuelve a salir
+        proximoPortal = Time.time + 1f;
+        // En el descanso: sigue el de esta computadora (al terminar arranca la oleada siguiente, ahora desde acá).
+        if (fase == Fase.Descanso && !esperandoEleccion && finalUi == null && (descanso == null || !descanso.IsActive))
+        {
+            if (descanso != null) descanso.Begin(); else Invoke(nameof(Empezar), 20f);
+        }
     }
 
     // US 300, CA1 y CA2: los invasores de la oleada según su mezcla, mezclados, con los Rápidos en jaurías (cada jauría es
@@ -241,7 +390,7 @@ public class OleadasDeInvasion : MonoBehaviour
             if (yo != null) { navMeshPedido = true; NavMeshEnVivo.Preparar(yo.position); }
         }
 
-        if (fase != Fase.Oleada) return;
+        if (fase != Fase.Oleada || Espejo) return; // US 290: en espejo no larga a nadie: las copias llegan por la red
 
         jugadorAhora = Jugador();
         // Los que cayeron cuentan como muertos. Los que desaparecieron sin morir (se borraron, se cayeron del mapa o
@@ -317,6 +466,7 @@ public class OleadasDeInvasion : MonoBehaviour
             portalDelJefe.Fila.Enqueue(tipoJefe); // (si el jefe se perdió, vuelve a salir por el mismo portal)
             MatchHud.ShowBanner(L10n.T("gameplay.wave.title_fmt", Oleada), L10n.T("gameplay.wave.boss_arrived"), ShopUIKit.Bad, escoltaPorSalir > 0 ? L10n.T("gameplay.wave.with_escort") : "", null, 3f);
             LlegoElJefe?.Invoke();
+            InvasoresEnRed.AvisarOleada(InvasoresEnRed.OleadaLlegoElJefe, Oleada, Total, JefesDerrotados); // US 290
         }
         if (portalDelJefe != null && !portalDelJefe.Cerrando && portalDelJefe.Listo && portalDelJefe.Fila.Count > 0
             && Time.time >= portalDelJefe.Proximo)
@@ -430,6 +580,7 @@ public class OleadasDeInvasion : MonoBehaviour
     private void Superar()
     {
         CerrarPortales();
+        InvasoresEnRed.AvisarOleada(InvasoresEnRed.OleadaSupero, Oleada, Total, JefesDerrotados); // US 290
         Supero?.Invoke(Oleada);
         if (DeJefe)
         {
@@ -465,7 +616,7 @@ public class OleadasDeInvasion : MonoBehaviour
     /// oleada n.</summary>
     public void IrA(int n)
     {
-        if (fase == Fase.Final) return;
+        if (fase == Fase.Final || Espejo) return; // (en cooperativo, solo el anfitrión)
         foreach (Npc v in vivos) if (v != null) Destroy(v.gameObject);
         if (jefe != null) Destroy(jefe.gameObject);
         CerrarPortales();
@@ -656,12 +807,15 @@ public class OleadasDeInvasion : MonoBehaviour
         return float.IsPositiveInfinity(suelo) ? p.y : suelo;
     }
 
+    private static readonly List<HealthSystem> jugadores = new List<HealthSystem>();
+
+    // El jugador de esta computadora; en cooperativo, si está muerto, un compañero vivo (US 290: la oleada sigue).
     private static Transform Jugador()
     {
-        PlayerMovement p = FindFirstObjectByType<PlayerMovement>();
-        if (p == null) return null;
-        HealthSystem vida = p.GetComponent<HealthSystem>();
-        return vida != null && vida.currentHealth <= 0 ? null : p.transform;
+        PersecucionDeNpc.Jugadores(jugadores);
+        foreach (HealthSystem vida in jugadores)
+            if (vida != null && vida.currentHealth > 0) return vida.transform;
+        return null;
     }
 
     // ---------- US 303, CA4: Jefe derrotado: seguir o retirarse ----------

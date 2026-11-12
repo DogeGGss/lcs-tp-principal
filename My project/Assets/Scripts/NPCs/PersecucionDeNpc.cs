@@ -20,6 +20,7 @@ using UnityEngine.AI;
 // - CA2: si lo ve (sin paredes en el medio) a menos de 10 m, grita una vez y va 20 % más rápido mientras lo vea.
 // - CA3: si el jugador está donde no se llega caminando, va al punto alcanzable más cercano y espera ahí.
 // - CA4: con el jugador muerto deja de perseguirlo y se queda quieto.
+// F31 (US 290, CA3): en Invasión cooperativa va hacia el jugador vivo más cercano, sea quien sea (Jugadores).
 // Lo agrega Npc.Crear.
 [RequireComponent(typeof(Npc))]
 public class PersecucionDeNpc : MonoBehaviour
@@ -284,6 +285,27 @@ public class PersecucionDeNpc : MonoBehaviour
     private static readonly List<HealthSystem> jugadores = new List<HealthSystem>();
     private static float jugadoresEn = -10f;
 
+    /// <summary>
+    /// Los jugadores a los que van los invasores: el de esta computadora y, en Invasión cooperativa, las copias de los
+    /// compañeros (F31, US 290, CA3: el anfitrión los lleva a todos; el daño a una copia le llega a su dueño).
+    /// </summary>
+    public static void Jugadores(List<HealthSystem> lista)
+    {
+        lista.Clear();
+        foreach (PlayerMovement p in FindObjectsByType<PlayerMovement>(FindObjectsSortMode.None))
+        {
+            HealthSystem v = p.GetComponent<HealthSystem>();
+            if (v != null && !lista.Contains(v)) lista.Add(v);
+        }
+        if (!CooperativoDeInvasion.Activo) return;
+        foreach (JugadorEnRed j in FindObjectsByType<JugadorEnRed>(FindObjectsSortMode.None))
+        {
+            if (j == null || j.photonView == null || j.photonView.IsMine || !j.Vivo) continue;
+            HealthSystem v = j.GetComponent<HealthSystem>();
+            if (v != null && !lista.Contains(v)) lista.Add(v);
+        }
+    }
+
     /// <summary>El jugador vivo más cercano a ese punto (US 036, CA1), o null si no hay ninguno vivo (CA4).</summary>
     public static Transform JugadorMasCercano(Vector3 desde)
     {
@@ -291,18 +313,13 @@ public class PersecucionDeNpc : MonoBehaviour
         if (Time.time - jugadoresEn > 1f || Time.time < jugadoresEn || jugadores.Count == 0 || jugadores.Exists(j => j == null))
         {
             jugadoresEn = Time.time;
-            jugadores.Clear();
-            foreach (PlayerMovement p in FindObjectsByType<PlayerMovement>(FindObjectsSortMode.None))
-            {
-                HealthSystem v = p.GetComponent<HealthSystem>();
-                if (v != null) jugadores.Add(v);
-            }
+            Jugadores(jugadores);
         }
         Transform mejor = null;
         float mejorDistancia = float.MaxValue;
         foreach (HealthSystem v in jugadores)
         {
-            if (v == null || v.currentHealth <= 0) continue;
+            if (v == null || v.currentHealth <= 0 || !v.isActiveAndEnabled) continue;
             float d = (v.transform.position - desde).sqrMagnitude;
             if (d < mejorDistancia) { mejorDistancia = d; mejor = v.transform; }
         }

@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Photon.Pun;
 using UnityEngine;
 
 // F11 (NPCs), US 145: un NPC enemigo armado según su tipo (TipoDeNpc). Npc.Crear lo arma en un lugar:
@@ -14,8 +15,23 @@ using UnityEngine;
 // Para el modo Zombie (F08) avisa cada impacto de bala (ImpactoDeBala, puntos de la US 147) y cada baja (Murio,
 // puntos y oleadas, US 144 y 147). Todos los NPCs de la escena están en Todos.: leen de acá el tipo (Tipo) y las animaciones.
 // US 301: puede salir alfa (VarianteAlfa): más grande, con más vida y más daño, violeta y con aura.
+// F31 (US 290): en Invasión cooperativa los invasores los lleva el anfitrión (InvasoresEnRed); en las demás
+// computadoras cada uno es una copia (EsEspejo, CrearCopia) que repite lo que le llega y le manda el daño al anfitrión.
 public class Npc : MonoBehaviour
 {
+    /// <summary>US 290: su número en la partida en red (0: todavía no se avisó, o jugando solo).</summary>
+    public int IdRed { get; set; }
+    /// <summary>US 290: es la copia de un invasor que lleva el anfitrión (no decide nada: repite lo que le llega).</summary>
+    public bool EsEspejo { get; private set; }
+    /// <summary>US 290, CA2: el jugador (su número en la sala) que le hizo el último daño, mientras se aplica; 0: el de
+    /// esta computadora. Al morir queda el que lo mató (los puntos son suyos).</summary>
+    public int Matador { get; set; }
+    /// <summary>US 290, CA2: lo mató otro jugador (la baja y sus puntos son de él).</summary>
+    public bool LoMatoOtro => Matador != 0 && PhotonNetwork.InRoom && PhotonNetwork.LocalPlayer != null
+                              && Matador != PhotonNetwork.LocalPlayer.ActorNumber;
+    /// <summary>US 290: mientras un invasor golpea a un jugador (el daño a la copia de un compañero va sin atacante).</summary>
+    public static bool Pegando { get; set; }
+
     /// <summary>El tipo de este NPC (vida, daño, velocidad, puntos).</summary>
     public TipoDeNpc Tipo { get; private set; }
     /// <summary>US 301: la variante alfa, o null si es uno común de su tipo.</summary>
@@ -108,6 +124,7 @@ public class Npc : MonoBehaviour
     public void Aturdir(float segundos)
     {
         if (!Vivo) return;
+        if (EsEspejo) InvasoresEnRed.PedirAturdir(this, segundos); // US 290: lo decide el anfitrión (acá se ve ya)
         aturdidoHasta = Mathf.Max(aturdidoHasta, Time.time + segundos);
         if (Animaciones != null && Tipo != null)
         {
@@ -148,6 +165,52 @@ public class Npc : MonoBehaviour
             if (tipo.aDistancia != AtaqueADistancia.Ninguno) go.AddComponent<DistanciaDeNpc>(); // US 285 y US 286
         }
         return npc;
+    }
+
+    /// <summary>
+    /// US 290: la copia de un invasor que lleva el anfitrión. No persigue ni ataca (eso llega por la red), pero tiene lo
+    /// que muestra sus ataques (la línea de la embestida, el vuelo, la mira del rayo). El daño que recibe se le manda al
+    /// anfitrión.
+    /// </summary>
+    public static Npc CrearCopia(TipoDeNpc tipo, Vector3 lugar, Quaternion giro, VarianteAlfa alfa)
+    {
+        Npc npc = Crear(tipo, lugar, giro, false, alfa);
+        if (npc == null) return null;
+        npc.EsEspejo = true;
+        // (Sin persecución no hacen nada solos: la usan las copias para mostrar lo que hace el del anfitrión.)
+        if (tipo.embiste) npc.gameObject.AddComponent<EmbestidaDeNpc>();
+        if (tipo.vuela) npc.gameObject.AddComponent<VueloDeNpc>();
+        if (tipo.aDistancia != AtaqueADistancia.Ninguno) npc.gameObject.AddComponent<DistanciaDeNpc>();
+        if (npc.Vida != null)
+            npc.Vida.DamageRedirect = (danio, cabeza) =>
+            {
+                Vector3? desde = HealthSystem.DamageOrigin;
+                InvasoresEnRed.MandarDanio(npc, danio, cabeza, desde);
+                npc.Vida.AvisarGolpe(danio, desde); // quien le pegó ve enseguida la reacción y la sangre
+            };
+        return npc;
+    }
+
+    /// <summary>US 290, CA5: el anfitrión se fue y ahora los lleva esta computadora: la copia pasa a ser un invasor
+    /// de verdad (persigue, ataca y decide su vida).</summary>
+    public void Activar()
+    {
+        if (!EsEspejo) return;
+        EsEspejo = false;
+        if (Vida != null) Vida.DamageRedirect = null;
+        if (!Vivo) return;
+        if (GetComponent<PersecucionDeNpc>() == null) gameObject.AddComponent<PersecucionDeNpc>();
+        if (GetComponent<AtaqueDeNpc>() == null) gameObject.AddComponent<AtaqueDeNpc>();
+    }
+
+    /// <summary>US 290: lo mata la red (el anfitrión avisó la baja): muere como siempre, con quién lo mató.</summary>
+    public void MorirPorRed(int matador, bool cabeza)
+    {
+        if (!Vivo || Vida == null) return;
+        Matador = matador;
+        Vida.DamageRedirect = null;
+        Vida.Invulnerable = false;
+        Vida.TakeDamage(Vida.currentHealth + Vida.currentShield + 1, cabeza);
     }
 
     private void Armar(TipoDeNpc tipo)

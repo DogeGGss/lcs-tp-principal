@@ -16,6 +16,8 @@ using UnityEngine.Rendering;
 // - Mientras disparan vuelan alrededor del jugador (de costado, cambiando de sentido de a ratos o si algo los frena),
 //   acomodándose a mitad de su distancia, y de a ratos toman más altura (hasta 2,5 m más) y vuelven a bajar.
 // - Flotan a alturaDeVuelo con un leve vaivén; al morir caen al piso. Aturdidos (la flash, US 038) no disparan.
+// F31 (US 290, CA4): en Invasión cooperativa la mira, el rayo y las bolas salen en todas las computadoras
+// (InvasoresEnRed) y cada una le hace el daño al jugador de su computadora.
 // Los valores salen de TipoDeNpc (sección "A distancia"). Lo agrega Npc.Crear (después de la persecución: la usa).
 [RequireComponent(typeof(Npc))]
 public class DistanciaDeNpc : MonoBehaviour
@@ -76,6 +78,7 @@ public class DistanciaDeNpc : MonoBehaviour
 
     private void Update()
     {
+        if (npc != null && npc.EsEspejo) { MiraRemota(); return; } // F31 (US 290): la copia solo muestra la mira
         if (persecucion == null) persecucion = GetComponent<PersecucionDeNpc>();
         if (npc == null || npc.Tipo == null || persecucion == null) return;
 
@@ -233,6 +236,7 @@ public class DistanciaDeNpc : MonoBehaviour
         bolasTiradas = 0;
         apuntaA = Pecho(jugador);
         SonidoDeNpc.Uno(npc.Tipo.sonidoDeCarga, transform, 35f);
+        if (npc.Tipo.aDistancia == AtaqueADistancia.RayoDelOjo) InvasoresEnRed.AvisarCargaDelRayo(npc, jugador); // US 290, CA4
         Animar(npc.Tipo.quietoEnCombate != null ? npc.Tipo.quietoEnCombate : npc.Tipo.quieto);
     }
 
@@ -260,7 +264,9 @@ public class DistanciaDeNpc : MonoBehaviour
     {
         if (Time.time < proximaBola) return;
         Vector3 desde = BocaPos() + transform.forward * 0.3f;
-        BolaDeEnergia.Lanzar(desde, Pecho(jugador), npc.Tipo, transform);
+        Vector3 pecho = Pecho(jugador);
+        BolaDeEnergia.Lanzar(desde, pecho, npc.Tipo, transform);
+        InvasoresEnRed.AvisarBolaDeEnergia(npc, desde, pecho); // F31 (US 290, CA4): sale en todas las computadoras
         SonidoDeNpc.Uno(npc.Tipo.sonidoDeDisparo, transform, 40f);
         Golpe();
         bolasTiradas++;
@@ -285,6 +291,7 @@ public class DistanciaDeNpc : MonoBehaviour
         }
         BorrarMira();
         Rayo.Mostrar(desde, fin, npc.Tipo.colorADistancia);
+        InvasoresEnRed.AvisarRayo(npc, desde, fin); // F31 (US 290, CA4): en cada computadora le pega a su jugador
         SonidoDeNpc.Uno(npc.Tipo.sonidoDeDisparo, transform, 50f);
         SonidoDeNpc.En(npc.Tipo.sonidoDeImpactoADistancia, fin, 30f);
         Golpe();
@@ -392,6 +399,50 @@ public class DistanciaDeNpc : MonoBehaviour
             return false;
         }
         return true;
+    }
+
+    // ---------- La copia en otra computadora (F31, US 290, CA4) ----------
+
+    private Transform objetivoRemoto;
+    private float cargaRemotaDesde = -10f;
+
+    /// <summary>El del anfitrión empezó a cargar el rayo contra ese jugador: la copia muestra la mira.</summary>
+    public void CargaRemota(Transform jugador)
+    {
+        objetivoRemoto = jugador;
+        cargaRemotaDesde = Time.time;
+        if (jugador != null) apuntaA = Pecho(jugador);
+    }
+
+    /// <summary>El del anfitrión disparó el rayo: se ve en esta computadora y, si toca al jugador de acá, le hace su daño.</summary>
+    public void RayoRemoto(Vector3 desde, Vector3 fin)
+    {
+        cargaRemotaDesde = -10f;
+        BorrarMira();
+        if (npc == null || npc.Tipo == null) return;
+        foreach (PlayerMovement jugador in Tocados(desde, fin))
+        {
+            HealthSystem vida = jugador.GetComponent<HealthSystem>();
+            if (vida == null || vida.currentHealth <= 0) continue;
+            HealthSystem.DamageOrigin = desde;
+            HealthSystem.DamageSource = npc.Tipo.nombre;
+            vida.TakeDamage(npc.Danio(npc.Tipo.danioADistancia));
+            HealthSystem.DamageSource = null;
+        }
+        Rayo.Mostrar(desde, fin, npc.Tipo.colorADistancia);
+        SonidoDeNpc.En(npc.Tipo.sonidoDeImpactoADistancia, fin, 30f);
+    }
+
+    // Como la del anfitrión: sigue al jugador y el último cuarto de segundo se queda quieta.
+    private void MiraRemota()
+    {
+        float t = Time.time - cargaRemotaDesde;
+        if (!npc.Vivo || t > CargaRayo + 0.5f) { if (mira != null && mira.enabled) BorrarMira(); return; }
+        if (objetivoRemoto != null && t < CargaRayo - MiraQuieta) apuntaA = Pecho(objetivoRemoto);
+        Vector3 desde = OjoPos();
+        float latido = 0.5f + 0.5f * Mathf.Sin(t * 30f);
+        float k = Mathf.Clamp01(t / CargaRayo);
+        DibujarMira(desde, HastaDondeLlega(desde, apuntaA), Mathf.Lerp(0.03f, 0.09f, k), Color.white * Mathf.Lerp(0.25f, 0.6f + 0.4f * latido, k));
     }
 
     // ---------- La mira (US 285) ----------

@@ -316,7 +316,7 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
     private void RpcDanio(int danio, int atacante, bool cabeza, string arma, byte codigo, Vector3 origen)
     {
         if (!photonView.IsMine || muerto || vida == null) return;
-        if (EquiposTacticos.SonAliados(atacante, Actor)) return; // US 031, CA6: por las dudas, también acá
+        if (atacante != 0 && EquiposTacticos.SonAliados(atacante, Actor)) return; // US 031, CA6: por las dudas, también acá (0: un invasor, US 290)
         if (atacante > 0 && atacante != Actor) danos[atacante] = Time.unscaledTime;
         ultimoAtacante = atacante;
         ultimaArma = arma ?? "";
@@ -1003,7 +1003,9 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
                     JugadorEnRed yo = this.partida != null ? this.partida.Local : null;
                     Vector3 origen = HealthSystem.DamageOrigin ?? (yo != null ? yo.transform.position : transform.position);
                     // El arma en la mano de quien hizo el daño, ahora: el daño se calcula en el mismo cuadro del tiro.
-                    photonView.RPC(nameof(RpcDanio), photonView.Owner, danio, PhotonNetwork.LocalPlayer.ActorNumber, cabeza,
+                    // F31 (US 290): el golpe de un invasor (que lleva el anfitrión) va sin atacante: no es fuego amigo.
+                    int atacante = Npc.Pegando ? 0 : PhotonNetwork.LocalPlayer.ActorNumber;
+                    photonView.RPC(nameof(RpcDanio), photonView.Owner, danio, atacante, cabeza,
                         HealthSystem.DamageSource ?? "", yo != null ? yo.ArmaActual : ArmaDesconocida, origen);
                 }
             };

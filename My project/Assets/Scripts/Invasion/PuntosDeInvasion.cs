@@ -39,6 +39,7 @@ public class PuntosDeInvasion : MonoBehaviour
 
     private void AlMorir(Npc npc, int puntos, bool cabeza)
     {
+        if (npc != null && npc.LoMatoOtro) return; // F31 (US 290, CA2): en cooperativo, la baja y sus puntos son del que lo mató
         Bajas++;
         if (cabeza) BajasALaCabeza++;
         Sumar(puntos, cabeza);
