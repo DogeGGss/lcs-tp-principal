@@ -108,7 +108,7 @@ public class PartidaEnRed : MonoBehaviour
         gameObject.AddComponent<Reconexion>();                       // US 195: anota la partida para poder volver
         gameObject.AddComponent<MarcasDeCompaneros>().Iniciar(this); // US 193: solo se ven cuando hay equipos
         gameObject.AddComponent<RivalesVistos>().Iniciar(this);      // US 194, CA4: rivales vistos, para el minimapa
-        if (MatchSettings.Mode == GameMode.Zombie) CooperativoDeInvasion.AnunciarPersonaje(); // F31: su aspecto, para los demás
+        if (MatchSettings.Mode == GameMode.Zombie) gameObject.AddComponent<PersonajesInvasion>(); // F31: se elige el aspecto al entrar
         if (MatchSettings.Mode == GameMode.Tactico)
         {
             gameObject.AddComponent<MarcadorTactico>().Iniciar(this); // US 134

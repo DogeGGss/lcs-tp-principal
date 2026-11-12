@@ -200,8 +200,6 @@ public partial class ModeSelectScreen
     // US 274: busca partida del modo del andén.
     private void Buscar(int mode)
     {
-        if (mode == 2 && !personajeListo) { ConPersonaje(() => Buscar(mode)); return; } // F31: primero el personaje
-        personajeListo = false;
         Detail d = details[mode];
         L10n.BindSource(d.status, "","ui.");
         MatchSettings.Mode = (GameMode)mode;

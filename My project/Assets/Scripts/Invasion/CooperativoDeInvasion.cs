@@ -5,7 +5,7 @@ using Photon.Realtime;
 // F31 (Invasión cooperativa), US 289: lo que cambia cuando Invasión se juega de a varios, según cuántos jugadores hay.
 // - CA4: cada jugador de más suma un 50 % de invasores a cada oleada y 5 al tope de invasores a la vez (US 299), y el
 //   Jefe tiene un 50 % más de vida por cada uno (con 4 jugadores, 2,5 veces).
-// - El personaje (solo el aspecto, US 297) es el que eligió cada uno en el menú antes de entrar; viaja como propiedad del
+// - El personaje (solo el aspecto, US 297) se elige al entrar a la partida (PersonajesInvasion); viaja como propiedad del
 //   jugador en la sala ("inv.pj"), así los demás lo ven con su cuerpo (JugadorEnRed.PersonajeDe).
 // Jugando solo (sin sala) todo queda como siempre. Cuenta a los que están en la partida: el que se desconectó (y todavía
 // puede volver, US 195) no suma.
@@ -43,7 +43,7 @@ public static class CooperativoDeInvasion
 
     private const string PropPersonaje = "inv.pj";
 
-    /// <summary>Publica el personaje elegido en el menú (lo llama PartidaEnRed al armar la partida).</summary>
+    /// <summary>Publica el personaje elegido (lo llama PersonajesInvasion al empezar y al elegir).</summary>
     public static void AnunciarPersonaje()
     {
         CharacterData p = CharacterRoster.Selected;

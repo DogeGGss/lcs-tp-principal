@@ -909,8 +909,6 @@ public partial class ModeSelectScreen : MonoBehaviour
     // US 027: crea la sala en Photon; la sala aparece cuando Photon confirma (OnNetworkChanged).
     private void CreateRoom(int mode)
     {
-        if (mode == 2 && !personajeListo) { ConPersonaje(() => CreateRoom(mode)); return; }
-        personajeListo = false;
         Detail d = details[mode];
         MatchSettings.Mode = (GameMode)mode;
         onCreateRoom.Invoke((GameMode)mode);
@@ -939,8 +937,6 @@ public partial class ModeSelectScreen : MonoBehaviour
         Detail d = details[mode];
         string code = d.code.text.ToUpperInvariant();
         if (code.Length != 5) { L10n.BindSource(d.status, "No existe una sala con ese código.","ui."); d.code.ActivateInputField(); return; }
-        if (mode == 2 && !personajeListo) { ConPersonaje(() => Join(mode)); return; }
-        personajeListo = false;
         MatchSettings.Mode = (GameMode)mode;
         onJoinRoom.Invoke((GameMode)mode, code);
         L10n.BindSource(d.status, "Entrando a la sala…","ui.");
@@ -1066,18 +1062,6 @@ public partial class ModeSelectScreen : MonoBehaviour
             ? L10n.T("ui.mode.record",L10n.Source(name,"ui."),ModeHex[2],best)
             : L10n.T("ui.mode.unplayed",L10n.Source(name,"ui."),ModeHex[2]))
             + (coop > 0 ? L10n.T("ui.mode.record_coop",ModeHex[2],coop) : "");
-    }
-
-    // F31: antes de buscar, crear o entrar a una sala de Invasión se elige el personaje (solo el aspecto, US 297), como al
-    // jugar solo. Al confirmar sigue con lo que se había pedido.
-    private bool personajeListo;
-
-    private void ConPersonaje(System.Action seguir)
-    {
-        if (CharacterSelectScreen.IsOpen) return;
-        CharacterSelectScreen.Show(displayFont, labelFont, bodyFont, rounded,
-            L10n.T("gameplay.ui.invasion_mode") + " · " + L10n.Source(DifficultyName[(int)MatchSettings.Difficulty], "ui."), 0f,
-            () => { personajeListo = true; seguir(); }, () => { }, true, "character.no_invasion_abilities");
     }
 
     // US 015, CA1: en el Zombie, el personaje se elige después de la dificultad y antes de entrar al mapa. En Invasión
