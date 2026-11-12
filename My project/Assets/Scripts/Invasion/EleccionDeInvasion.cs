@@ -27,8 +27,13 @@ using static ShopUIKit;
 // US 332, Entrega inmediata: con la carta, la elección se abre apenas el puesto llega al 100 % peleando, sin esperar
 // al final de la oleada (no en las oleadas del Jefe, que tienen la suya). Jugando solo el juego se pausa mientras se
 // elige. La munición del puesto se sigue dando al terminar la oleada, cuando el puesto se abre (ya sin elección).
-// De a varios, si se pausa o no todavía no está decidido (el multijugador entra en otro sprint).
-// De a varios (US 289) cada uno va a elegir lo suyo, con un tope de 30 s; por ahora se juega solo y no hay tope.
+// F31 (US 356), en Invasión cooperativa:
+// - CA2: cada uno elige lo suyo y la partida no se pausa (tampoco con Entrega inmediata). El descanso arranca cuando
+//   eligieron todos (OleadasDeInvasion.EsperarATodos).
+// - CA3: arriba se ve un punto por cada jugador que elige, con su nombre; se pinta de verde cuando eligió.
+// - CA4: cada uno tiene 30 s, con la cuenta a la vista; si se terminan, se elige al azar una de sus opciones (nunca
+//   "Descartar una carta" ni "Seguir sin elegir").
+// - CA5: se ve "La partida sigue".
 // US 360 (límite de 8 cartas, F29):
 // - CA1: 8 lugares; cada carta distinta ocupa uno (también las legendarias). Repetirla (mejorarla) y las armas no ocupan.
 // - CA2: abajo se ven los lugares ocupados ("6 / 8") y las cartas que se tienen, con cuántas veces.
@@ -92,7 +97,8 @@ public class EleccionDeInvasion : MonoBehaviour
     private RectTransform cabeza;
     private readonly List<(CanvasGroup grupo, RectTransform rect, float x)> cartas = new List<(CanvasGroup, RectTransform, float)>();
     private RectTransform lienzo, fila;
-    private TextMeshProUGUI tirarTexto, puntosTexto, tusCartas, vacia;
+    private TextMeshProUGUI tirarTexto, puntosTexto, tusCartas, vacia, enRed;
+    public const float TiempoParaElegir = 30f; // US 356, CA4
     private RectTransform descartarBoton, seguirBoton;
     private UnityEngine.UI.Image tirarFondo;
     private TMP_FontAsset display, label;
@@ -142,7 +148,7 @@ public class EleccionDeInvasion : MonoBehaviour
         Abrir(false);
         if (!Abierta) { inmediata = false; return; }
         escalaDeTiempo = Time.timeScale > 0f ? Time.timeScale : 1f;
-        Time.timeScale = 0f; // jugando solo, el juego se pausa mientras se elige
+        if (!CooperativoDeInvasion.Activo) Time.timeScale = 0f; // jugando solo, el juego se pausa mientras se elige (US 356: de a varios, no)
     }
 
     // US 303, CA2 y CA4: al superar una oleada del Jefe primero sale "Jefe derrotado"; la elección del Jefe espera a
@@ -454,6 +460,7 @@ public class EleccionDeInvasion : MonoBehaviour
         }
         Animar();
         if (!Lista) return;
+        if (CooperativoDeInvasion.Activo && EnRed()) return; // US 356, CA4: se terminó el tiempo y se eligió al azar
         if (MisCartasInvasion.Abierta) { } // US 361: descartando, las teclas son de esa pantalla
         else if (Input.GetKeyDown(KeyCode.Alpha1) || Input.GetKeyDown(KeyCode.Keypad1)) Elegir(0);
         else if (Input.GetKeyDown(KeyCode.Alpha2) || Input.GetKeyDown(KeyCode.Keypad2)) Elegir(1);
@@ -462,6 +469,40 @@ public class EleccionDeInvasion : MonoBehaviour
         if (Abierta && Cursor.lockState != CursorLockMode.None) { Cursor.lockState = CursorLockMode.None; Cursor.visible = true; }
         if (Abierta) ActualizarTirar();
         if (Abierta && lienzo != null) lienzo.gameObject.SetActive(!MisCartasInvasion.Abierta); // la de las cartas va encima
+    }
+
+    // ---------- F31 (US 356): de a varios ----------
+
+    // CA3 a CA5: los puntos de los que eligen, la cuenta y "La partida sigue". Devuelve true si se terminó el tiempo (y
+    // se eligió al azar).
+    private bool EnRed()
+    {
+        float queda = TiempoParaElegir - (Time.unscaledTime - mostradaEn);
+        if (queda <= 0f)
+        {
+            MisCartasInvasion.CerrarSiEstaAbierta();
+            var posibles = new List<int>();
+            for (int i = 0; i < opciones.Count; i++) if (!opciones[i].sinLugar) posibles.Add(i);
+            if (posibles.Count > 0) Elegir(posibles[Random.Range(0, posibles.Count)]);
+            else Terminar(); // sin nada para elegir: sigue sin elegir
+            return true;
+        }
+        if (enRed == null) return false;
+        var sb = new System.Text.StringBuilder();
+        if (!inmediata && oleadas != null)
+        {
+            foreach (Photon.Realtime.Player p in InvasoresEnRed.QuienesEligen())
+            {
+                bool listo = InvasoresEnRed.Listo(oleadas.Oleada, p.ActorNumber);
+                sb.Append("<color=#").Append(ColorUtility.ToHtmlStringRGB(listo ? MarcadorInvasion.Verde : Mute)).Append(">●</color> ")
+                  .Append(string.IsNullOrEmpty(p.NickName) ? "?" : p.NickName).Append("     ");
+            }
+        }
+        sb.Append("<color=#").Append(ColorUtility.ToHtmlStringRGB(queda <= 10f ? Bad : Ink)).Append('>')
+          .Append(Mathf.CeilToInt(queda)).Append(" s</color>     ")
+          .Append(L10n.T("gameplay.card.match_continues"));
+        enRed.text = sb.ToString();
+        return false;
     }
 
     // ---------- Pantalla ----------
@@ -537,6 +578,16 @@ public class EleccionDeInvasion : MonoBehaviour
         va.sizeDelta = new Vector2(1000f, 120f);
         vacia.textWrappingMode = TextWrappingModes.Normal;
         vacia.text = L10n.T("gameplay.card.no_options");
+
+        // US 356, CA3 a CA5: quién eligió, la cuenta y "La partida sigue" (solo en cooperativo).
+        if (CooperativoDeInvasion.Activo)
+        {
+            enRed = Text(Node("EnRed", lienzo), label, 19f, Soft, TextAlignmentOptions.Center, 4f);
+            RectTransform er = enRed.rectTransform;
+            er.anchorMin = er.anchorMax = er.pivot = new Vector2(0.5f, 1f);
+            er.anchoredPosition = new Vector2(0f, -232f);
+            er.sizeDelta = new Vector2(1500f, 30f);
+        }
 
         lienzo.gameObject.SetActive(false);
     }

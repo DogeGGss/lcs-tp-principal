@@ -63,6 +63,12 @@ public class MisCartasInvasion : MonoBehaviour
         actual.Mostrar(true);
     }
 
+    /// <summary>US 356, CA4: se terminó el tiempo de la elección: si estaba descartando, se cierra sin descartar.</summary>
+    public static void CerrarSiEstaAbierta()
+    {
+        if (Abierta && actual != null) actual.CerrarDescarte();
+    }
+
     private void CerrarDescarte()
     {
         Abierta = false;
