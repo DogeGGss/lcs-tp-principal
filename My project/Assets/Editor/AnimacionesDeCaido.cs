@@ -18,6 +18,8 @@ public class AnimacionesDeCaido : AssetPostprocessor
 {
     public const string Carpeta = "Assets/Personajes/Caido/";
     private const string Controlador = "Assets/Player/Basic Shooter Pack/AnimatorControllerAlienSoldier.controller";
+    // De caer a arrastrarse: empieza a mezclar antes del final de la de caer, durante medio segundo.
+    private const float SaleDeCaer = 0.8f, MezclaCaerArrastrarse = 0.5f;
 
     private void OnPreprocessModel()
     {
@@ -33,20 +35,28 @@ public class AnimacionesDeCaido : AssetPostprocessor
         }
     }
 
+    // Subirlo hace que Unity vuelva a importar las animaciones con lo de abajo (versión 2: sin el avance en la pose).
+    public override uint GetVersion() => 2;
+
     private void OnPreprocessAnimation()
     {
         if (!assetPath.StartsWith(Carpeta)) return;
         var importador = (ModelImporter)assetImporter;
-        if (importador.clipAnimations != null && importador.clipAnimations.Length > 0) return; // ya tiene sus clips
         string nombre = Path.GetFileNameWithoutExtension(assetPath);
-        ModelImporterClipAnimation[] clips = importador.defaultClipAnimations;
+        bool tenia = importador.clipAnimations != null && importador.clipAnimations.Length > 0; // (respeta Start y End)
+        ModelImporterClipAnimation[] clips = tenia ? importador.clipAnimations : importador.defaultClipAnimations;
         foreach (ModelImporterClipAnimation clip in clips)
         {
             clip.name = nombre;
             clip.loopTime = clip.loopPose = nombre == CaidoEnTerceraPersona.Arrastrarse;
-            // En su lugar: el giro, la altura y el paso de la cadera quedan en la pose (no mueven al personaje).
-            clip.lockRootRotation = clip.lockRootHeightY = clip.lockRootPositionXZ = true;
-            clip.keepOriginalOrientation = clip.keepOriginalPositionY = clip.keepOriginalPositionXZ = true;
+            // El giro y la altura de la cadera quedan en la pose. El avance (adelante y a los costados) no: sale como
+            // movimiento del personaje, que no se aplica, así el cuerpo cae, se arrastra y se levanta siempre en el mismo
+            // lugar. Con el avance en la pose, la de caer terminaba un metro más adelante de donde empieza la de
+            // arrastrarse (y lo mismo con la de levantarse): se veía un salto.
+            clip.lockRootRotation = clip.lockRootHeightY = true;
+            clip.lockRootPositionXZ = false;
+            clip.keepOriginalOrientation = clip.keepOriginalPositionY = true;
+            clip.keepOriginalPositionXZ = false; // (el centro de masa, no el pie)
         }
         importador.clipAnimations = clips;
     }
@@ -137,14 +147,16 @@ public class AnimacionesDeCaido : AssetPostprocessor
             eArrastrarse.speedParameter = CaidoEnTerceraPersona.Parametro;
             cambio = true;
         }
-        // Al terminar de caer, sigue en el piso con la de arrastrarse.
-        if (eCaer.transitions.All(t => t.destinationState != eArrastrarse))
+        // Al terminar de caer, sigue en el piso con la de arrastrarse (con una mezcla larga: no terminan en la misma pose).
+        AnimatorStateTransition aArrastrarse = eCaer.transitions.FirstOrDefault(t => t.destinationState == eArrastrarse);
+        if (aArrastrarse == null) { aArrastrarse = eCaer.AddTransition(eArrastrarse); cambio = true; }
+        if (!aArrastrarse.hasExitTime || !Mathf.Approximately(aArrastrarse.exitTime, SaleDeCaer) ||
+            !Mathf.Approximately(aArrastrarse.duration, MezclaCaerArrastrarse) || !aArrastrarse.hasFixedDuration)
         {
-            AnimatorStateTransition t = eCaer.AddTransition(eArrastrarse);
-            t.hasExitTime = true;
-            t.exitTime = 0.95f;
-            t.duration = 0.15f;
-            t.hasFixedDuration = true;
+            aArrastrarse.hasExitTime = true;
+            aArrastrarse.exitTime = SaleDeCaer;
+            aArrastrarse.duration = MezclaCaerArrastrarse;
+            aArrastrarse.hasFixedDuration = true;
             cambio = true;
         }
 

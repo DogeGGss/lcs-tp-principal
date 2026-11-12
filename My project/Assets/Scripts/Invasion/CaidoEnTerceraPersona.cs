@@ -12,6 +12,7 @@ public class CaidoEnTerceraPersona : MonoBehaviour
     public const string Capa = "Caido", Caer = "Caer", Arrastrarse = "Arrastrarse", Levantarse = "Levantarse";
     public const string Parametro = "Arrastre"; // la velocidad de la de arrastrarse: 0 quieto, 1 arrastrándose
     private const float Entrar = 0.15f, Salir = 0.35f, LevantarseSinClip = 2.5f;
+    private const float MezclaLevantarse = 0.45f; // s
     private const float AlturaDelCartel = 1.1f;
 
     private Animator animador;
@@ -68,7 +69,8 @@ public class CaidoEnTerceraPersona : MonoBehaviour
         else if (!Caido && estaba)
         {
             estaba = false;
-            animador.CrossFadeInFixedTime(Levantarse, 0.15f, capa, 0f); // CA4: se levanta
+            // CA4: se levanta. Con una mezcla larga: la de arrastrarse y la de levantarse no están en la misma pose.
+            animador.CrossFadeInFixedTime(Levantarse, MezclaLevantarse, capa, 0f);
             levantandoHasta = Time.time + LargoDeLevantarse();
         }
         if (Caido && hayParametro)
