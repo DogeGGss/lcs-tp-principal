@@ -1092,7 +1092,8 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
 
     /// <summary>El personaje de ese jugador en la partida: el que eligió en el Táctico o su aspecto en el Deathmatch.</summary>
     public static CharacterData PersonajeDe(int actor) =>
-        PersonajesDeathmatch.Actual != null ? PersonajesDeathmatch.De(actor) : PersonajesTacticos.De(actor);
+        CooperativoDeInvasion.Activo ? CooperativoDeInvasion.PersonajeDe(actor) // F31: el que eligió en el menú
+        : PersonajesDeathmatch.Actual != null ? PersonajesDeathmatch.De(actor) : PersonajesTacticos.De(actor);
 
     // Si hay que fijarse el personaje: hasta tener el suyo y, en el Deathmatch, siempre (lo puede cambiar).
     private bool MirarCuerpo => (!cuerpoPropio || PersonajesDeathmatch.Actual != null) && Time.time >= proximoCuerpo;
