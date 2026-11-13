@@ -6,11 +6,15 @@ using UnityEngine;
 // animación): así se mueve con el brazo, la pierna o el torso como si estuviera clavada. La punta queda metida un poco
 // hacia el hueso (la colisión del invasor es más grande que el modelo). Mientras está pegada, la cola de la cápsula
 // titila rápido (CapsulaDeGranada). Si el invasor muere antes, se suelta y se queda donde estaba, y explota igual.
+// F31 (US 355, CA2): en Invasión cooperativa los compañeros la ven pegada al mismo invasor (JugadorEnRed.RpcGranadaPegada).
 public class GranadaPegada : MonoBehaviour
 {
     public const float Espera = 1f;           // s pegada hasta explotar
     public const float MasDanio = 2f;         // veces el daño
     private const float HaciaElHueso = 0.45f; // qué parte del camino del choque al hueso se mete la punta
+
+    /// <summary>F31 (US 355, CA2): una granada de verdad se le pegó a ese invasor en ese punto (el multijugador la repite).</summary>
+    public static event System.Action<Grenade1, Npc, Vector3> SePego;
 
     private Grenade1 granada;
     private Npc invasor;
@@ -42,6 +46,7 @@ public class GranadaPegada : MonoBehaviour
         else granada.transform.position = punto;
         // Colgada del hueso (o del invasor, si no tiene esqueleto), sin cambiar dónde ni cómo está.
         granada.transform.SetParent(hueso != null ? hueso : invasor.transform, true);
+        if (!granada.cosmetic) SePego?.Invoke(granada, invasor, punto);
     }
 
     // El hueso del modelo animado más cercano al punto (de las mallas con esqueleto del invasor).
@@ -71,6 +76,7 @@ public class GranadaPegada : MonoBehaviour
             suelta = true;
             granada.transform.SetParent(null, true);
         }
+        if (granada.cosmetic) return; // (la copia de un compañero, US 355: explota cuando la red avisa)
         if (Time.time - desde >= Espera)
         {
             if (!suelta) granada.transform.SetParent(null, true);

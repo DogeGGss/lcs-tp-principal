@@ -6,6 +6,7 @@ using UnityEngine;
 // cápsula titilando rápido (CapsulaDeGranada), y explota (con su daño de siempre, Grenade1) cuando un invasor pasa a menos de 2 m medidos
 // en horizontal (así también la hace explotar un Watcher que vuela por encima). Hay un tope de minas a la vez (5, 7 y
 // 9 con la carta repetida): al poner una de más, la más vieja explota sola.
+// F31 (US 355, CA2): en Invasión cooperativa los compañeros la ven en el mismo lugar (JugadorEnRed.RpcGranadaMina).
 public class MinaDeGranada : MonoBehaviour
 {
     public const float Alcance = 2f;          // m, en horizontal
@@ -14,6 +15,9 @@ public class MinaDeGranada : MonoBehaviour
 
     /// <summary>Cuántas minas puede haber a la vez (lo pone la carta).</summary>
     public static int Tope = 5;
+
+    /// <summary>F31 (US 355, CA2): una granada de verdad quedó como mina en ese punto (el multijugador la repite).</summary>
+    public static event System.Action<Grenade1, Vector3> SePuso;
 
     private static readonly List<MinaDeGranada> minas = new List<MinaDeGranada>();
 
@@ -46,6 +50,10 @@ public class MinaDeGranada : MonoBehaviour
         if (capsula != null) capsula.Clavar(punto);
         else granada.transform.position = punto;
 
+        // F31 (US 355, CA2): la copia de la granada de un compañero queda como mina igual, pero no cuenta para el tope
+        // ni explota sola: explota cuando explota la de verdad (la red avisa dónde).
+        if (granada.cosmetic) return;
+        SePuso?.Invoke(granada, punto);
         minas.Add(mina);
         // El tope: la más vieja explota sola.
         while (minas.Count > Mathf.Max(1, Tope))
@@ -60,7 +68,7 @@ public class MinaDeGranada : MonoBehaviour
 
     private void Update()
     {
-        if (granada == null) return;
+        if (granada == null || granada.cosmetic) return; // (la copia de un compañero, US 355)
         if (Time.time - desde < Armada) return;
 
         Vector3 p = transform.position;
