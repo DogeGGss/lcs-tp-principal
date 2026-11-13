@@ -35,8 +35,8 @@ ModelImporter:
       name: Levantarse
       takeName: mixamo.com
       internalID: -203655887218126122
-      firstFrame: 0
-      lastFrame: 258
+      firstFrame: 30
+      lastFrame: 180
       wrapMode: 0
       orientationOffsetY: 0
       level: 0
