@@ -368,6 +368,7 @@ public class CaidaEnInvasion : MonoBehaviourPunCallbacks, IOnEventCallback
         if (!alguno) return;
         termino = true;
         MatchHud.SetAction(null);
+        Multijugador.TerminarSala(); // la sala se cierra: nadie entra a una partida que ya terminó
         ResultadoDeInvasion.Mostrar(true);
     }
 

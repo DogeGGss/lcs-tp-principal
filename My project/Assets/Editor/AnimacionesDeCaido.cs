@@ -138,7 +138,12 @@ public class AnimacionesDeCaido : AssetPostprocessor
 
         AnimatorState eCaer = Estado(CaidoEnTerceraPersona.Caer, caer);
         AnimatorState eArrastrarse = Estado(CaidoEnTerceraPersona.Arrastrarse, arrastrarse);
-        Estado(CaidoEnTerceraPersona.Levantarse, levantarse);
+        AnimatorState eLevantarse = Estado(CaidoEnTerceraPersona.Levantarse, levantarse);
+        if (!Mathf.Approximately(eLevantarse.speed, CaidoEnTerceraPersona.VelocidadLevantarse))
+        {
+            eLevantarse.speed = CaidoEnTerceraPersona.VelocidadLevantarse; // más rápida (menos de 3 s)
+            cambio = true;
+        }
 
         // Quieto en el piso (Arrastre en 0) o arrastrándose (1).
         if (!eArrastrarse.speedParameterActive || eArrastrarse.speedParameter != CaidoEnTerceraPersona.Parametro)

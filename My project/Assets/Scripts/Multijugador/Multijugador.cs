@@ -48,6 +48,21 @@ public class Multijugador : MonoBehaviourPunCallbacks, IOnEventCallback
     // volvía a iniciar y Photon cortaba la carga del mapa ("PUN cancels an ongoing async level load").
     private static string salaIniciada;
 
+    // Buscando partida se cayó en una Invasión empezada sin nadie (terminó o se fueron todos): se sale y se busca otra.
+    private bool buscarOtraAlSalir;
+    private int salasVacias;
+
+    /// <summary>
+    /// F31: la partida de Invasión terminó (cayeron todos): la sala se cierra y deja de aparecer al buscar partida, así
+    /// nadie entra (o vuelve a entrar buscando) a una partida que ya terminó. Lo hace el anfitrión.
+    /// </summary>
+    public static void TerminarSala()
+    {
+        if (!PhotonNetwork.InRoom || !PhotonNetwork.IsMasterClient) return;
+        PhotonNetwork.CurrentRoom.IsOpen = false;
+        PhotonNetwork.CurrentRoom.IsVisible = false;
+    }
+
     /// <summary>US 358: esta computadora entró a la sala con la partida ya empezada.</summary>
     public static bool EntroEmpezada { get; private set; }
     private const string Alfabeto = "ABCDEFGHJKMNPQRSTUVWXYZ23456789"; // sin O, I ni L (US 027, CA2)
@@ -193,6 +208,7 @@ public class Multijugador : MonoBehaviourPunCallbacks, IOnEventCallback
     /// <summary>US 274: busca una partida pública de ese modo (o la crea) y espera ahí a que se llene (US 276).</summary>
     public void BuscarPartida(GameMode modo)
     {
+        salasVacias = 0;
         pedido = Pedido.Buscar;
         modoPedido = modo;
         buscandoDesde = Time.unscaledTime;
@@ -630,6 +646,21 @@ public class Multijugador : MonoBehaviourPunCallbacks, IOnEventCallback
         // F31 (US 358, CA1 y CA2): la partida ya empezó (Invasión cooperativa): se carga el mapa como al volver.
         if (EnJuego && modo == GameMode.Zombie)
         {
+            // Pero si no queda nadie jugando (la partida terminó o se fueron todos y la sala espera a los que se cortaron),
+            // no hay partida a la que sumarse: se cierra, se sale y, buscando, se busca otra.
+            bool alguien = false;
+            foreach (Player p in PhotonNetwork.PlayerListOthers) if (!p.IsInactive) { alguien = true; break; }
+            if (!alguien)
+            {
+                Debug.Log("Multijugador: la partida de esa sala ya no tiene a nadie jugando: se busca otra.");
+                TerminarSala();
+                buscarOtraAlSalir = hecho == Pedido.Buscar && ++salasVacias <= 3;
+                if (!buscarOtraAlSalir) Error?.Invoke(L10n.T("ui.net.match_over"));
+                PhotonNetwork.AutomaticallySyncScene = false;
+                PhotonNetwork.LeaveRoom(false);
+                return;
+            }
+            salasVacias = 0;
             EntroEmpezada = true;
             ConfigRed.Mapa mapa = MapaActual;
             if (mapa != null) PantallaDeCarga.MostrarOnline(mapa.escena, modo, mapa.nombre, mapa.imagen, EnPartidaPublica ? "" : Codigo);
@@ -647,6 +678,8 @@ public class Multijugador : MonoBehaviourPunCallbacks, IOnEventCallback
     {
         pendientes.Clear();
         MatchSettings.DificultadDeSala = null;
+        // (al volver al servidor, OnConnectedToMaster sigue con la búsqueda)
+        if (buscarOtraAlSalir) { buscarOtraAlSalir = false; pedido = Pedido.Buscar; }
         Cambio?.Invoke();
     }
 

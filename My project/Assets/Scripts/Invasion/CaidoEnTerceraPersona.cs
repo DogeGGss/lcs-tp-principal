@@ -11,6 +11,8 @@ public class CaidoEnTerceraPersona : MonoBehaviour
 {
     public const string Capa = "Caido", Caer = "Caer", Arrastrarse = "Arrastrarse", Levantarse = "Levantarse";
     public const string Parametro = "Arrastre"; // la velocidad de la de arrastrarse: 0 quieto, 1 arrastrándose
+    // La de levantarse va más rápida (la de Mixamo es lenta): recortada a 4,3 s, así dura menos de 3 s.
+    public const float VelocidadLevantarse = 1.5f;
     private const float Entrar = 0.15f, Salir = 0.35f, LevantarseSinClip = 2.5f;
     private const float MezclaLevantarse = 0.45f; // s
     private const float AlturaDelCartel = 1.1f;
@@ -45,6 +47,7 @@ public class CaidoEnTerceraPersona : MonoBehaviour
     private void Update()
     {
         Animar();
+        if (arma != null) arma.Caido = peso > 0f; // sin las manos en el arma mientras está en el piso
         Cartel();
         antes = transform.position;
     }
@@ -90,14 +93,8 @@ public class CaidoEnTerceraPersona : MonoBehaviour
         largoLevantarse = LevantarseSinClip;
         if (animador.runtimeAnimatorController != null)
             foreach (AnimationClip clip in animador.runtimeAnimatorController.animationClips)
-                if (clip != null && clip.name == Levantarse) { largoLevantarse = clip.length; break; }
+                if (clip != null && clip.name == Levantarse) { largoLevantarse = clip.length / VelocidadLevantarse; break; }
         return largoLevantarse;
-    }
-
-    // Sin las manos en el arma mientras está en el piso (como al bailar, US 262).
-    private void LateUpdate()
-    {
-        if (arma != null && peso > 0f) arma.Bailando = true;
     }
 
     // CA2: "Caído 23 s" (o "Reviviendo") arriba de él, mirando a la cámara.
@@ -128,6 +125,7 @@ public class CaidoEnTerceraPersona : MonoBehaviour
 
     private void OnDisable()
     {
+        if (arma != null) arma.Caido = false;
         if (animador != null && capa >= 0) animador.SetLayerWeight(capa, 0f);
         if (cartel != null) cartel.gameObject.SetActive(false);
     }
