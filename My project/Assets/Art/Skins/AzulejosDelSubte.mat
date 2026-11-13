@@ -25,14 +25,14 @@ Material:
     m_TexEnvs: []
     m_Ints: []
     m_Floats:
-    - _Escala: 0.02
+    - _Escala: 0.03
     - _Lisura: 0.8
     - _Metal: 0
     - _Patron: 4
     m_Colors:
-    - _Color1: {r: 0.1804, g: 0.4902, b: 0.4196, a: 1}
-    - _Color2: {r: 0.9098, g: 0.8510, b: 0.6588, a: 1}
-    - _Color3: {r: 0.7882, g: 0.5098, b: 0.1804, a: 1}
-    - _Color4: {r: 0.1647, g: 0.1490, b: 0.1333, a: 1}
+    - _Color1: {r: 0.4980, g: 0.7137, b: 0.8510, a: 1}
+    - _Color2: {r: 0.9451, g: 0.9451, b: 0.9255, a: 1}
+    - _Color3: {r: 0.2392, g: 0.4314, b: 0.6118, a: 1}
+    - _Color4: {r: 0.1647, g: 0.1804, b: 0.2000, a: 1}
   m_BuildTextureStacks: []
   m_AllowLocking: 1

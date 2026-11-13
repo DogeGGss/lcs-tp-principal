@@ -6619,14 +6619,6 @@ MonoBehaviour:
     m_Key: profile.skin.design.binary_code
     m_Metadata:
       m_Items: []
-  - m_Id: 380227458789497
-    m_Key: profile.skin.design.oro_pulido
-    m_Metadata:
-      m_Items: []
-  - m_Id: 380227458789498
-    m_Key: profile.skin.design.fibra_de_carbono
-    m_Metadata:
-      m_Items: []
   - m_Id: 380227458789499
     m_Key: profile.skin.design.cobre_oxidado
     m_Metadata:

@@ -6655,14 +6655,6 @@ MonoBehaviour:
     m_Localized: "Binary Code"
     m_Metadata:
       m_Items: []
-  - m_Id: 380227458789497
-    m_Localized: "Polished Gold"
-    m_Metadata:
-      m_Items: []
-  - m_Id: 380227458789498
-    m_Localized: "Carbon Fiber"
-    m_Metadata:
-      m_Items: []
   - m_Id: 380227458789499
     m_Localized: "Oxidized Copper"
     m_Metadata:

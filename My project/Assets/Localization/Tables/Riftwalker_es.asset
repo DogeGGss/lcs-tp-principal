@@ -6627,14 +6627,6 @@ MonoBehaviour:
     m_Localized: "Código binario"
     m_Metadata:
       m_Items: []
-  - m_Id: 380227458789497
-    m_Localized: "Oro pulido"
-    m_Metadata:
-      m_Items: []
-  - m_Id: 380227458789498
-    m_Localized: "Fibra de carbono"
-    m_Metadata:
-      m_Items: []
   - m_Id: 380227458789499
     m_Localized: "Cobre oxidado"
     m_Metadata:

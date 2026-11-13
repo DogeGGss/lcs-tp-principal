@@ -1,14 +1,15 @@
 // F35 (Skins de armas): las skins raras, materiales sin animar dibujados acá, sin texturas (como el código binario,
 // SkinMatrix.shader). Un mismo shader con varios patrones (_Patron); cada skin es un material con sus colores:
 //   0 Oro pulido      1 Fibra de carbono   2 Cobre oxidado
-//   3 Mármol de Retiro   4 Azulejos del subte   5 Cristal del Rift
+//   3 Mármol de Retiro   4 Azulejos del subte   5 Cristal del Rift   6 Madera
+// (0 y 1, el oro y la fibra de carbono, quedaron sin usar: se descartaron el 13/11/2026.)
 // El patrón va pegado al arma (se usa la posición del modelo, en metros) y se apoya en la cara del modelo que mejor le
 // queda (como un "triplanar" simple). Luz: la principal de la escena, la del ambiente y los reflejos (para los metales).
 Shader "Riftwalker/Skins/Patron"
 {
     Properties
     {
-        _Patron ("Patrón (0 oro, 1 carbono, 2 cobre, 3 mármol, 4 azulejos, 5 cristal)", Float) = 0
+        _Patron ("Patrón (0 oro, 1 carbono, 2 cobre, 3 mármol, 4 azulejos, 5 cristal, 6 madera)", Float) = 0
         _Color1 ("Color 1", Color) = (1, 1, 1, 1)
         _Color2 ("Color 2", Color) = (0.5, 0.5, 0.5, 1)
         _Color3 ("Color 3", Color) = (0, 0, 0, 1)
@@ -82,12 +83,23 @@ Shader "Riftwalker/Skins/Patron"
             }
 
             // Cada patrón: color y cuánto brilla (lisura), y cuánto es metal.
-            void Patron(float2 uv, out float3 color, out float lisura, out float metal)
+            void Patron(float2 uv, float3 pos, out float3 color, out float lisura, out float metal)
             {
                 lisura = _Lisura;
                 metal = _Metal;
                 int patron = (int)round(_Patron);
-                if (patron == 1) // fibra de carbono: tejido en diagonal, hebras que alternan de dirección
+                if (patron == 6) // madera: anillos alrededor del largo del arma (como un tronco), con vetas y fibra
+                {
+                    // En los modelos de las armas, el largo (el caño) es el eje X; el alto, el Z.
+                    float3 q = pos / _Escala;
+                    float r = length(q.yz);
+                    float t = r * 0.35 + Fbm(float2(q.x * 0.15, r * 0.6)) * 2.5;
+                    float anillo = pow(0.5 + 0.5 * sin(t * 6.2831), 3.0);
+                    float fibra = Ruido(float2(q.x * 0.05, r * 12.0));
+                    color = lerp(_Color1.rgb, _Color2.rgb, anillo * 0.8 + 0.2 * fibra);
+                    color *= 0.9 + 0.15 * Fbm(float2(q.x * 0.5 + 9.0, r * 2.0));
+                }
+                else if (patron == 1) // fibra de carbono: tejido en diagonal, hebras que alternan de dirección
                 {
                     float2 c = uv / _Escala;
                     float2 id = floor(c);
@@ -163,7 +175,7 @@ Shader "Riftwalker/Skins/Patron"
                 float2 uv = n.x > max(n.y, n.z) ? i.posM.yz : n.y > n.z ? i.posM.xz : i.posM.xy;
 
                 float3 albedo; float lisura, metal;
-                Patron(uv, albedo, lisura, metal);
+                Patron(uv, i.posM, albedo, lisura, metal);
 
                 float3 N = normalize(i.normalWS);
                 float3 V = normalize(i.viewWS);

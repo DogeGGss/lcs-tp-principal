@@ -41,6 +41,17 @@ public static class CatalogoDeSkins
         public string[] partes;
         /// <summary>Un color que lo representa, para la barra de colores del perfil.</summary>
         public Color muestra;
+        /// <summary>Otras partes, con otro material o un color (por ejemplo, el cuerpo de madera del cobre).</summary>
+        public Extra[] extras = new Extra[0];
+    }
+
+    /// <summary>Una parte del arma con otro material (el id en ModelosDeArmas) o solo otro color.</summary>
+    public class Extra
+    {
+        public string parte, material;
+        public Color color;
+        /// <summary>Para la barra del perfil.</summary>
+        public Color muestra;
     }
 
     public class Skin
@@ -89,10 +100,13 @@ public static class CatalogoDeSkins
     // Épicas (13/11/2026): el código binario verde que cae, animado (Art/Skins/SkinMatrix.shader), en los paneles y el acento.
     public static readonly List<Diseno> Disenos = new List<Diseno>
     {
-        new Diseno { id = "oro-pulido", nombre = "Oro pulido", rareza = Rareza.Raro, partes = new[] { White, Main }, muestra = Hex(0xE8B84A) },
-        new Diseno { id = "fibra-de-carbono", nombre = "Fibra de carbono", rareza = Rareza.Raro, partes = new[] { Black, White }, muestra = Hex(0x3A3D42) },
-        new Diseno { id = "cobre-oxidado", nombre = "Cobre oxidado", rareza = Rareza.Raro, partes = new[] { Black, White }, muestra = Hex(0xC27A43) },
-        new Diseno { id = "marmol-de-retiro", nombre = "Mármol de Retiro", rareza = Rareza.Raro, partes = new[] { Black, White }, muestra = Hex(0xEEEDE8) },
+        // Cobre con óxido en los paneles, el cuerpo de madera oscura y las franjas marrones.
+        new Diseno { id = "cobre-oxidado", nombre = "Cobre oxidado", rareza = Rareza.Raro, partes = new[] { White }, muestra = Hex(0xC27A43),
+            extras = new[] { new Extra { parte = Black, material = "madera-oscura", muestra = Hex(0x6B4122) },
+                             new Extra { parte = Main, color = Hex(0x6E4527), muestra = Hex(0x6E4527) } } },
+        // Mármol blanco en los paneles (el cuerpo queda negro) y las franjas doradas.
+        new Diseno { id = "marmol-de-retiro", nombre = "Mármol de Retiro", rareza = Rareza.Raro, partes = new[] { White }, muestra = Hex(0xEEEDE8),
+            extras = new[] { new Extra { parte = Main, color = Hex(0xC9A44C), muestra = Hex(0xC9A44C) } } },
         new Diseno { id = "azulejos-del-subte", nombre = "Azulejos del subte", rareza = Rareza.Raro, partes = new[] { White, Main }, muestra = Hex(0x2E7D6B) },
         new Diseno { id = "cristal-del-rift", nombre = "Cristal del Rift", rareza = Rareza.Raro, partes = new[] { White, Main }, muestra = Hex(0x7B3FE4) },
         new Diseno { id = "codigo-binario", nombre = "Código binario", rareza = Rareza.Epico, partes = new[] { White, Main }, muestra = Hex(0x26FF59) },
@@ -157,9 +171,17 @@ public static class CatalogoDeSkins
         string[] orden = { Black, White, Grey, Main };
         var barra = new Color[4];
         for (int i = 0; i < 4; i++)
-            barra[i] = skin.diseno != null && System.Array.IndexOf(skin.diseno.partes, orden[i]) >= 0 ? skin.diseno.muestra : Originales[i];
+        {
+            Extra extra = skin.diseno != null ? System.Array.Find(skin.diseno.extras, x => x.parte == orden[i]) : null;
+            barra[i] = extra != null ? extra.muestra
+                : skin.diseno != null && System.Array.IndexOf(skin.diseno.partes, orden[i]) >= 0 ? skin.diseno.muestra : Originales[i];
+        }
         return barra;
     }
+
+    /// <summary>Lo que el diseño de la skin le pone a esa otra parte del arma (otro material o un color), o null.</summary>
+    public static Extra ExtraPara(Skin skin, string material) =>
+        skin?.diseno == null || string.IsNullOrEmpty(material) ? null : System.Array.Find(skin.diseno.extras, x => x.parte == Parte(material));
 
     /// <summary>Si ese material del arma cambia con el diseño de la skin.</summary>
     public static bool EsParteDelDiseno(Skin skin, string material) =>

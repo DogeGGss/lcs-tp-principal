@@ -28,8 +28,13 @@ public class SkinsTests
         Assert.IsTrue(CatalogoDeSkins.EsParteDelDiseno(s, "Main (Instance)"));
         Assert.IsFalse(CatalogoDeSkins.EsParteDelDiseno(s, "Black"));
         Assert.IsNull(CatalogoDeSkins.ColorPara(s, "White"));
+        var modelos = Resources.Load<ModelosDeArmas>("Skins/ModelosDeArmas");
         foreach (CatalogoDeSkins.Diseno d in CatalogoDeSkins.Disenos)
-            Assert.IsNotNull(Resources.Load<ModelosDeArmas>("Skins/ModelosDeArmas").MaterialDe(d.id), d.id);
+        {
+            Assert.IsNotNull(modelos.MaterialDe(d.id), d.id);
+            foreach (CatalogoDeSkins.Extra x in d.extras)
+                if (!string.IsNullOrEmpty(x.material)) Assert.IsNotNull(modelos.MaterialDe(x.material), x.material);
+        }
     }
 
     [Test, Category("US 378"), Description("CA1: cada skin se llama con el arma y su nombre")]
@@ -69,5 +74,17 @@ public class SkinsTests
         foreach (CatalogoDeSkins.Arma a in CatalogoDeSkins.Armas)
             if (!string.IsNullOrEmpty(a.ficha))
                 Assert.IsNotNull(UnityEditor.AssetDatabase.LoadAssetAtPath<ShopItem>("Assets/Data/Tienda/" + a.ficha + ".asset"), a.ficha);
+    }
+
+    [Test, Category("US 378"), Description("CA2: el cobre lleva el cuerpo de madera y las franjas marrones; el mármol, las franjas doradas")]
+    public void Las_raras_tienen_sus_otras_partes()
+    {
+        CatalogoDeSkins.Skin cobre = CatalogoDeSkins.De("mitre-cobre-oxidado");
+        Assert.AreEqual(PerfilDatos.Rareza.Raro, cobre.rareza);
+        Assert.AreEqual("madera-oscura", CatalogoDeSkins.ExtraPara(cobre, "Black").material);
+        Assert.IsNotNull(CatalogoDeSkins.ExtraPara(cobre, "Main (Instance)"));
+        Assert.IsNull(CatalogoDeSkins.ExtraPara(cobre, "Grey"));
+        Assert.IsNull(CatalogoDeSkins.De("mitre-oro-pulido"));
+        Assert.IsNull(CatalogoDeSkins.De("mitre-fibra-de-carbono"));
     }
 }
