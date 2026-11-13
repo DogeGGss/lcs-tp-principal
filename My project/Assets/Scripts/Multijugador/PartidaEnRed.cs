@@ -40,6 +40,32 @@ public class PartidaEnRed : MonoBehaviour
         Actual = this;
     }
 
+    // Cada cuánto se revisa que no quede la copia de alguien que ya no está en la sala.
+    private const float CadaRevision = 1f;
+    private float proximaRevision;
+
+    // Por si se perdió el aviso de que se fue (Photon avisa que cambió el anfitrión antes de avisar quién se fue, y un
+    // error en ese aviso cortaba el otro: quedaba el personaje del anfitrión que salió): la copia de un jugador que ya
+    // no está en la sala (ni desconectado esperando volver, US 195) se quita igual.
+    private void Update()
+    {
+        if (!Lista || Time.unscaledTime < proximaRevision || PhotonNetwork.CurrentRoom == null) return;
+        proximaRevision = Time.unscaledTime + CadaRevision;
+        List<int> idos = null;
+        foreach (KeyValuePair<int, JugadorEnRed> par in jugadores)
+        {
+            if (par.Value == Local) continue;
+            Player dueno = PhotonNetwork.CurrentRoom.GetPlayer(par.Key);
+            if (dueno == null || dueno.IsInactive) (idos ??= new List<int>()).Add(par.Key);
+        }
+        if (idos == null) return;
+        foreach (int actor in idos)
+        {
+            Debug.LogWarning($"PartidaEnRed: quedaba la copia del jugador {actor}, que ya no está en la sala: se quita.");
+            QuitarJugador(actor);
+        }
+    }
+
     private void OnDestroy()
     {
         if (Actual == this) Actual = null;

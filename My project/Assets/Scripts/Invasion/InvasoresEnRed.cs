@@ -699,6 +699,14 @@ public class InvasoresEnRed : MonoBehaviourPunCallbacks, IOnEventCallback
     {
         if (nuevo == null || !nuevo.IsLocal || !CooperativoDeInvasion.Activo) return;
         Debug.Log("[Invasión en red] Se fue el anfitrión: ahora esta computadora lleva a los invasores.");
+        // Photon avisa esto antes de avisar que el anfitrión se fue: un error acá cortaba ese otro aviso (su personaje
+        // quedaba en la partida y los invasores lo seguían). Se anota y sigue.
+        try { TomarElMando(); }
+        catch (System.Exception e) { Debug.LogException(e); }
+    }
+
+    private void TomarElMando()
+    {
         // Los portales de antes se cierran (la oleada abre los suyos).
         foreach (PortalDeEnemigos portal in portales.Values) if (portal != null) portal.Cerrar();
         portales.Clear();
@@ -708,10 +716,14 @@ public class InvasoresEnRed : MonoBehaviourPunCallbacks, IOnEventCallback
         {
             Npc npc = par.Value;
             if (npc == null) { paraQuitar.Add(par.Key); continue; }
-            InvasorEnRed copia = npc.GetComponent<InvasorEnRed>();
-            if (copia != null) copia.Soltar();
-            npc.Activar();
-            if (npc.Vivo) vivos.Add(npc);
+            try
+            {
+                InvasorEnRed copia = npc.GetComponent<InvasorEnRed>();
+                if (copia != null) copia.Soltar();
+                npc.Activar();
+                if (npc.Vivo) vivos.Add(npc);
+            }
+            catch (System.Exception e) { Debug.LogException(e); } // uno con problemas no deja a los demás como copias
         }
         foreach (int id in paraQuitar) invasores.Remove(id);
         pedidos.Clear();
