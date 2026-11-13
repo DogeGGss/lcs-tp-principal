@@ -16,8 +16,8 @@ using static ShopUIKit;
 // - CA6: caerse del mapa es una muerte (FueraDelMapa), así que termina igual que el CA1.
 // - US 222, CA2: la partida se suma una vez a las estadísticas de Invasión del jugador (EstadisticasJugador), que ve el Perfil.
 // Todo se congela (el tiempo se detiene) y no se puede pausar.
-// F31 (US 289): en cooperativo el récord va aparte (CA13: MatchSettings.ZombieRecordCoop) y "Jugar de nuevo" vuelve al
-// menú, porque la partida de los demás sigue (para jugar otra se vuelve a buscar o a armar la sala).
+// F31 (US 289): en cooperativo el récord va aparte (CA13: MatchSettings.ZombieRecordCoop) y no hay "Jugar de nuevo",
+// solo "Volver al menú" (CA7): para jugar otra se vuelve a buscar o a armar la sala.
 public class ResultadoDeInvasion : MonoBehaviour
 {
     private const string EscenaMenu = "MenuPrincipal";
@@ -187,11 +187,16 @@ public class ResultadoDeInvasion : MonoBehaviour
         float yBotones = 760f;
         if (coop) yBotones = Jugadores(raiz, redondeado, puntos);
 
-        // CA5: los botones.
-        Boton(L10n.T("gameplay.result.play_again"), 676f, MarcadorInvasion.Verde, Hex(0x10180C), false, redondeado, JugarDeNuevo);
-        Boton(L10n.T("gameplay.result.back_menu"), 984f, Color.clear, Ink, true, redondeado, VolverAlMenu);
+        // CA5: los botones. F31 (US 289, CA7): en cooperativo solo "Volver al menú" (Enter o Esc).
+        if (coop)
+            Boton(L10n.T("gameplay.result.back_menu"), (1920f - 260f) / 2f, MarcadorInvasion.Verde, Hex(0x10180C), false, redondeado, VolverAlMenu);
+        else
+        {
+            Boton(L10n.T("gameplay.result.play_again"), 676f, MarcadorInvasion.Verde, Hex(0x10180C), false, redondeado, JugarDeNuevo);
+            Boton(L10n.T("gameplay.result.back_menu"), 984f, Color.clear, Ink, true, redondeado, VolverAlMenu);
+        }
         Text(Place(Node("Teclas", raiz), 0f, yBotones + 76f, 1920f, 24f), label, 15f, Mute, TextAlignmentOptions.Center, 12f, true).text =
-            L10n.T("gameplay.result.keys_hint");
+            L10n.T(coop ? "gameplay.result.keys_hint_coop" : "gameplay.result.keys_hint");
 
         void Boton(string texto, float x, Color fondo, Color tinta, bool borde, Sprite sprite, System.Action alApretar)
         {
@@ -250,7 +255,11 @@ public class ResultadoDeInvasion : MonoBehaviour
             via.pulso = Mathf.Repeat(Time.unscaledTime, 1.6f) / 1.6f;
             via.Refrescar();
         }
-        if (Input.GetKeyDown(KeyCode.Return) || Input.GetKeyDown(KeyCode.KeypadEnter)) JugarDeNuevo();
+        if (Input.GetKeyDown(KeyCode.Return) || Input.GetKeyDown(KeyCode.KeypadEnter))
+        {
+            if (CooperativoDeInvasion.Activo) VolverAlMenu(); // (US 289, CA7: en cooperativo no hay "Jugar de nuevo")
+            else JugarDeNuevo();
+        }
         else if (Input.GetKeyDown(KeyCode.Escape)) VolverAlMenu();
     }
 
