@@ -2,7 +2,7 @@
 // SkinMatrix.shader). Un mismo shader con varios patrones (_Patron); cada skin es un material con sus colores:
 //   0 Oro pulido      1 Fibra de carbono   2 Cobre oxidado
 //   3 Mármol de Retiro   4 Azulejos del subte   5 Cristal del Rift   6 Madera
-// (0 y 1, el oro y la fibra de carbono, quedaron sin usar: se descartaron el 13/11/2026.)
+// El oro (0) quedó para las franjas del mármol; la fibra de carbono (1) quedó sin usar (se descartó el 13/11/2026).
 // El patrón va pegado al arma (se usa la posición del modelo, en metros) y se apoya en la cara del modelo que mejor le
 // queda (como un "triplanar" simple). Luz: la principal de la escena, la del ambiente y los reflejos (para los metales).
 Shader "Riftwalker/Skins/Patron"

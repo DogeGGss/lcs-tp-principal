@@ -104,10 +104,14 @@ public static class CatalogoDeSkins
         new Diseno { id = "cobre-oxidado", nombre = "Cobre oxidado", rareza = Rareza.Raro, partes = new[] { White }, muestra = Hex(0xC27A43),
             extras = new[] { new Extra { parte = Black, material = "madera-oscura", muestra = Hex(0x6B4122) },
                              new Extra { parte = Main, color = Hex(0x6E4527), muestra = Hex(0x6E4527) } } },
-        // Mármol blanco en los paneles (el cuerpo queda negro) y las franjas doradas.
+        // Mármol blanco en los paneles, el cuerpo de mármol negro con vetas doradas y las franjas de oro (con brillo de metal).
         new Diseno { id = "marmol-de-retiro", nombre = "Mármol de Retiro", rareza = Rareza.Raro, partes = new[] { White }, muestra = Hex(0xEEEDE8),
-            extras = new[] { new Extra { parte = Main, color = Hex(0xC9A44C), muestra = Hex(0xC9A44C) } } },
-        new Diseno { id = "azulejos-del-subte", nombre = "Azulejos del subte", rareza = Rareza.Raro, partes = new[] { White, Main }, muestra = Hex(0x2E7D6B) },
+            extras = new[] { new Extra { parte = Black, material = "marmol-negro", muestra = Hex(0x16171A) },
+                             new Extra { parte = Main, material = "oro", muestra = Hex(0xE8B84A) } } },
+        // Azulejos celestes y blancos en los paneles, el cuerpo blanco como una pared y las franjas grises.
+        new Diseno { id = "azulejos-del-subte", nombre = "Azulejos del subte", rareza = Rareza.Raro, partes = new[] { White }, muestra = Hex(0x7FB6D9),
+            extras = new[] { new Extra { parte = Black, color = Hex(0xECEBE6), muestra = Hex(0xECEBE6) },
+                             new Extra { parte = Main, color = Hex(0x8A8D92), muestra = Hex(0x8A8D92) } } },
         new Diseno { id = "cristal-del-rift", nombre = "Cristal del Rift", rareza = Rareza.Raro, partes = new[] { White, Main }, muestra = Hex(0x7B3FE4) },
         new Diseno { id = "codigo-binario", nombre = "Código binario", rareza = Rareza.Epico, partes = new[] { White, Main }, muestra = Hex(0x26FF59) },
     };

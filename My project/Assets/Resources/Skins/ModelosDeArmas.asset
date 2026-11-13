@@ -42,3 +42,7 @@ MonoBehaviour:
     material: {fileID: 2100000, guid: 2ae7568c17094111b49d76a6db9de9e1, type: 2}
   - diseno: madera-oscura
     material: {fileID: 2100000, guid: 5161ec0b89c44feab12115f87cf40f5c, type: 2}
+  - diseno: marmol-negro
+    material: {fileID: 2100000, guid: c40c9e435a9e476ab8bbfa6bc2200ce4, type: 2}
+  - diseno: oro
+    material: {fileID: 2100000, guid: 046f498752dc4a11b02a5f799b53d080, type: 2}

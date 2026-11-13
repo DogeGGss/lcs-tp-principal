@@ -25,7 +25,7 @@ Material:
     m_TexEnvs: []
     m_Ints: []
     m_Floats:
-    - _Escala: 0.03
+    - _Escala: 0.024
     - _Lisura: 0.8
     - _Metal: 0
     - _Patron: 4
