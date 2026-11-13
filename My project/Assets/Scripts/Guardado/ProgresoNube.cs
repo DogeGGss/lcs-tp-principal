@@ -85,7 +85,10 @@ public static class ProgresoNube
         Sumar(d.contadores, Deathmatch + "mejor_racha", e.mejorRacha);
 
         foreach (ZombieDifficulty z in Enum.GetValues(typeof(ZombieDifficulty)))
+        {
             Sumar(d.contadores, Zombie + z.ToString().ToLowerInvariant(), MatchSettings.ZombieRecord(z));
+            Sumar(d.contadores, Zombie + "coop." + z.ToString().ToLowerInvariant(), MatchSettings.ZombieRecordCoop(z)); // F31 (US 289, CA13)
+        }
 
         d.conjuntos.Add(Ordenado(Perfil + "obtenidos", PerfilDatos.ObtenidosIds));
         d.conjuntos.Add(Ordenado(Perfil + "packs_usados", PerfilDatos.PacksUsados));
@@ -179,7 +182,10 @@ public static class ProgresoNube
 
         // Récords de Zombie
         foreach (ZombieDifficulty z in Enum.GetValues(typeof(ZombieDifficulty)))
+        {
             MatchSettings.SubirZombieRecord(z, (int)Leer(Zombie + z.ToString().ToLowerInvariant()));
+            MatchSettings.SubirZombieRecordCoop(z, (int)Leer(Zombie + "coop." + z.ToString().ToLowerInvariant())); // F31 (US 289, CA13)
+        }
 
         // Perfil: lo que solo suma (unión y máximo) y lo equipado y los últimos premios (solo en una PC nueva)
         var perfil = new PerfilDatos.Nube

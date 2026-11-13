@@ -2043,6 +2043,18 @@
     {
       "key": "gameplay.mates.next_wave",
       "text": "You'll spawn when the next wave starts"
+    },
+    {
+      "key": "gameplay.result.record_coop_fmt",
+      "text": "Co-op record on {0}: <color=#F3F4F6>wave {1}</color> · solo: wave {2}"
+    },
+    {
+      "key": "gameplay.result.record_solo_fmt",
+      "text": "Single-player record: wave {0}"
+    },
+    {
+      "key": "gameplay.mates.retired",
+      "text": "Retired"
     }
   ]
 }

@@ -2043,6 +2043,18 @@
     {
       "key": "gameplay.mates.next_wave",
       "text": "Aparecés al empezar la próxima oleada"
+    },
+    {
+      "key": "gameplay.result.record_coop_fmt",
+      "text": "Récord cooperativo en {0}: <color=#F3F4F6>oleada {1}</color> · solo: oleada {2}"
+    },
+    {
+      "key": "gameplay.result.record_solo_fmt",
+      "text": "Récord de un jugador: oleada {0}"
+    },
+    {
+      "key": "gameplay.mates.retired",
+      "text": "Se retiró"
     }
   ]
 }

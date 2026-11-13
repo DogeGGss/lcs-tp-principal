@@ -492,6 +492,13 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
         partida.Aviso(L10n.T(Reconexion.Volvio ? "gameplay.death.rejoined" : "gameplay.mates.joined_title"), L10n.T("gameplay.mates.next_wave"));
     }
 
+    /// <summary>F31 (US 289, CA9): se retiró de una Invasión cooperativa: queda afuera hasta que sale de la sala.</summary>
+    public void QuedarFueraDeLaPartida()
+    {
+        if (photonView == null || !photonView.IsMine || vida == null || muerto) return;
+        QuedarAfuera();
+    }
+
     // Como muerto, pero sin morir: no hay aviso de baja ni suma una muerte, y no se le cae nada. Los demás lo ven
     // afuera porque le llega la vida en 0 (OnPhotonSerializeView).
     private void QuedarAfuera()

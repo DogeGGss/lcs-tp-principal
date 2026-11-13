@@ -92,7 +92,8 @@ public class MarcadorInvasion : MonoBehaviour
 
     private void Start()
     {
-        record = MatchSettings.ZombieRecord(MatchSettings.Difficulty);
+        // F31 (US 289, CA13): en cooperativo, la banderita es la del récord cooperativo.
+        record = CooperativoDeInvasion.Activo ? MatchSettings.ZombieRecordCoop(MatchSettings.Difficulty) : MatchSettings.ZombieRecord(MatchSettings.Difficulty);
         Cartas.Clear();
     }
 

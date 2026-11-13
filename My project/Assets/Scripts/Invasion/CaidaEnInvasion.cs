@@ -23,7 +23,8 @@ using Hashtable = ExitGames.Client.Photon.Hashtable;
 // sala; el revivir, con eventos de Photon.
 public class CaidaEnInvasion : MonoBehaviourPunCallbacks, IOnEventCallback
 {
-    public enum Estado : byte { Vivo = 0, Caido = 1, Muerto = 2 }
+    // Retirado: eligió "Retirarse" después de un Jefe (US 289, CA9): ya terminó su partida (no vuelve ni elige).
+    public enum Estado : byte { Vivo = 0, Caido = 1, Muerto = 2, Retirado = 3 }
 
     public const float Desangra = 30f, TardaEnRevivir = 5f, Alcance = 2.2f, VidaAlLevantarse = 0.3f;
     private const float AlcanceParaCortar = 3f;
@@ -332,6 +333,23 @@ public class CaidaEnInvasion : MonoBehaviourPunCallbacks, IOnEventCallback
             return new Pose(lugar, Quaternion.Euler(0f, j.transform.eulerAngles.y, 0f));
         }
         return new Pose(local.transform.position, local.transform.rotation);
+    }
+
+    // ---------- US 289, CA9: retirarse de a varios ----------
+
+    /// <summary>US 289, CA9: se retiró después de un Jefe: terminó su partida (ve su resultado) y la de los demás
+    /// sigue. Queda afuera, como muerto pero sin aviso de baja: los invasores no lo buscan, no elige en el puesto y no
+    /// vuelve en la oleada siguiente.</summary>
+    public static void Retirarse()
+    {
+        if (Actual == null || Actual.estado == Estado.Retirado) return;
+        Actual.CortarRevivir();
+        if (Actual.estado == Estado.Caido) { Actual.Bloquear(false); if (Actual.movimiento != null) Actual.movimiento.Caido = false; }
+        Actual.estado = Estado.Retirado;
+        Actual.termino = true; // (su resultado ya está en pantalla)
+        Actual.Publicar();
+        MatchHud.SetAction(null);
+        if (Actual.local != null) Actual.local.QuedarFueraDeLaPartida();
     }
 
     // ---------- CA7: todos caídos o muertos ----------
