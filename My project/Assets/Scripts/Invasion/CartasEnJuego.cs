@@ -234,6 +234,7 @@ public class CartasEnJuego : MonoBehaviour
         Vector3 centro = puesto.Lugar;
         float radio = puesto.Radio;
         int empujados = BurbujaDeDespeje.Lanzar(centro, radio, metros);
+        InvasoresEnRed.AvisarDespeje(centro, radio, metros); // F31 (US 355, CA3): la ven todos
         Debug.Log($"Despeje: {empujados} invasores empujados {metros:0} m.");
     }
 
@@ -474,13 +475,22 @@ public class CartasEnJuego : MonoBehaviour
         if (carronero <= 0 || npc == null) return;
         if (++muertesParaCarronero < Mathf.Max(1, CarroneroCada - (carronero - 1))) return;
         muertesParaCarronero = 0;
-        CargadorEnElPiso.Soltar(npc.transform.position, npc.transform, () => MunicionDelArma.SumarUnCargador(MunicionDelArma.EnLaMano(Armas())));
+        CargadorEnElPiso c = CargadorEnElPiso.Soltar(npc.transform.position, npc.transform, JuntarCargador);
+        InvasoresEnRed.AvisarCargador(c); // F31 (US 355, CA5): lo ven todos y lo agarra el primero que pasa
     }
 
     // US 317: una baja con el cuchillo.
     private void AlMatarConElCuchillo(MeleeAttack cuchillo)
     {
         if (EleccionDeInvasion.Veces("Filo") > 0) MunicionDelArma.LlenarCargador(MunicionDelArma.EnLaMano(Armas()));
+    }
+
+    /// <summary>US 318: juntó un cargador del piso: un cargador entero al arma que tiene en la mano (también uno que
+    /// soltó la carta de un compañero, US 355).</summary>
+    public static void JuntarCargador()
+    {
+        CartasEnJuego cartas = FindFirstObjectByType<CartasEnJuego>();
+        if (cartas != null) MunicionDelArma.SumarUnCargador(MunicionDelArma.EnLaMano(cartas.Armas()));
     }
 
     private WeaponSwitcher Armas()
@@ -525,7 +535,7 @@ public class BurbujaDeDespeje : MonoBehaviour
 
     /// <summary>Lanza la burbuja desde el centro del puesto: empuja esos metros a los invasores del anillo (no al Jefe).
     /// Devuelve cuántos va a empujar.</summary>
-    public static int Lanzar(Vector3 centro, float radio, float metros)
+    public static int Lanzar(Vector3 centro, float radio, float metros, bool empujar = true)
     {
         var go = new GameObject("Burbuja de Despeje");
         go.transform.position = centro;
@@ -536,6 +546,7 @@ public class BurbujaDeDespeje : MonoBehaviour
         b.desde = Time.time;
         foreach (Npc npc in Npc.Todos)
         {
+            if (!empujar) break; // F31 (US 355, CA3): la de un compañero solo se ve (el empujón ya lo pidió él)
             if (npc == null || !npc.Vivo || (npc.Tipo != null && npc.Tipo.esJefe)) continue;
             Vector3 d = npc.transform.position - centro;
             d.y = 0f;

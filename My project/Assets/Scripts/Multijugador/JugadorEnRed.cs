@@ -160,6 +160,8 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
         GrenadeThrower.Thrown += AlLanzarGranada;
         GrenadeThrower.Started += AlEmpezarGranada;
         Grenade1.Exploded += AlExplotarGranada;
+        MinaDeGranada.SePuso += AlPonerMina;         // F31 (US 355)
+        GranadaPegada.SePego += AlPegarGranada;      // F31 (US 355)
         HabilidadTrasbordo.Usado += AlTrasbordar;
         PortalDeTeletransporte.Paso += AlPasarPortal;   // Mapa 1: los portales
         HabilidadBarrera.Levantada += AlLevantarBarrera;
@@ -178,6 +180,8 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
         GrenadeThrower.Thrown -= AlLanzarGranada;
         GrenadeThrower.Started -= AlEmpezarGranada;
         Grenade1.Exploded -= AlExplotarGranada;
+        MinaDeGranada.SePuso -= AlPonerMina;
+        GranadaPegada.SePego -= AlPegarGranada;
         HabilidadTrasbordo.Usado -= AlTrasbordar;
         PortalDeTeletransporte.Paso -= AlPasarPortal;
         HabilidadBarrera.Levantada -= AlLevantarBarrera;
@@ -1406,6 +1410,39 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
             Grenade1.PlayExplosion(item != null && item.grenadePrefab != null ? item.grenadePrefab.GetComponent<Grenade1>() : null, centro, item);
         }
         granadasRemotas.Remove(id);
+    }
+
+    // F31 (US 355, CA2): la granada de este jugador quedó como mina (Campo minado) o se le pegó a un invasor (Carga
+    // adherente): en las demás computadoras la copia hace lo mismo, y explota cuando explota la de verdad.
+    private void AlPonerMina(Grenade1 granada, Vector3 punto)
+    {
+        if (granada == null || granada.thrower != transform || granada.netId == 0 || !photonView.IsMine) return;
+        photonView.RPC(nameof(RpcGranadaMina), RpcTarget.Others, granada.netId, punto, granada.transform.rotation);
+    }
+
+    private void AlPegarGranada(Grenade1 granada, Npc invasor, Vector3 punto)
+    {
+        if (granada == null || invasor == null || granada.thrower != transform || granada.netId == 0 || !photonView.IsMine) return;
+        if (invasor.IdRed == 0) return; // (un invasor que no está en la red)
+        photonView.RPC(nameof(RpcGranadaPegada), RpcTarget.Others, granada.netId, invasor.IdRed, punto, granada.transform.rotation);
+    }
+
+    [PunRPC]
+    private void RpcGranadaMina(int id, Vector3 punto, Quaternion giro)
+    {
+        if (photonView.IsMine || !granadasRemotas.TryGetValue(id, out Grenade1 granada) || granada == null) return;
+        granada.transform.rotation = giro;
+        MinaDeGranada.Poner(granada, punto);
+    }
+
+    [PunRPC]
+    private void RpcGranadaPegada(int id, int invasor, Vector3 punto, Quaternion giro)
+    {
+        if (photonView.IsMine || !granadasRemotas.TryGetValue(id, out Grenade1 granada) || granada == null) return;
+        Npc npc = InvasoresEnRed.Invasor(invasor);
+        if (npc == null) return;
+        granada.transform.rotation = giro;
+        GranadaPegada.Pegar(granada, npc, null, punto);
     }
 
     private ShopItem FichaDe(byte indice) => catalogo != null && indice < catalogo.items.Count ? catalogo.items[indice] : null;

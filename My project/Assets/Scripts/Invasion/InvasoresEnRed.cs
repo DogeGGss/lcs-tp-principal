@@ -32,8 +32,10 @@ public class InvasoresEnRed : MonoBehaviourPunCallbacks, IOnEventCallback
         // US 353: el puesto de suministros.
         EvPuesto = 51, EvProximoPuesto = 52, EvCargaDelPuesto = 53, EvPuntosAlPuesto = 54,
         // US 356: quién ya eligió en el puesto y cuándo arranca el descanso.
-        EvListo = 55, EvDescanso = 56;
-    private const byte PrimerEvento = EvAparece, UltimoEvento = EvDescanso;
+        EvListo = 55, EvDescanso = 56,
+        // US 355: lo que se ve de las cartas de cada uno (los manda cualquiera, no solo el anfitrión).
+        EvDespeje = 57, EvCargador = 58, EvCargadorJuntado = 59;
+    private const byte PrimerEvento = EvAparece, UltimoEvento = EvCargadorJuntado;
 
     // Lo que se ve de los ataques (EvEfecto).
     private const byte EfCargaRayo = 1, EfRayo = 2, EfBolaDeEnergia = 3, EfBolaDeVeneno = 4, EfEmbestida = 5,
@@ -318,6 +320,47 @@ public class InvasoresEnRed : MonoBehaviourPunCallbacks, IOnEventCallback
         PhotonNetwork.RaiseEvent(EvPuntosAlPuesto, puntos, new RaiseEventOptions { Receivers = ReceiverGroup.MasterClient }, SendOptions.SendReliable);
     }
 
+    // ---------- US 355: lo que se ve de las cartas de cada uno ----------
+
+    private readonly Dictionary<int, CargadorEnElPiso> cargadores = new Dictionary<int, CargadorEnElPiso>();
+    private int siguienteCargador;
+
+    /// <summary>US 355: el invasor con ese número (la copia, o el de verdad en el anfitrión).</summary>
+    public static Npc Invasor(int id) => Actual != null && Actual.invasores.TryGetValue(id, out Npc npc) ? npc : null;
+
+    /// <summary>US 355, CA3: salió mi burbuja de Despeje: los demás la ven.</summary>
+    public static void AvisarDespeje(Vector3 centro, float radio, float metros)
+    {
+        if (!CooperativoDeInvasion.Activo || Actual == null) return;
+        Actual.Mandar(EvDespeje, new object[] { centro, radio, metros }, ReceiverGroup.Others, true);
+    }
+
+    /// <summary>US 355, CA5: mi Carroñero soltó un cargador: lo ven todos y lo agarra el primero que pasa.</summary>
+    public static void AvisarCargador(CargadorEnElPiso cargador)
+    {
+        if (cargador == null || !CooperativoDeInvasion.Activo || Actual == null) return;
+        Actual.siguienteCargador = Actual.siguienteCargador % 99999 + 1;
+        cargador.IdRed = Mathf.Clamp(Yo, 1, 160) * 100000 + Actual.siguienteCargador;
+        Actual.cargadores[cargador.IdRed] = cargador;
+        Actual.Mandar(EvCargador, new object[] { cargador.IdRed, cargador.transform.position }, ReceiverGroup.Others, true);
+    }
+
+    /// <summary>US 355, CA5: lo agarré: desaparece para todos.</summary>
+    public static void AvisarCargadorJuntado(CargadorEnElPiso cargador)
+    {
+        if (cargador == null || cargador.IdRed == 0 || Actual == null) return;
+        Actual.cargadores.Remove(cargador.IdRed);
+        Actual.Mandar(EvCargadorJuntado, cargador.IdRed, ReceiverGroup.Others, true);
+    }
+
+    private void CargadorDeOtro(int id, Vector3 lugar)
+    {
+        if (cargadores.ContainsKey(id)) return;
+        CargadorEnElPiso c = CargadorEnElPiso.Soltar(lugar + Vector3.up * 0.5f, null, CartasEnJuego.JuntarCargador);
+        c.IdRed = id;
+        cargadores[id] = c;
+    }
+
     // ---------- US 356: la elección de todos ----------
 
     private static readonly Dictionary<int, HashSet<int>> listos = new Dictionary<int, HashSet<int>>();
@@ -441,6 +484,19 @@ public class InvasoresEnRed : MonoBehaviourPunCallbacks, IOnEventCallback
                 break;
             case EvDescanso:
                 if (EsCopia && ev.CustomData is int oleadaDelDescanso && Oleadas != null) Oleadas.DescansoDelAnfitrion(oleadaDelDescanso);
+                break;
+            case EvDespeje: // US 355, CA3: la burbuja de un compañero (el empujón ya se lo pidió él al anfitrión)
+                if (d != null) BurbujaDeDespeje.Lanzar((Vector3)d[0], (float)d[1], (float)d[2], false);
+                break;
+            case EvCargador: // US 355, CA5: el cargador que soltó la carta de un compañero
+                if (d != null) CargadorDeOtro((int)d[0], (Vector3)d[1]);
+                break;
+            case EvCargadorJuntado:
+                if (ev.CustomData is int juntado && cargadores.TryGetValue(juntado, out CargadorEnElPiso c))
+                {
+                    cargadores.Remove(juntado);
+                    if (c != null) Destroy(c.gameObject);
+                }
                 break;
             case EvPuntosAlPuesto:
                 if (Anfitrion && ev.CustomData is int puntos && PuestoDeSuministros.Actual != null)
