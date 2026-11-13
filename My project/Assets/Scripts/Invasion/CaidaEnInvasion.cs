@@ -35,6 +35,8 @@ public class CaidaEnInvasion : MonoBehaviourPunCallbacks, IOnEventCallback
 
     /// <summary>El jugador de esta computadora está caído.</summary>
     public static bool YoCaido => Actual != null && Actual.estado == Estado.Caido;
+    /// <summary>US 356, CA2: muerto (espera la oleada siguiente) o retirado: esa vez no elige en el puesto.</summary>
+    public static bool YoAfuera => Actual != null && (Actual.estado == Estado.Muerto || Actual.estado == Estado.Retirado);
 
     private Estado estado = Estado.Vivo;
     private double caidoDesde;

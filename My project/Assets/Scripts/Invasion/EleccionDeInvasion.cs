@@ -182,6 +182,8 @@ public class EleccionDeInvasion : MonoBehaviour
     {
         this.delJefe = delJefe;
         if (MatchHud.Instance == null) return;
+        // US 356, CA2: en cooperativo, el que está muerto (o se retiró) no elige esa vez: vuelve en la oleada siguiente.
+        if (CooperativoDeInvasion.Activo && CaidaEnInvasion.YoAfuera) return;
         if (equipo == null) equipo = FindFirstObjectByType<PlayerLoadout>();
         if (lienzo == null) Armar();
 
