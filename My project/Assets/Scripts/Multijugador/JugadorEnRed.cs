@@ -265,14 +265,15 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
         int indice = catalogo != null ? catalogo.items.IndexOf(suelta.item) : -1;
         if (indice < 0 || indice > byte.MaxValue) return;
         photonView.RPC(nameof(RpcArmaSoltada), RpcTarget.Others, suelta.id, (byte)indice, suelta.desde, suelta.velocidad,
-            suelta.yaw, suelta.cargador, suelta.reserva);
+            suelta.yaw, suelta.cargador, suelta.reserva, suelta.skin ?? "");
     }
 
+    // F35 (US 380, CA4): con la skin que tenía.
     [PunRPC]
-    private void RpcArmaSoltada(int id, byte indice, Vector3 desde, Vector3 velocidad, float yaw, int cargador, int reserva)
+    private void RpcArmaSoltada(int id, byte indice, Vector3 desde, Vector3 velocidad, float yaw, int cargador, int reserva, string skin)
     {
         ShopItem item = FichaDe(indice);
-        if (item != null) ArmaEnPiso.Crear(id, item, desde, velocidad, yaw, cargador, reserva, false);
+        if (item != null) ArmaEnPiso.Crear(id, item, desde, velocidad, yaw, cargador, reserva, false, skin);
     }
 
     // CA10: la que soltó este jugador ya se quedó quieta; en las demás computadoras queda en el mismo lugar.
@@ -540,8 +541,11 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
             cargador = item.magazine > 0 ? item.magazine : -1,
             reserva = item.magazine > 0 ? item.reserve : -1
         };
+        // F35 (US 380, CA4): con la skin que tenía (la que publicó).
+        CatalogoDeSkins.Arma arma = CatalogoDeSkins.ArmaDeFicha(item.name);
+        if (arma != null && SkinsEnLasArmas.De(dueno).TryGetValue(arma.id, out CatalogoDeSkins.Skin skin)) suelta.skin = skin.id;
         // Propia: cuando se queda quieta, esta computadora les avisa a las demás dónde quedó (AlQuedarQuieta).
-        ArmaEnPiso.Crear(suelta.id, item, suelta.desde, suelta.velocidad, suelta.yaw, suelta.cargador, suelta.reserva, true);
+        ArmaEnPiso.Crear(suelta.id, item, suelta.desde, suelta.velocidad, suelta.yaw, suelta.cargador, suelta.reserva, true, suelta.skin);
         AlSoltarArma(suelta);
     }
 
@@ -750,6 +754,18 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
     private readonly List<ShopItem> fichasSecundarias = new List<ShopItem>();
     private ShopItem fichaPistola;
 
+    /// <summary>F35 (US 380): las armas de fuego de esta copia con su ficha: las de primera persona (apagadas) y las de la
+    /// mano.</summary>
+    public IEnumerable<(GameObject arma, ShopItem ficha)> ArmasConFicha()
+    {
+        for (int i = 0; i < principales.Count; i++) yield return (principales[i], i < fichasPrincipales.Count ? fichasPrincipales[i] : null);
+        ShopItem pistolaInicial = fichaPistola != null ? fichaPistola : catalogo != null ? catalogo.starterSecondary : null;
+        yield return (pistola, pistolaInicial);
+        for (int i = 0; i < secundarias.Count; i++) yield return (secundarias[i], i < fichasSecundarias.Count ? fichasSecundarias[i] : null);
+        foreach (KeyValuePair<byte, ModeloEnMano> m in enLaMano)
+            if (m.Value.go != null) yield return (m.Value.go, m.Key == ArmaPistola ? pistolaInicial : FichaDeCodigo(m.Key));
+    }
+
     private bool EsSecundaria(byte arma) => arma >= PrimeraSecundaria && arma < PrimeraPrincipal && arma - PrimeraSecundaria < secundarias.Count;
 
     // Las secundarias que no son la Línea A (US 072), en el orden de WeaponSwitcher.otrasSecundarias.
@@ -946,6 +962,7 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
         Quitar<EfectoHabilidad>(go); // el Trasbordo o la Barrera de su dueño llegan por la red
         Quitar<GrenadeThrower>(go); // la copia no tira granadas: las que tiró su dueño llegan por RpcGranada (US 073)
         Quitar<SoltarArmas>(go);    // ni suelta armas: las que soltó su dueño llegan por RpcArmaSoltada (US 184)
+        Quitar<SkinsEnLasArmas>(go); // sus skins llegan por la red (F35, US 380: SkinsDeJugadorEnRed)
         PlayerLoadout carga = go.GetComponentInChildren<PlayerLoadout>(true);
         jugador.catalogo = carga != null ? carga.Catalog : null; // para saber qué granada tiró
         Quitar<PlayerLoadout>(go); // antes que la billetera, que la necesita
@@ -992,6 +1009,7 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
         Destroy(soporte);
         vista.ViewID = viewId;
         jugador.IniciarCopia(efectos);
+        SkinsDeJugadorEnRed.Poner(jugador); // F35 (US 380, CA2): sus armas con sus skins
         return jugador;
     }
 
