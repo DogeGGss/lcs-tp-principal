@@ -40,7 +40,13 @@ public class Multijugador : MonoBehaviourPunCallbacks, IOnEventCallback
 
     /// <summary>La sala ya está jugando (el anfitrión inició la partida).</summary>
     public static bool EnJuego =>
-        PhotonNetwork.CurrentRoom != null && PhotonNetwork.CurrentRoom.CustomProperties.TryGetValue(PropJugando, out object v) && v is bool b && b;
+        PhotonNetwork.CurrentRoom != null && (PhotonNetwork.CurrentRoom.Name == salaIniciada ||
+            PhotonNetwork.CurrentRoom.CustomProperties.TryGetValue(PropJugando, out object v) && v is bool b && b);
+
+    // La sala que inició esta computadora. La marca de la sala tarda en volver del servidor (y mientras se carga el mapa
+    // Photon no procesa mensajes): sin esto, en Invasión (la sala sigue abierta) el anfitrión de una sala pública la
+    // volvía a iniciar y Photon cortaba la carga del mapa ("PUN cancels an ongoing async level load").
+    private static string salaIniciada;
 
     /// <summary>US 358: esta computadora entró a la sala con la partida ya empezada.</summary>
     public static bool EntroEmpezada { get; private set; }
@@ -247,7 +253,8 @@ public class Multijugador : MonoBehaviourPunCallbacks, IOnEventCallback
     // US 027, CA7: solo el anfitrión, con al menos 2 jugadores. La sala se cierra y todos pasan al mapa.
     public void Iniciar()
     {
-        if (!PuedeIniciar) return;
+        if (!PuedeIniciar || EnJuego) return;
+        salaIniciada = PhotonNetwork.CurrentRoom.Name;
         // US 031: en Táctico, el anfitrión reparte los equipos antes de cargar el mapa.
         if (ModoSala == GameMode.Tactico) EquiposTacticos.Repartir();
         // F31 (US 358, CA1): en Invasión la sala sigue abierta (con el código o buscando partida se entra mientras
