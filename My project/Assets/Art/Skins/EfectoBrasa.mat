@@ -26,7 +26,7 @@ Material:
     m_Ints: []
     m_Floats:
     - _Abrir: 1
-    - _Brillo: 2
+    - _Brillo: 4
     - _Modo: 1
     m_Colors:
     - _ColorFuego: {r: 0.1176, g: 0.4196, b: 1.0000, a: 1}

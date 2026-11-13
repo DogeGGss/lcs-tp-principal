@@ -47,8 +47,8 @@ public static class CatalogoDeSkins
         public Efectos efectos;
     }
 
-    /// <summary>US 381: lo que cambia al disparar con una legendaria (EfectosDeSkin). Mismo tamaño y duración que los de
-    /// siempre: cambia el color y la forma.</summary>
+    /// <summary>US 381: lo que cambia al disparar con una legendaria (EfectosDeSkin): el color y la forma del fogonazo y
+    /// la estela.</summary>
     public class Efectos
     {
         public Color fuego, nucleo;

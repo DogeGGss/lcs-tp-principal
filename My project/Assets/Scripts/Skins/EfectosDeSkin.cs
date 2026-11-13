@@ -1,14 +1,14 @@
 using UnityEngine;
 
 // F35 (Skins de armas), US 381: el fogonazo y la estela de las skins legendarias (CatalogoDeSkins.Efectos), en lugar de
-// los de siempre (Trazadora). CA3: duran y miden lo mismo que los normales y no cambian la bala: cambia el color y la forma.
+// los de siempre (Trazadora). No cambian la bala: se ven más (como los de la bronca) y de otro color y forma.
 // - Fogonazo: la luz del color del fuego y, si tiene alas, dos alas de fuego que se abren y se cierran en un instante,
 //   mirando a la cámara (Art/Skins/EfectoAlas).
 // - Estela: la de siempre, del color del fuego, y si tiene brasas, unas brasas que se desprenden y caen (EfectoBrasa).
 // Los usan los disparos propios (WeaponFire) y los de los demás jugadores (JugadorEnRed): CA4, lo ven todos.
 public static class EfectosDeSkin
 {
-    private const int BrasasPorMetro = 2, MaxBrasas = 14;
+    private const int BrasasPorMetro = 4, MaxBrasas = 30;
 
     private static ParticleSystem brasas;
 
@@ -53,8 +53,8 @@ public static class EfectosDeSkin
             float t = Random.Range(0.05f, 1f) * Mathf.Min(1f, 30f / Mathf.Max(0.01f, largo)); // las de cerca, que se ven
             p.position = Vector3.Lerp(desde, hasta, t) + Random.insideUnitSphere * 0.04f;
             p.velocity = Random.insideUnitSphere * 0.4f + Vector3.down * Random.Range(0.3f, 0.9f);
-            p.startSize = Random.Range(0.015f, 0.035f);
-            p.startLifetime = Random.Range(0.35f, 0.7f);
+            p.startSize = Random.Range(0.04f, 0.08f);
+            p.startLifetime = Random.Range(0.5f, 1f);
             p.startColor = Color.Lerp(e.fuego, e.nucleo, Random.value);
             ps.Emit(p, 1);
         }

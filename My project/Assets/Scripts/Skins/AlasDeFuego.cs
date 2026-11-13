@@ -4,7 +4,7 @@ using UnityEngine;
 // cierran en DuracionAlas.
 public class AlasDeFuego : MonoBehaviour
 {
-    private const float DuracionAlas = 0.07f, TamanoAlas = 0.32f; // s y m (como el fogonazo de luz de siempre)
+    private const float DuracionAlas = 0.14f, TamanoAlas = 0.6f; // s y m
     private static readonly int Abrir = Shader.PropertyToID("_Abrir");
     private static readonly int ColorFuego = Shader.PropertyToID("_ColorFuego"), ColorNucleo = Shader.PropertyToID("_ColorNucleo");
 
@@ -40,8 +40,9 @@ public class AlasDeFuego : MonoBehaviour
             // La x del cuadrado, a lo largo del disparo (en la pantalla); si se dispara justo hacia adelante de la
             // cámara (primera persona), de costado.
             x = Vector3.ProjectOnPlane(adelante, mira);
-            // (En primera persona, más chicas: la boca está cerca de la cámara y no tienen que tapar la mira, CA3.)
-            if (x.sqrMagnitude < 0.04f) { x = cam.transform.right; tam = TamanoAlas * 0.55f; }
+            // En primera persona (se dispara hacia adelante de la cámara): más chicas y hacia arriba a la derecha de la boca,
+            // lejos de la mira y del arma (que se dibuja encima, con otra cámara, y las taparía).
+            if (x.sqrMagnitude < 0.04f) { x = cam.transform.right * 0.6f + cam.transform.up * 0.8f; tam = TamanoAlas * 0.4f; }
             x.Normalize();
             transform.rotation = Quaternion.LookRotation(mira, Vector3.Cross(mira, x)); // (así su derecha es x)
         }
