@@ -2131,6 +2131,30 @@
     {
       "key": "profile.text.kda_kills_assists_deaths_with",
       "text": "* KDA = (bajas + asistencias) ÷ muertes; sin muertes, ÷ 1. Asistencia: dañaste a un rival que otro eliminó en los 10 s siguientes. Cuentan las partidas terminadas."
+    },
+    {
+      "key": "profile.skin.weapon.knife",
+      "text": "Cuchillo"
+    },
+    {
+      "key": "profile.skin.colors.rift",
+      "text": "Rift"
+    },
+    {
+      "key": "profile.skin.colors.albiceleste",
+      "text": "Albiceleste"
+    },
+    {
+      "key": "profile.skin.colors.ember",
+      "text": "Brasa"
+    },
+    {
+      "key": "profile.skin.colors.arctic",
+      "text": "Ártico"
+    },
+    {
+      "key": "profile.skin.colors.desert",
+      "text": "Desierto"
     }
   ]
 }

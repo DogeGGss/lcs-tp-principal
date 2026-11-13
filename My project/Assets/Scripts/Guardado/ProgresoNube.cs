@@ -4,7 +4,8 @@ using UnityEngine;
 
 // El progreso del jugador que se guarda también en la nube (F18, US 162, CA3, y US 163, CA2), además de los logros, que
 // van con el ranking (LogrosOnline, rw_sync_comets): las estadísticas del minijuego (US 159) y las del jugador (F24), los
-// récords de Zombie y el Perfil (cosméticos, cápsulas abiertas, pity, compras y últimos premios). Arma el documento que
+// récords de Zombie, el Perfil (cosméticos, cápsulas abiertas, pity, compras y últimos premios) y las skins de las armas
+// (F35, US 378: las obtenidas y la equipada de cada arma). Arma el documento que
 // sube LogrosOnline (rw_sync_progress) y junta el que vuelve:
 // - contadores que solo suben: el máximo (el pity va como «cápsula del último épico», que también solo sube);
 // - mejores tiempos: el mínimo; cosméticos, packs de una vez y compras: la unión;
@@ -29,6 +30,7 @@ public static class ProgresoNube
     }
 
     private const string Minijuego = "minijuego.", Zombie = "zombie.record.", Perfil = "perfil.";
+    private const string Skins = "skins.", SkinEquipada = Skins + "equipada.";
     private const string Tactico = "estadisticas.tactico.", Deathmatch = "estadisticas.deathmatch.", Invasion = "estadisticas.invasion.";
     private static readonly string[] Tipos = { "comun", "raro", "epico" };
 
@@ -56,6 +58,7 @@ public static class ProgresoNube
             EstadisticasMinijuego.Recargar();
             EstadisticasJugador.Recargar();
             PerfilDatos.Recargar();
+            SkinsDeArmas.Recargar();
         };
     }
 
@@ -101,6 +104,16 @@ public static class ProgresoNube
             foreach (var (tipo, id) in PerfilDatos.Equipados) d.valores.Add(new Texto { clave = Perfil + tipo, valor = id });
             IReadOnlyList<string> recientes = PerfilDatos.Recientes;
             for (int i = 0; i < recientes.Count; i++) d.valores.Add(new Texto { clave = Reciente + i, valor = recientes[i] });
+        }
+
+        // Skins de las armas (F35, US 378): las obtenidas (unión) y la equipada de cada arma ("" sin skin).
+        d.conjuntos.Add(Ordenado(Skins + "obtenidas", SkinsDeArmas.Obtenidas));
+        if (SkinsDeArmas.EquipadoPropio)
+        {
+            var equipadas = new Dictionary<string, string>();
+            foreach (var (arma, skin) in SkinsDeArmas.Equipadas) equipadas[arma] = skin;
+            foreach (CatalogoDeSkins.Arma a in CatalogoDeSkins.Armas)
+                d.valores.Add(new Texto { clave = SkinEquipada + a.id, valor = equipadas.TryGetValue(a.id, out string s) ? s : "" });
         }
         return d;
     }
@@ -215,5 +228,17 @@ public static class ProgresoNube
             }
         perfil.recientes.AddRange(recientes.Values);
         PerfilDatos.FusionarNube(perfil);
+
+        // Skins de las armas (F35, US 378)
+        var skins = new List<string>();
+        var equipadas = new Dictionary<string, string>();
+        if (nube.conjuntos != null)
+            foreach (Conjunto c in nube.conjuntos)
+                if (c != null && c.elementos != null && c.clave == Skins + "obtenidas") skins.AddRange(c.elementos);
+        if (nube.valores != null)
+            foreach (Texto t in nube.valores)
+                if (t != null && t.clave != null && t.clave.StartsWith(SkinEquipada, StringComparison.Ordinal))
+                    equipadas[t.clave.Substring(SkinEquipada.Length)] = t.valor ?? "";
+        SkinsDeArmas.FusionarNube(skins, equipadas);
     }
 }

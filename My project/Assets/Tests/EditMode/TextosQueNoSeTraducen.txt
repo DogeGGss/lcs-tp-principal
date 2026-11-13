@@ -117,6 +117,9 @@ Pruebas/PruebaDeRendimiento.cs: Prueba de rendimiento ({i + 1}/{pasos.Count}): {
 Pruebas/PruebaDeRendimiento.cs: \nGuardado en 
 Pruebas/PruebaDeRendimiento.cs:   (F2 de nuevo para repetir)
 Pruebas/PruebaDeRendimiento.cs: Con sombra ({conSombra.Count}):
+Skins/CatalogoDeSkins.cs: Último Tren
+Skins/CatalogoDeSkins.cs: El Gran Capitán
+Skins/CatalogoDeSkins.cs: La Porteña
 UI/Credits/CreditsScreen.cs: Nicolás Gauna\nFranco Barreto\nNahuel Velázquez\nUlises Fonseca
 UI/Credits/CreditsScreen.cs: Ulises Fonseca\nNahuel Velázquez
 UI/Credits/CreditsScreen.cs: Lucas Huber\nNicolás Gauna\nLuka Gómez
