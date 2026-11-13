@@ -23,12 +23,14 @@ public class Trazadora : MonoBehaviour
     private static readonly System.Collections.Generic.Dictionary<Color, Material> teñidas =
         new System.Collections.Generic.Dictionary<Color, Material>();
 
-    /// <summary>Estela de "desde" (la boca del arma) hasta "hasta" (donde pegó la bala); roja, la del disparo con bronca.</summary>
-    public static void Mostrar(Vector3 desde, Vector3 hasta, bool conBronca = false)
+    /// <summary>Estela de "desde" (la boca del arma) hasta "hasta" (donde pegó la bala); roja, la del disparo con bronca.
+    /// color: el de una skin legendaria (F35, US 381): del mismo grosor que la de siempre, solo de otro color.</summary>
+    public static void Mostrar(Vector3 desde, Vector3 hasta, bool conBronca = false, Color? color = null)
     {
         Material material = ConfigRed.Actual != null ? ConfigRed.Actual.trazadora : null;
         Color? tinte = conBronca ? (Color?)Bronca : Tinte;
         if (material != null && tinte.HasValue) material = Teñida(material, tinte.Value);
+        else if (material != null && color.HasValue) material = Teñida(material, color.Value);
         conBronca = tinte.HasValue; // (gruesa y fuerte)
         Vector3 tramo = hasta - desde;
         float distancia = tramo.magnitude;
@@ -63,8 +65,9 @@ public class Trazadora : MonoBehaviour
         return m;
     }
 
-    /// <summary>Destello de luz en la boca del arma, un instante; rojo y más fuerte, el del disparo con bronca.</summary>
-    public static void Fogonazo(Vector3 lugar, bool conBronca = false)
+    /// <summary>Destello de luz en la boca del arma, un instante; rojo y más fuerte, el del disparo con bronca. color: el
+    /// de una skin legendaria (F35, US 381), igual de fuerte que el de siempre.</summary>
+    public static void Fogonazo(Vector3 lugar, bool conBronca = false, Color? color = null)
     {
         var go = new GameObject("Fogonazo");
         go.transform.position = lugar;
@@ -72,7 +75,7 @@ public class Trazadora : MonoBehaviour
         luz.type = LightType.Point;
         Color? tinte = conBronca ? (Color?)Bronca : Tinte;
         conBronca = tinte.HasValue;
-        luz.color = tinte ?? new Color(1f, 0.78f, 0.45f);
+        luz.color = tinte ?? color ?? new Color(1f, 0.78f, 0.45f);
         luz.intensity = conBronca ? 6f : 2.2f;
         luz.range = conBronca ? 7f : 5f;
         luz.shadows = LightShadows.None;

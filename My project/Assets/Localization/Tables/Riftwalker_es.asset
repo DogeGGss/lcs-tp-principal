@@ -6639,6 +6639,10 @@ MonoBehaviour:
     m_Localized: "Cristal del Rift"
     m_Metadata:
       m_Items: []
+  - m_Id: 380227458789503
+    m_Localized: "Dragón Abisal"
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

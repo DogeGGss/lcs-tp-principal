@@ -43,6 +43,19 @@ public static class CatalogoDeSkins
         public Color muestra;
         /// <summary>Otras partes, con otro material o un color (por ejemplo, el cuerpo de mármol negro del mármol).</summary>
         public Extra[] extras = new Extra[0];
+        /// <summary>Las legendarias (US 381): su fogonazo y su estela. null: los de siempre.</summary>
+        public Efectos efectos;
+    }
+
+    /// <summary>US 381: lo que cambia al disparar con una legendaria (EfectosDeSkin). Mismo tamaño y duración que los de
+    /// siempre: cambia el color y la forma.</summary>
+    public class Efectos
+    {
+        public Color fuego, nucleo;
+        /// <summary>El fogonazo con forma de dos alas de fuego que se abren.</summary>
+        public bool alas;
+        /// <summary>La estela suelta brasas que caen.</summary>
+        public bool brasas;
     }
 
     /// <summary>Una parte del arma con otro material (el id en ModelosDeArmas) o solo otro color.</summary>
@@ -113,6 +126,13 @@ public static class CatalogoDeSkins
             extras = new[] { new Extra { parte = Black, material = "cristal-oscuro", muestra = Hex(0x2A1F4A) },
                              new Extra { parte = Main, color = Hex(0x3B1F7A), muestra = Hex(0x3B1F7A) } } },
         new Diseno { id = "codigo-binario", nombre = "Código binario", rareza = Rareza.Epico, partes = new[] { White, Main }, muestra = Hex(0x26FF59) },
+        // Legendaria (US 381, 13/11/2026), inspirada en un dragón negro con alas de fuego azul (Art/Skins/SkinDragon.shader):
+        // escamas negras en el cuerpo, grietas de fuego azul en los paneles y llamas en las franjas, todo animado; al
+        // disparar, un fogonazo de alas de fuego y una estela azul con brasas.
+        new Diseno { id = "dragon-abisal", nombre = "Dragón Abisal", rareza = Rareza.Legendario, partes = new[] { White }, muestra = Hex(0x1E6BFF),
+            extras = new[] { new Extra { parte = Black, material = "dragon-escamas", muestra = Hex(0x2A2C36) },
+                             new Extra { parte = Main, material = "dragon-llama", muestra = Hex(0x4FC8FF) } },
+            efectos = new Efectos { fuego = Hex(0x1E6BFF), nucleo = Hex(0xCFFAFF), alas = true, brasas = true } },
     };
 
     /// <summary>Los colores de las armas como vienen: cuerpo, paneles, detalles y acento.</summary>

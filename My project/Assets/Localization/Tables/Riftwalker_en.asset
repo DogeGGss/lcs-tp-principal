@@ -6667,6 +6667,10 @@ MonoBehaviour:
     m_Localized: "Rift Crystal"
     m_Metadata:
       m_Items: []
+  - m_Id: 380227458789503
+    m_Localized: "Abyssal Dragon"
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

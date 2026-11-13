@@ -90,14 +90,20 @@ public static class WeaponFire
         }
         int deMas = DanioDeMas != null ? Mathf.Max(0, DanioDeMas()) : 0; // US 330
         bool conBronca = deMas > 0; // US 330: el disparo con bronca se ve rojo
-        Trazadora.Fogonazo(muzzle, conBronca);
+        // F35 (US 381): con una skin legendaria, su fogonazo y su estela (la bronca y la descarga tienen prioridad).
+        CatalogoDeSkins.Efectos legendaria = conBronca || Trazadora.Tinte.HasValue ? null : SkinsEnLasArmas.EfectosDe(weapon);
+        if (legendaria != null) EfectosDeSkin.Fogonazo(muzzle, camera.transform.forward, legendaria);
+        else Trazadora.Fogonazo(muzzle, conBronca);
+        CalorDeSkin.Disparo(SkinsEnLasArmas.ArmaDe(weapon)); // el fuego de la skin se enciende con cada tiro
         int deMasPorPerdigon = deMas / pellets, deMasSobra = deMas - deMasPorPerdigon * pellets;
         for (int i = 0; i < pellets; i++)
         {
             Vector3 direction = view * Deviation(spread) * Vector3.forward;
             directions[i] = direction;
             bool touched = Trace(camera.transform.position, direction, range, shooter, out RaycastHit hit, out HealthSystem target, out BodyZone zone);
-            Trazadora.Mostrar(muzzle, touched ? hit.point : camera.transform.position + direction * Mathf.Min(range, 300f), conBronca);
+            Vector3 fin = touched ? hit.point : camera.transform.position + direction * Mathf.Min(range, 300f);
+            if (legendaria != null) EfectosDeSkin.Estela(muzzle, fin, legendaria);
+            else Trazadora.Mostrar(muzzle, fin, conBronca);
             if (!touched)
                 continue;
 

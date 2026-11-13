@@ -1352,6 +1352,15 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
         if (camara != null) soporteMano.rotation = camara.rotation;
     }
 
+    // F35 (US 381): la skin que publicó su dueño para el arma con ese código, o null.
+    private CatalogoDeSkins.Skin SkinEnLaMano(byte arma)
+    {
+        ShopItem ficha = arma == ArmaPistola ? (fichaPistola != null ? fichaPistola : catalogo != null ? catalogo.starterSecondary : null)
+            : FichaDeCodigo(arma);
+        CatalogoDeSkins.Arma a = ficha != null ? CatalogoDeSkins.ArmaDeFicha(ficha.name) : null;
+        return a != null && SkinsEnLasArmas.De(Dueno).TryGetValue(a.id, out CatalogoDeSkins.Skin s) ? s : null;
+    }
+
     // CA5: la boca del caño del arma que tiene en la mano; si no tiene ninguna, "siNo".
     private Vector3 Boca(byte arma, Vector3 siNo)
     {
@@ -1378,12 +1387,18 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
         if (clip != null && sonido != null) sonido.PlayOneShot(clip);
 
         Vector3 boca = Boca(arma, origen); // US 182, CA5: del caño del arma en la mano
-        global::Trazadora.Fogonazo(boca);
+        // F35 (US 381, CA4): con su skin legendaria, el fogonazo y la estela de la skin, y su fuego se enciende.
+        CatalogoDeSkins.Efectos legendaria = EfectosDeSkin.De(SkinEnLaMano(arma));
+        Vector3 adelante = direcciones.Length >= 3 ? new Vector3(direcciones[0], direcciones[1], direcciones[2]) : transform.forward;
+        if (legendaria != null) EfectosDeSkin.Fogonazo(boca, adelante, legendaria);
+        else global::Trazadora.Fogonazo(boca);
+        if (enLaMano.TryGetValue(arma, out ModeloEnMano conCalor)) CalorDeSkin.Disparo(conCalor.go);
         for (int i = 0; i + 2 < direcciones.Length; i += 3)
         {
             Vector3 direccion = new Vector3(direcciones[i], direcciones[i + 1], direcciones[i + 2]);
             Vector3 fin = WeaponFire.Replay(origen, direccion, AlcanceTrazadora, transform);
-            global::Trazadora.Mostrar(boca, fin);
+            if (legendaria != null) EfectosDeSkin.Estela(boca, fin, legendaria);
+            else global::Trazadora.Mostrar(boca, fin);
         }
     }
 

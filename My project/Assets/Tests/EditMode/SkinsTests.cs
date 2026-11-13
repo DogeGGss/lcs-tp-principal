@@ -88,4 +88,19 @@ public class SkinsTests
         Assert.IsNull(CatalogoDeSkins.De("mitre-fibra-de-carbono"));
         Assert.IsNull(CatalogoDeSkins.De("mitre-cobre-oxidado"));
     }
+
+    [Test, Category("US 381"), Description("Dragón Abisal: legendaria, con su fogonazo de alas, su estela con brasas y sus materiales")]
+    public void Dragon_abisal_es_legendaria()
+    {
+        CatalogoDeSkins.Skin s = CatalogoDeSkins.De("mitre-dragon-abisal");
+        Assert.IsNotNull(s);
+        Assert.AreEqual(PerfilDatos.Rareza.Legendario, s.rareza);
+        CatalogoDeSkins.Efectos e = EfectosDeSkin.De(s);
+        Assert.IsNotNull(e);
+        Assert.IsTrue(e.alas && e.brasas);
+        Assert.IsNull(EfectosDeSkin.De(CatalogoDeSkins.De("mitre-codigo-binario"))); // las demás, los efectos de siempre
+        var modelos = Resources.Load<ModelosDeArmas>("Skins/ModelosDeArmas");
+        Assert.IsNotNull(modelos.MaterialDe("efecto-alas"));
+        Assert.IsNotNull(modelos.MaterialDe("efecto-brasa"));
+    }
 }
