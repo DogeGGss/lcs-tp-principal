@@ -45,6 +45,7 @@ public class CaidoEnTerceraPersona : MonoBehaviour
     private void Update()
     {
         Animar();
+        if (arma != null) arma.Caido = peso > 0f; // sin las manos en el arma mientras está en el piso
         Cartel();
         antes = transform.position;
     }
@@ -94,12 +95,6 @@ public class CaidoEnTerceraPersona : MonoBehaviour
         return largoLevantarse;
     }
 
-    // Sin las manos en el arma mientras está en el piso (como al bailar, US 262).
-    private void LateUpdate()
-    {
-        if (arma != null && peso > 0f) arma.Bailando = true;
-    }
-
     // CA2: "Caído 23 s" (o "Reviviendo") arriba de él, mirando a la cámara.
     private void Cartel()
     {
@@ -128,6 +123,7 @@ public class CaidoEnTerceraPersona : MonoBehaviour
 
     private void OnDisable()
     {
+        if (arma != null) arma.Caido = false;
         if (animador != null && capa >= 0) animador.SetLayerWeight(capa, 0f);
         if (cartel != null) cartel.gameObject.SetActive(false);
     }
