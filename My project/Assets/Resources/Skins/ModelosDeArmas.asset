@@ -42,3 +42,5 @@ MonoBehaviour:
     material: {fileID: 2100000, guid: c40c9e435a9e476ab8bbfa6bc2200ce4, type: 2}
   - diseno: oro
     material: {fileID: 2100000, guid: 046f498752dc4a11b02a5f799b53d080, type: 2}
+  - diseno: cristal-oscuro
+    material: {fileID: 2100000, guid: ba992037457c4509892963b3e53c1659, type: 2}

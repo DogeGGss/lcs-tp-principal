@@ -108,7 +108,10 @@ public static class CatalogoDeSkins
         new Diseno { id = "azulejos-del-subte", nombre = "Azulejos del subte", rareza = Rareza.Raro, partes = new[] { White }, muestra = Hex(0x7FB6D9),
             extras = new[] { new Extra { parte = Black, color = Hex(0xECEBE6), muestra = Hex(0xECEBE6) },
                              new Extra { parte = Main, color = Hex(0x8A8D92), muestra = Hex(0x8A8D92) } } },
-        new Diseno { id = "cristal-del-rift", nombre = "Cristal del Rift", rareza = Rareza.Raro, partes = new[] { White, Main }, muestra = Hex(0x7B3FE4) },
+        // Cristal violeta y celeste en los paneles, el cuerpo de cristal oscuro con bordes violetas y las franjas violeta oscuro.
+        new Diseno { id = "cristal-del-rift", nombre = "Cristal del Rift", rareza = Rareza.Raro, partes = new[] { White }, muestra = Hex(0x7B3FE4),
+            extras = new[] { new Extra { parte = Black, material = "cristal-oscuro", muestra = Hex(0x2A1F4A) },
+                             new Extra { parte = Main, color = Hex(0x3B1F7A), muestra = Hex(0x3B1F7A) } } },
         new Diseno { id = "codigo-binario", nombre = "Código binario", rareza = Rareza.Epico, partes = new[] { White, Main }, muestra = Hex(0x26FF59) },
     };
 
