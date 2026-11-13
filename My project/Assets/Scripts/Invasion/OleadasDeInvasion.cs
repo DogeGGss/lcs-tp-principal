@@ -77,6 +77,11 @@ public class OleadasDeInvasion : MonoBehaviour
 
     /// <summary>Avisa cada oleada que empieza y cada oleada superada (para el marcador y los puntos).</summary>
     public static event System.Action<int> Empezo, Supero;
+    /// <summary>
+    /// US 358 y US 359, CA2: el Empezo que corre ahora no es una oleada que arranca: esta computadora recién entró (o
+    /// volvió) y se pone al día con la que ya estaba en juego en el anfitrión (EstadoDelAnfitrion).
+    /// </summary>
+    public static bool PoniendoseAlDia { get; private set; }
     /// <summary>US 335: arrancó el descanso de 20 s antes de esa oleada (después de la elección, si la hubo).</summary>
     public static event System.Action<int> EmpezoElDescanso;
 
@@ -245,7 +250,9 @@ public class OleadasDeInvasion : MonoBehaviour
         if (suFase == Fase.Oleada && (fase != Fase.Oleada || Oleada != n))
         {
             bool conJefe = EsDeJefe(n) && tipoJefe != null;
-            EmpezoEnElAnfitrion(n, (int)e[2] + (conJefe ? 1 : 0), (int)e[4]);
+            PoniendoseAlDia = true;
+            try { EmpezoEnElAnfitrion(n, (int)e[2] + (conJefe ? 1 : 0), (int)e[4]); }
+            finally { PoniendoseAlDia = false; }
         }
         if (fase == Fase.Oleada && Oleada == n)
         {
