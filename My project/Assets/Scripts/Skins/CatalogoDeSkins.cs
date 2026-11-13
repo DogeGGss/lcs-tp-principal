@@ -60,9 +60,9 @@ public static class CatalogoDeSkins
     // La primera tanda (13/11/2026): cinco combinaciones, comunes, en todas las armas. Cuerpo / paneles / detalles / acento.
     public static readonly List<Colores> Combinaciones = new List<Colores>
     {
-        C("rift", "Rift", 0x1E1630, 0x8B3DFF, 0x0B0812, 0xB9A7E8),
-        C("albiceleste", "Albiceleste", 0xE8EEF4, 0x74ACDF, 0x1C2633, 0xF6B40E),
-        C("brasa", "Brasa", 0x121212, 0xD7261E, 0x3A3A3A, 0xFF6A3D),
+        C("rift", "Rift", 0xB9A7E8, 0x6E3FCF, 0x2A2140, 0xF2ECFF),
+        C("albiceleste", "Albiceleste", 0x74ACDF, 0xF2F5F8, 0x2B3A4A, 0xF6B40E),
+        C("brasa", "Brasa", 0x1B1B1B, 0x4A4A4A, 0x0A0A0A, 0xE0281F),
         C("artico", "Ártico", 0xDDE3E8, 0x5FD3E8, 0x2A2F35, 0xA7B0B8),
         C("desierto", "Desierto", 0xC8A26B, 0x6B5A40, 0x2B241A, 0xD9C9A8),
     };
