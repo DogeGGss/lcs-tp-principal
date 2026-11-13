@@ -11,6 +11,9 @@ public class SkinDeArma : MonoBehaviour
 {
     // Un material por cada original y color: así no se crea uno nuevo cada vez que se pone una skin.
     private static readonly Dictionary<(Material, Color), Material> pintados = new Dictionary<(Material, Color), Material>();
+    // De cada pintado, su original: una copia de un arma con skin (el arma en el piso, la de la mano de los demás) sale
+    // con los materiales pintados, y otra skin (o ninguna) tiene que partir de los originales (US 380).
+    private static readonly Dictionary<Material, Material> originalDe = new Dictionary<Material, Material>();
 
     private readonly Dictionary<Renderer, Material[]> originales = new Dictionary<Renderer, Material[]>();
 
@@ -33,8 +36,6 @@ public class SkinDeArma : MonoBehaviour
     public static void Poner(GameObject arma, CatalogoDeSkins.Skin skin)
     {
         if (arma == null) return;
-        SkinDeArma s = arma.GetComponent<SkinDeArma>();
-        if (skin == null) { if (s != null) s.Sacar(); return; }
         De(arma).Poner(skin);
     }
 
@@ -62,7 +63,8 @@ public class SkinDeArma : MonoBehaviour
 
     public void Poner(CatalogoDeSkins.Skin skin)
     {
-        if (skin == Puesta) return;
+        if (skin == Puesta && (skin != null || pintada)) return;
+        pintada = true;
         Cambiar(m =>
         {
             Color? color = m != null ? CatalogoDeSkins.ColorPara(skin, m.name) : null;
@@ -71,7 +73,9 @@ public class SkinDeArma : MonoBehaviour
         Puesta = skin;
     }
 
-    // Cambia cada material (de los originales) por el que devuelve cambio.
+    private bool pintada; // ya se le puso una skin del catálogo (o la original) alguna vez
+
+    // Cambia cada material (de los originales: si ya venía pintado, el suyo) por el que devuelve cambio.
     private void Cambiar(System.Func<Material, Material> cambio)
     {
         Sacar();
@@ -81,10 +85,12 @@ public class SkinDeArma : MonoBehaviour
             Material[] actuales = r.sharedMaterials;
             originales[r] = actuales;
             var nuevos = new Material[actuales.Length];
-            for (int i = 0; i < nuevos.Length; i++) nuevos[i] = cambio(actuales[i]);
+            for (int i = 0; i < nuevos.Length; i++) nuevos[i] = cambio(Original(actuales[i]));
             r.sharedMaterials = nuevos;
         }
     }
+
+    private static Material Original(Material m) => m != null && originalDe.TryGetValue(m, out Material o) && o != null ? o : m;
 
     // El mismo material con otro color (URP: _BaseColor; si no, _Color). Con textura, el color la tiñe.
     private static Material Pintado(Material original, Color color)
@@ -95,6 +101,7 @@ public class SkinDeArma : MonoBehaviour
         if (m.HasProperty("_BaseColor")) m.SetColor("_BaseColor", color);
         if (m.HasProperty("_Color")) m.SetColor("_Color", color);
         pintados[clave] = m;
+        originalDe[m] = original;
         return m;
     }
 

@@ -49,6 +49,8 @@ public class WeaponSwitcher : MonoBehaviour
 
         // Soltar y levantar armas (US 184): igual, se agrega solo.
         if (GetComponentInParent<SoltarArmas>() == null) gameObject.AddComponent<SoltarArmas>();
+        // F35 (US 380): las skins en las armas.
+        if (GetComponentInParent<SkinsEnLasArmas>() == null) gameObject.AddComponent<SkinsEnLasArmas>();
         // Brazos de primera persona pegados a la cámara con la Línea A (si el jugador tiene brazos de primera persona).
         if (GetComponentInParent<BrazosEnCamara>() == null) gameObject.AddComponent<BrazosEnCamara>();
         // Animación del arma en primera persona (disparo, recarga, sacarla, caminar). Por ahora, solo la pistola.
