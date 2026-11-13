@@ -6623,6 +6623,22 @@ MonoBehaviour:
     m_Localized: "{0} sin skin"
     m_Metadata:
       m_Items: []
+  - m_Id: 380227458789496
+    m_Localized: "Código binario"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227458789500
+    m_Localized: "Mármol de Retiro"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227458789501
+    m_Localized: "Azulejos del subte"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227458789502
+    m_Localized: "Cristal del Rift"
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

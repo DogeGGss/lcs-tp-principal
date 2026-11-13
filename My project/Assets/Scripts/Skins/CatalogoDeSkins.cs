@@ -10,6 +10,8 @@ using Rareza = PerfilDatos.Rareza;
 // Las armas de fuego tienen los mismos cuatro materiales, así que una combinación sirve para todas. Por lo que tapa cada
 // uno (medido en los modelos): Black es el cuerpo (la mitad del arma), White los paneles (un tercio), Grey los detalles y
 // Main el acento (unas franjas). El cuchillo (otro modelo, con textura) por ahora no tiene skins.
+// Las demás rarezas ponen un material en algunas partes del arma (Diseno): el material está en
+// Resources/Skins/ModelosDeArmas, con el id del diseño. Épicas: Código binario (13/11/2026), en todas las armas.
 // El id de cada skin ("mitre-rift") es el que se guarda (SkinsDeArmas) y el que va por la red: no se cambia.
 public static class CatalogoDeSkins
 {
@@ -30,6 +32,28 @@ public static class CatalogoDeSkins
         public Color cuerpo, paneles, detalles, acento;
     }
 
+    /// <summary>Una skin con material (raras, épicas y legendarias): qué material va en qué partes del arma.</summary>
+    public class Diseno
+    {
+        public string id, nombre;
+        public Rareza rareza;
+        /// <summary>Los materiales del arma que cambia (por nombre); los demás quedan como vienen.</summary>
+        public string[] partes;
+        /// <summary>Un color que lo representa, para la barra de colores del perfil.</summary>
+        public Color muestra;
+        /// <summary>Otras partes, con otro material o un color (por ejemplo, el cuerpo de mármol negro del mármol).</summary>
+        public Extra[] extras = new Extra[0];
+    }
+
+    /// <summary>Una parte del arma con otro material (el id en ModelosDeArmas) o solo otro color.</summary>
+    public class Extra
+    {
+        public string parte, material;
+        public Color color;
+        /// <summary>Para la barra del perfil.</summary>
+        public Color muestra;
+    }
+
     public class Skin
     {
         public string id, nombre;
@@ -37,9 +61,14 @@ public static class CatalogoDeSkins
         public Rareza rareza;
         /// <summary>Las comunes: sus colores.</summary>
         public Colores colores;
+        /// <summary>Las de material: su diseño.</summary>
+        public Diseno diseno;
+
+        /// <summary>El nombre de la combinación o del diseño ("Rift", "Código binario").</summary>
+        public string Estilo => colores != null ? colores.nombre : diseno != null ? diseno.nombre : nombre;
 
         /// <summary>El nombre que ve el jugador, en su idioma (los nombres de las armas no se traducen).</summary>
-        public string Texto => L10n.Source(arma.nombre, "profile.") + " · " + L10n.Source(colores != null ? colores.nombre : nombre, "profile.");
+        public string Texto => L10n.Source(arma.nombre, "profile.") + " · " + L10n.Source(Estilo, "profile.");
     }
 
     public const string Main = "Main", Grey = "Grey", Black = "Black", White = "White";
@@ -67,14 +96,41 @@ public static class CatalogoDeSkins
         C("desierto", "Desierto", 0xC8A26B, 0x6B5A40, 0x2B241A, 0xD9C9A8),
     };
 
+    // Raras (13/11/2026): materiales sin animar (Art/Skins/SkinPatron.shader, un material por diseño).
+    // Épicas (13/11/2026): el código binario verde que cae, animado (Art/Skins/SkinMatrix.shader), en los paneles y el acento.
+    public static readonly List<Diseno> Disenos = new List<Diseno>
+    {
+        // Mármol blanco en los paneles, el cuerpo de mármol negro con vetas doradas y las franjas de oro (con brillo de metal).
+        new Diseno { id = "marmol-de-retiro", nombre = "Mármol de Retiro", rareza = Rareza.Raro, partes = new[] { White }, muestra = Hex(0xEEEDE8),
+            extras = new[] { new Extra { parte = Black, material = "marmol-negro", muestra = Hex(0x16171A) },
+                             new Extra { parte = Main, material = "oro", muestra = Hex(0xE8B84A) } } },
+        // Azulejos celestes y blancos en los paneles, el cuerpo blanco como una pared y las franjas grises.
+        new Diseno { id = "azulejos-del-subte", nombre = "Azulejos del subte", rareza = Rareza.Raro, partes = new[] { White }, muestra = Hex(0x7FB6D9),
+            extras = new[] { new Extra { parte = Black, color = Hex(0xECEBE6), muestra = Hex(0xECEBE6) },
+                             new Extra { parte = Main, color = Hex(0x8A8D92), muestra = Hex(0x8A8D92) } } },
+        // Cristal violeta y celeste en los paneles, el cuerpo de cristal oscuro con bordes violetas y las franjas violeta oscuro.
+        new Diseno { id = "cristal-del-rift", nombre = "Cristal del Rift", rareza = Rareza.Raro, partes = new[] { White }, muestra = Hex(0x7B3FE4),
+            extras = new[] { new Extra { parte = Black, material = "cristal-oscuro", muestra = Hex(0x2A1F4A) },
+                             new Extra { parte = Main, color = Hex(0x3B1F7A), muestra = Hex(0x3B1F7A) } } },
+        new Diseno { id = "codigo-binario", nombre = "Código binario", rareza = Rareza.Epico, partes = new[] { White, Main }, muestra = Hex(0x26FF59) },
+    };
+
+    /// <summary>Los colores de las armas como vienen: cuerpo, paneles, detalles y acento.</summary>
+    public static readonly Color[] Originales = { Hex(0x070707), Hex(0x757575), Hex(0x1A1A1A), Hex(0x9D3607) };
+
     public static readonly List<Skin> Skins = new List<Skin>();
     private static readonly Dictionary<string, Skin> porId = new Dictionary<string, Skin>();
 
     static CatalogoDeSkins()
     {
         foreach (Arma a in Armas)
+        {
             foreach (Colores c in Combinaciones)
                 Sumar(new Skin { id = a.id + "-" + c.id, nombre = a.nombre + " · " + c.nombre, arma = a, rareza = Rareza.Comun, colores = c });
+            if (a.tenir) continue; // el cuchillo no tiene los cuatro materiales
+            foreach (Diseno d in Disenos)
+                Sumar(new Skin { id = a.id + "-" + d.id, nombre = a.nombre + " · " + d.nombre, arma = a, rareza = d.rareza, diseno = d });
+        }
     }
 
     private static void Sumar(Skin s)
@@ -108,6 +164,31 @@ public static class CatalogoDeSkins
         return n == Black ? skin.colores.cuerpo : n == White ? skin.colores.paneles : n == Grey ? skin.colores.detalles :
             n == Main ? skin.colores.acento : (Color?)null;
     }
+
+    /// <summary>Los cuatro colores de la barra del perfil (cuerpo, paneles, detalles y acento): los de la combinación o,
+    /// con un diseño, su color en las partes que cambia.</summary>
+    public static Color[] ColoresDeBarra(Skin skin)
+    {
+        if (skin == null) return Originales;
+        if (skin.colores != null) return new[] { skin.colores.cuerpo, skin.colores.paneles, skin.colores.detalles, skin.colores.acento };
+        string[] orden = { Black, White, Grey, Main };
+        var barra = new Color[4];
+        for (int i = 0; i < 4; i++)
+        {
+            Extra extra = skin.diseno != null ? System.Array.Find(skin.diseno.extras, x => x.parte == orden[i]) : null;
+            barra[i] = extra != null ? extra.muestra
+                : skin.diseno != null && System.Array.IndexOf(skin.diseno.partes, orden[i]) >= 0 ? skin.diseno.muestra : Originales[i];
+        }
+        return barra;
+    }
+
+    /// <summary>Lo que el diseño de la skin le pone a esa otra parte del arma (otro material o un color), o null.</summary>
+    public static Extra ExtraPara(Skin skin, string material) =>
+        skin?.diseno == null || string.IsNullOrEmpty(material) ? null : System.Array.Find(skin.diseno.extras, x => x.parte == Parte(material));
+
+    /// <summary>Si ese material del arma cambia con el diseño de la skin.</summary>
+    public static bool EsParteDelDiseno(Skin skin, string material) =>
+        skin?.diseno != null && !string.IsNullOrEmpty(material) && System.Array.IndexOf(skin.diseno.partes, Parte(material)) >= 0;
 
     // "Main (Instance)" → "Main".
     private static string Parte(string material)

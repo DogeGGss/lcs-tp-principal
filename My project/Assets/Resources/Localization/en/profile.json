@@ -2187,6 +2187,22 @@
     {
       "key": "profile.skin.removed_fmt",
       "text": "{0} without a skin"
+    },
+    {
+      "key": "profile.skin.design.binary_code",
+      "text": "Binary Code"
+    },
+    {
+      "key": "profile.skin.design.marmol_de_retiro",
+      "text": "Retiro Marble"
+    },
+    {
+      "key": "profile.skin.design.azulejos_del_subte",
+      "text": "Subway Tiles"
+    },
+    {
+      "key": "profile.skin.design.cristal_del_rift",
+      "text": "Rift Crystal"
     }
   ]
 }

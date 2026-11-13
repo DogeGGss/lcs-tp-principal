@@ -65,8 +65,19 @@ public class SkinDeArma : MonoBehaviour
     {
         if (skin == Puesta && (skin != null || pintada)) return;
         pintada = true;
+        Material diseno = skin?.diseno != null ? ModelosDeArmas.Actual.MaterialDe(skin.diseno.id) : null;
         Cambiar(m =>
         {
+            if (diseno != null)
+            {
+                if (m == null) return m;
+                if (CatalogoDeSkins.EsParteDelDiseno(skin, m.name)) return ConDiseno(m, diseno);
+                // Otras partes del diseño: con otro material (el cuerpo de madera del cobre) o un color (las franjas).
+                CatalogoDeSkins.Extra extra = CatalogoDeSkins.ExtraPara(skin, m.name);
+                if (extra == null) return m;
+                Material otro = !string.IsNullOrEmpty(extra.material) ? ModelosDeArmas.Actual.MaterialDe(extra.material) : null;
+                return otro != null ? ConDiseno(m, otro) : string.IsNullOrEmpty(extra.material) ? Pintado(m, extra.color) : m;
+            }
             Color? color = m != null ? CatalogoDeSkins.ColorPara(skin, m.name) : null;
             return color.HasValue ? Pintado(m, color.Value) : m;
         });
@@ -88,6 +99,19 @@ public class SkinDeArma : MonoBehaviour
             for (int i = 0; i < nuevos.Length; i++) nuevos[i] = cambio(Original(actuales[i]));
             r.sharedMaterials = nuevos;
         }
+    }
+
+    // Una copia del material del diseño por cada original (y no el mismo para todas): así se sabe de qué original salió.
+    private static readonly Dictionary<(Material, Material), Material> conDiseno = new Dictionary<(Material, Material), Material>();
+
+    private static Material ConDiseno(Material original, Material diseno)
+    {
+        var clave = (original, diseno);
+        if (conDiseno.TryGetValue(clave, out Material m) && m != null) return m;
+        m = new Material(diseno) { name = original.name + " (skin)" };
+        conDiseno[clave] = m;
+        originalDe[m] = original;
+        return m;
     }
 
     private static Material Original(Material m) => m != null && originalDe.TryGetValue(m, out Material o) && o != null ? o : m;

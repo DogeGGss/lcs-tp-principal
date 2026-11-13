@@ -33,7 +33,7 @@ public class SkinsDePrueba : EditorWindow
         foreach (CatalogoDeSkins.Arma a in CatalogoDeSkins.Armas)
         {
             CatalogoDeSkins.Skin equipada = SkinsDeArmas.EquipadaDe(a.id);
-            bool ver = EditorGUILayout.Foldout(abierta == a.id, a.nombre + (equipada != null ? "  · " + equipada.colores.nombre : ""), true);
+            bool ver = EditorGUILayout.Foldout(abierta == a.id, a.nombre + (equipada != null ? "  · " + equipada.Estilo : ""), true);
             if (ver != (abierta == a.id)) abierta = ver ? a.id : null;
             if (!ver) continue;
             foreach (CatalogoDeSkins.Skin s in CatalogoDeSkins.DelArma(a.id)) Fila(s, enLaMano);
@@ -46,7 +46,7 @@ public class SkinsDePrueba : EditorWindow
         SkinsDeArmas.Estado estado = SkinsDeArmas.EstadoDe(s);
         using (new EditorGUILayout.HorizontalScope())
         {
-            Muestra(s.colores.cuerpo); Muestra(s.colores.paneles); Muestra(s.colores.detalles); Muestra(s.colores.acento);
+            foreach (Color c in CatalogoDeSkins.ColoresDeBarra(s)) Muestra(c);
             var estilo = new GUIStyle(EditorStyles.label) { normal = { textColor = PerfilUI.ColorRareza(s.rareza) } };
             GUILayout.Label(s.nombre + "  (" + PerfilUI.NombreRareza(s.rareza) + ")", estilo, GUILayout.Width(230));
             GUILayout.Label(estado.ToString(), GUILayout.Width(80));

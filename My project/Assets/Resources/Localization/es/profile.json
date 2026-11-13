@@ -2187,6 +2187,22 @@
     {
       "key": "profile.skin.removed_fmt",
       "text": "{0} sin skin"
+    },
+    {
+      "key": "profile.skin.design.binary_code",
+      "text": "Código binario"
+    },
+    {
+      "key": "profile.skin.design.marmol_de_retiro",
+      "text": "Mármol de Retiro"
+    },
+    {
+      "key": "profile.skin.design.azulejos_del_subte",
+      "text": "Azulejos del subte"
+    },
+    {
+      "key": "profile.skin.design.cristal_del_rift",
+      "text": "Cristal del Rift"
     }
   ]
 }

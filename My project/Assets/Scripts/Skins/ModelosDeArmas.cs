@@ -1,9 +1,10 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-// F35 (Skins de armas), US 379: el modelo 3D de cada arma (el del FBX, sin scripts), para la vista previa de las skins en
-// el perfil, donde no está el jugador con sus armas. Es un asset (Resources/Skins/ModelosDeArmas): el id del arma es el
-// del catálogo (CatalogoDeSkins.Armas).
+// F35 (Skins de armas): lo que las skins necesitan del proyecto. Es un asset (Resources/Skins/ModelosDeArmas):
+// - US 379: el modelo 3D de cada arma (el del FBX, sin scripts), para la vista previa de las skins en el perfil, donde no
+//   está el jugador con sus armas; el id del arma es el del catálogo (CatalogoDeSkins.Armas).
+// - El material de cada diseño (CatalogoDeSkins.Disenos), por su id.
 [CreateAssetMenu(menuName = "Riftwalker/Modelos de las armas (skins)")]
 public class ModelosDeArmas : ScriptableObject
 {
@@ -16,7 +17,16 @@ public class ModelosDeArmas : ScriptableObject
         public GameObject modelo;
     }
 
+    [System.Serializable]
+    public class MaterialDeDiseno
+    {
+        [Tooltip("El id del diseño en CatalogoDeSkins (codigo-binario...).")]
+        public string diseno = "";
+        public Material material;
+    }
+
     public List<Modelo> modelos = new List<Modelo>();
+    public List<MaterialDeDiseno> materiales = new List<MaterialDeDiseno>();
 
     private static ModelosDeArmas actual;
 
@@ -34,4 +44,7 @@ public class ModelosDeArmas : ScriptableObject
 
     /// <summary>El modelo de esa arma, o null.</summary>
     public GameObject De(string arma) => modelos.Find(m => m != null && m.arma == arma)?.modelo;
+
+    /// <summary>El material de ese diseño, o null.</summary>
+    public Material MaterialDe(string diseno) => materiales.Find(m => m != null && m.diseno == diseno)?.material;
 }
