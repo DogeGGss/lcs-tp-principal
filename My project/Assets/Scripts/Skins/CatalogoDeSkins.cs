@@ -9,14 +9,14 @@ using Rareza = PerfilDatos.Rareza;
 // - Rara: otro material, sin animar. Épica: material animado. Legendaria: además, su fogonazo y su proyectil (US 381).
 // Las armas de fuego tienen los mismos cuatro materiales, así que una combinación sirve para todas. Por lo que tapa cada
 // uno (medido en los modelos): Black es el cuerpo (la mitad del arma), White los paneles (un tercio), Grey los detalles y
-// Main el acento (unas franjas). El cuchillo es otro modelo, con textura: lo tiñen los paneles.
+// Main el acento (unas franjas). El cuchillo (otro modelo, con textura) por ahora no tiene skins.
 // El id de cada skin ("mitre-rift") es el que se guarda (SkinsDeArmas) y el que va por la red: no se cambia.
 public static class CatalogoDeSkins
 {
     public class Arma
     {
         public string id, nombre;
-        /// <summary>La ficha de la tienda (Data/Tienda), para saber de qué arma es cada una. Vacío: el cuchillo.</summary>
+        /// <summary>La ficha de la tienda (Data/Tienda), para saber de qué arma es cada una. Vacío: un arma sin ficha (como el cuchillo).</summary>
         public string ficha;
         /// <summary>Se tiñe con el acento (un modelo con textura, sin los cuatro materiales).</summary>
         public bool tenir;
@@ -54,7 +54,7 @@ public static class CatalogoDeSkins
         new Arma { id = "gran-capitan", nombre = "El Gran Capitán", ficha = "GranCapitan" },
         new Arma { id = "la-portena", nombre = "La Porteña", ficha = "Pistola" },
         new Arma { id = "la-trochita", nombre = "La Trochita", ficha = "PistolaPesada" },
-        new Arma { id = "cuchillo", nombre = "Cuchillo", ficha = "", tenir = true },
+        // El cuchillo, por ahora sin skins: teñido con un color no quedó bien (13/11/2026). Con tenir = true lo tiñen los paneles.
     };
 
     // La primera tanda (13/11/2026): cinco combinaciones, comunes, en todas las armas. Cuerpo / paneles / detalles / acento.

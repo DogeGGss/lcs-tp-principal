@@ -45,9 +45,6 @@ public class SkinsTests
         Assert.AreEqual(s.colores.detalles, CatalogoDeSkins.ColorPara(s, "Grey (Instance)"));
         Assert.AreEqual(s.colores.acento, CatalogoDeSkins.ColorPara(s, "Main"));
         Assert.IsNull(CatalogoDeSkins.ColorPara(s, "Mira"));
-        // El cuchillo es otro modelo: lo tiñen los paneles.
-        CatalogoDeSkins.Skin c = CatalogoDeSkins.De("cuchillo-brasa");
-        Assert.AreEqual(c.colores.paneles, CatalogoDeSkins.ColorPara(c, "M_Knife"));
     }
 
     [Test, Category("US 378"), Description("Cada arma de fuego del catálogo tiene su ficha en la tienda")]

@@ -2133,10 +2133,6 @@
       "text": "* KDA = (bajas + asistencias) ÷ muertes; sin muertes, ÷ 1. Asistencia: dañaste a un rival que otro eliminó en los 10 s siguientes. Cuentan las partidas terminadas."
     },
     {
-      "key": "profile.skin.weapon.knife",
-      "text": "Cuchillo"
-    },
-    {
       "key": "profile.skin.colors.rift",
       "text": "Rift"
     },

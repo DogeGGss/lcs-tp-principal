@@ -2133,10 +2133,6 @@
       "text": "* KDA = (kills + assists) ÷ deaths; with no deaths, ÷ 1. Assist: you damaged an enemy that someone else eliminated within the next 10 s. Only finished matches count."
     },
     {
-      "key": "profile.skin.weapon.knife",
-      "text": "Knife"
-    },
-    {
       "key": "profile.skin.colors.rift",
       "text": "Rift"
     },
