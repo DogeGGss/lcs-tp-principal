@@ -10,7 +10,7 @@ using UnityEngine;
 public class SkinDeArma : MonoBehaviour
 {
     // Un material por cada original y color: así no se crea uno nuevo cada vez que se pone una skin.
-    private static readonly Dictionary<(int, Color), Material> pintados = new Dictionary<(int, Color), Material>();
+    private static readonly Dictionary<(Material, Color), Material> pintados = new Dictionary<(Material, Color), Material>();
 
     private readonly Dictionary<Renderer, Material[]> originales = new Dictionary<Renderer, Material[]>();
 
@@ -89,7 +89,7 @@ public class SkinDeArma : MonoBehaviour
     // El mismo material con otro color (URP: _BaseColor; si no, _Color). Con textura, el color la tiñe.
     private static Material Pintado(Material original, Color color)
     {
-        var clave = (original.GetInstanceID(), color);
+        var clave = (original, color);
         if (pintados.TryGetValue(clave, out Material m) && m != null) return m;
         m = new Material(original) { name = original.name + " (skin)" };
         if (m.HasProperty("_BaseColor")) m.SetColor("_BaseColor", color);
