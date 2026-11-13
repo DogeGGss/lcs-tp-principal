@@ -196,6 +196,9 @@ public class EleccionDeInvasion : MonoBehaviour
     // CA2: la mitad de la munición máxima de cada arma (con Logística, toda: US 314).
     private void DarMunicion()
     {
+        // F31 (US 353, CA6): en cooperativo, la recarga es para todos siempre que haya al menos uno adentro del anillo.
+        PuestoDeSuministros puesto = PuestoDeSuministros.Actual;
+        if (CooperativoDeInvasion.Activo && puesto != null && puesto.Hay && !puesto.AlguienAdentro()) return;
         if (equipo == null) equipo = FindFirstObjectByType<PlayerLoadout>();
         WeaponSwitcher armas = equipo != null ? equipo.GetComponentInChildren<WeaponSwitcher>(true) : null;
         if (armas == null) return;
