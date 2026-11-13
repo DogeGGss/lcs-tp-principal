@@ -7,8 +7,9 @@ using Rareza = PerfilDatos.Rareza;
 // PerfilUI.ColorRareza):
 // - Común: solo cambia los colores del arma (la primera tanda: las combinaciones de abajo en todas las armas).
 // - Rara: otro material, sin animar. Épica: material animado. Legendaria: además, su fogonazo y su proyectil (US 381).
-// Las armas de fuego tienen los mismos cuatro materiales (Main: el acento, Grey: el cuerpo, Black: los detalles y White:
-// el metal), así que una combinación sirve para todas. El cuchillo es otro modelo, con textura: lo tiñe el acento.
+// Las armas de fuego tienen los mismos cuatro materiales, así que una combinación sirve para todas. Por lo que tapa cada
+// uno (medido en los modelos): Black es el cuerpo (la mitad del arma), White los paneles (un tercio), Grey los detalles y
+// Main el acento (unas franjas). El cuchillo es otro modelo, con textura: lo tiñen los paneles.
 // El id de cada skin ("mitre-rift") es el que se guarda (SkinsDeArmas) y el que va por la red: no se cambia.
 public static class CatalogoDeSkins
 {
@@ -25,7 +26,8 @@ public static class CatalogoDeSkins
     public class Colores
     {
         public string id, nombre;
-        public Color main, grey, black, white;
+        /// <summary>Material Black (la mitad del arma), White (un tercio), Grey y Main (unas franjas).</summary>
+        public Color cuerpo, paneles, detalles, acento;
     }
 
     public class Skin
@@ -55,13 +57,13 @@ public static class CatalogoDeSkins
         new Arma { id = "cuchillo", nombre = "Cuchillo", ficha = "", tenir = true },
     };
 
-    // La primera tanda (13/11/2026): cinco combinaciones, comunes, en todas las armas. Main / Grey / Black / White.
+    // La primera tanda (13/11/2026): cinco combinaciones, comunes, en todas las armas. Cuerpo / paneles / detalles / acento.
     public static readonly List<Colores> Combinaciones = new List<Colores>
     {
-        C("rift", "Rift", 0x8B3DFF, 0x1E1630, 0x0B0812, 0xB9A7E8),
-        C("albiceleste", "Albiceleste", 0x74ACDF, 0xE8EEF4, 0x1C2633, 0xF6B40E),
-        C("brasa", "Brasa", 0xD7261E, 0x121212, 0x050505, 0x3A3A3A),
-        C("artico", "Ártico", 0x5FD3E8, 0xDDE3E8, 0x2A2F35, 0xA7B0B8),
+        C("rift", "Rift", 0x1E1630, 0x8B3DFF, 0x0B0812, 0xB9A7E8),
+        C("albiceleste", "Albiceleste", 0xE8EEF4, 0x74ACDF, 0x1C2633, 0xF6B40E),
+        C("brasa", "Brasa", 0x121212, 0xD7261E, 0x3A3A3A, 0xFF6A3D),
+        C("artico", "Ártico", 0xDDE3E8, 0x5FD3E8, 0x2A2F35, 0xA7B0B8),
         C("desierto", "Desierto", 0xC8A26B, 0x6B5A40, 0x2B241A, 0xD9C9A8),
     };
 
@@ -81,8 +83,8 @@ public static class CatalogoDeSkins
         porId[s.id] = s;
     }
 
-    private static Colores C(string id, string nombre, int main, int grey, int black, int white) =>
-        new Colores { id = id, nombre = nombre, main = Hex(main), grey = Hex(grey), black = Hex(black), white = Hex(white) };
+    private static Colores C(string id, string nombre, int cuerpo, int paneles, int detalles, int acento) =>
+        new Colores { id = id, nombre = nombre, cuerpo = Hex(cuerpo), paneles = Hex(paneles), detalles = Hex(detalles), acento = Hex(acento) };
 
     private static Color Hex(int rgb) => new Color(((rgb >> 16) & 0xFF) / 255f, ((rgb >> 8) & 0xFF) / 255f, (rgb & 0xFF) / 255f);
 
@@ -101,10 +103,10 @@ public static class CatalogoDeSkins
     public static Color? ColorPara(Skin skin, string material)
     {
         if (skin?.colores == null || string.IsNullOrEmpty(material)) return null;
-        if (skin.arma.tenir) return skin.colores.main;
+        if (skin.arma.tenir) return skin.colores.paneles;
         string n = Parte(material);
-        return n == Main ? skin.colores.main : n == Grey ? skin.colores.grey : n == Black ? skin.colores.black :
-            n == White ? skin.colores.white : (Color?)null;
+        return n == Black ? skin.colores.cuerpo : n == White ? skin.colores.paneles : n == Grey ? skin.colores.detalles :
+            n == Main ? skin.colores.acento : (Color?)null;
     }
 
     // "Main (Instance)" → "Main".

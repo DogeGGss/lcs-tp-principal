@@ -40,14 +40,14 @@ public class SkinsTests
     public void Cada_material_lleva_su_color()
     {
         CatalogoDeSkins.Skin s = CatalogoDeSkins.De("mitre-brasa");
-        Assert.AreEqual(s.colores.main, CatalogoDeSkins.ColorPara(s, "Main"));
-        Assert.AreEqual(s.colores.grey, CatalogoDeSkins.ColorPara(s, "Grey (Instance)"));
-        Assert.AreEqual(s.colores.black, CatalogoDeSkins.ColorPara(s, "Black"));
-        Assert.AreEqual(s.colores.white, CatalogoDeSkins.ColorPara(s, "White"));
+        Assert.AreEqual(s.colores.cuerpo, CatalogoDeSkins.ColorPara(s, "Black"));
+        Assert.AreEqual(s.colores.paneles, CatalogoDeSkins.ColorPara(s, "White"));
+        Assert.AreEqual(s.colores.detalles, CatalogoDeSkins.ColorPara(s, "Grey (Instance)"));
+        Assert.AreEqual(s.colores.acento, CatalogoDeSkins.ColorPara(s, "Main"));
         Assert.IsNull(CatalogoDeSkins.ColorPara(s, "Mira"));
-        // El cuchillo es otro modelo: lo tiñe el acento.
+        // El cuchillo es otro modelo: lo tiñen los paneles.
         CatalogoDeSkins.Skin c = CatalogoDeSkins.De("cuchillo-brasa");
-        Assert.AreEqual(c.colores.main, CatalogoDeSkins.ColorPara(c, "M_Knife"));
+        Assert.AreEqual(c.colores.paneles, CatalogoDeSkins.ColorPara(c, "M_Knife"));
     }
 
     [Test, Category("US 378"), Description("Cada arma de fuego del catálogo tiene su ficha en la tienda")]

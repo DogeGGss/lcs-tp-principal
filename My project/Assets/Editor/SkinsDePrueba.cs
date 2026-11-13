@@ -46,7 +46,7 @@ public class SkinsDePrueba : EditorWindow
         SkinsDeArmas.Estado estado = SkinsDeArmas.EstadoDe(s);
         using (new EditorGUILayout.HorizontalScope())
         {
-            Muestra(s.colores.main); Muestra(s.colores.grey); Muestra(s.colores.black); Muestra(s.colores.white);
+            Muestra(s.colores.cuerpo); Muestra(s.colores.paneles); Muestra(s.colores.detalles); Muestra(s.colores.acento);
             var estilo = new GUIStyle(EditorStyles.label) { normal = { textColor = PerfilUI.ColorRareza(s.rareza) } };
             GUILayout.Label(s.nombre + "  (" + PerfilUI.NombreRareza(s.rareza) + ")", estilo, GUILayout.Width(230));
             GUILayout.Label(estado.ToString(), GUILayout.Width(80));
