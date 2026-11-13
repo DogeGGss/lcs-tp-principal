@@ -13,7 +13,7 @@ using Hashtable = ExitGames.Client.Photon.Hashtable;
 //   CaidoEnTerceraPersona). Si se terminan, muere: mira a sus compañeros (Espectador) y vuelve al empezar la oleada
 //   siguiente, junto a un compañero vivo, con la vida llena (US 289, CA6).
 // - CA3: un compañero vivo se acerca (2,2 m), mantiene la tecla de usar (E) y lo revive en 5 s, con la barra. Mientras,
-//   el que revive queda agachado sobre él. Si suelta la tecla, se aleja o lo golpean, se corta.
+//   el que revive queda agachado sobre él. Si suelta la tecla o se aleja, se corta (que lo golpeen no lo corta).
 // - CA4: el revivido se levanta con un 30 % de vida, con sus armas y su munición.
 // - CA5: los invasores no lo atacan (con 0 de vida no cuenta como objetivo: van al vivo más cercano).
 // - CA6: si la oleada termina con él caído, se levanta solo con un 30 % de vida.
@@ -59,7 +59,6 @@ public class CaidaEnInvasion : MonoBehaviourPunCallbacks, IOnEventCallback
         reviviendo.Clear();
         OleadasDeInvasion.Supero += AlSuperar;
         OleadasDeInvasion.Empezo += AlEmpezar;
-        HealthSystem.Damaged += AlRecibirDanio;
     }
 
     public override void OnDisable()
@@ -68,7 +67,6 @@ public class CaidaEnInvasion : MonoBehaviourPunCallbacks, IOnEventCallback
         if (Actual == this) Actual = null;
         OleadasDeInvasion.Supero -= AlSuperar;
         OleadasDeInvasion.Empezo -= AlEmpezar;
-        HealthSystem.Damaged -= AlRecibirDanio;
         if (vida != null) vida.AntesDeMorir = null;
         if (movimiento != null) { movimiento.Caido = false; movimiento.ForzarAgachado = false; }
     }
@@ -296,12 +294,6 @@ public class CaidaEnInvasion : MonoBehaviourPunCallbacks, IOnEventCallback
         }
         else if (estado == Estado.Vivo) MatchHud.SetAction(null);
         if (movimiento != null) movimiento.ForzarAgachado = false;
-    }
-
-    // CA3: si al que revive lo golpean, se corta.
-    private void AlRecibirDanio(HealthSystem quien, int danio, Vector3? desde)
-    {
-        if (quien != null && quien == vida && reviviendoA != null) CortarRevivir();
     }
 
     // ---------- CA6: fin de la oleada y la siguiente ----------

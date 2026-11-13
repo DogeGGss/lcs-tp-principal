@@ -2055,6 +2055,10 @@
     {
       "key": "gameplay.mates.retired",
       "text": "Se retiró"
+    },
+    {
+      "key": "gameplay.result.keys_hint_coop",
+      "text": "Enter o Esc  ·  Volver al menú"
     }
   ]
 }
