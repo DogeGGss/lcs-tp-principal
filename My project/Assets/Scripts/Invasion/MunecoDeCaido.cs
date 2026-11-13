@@ -82,7 +82,7 @@ public class MunecoDeCaido : MonoBehaviour
             {
                 if (clip == null) continue;
                 if (clip.name == CaidoEnTerceraPersona.Caer) caer = clip.length;
-                else if (clip.name == CaidoEnTerceraPersona.Levantarse) levantarse = clip.length;
+                else if (clip.name == CaidoEnTerceraPersona.Levantarse) levantarse = clip.length / CaidoEnTerceraPersona.VelocidadLevantarse;
             }
 
         var go = new GameObject("Cartel");

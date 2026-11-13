@@ -11,6 +11,8 @@ public class CaidoEnTerceraPersona : MonoBehaviour
 {
     public const string Capa = "Caido", Caer = "Caer", Arrastrarse = "Arrastrarse", Levantarse = "Levantarse";
     public const string Parametro = "Arrastre"; // la velocidad de la de arrastrarse: 0 quieto, 1 arrastrándose
+    // La de levantarse va más rápida (la de Mixamo es lenta): recortada a 4,3 s, así dura menos de 3 s.
+    public const float VelocidadLevantarse = 1.5f;
     private const float Entrar = 0.15f, Salir = 0.35f, LevantarseSinClip = 2.5f;
     private const float MezclaLevantarse = 0.45f; // s
     private const float AlturaDelCartel = 1.1f;
@@ -91,7 +93,7 @@ public class CaidoEnTerceraPersona : MonoBehaviour
         largoLevantarse = LevantarseSinClip;
         if (animador.runtimeAnimatorController != null)
             foreach (AnimationClip clip in animador.runtimeAnimatorController.animationClips)
-                if (clip != null && clip.name == Levantarse) { largoLevantarse = clip.length; break; }
+                if (clip != null && clip.name == Levantarse) { largoLevantarse = clip.length / VelocidadLevantarse; break; }
         return largoLevantarse;
     }
 
