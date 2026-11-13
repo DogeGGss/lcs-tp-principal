@@ -2151,6 +2151,42 @@
     {
       "key": "profile.skin.colors.desert",
       "text": "Desert"
+    },
+    {
+      "key": "profile.skin.weapons",
+      "text": "Weapons"
+    },
+    {
+      "key": "profile.skin.none",
+      "text": "No skin"
+    },
+    {
+      "key": "profile.skin.equipped",
+      "text": "Equipped"
+    },
+    {
+      "key": "profile.skin.locked",
+      "text": "Locked"
+    },
+    {
+      "key": "profile.skin.type",
+      "text": "Weapon skin"
+    },
+    {
+      "key": "profile.skin.none_detail",
+      "text": "The weapon as it comes, without a skin."
+    },
+    {
+      "key": "profile.skin.get_it",
+      "text": "Unlock it in the pass or in capsules"
+    },
+    {
+      "key": "profile.skin.equipped_fmt",
+      "text": "{0} equipped"
+    },
+    {
+      "key": "profile.skin.removed_fmt",
+      "text": "{0} without a skin"
     }
   ]
 }

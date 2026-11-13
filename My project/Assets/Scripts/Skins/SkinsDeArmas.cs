@@ -64,6 +64,8 @@ public static class SkinsDeArmas
     public static bool Tiene(CatalogoDeSkins.Skin s) => s != null && D.obtenidas.Contains(s.id);
     public static bool EsNueva(CatalogoDeSkins.Skin s) => s != null && D.nuevas.Contains(s.id);
     public static IEnumerable<string> Obtenidas => D.obtenidas;
+    public static int CantidadObtenidas => CatalogoDeSkins.Skins.FindAll(Tiene).Count;
+    public static int CantidadNuevas => CatalogoDeSkins.Skins.FindAll(EsNueva).Count;
 
     /// <summary>La skin equipada de esa arma, o null (sin skin: la original).</summary>
     public static CatalogoDeSkins.Skin EquipadaDe(string arma)
