@@ -82,6 +82,7 @@ public class PartidaDeInvasion : MonoBehaviour
         {
             gameObject.AddComponent<InvasoresEnRed>(); // F31 (US 290): los mismos invasores para todos
             gameObject.AddComponent<CaidaEnInvasion>(); // F31 (US 357): caer y revivir
+            gameObject.AddComponent<CompanerosEnInvasion>(); // F31 (US 354): ver a los compañeros
         }
         if (TrucosDeInvasion.Disponibles) gameObject.AddComponent<TrucosDeInvasion>(); // F10: menú de trucos
     }

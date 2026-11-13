@@ -20,6 +20,8 @@ using Img = UnityEngine.UI.Image;
 // - CA8: funciona en Táctico, Deathmatch y Zombie (en Zombie, el jugador y el mapa).
 // Invasión (US 283): los invasores vivos se ven siempre como puntos rojos, y el jefe (US 146) con un punto más grande.
 // US 292, CA2 y CA3: el puesto de suministros, un cuadrado verde con su anillo (15 m) alrededor.
+// F31 (US 354, CA3): en Invasión cooperativa, los compañeros en azul; los caídos, con el ícono de caído (un círculo
+// rojo con una cruz blanca, el mismo que se ve arriba de ellos).
 // Lo crea CombatHud sobre su lienzo. Hay dos vistas del mismo mapa: la chica (el radar) y la grande (el mapa completo).
 public class Minimapa : MonoBehaviour
 {
@@ -128,7 +130,8 @@ public class Minimapa : MonoBehaviour
         {
             PartidaEnRed partida = PartidaEnRed.Actual;
             JugadorEnRed local = partida != null ? partida.Local : null;
-            bool hayEquipos = local != null && EquiposTacticos.HayEquipos;
+            bool cooperativo = CooperativoDeInvasion.Activo; // F31 (US 354, CA3): en Invasión cooperativa, todos
+            bool hayEquipos = local != null && (EquiposTacticos.HayEquipos || cooperativo);
 
             sobran.Clear();
             foreach (KeyValuePair<JugadorEnRed, RectTransform> par in companeros)
@@ -145,7 +148,7 @@ public class Minimapa : MonoBehaviour
             foreach (JugadorEnRed j in partida.Jugadores)
             {
                 if (j == null || j == local) continue;
-                bool ver = j.Vivo && EquiposTacticos.SonAliados(local.Actor, j.Actor);
+                bool ver = j.Vivo && (cooperativo || EquiposTacticos.SonAliados(local.Actor, j.Actor));
                 if (!companeros.TryGetValue(j, out RectTransform punto))
                 {
                     if (!ver) continue;
@@ -162,10 +165,37 @@ public class Minimapa : MonoBehaviour
                 if (!ver) continue;
                 punto.anchoredPosition = EnMapa(j.transform.position, centro);
                 punto.localRotation = derecho;
+                if (cooperativo) // US 354, CA3: el caído, con el mismo ícono que en la pantalla (no un punto rojo, como los invasores)
+                {
+                    Transform cruz = punto.Find("Caído");
+                    if (cruz == null) cruz = IconoDeCaido(punto);
+                    bool caido = j.EstaCaido;
+                    if (cruz.gameObject.activeSelf != caido) cruz.gameObject.SetActive(caido);
+                    Transform color = punto.Find("Color");
+                    if (color != null && color.gameObject.activeSelf == caido) color.gameObject.SetActive(!caido);
+                    punto.SetAsLastSibling(); // (arriba de los invasores)
+                }
                 bool lleva = portador != 0 && j.Actor == portador;
                 GameObject marca = iconos[j];
                 if (marca.activeSelf != lleva) marca.SetActive(lleva);
             }
+        }
+
+        // US 354, CA3: un círculo rojo con una cruz blanca (como arriba del caído, CompanerosEnInvasion), más grande que
+        // el punto de un invasor y con borde blanco.
+        private Transform IconoDeCaido(RectTransform punto)
+        {
+            RectTransform icono = Centrado(Node("Caído", punto), 20f);
+            Image(Stretch(Node("Borde", icono)), redondeado, Color.white, 10f);
+            Image(Centrado(Node("Círculo", icono), 17f), redondeado, Hex(0xFF5C5C), 8.5f);
+            RectTransform h = Centrado(Node("Horizontal", icono), 0f);
+            h.sizeDelta = new Vector2(10f, 3f);
+            Image(h, null, Color.white);
+            RectTransform v = Centrado(Node("Vertical", icono), 0f);
+            v.sizeDelta = new Vector2(3f, 10f);
+            Image(v, null, Color.white);
+            icono.gameObject.SetActive(false);
+            return icono;
         }
 
         // CA4: rivales vistos por el equipo, en rojo.

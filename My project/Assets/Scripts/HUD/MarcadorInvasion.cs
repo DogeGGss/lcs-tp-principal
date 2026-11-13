@@ -87,7 +87,7 @@ public class MarcadorInvasion : MonoBehaviour
     private void OnDestroy()
     {
         if (grupo != null) Destroy(grupo.gameObject);
-        if (MatchHud.TableProvider == SinTabla) MatchHud.TableProvider = null;
+        if (MatchHud.TableProvider == SinTabla || MatchHud.TableProvider == CompanerosEnInvasion.Tabla) MatchHud.TableProvider = null;
     }
 
     private void Start()
@@ -144,7 +144,8 @@ public class MarcadorInvasion : MonoBehaviour
         ArmarCartas(raiz);
 
         // US 298, CA2: Tab es para el panel y las cartas, no para la tabla de la US 057 (con null no dibuja nada).
-        MatchHud.TableProvider = SinTabla;
+        // F31 (US 354, CA4): en cooperativo, sí: todos los jugadores con sus bajas y sus puntos.
+        MatchHud.TableProvider = CooperativoDeInvasion.Activo ? CompanerosEnInvasion.Tabla : SinTabla;
     }
 
     private static MatchHud.Table SinTabla() => null;
