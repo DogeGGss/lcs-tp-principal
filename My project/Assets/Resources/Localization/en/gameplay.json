@@ -2003,6 +2003,34 @@
     {
       "key": "gameplay.down.overhead_fmt",
       "text": "Down · {0} s"
+    },
+    {
+      "key": "gameplay.mates.down",
+      "text": "Down"
+    },
+    {
+      "key": "gameplay.mates.dead",
+      "text": "Dead"
+    },
+    {
+      "key": "gameplay.mates.disconnected",
+      "text": "Disconnected"
+    },
+    {
+      "key": "gameplay.mates.player",
+      "text": "Player"
+    },
+    {
+      "key": "gameplay.mates.kills",
+      "text": "Kills"
+    },
+    {
+      "key": "gameplay.mates.points",
+      "text": "Points"
+    },
+    {
+      "key": "gameplay.mates.state",
+      "text": "Status"
     }
   ]
 }

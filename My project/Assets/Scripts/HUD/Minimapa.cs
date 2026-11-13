@@ -20,6 +20,7 @@ using Img = UnityEngine.UI.Image;
 // - CA8: funciona en Táctico, Deathmatch y Zombie (en Zombie, el jugador y el mapa).
 // Invasión (US 283): los invasores vivos se ven siempre como puntos rojos, y el jefe (US 146) con un punto más grande.
 // US 292, CA2 y CA3: el puesto de suministros, un cuadrado verde con su anillo (15 m) alrededor.
+// F31 (US 354, CA3): en Invasión cooperativa, los compañeros en azul (los caídos, en rojo).
 // Lo crea CombatHud sobre su lienzo. Hay dos vistas del mismo mapa: la chica (el radar) y la grande (el mapa completo).
 public class Minimapa : MonoBehaviour
 {
@@ -128,7 +129,8 @@ public class Minimapa : MonoBehaviour
         {
             PartidaEnRed partida = PartidaEnRed.Actual;
             JugadorEnRed local = partida != null ? partida.Local : null;
-            bool hayEquipos = local != null && EquiposTacticos.HayEquipos;
+            bool cooperativo = CooperativoDeInvasion.Activo; // F31 (US 354, CA3): en Invasión cooperativa, todos
+            bool hayEquipos = local != null && (EquiposTacticos.HayEquipos || cooperativo);
 
             sobran.Clear();
             foreach (KeyValuePair<JugadorEnRed, RectTransform> par in companeros)
@@ -145,7 +147,7 @@ public class Minimapa : MonoBehaviour
             foreach (JugadorEnRed j in partida.Jugadores)
             {
                 if (j == null || j == local) continue;
-                bool ver = j.Vivo && EquiposTacticos.SonAliados(local.Actor, j.Actor);
+                bool ver = j.Vivo && (cooperativo || EquiposTacticos.SonAliados(local.Actor, j.Actor));
                 if (!companeros.TryGetValue(j, out RectTransform punto))
                 {
                     if (!ver) continue;
@@ -162,6 +164,11 @@ public class Minimapa : MonoBehaviour
                 if (!ver) continue;
                 punto.anchoredPosition = EnMapa(j.transform.position, centro);
                 punto.localRotation = derecho;
+                if (cooperativo) // US 354, CA3: el caído, en rojo
+                {
+                    Img color = punto.Find("Color")?.GetComponent<Img>();
+                    if (color != null) color.color = j.EstaCaido ? Hex(0xFF5C5C) : MatchHud.TeamColor;
+                }
                 bool lleva = portador != 0 && j.Actor == portador;
                 GameObject marca = iconos[j];
                 if (marca.activeSelf != lleva) marca.SetActive(lleva);
