@@ -481,6 +481,17 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
         }
     }
 
+    /// <summary>
+    /// F31 (US 358 y US 359, CA2): entró (o volvió) a una Invasión cooperativa durante una oleada: mira a sus compañeros
+    /// y aparece al empezar la siguiente (CaidaEnInvasion), sin aviso de baja.
+    /// </summary>
+    public void EsperarLaOleada()
+    {
+        if (photonView == null || !photonView.IsMine || vida == null || muerto) return;
+        QuedarAfuera();
+        partida.Aviso(L10n.T(Reconexion.Volvio ? "gameplay.death.rejoined" : "gameplay.mates.joined_title"), L10n.T("gameplay.mates.next_wave"));
+    }
+
     // Como muerto, pero sin morir: no hay aviso de baja ni suma una muerte, y no se le cae nada. Los demás lo ven
     // afuera porque le llega la vida en 0 (OnPhotonSerializeView).
     private void QuedarAfuera()

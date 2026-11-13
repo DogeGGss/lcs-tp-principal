@@ -2031,6 +2031,18 @@
     {
       "key": "gameplay.mates.state",
       "text": "Estado"
+    },
+    {
+      "key": "gameplay.event.joined",
+      "text": "se unió a la partida"
+    },
+    {
+      "key": "gameplay.mates.joined_title",
+      "text": "Entraste a la partida"
+    },
+    {
+      "key": "gameplay.mates.next_wave",
+      "text": "Aparecés al empezar la próxima oleada"
     }
   ]
 }

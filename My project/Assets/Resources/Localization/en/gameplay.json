@@ -2031,6 +2031,18 @@
     {
       "key": "gameplay.mates.state",
       "text": "Status"
+    },
+    {
+      "key": "gameplay.event.joined",
+      "text": "joined the match"
+    },
+    {
+      "key": "gameplay.mates.joined_title",
+      "text": "You joined the match"
+    },
+    {
+      "key": "gameplay.mates.next_wave",
+      "text": "You'll spawn when the next wave starts"
     }
   ]
 }
