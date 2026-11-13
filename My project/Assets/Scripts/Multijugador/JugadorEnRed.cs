@@ -14,6 +14,7 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
 {
     private const float AlcanceTrazadora = 300f;
     private const byte Agachado = 1, Corriendo = 2, Cayendo = 4, Invulnerable = 8, Despacio = 16;
+    private const byte Caido = 32; // F31 (US 357): caído en Invasión cooperativa (se lo puede revivir)
     // Arma en la mano: las principales van desde PrimeraPrincipal, en el orden de WeaponSwitcher.Principales(), y las
     // demás secundarias (Línea H...) desde PrimeraSecundaria, en el orden de WeaponSwitcher.otrasSecundarias (US 072).
     private const byte SinArma = 0, ArmaPistola = 2, ArmaCuchillo = 3, PrimeraSecundaria = 4, PrimeraPrincipal = 10;
@@ -44,6 +45,7 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
     private LanzamientoDeGranada lanzamiento;    // US 259: las manos con la granada y el lanzamiento
     private CuchilloEnTerceraPersona cuchilloVisto; // US 257: las manos con el cuchillo y el corte
     private BaileEnTerceraPersona baile;         // US 262: el baile (emote) que hace
+    private CaidoEnTerceraPersona caidoVisto;    // F31 (US 357): caído, arrastrándose o levantándose
     private byte emoteRed;                       // US 262: el baile que llega por la red (0: ninguno; si no, su número + 1)
     private readonly HashSet<int> granadasExplotadas = new HashSet<int>();
     private bool cuerpoPropio;              // la copia ya tiene el modelo de su personaje (CharacterData.modelo)
@@ -93,6 +95,8 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
     private Transform manoDerecha, soporteMano;
 
     public bool Vivo => !muerto;
+    /// <summary>F31 (US 357): la copia de un compañero que está caído (en esta computadora lo dice su dueño).</summary>
+    public bool EstaCaido => !muerto && (banderasRed & Caido) != 0;
 
     // US 138, CA5: para saber hasta cuándo se puede cambiar de equipo en Deathmatch.
     public const float TopeConTienda = 10f; // muerto y con la tienda abierta, como mucho se espera esto
@@ -558,7 +562,10 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
         ultimaArma = causa ?? "";
         ultimoCodigo = ArmaDesconocida;
         vida.Invulnerable = false;
+        if (vida.currentHealth <= 0) { vida.Rematar(); return; } // F31 (US 357): estaba caído
+        HealthSystem.MuerteDirecta = true; // US 357: caerse del mapa mata, no deja caído
         vida.TakeDamage(vida.currentHealth + vida.currentShield + 1);
+        HealthSystem.MuerteDirecta = false;
     }
 
     // Muerto no se mueve, no dispara ni cambia de arma; puede seguir mirando alrededor. Si muere con la pausa
@@ -601,6 +608,7 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
         }
         if (vida != null && vida.Invulnerable) banderas |= Invulnerable;
         if (movimiento != null && movimiento.CaminandoDespacio) banderas |= Despacio; // US 198
+        if (movimiento != null && movimiento.Caido) banderas |= Caido; // US 357
         return banderas;
     }
 
@@ -1017,6 +1025,7 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
         lanzamiento = LanzamientoDeGranada.Crear(gameObject, terceraPersona); // US 259
         cuchilloVisto = CuchilloEnTerceraPersona.Crear(gameObject, terceraPersona); // US 257
         baile = BaileEnTerceraPersona.Crear(gameObject, animador, terceraPersona);    // US 262
+        caidoVisto = CaidoEnTerceraPersona.Crear(gameObject, animador, terceraPersona, this); // F31 (US 357)
     }
 
     private void CrearContorno()
@@ -1157,7 +1166,9 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
             pasos.Muerto = muerto;
         }
 
-        MostrarArma(muerto ? SinArma : armaRed);
+        bool caido = (banderasRed & Caido) != 0;
+        if (caidoVisto != null) caidoVisto.Caido = !muerto && caido; // US 357, CA8: cae, se arrastra y se levanta
+        MostrarArma(muerto || caido ? SinArma : armaRed);
         if (terceraPersona != null)
         {
             terceraPersona.Recarga = muerto || recargaRed == SinRecarga ? -1f : recargaRed / 200f;

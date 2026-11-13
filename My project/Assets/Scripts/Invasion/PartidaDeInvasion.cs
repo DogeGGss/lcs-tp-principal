@@ -78,7 +78,11 @@ public class PartidaDeInvasion : MonoBehaviour
         gameObject.AddComponent<EleccionDeInvasion>();  // US 293
         gameObject.AddComponent<MisCartasInvasion>();   // US 361: tus cartas (con la C) y el descarte (US 360)
         gameObject.AddComponent<CartasEnJuego>();       // las cartas que actúan durante el juego (US 316 y otras)
-        if (CooperativoDeInvasion.Activo) gameObject.AddComponent<InvasoresEnRed>(); // F31 (US 290): los mismos invasores para todos
+        if (CooperativoDeInvasion.Activo)
+        {
+            gameObject.AddComponent<InvasoresEnRed>(); // F31 (US 290): los mismos invasores para todos
+            gameObject.AddComponent<CaidaEnInvasion>(); // F31 (US 357): caer y revivir
+        }
         if (TrucosDeInvasion.Disponibles) gameObject.AddComponent<TrucosDeInvasion>(); // F10: menú de trucos
     }
 
@@ -103,7 +107,13 @@ public class PartidaDeInvasion : MonoBehaviour
     }
 
     // US 151, CA1: no hay segunda vida, la partida termina.
-    private void AlMorirElJugador() => ResultadoDeInvasion.Mostrar(true);
+    // F31 (US 357): en cooperativo no: muere después de estar caído y vuelve en la oleada siguiente; la partida termina
+    // cuando están todos caídos o muertos (CaidaEnInvasion).
+    private void AlMorirElJugador()
+    {
+        if (CooperativoDeInvasion.Activo) return;
+        ResultadoDeInvasion.Mostrar(true);
+    }
 
     // CA6
     private void ArrancarMusica()

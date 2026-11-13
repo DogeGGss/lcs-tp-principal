@@ -1971,6 +1971,38 @@
     {
       "key": "gameplay.card.match_continues",
       "text": "The match goes on"
+    },
+    {
+      "key": "gameplay.down.you_are_down",
+      "text": "You're down! Wait for a revive"
+    },
+    {
+      "key": "gameplay.down.bleeding_fmt",
+      "text": "Down · {0} s to be revived"
+    },
+    {
+      "key": "gameplay.down.reviving_you_fmt",
+      "text": "{0} is reviving you"
+    },
+    {
+      "key": "gameplay.down.revived",
+      "text": "You're back up!"
+    },
+    {
+      "key": "gameplay.down.hold_to_revive_fmt",
+      "text": "Hold {0} to revive {1}"
+    },
+    {
+      "key": "gameplay.down.reviving_fmt",
+      "text": "Reviving {0}"
+    },
+    {
+      "key": "gameplay.down.being_revived",
+      "text": "Being revived"
+    },
+    {
+      "key": "gameplay.down.overhead_fmt",
+      "text": "Down · {0} s"
     }
   ]
 }
