@@ -9,8 +9,8 @@ using Cosmetico = PerfilDatos.Cosmetico;
 
 // Perfil del jugador (menú principal). Arriba, la cabecera con el banner, el avatar, el nombre, el título y un
 // resumen; abajo, cuatro pestañas: Estadísticas (US 221: las del jugador, F24, y las del minijuego, US 159), Personalización
-// (avatares, banners, títulos y marcos), Emotes (US 264: los bailes que se llevan en la rueda) y Cuenta (US 237,
-// PestanaCuenta).
+// (avatares, banners, títulos y marcos; y las skins de las armas, F35, US 379), Emotes (US 264: los bailes que se llevan
+// en la rueda) y Cuenta (US 237, PestanaCuenta).
 public class PantallaPerfil : PantallaBase
 {
     private const float Y0 = 520f, AnchoGrilla = 1260f;
@@ -33,7 +33,7 @@ public class PantallaPerfil : PantallaBase
     private Tipo categoria = Tipo.Avatar;
     private bool mostrarBloqueados = true;
     private Cosmetico seleccionado;
-    private readonly RectTransform[] chips = new RectTransform[4];
+    private readonly RectTransform[] chips = new RectTransform[5];
     private Img check;
 
     public PantallaPerfil(MenuRiftwalker menu, RectTransform parent) : base(menu, parent, "Perfil")
@@ -124,6 +124,7 @@ public class PantallaPerfil : PantallaBase
         panelCuenta.gameObject.SetActive(i == 3);
         if (i == 3) cuenta.Refrescar();
         if (i == 2) VerEmote(emoteVisto); else VistaPreviaDeEmote.Apagar(); // la vista previa solo dibuja si se ve
+        if (i == 1 && armas) VerSkin(SkinElegida); else VistaPreviaDeSkin.Apagar();
         RefrescarInfo();
     }
 
@@ -139,8 +140,10 @@ public class PantallaPerfil : PantallaBase
         }
         else
         {
-            int tiene = PerfilDatos.Obtenidos(Tipo.Avatar) + PerfilDatos.Obtenidos(Tipo.Banner) + PerfilDatos.Obtenidos(Tipo.Titulo) + PerfilDatos.Obtenidos(Tipo.Marco);
-            int total = PerfilDatos.Total(Tipo.Avatar) + PerfilDatos.Total(Tipo.Banner) + PerfilDatos.Total(Tipo.Titulo) + PerfilDatos.Total(Tipo.Marco);
+            int tiene = PerfilDatos.Obtenidos(Tipo.Avatar) + PerfilDatos.Obtenidos(Tipo.Banner) + PerfilDatos.Obtenidos(Tipo.Titulo) + PerfilDatos.Obtenidos(Tipo.Marco)
+                + SkinsDeArmas.CantidadObtenidas;
+            int total = PerfilDatos.Total(Tipo.Avatar) + PerfilDatos.Total(Tipo.Banner) + PerfilDatos.Total(Tipo.Titulo) + PerfilDatos.Total(Tipo.Marco)
+                + CatalogoDeSkins.Skins.Count;
             infoPestana.text = L10n.T("profile.info.collection_fmt", tiene, total);
         }
     }
@@ -314,11 +317,14 @@ public class PantallaPerfil : PantallaBase
         for (int i = 0; i < 4; i++)
         {
             Tipo t = tipos[i];
-            chips[i] = Place(Node("Categoria" + i, panelPers), i * 242f, 0f, 230f, 52f);
-            Clickeable(chips[i], () => { categoria = t; seleccionado = null; scroll.verticalNormalizedPosition = 1f; Refrescar(); });
+            chips[i] = Place(Node("Categoria" + i, panelPers), i * AnchoChip, 0f, AnchoChip - 12f, 52f);
+            Clickeable(chips[i], () => { categoria = t; armas = false; seleccionado = null; scroll.verticalNormalizedPosition = 1f; Refrescar(); });
         }
+        // F35, US 379, CA1: el apartado de las armas, con sus skins.
+        chips[4] = Place(Node("CategoriaArmas", panelPers), 4 * AnchoChip, 0f, AnchoChip - 12f, 52f);
+        Clickeable(chips[4], () => { armas = true; scroll.verticalNormalizedPosition = 1f; Refrescar(); });
 
-        RectTransform toggle = Place(Node("Bloqueados", panelPers), 1000f, 8f, 260f, 36f);
+        RectTransform toggle = Place(Node("Bloqueados", panelPers), 1012f, 8f, 248f, 36f);
         Image(Place(Node("Caja", toggle), 0f, 6f, 24f, 24f), Rounded, White(0.12f), 4f);
         check = Image(Place(Node("Check", toggle), 5f, 11f, 14f, 14f), Rounded, Accent, 3f);
         T(toggle, "Texto", 36f, 0f, 220f, 36f, FRotulo, 19f, Soft, "Mostrar bloqueados", TextAlignmentOptions.MidlineLeft, 8f, true);
@@ -330,25 +336,28 @@ public class PantallaPerfil : PantallaBase
 
     private void RefrescarChips()
     {
-        string[] nombres = { "Avatares", "Banners", "Títulos", "Marcos" };
+        string[] nombres = { "Avatares", "Banners", "Títulos", "Marcos", "Armas" };
         Tipo[] tipos = { Tipo.Avatar, Tipo.Banner, Tipo.Titulo, Tipo.Marco };
-        for (int i = 0; i < 4; i++)
+        const float w = AnchoChip - 12f;
+        for (int i = 0; i < chips.Length; i++)
         {
             RectTransform c = chips[i];
             BorrarHijos(c);
             Img fondo = c.GetComponent<Img>();
-            bool activo = tipos[i] == categoria;
+            bool esArmas = i == 4;
+            bool activo = esArmas ? armas : !armas && tipos[i] == categoria;
             fondo.sprite = Rounded;
             fondo.type = Img.Type.Sliced;
             fondo.pixelsPerUnitMultiplier = 16f / 8f;
             fondo.color = activo ? Accent : PanelColor;
-            T(c, "Nombre", 20f, 0f, 150f, 52f, FTitulo, 28f, activo ? AccentInk : Soft, nombres[i], TextAlignmentOptions.MidlineLeft, 6f, true);
-            T(c, "Cuenta", 118f, 0f, 96f, 52f, FMono, 18f, activo ? AccentInk : Mute,
-                $"{PerfilDatos.Obtenidos(tipos[i])}/{PerfilDatos.Total(tipos[i])}", TextAlignmentOptions.MidlineRight);
-            int nuevos = PerfilDatos.CantidadNuevos(tipos[i]);
+            T(c, "Nombre", 16f, 0f, w - 24f, 52f, FTitulo, 24f, activo ? AccentInk : Soft, nombres[i], TextAlignmentOptions.MidlineLeft, 5f, true);
+            int tiene = esArmas ? SkinsDeArmas.CantidadObtenidas : PerfilDatos.Obtenidos(tipos[i]);
+            int total = esArmas ? CatalogoDeSkins.Skins.Count : PerfilDatos.Total(tipos[i]);
+            T(c, "Cuenta", w - 100f, 0f, 88f, 52f, FMono, 16f, activo ? AccentInk : Mute, $"{tiene}/{total}", TextAlignmentOptions.MidlineRight);
+            int nuevos = esArmas ? SkinsDeArmas.CantidadNuevas : PerfilDatos.CantidadNuevos(tipos[i]);
             if (nuevos > 0)
             {
-                RectTransform badge = Place(Node("Nuevos", c), 194f, -10f, 44f, 24f);
+                RectTransform badge = Place(Node("Nuevos", c), w - 36f, -10f, 44f, 24f);
                 Image(badge, Rounded, activo ? Ink : Accent, 6f);
                 T(badge, "N", 0f, 0f, 44f, 24f, FRotulo, 15f, AccentInk, "+" + nuevos, TextAlignmentOptions.Center);
             }
@@ -358,6 +367,7 @@ public class PantallaPerfil : PantallaBase
 
     private void RefrescarGrilla()
     {
+        if (armas) { RefrescarArmas(); return; }
         BorrarHijos(grilla);
         var lista = new List<Cosmetico>();
         foreach (Cosmetico c in PerfilDatos.Catalogo)
@@ -443,6 +453,8 @@ public class PantallaPerfil : PantallaBase
 
     private void RefrescarVista()
     {
+        if (armas) { RefrescarVistaSkin(); return; }
+        VistaPreviaDeSkin.Apagar();
         BorrarHijos(vista);
         Image(Stretch(Node("Fondo", vista)), Rounded, PanelColor, 8f);
         Borde(Stretch(Node("Marco", vista)), 8f, White(0.08f));
@@ -512,6 +524,175 @@ public class PantallaPerfil : PantallaBase
             {
                 if (PerfilDatos.Equipar(c)) menu.Avisar($"<color={Rich(colorR)}>{c.nombre}</color> equipado");
             }, 26f);
+    }
+
+    // ================= Skins de las armas (F35, US 379) =================
+    // Arriba, las armas; abajo, las skins del arma elegida, empezando por "Sin skin" (la original, siempre disponible); a la
+    // derecha, el arma girando con la skin que se mira (CA2: pasando el mouse, o la elegida). Una skin equipada por arma
+    // (CA3); las bloqueadas se ven pero no se equipan (CA4). Se guarda en la cuenta y en la nube (CA5, SkinsDeArmas).
+
+    private const float AnchoChip = 202f;
+    private bool armas;
+    private string armaElegida = CatalogoDeSkins.Armas[0].id;
+    private string skinElegida; // id de la skin que se mira ("": sin skin; null: la equipada)
+    private UnityEngine.UI.RawImage vistaSkin;
+
+    // Los colores originales de las armas (Black, White, Grey y Main), para la carta "Sin skin".
+    private static readonly Color[] Originales = { Hex(0x070707), Hex(0x757575), Hex(0x1A1A1A), Hex(0x9D3607) };
+    // Lo que tapa cada material del arma (cuerpo, paneles, detalles y acento): así es la barra de colores de cada carta.
+    private static readonly float[] Partes = { 0.5f, 0.3f, 0.12f, 0.08f };
+
+    private CatalogoDeSkins.Skin SkinElegida
+    {
+        get
+        {
+            if (skinElegida == null) return SkinsDeArmas.EquipadaDe(armaElegida);
+            CatalogoDeSkins.Skin s = CatalogoDeSkins.De(skinElegida);
+            return s != null && s.arma.id == armaElegida ? s : null;
+        }
+    }
+
+    private void RefrescarArmas()
+    {
+        BorrarHijos(grilla);
+        // Las armas, en una fila.
+        var lista = CatalogoDeSkins.Armas;
+        const float Gap = 10f, AltoArma = 48f;
+        float aw = (AnchoGrilla - (lista.Count - 1) * Gap) / lista.Count;
+        for (int i = 0; i < lista.Count; i++)
+        {
+            CatalogoDeSkins.Arma a = lista[i];
+            bool activa = a.id == armaElegida;
+            RectTransform chip = Place(Node(a.id, grilla), i * (aw + Gap), 0f, aw, AltoArma);
+            Image(chip, Rounded, activa ? SelectedColor : PanelColor, 6f, true);
+            CatalogoDeSkins.Skin puesta = SkinsDeArmas.EquipadaDe(a.id);
+            if (puesta != null) Image(Place(Node("Skin", chip), 10f, 19f, 10f, 10f), Rounded, puesta.colores.paneles, 3f);
+            TextMeshProUGUI n = T(chip, "Nombre", puesta != null ? 26f : 12f, 0f, aw - (puesta != null ? 34f : 24f), AltoArma, FRotulo, 17f,
+                activa ? Accent : Soft, L10n.Source(a.nombre, "profile."), TextAlignmentOptions.MidlineLeft, 3f, true);
+            n.enableAutoSizing = true; // "El Gran Capitán" es largo
+            n.fontSizeMin = 11f;
+            n.fontSizeMax = 17f;
+            Img borde = Borde(chip, 6f, activa ? Accent : White(0.08f));
+            var p = Clickeable(chip, () => { armaElegida = a.id; skinElegida = null; Refrescar(); });
+            p.Hovered = () => { if (borde != null && armaElegida != a.id) borde.color = White(0.35f); };
+            p.Exited = () => { if (borde != null && armaElegida != a.id) borde.color = White(0.08f); };
+        }
+
+        // Sus skins: primero "Sin skin", después las que tiene y (si se muestran) las bloqueadas.
+        var skins = new List<CatalogoDeSkins.Skin> { null };
+        foreach (CatalogoDeSkins.Skin s in CatalogoDeSkins.DelArma(armaElegida)) if (SkinsDeArmas.Tiene(s)) skins.Add(s);
+        if (mostrarBloqueados)
+            foreach (CatalogoDeSkins.Skin s in CatalogoDeSkins.DelArma(armaElegida)) if (!SkinsDeArmas.Tiene(s)) skins.Add(s);
+        const int Columnas = 3;
+        const float GapCarta = 18f, AltoCarta = 128f, Y = AltoArma + 18f;
+        float w = (AnchoGrilla - (Columnas - 1) * GapCarta) / Columnas;
+        for (int i = 0; i < skins.Count; i++)
+            CartaSkin(skins[i], (i % Columnas) * (w + GapCarta), Y + (i / Columnas) * (AltoCarta + GapCarta), w, AltoCarta);
+        int filas = (skins.Count + Columnas - 1) / Columnas;
+        grilla.sizeDelta = new Vector2(AnchoGrilla, Mathf.Max(472f, Y + filas * (AltoCarta + GapCarta)));
+    }
+
+    private void CartaSkin(CatalogoDeSkins.Skin s, float x, float y, float w, float h)
+    {
+        string id = s != null ? s.id : "";
+        bool tiene = s == null || SkinsDeArmas.Tiene(s);
+        bool equipada = SkinsDeArmas.EquipadaDe(armaElegida) == s;
+        bool elegida = SkinElegida == s;
+        bool nueva = SkinsDeArmas.EsNueva(s);
+        Color colorR = s != null ? ColorRareza(s.rareza) : Mute;
+        RectTransform carta = Place(Node(s != null ? s.nombre : "Sin skin", grilla), x, y, w, h);
+        Image(carta, Rounded, PanelColor, 8f, true);
+
+        // Los cuatro colores, cada uno del ancho de lo que tapa en el arma.
+        RectTransform barra = Place(Node("Colores", carta), 16f, 16f, w - 32f, 40f);
+        Color[] colores = s != null ? new[] { s.colores.cuerpo, s.colores.paneles, s.colores.detalles, s.colores.acento } : Originales;
+        float bx = 0f;
+        for (int i = 0; i < 4; i++)
+        {
+            float bw = (w - 32f) * Partes[i];
+            Image(Place(Node("Color" + i, barra), bx, 0f, bw, 40f), null, colores[i]);
+            bx += bw;
+        }
+        Borde(barra, 4f, White(0.12f));
+        if (!tiene)
+        {
+            Image(Stretch(Node("Velo", barra)), null, new Color(0f, 0f, 0f, DarkAlpha(0.55f)));
+            Candado(barra, (w - 32f) / 2f, 20f, 26f, Soft);
+        }
+
+        TextMeshProUGUI n = T(carta, "Nombre", 16f, 62f, w - 32f, 32f, FTitulo, 26f, tiene ? Ink : Mute,
+            s != null ? s.Texto : "Sin skin", TextAlignmentOptions.MidlineLeft, 2f);
+        n.overflowMode = TextOverflowModes.Ellipsis;
+        string estado = equipada ? "Equipada" : !tiene ? "Bloqueada" : s == null ? "Original" : NombreRareza(s.rareza);
+        T(carta, "Estado", 16f, 96f, w - 32f, 20f, FRotulo, 15f, equipada ? Ok : !tiene ? Mute : colorR, estado, TextAlignmentOptions.MidlineLeft, 14f, true);
+        if (s != null) Image(Place(Node("Rareza", carta), 0f, h - 4f, w, 4f), null, colorR);
+
+        if (nueva)
+        {
+            const float AnchoNuevo = 64f;
+            RectTransform etiqueta = Place(Node("Nuevo", carta), w - AnchoNuevo - 8f, 64f, AnchoNuevo, 24f);
+            Image(etiqueta, Rounded, Accent, 5f);
+            T(etiqueta, "T", 0f, 0f, AnchoNuevo, 24f, FRotulo, 14f, AccentInk, "Nuevo", TextAlignmentOptions.Center, 12f, true);
+        }
+
+        Img borde = Borde(carta, 8f, elegida ? Accent : White(0.08f));
+        var p = Clickeable(carta, () => { skinElegida = id; SkinsDeArmas.Vista(s); Refrescar(); });
+        // CA2: pasando el mouse se ve en la vista previa.
+        p.Hovered = () => { VerSkin(s); if (borde != null && SkinElegida != s) borde.color = White(0.35f); };
+        p.Exited = () => { VerSkin(SkinElegida); if (borde != null && SkinElegida != s) borde.color = White(0.08f); };
+    }
+
+    private void RefrescarVistaSkin()
+    {
+        BorrarHijos(vista);
+        Image(Stretch(Node("Fondo", vista)), Rounded, PanelColor, 8f);
+        Borde(Stretch(Node("Marco", vista)), 8f, White(0.08f));
+        T(vista, "Rotulo", 24f, 18f, 400f, 22f, FRotulo, 17f, Accent, "Vista previa", TextAlignmentOptions.MidlineLeft, 16f, true);
+        RectTransform caja = Place(Node("Arma", vista), 24f, 54f, 452f, 301f);
+        vistaSkin = caja.gameObject.AddComponent<UnityEngine.UI.RawImage>();
+        vistaSkin.raycastTarget = false;
+
+        CatalogoDeSkins.Skin s = SkinElegida;
+        CatalogoDeSkins.Arma arma = CatalogoDeSkins.ArmaDe(armaElegida);
+        string nombreArma = arma != null ? L10n.Source(arma.nombre, "profile.") : "";
+        TextMeshProUGUI n = T(vista, "Nombre", 24f, 366f, 452f, 58f, FTitulo, 40f, Ink,
+            s != null ? s.Texto : nombreArma + " · " + L10n.Source("Sin skin", "profile."), TextAlignmentOptions.MidlineLeft, 3f, true);
+        n.overflowMode = TextOverflowModes.Ellipsis;
+        if (s != null)
+        {
+            Color colorR = ColorRareza(s.rareza);
+            T(vista, "Detalle", 24f, 420f, 452f, 28f, FTexto, 20f, Mute,
+                $"{L10n.Source("Skin de arma", "profile.")} · <color={Rich(colorR)}>{NombreRareza(s.rareza)}</color>");
+        }
+        else T(vista, "Detalle", 24f, 420f, 452f, 28f, FTexto, 20f, Mute, "El arma como viene, sin skin.");
+
+        bool tiene = s == null || SkinsDeArmas.Tiene(s);
+        if (!tiene) // CA4: se ve, pero no se equipa
+            CrearBoton(vista, 24f, 464f, 452f, 56f, "Se consigue en el pase o en las cápsulas", false, null, 20f).button.interactable = false;
+        else if (SkinsDeArmas.EquipadaDe(armaElegida) == s)
+            CrearBoton(vista, 24f, 464f, 452f, 56f, "Equipada", true, null, 26f, Ok).button.interactable = false;
+        else
+            CrearBoton(vista, 24f, 464f, 452f, 56f, "Equipar", true, () =>
+            {
+                // CA3: una por arma; "Sin skin" la saca.
+                if (s == null)
+                {
+                    SkinsDeArmas.Desequipar(armaElegida);
+                    menu.Avisar(L10n.T("profile.skin.removed_fmt", nombreArma));
+                }
+                else if (SkinsDeArmas.Equipar(s)) menu.Avisar(L10n.T("profile.skin.equipped_fmt", $"<color={Rich(ColorRareza(s.rareza))}>{s.Texto}</color>"));
+                skinElegida = null;
+                Refrescar();
+            }, 26f);
+        VerSkin(s);
+    }
+
+    // La vista previa: el arma elegida con esa skin (o la original), solo si se está viendo.
+    private void VerSkin(CatalogoDeSkins.Skin s)
+    {
+        if (vistaSkin == null || pestana != 1 || !armas) return;
+        VistaPreviaDeSkin.Mostrar(armaElegida, s);
+        vistaSkin.texture = VistaPreviaDeSkin.Textura;
     }
 
     // ================= Emotes (US 264) =================

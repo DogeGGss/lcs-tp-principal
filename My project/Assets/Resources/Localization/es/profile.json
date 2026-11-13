@@ -2151,6 +2151,42 @@
     {
       "key": "profile.skin.colors.desert",
       "text": "Desierto"
+    },
+    {
+      "key": "profile.skin.weapons",
+      "text": "Armas"
+    },
+    {
+      "key": "profile.skin.none",
+      "text": "Sin skin"
+    },
+    {
+      "key": "profile.skin.equipped",
+      "text": "Equipada"
+    },
+    {
+      "key": "profile.skin.locked",
+      "text": "Bloqueada"
+    },
+    {
+      "key": "profile.skin.type",
+      "text": "Skin de arma"
+    },
+    {
+      "key": "profile.skin.none_detail",
+      "text": "El arma como viene, sin skin."
+    },
+    {
+      "key": "profile.skin.get_it",
+      "text": "Se consigue en el pase o en las cápsulas"
+    },
+    {
+      "key": "profile.skin.equipped_fmt",
+      "text": "{0} equipada"
+    },
+    {
+      "key": "profile.skin.removed_fmt",
+      "text": "{0} sin skin"
     }
   ]
 }
