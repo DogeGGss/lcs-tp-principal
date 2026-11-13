@@ -707,8 +707,10 @@ public class InvasoresEnRed : MonoBehaviourPunCallbacks, IOnEventCallback
 
     private void TomarElMando()
     {
-        // Los portales de antes se cierran (la oleada abre los suyos).
-        foreach (PortalDeEnemigos portal in portales.Values) if (portal != null) portal.Cerrar();
+        // Los portales de antes se cierran (la oleada abre los suyos). Sobre una copia de la lista: al cerrarse, cada
+        // portal se saca de "portales" (AvisarCierre, que ya corre como anfitrión). Recorriendo la lista misma, eso
+        // cortaba todo con un error: los invasores quedaban congelados como copias y la oleada pasaba a la siguiente.
+        foreach (PortalDeEnemigos portal in new List<PortalDeEnemigos>(portales.Values)) if (portal != null) portal.Cerrar();
         portales.Clear();
         var vivos = new List<Npc>();
         paraQuitar.Clear();
