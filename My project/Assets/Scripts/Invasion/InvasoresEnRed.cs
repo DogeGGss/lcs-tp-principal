@@ -36,6 +36,9 @@ public class InvasoresEnRed : MonoBehaviourPunCallbacks, IOnEventCallback
         // US 355: lo que se ve de las cartas de cada uno (los manda cualquiera, no solo el anfitrión).
         EvDespeje = 57, EvCargador = 58, EvCargadorJuntado = 59;
     private const byte PrimerEvento = EvAparece, UltimoEvento = EvCargadorJuntado;
+    // Para probar: un compañero pide ir a una oleada (Ir a la oleada del editor o de los trucos, F10). Lo hace el anfitrión.
+    // (El 60 y el 61 son de CaidaEnInvasion.)
+    private const byte EvIrALaOleada = 62;
 
     // Lo que se ve de los ataques (EvEfecto).
     private const byte EfCargaRayo = 1, EfRayo = 2, EfBolaDeEnergia = 3, EfBolaDeVeneno = 4, EfEmbestida = 5,
@@ -441,6 +444,14 @@ public class InvasoresEnRed : MonoBehaviourPunCallbacks, IOnEventCallback
             new RaiseEventOptions { Receivers = ReceiverGroup.MasterClient }, SendOptions.SendReliable);
     }
 
+    /// <summary>Para probar: en cooperativo, ir a la oleada n lo hace el anfitrión (los invasores son suyos). Desde otra
+    /// computadora se le pide.</summary>
+    public static void PedirIrALaOleada(int n)
+    {
+        if (!PhotonNetwork.InRoom) return;
+        PhotonNetwork.RaiseEvent(EvIrALaOleada, n, new RaiseEventOptions { Receivers = ReceiverGroup.MasterClient }, SendOptions.SendReliable);
+    }
+
     /// <summary>La flash aturdió a una copia: que lo aturda el anfitrión.</summary>
     public static void PedirAturdir(Npc npc, float segundos)
     {
@@ -463,6 +474,11 @@ public class InvasoresEnRed : MonoBehaviourPunCallbacks, IOnEventCallback
 
     public void OnEvent(EventData ev)
     {
+        if (ev.Code == EvIrALaOleada)
+        {
+            if (Anfitrion && ev.CustomData is int oleadaPedida && Oleadas != null) Oleadas.IrA(oleadaPedida);
+            return;
+        }
         if (ev.Code < PrimerEvento || ev.Code > UltimoEvento) return;
         object[] d = ev.CustomData as object[];
         switch (ev.Code)

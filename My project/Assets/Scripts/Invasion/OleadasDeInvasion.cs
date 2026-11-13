@@ -668,7 +668,9 @@ public class OleadasDeInvasion : MonoBehaviour
     /// oleada n.</summary>
     public void IrA(int n)
     {
-        if (fase == Fase.Final || Espejo) return; // (en cooperativo, solo el anfitrión)
+        if (fase == Fase.Final) return;
+        // En cooperativo los invasores son del anfitrión: desde otra computadora se le pide a él.
+        if (Espejo) { InvasoresEnRed.PedirIrALaOleada(n); return; }
         foreach (Npc v in vivos) if (v != null) Destroy(v.gameObject);
         if (jefe != null) Destroy(jefe.gameObject);
         CerrarPortales();
