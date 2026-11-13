@@ -41,7 +41,7 @@ public static class CatalogoDeSkins
         public string[] partes;
         /// <summary>Un color que lo representa, para la barra de colores del perfil.</summary>
         public Color muestra;
-        /// <summary>Otras partes, con otro material o un color (por ejemplo, el cuerpo de madera del cobre).</summary>
+        /// <summary>Otras partes, con otro material o un color (por ejemplo, el cuerpo de mármol negro del mármol).</summary>
         public Extra[] extras = new Extra[0];
     }
 
@@ -100,10 +100,6 @@ public static class CatalogoDeSkins
     // Épicas (13/11/2026): el código binario verde que cae, animado (Art/Skins/SkinMatrix.shader), en los paneles y el acento.
     public static readonly List<Diseno> Disenos = new List<Diseno>
     {
-        // Cobre con óxido en los paneles, el cuerpo de madera oscura y las franjas marrones.
-        new Diseno { id = "cobre-oxidado", nombre = "Cobre oxidado", rareza = Rareza.Raro, partes = new[] { White }, muestra = Hex(0xC27A43),
-            extras = new[] { new Extra { parte = Black, material = "madera-oscura", muestra = Hex(0x6B4122) },
-                             new Extra { parte = Main, color = Hex(0x6E4527), muestra = Hex(0x6E4527) } } },
         // Mármol blanco en los paneles, el cuerpo de mármol negro con vetas doradas y las franjas de oro (con brillo de metal).
         new Diseno { id = "marmol-de-retiro", nombre = "Mármol de Retiro", rareza = Rareza.Raro, partes = new[] { White }, muestra = Hex(0xEEEDE8),
             extras = new[] { new Extra { parte = Black, material = "marmol-negro", muestra = Hex(0x16171A) },

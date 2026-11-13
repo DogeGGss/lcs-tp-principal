@@ -28,7 +28,7 @@ Material:
     - _Borde: 0.6
     - _Brillo: 2.2
     - _Cambio: 6
-    - _Celda: 0.012
+    - _Celda: 0.006
     - _Cola: 0.45
     - _Velocidad: 1.6
     m_Colors:

@@ -6655,10 +6655,6 @@ MonoBehaviour:
     m_Localized: "Binary Code"
     m_Metadata:
       m_Items: []
-  - m_Id: 380227458789499
-    m_Localized: "Oxidized Copper"
-    m_Metadata:
-      m_Items: []
   - m_Id: 380227458789500
     m_Localized: "Retiro Marble"
     m_Metadata:

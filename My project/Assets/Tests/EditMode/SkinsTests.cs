@@ -76,15 +76,16 @@ public class SkinsTests
                 Assert.IsNotNull(UnityEditor.AssetDatabase.LoadAssetAtPath<ShopItem>("Assets/Data/Tienda/" + a.ficha + ".asset"), a.ficha);
     }
 
-    [Test, Category("US 378"), Description("CA2: el cobre lleva el cuerpo de madera y las franjas marrones; el mármol, las franjas doradas")]
+    [Test, Category("US 378"), Description("CA2: el mármol lleva el cuerpo de mármol negro y las franjas de oro")]
     public void Las_raras_tienen_sus_otras_partes()
     {
-        CatalogoDeSkins.Skin cobre = CatalogoDeSkins.De("mitre-cobre-oxidado");
-        Assert.AreEqual(PerfilDatos.Rareza.Raro, cobre.rareza);
-        Assert.AreEqual("madera-oscura", CatalogoDeSkins.ExtraPara(cobre, "Black").material);
-        Assert.IsNotNull(CatalogoDeSkins.ExtraPara(cobre, "Main (Instance)"));
-        Assert.IsNull(CatalogoDeSkins.ExtraPara(cobre, "Grey"));
+        CatalogoDeSkins.Skin marmol = CatalogoDeSkins.De("mitre-marmol-de-retiro");
+        Assert.AreEqual(PerfilDatos.Rareza.Raro, marmol.rareza);
+        Assert.AreEqual("marmol-negro", CatalogoDeSkins.ExtraPara(marmol, "Black").material);
+        Assert.AreEqual("oro", CatalogoDeSkins.ExtraPara(marmol, "Main (Instance)").material);
+        Assert.IsNull(CatalogoDeSkins.ExtraPara(marmol, "Grey"));
         Assert.IsNull(CatalogoDeSkins.De("mitre-oro-pulido"));
         Assert.IsNull(CatalogoDeSkins.De("mitre-fibra-de-carbono"));
+        Assert.IsNull(CatalogoDeSkins.De("mitre-cobre-oxidado"));
     }
 }
