@@ -6615,6 +6615,10 @@ MonoBehaviour:
     m_Key: profile.skin.removed_fmt
     m_Metadata:
       m_Items: []
+  - m_Id: 380227458789496
+    m_Key: profile.skin.design.binary_code
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

@@ -6,14 +6,30 @@ using UnityEngine;
 // F35 (Skins de armas): el catálogo de skins (US 378).
 public class SkinsTests
 {
-    [Test, Category("US 378"), Description("CA1 y CA5: la primera tanda, cinco combinaciones comunes en cada arma")]
+    [Test, Category("US 378"), Description("CA1 y CA5: la primera tanda, cinco combinaciones comunes en cada arma, y los diseños")]
     public void La_primera_tanda_son_comunes_en_todas_las_armas()
     {
-        Assert.AreEqual(CatalogoDeSkins.Armas.Count * CatalogoDeSkins.Combinaciones.Count, CatalogoDeSkins.Skins.Count);
+        int porArma = CatalogoDeSkins.Combinaciones.Count + CatalogoDeSkins.Disenos.Count;
+        Assert.AreEqual(CatalogoDeSkins.Armas.Count * porArma, CatalogoDeSkins.Skins.Count);
         foreach (CatalogoDeSkins.Arma a in CatalogoDeSkins.Armas)
-            Assert.AreEqual(CatalogoDeSkins.Combinaciones.Count, CatalogoDeSkins.DelArma(a.id).Count, a.nombre);
+            Assert.AreEqual(porArma, CatalogoDeSkins.DelArma(a.id).Count, a.nombre);
         foreach (CatalogoDeSkins.Skin s in CatalogoDeSkins.Skins)
-            Assert.AreEqual(PerfilDatos.Rareza.Comun, s.rareza, s.nombre);
+            Assert.AreEqual(s.colores != null ? PerfilDatos.Rareza.Comun : s.diseno.rareza, s.rareza, s.nombre);
+    }
+
+    [Test, Category("US 378"), Description("CA2: Código binario es épica, en los paneles y el acento, con su material")]
+    public void Codigo_binario_es_epica()
+    {
+        CatalogoDeSkins.Skin s = CatalogoDeSkins.De("mitre-codigo-binario");
+        Assert.IsNotNull(s);
+        Assert.AreEqual(PerfilDatos.Rareza.Epico, s.rareza);
+        Assert.AreEqual("Mitre · Código binario", s.nombre);
+        Assert.IsTrue(CatalogoDeSkins.EsParteDelDiseno(s, "White"));
+        Assert.IsTrue(CatalogoDeSkins.EsParteDelDiseno(s, "Main (Instance)"));
+        Assert.IsFalse(CatalogoDeSkins.EsParteDelDiseno(s, "Black"));
+        Assert.IsNull(CatalogoDeSkins.ColorPara(s, "White"));
+        foreach (CatalogoDeSkins.Diseno d in CatalogoDeSkins.Disenos)
+            Assert.IsNotNull(Resources.Load<ModelosDeArmas>("Skins/ModelosDeArmas").MaterialDe(d.id), d.id);
     }
 
     [Test, Category("US 378"), Description("CA1: cada skin se llama con el arma y su nombre")]

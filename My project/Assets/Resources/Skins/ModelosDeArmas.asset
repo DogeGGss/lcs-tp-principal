@@ -29,3 +29,6 @@ MonoBehaviour:
     modelo: {fileID: 919132149155446097, guid: b6850ddfbb71bac42adc4da0872aaad2, type: 3}
   - arma: la-trochita
     modelo: {fileID: 919132149155446097, guid: ea59be7a4287c084e9ac1e85035af213, type: 3}
+  materiales:
+  - diseno: codigo-binario
+    material: {fileID: 2100000, guid: b2042ddfb4e740c48e1ee4c69b5ffc19, type: 2}

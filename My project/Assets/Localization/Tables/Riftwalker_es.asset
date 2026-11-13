@@ -6623,6 +6623,10 @@ MonoBehaviour:
     m_Localized: "{0} sin skin"
     m_Metadata:
       m_Items: []
+  - m_Id: 380227458789496
+    m_Localized: "Código binario"
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

@@ -537,8 +537,6 @@ public class PantallaPerfil : PantallaBase
     private string skinElegida; // id de la skin que se mira ("": sin skin; null: la equipada)
     private UnityEngine.UI.RawImage vistaSkin;
 
-    // Los colores originales de las armas (Black, White, Grey y Main), para la carta "Sin skin".
-    private static readonly Color[] Originales = { Hex(0x070707), Hex(0x757575), Hex(0x1A1A1A), Hex(0x9D3607) };
     // Lo que tapa cada material del arma (cuerpo, paneles, detalles y acento): así es la barra de colores de cada carta.
     private static readonly float[] Partes = { 0.5f, 0.3f, 0.12f, 0.08f };
 
@@ -566,7 +564,7 @@ public class PantallaPerfil : PantallaBase
             RectTransform chip = Place(Node(a.id, grilla), i * (aw + Gap), 0f, aw, AltoArma);
             Image(chip, Rounded, activa ? SelectedColor : PanelColor, 6f, true);
             CatalogoDeSkins.Skin puesta = SkinsDeArmas.EquipadaDe(a.id);
-            if (puesta != null) Image(Place(Node("Skin", chip), 10f, 19f, 10f, 10f), Rounded, puesta.colores.paneles, 3f);
+            if (puesta != null) Image(Place(Node("Skin", chip), 10f, 19f, 10f, 10f), Rounded, CatalogoDeSkins.ColoresDeBarra(puesta)[1], 3f);
             TextMeshProUGUI n = T(chip, "Nombre", puesta != null ? 26f : 12f, 0f, aw - (puesta != null ? 34f : 24f), AltoArma, FRotulo, 17f,
                 activa ? Accent : Soft, L10n.Source(a.nombre, "profile."), TextAlignmentOptions.MidlineLeft, 3f, true);
             n.enableAutoSizing = true; // "El Gran Capitán" es largo
@@ -605,7 +603,7 @@ public class PantallaPerfil : PantallaBase
 
         // Los cuatro colores, cada uno del ancho de lo que tapa en el arma.
         RectTransform barra = Place(Node("Colores", carta), 16f, 16f, w - 32f, 40f);
-        Color[] colores = s != null ? new[] { s.colores.cuerpo, s.colores.paneles, s.colores.detalles, s.colores.acento } : Originales;
+        Color[] colores = CatalogoDeSkins.ColoresDeBarra(s); // "Sin skin": los originales
         float bx = 0f;
         for (int i = 0; i < 4; i++)
         {

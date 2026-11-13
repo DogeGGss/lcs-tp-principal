@@ -2187,6 +2187,10 @@
     {
       "key": "profile.skin.removed_fmt",
       "text": "{0} sin skin"
+    },
+    {
+      "key": "profile.skin.design.binary_code",
+      "text": "Código binario"
     }
   ]
 }
