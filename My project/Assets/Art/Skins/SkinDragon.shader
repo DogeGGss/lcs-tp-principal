@@ -91,7 +91,8 @@ Shader "Riftwalker/Skins/Dragon"
             // Escamas en p (x: a lo largo del arma). luz: el relieve (0,25 en sombra a ~1,2); filo: 1 en el borde.
             void Escamas(float2 p, float tam, out float luz, out float filo, out float2 id)
             {
-                float2 q = float2(p.x / (tam * 1.3), p.y / tam);
+                // (x al revés: así la punta queda hacia la culata.)
+                float2 q = float2(-p.x / (tam * 1.3), p.y / tam);
                 float c0 = floor(q.x), fu0 = q.x - c0;
                 luz = 0.25; filo = 0.0; id = float2(0, 0);
                 // Primero la de la columna de atrás (queda abajo), después la de esta columna (arriba).
@@ -143,7 +144,7 @@ Shader "Riftwalker/Skins/Dragon"
                     float3 H = normalize(L + V);
                     float especular = pow(saturate(dot(N, H)), 48.0) * 0.6;
                     color = escama * (luzP.color * nl * 0.9 + SampleSH(N)) + especular * luzP.color;
-                    color += _ColorFilo.rgb * (filo * 0.45 + fresnel * 0.35);
+                    color += _ColorFilo.rgb * (filo * 0.15 + fresnel * 0.12);
                     if (parte == 1) // paneles: grietas de fuego que fluye hacia el caño
                     {
                         float2 f = float2(p.x - _Time.y * 0.15, p.y) / 0.05;

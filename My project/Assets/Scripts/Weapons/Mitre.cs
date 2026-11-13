@@ -52,6 +52,9 @@ public class Mitre : MonoBehaviour, IHudWeapon
     private Transform shooter;
     private ShopItem data;
 
+    /// <summary>F35 (US 381): la ficha del arma (la asignada o la del catálogo), para saber qué skin lleva.</summary>
+    public ShopItem Ficha => Data;
+
     // Ficha del arma: la asignada o, si falta, la del catálogo de la tienda con este nombre.
     private ShopItem Data
     {
