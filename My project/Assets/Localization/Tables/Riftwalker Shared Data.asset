@@ -6619,6 +6619,30 @@ MonoBehaviour:
     m_Key: profile.skin.design.binary_code
     m_Metadata:
       m_Items: []
+  - m_Id: 380227458789497
+    m_Key: profile.skin.design.oro_pulido
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227458789498
+    m_Key: profile.skin.design.fibra_de_carbono
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227458789499
+    m_Key: profile.skin.design.cobre_oxidado
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227458789500
+    m_Key: profile.skin.design.marmol_de_retiro
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227458789501
+    m_Key: profile.skin.design.azulejos_del_subte
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227458789502
+    m_Key: profile.skin.design.cristal_del_rift
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

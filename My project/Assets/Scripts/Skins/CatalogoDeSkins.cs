@@ -85,9 +85,16 @@ public static class CatalogoDeSkins
         C("desierto", "Desierto", 0xC8A26B, 0x6B5A40, 0x2B241A, 0xD9C9A8),
     };
 
+    // Raras (13/11/2026): materiales sin animar (Art/Skins/SkinPatron.shader, un material por diseño).
     // Épicas (13/11/2026): el código binario verde que cae, animado (Art/Skins/SkinMatrix.shader), en los paneles y el acento.
     public static readonly List<Diseno> Disenos = new List<Diseno>
     {
+        new Diseno { id = "oro-pulido", nombre = "Oro pulido", rareza = Rareza.Raro, partes = new[] { White, Main }, muestra = Hex(0xE8B84A) },
+        new Diseno { id = "fibra-de-carbono", nombre = "Fibra de carbono", rareza = Rareza.Raro, partes = new[] { Black, White }, muestra = Hex(0x3A3D42) },
+        new Diseno { id = "cobre-oxidado", nombre = "Cobre oxidado", rareza = Rareza.Raro, partes = new[] { Black, White }, muestra = Hex(0xC27A43) },
+        new Diseno { id = "marmol-de-retiro", nombre = "Mármol de Retiro", rareza = Rareza.Raro, partes = new[] { Black, White }, muestra = Hex(0xEEEDE8) },
+        new Diseno { id = "azulejos-del-subte", nombre = "Azulejos del subte", rareza = Rareza.Raro, partes = new[] { White, Main }, muestra = Hex(0x2E7D6B) },
+        new Diseno { id = "cristal-del-rift", nombre = "Cristal del Rift", rareza = Rareza.Raro, partes = new[] { White, Main }, muestra = Hex(0x7B3FE4) },
         new Diseno { id = "codigo-binario", nombre = "Código binario", rareza = Rareza.Epico, partes = new[] { White, Main }, muestra = Hex(0x26FF59) },
     };
 

@@ -2191,6 +2191,30 @@
     {
       "key": "profile.skin.design.binary_code",
       "text": "Binary Code"
+    },
+    {
+      "key": "profile.skin.design.oro_pulido",
+      "text": "Polished Gold"
+    },
+    {
+      "key": "profile.skin.design.fibra_de_carbono",
+      "text": "Carbon Fiber"
+    },
+    {
+      "key": "profile.skin.design.cobre_oxidado",
+      "text": "Oxidized Copper"
+    },
+    {
+      "key": "profile.skin.design.marmol_de_retiro",
+      "text": "Retiro Marble"
+    },
+    {
+      "key": "profile.skin.design.azulejos_del_subte",
+      "text": "Subway Tiles"
+    },
+    {
+      "key": "profile.skin.design.cristal_del_rift",
+      "text": "Rift Crystal"
     }
   ]
 }

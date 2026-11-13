@@ -32,3 +32,15 @@ MonoBehaviour:
   materiales:
   - diseno: codigo-binario
     material: {fileID: 2100000, guid: b2042ddfb4e740c48e1ee4c69b5ffc19, type: 2}
+  - diseno: oro-pulido
+    material: {fileID: 2100000, guid: 7e7b4c2b27244c0cb51c007c0c972263, type: 2}
+  - diseno: fibra-de-carbono
+    material: {fileID: 2100000, guid: 5520101beb274d74946d4271c53205e3, type: 2}
+  - diseno: cobre-oxidado
+    material: {fileID: 2100000, guid: 95bc05e35c42432a96d937a96e126d54, type: 2}
+  - diseno: marmol-de-retiro
+    material: {fileID: 2100000, guid: fc5d0b936d8b44d99228f3aba44a18b2, type: 2}
+  - diseno: azulejos-del-subte
+    material: {fileID: 2100000, guid: b8f21d601dac4ae1b7c4117e34e8c30c, type: 2}
+  - diseno: cristal-del-rift
+    material: {fileID: 2100000, guid: 2ae7568c17094111b49d76a6db9de9e1, type: 2}

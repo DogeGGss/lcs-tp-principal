@@ -6655,6 +6655,30 @@ MonoBehaviour:
     m_Localized: "Binary Code"
     m_Metadata:
       m_Items: []
+  - m_Id: 380227458789497
+    m_Localized: "Polished Gold"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227458789498
+    m_Localized: "Carbon Fiber"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227458789499
+    m_Localized: "Oxidized Copper"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227458789500
+    m_Localized: "Retiro Marble"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227458789501
+    m_Localized: "Subway Tiles"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227458789502
+    m_Localized: "Rift Crystal"
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []
