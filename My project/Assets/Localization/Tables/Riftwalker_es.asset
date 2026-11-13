@@ -6303,6 +6303,326 @@ MonoBehaviour:
     m_Localized: "Arranca sola con {0} jugadores, o con los que haya si pasan {1} s sin que entre nadie."
     m_Metadata:
       m_Items: []
+  - m_Id: 380227458789416
+    m_Localized: "En Invasión no hay habilidades"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227458789417
+    m_Localized: "Matar saca la pausa entre las próximas 5 ráfagas."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227458789418
+    m_Localized: "Matar saca la pausa entre las próximas 7 ráfagas."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227458789419
+    m_Localized: "Cada baja le suma una bala a las ráfagas, hasta 8. Al recargar vuelven a 3."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227458789420
+    m_Localized: "Cada baja le suma una bala a las ráfagas, hasta 10. Al recargar vuelven a 3."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227458789421
+    m_Localized: "Las granadas que tocan el piso quedan como minas (hasta 7)."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227458789422
+    m_Localized: "Las granadas que tocan el piso quedan como minas (hasta 9)."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227458789423
+    m_Localized: "80 % más de reserva en las dos armas (40 % más que ahora)."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227458789424
+    m_Localized: "120 % más de reserva en las dos armas (40 % más que ahora)."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227458789425
+    m_Localized: "Cada baja a la cabeza devuelve 10 balas al cargador."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227458789426
+    m_Localized: "Cada baja a la cabeza devuelve 15 balas al cargador."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227458789427
+    m_Localized: "1 de cada 4 invasores suelta un cargador al morir."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227458789428
+    m_Localized: "1 de cada 3 invasores suelta un cargador al morir."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227458789429
+    m_Localized: "El cuchillo mata de un golpe a los invasores con 30 % de vida o menos (salvo al Jefe)."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227458789430
+    m_Localized: "El cuchillo mata de un golpe a los invasores con 35 % de vida o menos (salvo al Jefe)."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227458789431
+    m_Localized: "Cada cuchillazo cura lo mismo que el daño que hace, hasta 35 de vida por golpe."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227458789432
+    m_Localized: "Cada cuchillazo cura lo mismo que el daño que hace, hasta 45 de vida por golpe."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227458789433
+    m_Localized: "Cuando un invasor te pega, tu próximo disparo suma 6 veces la vida que perdiste."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227458789434
+    m_Localized: "Cuando un invasor te pega, tu próximo disparo suma 7 veces la vida que perdiste."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227458789435
+    m_Localized: "Cuando el puesto se carga, una burbuja empuja 15 m a los invasores del anillo, salvo al Jefe."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227458789436
+    m_Localized: "Cuando el puesto se carga, una burbuja empuja 20 m a los invasores del anillo, salvo al Jefe."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227458789437
+    m_Localized: "No tenés lugar: descartá una carta para elegir una nueva"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227458789438
+    m_Localized: "Sin lugar · descartá una"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227458789439
+    m_Localized: "Descartaste {0}"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227458789440
+    m_Localized: "Descartar una carta"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227458789441
+    m_Localized: "Seguir sin elegir"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227458789442
+    m_Localized: "No hay cartas para elegir esta vez"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227458789443
+    m_Localized: "Tus cartas {0} / {1}"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227458789444
+    m_Localized: "{0} / {1} lugares ocupados"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227458789445
+    m_Localized: "Tus cartas"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227458789446
+    m_Localized: "Elegí cuál descartar"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227458789447
+    m_Localized: "Perdés la carta con sus mejoras y esta vez no elegís  ·  Esc para volver"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227458789448
+    m_Localized: "Soltá {0} para cerrar"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227458789449
+    m_Localized: "Volver"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227458789450
+    m_Localized: "Cancelar"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227458789451
+    m_Localized: "Descartar"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227458789452
+    m_Localized: "¿Descartar {0}? Perdés sus mejoras y esta vez no elegís."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227458789453
+    m_Localized: "Libre"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227458789454
+    m_Localized: "{0} de {1}"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227458789455
+    m_Localized: "Única"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227458789456
+    m_Localized: "Sin uso"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227458789457
+    m_Localized: "Rinde con: {0}"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227458789458
+    m_Localized: "Cartas (Invasión)"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227458789459
+    m_Localized: "La partida sigue"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227458789460
+    m_Localized: "¡Caíste! Esperá que te revivan"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227458789461
+    m_Localized: "Caído · {0} s para que te revivan"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227458789462
+    m_Localized: "{0} te está reviviendo"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227458789463
+    m_Localized: "¡Te levantaste!"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227458789464
+    m_Localized: "Mantené {0} para revivir a {1}"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227458789465
+    m_Localized: "Reviviendo a {0}"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227458789466
+    m_Localized: "Reviviendo"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227458789467
+    m_Localized: "Caído · {0} s"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227458789468
+    m_Localized: "Caído"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227458789469
+    m_Localized: "Muerto"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227458789470
+    m_Localized: "Desconectado"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227458789471
+    m_Localized: "Jugador"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227458789472
+    m_Localized: "Bajas"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227458789473
+    m_Localized: "Puntos"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227458789474
+    m_Localized: "Estado"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227458789475
+    m_Localized: "se unió a la partida"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227458789476
+    m_Localized: "Entraste a la partida"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227458789477
+    m_Localized: "Aparecés al empezar la próxima oleada"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227458789478
+    m_Localized: "Récord cooperativo en {0}: <color=#F3F4F6>oleada {1}</color> · solo: oleada {2}"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227458789479
+    m_Localized: "Récord de un jugador: oleada {0}"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227458789480
+    m_Localized: "Se retiró"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227458789481
+    m_Localized: "Enter o Esc  ·  Volver al menú"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227458789482
+    m_Localized: "Rift"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227458789483
+    m_Localized: "Albiceleste"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227458789484
+    m_Localized: "Brasa"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227458789485
+    m_Localized: "Ártico"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227458789486
+    m_Localized: "Desierto"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227458789487
+    m_Localized: "Armas"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227458789488
+    m_Localized: "Sin skin"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227458789489
+    m_Localized: "Equipada"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227458789490
+    m_Localized: "Bloqueada"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227458789491
+    m_Localized: "Skin de arma"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227458789492
+    m_Localized: "El arma como viene, sin skin."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227458789493
+    m_Localized: "Se consigue en el pase o en las cápsulas"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227458789494
+    m_Localized: "{0} equipada"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227458789495
+    m_Localized: "{0} sin skin"
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

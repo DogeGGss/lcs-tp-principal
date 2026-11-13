@@ -6331,6 +6331,326 @@ MonoBehaviour:
     m_Localized: "Starts automatically with {0} players, or with whoever is here after {1} seconds without new players."
     m_Metadata:
       m_Items: []
+  - m_Id: 380227458789416
+    m_Localized: "Abilities are disabled in Invasion"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227458789417
+    m_Localized: "Killing removes the pause between the next 5 bursts."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227458789418
+    m_Localized: "Killing removes the pause between the next 7 bursts."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227458789419
+    m_Localized: "Each kill adds one bullet to your bursts, up to 8. Reloading resets them to 3."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227458789420
+    m_Localized: "Each kill adds one bullet to your bursts, up to 10. Reloading resets them to 3."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227458789421
+    m_Localized: "Grenades that touch the ground stay as mines (up to 7)."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227458789422
+    m_Localized: "Grenades that touch the ground stay as mines (up to 9)."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227458789423
+    m_Localized: "80% more reserve ammo for both weapons (40% more than now)."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227458789424
+    m_Localized: "120% more reserve ammo for both weapons (40% more than now)."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227458789425
+    m_Localized: "Each headshot kill returns 10 bullets to the magazine."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227458789426
+    m_Localized: "Each headshot kill returns 15 bullets to the magazine."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227458789427
+    m_Localized: "1 in 4 invaders drops a magazine when it dies."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227458789428
+    m_Localized: "1 in 3 invaders drops a magazine when it dies."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227458789429
+    m_Localized: "The knife kills invaders with 30% health or less in one hit (except the Boss)."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227458789430
+    m_Localized: "The knife kills invaders with 35% health or less in one hit (except the Boss)."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227458789431
+    m_Localized: "Each knife hit heals as much as the damage it deals, up to 35 health per hit."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227458789432
+    m_Localized: "Each knife hit heals as much as the damage it deals, up to 45 health per hit."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227458789433
+    m_Localized: "When an invader hits you, your next shot adds 6 times the health you lost."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227458789434
+    m_Localized: "When an invader hits you, your next shot adds 7 times the health you lost."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227458789435
+    m_Localized: "When the station is charged, a bubble pushes invaders in the ring back 15 m, except the Boss."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227458789436
+    m_Localized: "When the station is charged, a bubble pushes invaders in the ring back 20 m, except the Boss."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227458789437
+    m_Localized: "No room: discard a card to pick a new one"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227458789438
+    m_Localized: "No room · discard one"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227458789439
+    m_Localized: "You discarded {0}"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227458789440
+    m_Localized: "Discard a card"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227458789441
+    m_Localized: "Continue without picking"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227458789442
+    m_Localized: "No cards to pick this time"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227458789443
+    m_Localized: "Your cards {0} / {1}"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227458789444
+    m_Localized: "{0} / {1} slots used"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227458789445
+    m_Localized: "Your cards"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227458789446
+    m_Localized: "Pick one to discard"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227458789447
+    m_Localized: "You lose the card and its upgrades, and you don't pick this time  ·  Esc to go back"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227458789448
+    m_Localized: "Release {0} to close"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227458789449
+    m_Localized: "Back"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227458789450
+    m_Localized: "Cancel"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227458789451
+    m_Localized: "Discard"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227458789452
+    m_Localized: "Discard {0}? You lose its upgrades and you don't pick this time."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227458789453
+    m_Localized: "Free"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227458789454
+    m_Localized: "{0} of {1}"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227458789455
+    m_Localized: "Single"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227458789456
+    m_Localized: "No use"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227458789457
+    m_Localized: "Works with: {0}"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227458789458
+    m_Localized: "Cards (Invasion)"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227458789459
+    m_Localized: "The match goes on"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227458789460
+    m_Localized: "You're down! Wait for a revive"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227458789461
+    m_Localized: "Down · {0} s to be revived"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227458789462
+    m_Localized: "{0} is reviving you"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227458789463
+    m_Localized: "You're back up!"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227458789464
+    m_Localized: "Hold {0} to revive {1}"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227458789465
+    m_Localized: "Reviving {0}"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227458789466
+    m_Localized: "Being revived"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227458789467
+    m_Localized: "Down · {0} s"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227458789468
+    m_Localized: "Down"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227458789469
+    m_Localized: "Dead"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227458789470
+    m_Localized: "Disconnected"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227458789471
+    m_Localized: "Player"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227458789472
+    m_Localized: "Kills"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227458789473
+    m_Localized: "Points"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227458789474
+    m_Localized: "Status"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227458789475
+    m_Localized: "joined the match"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227458789476
+    m_Localized: "You joined the match"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227458789477
+    m_Localized: "You'll spawn when the next wave starts"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227458789478
+    m_Localized: "Co-op record on {0}: <color=#F3F4F6>wave {1}</color> · solo: wave {2}"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227458789479
+    m_Localized: "Single-player record: wave {0}"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227458789480
+    m_Localized: "Retired"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227458789481
+    m_Localized: "Enter or Esc  ·  Back to menu"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227458789482
+    m_Localized: "Rift"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227458789483
+    m_Localized: "Albiceleste"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227458789484
+    m_Localized: "Ember"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227458789485
+    m_Localized: "Arctic"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227458789486
+    m_Localized: "Desert"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227458789487
+    m_Localized: "Weapons"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227458789488
+    m_Localized: "No skin"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227458789489
+    m_Localized: "Equipped"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227458789490
+    m_Localized: "Locked"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227458789491
+    m_Localized: "Weapon skin"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227458789492
+    m_Localized: "The weapon as it comes, without a skin."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227458789493
+    m_Localized: "Unlock it in the pass or in capsules"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227458789494
+    m_Localized: "{0} equipped"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227458789495
+    m_Localized: "{0} without a skin"
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

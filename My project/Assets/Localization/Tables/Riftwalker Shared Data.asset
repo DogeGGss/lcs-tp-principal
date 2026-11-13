@@ -6295,6 +6295,326 @@ MonoBehaviour:
     m_Key: ui.search.minimum_wait_invasion
     m_Metadata:
       m_Items: []
+  - m_Id: 380227458789416
+    m_Key: character.no_invasion_abilities
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227458789417
+    m_Key: gameplay.card.fx.no_interval.2
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227458789418
+    m_Key: gameplay.card.fx.no_interval.3
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227458789419
+    m_Key: gameplay.card.fx.growing_burst.2
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227458789420
+    m_Key: gameplay.card.fx.growing_burst.3
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227458789421
+    m_Key: gameplay.card.fx.minefield.2
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227458789422
+    m_Key: gameplay.card.fx.minefield.3
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227458789423
+    m_Key: gameplay.card.fx.backpack.2
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227458789424
+    m_Key: gameplay.card.fx.backpack.3
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227458789425
+    m_Key: gameplay.card.fx.recycler.2
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227458789426
+    m_Key: gameplay.card.fx.recycler.3
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227458789427
+    m_Key: gameplay.card.fx.scavenger.2
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227458789428
+    m_Key: gameplay.card.fx.scavenger.3
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227458789429
+    m_Key: gameplay.card.fx.finisher.2
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227458789430
+    m_Key: gameplay.card.fx.finisher.3
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227458789431
+    m_Key: gameplay.card.fx.hungry_edge.2
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227458789432
+    m_Key: gameplay.card.fx.hungry_edge.3
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227458789433
+    m_Key: gameplay.card.fx.rage.2
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227458789434
+    m_Key: gameplay.card.fx.rage.3
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227458789435
+    m_Key: gameplay.card.fx.clearance.2
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227458789436
+    m_Key: gameplay.card.fx.clearance.3
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227458789437
+    m_Key: gameplay.card.no_room
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227458789438
+    m_Key: gameplay.card.no_room_short
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227458789439
+    m_Key: gameplay.card.discarded_fmt
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227458789440
+    m_Key: gameplay.card.discard
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227458789441
+    m_Key: gameplay.card.skip
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227458789442
+    m_Key: gameplay.card.no_options
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227458789443
+    m_Key: gameplay.card.slots_fmt
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227458789444
+    m_Key: gameplay.card.occupied_fmt
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227458789445
+    m_Key: gameplay.card.your_cards
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227458789446
+    m_Key: gameplay.card.pick_discard
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227458789447
+    m_Key: gameplay.card.discard_hint
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227458789448
+    m_Key: gameplay.card.hold_hint
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227458789449
+    m_Key: gameplay.card.back
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227458789450
+    m_Key: gameplay.card.cancel
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227458789451
+    m_Key: gameplay.card.discard_confirm
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227458789452
+    m_Key: gameplay.card.discard_question_fmt
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227458789453
+    m_Key: gameplay.card.free_slot
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227458789454
+    m_Key: gameplay.card.times_fmt
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227458789455
+    m_Key: gameplay.card.single
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227458789456
+    m_Key: gameplay.card.unused
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227458789457
+    m_Key: gameplay.card.unused_weapon_fmt
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227458789458
+    m_Key: gameplay.controls.cards
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227458789459
+    m_Key: gameplay.card.match_continues
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227458789460
+    m_Key: gameplay.down.you_are_down
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227458789461
+    m_Key: gameplay.down.bleeding_fmt
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227458789462
+    m_Key: gameplay.down.reviving_you_fmt
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227458789463
+    m_Key: gameplay.down.revived
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227458789464
+    m_Key: gameplay.down.hold_to_revive_fmt
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227458789465
+    m_Key: gameplay.down.reviving_fmt
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227458789466
+    m_Key: gameplay.down.being_revived
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227458789467
+    m_Key: gameplay.down.overhead_fmt
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227458789468
+    m_Key: gameplay.mates.down
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227458789469
+    m_Key: gameplay.mates.dead
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227458789470
+    m_Key: gameplay.mates.disconnected
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227458789471
+    m_Key: gameplay.mates.player
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227458789472
+    m_Key: gameplay.mates.kills
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227458789473
+    m_Key: gameplay.mates.points
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227458789474
+    m_Key: gameplay.mates.state
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227458789475
+    m_Key: gameplay.event.joined
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227458789476
+    m_Key: gameplay.mates.joined_title
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227458789477
+    m_Key: gameplay.mates.next_wave
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227458789478
+    m_Key: gameplay.result.record_coop_fmt
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227458789479
+    m_Key: gameplay.result.record_solo_fmt
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227458789480
+    m_Key: gameplay.mates.retired
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227458789481
+    m_Key: gameplay.result.keys_hint_coop
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227458789482
+    m_Key: profile.skin.colors.rift
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227458789483
+    m_Key: profile.skin.colors.albiceleste
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227458789484
+    m_Key: profile.skin.colors.ember
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227458789485
+    m_Key: profile.skin.colors.arctic
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227458789486
+    m_Key: profile.skin.colors.desert
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227458789487
+    m_Key: profile.skin.weapons
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227458789488
+    m_Key: profile.skin.none
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227458789489
+    m_Key: profile.skin.equipped
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227458789490
+    m_Key: profile.skin.locked
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227458789491
+    m_Key: profile.skin.type
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227458789492
+    m_Key: profile.skin.none_detail
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227458789493
+    m_Key: profile.skin.get_it
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227458789494
+    m_Key: profile.skin.equipped_fmt
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227458789495
+    m_Key: profile.skin.removed_fmt
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:
