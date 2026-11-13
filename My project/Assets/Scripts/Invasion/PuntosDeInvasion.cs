@@ -21,6 +21,13 @@ public class PuntosDeInvasion : MonoBehaviour
     public int BajasALaCabeza { get; private set; }
     public int PuntosGanados { get; private set; }
 
+    /// <summary>F31 (US 359, CA2): volvió a la partida: lo que llevaba (lo publicó en la sala, CompanerosEnInvasion).</summary>
+    public void Recuperar(int bajas, int puntosGanados)
+    {
+        Bajas = Mathf.Max(Bajas, bajas);
+        PuntosGanados = Mathf.Max(PuntosGanados, puntosGanados);
+    }
+
     private PlayerWallet billetera;
 
     private void OnEnable()

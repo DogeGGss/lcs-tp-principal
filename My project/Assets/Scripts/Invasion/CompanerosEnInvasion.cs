@@ -19,7 +19,7 @@ using Img = UnityEngine.UI.Image;
 //   publica los suyos como propiedad del jugador en la sala.
 public class CompanerosEnInvasion : MonoBehaviour
 {
-    private const string PropBajas = "inv.bajas", PropPuntos = "inv.pts";
+    public const string PropBajas = "inv.bajas", PropPuntos = "inv.pts";
     private const float CadaPublicar = 0.5f;
     private const float ListaX = 24f, ListaY = 430f, AnchoFila = 260f, AltoFila = 46f, EntreFilas = 6f; // CA1
     private const float AlturaDelNombre = 2.15f, AlturaCaido = 0.9f;                                   // CA2 (m)
