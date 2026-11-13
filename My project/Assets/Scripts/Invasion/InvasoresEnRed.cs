@@ -406,7 +406,8 @@ public class InvasoresEnRed : MonoBehaviourPunCallbacks, IOnEventCallback
     }
 
     // US 357: los muertos (que esperan la oleada siguiente) no eligen; los caídos sí.
-    private static bool EstaMuerto(Player p) => CaidaEnInvasion.EstadoDe(p) == CaidaEnInvasion.Estado.Muerto;
+    private static bool EstaMuerto(Player p) =>
+        CaidaEnInvasion.EstadoDe(p) == CaidaEnInvasion.Estado.Muerto || CaidaEnInvasion.EstadoDe(p) == CaidaEnInvasion.Estado.Retirado; // (US 289, CA9)
 
     /// <summary>US 356, CA2: eligieron todos: arranca el descanso antes de la oleada siguiente a esa.</summary>
     public static void AvisarDescanso(int oleada)

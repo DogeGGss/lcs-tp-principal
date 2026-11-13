@@ -155,7 +155,12 @@ public class ResultadoDeInvasion : MonoBehaviour
         }
         else
             Text(Place(Node("Record", raiz), 0f, 504f, 1920f, 36f), label, 22f, Mute, TextAlignmentOptions.Center, 12f, true).text =
-                L10n.T("gameplay.result.record_fmt", Dificultad((int)dificultad), recordAntes);
+                coop ? L10n.T("gameplay.result.record_coop_fmt", Dificultad((int)dificultad), recordAntes, MatchSettings.ZombieRecord(dificultad))
+                     : L10n.T("gameplay.result.record_fmt", Dificultad((int)dificultad), recordAntes);
+        // US 289, CA13: en cooperativo también el récord de un jugador (con un récord nuevo, debajo de la píldora).
+        if (coop && nuevo)
+            Text(Place(Node("RecordSolo", raiz), 0f, 540f, 1920f, 28f), label, 18f, Mute, TextAlignmentOptions.Center, 12f, true).text =
+                L10n.T("gameplay.result.record_solo_fmt", MatchSettings.ZombieRecord(dificultad));
 
         // CA3: los números.
         string[,] numeros =
@@ -177,15 +182,20 @@ public class ResultadoDeInvasion : MonoBehaviour
             Text(Place(Node("Valor", tarjeta), 0f, 50f, Ancho, 64f), display, 56f, tinta, TextAlignmentOptions.Center, 2f).text = numeros[i, 1];
         }
 
+        // F31 (US 289, CA7): en cooperativo, cada jugador con sus bajas y sus puntos (debajo de los números; los botones
+        // bajan).
+        float yBotones = 760f;
+        if (coop) yBotones = Jugadores(raiz, redondeado, puntos);
+
         // CA5: los botones.
         Boton(L10n.T("gameplay.result.play_again"), 676f, MarcadorInvasion.Verde, Hex(0x10180C), false, redondeado, JugarDeNuevo);
         Boton(L10n.T("gameplay.result.back_menu"), 984f, Color.clear, Ink, true, redondeado, VolverAlMenu);
-        Text(Place(Node("Teclas", raiz), 0f, 836f, 1920f, 24f), label, 15f, Mute, TextAlignmentOptions.Center, 12f, true).text =
+        Text(Place(Node("Teclas", raiz), 0f, yBotones + 76f, 1920f, 24f), label, 15f, Mute, TextAlignmentOptions.Center, 12f, true).text =
             L10n.T("gameplay.result.keys_hint");
 
         void Boton(string texto, float x, Color fondo, Color tinta, bool borde, Sprite sprite, System.Action alApretar)
         {
-            RectTransform b = Place(Node(texto, raiz), x, 760f, 260f, 56f);
+            RectTransform b = Place(Node(texto, raiz), x, yBotones, 260f, 56f);
             if (borde)
                 MarcadorInvasion.Figura<FormaRedondeada>(Stretch(Node("Borde", b))).Pintar(Color.clear, White(FadeAlpha(0.35f)), 6f, 1.5f);
             UnityEngine.UI.Image img = Image(b, sprite, borde ? new Color(1f, 1f, 1f, 0f) : fondo, 6f, true);
@@ -197,6 +207,36 @@ public class ResultadoDeInvasion : MonoBehaviour
         }
 
         Congelar();
+        // US 289, CA9: el que se retira termina su partida; la de los demás sigue.
+        if (coop && !murio) CaidaEnInvasion.Retirarse();
+    }
+
+    // US 289, CA7: los jugadores de la partida, ordenados por puntos. Devuelve dónde van los botones.
+    private float Jugadores(RectTransform raiz, Sprite redondeado, PuntosDeInvasion mios)
+    {
+        if (!Photon.Pun.PhotonNetwork.InRoom) return 760f;
+        var lista = new System.Collections.Generic.List<Photon.Realtime.Player>(Photon.Pun.PhotonNetwork.PlayerList);
+        int Bajas(Photon.Realtime.Player p) => p.IsLocal && mios != null ? mios.Bajas : CompanerosEnInvasion.Numero(p, CompanerosEnInvasion.PropBajas);
+        int Puntos(Photon.Realtime.Player p) => p.IsLocal && mios != null ? mios.PuntosGanados : CompanerosEnInvasion.Numero(p, CompanerosEnInvasion.PropPuntos);
+        lista.Sort((a, b) => Puntos(b).CompareTo(Puntos(a)));
+        const float Ancho = 720f, Alto = 34f, Y = 728f;
+        float x = (1920f - Ancho) / 2f;
+        Text(Place(Node("Jugadores", raiz), x + 16f, Y, 300f, 24f), label, 15f, Mute, TextAlignmentOptions.MidlineLeft, 14f, true).text = L10n.T("gameplay.mates.player");
+        Text(Place(Node("ColBajas", raiz), x + Ancho - 300f, Y, 140f, 24f), label, 15f, Mute, TextAlignmentOptions.MidlineRight, 14f, true).text = L10n.T("gameplay.mates.kills");
+        Text(Place(Node("ColPuntos", raiz), x + Ancho - 156f, Y, 140f, 24f), label, 15f, Mute, TextAlignmentOptions.MidlineRight, 14f, true).text = L10n.T("gameplay.mates.points");
+        float y = Y + 28f;
+        foreach (Photon.Realtime.Player p in lista)
+        {
+            RectTransform fila = Place(Node("Jugador " + p.ActorNumber, raiz), x, y, Ancho, Alto);
+            Image(fila, redondeado, p.IsLocal ? WithAlpha(Accent, 0.18f) : Rgb(10, 12, 17, DarkAlpha(0.9f)), 6f);
+            Color tinta = p.IsInactive ? Mute : Ink;
+            Text(Place(Node("Nombre", fila), 16f, 0f, 380f, Alto), label, 20f, tinta, TextAlignmentOptions.MidlineLeft).text =
+                string.IsNullOrEmpty(p.NickName) ? "?" : p.NickName;
+            Text(Place(Node("Bajas", fila), Ancho - 300f, 0f, 140f, Alto), mono, 20f, tinta, TextAlignmentOptions.MidlineRight).text = Bajas(p).ToString();
+            Text(Place(Node("Puntos", fila), Ancho - 156f, 0f, 140f, Alto), mono, 20f, tinta, TextAlignmentOptions.MidlineRight).text = Miles(Puntos(p));
+            y += Alto + 4f;
+        }
+        return Mathf.Max(760f, y + 20f);
     }
 
     private static string Miles(int n) => n.ToString("N0", System.Globalization.CultureInfo.InvariantCulture).Replace(",", ".");
@@ -252,6 +292,7 @@ public class ResultadoDeInvasion : MonoBehaviour
         if (saliendo) return;
         saliendo = true;
         Soltar();
+        if (CooperativoDeInvasion.Activo) Multijugador.SalirDeLaSala(); // F31: sale de la sala (no vuelve, US 195)
         PantallaDeCarga.Cargar(EscenaMenu, "", "Menú principal"); // US 046 y US 196
     }
 }

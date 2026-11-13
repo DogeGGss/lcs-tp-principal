@@ -186,8 +186,9 @@ public class CompanerosEnInvasion : MonoBehaviour
             if (p.IsInactive) { f.estado.text = L10n.T("gameplay.mates.disconnected"); f.estado.color = Mute; }
             else if (estado == CaidaEnInvasion.Estado.Caido) { f.estado.text = L10n.T("gameplay.mates.down"); f.estado.color = Rojo; }
             else if (estado == CaidaEnInvasion.Estado.Muerto) { f.estado.text = L10n.T("gameplay.mates.dead"); f.estado.color = Mute; }
+            else if (estado == CaidaEnInvasion.Estado.Retirado) { f.estado.text = L10n.T("gameplay.mates.retired"); f.estado.color = Mute; }
             else f.estado.text = "";
-            f.nombre.color = estado == CaidaEnInvasion.Estado.Muerto || p.IsInactive ? Mute : Ink;
+            f.nombre.color = estado == CaidaEnInvasion.Estado.Muerto || estado == CaidaEnInvasion.Estado.Retirado || p.IsInactive ? Mute : Ink;
         }
     }
 
@@ -263,7 +264,7 @@ public class CompanerosEnInvasion : MonoBehaviour
         PhotonNetwork.LocalPlayer.SetCustomProperties(new Hashtable { { PropBajas, bajasPublicadas }, { PropPuntos, puntosPublicados } });
     }
 
-    private static int Numero(Player p, string clave) => p.CustomProperties.TryGetValue(clave, out object v) && v is int n ? n : 0;
+    public static int Numero(Player p, string clave) => p.CustomProperties.TryGetValue(clave, out object v) && v is int n ? n : 0;
 
     /// <summary>CA4: la tabla con Tab (la pide MarcadorInvasion en cooperativo).</summary>
     public static MatchHud.Table Tabla()
@@ -284,12 +285,13 @@ public class CompanerosEnInvasion : MonoBehaviour
             CaidaEnInvasion.Estado e = CaidaEnInvasion.EstadoDe(p);
             string estado = p.IsInactive ? L10n.T("gameplay.mates.disconnected")
                 : e == CaidaEnInvasion.Estado.Caido ? L10n.T("gameplay.mates.down")
-                : e == CaidaEnInvasion.Estado.Muerto ? L10n.T("gameplay.mates.dead") : "";
+                : e == CaidaEnInvasion.Estado.Muerto ? L10n.T("gameplay.mates.dead")
+                : e == CaidaEnInvasion.Estado.Retirado ? L10n.T("gameplay.mates.retired") : "";
             seccion.rows.Add(new MatchHud.Row
             {
                 cells = new[] { string.IsNullOrEmpty(p.NickName) ? "?" : p.NickName, Numero(p, PropBajas).ToString(), Numero(p, PropPuntos).ToString(), estado },
                 highlight = p.IsLocal,
-                dim = e == CaidaEnInvasion.Estado.Muerto || p.IsInactive,
+                dim = e == CaidaEnInvasion.Estado.Muerto || e == CaidaEnInvasion.Estado.Retirado || p.IsInactive,
             });
         }
         tabla.sections.Add(seccion);

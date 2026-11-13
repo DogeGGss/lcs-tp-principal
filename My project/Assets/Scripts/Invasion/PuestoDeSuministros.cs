@@ -52,6 +52,23 @@ public class PuestoDeSuministros : MonoBehaviour
     public bool Cargado => Meta > 0 && Carga >= Meta;
     /// <summary>CA4: el jugador está adentro del anillo.</summary>
     public bool Adentro { get; private set; }
+
+    /// <summary>F31 (US 353, CA6): hay al menos un jugador vivo adentro del anillo (este o un compañero).</summary>
+    public bool AlguienAdentro()
+    {
+        if (!Hay) return false;
+        if (Adentro) return true;
+        PartidaEnRed partida = PartidaEnRed.Actual;
+        if (partida == null) return false;
+        foreach (JugadorEnRed j in partida.Jugadores)
+        {
+            if (j == null || !j.Vivo || j.EstaCaido) continue;
+            Vector3 d = j.transform.position - Lugar;
+            d.y = 0f;
+            if (d.sqrMagnitude <= Radio * Radio) return true;
+        }
+        return false;
+    }
     /// <summary>US 335: ya se sabe dónde cae el próximo (en el descanso).</summary>
     public bool HayProximo { get; private set; }
     public Vector3 LugarProximo { get; private set; }
