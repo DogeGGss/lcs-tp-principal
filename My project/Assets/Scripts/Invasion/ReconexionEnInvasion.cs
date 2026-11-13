@@ -34,7 +34,13 @@ public class ReconexionEnInvasion : MonoBehaviour
         if (!recuperado)
         {
             recuperado = true;
-            if (Reconexion.Volvio) StartCoroutine(Recuperar(partida.Local.gameObject));
+            if (Reconexion.Volvio)
+            {
+                // Que no publique mientras recupera: publicaría las cartas y la munición de recién entrado (ninguna) y
+                // pisaría las guardadas antes de leerlas. Recuperar lo vuelve a habilitar al terminar.
+                proximo = float.MaxValue;
+                StartCoroutine(Recuperar(partida.Local.gameObject));
+            }
             else proximo = Time.unscaledTime + 2f; // (que no publique antes de tener el equipo inicial)
             return;
         }
@@ -122,7 +128,9 @@ public class ReconexionEnInvasion : MonoBehaviour
     private IEnumerator Recuperar(GameObject jugador)
     {
         Player yo = PhotonNetwork.LocalPlayer;
-        Hashtable props = yo.CustomProperties;
+        // Una copia: las propiedades del jugador cambian mientras esto espera (y no se tienen que perder).
+        var props = new Hashtable();
+        foreach (var par in yo.CustomProperties) props[par.Key] = par.Value;
         Debug.Log("[Invasión] Volvió a la partida: recupera sus puntos, su equipo, sus cartas y su munición.");
 
         // Los puntos (la billetera) y lo ganado (bajas y puntos, para el resultado y la tabla).
