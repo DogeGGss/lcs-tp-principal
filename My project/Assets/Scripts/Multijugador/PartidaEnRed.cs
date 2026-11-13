@@ -167,6 +167,13 @@ public class PartidaEnRed : MonoBehaviour
             L10n.T(jugador.IsInactive ? "gameplay.event.disconnected" : "gameplay.event.left"));
     }
 
+    /// <summary>F31 (US 358, CA5): alguien nuevo se sumó a la partida empezada (Invasión cooperativa).</summary>
+    public void AlEntrar(Player jugador)
+    {
+        if (jugador == null) return;
+        MatchHud.ReportEvent(jugador.NickName, JugadorEnRed.ColorDe(jugador.ActorNumber), L10n.T("gameplay.event.joined"));
+    }
+
     /// <summary>CA2: alguien volvió a la partida. Su copia aparece cuando avisa que terminó de cargar el mapa.</summary>
     public void AlVolver(Player jugador)
     {

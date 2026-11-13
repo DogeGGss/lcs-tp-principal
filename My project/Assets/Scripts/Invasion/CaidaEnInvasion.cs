@@ -137,6 +137,13 @@ public class CaidaEnInvasion : MonoBehaviourPunCallbacks, IOnEventCallback
             espectador = gameObject.AddComponent<Espectador>();
             espectador.Iniciar(partida);
         }
+        // US 358 y US 359, CA2: entró (o volvió) con una oleada en juego: mira a sus compañeros y aparece al empezar la
+        // siguiente, junto a uno vivo (AlEmpezar). En el descanso aparece enseguida.
+        if ((Multijugador.EntroEmpezada || Reconexion.Volvio) && InvasoresEnRed.EnOleada)
+        {
+            estado = Estado.Muerto;
+            local.EsperarLaOleada();
+        }
         Publicar();
         return true;
     }

@@ -325,6 +325,12 @@ public class InvasoresEnRed : MonoBehaviourPunCallbacks, IOnEventCallback
     private readonly Dictionary<int, CargadorEnElPiso> cargadores = new Dictionary<int, CargadorEnElPiso>();
     private int siguienteCargador;
 
+    private const string PropEnOleada = "inv.ola";
+
+    /// <summary>US 358, CA2: hay una oleada en juego (si no, es el descanso).</summary>
+    public static bool EnOleada =>
+        PhotonNetwork.CurrentRoom != null && PhotonNetwork.CurrentRoom.CustomProperties.TryGetValue(PropEnOleada, out object v) && v is bool b && b;
+
     /// <summary>US 355: el invasor con ese número (la copia, o el de verdad en el anfitrión).</summary>
     public static Npc Invasor(int id) => Actual != null && Actual.invasores.TryGetValue(id, out Npc npc) ? npc : null;
 
@@ -415,6 +421,10 @@ public class InvasoresEnRed : MonoBehaviourPunCallbacks, IOnEventCallback
         if (!Anfitrion || Actual == null) return;
         Actual.Mandar(EvOleada, new object[] { que, oleada, total, jefesDerrotados }, ReceiverGroup.Others, true);
         Actual.proximoEstadoDeOleada = 0f; // y enseguida el estado completo
+        // US 358, CA2: queda en la sala si hay una oleada en juego (el que entra en una, espera la siguiente).
+        bool enOleada = que != OleadaSupero;
+        if (PhotonNetwork.CurrentRoom != null && EnOleada != enOleada)
+            PhotonNetwork.CurrentRoom.SetCustomProperties(new ExitGames.Client.Photon.Hashtable { { PropEnOleada, enOleada } });
     }
 
     // =====================================================================

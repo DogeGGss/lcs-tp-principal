@@ -35,6 +35,15 @@ public class Multijugador : MonoBehaviourPunCallbacks, IOnEventCallback
     // Buscar partida: la sala es pública, desde cuándo se espera con el mínimo y cuándo empezó la cuenta regresiva
     // (PhotonNetwork.ServerTimestamp; 0, todavía no).
     private const string PropPublica = "pub", PropEspera = "esp", PropInicio = "ini";
+    // F31 (US 358): la partida ya empezó (en Invasión cooperativa la sala sigue abierta y se puede entrar).
+    private const string PropJugando = "jgo";
+
+    /// <summary>La sala ya está jugando (el anfitrión inició la partida).</summary>
+    public static bool EnJuego =>
+        PhotonNetwork.CurrentRoom != null && PhotonNetwork.CurrentRoom.CustomProperties.TryGetValue(PropJugando, out object v) && v is bool b && b;
+
+    /// <summary>US 358: esta computadora entró a la sala con la partida ya empezada.</summary>
+    public static bool EntroEmpezada { get; private set; }
     private const string Alfabeto = "ABCDEFGHJKMNPQRSTUVWXYZ23456789"; // sin O, I ni L (US 027, CA2)
     private const string EscenaMenu = "MenuPrincipal";
 
@@ -241,7 +250,10 @@ public class Multijugador : MonoBehaviourPunCallbacks, IOnEventCallback
         if (!PuedeIniciar) return;
         // US 031: en Táctico, el anfitrión reparte los equipos antes de cargar el mapa.
         if (ModoSala == GameMode.Tactico) EquiposTacticos.Repartir();
-        PhotonNetwork.CurrentRoom.IsOpen = false;
+        // F31 (US 358, CA1): en Invasión la sala sigue abierta (con el código o buscando partida se entra mientras
+        // haya lugar); en los otros modos se cierra.
+        PhotonNetwork.CurrentRoom.IsOpen = ModoSala == GameMode.Zombie;
+        PhotonNetwork.CurrentRoom.SetCustomProperties(new Hashtable { { PropJugando, true } });
         // US 195: desde ahora, el que se desconecta queda 2 minutos en la sala para poder volver. En el andén no: ahí el
         // que se va deja su lugar libre en el momento. La sala también espera 2 minutos si se desconectan todos a la vez
         // (por ejemplo, se cortó la red de todos).
@@ -292,7 +304,7 @@ public class Multijugador : MonoBehaviourPunCallbacks, IOnEventCallback
     {
         // US 276: el anfitrión de una sala pública arranca la partida. Cada cambio de la sala tarda en volver del servidor:
         // entre uno y otro espera medio segundo, así no los repite.
-        if (!EnPartidaPublica || !PhotonNetwork.IsMasterClient || !PhotonNetwork.CurrentRoom.IsOpen) return;
+        if (!EnPartidaPublica || !PhotonNetwork.IsMasterClient || !PhotonNetwork.CurrentRoom.IsOpen || EnJuego) return;
         if (Time.unscaledTime - ultimoAjuste < 0.5f) return;
         int inicio = MarcaSala(PropInicio);
         switch (QueHacer(PhotonNetwork.CurrentRoom.PlayerCount, MinimoPara(ModoSala), inicio != 0, SegundosDesde(MarcaSala(PropEspera)), SegundosDesde(inicio),
@@ -443,7 +455,9 @@ public class Multijugador : MonoBehaviourPunCallbacks, IOnEventCallback
             if (!PhotonNetwork.RejoinRoom(vuelta.sala)) FallarVuelta(ErrorVolver, false);
             return;
         }
-        PhotonNetwork.AutomaticallySyncScene = true; // cuando el anfitrión inicia, todos cargan su mapa
+        // Cuando el anfitrión inicia, todos cargan su mapa. Al entrar a una sala se prende recién adentro (OnJoinedRoom):
+        // si la partida ya empezó (US 358), Photon la cargaría antes de terminar de entrar (como al volver, US 195).
+        PhotonNetwork.AutomaticallySyncScene = pedido == Pedido.Crear;
         // Photon conserva las propiedades del jugador local al salir de una sala y las lleva a la siguiente: sin esto,
         // las bajas, muertes, plantadas y desactivaciones de la tabla (y la plata y las armas publicadas) arrancarían
         // con lo de la partida anterior. Al volver a la misma partida (arriba) no se borran: las devuelve la sala.
@@ -572,6 +586,7 @@ public class Multijugador : MonoBehaviourPunCallbacks, IOnEventCallback
         Pedido hecho = pedido;
         pedido = Pedido.Nada;
         pendientes.Clear();
+        EntroEmpezada = false;
 
         GameMode modo = ModoSala;
         if (hecho == Pedido.Unirse && modo != modoPedido)
@@ -605,6 +620,19 @@ public class Multijugador : MonoBehaviourPunCallbacks, IOnEventCallback
         foreach (Player p in PhotonNetwork.PlayerListOthers) otros.Add(p.NickName);
         PhotonNetwork.NickName = PlayerProfile.UniqueInRoom(NombreBase(), otros);
 
+        // F31 (US 358, CA1 y CA2): la partida ya empezó (Invasión cooperativa): se carga el mapa como al volver.
+        if (EnJuego && modo == GameMode.Zombie)
+        {
+            EntroEmpezada = true;
+            ConfigRed.Mapa mapa = MapaActual;
+            if (mapa != null) PantallaDeCarga.MostrarOnline(mapa.escena, modo, mapa.nombre, mapa.imagen, EnPartidaPublica ? "" : Codigo);
+            PhotonNetwork.AutomaticallySyncScene = true; // carga la escena que tiene el anfitrión
+            if (PhotonNetwork.IsMasterClient && mapa != null) PhotonNetwork.LoadLevel(mapa.escena);
+            Cambio?.Invoke();
+            return;
+        }
+        PhotonNetwork.AutomaticallySyncScene = true; // cuando el anfitrión inicia, todos cargan su mapa
+
         Cambio?.Invoke();
     }
 
@@ -619,6 +647,7 @@ public class Multijugador : MonoBehaviourPunCallbacks, IOnEventCallback
     {
         Debug.Log($"Multijugador: {(newPlayer.HasRejoined ? "volvió" : "entró")} {newPlayer.NickName}.");
         if (newPlayer.HasRejoined && PartidaEnRed.Actual != null) PartidaEnRed.Actual.AlVolver(newPlayer); // US 195
+        else if (EnJuego && PartidaEnRed.Actual != null) PartidaEnRed.Actual.AlEntrar(newPlayer); // US 358, CA5
         // US 276, CA2: en buscar partida, si entra alguien la espera con el mínimo vuelve a empezar.
         if (EnPartidaPublica && PhotonNetwork.IsMasterClient && PhotonNetwork.CurrentRoom.IsOpen && MarcaSala(PropInicio) == 0)
             Ajustar(new Hashtable { { PropEspera, MarcaAhora() } });
