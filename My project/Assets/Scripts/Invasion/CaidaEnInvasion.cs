@@ -309,6 +309,9 @@ public class CaidaEnInvasion : MonoBehaviourPunCallbacks, IOnEventCallback
     private void AlEmpezar(int oleada)
     {
         if (estado != Estado.Muerto || local == null) return;
+        // US 358 y US 359, CA2: entró o volvió en medio de una oleada y esta computadora se está poniendo al día con
+        // ella: no es la siguiente, sigue mirando a sus compañeros.
+        if (OleadasDeInvasion.PoniendoseAlDia) return;
         Pose punto = JuntoAUnCompanero();
         estado = Estado.Vivo;
         Publicar();
