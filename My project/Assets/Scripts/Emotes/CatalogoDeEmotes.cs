@@ -21,6 +21,8 @@ public class CatalogoDeEmotes : ScriptableObject
         public AnimationClip clip;
         [Tooltip("F37 (US 388): su rareza. Inicial: lo tienen todos de entrada (el Saludo); los demás se consiguen.")]
         public PerfilDatos.Rareza rareza = PerfilDatos.Rareza.Comun;
+        [Tooltip("F37: en qué momento del baile (de 0 a 1) se saca la silueta del ícono (Riftwalker > Emotes > Generar íconos).")]
+        [Range(0f, 1f)] public float momentoIcono = 0.4f;
     }
 
     public List<Emote> emotes = new List<Emote>();
