@@ -32,7 +32,11 @@ Shader "Riftwalker/Skins/Matrix"
             #pragma vertex vert
             #pragma fragment frag
             #pragma multi_compile_fog
+            #pragma multi_compile _ _ADDITIONAL_LIGHTS_VERTEX _ADDITIONAL_LIGHTS
+            #pragma multi_compile _ _CLUSTER_LIGHT_LOOP
             #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
+            #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Lighting.hlsl"
+            #include "LucesDeSkin.hlsl"
 
             CBUFFER_START(UnityPerMaterial)
                 float4 _ColorFondo, _ColorCodigo, _ColorCabeza;
@@ -49,6 +53,7 @@ Shader "Riftwalker/Skins/Matrix"
                 float3 normalWS : TEXCOORD2;
                 float3 viewWS : TEXCOORD3;
                 float fog : TEXCOORD4;
+                float3 posWS : TEXCOORD5;
             };
 
             Varyings vert(Attributes v)
@@ -63,6 +68,7 @@ Shader "Riftwalker/Skins/Matrix"
                 o.normalWS = TransformObjectToWorldNormal(v.normalOS);
                 o.viewWS = GetWorldSpaceViewDir(p.positionWS);
                 o.fog = ComputeFogFactor(p.positionCS.z);
+                o.posWS = p.positionWS;
                 return o;
             }
 
@@ -117,6 +123,10 @@ Shader "Riftwalker/Skins/Matrix"
                 float borde = pow(1.0 - saturate(dot(normalize(i.normalWS), normalize(i.viewWS))), 3.0) * _Borde;
 
                 float3 color = _ColorFondo.rgb + codigo + _ColorCodigo.rgb * borde;
+                // Las otras luces (el fogonazo, las del mapa) sobre el fondo oscuro.
+                float3 brilloExtra;
+                float3 extra = LucesExtra(i.posWS, normalize(i.normalWS), normalize(i.viewWS), i.positionCS, 32.0, brilloExtra);
+                color += (_ColorFondo.rgb + 0.06) * extra + brilloExtra * 0.2;
                 color = MixFog(color, i.fog);
                 return float4(color, 1);
             }

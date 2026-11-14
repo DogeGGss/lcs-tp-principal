@@ -49,8 +49,11 @@ Shader "Riftwalker/Skins/Dragon"
             #pragma vertex vert
             #pragma fragment frag
             #pragma multi_compile_fog
+            #pragma multi_compile _ _ADDITIONAL_LIGHTS_VERTEX _ADDITIONAL_LIGHTS
+            #pragma multi_compile _ _CLUSTER_LIGHT_LOOP
             #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
             #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Lighting.hlsl"
+            #include "LucesDeSkin.hlsl"
 
             CBUFFER_START(UnityPerMaterial)
                 float4 _ColorEscama, _ColorFilo, _ColorFuego, _ColorNucleo, _ColorPiedra;
@@ -80,6 +83,7 @@ Shader "Riftwalker/Skins/Dragon"
                 float3 normalWS : TEXCOORD2;
                 float3 viewWS : TEXCOORD3;
                 float fog : TEXCOORD4;
+                float3 posWS : TEXCOORD5;
             };
 
             Varyings vert(Attributes v)
@@ -93,6 +97,7 @@ Shader "Riftwalker/Skins/Dragon"
                 o.normalWS = TransformObjectToWorldNormal(v.normalOS);
                 o.viewWS = GetWorldSpaceViewDir(p.positionWS);
                 o.fog = ComputeFogFactor(p.positionCS.z);
+                o.posWS = p.positionWS;
                 return o;
             }
 
@@ -194,6 +199,10 @@ Shader "Riftwalker/Skins/Dragon"
                     float especular = pow(saturate(dot(Nr, H)), 64.0) * 0.8 * gris;
                     float ambiente = dot(SampleSH(Nr), float3(0.299, 0.587, 0.114));
                     color = escama * (luzP.color * nlr * 0.9 + ambiente) + especular * 0.5;
+                    // Las otras luces (el fogonazo, las del mapa).
+                    float3 brilloExtra;
+                    float3 extra = LucesExtra(i.posWS, Nr, V, i.positionCS, 64.0, brilloExtra);
+                    color += escama * extra + brilloExtra * 0.4 * gris;
                     float frs = pow(1.0 - saturate(dot(Nr, V)), 3.0);
                     color += _ColorFilo.rgb * frs * 0.25;
                     if (parte == 1) // paneles: piedra volcánica con grietas de fuego que se abren
@@ -219,6 +228,9 @@ Shader "Riftwalker/Skins/Dragon"
                         float aspero = pow(saturate(dot(Np, normalize(L + V))), 24.0) * 0.15 * grano;
                         float ambienteP = dot(SampleSH(Np), float3(0.299, 0.587, 0.114));
                         color = piedra * (luzP.color * saturate(dot(Np, L)) * 0.9 + ambienteP) + aspero;
+                        float3 brilloP;
+                        float3 extraP = LucesExtra(i.posWS, Np, V, i.positionCS, 24.0, brilloP);
+                        color += piedra * extraP + brilloP * 0.15 * grano;
 
                         // Cada tanda dura _Ciclo segundos y la siguiente espera _Pausa. Con _DosTandas, otra tanda corre a
                         // destiempo (a mitad de camino), en otros lugares.
