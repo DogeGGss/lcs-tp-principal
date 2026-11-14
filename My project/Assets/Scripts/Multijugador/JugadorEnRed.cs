@@ -1390,9 +1390,10 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
         // F35 (US 381, CA4): con su skin legendaria, el fogonazo y la estela de la skin, y su fuego se enciende.
         CatalogoDeSkins.Efectos legendaria = EfectosDeSkin.De(SkinEnLaMano(arma));
         Vector3 adelante = direcciones.Length >= 3 ? new Vector3(direcciones[0], direcciones[1], direcciones[2]) : transform.forward;
-        if (legendaria != null) EfectosDeSkin.DisparoDeOtro(boca, adelante, legendaria);
+        enLaMano.TryGetValue(arma, out ModeloEnMano conCalor);
+        if (legendaria != null) EfectosDeSkin.DisparoDeOtro(boca, adelante, legendaria, conCalor?.go);
         else global::Trazadora.Fogonazo(boca);
-        if (enLaMano.TryGetValue(arma, out ModeloEnMano conCalor)) CalorDeSkin.Disparo(conCalor.go);
+        if (conCalor != null) CalorDeSkin.Disparo(conCalor.go);
         for (int i = 0; i + 2 < direcciones.Length; i += 3)
         {
             Vector3 direccion = new Vector3(direcciones[i], direcciones[i + 1], direcciones[i + 2]);

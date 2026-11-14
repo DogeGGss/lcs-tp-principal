@@ -56,6 +56,10 @@ public static class CatalogoDeSkins
         public bool llamarada;
         /// <summary>La estela suelta brasas que caen.</summary>
         public bool brasas;
+        /// <summary>El fogonazo suelta chispas que saltan hacia adelante.</summary>
+        public bool chispas;
+        /// <summary>Después de disparar, la boca larga humo (HumoDeSkin).</summary>
+        public bool humo;
     }
 
     /// <summary>Una parte del arma con otro material (el id en ModelosDeArmas) o solo otro color.</summary>
@@ -132,7 +136,7 @@ public static class CatalogoDeSkins
         new Diseno { id = "dragon-abisal", nombre = "Dragón Abisal", rareza = Rareza.Legendario, partes = new[] { White }, muestra = Hex(0x1E6BFF),
             extras = new[] { new Extra { parte = Black, material = "dragon-escamas", muestra = Hex(0x2A2C36) },
                              new Extra { parte = Main, material = "dragon-llama", muestra = Hex(0x4FC8FF) } },
-            efectos = new Efectos { fuego = Hex(0x1E6BFF), nucleo = Hex(0xCFFAFF), llamarada = true, brasas = true } },
+            efectos = new Efectos { fuego = Hex(0x1E6BFF), nucleo = Hex(0xCFFAFF), llamarada = true, brasas = true, chispas = true, humo = true } },
     };
 
     /// <summary>Los colores de las armas como vienen: cuerpo, paneles, detalles y acento.</summary>

@@ -2,8 +2,8 @@
 //   0 Alas: el fogonazo en forma de dos alas de fuego que se abren (_Abrir, de 0 a 1) hacia arriba y hacia abajo, en un
 //     cuadrado (uv: x a lo largo del disparo, y de un ala a la otra).
 //   1 Brasa: un puntito de fuego redondo (las brasas que suelta la estela).
-//   2 Llamarada: el fogonazo, una llama azul en forma de gota que sale de la boca (x: de la boca hacia adelante) y
-//     tiembla (_Abrir: cuánto creció, de 0 a 1).
+//   2 Llamarada: el fogonazo, una lengua de fuego azul en forma de gota que sale de la boca (x: de la boca hacia
+//     adelante), tiembla (_Abrir: cuánto creció, de 0 a 1) y se curva hacia un costado (_Enrosque).
 Shader "Riftwalker/Skins/Efectos"
 {
     Properties
@@ -13,6 +13,7 @@ Shader "Riftwalker/Skins/Efectos"
         _ColorNucleo ("Centro del fuego", Color) = (0.81, 0.98, 1, 1)
         _Brillo ("Brillo", Float) = 2
         _Abrir ("Abiertas (alas)", Range(0, 1)) = 1
+        _Enrosque ("Enrosque de la llama (-1 a 1)", Float) = 0
     }
 
     SubShader
@@ -34,7 +35,7 @@ Shader "Riftwalker/Skins/Efectos"
 
             CBUFFER_START(UnityPerMaterial)
                 float4 _ColorFuego, _ColorNucleo;
-                float _Modo, _Brillo, _Abrir;
+                float _Modo, _Brillo, _Abrir, _Enrosque;
             CBUFFER_END
 
             struct Attributes { float4 positionOS : POSITION; float2 uv : TEXCOORD0; float4 color : COLOR; };
@@ -54,7 +55,8 @@ Shader "Riftwalker/Skins/Efectos"
                 float3 color;
                 if ((int)round(_Modo) == 2)
                 {
-                    float x = i.uv.x, y = abs(i.uv.y * 2.0 - 1.0);
+                    // La lengua se curva hacia un costado (_Enrosque), más cuanto más lejos de la boca.
+                    float x = i.uv.x, y = abs(i.uv.y * 2.0 - 1.0 - _Enrosque * 0.55 * x * x);
                     float temblor = 0.85 + 0.15 * sin(x * 23.0 + _Time.y * 60.0) * sin(y * 17.0 - _Time.y * 45.0);
                     float ancho = 0.95 * pow(saturate(x * 4.0), 0.5) * pow(saturate(1.0 - x), 0.8) * temblor;
                     float largo = step(x, _Abrir);                                   // crece desde la boca

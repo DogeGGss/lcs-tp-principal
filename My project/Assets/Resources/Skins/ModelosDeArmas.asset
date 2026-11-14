@@ -29,6 +29,9 @@ MonoBehaviour:
     modelo: {fileID: 919132149155446097, guid: b6850ddfbb71bac42adc4da0872aaad2, type: 3}
   - arma: la-trochita
     modelo: {fileID: 919132149155446097, guid: ea59be7a4287c084e9ac1e85035af213, type: 3}
+  bocas:
+  - arma: mitre
+    corrimiento: {x: -0, y: 0.038}
   materiales:
   - diseno: codigo-binario
     material: {fileID: 2100000, guid: b2042ddfb4e740c48e1ee4c69b5ffc19, type: 2}
@@ -54,3 +57,5 @@ MonoBehaviour:
     material: {fileID: 2100000, guid: 6aab7071999542fabd2532e227ec59f6, type: 2}
   - diseno: efecto-brasa
     material: {fileID: 2100000, guid: 92c4d18064ab44d1a9da831b05125382, type: 2}
+  - diseno: efecto-humo
+    material: {fileID: 2100000, guid: c321e3817fef49a0b6afd2420db31ef9, type: 2}
