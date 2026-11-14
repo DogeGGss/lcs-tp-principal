@@ -54,6 +54,30 @@ public class SkinsEnLasArmas : MonoBehaviour
         return SkinsDeArmas.EquipadaDe(arma.id)?.id;
     }
 
+    /// <summary>US 381: los efectos de disparo de la skin del arma de esa ficha, si es legendaria (si no, null). Se mira
+    /// la skin que tiene puesta el arma (lo que se ve: también la que se le puso desde Skins de prueba); si no, la que le
+    /// toca.</summary>
+    public static CatalogoDeSkins.Efectos EfectosDe(ShopItem ficha)
+    {
+        if (Local == null) return null;
+        GameObject arma = ArmaDe(ficha);
+        SkinDeArma puesta = arma != null ? arma.GetComponent<SkinDeArma>() : null;
+        if (puesta != null && puesta.Puesta != null) return EfectosDeSkin.De(puesta.Puesta);
+        return EfectosDeSkin.De(CatalogoDeSkins.De(Local.SkinDe(ficha)));
+    }
+
+    /// <summary>US 381: la ficha de un arma de primera persona del jugador (para Skins de prueba), o null.</summary>
+    public static ShopItem FichaDeArma(GameObject arma) => Local != null ? Local.FichaDe(arma) : null;
+
+    /// <summary>US 381: el arma de primera persona de esa ficha (para su calor al disparar), o null.</summary>
+    public static GameObject ArmaDe(ShopItem ficha)
+    {
+        if (Local == null || Local.switcher == null || ficha == null) return null;
+        foreach (GameObject arma in Local.switcher.Principales()) if (Local.FichaDe(arma) == ficha) return arma;
+        foreach (GameObject arma in Local.switcher.Secundarias()) if (Local.FichaDe(arma) == ficha) return arma;
+        return null;
+    }
+
     /// <summary>CA4: levantó un arma del piso con esa skin (la de quien la soltó).</summary>
     public void Levantada(ShopItem ficha, string skin)
     {
@@ -105,6 +129,13 @@ public class SkinsEnLasArmas : MonoBehaviour
     private ShopItem FichaDe(GameObject arma)
     {
         ShopItem item = WeaponSwitcher.FichaDe(arma);
+        // El Mitre y la pistola pueden no tener la ficha asignada: la buscan en el catálogo (la que usan al disparar).
+        if (item == null && arma != null)
+        {
+            Mitre mitre = arma.GetComponent<Mitre>();
+            Pistola pistola = arma.GetComponent<Pistola>();
+            item = mitre != null ? mitre.Ficha : pistola != null ? pistola.Ficha : null;
+        }
         if (item == null && switcher != null && arma == switcher.pistolObj && loadout != null && loadout.Catalog != null)
             item = loadout.Catalog.starterSecondary;
         return item;

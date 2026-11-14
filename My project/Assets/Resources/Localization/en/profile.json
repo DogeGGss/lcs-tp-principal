@@ -2203,6 +2203,10 @@
     {
       "key": "profile.skin.design.cristal_del_rift",
       "text": "Rift Crystal"
+    },
+    {
+      "key": "profile.skin.design.dragon_abisal",
+      "text": "Abyssal Dragon"
     }
   ]
 }

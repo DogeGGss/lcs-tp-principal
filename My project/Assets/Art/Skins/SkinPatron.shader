@@ -33,8 +33,11 @@ Shader "Riftwalker/Skins/Patron"
             #pragma vertex vert
             #pragma fragment frag
             #pragma multi_compile_fog
+            #pragma multi_compile _ _ADDITIONAL_LIGHTS_VERTEX _ADDITIONAL_LIGHTS
+            #pragma multi_compile _ _CLUSTER_LIGHT_LOOP
             #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
             #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Lighting.hlsl"
+            #include "LucesDeSkin.hlsl"
 
             CBUFFER_START(UnityPerMaterial)
                 float4 _Color1, _Color2, _Color3, _Color4;
@@ -50,6 +53,7 @@ Shader "Riftwalker/Skins/Patron"
                 float3 normalWS : TEXCOORD2;
                 float3 viewWS : TEXCOORD3;
                 float fog : TEXCOORD4;
+                float3 posWS : TEXCOORD5;
             };
 
             Varyings vert(Attributes v)
@@ -63,6 +67,7 @@ Shader "Riftwalker/Skins/Patron"
                 o.normalWS = TransformObjectToWorldNormal(v.normalOS);
                 o.viewWS = GetWorldSpaceViewDir(p.positionWS);
                 o.fog = ComputeFogFactor(p.positionCS.z);
+                o.posWS = p.positionWS;
                 return o;
             }
 
@@ -191,6 +196,10 @@ Shader "Riftwalker/Skins/Patron"
                 float3 difuso = albedo * (1.0 - metal);
                 float3 color = (difuso + especular) * luz.color * nl;
                 color += difuso * SampleSH(N);
+                // Las otras luces (el fogonazo, las del mapa).
+                float3 brilloExtra;
+                float3 extra = LucesExtra(i.posWS, N, V, i.positionCS, potencia, brilloExtra);
+                color += difuso * extra + reflejo * brilloExtra * (potencia + 2.0) / 8.0;
                 // Reflejos del ambiente: los metales y lo pulido (mármol, azulejos) devuelven lo que tienen alrededor.
                 float fresnel = pow(1.0 - saturate(dot(N, V)), 5.0);
                 float3 entorno = GlossyEnvironmentReflection(reflect(-V, N), 1.0 - lisura, 1.0);

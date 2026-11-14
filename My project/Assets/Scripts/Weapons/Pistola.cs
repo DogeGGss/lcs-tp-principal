@@ -186,6 +186,9 @@ public class Pistola : MonoBehaviour, IHudWeapon
         WeaponFire.Fire(Data, playerCamera, shooter, false, 100f);
     }
 
+    /// <summary>F35 (US 381): la ficha del arma (la asignada o la pistola inicial), para saber qué skin lleva.</summary>
+    public ShopItem Ficha => Data;
+
     // Ficha del arma: la asignada o, si falta, la pistola inicial del catálogo de la tienda.
     private ShopItem Data
     {
