@@ -23,6 +23,14 @@ Material:
   m_SavedProperties:
     serializedVersion: 3
     m_TexEnvs:
+    - _Piedra:
+        m_Texture: {fileID: 2800000, guid: d2e78050d34c4255ac4b9a668744b740, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _PiedraNormal:
+        m_Texture: {fileID: 2800000, guid: 3d1514aa70b14cd9bc7dab1d9ee0d377, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
     - _Escamas:
         m_Texture: {fileID: 2800000, guid: 715fda4b41ee40cb9a8d3d5e43fa19df, type: 3}
         m_Scale: {x: 1, y: 1}
@@ -33,6 +41,8 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
+    - _RelievePiedra: 1
+    - _TilePiedra: 0.25
     - _Giro: 3
     - _Relieve: 1
     - _Tile: 0.3
@@ -43,6 +53,7 @@ Material:
     - _Escala: 0.04
     - _Parte: 1
     m_Colors:
+    - _ColorPiedra: {r: 1, g: 1, b: 1, a: 1}
     - _ColorEscama: {r: 0.0549, g: 0.0549, b: 0.0667, a: 1}
     - _ColorFilo: {r: 0.1647, g: 0.1647, b: 0.1882, a: 1}
     - _ColorFuego: {r: 0.1176, g: 0.4196, b: 1.0000, a: 1}

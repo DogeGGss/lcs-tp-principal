@@ -1,6 +1,6 @@
 // F35 (Skins de armas), US 381: la skin legendaria "Dragón Abisal", animada. Un material por parte del arma (_Parte):
 //   0 Cuerpo: escamas negras (la textura Texturas/EscamasDragon, de FreePBR, con su relieve), con un brillo apenas gris.
-//   1 Paneles: piedra volcánica (basalto oscuro y poroso) donde se abren grietas de fuego azul: cada grieta crece desde un
+//   1 Paneles: piedra (la roca del terreno del mapa de deathmatch, Terreno_Roca) donde se abren grietas de fuego azul: cada grieta crece desde un
 //     punto, se abre, brilla y se vuelve a cerrar, y en otro lado se abren otras (dos tandas a destiempo, cada una de
 //     _Ciclo segundos). La piedra y las grietas se calculan en 3D (no apoyadas en cada cara): pasan de una cara a otra
 //     sin cortarse.
@@ -26,6 +26,11 @@ Shader "Riftwalker/Skins/Dragon"
         _Relieve ("Cuánto relieve", Range(0, 2)) = 1
         _Ciclo ("Duración de cada tanda de grietas (s)", Float) = 3.5
         _Grieta ("Tamaño de las grietas (m)", Float) = 0.05
+        [NoScaleOffset] _Piedra ("Piedra de los paneles (color)", 2D) = "gray" {}
+        [NoScaleOffset] _PiedraNormal ("Relieve de la piedra", 2D) = "bump" {}
+        _ColorPiedra ("Tinte de la piedra", Color) = (1, 1, 1, 1)
+        _TilePiedra ("Tamaño de la piedra (m)", Float) = 0.25
+        _RelievePiedra ("Relieve de la piedra", Range(0, 2)) = 1
     }
 
     SubShader
@@ -45,11 +50,13 @@ Shader "Riftwalker/Skins/Dragon"
             #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Lighting.hlsl"
 
             CBUFFER_START(UnityPerMaterial)
-                float4 _ColorEscama, _ColorFilo, _ColorFuego, _ColorNucleo;
-                float _Parte, _Escala, _Brillo, _Calor, _Tile, _Giro, _Relieve, _Ciclo, _Grieta;
+                float4 _ColorEscama, _ColorFilo, _ColorFuego, _ColorNucleo, _ColorPiedra;
+                float _Parte, _Escala, _Brillo, _Calor, _Tile, _Giro, _Relieve, _Ciclo, _Grieta, _TilePiedra, _RelievePiedra;
             CBUFFER_END
             TEXTURE2D(_Escamas); SAMPLER(sampler_Escamas);
             TEXTURE2D(_EscamasNormal); SAMPLER(sampler_EscamasNormal);
+            TEXTURE2D(_Piedra); SAMPLER(sampler_Piedra);
+            TEXTURE2D(_PiedraNormal); SAMPLER(sampler_PiedraNormal);
 
             // Gira (x, y) de a 90°: así la punta de las escamas de la textura queda hacia la culata.
             float2 Girar(float2 v, int vueltas)
@@ -188,16 +195,27 @@ Shader "Riftwalker/Skins/Dragon"
                     color += _ColorFilo.rgb * frs * 0.25;
                     if (parte == 1) // paneles: piedra volcánica con grietas de fuego que se abren
                     {
-                        // La piedra: basalto casi negro, con manchas, poros y un brillo áspero (en 3D: sin cortes).
-                        float3 q = i.posM / 0.03;
-                        float manchas = Fbm3(q * 0.6);
-                        float grano = Fbm3(q * 4.0 + 31.0);
-                        float poros = smoothstep(0.62, 0.7, Ruido3(q * 6.0 + 7.0));
-                        float3 piedra = lerp(float3(0.025, 0.024, 0.026), float3(0.11, 0.105, 0.1), manchas) * (0.75 + 0.5 * grano);
-                        piedra *= 1.0 - 0.7 * poros;
-                        float aspero = pow(saturate(dot(N, normalize(L + V))), 16.0) * 0.12 * grano;
-                        float ambienteP = dot(SampleSH(N), float3(0.299, 0.587, 0.114));
-                        color = piedra * (luzP.color * nl * 0.9 + ambienteP) + aspero;
+                        // La piedra: la roca del terreno del mapa de deathmatch (Terreno_Roca: color y relieve), proyectada
+                        // desde los tres ejes del modelo y mezclada según la cara (triplanar): no se corta entre caras.
+                        float3 w = pow(n, 4.0);
+                        w /= w.x + w.y + w.z;
+                        float3 P = i.posM / _TilePiedra;
+                        float2 uvX = P.zy, uvY = P.xz, uvZ = P.xy;
+                        float3 roca = SAMPLE_TEXTURE2D(_Piedra, sampler_Piedra, uvX).rgb * w.x
+                                    + SAMPLE_TEXTURE2D(_Piedra, sampler_Piedra, uvY).rgb * w.y
+                                    + SAMPLE_TEXTURE2D(_Piedra, sampler_Piedra, uvZ).rgb * w.z;
+                        float3 tnX = UnpackNormalScale(SAMPLE_TEXTURE2D(_PiedraNormal, sampler_PiedraNormal, uvX), _RelievePiedra);
+                        float3 tnY = UnpackNormalScale(SAMPLE_TEXTURE2D(_PiedraNormal, sampler_PiedraNormal, uvY), _RelievePiedra);
+                        float3 tnZ = UnpackNormalScale(SAMPLE_TEXTURE2D(_PiedraNormal, sampler_PiedraNormal, uvZ), _RelievePiedra);
+                        tnX = float3(tnX.xy + no.zy, abs(tnX.z) * no.x);
+                        tnY = float3(tnY.xy + no.xz, abs(tnY.z) * no.y);
+                        tnZ = float3(tnZ.xy + no.xy, abs(tnZ.z) * no.z);
+                        float3 Np = normalize(TransformObjectToWorldNormal(normalize(tnX.zyx * w.x + tnY.xzy * w.y + tnZ.xyz * w.z)));
+                        float3 piedra = roca * _ColorPiedra.rgb;
+                        float grano = saturate(dot(roca, float3(0.299, 0.587, 0.114)) * 4.0);
+                        float aspero = pow(saturate(dot(Np, normalize(L + V))), 24.0) * 0.15 * grano;
+                        float ambienteP = dot(SampleSH(Np), float3(0.299, 0.587, 0.114));
+                        color = piedra * (luzP.color * saturate(dot(Np, L)) * 0.9 + ambienteP) + aspero;
 
                         float t = _Time.y / max(_Ciclo, 0.1);
                         float n1, h1, n2, h2;
