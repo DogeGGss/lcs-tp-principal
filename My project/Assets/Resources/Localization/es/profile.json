@@ -2211,6 +2211,14 @@
     {
       "key": "profile.skin.design.tormenta",
       "text": "Tormenta"
+    },
+    {
+      "key": "profile.skin.design.proxima_estacion",
+      "text": "Próxima estación"
+    },
+    {
+      "key": "profile.skin.design.grieta_del_rift",
+      "text": "Grieta del Rift"
     }
   ]
 }

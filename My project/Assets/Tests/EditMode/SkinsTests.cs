@@ -133,4 +133,20 @@ public class SkinsTests
         Assert.IsNull(PerfilDatos.DesdeClave(PerfilDatos.ClaveSkin + "mitre-tormenta"));
         Assert.IsNull(PerfilDatos.SkinDeClave("av:astra-pop"));
     }
+
+    [Test, Category("US 384"), Description("Épicas nuevas: Próxima estación y Grieta del Rift, en todas las armas y con sus materiales")]
+    public void Proxima_estacion_y_grieta_del_rift_son_epicas()
+    {
+        foreach (CatalogoDeSkins.Arma a in CatalogoDeSkins.Armas)
+            foreach (string id in new[] { "proxima-estacion", "grieta-del-rift" })
+            {
+                CatalogoDeSkins.Skin s = CatalogoDeSkins.De(a.id + "-" + id);
+                Assert.IsNotNull(s, a.id + "-" + id);
+                Assert.AreEqual(PerfilDatos.Rareza.Epico, s.rareza);
+                Assert.IsNull(EfectosDeSkin.De(s)); // las épicas, con los efectos de disparo de siempre
+            }
+        var modelos = Resources.Load<ModelosDeArmas>("Skins/ModelosDeArmas");
+        foreach (string id in new[] { "proxima-estacion", "proxima-estacion-franjas", "grieta-del-rift", "grieta-cuerpo", "grieta-franjas" })
+            Assert.IsNotNull(modelos.MaterialDe(id), id);
+    }
 }
