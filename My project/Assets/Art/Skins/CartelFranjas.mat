@@ -32,6 +32,7 @@ Material:
     - _Parte: 2
     - _Celda: 0.006
     - _Velocidad: 22
+    - _LargoTexto: 6818
     - _Renglon: 15
     - _Espejo: 1
     - _Brillo: 2.2

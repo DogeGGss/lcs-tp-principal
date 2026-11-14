@@ -1,6 +1,7 @@
 // F35 (Skins de armas), US 384: la skin épica "Próxima estación", animada: el arma es un cartel de LEDs naranjas, como
-// los de los trenes, con el texto que pasa (Texturas/CartelTexto.png: "ÚLTIMO TREN A RETIRO · PRÓXIMA ESTACIÓN" y
-// estaciones del San Martín hasta Retiro). Un material por parte (_Parte):
+// los de los trenes, con el texto que pasa (Texturas/CartelTexto.png: "ÚLTIMO TREN A RETIRO · PRÓXIMA ESTACIÓN PILAR ·
+// ÚLTIMO TREN A RETIRO · PRÓXIMA ESTACIÓN PTE. DERQUI..." por las estaciones del San Martín hasta Retiro, partido en
+// tiras; _LargoTexto es el largo total). Un material por parte (_Parte):
 //   0 Cartel: los LEDs, en el cuerpo, los paneles y los detalles (el texto recorre toda el arma: no lo tapa una pieza).
 //     El texto va a lo largo del arma, en renglones que se repiten hacia arriba y siguen por encima del arma (pasa del
 //     costado a la parte de arriba sin cortarse); en las puntas, solo los LEDs apagados.
@@ -18,6 +19,7 @@ Shader "Riftwalker/Skins/Cartel"
         _ColorCarcasa ("Carcasa", Color) = (0.07, 0.07, 0.07, 1)
         _Celda ("Tamaño de cada LED (m)", Float) = 0.006
         _Velocidad ("LEDs por segundo que corre el texto", Float) = 22
+        _LargoTexto ("Largo del texto (columnas; la textura lo parte en tiras de 16 de alto)", Float) = 6818
         _Renglon ("Renglones de alto (texto + espacio)", Float) = 15
         _Espejo ("Dar vuelta el texto (1 o -1)", Float) = 1
         _Brillo ("Brillo", Float) = 2.2
@@ -45,7 +47,7 @@ Shader "Riftwalker/Skins/Cartel"
             CBUFFER_START(UnityPerMaterial)
                 float _AjusteEscala;
                 float4 _ColorLed, _ColorApagado, _ColorCarcasa;
-                float _Parte, _Celda, _Velocidad, _Renglon, _Espejo, _Brillo;
+                float _Parte, _Celda, _Velocidad, _LargoTexto, _Renglon, _Espejo, _Brillo;
                 float4 _Texto_TexelSize;
             CBUFFER_END
             TEXTURE2D(_Texto); SAMPLER(sampler_point_repeat);
@@ -159,12 +161,18 @@ Shader "Riftwalker/Skins/Cartel"
                     {
                         float renglon = floor(id.y / _Renglon);
                         float fila = id.y - renglon * _Renglon;       // 0 abajo
-                        float alto = _Texto_TexelSize.w;              // filas de la textura
-                        if (fila < alto)
+                        // La textura tiene el texto partido en tiras de 16 de alto, una abajo de la otra (es muy largo
+                        // para una sola fila): la columna dice en qué tira y en qué lugar de la tira.
+                        if (fila < 16.0)
                         {
                             // (Girado media vuelta respecto del modelo: así se lee al derecho en el arma.)
                             float col = -id.x + floor(_Time.y * _Velocidad) + renglon * 37.0;
-                            float2 uv = float2((col + 0.5) * _Texto_TexelSize.x, (fila + 0.5) / alto);
+                            float largo = max(_LargoTexto, 1.0);
+                            col = col - floor(col / largo) * largo;
+                            float ancho = _Texto_TexelSize.z, alto = _Texto_TexelSize.w;
+                            float tira = floor(col / ancho);
+                            float cx = col - tira * ancho;
+                            float2 uv = float2((cx + 0.5) / ancho, (alto - (tira + 1.0) * 16.0 + fila + 0.5) / alto);
                             prendido = SAMPLE_TEXTURE2D(_Texto, sampler_point_repeat, uv).r;
                         }
                     }
