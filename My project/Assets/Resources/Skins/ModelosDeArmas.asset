@@ -69,11 +69,9 @@ MonoBehaviour:
     material: {fileID: 2100000, guid: db5977cd5082407fae61e649639b23f2, type: 2}
   - diseno: proxima-estacion-franjas
     material: {fileID: 2100000, guid: b8f1ea2a0c374d20aa5bb9009a068f70, type: 2}
-  - diseno: grieta-del-rift
-    material: {fileID: 2100000, guid: 8cc28bdb5c3e4980806f6da01e9b339e, type: 2}
-  - diseno: grieta-cuerpo
-    material: {fileID: 2100000, guid: 5b044923b821424592341699dc63cded, type: 2}
-  - diseno: grieta-franjas
-    material: {fileID: 2100000, guid: c4261f0ac3f647a5bafaf2c7a9bf508e, type: 2}
+  - diseno: mapa-del-subte
+    material: {fileID: 2100000, guid: 0a3eca9146194b7b803db82824d463d1, type: 2}
+  - diseno: mapa-franjas
+    material: {fileID: 2100000, guid: 943801872e444f3d800b54a12d900e2a, type: 2}
   - diseno: efecto-humo
     material: {fileID: 2100000, guid: c321e3817fef49a0b6afd2420db31ef9, type: 2}

@@ -7,8 +7,8 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: GrietaCuerpo
-  m_Shader: {fileID: 4800000, guid: 00482653c8c6488f950bea3e46741e81, type: 3}
+  m_Name: MapaDelSubte
+  m_Shader: {fileID: 4800000, guid: e2f0ceb8bc9540029d11dc815e482fb0, type: 3}
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
   m_ValidKeywords: []
@@ -26,15 +26,16 @@ Material:
     m_Ints: []
     m_Floats:
     - _Parte: 0
-    - _Grieta: 0.12
-    - _Remolino: 0.05
-    - _Giro: 0.6
-    - _Brillo: 2
+    - _Separacion: 0.016
+    - _Grosor: 0.0045
+    - _Tramo: 0.07
+    - _Velocidad: 0.22
+    - _Desfase: 1.1
+    - _Inicio: -0.7
+    - _Ciclo: 14
+    - _Espejo: 1
     m_Colors:
-    - _ColorFondo: {r: 0.043, g: 0.031, b: 0.071, a: 1}
-    - _ColorGrieta: {r: 0.482, g: 0.247, b: 0.894, a: 1}
-    - _ColorCentro: {r: 0.847, g: 0.722, b: 1, a: 1}
-    - _ColorPortalOscuro: {r: 0.11, g: 0.043, b: 0.227, a: 1}
-    - _ColorPortalClaro: {r: 0.29, g: 0.122, b: 0.627, a: 1}
+    - _ColorPapel: {r: 0.96, g: 0.95, b: 0.91, a: 1}
+    - _ColorTinta: {r: 0.12, g: 0.12, b: 0.14, a: 1}
   m_BuildTextureStacks: []
   m_AllowLocking: 1

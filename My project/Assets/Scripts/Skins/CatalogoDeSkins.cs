@@ -141,12 +141,13 @@ public static class CatalogoDeSkins
             extras = new[] { new Extra { parte = Black, material = "proxima-estacion", muestra = Hex(0x1A0E05) },
                              new Extra { parte = Grey, material = "proxima-estacion", muestra = Hex(0x1A0E05) },
                              new Extra { parte = Main, material = "proxima-estacion-franjas", muestra = Hex(0xFFB347) } } },
-        // Una grieta violeta del Rift en el cuerpo, un remolino de energía en los paneles y chispas en las franjas
-        // (Art/Skins/SkinGrieta.shader).
-        new Diseno { id = "grieta-del-rift", nombre = "Grieta del Rift", rareza = Rareza.Epico, partes = new[] { White }, muestra = Hex(0x4A1FA0),
-            extras = new[] { new Extra { parte = Black, material = "grieta-cuerpo", muestra = Hex(0x0B0812) },
-                             new Extra { parte = Grey, material = "grieta-cuerpo", muestra = Hex(0x0B0812) },
-                             new Extra { parte = Main, material = "grieta-franjas", muestra = Hex(0xD8B8FF) } } },
+        // Sobre un papel blanco en toda el arma se va dibujando un mapa de la red de subte, con las líneas de sus colores,
+        // y se vuelve a dibujar otro (Art/Skins/SkinMapa.shader); las franjas, con los colores de las líneas.
+        // (Grieta del Rift quedó descartada, 14/11/2026.)
+        new Diseno { id = "mapa-del-subte", nombre = "Mapa del subte", rareza = Rareza.Epico, partes = new[] { White }, muestra = Hex(0xF5F2E8),
+            extras = new[] { new Extra { parte = Black, material = "mapa-del-subte", muestra = Hex(0xF5F2E8) },
+                             new Extra { parte = Grey, material = "mapa-del-subte", muestra = Hex(0xF5F2E8) },
+                             new Extra { parte = Main, material = "mapa-franjas", muestra = Hex(0xEE3D3D) } } },
         // Legendaria (US 381, 13/11/2026), inspirada en un dragón negro con alas de fuego azul (Art/Skins/SkinDragon.shader):
         // escamas negras en el cuerpo y los detalles, grietas de fuego azul en los paneles y llamas en las franjas, todo animado; al
         // disparar, una llamarada azul y una estela azul con brasas.
