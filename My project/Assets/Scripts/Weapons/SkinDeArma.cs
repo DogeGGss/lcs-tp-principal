@@ -117,6 +117,70 @@ public class SkinDeArma : MonoBehaviour
     }
 
     // Una copia del material del diseño por cada original (y no el mismo para todas): así se sabe de qué original salió.
+    // ---------- El tamaño del patrón en la vista previa ----------
+    // Los patrones de las skins (las raras, la épica, las legendarias) se miden en el arma con su escala: en la mano el
+    // arma tiene una escala y en la vista previa del perfil otra (la agranda para que entre), y el patrón salía más
+    // chico. Al pintar el arma en la mano se guarda su escala, y la vista previa ajusta el patrón con eso (_AjusteEscala).
+
+    private const string ClaveEscala = "Riftwalker.Skins.EscalaEnLaMano.";
+    private static readonly int AjusteEscala = Shader.PropertyToID("_AjusteEscala");
+
+    /// <summary>Guarda la escala de esa arma en la mano (la de su pieza más grande).</summary>
+    public static void RecordarEscalaEnLaMano(string arma, GameObject go)
+    {
+        Renderer r = Principal(go);
+        if (string.IsNullOrEmpty(arma) || r == null) return;
+        float escala = Mathf.Abs(r.transform.lossyScale.x);
+        if (escala <= 0f || Mathf.Approximately(PlayerPrefs.GetFloat(ClaveEscala + arma, 0f), escala)) return;
+        PlayerPrefs.SetFloat(ClaveEscala + arma, escala);
+    }
+
+    /// <summary>Ajusta el patrón de la copia del arma (la vista previa) para que se vea del tamaño que tiene en la mano.
+    /// largoEnLaMano: si nunca se la tuvo en la mano, cuánto mide más o menos ahí (m).</summary>
+    public static void AjustarALaMano(GameObject go, string arma, float largoEnLaMano)
+    {
+        Renderer principal = Principal(go);
+        if (principal == null) return;
+        float enLaMano = PlayerPrefs.GetFloat(ClaveEscala + arma, 0f);
+        if (enLaMano <= 0f)
+        {
+            Mesh malla = MallaDe(principal);
+            float largo = malla != null ? Mathf.Max(malla.bounds.size.x, Mathf.Max(malla.bounds.size.y, malla.bounds.size.z)) : 0f;
+            if (largo <= 0f) return;
+            enLaMano = largoEnLaMano / largo;
+        }
+        var bloque = new MaterialPropertyBlock();
+        foreach (Renderer r in go.GetComponentsInChildren<Renderer>(true))
+        {
+            if (r is LineRenderer || r is TrailRenderer || r is ParticleSystemRenderer) continue;
+            float escala = Mathf.Abs(r.transform.lossyScale.x);
+            if (escala <= 0f) continue;
+            r.GetPropertyBlock(bloque);
+            bloque.SetFloat(AjusteEscala, enLaMano / escala);
+            r.SetPropertyBlock(bloque);
+        }
+    }
+
+    private static Mesh MallaDe(Renderer r) =>
+        r is SkinnedMeshRenderer s ? s.sharedMesh : r.GetComponent<MeshFilter>() is MeshFilter f ? f.sharedMesh : null;
+
+    // La pieza más grande del arma (por su malla).
+    private static Renderer Principal(GameObject go)
+    {
+        if (go == null) return null;
+        Renderer mejor = null;
+        float mayor = -1f;
+        foreach (Renderer r in go.GetComponentsInChildren<Renderer>(true))
+        {
+            Mesh m = MallaDe(r);
+            if (m == null) continue;
+            Vector3 t = m.bounds.size;
+            float v = t.x * t.y * t.z;
+            if (v > mayor) { mayor = v; mejor = r; }
+        }
+        return mejor;
+    }
+
     private static readonly Dictionary<(Material, Material), Material> conDiseno = new Dictionary<(Material, Material), Material>();
 
     private static Material ConDiseno(Material original, Material diseno)

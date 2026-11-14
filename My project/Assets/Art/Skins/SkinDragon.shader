@@ -12,6 +12,7 @@ Shader "Riftwalker/Skins/Dragon"
 {
     Properties
     {
+        [HideInInspector] _AjusteEscala ("Ajuste del tamaño del patrón", Float) = 1
         _Parte ("Parte (0 cuerpo, 1 paneles, 2 franjas)", Float) = 0
         _Escala ("Tamaño de las escamas (m)", Float) = 0.04
         _ColorEscama ("Escama", Color) = (0.165, 0.173, 0.212, 1)
@@ -56,6 +57,7 @@ Shader "Riftwalker/Skins/Dragon"
             #include "LucesDeSkin.hlsl"
 
             CBUFFER_START(UnityPerMaterial)
+                float _AjusteEscala;
                 float4 _ColorEscama, _ColorFilo, _ColorFuego, _ColorNucleo, _ColorPiedra;
                 float _Parte, _Escala, _Brillo, _Calor, _Tile, _Giro, _Relieve, _Ciclo, _Pausa, _DosTandas, _Grieta, _TilePiedra, _RelievePiedra;
             CBUFFER_END
@@ -92,7 +94,7 @@ Shader "Riftwalker/Skins/Dragon"
                 VertexPositionInputs p = GetVertexPositionInputs(v.positionOS.xyz);
                 o.positionCS = p.positionCS;
                 float3 escala = float3(length(UNITY_MATRIX_M._m00_m10_m20), length(UNITY_MATRIX_M._m01_m11_m21), length(UNITY_MATRIX_M._m02_m12_m22));
-                o.posM = v.positionOS.xyz * escala;
+                o.posM = v.positionOS.xyz * escala * _AjusteEscala; // (la vista previa del perfil la ajusta)
                 o.normalOS = v.normalOS;
                 o.normalWS = TransformObjectToWorldNormal(v.normalOS);
                 o.viewWS = GetWorldSpaceViewDir(p.positionWS);

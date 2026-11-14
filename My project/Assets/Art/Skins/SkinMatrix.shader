@@ -7,6 +7,7 @@ Shader "Riftwalker/Skins/Matrix"
 {
     Properties
     {
+        [HideInInspector] _AjusteEscala ("Ajuste del tamaño del patrón", Float) = 1
         _ColorFondo ("Fondo", Color) = (0.01, 0.035, 0.015, 1)
         _ColorCodigo ("Código", Color) = (0.15, 1, 0.35, 1)
         _ColorCabeza ("Cabeza de la gota", Color) = (0.85, 1, 0.88, 1)
@@ -39,6 +40,7 @@ Shader "Riftwalker/Skins/Matrix"
             #include "LucesDeSkin.hlsl"
 
             CBUFFER_START(UnityPerMaterial)
+                float _AjusteEscala;
                 float4 _ColorFondo, _ColorCodigo, _ColorCabeza;
                 float4 _Arriba;
                 float _Celda, _Velocidad, _Cola, _Cambio, _Brillo, _Borde;
@@ -63,7 +65,7 @@ Shader "Riftwalker/Skins/Matrix"
                 o.positionCS = p.positionCS;
                 // Escala del modelo: los modelos de armas vienen en otras unidades; así la celda se mide en metros.
                 float3 escala = float3(length(UNITY_MATRIX_M._m00_m10_m20), length(UNITY_MATRIX_M._m01_m11_m21), length(UNITY_MATRIX_M._m02_m12_m22));
-                o.posM = v.positionOS.xyz * escala;
+                o.posM = v.positionOS.xyz * escala * _AjusteEscala; // (la vista previa del perfil la ajusta)
                 o.normalOS = v.normalOS;
                 o.normalWS = TransformObjectToWorldNormal(v.normalOS);
                 o.viewWS = GetWorldSpaceViewDir(p.positionWS);
