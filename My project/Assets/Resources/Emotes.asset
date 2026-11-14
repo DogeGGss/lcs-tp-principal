@@ -41,3 +41,35 @@ MonoBehaviour:
     nombre: Floss
     icono: {fileID: 0}
     clip: {fileID: 7400000, guid: 2273c85663b34c33a9c5dea8892e9d76, type: 2}
+  - estado: Dancing
+    nombre: Dancing
+    icono: {fileID: 0}
+    clip: {fileID: -203655887218126122, guid: 8f8c5a016b124384ab34696105dba477, type: 3}
+  - estado: Greeting
+    nombre: Greeting
+    icono: {fileID: 0}
+    clip: {fileID: -203655887218126122, guid: fb6a2812c029d304ba42ceed9bc8a715, type: 3}
+  - estado: HipHop
+    nombre: HipHop
+    icono: {fileID: 0}
+    clip: {fileID: -203655887218126122, guid: fb078ef1ddab9ca43b8221173a42b14a, type: 3}
+  - estado: HipHop2
+    nombre: HipHop2
+    icono: {fileID: 0}
+    clip: {fileID: -203655887218126122, guid: e002ad7500cfc474d8e7164bc7dd6bc0, type: 3}
+  - estado: HipHop3
+    nombre: HipHop3
+    icono: {fileID: 0}
+    clip: {fileID: -203655887218126122, guid: ac852042cdfbebc47b7f10094f7e6527, type: 3}
+  - estado: NorthernSoul
+    nombre: NorthernSoul
+    icono: {fileID: 0}
+    clip: {fileID: -203655887218126122, guid: 670198842f75b7844b502e491f666e07, type: 3}
+  - estado: PunchingBag
+    nombre: PunchingBag
+    icono: {fileID: 0}
+    clip: {fileID: -203655887218126122, guid: 9f16361609deb7e4183d8e9bb459488b, type: 3}
+  - estado: Twist
+    nombre: Twist
+    icono: {fileID: 0}
+    clip: {fileID: -203655887218126122, guid: 66d267686d94d3744ae47415d1776409, type: 3}
