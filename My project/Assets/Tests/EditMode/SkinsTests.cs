@@ -103,4 +103,19 @@ public class SkinsTests
         Assert.IsNotNull(modelos.MaterialDe("efecto-llamarada"));
         Assert.IsNotNull(modelos.MaterialDe("efecto-brasa"));
     }
+
+    [Test, Category("US 381"), Description("Tormenta: legendaria, con el tiro como un rayo, chispas, arquitos y sus materiales")]
+    public void Tormenta_es_legendaria()
+    {
+        CatalogoDeSkins.Skin s = CatalogoDeSkins.De("la-portena-tormenta");
+        Assert.IsNotNull(s);
+        Assert.AreEqual(PerfilDatos.Rareza.Legendario, s.rareza);
+        CatalogoDeSkins.Efectos e = EfectosDeSkin.De(s);
+        Assert.IsNotNull(e);
+        Assert.IsTrue(e.rayo && e.arcos && e.chispas);
+        Assert.IsFalse(e.llamarada || e.humo);
+        var modelos = Resources.Load<ModelosDeArmas>("Skins/ModelosDeArmas");
+        foreach (string id in new[] { "tormenta", "tormenta-nubes", "tormenta-corriente", "efecto-rayo" })
+            Assert.IsNotNull(modelos.MaterialDe(id), id);
+    }
 }

@@ -6671,6 +6671,10 @@ MonoBehaviour:
     m_Localized: "Abyssal Dragon"
     m_Metadata:
       m_Items: []
+  - m_Id: 380227458789504
+    m_Localized: "Storm"
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

@@ -68,8 +68,9 @@ public class SkinsDePrueba : EditorWindow
 
     // US 381: la boca del arma en la mano (de dónde salen el fogonazo y la estela de las legendarias en primera persona).
     // Es el vacío BocaSkin del arma: se lo selecciona, se lo mueve (y se lo gira, para la dirección de la llama) en la
-    // escena con el juego andando, "Probar" tira el fogonazo y una estela del Dragón Abisal sin disparar, y "Guardar en
-    // el prefab" deja esa posición en el prefab del jugador (lo que se mueve con el juego andando se pierde al pararlo).
+    // escena con el juego andando, "Probar" tira el fogonazo y una estela de la legendaria puesta (o del Dragón Abisal)
+    // sin disparar, y "Guardar en el prefab" deja esa posición en el prefab del jugador (lo que se mueve con el juego
+    // andando se pierde al pararlo).
     // Un arma sin el vacío usa la punta del modelo con un ajuste a ojo (los deslizadores).
     private static void Boca(GameObject enLaMano)
     {
@@ -88,7 +89,7 @@ public class SkinsDePrueba : EditorWindow
             {
                 if (GUILayout.Button("Seleccionar la boca")) { Selection.activeTransform = boca; EditorGUIUtility.PingObject(boca); }
                 if (GUILayout.Button("Probar"))
-                    EfectosDeSkin.Prueba(enLaMano, ficha, EfectosDeSkin.De(CatalogoDeSkins.De(arma.id + "-dragon-abisal")));
+                    EfectosDeSkin.Prueba(enLaMano, ficha, EfectosDePrueba(enLaMano, arma));
                 if (GUILayout.Button("Guardar en el prefab")) BocasDeSkin.Guardar(enLaMano.name, boca);
             }
             return;
@@ -103,7 +104,7 @@ public class SkinsDePrueba : EditorWindow
         using (new EditorGUILayout.HorizontalScope())
         {
             if (GUILayout.Button("Probar"))
-                EfectosDeSkin.Prueba(enLaMano, ficha, EfectosDeSkin.De(CatalogoDeSkins.De(arma.id + "-dragon-abisal")));
+                EfectosDeSkin.Prueba(enLaMano, ficha, EfectosDePrueba(enLaMano, arma));
             if (GUILayout.Button("Volver a 0")) ahora = Vector2.zero;
         }
         if (ahora != antes)
@@ -112,6 +113,13 @@ public class SkinsDePrueba : EditorWindow
             EditorUtility.SetDirty(modelos);
             AssetDatabase.SaveAssetIfDirty(modelos);
         }
+    }
+
+    // Los efectos de la legendaria que tiene puesta el arma o, si no tiene una, los del Dragón Abisal.
+    private static CatalogoDeSkins.Efectos EfectosDePrueba(GameObject enLaMano, CatalogoDeSkins.Arma arma)
+    {
+        SkinDeArma puesta = enLaMano.GetComponent<SkinDeArma>();
+        return EfectosDeSkin.De(puesta != null ? puesta.Puesta : null) ?? EfectosDeSkin.De(CatalogoDeSkins.De(arma.id + "-dragon-abisal"));
     }
 
     private static void Muestra(Color c)

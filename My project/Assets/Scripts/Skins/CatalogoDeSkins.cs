@@ -60,6 +60,10 @@ public static class CatalogoDeSkins
         public bool chispas;
         /// <summary>Después de disparar, la boca larga humo (HumoDeSkin).</summary>
         public bool humo;
+        /// <summary>La estela es un rayo en zigzag, con arquitos donde pega (RayoDeSkin).</summary>
+        public bool rayo;
+        /// <summary>Al disparar y después, saltan arquitos eléctricos en la boca (RayoDeSkin, HumoDeSkin).</summary>
+        public bool arcos;
     }
 
     /// <summary>Una parte del arma con otro material (el id en ModelosDeArmas) o solo otro color.</summary>
@@ -137,6 +141,13 @@ public static class CatalogoDeSkins
             extras = new[] { new Extra { parte = Black, material = "dragon-escamas", muestra = Hex(0x2A2C36) },
                              new Extra { parte = Main, material = "dragon-llama", muestra = Hex(0x4FC8FF) } },
             efectos = new Efectos { fuego = Hex(0x1E6BFF), nucleo = Hex(0xCFFAFF), llamarada = true, brasas = true, chispas = true, humo = true } },
+        // Legendaria (US 381, 14/11/2026), una tormenta (Art/Skins/SkinTormenta.shader): nubes negro azuladas en el cuerpo,
+        // nubes con lluvia y relámpagos amarillos en los paneles y corriente amarilla en las franjas, todo animado; al
+        // disparar, chispas y arquitos amarillos, y el tiro sale como un rayo.
+        new Diseno { id = "tormenta", nombre = "Tormenta", rareza = Rareza.Legendario, partes = new[] { White }, muestra = Hex(0xFFC81E),
+            extras = new[] { new Extra { parte = Black, material = "tormenta-nubes", muestra = Hex(0x1E2433) },
+                             new Extra { parte = Main, material = "tormenta-corriente", muestra = Hex(0xFFE27A) } },
+            efectos = new Efectos { fuego = Hex(0xFFC81E), nucleo = Hex(0xFFF7C8), chispas = true, rayo = true, arcos = true } },
     };
 
     /// <summary>Los colores de las armas como vienen: cuerpo, paneles, detalles y acento.</summary>

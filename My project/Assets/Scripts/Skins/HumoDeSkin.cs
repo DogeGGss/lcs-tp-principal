@@ -3,14 +3,15 @@ using UnityEngine;
 // F35 (Skins de armas), US 381: el humo que larga la boca de un arma con skin legendaria después de disparar: cada
 // disparo junta un poco y, cuando se deja de disparar, sale una columna de humo gris azulado (con brasas)
 // que se va apagando. Después de una ráfaga sale más y dura cerca de dos segundos; con un tiro suelto casi no se
-// nota. Al recargar o guardar el arma propia se corta (y se borra el que había: el arma se mueve y el humo quedaría
+// nota. Con una skin con arcos (la Tormenta), en vez de humo (o además) saltan arquitos eléctricos en la boca, con la
+// misma regla. Al recargar o guardar el arma propia se corta (y se borra el que había: el arma se mueve y el humo quedaría
 // flotando solo). Va en el arma (la propia en la mano o la de la mano de los demás) y se agrega sola con el primer disparo.
 public class HumoDeSkin : MonoBehaviour
 {
     private const float PorDisparo = 0.25f;   // cuánto humo junta cada tiro (de 0 a 1)
     private const float Dura = 2.2f;         // s: lo que tarda en irse todo el humo
     private const float Espera = 0.12f;      // s: mientras se dispara no sale (lo tapa el fuego)
-    private const float BocanadasPorSegundo = 40f, BrasasPorBocanada = 0.3f;
+    private const float BocanadasPorSegundo = 40f, BrasasPorBocanada = 0.3f, ArcosPorBocanada = 0.2f;
 
     private float cuanto, ultimo, pendientes;
     private CatalogoDeSkins.Efectos efectos;
@@ -79,8 +80,18 @@ public class HumoDeSkin : MonoBehaviour
         else boca = transform.TransformPoint(bocaLocal);
         for (; pendientes >= 1f; pendientes -= 1f)
         {
-            EfectosDeSkin.Bocanada(boca, propio, escala, cuanto, efectos, false);
-            if (Random.value < BrasasPorBocanada * cuanto * 2f) EfectosDeSkin.Bocanada(boca, propio, escala, cuanto, efectos, true);
+            if (efectos.humo)
+            {
+                EfectosDeSkin.Bocanada(boca, propio, escala, cuanto, efectos, false);
+                if (Random.value < BrasasPorBocanada * cuanto * 2f) EfectosDeSkin.Bocanada(boca, propio, escala, cuanto, efectos, true);
+            }
+            // Los arquitos, más espaciados que las bocanadas (unos 8 por segundo con todo el calor).
+            if (efectos.arcos && Random.value < ArcosPorBocanada)
+            {
+                Camera cam = Camera.main;
+                Vector3 adelante = propio ? (cam != null ? cam.transform.forward : transform.forward) : transform.forward;
+                EfectosDeSkin.Arcos(boca, adelante, 0.13f * escala, efectos, 1);
+            }
         }
     }
 }

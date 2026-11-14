@@ -6643,6 +6643,10 @@ MonoBehaviour:
     m_Localized: "Dragón Abisal"
     m_Metadata:
       m_Items: []
+  - m_Id: 380227458789504
+    m_Localized: "Tormenta"
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []
