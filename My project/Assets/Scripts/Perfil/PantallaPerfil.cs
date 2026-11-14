@@ -183,6 +183,7 @@ public class PantallaPerfil : PantallaBase
             ("KDA*", e.SinDatos ? SinDatos : Kda(e)),
             ("Tiros a la cabeza", Porcentaje(e.Cabezas, e.Bajas)),
             ("Horas jugadas", Horas(e.Segundos)),
+            ("Nivel de jugador", N(NivelDeJugador.Valor)), // US 278, CA4
         };
         float paso = 1744f / datos.Length;
         for (int i = 0; i < datos.Length; i++)
