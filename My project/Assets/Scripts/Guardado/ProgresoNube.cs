@@ -49,6 +49,7 @@ public static class ProgresoNube
             else if (clave == EstadisticasMinijuego.Clave) EstadisticasMinijuego.Recargar();
             else if (clave == EstadisticasJugador.Clave) EstadisticasJugador.Recargar();
             else if (clave == PerfilDatos.Clave) PerfilDatos.Recargar();
+            else if (clave == PaseDeBatalla.Clave) PaseDeBatalla.Recargar();
         };
         // Se entró o se salió de una cuenta (US 237): todo lo del jugador es otro. Logros antes que estadísticas: al
         // recargarlas, los logros de combate se revisan con lo de la cuenta.
@@ -59,6 +60,7 @@ public static class ProgresoNube
             EstadisticasJugador.Recargar();
             PerfilDatos.Recargar();
             SkinsDeArmas.Recargar();
+            PaseDeBatalla.Recargar();
         };
     }
 
@@ -115,6 +117,10 @@ public static class ProgresoNube
             foreach (CatalogoDeSkins.Arma a in CatalogoDeSkins.Armas)
                 d.valores.Add(new Texto { clave = SkinEquipada + a.id, valor = equipadas.TryGetValue(a.id, out string s) ? s : "" });
         }
+
+        // Pase de batalla (F32): la experiencia, la compra y los desafíos de la temporada (máximo) y lo reclamado (unión).
+        foreach (var (clave, valor) in PaseDeBatalla.Contadores) Sumar(d.contadores, clave, valor);
+        d.conjuntos.Add(Ordenado(PaseDeBatalla.ClaveReclamados, PaseDeBatalla.Reclamados));
         return d;
     }
 
@@ -240,5 +246,12 @@ public static class ProgresoNube
                 if (t != null && t.clave != null && t.clave.StartsWith(SkinEquipada, StringComparison.Ordinal))
                     equipadas[t.clave.Substring(SkinEquipada.Length)] = t.valor ?? "";
         SkinsDeArmas.FusionarNube(skins, equipadas);
+
+        // Pase de batalla (F32)
+        var reclamados = new List<string>();
+        if (nube.conjuntos != null)
+            foreach (Conjunto c in nube.conjuntos)
+                if (c != null && c.elementos != null && c.clave == PaseDeBatalla.ClaveReclamados) reclamados.AddRange(c.elementos);
+        PaseDeBatalla.FusionarNube(Leer, reclamados);
     }
 }

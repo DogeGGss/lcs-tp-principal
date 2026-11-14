@@ -116,7 +116,7 @@ public static class Guardado
     private static readonly string[] DeLaCuenta =
     {
         LogrosCometas.Clave, EstadisticasMinijuego.Clave, EstadisticasJugador.Clave, PerfilDatos.Clave,
-        "Riftwalker.Emote", SkinsDeArmas.Clave, MatchSettings.ZombieRecordPrefix, "Jugador.Nombre"
+        "Riftwalker.Emote", SkinsDeArmas.Clave, MatchSettings.ZombieRecordPrefix, "Jugador.Nombre", PaseDeBatalla.Clave
     };
 
     /// <summary>La clave es progreso del jugador (va a la cuenta) y no una opción de la PC.</summary>

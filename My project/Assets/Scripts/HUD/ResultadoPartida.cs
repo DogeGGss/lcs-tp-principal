@@ -94,6 +94,8 @@ public class ResultadoPartida : MonoBehaviour
         // Prueba del menú (Perfil y cápsulas): los créditos se ganan jugando.
         int creditos = PerfilDatos.GanarPorPartida(gane);
         RegistroDePartida.Tactico(rondas, gane); // F24: estadísticas del jugador
+        // F32 (US 362, CA3): la experiencia del pase y los desafíos completados, arriba a la izquierda.
+        ResumenDelPase.Dibujar(root, 40f, 40f, DesafiosDePartida.TerminarMultijugador(false, gane), displayFont, labelFont, rounded);
         Text(Place(Node("Creditos", root), 1420f, 40f, 460f, 34f), labelFont, 24f, Accent, TextAlignmentOptions.MidlineRight, 12f, true).text =
             L10n.T("gameplay.dm.credits_fmt", creditos);
 
