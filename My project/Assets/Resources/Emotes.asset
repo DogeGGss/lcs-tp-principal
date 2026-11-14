@@ -21,10 +21,6 @@ MonoBehaviour:
     nombre: Twerk
     icono: {fileID: 0}
     clip: {fileID: -203655887218126122, guid: 4f9a632cb609f4e4cbd781bc601735af, type: 3}
-  - estado: Breakdance
-    nombre: Breakdance
-    icono: {fileID: 0}
-    clip: {fileID: -203655887218126122, guid: d052688fd724d3846b01de0252769e3c, type: 3}
   - estado: Flair
     nombre: Flair
     icono: {fileID: 0}
@@ -37,3 +33,11 @@ MonoBehaviour:
     nombre: Silly
     icono: {fileID: 0}
     clip: {fileID: -203655887218126122, guid: bf86d8f300e7a004da99c4019d2eb361, type: 3}
+  - estado: DefaultDance
+    nombre: DefaultDance
+    icono: {fileID: 0}
+    clip: {fileID: 7400000, guid: cc59ea8012b045aeb2c9b8585619c575, type: 2}
+  - estado: Floss
+    nombre: Floss
+    icono: {fileID: 0}
+    clip: {fileID: 7400000, guid: 2273c85663b34c33a9c5dea8892e9d76, type: 2}
