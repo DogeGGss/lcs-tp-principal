@@ -1,7 +1,9 @@
 // F35 (Skins de armas), US 381: la skin legendaria "Dragón Abisal", animada. Un material por parte del arma (_Parte):
 //   0 Cuerpo: escamas negras (la textura Texturas/EscamasDragon, de FreePBR, con su relieve), con un brillo apenas gris.
-//   1 Paneles: escamas negras donde se abren grietas de fuego azul: cada grieta crece desde un punto, se abre, brilla y se
-//     vuelve a cerrar, y en otro lado se abren otras (dos tandas a destiempo, cada una de _Ciclo segundos).
+//   1 Paneles: piedra volcánica (basalto oscuro y poroso) donde se abren grietas de fuego azul: cada grieta crece desde un
+//     punto, se abre, brilla y se vuelve a cerrar, y en otro lado se abren otras (dos tandas a destiempo, cada una de
+//     _Ciclo segundos). La piedra y las grietas se calculan en 3D (no apoyadas en cada cara): pasan de una cara a otra
+//     sin cortarse.
 //   2 Franjas: fuego azul vivo que corre a lo largo del arma.
 // El fuego "respira" (sube y baja despacio) y se enciende con cada disparo (_Calor, de 0 a 1, lo pone CalorDeSkin en
 // cada arma). En los modelos de las armas el largo (el caño) es el eje X, con el caño hacia +X, y el alto el Z.
@@ -100,13 +102,32 @@ Shader "Riftwalker/Skins/Dragon"
                 return v;
             }
 
+            // Lo mismo en 3D (para lo que tiene que seguir de una cara a otra del arma sin cortarse).
+            float Azar3(float3 p) { return frac(sin(dot(p, float3(127.1, 311.7, 74.7))) * 43758.5453); }
+
+            float Ruido3(float3 p)
+            {
+                float3 i = floor(p), f = frac(p);
+                float3 u = f * f * (3.0 - 2.0 * f);
+                float a = lerp(lerp(Azar3(i), Azar3(i + float3(1, 0, 0)), u.x), lerp(Azar3(i + float3(0, 1, 0)), Azar3(i + float3(1, 1, 0)), u.x), u.y);
+                float b = lerp(lerp(Azar3(i + float3(0, 0, 1)), Azar3(i + float3(1, 0, 1)), u.x), lerp(Azar3(i + float3(0, 1, 1)), Azar3(i + float3(1, 1, 1)), u.x), u.y);
+                return lerp(a, b, u.z);
+            }
+
+            float Fbm3(float3 p)
+            {
+                float v = 0.0, a = 0.5;
+                for (int k = 0; k < 5; k++) { v += a * Ruido3(p); p = p * 2.03 + 17.1; a *= 0.5; }
+                return v;
+            }
+
             // Una tanda de grietas: "fase" va de 0 a 1 durante la tanda; "semilla" cambia de una tanda a otra (otras
             // grietas, en otros lugares). Devuelve el centro (nucleo) y el resplandor (halo) de la grieta en p.
-            void Tanda(float2 p, float fase, float semilla, out float nucleo, out float halo)
+            void Tanda(float3 p, float fase, float semilla, out float nucleo, out float halo)
             {
-                float2 o = float2(semilla * 7.31, semilla * 3.17);
-                float g = Fbm(p / _Grieta + o);                       // las grietas siguen la línea g = 0,5
-                float llega = Fbm(p / (_Grieta * 2.4) + o * 1.7);     // cuándo le llega la grieta a cada punto
+                float3 o = float3(semilla * 7.31, semilla * 3.17, semilla * 5.13);
+                float g = Fbm3(p / _Grieta + o);                      // las grietas siguen la superficie g = 0,5
+                float llega = Fbm3(p / (_Grieta * 2.4) + o * 1.7);    // cuándo le llega la grieta a cada punto
                 float frente = fase * 1.5 - 0.25;                     // avanza durante la tanda
                 float abierta = saturate((frente - llega) * 7.0);     // detrás del frente, ya abierta
                 float cierra = saturate((1.0 - fase) * 3.5);          // al final de la tanda se cierra
@@ -165,16 +186,29 @@ Shader "Riftwalker/Skins/Dragon"
                     color = escama * (luzP.color * nlr * 0.9 + ambiente) + especular * 0.5;
                     float frs = pow(1.0 - saturate(dot(Nr, V)), 3.0);
                     color += _ColorFilo.rgb * frs * 0.25;
-                    if (parte == 1) // paneles: grietas de fuego que fluye hacia el caño
+                    if (parte == 1) // paneles: piedra volcánica con grietas de fuego que se abren
                     {
+                        // La piedra: basalto casi negro, con manchas, poros y un brillo áspero (en 3D: sin cortes).
+                        float3 q = i.posM / 0.03;
+                        float manchas = Fbm3(q * 0.6);
+                        float grano = Fbm3(q * 4.0 + 31.0);
+                        float poros = smoothstep(0.62, 0.7, Ruido3(q * 6.0 + 7.0));
+                        float3 piedra = lerp(float3(0.025, 0.024, 0.026), float3(0.11, 0.105, 0.1), manchas) * (0.75 + 0.5 * grano);
+                        piedra *= 1.0 - 0.7 * poros;
+                        float aspero = pow(saturate(dot(N, normalize(L + V))), 16.0) * 0.12 * grano;
+                        float ambienteP = dot(SampleSH(N), float3(0.299, 0.587, 0.114));
+                        color = piedra * (luzP.color * nl * 0.9 + ambienteP) + aspero;
+
                         float t = _Time.y / max(_Ciclo, 0.1);
                         float n1, h1, n2, h2;
-                        Tanda(p, frac(t), floor(t), n1, h1);
-                        Tanda(p, frac(t + 0.5), floor(t + 0.5) + 100.0, n2, h2); // otra tanda, a destiempo
+                        Tanda(i.posM, frac(t), floor(t), n1, h1);
+                        Tanda(i.posM, frac(t + 0.5), floor(t + 0.5) + 100.0, n2, h2); // otra tanda, a destiempo
                         float nucleo = max(n1, n2);
                         float halo = max(h1, h2);
+                        // La piedra junto a la grieta, recalentada: un poco del fuego en los bordes.
+                        color += _ColorFuego.rgb * halo * 0.15 * fuerza * (0.5 + grano);
                         float3 fuego = lerp(_ColorFuego.rgb, _ColorNucleo.rgb, nucleo);
-                        color = lerp(color, fuego * fuerza * 0.5, saturate(max(nucleo, halo * 0.85)));
+                        color = lerp(color, fuego * fuerza * 0.5, saturate(max(nucleo, halo * 0.7)));
                     }
                 }
 
