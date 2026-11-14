@@ -121,6 +121,21 @@ public static class SkinsDeArmas
         if (!string.IsNullOrEmpty(skin)) D.equipadas.Add(new Equipada { arma = arma, skin = skin });
     }
 
+    /// <summary>
+    /// Solo para probar, en el editor: no trae las skins obtenidas de la nube. La nube nunca pierde una skin (las junta), así
+    /// que sin esto las que se sacan con "Bloquear todas" vuelven en la próxima sincronización. Lo prende "Bloquear todas"
+    /// y lo apaga "Desbloquear todas" (Riftwalker > Armas > Skins de prueba). En el juego siempre es false.
+    /// </summary>
+#if UNITY_EDITOR
+    public static bool SinNube
+    {
+        get => UnityEditor.EditorPrefs.GetBool(Clave + ".SinNube", false);
+        set => UnityEditor.EditorPrefs.SetBool(Clave + ".SinNube", value);
+    }
+#else
+    public static bool SinNube => false;
+#endif
+
     /// <summary>Solo para probar (Riftwalker > Armas > Skins de prueba): saca una skin o todas.</summary>
     public static void Quitar(string id = null)
     {
@@ -144,8 +159,9 @@ public static class SkinsDeArmas
     public static void FusionarNube(IEnumerable<string> obtenidas, IReadOnlyDictionary<string, string> equipadas)
     {
         bool cambio = false;
-        foreach (string id in obtenidas)
-            if (CatalogoDeSkins.De(id) != null && !D.obtenidas.Contains(id)) { D.obtenidas.Add(id); cambio = true; }
+        if (!SinNube)
+            foreach (string id in obtenidas)
+                if (CatalogoDeSkins.De(id) != null && !D.obtenidas.Contains(id)) { D.obtenidas.Add(id); cambio = true; }
         if (!EquipadoPropio)
             foreach (KeyValuePair<string, string> e in equipadas)
             {

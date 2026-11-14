@@ -25,10 +25,19 @@ public class SkinsDePrueba : EditorWindow
         using (new EditorGUILayout.HorizontalScope())
         {
             if (GUILayout.Button("Desbloquear todas"))
+            {
+                SkinsDeArmas.SinNube = false;
                 foreach (CatalogoDeSkins.Skin s in CatalogoDeSkins.Skins) SkinsDeArmas.Desbloquear(s.id);
-            if (GUILayout.Button("Bloquear todas")) SkinsDeArmas.Quitar();
+            }
+            if (GUILayout.Button("Bloquear todas"))
+            {
+                SkinsDeArmas.SinNube = true; // si no, las de la nube vuelven en la próxima sincronización
+                SkinsDeArmas.Quitar();
+            }
             if (enLaMano != null && GUILayout.Button("Sacar la skin")) SkinDeArma.Poner(enLaMano, null);
         }
+        if (SkinsDeArmas.SinNube)
+            EditorGUILayout.HelpBox("Bloqueadas para probar: no se traen las skins de la nube hasta apretar Desbloquear todas.", MessageType.Info);
         Boca(enLaMano);
 
         scroll = EditorGUILayout.BeginScrollView(scroll);
