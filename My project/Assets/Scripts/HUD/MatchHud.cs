@@ -62,6 +62,8 @@ public class MatchHud : MonoBehaviour
         public string[] cells;
         public bool highlight;                     // la fila del jugador (resaltada en naranja)
         public bool dim;                           // apagada (por ejemplo, jugador muerto)
+        public Player perfil;                      // US 376: la celda del nombre va en la placa del perfil de este jugador
+        public int columnaPerfil;                  // la columna del nombre
     }
 
     /// <summary>Si un modo lo asigna, la tabla con Tab muestra lo que devuelve.</summary>
@@ -73,7 +75,7 @@ public class MatchHud : MonoBehaviour
     private const float MarkerW = 2f * (RosterW + Gap + ScoreW + Gap) + CenterW;
     private const float FeedRowH = 32f, FeedGap = 6f, FeedTime = 4f, FeedFade = 0.5f;
     private const int FeedMax = 5, MaxTicks = 12;
-    private const float TableW = 860f, TableRowH = 36f;
+    private const float TableW = 860f, TableRowH = 36f, TablePerfilH = 48f; // US 376: las filas con perfil son más altas
 
     private TMP_FontAsset displayFont, labelFont;
     private Sprite rounded;
@@ -830,7 +832,11 @@ public class MatchHud : MonoBehaviour
         if (data == null || data.columns == null) return;
 
         float h = 72f;
-        foreach (Section s in data.sections) h += (string.IsNullOrEmpty(s.title) ? 0f : 26f) + TableRowH * (s.rows.Count + 1) + 10f;
+        foreach (Section s in data.sections)
+        {
+            h += (string.IsNullOrEmpty(s.title) ? 0f : 26f) + TableRowH + 10f;
+            foreach (Row r in s.rows) h += RowH(r);
+        }
         h += 10f;
         table.sizeDelta = new Vector2(TableW, h);
 
@@ -849,22 +855,25 @@ public class MatchHud : MonoBehaviour
             }
             DrawRow(data, new Row { cells = data.columns }, y, true, 0);
             y += TableRowH;
-            for (int r = 0; r < s.rows.Count; r++, y += TableRowH) DrawRow(data, s.rows[r], y, false, r);
+            for (int r = 0; r < s.rows.Count; y += RowH(s.rows[r]), r++) DrawRow(data, s.rows[r], y, false, r);
             y += 10f;
         }
     }
 
+    private static float RowH(Row row) => row.perfil != null ? TablePerfilH : TableRowH;
+
     private void DrawRow(Table data, Row row, float y, bool header, int index)
     {
+        float rowH = header ? TableRowH : RowH(row);
         if (!header)
         {
             if (row.highlight)
             {
-                Image(Place(Node("Resaltada", table), 16f, y, TableW - 32f, TableRowH), rounded, Over(WithAlpha(Accent, 0.16f), Rgb(10, 12, 17)), 3f);
-                Image(Place(Node("Borde", table), 16f, y, 3f, TableRowH), null, Accent);
+                Image(Place(Node("Resaltada", table), 16f, y, TableW - 32f, rowH), rounded, Over(WithAlpha(Accent, 0.16f), Rgb(10, 12, 17)), 3f);
+                Image(Place(Node("Borde", table), 16f, y, 3f, rowH), null, Accent);
             }
             else if (index % 2 == 0)
-                Image(Place(Node("Franja", table), 16f, y, TableW - 32f, TableRowH), rounded, White(0.035f), 3f);
+                Image(Place(Node("Franja", table), 16f, y, TableW - 32f, rowH), rounded, White(0.035f), 3f);
         }
         else Image(Place(Node("Separador", table), 24f, y + TableRowH - 1f, TableW - 48f, 1f), null, White(0.08f));
 
@@ -872,10 +881,16 @@ public class MatchHud : MonoBehaviour
         for (int c = 0; c < row.cells.Length && c < data.columns.Length; c++)
         {
             float w = data.widths != null && c < data.widths.Length ? data.widths[c] : (c == 0 ? 420f : 130f);
-            var align = c == 0 ? TextAlignmentOptions.MidlineLeft : TextAlignmentOptions.MidlineRight;
+            var align = c == 0 || (row.perfil != null && c == row.columnaPerfil) ? TextAlignmentOptions.MidlineLeft : TextAlignmentOptions.MidlineRight;
+            if (!header && row.perfil != null && c == row.columnaPerfil)
+            {
+                PerfilEnPartida.Placa(table, x, y + 3f, w - 16f, rowH - 6f, row.perfil, row.cells[c], displayFont, labelFont, rounded, row.dim);
+                x += w;
+                continue;
+            }
             TextMeshProUGUI t = header
-                ? Text(Place(Node("Columna", table), x, y, w, TableRowH), labelFont, 12f, Mute, align, 12f, true)
-                : Text(Place(Node("Celda", table), x, y, w, TableRowH), displayFont, c == 0 ? 19f : 20f, Ink, align, c == 0 ? 2f : 0f);
+                ? Text(Place(Node("Columna", table), x, y, w, rowH), labelFont, 12f, Mute, align, 12f, true)
+                : Text(Place(Node("Celda", table), x, y, w, rowH), displayFont, c == 0 ? 19f : 20f, Ink, align, c == 0 ? 2f : 0f);
             t.text = row.cells[c];
             if (row.dim) t.alpha = 0.45f;
             x += w;

@@ -18,7 +18,7 @@ using static ShopUIKit;
 public class ResultadoPartida : MonoBehaviour
 {
     private const string EscenaMenu = "MenuPrincipal";
-    private const float TablaW = 920f, FilaH = 38f;
+    private const float TablaW = 920f, FilaH = 48f; // US 376: filas altas para la placa del perfil
     private static readonly float[] Anchos = { 352f, 110f, 110f, 130f, 170f }; // suman 872 (la tabla menos los márgenes)
     private static readonly string[] Columnas = { "Jugador", "Bajas", "Muertes", "Plantadas", "Desactivaciones" };
 
@@ -145,12 +145,12 @@ public class ResultadoPartida : MonoBehaviour
                 Bajas(p).ToString(), Muertes(p).ToString(),
                 Estadistica(p, RondasTacticas.PropPlantadas).ToString(),
                 Estadistica(p, RondasTacticas.PropDesactivaciones).ToString()
-            }, false, p.IsLocal, i);
+            }, false, p.IsLocal, i, p);
         }
         return y;
     }
 
-    private void Fila(float y, string[] celdas, bool encabezado, bool resaltada, int indice)
+    private void Fila(float y, string[] celdas, bool encabezado, bool resaltada, int indice, Player jugador = null)
     {
         float ancho = TablaW - 48f;
         if (encabezado)
@@ -169,6 +169,13 @@ public class ResultadoPartida : MonoBehaviour
             float w = Anchos[c] - (c == 0 ? 10f : 0f);
             if (c == celdas.Length - 1) w -= 10f;
             var alineacion = c == 0 ? TextAlignmentOptions.MidlineLeft : TextAlignmentOptions.MidlineRight;
+            if (!encabezado && c == 0)
+            {
+                // US 376: el nombre va en la placa con el perfil del jugador.
+                PerfilEnPartida.Placa(tabla, x - 4f, y + 3f, w - 6f, h - 6f, jugador, celdas[c], displayFont, labelFont, rounded, false);
+                x += w;
+                continue;
+            }
             TextMeshProUGUI t = encabezado
                 ? Text(Place(Node("Columna", tabla), x, y, w, h), labelFont, 13f, Mute, alineacion, 12f, true)
                 : Text(Place(Node("Celda", tabla), x, y, w, h), displayFont, c == 0 ? 20f : 21f, Ink, alineacion, c == 0 ? 2f : 0f);

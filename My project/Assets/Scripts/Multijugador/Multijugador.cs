@@ -622,6 +622,7 @@ public class Multijugador : MonoBehaviourPunCallbacks, IOnEventCallback
 
         MatchSettings.Mode = modo;
         MatchSettings.RoomCode = PhotonNetwork.CurrentRoom.Name;
+        PerfilEnPartida.Publicar(); // US 376: lo equipado, para la tabla con Tab y el resultado
         // US 289, CA3: en Invasión se juega con la dificultad de la sala (sin cambiar la que el jugador eligió para jugar solo).
         MatchSettings.DificultadDeSala = modo == GameMode.Zombie ? DificultadSala : (ZombieDifficulty?)null;
 
