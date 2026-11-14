@@ -48,7 +48,8 @@ Material:
     - _Tile: 0.3
     - _Brillo: 2.5
     - _Calor: 0
-    - _Ciclo: 3.5
+    - _Ciclo: 5.5
+    - _Pausa: 1.2
     - _Grieta: 0.05
     - _Escala: 0.04
     - _Parte: 1
