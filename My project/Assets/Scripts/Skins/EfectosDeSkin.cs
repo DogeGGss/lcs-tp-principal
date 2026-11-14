@@ -193,6 +193,12 @@ public static class EfectosDeSkin
         ps.Emit(p, 1);
     }
 
+    /// <summary>Borra el humo del arma propia (recargó o guardó el arma: el humo quedaría flotando solo).</summary>
+    public static void BorrarHumoPropio()
+    {
+        if (humoPropio != null) humoPropio.Clear();
+    }
+
     // Un sistema de partículas para emitir a mano (sin emisión propia): en el mundo, o hijo de la cámara y moviéndose
     // con ella. Las chispas se estiran según su velocidad; el humo crece y se deshace al subir.
     private static ParticleSystem Particulas(ref ParticleSystem ps, string material, string nombre, Transform padre, bool chispas)
