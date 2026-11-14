@@ -11,7 +11,7 @@ public class HumoDeSkin : MonoBehaviour
     private const float PorDisparo = 0.25f;   // cuánto humo junta cada tiro (de 0 a 1)
     private const float Dura = 2.2f;         // s: lo que tarda en irse todo el humo
     private const float Espera = 0.12f;      // s: mientras se dispara no sale (lo tapa el fuego)
-    private const float BocanadasPorSegundo = 40f, BrasasPorBocanada = 0.3f, ArcosPorBocanada = 0.2f;
+    private const float BocanadasPorSegundo = 40f, BrasasPorBocanada = 0.3f, ArcosPorBocanada = 0.3f;
 
     private float cuanto, ultimo, pendientes;
     private CatalogoDeSkins.Efectos efectos;
@@ -85,12 +85,13 @@ public class HumoDeSkin : MonoBehaviour
                 EfectosDeSkin.Bocanada(boca, propio, escala, cuanto, efectos, false);
                 if (Random.value < BrasasPorBocanada * cuanto * 2f) EfectosDeSkin.Bocanada(boca, propio, escala, cuanto, efectos, true);
             }
-            // Los arquitos, más espaciados que las bocanadas (unos 8 por segundo con todo el calor).
+            // Los arquitos, más espaciados que las bocanadas (unos 12 por segundo con todo el calor).
             if (efectos.arcos && Random.value < ArcosPorBocanada)
             {
                 Camera cam = Camera.main;
                 Vector3 adelante = propio ? (cam != null ? cam.transform.forward : transform.forward) : transform.forward;
-                EfectosDeSkin.Arcos(boca, adelante, 0.13f * escala, efectos, 1);
+                // Más largos y gruesos que los del disparo: solos, chicos, no se notaban.
+                EfectosDeSkin.Arcos(boca, adelante, 0.3f * escala, efectos, Random.value < 0.5f ? 1 : 2, 2.2f);
             }
         }
     }

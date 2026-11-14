@@ -137,19 +137,21 @@ public static class EfectosDeSkin
     // ---------- Rayos ----------
 
     /// <summary>Unos arquitos eléctricos que saltan de la boca (o de donde pegó un rayo), hacia cualquier lado pero más
-    /// hacia adelante. largo: el de la llamarada del arma (el de la propia o el de los demás).</summary>
-    public static void Arcos(Vector3 desde, Vector3 adelante, float largo, CatalogoDeSkins.Efectos e, int cuantos)
+    /// hacia adelante. largo: el de la llamarada del arma (el de la propia o el de los demás).
+    /// grueso: cuánto más gruesos y duraderos (los de después de disparar, que tienen que notarse solos).</summary>
+    public static void Arcos(Vector3 desde, Vector3 adelante, float largo, CatalogoDeSkins.Efectos e, int cuantos, float grueso = 1f)
     {
         Vector3 hacia = adelante.sqrMagnitude > 0.0001f ? adelante.normalized : Vector3.forward;
         // El grosor, según lo lejos que está de la cámara (que se vea igual de cerca y de lejos).
         Camera cam = Camera.main;
         float distancia = cam != null ? Vector3.Distance(cam.transform.position, desde) : 5f;
-        float grosor = Mathf.Clamp(0.004f * distancia, 0.003f, 0.06f);
+        float grosor = Mathf.Clamp(0.004f * distancia, 0.003f, 0.06f) * grueso;
         for (int i = 0; i < cuantos; i++)
         {
             Vector3 dir = (hacia * 0.6f + Random.onUnitSphere).normalized;
             float l = largo * Random.Range(0.3f, 0.6f);
-            RayoDeSkin.Crear(desde, desde + dir * l, e, grosor, grosor * 0.6f, Random.value < 0.5f ? 1 : 0, Random.Range(0.06f, 0.1f));
+            RayoDeSkin.Crear(desde, desde + dir * l, e, grosor, grosor * 0.6f, Random.value < 0.5f ? 1 : 0,
+                             Random.Range(0.06f, 0.1f) * Mathf.Sqrt(grueso));
         }
     }
 
