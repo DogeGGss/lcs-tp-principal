@@ -22,9 +22,20 @@ Material:
   m_LockedProperties: 
   m_SavedProperties:
     serializedVersion: 3
-    m_TexEnvs: []
+    m_TexEnvs:
+    - _Escamas:
+        m_Texture: {fileID: 2800000, guid: 715fda4b41ee40cb9a8d3d5e43fa19df, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _EscamasNormal:
+        m_Texture: {fileID: 2800000, guid: 1d0fd406f604467bbc290bdfaf442063, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
+    - _Giro: 3
+    - _Relieve: 1
+    - _Tile: 0.3
     - _Brillo: 2.5
     - _Calor: 0
     - _Escala: 0.04
