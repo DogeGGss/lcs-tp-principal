@@ -27,7 +27,10 @@ public class VistaPreviaDeSkin : MonoBehaviour
         VistaPreviaDeSkin v = Asegurar();
         v.camara.enabled = true;
         if (arma != v.arma || v.modelo == null) v.Modelo(arma);
-        if (v.modelo != null) SkinDeArma.Poner(v.modelo, skin);
+        if (v.modelo == null) return;
+        SkinDeArma.Poner(v.modelo, skin);
+        // El patrón del tamaño que tiene en la mano (acá el arma está agrandada para que entre en la vista).
+        SkinDeArma.AjustarALaMano(v.modelo, arma, arma == "la-portena" || arma == "la-trochita" ? 0.45f : arma == "ultimo-tren" ? 1.13f : 0.95f);
     }
 
     /// <summary>Deja de dibujar (la vista previa no está en pantalla).</summary>

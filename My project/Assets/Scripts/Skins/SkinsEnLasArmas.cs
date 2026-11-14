@@ -121,8 +121,10 @@ public class SkinsEnLasArmas : MonoBehaviour
     private void Pintar(GameObject arma)
     {
         ShopItem ficha = FichaDe(arma);
-        if (ficha == null || CatalogoDeSkins.ArmaDeFicha(ficha.name) == null) return;
+        CatalogoDeSkins.Arma deCatalogo = ficha != null ? CatalogoDeSkins.ArmaDeFicha(ficha.name) : null;
+        if (deCatalogo == null) return;
         SkinDeArma.Poner(arma, CatalogoDeSkins.De(SkinDe(ficha)));
+        SkinDeArma.RecordarEscalaEnLaMano(deCatalogo.id, arma); // para que la vista previa del perfil la muestre igual
     }
 
     // La pistola inicial puede no tener la ficha cargada: es la secundaria inicial de la tienda (como en SoltarArmas).

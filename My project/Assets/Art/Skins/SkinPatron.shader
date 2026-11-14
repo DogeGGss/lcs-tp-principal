@@ -10,6 +10,7 @@ Shader "Riftwalker/Skins/Patron"
 {
     Properties
     {
+        [HideInInspector] _AjusteEscala ("Ajuste del tamaño del patrón", Float) = 1
         _Patron ("Patrón (0 oro, 1 carbono, 2 cobre, 3 mármol, 4 azulejos, 5 cristal, 6 madera)", Float) = 0
         _Color1 ("Color 1", Color) = (1, 1, 1, 1)
         _Color2 ("Color 2", Color) = (0.5, 0.5, 0.5, 1)
@@ -40,6 +41,7 @@ Shader "Riftwalker/Skins/Patron"
             #include "LucesDeSkin.hlsl"
 
             CBUFFER_START(UnityPerMaterial)
+                float _AjusteEscala;
                 float4 _Color1, _Color2, _Color3, _Color4;
                 float _Patron, _Escala, _Metal, _Lisura;
             CBUFFER_END
@@ -62,7 +64,7 @@ Shader "Riftwalker/Skins/Patron"
                 VertexPositionInputs p = GetVertexPositionInputs(v.positionOS.xyz);
                 o.positionCS = p.positionCS;
                 float3 escala = float3(length(UNITY_MATRIX_M._m00_m10_m20), length(UNITY_MATRIX_M._m01_m11_m21), length(UNITY_MATRIX_M._m02_m12_m22));
-                o.posM = v.positionOS.xyz * escala;
+                o.posM = v.positionOS.xyz * escala * _AjusteEscala; // (la vista previa del perfil la ajusta)
                 o.normalOS = v.normalOS;
                 o.normalWS = TransformObjectToWorldNormal(v.normalOS);
                 o.viewWS = GetWorldSpaceViewDir(p.positionWS);

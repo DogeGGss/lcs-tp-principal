@@ -11,6 +11,7 @@ Shader "Riftwalker/Skins/Tormenta"
 {
     Properties
     {
+        [HideInInspector] _AjusteEscala ("Ajuste del tamaño del patrón", Float) = 1
         _Parte ("Parte (0 cuerpo, 1 paneles, 2 franjas)", Float) = 0
         _ColorOscuro ("Nube oscura", Color) = (0.047, 0.059, 0.082, 1)
         _ColorClaro ("Nube clara", Color) = (0.227, 0.263, 0.345, 1)
@@ -50,6 +51,7 @@ Shader "Riftwalker/Skins/Tormenta"
             #include "LucesDeSkin.hlsl"
 
             CBUFFER_START(UnityPerMaterial)
+                float _AjusteEscala;
                 float4 _ColorOscuro, _ColorClaro, _ColorLluvia, _ColorRayo, _ColorNucleo;
                 float _Parte, _Nube, _Viento, _Lluvia, _Gota, _LargoGota, _VelocidadLluvia, _Brillo, _CadaRayo, _Rayo, _Calor, _ConLluvia;
             CBUFFER_END
@@ -72,7 +74,7 @@ Shader "Riftwalker/Skins/Tormenta"
                 VertexPositionInputs p = GetVertexPositionInputs(v.positionOS.xyz);
                 o.positionCS = p.positionCS;
                 float3 escala = float3(length(UNITY_MATRIX_M._m00_m10_m20), length(UNITY_MATRIX_M._m01_m11_m21), length(UNITY_MATRIX_M._m02_m12_m22));
-                o.posM = v.positionOS.xyz * escala;
+                o.posM = v.positionOS.xyz * escala * _AjusteEscala; // (la vista previa del perfil la ajusta)
                 o.normalOS = v.normalOS;
                 o.normalWS = TransformObjectToWorldNormal(v.normalOS);
                 o.viewWS = GetWorldSpaceViewDir(p.positionWS);
