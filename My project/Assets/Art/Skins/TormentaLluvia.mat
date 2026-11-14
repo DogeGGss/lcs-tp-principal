@@ -36,6 +36,7 @@ Material:
     - _CadaRayo: 3.5
     - _Rayo: 0.05
     - _Calor: 0
+    - _ConLluvia: 1
     m_Colors:
     - _ColorOscuro: {r: 0.047, g: 0.059, b: 0.082, a: 1}
     - _ColorClaro: {r: 0.227, g: 0.263, b: 0.345, a: 1}

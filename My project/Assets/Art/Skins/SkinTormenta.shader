@@ -1,7 +1,8 @@
 // F35 (Skins de armas), US 381: la skin legendaria "Tormenta", animada. Un material por parte del arma (_Parte):
 //   0 Cuerpo: nubes de tormenta negro azuladas que se mueven despacio.
-//   1 Paneles: nubes más claras con lluvia fina que cae (en las caras de costado; arriba no se ve) y, cada _CadaRayo
-//     segundos (más o menos), un relámpago amarillo que parpadea dos o tres veces y se apaga.
+//   1 Paneles: nubes más claras.
+//   En las dos, lluvia fina que cae (en las caras de costado; arriba no se ve) y, cada _CadaRayo segundos (más o
+//   menos), un relámpago amarillo que parpadea dos o tres veces y se apaga (_ConLluvia: 0 para sacarlos de esa parte).
 //   2 Franjas: oscuras, con hilos de corriente amarilla que corren a lo largo del arma.
 // El relámpago ilumina un instante todo el arma (las nubes del cuerpo también). Las nubes y los relámpagos se calculan
 // en 3D (no apoyados en cada cara): pasan de una cara a otra sin cortarse. Con cada disparo la corriente se enciende
@@ -26,6 +27,7 @@ Shader "Riftwalker/Skins/Tormenta"
         _CadaRayo ("Cada cuánto cae un rayo (s)", Float) = 3.5
         _Rayo ("Tamaño de los rayos (m)", Float) = 0.05
         _Calor ("Calor (al disparar)", Range(0, 1)) = 0
+        [Toggle] _ConLluvia ("Lluvia y rayos", Float) = 1
     }
 
     SubShader
@@ -49,7 +51,7 @@ Shader "Riftwalker/Skins/Tormenta"
 
             CBUFFER_START(UnityPerMaterial)
                 float4 _ColorOscuro, _ColorClaro, _ColorLluvia, _ColorRayo, _ColorNucleo;
-                float _Parte, _Nube, _Viento, _Lluvia, _Gota, _LargoGota, _VelocidadLluvia, _Brillo, _CadaRayo, _Rayo, _Calor;
+                float _Parte, _Nube, _Viento, _Lluvia, _Gota, _LargoGota, _VelocidadLluvia, _Brillo, _CadaRayo, _Rayo, _Calor, _ConLluvia;
             CBUFFER_END
 
             struct Attributes { float4 positionOS : POSITION; float3 normalOS : NORMAL; };
@@ -193,7 +195,7 @@ Shader "Riftwalker/Skins/Tormenta"
                     float3 albedo = lerp(_ColorOscuro.rgb, _ColorClaro.rgb, k) * (panel ? 1.5 : 1.0);
                     color = Iluminar(albedo, N, V, i.posWS, i.positionCS, 0.05);
                     float nucleo = 0.0, halo = 0.0;
-                    if (panel)
+                    if (_ConLluvia > 0.5)
                     {
                         // La lluvia: rayitas que caen (hacia -Z), en columnas; solo en las caras de costado.
                         float2 celda = floor(i.posM.xy / _Gota);
