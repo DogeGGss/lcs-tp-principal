@@ -6,8 +6,8 @@ Shader "Riftwalker/Skins/Humo"
 {
     Properties
     {
-        _Color ("Humo", Color) = (0.1, 0.12, 0.2, 1)
-        _Brillo ("Brillo de las brasas", Float) = 2
+        _Color ("Humo", Color) = (0.3, 0.34, 0.46, 1)
+        _Brillo ("Brillo de las brasas", Float) = 3
     }
 
     SubShader
@@ -62,12 +62,12 @@ Shader "Riftwalker/Skins/Humo"
                 if (claro > 0.5)
                 {
                     float b = saturate(1.0 - d);
-                    return float4(i.color.rgb * _Brillo, b * b * i.color.a);
+                    return float4(i.color.rgb * _Brillo * (0.6 + 0.6 * b), saturate(b * 1.8) * i.color.a);
                 }
                 // El humo: redondo y suave, con el borde despedazado (ruido que gira con el tiempo de cada bocanada).
                 float n = Ruido(i.uv * 4.0 + i.color.a * 7.0) * 0.6 + Ruido(i.uv * 9.0 - i.color.a * 3.0) * 0.4;
                 float a = saturate(1.0 - d) ;
-                a = saturate(a * a * 1.6 * (0.55 + 0.9 * n));
+                a = saturate(a * a * 2.4 * (0.55 + 0.9 * n));
                 return float4(_Color.rgb + i.color.rgb, a * i.color.a);
             }
             ENDHLSL

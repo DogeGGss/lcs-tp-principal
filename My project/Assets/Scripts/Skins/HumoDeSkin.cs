@@ -1,15 +1,15 @@
 using UnityEngine;
 
 // F35 (Skins de armas), US 381: el humo que larga la boca de un arma con skin legendaria después de disparar: cada
-// disparo junta un poco y, cuando se deja de disparar, sale una columna fina de humo negro azulado (con alguna brasa)
-// que se va apagando. Después de una ráfaga sale más y dura cerca de un segundo y medio; con un tiro suelto casi no se
+// disparo junta un poco y, cuando se deja de disparar, sale una columna de humo gris azulado (con brasas)
+// que se va apagando. Después de una ráfaga sale más y dura cerca de dos segundos; con un tiro suelto casi no se
 // nota. Va en el arma (la propia en la mano o la de la mano de los demás) y se agrega sola con el primer disparo.
 public class HumoDeSkin : MonoBehaviour
 {
-    private const float PorDisparo = 0.2f;   // cuánto humo junta cada tiro (de 0 a 1)
-    private const float Dura = 1.6f;         // s: lo que tarda en irse todo el humo
+    private const float PorDisparo = 0.25f;   // cuánto humo junta cada tiro (de 0 a 1)
+    private const float Dura = 2.2f;         // s: lo que tarda en irse todo el humo
     private const float Espera = 0.12f;      // s: mientras se dispara no sale (lo tapa el fuego)
-    private const float BocanadasPorSegundo = 30f, BrasasPorBocanada = 0.12f;
+    private const float BocanadasPorSegundo = 40f, BrasasPorBocanada = 0.3f;
 
     private float cuanto, ultimo, pendientes;
     private CatalogoDeSkins.Efectos efectos;

@@ -183,12 +183,12 @@ public static class EfectosDeSkin
             applyShapeToPosition = false,
             position = propia != null ? propia.InverseTransformPoint(boca) : boca,
             velocity = propia != null ? propia.InverseTransformDirection(velocidad) : velocidad,
-            startSize = (brasa ? Random.Range(0.002f, 0.003f) : Random.Range(0.012f, 0.02f)) * escala,
-            startLifetime = brasa ? Random.Range(0.5f, 0.8f) : Random.Range(1f, 1.6f),
+            startSize = (brasa ? Random.Range(0.0018f, 0.0028f) : Random.Range(0.02f, 0.034f)) * escala,
+            startLifetime = brasa ? Random.Range(0.6f, 1f) : Random.Range(1.2f, 1.8f),
             rotation = Random.Range(0f, 360f),
             // El humo, negro (el material le pone el color) y más tupido cuanto más se disparó; la brasa, del fuego.
             startColor = brasa ? (Color32)Color.Lerp(e.fuego, e.nucleo, Random.value)
-                               : (Color32)new Color(0f, 0f, 0f, Mathf.Lerp(0.35f, 0.85f, cuanto)),
+                               : (Color32)new Color(0f, 0f, 0f, Mathf.Lerp(0.6f, 1f, cuanto)),
         };
         ps.Emit(p, 1);
     }
@@ -232,7 +232,7 @@ public static class EfectosDeSkin
         {
             ParticleSystem.SizeOverLifetimeModule crece = ps.sizeOverLifetime;
             crece.enabled = true;
-            crece.size = new ParticleSystem.MinMaxCurve(1f, AnimationCurve.Linear(0f, 1f, 1f, 3.5f));
+            crece.size = new ParticleSystem.MinMaxCurve(1f, AnimationCurve.Linear(0f, 1f, 1f, 4f));
         }
         var r = go.GetComponent<ParticleSystemRenderer>();
         r.sharedMaterial = m;
