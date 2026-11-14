@@ -1,6 +1,7 @@
 // F27 (Emotes): los emotes que el jugador lleva en la rueda (US 261), en sus 4 espacios y en orden. Se guardan con el
 // perfil (Guardado); cada espacio guarda el baile por su estado (el nombre de la animación), así no cambia si se agregan
-// bailes al catálogo. Se eligen desde el perfil (US 264); la primera vez, los 4 vienen vacíos.
+// bailes al catálogo. Se eligen desde el perfil (US 264); la primera vez, los 4 vienen vacíos. Solo se equipan (y solo
+// cuentan) los bailes que el jugador tiene (F37, US 388: ColeccionDeEmotes).
 public static class EmotesEquipados
 {
     public const int Espacios = 4;
@@ -17,7 +18,7 @@ public static class EmotesEquipados
         if (string.IsNullOrEmpty(estado)) return -1;
         var lista = CatalogoDeEmotes.Actual.emotes;
         for (int i = 0; i < lista.Count; i++)
-            if (lista[i] != null && lista[i].estado == estado) return i;
+            if (lista[i] != null && lista[i].estado == estado) return ColeccionDeEmotes.Tiene(lista[i]) ? i : -1; // F37: solo los que tiene
         return -1;
     }
 
@@ -39,6 +40,7 @@ public static class EmotesEquipados
     {
         if (espacio < 0 || espacio >= Espacios) return;
         CatalogoDeEmotes.Emote e = CatalogoDeEmotes.Actual.De(emote);
+        if (e != null && !ColeccionDeEmotes.Tiene(e)) return; // F37 (US 388): los bloqueados no se equipan
         if (e != null)
             for (int i = 0; i < Espacios; i++)
                 if (i != espacio && En(i) == emote) Guardado.SetString(Clave + i, "");

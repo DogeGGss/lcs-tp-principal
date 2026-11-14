@@ -31,6 +31,7 @@ public static class ProgresoNube
 
     private const string Minijuego = "minijuego.", Zombie = "zombie.record.", Perfil = "perfil.";
     private const string Skins = "skins.", SkinEquipada = Skins + "equipada.";
+    private const string Emotes = "emotes.obtenidos"; // F37 (US 388)
     private const string Tactico = "estadisticas.tactico.", Deathmatch = "estadisticas.deathmatch.", Invasion = "estadisticas.invasion.";
     private static readonly string[] Tipos = { "comun", "raro", "epico" };
 
@@ -52,6 +53,7 @@ public static class ProgresoNube
             else if (clave == PaseDeBatalla.Clave) PaseDeBatalla.Recargar();
             else if (clave == NivelDeJugador.Clave) NivelDeJugador.Recargar();
             else if (clave == EstadisticasDeInvasion.Clave) EstadisticasDeInvasion.Recargar();
+            else if (clave == ColeccionDeEmotes.Clave) ColeccionDeEmotes.Recargar();
         };
         // Se entró o se salió de una cuenta (US 237): todo lo del jugador es otro. Logros antes que estadísticas: al
         // recargarlas, los logros de combate se revisan con lo de la cuenta.
@@ -62,6 +64,7 @@ public static class ProgresoNube
             EstadisticasJugador.Recargar();
             PerfilDatos.Recargar();
             SkinsDeArmas.Recargar();
+            ColeccionDeEmotes.Recargar();
             PaseDeBatalla.Recargar();
             NivelDeJugador.Recargar();
             EstadisticasDeInvasion.Recargar();
@@ -114,6 +117,8 @@ public static class ProgresoNube
 
         // Skins de las armas (F35, US 378): las obtenidas (unión) y la equipada de cada arma ("" sin skin).
         d.conjuntos.Add(Ordenado(Skins + "obtenidas", SkinsDeArmas.Obtenidas));
+        // Los bailes conseguidos (F37, US 388, CA5): la unión.
+        d.conjuntos.Add(Ordenado(Emotes, ColeccionDeEmotes.Obtenidos));
         if (SkinsDeArmas.EquipadoPropio)
         {
             var equipadas = new Dictionary<string, string>();
@@ -278,6 +283,13 @@ public static class ProgresoNube
                 if (t != null && t.clave != null && t.clave.StartsWith(SkinEquipada, StringComparison.Ordinal))
                     equipadas[t.clave.Substring(SkinEquipada.Length)] = t.valor ?? "";
         SkinsDeArmas.FusionarNube(skins, equipadas);
+
+        // Los bailes conseguidos (F37, US 388)
+        var emotes = new List<string>();
+        if (nube.conjuntos != null)
+            foreach (Conjunto c in nube.conjuntos)
+                if (c != null && c.elementos != null && c.clave == Emotes) emotes.AddRange(c.elementos);
+        ColeccionDeEmotes.FusionarNube(emotes);
 
         // Pase de batalla (F32)
         var reclamados = new List<string>();

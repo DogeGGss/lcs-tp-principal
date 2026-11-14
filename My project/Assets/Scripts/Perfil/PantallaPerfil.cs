@@ -749,6 +749,11 @@ public class PantallaPerfil : PantallaBase
     // a la derecha, el personaje elegido haciendo el que se mira (CA2). Se elige un espacio y después un emote para
     // ponerlo ahí (CA3: si ya estaba en otro espacio, sale de ese); "Quitar" vacía un espacio (CA4). Se guarda con el
     // perfil (CA5, EmotesEquipados).
+    // F37 (US 388): cada baile con su rareza (el nombre y una franja de su color) y su estado. Los bloqueados se ven en la
+    // vista previa pero no se equipan, y dicen dónde se consiguen; los recién conseguidos, marcados como nuevos hasta que
+    // se los ve.
+
+    private const string DondeSeConsiguen = "Se consigue en las cápsulas, el pase o la tienda";
 
     private static readonly string[] LugaresDeLaRueda = { "Arriba", "Derecha", "Abajo", "Izquierda" };
     private int espacioElegido = 0;
@@ -837,8 +842,11 @@ public class PantallaPerfil : PantallaBase
             int k = i;
             int espacio = EspacioDe(i);
             bool visto = emoteVisto == i;
+            bool tiene = ColeccionDeEmotes.Tiene(e);
+            Color colorR = ColorRareza(e.rareza);
             RectTransform carta = Place(Node(e.nombre, grillaEmotes), (i % Columnas) * (cw + Gap), (i / Columnas) * (Alto + Gap), cw, Alto);
             Image(carta, Rounded, PanelColor, 8f, true);
+            Image(Place(Node("Rareza", carta), 0f, Alto - 5f, cw, 5f), null, colorR); // la franja de su rareza
             if (e.icono != null) Image(Place(Node("Icono", carta), 16f, 16f, 72f, 72f), e.icono, Color.white).preserveAspect = true;
             else
             {
@@ -847,16 +855,31 @@ public class PantallaPerfil : PantallaBase
                 Image(ini, Rounded, ChipColor, 6f);
                 T(ini, "Letra", 0f, 0f, 72f, 72f, FTitulo, 40f, Soft, e.nombre.Length > 0 ? e.nombre.Substring(0, 1) : "?", TextAlignmentOptions.Center);
             }
-            TextMeshProUGUI n = T(carta, "Nombre", 104f, 18f, cw - 120f, 40f, FTitulo, 30f, Ink, e.nombre, TextAlignmentOptions.MidlineLeft, 3f, true);
+            TextMeshProUGUI n = T(carta, "Nombre", 104f, 12f, cw - 120f, 40f, FTitulo, 30f, tiene ? Ink : Soft, e.nombre, TextAlignmentOptions.MidlineLeft, 3f, true);
             n.overflowMode = TextOverflowModes.Ellipsis;
-            T(carta, "Estado", 104f, 60f, cw - 120f, 24f, FRotulo, 16f, espacio >= 0 ? Ok : Mute,
-                espacio >= 0 ? L10n.T("profile.emotes.in_slot_fmt", espacio + 1) : L10n.T("profile.ui.not_equipped"), TextAlignmentOptions.MidlineLeft, 12f, true);
+            T(carta, "Rareza", 104f, 50f, cw - 120f, 20f, FRotulo, 14f, colorR, NombreRareza(e.rareza), TextAlignmentOptions.MidlineLeft, 12f, true);
+            T(carta, "Estado", 104f, 72f, cw - 120f, 22f, FRotulo, 15f, !tiene ? Mute : espacio >= 0 ? Ok : Soft,
+                !tiene ? L10n.Source("Bloqueado", "profile.") : espacio >= 0 ? L10n.T("profile.emotes.in_slot_fmt", espacio + 1) : L10n.T("profile.ui.not_equipped"),
+                TextAlignmentOptions.MidlineLeft, 12f, true);
+            if (!tiene)
+            {
+                Image(Stretch(Node("Velo", carta)), Rounded, new Color(0f, 0f, 0f, DarkAlpha(0.35f)), 8f);
+                Candado(carta, cw - 26f, 26f, 22f, Mute);
+            }
+            else if (ColeccionDeEmotes.EsNuevo(e))
+            {
+                RectTransform chip = Place(Node("Nuevo", carta), cw - 86f, 10f, 76f, 24f);
+                Image(chip, Rounded, Accent, 5f);
+                T(chip, "Texto", 0f, 0f, 76f, 24f, FRotulo, 14f, AccentInk, L10n.Source("Nuevo", "profile."), TextAlignmentOptions.Center, 12f, true);
+            }
             Img borde = Borde(carta, 8f, visto ? Accent : White(0.08f));
             var p = Clickeable(carta, () =>
             {
-                // CA3: va al espacio elegido.
+                // CA3: va al espacio elegido (F37: si lo tiene; bloqueado, solo se lo mira).
                 emoteVisto = k;
-                if (espacioElegido >= 0)
+                ColeccionDeEmotes.Visto(e);
+                if (!tiene) menu.Avisar($"<color={Rich(colorR)}>{e.nombre}</color>: {L10n.Source(DondeSeConsiguen, "profile.").ToLowerInvariant()}");
+                else if (espacioElegido >= 0)
                 {
                     EmotesEquipados.Poner(espacioElegido, k);
                     menu.Avisar(L10n.T("profile.emote.equipped_fmt", L10n.Source(e.nombre, "profile."), espacioElegido + 1, L10n.Source(LugaresDeLaRueda[espacioElegido], "profile.").ToLowerInvariant()));
@@ -864,7 +887,7 @@ public class PantallaPerfil : PantallaBase
                 Refrescar();
             });
             // CA2: pasando el mouse se ve en la vista previa.
-            p.Hovered = () => { VerEmote(k); if (borde != null && emoteVisto != k) borde.color = White(0.35f); };
+            p.Hovered = () => { VerEmote(k); ColeccionDeEmotes.Visto(e); if (borde != null && emoteVisto != k) borde.color = White(0.35f); };
             p.Exited = () => { VerEmote(emoteVisto); if (borde != null && emoteVisto != k) borde.color = White(0.08f); };
         }
         int filas = (catalogo.emotes.Count + Columnas - 1) / Columnas;
@@ -888,8 +911,11 @@ public class PantallaPerfil : PantallaBase
         VistaPreviaDeEmote.Mostrar(pj, e != null ? e.clip : null);
         vistaEmote.texture = VistaPreviaDeEmote.Textura;
         nombreVisto.text = e != null ? e.nombre : "";
+        nombreVisto.color = e != null ? ColorRareza(e.rareza) : Ink; // F37 (US 388): con el color de su rareza
         if (personajeVisto != null) personajeVisto.text = pj != null ? pj.displayName : "";
-        ayudaVista.text = e == null ? L10n.Source("Pasá el mouse por un baile para verlo.", "profile.") : pj != null ? pj.role : "";
+        ayudaVista.text = e == null ? L10n.Source("Pasá el mouse por un baile para verlo.", "profile.")
+            : !ColeccionDeEmotes.Tiene(e) ? NombreRareza(e.rareza) + " · " + L10n.Source(DondeSeConsiguen, "profile.")
+            : NombreRareza(e.rareza) + (pj != null ? " · " + pj.role : "");
     }
 
     private CharacterData PersonajeDeLaVista()
