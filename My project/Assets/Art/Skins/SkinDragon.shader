@@ -1,8 +1,9 @@
 // F35 (Skins de armas), US 381: la skin legendaria "Dragón Abisal", animada. Un material por parte del arma (_Parte):
 //   0 Cuerpo: escamas negras (la textura Texturas/EscamasDragon, de FreePBR, con su relieve), con un brillo apenas gris.
 //   1 Paneles: piedra (la roca del terreno del mapa de deathmatch, Terreno_Roca) donde se abren grietas de fuego azul: cada grieta crece desde un
-//     punto, se abre, brilla y se vuelve a cerrar y, tras una pausa (_Pausa), se abren otras en otro lado (una tanda por
-//     vez, de _Ciclo segundos). La piedra y las grietas se calculan en 3D (no apoyadas en cada cara): pasan de una cara a otra
+//     punto, se abre, brilla y se vuelve a cerrar, y en otro lado se abren otras (dos tandas a destiempo, cada una de
+//     _Ciclo segundos; se puede dejar una sola tanda y agregar una pausa entre tandas, _Pausa). La piedra y las
+//     grietas se calculan en 3D (no apoyadas en cada cara): pasan de una cara a otra
 //     sin cortarse.
 //   2 Franjas: fuego azul vivo que corre a lo largo del arma.
 // El fuego "respira" (sube y baja despacio) y se enciende con cada disparo (_Calor, de 0 a 1, lo pone CalorDeSkin en
@@ -24,8 +25,9 @@ Shader "Riftwalker/Skins/Dragon"
         _Tile ("Tamaño de la textura (m)", Float) = 0.3
         _Giro ("Giro de la textura (vueltas de 90°)", Float) = 3
         _Relieve ("Cuánto relieve", Range(0, 2)) = 1
-        _Ciclo ("Duración de cada tanda de grietas (s)", Float) = 5.5
-        _Pausa ("Pausa entre tandas (s)", Float) = 1.2
+        _Ciclo ("Duración de cada tanda de grietas (s)", Float) = 3.5
+        _Pausa ("Pausa entre tandas (s)", Float) = 0
+        [Toggle] _DosTandas ("Dos tandas a destiempo", Float) = 1
         _Grieta ("Tamaño de las grietas (m)", Float) = 0.05
         [NoScaleOffset] _Piedra ("Piedra de los paneles (color)", 2D) = "gray" {}
         [NoScaleOffset] _PiedraNormal ("Relieve de la piedra", 2D) = "bump" {}
@@ -52,7 +54,7 @@ Shader "Riftwalker/Skins/Dragon"
 
             CBUFFER_START(UnityPerMaterial)
                 float4 _ColorEscama, _ColorFilo, _ColorFuego, _ColorNucleo, _ColorPiedra;
-                float _Parte, _Escala, _Brillo, _Calor, _Tile, _Giro, _Relieve, _Ciclo, _Pausa, _Grieta, _TilePiedra, _RelievePiedra;
+                float _Parte, _Escala, _Brillo, _Calor, _Tile, _Giro, _Relieve, _Ciclo, _Pausa, _DosTandas, _Grieta, _TilePiedra, _RelievePiedra;
             CBUFFER_END
             TEXTURE2D(_Escamas); SAMPLER(sampler_Escamas);
             TEXTURE2D(_EscamasNormal); SAMPLER(sampler_EscamasNormal);
@@ -218,12 +220,21 @@ Shader "Riftwalker/Skins/Dragon"
                         float ambienteP = dot(SampleSH(Np), float3(0.299, 0.587, 0.114));
                         color = piedra * (luzP.color * saturate(dot(Np, L)) * 0.9 + ambienteP) + aspero;
 
-                        // Una tanda por vez: se abre, se cierra del todo y, tras una pausa, se abre otra en otro lado.
+                        // Cada tanda dura _Ciclo segundos y la siguiente espera _Pausa. Con _DosTandas, otra tanda corre a
+                        // destiempo (a mitad de camino), en otros lugares.
                         float ciclo = max(_Ciclo, 0.1);
-                        float t = _Time.y / (ciclo + max(_Pausa, 0.0));
-                        float fase = frac(t) * (ciclo + max(_Pausa, 0.0)) / ciclo; // pasa de 1 durante la pausa
-                        float nucleo = 0.0, halo = 0.0;
+                        float periodo = ciclo + max(_Pausa, 0.0);
+                        float t = _Time.y / periodo;
+                        float nucleo = 0.0, halo = 0.0, n2 = 0.0, h2 = 0.0;
+                        float fase = frac(t) * periodo / ciclo; // pasa de 1 durante la pausa
                         if (fase < 1.0) Tanda(i.posM, fase, floor(t), nucleo, halo);
+                        if (_DosTandas > 0.5)
+                        {
+                            float fase2 = frac(t + 0.5) * periodo / ciclo;
+                            if (fase2 < 1.0) Tanda(i.posM, fase2, floor(t + 0.5) + 100.0, n2, h2);
+                            nucleo = max(nucleo, n2);
+                            halo = max(halo, h2);
+                        }
                         // La piedra junto a la grieta, recalentada: un poco del fuego en los bordes.
                         color += _ColorFuego.rgb * halo * 0.15 * fuerza * (0.5 + grano);
                         float3 fuego = lerp(_ColorFuego.rgb, _ColorNucleo.rgb, nucleo);
