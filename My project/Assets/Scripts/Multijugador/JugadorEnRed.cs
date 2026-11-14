@@ -656,6 +656,8 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
         Sprite icono = otraArma ? IconoDe(arma) : tirador != null ? tirador.IconoDeArma(usada) : null;
         MatchHud.ReportKill(asesino != null ? asesino.NickName : "", nombreArma, Nombre,
             ColorDe(atacante), ColorDe(photonView.OwnerActorNr), cabeza, icono);
+        // F32 (US 365): los desafíos del pase cuentan las bajas del jugador local a otros jugadores.
+        if (asesino != null && asesino.IsLocal && !photonView.IsMine) DesafiosDePartida.BajaPvP(nombreArma, cabeza);
     }
 
     // F24: los que lo dañaron en los últimos 10 s y no son el que lo mató. Sin alguien que lo haya matado (se cayó, su

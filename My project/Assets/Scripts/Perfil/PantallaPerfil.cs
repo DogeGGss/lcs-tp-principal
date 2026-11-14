@@ -516,7 +516,7 @@ public class PantallaPerfil : PantallaBase
         T(vista, "Detalle", 24f, 420f, 452f, 28f, FTexto, 20f, Mute, detalle);
 
         if (!PerfilDatos.Tiene(c))
-            CrearBoton(vista, 24f, 464f, 452f, 56f, "Conseguilo en la estación »", false, () => menu.Abrir(menu.Estacion), 24f);
+            CrearBoton(vista, 24f, 464f, 452f, 56f, "Conseguilo en la estación »", false, () => menu.AbrirTienda(PestanaTienda.Capsulas), 24f);
         else if (PerfilDatos.Equipado(c))
             CrearBoton(vista, 24f, 464f, 452f, 56f, "Equipado", true, null, 26f, Ok).button.interactable = false;
         else

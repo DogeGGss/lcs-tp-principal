@@ -93,6 +93,8 @@ public class ResultadoDeathmatch : MonoBehaviour
                     PartidaDeathmatch.Actual.Ganador == Photon.Pun.PhotonNetwork.LocalPlayer.ActorNumber;
         int creditos = PerfilDatos.GanarPorPartida(gane);
         RegistroDePartida.Deathmatch(gane); // F24: estadísticas del jugador
+        // F32 (US 362, CA3): la experiencia del pase y los desafíos completados, arriba a la izquierda.
+        ResumenDelPase.Dibujar(root, 40f, 40f, DesafiosDePartida.TerminarMultijugador(true, gane), displayFont, labelFont, rounded);
         Text(Place(Node("Creditos", root), 1420f, 40f, 460f, 34f), labelFont, 24f, Accent, TextAlignmentOptions.MidlineRight, 12f, true).text =
             L10n.T("gameplay.dm.credits_fmt", creditos);
 

@@ -37,7 +37,7 @@ public class PantallaEstacion : PantallaBase
 
     public PantallaEstacion(MenuRiftwalker menu, RectTransform parent) : base(menu, parent, "Estacion")
     {
-        BarraSuperior("Suministros del otro lado", "Estación del Rift");
+        BarraDeTienda(PestanaTienda.Capsulas, "Estación del Rift");
         ArmarEscena();
         ArmarAcciones();
         ArmarColumna();
@@ -168,10 +168,10 @@ public class PantallaEstacion : PantallaBase
             () => PerfilDatos.Cristales >= PerfilDatos.CristalesPorBoleto, listo => PerfilDatos.CanjearCristales(1, listo), "+1 boleto");
         Canje(canje, 188f, 2, $"{PerfilDatos.CristalesPorDiez} cristales", "10 boletos · 10 % menos",
             () => PerfilDatos.Cristales >= PerfilDatos.CristalesPorDiez, listo => PerfilDatos.CanjearCristales(10, listo), "+10 boletos");
-        TextMeshProUGUI tienda = T(canje, "Tienda", 24f, 252f, 540f, 26f, FRotulo, 18f, ColorCristales, "¿Sin cristales? Ir a la tienda »", TextAlignmentOptions.MidlineLeft, 8f, true);
+        TextMeshProUGUI tienda = T(canje, "Tienda", 24f, 252f, 540f, 26f, FRotulo, 18f, ColorCristales, "¿Sin cristales? Comprar cristales »", TextAlignmentOptions.MidlineLeft, 8f, true);
         tienda.raycastTarget = true;
         var pt = tienda.gameObject.AddComponent<ShopPointerTarget>();
-        pt.Clicked = () => menu.Abrir(menu.Tienda);
+        pt.Clicked = () => menu.AbrirTienda(PestanaTienda.Cristales);
         pt.Hovered = () => tienda.color = Ink;
         pt.Exited = () => tienda.color = ColorCristales;
 

@@ -110,6 +110,9 @@ public class ResultadoDeInvasion : MonoBehaviour
         Image(Place(Node("Linea", raiz), 870f, 280f, 180f, 4f), null, color);
         Text(Place(Node("Lema", raiz), 0f, 296f, 1920f, 34f), label, 26f, color, TextAlignmentOptions.Center, 24f, true).text =
             L10n.T(salvo ? "gameplay.result.saved_world" : "gameplay.result.not_saved_world");
+        // F32 (US 362, CA1 y CA3): 10 de experiencia por oleada superada, con los desafíos de Invasión.
+        ResumenDelPase.Dibujar(raiz, 40f, 40f, DesafiosDePartida.TerminarInvasion(oleada, murio ? oleada - 1 : oleada, puntos != null ? puntos.Bajas : 0),
+            display, label, redondeado);
         Text(Place(Node("Detalle", raiz), 0f, 336f, 1920f, 36f), label, 30f, Ink, TextAlignmentOptions.Center, 12f, true).text =
             !murio ? L10n.T("gameplay.result.retired_fmt", oleada)
             : infinito ? L10n.T("gameplay.result.reached_fmt", oleada, L10n.Plural("gameplay.result.bosses_defeated", jefes))

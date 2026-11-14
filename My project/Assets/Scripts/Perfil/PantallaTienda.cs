@@ -17,7 +17,7 @@ public class PantallaTienda : PantallaBase
 
     public PantallaTienda(MenuRiftwalker menu, RectTransform parent) : base(menu, parent, "Tienda")
     {
-        BarraSuperior("Simulación de negocio", "Tienda");
+        BarraDeTienda(PestanaTienda.Cristales, "Simulación");
 
         RectTransform aviso = Place(Node("AvisoSimulacion", rect), 60f, 120f, 1800f, 62f);
         Image(aviso, Rounded, WithAlpha(Accent, 0.1f), 8f);

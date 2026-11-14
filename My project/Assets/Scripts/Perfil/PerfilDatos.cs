@@ -597,6 +597,42 @@ public static class PerfilDatos
         return true;
     }
 
+    // ----- Tienda directa (US 386) y pase de batalla (F32) -----
+
+    /// <summary>Suma el cosmético a la colección, marcado como nuevo. false si ya lo tenía.</summary>
+    public static bool Dar(Cosmetico c)
+    {
+        if (c == null || Tiene(c)) return false;
+        E.obtenidos.Add(c.Clave);
+        if (!E.nuevos.Contains(c.Clave)) E.nuevos.Add(c.Clave);
+        Guardar();
+        return true;
+    }
+
+    /// <summary>Un repetido (por ejemplo, una recompensa del pase que ya salió en una cápsula) se cambia por créditos.</summary>
+    public static int CreditosPorRepetir(Rareza r)
+    {
+        int creditos = CreditosPorRepetido[(int)r];
+        if (creditos > 0) Sumar(Mover("repetido", creditos: creditos));
+        return creditos;
+    }
+
+    /// <summary>Paga con cristales (la tienda directa, el pase). listo recibe null si se pudo, o el motivo.</summary>
+    public static void PagarCristales(string motivo, int cristales, Action<string> listo) =>
+        Gastar(Mover(motivo, cristales: -cristales), L10n.Source("Te faltan cristales", "profile."), listo);
+
+    /// <summary>Créditos que se ganan (las recompensas del pase).</summary>
+    public static void SumarCreditos(string motivo, int creditos)
+    {
+        if (creditos > 0) Sumar(Mover(motivo, creditos: creditos));
+    }
+
+    /// <summary>Cristales que se ganan (las recompensas del pase).</summary>
+    public static void SumarCristales(string motivo, int cristales)
+    {
+        if (cristales > 0) Sumar(Mover(motivo, cristales: cristales));
+    }
+
     public const int DebugCreditos = 1000, DebugBoletos = 10, DebugCristales = 500;
 
     /// <summary>DEBUG (F9 en el menú): suma de las tres monedas para probar sin jugar ni comprar.</summary>
