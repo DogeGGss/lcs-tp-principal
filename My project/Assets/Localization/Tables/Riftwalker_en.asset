@@ -6197,7 +6197,7 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 380227458789383
-    m_Localized: First the rarity is rolled (with these odds), then the type ({0}% avatar, {1}% banner, {2}% title, {3}% frame) and finally a random item. Every {4} capsules an epic or better is guaranteed. Duplicates turn into credits.
+    m_Localized: First the rarity is rolled (with these odds), then the type ({0}% avatar, {1}% banner, {2}% title, {3}% frame, {4}% weapon skin) and finally a random item. Every {5} capsules an epic or better is guaranteed. Duplicates turn into credits.
     m_Metadata:
       m_Items: []
   - m_Id: 380227458789384

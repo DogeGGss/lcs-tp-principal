@@ -6172,7 +6172,7 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 380227458789383
-    m_Localized: "Primero sale la rareza (con estas probabilidades), despu\xE9s el tipo ({0} % avatar, {1} % banner, {2} % t\xEDtulo, {3} % marco) y por \xFAltimo un objeto al azar. Cada {4} c\xE1psulas hay uno \xE9pico o mejor asegurado. Los repetidos se convierten en cr\xE9ditos."
+    m_Localized: "Primero sale la rareza (con estas probabilidades), despu\xE9s el tipo ({0} % avatar, {1} % banner, {2} % t\xEDtulo, {3} % marco, {4} % skin de arma) y por \xFAltimo un objeto al azar. Cada {5} c\xE1psulas hay uno \xE9pico o mejor asegurado. Los repetidos se convierten en cr\xE9ditos."
     m_Metadata:
       m_Items: []
   - m_Id: 380227458789384

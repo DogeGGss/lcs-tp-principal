@@ -2102,7 +2102,7 @@
     },
     {
       "key": "profile.station.odds_fmt",
-      "text": "Primero sale la rareza (con estas probabilidades), después el tipo ({0} % avatar, {1} % banner, {2} % título, {3} % marco) y por último un objeto al azar. Cada {4} cápsulas hay uno épico o mejor asegurado. Los repetidos se convierten en créditos."
+      "text": "Primero sale la rareza (con estas probabilidades), después el tipo ({0} % avatar, {1} % banner, {2} % título, {3} % marco, {4} % skin de arma) y por último un objeto al azar. Cada {5} cápsulas hay uno épico o mejor asegurado. Los repetidos se convierten en créditos."
     },
     {
       "key": "profile.emote.equipped_fmt",

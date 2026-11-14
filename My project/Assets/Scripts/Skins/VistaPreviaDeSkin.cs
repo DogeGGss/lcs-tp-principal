@@ -3,6 +3,8 @@ using UnityEngine;
 // F35 (Skins de armas), US 379, CA2: el arma girando con la skin elegida, para la vista previa del perfil. Es una copia
 // del modelo del arma (ModelosDeArmas) lejos del menú (abajo, donde no se ve), con su propia cámara y sus luces, que dibuja
 // en una textura (Textura) que el perfil muestra. Como la de los emotes (VistaPreviaDeEmote).
+// US 382: también se pueden armar otras aparte (Nueva), cada una con su textura y en su lugar, para mostrar varias armas
+// a la vez (las cartas de las cápsulas); se borran con Destruir.
 public class VistaPreviaDeSkin : MonoBehaviour
 {
     private static readonly Vector3 Lugar = new Vector3(0f, -3000f, 0f);
@@ -22,15 +24,38 @@ public class VistaPreviaDeSkin : MonoBehaviour
     public static RenderTexture Textura => Asegurar().textura;
 
     /// <summary>Muestra esa arma con esa skin (null: la original).</summary>
-    public static void Mostrar(string arma, CatalogoDeSkins.Skin skin)
+    public static void Mostrar(string arma, CatalogoDeSkins.Skin skin) => Asegurar().Poner(arma, skin);
+
+    private static int otras;
+
+    /// <summary>Una vista previa aparte (con su propia textura), con esa arma y esa skin. Borrarla con Destruir.</summary>
+    public static VistaPreviaDeSkin Nueva(string arma, CatalogoDeSkins.Skin skin)
     {
-        VistaPreviaDeSkin v = Asegurar();
-        v.camara.enabled = true;
-        if (arma != v.arma || v.modelo == null) v.Modelo(arma);
-        if (v.modelo == null) return;
-        SkinDeArma.Poner(v.modelo, skin);
+        var go = new GameObject("Vista previa de skins (aparte)");
+        otras = (otras + 1) % 1000;
+        go.transform.position = Lugar + new Vector3(50f * (otras + 1), 0f, 0f); // lejos de las demás (y de sus luces)
+        var v = go.AddComponent<VistaPreviaDeSkin>();
+        v.Armar();
+        v.Poner(arma, skin);
+        return v;
+    }
+
+    /// <summary>La textura de esta vista previa.</summary>
+    public RenderTexture Imagen => textura;
+
+    public void Destruir()
+    {
+        if (this != null) Destroy(gameObject);
+    }
+
+    private void Poner(string nueva, CatalogoDeSkins.Skin skin)
+    {
+        camara.enabled = true;
+        if (nueva != arma || modelo == null) Modelo(nueva);
+        if (modelo == null) return;
+        SkinDeArma.Poner(modelo, skin);
         // El patrón del tamaño que tiene en la mano (acá el arma está agrandada para que entre en la vista).
-        SkinDeArma.AjustarALaMano(v.modelo, arma, arma == "la-portena" || arma == "la-trochita" ? 0.45f : arma == "ultimo-tren" ? 1.13f : 0.95f);
+        SkinDeArma.AjustarALaMano(modelo, arma, arma == "la-portena" || arma == "la-trochita" ? 0.45f : arma == "ultimo-tren" ? 1.13f : 0.95f);
     }
 
     /// <summary>Deja de dibujar (la vista previa no está en pantalla).</summary>
@@ -125,7 +150,7 @@ public class VistaPreviaDeSkin : MonoBehaviour
 
     private void OnDestroy()
     {
-        if (textura != null) textura.Release();
+        if (textura != null) { textura.Release(); Destroy(textura); }
         if (unica == this) unica = null;
     }
 }
