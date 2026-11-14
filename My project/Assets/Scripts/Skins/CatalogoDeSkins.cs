@@ -117,21 +117,25 @@ public static class CatalogoDeSkins
         C("desierto", "Desierto", 0xC8A26B, 0x6B5A40, 0x2B241A, 0xD9C9A8),
     };
 
-    // Raras (13/11/2026): materiales sin animar (Art/Skins/SkinPatron.shader, un material por diseño).
+    // Raras (13/11/2026): materiales sin animar (Art/Skins/SkinPatron.shader, un material por diseño). Los detalles (Grey,
+    // en algunas armas piezas grandes) van como el cuerpo (14/11/2026).
     // Épicas (13/11/2026): el código binario verde que cae, animado (Art/Skins/SkinMatrix.shader), en los paneles y el acento.
     public static readonly List<Diseno> Disenos = new List<Diseno>
     {
         // Mármol blanco en los paneles, el cuerpo de mármol negro con vetas doradas y las franjas de oro (con brillo de metal).
         new Diseno { id = "marmol-de-retiro", nombre = "Mármol de Retiro", rareza = Rareza.Raro, partes = new[] { White }, muestra = Hex(0xEEEDE8),
             extras = new[] { new Extra { parte = Black, material = "marmol-negro", muestra = Hex(0x16171A) },
+                             new Extra { parte = Grey, material = "marmol-negro", muestra = Hex(0x16171A) },
                              new Extra { parte = Main, material = "oro", muestra = Hex(0xE8B84A) } } },
         // Azulejos celestes y blancos en los paneles, el cuerpo blanco como una pared y las franjas grises.
         new Diseno { id = "azulejos-del-subte", nombre = "Azulejos del subte", rareza = Rareza.Raro, partes = new[] { White }, muestra = Hex(0x7FB6D9),
             extras = new[] { new Extra { parte = Black, color = Hex(0xECEBE6), muestra = Hex(0xECEBE6) },
+                             new Extra { parte = Grey, color = Hex(0xECEBE6), muestra = Hex(0xECEBE6) },
                              new Extra { parte = Main, color = Hex(0x8A8D92), muestra = Hex(0x8A8D92) } } },
         // Cristal violeta y celeste en los paneles, el cuerpo de cristal oscuro con bordes violetas y las franjas violeta oscuro.
         new Diseno { id = "cristal-del-rift", nombre = "Cristal del Rift", rareza = Rareza.Raro, partes = new[] { White }, muestra = Hex(0x7B3FE4),
             extras = new[] { new Extra { parte = Black, material = "cristal-oscuro", muestra = Hex(0x2A1F4A) },
+                             new Extra { parte = Grey, material = "cristal-oscuro", muestra = Hex(0x2A1F4A) },
                              new Extra { parte = Main, color = Hex(0x3B1F7A), muestra = Hex(0x3B1F7A) } } },
         new Diseno { id = "codigo-binario", nombre = "Código binario", rareza = Rareza.Epico, partes = new[] { White, Main }, muestra = Hex(0x26FF59) },
         // Épicas (US 384, 14/11/2026). Un cartel de LEDs naranjas de tren en toda el arma (Art/Skins/SkinCartel.shader),

@@ -83,7 +83,7 @@ public class SkinsTests
         Assert.AreEqual(PerfilDatos.Rareza.Raro, marmol.rareza);
         Assert.AreEqual("marmol-negro", CatalogoDeSkins.ExtraPara(marmol, "Black").material);
         Assert.AreEqual("oro", CatalogoDeSkins.ExtraPara(marmol, "Main (Instance)").material);
-        Assert.IsNull(CatalogoDeSkins.ExtraPara(marmol, "Grey"));
+        Assert.AreEqual("marmol-negro", CatalogoDeSkins.ExtraPara(marmol, "Grey").material); // los detalles, como el cuerpo
         Assert.IsNull(CatalogoDeSkins.De("mitre-oro-pulido"));
         Assert.IsNull(CatalogoDeSkins.De("mitre-fibra-de-carbono"));
         Assert.IsNull(CatalogoDeSkins.De("mitre-cobre-oxidado"));
