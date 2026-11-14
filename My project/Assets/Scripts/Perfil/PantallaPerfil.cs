@@ -23,6 +23,7 @@ public class PantallaPerfil : PantallaBase
     private readonly TextMeshProUGUI[] resumen = new TextMeshProUGUI[4];
     private TextMeshProUGUI nivelValor, nivelRango; // US 278, CA4: el nivel de jugador, con su propio lugar en la cabecera
     private UIPolygon nivelEmblema;
+    private RectTransform nivelLogo;
     private Img nivelBorde;
     private readonly TextMeshProUGUI[] pestanas = new TextMeshProUGUI[4];
     private Img subrayado;
@@ -95,7 +96,7 @@ public class PantallaPerfil : PantallaBase
         nivelBorde = Borde(nivel, 8f, WithAlpha(Accent, 0.6f));
         nivelEmblema = Poligono(nivel, "Emblema", Accent, Hexagono(70f, 86f, 52f));
         Poligono(nivel, "Interior", Hex(0x0B0E14), Hexagono(70f, 86f, 44f));
-        T(nivel, "Icono", 30f, 54f, 80f, 64f, FTitulo, 46f, Ink, "RW", TextAlignmentOptions.Center, 2f, true);
+        nivelLogo = Place(Node("Logo", nivel), 0f, 0f, 140f, 172f); // el logo del rango (EmblemaDeNivel), se dibuja al refrescar
         T(nivel, "Rotulo", 140f, 18f, 210f, 22f, FRotulo, 16f, Accent, "Nivel de jugador", TextAlignmentOptions.MidlineLeft, 14f, true);
         nivelValor = T(nivel, "Valor", 136f, 40f, 216f, 80f, FTitulo, 78f, Ink, "", TextAlignmentOptions.MidlineLeft, 2f);
         nivelRango = T(nivel, "Rango", 140f, 118f, 210f, 26f, FTitulo, 24f, Soft, "", TextAlignmentOptions.MidlineLeft, 6f, true);
@@ -114,11 +115,13 @@ public class PantallaPerfil : PantallaBase
     }
 
     /// <summary>El rango del nivel de jugador, con su color (los de las rarezas): para que el número tenga peso.</summary>
-    private static (string nombre, Color color) Rango(int nivel) =>
-        nivel >= 1250 ? ("Jefe de estación", ColorRareza(PerfilDatos.Rareza.Legendario))
-        : nivel >= 1100 ? ("Maquinista", ColorRareza(PerfilDatos.Rareza.Epico))
-        : nivel >= 950 ? ("Guarda", ColorRareza(PerfilDatos.Rareza.Raro))
-        : ("Pasajero", ColorRareza(PerfilDatos.Rareza.Comun));
+    private static readonly string[] Rangos = { "Pasajero", "Guarda", "Maquinista", "Jefe de estación" };
+
+    private static (string nombre, Color color) Rango(int nivel)
+    {
+        int r = EmblemaDeNivel.RangoDe(nivel);
+        return (Rangos[r], ColorRareza((PerfilDatos.Rareza)(r + 1))); // común, raro, épico y legendario
+    }
 
     // ================= Pestañas =================
 
@@ -936,6 +939,8 @@ public class PantallaPerfil : PantallaBase
         nivelRango.text = L10n.Source(rango, "profile.");
         nivelRango.color = colorRango;
         nivelEmblema.color = colorRango;
+        BorrarHijos(nivelLogo);
+        EmblemaDeNivel.Dibujar(nivelLogo, 70f, 86f, EmblemaDeNivel.RangoDe(nivelJugador), colorRango);
         if (nivelBorde != null) nivelBorde.color = WithAlpha(colorRango, 0.7f);
         resumen[0].text = N(e.Partidas);
         resumen[1].text = N(e.Victorias);
