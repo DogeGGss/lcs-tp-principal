@@ -135,7 +135,8 @@ public static class CatalogoDeSkins
                              new Extra { parte = Main, color = Hex(0x3B1F7A), muestra = Hex(0x3B1F7A) } } },
         new Diseno { id = "codigo-binario", nombre = "Código binario", rareza = Rareza.Epico, partes = new[] { White, Main }, muestra = Hex(0x26FF59) },
         // Épicas (US 384, 14/11/2026). Un cartel de LEDs naranjas de tren en toda el arma (Art/Skins/SkinCartel.shader),
-        // con "RETIRO · PRÓXIMA ESTACIÓN · ÚLTIMO TREN..." que pasa, y LEDs ámbar en secuencia en las franjas.
+        // con "ÚLTIMO TREN A RETIRO · PRÓXIMA ESTACIÓN" y estaciones del San Martín que pasan, y LEDs ámbar en secuencia
+        // en las franjas.
         new Diseno { id = "proxima-estacion", nombre = "Próxima estación", rareza = Rareza.Epico, partes = new[] { White }, muestra = Hex(0xFF8A1E),
             extras = new[] { new Extra { parte = Black, material = "proxima-estacion", muestra = Hex(0x1A0E05) },
                              new Extra { parte = Grey, material = "proxima-estacion", muestra = Hex(0x1A0E05) },

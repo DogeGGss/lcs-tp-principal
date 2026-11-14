@@ -1,9 +1,9 @@
 // F35 (Skins de armas), US 384: la skin épica "Próxima estación", animada: el arma es un cartel de LEDs naranjas, como
-// los de los trenes, con el texto que pasa (Texturas/CartelTexto.png: "RETIRO · PRÓXIMA ESTACIÓN · ÚLTIMO TREN A
-// RETIRO..."). Un material por parte (_Parte):
+// los de los trenes, con el texto que pasa (Texturas/CartelTexto.png: "ÚLTIMO TREN A RETIRO · PRÓXIMA ESTACIÓN" y
+// estaciones del San Martín hasta Retiro). Un material por parte (_Parte):
 //   0 Cartel: los LEDs, en el cuerpo, los paneles y los detalles (el texto recorre toda el arma: no lo tapa una pieza).
-//     El texto va en las caras de costado, a lo largo del arma, en renglones que se repiten hacia arriba; arriba y
-//     abajo del arma, solo los LEDs apagados.
+//     El texto va a lo largo del arma, en renglones que se repiten hacia arriba y siguen por encima del arma (pasa del
+//     costado a la parte de arriba sin cortarse); en las puntas, solo los LEDs apagados.
 //   2 Franjas: LEDs ámbar que se prenden en secuencia, de a grupos, corriendo a lo largo del arma.
 // Los LEDs van pegados al arma (la posición del modelo, en metros). En los modelos el largo es el eje X y el alto el Z.
 Shader "Riftwalker/Skins/Cartel"
@@ -143,16 +143,19 @@ Shader "Riftwalker/Skins/Cartel"
                 }
                 else
                 {
-                    // La grilla de LEDs, en el plano de la cara (con x a lo largo del arma cuando se puede).
-                    float2 p = n.x > max(n.y, n.z) ? i.posM.yz : n.y > n.z ? float2(x, z) : float2(x, i.posM.y);
+                    // La grilla de LEDs: a lo largo del arma (x) y "hacia arriba" dando la vuelta por encima: en los
+                    // costados es la altura y arriba sigue hacia el centro (z - |y|), así el texto pasa del costado a
+                    // la parte de arriba sin cortarse. En las puntas del arma (caras que miran en x), solo la grilla.
+                    bool punta = n.x > max(n.y, n.z);
+                    float2 p = punta ? i.posM.yz : float2(x, z - abs(i.posM.y));
                     float2 celda = p / _Celda;
                     float2 id = floor(celda);
                     float2 f = frac(celda) - 0.5;
                     float punto = saturate(1.0 - length(f) / 0.42);
-                    // El texto: en las caras de costado (normal en y), los renglones hacia arriba (z) y el texto que
-                    // corre a lo largo (x). Cada renglón es una vuelta del texto, corrida para que no queden alineados.
+                    // El texto: los renglones hacia arriba y el texto que corre a lo largo (x). Cada renglón es una
+                    // vuelta del texto, corrida para que no queden alineados.
                     float prendido = 0.0;
-                    if (n.y > max(n.x, n.z))
+                    if (!punta)
                     {
                         float renglon = floor(id.y / _Renglon);
                         float fila = id.y - renglon * _Renglon;       // 0 abajo
