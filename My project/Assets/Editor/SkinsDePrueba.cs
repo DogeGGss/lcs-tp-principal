@@ -66,8 +66,11 @@ public class SkinsDePrueba : EditorWindow
         }
     }
 
-    // US 381: el ajuste a ojo de la boca del arma en la mano (de dónde salen el fogonazo y la estela de las legendarias en
-    // primera persona). "Probar" tira el fogonazo y una estela del Dragón Abisal sin disparar; se guarda en el asset.
+    // US 381: la boca del arma en la mano (de dónde salen el fogonazo y la estela de las legendarias en primera persona).
+    // Es el vacío BocaSkin del arma: se lo selecciona, se lo mueve (y se lo gira, para la dirección de la llama) en la
+    // escena con el juego andando, "Probar" tira el fogonazo y una estela del Dragón Abisal sin disparar, y "Guardar en
+    // el prefab" deja esa posición en el prefab del jugador (lo que se mueve con el juego andando se pierde al pararlo).
+    // Un arma sin el vacío usa la punta del modelo con un ajuste a ojo (los deslizadores).
     private static void Boca(GameObject enLaMano)
     {
         if (enLaMano == null) return;
@@ -76,6 +79,22 @@ public class SkinsDePrueba : EditorWindow
         if (arma == null) return;
         EditorGUILayout.Space();
         EditorGUILayout.LabelField("Boca de " + arma.nombre + " (fogonazo y estela de las legendarias)", EditorStyles.boldLabel);
+        Transform boca = EfectosDeSkin.BocaDe(enLaMano);
+        if (boca != null)
+        {
+            EditorGUILayout.HelpBox("Sale del vacío " + EfectosDeSkin.NombreBoca + ": seleccionalo, movelo en la escena " +
+                "(la flecha azul, hacia donde sale la llama) y probá. Al final, guardalo en el prefab.", MessageType.None);
+            using (new EditorGUILayout.HorizontalScope())
+            {
+                if (GUILayout.Button("Seleccionar la boca")) { Selection.activeTransform = boca; EditorGUIUtility.PingObject(boca); }
+                if (GUILayout.Button("Probar"))
+                    EfectosDeSkin.Prueba(enLaMano, ficha, EfectosDeSkin.De(CatalogoDeSkins.De(arma.id + "-dragon-abisal")));
+                if (GUILayout.Button("Guardar en el prefab")) BocasDeSkin.Guardar(enLaMano.name, boca);
+            }
+            return;
+        }
+        EditorGUILayout.HelpBox("Esta arma no tiene el vacío " + EfectosDeSkin.NombreBoca + ": Riftwalker > Armas > " +
+            "Crear bocas de skin (con el juego parado).", MessageType.Info);
         ModelosDeArmas modelos = ModelosDeArmas.Actual;
         Vector2 antes = modelos.CorrimientoDeBoca(arma.id);
         Vector2 ahora = antes;

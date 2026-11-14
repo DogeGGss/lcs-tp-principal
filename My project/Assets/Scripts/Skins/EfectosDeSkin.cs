@@ -17,27 +17,74 @@ public static class EfectosDeSkin
     private const float DistanciaBoca = 1f;                       // m: donde se dibuja la boca del arma propia
     private const float LlamaPropia = 0.13f, LlamaDeOtro = 0.45f; // m: el largo de la llamarada
 
-    /// <summary>Disparo propio (primera persona): el fogonazo y las estelas salen de la punta del arma tal como se ve en
+    /// <summary>El objeto vacío del arma de donde salen el fogonazo y la estela de las legendarias: se mueve (y se gira,
+    /// para la dirección de la llama) en el prefab del jugador. Lo crea Riftwalker > Armas > Crear bocas de skin.</summary>
+    public const string NombreBoca = "BocaSkin";
+
+    /// <summary>La boca del arma (el vacío BocaSkin), o null si esa arma no la tiene.</summary>
+    public static Transform BocaDe(GameObject arma)
+    {
+        if (arma == null) return null;
+        foreach (Transform t in arma.GetComponentsInChildren<Transform>(true))
+            if (t.name == NombreBoca) return t;
+        return null;
+    }
+
+    /// <summary>Disparo propio (primera persona): el fogonazo y las estelas salen de la boca del arma tal como se ve en
     /// la pantalla. El arma la dibuja otra cámara (con otro campo de visión), así que la boca "de verdad" no coincide con
-    /// lo que se ve; se toma el punto de la pantalla donde está la punta y se lo pone a un metro de la cámara.</summary>
+    /// lo que se ve; se toma el punto de la pantalla donde está la boca y se lo pone a un metro de la cámara. La boca es
+    /// el vacío BocaSkin del arma; si no lo tiene, la punta del modelo más el ajuste de Skins de prueba.</summary>
     public static void DisparoPropio(GameObject arma, ShopItem ficha, Vector3 muzzle, Vector3[] finales, CatalogoDeSkins.Efectos e)
     {
         Vector3 boca = muzzle;
         Vector3 haciaDonde = Vector3.zero;
         Camera cam = Camera.main;
-        if (cam != null && PuntaEnPantalla(arma, cam, out Vector3 pantalla))
+        Transform vacio = BocaDe(arma);
+        Vector3 pantalla = Vector3.zero;
+        Vector2 direccion = Vector2.zero; // hacia dónde sale la llama, en la pantalla
+        bool hay;
+        if (cam != null && vacio != null)
         {
-            // El ajuste a ojo de esa arma (Skins de prueba).
-            CatalogoDeSkins.Arma a = ficha != null ? CatalogoDeSkins.ArmaDeFicha(ficha.name) : null;
-            if (a != null) pantalla += (Vector3)(ModelosDeArmas.Actual.CorrimientoDeBoca(a.id) * Screen.height);
+            Camera camArma = CamaraDelArma(cam, vacio.gameObject.layer, arma);
+            pantalla = camArma.WorldToScreenPoint(vacio.position);
+            Vector3 adelante = camArma.WorldToScreenPoint(vacio.position + vacio.forward * 0.1f);
+            direccion = (Vector2)(adelante - pantalla);
+            hay = pantalla.z > 0f;
+        }
+        else
+        {
+            hay = cam != null && PuntaEnPantalla(arma, cam, out pantalla);
+            if (hay)
+            {
+                // El ajuste a ojo de esa arma (Skins de prueba).
+                CatalogoDeSkins.Arma a = ficha != null ? CatalogoDeSkins.ArmaDeFicha(ficha.name) : null;
+                if (a != null) pantalla += (Vector3)(ModelosDeArmas.Actual.CorrimientoDeBoca(a.id) * Screen.height);
+                // La llama sale hacia el centro de la pantalla (hacia donde apunta el caño en la imagen).
+                direccion = new Vector2(Screen.width * 0.5f - pantalla.x, Screen.height * 0.5f - pantalla.y);
+            }
+        }
+        if (hay)
+        {
             boca = cam.ScreenToWorldPoint(new Vector3(pantalla.x, pantalla.y, DistanciaBoca));
-            // La llama sale hacia el centro de la pantalla (hacia donde apunta el caño en la imagen), corta: no tapa la mira.
-            Vector2 alCentro = new Vector2(Screen.width * 0.5f - pantalla.x, Screen.height * 0.5f - pantalla.y);
-            haciaDonde = cam.transform.right * alCentro.x + cam.transform.up * alCentro.y;
+            // Si el vacío apunta casi derecho hacia adentro de la pantalla, la llama va hacia el centro.
+            if (direccion.sqrMagnitude < 1f) direccion = new Vector2(Screen.width * 0.5f - pantalla.x, Screen.height * 0.5f - pantalla.y);
+            haciaDonde = cam.transform.right * direccion.x + cam.transform.up * direccion.y;
         }
         Trazadora.Fogonazo(boca, false, e.fuego);
         if (e.llamarada) LlamaradaDeSkin.Crear(boca, haciaDonde, LlamaPropia, e);
         foreach (Vector3 fin in finales) Estela(boca, fin, e);
+    }
+
+    // La cámara que dibuja el arma de primera persona (la de las armas, hija de la principal), o la principal.
+    private static Camera CamaraDelArma(Camera cam, int capa, GameObject arma)
+    {
+        foreach (Camera c in cam.GetComponentsInChildren<Camera>(true))
+            if (c != cam && c.enabled && (c.cullingMask & (1 << capa)) != 0) return c;
+        // El vacío puede estar en otra capa: la del modelo del arma.
+        foreach (Renderer r in arma.GetComponentsInChildren<Renderer>())
+            foreach (Camera c in cam.GetComponentsInChildren<Camera>(true))
+                if (c != cam && c.enabled && (c.cullingMask & (1 << r.gameObject.layer)) != 0) return c;
+        return cam;
     }
 
     /// <summary>Para ajustar la boca (Skins de prueba): el fogonazo y una estela hacia adelante, sin disparar.</summary>
@@ -79,9 +126,7 @@ public static class EfectosDeSkin
             else b.Encapsulate(r.bounds);
         }
         if (!hay) return false;
-        Camera camArma = cam;
-        foreach (Camera c in cam.GetComponentsInChildren<Camera>(true))
-            if (c != cam && c.enabled && (c.cullingMask & (1 << capa)) != 0) { camArma = c; break; }
+        Camera camArma = CamaraDelArma(cam, capa, arma);
         Vector3 f = camArma.transform.forward;
         float hasta = Mathf.Abs(f.x) * b.extents.x + Mathf.Abs(f.y) * b.extents.y + Mathf.Abs(f.z) * b.extents.z;
         pantalla = camArma.WorldToScreenPoint(b.center + f * hasta);
