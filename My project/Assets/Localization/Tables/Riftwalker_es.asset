@@ -6647,6 +6647,14 @@ MonoBehaviour:
     m_Localized: "Tormenta"
     m_Metadata:
       m_Items: []
+  - m_Id: 380227458789505
+    m_Localized: "Próxima estación"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 380227458789506
+    m_Localized: "Mapa del subte"
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

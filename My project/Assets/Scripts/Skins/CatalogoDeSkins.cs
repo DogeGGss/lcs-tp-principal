@@ -134,6 +134,20 @@ public static class CatalogoDeSkins
             extras = new[] { new Extra { parte = Black, material = "cristal-oscuro", muestra = Hex(0x2A1F4A) },
                              new Extra { parte = Main, color = Hex(0x3B1F7A), muestra = Hex(0x3B1F7A) } } },
         new Diseno { id = "codigo-binario", nombre = "Código binario", rareza = Rareza.Epico, partes = new[] { White, Main }, muestra = Hex(0x26FF59) },
+        // Épicas (US 384, 14/11/2026). Un cartel de LEDs naranjas de tren en toda el arma (Art/Skins/SkinCartel.shader),
+        // con "ÚLTIMO TREN A RETIRO · PRÓXIMA ESTACIÓN" y estaciones del San Martín que pasan, y LEDs ámbar en secuencia
+        // en las franjas.
+        new Diseno { id = "proxima-estacion", nombre = "Próxima estación", rareza = Rareza.Epico, partes = new[] { White }, muestra = Hex(0xFF8A1E),
+            extras = new[] { new Extra { parte = Black, material = "proxima-estacion", muestra = Hex(0x1A0E05) },
+                             new Extra { parte = Grey, material = "proxima-estacion", muestra = Hex(0x1A0E05) },
+                             new Extra { parte = Main, material = "proxima-estacion-franjas", muestra = Hex(0xFFB347) } } },
+        // Sobre un papel blanco en toda el arma se va dibujando un mapa de la red de subte, con las líneas de sus colores,
+        // y se vuelve a dibujar otro (Art/Skins/SkinMapa.shader); las franjas, con los colores de las líneas.
+        // (Grieta del Rift quedó descartada, 14/11/2026.)
+        new Diseno { id = "mapa-del-subte", nombre = "Mapa del subte", rareza = Rareza.Epico, partes = new[] { White }, muestra = Hex(0xF5F2E8),
+            extras = new[] { new Extra { parte = Black, material = "mapa-del-subte", muestra = Hex(0xF5F2E8) },
+                             new Extra { parte = Grey, material = "mapa-del-subte", muestra = Hex(0xF5F2E8) },
+                             new Extra { parte = Main, material = "mapa-franjas", muestra = Hex(0xEE3D3D) } } },
         // Legendaria (US 381, 13/11/2026), inspirada en un dragón negro con alas de fuego azul (Art/Skins/SkinDragon.shader):
         // escamas negras en el cuerpo y los detalles, grietas de fuego azul en los paneles y llamas en las franjas, todo animado; al
         // disparar, una llamarada azul y una estela azul con brasas.
