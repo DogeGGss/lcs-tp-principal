@@ -129,6 +129,7 @@ public partial class ModeSelectScreen : MonoBehaviour
         public CanvasGroup startGroup;
         public float actionsY;
         public Busqueda busqueda; // buscar partida (los tres modos: en Invasión, F31)
+        public RectTransform equipos; // US 377: las tres columnas del Táctico con código
     }
 
     private RectTransform root;
@@ -757,6 +758,10 @@ public partial class ModeSelectScreen : MonoBehaviour
             d.slots[s] = Text(Place(Node("Lugar", room), x, sy, 324f, 36f), bodyFont, 21f, Ink, TextAlignmentOptions.MidlineLeft);
         }
 
+        // US 377: en el Táctico con código, en lugar de los 8 lugares van las tres columnas para elegir equipo.
+        d.equipos = Place(Node("Equipos", room), 26f, 70f, 668f, 182f);
+        d.equipos.gameObject.SetActive(false);
+
         L10n.BindSource(Text(Place(Node("Mapa", room), 26f, 256f, 120f, 40f), labelFont, 22f, White(0.7f), TextAlignmentOptions.MidlineLeft, 16f, true), "Mapa","ui.");
         d.roomMap = Text(Place(Node("NombreMapa", room), 120f, 256f, 330f, 40f), bodyFont, 24f, Ink, TextAlignmentOptions.MidlineLeft);
         d.mapButton = ButtonRect(room, 462f, 258f, "Cambiar mapa", false, c, NextMap, 20f, 36f);
@@ -1009,9 +1014,13 @@ public partial class ModeSelectScreen : MonoBehaviour
         d.roomCode.text = net.Codigo;
         int maximo = Multijugador.MaxPara((GameMode)mode); // 4 en Invasión (US 289, CA1)
         d.roomCount.text = $"{players.Count} / {maximo}";
+        // US 377: Táctico con código: tres columnas (Equipo 1, Sin equipo, Equipo 2) en lugar de los lugares.
+        bool elegirEquipo = mode == 0 && !net.EnPartidaPublica;
+        d.equipos.gameObject.SetActive(elegirEquipo);
+        if (elegirEquipo) DibujarEquipos(d);
         for (int s = 0; s < 8; s++)
         {
-            d.slots[s].gameObject.SetActive(s < maximo);
+            d.slots[s].gameObject.SetActive(s < maximo && !elegirEquipo);
             bool taken = s < players.Count;
             string name = taken ? players[s].nombre : "Libre";
             if (taken && players[s].vos) name += " <color=#FFFFFF80>(vos)</color>";
@@ -1030,11 +1039,78 @@ public partial class ModeSelectScreen : MonoBehaviour
         d.startButton.gameObject.SetActive(host);
         d.startButton.interactable = ready;
         d.startGroup.alpha = ready ? 1f : 0.4f;
-        L10n.BindSource(d.roomFoot, !host ? "Esperando al anfitrión…"
+        L10n.BindSource(d.roomFoot, elegirEquipo && net.FaltanEquipos && players.Count >= Multijugador.MinimoParaIniciar((GameMode)mode)
+            ? (EquiposTacticos.CuantosEligieron(0) > 0 ? "Hay jugadores sin equipo: cada uno elige con las flechas (o A y D)." : "Cada equipo necesita al menos un jugador.")
+            : !host ? "Esperando al anfitrión…"
             : mode == 2 && players.Count < Multijugador.MaxInvasion ? "Pasale el código a tus amigos (hasta 4). Podés arrancar cuando quieras."
             : players.Count < Multijugador.MinimoParaIniciar((GameMode)mode) ? "Pasale el código a tus amigos. Se necesitan al menos 2 jugadores."
             : "Todo listo: iniciá la partida cuando quieras.","ui.");
         d.room.gameObject.SetActive(true);
+    }
+
+    // ================= Elegir equipo (US 377) =================
+
+    private static readonly string[] NombresEquipos = { "Sin equipo", "Equipo 1", "Equipo 2" };
+
+    // CA1: tres columnas: Equipo 1 a la izquierda, Sin equipo en el medio y Equipo 2 a la derecha, iguales para todos.
+    private void DibujarEquipos(Detail d)
+    {
+        for (int i = d.equipos.childCount - 1; i >= 0; i--) Destroy(d.equipos.GetChild(i).gameObject);
+        int[] orden = { 1, 0, 2 }; // de izquierda a derecha
+        const float ancho = 212f, gap = 16f, fila = 34f;
+        for (int col = 0; col < 3; col++)
+        {
+            int equipo = orden[col];
+            float x = col * (ancho + gap);
+            int cuantos = EquiposTacticos.CuantosEligieron(equipo);
+            Color color = equipo == 1 ? new Color(0.345f, 0.651f, 1f) : equipo == 2 ? new Color(1f, 0.361f, 0.361f) : White(0.7f);
+            string cuenta = equipo == 0 ? cuantos.ToString() : $"{cuantos}/{EquiposTacticos.MaxPorEquipo}";
+            Text(Place(Node("Titulo", d.equipos), x, 0f, ancho, 26f), labelFont, 17f, color, TextAlignmentOptions.MidlineLeft, 14f, true).text =
+                $"{L10n.Source(NombresEquipos[equipo], "ui.")}  <color=#FFFFFF66>{cuenta}</color>";
+            Image(Place(Node("Linea", d.equipos), x, 27f, ancho, 2f), null, WithAlpha(color, 0.6f));
+            int n = 0;
+            foreach (Photon.Realtime.Player p in Photon.Pun.PhotonNetwork.PlayerList)
+            {
+                if (EquiposTacticos.ElegidoPor(p) != equipo) continue;
+                float y = 34f + n * fila;
+                n++;
+                bool vos = p.IsLocal;
+                string nombre = p.NickName + (vos ? " <color=#FFFFFF80>(vos)</color>" : "") + (p.IsMasterClient ? " <color=#FFD2A1>·</color>" : "");
+                TextMeshProUGUI t = Text(Place(Node("Jugador", d.equipos), x + (vos ? 30f : 4f), y, ancho - (vos ? 60f : 8f), fila - 4f),
+                    bodyFont, 20f, Ink, TextAlignmentOptions.MidlineLeft);
+                t.text = nombre;
+                t.overflowMode = TextOverflowModes.Ellipsis;
+                if (!vos) continue;
+                // CA3: cada uno se mueve a sí mismo, con las flechas de al lado de su nombre.
+                int izquierda = equipo == 0 ? 1 : equipo == 2 ? 0 : -1, derecha = equipo == 0 ? 2 : equipo == 1 ? 0 : -1;
+                if (izquierda >= 0) FlechaEquipo(d.equipos, x, y, "‹", izquierda);
+                if (derecha >= 0) FlechaEquipo(d.equipos, x + ancho - 26f, y, "›", derecha);
+            }
+        }
+    }
+
+    private void FlechaEquipo(RectTransform padre, float x, float y, string simbolo, int destino)
+    {
+        // CA4: un equipo lleno no acepta más: la flecha hacia ese lado queda apagada.
+        bool lleno = destino != 0 && EquiposTacticos.CuantosEligieron(destino) >= EquiposTacticos.MaxPorEquipo;
+        RectTransform r = Place(Node("Flecha", padre), x, y + 2f, 26f, 26f);
+        Image(r, rounded, lleno ? White(0.06f) : White(0.14f), 5f, !lleno);
+        TextMeshProUGUI t = Text(Place(Node("T", r), 0f, -2f, 26f, 26f), labelFont, 24f, lleno ? White(0.3f) : Ink, TextAlignmentOptions.Center);
+        t.text = simbolo;
+        if (lleno) return;
+        var p = r.gameObject.AddComponent<ShopPointerTarget>();
+        p.Clicked = () => EquiposTacticos.Elegir(destino);
+        p.Hovered = () => t.color = new Color(1f, 0.82f, 0.63f);
+        p.Exited = () => t.color = Ink;
+    }
+
+    // CA3: también con las teclas A y D (A hacia la izquierda, D hacia la derecha).
+    private void TeclasDeEquipo(Keyboard kb)
+    {
+        if (open != 0 || !Multijugador.EnSala || Multijugador.Instancia.EnPartidaPublica || Multijugador.Instancia.ModoSala != GameMode.Tactico) return;
+        int actual = EquiposTacticos.ElegidoPor(Photon.Pun.PhotonNetwork.LocalPlayer);
+        if (kb.aKey.wasPressedThisFrame && actual != 1) EquiposTacticos.Elegir(actual == 0 ? 1 : 0);
+        else if (kb.dKey.wasPressedThisFrame && actual != 2) EquiposTacticos.Elegir(actual == 0 ? 2 : 0);
     }
 
     private void SelectDifficulty(ZombieDifficulty difficulty)
@@ -1453,6 +1529,7 @@ public partial class ModeSelectScreen : MonoBehaviour
         if (kb != null)
         {
             if (kb.escapeKey.wasPressedThisFrame) { Back(); return; }
+            if (!isTyping) TeclasDeEquipo(kb); // US 377
             if (!isTyping && open < 0)
             {
                 if (kb.digit1Key.wasPressedThisFrame || kb.numpad1Key.wasPressedThisFrame) OpenMode(0);

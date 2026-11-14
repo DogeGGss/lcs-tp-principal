@@ -39,36 +39,105 @@ public static class EquiposTacticos
     {
         if (!PhotonNetwork.InRoom || !PhotonNetwork.IsMasterClient) return;
 
-        var actores = new List<int>();
-        foreach (Player jugador in PhotonNetwork.PlayerList) actores.Add(jugador.ActorNumber);
-
-        // CA1: se mezclan al azar.
-        for (int i = actores.Count - 1; i > 0; i--)
+        var jugadores = new List<Player>(PhotonNetwork.PlayerList);
+        // CA1: se mezclan al azar (así, si hay empate, cualquiera de los repartos parejos puede salir).
+        for (int i = jugadores.Count - 1; i > 0; i--)
         {
             int j = Random.Range(0, i + 1);
-            int guardado = actores[i];
-            actores[i] = actores[j];
-            actores[j] = guardado;
+            (jugadores[i], jugadores[j]) = (jugadores[j], jugadores[i]);
         }
 
-        // CA2: los primeros van al equipo 0 y el resto al equipo 1. Con cantidad impar, el equipo 0 se queda
-        // con uno más (la diferencia es de 1 como mucho) y ninguno pasa de 4.
-        int enEquipo0 = Mathf.Min(MaxPorEquipo, (actores.Count + 1) / 2);
+        bool publica = Multijugador.Existe && Multijugador.Instancia.EnPartidaPublica;
+        bool[] enEquipo0;
+        if (PruebaTodosAliados) enEquipo0 = jugadores.ConvertAll(_ => true).ToArray();
+        else if (!publica && EquiposElegidosListos) enEquipo0 = jugadores.ConvertAll(p => ElegidoPor(p) == 1).ToArray(); // US 377, CA6
+        else if (publica) enEquipo0 = Parejos(jugadores.ConvertAll(NivelDeJugador.De)); // US 280, CA1
+        else
+        {
+            // CA2: los primeros van al equipo 0 y el resto al equipo 1. Con cantidad impar, el equipo 0 se queda
+            // con uno más (la diferencia es de 1 como mucho) y ninguno pasa de 4.
+            int cuantos = Mathf.Min(MaxPorEquipo, (jugadores.Count + 1) / 2);
+            enEquipo0 = new bool[jugadores.Count];
+            for (int i = 0; i < jugadores.Count; i++) enEquipo0[i] = i < cuantos;
+        }
+
         var propiedades = new Hashtable();
         string equipo0 = "", equipo1 = "";
-        for (int i = 0; i < actores.Count; i++)
+        for (int i = 0; i < jugadores.Count; i++)
         {
-            int equipo = (PruebaTodosAliados || i < enEquipo0) ? 0 : 1;
-            propiedades[Clave(actores[i])] = equipo;
-            if (equipo == 0) equipo0 += " " + actores[i]; else equipo1 += " " + actores[i];
+            int equipo = enEquipo0[i] ? 0 : 1;
+            propiedades[Clave(jugadores[i].ActorNumber)] = equipo;
+            if (equipo == 0) equipo0 += " " + jugadores[i].ActorNumber; else equipo1 += " " + jugadores[i].ActorNumber;
         }
 
-        // CA3: un equipo al azar ataca en las rondas 1 a 6 y el otro defiende.
+        // CA3 (y US 280, CA4; US 377, CA6): un equipo al azar ataca en las rondas 1 a 6 y el otro defiende.
         int atacante = Random.Range(0, 2);
         propiedades[PropAtacante] = atacante;
 
         PhotonNetwork.CurrentRoom.SetCustomProperties(propiedades);
         Debug.Log($"EquiposTacticos: equipo 0 (jugadores:{equipo0}), equipo 1 (jugadores:{equipo1}). Ataca el equipo {atacante}.");
+    }
+
+    // ---------- Equipos parejos (US 280) ----------
+
+    /// <summary>
+    /// CA1 y CA2: de todos los repartos con la misma cantidad de jugadores (o uno de diferencia, ninguno de más de 4), el
+    /// que deja la suma de niveles más pareja. Con 8 jugadores son 70 repartos: se prueban todos. Si hay varios iguales,
+    /// queda el primero (la lista ya viene mezclada al azar). Devuelve, para cada jugador, si va al equipo 0.
+    /// </summary>
+    public static bool[] Parejos(List<int> niveles)
+    {
+        int n = niveles.Count;
+        var mejor = new bool[n];
+        if (n == 0) return mejor;
+        int total = 0;
+        foreach (int x in niveles) total += x;
+        int tamano = Mathf.Min(MaxPorEquipo, (n + 1) / 2);
+        long mejorDiferencia = long.MaxValue;
+        for (int mascara = 0; mascara < (1 << n); mascara++)
+        {
+            int cuenta = 0, suma = 0;
+            for (int i = 0; i < n; i++) if ((mascara & (1 << i)) != 0) { cuenta++; suma += niveles[i]; }
+            if (cuenta != tamano || n - cuenta > MaxPorEquipo) continue;
+            long diferencia = System.Math.Abs((long)suma - (total - suma));
+            if (diferencia >= mejorDiferencia) continue;
+            mejorDiferencia = diferencia;
+            for (int i = 0; i < n; i++) mejor[i] = (mascara & (1 << i)) != 0;
+        }
+        return mejor;
+    }
+
+    // ---------- Elegir equipo en las salas con código (US 377) ----------
+
+    /// <summary>El equipo que eligió cada jugador en la sala: 0 sin equipo (en el medio), 1 o 2.</summary>
+    public const string PropElegido = "eqElegido";
+
+    public static int ElegidoPor(Player p) => p != null && p.CustomProperties.TryGetValue(PropElegido, out object v) && v is int n ? n : 0;
+
+    public static int CuantosEligieron(int equipo)
+    {
+        int n = 0;
+        if (PhotonNetwork.InRoom) foreach (Player p in PhotonNetwork.PlayerList) if (ElegidoPor(p) == equipo) n++;
+        return n;
+    }
+
+    /// <summary>CA3 y CA4: el jugador local se mueve a ese lugar (0 el medio, 1 o 2), si hay lugar.</summary>
+    public static bool Elegir(int equipo)
+    {
+        if (!PhotonNetwork.InRoom || equipo < 0 || equipo > 2) return false;
+        if (equipo != 0 && CuantosEligieron(equipo) >= MaxPorEquipo && ElegidoPor(PhotonNetwork.LocalPlayer) != equipo) return false;
+        PhotonNetwork.LocalPlayer.SetCustomProperties(new Hashtable { { PropElegido, equipo } });
+        return true;
+    }
+
+    /// <summary>CA5: se puede iniciar si nadie quedó en el medio y cada equipo tiene al menos uno (y ninguno más de 4).</summary>
+    public static bool EquiposElegidosListos
+    {
+        get
+        {
+            int uno = CuantosEligieron(1), dos = CuantosEligieron(2);
+            return CuantosEligieron(0) == 0 && uno >= 1 && dos >= 1 && uno <= MaxPorEquipo && dos <= MaxPorEquipo;
+        }
     }
 
     // ---------- Consultas ----------

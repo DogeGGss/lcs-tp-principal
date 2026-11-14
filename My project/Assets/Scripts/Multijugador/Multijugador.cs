@@ -274,8 +274,9 @@ public class Multijugador : MonoBehaviourPunCallbacks, IOnEventCallback
         // US 031: en Táctico, el anfitrión reparte los equipos antes de cargar el mapa.
         if (ModoSala == GameMode.Tactico) EquiposTacticos.Repartir();
         // F31 (US 358, CA1): en Invasión la sala sigue abierta (con el código o buscando partida se entra mientras
-        // haya lugar); en los otros modos se cierra.
-        PhotonNetwork.CurrentRoom.IsOpen = ModoSala == GameMode.Zombie;
+        // haya lugar); en los otros modos se cierra. US 279, CA1: el Deathmatch de buscar partida también queda abierto
+        // (PartidaDeathmatch lo cierra cuando quedan 2 minutos).
+        PhotonNetwork.CurrentRoom.IsOpen = ModoSala == GameMode.Zombie || (ModoSala == GameMode.Deathmatch && EnPartidaPublica);
         PhotonNetwork.CurrentRoom.SetCustomProperties(new Hashtable { { PropJugando, true } });
         // US 195: desde ahora, el que se desconecta queda 2 minutos en la sala para poder volver. En el andén no: ahí el
         // que se va deja su lugar libre en el momento. La sala también espera 2 minutos si se desconectan todos a la vez
@@ -433,7 +434,13 @@ public class Multijugador : MonoBehaviourPunCallbacks, IOnEventCallback
     }
 
     // En Invasión alcanza con uno (US 289): el anfitrión puede arrancar aunque no haya entrado nadie.
-    public bool PuedeIniciar => EsAnfitrion && CantidadJugadores >= MinimoParaIniciar(ModoSala) && MapaActual != null;
+    public bool PuedeIniciar => EsAnfitrion && CantidadJugadores >= MinimoParaIniciar(ModoSala) && MapaActual != null && !FaltanEquipos;
+
+    /// <summary>
+    /// US 377, CA5: en un Táctico con código no se puede iniciar mientras alguien siga sin equipo (en el medio) o un equipo
+    /// esté vacío. (Con la prueba solo, sí: se juega de a uno.)
+    /// </summary>
+    public bool FaltanEquipos => ModoSala == GameMode.Tactico && !EnPartidaPublica && !PruebaSolo.Activa && !EquiposTacticos.EquiposElegidosListos;
 
     public static int MinimoParaIniciar(GameMode modo) => PruebaSolo.Activa || modo == GameMode.Zombie ? 1 : MinJugadores;
 
@@ -623,6 +630,7 @@ public class Multijugador : MonoBehaviourPunCallbacks, IOnEventCallback
         MatchSettings.Mode = modo;
         MatchSettings.RoomCode = PhotonNetwork.CurrentRoom.Name;
         PerfilEnPartida.Publicar(); // US 376: lo equipado, para la tabla con Tab y el resultado
+        NivelDeJugador.Publicar(); // US 278, CA5: para los equipos parejos de buscar partida (US 280)
         // US 289, CA3: en Invasión se juega con la dificultad de la sala (sin cambiar la que el jugador eligió para jugar solo).
         MatchSettings.DificultadDeSala = modo == GameMode.Zombie ? DificultadSala : (ZombieDifficulty?)null;
 
@@ -645,7 +653,8 @@ public class Multijugador : MonoBehaviourPunCallbacks, IOnEventCallback
         PhotonNetwork.NickName = PlayerProfile.UniqueInRoom(NombreBase(), otros);
 
         // F31 (US 358, CA1 y CA2): la partida ya empezó (Invasión cooperativa): se carga el mapa como al volver.
-        if (EnJuego && modo == GameMode.Zombie)
+        // US 279, CA1 y CA2: lo mismo con un Deathmatch de buscar partida empezado (aparece como en una reaparición).
+        if (EnJuego && (modo == GameMode.Zombie || modo == GameMode.Deathmatch))
         {
             // Pero si no queda nadie jugando (la partida terminó o se fueron todos y la sala espera a los que se cortaron),
             // no hay partida a la que sumarse: se cierra, se sale y, buscando, se busca otra.

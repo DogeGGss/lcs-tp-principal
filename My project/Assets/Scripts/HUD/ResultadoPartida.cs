@@ -98,6 +98,7 @@ public class ResultadoPartida : MonoBehaviour
         ResumenDelPase.Dibujar(root, 40f, 40f, DesafiosDePartida.TerminarMultijugador(false, gane), displayFont, labelFont, rounded);
         Text(Place(Node("Creditos", root), 1420f, 40f, 460f, 34f), labelFont, 24f, Accent, TextAlignmentOptions.MidlineRight, 12f, true).text =
             L10n.T("gameplay.dm.credits_fmt", creditos);
+        NivelEnResultado(root, NivelDeJugador.AlTerminarTactico(gane), labelFont); // US 278
 
         // CA3: tabla (se arma de nuevo cada tanto, por si llegan estadísticas atrasadas).
         tabla = Place(Node("Tabla", root), (1920f - TablaW) / 2f, 450f, TablaW, 100f);
@@ -113,6 +114,15 @@ public class ResultadoPartida : MonoBehaviour
         puntero.Clicked = VolverAlMenu;
 
         Congelar();
+    }
+
+    /// <summary>US 278: en buscar partida, el nivel de jugador nuevo y cuánto cambió, debajo de los créditos.</summary>
+    public static void NivelEnResultado(RectTransform root, int? cambio, TMP_FontAsset fuente)
+    {
+        if (cambio == null) return;
+        string signo = cambio.Value > 0 ? "+" : cambio.Value < 0 ? "−" : "±";
+        Text(Place(Node("NivelDeJugador", root), 1420f, 78f, 460f, 30f), fuente, 20f, Soft, TextAlignmentOptions.MidlineRight, 10f, true).text =
+            $"{L10n.Source("Nivel de jugador", "gameplay.")} {PerfilDatos.Numero(NivelDeJugador.Valor)}  <color=#8E96A3>({signo}{Mathf.Abs(cambio.Value)})</color>";
     }
 
     private float DibujarTabla()

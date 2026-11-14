@@ -50,6 +50,7 @@ public static class ProgresoNube
             else if (clave == EstadisticasJugador.Clave) EstadisticasJugador.Recargar();
             else if (clave == PerfilDatos.Clave) PerfilDatos.Recargar();
             else if (clave == PaseDeBatalla.Clave) PaseDeBatalla.Recargar();
+            else if (clave == NivelDeJugador.Clave) NivelDeJugador.Recargar();
         };
         // Se entró o se salió de una cuenta (US 237): todo lo del jugador es otro. Logros antes que estadísticas: al
         // recargarlas, los logros de combate se revisan con lo de la cuenta.
@@ -61,6 +62,7 @@ public static class ProgresoNube
             PerfilDatos.Recargar();
             SkinsDeArmas.Recargar();
             PaseDeBatalla.Recargar();
+            NivelDeJugador.Recargar();
         };
     }
 
@@ -121,10 +123,15 @@ public static class ProgresoNube
         // Pase de batalla (F32): la experiencia, la compra y los desafíos de la temporada (máximo) y lo reclamado (unión).
         foreach (var (clave, valor) in PaseDeBatalla.Contadores) Sumar(d.contadores, clave, valor);
         d.conjuntos.Add(Ordenado(PaseDeBatalla.ClaveReclamados, PaseDeBatalla.Reclamados));
+
+        // Nivel de jugador (US 278): sube y baja, así que va como texto "nivel|partidas" (manda el que contó más partidas).
+        if (NivelDeJugador.Partidas > 0)
+            d.valores.Add(new Texto { clave = NivelJugador, valor = NivelDeJugador.Valor + "|" + NivelDeJugador.Partidas });
         return d;
     }
 
     private const string Reciente = Perfil + "reciente.";
+    private const string NivelJugador = "nivel.jugador";
 
     private static Conjunto Ordenado(string clave, IEnumerable<string> elementos)
     {
@@ -253,5 +260,15 @@ public static class ProgresoNube
             foreach (Conjunto c in nube.conjuntos)
                 if (c != null && c.elementos != null && c.clave == PaseDeBatalla.ClaveReclamados) reclamados.AddRange(c.elementos);
         PaseDeBatalla.FusionarNube(Leer, reclamados);
+
+        // Nivel de jugador (US 278, CA6)
+        if (nube.valores != null)
+            foreach (Texto t in nube.valores)
+            {
+                if (t == null || t.clave != NivelJugador || string.IsNullOrEmpty(t.valor)) continue;
+                string[] partes = t.valor.Split('|');
+                if (partes.Length == 2 && int.TryParse(partes[0], out int nivel) && int.TryParse(partes[1], out int partidas))
+                    NivelDeJugador.FusionarNube(nivel, partidas);
+            }
     }
 }

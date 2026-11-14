@@ -97,6 +97,7 @@ public class ResultadoDeathmatch : MonoBehaviour
         ResumenDelPase.Dibujar(root, 40f, 40f, DesafiosDePartida.TerminarMultijugador(true, gane), displayFont, labelFont, rounded);
         Text(Place(Node("Creditos", root), 1420f, 40f, 460f, 34f), labelFont, 24f, Accent, TextAlignmentOptions.MidlineRight, 12f, true).text =
             L10n.T("gameplay.dm.credits_fmt", creditos);
+        ResultadoPartida.NivelEnResultado(root, NivelDeJugador.AlTerminarDeathmatch(), labelFont); // US 278
 
         tabla = Place(Node("Tabla", root), (1920f - TablaW) / 2f, TablaY, TablaW, 100f);
 
