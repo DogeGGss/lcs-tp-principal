@@ -15,76 +15,91 @@ MonoBehaviour:
   emotes:
   - estado: Shuffle
     nombre: Shuffle
-    icono: {fileID: 0}
+    icono: {fileID: 21300000, guid: 92c959e03d9326544abb367b728d1287, type: 3}
     clip: {fileID: -203655887218126122, guid: ac8bc584e88631a4db51727dcc3c6a47, type: 3}
     rareza: 2
+    momentoIcono: 0.4
   - estado: Twerk
     nombre: Twerk
-    icono: {fileID: 0}
+    icono: {fileID: 21300000, guid: ab550c02619fa8a4895d0d708c628da9, type: 3}
     clip: {fileID: -203655887218126122, guid: 4f9a632cb609f4e4cbd781bc601735af, type: 3}
     rareza: 4
+    momentoIcono: 0.4
   - estado: Flair
     nombre: Flair
-    icono: {fileID: 0}
+    icono: {fileID: 21300000, guid: 2caa3d5741338b342914363ea1855211, type: 3}
     clip: {fileID: -203655887218126122, guid: ffe236bf4484ff3418de5a172080f1e5, type: 3}
     rareza: 3
+    momentoIcono: 0.4
   - estado: Rumba
     nombre: Rumba
-    icono: {fileID: 0}
+    icono: {fileID: 21300000, guid: 937e2627a81b1e4469783155d520a7ba, type: 3}
     clip: {fileID: -203655887218126122, guid: 7a474da37b3eb0943bc4ca3ff965861c, type: 3}
     rareza: 1
+    momentoIcono: 0.4
   - estado: Silly
     nombre: Payaseando
-    icono: {fileID: 0}
+    icono: {fileID: 21300000, guid: 7523e20d1eb4aa7458090ccb57b300e6, type: 3}
     clip: {fileID: -203655887218126122, guid: bf86d8f300e7a004da99c4019d2eb361, type: 3}
     rareza: 1
+    momentoIcono: 0.4
   - estado: DefaultDance
-    nombre: El Clásico
-    icono: {fileID: 0}
+    nombre: "El Cl\xE1sico"
+    icono: {fileID: 21300000, guid: facd7c6f2e7a30f4c8a1b9fdc45efcbd, type: 3}
     clip: {fileID: 7400000, guid: cc59ea8012b045aeb2c9b8585619c575, type: 2}
     rareza: 4
+    momentoIcono: 0.4
   - estado: Floss
     nombre: Floss
-    icono: {fileID: 0}
+    icono: {fileID: 21300000, guid: 4114feee144cc80408ce5e268cef3bd6, type: 3}
     clip: {fileID: 7400000, guid: 2273c85663b34c33a9c5dea8892e9d76, type: 2}
     rareza: 3
+    momentoIcono: 0.4
   - estado: Dancing
     nombre: Pasito
-    icono: {fileID: 0}
+    icono: {fileID: 21300000, guid: 6cd8cc38236cc9e48a8a2fc4c254b817, type: 3}
     clip: {fileID: -203655887218126122, guid: 8f8c5a016b124384ab34696105dba477, type: 3}
     rareza: 1
+    momentoIcono: 0.4
   - estado: Greeting
     nombre: Saludo
-    icono: {fileID: 0}
+    icono: {fileID: 21300000, guid: 7320099fd760b2840b3171ee0173e1cd, type: 3}
     clip: {fileID: -203655887218126122, guid: fb6a2812c029d304ba42ceed9bc8a715, type: 3}
     rareza: 0
+    momentoIcono: 0.4
   - estado: HipHop
     nombre: Hip Hop
-    icono: {fileID: 0}
+    icono: {fileID: 21300000, guid: 77b4572acaa168a4ebbca1c48fc635a4, type: 3}
     clip: {fileID: -203655887218126122, guid: fb078ef1ddab9ca43b8221173a42b14a, type: 3}
     rareza: 1
+    momentoIcono: 0.4
   - estado: HipHop2
     nombre: Freestyle
-    icono: {fileID: 0}
+    icono: {fileID: 21300000, guid: a3dc63b2b897abb4ba26327123a409c2, type: 3}
     clip: {fileID: -203655887218126122, guid: e002ad7500cfc474d8e7164bc7dd6bc0, type: 3}
     rareza: 2
+    momentoIcono: 0.4
   - estado: HipHop3
     nombre: Old School
-    icono: {fileID: 0}
+    icono: {fileID: 21300000, guid: 934609a17792ae74b9df4a1483d934ec, type: 3}
     clip: {fileID: -203655887218126122, guid: ac852042cdfbebc47b7f10094f7e6527, type: 3}
     rareza: 2
+    momentoIcono: 0.4
   - estado: NorthernSoul
     nombre: Giro Soul
-    icono: {fileID: 0}
+    icono: {fileID: 21300000, guid: 57899f479917d3a4ead8e7217211a218, type: 3}
     clip: {fileID: -203655887218126122, guid: 670198842f75b7844b502e491f666e07, type: 3}
     rareza: 3
+    momentoIcono: 0.4
   - estado: PunchingBag
     nombre: Round 1
-    icono: {fileID: 0}
+    icono: {fileID: 21300000, guid: 81668886da291aa4180019ad8551dc49, type: 3}
     clip: {fileID: -203655887218126122, guid: 9f16361609deb7e4183d8e9bb459488b, type: 3}
     rareza: 2
+    momentoIcono: 0.4
   - estado: Twist
     nombre: Twist
-    icono: {fileID: 0}
+    icono: {fileID: 21300000, guid: bffb59b6e7a4cd64e933d1fc78bec9af, type: 3}
     clip: {fileID: -203655887218126122, guid: 66d267686d94d3744ae47415d1776409, type: 3}
     rareza: 1
+    momentoIcono: 0.4
