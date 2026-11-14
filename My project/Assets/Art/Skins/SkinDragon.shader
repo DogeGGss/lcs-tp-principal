@@ -1,6 +1,6 @@
 // F35 (Skins de armas), US 381: la skin legendaria "Dragón Abisal", animada. Un material por parte del arma (_Parte):
-//   0 Cuerpo: escamas negras (la textura Texturas/EscamasDragon, de FreePBR, con su relieve), con el filo azul verdoso.
-//   1 Paneles: escamas oscuras con grietas de fuego azul que fluye hacia el caño.
+//   0 Cuerpo: escamas negras (la textura Texturas/EscamasDragon, de FreePBR, con su relieve), con un brillo apenas gris.
+//   1 Escamas con grietas de fuego azul (sin usar desde el 14/11/2026: los paneles llevan el fuego de las franjas, 2).
 //   2 Franjas: fuego azul vivo que corre a lo largo del arma.
 // El fuego "respira" (sube y baja despacio) y se enciende con cada disparo (_Calor, de 0 a 1, lo pone CalorDeSkin en
 // cada arma). En los modelos de las armas el largo (el caño) es el eje X, con el caño hacia +X, y el alto el Z.
@@ -136,10 +136,12 @@ Shader "Riftwalker/Skins/Dragon"
                     float3 Nr = normalize(TransformObjectToWorldNormal(nRelieve));
                     float nlr = saturate(dot(Nr, L));
                     float3 escama = _ColorEscama.rgb * (0.35 + 1.3 * gris) * (parte == 1 ? 0.8 : 1.0);
+                    // Negras de verdad: la luz del ambiente (el cielo, que es azulado) llega gris, sin teñirlas.
                     // Iluminadas con el relieve, con un brillo duro (escamas pulidas) y el filo azul verdoso de costado.
                     float3 H = normalize(L + V);
                     float especular = pow(saturate(dot(Nr, H)), 64.0) * 0.8 * gris;
-                    color = escama * (luzP.color * nlr * 0.9 + SampleSH(Nr)) + especular * luzP.color;
+                    float ambiente = dot(SampleSH(Nr), float3(0.299, 0.587, 0.114));
+                    color = escama * (luzP.color * nlr * 0.9 + ambiente) + especular * 0.5;
                     float frs = pow(1.0 - saturate(dot(Nr, V)), 3.0);
                     color += _ColorFilo.rgb * frs * 0.25;
                     if (parte == 1) // paneles: grietas de fuego que fluye hacia el caño

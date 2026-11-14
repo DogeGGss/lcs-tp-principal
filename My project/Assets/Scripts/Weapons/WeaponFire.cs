@@ -92,9 +92,10 @@ public static class WeaponFire
         bool conBronca = deMas > 0; // US 330: el disparo con bronca se ve rojo
         // F35 (US 381): con una skin legendaria, su fogonazo y su estela (la bronca y la descarga tienen prioridad).
         CatalogoDeSkins.Efectos legendaria = conBronca || Trazadora.Tinte.HasValue ? null : SkinsEnLasArmas.EfectosDe(weapon);
-        if (legendaria != null) EfectosDeSkin.Fogonazo(muzzle, camera.transform.forward, legendaria);
-        else Trazadora.Fogonazo(muzzle, conBronca);
-        CalorDeSkin.Disparo(SkinsEnLasArmas.ArmaDe(weapon)); // el fuego de la skin se enciende con cada tiro
+        if (legendaria == null) Trazadora.Fogonazo(muzzle, conBronca);
+        Vector3[] finales = legendaria != null ? new Vector3[pellets] : null; // (sus estelas salen todas juntas, al final)
+        GameObject conSkin = SkinsEnLasArmas.ArmaDe(weapon);
+        CalorDeSkin.Disparo(conSkin); // el fuego de la skin se enciende con cada tiro
         int deMasPorPerdigon = deMas / pellets, deMasSobra = deMas - deMasPorPerdigon * pellets;
         for (int i = 0; i < pellets; i++)
         {
@@ -102,7 +103,7 @@ public static class WeaponFire
             directions[i] = direction;
             bool touched = Trace(camera.transform.position, direction, range, shooter, out RaycastHit hit, out HealthSystem target, out BodyZone zone);
             Vector3 fin = touched ? hit.point : camera.transform.position + direction * Mathf.Min(range, 300f);
-            if (legendaria != null) EfectosDeSkin.Estela(muzzle, fin, legendaria);
+            if (legendaria != null) finales[i] = fin;
             else Trazadora.Mostrar(muzzle, fin, conBronca);
             if (!touched)
                 continue;
@@ -143,6 +144,8 @@ public static class WeaponFire
                 Killed?.Invoke(zone == BodyZone.Head);
             }
         }
+        // F35 (US 381): el fogonazo y las estelas de la skin legendaria, desde la punta del arma como se ve.
+        if (legendaria != null) EfectosDeSkin.DisparoPropio(conSkin, muzzle, finales, legendaria);
 
         aim.Kick(weapon); // (US 309: con el doble cartucho patea igual que uno)
         Fired?.Invoke(shooter, camera.transform.position, directions);
