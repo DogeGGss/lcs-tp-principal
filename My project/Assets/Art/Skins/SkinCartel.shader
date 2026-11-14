@@ -159,8 +159,9 @@ Shader "Riftwalker/Skins/Cartel"
                         float alto = _Texto_TexelSize.w;              // filas de la textura
                         if (fila < alto)
                         {
-                            float col = id.x + floor(_Time.y * _Velocidad) + renglon * 37.0;
-                            float2 uv = float2((col + 0.5) * _Texto_TexelSize.x, 1.0 - (fila + 0.5) / alto);
+                            // (Girado media vuelta respecto del modelo: así se lee al derecho en el arma.)
+                            float col = -id.x + floor(_Time.y * _Velocidad) + renglon * 37.0;
+                            float2 uv = float2((col + 0.5) * _Texto_TexelSize.x, (fila + 0.5) / alto);
                             prendido = SAMPLE_TEXTURE2D(_Texto, sampler_point_repeat, uv).r;
                         }
                     }
