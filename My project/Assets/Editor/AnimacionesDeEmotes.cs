@@ -11,6 +11,7 @@ using UnityEngine;
 // - en el Animator de los personajes (AnimatorControllerAlienSoldier) arma la capa "Emotes" (todo el cuerpo, peso 0: la
 //   prende BaileEnTerceraPersona mientras baila) con un estado por baile;
 // - lo agrega al final del catálogo (Resources/Emotes), donde se le pone el nombre que se muestra y el ícono.
+// También sirve un .anim humanoide (un baile que ya viene como clip de Unity, con su loop y en su lugar ya puestos).
 // También desde el menú: Riftwalker > Emotes > Armar los bailes.
 public class AnimacionesDeEmotes : AssetPostprocessor
 {
@@ -52,7 +53,8 @@ public class AnimacionesDeEmotes : AssetPostprocessor
 
     private static void OnPostprocessAllAssets(string[] importados, string[] borrados, string[] movidos, string[] desde)
     {
-        if (importados.Any(p => p.StartsWith(Carpeta) && p.EndsWith(".fbx", System.StringComparison.OrdinalIgnoreCase)))
+        if (importados.Any(p => p.StartsWith(Carpeta) && (p.EndsWith(".fbx", System.StringComparison.OrdinalIgnoreCase) ||
+                                                          p.EndsWith(".anim", System.StringComparison.OrdinalIgnoreCase))))
             EditorApplication.delayCall += Armar;
     }
 
@@ -72,6 +74,13 @@ public class AnimacionesDeEmotes : AssetPostprocessor
             .Select(p => AssetDatabase.LoadAllAssetsAtPath(p).OfType<AnimationClip>().FirstOrDefault(c => !c.name.StartsWith("__preview__")))
             .Where(c => c != null)
             .ToList();
+        // Los .anim (clips humanoides sueltos), después de los .fbx.
+        bailes.AddRange(AssetDatabase.FindAssets("t:AnimationClip", new[] { Carpeta.TrimEnd('/') })
+            .Select(AssetDatabase.GUIDToAssetPath)
+            .Where(p => p.EndsWith(".anim", System.StringComparison.OrdinalIgnoreCase))
+            .OrderBy(p => p)
+            .Select(AssetDatabase.LoadAssetAtPath<AnimationClip>)
+            .Where(c => c != null));
         if (bailes.Count == 0) return;
 
         bool cambio = false;
