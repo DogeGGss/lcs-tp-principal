@@ -81,6 +81,8 @@ public class ResultadoDeInvasion : MonoBehaviour
             muertes = murio ? 1 : 0,
             segundos = segundos,
         });
+        // US 308: Jefes, puestos, cartas, armas y cooperativo (una vez por partida, con el mismo id).
+        EstadisticasDeInvasion.Registrar(partida.Id, jefes, coop);
         Guardado.Save(); // la nube lo sube sola cuando ve el cambio (LogrosOnline)
 
         var canvas = GetComponent<Canvas>();

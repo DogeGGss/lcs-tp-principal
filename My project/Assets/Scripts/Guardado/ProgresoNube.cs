@@ -51,6 +51,7 @@ public static class ProgresoNube
             else if (clave == PerfilDatos.Clave) PerfilDatos.Recargar();
             else if (clave == PaseDeBatalla.Clave) PaseDeBatalla.Recargar();
             else if (clave == NivelDeJugador.Clave) NivelDeJugador.Recargar();
+            else if (clave == EstadisticasDeInvasion.Clave) EstadisticasDeInvasion.Recargar();
         };
         // Se entró o se salió de una cuenta (US 237): todo lo del jugador es otro. Logros antes que estadísticas: al
         // recargarlas, los logros de combate se revisan con lo de la cuenta.
@@ -63,6 +64,7 @@ public static class ProgresoNube
             SkinsDeArmas.Recargar();
             PaseDeBatalla.Recargar();
             NivelDeJugador.Recargar();
+            EstadisticasDeInvasion.Recargar();
         };
     }
 
@@ -119,6 +121,9 @@ public static class ProgresoNube
             foreach (CatalogoDeSkins.Arma a in CatalogoDeSkins.Armas)
                 d.valores.Add(new Texto { clave = SkinEquipada + a.id, valor = equipadas.TryGetValue(a.id, out string s) ? s : "" });
         }
+
+        // Estadísticas de la Invasión nueva (US 308): contadores que solo suben.
+        foreach (var (clave, valor) in EstadisticasDeInvasion.Contadores) Sumar(d.contadores, clave, valor);
 
         // Pase de batalla (F32): la experiencia, la compra y los desafíos de la temporada (máximo) y lo reclamado (unión).
         foreach (var (clave, valor) in PaseDeBatalla.Contadores) Sumar(d.contadores, clave, valor);
@@ -280,6 +285,9 @@ public static class ProgresoNube
             foreach (Conjunto c in nube.conjuntos)
                 if (c != null && c.elementos != null && c.clave == PaseDeBatalla.ClaveReclamados) reclamados.AddRange(c.elementos);
         PaseDeBatalla.FusionarNube(Leer, reclamados);
+
+        // Estadísticas de la Invasión nueva (US 308, CA6)
+        EstadisticasDeInvasion.FusionarNube(contadores);
 
         // Nivel de jugador (US 278, CA6)
         if (nube.valores != null)

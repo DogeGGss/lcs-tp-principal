@@ -140,6 +140,8 @@ public class CombatHud : MonoBehaviour
 
     // US 139, CA3: aviso verde "+50" al lado de la vida durante 1 s.
     private static CombatHud current;
+    /// <summary>US 308: el arma que el jugador tiene en la mano (para contar los invasores eliminados con cada una).</summary>
+    public static string ArmaActual => current != null ? current.WeaponName : null;
     private TextMeshProUGUI healText;
     private float healUntil = -1f;
     private const float HealSeconds = 1f;
