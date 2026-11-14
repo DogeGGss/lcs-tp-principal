@@ -127,11 +127,31 @@ public static class ProgresoNube
         // Nivel de jugador (US 278): sube y baja, así que va como texto "nivel|partidas" (manda el que contó más partidas).
         if (NivelDeJugador.Partidas > 0)
             d.valores.Add(new Texto { clave = NivelJugador, valor = NivelDeJugador.Valor + "|" + NivelDeJugador.Partidas });
+
+        // La base rechaza el documento entero si una sola clave no tiene el formato que acepta (rw_sync_progress): lo que
+        // no lo cumpla no se sube, así el resto del progreso sigue llegando.
+        int antes = d.contadores.Count + d.minimos.Count + d.conjuntos.Count + d.valores.Count;
+        d.contadores.RemoveAll(n => !ClaveValida(n.clave));
+        d.minimos.RemoveAll(n => !ClaveValida(n.clave));
+        d.conjuntos.RemoveAll(c => !ClaveValida(c.clave));
+        d.valores.RemoveAll(t => !ClaveValida(t.clave) || t.valor == null || t.valor.Length > 64);
+        foreach (Conjunto c in d.conjuntos) c.elementos = Array.FindAll(c.elementos, x => x != null && x.Length <= 64);
+        int sacadas = antes - (d.contadores.Count + d.minimos.Count + d.conjuntos.Count + d.valores.Count);
+        if (sacadas > 0) Debug.LogWarning($"ProgresoNube: {sacadas} datos con una clave que la base no acepta no se subieron.");
         return d;
     }
 
     private const string Reciente = Perfil + "reciente.";
     private const string NivelJugador = "nivel.jugador";
+
+    /// <summary>El formato de clave que acepta la base: ^[a-z0-9_.-]{1,64}$.</summary>
+    public static bool ClaveValida(string clave)
+    {
+        if (string.IsNullOrEmpty(clave) || clave.Length > 64) return false;
+        foreach (char c in clave)
+            if (!((c >= 'a' && c <= 'z') || (c >= '0' && c <= '9') || c == '_' || c == '.' || c == '-')) return false;
+        return true;
+    }
 
     private static Conjunto Ordenado(string clave, IEnumerable<string> elementos)
     {
