@@ -22,6 +22,9 @@ public static class CatalogoDeSkins
         public string ficha;
         /// <summary>Se tiñe con el acento (un modelo con textura, sin los cuatro materiales).</summary>
         public bool tenir;
+        /// <summary>La mira telescópica, en el modelo (sus coordenadas, sin escala): en las legendarias va como las
+        /// franjas (la corriente de la Tormenta, el fuego del Dragón). Vacía (tamaño 0): sin mira.</summary>
+        public Bounds mira;
     }
 
     /// <summary>Los cuatro colores de una skin común.</summary>
@@ -100,7 +103,10 @@ public static class CatalogoDeSkins
         new Arma { id = "urquiza", nombre = "Urquiza", ficha = "Subfusil" },
         new Arma { id = "belgrano-sur", nombre = "Belgrano Sur", ficha = "FusilRafaga" },
         new Arma { id = "roca", nombre = "Roca", ficha = "Escopeta" },
-        new Arma { id = "ultimo-tren", nombre = "Último Tren", ficha = "Francotirador" },
+        // La mira: arriba del cuerpo, de punta a punta (el caño y la culata quedan más abajo). x en los dos sentidos: el
+        // modelo puede venir dado vuelta.
+        new Arma { id = "ultimo-tren", nombre = "Último Tren", ficha = "Francotirador",
+                   mira = new Bounds(new Vector3(0f, 0f, 0.631f), new Vector3(2.3f, 2f, 0.738f)) },
         new Arma { id = "gran-capitan", nombre = "El Gran Capitán", ficha = "GranCapitan" },
         new Arma { id = "la-portena", nombre = "La Porteña", ficha = "Pistola" },
         new Arma { id = "la-trochita", nombre = "La Trochita", ficha = "PistolaPesada" },

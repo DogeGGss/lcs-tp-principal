@@ -71,12 +71,12 @@ public class SkinDeArma : MonoBehaviour
             if (diseno != null)
             {
                 if (m == null) return m;
-                if (CatalogoDeSkins.EsParteDelDiseno(skin, m.name)) return ConDiseno(m, diseno);
+                if (CatalogoDeSkins.EsParteDelDiseno(skin, m.name)) return ConMira(ConDiseno(m, diseno), skin.arma);
                 // Otras partes del diseño: con otro material (el cuerpo de madera del cobre) o un color (las franjas).
                 CatalogoDeSkins.Extra extra = CatalogoDeSkins.ExtraPara(skin, m.name);
                 if (extra == null) return m;
                 Material otro = !string.IsNullOrEmpty(extra.material) ? ModelosDeArmas.Actual.MaterialDe(extra.material) : null;
-                return otro != null ? ConDiseno(m, otro) : string.IsNullOrEmpty(extra.material) ? Pintado(m, extra.color) : m;
+                return otro != null ? ConMira(ConDiseno(m, otro), skin.arma) : string.IsNullOrEmpty(extra.material) ? Pintado(m, extra.color) : m;
             }
             Color? color = m != null ? CatalogoDeSkins.ColorPara(skin, m.name) : null;
             return color.HasValue ? Pintado(m, color.Value) : m;
@@ -111,6 +111,18 @@ public class SkinDeArma : MonoBehaviour
         m = new Material(diseno) { name = original.name + " (skin)" };
         conDiseno[clave] = m;
         originalDe[m] = original;
+        return m;
+    }
+
+    private static readonly int MiraMin = Shader.PropertyToID("_MiraMin"), MiraMax = Shader.PropertyToID("_MiraMax");
+
+    // La mira telescópica del arma (si tiene) en el material de una legendaria: el shader la pinta como las franjas.
+    // (Cada modelo trae sus propios materiales, así que la copia es de esa arma sola.)
+    private static Material ConMira(Material m, CatalogoDeSkins.Arma arma)
+    {
+        if (m == null || arma == null || arma.mira.size == Vector3.zero || !m.HasProperty(MiraMax)) return m;
+        m.SetVector(MiraMin, new Vector4(arma.mira.min.x, arma.mira.min.y, arma.mira.min.z, 1f));
+        m.SetVector(MiraMax, new Vector4(arma.mira.max.x, arma.mira.max.y, arma.mira.max.z, 1f));
         return m;
     }
 
