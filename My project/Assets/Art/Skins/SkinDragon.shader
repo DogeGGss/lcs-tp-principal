@@ -7,8 +7,7 @@
 //     sin cortarse.
 //   2 Franjas: fuego azul vivo que corre a lo largo del arma.
 // El fuego "respira" (sube y baja despacio) y se enciende con cada disparo (_Calor, de 0 a 1, lo pone CalorDeSkin en
-// cada arma). La mira telescópica (_MiraMin/_MiraMax, en el modelo) va como las franjas. En los modelos de las armas
-// el largo (el caño) es el eje X, con el caño hacia +X, y el alto el Z.
+// cada arma). En los modelos de las armas el largo (el caño) es el eje X, con el caño hacia +X, y el alto el Z.
 Shader "Riftwalker/Skins/Dragon"
 {
     Properties
@@ -21,8 +20,6 @@ Shader "Riftwalker/Skins/Dragon"
         _ColorNucleo ("Centro del fuego", Color) = (0.81, 0.98, 1, 1)
         _Brillo ("Brillo del fuego", Float) = 2.5
         _Calor ("Calor (al disparar)", Range(0, 1)) = 0
-        _MiraMin ("Mira: desde (en el modelo; w 1 si hay)", Vector) = (0, 0, 0, 0)
-        _MiraMax ("Mira: hasta", Vector) = (0, 0, 0, 0)
         [NoScaleOffset] _Escamas ("Escamas (gris)", 2D) = "gray" {}
         [NoScaleOffset] _EscamasNormal ("Relieve de las escamas", 2D) = "bump" {}
         _Tile ("Tamaño de la textura (m)", Float) = 0.3
@@ -59,7 +56,6 @@ Shader "Riftwalker/Skins/Dragon"
             #include "LucesDeSkin.hlsl"
 
             CBUFFER_START(UnityPerMaterial)
-                float4 _MiraMin, _MiraMax;
                 float4 _ColorEscama, _ColorFilo, _ColorFuego, _ColorNucleo, _ColorPiedra;
                 float _Parte, _Escala, _Brillo, _Calor, _Tile, _Giro, _Relieve, _Ciclo, _Pausa, _DosTandas, _Grieta, _TilePiedra, _RelievePiedra;
             CBUFFER_END
@@ -88,7 +84,6 @@ Shader "Riftwalker/Skins/Dragon"
                 float3 viewWS : TEXCOORD3;
                 float fog : TEXCOORD4;
                 float3 posWS : TEXCOORD5;
-                float3 posO : TEXCOORD6;
             };
 
             Varyings vert(Attributes v)
@@ -103,7 +98,6 @@ Shader "Riftwalker/Skins/Dragon"
                 o.viewWS = GetWorldSpaceViewDir(p.positionWS);
                 o.fog = ComputeFogFactor(p.positionCS.z);
                 o.posWS = p.positionWS;
-                o.posO = v.positionOS.xyz;
                 return o;
             }
 
@@ -166,8 +160,6 @@ Shader "Riftwalker/Skins/Dragon"
                 float3 n = abs(normalize(i.normalOS));
                 float2 p = n.x > max(n.y, n.z) ? i.posM.yz : n.y > n.z ? i.posM.xz : i.posM.xy;
                 int parte = (int)round(_Parte);
-                // La mira telescópica (SkinDeArma la pone en los francotiradores) va como las franjas.
-                if (_MiraMax.w > 0.5 && all(i.posO >= _MiraMin.xyz) && all(i.posO <= _MiraMax.xyz)) parte = 2;
                 float respira = 0.75 + 0.25 * sin(_Time.y * 1.6);          // el fuego sube y baja despacio
                 float fuerza = _Brillo * (respira + 1.2 * _Calor);          // y se enciende con los disparos
 

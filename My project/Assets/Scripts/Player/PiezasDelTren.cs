@@ -5,7 +5,8 @@ using UnityEngine;
 // palito al costado del cajón y del lado de la mano derecha. En el cerrojo la manija gira hacia arriba, va hacia atrás,
 // vuelve y baja; AnimacionPrimeraPersona lleva la mano derecha a la punta del palito (Manija).
 // Tampoco trae mira, aunque tiene mira telescópica: se le agrega una arriba, sobre el riel (tubo, ocular, objetivo con
-// su vidrio y dos soportes), de un gris oscuro. AnimacionPrimeraPersona sube el arma hasta que el ojo queda en el
+// su vidrio y dos soportes), de un gris oscuro. Con una skin legendaria, la mira va como las franjas del arma (la
+// corriente de la Tormenta, el fuego del Dragón: SkinDeArma la toma por el nombre de su material, NombreMira). AnimacionPrimeraPersona sube el arma hasta que el ojo queda en el
 // centro del tubo (CentroDeLaMira).
 // Las medidas están en las coordenadas del modelo (x hacia la boca, z hacia arriba); Unity da vuelta la x al
 // importarlo: en la malla un punto (x, y, z) del modelo está en (-x, y, z) * escala.
@@ -24,6 +25,9 @@ public class PiezasDelTren : IPiezasDelArma
     private const float OcularLargo = 0.1f, OcularRadio = 0.045f, ObjetivoLargo = 0.14f, ObjetivoRadio = 0.05f;
     private static readonly float[] Soportes = { 0.38f, 0.56f };
     private const float RielZ = 0.335f;
+
+    /// <summary>El nombre del material gris de la mira (las skins legendarias la pintan como las franjas).</summary>
+    public const string NombreMira = "Mira del Último Tren";
 
     // Momentos del cerrojo (avance de 0 a 1), los mismos que usa la mano en AnimacionPrimeraPersona.
     public const float Agarra = 0.2f, Levantada = 0.33f, Atras = 0.52f, Adelante = 0.72f, Baja = 0.84f;
@@ -78,6 +82,9 @@ public class PiezasDelTren : IPiezasDelArma
         punta.localPosition = new Vector3(0f, lado * (Ancho + LargoVarilla), 0f) * escala;
 
         ArmarMira();
+        // Si el arma ya tiene una skin puesta, se la vuelve a poner para que llegue a las piezas nuevas (la mira).
+        SkinDeArma skin = arma.GetComponentInParent<SkinDeArma>();
+        if (skin != null) skin.Reaplicar();
         var lista = new System.Collections.Generic.List<Renderer>(eje.GetComponentsInChildren<Renderer>(true));
         lista.AddRange(mira.GetComponentsInChildren<Renderer>(true));
         vistas = lista.ToArray();
@@ -90,8 +97,8 @@ public class PiezasDelTren : IPiezasDelArma
     // punta) y dos soportes que la unen al riel.
     private void ArmarMira()
     {
-        gris = Liso(new Color(0.16f, 0.17f, 0.18f), 0.45f);
-        vidrio = Liso(new Color(0.05f, 0.09f, 0.14f), 0.9f);
+        gris = Liso(new Color(0.16f, 0.17f, 0.18f), 0.45f, NombreMira);
+        vidrio = Liso(new Color(0.05f, 0.09f, 0.14f), 0.9f, "Vidrio de la mira del Último Tren");
         var go = new GameObject("Mira");
         go.layer = arma.gameObject.layer;
         mira = go.transform;
@@ -121,10 +128,10 @@ public class PiezasDelTren : IPiezasDelArma
     }
 
     // Un material liso de ese color, a partir del del arma (así usa el mismo shader).
-    private Material Liso(Color color, float brillo)
+    private Material Liso(Color color, float brillo, string nombre)
     {
-        var m = new Material(render.sharedMaterial);
-        m.name = "Mira del Último Tren";
+        var m = new Material(SkinDeArma.OriginalDe(render.sharedMaterial));
+        m.name = nombre;
         if (m.HasProperty("_BaseMap")) m.SetTexture("_BaseMap", null);
         if (m.HasProperty("_MainTex")) m.SetTexture("_MainTex", null);
         if (m.HasProperty("_BaseColor")) m.SetColor("_BaseColor", color);

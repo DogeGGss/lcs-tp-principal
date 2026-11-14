@@ -6,8 +6,7 @@
 //   2 Franjas: oscuras, con hilos de corriente amarilla que corren a lo largo del arma.
 // El relámpago ilumina un instante todo el arma (las nubes del cuerpo también). Las nubes y los relámpagos se calculan
 // en 3D (no apoyados en cada cara): pasan de una cara a otra sin cortarse. Con cada disparo la corriente se enciende
-// (_Calor, de 0 a 1, lo pone CalorDeSkin). La mira telescópica (_MiraMin/_MiraMax, en el modelo) va como las
-// franjas. En los modelos de las armas el largo (el caño) es el eje X y el alto el Z.
+// (_Calor, de 0 a 1, lo pone CalorDeSkin). En los modelos de las armas el largo (el caño) es el eje X y el alto el Z.
 Shader "Riftwalker/Skins/Tormenta"
 {
     Properties
@@ -28,8 +27,6 @@ Shader "Riftwalker/Skins/Tormenta"
         _CadaRayo ("Cada cuánto cae un rayo (s)", Float) = 3.5
         _Rayo ("Tamaño de los rayos (m)", Float) = 0.05
         _Calor ("Calor (al disparar)", Range(0, 1)) = 0
-        _MiraMin ("Mira: desde (en el modelo; w 1 si hay)", Vector) = (0, 0, 0, 0)
-        _MiraMax ("Mira: hasta", Vector) = (0, 0, 0, 0)
         [Toggle] _ConLluvia ("Lluvia y rayos", Float) = 1
     }
 
@@ -53,7 +50,6 @@ Shader "Riftwalker/Skins/Tormenta"
             #include "LucesDeSkin.hlsl"
 
             CBUFFER_START(UnityPerMaterial)
-                float4 _MiraMin, _MiraMax;
                 float4 _ColorOscuro, _ColorClaro, _ColorLluvia, _ColorRayo, _ColorNucleo;
                 float _Parte, _Nube, _Viento, _Lluvia, _Gota, _LargoGota, _VelocidadLluvia, _Brillo, _CadaRayo, _Rayo, _Calor, _ConLluvia;
             CBUFFER_END
@@ -68,7 +64,6 @@ Shader "Riftwalker/Skins/Tormenta"
                 float3 viewWS : TEXCOORD3;
                 float fog : TEXCOORD4;
                 float3 posWS : TEXCOORD5;
-                float3 posO : TEXCOORD6;
             };
 
             Varyings vert(Attributes v)
@@ -83,7 +78,6 @@ Shader "Riftwalker/Skins/Tormenta"
                 o.viewWS = GetWorldSpaceViewDir(p.positionWS);
                 o.fog = ComputeFogFactor(p.positionCS.z);
                 o.posWS = p.positionWS;
-                o.posO = v.positionOS.xyz;
                 return o;
             }
 
@@ -177,8 +171,6 @@ Shader "Riftwalker/Skins/Tormenta"
                 float3 n = abs(normalize(i.normalOS));
                 float2 p = n.x > max(n.y, n.z) ? i.posM.yz : n.y > n.z ? i.posM.xz : i.posM.xy;
                 int parte = (int)round(_Parte);
-                // La mira telescópica (SkinDeArma la pone en los francotiradores) va como las franjas.
-                if (_MiraMax.w > 0.5 && all(i.posO >= _MiraMin.xyz) && all(i.posO <= _MiraMax.xyz)) parte = 2;
                 float3 N = normalize(i.normalWS);
                 float3 V = normalize(i.viewWS);
                 float cual;
