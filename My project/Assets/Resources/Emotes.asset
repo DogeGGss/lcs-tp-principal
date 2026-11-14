@@ -17,59 +17,74 @@ MonoBehaviour:
     nombre: Shuffle
     icono: {fileID: 0}
     clip: {fileID: -203655887218126122, guid: ac8bc584e88631a4db51727dcc3c6a47, type: 3}
+    rareza: 2
   - estado: Twerk
     nombre: Twerk
     icono: {fileID: 0}
     clip: {fileID: -203655887218126122, guid: 4f9a632cb609f4e4cbd781bc601735af, type: 3}
+    rareza: 4
   - estado: Flair
     nombre: Flair
     icono: {fileID: 0}
     clip: {fileID: -203655887218126122, guid: ffe236bf4484ff3418de5a172080f1e5, type: 3}
+    rareza: 3
   - estado: Rumba
     nombre: Rumba
     icono: {fileID: 0}
     clip: {fileID: -203655887218126122, guid: 7a474da37b3eb0943bc4ca3ff965861c, type: 3}
+    rareza: 1
   - estado: Silly
     nombre: Payaseando
     icono: {fileID: 0}
     clip: {fileID: -203655887218126122, guid: bf86d8f300e7a004da99c4019d2eb361, type: 3}
+    rareza: 1
   - estado: DefaultDance
     nombre: El Clásico
     icono: {fileID: 0}
     clip: {fileID: 7400000, guid: cc59ea8012b045aeb2c9b8585619c575, type: 2}
+    rareza: 4
   - estado: Floss
     nombre: Floss
     icono: {fileID: 0}
     clip: {fileID: 7400000, guid: 2273c85663b34c33a9c5dea8892e9d76, type: 2}
+    rareza: 3
   - estado: Dancing
     nombre: Pasito
     icono: {fileID: 0}
     clip: {fileID: -203655887218126122, guid: 8f8c5a016b124384ab34696105dba477, type: 3}
+    rareza: 1
   - estado: Greeting
     nombre: Saludo
     icono: {fileID: 0}
     clip: {fileID: -203655887218126122, guid: fb6a2812c029d304ba42ceed9bc8a715, type: 3}
+    rareza: 0
   - estado: HipHop
     nombre: Hip Hop
     icono: {fileID: 0}
     clip: {fileID: -203655887218126122, guid: fb078ef1ddab9ca43b8221173a42b14a, type: 3}
+    rareza: 1
   - estado: HipHop2
     nombre: Freestyle
     icono: {fileID: 0}
     clip: {fileID: -203655887218126122, guid: e002ad7500cfc474d8e7164bc7dd6bc0, type: 3}
+    rareza: 2
   - estado: HipHop3
     nombre: Old School
     icono: {fileID: 0}
     clip: {fileID: -203655887218126122, guid: ac852042cdfbebc47b7f10094f7e6527, type: 3}
+    rareza: 2
   - estado: NorthernSoul
     nombre: Giro Soul
     icono: {fileID: 0}
     clip: {fileID: -203655887218126122, guid: 670198842f75b7844b502e491f666e07, type: 3}
+    rareza: 3
   - estado: PunchingBag
     nombre: Round 1
     icono: {fileID: 0}
     clip: {fileID: -203655887218126122, guid: 9f16361609deb7e4183d8e9bb459488b, type: 3}
+    rareza: 2
   - estado: Twist
     nombre: Twist
     icono: {fileID: 0}
     clip: {fileID: -203655887218126122, guid: 66d267686d94d3744ae47415d1776409, type: 3}
+    rareza: 1
