@@ -372,6 +372,7 @@ public class EleccionDeInvasion : MonoBehaviour
         {
             int veces = elegidas.TryGetValue(o.carta, out int n) ? n + 1 : 1; // CA5: se suman
             elegidas[o.carta] = veces;
+            EstadisticasDeInvasion.CartaElegida(o.carta); // US 308, CA3
             if (!orden.Contains(o.carta)) orden.Add(o.carta);
             o.carta.aplicar?.Invoke(equipo != null ? equipo.gameObject : null, veces);
             ActualizarCartas();

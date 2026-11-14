@@ -21,6 +21,10 @@ public class PantallaPerfil : PantallaBase
     private Transform bajoMarco;
     private TextMeshProUGUI nombre, titulo, infoPestana;
     private readonly TextMeshProUGUI[] resumen = new TextMeshProUGUI[4];
+    private TextMeshProUGUI nivelValor, nivelRango; // US 278, CA4: el nivel de jugador, con su propio lugar en la cabecera
+    private UIPolygon nivelEmblema;
+    private RectTransform nivelLogo;
+    private Img nivelBorde;
     private readonly TextMeshProUGUI[] pestanas = new TextMeshProUGUI[4];
     private Img subrayado;
     private RectTransform panelEstad, panelPers, panelEmotes, panelCuenta, grilla, vista;
@@ -85,6 +89,38 @@ public class PantallaPerfil : PantallaBase
             PlayerNameScreen pantalla = Object.FindAnyObjectByType<PlayerNameScreen>();
             if (pantalla != null) pantalla.Open(false);
         }, 20f);
+
+        // US 278, CA4: el nivel de jugador, aparte y más grande que las estadísticas: un emblema con el color de su rango.
+        RectTransform nivel = Place(Node("NivelDeJugador", cab), 1800f - 150f - 360f, 34f, 360f, 172f);
+        Image(nivel, Rounded, new Color(0f, 0f, 0f, DarkAlpha(0.62f)), 10f);
+        nivelBorde = Borde(nivel, 8f, WithAlpha(Accent, 0.6f));
+        nivelEmblema = Poligono(nivel, "Emblema", Accent, Hexagono(70f, 86f, 52f));
+        Poligono(nivel, "Interior", Hex(0x0B0E14), Hexagono(70f, 86f, 44f));
+        nivelLogo = Place(Node("Logo", nivel), 0f, 0f, 140f, 172f); // el logo del rango (EmblemaDeNivel), se dibuja al refrescar
+        T(nivel, "Rotulo", 140f, 18f, 210f, 22f, FRotulo, 16f, Accent, "Nivel de jugador", TextAlignmentOptions.MidlineLeft, 14f, true);
+        nivelValor = T(nivel, "Valor", 136f, 40f, 216f, 80f, FTitulo, 78f, Ink, "", TextAlignmentOptions.MidlineLeft, 2f);
+        nivelRango = T(nivel, "Rango", 140f, 118f, 210f, 26f, FTitulo, 24f, Soft, "", TextAlignmentOptions.MidlineLeft, 6f, true);
+        T(nivel, "Ayuda", 140f, 144f, 210f, 20f, FTexto, 14f, Mute, "Sube y baja en buscar partida", TextAlignmentOptions.MidlineLeft);
+    }
+
+    private static Vector2[] Hexagono(float cx, float cy, float r)
+    {
+        var p = new Vector2[6];
+        for (int i = 0; i < 6; i++)
+        {
+            float a = Mathf.Deg2Rad * (60f * i - 90f);
+            p[i] = new Vector2(cx + r * Mathf.Cos(a), cy + r * Mathf.Sin(a));
+        }
+        return p;
+    }
+
+    /// <summary>El rango del nivel de jugador, con su color (los de las rarezas): para que el número tenga peso.</summary>
+    private static readonly string[] Rangos = { "Pasajero", "Guarda", "Maquinista", "Jefe de estación" };
+
+    private static (string nombre, Color color) Rango(int nivel)
+    {
+        int r = EmblemaDeNivel.RangoDe(nivel);
+        return (Rangos[r], ColorRareza((PerfilDatos.Rareza)(r + 1))); // común, raro, épico y legendario
     }
 
     // ================= Pestañas =================
@@ -183,7 +219,6 @@ public class PantallaPerfil : PantallaBase
             ("KDA*", e.SinDatos ? SinDatos : Kda(e)),
             ("Tiros a la cabeza", Porcentaje(e.Cabezas, e.Bajas)),
             ("Horas jugadas", Horas(e.Segundos)),
-            ("Nivel de jugador", N(NivelDeJugador.Valor)), // US 278, CA4
         };
         float paso = 1744f / datos.Length;
         for (int i = 0; i < datos.Length; i++)
@@ -214,14 +249,23 @@ public class PantallaPerfil : PantallaBase
         // US 222, CA2: aparte del multijugador, con los récords de oleada por dificultad (US 151 y US 161).
         int facil = MatchSettings.ZombieRecord(ZombieDifficulty.Facil), normal = MatchSettings.ZombieRecord(ZombieDifficulty.Normal),
             dificil = MatchSettings.ZombieRecord(ZombieDifficulty.Dificil);
+        // US 308 (CA5): lo de la Invasión nueva. Los tres récords van en una fila para que entre todo.
+        int coopMejor = Mathf.Max(MatchSettings.ZombieRecordCoop(ZombieDifficulty.Facil), MatchSettings.ZombieRecordCoop(ZombieDifficulty.Normal),
+            MatchSettings.ZombieRecordCoop(ZombieDifficulty.Dificil));
+        string carta = EstadisticasDeInvasion.CartaFavorita, arma = EstadisticasDeInvasion.ArmaFavorita;
+        int jefes = EstadisticasDeInvasion.Jefes;
         Tarjeta(2, "Invasión", "#7DE05A", e.invasion.partidas == 0 && facil + normal + dificil == 0 ? "Todavía no terminaste ninguna partida de Invasión." : null, new[]
         {
             ("Partidas", N(e.invasion.partidas)),
             ("Mundo salvado", N(e.invasion.victorias)),
             ("Invasores eliminados", N(e.invasion.bajas)),
-            ("Récord en Fácil", Oleada(facil)),
-            ("Récord en Normal", Oleada(normal)),
-            ("Récord en Difícil", Oleada(dificil)),
+            ("Récord F · N · D", $"{Oleada(facil)} · {Oleada(normal)} · {Oleada(dificil)}"),
+            ("Jefes derrotados", jefes > 0 ? $"{N(jefes)} <size=70%><color=#8E96A3>(oleada {EstadisticasDeInvasion.JefeMasDificil})</color></size>" : SinDatos),
+            ("Puestos cargados", N(EstadisticasDeInvasion.Puestos)),
+            ("Carta favorita", carta != null ? L10n.Source(carta) : SinDatos),
+            ("Arma favorita", arma ?? SinDatos),
+            ("En cooperativo", EstadisticasDeInvasion.PartidasCoop > 0
+                ? $"{N(EstadisticasDeInvasion.PartidasCoop)} <size=70%><color=#8E96A3>(oleada {Oleada(coopMejor)})</color></size>" : SinDatos),
         });
         RectTransform minijuego = Tarjeta(3, "Minijuego: cometas", "#4CC3FF", null, null);
         cuerpoMinijuego = Place(Node("Datos", minijuego), 0f, 60f, w, 236f);
@@ -250,12 +294,18 @@ public class PantallaPerfil : PantallaBase
             return tarjeta;
         }
         if (filas == null) return tarjeta;
+        // Con más de 6 filas (la de Invasión, US 308), más juntas y más chicas, así entran en el mismo alto.
+        float paso = Mathf.Min(37f, 226f / filas.Length);
+        bool compacta = paso < 37f;
         for (int j = 0; j < filas.Length; j++)
         {
-            float y = 66f + j * 37f;
-            T(tarjeta, "Dato" + j, 24f, y, w - 140f, 32f, FTexto, 21f, Soft, filas[j].nombre);
-            T(tarjeta, "Valor" + j, w - 164f, y, 140f, 32f, FTitulo, 28f, Ink, filas[j].valor, TextAlignmentOptions.MidlineRight);
-            if (j < filas.Length - 1) Image(Place(Node("Linea" + j, tarjeta), 24f, y + 34f, w - 48f, 1f), null, White(0.06f));
+            float y = 66f + j * paso;
+            float altoFila = paso - 4f;
+            T(tarjeta, "Dato" + j, 24f, y, compacta ? w * 0.48f : w - 140f, altoFila, FTexto, compacta ? 17f : 21f, Soft, filas[j].nombre);
+            TextMeshProUGUI valor = T(tarjeta, "Valor" + j, compacta ? w * 0.42f : w - 164f, compacta ? y - 2f : y, compacta ? w * 0.58f - 24f : 140f, compacta ? paso : altoFila,
+                FTitulo, compacta ? 21f : 28f, Ink, filas[j].valor, TextAlignmentOptions.MidlineRight);
+            if (compacta) { valor.enableAutoSizing = true; valor.fontSizeMin = 15f; valor.fontSizeMax = 22f; } // un nombre largo (la carta favorita) se achica
+            if (j < filas.Length - 1) Image(Place(Node("Linea" + j, tarjeta), 24f, y + paso - 3f, w - 48f, 1f), null, White(0.06f));
         }
         return tarjeta;
     }
@@ -883,6 +933,15 @@ public class PantallaPerfil : PantallaBase
         titulo.text = sinTitulo ? L10n.T("profile.title.none") : L10n.Source(ti.nombre, "profile.");
         titulo.color = sinTitulo ? Mute : Ink;
         EstadisticasJugador.Totales e = EstadisticasJugador.Datos;
+        int nivelJugador = NivelDeJugador.Valor;
+        var (rango, colorRango) = Rango(nivelJugador);
+        nivelValor.text = N(nivelJugador);
+        nivelRango.text = L10n.Source(rango, "profile.");
+        nivelRango.color = colorRango;
+        nivelEmblema.color = colorRango;
+        BorrarHijos(nivelLogo);
+        EmblemaDeNivel.Dibujar(nivelLogo, 70f, 86f, EmblemaDeNivel.RangoDe(nivelJugador), colorRango);
+        if (nivelBorde != null) nivelBorde.color = WithAlpha(colorRango, 0.7f);
         resumen[0].text = N(e.Partidas);
         resumen[1].text = N(e.Victorias);
         resumen[2].text = e.SinDatos ? "—" : Kda(e);

@@ -349,6 +349,7 @@ public class PuestoDeSuministros : MonoBehaviour
         if (!Hay || Cargado) return;
         ActualizarAdentro();
         if (!Adentro) return; // afuera cuenta para el récord, no para el puesto
+        EstadisticasDeInvasion.AporteAlPuesto(this); // US 308, CA2: este jugador le aportó puntos
         // US 353, CA2: en cooperativo la carga la lleva el anfitrión (los puntos de cada uno se le mandan).
         if (InvasoresEnRed.EsCopia) { InvasoresEnRed.MandarPuntosAlPuesto(puntos); return; }
         Cargar(puntos);
