@@ -66,6 +66,9 @@ public class SkinsEnLasArmas : MonoBehaviour
         return EfectosDeSkin.De(CatalogoDeSkins.De(Local.SkinDe(ficha)));
     }
 
+    /// <summary>US 381: la ficha de un arma de primera persona del jugador (para Skins de prueba), o null.</summary>
+    public static ShopItem FichaDeArma(GameObject arma) => Local != null ? Local.FichaDe(arma) : null;
+
     /// <summary>US 381: el arma de primera persona de esa ficha (para su calor al disparar), o null.</summary>
     public static GameObject ArmaDe(ShopItem ficha)
     {

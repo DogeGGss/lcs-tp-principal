@@ -38,8 +38,10 @@ Material:
     - _Tile: 0.3
     - _Brillo: 2.5
     - _Calor: 0
+    - _Ciclo: 3.5
+    - _Grieta: 0.05
     - _Escala: 0.04
-    - _Parte: 2
+    - _Parte: 1
     m_Colors:
     - _ColorEscama: {r: 0.0549, g: 0.0549, b: 0.0667, a: 1}
     - _ColorFilo: {r: 0.1647, g: 0.1647, b: 0.1882, a: 1}

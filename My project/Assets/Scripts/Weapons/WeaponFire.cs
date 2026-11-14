@@ -145,7 +145,7 @@ public static class WeaponFire
             }
         }
         // F35 (US 381): el fogonazo y las estelas de la skin legendaria, desde la punta del arma como se ve.
-        if (legendaria != null) EfectosDeSkin.DisparoPropio(conSkin, muzzle, finales, legendaria);
+        if (legendaria != null) EfectosDeSkin.DisparoPropio(conSkin, weapon, muzzle, finales, legendaria);
 
         aim.Kick(weapon); // (US 309: con el doble cartucho patea igual que uno)
         Fired?.Invoke(shooter, camera.transform.position, directions);

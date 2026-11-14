@@ -20,13 +20,16 @@ public static class EfectosDeSkin
     /// <summary>Disparo propio (primera persona): el fogonazo y las estelas salen de la punta del arma tal como se ve en
     /// la pantalla. El arma la dibuja otra cámara (con otro campo de visión), así que la boca "de verdad" no coincide con
     /// lo que se ve; se toma el punto de la pantalla donde está la punta y se lo pone a un metro de la cámara.</summary>
-    public static void DisparoPropio(GameObject arma, Vector3 muzzle, Vector3[] finales, CatalogoDeSkins.Efectos e)
+    public static void DisparoPropio(GameObject arma, ShopItem ficha, Vector3 muzzle, Vector3[] finales, CatalogoDeSkins.Efectos e)
     {
         Vector3 boca = muzzle;
         Vector3 haciaDonde = Vector3.zero;
         Camera cam = Camera.main;
         if (cam != null && PuntaEnPantalla(arma, cam, out Vector3 pantalla))
         {
+            // El ajuste a ojo de esa arma (Skins de prueba).
+            CatalogoDeSkins.Arma a = ficha != null ? CatalogoDeSkins.ArmaDeFicha(ficha.name) : null;
+            if (a != null) pantalla += (Vector3)(ModelosDeArmas.Actual.CorrimientoDeBoca(a.id) * Screen.height);
             boca = cam.ScreenToWorldPoint(new Vector3(pantalla.x, pantalla.y, DistanciaBoca));
             // La llama sale hacia el centro de la pantalla (hacia donde apunta el caño en la imagen), corta: no tapa la mira.
             Vector2 alCentro = new Vector2(Screen.width * 0.5f - pantalla.x, Screen.height * 0.5f - pantalla.y);
@@ -35,6 +38,14 @@ public static class EfectosDeSkin
         Trazadora.Fogonazo(boca, false, e.fuego);
         if (e.llamarada) LlamaradaDeSkin.Crear(boca, haciaDonde, LlamaPropia, e);
         foreach (Vector3 fin in finales) Estela(boca, fin, e);
+    }
+
+    /// <summary>Para ajustar la boca (Skins de prueba): el fogonazo y una estela hacia adelante, sin disparar.</summary>
+    public static void Prueba(GameObject arma, ShopItem ficha, CatalogoDeSkins.Efectos e)
+    {
+        Camera cam = Camera.main;
+        if (cam == null || e == null) return;
+        DisparoPropio(arma, ficha, Trazadora.BocaLocal(cam), new[] { cam.transform.position + cam.transform.forward * 25f }, e);
     }
 
     /// <summary>Disparo de otro jugador (su arma en la mano, US 380): desde la boca de ese modelo.</summary>

@@ -1,6 +1,7 @@
 // F35 (Skins de armas), US 381: la skin legendaria "Dragón Abisal", animada. Un material por parte del arma (_Parte):
 //   0 Cuerpo: escamas negras (la textura Texturas/EscamasDragon, de FreePBR, con su relieve), con un brillo apenas gris.
-//   1 Escamas con grietas de fuego azul (sin usar desde el 14/11/2026: los paneles llevan el fuego de las franjas, 2).
+//   1 Paneles: escamas negras donde se abren grietas de fuego azul: cada grieta crece desde un punto, se abre, brilla y se
+//     vuelve a cerrar, y en otro lado se abren otras (dos tandas a destiempo, cada una de _Ciclo segundos).
 //   2 Franjas: fuego azul vivo que corre a lo largo del arma.
 // El fuego "respira" (sube y baja despacio) y se enciende con cada disparo (_Calor, de 0 a 1, lo pone CalorDeSkin en
 // cada arma). En los modelos de las armas el largo (el caño) es el eje X, con el caño hacia +X, y el alto el Z.
@@ -21,6 +22,8 @@ Shader "Riftwalker/Skins/Dragon"
         _Tile ("Tamaño de la textura (m)", Float) = 0.3
         _Giro ("Giro de la textura (vueltas de 90°)", Float) = 3
         _Relieve ("Cuánto relieve", Range(0, 2)) = 1
+        _Ciclo ("Duración de cada tanda de grietas (s)", Float) = 3.5
+        _Grieta ("Tamaño de las grietas (m)", Float) = 0.05
     }
 
     SubShader
@@ -41,7 +44,7 @@ Shader "Riftwalker/Skins/Dragon"
 
             CBUFFER_START(UnityPerMaterial)
                 float4 _ColorEscama, _ColorFilo, _ColorFuego, _ColorNucleo;
-                float _Parte, _Escala, _Brillo, _Calor, _Tile, _Giro, _Relieve;
+                float _Parte, _Escala, _Brillo, _Calor, _Tile, _Giro, _Relieve, _Ciclo, _Grieta;
             CBUFFER_END
             TEXTURE2D(_Escamas); SAMPLER(sampler_Escamas);
             TEXTURE2D(_EscamasNormal); SAMPLER(sampler_EscamasNormal);
@@ -97,6 +100,24 @@ Shader "Riftwalker/Skins/Dragon"
                 return v;
             }
 
+            // Una tanda de grietas: "fase" va de 0 a 1 durante la tanda; "semilla" cambia de una tanda a otra (otras
+            // grietas, en otros lugares). Devuelve el centro (nucleo) y el resplandor (halo) de la grieta en p.
+            void Tanda(float2 p, float fase, float semilla, out float nucleo, out float halo)
+            {
+                float2 o = float2(semilla * 7.31, semilla * 3.17);
+                float g = Fbm(p / _Grieta + o);                       // las grietas siguen la línea g = 0,5
+                float llega = Fbm(p / (_Grieta * 2.4) + o * 1.7);     // cuándo le llega la grieta a cada punto
+                float frente = fase * 1.5 - 0.25;                     // avanza durante la tanda
+                float abierta = saturate((frente - llega) * 7.0);     // detrás del frente, ya abierta
+                float cierra = saturate((1.0 - fase) * 3.5);          // al final de la tanda se cierra
+                float ancho = 0.022 * abierta * cierra;
+                float d = abs(g - 0.5);
+                nucleo = ancho > 0.0005 ? saturate(1.0 - d / ancho) : 0.0;
+                // La punta que se está abriendo brilla más.
+                float punta = saturate(1.0 - abs(frente - llega) * 12.0) * step(llega, frente);
+                halo = pow(saturate(1.0 - d / (ancho * 4.0 + 0.0005)), 2.0) * abierta * cierra * (0.7 + 0.8 * punta);
+            }
+
             float4 frag(Varyings i) : SV_Target
             {
                 // El plano del patrón según la cara, con x siempre a lo largo del arma cuando se puede.
@@ -146,10 +167,12 @@ Shader "Riftwalker/Skins/Dragon"
                     color += _ColorFilo.rgb * frs * 0.25;
                     if (parte == 1) // paneles: grietas de fuego que fluye hacia el caño
                     {
-                        float2 f = float2(p.x - _Time.y * 0.15, p.y) / 0.05;
-                        float g = Fbm(f);
-                        float nucleo = saturate(1.0 - abs(g - 0.5) / 0.02);
-                        float halo = pow(saturate(1.0 - abs(g - 0.5) / 0.09), 2.0);
+                        float t = _Time.y / max(_Ciclo, 0.1);
+                        float n1, h1, n2, h2;
+                        Tanda(p, frac(t), floor(t), n1, h1);
+                        Tanda(p, frac(t + 0.5), floor(t + 0.5) + 100.0, n2, h2); // otra tanda, a destiempo
+                        float nucleo = max(n1, n2);
+                        float halo = max(h1, h2);
                         float3 fuego = lerp(_ColorFuego.rgb, _ColorNucleo.rgb, nucleo);
                         color = lerp(color, fuego * fuerza * 0.5, saturate(max(nucleo, halo * 0.85)));
                     }
