@@ -44,9 +44,17 @@ public static class PerfilDatos
     public class Resultado
     {
         public Cosmetico cosmetico;
+        public CatalogoDeSkins.Skin skin; // F35 (US 382): una skin de arma, en vez de un cosmético
         public bool nuevo, garantia;
         public int creditos; // por repetido
+
+        public Rareza Rareza => skin != null ? skin.rareza : cosmetico.rareza;
+        public string Nombre => skin != null ? skin.Texto : L10n.Source(cosmetico.nombre, "profile.");
+        public string Clave => skin != null ? ClaveSkin + skin.id : cosmetico.Clave;
     }
+
+    /// <summary>F35 (US 382): las claves de las skins de armas (en los últimos premios), como en Premio.</summary>
+    public const string ClaveSkin = "sk:";
 
     // cuando: "2026-11-01T14:03", para ordenar las compras de varias PCs (las viejas solo tienen fecha, "01/11 14:03").
     [Serializable]
@@ -327,7 +335,7 @@ public static class PerfilDatos
             cambio |= Equipar(Tipo.Banner, nube.equipados, "banner", ref s.banner);
             cambio |= Equipar(Tipo.Titulo, nube.equipados, "titulo", ref s.titulo);
             cambio |= Equipar(Tipo.Marco, nube.equipados, "marco", ref s.marco);
-            var recientes = nube.recientes.FindAll(clave => DesdeClave(clave) != null);
+            var recientes = nube.recientes.FindAll(clave => DesdeClave(clave) != null || SkinDeClave(clave) != null);
             if (recientes.Count > 0) { s.recientes = recientes; cambio = true; }
         }
         if (!s.nubeRecibida) { s.nubeRecibida = true; cambio = true; }
@@ -512,21 +520,33 @@ public static class PerfilDatos
             if (r >= Rareza.Epico) E.ultimoEpico = E.aperturas;
 
             // Dentro de la rareza, primero el tipo (si no, casi todo serían títulos: son 71 de 129) y después el objeto.
-            Tipo tipo = SortearTipo(r);
-            List<Cosmetico> posibles = Catalogo.FindAll(c => c.rareza == r && c.tipo == tipo);
-            Cosmetico premio = posibles[UnityEngine.Random.Range(0, posibles.Count)];
-            var res = new Resultado { cosmetico = premio, garantia = garantia, nuevo = !Tiene(premio) };
-            if (res.nuevo)
+            // F35 (US 382): el tipo puede ser una skin de arma; queda en la colección de skins, marcada como nueva.
+            int tipo = SortearTipo(r);
+            Resultado res;
+            if (tipo == TipoSkin)
             {
-                E.obtenidos.Add(premio.Clave);
-                if (!E.nuevos.Contains(premio.Clave)) E.nuevos.Add(premio.Clave);
+                List<CatalogoDeSkins.Skin> skins = CatalogoDeSkins.Skins.FindAll(s => s.rareza == r);
+                CatalogoDeSkins.Skin skin = skins[UnityEngine.Random.Range(0, skins.Count)];
+                res = new Resultado { skin = skin, garantia = garantia, nuevo = !SkinsDeArmas.Tiene(skin) };
+                if (res.nuevo) SkinsDeArmas.Desbloquear(skin.id);
             }
             else
+            {
+                List<Cosmetico> posibles = Catalogo.FindAll(c => c.rareza == r && (int)c.tipo == tipo);
+                Cosmetico premio = posibles[UnityEngine.Random.Range(0, posibles.Count)];
+                res = new Resultado { cosmetico = premio, garantia = garantia, nuevo = !Tiene(premio) };
+                if (res.nuevo)
+                {
+                    E.obtenidos.Add(premio.Clave);
+                    if (!E.nuevos.Contains(premio.Clave)) E.nuevos.Add(premio.Clave);
+                }
+            }
+            if (!res.nuevo)
             {
                 res.creditos = CreditosPorRepetido[(int)r];
                 repetidos += res.creditos;
             }
-            E.recientes.Insert(0, premio.Clave);
+            E.recientes.Insert(0, res.Clave);
             if (E.recientes.Count > 8) E.recientes.RemoveAt(E.recientes.Count - 1);
             lista.Add(res);
         }
@@ -535,21 +555,31 @@ public static class PerfilDatos
         return lista;
     }
 
-    public static readonly int[] ProbabilidadTipo = { 35, 25, 25, 15 }; // Avatar, Banner, Título, Marco
+    // Avatar, Banner, Título, Marco y (F35, US 382, 14/11/2026) skin de arma.
+    public static readonly int[] ProbabilidadTipo = { 35, 20, 20, 15, 10 };
+    public const int TipoSkin = 4; // el lugar de las skins de armas en ProbabilidadTipo
 
-    private static Tipo SortearTipo(Rareza r)
+    // Si hay algún premio de ese tipo con esa rareza.
+    private static bool HayDeTipo(Rareza r, int t) =>
+        t == TipoSkin ? CatalogoDeSkins.Skins.Exists(s => s.rareza == r) : Catalogo.Exists(c => c.rareza == r && (int)c.tipo == t);
+
+    private static int SortearTipo(Rareza r)
     {
         int total = 0;
-        for (int t = 0; t < ProbabilidadTipo.Length; t++) if (Catalogo.Exists(c => c.rareza == r && (int)c.tipo == t)) total += ProbabilidadTipo[t];
+        for (int t = 0; t < ProbabilidadTipo.Length; t++) if (HayDeTipo(r, t)) total += ProbabilidadTipo[t];
         int tiro = UnityEngine.Random.Range(0, total), acumulado = 0;
         for (int t = 0; t < ProbabilidadTipo.Length; t++)
         {
-            if (!Catalogo.Exists(c => c.rareza == r && (int)c.tipo == t)) continue;
+            if (!HayDeTipo(r, t)) continue;
             acumulado += ProbabilidadTipo[t];
-            if (tiro < acumulado) return (Tipo)t;
+            if (tiro < acumulado) return t;
         }
-        return Tipo.Titulo;
+        return (int)Tipo.Titulo;
     }
+
+    /// <summary>F35 (US 382): la skin de una clave de los últimos premios ("sk:id"), o null si es un cosmético.</summary>
+    public static CatalogoDeSkins.Skin SkinDeClave(string clave) =>
+        clave != null && clave.StartsWith(ClaveSkin) ? CatalogoDeSkins.De(clave.Substring(ClaveSkin.Length)) : null;
 
     private static Rareza Sortear()
     {
@@ -565,7 +595,7 @@ public static class PerfilDatos
 
     public static Cosmetico DesdeClave(string clave)
     {
-        if (string.IsNullOrEmpty(clave) || clave.Length < 3) return null;
+        if (string.IsNullOrEmpty(clave) || clave.Length < 3 || clave.StartsWith(ClaveSkin)) return null;
         Tipo t = clave.StartsWith("av:") ? Tipo.Avatar : clave.StartsWith("bn:") ? Tipo.Banner : clave.StartsWith("mc:") ? Tipo.Marco : Tipo.Titulo;
         return Buscar(t, clave.Substring(3));
     }

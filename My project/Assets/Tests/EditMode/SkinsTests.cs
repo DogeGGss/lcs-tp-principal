@@ -118,4 +118,19 @@ public class SkinsTests
         foreach (string id in new[] { "tormenta", "tormenta-nubes", "tormenta-corriente", "efecto-rayo" })
             Assert.IsNotNull(modelos.MaterialDe(id), id);
     }
+
+    [Test, Category("US 382"), Description("Cápsulas: las skins son un tipo de premio más (10 %) y hay de todas las rarezas")]
+    public void Las_capsulas_traen_skins()
+    {
+        int total = 0;
+        foreach (int p in PerfilDatos.ProbabilidadTipo) total += p;
+        Assert.AreEqual(100, total);
+        Assert.AreEqual(10, PerfilDatos.ProbabilidadTipo[PerfilDatos.TipoSkin]);
+        foreach (PerfilDatos.Rareza r in new[] { PerfilDatos.Rareza.Comun, PerfilDatos.Rareza.Raro, PerfilDatos.Rareza.Epico, PerfilDatos.Rareza.Legendario })
+            Assert.IsTrue(CatalogoDeSkins.Skins.Exists(s => s.rareza == r), r.ToString());
+        // Los últimos premios guardan las skins con su clave, sin confundirlas con un cosmético del Perfil.
+        Assert.AreEqual("mitre-tormenta", PerfilDatos.SkinDeClave(PerfilDatos.ClaveSkin + "mitre-tormenta").id);
+        Assert.IsNull(PerfilDatos.DesdeClave(PerfilDatos.ClaveSkin + "mitre-tormenta"));
+        Assert.IsNull(PerfilDatos.SkinDeClave("av:astra-pop"));
+    }
 }
