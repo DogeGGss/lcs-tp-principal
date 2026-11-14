@@ -2207,6 +2207,10 @@
     {
       "key": "profile.skin.design.dragon_abisal",
       "text": "Dragón Abisal"
+    },
+    {
+      "key": "profile.skin.design.tormenta",
+      "text": "Tormenta"
     }
   ]
 }

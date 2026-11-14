@@ -81,7 +81,8 @@ public static class EfectosDeSkin
         Trazadora.Fogonazo(boca, false, e.fuego);
         if (e.llamarada) Lenguas(boca, haciaDonde, LlamaPropia, e);
         if (e.chispas && cam != null) Chispas(boca, haciaDonde, cam.transform.forward, LlamaPropia, e, cam.transform);
-        if (e.humo) HumoDeSkin.DisparoPropio(arma, ficha, e);
+        if (e.arcos) Arcos(boca, haciaDonde, LlamaPropia, e, 2);
+        if (e.humo || e.arcos) HumoDeSkin.DisparoPropio(arma, ficha, e);
         foreach (Vector3 fin in finales) Estela(boca, fin, e);
     }
 
@@ -129,7 +130,29 @@ public static class EfectosDeSkin
         Trazadora.Fogonazo(boca, false, e.fuego);
         if (e.llamarada) Lenguas(boca, adelante, LlamaDeOtro, e);
         if (e.chispas) Chispas(boca, adelante, adelante, LlamaDeOtro, e, null);
-        if (e.humo && modelo != null) HumoDeSkin.DisparoDeOtro(modelo, boca, e);
+        if (e.arcos) Arcos(boca, adelante, LlamaDeOtro, e, 2);
+        if ((e.humo || e.arcos) && modelo != null) HumoDeSkin.DisparoDeOtro(modelo, boca, e);
+    }
+
+    // ---------- Rayos ----------
+
+    /// <summary>Unos arquitos eléctricos que saltan de la boca (o de donde pegó un rayo), hacia cualquier lado pero más
+    /// hacia adelante. largo: el de la llamarada del arma (el de la propia o el de los demás).
+    /// grueso: cuánto más gruesos y duraderos (los de después de disparar, que tienen que notarse solos).</summary>
+    public static void Arcos(Vector3 desde, Vector3 adelante, float largo, CatalogoDeSkins.Efectos e, int cuantos, float grueso = 1f)
+    {
+        Vector3 hacia = adelante.sqrMagnitude > 0.0001f ? adelante.normalized : Vector3.forward;
+        // El grosor, según lo lejos que está de la cámara (que se vea igual de cerca y de lejos).
+        Camera cam = Camera.main;
+        float distancia = cam != null ? Vector3.Distance(cam.transform.position, desde) : 5f;
+        float grosor = Mathf.Clamp(0.004f * distancia, 0.003f, 0.06f) * grueso;
+        for (int i = 0; i < cuantos; i++)
+        {
+            Vector3 dir = (hacia * 0.6f + Random.onUnitSphere).normalized;
+            float l = largo * Random.Range(0.3f, 0.6f);
+            RayoDeSkin.Crear(desde, desde + dir * l, e, grosor, grosor * 0.6f, Random.value < 0.5f ? 1 : 0,
+                             Random.Range(0.06f, 0.1f) * Mathf.Sqrt(grueso));
+        }
     }
 
     // ---------- Chispas y humo ----------
@@ -257,6 +280,17 @@ public static class EfectosDeSkin
     /// <summary>La estela de la legendaria, de la boca del arma hasta donde pegó.</summary>
     public static void Estela(Vector3 desde, Vector3 hasta, CatalogoDeSkins.Efectos e)
     {
+        if (e.rayo)
+        {
+            // Un rayo de la boca hasta donde pegó (más fino junto a la boca, que está cerca de la cámara) y unos
+            // arquitos donde pegó, del tamaño de lo que se ve a esa distancia.
+            Camera cam = Camera.main;
+            float lejos = cam != null ? Vector3.Distance(cam.transform.position, hasta) : 20f;
+            float cerca = cam != null ? Vector3.Distance(cam.transform.position, desde) : 1f;
+            RayoDeSkin.Crear(desde, hasta, e, Mathf.Clamp(0.012f * cerca, 0.01f, 0.06f), Mathf.Clamp(0.004f * lejos, 0.03f, 0.12f), 2, 0.13f);
+            Arcos(hasta, desde - hasta, Mathf.Clamp(lejos * 0.02f, 0.1f, 0.5f), e, 3);
+            return;
+        }
         Trazadora.Mostrar(desde, hasta, false, e.fuego);
         if (e.brasas) Brasas(desde, hasta, e);
     }

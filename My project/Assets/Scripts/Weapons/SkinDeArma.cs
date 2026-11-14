@@ -71,9 +71,12 @@ public class SkinDeArma : MonoBehaviour
             if (diseno != null)
             {
                 if (m == null) return m;
-                if (CatalogoDeSkins.EsParteDelDiseno(skin, m.name)) return ConDiseno(m, diseno);
+                // La mira que se le agrega al Último Tren (PiezasDelTren): en las legendarias, como las franjas.
+                string parte = m.name == PiezasDelTren.NombreMira && skin.rareza == PerfilDatos.Rareza.Legendario
+                    ? CatalogoDeSkins.Main : m.name;
+                if (CatalogoDeSkins.EsParteDelDiseno(skin, parte)) return ConDiseno(m, diseno);
                 // Otras partes del diseño: con otro material (el cuerpo de madera del cobre) o un color (las franjas).
-                CatalogoDeSkins.Extra extra = CatalogoDeSkins.ExtraPara(skin, m.name);
+                CatalogoDeSkins.Extra extra = CatalogoDeSkins.ExtraPara(skin, parte);
                 if (extra == null) return m;
                 Material otro = !string.IsNullOrEmpty(extra.material) ? ModelosDeArmas.Actual.MaterialDe(extra.material) : null;
                 return otro != null ? ConDiseno(m, otro) : string.IsNullOrEmpty(extra.material) ? Pintado(m, extra.color) : m;
@@ -85,6 +88,18 @@ public class SkinDeArma : MonoBehaviour
     }
 
     private bool pintada; // ya se le puso una skin del catálogo (o la original) alguna vez
+
+    /// <summary>Vuelve a poner la skin puesta (se le agregaron piezas al arma, como la mira del Último Tren).</summary>
+    public void Reaplicar()
+    {
+        CatalogoDeSkins.Skin s = Puesta;
+        if (s == null) return;
+        Puesta = null;
+        Poner(s);
+    }
+
+    /// <summary>El material original del que salió una copia pintada (o el mismo, si no es una copia).</summary>
+    public static Material OriginalDe(Material m) => Original(m);
 
     // Cambia cada material (de los originales: si ya venía pintado, el suyo) por el que devuelve cambio.
     private void Cambiar(System.Func<Material, Material> cambio)

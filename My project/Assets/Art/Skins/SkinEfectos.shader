@@ -1,14 +1,16 @@
 // F35 (Skins de armas), US 381: los efectos de disparo de las skins legendarias, sin texturas, sumando luz (aditivos):
 //   0 Alas: el fogonazo en forma de dos alas de fuego que se abren (_Abrir, de 0 a 1) hacia arriba y hacia abajo, en un
 //     cuadrado (uv: x a lo largo del disparo, y de un ala a la otra).
-//   1 Brasa: un puntito de fuego redondo (las brasas que suelta la estela).
+//   1 Brasa: un puntito de fuego redondo (las brasas de la estela, las chispas), del color de la partícula.
 //   2 Llamarada: el fogonazo, una lengua de fuego azul en forma de gota que sale de la boca (x: de la boca hacia
 //     adelante), tiembla (_Abrir: cuánto creció, de 0 a 1) y se curva hacia un costado (_Enrosque).
+//   3 Rayo: una línea (LineRenderer) eléctrica, con el centro casi blanco y el borde del color del rayo; el color y la
+//     transparencia de la línea la tiñen y la apagan (RayoDeSkin).
 Shader "Riftwalker/Skins/Efectos"
 {
     Properties
     {
-        _Modo ("Modo (0 alas, 1 brasa, 2 llamarada)", Float) = 0
+        _Modo ("Modo (0 alas, 1 brasa, 2 llamarada, 3 rayo)", Float) = 0
         _ColorFuego ("Fuego", Color) = (0.118, 0.42, 1, 1)
         _ColorNucleo ("Centro del fuego", Color) = (0.81, 0.98, 1, 1)
         _Brillo ("Brillo", Float) = 2
@@ -53,6 +55,12 @@ Shader "Riftwalker/Skins/Efectos"
             float4 frag(Varyings i) : SV_Target
             {
                 float3 color;
+                if ((int)round(_Modo) == 3)
+                {
+                    float centro = saturate(1.0 - abs(i.uv.y * 2.0 - 1.0));
+                    color = lerp(_ColorFuego.rgb, _ColorNucleo.rgb, pow(centro, 3.0)) * pow(centro, 1.5) * _Brillo;
+                    return float4(color * i.color.rgb * i.color.a, 1);
+                }
                 if ((int)round(_Modo) == 2)
                 {
                     // La lengua se curva hacia un costado (_Enrosque), más cuanto más lejos de la boca.
@@ -69,8 +77,9 @@ Shader "Riftwalker/Skins/Efectos"
                 {
                     float d = length(i.uv - 0.5) * 2.0;
                     float b = saturate(1.0 - d);
-                    color = lerp(_ColorFuego.rgb, _ColorNucleo.rgb, b * b) * b * b * _Brillo;
-                    return float4(color * i.color.rgb * i.color.a, 1);
+                    // El color es el de la partícula (el fuego de cada skin), con el centro más claro.
+                    color = lerp(i.color.rgb, i.color.rgb * 0.4 + 0.6, b * b) * b * b * _Brillo;
+                    return float4(color * i.color.a, 1);
                 }
                 // Alas: x de 0 (la boca del arma) a 1 (hacia adelante); y de -1 a 1 (un ala arriba y otra abajo).
                 float x = i.uv.x, y = abs(i.uv.y * 2.0 - 1.0);
