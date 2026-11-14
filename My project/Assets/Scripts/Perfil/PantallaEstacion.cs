@@ -32,6 +32,7 @@ public class PantallaEstacion : PantallaBase
 
     private Estado estado;
     private float t;
+    private readonly List<VistaPreviaDeSkin> vistas = new List<VistaPreviaDeSkin>(); // las armas de las cartas de skins (US 382)
     private List<PerfilDatos.Resultado> resultados;
     private Color colorFinal = Accent, colorAmague;
     private bool amague;
@@ -227,7 +228,7 @@ public class PantallaEstacion : PantallaBase
         colorAmague = ColorRareza(Rareza.Raro);
         BorrarHijos(premio);
         BorrarHijos(premios);
-        VistaPreviaDeSkin.Apagar();
+        BorrarVistas();
         estado = Estado.Abriendo;
         t = 0f;
         capsula.gameObject.SetActive(true);
@@ -256,9 +257,26 @@ public class PantallaEstacion : PantallaBase
         Refrescar();
     }
 
+    private void BorrarVistas()
+    {
+        foreach (VistaPreviaDeSkin v in vistas) if (v != null) v.Destruir();
+        vistas.Clear();
+    }
+
+    // El arma girando con la skin, en ese lugar de la carta (cada carta con la suya).
+    private void ArmaConSkin(RectTransform carta, CatalogoDeSkins.Skin skin, float x, float y, float w, float h)
+    {
+        VistaPreviaDeSkin v = VistaPreviaDeSkin.Nueva(skin.arma.id, skin);
+        vistas.Add(v);
+        var imagen = Node("Arma", carta).gameObject.AddComponent<UnityEngine.UI.RawImage>();
+        Place(imagen.rectTransform, x, y, w, h);
+        imagen.texture = v.Imagen;
+        imagen.raycastTarget = false;
+    }
+
     private void Reiniciar()
     {
-        VistaPreviaDeSkin.Apagar();
+        BorrarVistas();
         estado = Estado.Espera;
         t = 0f;
         capsula.gameObject.SetActive(true);
@@ -390,11 +408,7 @@ public class PantallaEstacion : PantallaBase
         Image(carta, Rounded, colorR, 12f);
         Image(Place(Node("Interior", carta), 4f, 4f, cw - 8f, ch - 8f), Rounded, Hex(0x0E1117), 10f);
         T(carta, "Rareza", 0f, 18f, cw, 26f, FRotulo, 22f, colorR, PerfilUI.NombreRareza(r.Rareza) + (r.garantia ? L10n.T("profile.station.guarantee_tag") : ""), TextAlignmentOptions.Center, 16f, true);
-        VistaPreviaDeSkin.Mostrar(r.skin.arma.id, r.skin);
-        var vista = Node("Arma", carta).gameObject.AddComponent<UnityEngine.UI.RawImage>();
-        Place(vista.rectTransform, 40f, 56f, cw - 80f, (cw - 80f) * 2f / 3f);
-        vista.texture = VistaPreviaDeSkin.Textura;
-        vista.raycastTarget = false;
+        ArmaConSkin(carta, r.skin, 40f, 56f, cw - 80f, (cw - 80f) * 2f / 3f);
         TextMeshProUGUI n = T(carta, "Nombre", 20f, 372f, cw - 40f, 46f, FTitulo, 40f, Ink, r.Nombre, TextAlignmentOptions.Center, 3f, true);
         n.enableAutoSizing = true;
         n.fontSizeMin = 24f;
@@ -415,8 +429,13 @@ public class PantallaEstacion : PantallaBase
         Image(carta, Rounded, colorR, 10f);
         Image(Place(Node("Interior", carta), 3f, 3f, w - 6f, 314f), Rounded, Hex(0x0E1117), 8f);
         T(carta, "Rareza", 0f, 12f, w, 20f, FRotulo, 15f, colorR, PerfilUI.NombreRareza(r.Rareza), TextAlignmentOptions.Center, 12f, true);
-        // Una skin de arma, con sus colores y el arma (como en la tienda y el pase); el resto, con su arte.
-        if (r.skin != null) Premio.De(r.skin).DibujarArte(carta, 14f, 38f, w - 28f, w - 28f);
+        // Una skin de arma: el arma girando con la skin, y abajo de qué arma es; el resto, con su arte.
+        if (r.skin != null)
+        {
+            float lado = w - 28f;
+            Image(Place(Node("Fondo", carta), 14f, 38f, lado, lado), Rounded, Hex(0x151922), 6f);
+            ArmaConSkin(carta, r.skin, 14f, 38f + lado / 6f, lado, lado * 2f / 3f);
+        }
         else Arte(carta, c, 14f, 38f, w - 28f);
         TextMeshProUGUI n = T(carta, "Nombre", 10f, 216f, w - 20f, 52f, FRotulo, 20f, Ink, r.Nombre, TextAlignmentOptions.Center);
         n.textWrappingMode = TextWrappingModes.Normal;
