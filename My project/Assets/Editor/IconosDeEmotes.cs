@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.Animations;
 using UnityEngine.Playables;
 
-// F37 (Emotes coleccionables): los íconos de los bailes, generados. Pone al primer personaje (CharacterRoster) en un
+// F37 (Emotes coleccionables): los íconos de los bailes, generados. Pone a Necochea (Personaje) en un
 // momento del baile (Emote.momentoIcono, de 0 a 1), lo dibuja como silueta blanca y la pone en un círculo del color de
 // su rareza (oscuro, con el borde vivo). Guarda cada ícono en Art/Emotes/Iconos (<estado>.png, como sprite) y se lo
 // asigna en el catálogo. Si un ícono no representa bien al baile, se cambia su momentoIcono en el catálogo
@@ -13,12 +13,15 @@ public static class IconosDeEmotes
 {
     private const string Carpeta = "Assets/Art/Emotes/Iconos";
     private const int Captura = 512, Lado = 256;
+    private const string Personaje = "Necochea"; // el de los íconos (su displayName); si no está, el primero
 
     [MenuItem("Riftwalker/Emotes/Generar íconos")]
     public static void Generar()
     {
         CatalogoDeEmotes catalogo = CatalogoDeEmotes.Actual;
-        CharacterData pj = CharacterRoster.All.Count > 0 ? CharacterRoster.All[0] : null;
+        CharacterData pj = null;
+        foreach (CharacterData c in CharacterRoster.All) if (c != null && c.displayName == Personaje) { pj = c; break; }
+        if (pj == null && CharacterRoster.All.Count > 0) pj = CharacterRoster.All[0];
         if (pj == null || pj.modelo == null) { Debug.LogWarning("Íconos de emotes: no hay personajes."); return; }
         if (!AssetDatabase.IsValidFolder("Assets/Art/Emotes")) AssetDatabase.CreateFolder("Assets/Art", "Emotes");
         if (!AssetDatabase.IsValidFolder(Carpeta)) AssetDatabase.CreateFolder("Assets/Art/Emotes", "Iconos");
@@ -58,7 +61,7 @@ public static class IconosDeEmotes
     private static Texture2D Silueta(GameObject modelo, AnimationClip clip, float momento)
     {
         GameObject pj = Object.Instantiate(modelo);
-        pj.hideFlags = HideFlags.HideAndDontSave;
+        pj.hideFlags = HideFlags.HideInHierarchy | HideFlags.DontSave; // (editable: el modo de animación lo tiene que poder mover)
         var piezas = new System.Collections.Generic.List<GameObject>();
         var blanco = new Material(Shader.Find("Universal Render Pipeline/Unlit") ?? Shader.Find("Unlit/Color"));
         blanco.SetColor("_BaseColor", Color.white);
@@ -72,13 +75,11 @@ public static class IconosDeEmotes
             if (animador == null) return null;
             animador.runtimeAnimatorController = null;
             animador.applyRootMotion = false;
-            // La pose de ese momento.
-            PlayableGraph grafo = PlayableGraph.Create("Ícono");
-            var salida = AnimationPlayableOutput.Create(grafo, "Salida", animador);
-            var reproducir = AnimationClipPlayable.Create(grafo, clip);
-            salida.SetSourcePlayable(reproducir);
-            reproducir.SetTime(Mathf.Clamp01(momento) * clip.length);
-            grafo.Evaluate();
+            // La pose de ese momento (con el modo de animación del editor, que mueve los huesos fuera del Play).
+            AnimationMode.StartAnimationMode();
+            AnimationMode.BeginSampling();
+            AnimationMode.SampleAnimationClip(animador.gameObject, clip, Mathf.Clamp01(momento) * clip.length);
+            AnimationMode.EndSampling();
             // Cada malla, fija en esa pose (se dibuja en otra escena, la de la vista previa).
             Bounds limites = default;
             bool hay = false;
@@ -100,7 +101,6 @@ public static class IconosDeEmotes
                 piezas.Add(go);
                 if (!hay) { limites = mr.bounds; hay = true; } else limites.Encapsulate(mr.bounds);
             }
-            grafo.Destroy();
             if (!hay) return null;
 
             Camera cam = util.camera;
@@ -119,6 +119,7 @@ public static class IconosDeEmotes
         }
         finally
         {
+            if (AnimationMode.InAnimationMode()) AnimationMode.StopAnimationMode();
             util.Cleanup();
             foreach (GameObject go in piezas) Object.DestroyImmediate(go);
             Object.DestroyImmediate(pj);
