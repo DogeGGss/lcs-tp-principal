@@ -80,7 +80,7 @@ public static class DesafiosDePartida
         if (!deathmatch)
         {
             CharacterData personaje = CharacterRoster.Selected;
-            if (personaje != null) Sumar("personaje." + personaje.displayName);
+            if (personaje != null) Sumar("personaje." + PaseDeBatalla.IdDePersonaje(personaje.displayName));
         }
         return Terminar(PaseDeBatalla.XpPartida + (gano ? PaseDeBatalla.XpVictoria : 0), null);
     }

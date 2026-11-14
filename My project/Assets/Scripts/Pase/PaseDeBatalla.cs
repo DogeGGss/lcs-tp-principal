@@ -64,6 +64,8 @@ public static class PaseDeBatalla
                 if (!string.IsNullOrEmpty(json)) { try { e = JsonUtility.FromJson<Estado>(json); } catch { e = null; } }
                 if (e == null) e = new Estado { temporada = TemporadaActual };
                 if (e.temporada == 0) e.temporada = TemporadaActual;
+                MigrarIds(e.desafios);
+                MigrarIds(e.etapas);
             }
             if (e.temporada != TemporadaActual) CerrarTemporada();
             return e;
@@ -326,7 +328,7 @@ public static class PaseDeBatalla
         var l = new List<Desafio>();
         void D(string id, string nombre, string modo, int meta, int xp) => l.Add(new Desafio { id = id, nombre = nombre, modo = modo, metas = new[] { meta }, xp = new[] { xp } });
         foreach (string p in new[] { "Soledad", "Unzué", "Goya", "Necochea" })
-            D("personaje." + p, $"Jugar 3 partidas con {p}", "Táctico", 3, 300);
+            D("personaje." + IdDePersonaje(p), $"Jugar 3 partidas con {p}", "Táctico", 3, 300);
         D("cabezas", "Eliminar 3 enemigos con disparos a la cabeza", "Deathmatch o Táctico", 3, 300);
         l.Add(new Desafio { id = "invasion.bajas", nombre = "Eliminar {n} enemigos", modo = "Invasión",
             metas = new[] { 10, 20, 40, 80, 160, 320 }, xp = new[] { 300, 300, 500, 500, 750, 1000 } });
@@ -341,6 +343,37 @@ public static class PaseDeBatalla
         D("invasion.jefe", "Eliminar al Jefe", "Invasión", 1, 750);
         D("invasion.alfas", "Eliminar 10 alfas", "Invasión", 10, 500);
         return l;
+    }
+
+    /// <summary>
+    /// El id del personaje para las claves de la nube: en minúsculas y sin tildes ("Unzué" → "unzue"). La base solo acepta
+    /// claves con a-z, 0-9, punto, guion y guion bajo (rw_sync_progress): con una mayúscula o una tilde rechazaba todo el
+    /// progreso del jugador.
+    /// </summary>
+    public static string IdDePersonaje(string nombre)
+    {
+        if (string.IsNullOrEmpty(nombre)) return "";
+        var sb = new System.Text.StringBuilder();
+        foreach (char c in nombre.Normalize(System.Text.NormalizationForm.FormD).ToLowerInvariant())
+        {
+            if (System.Globalization.CharUnicodeInfo.GetUnicodeCategory(c) == System.Globalization.UnicodeCategory.NonSpacingMark) continue;
+            sb.Append((c >= 'a' && c <= 'z') || (c >= '0' && c <= '9') || c == '-' || c == '_' ? c : '-');
+        }
+        return sb.ToString();
+    }
+
+    // Los desafíos por personaje se guardaban con el nombre tal cual ("personaje.Unzué"): se pasan al id nuevo.
+    private static void MigrarIds(List<string> lista)
+    {
+        for (int i = 0; i < lista.Count; i++)
+        {
+            string s = lista[i];
+            if (!s.StartsWith("personaje.", StringComparison.Ordinal)) continue;
+            int igual = s.IndexOf('=');
+            if (igual < 0) continue;
+            string nuevo = "personaje." + IdDePersonaje(s.Substring(10, igual - 10)) + s.Substring(igual);
+            if (nuevo != s) lista[i] = nuevo;
+        }
     }
 
     public static int Avance(string id) => Leer(E.desafios, id);
