@@ -7,7 +7,8 @@ using UnityEngine;
 // - US 317, Filo: matar con el cuchillo recarga al instante la última arma de fuego que se tuvo en la mano (desde su
 //   reserva), porque en ese momento la mano tiene el cuchillo.
 // - US 318, Carroñero: 1 de cada 5 invasores que mueren suelta un cargador (1 de cada 4 y 1 de cada 3 con la carta
-//   repetida), que se junta pasando por encima (CargadorEnElPiso).
+//   repetida), que se junta pasando por encima (CargadorEnElPiso). En cooperativo cuentan solo las bajas del que tiene
+//   la carta, y el cargador lo puede juntar cualquiera.
 // - US 328, Remate: el cuchillo mata de un golpe a un invasor con el 25 % de la vida o menos (30 % y 35 % con la carta
 //   repetida), salvo al Jefe.
 // - US 329, Reserva lista: el arma guardada (la principal o la secundaria que no está en la mano) se recarga sola desde
@@ -468,11 +469,12 @@ public class CartasEnJuego : MonoBehaviour
         return Mathf.Max(danio, vida.currentHealth + vida.currentShield); // de un golpe
     }
 
-    // US 318: cada invasor que muere (por lo que sea) cuenta para el Carroñero.
+    // US 318: cada invasor que muere cuenta para el Carroñero. En cooperativo, solo los que mata el que tiene la carta
+    // (los de los compañeros no): el cargador que suelta lo puede juntar cualquiera (US 355, CA5).
     private void AlMorirUnInvasor(Npc npc, int puntos, bool cabeza)
     {
         int carronero = EleccionDeInvasion.Veces("Carroñero");
-        if (carronero <= 0 || npc == null) return;
+        if (carronero <= 0 || npc == null || npc.LoMatoOtro) return;
         if (++muertesParaCarronero < Mathf.Max(1, CarroneroCada - (carronero - 1))) return;
         muertesParaCarronero = 0;
         CargadorEnElPiso c = CargadorEnElPiso.Soltar(npc.transform.position, npc.transform, JuntarCargador);
