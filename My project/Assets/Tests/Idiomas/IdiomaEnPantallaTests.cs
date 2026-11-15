@@ -218,13 +218,10 @@ public class IdiomaEnPantallaTests
         yield return Esperar(espera);
     }
 
-    // La Nota para el PO y el «¿Cómo te llamás?» se abren solos la primera vez y taparían las capturas:
-    // en las pruebas el jugador ya tiene nombre y la nota se da por vista (si igual está abierta, se cierra).
+    // El «¿Cómo te llamás?» se abre solo la primera vez y taparía las capturas: en las pruebas el jugador ya tiene nombre.
     internal static void SinAvisosEncima()
     {
         if (!PlayerProfile.HasName) PlayerProfile.TrySetName("Riftwalker", out _);
-        typeof(NotaPO).GetField("shownThisSession", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Static)?.SetValue(null, true);
-        foreach (NotaPO nota in Object.FindObjectsByType<NotaPO>(FindObjectsSortMode.None)) nota.Close();
     }
 
     internal static IEnumerator Esperar(float segundos)

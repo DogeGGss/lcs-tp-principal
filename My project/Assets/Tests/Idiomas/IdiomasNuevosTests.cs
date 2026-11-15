@@ -65,7 +65,6 @@ public class IdiomasNuevosTests
         pestana.onClick.Invoke();
         yield return Esperar(1f);
         yield return new WaitForEndOfFrame();
-        Assert.IsFalse(NotaPO.IsOpen, "La Nota para el PO tapa el selector");
         RevisorDeTextos.Guardar("US-350_CA1_Selector_de_idioma", "es", new List<string>(), new List<RevisorDeTextos.NoEntra>(), null);
         var textos = DetectorDeIdioma.TextosVisibles().Select(DetectorDeIdioma.Visible).ToList();
         var faltan = Nombres.Where(n => !textos.Contains(n)).ToList();
