@@ -426,6 +426,7 @@ public static class PaseDeBatalla
     /// <summary>Junta lo que volvió de la nube: el máximo de cada contador y la unión de lo reclamado.</summary>
     public static void FusionarNube(Func<string, long> leer, IEnumerable<string> reclamados)
     {
+        if (SinNubeDePrueba) return; // "Reiniciar el pase" en el editor: la nube no devuelve lo de antes
         Estado s = E;
         string t = "pase." + s.temporada + ".";
         bool cambio = false;
@@ -445,6 +446,22 @@ public static class PaseDeBatalla
     }
 
     // ================= Pruebas en el editor =================
+
+    // La nube solo sube la experiencia, la compra y los desafíos, y junta lo reclamado: sin esto, lo que saca "Reiniciar el
+    // pase" vuelve en la próxima sincronización. Lo prende "Reiniciar el pase" y lo apaga "Volver a traer el pase de la
+    // nube". En el juego siempre es false.
+    private const string SinNubeClave = "Riftwalker.Pase.SinNube";
+    private static bool SinNubeDePrueba
+    {
+        get
+        {
+#if UNITY_EDITOR
+            return UnityEditor.EditorPrefs.GetBool(SinNubeClave, false);
+#else
+            return false;
+#endif
+        }
+    }
 
     private static int DiasDePrueba
     {
@@ -502,10 +519,18 @@ public static class PaseDeBatalla
     [UnityEditor.MenuItem("Riftwalker/Pase de batalla/Reiniciar el pase")]
     private static void ReiniciarDePrueba()
     {
+        UnityEditor.EditorPrefs.SetBool(SinNubeClave, true);
         Guardado.DeleteKey(Clave);
         Guardado.Save();
         Recargar();
-        Debug.Log("Pase: reiniciado.");
+        Debug.Log("Pase: reiniciado. Mientras pruebes no se trae el pase de la nube (Volver a traer el pase de la nube).");
+    }
+
+    [UnityEditor.MenuItem("Riftwalker/Pase de batalla/Volver a traer el pase de la nube")]
+    private static void VolverATraerDeLaNube()
+    {
+        UnityEditor.EditorPrefs.DeleteKey(SinNubeClave);
+        Debug.Log("Pase: se vuelve a traer de la nube en la próxima sincronización.");
     }
 #endif
 }
