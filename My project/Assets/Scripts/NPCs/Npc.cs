@@ -386,6 +386,14 @@ public class Npc : MonoBehaviour
     private void Update()
     {
         if (Animaciones != null) Animaciones.Actualizar(Time.deltaTime);
+        // F31: mirando como espectador, la cámara va con los ojos de un compañero y Unity puede dar al invasor por no
+        // visto: con CullUpdateTransforms deja de mover sus huesos y se ve congelado en una pose. Mientras se espectea,
+        // se anima siempre.
+        if (Animador != null)
+        {
+            AnimatorCullingMode modo = CaidaEnInvasion.YoAfuera ? AnimatorCullingMode.AlwaysAnimate : AnimatorCullingMode.CullUpdateTransforms;
+            if (Animador.cullingMode != modo) Animador.cullingMode = modo;
+        }
     }
 
     private void OnDestroy()
