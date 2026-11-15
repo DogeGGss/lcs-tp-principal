@@ -10,8 +10,8 @@ using Hashtable = ExitGames.Client.Photon.Hashtable;
 //   piso, y se arrastra despacio (PlayerMovement.Caido). No puede disparar, usar el cuchillo ni tirar granadas, y no
 //   recibe más daño. Sí elige cuando se abre el puesto (US 356).
 // - CA2: tiene 30 s para que lo revivan, con la cuenta en su pantalla (y arriba de él para los demás,
-//   CaidoEnTerceraPersona). Si se terminan, muere: mira a sus compañeros (Espectador) y vuelve al empezar la oleada
-//   siguiente, junto a un compañero vivo, con la vida llena (US 289, CA6).
+//   CaidoEnTerceraPersona). Si se terminan, muere: mira a sus compañeros (Espectador) y vuelve cuando arranca el
+//   descanso siguiente (al terminar esa oleada), junto a un compañero vivo, con la vida llena (US 289, CA6).
 // - CA3: un compañero vivo se acerca (2,2 m), mantiene la tecla de usar (E) y lo revive en 5 s, con la barra. Mientras,
 //   el que revive queda agachado sobre él. Si suelta la tecla o se aleja, se corta (que lo golpeen no lo corta).
 // - CA4: el revivido se levanta con un 30 % de vida, con sus armas y su munición. Mientras se levanta (lo que dura la
@@ -67,6 +67,7 @@ public class CaidaEnInvasion : MonoBehaviourPunCallbacks, IOnEventCallback
         reviviendo.Clear();
         OleadasDeInvasion.Supero += AlSuperar;
         OleadasDeInvasion.Empezo += AlEmpezar;
+        OleadasDeInvasion.EmpezoElDescanso += AlEmpezarElDescanso;
     }
 
     public override void OnDisable()
@@ -75,6 +76,7 @@ public class CaidaEnInvasion : MonoBehaviourPunCallbacks, IOnEventCallback
         if (Actual == this) Actual = null;
         OleadasDeInvasion.Supero -= AlSuperar;
         OleadasDeInvasion.Empezo -= AlEmpezar;
+        OleadasDeInvasion.EmpezoElDescanso -= AlEmpezarElDescanso;
         if (vida != null) vida.AntesDeMorir = null;
         if (movimiento != null) { movimiento.Caido = false; movimiento.ForzarAgachado = false; movimiento.Levantandose = false; }
     }
@@ -145,8 +147,8 @@ public class CaidaEnInvasion : MonoBehaviourPunCallbacks, IOnEventCallback
             espectador = gameObject.AddComponent<Espectador>();
             espectador.Iniciar(partida);
         }
-        // US 358 y US 359, CA2: entró (o volvió) con una oleada en juego: mira a sus compañeros y aparece al empezar la
-        // siguiente, junto a uno vivo (AlEmpezar). En el descanso aparece enseguida.
+        // US 358 y US 359, CA2: entró (o volvió) con una oleada en juego: mira a sus compañeros y aparece cuando arranca
+        // el descanso siguiente, junto a uno vivo (AlEmpezarElDescanso). En el descanso aparece enseguida.
         if ((Multijugador.EntroEmpezada || Reconexion.Volvio) && InvasoresEnRed.EnOleada)
         {
             estado = Estado.Muerto;
@@ -347,13 +349,27 @@ public class CaidaEnInvasion : MonoBehaviourPunCallbacks, IOnEventCallback
         if (estado == Estado.Caido) Levantarse(); // CA6: se levanta solo
     }
 
-    // US 289, CA6: el que murió vuelve al empezar la oleada siguiente, junto a un compañero vivo, con la vida llena.
+    // US 289, CA6: el que murió vuelve en el descanso siguiente (AlEmpezarElDescanso), junto a un compañero vivo, con
+    // la vida llena. Si no llegó a volver ahí (por ejemplo, no hubo descanso), al empezar la oleada siguiente.
     private void AlEmpezar(int oleada)
     {
         if (estado != Estado.Muerto || local == null) return;
         // US 358 y US 359, CA2: entró o volvió en medio de una oleada y esta computadora se está poniendo al día con
         // ella: no es la siguiente, sigue mirando a sus compañeros.
         if (OleadasDeInvasion.PoniendoseAlDia) return;
+        Volver();
+    }
+
+    // US 289, CA6 (y US 358 y US 359, CA2): el que murió, o entró (o volvió) con una oleada en juego, aparece cuando
+    // arranca el descanso de 20 s siguiente, así tiene tiempo de prepararse antes de la oleada.
+    private void AlEmpezarElDescanso(int oleada)
+    {
+        if (estado != Estado.Muerto || local == null) return;
+        Volver();
+    }
+
+    private void Volver()
+    {
         Pose punto = JuntoAUnCompanero();
         estado = Estado.Vivo;
         Publicar();
