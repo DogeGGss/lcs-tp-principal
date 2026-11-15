@@ -211,8 +211,17 @@ public class IdiomaEnPantallaTests
     {
         if (!Application.CanStreamedLevelBeLoaded(escena)) Assert.Ignore($"La escena {escena} no está en el Scene List del build.");
         MatchSettings.Mode = modo;
+        SinNotaPO();
         yield return SceneManager.LoadSceneAsync(escena);
         yield return Esperar(espera);
+    }
+
+    // La Nota para el PO se abre sola la primera vez de cada sesión y taparía las capturas:
+    // en las pruebas se la da por vista, y si igual está abierta se la cierra.
+    internal static void SinNotaPO()
+    {
+        typeof(NotaPO).GetField("shownThisSession", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Static)?.SetValue(null, true);
+        foreach (NotaPO nota in Object.FindObjectsByType<NotaPO>(FindObjectsSortMode.None)) nota.Close();
     }
 
     internal static IEnumerator Esperar(float segundos)
