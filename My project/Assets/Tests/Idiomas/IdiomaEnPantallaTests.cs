@@ -51,7 +51,9 @@ public class IdiomaEnPantallaTests
         yield return Esperar(1f);
         OpcionesPantalla opciones = Object.FindAnyObjectByType<OpcionesPantalla>();
         Assert.IsNotNull(opciones, "No se abrió Opciones");
-        var pestanas = opciones.GetComponentsInChildren<UnityEngine.UI.Button>(true).Where(b => b.name.StartsWith("Btn")).ToList();
+        // Solo las pestañas: Guardar, Restablecer y Volver cierran Opciones o abren un aviso, y las capturas siguientes saldrían de otra pantalla.
+        string[] soloPestanas = { "BtnGraficos", "BtnControles", "BtnSonido", "BtnMira", "BtnIdioma" };
+        var pestanas = opciones.GetComponentsInChildren<UnityEngine.UI.Button>(true).Where(b => soloPestanas.Contains(b.name)).ToList();
         Assert.IsNotEmpty(pestanas, "Opciones no tiene pestañas");
         var todos = new List<string>();
         foreach (var pestana in pestanas)
@@ -211,8 +213,15 @@ public class IdiomaEnPantallaTests
     {
         if (!Application.CanStreamedLevelBeLoaded(escena)) Assert.Ignore($"La escena {escena} no está en el Scene List del build.");
         MatchSettings.Mode = modo;
+        SinAvisosEncima();
         yield return SceneManager.LoadSceneAsync(escena);
         yield return Esperar(espera);
+    }
+
+    // El «¿Cómo te llamás?» se abre solo la primera vez y taparía las capturas: en las pruebas el jugador ya tiene nombre.
+    internal static void SinAvisosEncima()
+    {
+        if (!PlayerProfile.HasName) PlayerProfile.TrySetName("Riftwalker", out _);
     }
 
     internal static IEnumerator Esperar(float segundos)

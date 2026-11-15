@@ -23,6 +23,8 @@ public static class DetectorDeIdioma
     {
         "Nicolás", "Gauna", "Velázquez", "Gómez", "Huber", "Barreto", "Fonseca", "Ramos", "Lucas", "Luka", "Franco",
         "Nahuel", "Ulises", "David", "Unzué", "Porteña", "Capitán", "UNGS", "Riftwalker",
+        // Cada idioma del selector se muestra con su propio nombre (Español, Português, Français...).
+        "Español", "Português", "Brasil", "Français", "Italiano",
     };
     // Carteles reales de los mapas (la UNGS, sus calles, el colectivo, los murales): son parte del lugar y no se traducen.
     internal static readonly HashSet<string> CartelesDelMapa = new HashSet<string>(StringComparer.Ordinal)
