@@ -215,6 +215,9 @@ public static class PerfilDatos
                 try { e = JsonUtility.FromJson<Estado>(json); } catch { e = null; }
             }
             if (e == null) e = new Estado(); // de cero: los cosméticos de entrada y sin monedas (US 237, CA3)
+            // Lo que quedó en la fila con un motivo que la base no acepta (la tienda y el pase lo mandaban así) se corrige:
+            // si no, trababa la subida de todo lo pendiente.
+            foreach (Movimiento m in e.pendientes) if (m != null) m.motivo = MotivoDeLaBase(m.motivo);
             if (e.ultimoEpico < 0) e.ultimoEpico = Mathf.Max(0, e.aperturas - e.sinEpico);
             return e;
         }
@@ -690,7 +693,23 @@ public static class PerfilDatos
     public static List<Movimiento> Pendientes => new List<Movimiento>(E.pendientes);
 
     public static Movimiento Mover(string motivo, int creditos = 0, int boletos = 0, int cristales = 0) =>
-        new Movimiento { id = Guid.NewGuid().ToString(), motivo = motivo, creditos = creditos, boletos = boletos, cristales = cristales };
+        new Movimiento { id = Guid.NewGuid().ToString(), motivo = MotivoDeLaBase(motivo), creditos = creditos, boletos = boletos, cristales = cristales };
+
+    // Los motivos que acepta la base (rw_wallet_apply, Backend/Supabase/monedas.sql). Con cualquier otro rechaza el envío
+    // entero ("Invalid moves"): el gasto falla como si no hubiera conexión y lo ganado se queda trabado en la fila.
+    private static readonly string[] MotivosDeLaBase = { "partida", "repetido", "capsula", "canje_creditos", "canje_cristales", "compra", "debug" };
+
+    /// <summary>
+    /// El motivo con el que se manda un movimiento a la base: las compras con cristales de la tienda directa (US 386) y del
+    /// pase (US 364) van como "compra"; lo que da el pase de batalla al subir de nivel (F32), como "partida".
+    /// </summary>
+    public static string MotivoDeLaBase(string motivo)
+    {
+        if (string.IsNullOrEmpty(motivo)) return "partida";
+        if (Array.IndexOf(MotivosDeLaBase, motivo) >= 0) return motivo;
+        if (motivo.StartsWith("tienda", StringComparison.Ordinal) || motivo.StartsWith("pase:", StringComparison.Ordinal)) return "compra";
+        return "partida";
+    }
 
     private static bool Alcanza(Movimiento m) => E.creditos + m.creditos >= 0 && E.boletos + m.boletos >= 0 && E.cristales + m.cristales >= 0;
 
