@@ -466,6 +466,23 @@ public static class PaseDeBatalla
         Debug.Log($"Pase: nivel {r.nivelAntes} → {r.nivelDespues} ({Xp} de experiencia).");
     }
 
+    // US 362, CA2: para probar lo que sobra al subir (900 + una partida ganada) y el tope del nivel 40.
+    [UnityEditor.MenuItem("Riftwalker/Pase de batalla/Sumar 900 de experiencia")]
+    private static void Sumar900DePrueba()
+    {
+        Resumen r = Sumar(900, null, null);
+        Debug.Log($"Pase: nivel {r.nivelAntes} → {r.nivelDespues} ({Xp} de experiencia).");
+    }
+
+    [UnityEditor.MenuItem("Riftwalker/Pase de batalla/Ir al nivel 39 con 900 (casi el 40)")]
+    private static void CasiElTopeDePrueba()
+    {
+        int falta = (Niveles - 1) * XpPorNivel + 900 - Xp;
+        if (falta <= 0) { Debug.Log($"Pase: ya tenés {Xp} de experiencia (nivel {Nivel}). Reiniciá el pase para volver a probar."); return; }
+        Resumen r = Sumar(falta, null, null);
+        Debug.Log($"Pase: nivel {r.nivelAntes} → {r.nivelDespues} ({Xp} de experiencia).");
+    }
+
     [UnityEditor.MenuItem("Riftwalker/Pase de batalla/Adelantar 7 días")]
     private static void AdelantarDias()
     {
