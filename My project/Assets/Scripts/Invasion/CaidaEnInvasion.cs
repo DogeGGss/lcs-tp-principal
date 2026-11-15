@@ -14,7 +14,9 @@ using Hashtable = ExitGames.Client.Photon.Hashtable;
 //   siguiente, junto a un compañero vivo, con la vida llena (US 289, CA6).
 // - CA3: un compañero vivo se acerca (2,2 m), mantiene la tecla de usar (E) y lo revive en 5 s, con la barra. Mientras,
 //   el que revive queda agachado sobre él. Si suelta la tecla o se aleja, se corta (que lo golpeen no lo corta).
-// - CA4: el revivido se levanta con un 30 % de vida, con sus armas y su munición.
+// - CA4: el revivido se levanta con un 30 % de vida, con sus armas y su munición. Mientras se levanta (lo que dura la
+//   animación que ven los demás, CaidoEnTerceraPersona) no se mueve, no dispara y no tiene el arma en la mano; la cámara
+//   sube del piso a la altura de parado a la par.
 // - CA5: los invasores no lo atacan (con 0 de vida no cuenta como objetivo: van al vivo más cercano).
 // - CA6: si la oleada termina con él caído, se levanta solo con un 30 % de vida.
 // - CA7: si todos están caídos o muertos a la vez, la partida termina (el resultado, en todas las computadoras).
@@ -47,6 +49,8 @@ public class CaidaEnInvasion : MonoBehaviourPunCallbacks, IOnEventCallback
     private readonly List<Behaviour> bloqueados = new List<Behaviour>();
     private Camera camaraArmas;
     private bool termino;
+    private bool bloqueado;                 // CA1: las armas trabadas (caído o levantándose)
+    private float levantandoDesde = -1f, levantandoDura; // CA4: se está levantando
 
     // CA3: el que revive (en su computadora).
     private JugadorEnRed reviviendoA;
@@ -70,7 +74,7 @@ public class CaidaEnInvasion : MonoBehaviourPunCallbacks, IOnEventCallback
         OleadasDeInvasion.Supero -= AlSuperar;
         OleadasDeInvasion.Empezo -= AlEmpezar;
         if (vida != null) vida.AntesDeMorir = null;
-        if (movimiento != null) { movimiento.Caido = false; movimiento.ForzarAgachado = false; }
+        if (movimiento != null) { movimiento.Caido = false; movimiento.ForzarAgachado = false; movimiento.Levantandose = false; }
     }
 
     // =====================================================================
@@ -113,10 +117,11 @@ public class CaidaEnInvasion : MonoBehaviourPunCallbacks, IOnEventCallback
     private void Update()
     {
         if (!Preparar()) return;
+        if (levantandoDesde >= 0f) MientrasSeLevanta(); // CA4
         switch (estado)
         {
             case Estado.Caido: MientrasCaido(); break;
-            case Estado.Vivo: Revivir(); break;
+            case Estado.Vivo: if (levantandoDesde < 0f) Revivir(); break;
         }
         RevisarFin();
     }
@@ -154,6 +159,7 @@ public class CaidaEnInvasion : MonoBehaviourPunCallbacks, IOnEventCallback
     private bool AlQuedarseSinVida()
     {
         if (estado != Estado.Vivo || !CooperativoDeInvasion.Activo) return false;
+        CortarLevantarse(); // (cayó otra vez mientras se levantaba: las armas siguen trabadas)
         estado = Estado.Caido;
         caidoDesde = PhotonNetwork.Time;
         Publicar();
@@ -200,15 +206,48 @@ public class CaidaEnInvasion : MonoBehaviourPunCallbacks, IOnEventCallback
         Publicar();
         reviviendo.Remove(PhotonNetwork.LocalPlayer.ActorNumber);
         MatchHud.SetAction(null);
-        if (movimiento != null) movimiento.Caido = false;
-        Bloquear(false);
         if (vida != null) vida.SetState(Mathf.Max(1, Mathf.RoundToInt(vida.maxHealth * VidaAlLevantarse)), 0);
         MatchHud.Warn(L10n.T("gameplay.down.revived"), 1.5f);
+        // Se levanta: hasta estar parado no se mueve ni dispara (las armas siguen trabadas, Bloquear).
+        if (movimiento != null)
+        {
+            movimiento.Caido = false;
+            movimiento.Levantandose = true;
+            movimiento.LevantarseAvance = 0f;
+        }
+        levantandoDesde = Time.time;
+        levantandoDura = CaidoEnTerceraPersona.LargoDe(local != null ? CuerpoDe(local) : null);
+    }
+
+    // CA4: la cámara sube a la par de la animación; al terminar, se mueve y tiene el arma de nuevo.
+    private void MientrasSeLevanta()
+    {
+        float avance = Mathf.Clamp01((Time.time - levantandoDesde) / Mathf.Max(0.1f, levantandoDura));
+        if (movimiento != null) movimiento.LevantarseAvance = avance;
+        if (avance < 1f) return;
+        CortarLevantarse();
+        Bloquear(false);
+    }
+
+    private void CortarLevantarse()
+    {
+        levantandoDesde = -1f;
+        if (movimiento != null) movimiento.Levantandose = false;
+    }
+
+    // El Animator del cuerpo del jugador (el que tiene la animación de levantarse).
+    private static Animator CuerpoDe(JugadorEnRed jugador)
+    {
+        foreach (Animator a in jugador.GetComponentsInChildren<Animator>(true))
+            if (a.runtimeAnimatorController != null && a.GetLayerIndex(CaidoEnTerceraPersona.Capa) >= 0) return a;
+        return null;
     }
 
     // CA1: caído no dispara, ni usa el cuchillo, ni tira granadas, ni cambia de arma; el arma en la mano no se ve.
     private void Bloquear(bool bloquear)
     {
+        if (bloquear == bloqueado) return; // (ya trabadas: no se pierden las que se apagaron antes)
+        bloqueado = bloquear;
         if (!bloquear)
         {
             foreach (Behaviour b in bloqueados) if (b != null) b.enabled = true;
@@ -341,7 +380,12 @@ public class CaidaEnInvasion : MonoBehaviourPunCallbacks, IOnEventCallback
     {
         if (Actual == null || Actual.estado == Estado.Retirado) return;
         Actual.CortarRevivir();
-        if (Actual.estado == Estado.Caido) { Actual.Bloquear(false); if (Actual.movimiento != null) Actual.movimiento.Caido = false; }
+        if (Actual.estado == Estado.Caido || Actual.levantandoDesde >= 0f)
+        {
+            Actual.CortarLevantarse();
+            Actual.Bloquear(false);
+            if (Actual.movimiento != null) Actual.movimiento.Caido = false;
+        }
         Actual.estado = Estado.Retirado;
         Actual.termino = true; // (su resultado ya está en pantalla)
         Actual.Publicar();
