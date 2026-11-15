@@ -2107,6 +2107,62 @@
     {
       "key": "gameplay.table.fixed_hint",
       "text": "Click a name to view their profile · Tab or Esc to close"
+    },
+    {
+      "key": "gameplay.death.card.killed_by",
+      "text": "Killed by"
+    },
+    {
+      "key": "gameplay.death.card.title",
+      "text": "Summary"
+    },
+    {
+      "key": "gameplay.death.card.distance",
+      "text": "Distance"
+    },
+    {
+      "key": "gameplay.death.card.distance_fmt",
+      "text": "{0} m"
+    },
+    {
+      "key": "gameplay.death.card.remaining",
+      "text": "They had left"
+    },
+    {
+      "key": "gameplay.death.card.hp_fmt",
+      "text": "{0} HP · {1} shield"
+    },
+    {
+      "key": "gameplay.death.card.you_dealt",
+      "text": "You dealt"
+    },
+    {
+      "key": "gameplay.death.card.they_dealt",
+      "text": "They dealt"
+    },
+    {
+      "key": "gameplay.death.card.hits.one",
+      "text": "{1} damage in 1 hit"
+    },
+    {
+      "key": "gameplay.death.card.hits.other",
+      "text": "{1} damage in {0} hits"
+    },
+    {
+      "key": "gameplay.death.card.no_damage",
+      "text": "No damage"
+    },
+    {
+      "key": "gameplay.death.card.others",
+      "text": "Others who damaged you"
+    },
+    {
+      "key": "gameplay.death.card.received",
+      "text": "Damage taken"
+    },
+    {
+      "key": "gameplay.death.card.headshot",
+      "text": "Headshot"
     }
   ]
 }

@@ -2071,7 +2071,7 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 380227458789477
-    m_Localized: Compari all'inizio della prossima pausa
+    m_Localized: Compari all'inizio della prossima ondata
     m_Metadata:
       m_Items: []
   - m_Id: 380227458789478
@@ -7212,7 +7212,7 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 2872270592503811
-    m_Localized: "Uccisioni \xB7 morti \xB7 assist"
+    m_Localized: Prestazione
     m_Metadata:
       m_Items: []
   - m_Id: 2872270592503812
@@ -7309,6 +7309,62 @@ MonoBehaviour:
       m_Items: []
   - m_Id: 2872270592503835
     m_Localized: Non ha ancora concluso nessuna partita.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2881462216781824
+    m_Localized: Eliminato da
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2881462250336256
+    m_Localized: Riepilogo
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2881462250336257
+    m_Localized: Distanza
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2881462250336258
+    m_Localized: '{0} m'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2881462250336259
+    m_Localized: "Gli \xE8 rimasto"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2881462250336260
+    m_Localized: "{0} vita \xB7 {1} scudo"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2881462250336261
+    m_Localized: Gli hai inflitto
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2881462250336262
+    m_Localized: Ti ha inflitto
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2881462250336263
+    m_Localized: '{1} danni in 1 colpo'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2881462250336264
+    m_Localized: '{1} danni in {0} colpi'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2881462250336265
+    m_Localized: Nessun danno
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2881462250336266
+    m_Localized: Altri che ti hanno colpito
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2881462250336267
+    m_Localized: Danni subiti
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2881462250336268
+    m_Localized: Colpo alla testa
     m_Metadata:
       m_Items: []
   references:

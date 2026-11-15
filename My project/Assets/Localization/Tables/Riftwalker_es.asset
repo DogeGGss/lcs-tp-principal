@@ -7196,7 +7196,7 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 2872270592503811
-    m_Localized: "Bajas \xB7 muertes \xB7 asistencias"
+    m_Localized: "Desempe\xF1o"
     m_Metadata:
       m_Items: []
   - m_Id: 2872270592503812
@@ -7293,6 +7293,62 @@ MonoBehaviour:
       m_Items: []
   - m_Id: 2872270592503835
     m_Localized: "Todav\xEDa no termin\xF3 ninguna partida."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2881462216781824
+    m_Localized: "Te elimin\xF3"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2881462250336256
+    m_Localized: Resumen
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2881462250336257
+    m_Localized: Distancia
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2881462250336258
+    m_Localized: '{0} m'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2881462250336259
+    m_Localized: "Le qued\xF3"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2881462250336260
+    m_Localized: "{0} vida \xB7 {1} escudo"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2881462250336261
+    m_Localized: Vos le hiciste
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2881462250336262
+    m_Localized: Te hizo
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2881462250336263
+    m_Localized: "{1} de da\xF1o en 1 impacto"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2881462250336264
+    m_Localized: "{1} de da\xF1o en {0} impactos"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2881462250336265
+    m_Localized: "Sin da\xF1o"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2881462250336266
+    m_Localized: "Otros que te da\xF1aron"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2881462250336267
+    m_Localized: "Da\xF1o recibido"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2881462250336268
+    m_Localized: Tiro a la cabeza
     m_Metadata:
       m_Items: []
   references:

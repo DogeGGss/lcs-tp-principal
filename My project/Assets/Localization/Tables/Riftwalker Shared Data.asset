@@ -7287,6 +7287,62 @@ MonoBehaviour:
     m_Key: profile.other.no_matches
     m_Metadata:
       m_Items: []
+  - m_Id: 2881462216781824
+    m_Key: gameplay.death.card.killed_by
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2881462250336256
+    m_Key: gameplay.death.card.title
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2881462250336257
+    m_Key: gameplay.death.card.distance
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2881462250336258
+    m_Key: gameplay.death.card.distance_fmt
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2881462250336259
+    m_Key: gameplay.death.card.remaining
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2881462250336260
+    m_Key: gameplay.death.card.hp_fmt
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2881462250336261
+    m_Key: gameplay.death.card.you_dealt
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2881462250336262
+    m_Key: gameplay.death.card.they_dealt
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2881462250336263
+    m_Key: gameplay.death.card.hits.one
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2881462250336264
+    m_Key: gameplay.death.card.hits.other
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2881462250336265
+    m_Key: gameplay.death.card.no_damage
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2881462250336266
+    m_Key: gameplay.death.card.others
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2881462250336267
+    m_Key: gameplay.death.card.received
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2881462250336268
+    m_Key: gameplay.death.card.headshot
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

@@ -125,6 +125,9 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
 
     // Número de jugador de Photon y equipo táctico (US 031).
     public int Actor => photonView != null && photonView.Owner != null ? photonView.Owner.ActorNumber : -1;
+
+    /// <summary>Su vida y escudo (en las copias, los que manda el dueño). US 375: lo que le quedó al que te mató.</summary>
+    public HealthSystem Vida => vida;
     public int Equipo => EquiposTacticos.DeActor(Actor);
 
     // =====================================================================
@@ -159,6 +162,7 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
             movimiento.Landed += () => aterrizajes++;
         }
         if (vida != null) vida.Died += AlMorir;
+        ResumenDeMuerte.Seguir(vida); // US 375: el daño que recibe en cada vida
         WeaponFire.Fired += AlDisparar;
         MeleeAttack.Swung += AlAcuchillar;
         GrenadeThrower.Thrown += AlLanzarGranada;
@@ -326,10 +330,12 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
     // codigo: el arma que tenía en la mano el atacante cuando hizo el daño. Va al aviso de baja aunque, por el lag,
     // cuando llega el aviso ya tenga otra (por ejemplo, mató con el Mitre y enseguida sacó el cuchillo).
     [PunRPC]
-    private void RpcDanio(int danio, int atacante, bool cabeza, string arma, byte codigo, Vector3 origen)
+    private void RpcDanio(int danio, int atacante, bool cabeza, string arma, byte codigo, Vector3 origen, byte zona)
     {
         if (!photonView.IsMine || muerto || vida == null) return;
         if (atacante != 0 && EquiposTacticos.SonAliados(atacante, Actor)) return; // US 031, CA6: por las dudas, también acá (0: un invasor, US 290)
+        if (atacante > 0 && atacante != Actor && !vida.Invulnerable)
+            ResumenDeMuerte.Recibido(atacante, danio, cabeza ? BodyZone.Head : (BodyZone)zona); // US 375, CA3 y CA4
         if (atacante > 0 && atacante != Actor) danos[atacante] = Time.unscaledTime;
         ultimoAtacante = atacante;
         ultimaArma = arma ?? "";
@@ -353,6 +359,7 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
         if (MatchSettings.Mode == GameMode.Deathmatch) ShopUI.Cerrar();
         Bloquear(true);
         AvisarBaja(ultimoAtacante, cabeza, ultimaArma, ultimoCodigo, asistentes); // US 057, CA4
+        MostrarResumen(cabeza); // US 375
 
         Player asesino = ultimoAtacante != 0 && PhotonNetwork.CurrentRoom != null ? PhotonNetwork.CurrentRoom.GetPlayer(ultimoAtacante) : null;
         string titulo = asesino != null ? L10n.T("gameplay.death.killed_by_fmt", asesino.NickName) : ultimaArma == Caida ? L10n.T("gameplay.death.fell")
@@ -402,6 +409,7 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
         ultimaArma = "";
         ultimoCodigo = ArmaDesconocida;
         danos.Clear();
+        ResumenDeMuerte.NuevaVida(); // US 375: se esconde la tarjeta y la vida nueva empieza de cero
         Bloquear(false);
         AbrirVentanaDeEquipo();
 
@@ -451,6 +459,7 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
         ultimaArma = "";
         ultimoCodigo = ArmaDesconocida;
         danos.Clear();
+        ResumenDeMuerte.NuevaVida(); // US 375: se esconde la tarjeta y la vida nueva empieza de cero
         Bloquear(false);
         vida.Invulnerable = false;
         photonView.RPC(nameof(RpcReaparecio), RpcTarget.Others, punto.position, punto.rotation.eulerAngles.y);
@@ -660,6 +669,35 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
     // que el asesino tiene en la mano (por ejemplo, una granada, US 073); vacío, el arma en la mano.
     // codigo: el arma que tenía en la mano el asesino al hacer el daño (si no se sabe, la que tiene ahora).
     // asistentes: los que lo habían dañado en los últimos 10 s, sin contar al que lo mató (F24, asistencias).
+    // US 375: la tarjeta con el resumen del enfrentamiento (Táctico y Deathmatch): quién lo mató, con qué, a qué
+    // distancia, lo que le quedó, el daño de los dos y los demás que lo dañaron. Sin un jugador que lo haya matado (se
+    // cayó, la valla, su propia granada), dice qué pasó y muestra solo el daño recibido (CA5).
+    private void MostrarResumen(bool cabeza)
+    {
+        if (MatchSettings.Mode != GameMode.Tactico && MatchSettings.Mode != GameMode.Deathmatch) return;
+        Player asesino = ultimoAtacante > 0 && ultimoAtacante != Actor && PhotonNetwork.CurrentRoom != null
+            ? PhotonNetwork.CurrentRoom.GetPlayer(ultimoAtacante) : null;
+        var m = new ResumenDeMuerte.Muerte { cabeza = cabeza };
+        if (asesino != null)
+        {
+            JugadorEnRed tirador = partida != null ? partida.Buscar(ultimoAtacante) : null;
+            byte usada = tirador == null ? SinArma : ultimoCodigo != SinArma && ultimoCodigo != ArmaDesconocida ? ultimoCodigo : tirador.ArmaActual;
+            m.asesino = ultimoAtacante;
+            m.nombre = asesino.NickName;
+            CharacterData personaje = PersonajeDe(ultimoAtacante);
+            m.personaje = personaje != null ? personaje.displayName : "";
+            m.arma = !string.IsNullOrEmpty(ultimaArma) ? ultimaArma : tirador != null ? tirador.NombreDeArma(usada) : "";
+            if (tirador != null)
+            {
+                m.distancia = Vector3.Distance(transform.position, tirador.transform.position);
+                if (tirador.vida != null) { m.vida = tirador.vida.currentHealth; m.escudo = tirador.vida.currentShield; m.conVida = true; }
+            }
+        }
+        else m.causa = ultimaArma == Caida ? L10n.T("gameplay.death.fell") : ultimaArma == VallaElectrica.Causa ? L10n.T("gameplay.death.fence")
+            : L10n.T("gameplay.ui.you_were_eliminated");
+        ResumenDeMuerte.Mostrar(m);
+    }
+
     private void AvisarBaja(int atacante, bool cabeza, string arma, byte codigo, int[] asistentes)
     {
         RondasTacticas.ContarBaja(atacante, photonView.OwnerActorNr, cabeza, asistentes); // US 135, CA2: $ 200 al que mató
@@ -1072,8 +1110,14 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
                     // El arma en la mano de quien hizo el daño, ahora: el daño se calcula en el mismo cuadro del tiro.
                     // F31 (US 290): el golpe de un invasor (que lleva el anfitrión) va sin atacante: no es fuego amigo.
                     int atacante = Npc.Pegando ? 0 : PhotonNetwork.LocalPlayer.ActorNumber;
+                    // US 375: en qué zona pegó (sin zona, como el cuchillo o la granada, cuenta como cuerpo).
+                    byte zona = (byte)(cabeza ? BodyZone.Head : HealthSystem.DamageZone ?? BodyZone.Body);
+                    HealthSystem.DamageZone = null;
                     photonView.RPC(nameof(RpcDanio), photonView.Owner, danio, atacante, cabeza,
-                        HealthSystem.DamageSource ?? "", yo != null ? yo.ArmaActual : ArmaDesconocida, origen);
+                        HealthSystem.DamageSource ?? "", yo != null ? yo.ArmaActual : ArmaDesconocida, origen, zona);
+                    // US 375, CA3: lo que el jugador de esta computadora le hizo a este (vivo, y si no es compañero).
+                    if (atacante != 0 && !muerto && !vida.Invulnerable && !EquiposTacticos.SonAliados(atacante, Actor))
+                        ResumenDeMuerte.Hecho(Actor, danio);
                 }
             };
 

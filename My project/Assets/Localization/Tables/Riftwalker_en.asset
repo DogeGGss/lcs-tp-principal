@@ -7224,7 +7224,7 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 2872270592503811
-    m_Localized: "Kills \xB7 deaths \xB7 assists"
+    m_Localized: Performance
     m_Metadata:
       m_Items: []
   - m_Id: 2872270592503812
@@ -7321,6 +7321,62 @@ MonoBehaviour:
       m_Items: []
   - m_Id: 2872270592503835
     m_Localized: Hasn't finished any matches yet.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2881462216781824
+    m_Localized: Killed by
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2881462250336256
+    m_Localized: Summary
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2881462250336257
+    m_Localized: Distance
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2881462250336258
+    m_Localized: '{0} m'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2881462250336259
+    m_Localized: They had left
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2881462250336260
+    m_Localized: "{0} HP \xB7 {1} shield"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2881462250336261
+    m_Localized: You dealt
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2881462250336262
+    m_Localized: They dealt
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2881462250336263
+    m_Localized: '{1} damage in 1 hit'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2881462250336264
+    m_Localized: '{1} damage in {0} hits'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2881462250336265
+    m_Localized: No damage
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2881462250336266
+    m_Localized: Others who damaged you
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2881462250336267
+    m_Localized: Damage taken
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2881462250336268
+    m_Localized: Headshot
     m_Metadata:
       m_Items: []
   references:

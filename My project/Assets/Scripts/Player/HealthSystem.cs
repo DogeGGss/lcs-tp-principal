@@ -32,6 +32,9 @@ public class HealthSystem : MonoBehaviour
     // Desde dónde viene el daño (US 192): el lugar del que disparó o donde explotó la granada. Lo pone quien hace el
     // daño justo antes de TakeDamage y se borra al usarlo. Sin lugar, el indicador de dirección no muestra nada.
     public static Vector3? DamageOrigin;
+    // US 375: en qué zona pegó el tiro (cabeza, cuerpo o piernas), para el resumen al morir del que lo recibe. Lo pone
+    // el disparo justo antes de TakeDamage y se borra al usarlo; sin zona (cuchillo, granada) cuenta como cuerpo.
+    public static BodyZone? DamageZone;
     // US 260: desde dónde vino el último daño que recibió (para empujar el cuerpo al morir), o null si no se sabe.
     public Vector3? LastDamageOrigin { get; private set; }
 

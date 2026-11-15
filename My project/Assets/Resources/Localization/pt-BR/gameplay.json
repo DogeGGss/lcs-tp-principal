@@ -2042,7 +2042,7 @@
     },
     {
       "key": "gameplay.mates.next_wave",
-      "text": "Você aparece no início do próximo descanso"
+      "text": "Você aparece no início da próxima onda"
     },
     {
       "key": "gameplay.result.record_coop_fmt",
@@ -2107,6 +2107,62 @@
     {
       "key": "gameplay.table.fixed_hint",
       "text": "Clique em um nome para ver o perfil · Tab ou Esc para fechar"
+    },
+    {
+      "key": "gameplay.death.card.killed_by",
+      "text": "Você foi eliminado por"
+    },
+    {
+      "key": "gameplay.death.card.title",
+      "text": "Resumo"
+    },
+    {
+      "key": "gameplay.death.card.distance",
+      "text": "Distância"
+    },
+    {
+      "key": "gameplay.death.card.distance_fmt",
+      "text": "{0} m"
+    },
+    {
+      "key": "gameplay.death.card.remaining",
+      "text": "Ficou com"
+    },
+    {
+      "key": "gameplay.death.card.hp_fmt",
+      "text": "{0} vida · {1} escudo"
+    },
+    {
+      "key": "gameplay.death.card.you_dealt",
+      "text": "Você causou"
+    },
+    {
+      "key": "gameplay.death.card.they_dealt",
+      "text": "Ele causou"
+    },
+    {
+      "key": "gameplay.death.card.hits.one",
+      "text": "{1} de dano em 1 acerto"
+    },
+    {
+      "key": "gameplay.death.card.hits.other",
+      "text": "{1} de dano em {0} acertos"
+    },
+    {
+      "key": "gameplay.death.card.no_damage",
+      "text": "Sem dano"
+    },
+    {
+      "key": "gameplay.death.card.others",
+      "text": "Outros que causaram dano"
+    },
+    {
+      "key": "gameplay.death.card.received",
+      "text": "Dano recebido"
+    },
+    {
+      "key": "gameplay.death.card.headshot",
+      "text": "Tiro na cabeça"
     }
   ]
 }
