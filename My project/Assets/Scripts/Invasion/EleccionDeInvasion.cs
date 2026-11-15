@@ -21,6 +21,8 @@ using static ShopUIKit;
 // - CA6: después de elegir arranca el respiro de 20 s.
 // US 294 (provisional): en 1 de cada 3 tiradas una de las opciones es un arma que no se tiene, que reemplaza la del
 // mismo lugar y viene con la munición llena.
+// F31: la primera elección de la partida es siempre entre 3 armas principales al azar que no se tienen (también al volver
+// a tirar), para llegar mejor armado a las oleadas más altas. Si no hay 3, las que falten son cartas.
 // US 303: al superar una oleada del Jefe la elección se abre siempre, aunque el puesto no esté cargado (CA2), recién
 // después de "Seguir" (CA4): es la elección del Jefe, sin comunes y con más chance de raras, épicas y legendarias (vale
 // también al volver a tirar, solo en esa elección). Las legendarias no salen antes del primer Jefe (CA3).
@@ -87,6 +89,7 @@ public class EleccionDeInvasion : MonoBehaviour
     private int costo = PrimeraTirada;
     private readonly List<Opcion> opciones = new List<Opcion>();
     private readonly Dictionary<CartaDeInvasion, int> elegidas = new Dictionary<CartaDeInvasion, int>();
+    private int eleccionesHechas; // F31: la primera es entre 3 armas principales
     private readonly List<CartaDeInvasion> orden = new List<CartaDeInvasion>();
     private readonly List<Behaviour> bloqueados = new List<Behaviour>();
 
@@ -300,6 +303,22 @@ public class EleccionDeInvasion : MonoBehaviour
         opciones.Clear();
         int oleada = oleadas != null ? oleadas.Oleada : 1;
 
+        // F31: la primera elección, 3 armas principales al azar (las que no alcancen, cartas).
+        if (eleccionesHechas == 0 && elegidas.Count == 0)
+        {
+            foreach (ShopItem principal in ArmasPrincipalesAlAzar(3)) opciones.Add(new Opcion { arma = principal });
+            var salieron = new HashSet<CartaDeInvasion>();
+            while (opciones.Count < 3)
+            {
+                CartaDeInvasion carta = CartaAlAzar(oleada, salieron, false);
+                if (carta == null) break;
+                salieron.Add(carta);
+                opciones.Add(new Opcion { carta = carta });
+            }
+            Dibujar();
+            return;
+        }
+
         // US 294, CA3: como mucho un arma, en 1 de cada 3 tiradas.
         ShopItem arma = Random.value < 1f / 3f ? ArmaAlAzar() : null;
         int lugarArma = arma != null ? Random.Range(0, 3) : -1;
@@ -362,6 +381,22 @@ public class EleccionDeInvasion : MonoBehaviour
         return posibles.Count > 0 ? posibles[Random.Range(0, posibles.Count)] : null;
     }
 
+    // F31: hasta n armas principales distintas que no se tienen, al azar (del catálogo o solo de Invasión).
+    private List<ShopItem> ArmasPrincipalesAlAzar(int n)
+    {
+        var posibles = new List<ShopItem>();
+        if (equipo == null) equipo = FindFirstObjectByType<PlayerLoadout>();
+        if (equipo == null || equipo.Catalog == null) return posibles;
+        var armas = new List<ShopItem>(equipo.Catalog.items);
+        armas.AddRange(ConfigInvasion.Actual.armasSoloInvasion);
+        foreach (ShopItem item in armas)
+            if (item != null && item.kind == ShopItemKind.PrimaryWeapon && !equipo.IsEquipped(item) && !posibles.Contains(item))
+                posibles.Add(item);
+        for (int i = posibles.Count - 1; i > 0; i--) { int j = Random.Range(0, i + 1); (posibles[i], posibles[j]) = (posibles[j], posibles[i]); }
+        if (posibles.Count > n) posibles.RemoveRange(n, posibles.Count - n);
+        return posibles;
+    }
+
     private void Elegir(int i)
     {
         if (!Abierta || !Lista || i < 0 || i >= opciones.Count || MisCartasInvasion.Abierta) return;
@@ -383,6 +418,7 @@ public class EleccionDeInvasion : MonoBehaviour
     // CA6: arranca el respiro (US 332: en medio de la oleada no).
     private void Terminar()
     {
+        eleccionesHechas++;
         bool enLaOleada = inmediata;
         Cerrar();
         if (!enLaOleada && oleadas != null) oleadas.TerminoLaEleccion();
