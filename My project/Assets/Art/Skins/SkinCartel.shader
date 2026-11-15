@@ -21,7 +21,7 @@ Shader "Riftwalker/Skins/Cartel"
         _Velocidad ("LEDs por segundo que corre el texto", Float) = 22
         _LargoTexto ("Largo del texto (columnas; la textura lo parte en tiras de 16 de alto)", Float) = 6818
         _Renglon ("Renglones de alto (texto + espacio)", Float) = 15
-        _Espejo ("Dar vuelta el texto (1 o -1)", Float) = 1
+        _Espejo ("Dar vuelta el texto (1 o -1; el cartel va en -1)", Float) = -1
         _Brillo ("Brillo", Float) = 2.2
     }
 

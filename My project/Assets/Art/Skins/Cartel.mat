@@ -29,16 +29,17 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
-    - _Parte: 0
-    - _Celda: 0.006
-    - _Velocidad: 22
-    - _LargoTexto: 6818
-    - _Renglon: 15
-    - _Espejo: 1
+    - _AjusteEscala: 1
     - _Brillo: 2.2
+    - _Celda: 0.006
+    - _Espejo: -1
+    - _LargoTexto: 6818
+    - _Parte: 0
+    - _Renglon: 15
+    - _Velocidad: 22
     m_Colors:
-    - _ColorLed: {r: 1, g: 0.541, b: 0.118, a: 1}
     - _ColorApagado: {r: 0.102, g: 0.055, b: 0.02, a: 1}
     - _ColorCarcasa: {r: 0.07, g: 0.07, b: 0.07, a: 1}
+    - _ColorLed: {r: 1, g: 0.541, b: 0.118, a: 1}
   m_BuildTextureStacks: []
   m_AllowLocking: 1
