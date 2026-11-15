@@ -252,6 +252,7 @@ public class EmbestidaDeNpc : MonoBehaviour
             float adelante = Vector3.Dot(rel, direccion);
             float costado = Vector3.Cross(direccion, rel).y; // + a la derecha, - a la izquierda
             if (adelante < -npc.Frente * 0.5f || adelante > npc.Frente + radio || Mathf.Abs(costado) > npc.Ancho * MasAncho + radio) continue;
+            if (persecucion != null && !persecucion.AlcanzaEnAltura(vida.transform)) continue; // F31: subido a algo alto, no lo toca
 
             golpeados.Add(vida);
             HealthSystem.DamageOrigin = transform.position + Vector3.up;
