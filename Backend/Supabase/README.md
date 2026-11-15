@@ -109,6 +109,15 @@ El saldo de créditos, boletos y cristales de una cuenta lo lleva la base: en SQ
 - «Reiniciar datos de prueba» (Tienda) es solo sin cuenta.
 - Mientras no se corra `monedas.sql`, el juego sigue con las monedas en la PC, como antes.
 - Como el resto, no es a prueba de trampas: el sorteo de las cápsulas sigue en el juego y la base acepta lo que el juego dice que ganó (con topes por movimiento).
+
+## Perfiles y partidas (F34: US 373 y US 374)
+
+El historial de partidas y el perfil de otros jugadores: en SQL Editor ejecutar `Backend/Supabase/perfiles.sql` (después de `logros.sql`; es reejecutable y no borra nada).
+
+- Tabla `rw_match_history` (las partidas terminadas de cada cuenta, con el id que les da el juego), con RLS y sin acceso directo. La base guarda las 20 más nuevas de cada cuenta.
+- `rw_add_matches` (solo cuentas): el juego manda las partidas que todavía no subió y la base devuelve las 20 de la cuenta, que el juego junta con las de la PC. Así el historial es el mismo en otra computadora (US 374, CA4). Reintentar no duplica: una partida que ya llegó no se vuelve a guardar.
+- `rw_public_profile` (cualquier sesión, como el ranking): lo público de un jugador para el perfil que se abre desde el ranking, la tabla con Tab o el resultado (US 373). Devuelve el nombre, lo equipado (avatar, banner, título y marco), el nivel, las estadísticas por modo, los logros, el puesto en el ranking de bajas y de logros, y el historial. Nunca el mail, las monedas, las compras ni el resto de la cuenta (CA3). Un jugador sin cuenta en el ranking devuelve `found: false` y el juego dice que su perfil no está disponible (CA4).
+- Mientras no se corra `perfiles.sql`, el historial queda en la PC (la pestaña Historial lo avisa) y el perfil de otros dice que falta actualizar el servicio online.
 ## Funciones (Edge Functions): verificar la cuenta en Photon y borrar la cuenta
 
 Dos funciones en `Backend/Supabase/functions`, que se publican desde el panel de Supabase (no hace falta instalar nada):

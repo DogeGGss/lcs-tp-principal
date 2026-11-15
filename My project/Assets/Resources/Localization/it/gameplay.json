@@ -2099,6 +2099,14 @@
     {
       "key": "gameplay.shop.shield",
       "text": "Scudo"
+    },
+    {
+      "key": "gameplay.table.mouse_hint",
+      "text": "Clic destro: usa il mouse per vedere un profilo"
+    },
+    {
+      "key": "gameplay.table.fixed_hint",
+      "text": "Clicca un nome per vedere il profilo · Tab o Esc per chiudere"
     }
   ]
 }

@@ -5,6 +5,7 @@ using UnityEngine.UI;
 using static ShopUIKit;
 using static PerfilUI;
 using Categoria = CategoriasRanking.Categoria;
+using Img = UnityEngine.UI.Image;
 
 // Logros y ranking (US 044 y US 226). Pestaña Logros: los logros de cometas y de combate, con el progreso y el
 // porcentaje de jugadores que tiene cada uno. Pestaña Ranking: todos los jugadores ordenados por la categoría elegida (CategoriasRanking): un dato
@@ -187,6 +188,17 @@ public class PantallaLogros : PantallaBase
         T(r, "Puesto", 22, 0, 110, 72, FTitulo, 34, p.rank <= 3 ? Accent : Soft, "#" + p.rank);
         T(r, "Nombre", 150, 0, 800, 72, FTitulo, 30, Ink, mio ? L10n.T("profile.ach.you_suffix", p.display_name) : p.display_name).richText = false;
         T(r, "Valor", 960, 0, 346, 72, FTitulo, 36, Ink, CategoriasRanking.Mostrar(cat, p.value), TextAlignmentOptions.MidlineRight);
+        AbrirPerfil(r, p.player_id, p.display_name);
+    }
+
+    // US 373, CA1: tocando a un jugador del ranking se abre su perfil; al cerrarlo se vuelve a la misma página (CA5).
+    static void AbrirPerfil(RectTransform zona, string id, string nombre)
+    {
+        Img fondo = zona.GetComponent<Img>();
+        Color normal = fondo != null ? fondo.color : PanelColor;
+        var p = Clickeable(zona, () => PerfilAjeno.Abrir(id, nombre));
+        p.Hovered = () => { if (fondo != null) fondo.color = Over(White(0.06f), normal); };
+        p.Exited = () => { if (fondo != null) fondo.color = normal; };
     }
     void FilaLogro(LogrosCometas.Definicion d, int i)
     {
@@ -211,6 +223,7 @@ public class PantallaLogros : PantallaBase
         var r = Place(Node("Jugador", lista), 0, i * 112, 1330, 100); Image(r, Rounded, PanelColor, 6);
         T(r, "Puesto", 20, 20, 110, 50, FTitulo, 38, Accent, "#" + p.rank);
         T(r, "Nombre", 150, 15, 490, 38, FTitulo, 30, Ink, p.display_name).richText = false;
+        AbrirPerfil(Place(Node("AbrirPerfil", r), 0, 0, 660, 100), p.player_id, p.display_name);
         var catalogo = LogrosCometas.Catalogo;
         T(r, "Cantidad", 150, 57, 490, 28, FTexto, 22, Mute, L10n.T("profile.ach.player_total_fmt", p.total, catalogo.Length));
         // Un cuadradito por logro, en el orden del catálogo: entran entre el nombre y el botón.

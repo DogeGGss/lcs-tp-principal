@@ -7195,6 +7195,122 @@ MonoBehaviour:
     m_Localized: Online
     m_Metadata:
       m_Items: []
+  - m_Id: 2872270567337984
+    m_Localized: 'Clic destro: usa il mouse per vedere un profilo'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2872270592503808
+    m_Localized: "Clicca un nome per vedere il profilo \xB7 Tab o Esc per chiudere"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2872270592503809
+    m_Localized: Cronologia
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2872270592503810
+    m_Localized: Risultato
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2872270592503811
+    m_Localized: "Uccisioni \xB7 morti \xB7 assist"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2872270592503812
+    m_Localized: Data
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2872270592503813
+    m_Localized: Durata
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2872270592503814
+    m_Localized: "{0}\xBA posto"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2872270592503815
+    m_Localized: "{0} \xB7 ondata {1} \xB7 {2}"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2872270592503816
+    m_Localized: cooperativa
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2872270592503817
+    m_Localized: da solo
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2872270592503818
+    m_Localized: "{0} / {1} / {2} \xB7 KDA {3}"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2872270592503819
+    m_Localized: "Le ultime 20 partite concluse del tuo account, dalla pi\xF9 recente alla pi\xF9 vecchia."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2872270592503820
+    m_Localized: 'Senza account: si vedono solo le partite giocate su questo computer.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2872270592503821
+    m_Localized: 'Partite di questo computer: il servizio online va aggiornato.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2872270592503822
+    m_Localized: 'Offline: partite di questo computer. Verranno caricate sul tuo account quando torna la connessione.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2872270592503823
+    m_Localized: Non hai ancora concluso nessuna partita. Compaiono qui quando arrivi alla schermata dei risultati.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2872270592503824
+    m_Localized: '{0} di {1} partite'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2872270592503825
+    m_Localized: "\xAB Indietro"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2872270592503826
+    m_Localized: "Profilo di un altro giocatore \xB7 solo visualizzazione"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2872270592503827
+    m_Localized: Posizione in classifica
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2872270592503828
+    m_Localized: "Non ha ancora concluso nessuna partita in questa modalit\xE0."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2872270592503829
+    m_Localized: "* KDA = (uccisioni + assist) \xF7 morti; senza morti, \xF7 1. Contano le partite concluse."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2872270592503830
+    m_Localized: "Caricamento del profilo\u2026"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2872270592503831
+    m_Localized: "Questo giocatore non ha un account: il suo profilo non \xE8 disponibile."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2872270592503832
+    m_Localized: "Offline: il profilo non \xE8 disponibile ora."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2872270592503833
+    m_Localized: "Il profilo non \xE8 disponibile: il servizio online va aggiornato."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2872270592503834
+    m_Localized: Impossibile caricare il profilo. Riprova tra poco.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2872270592503835
+    m_Localized: Non ha ancora concluso nessuna partita.
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

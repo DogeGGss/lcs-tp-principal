@@ -7186,6 +7186,122 @@ MonoBehaviour:
     m_Localized: En ligne
     m_Metadata:
       m_Items: []
+  - m_Id: 2872270567337984
+    m_Localized: 'Clic droit : utiliser la souris pour voir un profil'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2872270592503808
+    m_Localized: "Clique sur un nom pour voir son profil \xB7 Tab ou \xC9chap pour fermer"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2872270592503809
+    m_Localized: Historique
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2872270592503810
+    m_Localized: "R\xE9sultat"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2872270592503811
+    m_Localized: "\xC9liminations \xB7 morts \xB7 assistances"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2872270592503812
+    m_Localized: Date
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2872270592503813
+    m_Localized: "Dur\xE9e"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2872270592503814
+    m_Localized: '{0}e place'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2872270592503815
+    m_Localized: "{0} \xB7 vague {1} \xB7 {2}"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2872270592503816
+    m_Localized: "coop\xE9ratif"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2872270592503817
+    m_Localized: solo
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2872270592503818
+    m_Localized: "{0} / {1} / {2} \xB7 KDA {3}"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2872270592503819
+    m_Localized: "Les 20 derni\xE8res parties termin\xE9es de ton compte, de la plus r\xE9cente \xE0 la plus ancienne."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2872270592503820
+    m_Localized: "Sans compte : seules les parties jou\xE9es sur cet ordinateur s'affichent."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2872270592503821
+    m_Localized: "Parties de cet ordinateur : le service en ligne doit \xEAtre mis \xE0 jour."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2872270592503822
+    m_Localized: "Hors ligne : parties de cet ordinateur. Elles seront envoy\xE9es sur ton compte au retour de la connexion."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2872270592503823
+    m_Localized: "Tu n'as encore termin\xE9 aucune partie. Elles apparaissent ici en arrivant \xE0 l'\xE9cran des r\xE9sultats."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2872270592503824
+    m_Localized: '{0} sur {1} parties'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2872270592503825
+    m_Localized: "\xAB Retour"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2872270592503826
+    m_Localized: "Profil d'un autre joueur \xB7 consultation seule"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2872270592503827
+    m_Localized: Place au classement
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2872270592503828
+    m_Localized: "N'a encore termin\xE9 aucune partie dans ce mode."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2872270592503829
+    m_Localized: "* KDA = (\xE9liminations + assistances) \xF7 morts ; sans mort, \xF7 1. Seules les parties termin\xE9es comptent."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2872270592503830
+    m_Localized: "Chargement du profil\u2026"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2872270592503831
+    m_Localized: 'Ce joueur n''a pas de compte : son profil n''est pas disponible.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2872270592503832
+    m_Localized: 'Hors ligne : le profil n''est pas disponible pour le moment.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2872270592503833
+    m_Localized: "Le profil n'est pas disponible : le service en ligne doit \xEAtre mis \xE0 jour."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2872270592503834
+    m_Localized: "Impossible de charger le profil. R\xE9essaie dans un moment."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2872270592503835
+    m_Localized: "N'a encore termin\xE9 aucune partie."
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

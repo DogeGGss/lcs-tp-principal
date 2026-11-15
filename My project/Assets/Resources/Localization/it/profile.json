@@ -2639,6 +2639,114 @@
     {
       "key": "profile.store.simulation",
       "text": "Simulazione"
+    },
+    {
+      "key": "profile.tab.history",
+      "text": "Cronologia"
+    },
+    {
+      "key": "profile.hist.col.result",
+      "text": "Risultato"
+    },
+    {
+      "key": "profile.hist.col.kda",
+      "text": "Prestazione"
+    },
+    {
+      "key": "profile.hist.col.date",
+      "text": "Data"
+    },
+    {
+      "key": "profile.hist.col.duration",
+      "text": "Durata"
+    },
+    {
+      "key": "profile.hist.place_fmt",
+      "text": "{0}º posto"
+    },
+    {
+      "key": "profile.hist.invasion_fmt",
+      "text": "{0} · ondata {1} · {2}"
+    },
+    {
+      "key": "profile.hist.coop",
+      "text": "cooperativa"
+    },
+    {
+      "key": "profile.hist.solo",
+      "text": "da solo"
+    },
+    {
+      "key": "profile.hist.kda_fmt",
+      "text": "{0} / {1} / {2} · KDA {3}"
+    },
+    {
+      "key": "profile.hist.synced",
+      "text": "Le ultime 20 partite concluse del tuo account, dalla più recente alla più vecchia."
+    },
+    {
+      "key": "profile.hist.no_account",
+      "text": "Senza account: si vedono solo le partite giocate su questo computer."
+    },
+    {
+      "key": "profile.hist.update_service",
+      "text": "Partite di questo computer: il servizio online va aggiornato."
+    },
+    {
+      "key": "profile.hist.offline",
+      "text": "Offline: partite di questo computer. Verranno caricate sul tuo account quando torna la connessione."
+    },
+    {
+      "key": "profile.hist.empty",
+      "text": "Non hai ancora concluso nessuna partita. Compaiono qui quando arrivi alla schermata dei risultati."
+    },
+    {
+      "key": "profile.info.history_fmt",
+      "text": "{0} di {1} partite"
+    },
+    {
+      "key": "profile.other.back",
+      "text": "« Indietro"
+    },
+    {
+      "key": "profile.other.view_only",
+      "text": "Profilo di un altro giocatore · solo visualizzazione"
+    },
+    {
+      "key": "profile.other.rank_title",
+      "text": "Posizione in classifica"
+    },
+    {
+      "key": "profile.other.mode_empty",
+      "text": "Non ha ancora concluso nessuna partita in questa modalità."
+    },
+    {
+      "key": "profile.other.kda_note",
+      "text": "* KDA = (uccisioni + assist) ÷ morti; senza morti, ÷ 1. Contano le partite concluse."
+    },
+    {
+      "key": "profile.other.loading",
+      "text": "Caricamento del profilo…"
+    },
+    {
+      "key": "profile.other.no_account",
+      "text": "Questo giocatore non ha un account: il suo profilo non è disponibile."
+    },
+    {
+      "key": "profile.other.offline",
+      "text": "Offline: il profilo non è disponibile ora."
+    },
+    {
+      "key": "profile.other.update_service",
+      "text": "Il profilo non è disponibile: il servizio online va aggiornato."
+    },
+    {
+      "key": "profile.other.unavailable",
+      "text": "Impossibile caricare il profilo. Riprova tra poco."
+    },
+    {
+      "key": "profile.other.no_matches",
+      "text": "Non ha ancora concluso nessuna partita."
     }
   ]
 }

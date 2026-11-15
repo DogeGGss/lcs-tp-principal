@@ -2639,6 +2639,114 @@
     {
       "key": "profile.store.simulation",
       "text": "Simulação"
+    },
+    {
+      "key": "profile.tab.history",
+      "text": "Histórico"
+    },
+    {
+      "key": "profile.hist.col.result",
+      "text": "Resultado"
+    },
+    {
+      "key": "profile.hist.col.kda",
+      "text": "Desempenho"
+    },
+    {
+      "key": "profile.hist.col.date",
+      "text": "Data"
+    },
+    {
+      "key": "profile.hist.col.duration",
+      "text": "Duração"
+    },
+    {
+      "key": "profile.hist.place_fmt",
+      "text": "{0}º lugar"
+    },
+    {
+      "key": "profile.hist.invasion_fmt",
+      "text": "{0} · onda {1} · {2}"
+    },
+    {
+      "key": "profile.hist.coop",
+      "text": "cooperativo"
+    },
+    {
+      "key": "profile.hist.solo",
+      "text": "solo"
+    },
+    {
+      "key": "profile.hist.kda_fmt",
+      "text": "{0} / {1} / {2} · KDA {3}"
+    },
+    {
+      "key": "profile.hist.synced",
+      "text": "As últimas 20 partidas terminadas da sua conta, da mais nova à mais antiga."
+    },
+    {
+      "key": "profile.hist.no_account",
+      "text": "Sem conta: aparecem só as partidas jogadas neste computador."
+    },
+    {
+      "key": "profile.hist.update_service",
+      "text": "Aparecem as partidas deste computador: falta atualizar o serviço online."
+    },
+    {
+      "key": "profile.hist.offline",
+      "text": "Sem conexão: aparecem as partidas deste computador. Elas sobem para a sua conta quando a conexão voltar."
+    },
+    {
+      "key": "profile.hist.empty",
+      "text": "Você ainda não terminou nenhuma partida. Elas aparecem aqui ao chegar à tela de resultado."
+    },
+    {
+      "key": "profile.info.history_fmt",
+      "text": "{0} de {1} partidas"
+    },
+    {
+      "key": "profile.other.back",
+      "text": "« Voltar"
+    },
+    {
+      "key": "profile.other.view_only",
+      "text": "Perfil de outro jogador · só para ver"
+    },
+    {
+      "key": "profile.other.rank_title",
+      "text": "Posição no ranking"
+    },
+    {
+      "key": "profile.other.mode_empty",
+      "text": "Ainda não terminou nenhuma partida deste modo."
+    },
+    {
+      "key": "profile.other.kda_note",
+      "text": "* KDA = (abates + assistências) ÷ mortes; sem mortes, ÷ 1. Contam as partidas terminadas."
+    },
+    {
+      "key": "profile.other.loading",
+      "text": "Carregando o perfil…"
+    },
+    {
+      "key": "profile.other.no_account",
+      "text": "Este jogador não tem conta: o perfil dele não está disponível."
+    },
+    {
+      "key": "profile.other.offline",
+      "text": "Sem conexão: o perfil não está disponível agora."
+    },
+    {
+      "key": "profile.other.update_service",
+      "text": "O perfil não está disponível: falta atualizar o serviço online."
+    },
+    {
+      "key": "profile.other.unavailable",
+      "text": "Não foi possível carregar o perfil. Tente de novo daqui a pouco."
+    },
+    {
+      "key": "profile.other.no_matches",
+      "text": "Ainda não terminou nenhuma partida."
     }
   ]
 }

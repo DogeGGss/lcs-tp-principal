@@ -7171,6 +7171,122 @@ MonoBehaviour:
     m_Key: ui.modes.online
     m_Metadata:
       m_Items: []
+  - m_Id: 2872270567337984
+    m_Key: gameplay.table.mouse_hint
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2872270592503808
+    m_Key: gameplay.table.fixed_hint
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2872270592503809
+    m_Key: profile.tab.history
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2872270592503810
+    m_Key: profile.hist.col.result
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2872270592503811
+    m_Key: profile.hist.col.kda
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2872270592503812
+    m_Key: profile.hist.col.date
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2872270592503813
+    m_Key: profile.hist.col.duration
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2872270592503814
+    m_Key: profile.hist.place_fmt
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2872270592503815
+    m_Key: profile.hist.invasion_fmt
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2872270592503816
+    m_Key: profile.hist.coop
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2872270592503817
+    m_Key: profile.hist.solo
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2872270592503818
+    m_Key: profile.hist.kda_fmt
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2872270592503819
+    m_Key: profile.hist.synced
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2872270592503820
+    m_Key: profile.hist.no_account
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2872270592503821
+    m_Key: profile.hist.update_service
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2872270592503822
+    m_Key: profile.hist.offline
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2872270592503823
+    m_Key: profile.hist.empty
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2872270592503824
+    m_Key: profile.info.history_fmt
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2872270592503825
+    m_Key: profile.other.back
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2872270592503826
+    m_Key: profile.other.view_only
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2872270592503827
+    m_Key: profile.other.rank_title
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2872270592503828
+    m_Key: profile.other.mode_empty
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2872270592503829
+    m_Key: profile.other.kda_note
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2872270592503830
+    m_Key: profile.other.loading
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2872270592503831
+    m_Key: profile.other.no_account
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2872270592503832
+    m_Key: profile.other.offline
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2872270592503833
+    m_Key: profile.other.update_service
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2872270592503834
+    m_Key: profile.other.unavailable
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2872270592503835
+    m_Key: profile.other.no_matches
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

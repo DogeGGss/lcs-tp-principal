@@ -2099,6 +2099,14 @@
     {
       "key": "gameplay.shop.shield",
       "text": "Bouclier"
+    },
+    {
+      "key": "gameplay.table.mouse_hint",
+      "text": "Clic droit : utiliser la souris pour voir un profil"
+    },
+    {
+      "key": "gameplay.table.fixed_hint",
+      "text": "Clique sur un nom pour voir son profil · Tab ou Échap pour fermer"
     }
   ]
 }

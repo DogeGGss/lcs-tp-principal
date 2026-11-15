@@ -2639,6 +2639,114 @@
     {
       "key": "profile.store.simulation",
       "text": "Simulation"
+    },
+    {
+      "key": "profile.tab.history",
+      "text": "History"
+    },
+    {
+      "key": "profile.hist.col.result",
+      "text": "Result"
+    },
+    {
+      "key": "profile.hist.col.kda",
+      "text": "Performance"
+    },
+    {
+      "key": "profile.hist.col.date",
+      "text": "Date"
+    },
+    {
+      "key": "profile.hist.col.duration",
+      "text": "Duration"
+    },
+    {
+      "key": "profile.hist.place_fmt",
+      "text": "{0}th place"
+    },
+    {
+      "key": "profile.hist.invasion_fmt",
+      "text": "{0} · wave {1} · {2}"
+    },
+    {
+      "key": "profile.hist.coop",
+      "text": "co-op"
+    },
+    {
+      "key": "profile.hist.solo",
+      "text": "solo"
+    },
+    {
+      "key": "profile.hist.kda_fmt",
+      "text": "{0} / {1} / {2} · KDA {3}"
+    },
+    {
+      "key": "profile.hist.synced",
+      "text": "The last 20 finished matches on your account, newest first."
+    },
+    {
+      "key": "profile.hist.no_account",
+      "text": "No account: only matches played on this computer are shown."
+    },
+    {
+      "key": "profile.hist.update_service",
+      "text": "Showing matches from this computer: the online service needs an update."
+    },
+    {
+      "key": "profile.hist.offline",
+      "text": "Offline: showing matches from this computer. They'll upload to your account when you're back online."
+    },
+    {
+      "key": "profile.hist.empty",
+      "text": "You haven't finished any matches yet. They show up here when you reach the results screen."
+    },
+    {
+      "key": "profile.info.history_fmt",
+      "text": "{0} of {1} matches"
+    },
+    {
+      "key": "profile.other.back",
+      "text": "« Back"
+    },
+    {
+      "key": "profile.other.view_only",
+      "text": "Another player's profile · view only"
+    },
+    {
+      "key": "profile.other.rank_title",
+      "text": "Ranking position"
+    },
+    {
+      "key": "profile.other.mode_empty",
+      "text": "Hasn't finished any match in this mode yet."
+    },
+    {
+      "key": "profile.other.kda_note",
+      "text": "* KDA = (kills + assists) ÷ deaths; with no deaths, ÷ 1. Only finished matches count."
+    },
+    {
+      "key": "profile.other.loading",
+      "text": "Loading profile…"
+    },
+    {
+      "key": "profile.other.no_account",
+      "text": "This player has no account: their profile isn't available."
+    },
+    {
+      "key": "profile.other.offline",
+      "text": "Offline: the profile isn't available right now."
+    },
+    {
+      "key": "profile.other.update_service",
+      "text": "The profile isn't available: the online service needs an update."
+    },
+    {
+      "key": "profile.other.unavailable",
+      "text": "Couldn't load the profile. Try again in a bit."
+    },
+    {
+      "key": "profile.other.no_matches",
+      "text": "Hasn't finished any matches yet."
     }
   ]
 }

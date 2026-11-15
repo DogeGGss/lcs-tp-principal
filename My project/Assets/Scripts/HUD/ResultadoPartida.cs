@@ -185,6 +185,8 @@ public class ResultadoPartida : MonoBehaviour
             {
                 // US 376: el nombre va en la placa con el perfil del jugador.
                 PerfilEnPartida.Placa(tabla, x - 4f, y + 3f, w - 6f, h - 6f, jugador, celdas[c], displayFont, labelFont, rounded, false);
+                // US 373, CA1: tocando el nombre se abre su perfil.
+                if (jugador != null) PerfilEnPartida.AbrirAlTocar(Place(Node("AbrirPerfil", tabla), x - 4f, y + 3f, w - 6f, h - 6f), jugador, jugador.NickName);
                 x += w;
                 continue;
             }

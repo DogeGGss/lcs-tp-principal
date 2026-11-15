@@ -195,6 +195,8 @@ public class ResultadoDeathmatch : MonoBehaviour
             {
                 // US 376: el nombre va en la placa con el perfil del jugador; "Ganador", a la derecha de la placa.
                 PerfilEnPartida.Placa(tabla, x - 4f, y + 3f, w - 6f, h - 6f, jugador, celdas[c], displayFont, labelFont, rounded, false);
+                // US 373, CA1: tocando el nombre se abre su perfil.
+                if (jugador != null) PerfilEnPartida.AbrirAlTocar(Place(Node("AbrirPerfil", tabla), x - 4f, y + 3f, w - 6f, h - 6f), jugador, jugador.NickName);
                 if (ganador)
                 {
                     RectTransform chip = Place(Node("Ganador", tabla), 0f, y + (h - 20f) / 2f, 10f, 20f);

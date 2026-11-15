@@ -7207,6 +7207,122 @@ MonoBehaviour:
     m_Localized: Online
     m_Metadata:
       m_Items: []
+  - m_Id: 2872270567337984
+    m_Localized: 'Right-click: use the mouse to view a profile'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2872270592503808
+    m_Localized: "Click a name to view their profile \xB7 Tab or Esc to close"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2872270592503809
+    m_Localized: History
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2872270592503810
+    m_Localized: Result
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2872270592503811
+    m_Localized: "Kills \xB7 deaths \xB7 assists"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2872270592503812
+    m_Localized: Date
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2872270592503813
+    m_Localized: Duration
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2872270592503814
+    m_Localized: '{0}th place'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2872270592503815
+    m_Localized: "{0} \xB7 wave {1} \xB7 {2}"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2872270592503816
+    m_Localized: co-op
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2872270592503817
+    m_Localized: solo
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2872270592503818
+    m_Localized: "{0} / {1} / {2} \xB7 KDA {3}"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2872270592503819
+    m_Localized: The last 20 finished matches on your account, newest first.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2872270592503820
+    m_Localized: 'No account: only matches played on this computer are shown.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2872270592503821
+    m_Localized: 'Showing matches from this computer: the online service needs an update.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2872270592503822
+    m_Localized: 'Offline: showing matches from this computer. They''ll upload to your account when you''re back online.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2872270592503823
+    m_Localized: You haven't finished any matches yet. They show up here when you reach the results screen.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2872270592503824
+    m_Localized: '{0} of {1} matches'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2872270592503825
+    m_Localized: "\xAB Back"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2872270592503826
+    m_Localized: "Another player's profile \xB7 view only"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2872270592503827
+    m_Localized: Ranking position
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2872270592503828
+    m_Localized: Hasn't finished any match in this mode yet.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2872270592503829
+    m_Localized: "* KDA = (kills + assists) \xF7 deaths; with no deaths, \xF7 1. Only finished matches count."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2872270592503830
+    m_Localized: "Loading profile\u2026"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2872270592503831
+    m_Localized: 'This player has no account: their profile isn''t available.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2872270592503832
+    m_Localized: 'Offline: the profile isn''t available right now.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2872270592503833
+    m_Localized: 'The profile isn''t available: the online service needs an update.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2872270592503834
+    m_Localized: Couldn't load the profile. Try again in a bit.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2872270592503835
+    m_Localized: Hasn't finished any matches yet.
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

@@ -7179,6 +7179,122 @@ MonoBehaviour:
     m_Localized: Online
     m_Metadata:
       m_Items: []
+  - m_Id: 2872270567337984
+    m_Localized: 'Clic derecho: usar el mouse para ver un perfil'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2872270592503808
+    m_Localized: "Toc\xE1 un nombre para ver su perfil \xB7 Tab o Esc para cerrar"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2872270592503809
+    m_Localized: Historial
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2872270592503810
+    m_Localized: Resultado
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2872270592503811
+    m_Localized: "Bajas \xB7 muertes \xB7 asistencias"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2872270592503812
+    m_Localized: Fecha
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2872270592503813
+    m_Localized: "Duraci\xF3n"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2872270592503814
+    m_Localized: "{0}.\xBA puesto"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2872270592503815
+    m_Localized: "{0} \xB7 oleada {1} \xB7 {2}"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2872270592503816
+    m_Localized: cooperativo
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2872270592503817
+    m_Localized: solo
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2872270592503818
+    m_Localized: "{0} / {1} / {2} \xB7 KDA {3}"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2872270592503819
+    m_Localized: "Las \xFAltimas 20 partidas terminadas de tu cuenta, de la m\xE1s nueva a la m\xE1s vieja."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2872270592503820
+    m_Localized: 'Sin cuenta: se ven solo las partidas jugadas en esta computadora.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2872270592503821
+    m_Localized: 'Se ven las partidas de esta computadora: falta actualizar el servicio online.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2872270592503822
+    m_Localized: "Sin conexi\xF3n: se ven las partidas de esta computadora. Se suben a tu cuenta cuando vuelva."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2872270592503823
+    m_Localized: "Todav\xEDa no terminaste ninguna partida. Aparecen ac\xE1 al llegar a la pantalla de resultado."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2872270592503824
+    m_Localized: '{0} de {1} partidas'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2872270592503825
+    m_Localized: "\xAB Volver"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2872270592503826
+    m_Localized: "Perfil de otro jugador \xB7 solo para mirar"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2872270592503827
+    m_Localized: Puesto en el ranking
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2872270592503828
+    m_Localized: "Todav\xEDa no termin\xF3 ninguna partida de este modo."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2872270592503829
+    m_Localized: "* KDA = (bajas + asistencias) \xF7 muertes; sin muertes, \xF7 1. Cuentan las partidas terminadas."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2872270592503830
+    m_Localized: "Cargando el perfil\u2026"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2872270592503831
+    m_Localized: "Este jugador no tiene cuenta: su perfil no est\xE1 disponible."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2872270592503832
+    m_Localized: "Sin conexi\xF3n: el perfil no est\xE1 disponible ahora."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2872270592503833
+    m_Localized: "El perfil no est\xE1 disponible: falta actualizar el servicio online."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2872270592503834
+    m_Localized: "No se pudo cargar el perfil. Prob\xE1 de nuevo en un rato."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2872270592503835
+    m_Localized: "Todav\xEDa no termin\xF3 ninguna partida."
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []
