@@ -84,7 +84,6 @@ public static class WeaponFire
         Vector3 muzzle = Trazadora.BocaLocal(camera);
         if (MinijuegoCometas.Activo)
         {
-            Trazadora.Fogonazo(muzzle);
             FirePractice(weapon, camera, aim, view, spread, pellets, muzzle, range);
             return;
         }
@@ -162,13 +161,22 @@ public static class WeaponFire
         MinijuegoCometas.ContarDisparo();
         float reach = MinijuegoCometas.Alcance(range);
         bool anyHit = false;
+        // F35 (US 381): con una skin legendaria, su fogonazo y sus estelas también en la fase de compra.
+        CatalogoDeSkins.Efectos legendaria = Trazadora.Tinte.HasValue ? null : SkinsEnLasArmas.EfectosDe(weapon);
+        if (legendaria == null) Trazadora.Fogonazo(muzzle);
+        Vector3[] finales = legendaria != null ? new Vector3[pellets] : null;
+        GameObject conSkin = SkinsEnLasArmas.ArmaDe(weapon);
+        CalorDeSkin.Disparo(conSkin);
         for (int i = 0; i < pellets; i++)
         {
             Vector3 direction = view * Deviation(spread) * Vector3.forward;
             Cometa comet = MinijuegoCometas.Buscar(camera.transform.position, direction, reach, out Vector3 point);
-            Trazadora.Mostrar(muzzle, comet != null ? point : camera.transform.position + direction * Mathf.Min(reach, 300f));
+            Vector3 fin = comet != null ? point : camera.transform.position + direction * Mathf.Min(reach, 300f);
+            if (legendaria != null) finales[i] = fin;
+            else Trazadora.Mostrar(muzzle, fin);
             if (comet != null && MinijuegoCometas.Acertar(comet, point)) anyHit = true;
         }
+        if (legendaria != null) EfectosDeSkin.DisparoPropio(conSkin, weapon, muzzle, finales, legendaria);
         aim.Kick(weapon);
         if (anyHit) Hit?.Invoke(HitMarkerKind.Body);
     }
