@@ -46,6 +46,7 @@ public class Pistola : MonoBehaviour, IHudWeapon
     void Awake()
     {
         if (fullReserve < 0) fullReserve = reserveAmmo;
+        reserveAmmo = Municion.Reserva(fullReserve); // F31: en Invasión viene con el doble
     }
 
     /// <summary>Cargador lleno y la reserva con la que viene el arma. Lo usan el inicio de cada ronda del Táctico

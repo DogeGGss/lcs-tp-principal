@@ -554,7 +554,7 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
             velocidad = Vector3.up * 0.5f,
             yaw = otro.transform.eulerAngles.y,
             cargador = item.magazine > 0 ? item.magazine : -1,
-            reserva = item.magazine > 0 ? item.reserve : -1
+            reserva = item.magazine > 0 ? Municion.Reserva(item.reserve) : -1
         };
         // F35 (US 380, CA4): con la skin que tenía (la que publicó).
         CatalogoDeSkins.Arma arma = CatalogoDeSkins.ArmaDeFicha(item.name);
