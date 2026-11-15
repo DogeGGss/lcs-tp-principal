@@ -2099,6 +2099,14 @@
     {
       "key": "gameplay.shop.shield",
       "text": "Shield"
+    },
+    {
+      "key": "gameplay.table.mouse_hint",
+      "text": "Right-click: use the mouse to view a profile"
+    },
+    {
+      "key": "gameplay.table.fixed_hint",
+      "text": "Click a name to view their profile · Tab or Esc to close"
     }
   ]
 }

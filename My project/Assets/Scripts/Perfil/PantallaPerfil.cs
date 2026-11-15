@@ -10,7 +10,7 @@ using Cosmetico = PerfilDatos.Cosmetico;
 // Perfil del jugador (menú principal). Arriba, la cabecera con el banner, el avatar, el nombre, el título y un
 // resumen; abajo, cuatro pestañas: Estadísticas (US 221: las del jugador, F24, y las del minijuego, US 159), Personalización
 // (avatares, banners, títulos y marcos; y las skins de las armas, F35, US 379), Emotes (US 264: los bailes que se llevan
-// en la rueda) y Cuenta (US 237, PestanaCuenta).
+// en la rueda), Historial (US 374: las últimas 20 partidas, ListaDeHistorial) y Cuenta (US 237, PestanaCuenta).
 public class PantallaPerfil : PantallaBase
 {
     private const float Y0 = 520f, AnchoGrilla = 1260f;
@@ -25,9 +25,14 @@ public class PantallaPerfil : PantallaBase
     private UIPolygon nivelEmblema;
     private RectTransform nivelLogo;
     private Img nivelBorde;
-    private readonly TextMeshProUGUI[] pestanas = new TextMeshProUGUI[4];
+    private readonly TextMeshProUGUI[] pestanas = new TextMeshProUGUI[5];
+    private const int PestanaHistorial = 3, PestanaDeCuenta = 4;
     private Img subrayado;
-    private RectTransform panelEstad, panelPers, panelEmotes, panelCuenta, grilla, vista;
+    private RectTransform panelEstad, panelPers, panelEmotes, panelHistorial, panelCuenta, grilla, vista;
+    private RectTransform listaHistorial;
+    private UnityEngine.UI.ScrollRect scrollHistorial;
+    private TextMeshProUGUI avisoHistorial;
+    private LogrosOnline.EstadoDelHistorial estadoHistorialDibujado;
     private PestanaCuenta cuenta;
     private RectTransform cuerpoMinijuego;
     private float anchoTarjeta;
@@ -48,6 +53,7 @@ public class PantallaPerfil : PantallaBase
         ArmarEstadisticas();
         ArmarPersonalizacion();
         ArmarEmotes();
+        ArmarHistorial();
         panelCuenta = Place(Node("Cuenta", rect), 60f, Y0, 1800f, 540f);
         cuenta = new PestanaCuenta(menu, panelCuenta);
         ElegirPestana(0);
@@ -127,7 +133,7 @@ public class PantallaPerfil : PantallaBase
 
     private void ArmarPestanas()
     {
-        string[] nombres = { "Estadísticas", "Personalización", "Emotes", "Cuenta" };
+        string[] nombres = { "Estadísticas", "Personalización", "Emotes", "Historial", "Cuenta" };
         float x = 60f;
         for (int i = 0; i < nombres.Length; i++)
         {
@@ -157,8 +163,10 @@ public class PantallaPerfil : PantallaBase
         panelEstad.gameObject.SetActive(i == 0);
         panelPers.gameObject.SetActive(i == 1);
         panelEmotes.gameObject.SetActive(i == 2);
-        panelCuenta.gameObject.SetActive(i == 3);
-        if (i == 3) cuenta.Refrescar();
+        panelHistorial.gameObject.SetActive(i == PestanaHistorial);
+        panelCuenta.gameObject.SetActive(i == PestanaDeCuenta);
+        if (i == PestanaDeCuenta) cuenta.Refrescar();
+        if (i == PestanaHistorial) RefrescarHistorial();
         if (i == 2) VerEmote(emoteVisto); else VistaPreviaDeEmote.Apagar(); // la vista previa solo dibuja si se ve
         if (i == 1 && armas) VerSkin(SkinElegida); else VistaPreviaDeSkin.Apagar();
         RefrescarInfo();
@@ -167,7 +175,9 @@ public class PantallaPerfil : PantallaBase
     private void RefrescarInfo()
     {
         if (pestana == 0) infoPestana.text = L10n.T("profile.info.matches_fmt", N(EstadisticasJugador.Datos.Partidas));
-        else if (pestana == 3) infoPestana.text = cuenta.Info;
+        else if (pestana == PestanaDeCuenta) infoPestana.text = cuenta.Info;
+        else if (pestana == PestanaHistorial)
+            infoPestana.text = L10n.T("profile.info.history_fmt", HistorialDePartidas.Partidas.Count, HistorialDePartidas.Maximo);
         else if (pestana == 2)
         {
             int equipados = 0;
@@ -978,12 +988,46 @@ public class PantallaPerfil : PantallaBase
         RefrescarGrilla();
         RefrescarVista();
         RefrescarEmotes();
-        if (pestana == 3) cuenta.Refrescar();
+        RefrescarHistorial();
+        if (pestana == PestanaDeCuenta) cuenta.Refrescar();
     }
 
     public override void Tick()
     {
         base.Tick();
-        if (pestana == 3) { cuenta.Tick(); RefrescarInfo(); }
+        if (pestana == PestanaDeCuenta) { cuenta.Tick(); RefrescarInfo(); }
+        // CA4: el aviso cambia cuando la nube termina de sincronizar (o se corta la conexión).
+        if (pestana == PestanaHistorial && LogrosOnline.Instancia != null && LogrosOnline.Instancia.Historial != estadoHistorialDibujado)
+            RefrescarHistorial();
+    }
+
+    // ================= Historial (US 374) =================
+
+    private void ArmarHistorial()
+    {
+        panelHistorial = Place(Node("Historial", rect), 60f, Y0, 1800f, 540f);
+        avisoHistorial = T(panelHistorial, "Aviso", 0f, 0f, 1800f, 30f, FTexto, 20f, Mute, "", TextAlignmentOptions.MidlineLeft);
+        scrollHistorial = Scroll(panelHistorial, 0f, 40f, 1800f, 500f, out listaHistorial);
+        HistorialDePartidas.Cambio += () => { if (rect != null && pestana == PestanaHistorial) RefrescarHistorial(); };
+    }
+
+    // CA1: las últimas 20 partidas terminadas, de la más nueva a la más vieja. CA4: dice si son las de la cuenta o solo
+    // las de esta computadora.
+    private void RefrescarHistorial()
+    {
+        if (panelHistorial == null) return;
+        LogrosOnline online = LogrosOnline.Instancia;
+        estadoHistorialDibujado = online != null ? online.Historial : LogrosOnline.EstadoDelHistorial.SinCuenta;
+        avisoHistorial.text = estadoHistorialDibujado switch
+        {
+            LogrosOnline.EstadoDelHistorial.EnLaNube => L10n.T("profile.hist.synced"),
+            LogrosOnline.EstadoDelHistorial.SinCuenta => L10n.T("profile.hist.no_account"),
+            LogrosOnline.EstadoDelHistorial.FaltaActualizarLaBase => L10n.T("profile.hist.update_service"),
+            _ => L10n.T("profile.hist.offline"),
+        };
+        avisoHistorial.color = estadoHistorialDibujado == LogrosOnline.EstadoDelHistorial.EnLaNube ? Mute : Accent;
+        float alto = ListaDeHistorial.Dibujar(listaHistorial, HistorialDePartidas.Partidas, 1800f, L10n.T("profile.hist.empty"));
+        listaHistorial.sizeDelta = new Vector2(1800f, Mathf.Max(500f, alto));
+        if (pestana == PestanaHistorial) RefrescarInfo();
     }
 }

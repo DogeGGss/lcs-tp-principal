@@ -83,6 +83,19 @@ public class ResultadoDeInvasion : MonoBehaviour
         });
         // US 308: Jefes, puestos, cartas, armas y cooperativo (una vez por partida, con el mismo id).
         EstadisticasDeInvasion.Registrar(partida.Id, jefes, coop);
+        // US 374: al historial, con la dificultad, la oleada a la que llegó y si jugó solo o en cooperativo.
+        HistorialDePartidas.Registrar(new HistorialDePartidas.Partida
+        {
+            id = partida.Id,
+            modo = "invasion",
+            segundos = segundos,
+            gano = salvo,
+            bajas = puntos != null ? puntos.Bajas : 0,
+            muertes = murio ? 1 : 0,
+            dificultad = dificultad.ToString().ToLowerInvariant(),
+            oleada = oleada,
+            coop = coop,
+        });
         Guardado.Save(); // la nube lo sube sola cuando ve el cambio (LogrosOnline)
 
         var canvas = GetComponent<Canvas>();

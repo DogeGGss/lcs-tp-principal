@@ -40,6 +40,17 @@ public static class RegistroDePartida
             desactivados = RondasTacticas.Propia(RondasTacticas.PropDesactivaciones),
             segundos = Segundos(RondasTacticas.Inicio),
         });
+        // US 374: la partida va al historial, con el mismo id.
+        HistorialDePartidas.Registrar(new HistorialDePartidas.Partida
+        {
+            id = Id(sala, RondasTacticas.Inicio),
+            modo = "tactico",
+            segundos = (int)Segundos(RondasTacticas.Inicio),
+            gano = gano,
+            bajas = bajas,
+            muertes = muertes,
+            asistencias = RondasTacticas.Propia(RondasTacticas.PropAsistencias),
+        });
     }
 
     /// <summary>Deathmatch (US 142): ganó si quedó en el primer puesto.</summary>
@@ -61,6 +72,29 @@ public static class RegistroDePartida
             mejorRacha = PartidaDeathmatch.MejorRacha(actor),
             segundos = Segundos(PartidaDeathmatch.Inicio),
         });
+        // US 374: al historial, con el puesto (el ganador que anotó el anfitrión va primero, como en el resultado).
+        HistorialDePartidas.Registrar(new HistorialDePartidas.Partida
+        {
+            id = Id(sala, PartidaDeathmatch.Inicio),
+            modo = "deathmatch",
+            segundos = (int)Segundos(PartidaDeathmatch.Inicio),
+            gano = gano,
+            puesto = gano ? 1 : PuestoDeathmatch(actor),
+            bajas = PartidaDeathmatch.Bajas(actor),
+            muertes = PartidaDeathmatch.Muertes(actor),
+            asistencias = PartidaDeathmatch.Asistencias(actor),
+        });
+    }
+
+    // El puesto del jugador en el Deathmatch: el ganador primero y después el orden de PartidaDeathmatch.Puestos.
+    private static int PuestoDeathmatch(int actor)
+    {
+        var puestos = PartidaDeathmatch.Puestos();
+        int ganador = PartidaDeathmatch.Actual != null ? PartidaDeathmatch.Actual.Ganador : 0;
+        int g = puestos.FindIndex(p => p.ActorNumber == ganador);
+        if (g > 0) { Player p = puestos[g]; puestos.RemoveAt(g); puestos.Insert(0, p); }
+        int mio = puestos.FindIndex(p => p.ActorNumber == actor);
+        return mio >= 0 ? mio + 1 : 0;
     }
 
     // CA3: la sala (su código) y la hora del servidor en que empezó la partida.

@@ -13,6 +13,8 @@ using Tipo = PerfilDatos.Tipo;
 // - En la fila, el nombre va en una placa como la cabecera del Perfil: el banner oscurecido de fondo, el marco alrededor,
 //   el avatar a la izquierda y el título debajo del nombre.
 // - Si un jugador no publicó nada (por ejemplo, con una versión vieja), se ve con lo del conjunto inicial.
+// - US 373: también publica el id de su cuenta, así tocando su placa se abre su perfil (PerfilAjeno). En el juego
+//   publicado es el mismo que el usuario de Photon (photon-auth); en el editor, Photon no lo verifica y va acá.
 public static class PerfilEnPartida
 {
     public const string Prop = "perfil";
@@ -23,7 +25,8 @@ public static class PerfilEnPartida
     {
         Player yo = PhotonNetwork.LocalPlayer;
         if (yo == null) return;
-        string valor = string.Join(Separador.ToString(), Id(PerfilDatos.Avatar), Id(PerfilDatos.Marco), Id(PerfilDatos.Banner), Id(PerfilDatos.Titulo));
+        string cuenta = LogrosOnline.Instancia != null ? LogrosOnline.Instancia.IdDeLaCuenta ?? "" : "";
+        string valor = string.Join(Separador.ToString(), Id(PerfilDatos.Avatar), Id(PerfilDatos.Marco), Id(PerfilDatos.Banner), Id(PerfilDatos.Titulo), cuenta);
         if (yo.CustomProperties.TryGetValue(Prop, out object actual) && actual as string == valor) return;
         yo.SetCustomProperties(new Hashtable { { Prop, valor } });
     }
@@ -38,6 +41,24 @@ public static class PerfilEnPartida
         string Parte(int i) => i < ids.Length ? ids[i] : null;
         return (Buscar(Tipo.Avatar, Parte(0), "riftwalker"), Buscar(Tipo.Marco, Parte(1), "anden-riftwalker"),
                 Buscar(Tipo.Banner, Parte(2), "anden-riftwalker"), Buscar(Tipo.Titulo, Parte(3), ""));
+    }
+
+    /// <summary>US 373: el id de la cuenta del jugador (para abrir su perfil), o null si no tiene una.</summary>
+    public static string CuentaDe(Player p)
+    {
+        if (p == null) return null;
+        if (p.IsLocal) return LogrosOnline.Instancia != null ? LogrosOnline.Instancia.IdDeLaCuenta : null;
+        string[] ids = p.CustomProperties.TryGetValue(Prop, out object valor) && valor is string texto ? texto.Split(Separador) : new string[0];
+        if (ids.Length > 4 && PerfilAjeno.EsCuenta(ids[4])) return ids[4];
+        return PerfilAjeno.EsCuenta(p.UserId) ? p.UserId : null;
+    }
+
+    /// <summary>US 373, CA1: tocando la placa se abre el perfil del jugador.</summary>
+    public static void AbrirAlTocar(RectTransform zona, Player p, string nombre)
+    {
+        if (zona == null || p == null) return;
+        string cuenta = CuentaDe(p);
+        PerfilUI.Clickeable(zona, () => PerfilAjeno.Abrir(cuenta, nombre));
     }
 
     private static Cosmetico Buscar(Tipo tipo, string id, string inicial) =>

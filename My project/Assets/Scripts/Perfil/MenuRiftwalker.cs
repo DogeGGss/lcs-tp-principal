@@ -161,7 +161,7 @@ public class MenuRiftwalker : MonoBehaviour
 
         Keyboard teclado = Keyboard.current;
         if (teclado != null && teclado.f9Key.wasPressedThisFrame) SumarDebug();
-        if (teclado != null && teclado.escapeKey.wasPressedThisFrame && !PlayerNameScreen.IsOpen)
+        if (teclado != null && teclado.escapeKey.wasPressedThisFrame && !PlayerNameScreen.IsOpen && !PerfilAjeno.Abierto)
         {
             if (modalAbierto) CerrarModal();
             else if (actual != null && !actual.Escape()) VolverAlMenu();

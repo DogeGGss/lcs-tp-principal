@@ -2639,6 +2639,114 @@
     {
       "key": "profile.store.simulation",
       "text": "Simulation"
+    },
+    {
+      "key": "profile.tab.history",
+      "text": "Historique"
+    },
+    {
+      "key": "profile.hist.col.result",
+      "text": "Résultat"
+    },
+    {
+      "key": "profile.hist.col.kda",
+      "text": "Performance"
+    },
+    {
+      "key": "profile.hist.col.date",
+      "text": "Date"
+    },
+    {
+      "key": "profile.hist.col.duration",
+      "text": "Durée"
+    },
+    {
+      "key": "profile.hist.place_fmt",
+      "text": "{0}e place"
+    },
+    {
+      "key": "profile.hist.invasion_fmt",
+      "text": "{0} · vague {1} · {2}"
+    },
+    {
+      "key": "profile.hist.coop",
+      "text": "coopératif"
+    },
+    {
+      "key": "profile.hist.solo",
+      "text": "solo"
+    },
+    {
+      "key": "profile.hist.kda_fmt",
+      "text": "{0} / {1} / {2} · KDA {3}"
+    },
+    {
+      "key": "profile.hist.synced",
+      "text": "Les 20 dernières parties terminées de ton compte, de la plus récente à la plus ancienne."
+    },
+    {
+      "key": "profile.hist.no_account",
+      "text": "Sans compte : seules les parties jouées sur cet ordinateur s'affichent."
+    },
+    {
+      "key": "profile.hist.update_service",
+      "text": "Parties de cet ordinateur : le service en ligne doit être mis à jour."
+    },
+    {
+      "key": "profile.hist.offline",
+      "text": "Hors ligne : parties de cet ordinateur. Elles seront envoyées sur ton compte au retour de la connexion."
+    },
+    {
+      "key": "profile.hist.empty",
+      "text": "Tu n'as encore terminé aucune partie. Elles apparaissent ici en arrivant à l'écran des résultats."
+    },
+    {
+      "key": "profile.info.history_fmt",
+      "text": "{0} sur {1} parties"
+    },
+    {
+      "key": "profile.other.back",
+      "text": "« Retour"
+    },
+    {
+      "key": "profile.other.view_only",
+      "text": "Profil d'un autre joueur · consultation seule"
+    },
+    {
+      "key": "profile.other.rank_title",
+      "text": "Place au classement"
+    },
+    {
+      "key": "profile.other.mode_empty",
+      "text": "N'a encore terminé aucune partie dans ce mode."
+    },
+    {
+      "key": "profile.other.kda_note",
+      "text": "* KDA = (éliminations + assistances) ÷ morts ; sans mort, ÷ 1. Seules les parties terminées comptent."
+    },
+    {
+      "key": "profile.other.loading",
+      "text": "Chargement du profil…"
+    },
+    {
+      "key": "profile.other.no_account",
+      "text": "Ce joueur n'a pas de compte : son profil n'est pas disponible."
+    },
+    {
+      "key": "profile.other.offline",
+      "text": "Hors ligne : le profil n'est pas disponible pour le moment."
+    },
+    {
+      "key": "profile.other.update_service",
+      "text": "Le profil n'est pas disponible : le service en ligne doit être mis à jour."
+    },
+    {
+      "key": "profile.other.unavailable",
+      "text": "Impossible de charger le profil. Réessaie dans un moment."
+    },
+    {
+      "key": "profile.other.no_matches",
+      "text": "N'a encore terminé aucune partie."
     }
   ]
 }

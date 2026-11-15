@@ -92,14 +92,14 @@ public class IdiomasNuevosTests
         }
     }
 
-    [UnityTest, Category("US 350"), Description("CA2-CA5: el Perfil, en sus cuatro pestañas")]
+    [UnityTest, Category("US 350"), Description("CA2-CA5: el Perfil, en sus cinco pestañas")]
     public IEnumerator US350_Perfil() => EnCadaIdioma(Perfil);
     private IEnumerator Perfil()
     {
         yield return Pantalla(m => m.Perfil);
         PantallaPerfil perfil = Object.FindAnyObjectByType<MenuRiftwalker>().Perfil;
         MethodInfo elegir = typeof(PantallaPerfil).GetMethod("ElegirPestana", BindingFlags.Instance | BindingFlags.NonPublic);
-        string[] pestanas = { "Estadisticas", "Personalizacion", "Emotes", "Cuenta" };
+        string[] pestanas = { "Estadisticas", "Personalizacion", "Emotes", "Historial", "Cuenta" }; // Historial: US 374
         for (int i = 0; i < pestanas.Length; i++)
         {
             elegir?.Invoke(perfil, new object[] { i });
