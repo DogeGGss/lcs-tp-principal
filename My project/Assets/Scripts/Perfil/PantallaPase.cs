@@ -44,7 +44,8 @@ public class PantallaPase : PantallaBase
         Borde(cab, 8f, White(0.08f));
         Image(Place(Node("Linea", cab), 0f, 0f, 4f, 120f), null, Accent);
         temporada = T(cab, "Temporada", 30f, 14f, 700f, 52f, FTitulo, 46f, Ink, "", TextAlignmentOptions.MidlineLeft, 3f, true);
-        dias = T(cab, "Dias", 32f, 66f, 700f, 26f, FRotulo, 18f, Mute, "", TextAlignmentOptions.MidlineLeft, 12f, true);
+        dias = T(cab, "Dias", 32f, 66f, 610f, 26f, FRotulo, 18f, Mute, "", TextAlignmentOptions.MidlineLeft, 12f, true);
+        dias.enableAutoSizing = true; dias.fontSizeMin = 11f; dias.fontSizeMax = 18f; // no pisa la barra de experiencia en ningún idioma
         nivel = T(cab, "Nivel", 560f, 18f, 300f, 40f, FTitulo, 34f, Accent, "", TextAlignmentOptions.MidlineLeft, 3f, true);
         cuenta = T(cab, "Cuenta", 880f, 22f, 300f, 34f, FTitulo, 26f, Soft, "", TextAlignmentOptions.MidlineRight, 2f);
         barra = Place(Node("Barra", cab), 560f, 66f, 620f, 12f);
@@ -110,20 +111,20 @@ public class PantallaPase : PantallaBase
         temporada.text = PaseDeBatalla.NombreTemporada;
         int faltan = PaseDeBatalla.DiasQueFaltan;
         dias.text = PaseDeBatalla.UltimaSemana
-            ? $"<color=#F29A38>{L10n.Source("Termina en", "profile.")} {faltan} {(faltan == 1 ? L10n.Source("día", "profile.") : L10n.Source("días", "profile."))}</color>"
-            : $"{L10n.Source("Faltan", "profile.")} {faltan} {L10n.Source("días", "profile.")} · {L10n.Source("40 niveles", "profile.")} · {PaseDeBatalla.CristalesGratis} {L10n.Source("cristales gratis", "profile.")}, {PaseDeBatalla.CristalesConPase} {L10n.Source("con el pase", "profile.")}";
+            ? $"<color=#F29A38>{L10n.Plural("profile.pass.ends_in", faltan)}</color>"
+            : L10n.T("profile.pass.days_left_fmt", faltan, PaseDeBatalla.CristalesGratis, PaseDeBatalla.CristalesConPase);
         bool tope = nivelActual >= PaseDeBatalla.Niveles;
-        nivel.text = $"{L10n.Source("Nivel", "profile.")} {nivelActual}";
+        nivel.text = L10n.T("profile.pass.level_fmt", nivelActual);
         cuenta.text = tope ? L10n.Source("Nivel máximo", "profile.") : $"{PerfilDatos.Numero(PaseDeBatalla.XpDelNivel)} / {PerfilDatos.Numero(PaseDeBatalla.XpPorNivel)}";
         relleno.sizeDelta = new Vector2(620f * PaseDeBatalla.XpDelNivel / PaseDeBatalla.XpPorNivel, 12f);
 
         // US 364, CA1 y CA4
         bool comprado = PaseDeBatalla.Comprado;
         int faltanCristales = PaseDeBatalla.Precio - PerfilDatos.Cristales;
-        botonComprar.texto.text = comprado ? "Pase comprado" : $"Comprar pase · {PerfilDatos.Numero(PaseDeBatalla.Precio)}";
+        botonComprar.texto.text = comprado ? L10n.T("profile.pass.bought") : L10n.T("profile.pass.buy_fmt", PerfilDatos.Numero(PaseDeBatalla.Precio));
         botonComprar.Habilitar(!comprado);
         int listas = PaseDeBatalla.ParaReclamar;
-        botonReclamarTodo.texto.text = listas > 0 ? $"Reclamar todo ({listas})" : "Reclamar todo";
+        botonReclamarTodo.texto.text = listas > 0 ? L10n.T("profile.pass.claim_all_fmt", listas) : L10n.T("profile.pass.claim_all");
         botonReclamarTodo.Habilitar(listas > 0);
 
         for (int i = 0; i < 2; i++)
@@ -141,7 +142,7 @@ public class PantallaPase : PantallaBase
     private void DibujarRecompensas()
     {
         int desde = paginaActual * PaseDeBatalla.PorPagina + 1;
-        pagina.text = $"{L10n.Source("Página", "profile.")} {paginaActual + 1} / {PaseDeBatalla.Paginas} · {L10n.Source("Niveles", "profile.")} {desde}–{desde + PaseDeBatalla.PorPagina - 1}";
+        pagina.text = L10n.T("profile.pass.page_fmt", paginaActual + 1, PaseDeBatalla.Paginas, desde, desde + PaseDeBatalla.PorPagina - 1);
         BorrarHijos(cartas);
         const int columnas = 5;
         float w = (AnchoCartas - (columnas - 1) * Gap) / columnas;
@@ -180,7 +181,7 @@ public class PantallaPase : PantallaBase
         }
 
         string pie = estado == EstadoRecompensa.Reclamada ? "Reclamada" : estado == EstadoRecompensa.Lista ? "Reclamar"
-            : estado == EstadoRecompensa.SinPase ? "Con el pase" : $"Nivel {n}";
+            : estado == EstadoRecompensa.SinPase ? "Con el pase" : L10n.T("profile.pass.level_fmt", n);
         Color tinta = estado == EstadoRecompensa.Reclamada ? Ok : estado == EstadoRecompensa.Lista ? Accent : Mute;
         T(carta, "Estado", 14f, CartaH - 40f, w - 28f, 30f, FTitulo, 22f, tinta, pie, TextAlignmentOptions.MidlineLeft, 4f, true);
 
@@ -204,7 +205,7 @@ public class PantallaPase : PantallaBase
         float h = panel.sizeDelta.y;
         Borde(panel, 8f, WithAlpha(ColorRareza(p.Rareza), 0.6f));
         T(panel, "Nivel", 24f, 20f, PanelW - 48f, 26f, FRotulo, 18f, Accent,
-            $"{L10n.Source("Nivel", "profile.")} {n} · {(PaseDeBatalla.EsGratis(n) ? L10n.Source("Gratis", "profile.") : L10n.Source("Pase de batalla", "profile."))}",
+            L10n.T("profile.pass.level_kind_fmt", n, PaseDeBatalla.EsGratis(n) ? L10n.T("profile.pass.free") : L10n.T("profile.store.tab.pass")),
             TextAlignmentOptions.MidlineLeft, 12f, true);
         float artH = p.cosmetico != null && p.cosmetico.tipo == PerfilDatos.Tipo.Avatar ? 300f : 220f;
         p.DibujarArte(panel, 24f, 54f, PanelW - 48f, artH);
@@ -215,21 +216,21 @@ public class PantallaPase : PantallaBase
         string ayuda = estado == EstadoRecompensa.Reclamada ? "Ya está en tu colección del Perfil."
             : estado == EstadoRecompensa.Lista ? "Hacé clic en la carta para reclamarla."
             : estado == EstadoRecompensa.SinPase ? "Se desbloquea con el pase de batalla."
-            : $"Se desbloquea al llegar al nivel {n}.";
+            : L10n.T("profile.pass.unlocks_at_fmt", n);
         T(panel, "Ayuda", 24f, h - 56f, PanelW - 48f, 30f, FTexto, 20f, estado == EstadoRecompensa.Lista ? Accent : Mute, ayuda, TextAlignmentOptions.MidlineLeft);
     }
 
     private void Reclamar(int n)
     {
         List<string> nombres = PaseDeBatalla.Reclamar(n);
-        if (nombres != null && nombres.Count > 0) menu.Avisar($"{L10n.Source("Reclamaste", "profile.")}: {string.Join(" y ", nombres)}");
+        if (nombres != null && nombres.Count > 0) menu.Avisar(L10n.T("profile.pass.claimed_list_fmt", string.Join(", ", nombres)));
         Refrescar();
     }
 
     private void ReclamarTodo()
     {
         List<string> nombres = PaseDeBatalla.ReclamarTodo();
-        if (nombres.Count > 0) menu.Avisar($"{L10n.Source("Reclamaste", "profile.")} {nombres.Count} {(nombres.Count == 1 ? L10n.Source("recompensa", "profile.") : L10n.Source("recompensas", "profile."))}");
+        if (nombres.Count > 0) menu.Avisar(L10n.Plural("profile.pass.claimed_count", nombres.Count));
         Refrescar();
     }
 
@@ -240,15 +241,15 @@ public class PantallaPase : PantallaBase
         if (PaseDeBatalla.Comprado) return;
         if (PerfilDatos.Cristales < PaseDeBatalla.Precio)
         {
-            menu.Avisar($"Te faltan {PerfilDatos.Numero(PaseDeBatalla.Precio - PerfilDatos.Cristales)} cristales para el pase");
+            menu.Avisar(L10n.T("profile.pass.missing_crystals_fmt", PerfilDatos.Numero(PaseDeBatalla.Precio - PerfilDatos.Cristales)));
             menu.AbrirTienda(PestanaTienda.Cristales); // CA1
             return;
         }
-        menu.Confirmar("Pase de batalla", $"¿Comprar el pase de la {PaseDeBatalla.NombreTemporada.ToLowerInvariant()}?",
-            $"Cuesta {PerfilDatos.Numero(PaseDeBatalla.Precio)} cristales y desbloquea las 32 recompensas de pago (también las de los niveles que ya pasaste). A lo largo de los niveles te devuelve cristales: 550 en total con el pase, contra 100 sin él. Compra simulada: no se cobra dinero real.",
-            "Comprar", () => PaseDeBatalla.Comprar(error =>
+        menu.Confirmar(L10n.T("profile.store.tab.pass"), L10n.T("profile.pass.buy_question_fmt", PaseDeBatalla.NombreTemporada.ToLowerInvariant()),
+            L10n.T("profile.pass.buy_body_fmt", PerfilDatos.Numero(PaseDeBatalla.Precio)),
+            L10n.Source("Comprar", "profile."), () => PaseDeBatalla.Comprar(error =>
             {
-                menu.Avisar(error ?? "¡Pase comprado! Las recompensas de pago de tus niveles ya están para reclamar.");
+                menu.Avisar(error != null ? L10n.Source(error, "profile.") : L10n.T("profile.pass.bought_msg"));
                 Refrescar();
             }));
     }
@@ -278,8 +279,8 @@ public class PantallaPase : PantallaBase
         TextMeshProUGUI nombre = T(fila, "Nombre", 16f, 2f, w - 420f, h * 0.58f, FTitulo, 22f, completo ? Ok : Ink,
             d.Nombre(etapa), TextAlignmentOptions.BottomLeft, 2f);
         nombre.overflowMode = TextOverflowModes.Ellipsis;
-        string etapas = d.metas.Length > 1 ? $" · {L10n.Source("Etapa", "profile.")} {Mathf.Min(cobradas + 1, d.metas.Length)} / {d.metas.Length}" : "";
-        T(fila, "Modo", 16f, h * 0.58f, w - 420f, h * 0.4f, FRotulo, 13f, Mute, d.modo + etapas, TextAlignmentOptions.TopLeft, 10f, true);
+        string etapas = d.metas.Length > 1 ? " · " + L10n.T("profile.pass.stage_fmt", Mathf.Min(cobradas + 1, d.metas.Length), d.metas.Length) : "";
+        T(fila, "Modo", 16f, h * 0.58f, w - 420f, h * 0.4f, FRotulo, 13f, Mute, L10n.Source(d.modo, "profile.") + etapas, TextAlignmentOptions.TopLeft, 10f, true);
         float bx = w - 390f, bw = 230f;
         RectTransform barraD = Place(Node("Barra", fila), bx, h / 2f - 4f, bw, 8f);
         Image(barraD, Rounded, White(0.1f), 4f);

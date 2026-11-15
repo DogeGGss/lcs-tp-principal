@@ -477,8 +477,8 @@ public class CombatHud : MonoBehaviour
         icon.sprite = data.icon;
         icon.enabled = data.icon != null;
         keyText.text = KeyBindings.Label(GameAction.Habilidad);
-        nameText.text = data.displayName;
-        float nameW = Width(nameText, data.displayName.ToUpperInvariant());
+        nameText.text = L10n.Source(data.displayName);
+        float nameW = Width(nameText, nameText.text.ToUpperInvariant());
         float x = (SkillW - (24f + 8f + nameW)) / 2f;
         keyChip.rectTransform.anchoredPosition = new Vector2(x, 0f);
         nameText.rectTransform.anchoredPosition = new Vector2(x + 32f, 0f);
@@ -1108,7 +1108,7 @@ public class CombatHud : MonoBehaviour
         slot.keyBg.color = inHand ? new Color(0f, 0f, 0f, 0.12f) : new Color(0f, 0f, 0f, DarkAlpha(0.35f));
     }
 
-    private static string ItemName(ShopItem item) => string.IsNullOrEmpty(item.alias) ? item.displayName : item.alias;
+    private static string ItemName(ShopItem item) => L10n.Source(string.IsNullOrEmpty(item.alias) ? item.displayName : item.alias);
 
     private void BuildSleepers(int count)
     {

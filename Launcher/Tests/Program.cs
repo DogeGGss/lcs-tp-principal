@@ -259,6 +259,21 @@ const string SesionJson = "{\"access_token\":\"a1\",\"refresh_token\":\"r1\",\"e
 HttpResponseMessage Json(HttpStatusCode code, string body) => new(code) { Content = new StringContent(body, Encoding.UTF8, "application/json") };
 Cuentas NuevaCuenta(TestFolder temp, Func<HttpRequestMessage, HttpResponseMessage> responder) =>
     new(new HttpClient(new Handler(responder)), new ServicioCuentas("https://prueba.supabase.co", "sb_publishable_prueba"), temp.Path);
+// US 350 (CA1): el selector del launcher ofrece los cinco idiomas y cada uno tiene todos los textos del launcher.
+Test("US 350 CA1: el launcher ofrece Español, English, Português, Français e Italiano", () =>
+{
+    var language = LauncherLanguage.FromResources(Path.Combine(Path.GetTempPath(), "riftwalker-us350-" + Guid.NewGuid().ToString("N") + ".json"));
+    Equal("Español, English, Português (Brasil), Français, Italiano", string.Join(", ", language.Locales.Select(l => l.name)));
+    var spanish = language.Resources.ToDictionary(r => r.Key, r => r.Value);
+    foreach (var code in new[] { "pt-BR", "fr", "it" })
+    {
+        language.Select(code, persist: false);
+        var sinTraducir = language.Resources.Where(r => string.IsNullOrWhiteSpace(r.Value) || r.Value.StartsWith("[")).Select(r => r.Key).ToList();
+        if (sinTraducir.Count > 0) throw new Exception($"{code}: sin texto en {string.Join(", ", sinTraducir.Take(5))}");
+        if (language.Resources.Count(r => r.Value == spanish[r.Key]) > spanish.Count / 2) throw new Exception($"{code}: la mayoría de los textos siguen en español");
+    }
+    return Task.CompletedTask;
+});
 Test("Cuenta: confirmar guarda la sesión con el formato que lee el juego", async () =>
 {
     using var temp = new TestFolder();

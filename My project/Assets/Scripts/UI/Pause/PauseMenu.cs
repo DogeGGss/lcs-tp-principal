@@ -1064,7 +1064,7 @@ public class PauseMenu : MonoBehaviour
             keyText.text = key;
             TextMeshProUGUI labelText = Text(Node("Nombre", column), labelFont, 15f, Mute, TextAlignmentOptions.MidlineLeft, 12f, true);
             L10n.BindSource(labelText, label,"ui.");
-            chips.Add((chip, labelText, Mathf.Max(26f, Width(keyText, key) + 14f), Width(labelText, label)));
+            chips.Add((chip, labelText, Mathf.Max(26f, Width(keyText, key) + 14f), Width(labelText, labelText.text))); // US 350: el texto ya traducido
         }
 
         // Primero se reparte en líneas, después se ubica de arriba hacia abajo.

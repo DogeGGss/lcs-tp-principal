@@ -2059,6 +2059,46 @@
     {
       "key": "gameplay.result.keys_hint_coop",
       "text": "Enter or Esc  ·  Back to menu"
+    },
+    {
+      "key": "gameplay.ability.barrera",
+      "text": "Barrier"
+    },
+    {
+      "key": "gameplay.ability.callejero",
+      "text": "Streetwise"
+    },
+    {
+      "key": "gameplay.ability.pulso",
+      "text": "Pulse"
+    },
+    {
+      "key": "gameplay.ability.silbato",
+      "text": "Whistle"
+    },
+    {
+      "key": "gameplay.ability.trasbordo",
+      "text": "Transfer"
+    },
+    {
+      "key": "gameplay.ability.vista_aerea",
+      "text": "Aerial view"
+    },
+    {
+      "key": "gameplay.grenade.shrapnel",
+      "text": "Shrapnel"
+    },
+    {
+      "key": "gameplay.grenade.smoke",
+      "text": "Smoke"
+    },
+    {
+      "key": "gameplay.shop.all_free",
+      "text": "All free"
+    },
+    {
+      "key": "gameplay.shop.shield",
+      "text": "Shield"
     }
   ]
 }

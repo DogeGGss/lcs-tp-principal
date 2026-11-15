@@ -1,6 +1,24 @@
 {
   "locales": [
-    { "code": "es", "name": "Español" },
-    { "code": "en", "name": "English" }
+    {
+      "code": "es",
+      "name": "Español"
+    },
+    {
+      "code": "en",
+      "name": "English"
+    },
+    {
+      "code": "pt-BR",
+      "name": "Português (Brasil)"
+    },
+    {
+      "code": "fr",
+      "name": "Français"
+    },
+    {
+      "code": "it",
+      "name": "Italiano"
+    }
   ]
 }

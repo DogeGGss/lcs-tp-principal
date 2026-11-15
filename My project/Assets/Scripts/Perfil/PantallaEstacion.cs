@@ -166,9 +166,9 @@ public class PantallaEstacion : PantallaBase
         T(canje, "Rotulo", 24f, 18f, 400f, 22f, FRotulo, 17f, Accent, "Conseguir boletos", TextAlignmentOptions.MidlineLeft, 16f, true);
         Canje(canje, 52f, 0, L10n.T("profile.station.credits_fmt", PerfilDatos.Numero(PerfilDatos.CreditosPorBoleto)), L10n.T("profile.station.one_ticket"),
             () => PerfilDatos.Creditos >= PerfilDatos.CreditosPorBoleto, PerfilDatos.CanjearCreditos, L10n.T("profile.station.add_one_ticket"));
-        Canje(canje, 120f, 2, $"{PerfilDatos.CristalesPorBoleto} cristales", "1 boleto",
+        Canje(canje, 120f, 2, L10n.T("profile.station.crystals_fmt", PerfilDatos.CristalesPorBoleto), "1 boleto",
             () => PerfilDatos.Cristales >= PerfilDatos.CristalesPorBoleto, listo => PerfilDatos.CanjearCristales(1, listo), "+1 boleto");
-        Canje(canje, 188f, 2, $"{PerfilDatos.CristalesPorDiez} cristales", "10 boletos · 10 % menos",
+        Canje(canje, 188f, 2, L10n.T("profile.station.crystals_fmt", PerfilDatos.CristalesPorDiez), "10 boletos · 10 % menos",
             () => PerfilDatos.Cristales >= PerfilDatos.CristalesPorDiez, listo => PerfilDatos.CanjearCristales(10, listo), "+10 boletos");
         TextMeshProUGUI tienda = T(canje, "Tienda", 24f, 252f, 540f, 26f, FRotulo, 18f, ColorCristales, "¿Sin cristales? Comprar cristales »", TextAlignmentOptions.MidlineLeft, 8f, true);
         tienda.raycastTarget = true;
@@ -392,7 +392,7 @@ public class PantallaEstacion : PantallaBase
         n.fontSizeMin = 24f;
         n.fontSizeMax = 40f;
         string tipo = NombreTipo(c.tipo);
-        T(carta, "Tipo", 20f, 418f, 340f, 22f, FRotulo, 16f, Mute, tipo + (string.IsNullOrEmpty(c.estilo) ? "" : " · " + c.estilo), TextAlignmentOptions.Center, 14f, true);
+        T(carta, "Tipo", 20f, 418f, 340f, 22f, FRotulo, 16f, Mute, tipo + (string.IsNullOrEmpty(c.estilo) ? "" : " · " + L10n.Source(c.estilo, "profile.")), TextAlignmentOptions.Center, 14f, true);
         Etiqueta(carta, r, 190f, 456f);
     }
 

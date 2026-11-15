@@ -2219,6 +2219,426 @@
     {
       "key": "profile.skin.design.mapa_del_subte",
       "text": "Subway Map"
+    },
+    {
+      "key": "profile.store.tab.capsules",
+      "text": "Capsules"
+    },
+    {
+      "key": "profile.store.tab.pass",
+      "text": "Battle pass"
+    },
+    {
+      "key": "profile.store.card_sub",
+      "text": "01 / Capsules · Pass · Crystals"
+    },
+    {
+      "key": "profile.store.no_luck",
+      "text": "No luck involved"
+    },
+    {
+      "key": "profile.store.daily",
+      "text": "Today's offers"
+    },
+    {
+      "key": "profile.store.daily_detail",
+      "text": "The cosmetic you choose, no luck involved. Simulated purchases: no real money is charged."
+    },
+    {
+      "key": "profile.store.new_offers_fmt",
+      "text": "New offers in {0} h {1:00} min"
+    },
+    {
+      "key": "profile.store.missing_crystals_fmt",
+      "text": "You need {0} more crystals"
+    },
+    {
+      "key": "profile.store.buy_crystals_fmt",
+      "text": "Buy · {0} crystals"
+    },
+    {
+      "key": "profile.store.to_crystals",
+      "text": "We'll take you to the Crystals tab."
+    },
+    {
+      "key": "profile.store.direct",
+      "text": "Direct shop"
+    },
+    {
+      "key": "profile.store.buy_question_fmt",
+      "text": "Buy {0}?"
+    },
+    {
+      "key": "profile.store.buy_body_fmt",
+      "text": "{0} · {1} for {2} crystals. Simulated purchase: no real money is charged."
+    },
+    {
+      "key": "profile.store.bought_fmt",
+      "text": "{0}! It's now in your Profile collection."
+    },
+    {
+      "key": "profile.store.no_crystals_buy",
+      "text": "Out of crystals? Buy crystals »"
+    },
+    {
+      "key": "profile.pass.season",
+      "text": "Season"
+    },
+    {
+      "key": "profile.pass.season_fmt",
+      "text": "Season {0}"
+    },
+    {
+      "key": "profile.pass.claim_all",
+      "text": "Claim all"
+    },
+    {
+      "key": "profile.pass.claim_all_fmt",
+      "text": "Claim all ({0})"
+    },
+    {
+      "key": "profile.pass.buy",
+      "text": "Buy pass"
+    },
+    {
+      "key": "profile.pass.buy_fmt",
+      "text": "Buy pass · {0}"
+    },
+    {
+      "key": "profile.pass.bought",
+      "text": "Pass bought"
+    },
+    {
+      "key": "profile.pass.rewards",
+      "text": "Rewards"
+    },
+    {
+      "key": "profile.pass.challenges",
+      "text": "Challenges"
+    },
+    {
+      "key": "profile.pass.ends_in.one",
+      "text": "Ends in {0} day"
+    },
+    {
+      "key": "profile.pass.ends_in.other",
+      "text": "Ends in {0} days"
+    },
+    {
+      "key": "profile.pass.days_left_fmt",
+      "text": "{0} days left · 40 levels · {1} free crystals, {2} with the pass"
+    },
+    {
+      "key": "profile.pass.level_fmt",
+      "text": "Level {0}"
+    },
+    {
+      "key": "profile.pass.level",
+      "text": "Level"
+    },
+    {
+      "key": "profile.pass.max_level",
+      "text": "Max level"
+    },
+    {
+      "key": "profile.pass.page_fmt",
+      "text": "Page {0} / {1} · Levels {2}–{3}"
+    },
+    {
+      "key": "profile.pass.free",
+      "text": "Free"
+    },
+    {
+      "key": "profile.pass.pass",
+      "text": "Pass"
+    },
+    {
+      "key": "profile.pass.claimed",
+      "text": "Claimed"
+    },
+    {
+      "key": "profile.pass.claim",
+      "text": "Claim"
+    },
+    {
+      "key": "profile.pass.with_pass",
+      "text": "With the pass"
+    },
+    {
+      "key": "profile.pass.level_kind_fmt",
+      "text": "Level {0} · {1}"
+    },
+    {
+      "key": "profile.pass.in_collection",
+      "text": "It's already in your Profile collection."
+    },
+    {
+      "key": "profile.pass.click_to_claim",
+      "text": "Click the card to claim it."
+    },
+    {
+      "key": "profile.pass.unlocks_with_pass",
+      "text": "Unlocks with the battle pass."
+    },
+    {
+      "key": "profile.pass.unlocks_at_fmt",
+      "text": "Unlocks at level {0}."
+    },
+    {
+      "key": "profile.pass.claimed_list_fmt",
+      "text": "You claimed: {0}"
+    },
+    {
+      "key": "profile.pass.claimed_count.one",
+      "text": "You claimed {0} reward"
+    },
+    {
+      "key": "profile.pass.claimed_count.other",
+      "text": "You claimed {0} rewards"
+    },
+    {
+      "key": "profile.pass.missing_crystals_fmt",
+      "text": "You need {0} more crystals for the pass"
+    },
+    {
+      "key": "profile.pass.buy_question_fmt",
+      "text": "Buy the {0} pass?"
+    },
+    {
+      "key": "profile.pass.buy_body_fmt",
+      "text": "It costs {0} crystals and unlocks the 32 paid rewards (including those of levels you already passed). Across the levels it gives crystals back: 550 in total with the pass, against 100 without it. Simulated purchase: no real money is charged."
+    },
+    {
+      "key": "profile.pass.bought_msg",
+      "text": "Pass bought! The paid rewards of your levels are ready to claim."
+    },
+    {
+      "key": "profile.pass.stage_fmt",
+      "text": "Stage {0} / {1}"
+    },
+    {
+      "key": "profile.pass.completed",
+      "text": "Completed"
+    },
+    {
+      "key": "profile.pass.from_match",
+      "text": "from the match"
+    },
+    {
+      "key": "profile.pass.from_challenges",
+      "text": "from challenges"
+    },
+    {
+      "key": "profile.pass.reward_with_pass",
+      "text": "a reward with the pass"
+    },
+    {
+      "key": "profile.pass.challenge",
+      "text": "Challenge"
+    },
+    {
+      "key": "profile.pass.duplicate",
+      "text": "duplicate"
+    },
+    {
+      "key": "profile.pass.credits_lower",
+      "text": "credits"
+    },
+    {
+      "key": "profile.pass.already_bought",
+      "text": "You already bought this season's pass"
+    },
+    {
+      "key": "profile.pass.ends_notice",
+      "text": "Pass: ends in"
+    },
+    {
+      "key": "profile.pass.day",
+      "text": "day"
+    },
+    {
+      "key": "profile.pass.days",
+      "text": "days"
+    },
+    {
+      "key": "profile.pass.season_over",
+      "text": "The season ended: everything you hadn't claimed was claimed automatically"
+    },
+    {
+      "key": "profile.pass.banner_type",
+      "text": "Calling card"
+    },
+    {
+      "key": "profile.pass.mode.dm_or_tac",
+      "text": "Deathmatch or Tactical"
+    },
+    {
+      "key": "profile.pass.ch.play_with_fmt",
+      "text": "Play 3 matches as {0}"
+    },
+    {
+      "key": "profile.pass.ch.headshots",
+      "text": "Kill 3 enemies with headshots"
+    },
+    {
+      "key": "profile.pass.ch.kills_fmt",
+      "text": "Kill {0} enemies"
+    },
+    {
+      "key": "profile.pass.ch.win_2",
+      "text": "Win 2 matches"
+    },
+    {
+      "key": "profile.pass.ch.win_1",
+      "text": "Win 1 match"
+    },
+    {
+      "key": "profile.pass.ch.wave_fmt",
+      "text": "Reach wave {0}"
+    },
+    {
+      "key": "profile.pass.ch.no_scope",
+      "text": "Kill 5 enemies with the Último Tren without aiming"
+    },
+    {
+      "key": "profile.pass.ch.weapon_fmt",
+      "text": "Kill 15 enemies with {0}"
+    },
+    {
+      "key": "profile.pass.ch.stations",
+      "text": "Charge 3 supply stations"
+    },
+    {
+      "key": "profile.pass.ch.boss",
+      "text": "Kill the Boss"
+    },
+    {
+      "key": "profile.pass.ch.alphas",
+      "text": "Kill 10 alphas"
+    },
+    {
+      "key": "profile.level.title",
+      "text": "Player level"
+    },
+    {
+      "key": "profile.level.help",
+      "text": "Goes up and down in matchmaking"
+    },
+    {
+      "key": "profile.level.rank.passenger",
+      "text": "Passenger"
+    },
+    {
+      "key": "profile.level.rank.guard",
+      "text": "Conductor"
+    },
+    {
+      "key": "profile.inv.record_fnd",
+      "text": "Record E · N · H"
+    },
+    {
+      "key": "profile.inv.bosses",
+      "text": "Bosses defeated"
+    },
+    {
+      "key": "profile.inv.stations",
+      "text": "Stations charged"
+    },
+    {
+      "key": "profile.inv.fav_card",
+      "text": "Favorite card"
+    },
+    {
+      "key": "profile.inv.fav_weapon",
+      "text": "Favorite weapon"
+    },
+    {
+      "key": "profile.inv.coop",
+      "text": "In co-op"
+    },
+    {
+      "key": "profile.inv.wave_fmt",
+      "text": "(wave {0})"
+    },
+    {
+      "key": "profile.custom.avatars",
+      "text": "Avatars"
+    },
+    {
+      "key": "profile.custom.banners",
+      "text": "Banners"
+    },
+    {
+      "key": "profile.custom.frames",
+      "text": "Frames"
+    },
+    {
+      "key": "profile.custom.equipped",
+      "text": "Equipped"
+    },
+    {
+      "key": "profile.custom.locked",
+      "text": "Locked"
+    },
+    {
+      "key": "profile.custom.remove",
+      "text": "Remove"
+    },
+    {
+      "key": "profile.emotes.right",
+      "text": "Right"
+    },
+    {
+      "key": "profile.emotes.left",
+      "text": "Left"
+    },
+    {
+      "key": "profile.emotes.slot_fmt",
+      "text": "Slot {0} · {1}"
+    },
+    {
+      "key": "profile.emote.payaseando",
+      "text": "Clowning around"
+    },
+    {
+      "key": "profile.emote.el_clasico",
+      "text": "The Classic"
+    },
+    {
+      "key": "profile.emote.pasito",
+      "text": "Little step"
+    },
+    {
+      "key": "profile.emote.saludo",
+      "text": "Wave"
+    },
+    {
+      "key": "profile.emote.giro_soul",
+      "text": "Soul Spin"
+    },
+    {
+      "key": "profile.ach.refresh",
+      "text": "Refresh"
+    },
+    {
+      "key": "profile.ach.ranking",
+      "text": "Ranking"
+    },
+    {
+      "key": "profile.account.confirm",
+      "text": "Confirm"
+    },
+    {
+      "key": "profile.account.confirmed",
+      "text": "Confirmed"
+    },
+    {
+      "key": "profile.custom.where_to_get",
+      "text": "Get it from capsules, the pass or the shop"
+    },
+    {
+      "key": "profile.store.simulation",
+      "text": "Simulation"
     }
   ]
 }

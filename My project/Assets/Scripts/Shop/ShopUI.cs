@@ -643,7 +643,7 @@ public class ShopUI : MonoBehaviour
         {
             // US 138, CA1: sin plata ni precios.
             barSub.text = L10n.Source(CampoDePractica.Activo ? "Campo de práctica" : "Deathmatch");
-            barMoney.text = "Todo gratis";
+            barMoney.text = L10n.Source("Todo gratis");
             barNext.text = L10n.T(CampoDePractica.Activo ? "gameplay.shop.change_anytime" : "gameplay.shop.kept_next_life");
             banner.SetActive(false);
             return;
@@ -1278,7 +1278,7 @@ public class ShopUI : MonoBehaviour
             Image(Place(Node("Color", chips[i]), 7f, 7.5f, 10f, 10f), circle, grenade.tint);
             texts[i] = Text(Place(Node("Cantidad", chips[i]), 23f, 0f, 160f, 25f), monoFont, 14f, selectedGrenade ? KeyInk : Ink);
             texts[i].fontStyle = FontStyles.Bold;
-            texts[i].text = $"{ListName(grenade)} {count}/{grenade.maxCarry}";
+            texts[i].text = $"{L10n.Source(ListName(grenade))} {count}/{grenade.maxCarry}";
             textWidth += Width(texts[i], texts[i].text);
         }
         // Si a 14 no entran, se achica la letra lo justo (no menos de 11); lo que igual sobre lo corta la fila.
@@ -1303,7 +1303,8 @@ public class ShopUI : MonoBehaviour
             if (loadout.Shield > 0 && shield.shieldPoints >= loadout.Shield && (carried == null || shield.shieldPoints < carried.shieldPoints))
                 carried = shield;
         }
-        SlotHeader(4, null, loadout.Shield <= 0 ? "Escudo" : carried != null ? $"Escudo  ·  <color=#E6E9EE>{ItemName(carried)}</color>" : "Escudo");
+        string escudo = L10n.Source("Escudo");
+        SlotHeader(4, null, loadout.Shield <= 0 ? escudo : carried != null ? $"{escudo}  ·  <color=#E6E9EE>{L10n.Source(ItemName(carried))}</color>" : escudo);
         RectTransform track = Place(Node("Barra", loadoutCells[4]), 18f, 65f, 130f, 12f);
         Image(track, rounded, TrackColor, 6f);
         float ratio = Mathf.Clamp01(loadout.Shield / (float)Mathf.Max(1, maxShield));

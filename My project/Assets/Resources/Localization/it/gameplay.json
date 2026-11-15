@@ -1,0 +1,2104 @@
+{
+  "entries": [
+    {
+      "key": "character.choose",
+      "text": "Scegli il tuo personaggio"
+    },
+    {
+      "key": "character.keyboard_hint",
+      "text": "<color=#F3F4F6>{0}</color>  Scegli     <color=#F3F4F6>← →</color>  Sposta     <color=#F3F4F6>Invio</color>  Conferma"
+    },
+    {
+      "key": "character.keyboard_back",
+      "text": "     <color=#F3F4F6>Esc</color>  Indietro"
+    },
+    {
+      "key": "character.provisional",
+      "text": "Provvisorio"
+    },
+    {
+      "key": "character.last_used",
+      "text": "Ultimo scelto"
+    },
+    {
+      "key": "character.appearance_only",
+      "text": "Solo aspetto"
+    },
+    {
+      "key": "character.no_ability",
+      "text": "Nessuna abilità"
+    },
+    {
+      "key": "character.no_dm_abilities",
+      "text": "Nel Deathmatch non ci sono abilità"
+    },
+    {
+      "key": "character.no_invasion_abilities",
+      "text": "In Invasione non ci sono abilità"
+    },
+    {
+      "key": "character.cooldown",
+      "text": "{0} · Ricarica {1} s"
+    },
+    {
+      "key": "character.selected_by",
+      "text": "Scelto da {0}"
+    },
+    {
+      "key": "gameplay.ui.empty",
+      "text": "Vuoto"
+    },
+    {
+      "key": "gameplay.ui.you_have_no_emotes_equipped_equip_them_from_your_profile",
+      "text": "Non hai emote equipaggiate: equipaggiale dal tuo profilo."
+    },
+    {
+      "key": "gameplay.ui.move_the_mouse",
+      "text": "Muovi il mouse"
+    },
+    {
+      "key": "gameplay.ui.health",
+      "text": "Vita"
+    },
+    {
+      "key": "gameplay.ui.your_cards",
+      "text": "Le tue carte"
+    },
+    {
+      "key": "gameplay.ui.boss",
+      "text": "Boss"
+    },
+    {
+      "key": "gameplay.ui.record",
+      "text": "Record"
+    },
+    {
+      "key": "gameplay.ui.pts",
+      "text": "Pti"
+    },
+    {
+      "key": "gameplay.ui.buy_phase",
+      "text": "Fase di acquisto"
+    },
+    {
+      "key": "gameplay.ui.match_over_deathmatch",
+      "text": "FINE PARTITA  ·  DEATHMATCH"
+    },
+    {
+      "key": "gameplay.ui.match_over",
+      "text": "Fine partita"
+    },
+    {
+      "key": "gameplay.ui.match_over_your_opponents_left",
+      "text": "Fine partita  ·  Gli avversari hanno abbandonato"
+    },
+    {
+      "key": "gameplay.ui.match_over_your_team_left",
+      "text": "Fine partita  ·  La tua squadra ha abbandonato"
+    },
+    {
+      "key": "gameplay.ui.victory_1",
+      "text": "Vittoria"
+    },
+    {
+      "key": "gameplay.ui.defeat",
+      "text": "Sconfitta"
+    },
+    {
+      "key": "gameplay.ui.boss_choice",
+      "text": "Scelta del Boss"
+    },
+    {
+      "key": "gameplay.ui.supply_station",
+      "text": "Posto di rifornimento"
+    },
+    {
+      "key": "gameplay.ui.invasion_mode",
+      "text": "Modalità Invasione"
+    },
+    {
+      "key": "gameplay.ui.you_survived",
+      "text": "Sei sopravvissuto!"
+    },
+    {
+      "key": "gameplay.ui.you_were_eliminated",
+      "text": "Sei stato eliminato"
+    },
+    {
+      "key": "gameplay.ui.player",
+      "text": "Giocatore"
+    },
+    {
+      "key": "gameplay.ui.could_not_connect_check_your_connection",
+      "text": "Impossibile connettersi. Controlla la connessione."
+    },
+    {
+      "key": "gameplay.ui.you_can_no_longer_rejoin_that_match",
+      "text": "Non è più possibile tornare a quella partita."
+    },
+    {
+      "key": "gameplay.ui.invasion",
+      "text": "Invasione"
+    },
+    {
+      "key": "gameplay.ui.tactical",
+      "text": "Tattico"
+    },
+    {
+      "key": "gameplay.ui.choose_your_loadout",
+      "text": "Scegli il tuo equipaggiamento"
+    },
+    {
+      "key": "gameplay.ui.starts_in",
+      "text": "Inizia tra"
+    },
+    {
+      "key": "gameplay.ui.close_to_respawn",
+      "text": "Chiudi per ricomparire"
+    },
+    {
+      "key": "gameplay.ui.you_can_change",
+      "text": "Puoi cambiare"
+    },
+    {
+      "key": "gameplay.ui.fight",
+      "text": "Combattete!"
+    },
+    {
+      "key": "gameplay.ui.deathmatch_mode_appearance_only",
+      "text": "Modalità Deathmatch  ·  Cambia solo l'aspetto"
+    },
+    {
+      "key": "gameplay.ui.change_your_loadout_while_dead_or_just_after_respawning",
+      "text": "Cambi equipaggiamento quando muori o appena ricompari"
+    },
+    {
+      "key": "gameplay.ui.ammunition",
+      "text": "Munizioni"
+    },
+    {
+      "key": "gameplay.ui.both_weapons",
+      "text": "Entrambe le armi"
+    },
+    {
+      "key": "gameplay.ui.refills_the_magazine_and_reserve_of_both_weapons",
+      "text": "Riempie caricatore e riserva di entrambe le armi."
+    },
+    {
+      "key": "gameplay.ui.pistol",
+      "text": "Pistola"
+    },
+    {
+      "key": "gameplay.controls.device",
+      "text": "Dispositivo"
+    },
+    {
+      "key": "gameplay.controls.mouse_left",
+      "text": "Clic sin."
+    },
+    {
+      "key": "gameplay.controls.mouse_right",
+      "text": "Clic des."
+    },
+    {
+      "key": "gameplay.controls.wheel",
+      "text": "Rotellina"
+    },
+    {
+      "key": "gameplay.controls.space",
+      "text": "Spazio"
+    },
+    {
+      "key": "gameplay.controls.backspace",
+      "text": "Backspace"
+    },
+    {
+      "key": "gameplay.controls.caps",
+      "text": "Bloc Maiusc"
+    },
+    {
+      "key": "gameplay.controls.up",
+      "text": "Su"
+    },
+    {
+      "key": "gameplay.controls.down",
+      "text": "Giù"
+    },
+    {
+      "key": "gameplay.controls.reload",
+      "text": "Ricarica"
+    },
+    {
+      "key": "gameplay.card.reserve_shot",
+      "text": "Colpo di riserva"
+    },
+    {
+      "key": "gameplay.card.focused_shot",
+      "text": "Colpo concentrato"
+    },
+    {
+      "key": "gameplay.card.quick_discharge",
+      "text": "Scarica rapida"
+    },
+    {
+      "key": "gameplay.card.coupling",
+      "text": "Accoppiamento"
+    },
+    {
+      "key": "gameplay.card.no_backup",
+      "text": "Senza riserva"
+    },
+    {
+      "key": "gameplay.card.sticky_charge",
+      "text": "Carica adesiva"
+    },
+    {
+      "key": "gameplay.card.double_shell",
+      "text": "Doppia cartuccia"
+    },
+    {
+      "key": "gameplay.card.compact_slug",
+      "text": "Proiettile compatto"
+    },
+    {
+      "key": "gameplay.card.twin_mag",
+      "text": "Caricatore gemello"
+    },
+    {
+      "key": "gameplay.card.loose_bolt",
+      "text": "Otturatore libero"
+    },
+    {
+      "key": "gameplay.card.open_sights",
+      "text": "Mira aperta"
+    },
+    {
+      "key": "gameplay.card.no_interval",
+      "text": "Senza intervallo"
+    },
+    {
+      "key": "gameplay.card.growing_burst",
+      "text": "Raffica crescente"
+    },
+    {
+      "key": "gameplay.card.minefield",
+      "text": "Campo minato"
+    },
+    {
+      "key": "gameplay.card.logistics",
+      "text": "Logistica"
+    },
+    {
+      "key": "gameplay.card.backpack",
+      "text": "Zaino"
+    },
+    {
+      "key": "gameplay.card.recycler",
+      "text": "Riciclatore"
+    },
+    {
+      "key": "gameplay.card.edge",
+      "text": "Filo"
+    },
+    {
+      "key": "gameplay.card.scavenger",
+      "text": "Spazzino"
+    },
+    {
+      "key": "gameplay.card.finisher",
+      "text": "Colpo di grazia"
+    },
+    {
+      "key": "gameplay.card.hungry_edge",
+      "text": "Filo vorace"
+    },
+    {
+      "key": "gameplay.card.ready_reserve",
+      "text": "Riserva pronta"
+    },
+    {
+      "key": "gameplay.card.rage",
+      "text": "Rabbia"
+    },
+    {
+      "key": "gameplay.card.direct_feed",
+      "text": "Alimentazione diretta"
+    },
+    {
+      "key": "gameplay.card.instant_delivery",
+      "text": "Consegna immediata"
+    },
+    {
+      "key": "gameplay.card.clearance",
+      "text": "Sgombero"
+    },
+    {
+      "key": "gameplay.weapon.smg_and_rifle",
+      "text": "Mitraglietta e fucile"
+    },
+    {
+      "key": "gameplay.weapon.rifle",
+      "text": "Fucile"
+    },
+    {
+      "key": "gameplay.weapon.heavy_pistol",
+      "text": "Pistola pesante"
+    },
+    {
+      "key": "gameplay.weapon.pistols_and_primary",
+      "text": "Pistole e arma principale"
+    },
+    {
+      "key": "gameplay.weapon.any_primary",
+      "text": "Qualsiasi principale"
+    },
+    {
+      "key": "gameplay.weapon.shotgun",
+      "text": "Fucile a pompa"
+    },
+    {
+      "key": "gameplay.weapon.smg",
+      "text": "Mitraglietta"
+    },
+    {
+      "key": "gameplay.weapon.sniper",
+      "text": "Cecchino"
+    },
+    {
+      "key": "gameplay.weapon.burst_rifle",
+      "text": "Fucile a raffica"
+    },
+    {
+      "key": "gameplay.weapon.all",
+      "text": "Tutte"
+    },
+    {
+      "key": "gameplay.weapon.knife",
+      "text": "Coltello"
+    },
+    {
+      "key": "gameplay.card.fx.reserve_shot",
+      "text": "Con il caricatore vuoto, tenendo premuto il grilletto continua a sparare dalla riserva, a metà cadenza."
+    },
+    {
+      "key": "gameplay.card.fx.focused_shot",
+      "text": "Mirando, il fucile spara fino a 5 proiettili insieme in un solo impatto, ogni 0,4 s."
+    },
+    {
+      "key": "gameplay.card.fx.quick_discharge",
+      "text": "Colpo caricato: tenendo premuto il grilletto si carica in 3 fasi e, rilasciando, partono 2, 4 o 6 proiettili di fila."
+    },
+    {
+      "key": "gameplay.card.fx.coupling",
+      "text": "Ogni 3 colpi di pistola andati a segno, l'arma principale spara da sola un colpo verso il mirino."
+    },
+    {
+      "key": "gameplay.card.fx.no_backup",
+      "text": "La tua arma principale ha il doppio del caricatore, ma perdi la secondaria per il resto della partita."
+    },
+    {
+      "key": "gameplay.card.fx.sticky_charge",
+      "text": "Le granate che colpiscono direttamente un invasore gli si attaccano per 1 s ed esplodono con il doppio dei danni."
+    },
+    {
+      "key": "gameplay.card.fx.double_shell",
+      "text": "Il fucile a pompa spara 2 cartucce insieme, consumandole entrambe."
+    },
+    {
+      "key": "gameplay.card.fx.compact_slug",
+      "text": "Mirando, i pallini partono insieme in un solo proiettile senza dispersione, con lo stesso danno."
+    },
+    {
+      "key": "gameplay.card.fx.twin_mag",
+      "text": "La prima volta che il caricatore si svuota, si ricarica all'istante dalla riserva."
+    },
+    {
+      "key": "gameplay.card.fx.loose_bolt",
+      "text": "Dopo un'eliminazione alla testa, puoi sparare di nuovo dopo 0,2 s."
+    },
+    {
+      "key": "gameplay.card.fx.open_sights",
+      "text": "Senza mirare, spara senza dispersione e a doppia cadenza. Mirando, spara normalmente."
+    },
+    {
+      "key": "gameplay.card.fx.no_interval",
+      "text": "Uccidere toglie la pausa tra le prossime 3 raffiche."
+    },
+    {
+      "key": "gameplay.card.fx.no_interval.2",
+      "text": "Uccidere toglie la pausa tra le prossime 5 raffiche."
+    },
+    {
+      "key": "gameplay.card.fx.no_interval.3",
+      "text": "Uccidere toglie la pausa tra le prossime 7 raffiche."
+    },
+    {
+      "key": "gameplay.card.fx.growing_burst",
+      "text": "Ogni eliminazione aggiunge un proiettile alle raffiche, fino a 6. Ricaricando tornano a 3."
+    },
+    {
+      "key": "gameplay.card.fx.growing_burst.2",
+      "text": "Ogni eliminazione aggiunge un proiettile alle raffiche, fino a 8. Ricaricando tornano a 3."
+    },
+    {
+      "key": "gameplay.card.fx.growing_burst.3",
+      "text": "Ogni eliminazione aggiunge un proiettile alle raffiche, fino a 10. Ricaricando tornano a 3."
+    },
+    {
+      "key": "gameplay.card.fx.minefield",
+      "text": "Le granate che toccano il suolo diventano mine (fino a 5)."
+    },
+    {
+      "key": "gameplay.card.fx.minefield.2",
+      "text": "Le granate che toccano il suolo diventano mine (fino a 7)."
+    },
+    {
+      "key": "gameplay.card.fx.minefield.3",
+      "text": "Le granate che toccano il suolo diventano mine (fino a 9)."
+    },
+    {
+      "key": "gameplay.card.fx.logistics",
+      "text": "D'ora in poi, i posti ricaricano tutte le munizioni invece della metà."
+    },
+    {
+      "key": "gameplay.card.fx.backpack",
+      "text": "40 % di riserva in più su entrambe le armi."
+    },
+    {
+      "key": "gameplay.card.fx.backpack.2",
+      "text": "80 % di riserva in più su entrambe le armi (40 % in più di adesso)."
+    },
+    {
+      "key": "gameplay.card.fx.backpack.3",
+      "text": "120 % di riserva in più su entrambe le armi (40 % in più di adesso)."
+    },
+    {
+      "key": "gameplay.card.fx.recycler",
+      "text": "Ogni eliminazione alla testa restituisce 5 proiettili al caricatore."
+    },
+    {
+      "key": "gameplay.card.fx.recycler.2",
+      "text": "Ogni eliminazione alla testa restituisce 10 proiettili al caricatore."
+    },
+    {
+      "key": "gameplay.card.fx.recycler.3",
+      "text": "Ogni eliminazione alla testa restituisce 15 proiettili al caricatore."
+    },
+    {
+      "key": "gameplay.card.fx.edge",
+      "text": "Uccidere col coltello ricarica l'ultima arma che avevi in mano."
+    },
+    {
+      "key": "gameplay.card.fx.scavenger",
+      "text": "1 invasore su 5 lascia cadere un caricatore quando muore."
+    },
+    {
+      "key": "gameplay.card.fx.scavenger.2",
+      "text": "1 invasore su 4 lascia cadere un caricatore quando muore."
+    },
+    {
+      "key": "gameplay.card.fx.scavenger.3",
+      "text": "1 invasore su 3 lascia cadere un caricatore quando muore."
+    },
+    {
+      "key": "gameplay.card.fx.finisher",
+      "text": "Il coltello uccide con un colpo gli invasori con il 25 % di vita o meno (tranne il Boss)."
+    },
+    {
+      "key": "gameplay.card.fx.finisher.2",
+      "text": "Il coltello uccide con un colpo gli invasori con il 30 % di vita o meno (tranne il Boss)."
+    },
+    {
+      "key": "gameplay.card.fx.finisher.3",
+      "text": "Il coltello uccide con un colpo gli invasori con il 35 % di vita o meno (tranne il Boss)."
+    },
+    {
+      "key": "gameplay.card.fx.hungry_edge",
+      "text": "Ogni coltellata cura quanto il danno inflitto, fino a 25 di vita per colpo."
+    },
+    {
+      "key": "gameplay.card.fx.hungry_edge.2",
+      "text": "Ogni coltellata cura quanto il danno inflitto, fino a 35 di vita per colpo."
+    },
+    {
+      "key": "gameplay.card.fx.hungry_edge.3",
+      "text": "Ogni coltellata cura quanto il danno inflitto, fino a 45 di vita per colpo."
+    },
+    {
+      "key": "gameplay.card.fx.ready_reserve",
+      "text": "L'arma riposta si ricarica da sola dalla riserva dopo 2 s."
+    },
+    {
+      "key": "gameplay.card.fx.rage",
+      "text": "Quando un invasore ti colpisce, il tuo prossimo colpo aggiunge 5 volte la vita persa."
+    },
+    {
+      "key": "gameplay.card.fx.rage.2",
+      "text": "Quando un invasore ti colpisce, il tuo prossimo colpo aggiunge 6 volte la vita persa."
+    },
+    {
+      "key": "gameplay.card.fx.rage.3",
+      "text": "Quando un invasore ti colpisce, il tuo prossimo colpo aggiunge 7 volte la vita persa."
+    },
+    {
+      "key": "gameplay.card.fx.direct_feed",
+      "text": "Caricatore e riserva sono un solo serbatoio: non ricarichi mai, finché non finiscono i proiettili."
+    },
+    {
+      "key": "gameplay.card.fx.instant_delivery",
+      "text": "La scelta del posto si apre appena si carica, senza aspettare la fine dell'ondata."
+    },
+    {
+      "key": "gameplay.card.fx.clearance",
+      "text": "Quando il posto si carica, una bolla spinge di 10 m gli invasori dell'anello, tranne il Boss."
+    },
+    {
+      "key": "gameplay.card.fx.clearance.2",
+      "text": "Quando il posto si carica, una bolla spinge di 15 m gli invasori dell'anello, tranne il Boss."
+    },
+    {
+      "key": "gameplay.card.fx.clearance.3",
+      "text": "Quando il posto si carica, una bolla spinge di 20 m gli invasori dell'anello, tranne il Boss."
+    },
+    {
+      "key": "gameplay.card.rarity.common",
+      "text": "Comune"
+    },
+    {
+      "key": "gameplay.card.rarity.rare",
+      "text": "Rara"
+    },
+    {
+      "key": "gameplay.card.rarity.epic",
+      "text": "Epica"
+    },
+    {
+      "key": "gameplay.card.rarity.legendary",
+      "text": "Leggendaria"
+    },
+    {
+      "key": "gameplay.card.weapon",
+      "text": "Arma"
+    },
+    {
+      "key": "gameplay.card.primary",
+      "text": "Arma principale"
+    },
+    {
+      "key": "gameplay.card.secondary",
+      "text": "Arma secondaria"
+    },
+    {
+      "key": "gameplay.card.works_with_fmt",
+      "text": "Rende con: {0}"
+    },
+    {
+      "key": "gameplay.card.disables_fmt",
+      "text": "Rende inutile: {0}"
+    },
+    {
+      "key": "gameplay.card.unused_direct_feed",
+      "text": "Inutile con Alimentazione diretta"
+    },
+    {
+      "key": "gameplay.card.replaces_fmt",
+      "text": "Sostituisce la tua {0}. Arriva con le munizioni piene."
+    },
+    {
+      "key": "gameplay.card.empty_slot_fmt",
+      "text": "Va nel tuo spazio arma {0}, che è vuoto. Arriva con le munizioni piene."
+    },
+    {
+      "key": "gameplay.card.station_choice",
+      "text": "Scelta del posto"
+    },
+    {
+      "key": "gameplay.card.pick_one",
+      "text": "Scegline una"
+    },
+    {
+      "key": "gameplay.card.reroll_fmt",
+      "text": "R  ·  Rilancia  ·  {0} pti"
+    },
+    {
+      "key": "gameplay.card.points_fmt",
+      "text": "Hai {0} pti"
+    },
+    {
+      "key": "gameplay.card.reroll_missing_fmt",
+      "text": "Ti mancano punti per rilanciare ({0})"
+    },
+    {
+      "key": "gameplay.wave.title_fmt",
+      "text": "Ondata {0}"
+    },
+    {
+      "key": "gameplay.wave.boss_coming",
+      "text": "Arriva il boss"
+    },
+    {
+      "key": "gameplay.wave.enemies_fmt",
+      "text": "{0} nemici"
+    },
+    {
+      "key": "gameplay.wave.boss_arrived",
+      "text": "È arrivato il boss!"
+    },
+    {
+      "key": "gameplay.wave.with_escort",
+      "text": "Con la sua scorta"
+    },
+    {
+      "key": "gameplay.wave.cleared_fmt",
+      "text": "Ondata {0} superata"
+    },
+    {
+      "key": "gameplay.wave.rest",
+      "text": "Pausa di 20 s"
+    },
+    {
+      "key": "gameplay.wave.boss_defeated",
+      "text": "BOSS SCONFITTO"
+    },
+    {
+      "key": "gameplay.wave.boss_defeated_body_fmt",
+      "text": "Hai superato l'ondata {0}. Se continui ti aspetta la scelta del Boss, ma da ora gli invasori hanno il {1} % di vita in più e colpiscono il {2} % più forte."
+    },
+    {
+      "key": "gameplay.wave.next_in",
+      "text": "Prossima ondata tra"
+    },
+    {
+      "key": "gameplay.wave.next",
+      "text": "Prossima ondata"
+    },
+    {
+      "key": "gameplay.wave.lap_fmt",
+      "text": "· giro {0}"
+    },
+    {
+      "key": "gameplay.wave.of_fmt",
+      "text": "di {0}"
+    },
+    {
+      "key": "gameplay.wave.no_cards",
+      "text": "<color=#9AA39A>Non hai ancora scelto carte</color>"
+    },
+    {
+      "key": "gameplay.station.supplies_in_fmt",
+      "text": "Rifornimenti a {0}"
+    },
+    {
+      "key": "gameplay.station.next_fmt",
+      "text": "Prossimo posto: {0}"
+    },
+    {
+      "key": "gameplay.station.next",
+      "text": "Prossimo posto"
+    },
+    {
+      "key": "gameplay.station.surroundings",
+      "text": "i dintorni"
+    },
+    {
+      "key": "gameplay.station.charged",
+      "text": "Posto caricato"
+    },
+    {
+      "key": "gameplay.station.open",
+      "text": "Posto aperto"
+    },
+    {
+      "key": "gameplay.station.left",
+      "text": "Il posto se n'è andato senza caricarsi"
+    },
+    {
+      "key": "gameplay.station.next_here",
+      "text": "Prossimo · qui"
+    },
+    {
+      "key": "gameplay.station.next_m_fmt",
+      "text": "Prossimo · {0:0} m"
+    },
+    {
+      "key": "gameplay.station.charge",
+      "text": "Carica del posto"
+    },
+    {
+      "key": "gameplay.station.outside_ring",
+      "text": "Fuori dall'anello"
+    },
+    {
+      "key": "gameplay.place.module_1",
+      "text": "il Modulo 1"
+    },
+    {
+      "key": "gameplay.place.module_fmt",
+      "text": "il Modulo {0}"
+    },
+    {
+      "key": "gameplay.place.library",
+      "text": "la Biblioteca"
+    },
+    {
+      "key": "gameplay.result.survived_fmt",
+      "text": "Sei sopravvissuto a {0} ondate"
+    },
+    {
+      "key": "gameplay.result.dead",
+      "text": "Sei morto"
+    },
+    {
+      "key": "gameplay.result.game_over_fmt",
+      "text": "Fine partita  ·  {0}"
+    },
+    {
+      "key": "gameplay.result.saved_world",
+      "text": "Hai salvato il mondo"
+    },
+    {
+      "key": "gameplay.result.not_saved_world",
+      "text": "Non hai salvato il mondo"
+    },
+    {
+      "key": "gameplay.result.retired_fmt",
+      "text": "Ti sei ritirato dopo il Boss dell'ondata {0}"
+    },
+    {
+      "key": "gameplay.result.fell_fmt",
+      "text": "Sei caduto all'ondata {0} di {1}"
+    },
+    {
+      "key": "gameplay.result.new_record_fmt",
+      "text": "Nuovo record! · Ondata {0}"
+    },
+    {
+      "key": "gameplay.result.record_fmt",
+      "text": "Record in {0}: <color=#F3F4F6>ondata {1}</color>"
+    },
+    {
+      "key": "gameplay.result.headshots",
+      "text": "Alla testa"
+    },
+    {
+      "key": "gameplay.result.play_again",
+      "text": "Gioca ancora"
+    },
+    {
+      "key": "gameplay.result.back_menu",
+      "text": "Torna al menu"
+    },
+    {
+      "key": "gameplay.result.keys_hint",
+      "text": "Invio  ·  Gioca ancora          Esc  ·  Torna al menu"
+    },
+    {
+      "key": "gameplay.hud.fury",
+      "text": "{0}  <color=#FF5C5C>FURIA</color>"
+    },
+    {
+      "key": "gameplay.hud.streak_fmt",
+      "text": "Serie <color=#{0}>· Migliore {1}</color>"
+    },
+    {
+      "key": "gameplay.hud.reload_suffix",
+      "text": " · Ricarica"
+    },
+    {
+      "key": "gameplay.hud.no_ammo",
+      "text": "Senza proiettili"
+    },
+    {
+      "key": "gameplay.hud.no_signal",
+      "text": "Nessun segnale"
+    },
+    {
+      "key": "gameplay.dm.first_to_fmt",
+      "text": "Vince il primo a {0}"
+    },
+    {
+      "key": "gameplay.dm.last_minute",
+      "text": "Ultimo minuto"
+    },
+    {
+      "key": "gameplay.dm.your_kills",
+      "text": "Le tue eliminazioni"
+    },
+    {
+      "key": "gameplay.dm.leading_over_fmt",
+      "text": "Sei in testa  <color=#8E96A3>su {0}</color>"
+    },
+    {
+      "key": "gameplay.dm.leading",
+      "text": "Sei in testa"
+    },
+    {
+      "key": "gameplay.dm.leader_fmt",
+      "text": "In testa  <color=#F3F4F6>{0}</color>"
+    },
+    {
+      "key": "gameplay.dm.leader",
+      "text": "In testa"
+    },
+    {
+      "key": "gameplay.dm.header_fmt",
+      "text": "Deathmatch  ·  Vince il primo a {0} eliminazioni"
+    },
+    {
+      "key": "gameplay.dm.you_tag",
+      "text": " <color=#8E96A3>(tu)</color>"
+    },
+    {
+      "key": "gameplay.dm.disconnected_tag",
+      "text": " <color=#8E96A3>(disconnesso)</color>"
+    },
+    {
+      "key": "gameplay.dm.headshot_kills",
+      "text": "Eliminazioni alla testa"
+    },
+    {
+      "key": "gameplay.dm.credits_fmt",
+      "text": "+{0} crediti"
+    },
+    {
+      "key": "gameplay.dm.back_menu_caps",
+      "text": "TORNA AL MENU"
+    },
+    {
+      "key": "gameplay.dm.place_fmt",
+      "text": "{0}º POSTO"
+    },
+    {
+      "key": "gameplay.dm.game_over_caps",
+      "text": "FINE PARTITA"
+    },
+    {
+      "key": "gameplay.dm.kills.one",
+      "text": "{0} eliminazione"
+    },
+    {
+      "key": "gameplay.dm.kills.other",
+      "text": "{0} eliminazioni"
+    },
+    {
+      "key": "gameplay.dm.others_left",
+      "text": "Gli altri giocatori hanno abbandonato la partita"
+    },
+    {
+      "key": "gameplay.dm.reached_first_fmt",
+      "text": "Sei arrivato primo a <color=#F29A38>{0}</color>"
+    },
+    {
+      "key": "gameplay.dm.time_up_won_fmt",
+      "text": "Tempo scaduto: hai vinto con <color=#F29A38>{0}</color>"
+    },
+    {
+      "key": "gameplay.dm.winner_fmt",
+      "text": "Ha vinto <color=#F29A38>{0}</color> con {1}"
+    },
+    {
+      "key": "gameplay.dm.time_up_winner_fmt",
+      "text": "Tempo scaduto: ha vinto <color=#F29A38>{0}</color> con {1}"
+    },
+    {
+      "key": "gameplay.tac.your_team",
+      "text": "La tua squadra"
+    },
+    {
+      "key": "gameplay.tac.team_side_fmt",
+      "text": "<color=#F3F4F6>La tua squadra</color>  ·  {0}"
+    },
+    {
+      "key": "gameplay.tac.round_to_fmt",
+      "text": "Round {0} · a {1}"
+    },
+    {
+      "key": "gameplay.tac.planted",
+      "text": "Dispositivo piazzato"
+    },
+    {
+      "key": "gameplay.tac.selection",
+      "text": "Selezione"
+    },
+    {
+      "key": "gameplay.tac.sudden_death",
+      "text": "Morte improvvisa"
+    },
+    {
+      "key": "gameplay.tac.round_score_fmt",
+      "text": "Round {0} · {1} a {2}"
+    },
+    {
+      "key": "gameplay.tac.round_in_progress",
+      "text": "Round in corso"
+    },
+    {
+      "key": "gameplay.tac.round_score_wide_fmt",
+      "text": "Round {0}  ·  {1} a {2}"
+    },
+    {
+      "key": "gameplay.tac.round_fmt",
+      "text": "Round {0}"
+    },
+    {
+      "key": "gameplay.tac.you_fmt",
+      "text": "{0} <color=#8E96A3>(tu)</color>"
+    },
+    {
+      "key": "gameplay.tac.disconnected_fmt",
+      "text": "{0} <color=#8E96A3>(disconnesso)</color>"
+    },
+    {
+      "key": "gameplay.tac.teams_line",
+      "text": "<color=#58A6FF>La tua squadra</color>   ·   <color=#FF5C5C>Avversari</color>"
+    },
+    {
+      "key": "gameplay.tac.decisive_round",
+      "text": "La squadra che vince questo round vince la partita"
+    },
+    {
+      "key": "gameplay.tac.halftime",
+      "text": "Metà partita"
+    },
+    {
+      "key": "gameplay.tac.side_switch",
+      "text": "Cambio di lato"
+    },
+    {
+      "key": "gameplay.tac.weapons_pistol",
+      "text": "Armi: pistola"
+    },
+    {
+      "key": "gameplay.tac.money_fmt",
+      "text": "Soldi: {0}"
+    },
+    {
+      "key": "gameplay.tac.everyone_gets_fmt",
+      "text": "Tutti ricevono {0}"
+    },
+    {
+      "key": "gameplay.tac.round_won",
+      "text": "Round vinto"
+    },
+    {
+      "key": "gameplay.tac.round_lost",
+      "text": "Round perso"
+    },
+    {
+      "key": "gameplay.tac.next_round_in",
+      "text": "Prossimo round tra {0}"
+    },
+    {
+      "key": "gameplay.tac.no_prize",
+      "text": "Nessun premio: non hanno piazzato"
+    },
+    {
+      "key": "gameplay.tac.loss_streak_fmt",
+      "text": "{0}ª sconfitta di fila"
+    },
+    {
+      "key": "gameplay.tac.time_defended_us",
+      "text": "Il tempo è scaduto e la tua squadra ha difeso"
+    },
+    {
+      "key": "gameplay.tac.time_defended_them",
+      "text": "Il tempo è scaduto e gli avversari hanno difeso"
+    },
+    {
+      "key": "gameplay.tac.exploded",
+      "text": "Il dispositivo è esploso"
+    },
+    {
+      "key": "gameplay.tac.defused",
+      "text": "Il dispositivo è stato disinnescato"
+    },
+    {
+      "key": "gameplay.tac.enemies_left",
+      "text": "Gli avversari hanno abbandonato la partita"
+    },
+    {
+      "key": "gameplay.tac.team_left",
+      "text": "La tua squadra ha abbandonato la partita"
+    },
+    {
+      "key": "gameplay.tac.team_wiped_them",
+      "text": "La tua squadra ha eliminato tutti gli avversari"
+    },
+    {
+      "key": "gameplay.tac.team_wiped_us",
+      "text": "Gli avversari hanno eliminato la tua squadra"
+    },
+    {
+      "key": "gameplay.tac.no_leaving_base",
+      "text": "Non puoi uscire dalla base durante l'acquisto"
+    },
+    {
+      "key": "gameplay.tac.base_opens_fmt",
+      "text": "L'uscita della base si apre tra <color=#F29A38>{0}:{1:00}</color>"
+    },
+    {
+      "key": "gameplay.tac.planting_at_fmt",
+      "text": "Piazzando il dispositivo in {0}"
+    },
+    {
+      "key": "gameplay.tac.defusing",
+      "text": "Disinnesco del dispositivo"
+    },
+    {
+      "key": "gameplay.tac.hold_plant_fmt",
+      "text": "Tieni premuto {0} per piazzare il dispositivo in {1}"
+    },
+    {
+      "key": "gameplay.tac.hold_defuse_fmt",
+      "text": "Tieni premuto {0} per disinnescare il dispositivo"
+    },
+    {
+      "key": "gameplay.tac.planted_at_fmt",
+      "text": "Dispositivo piazzato in {0}"
+    },
+    {
+      "key": "gameplay.map.teammate",
+      "text": "Compagno"
+    },
+    {
+      "key": "gameplay.map.station_ring",
+      "text": "Anello del posto"
+    },
+    {
+      "key": "gameplay.map.key_fmt",
+      "text": "<color=#F3F4F6>{0}</color>  Mappa"
+    },
+    {
+      "key": "gameplay.practice.dummies",
+      "text": "Manichini di allenamento"
+    },
+    {
+      "key": "gameplay.practice.health_fmt",
+      "text": "Vita {0}"
+    },
+    {
+      "key": "gameplay.practice.reaction_avg_fmt",
+      "text": "Reazione: media {0:0.00} s · migliore {1:0.00} s"
+    },
+    {
+      "key": "gameplay.practice.misses_fmt",
+      "text": " · {0} mancati"
+    },
+    {
+      "key": "gameplay.practice.reaction_none",
+      "text": "Reazione: non ne hai colpito nessuno"
+    },
+    {
+      "key": "gameplay.practice.moving",
+      "text": "In movimento"
+    },
+    {
+      "key": "gameplay.practice.reaction",
+      "text": "Reazione"
+    },
+    {
+      "key": "gameplay.practice.reaction_round_fmt",
+      "text": "Reazione: {0} di {1}"
+    },
+    {
+      "key": "gameplay.practice.mode_stats_fmt",
+      "text": "{0} · Eliminazioni: {1} · Alla testa: {2}"
+    },
+    {
+      "key": "gameplay.practice.pick_mode_fmt",
+      "text": "Scegli una modalità: guarda un pulsante e premi {0}, oppure sparagli"
+    },
+    {
+      "key": "gameplay.tutorial.sprint",
+      "text": "Correre (in Tattico, camminare piano)"
+    },
+    {
+      "key": "gameplay.tutorial.hit_target",
+      "text": "Colpisci un bersaglio"
+    },
+    {
+      "key": "gameplay.tutorial.aim",
+      "text": "Mirare con il mirino"
+    },
+    {
+      "key": "gameplay.tutorial.headshot",
+      "text": "Colpisci alla testa"
+    },
+    {
+      "key": "gameplay.tutorial.switch_weapon",
+      "text": "Cambiare arma"
+    },
+    {
+      "key": "gameplay.tutorial.use_ability",
+      "text": "Usare l'abilità"
+    },
+    {
+      "key": "gameplay.tutorial.open_shop",
+      "text": "Aprire il negozio"
+    },
+    {
+      "key": "gameplay.tutorial.pick_weapon",
+      "text": "Scegli un'altra arma"
+    },
+    {
+      "key": "gameplay.tutorial.use_ability_fmt",
+      "text": "Usare l'abilità: {0}"
+    },
+    {
+      "key": "gameplay.tutorial.modes_step_fmt",
+      "text": "Tutorial · Modalità di gioco · {0} di {1}"
+    },
+    {
+      "key": "gameplay.tutorial.next_mode",
+      "text": "Modalità successiva"
+    },
+    {
+      "key": "gameplay.tutorial.hold_tab_skip_fmt",
+      "text": "<color=#{0}>Tieni premuto Tab</color>  Salta il tutorial"
+    },
+    {
+      "key": "gameplay.tutorial.complete",
+      "text": "TUTORIAL COMPLETATO"
+    },
+    {
+      "key": "gameplay.tutorial.done",
+      "text": "Fatto! Ora conosci le basi"
+    },
+    {
+      "key": "gameplay.tutorial.panels_note",
+      "text": "I pannelli delle modalità sono sulla parete sinistra. Il tutorial si riapre dal pannello."
+    },
+    {
+      "key": "gameplay.tutorial.hold_tab",
+      "text": "Tenere premuto Tab"
+    },
+    {
+      "key": "gameplay.tutorial.game_mode",
+      "text": "Modalità di gioco"
+    },
+    {
+      "key": "gameplay.tutorial.step_fmt",
+      "text": "Tutorial · Passo {0} di {1}"
+    },
+    {
+      "key": "gameplay.tutorial.tab_skip_step_fmt",
+      "text": "<color=#{0}>Tab</color>  Salta passo     "
+    },
+    {
+      "key": "gameplay.mode.objective_fmt",
+      "text": "<color=#{0}>OBIETTIVO</color>\n{1}\n\n"
+    },
+    {
+      "key": "gameplay.mode.how_win_fmt",
+      "text": "<color=#{0}>COME SI VINCE</color>\n{1}\n\n"
+    },
+    {
+      "key": "gameplay.mode.how_lose_fmt",
+      "text": "<color=#{0}>COME SI PERDE</color>\n{1}"
+    },
+    {
+      "key": "gameplay.result.time",
+      "text": "Tempo"
+    },
+    {
+      "key": "gameplay.result.reached_fmt",
+      "text": "Sei arrivato all'ondata {0}  ·  {1}"
+    },
+    {
+      "key": "gameplay.result.bosses_defeated.one",
+      "text": "{0} Boss sconfitto"
+    },
+    {
+      "key": "gameplay.result.bosses_defeated.other",
+      "text": "{0} Boss sconfitti"
+    },
+    {
+      "key": "gameplay.difficulty.easy",
+      "text": "Facile"
+    },
+    {
+      "key": "gameplay.difficulty.normal",
+      "text": "Normale"
+    },
+    {
+      "key": "gameplay.difficulty.hard",
+      "text": "Difficile"
+    },
+    {
+      "key": "gameplay.station.inside",
+      "text": "Dentro"
+    },
+    {
+      "key": "gameplay.dm.victory",
+      "text": "VITTORIA"
+    },
+    {
+      "key": "gameplay.dm.col.kills",
+      "text": "Eliminazioni"
+    },
+    {
+      "key": "gameplay.dm.col.deaths",
+      "text": "Morti"
+    },
+    {
+      "key": "gameplay.tac.sides_drawn_attack",
+      "text": "Lati sorteggiati: attacchi"
+    },
+    {
+      "key": "gameplay.tac.sides_drawn_defend",
+      "text": "Lati sorteggiati: difendi"
+    },
+    {
+      "key": "gameplay.tac.now_attacks",
+      "text": "Ora la tua squadra <color=#F3F4F6>attacca</color>"
+    },
+    {
+      "key": "gameplay.tac.now_defends",
+      "text": "Ora la tua squadra <color=#F3F4F6>difende</color>"
+    },
+    {
+      "key": "gameplay.practice.shoot_it",
+      "text": "Sparagli"
+    },
+    {
+      "key": "gameplay.practice.down",
+      "text": "Abbattuto"
+    },
+    {
+      "key": "gameplay.practice.zone.head",
+      "text": "testa"
+    },
+    {
+      "key": "gameplay.practice.zone.legs",
+      "text": "gambe"
+    },
+    {
+      "key": "gameplay.practice.zone.body",
+      "text": "corpo"
+    },
+    {
+      "key": "gameplay.tutorial.finish",
+      "text": "Termina"
+    },
+    {
+      "key": "gameplay.card.slot.primary",
+      "text": "principale"
+    },
+    {
+      "key": "gameplay.card.slot.secondary",
+      "text": "secondaria"
+    },
+    {
+      "key": "gameplay.result.wave",
+      "text": "Ondata"
+    },
+    {
+      "key": "gameplay.result.points",
+      "text": "Punti"
+    },
+    {
+      "key": "gameplay.wave.continue",
+      "text": "Continua"
+    },
+    {
+      "key": "gameplay.wave.retire",
+      "text": "Ritirarsi"
+    },
+    {
+      "key": "gameplay.tutorial.move",
+      "text": "Muoversi"
+    },
+    {
+      "key": "gameplay.tutorial.look",
+      "text": "Guardare"
+    },
+    {
+      "key": "gameplay.tutorial.shoot",
+      "text": "Sparare"
+    },
+    {
+      "key": "gameplay.tutorial.ability",
+      "text": "Abilità"
+    },
+    {
+      "key": "gameplay.tutorial.shop",
+      "text": "Negozio"
+    },
+    {
+      "key": "gameplay.hud.streak",
+      "text": "Serie"
+    },
+    {
+      "key": "gameplay.mode.tactical.objective",
+      "text": "4 contro 4 a round, senza ricomparire. Gli attaccanti piazzano il dispositivo in A o B ({Plantar}) e i difensori lo difendono o lo disinnescano. {Correr} fa camminare piano e senza rumore (non si corre). L'abilità del tuo personaggio si usa con {Habilidad} e le granate si comprano nella fase di acquisto."
+    },
+    {
+      "key": "gameplay.mode.tactical.win",
+      "text": "Vinci il round se il dispositivo esplode, se lo disinneschi o se elimini tutta l'altra squadra (se il tempo scade senza piazzare, vincono i difensori). Vince la partita la prima squadra che arriva a 7 round."
+    },
+    {
+      "key": "gameplay.mode.tactical.lose",
+      "text": "Perde la squadra che non arriva a 7 round. Se muori, guardi un compagno fino al round successivo."
+    },
+    {
+      "key": "gameplay.mode.deathmatch.objective",
+      "text": "Tutti contro tutti, fino a 8 giocatori. Scegli le tue armi gratis ({Tienda}), ogni eliminazione ti cura di 50 e ricompari dopo 3 s. La tua abilità si usa con {Habilidad}. Non ci sono scudi né granate."
+    },
+    {
+      "key": "gameplay.mode.deathmatch.win",
+      "text": "Vince il primo che arriva a 25 eliminazioni, o chi ne ha di più allo scadere degli 8 minuti."
+    },
+    {
+      "key": "gameplay.mode.deathmatch.lose",
+      "text": "Perdi se un altro arriva prima a 25 eliminazioni o ne ha più di te allo scadere del tempo."
+    },
+    {
+      "key": "gameplay.mode.invasion.objective",
+      "text": "Tu da solo contro l'orda all'università, per 10 ondate. All'ondata 10 appare il boss. Con i punti che guadagni compri armi, granate e munizioni tra un'ondata e l'altra."
+    },
+    {
+      "key": "gameplay.mode.invasion.win",
+      "text": "Vinci se sopravvivi alle 10 ondate. Poi puoi continuare in modalità infinita per fare record."
+    },
+    {
+      "key": "gameplay.mode.invasion.lose",
+      "text": "Perdi se gli invasori ti uccidono."
+    },
+    {
+      "key": "gameplay.tac.attackers",
+      "text": "Attaccanti"
+    },
+    {
+      "key": "gameplay.tac.defenders",
+      "text": "Difensori"
+    },
+    {
+      "key": "gameplay.controls.back_label",
+      "text": "Indietro"
+    },
+    {
+      "key": "gameplay.spectator.watching_device",
+      "text": "Guardando il dispositivo"
+    },
+    {
+      "key": "gameplay.spectator.no_teammates",
+      "text": "Non restano compagni vivi"
+    },
+    {
+      "key": "gameplay.spectator.respawn_next",
+      "text": "Ricompari al round successivo"
+    },
+    {
+      "key": "gameplay.death.killed_by_fmt",
+      "text": "Ti ha eliminato {0}"
+    },
+    {
+      "key": "gameplay.death.fell",
+      "text": "Sei caduto dalla mappa"
+    },
+    {
+      "key": "gameplay.death.fence",
+      "text": "La recinzione ti ha fulminato"
+    },
+    {
+      "key": "gameplay.death.respawn_next_round",
+      "text": "Ricompari al round successivo."
+    },
+    {
+      "key": "gameplay.death.respawn_in_fmt",
+      "text": "Ricompari tra {0}. Premi {1} per cambiare equipaggiamento"
+    },
+    {
+      "key": "gameplay.death.rejoined",
+      "text": "Sei tornato in partita"
+    },
+    {
+      "key": "gameplay.hud.being_watched",
+      "text": "Ti stanno osservando"
+    },
+    {
+      "key": "gameplay.dm.press_to_pick_fmt",
+      "text": "Premi {0} per scegliere il tuo equipaggiamento"
+    },
+    {
+      "key": "gameplay.dm.you_reached_fmt",
+      "text": "Sei arrivato a {0} eliminazioni: te ne mancano {1}"
+    },
+    {
+      "key": "gameplay.dm.other_reached_fmt",
+      "text": "{0} è arrivato a {1} eliminazioni"
+    },
+    {
+      "key": "gameplay.event.disconnected",
+      "text": "si è disconnesso"
+    },
+    {
+      "key": "gameplay.event.left",
+      "text": "ha lasciato la partita"
+    },
+    {
+      "key": "gameplay.event.rejoined",
+      "text": "è tornato in partita"
+    },
+    {
+      "key": "gameplay.tac.waiting_others_fmt",
+      "text": "In attesa degli altri   ·   <color=#F29A38>{0}</color>"
+    },
+    {
+      "key": "gameplay.tac.pick_header_fmt",
+      "text": "Modalità Tattico  ·  La tua squadra: {0}"
+    },
+    {
+      "key": "gameplay.tac.a_teammate",
+      "text": "un compagno"
+    },
+    {
+      "key": "gameplay.tac.already_picked_fmt",
+      "text": "L'ha già scelto {0}"
+    },
+    {
+      "key": "gameplay.tac.confirm_failed",
+      "text": "Impossibile confermare, riprova"
+    },
+    {
+      "key": "gameplay.weapon.drop_to_pick_fmt",
+      "text": "{0}   ·   Lascia la tua {1} con <color=#F29A38>{2}</color> per raccoglierla"
+    },
+    {
+      "key": "gameplay.text.no_shield",
+      "text": "Senza scudo"
+    },
+    {
+      "key": "gameplay.text.light",
+      "text": "Leggero"
+    },
+    {
+      "key": "gameplay.text.full",
+      "text": "Completo"
+    },
+    {
+      "key": "gameplay.shop.invasion_no_sell",
+      "text": "<color=#FF5C5C>In Invasione non si vende: ciò che compri resta finché non lo sostituisci</color>"
+    },
+    {
+      "key": "gameplay.shop.missing_fmt",
+      "text": "Ti mancano {0}"
+    },
+    {
+      "key": "gameplay.shop.already_have_fmt",
+      "text": "Hai già {0}"
+    },
+    {
+      "key": "gameplay.shop.ammo_max",
+      "text": "Hai già le munizioni al massimo"
+    },
+    {
+      "key": "gameplay.shop.max_of_fmt",
+      "text": "Massimo di {0}"
+    },
+    {
+      "key": "gameplay.shop.shield_full",
+      "text": "Il tuo scudo è già pieno"
+    },
+    {
+      "key": "gameplay.shop.cant_change_now",
+      "text": "Ora non puoi cambiare equipaggiamento"
+    },
+    {
+      "key": "gameplay.shop.buy_phase_over",
+      "text": "La fase di acquisto è finita"
+    },
+    {
+      "key": "gameplay.shop.outside_zone",
+      "text": "Fuori dalla zona di acquisto"
+    },
+    {
+      "key": "gameplay.shop.only_this_round",
+      "text": "Si vende solo ciò che hai comprato in questo round"
+    },
+    {
+      "key": "gameplay.shop.dont_have",
+      "text": "Non ce l'hai"
+    },
+    {
+      "key": "gameplay.shop.change_time_over",
+      "text": "Il tempo per cambiare equipaggiamento è scaduto"
+    },
+    {
+      "key": "gameplay.shop.buy_over",
+      "text": "L'acquisto è finito"
+    },
+    {
+      "key": "gameplay.shop.change_anytime",
+      "text": "Cambiala quando vuoi"
+    },
+    {
+      "key": "gameplay.shop.kept_next_life",
+      "text": "Resta per la prossima vita"
+    },
+    {
+      "key": "gameplay.shop.points_per_kill_fmt",
+      "text": "+{0} per invasore · +{1} alla testa"
+    },
+    {
+      "key": "gameplay.shop.tactical_round_fmt",
+      "text": "Tattico · Round {0}"
+    },
+    {
+      "key": "gameplay.shop.next_round_min_fmt",
+      "text": "Prossimo round: minimo {0}"
+    },
+    {
+      "key": "gameplay.shop.outside_zone_banner",
+      "text": "Sei fuori dalla zona di acquisto. Torna al punto di comparsa per comprare."
+    },
+    {
+      "key": "gameplay.shop.phase_over_banner",
+      "text": "La fase di acquisto è finita. Puoi guardare, ma non comprare."
+    },
+    {
+      "key": "gameplay.shop.invasion_wave_lap_fmt",
+      "text": "Invasione · Ondata {0} · giro {1}"
+    },
+    {
+      "key": "gameplay.shop.invasion_wave_of_fmt",
+      "text": "Invasione · Ondata {0} di {1}"
+    },
+    {
+      "key": "gameplay.shop.shield_desc_fmt",
+      "text": "Assorbe i primi {0} punti di danno, prima della vita. Se sopravvivi, lo porti al round successivo con quello che resta."
+    },
+    {
+      "key": "gameplay.shop.shots_to_kill",
+      "text": "Colpi per uccidere"
+    },
+    {
+      "key": "gameplay.shop.stat.bursts",
+      "text": "raffiche/s"
+    },
+    {
+      "key": "gameplay.shop.stat.shots",
+      "text": "colpi/s"
+    },
+    {
+      "key": "gameplay.shop.stat.mag",
+      "text": "caricatore"
+    },
+    {
+      "key": "gameplay.shop.stat.per_shell",
+      "text": "per cartuccia"
+    },
+    {
+      "key": "gameplay.shop.stat.reload",
+      "text": "ricarica"
+    },
+    {
+      "key": "gameplay.shop.stat.mobility",
+      "text": "mobilità"
+    },
+    {
+      "key": "gameplay.shop.stat.sight",
+      "text": "mirino"
+    },
+    {
+      "key": "gameplay.shop.note_fmt",
+      "text": "<color=#D6DAE0><b>Rinculo:</b></color> {0}\n<color=#D6DAE0><b>Dispersione:</b></color> {1}° fermo · {2}° in movimento · penetrazione {3}"
+    },
+    {
+      "key": "gameplay.shop.col.against",
+      "text": "Contro"
+    },
+    {
+      "key": "gameplay.shop.col.with_this",
+      "text": "Con questa"
+    },
+    {
+      "key": "gameplay.shop.to_body_fmt",
+      "text": "{0} al corpo"
+    },
+    {
+      "key": "gameplay.text.shrapnel_center",
+      "text": "Schegge (centro)"
+    },
+    {
+      "key": "gameplay.shop.you_have_fmt",
+      "text": "Hai {0}"
+    },
+    {
+      "key": "gameplay.shop.col.carry",
+      "text": "porti"
+    },
+    {
+      "key": "gameplay.shop.col.fuse",
+      "text": "miccia"
+    },
+    {
+      "key": "gameplay.shop.col.max_total",
+      "text": "max. in totale"
+    },
+    {
+      "key": "gameplay.shop.slot4_hint",
+      "text": "Spazio 4 · premi di nuovo 4 per cambiare"
+    },
+    {
+      "key": "gameplay.shop.molotov_note",
+      "text": "Uccide solo senza scudo, e da molto vicino"
+    },
+    {
+      "key": "gameplay.shop.smoke_note",
+      "text": "Copre la visuale da dentro verso fuori e viceversa"
+    },
+    {
+      "key": "gameplay.shop.flash_front",
+      "text": "Di fronte (< 15 m)"
+    },
+    {
+      "key": "gameplay.shop.flash_side",
+      "text": "Di lato"
+    },
+    {
+      "key": "gameplay.shop.flash_back",
+      "text": "Di spalle"
+    },
+    {
+      "key": "gameplay.shop.btn.not_now",
+      "text": "Non ora"
+    },
+    {
+      "key": "gameplay.shop.btn.look_only",
+      "text": "solo guardare"
+    },
+    {
+      "key": "gameplay.shop.btn.chosen",
+      "text": "Scelta"
+    },
+    {
+      "key": "gameplay.shop.btn.in_hand",
+      "text": "ce l'hai in mano"
+    },
+    {
+      "key": "gameplay.shop.btn.next_life",
+      "text": "resta per la prossima vita"
+    },
+    {
+      "key": "gameplay.shop.btn.outside",
+      "text": "Fuori zona"
+    },
+    {
+      "key": "gameplay.shop.btn.have_it",
+      "text": "Ce l'hai già"
+    },
+    {
+      "key": "gameplay.shop.btn.until_replaced",
+      "text": "resta finché non la sostituisci"
+    },
+    {
+      "key": "gameplay.shop.btn.sell_fmt",
+      "text": "clic destro: vendi +{0}"
+    },
+    {
+      "key": "gameplay.shop.btn.always",
+      "text": "ce l'hai sempre"
+    },
+    {
+      "key": "gameplay.shop.btn.from_last_round",
+      "text": "l'hai portata dal round precedente"
+    },
+    {
+      "key": "gameplay.shop.btn.max_reached",
+      "text": "Massimo raggiunto"
+    },
+    {
+      "key": "gameplay.shop.btn.per_player_fmt",
+      "text": "{0} per giocatore"
+    },
+    {
+      "key": "gameplay.shop.btn.refund_fmt",
+      "text": "ti restituiscono {0}"
+    },
+    {
+      "key": "gameplay.shop.btn.pay_fmt",
+      "text": "paghi {0}"
+    },
+    {
+      "key": "gameplay.shop.spent_rest",
+      "text": "Speso nella pausa"
+    },
+    {
+      "key": "gameplay.shop.spent_round",
+      "text": "Speso in questo round"
+    },
+    {
+      "key": "gameplay.shop.no_primary",
+      "text": "Senza principale"
+    },
+    {
+      "key": "gameplay.shop.not_bought",
+      "text": "Non acquistato"
+    },
+    {
+      "key": "gameplay.shop.max",
+      "text": "Massimo"
+    },
+    {
+      "key": "gameplay.shop.all_body_fmt",
+      "text": "Tutto al corpo a meno di {0} m: {1}"
+    },
+    {
+      "key": "gameplay.shop.one_shot_light",
+      "text": "Uccide con 1 senza scudo o con leggero"
+    },
+    {
+      "key": "gameplay.shop.one_shot_none",
+      "text": "Uccide con 1 senza scudo"
+    },
+    {
+      "key": "gameplay.shop.never_one_shot",
+      "text": "Non uccide mai con 1"
+    },
+    {
+      "key": "gameplay.shop.head_any",
+      "text": "1 alla testa uccide chiunque"
+    },
+    {
+      "key": "gameplay.shop.head_any_fmt",
+      "text": "1 alla testa uccide chiunque ({0})"
+    },
+    {
+      "key": "gameplay.shop.head_light",
+      "text": "1 alla testa uccide con scudo leggero"
+    },
+    {
+      "key": "gameplay.shop.head_none",
+      "text": "1 alla testa uccide senza scudo"
+    },
+    {
+      "key": "gameplay.shop.head_full_fmt",
+      "text": "{0} alla testa con scudo completo"
+    },
+    {
+      "key": "gameplay.shop.body_any",
+      "text": "1 al corpo uccide chiunque"
+    },
+    {
+      "key": "gameplay.shop.body_none",
+      "text": "1 al corpo uccide senza scudo"
+    },
+    {
+      "key": "gameplay.shop.body_full_fmt",
+      "text": "{0} al corpo con scudo completo"
+    },
+    {
+      "key": "gameplay.text.number_or_click",
+      "text": "Numero o clic"
+    },
+    {
+      "key": "gameplay.text.category",
+      "text": "Categoria"
+    },
+    {
+      "key": "gameplay.text.right_click_sell",
+      "text": "Clic des. vendi"
+    },
+    {
+      "key": "gameplay.text.enter_click",
+      "text": "Invio · clic"
+    },
+    {
+      "key": "gameplay.text.tactical",
+      "text": "TATTICO"
+    },
+    {
+      "key": "gameplay.text.invasion",
+      "text": "INVASIONE"
+    },
+    {
+      "key": "gameplay.text.deathmatch",
+      "text": "DEATHMATCH"
+    },
+    {
+      "key": "gameplay.text.practice_range",
+      "text": "CAMPO DI ALLENAMENTO"
+    },
+    {
+      "key": "gameplay.text.firing_line",
+      "text": "LINEA DI TIRO"
+    },
+    {
+      "key": "gameplay.text.shooting_zone",
+      "text": "ZONA DI TIRO"
+    },
+    {
+      "key": "gameplay.text.practice_map",
+      "text": "MAPPA DI ALLENAMENTO"
+    },
+    {
+      "key": "gameplay.text.get_closer_to_see_the",
+      "text": "Avvicinati per vedere l'obiettivo"
+    },
+    {
+      "key": "gameplay.text.change_weapon",
+      "text": "Cambia arma"
+    },
+    {
+      "key": "gameplay.text.primary",
+      "text": "Principale"
+    },
+    {
+      "key": "gameplay.text.secondary",
+      "text": "Secondaria"
+    },
+    {
+      "key": "gameplay.text.pistols",
+      "text": "Pistole"
+    },
+    {
+      "key": "gameplay.text.smgs",
+      "text": "Mitragliette"
+    },
+    {
+      "key": "gameplay.text.shotguns",
+      "text": "Fucili a pompa"
+    },
+    {
+      "key": "gameplay.text.rifles",
+      "text": "Fucili"
+    },
+    {
+      "key": "gameplay.text.snipers",
+      "text": "Cecchini"
+    },
+    {
+      "key": "gameplay.text.shields",
+      "text": "Scudi"
+    },
+    {
+      "key": "gameplay.text.supplies",
+      "text": "Rifornimenti"
+    },
+    {
+      "key": "gameplay.text.grenades",
+      "text": "Granate"
+    },
+    {
+      "key": "gameplay.card.no_room",
+      "text": "Non hai spazio: scarta una carta per sceglierne una nuova"
+    },
+    {
+      "key": "gameplay.card.no_room_short",
+      "text": "Senza spazio · scartane una"
+    },
+    {
+      "key": "gameplay.card.discarded_fmt",
+      "text": "Hai scartato {0}"
+    },
+    {
+      "key": "gameplay.card.discard",
+      "text": "Scartare una carta"
+    },
+    {
+      "key": "gameplay.card.skip",
+      "text": "Continua senza scegliere"
+    },
+    {
+      "key": "gameplay.card.no_options",
+      "text": "Non ci sono carte da scegliere questa volta"
+    },
+    {
+      "key": "gameplay.card.slots_fmt",
+      "text": "Le tue carte {0} / {1}"
+    },
+    {
+      "key": "gameplay.card.occupied_fmt",
+      "text": "{0} / {1} spazi occupati"
+    },
+    {
+      "key": "gameplay.card.your_cards",
+      "text": "Le tue carte"
+    },
+    {
+      "key": "gameplay.card.pick_discard",
+      "text": "Scegli quale scartare"
+    },
+    {
+      "key": "gameplay.card.discard_hint",
+      "text": "Perdi la carta con i suoi potenziamenti e questa volta non scegli  ·  Esc per tornare"
+    },
+    {
+      "key": "gameplay.card.hold_hint",
+      "text": "Rilascia {0} per chiudere"
+    },
+    {
+      "key": "gameplay.card.back",
+      "text": "Indietro"
+    },
+    {
+      "key": "gameplay.card.cancel",
+      "text": "Annulla"
+    },
+    {
+      "key": "gameplay.card.discard_confirm",
+      "text": "Scarta"
+    },
+    {
+      "key": "gameplay.card.discard_question_fmt",
+      "text": "Scartare {0}? Perdi i suoi potenziamenti e questa volta non scegli."
+    },
+    {
+      "key": "gameplay.card.free_slot",
+      "text": "Libero"
+    },
+    {
+      "key": "gameplay.card.times_fmt",
+      "text": "{0} di {1}"
+    },
+    {
+      "key": "gameplay.card.single",
+      "text": "Unica"
+    },
+    {
+      "key": "gameplay.card.unused",
+      "text": "Inutile"
+    },
+    {
+      "key": "gameplay.card.unused_weapon_fmt",
+      "text": "Rende con: {0}"
+    },
+    {
+      "key": "gameplay.controls.cards",
+      "text": "Carte (Invasione)"
+    },
+    {
+      "key": "gameplay.card.match_continues",
+      "text": "La partita continua"
+    },
+    {
+      "key": "gameplay.down.you_are_down",
+      "text": "Sei a terra! Aspetta che ti rianimino"
+    },
+    {
+      "key": "gameplay.down.bleeding_fmt",
+      "text": "A terra · {0} s per rianimarti"
+    },
+    {
+      "key": "gameplay.down.reviving_you_fmt",
+      "text": "{0} ti sta rianimando"
+    },
+    {
+      "key": "gameplay.down.revived",
+      "text": "Ti sei rialzato!"
+    },
+    {
+      "key": "gameplay.down.hold_to_revive_fmt",
+      "text": "Tieni premuto {0} per rianimare {1}"
+    },
+    {
+      "key": "gameplay.down.reviving_fmt",
+      "text": "Rianimando {0}"
+    },
+    {
+      "key": "gameplay.down.being_revived",
+      "text": "Rianimazione"
+    },
+    {
+      "key": "gameplay.down.overhead_fmt",
+      "text": "A terra · {0} s"
+    },
+    {
+      "key": "gameplay.mates.down",
+      "text": "A terra"
+    },
+    {
+      "key": "gameplay.mates.dead",
+      "text": "Morto"
+    },
+    {
+      "key": "gameplay.mates.disconnected",
+      "text": "Disconnesso"
+    },
+    {
+      "key": "gameplay.mates.player",
+      "text": "Giocatore"
+    },
+    {
+      "key": "gameplay.mates.kills",
+      "text": "Eliminazioni"
+    },
+    {
+      "key": "gameplay.mates.points",
+      "text": "Punti"
+    },
+    {
+      "key": "gameplay.mates.state",
+      "text": "Stato"
+    },
+    {
+      "key": "gameplay.event.joined",
+      "text": "è entrato in partita"
+    },
+    {
+      "key": "gameplay.mates.joined_title",
+      "text": "Sei entrato in partita"
+    },
+    {
+      "key": "gameplay.mates.next_wave",
+      "text": "Compari all'inizio della prossima ondata"
+    },
+    {
+      "key": "gameplay.result.record_coop_fmt",
+      "text": "Record cooperativo in {0}: <color=#F3F4F6>ondata {1}</color> · singolo: ondata {2}"
+    },
+    {
+      "key": "gameplay.result.record_solo_fmt",
+      "text": "Record in singolo: ondata {0}"
+    },
+    {
+      "key": "gameplay.mates.retired",
+      "text": "Si è ritirato"
+    },
+    {
+      "key": "gameplay.result.keys_hint_coop",
+      "text": "Invio o Esc  ·  Torna al menu"
+    },
+    {
+      "key": "gameplay.ability.barrera",
+      "text": "Barriera"
+    },
+    {
+      "key": "gameplay.ability.callejero",
+      "text": "Di strada"
+    },
+    {
+      "key": "gameplay.ability.pulso",
+      "text": "Impulso"
+    },
+    {
+      "key": "gameplay.ability.silbato",
+      "text": "Fischietto"
+    },
+    {
+      "key": "gameplay.ability.trasbordo",
+      "text": "Coincidenza"
+    },
+    {
+      "key": "gameplay.ability.vista_aerea",
+      "text": "Vista aerea"
+    },
+    {
+      "key": "gameplay.grenade.shrapnel",
+      "text": "Schegge"
+    },
+    {
+      "key": "gameplay.grenade.smoke",
+      "text": "Fumo"
+    },
+    {
+      "key": "gameplay.shop.all_free",
+      "text": "Tutto gratis"
+    },
+    {
+      "key": "gameplay.shop.shield",
+      "text": "Scudo"
+    }
+  ]
+}

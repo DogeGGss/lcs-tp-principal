@@ -133,7 +133,7 @@ public class PantallaPerfil : PantallaBase
         {
             int k = i;
             pestanas[i] = T(rect, nombres[i], x, 438f, 360f, 50f, FTitulo, 36f, Mute, nombres[i], TextAlignmentOptions.MidlineLeft, 6f, true);
-            float w = Width(pestanas[i], nombres[i].ToUpperInvariant());
+            float w = Width(pestanas[i], pestanas[i].text.ToUpperInvariant()); // US 350: el ancho del texto ya traducido
             pestanas[i].rectTransform.sizeDelta = new Vector2(w, 50f);
             pestanas[i].raycastTarget = true;
             var p = pestanas[i].gameObject.AddComponent<ShopPointerTarget>();
@@ -260,12 +260,12 @@ public class PantallaPerfil : PantallaBase
             ("Mundo salvado", N(e.invasion.victorias)),
             ("Invasores eliminados", N(e.invasion.bajas)),
             ("Récord F · N · D", $"{Oleada(facil)} · {Oleada(normal)} · {Oleada(dificil)}"),
-            ("Jefes derrotados", jefes > 0 ? $"{N(jefes)} <size=70%><color=#8E96A3>(oleada {EstadisticasDeInvasion.JefeMasDificil})</color></size>" : SinDatos),
+            ("Jefes derrotados", jefes > 0 ? $"{N(jefes)} <size=70%><color=#8E96A3>{L10n.T("profile.inv.wave_fmt", EstadisticasDeInvasion.JefeMasDificil)}</color></size>" : SinDatos),
             ("Puestos cargados", N(EstadisticasDeInvasion.Puestos)),
             ("Carta favorita", carta != null ? L10n.Source(carta) : SinDatos),
             ("Arma favorita", arma ?? SinDatos),
             ("En cooperativo", EstadisticasDeInvasion.PartidasCoop > 0
-                ? $"{N(EstadisticasDeInvasion.PartidasCoop)} <size=70%><color=#8E96A3>(oleada {Oleada(coopMejor)})</color></size>" : SinDatos),
+                ? $"{N(EstadisticasDeInvasion.PartidasCoop)} <size=70%><color=#8E96A3>{L10n.T("profile.inv.wave_fmt", Oleada(coopMejor))}</color></size>" : SinDatos),
         });
         RectTransform minijuego = Tarjeta(3, "Minijuego: cometas", "#4CC3FF", null, null);
         cuerpoMinijuego = Place(Node("Datos", minijuego), 0f, 60f, w, 236f);
@@ -561,7 +561,7 @@ public class PantallaPerfil : PantallaBase
         n.overflowMode = TextOverflowModes.Ellipsis;
         string tipo = NombreTipo(c.tipo);
         string detalle = $"{tipo} · <color={Rich(colorR)}>{PerfilUI.NombreRareza(c.rareza)}</color>";
-        if (!string.IsNullOrEmpty(c.estilo)) detalle += " · " + c.estilo;
+        if (!string.IsNullOrEmpty(c.estilo)) detalle += " · " + L10n.Source(c.estilo, "profile.");
         PerfilDatos.Personaje pj = PerfilDatos.Personajes.Find(x => x.id == c.personaje);
         if (pj != null) detalle += " · " + pj.nombre;
         T(vista, "Detalle", 24f, 420f, 452f, 28f, FTexto, 20f, Mute, detalle);
@@ -804,7 +804,7 @@ public class PantallaPerfil : PantallaBase
             RectTransform carta = Place(Node("Espacio" + (i + 1), espaciosEmotes), i * (w + 18f), 0f, w, 124f);
             Image(carta, Rounded, elegido ? SelectedColor : PanelColor, 8f, true);
             T(carta, "Lugar", 18f, 12f, w - 36f, 20f, FRotulo, 15f, elegido ? Accent : Mute,
-                $"Espacio {i + 1} · {LugaresDeLaRueda[i]}", TextAlignmentOptions.MidlineLeft, 14f, true);
+                L10n.T("profile.emotes.slot_fmt", i + 1, L10n.Source(LugaresDeLaRueda[i], "profile.")), TextAlignmentOptions.MidlineLeft, 14f, true);
             if (e != null && e.icono != null)
                 Image(Place(Node("Icono", carta), 18f, 42f, 64f, 64f), e.icono, Color.white).preserveAspect = true;
             float tx = e != null && e.icono != null ? 96f : 18f;

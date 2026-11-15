@@ -602,7 +602,7 @@ public partial class ModeSelectScreen : MonoBehaviour
         RectTransform chip = Node("Etiqueta", parent);
         TextMeshProUGUI text = Text(Stretch(Node("Texto", chip)), monoFont, size, ink, TextAlignmentOptions.Center);
         L10n.BindSource(text,value,"ui.");
-        float w = Width(text, value) + 28f, h = size + 20f;
+        float w = Width(text, text.text) + 28f, h = size + 20f; // US 350: el ancho del texto ya traducido
         Place(chip, 0f, 0f, w, h);
         Img bg = Image(chip, rounded, new Color(0f, 0f, 0f, DarkAlpha(darkness)), 6f);
         Border(chip, 6f, border);
