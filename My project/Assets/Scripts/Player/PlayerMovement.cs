@@ -46,6 +46,10 @@ public class PlayerMovement : MonoBehaviour
     /// <summary>F31 (US 357, CA1): caído en Invasión cooperativa: se arrastra despacio, con la cámara casi en el piso,
     /// sin saltar ni correr (lo pone CaidaEnInvasion).</summary>
     public bool Caido { get; set; }
+    /// <summary>F31 (US 357, CA4): se está levantando después de que lo revivieron: no se mueve ni salta, y la cámara
+    /// sube del piso a la altura de parado según el avance (LevantarseAvance, de 0 a 1). Lo pone CaidaEnInvasion.</summary>
+    public bool Levantandose { get; set; }
+    public float LevantarseAvance { get; set; }
     /// <summary>US 357, CA3: agachado sin apretar la tecla (el que revive a un compañero).</summary>
     public bool ForzarAgachado { get; set; }
     public float caidoSpeed = 0.9f;
@@ -139,8 +143,9 @@ public class PlayerMovement : MonoBehaviour
         // =====================================================
 
         // Teclas reasignables (US 155), suavizadas como Input.GetAxis.
-        moveX = SmoothAxis(moveX, SinControles ? 0f : KeyBindings.Axis(GameAction.Izquierda, GameAction.Derecha));
-        moveZ = SmoothAxis(moveZ, SinControles ? 0f : KeyBindings.Axis(GameAction.Atras, GameAction.Adelante));
+        bool sinTeclas = SinControles || Levantandose; // (levantándose después de revivir, US 357: quieto)
+        moveX = SmoothAxis(moveX, sinTeclas ? 0f : KeyBindings.Axis(GameAction.Izquierda, GameAction.Derecha));
+        moveZ = SmoothAxis(moveZ, sinTeclas ? 0f : KeyBindings.Axis(GameAction.Atras, GameAction.Adelante));
         float x = moveX;
         float z = moveZ;
 
@@ -183,7 +188,13 @@ public class PlayerMovement : MonoBehaviour
         float targetCameraHeight = Caido ? caidoCameraHeight : isCrounching ? crouchCameraHeight : standingCameraHeight;
         Vector3 cameraPosition = cameraTransform.localPosition;
 
-        cameraPosition.y = Mathf.Lerp(cameraPosition.y, targetCameraHeight, cameraCrouchSpeed * Time.deltaTime);
+        if (Levantandose)
+        {
+            // US 357: la cámara sube con el cuerpo, al ritmo de la animación de levantarse que ven los demás.
+            float a = Mathf.Clamp01(LevantarseAvance);
+            cameraPosition.y = Mathf.Lerp(caidoCameraHeight, standingCameraHeight, a * a * (3f - 2f * a));
+        }
+        else cameraPosition.y = Mathf.Lerp(cameraPosition.y, targetCameraHeight, cameraCrouchSpeed * Time.deltaTime);
         cameraTransform.localPosition = cameraPosition;
 
 
@@ -204,7 +215,7 @@ public class PlayerMovement : MonoBehaviour
         {
             currentSpeed = crounchSpeed;
         }
-        else if (!SinControles && KeyBindings.Held(GameAction.Correr))
+        else if (!sinTeclas && KeyBindings.Held(GameAction.Correr))
         {
             // US 198: en el Táctico no se corre; Shift camina despacio y sin ruido. En el campo de práctica (que no es
             // ningún modo, aunque quede elegido el último) se corre (US 166).
@@ -259,7 +270,7 @@ public class PlayerMovement : MonoBehaviour
         // SALTO
         // =====================================================
 
-        if (!SinControles && !Caido && KeyBindings.Down(GameAction.Saltar) && controller.isGrounded && !arribaDeOtro)
+        if (!sinTeclas && !Caido && KeyBindings.Down(GameAction.Saltar) && controller.isGrounded && !arribaDeOtro)
         {
             verticalVelocity = jumpForce;
             saltoEsteCuadro = true;

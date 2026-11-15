@@ -483,6 +483,17 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
     }
 
     /// <summary>
+    /// F31 (US 357, CA4): invulnerable esos segundos, como al reaparecer (US 137): los demás lo ven igual y disparar lo
+    /// corta.
+    /// </summary>
+    public void HacerInvulnerable(float segundos)
+    {
+        if (photonView == null || !photonView.IsMine || vida == null || segundos <= 0f) return;
+        vida.Invulnerable = true;
+        finInvulnerable = Time.time + segundos;
+    }
+
+    /// <summary>
     /// F31 (US 358 y US 359, CA2): entró (o volvió) a una Invasión cooperativa durante una oleada: mira a sus compañeros
     /// y aparece al empezar la siguiente (CaidaEnInvasion), sin aviso de baja.
     /// </summary>
