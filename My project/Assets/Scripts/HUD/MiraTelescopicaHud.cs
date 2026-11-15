@@ -21,19 +21,35 @@ public class MiraTelescopicaHud : MonoBehaviour
     private static MiraTelescopicaHud instancia;
     private static Texture2D mascara;
 
-    private MiraTelescopica mira;
+    // Lo que muestra: el zoom y la distancia, y si sigue puesta (la propia, o la del compañero que se mira, US 133).
+    private System.Func<float> zoomDe, distanciaDe;
+    private System.Func<bool> sigue;
     private CanvasGroup grupo;
     private TextMeshProUGUI distancia, zoom;
     private float abiertaEn;
 
     public static void Mostrar(MiraTelescopica mira)
     {
+        if (mira == null) return;
+        Abrir(mira.fuenteNumeros, mira.fuenteTextos, () => mira.ZoomActual, mira.DistanciaAlBlanco,
+            () => mira != null && MiraTelescopica.Puesta);
+    }
+
+    /// <summary>US 133: la lente de la mira de otro jugador (el compañero que se mira como espectador).</summary>
+    public static void MostrarDeOtro(TMP_FontAsset numeros, TMP_FontAsset textos, System.Func<float> zoom,
+        System.Func<float> distancia, System.Func<bool> sigue) => Abrir(numeros, textos, zoom, distancia, sigue);
+
+    private static void Abrir(TMP_FontAsset numeros, TMP_FontAsset textos, System.Func<float> zoom, System.Func<float> distancia,
+        System.Func<bool> sigue)
+    {
         if (instancia == null)
         {
             instancia = new GameObject("MiraTelescopicaHud").AddComponent<MiraTelescopicaHud>();
-            instancia.Construir(mira.fuenteNumeros, mira.fuenteTextos);
+            instancia.Construir(numeros, textos);
         }
-        instancia.mira = mira;
+        instancia.zoomDe = zoom;
+        instancia.distanciaDe = distancia;
+        instancia.sigue = sigue;
         if (!instancia.gameObject.activeSelf)
         {
             instancia.gameObject.SetActive(true);
@@ -50,7 +66,7 @@ public class MiraTelescopicaHud : MonoBehaviour
 
     private void Update()
     {
-        if (mira == null || !MiraTelescopica.Puesta)
+        if (sigue == null || !sigue())
         {
             gameObject.SetActive(false);
             return;
@@ -61,8 +77,8 @@ public class MiraTelescopicaHud : MonoBehaviour
 
     private void Refrescar()
     {
-        zoom.text = mira.ZoomActual.ToString("0.#", System.Globalization.CultureInfo.GetCultureInfo("es-AR")) + "×";
-        float metros = mira.DistanciaAlBlanco();
+        zoom.text = zoomDe().ToString("0.#", System.Globalization.CultureInfo.GetCultureInfo("es-AR")) + "×";
+        float metros = distanciaDe();
         distancia.text = metros < 0f ? "—" : $"{Mathf.RoundToInt(metros)} m";
     }
 

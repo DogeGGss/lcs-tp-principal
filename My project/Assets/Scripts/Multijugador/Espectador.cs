@@ -18,6 +18,8 @@ using static ShopUIKit;
 // Animación de la copia (por código, con lo que llega por la red; sin las piezas que se mueven, como la corredera o el
 // tambor): el golpe de cada disparo con la fuerza de su tipo de arma, la recarga (baja, se inclina y vuelve, siguiendo
 // el avance que manda el compañero), sacar el arma desde abajo cuando cambia y el balanceo al caminar o correr.
+// Si el compañero apunta con la mira telescópica (el Último Tren), se ve como él: con el zoom y la lente de la mira
+// (MiraTelescopicaHud), sin el arma en la mano. El nivel de la mira viaja con el jugador (JugadorEnRed.NivelDeMira).
 // US 262: si el compañero que se mira baila (un emote), la cámara sale de sus ojos a tercera persona, atrás y un poco
 // arriba (como la del que baila, CamaraDeEmotes), para ver el baile: se ve su cuerpo y no el arma en primera persona,
 // el mouse gira alrededor y no atraviesa paredes. Al terminar el baile vuelve a sus ojos.
@@ -38,6 +40,11 @@ public class Espectador : MonoBehaviour
     private Camera camara;
     private Vector3 camaraPos;
     private Quaternion camaraRot;
+    private float camaraFov;
+    // La mira telescópica del compañero que se mira (el Último Tren): con su zoom y su lente, sin el arma en la mano.
+    private bool conMira;
+    private float zoomMira = 1f;
+    private readonly RaycastHit[] impactosMira = new RaycastHit[16];
     private readonly List<Behaviour> apagados = new List<Behaviour>();
     private readonly List<Renderer> ocultos = new List<Renderer>();
     private readonly List<Renderer> armasOcultas = new List<Renderer>(); // el arma en la mano del que murió
@@ -122,11 +129,12 @@ public class Espectador : MonoBehaviour
         {
             Transform ojos = mirando.Ojos;
             camara.transform.SetPositionAndRotation(ojos.position, ojos.rotation);
-            if (VerBaile(ojos)) return;
+            if (VerBaile(ojos)) { SacarMira(); return; }
             // Lo que su cuerpo arme después de empezar a mirarlo (la granada en la mano se arma la primera vez
             // que la saca) tampoco se dibuja: si no, se ve flotando al lado de la cámara.
             OcultarCuerpo(mirando);
             VerArmaDelCompanero();
+            VerMira();
         }
         else if (viendoDispositivo)
             camara.transform.SetPositionAndRotation(dispositivoPos, dispositivoRot); // CA5, con dispositivo plantado
@@ -178,6 +186,7 @@ public class Espectador : MonoBehaviour
         {
             camaraPos = camara.transform.localPosition;
             camaraRot = camara.transform.localRotation;
+            camaraFov = camara.fieldOfView;
         }
 
         // CA1: ni mirar alrededor (el movimiento y las armas ya los traba JugadorEnRed al morir).
@@ -211,6 +220,7 @@ public class Espectador : MonoBehaviour
         if (!muerto) return;
         muerto = false;
         Mirar(null);
+        SacarMira();
         if (camara != null)
         {
             camara.transform.localPosition = camaraPos;
@@ -491,6 +501,53 @@ public class Espectador : MonoBehaviour
         return false;
     }
 
+    // ---------- La mira telescópica del compañero (US 133) ----------
+
+    // Si el compañero apunta con la mira (el Último Tren), se ve como él: con el zoom y la lente, sin el arma en la mano.
+    private void VerMira()
+    {
+        MiraTelescopica mira = armaMirada != null ? armaMirada.GetComponentInChildren<MiraTelescopica>(true) : null;
+        ArmaDeFuego fuego = armaMirada != null ? armaMirada.GetComponentInChildren<ArmaDeFuego>(true) : null;
+        ShopItem ficha = fuego != null ? fuego.shopItem : null;
+        int nivel = mirando != null ? mirando.NivelDeMira : 0;
+        float zoom = mira == null || ficha == null || nivel == 0 ? 1f : nivel == 2 && ficha.zoom2 > 1f ? ficha.zoom2 : ficha.zoom;
+        if (zoom <= 1f) { SacarMira(); return; }
+
+        zoomMira = zoom;
+        camara.fieldOfView = Mathf.Lerp(camara.fieldOfView, camaraFov / zoom, 1f - Mathf.Exp(-25f * Time.deltaTime));
+        if (vistaArma != null) vistaArma.gameObject.SetActive(false);
+        if (camaraArmas != null) camaraArmas.enabled = false;
+        if (conMira) return;
+        conMira = true;
+        MiraTelescopicaHud.MostrarDeOtro(mira.fuenteNumeros, mira.fuenteTextos, () => zoomMira, DistanciaDeLaMira,
+            () => conMira && muerto && mirando != null);
+    }
+
+    private void SacarMira()
+    {
+        if (camara != null && Mathf.Abs(camara.fieldOfView - camaraFov) > 0.01f && camaraFov > 0f) camara.fieldOfView = camaraFov;
+        if (!conMira) return;
+        conMira = false;
+        MiraTelescopicaHud.Ocultar();
+        if (vistaArma != null) vistaArma.gameObject.SetActive(true);
+    }
+
+    // Lo que muestra la lente: la distancia a lo que está en el centro (sin contar al compañero ni al propio cuerpo).
+    private float DistanciaDeLaMira()
+    {
+        if (camara == null) return -1f;
+        Transform t = camara.transform;
+        int cantidad = Physics.RaycastNonAlloc(t.position, t.forward, impactosMira, 500f, Physics.DefaultRaycastLayers, QueryTriggerInteraction.Ignore);
+        float cerca = -1f;
+        for (int i = 0; i < cantidad; i++)
+        {
+            Transform otro = impactosMira[i].collider.transform;
+            if ((mirando != null && otro.IsChildOf(mirando.transform)) || (local != null && otro.IsChildOf(local.transform))) continue;
+            if (cerca < 0f || impactosMira[i].distance < cerca) cerca = impactosMira[i].distance;
+        }
+        return cerca;
+    }
+
     // El cuerpo del que se mira no se dibuja (si no, la cámara queda adentro de su cabeza).
     private void OcultarCuerpo(JugadorEnRed jugador)
     {
@@ -524,6 +581,7 @@ public class Espectador : MonoBehaviour
     private void Mirar(JugadorEnRed jugador)
     {
         if (jugador == mirando && (jugador != null || !muerto)) { MostrarCartel(); return; }
+        SacarMira(); // (la del que se miraba)
 
         // El cuerpo del que se mira no se dibuja (si no, la cámara queda adentro de su cabeza).
         foreach (Renderer r in ocultos) if (r != null) r.enabled = true;
