@@ -1,0 +1,20 @@
+US-347_CA2_Opciones_Idioma · idioma en · 2026-11-15 18:34:43
+Resultado: sin textos en español
+Textos en pantalla:
+  Game settings
+  Sound
+  E
+  Français
+  Language
+  Italiano
+  Português (Brasil)
+  Graphics
+  « Menu
+  Game language
+  Controls
+  Options
+  Changes apply immediately and are shared with the launcher.
+  Español
+  Crosshair
+  English
+  Q

@@ -1,0 +1,59 @@
+US-348_CA1_Invasion_HUD_y_oleada · idioma en · 2026-11-15 18:27:30
+Resultado: sin textos en español
+Textos en pantalla:
+  / 60
+  ICI instituto de ciencias
+  1
+  IDH instituto de desarrollo humano
+  NUNCA MÁS
+  Pts
+  Universidad Nacional de General Sarmiento
+  Next wave in
+  Juan M. Gutiérrez
+  2b
+  4
+  LP GRAND BOURG
+  comedor
+  ICO instituto del conurbano
+  TORT. - MALVINAS ARGENTINAS - ESTAC. MORENO - SAN MIGUEL LÍNEA 315/440
+  Juan Maza
+  H Map
+  5
+  20
+  La Porteña
+  UNGS
+  Knife
+  IDEI instituto de industria
+  6
+  9
+  B PAZ T.ALTAS
+  0:20
+  0
+  Next wave
+  7a
+  SEGURIDAD
+  2
+  INFORMES
+  52
+  Wave 1
+  Normal
+  Empty
+  3
+  SOY DE POLVORINES NI DE BOCA NI DE RIVER
+  ∞
+  440
+  SUM
+  aulas
+  7b
+  ENTRADA
+  8
+  LPGB
+  —
+  Juan María Gutiérrez 1150
+  100
+  7
+  of 10
+  COMPAÑEROS DETENIDOS DESAPARECIDOS EN CAMPO DE MAYO
+  Your cards
+  10
+  Módulo 7 Ingreso peatonal SECTOR A del Estacionamiento

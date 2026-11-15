@@ -1,0 +1,47 @@
+US-347_CA3_Perfil · idioma en · 2026-11-15 18:26:37
+Resultado: sin textos en español
+Textos en pantalla:
+  No data
+  0
+  +
+  You haven't finished a Tactical or Deathmatch match yet.
+  Deathmatch
+  Open capsules
+  You haven't finished a Tactical match yet.
+  Wins
+  Conductor
+  Hours played
+  Player level
+  Best wave
+  Comet minigame
+  No title
+  You haven't finished an Invasion match yet.
+  You haven't shot any comets yet.
+  Account
+  Deaths
+  KDA*
+  —
+  Matches
+  Earned by playing
+  Player record
+  Overall · Tactical and Deathmatch
+  0 min
+  Headshots
+  * KDA = (kills + assists) ÷ deaths; with no deaths, ÷ 1. Assist: you damaged an enemy that someone else eliminated within the next 10 s. Only finished matches count.
+  Win rate
+  Premium currency
+  1.000
+  « Menu
+  Kills
+  Customization
+  Assists
+  Goes up and down in matchmaking
+  Matches finished 0
+  Riftwalker
+  You haven't finished a Deathmatch match yet.
+  Invasion
+  Tactical
+  Emotes
+  Statistics
+  Change name
+  Profile

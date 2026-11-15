@@ -1,0 +1,29 @@
+US-347_CA1_Menu_principal · idioma en · 2026-11-15 18:26:25
+Resultado: sin textos en español
+Textos en pantalla:
+  Tactical · Deathmatch · Invasion
+  You have 0 tickets to open
+  »
+  Options
+  Project
+  0
+  Practice range
+  No title
+  Premium currency
+  +
+  Note for the PO
+  01 / Capsules · Pass · Crystals
+  Riftwalker
+  Platform 01 · Meeting point
+  Share your feedback
+  v0.5.0-exp.1
+  Credits
+  i
+  Play
+  Store
+  Before you play
+  Achievements
+  Open capsules
+  Test areas:
+  Quit
+  Earned by playing

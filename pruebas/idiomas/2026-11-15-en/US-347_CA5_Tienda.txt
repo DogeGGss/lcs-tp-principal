@@ -1,0 +1,46 @@
+US-347_CA5_Tienda · idioma en · 2026-11-15 18:26:45
+Resultado: sin textos en español
+Textos en pantalla:
+  Buy
+  Crystal Pouch
+  +500 free
+  Best value
+  Battle pass
+  Most popular
+  Store
+  Simulated purchases. This is a university project: no real money is charged. It tests how the store of a free-to-play game would work.
+  $ 5.500
+  $ 0
+  $ 12.900
+  Crystals
+  -40 %
+  Once per account
+  $ 1.990
+  1.000
+  crystals
+  +
+  Crystal Box
+  Open capsules
+  $ 1.200
+  0
+  Total spent (simulated)
+  5 tickets + 200 crystals
+  « Menu
+  2.500
+  Crystal Vault
+  Capsules
+  You haven't made any simulated purchases yet.
+  $ 3.300
+  Reset test data
+  +40 free
+  80
+  Simulation
+  0 purchases
+  400
+  +150 free
+  Crystal Chest
+  Premium currency
+  Welcome Offer
+  $ 29.900
+  Simulated purchases
+  Earned by playing

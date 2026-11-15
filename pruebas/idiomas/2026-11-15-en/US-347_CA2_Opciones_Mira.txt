@@ -1,0 +1,46 @@
+US-347_CA2_Opciones_Mira · idioma en · 2026-11-15 18:34:42
+Resultado: sin textos en español
+Textos en pantalla:
+  Game settings
+  Sound
+  E
+  Blue
+  Dynamic
+  Circle
+  220
+  61
+  Language
+  Thickness
+  Center dot
+  Custom
+  Color and spread
+  Gap
+  151
+  Fixed
+  Apply
+  2
+  No
+  Reset
+  Graphics
+  « Menu
+  Crosshair
+  Preview
+  8
+  Shape
+  5
+  Type
+  Controls
+  Cross
+  Options
+  Outline
+  Dark background
+  Yes
+  Custom color
+  Light background
+  Length
+  Red
+  Dot
+  Color
+  Q
+  Spread
+  Green

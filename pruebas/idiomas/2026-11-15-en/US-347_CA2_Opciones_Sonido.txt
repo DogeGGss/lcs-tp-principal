@@ -1,0 +1,22 @@
+US-347_CA2_Opciones_Sonido · idioma en · 2026-11-15 18:34:41
+Resultado: sin textos en español
+Textos en pantalla:
+  Game settings
+  Sound
+  100 %
+  E
+  Music
+  Language
+  Effects
+  Interface
+  Adjust a control to hear a preview. Press Apply to save.
+  Reset
+  Graphics
+  « Menu
+  Master
+  Volume
+  Controls
+  Options
+  Crosshair
+  Apply
+  Q

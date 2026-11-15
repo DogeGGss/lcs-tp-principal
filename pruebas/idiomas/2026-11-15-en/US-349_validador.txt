@@ -1,0 +1,1 @@
+Localization complete: 1789 keys × 5 locales; no missing values, duplicate keys or placeholder mismatches.

@@ -1,0 +1,69 @@
+US-347_CA2_Opciones_Controles · idioma en · 2026-11-15 18:34:40
+Resultado: sin textos en español
+Textos en pantalla:
+  No
+  Game settings
+  Esc
+  Sound
+  Invert Y axis
+  1
+  E
+  Pause
+  Mouse
+  G
+  Reset
+  Language
+  C
+  Aim
+  While aiming
+  Cards (Invasion)
+  Key bindings
+  Device
+  Right click
+  Sensitivity
+  Right
+  Primary weapon
+  Emotes
+  Plant / defuse
+  3
+  Secondary weapon
+  Back
+  Controls
+  Knife
+  A
+  Graphics
+  « Menu
+  4
+  Forward
+  Shoot
+  B
+  Grenades
+  S
+  Agacharse
+  Q
+  W
+  R
+  Drop weapon
+  ×1,00
+  Skip
+  Shift
+  Yes
+  Left
+  Options
+  Left click
+  Ctrl
+  Space
+  Ability
+  Reload
+  T
+  Crosshair
+  Shop
+  5
+  Click an action and press the new key. Esc cancels.
+  Sprint / walk slowly
+  1,5
+  Full map
+  D
+  2
+  H
+  Apply

@@ -1,0 +1,60 @@
+US-347_CA7_Creditos · idioma en · 2026-11-15 18:26:53
+Resultado: sin textos en español
+Textos en pantalla:
+  Cartoon Texture Pack
+  Project Riftwalker
+  Ulises Fonseca
+  Sci-fi environment
+  Speed up
+  Knife
+  Sci-Fi Modular Gun Pack, by Quaternius (CC0)
+  Fonts
+  action track 4, A.I. fight & jumping cyborg, mixed by glitchart: action track 4, by Alexandr Zhelanov (CC BY 3.0), and A.I. fight & jumping cyborg, by tricksntraps (CC0, OpenGameArt)
+  Textures
+  JetBrains · SIL Open Font License 1.1
+  Respawn sound
+  Deathmatch music
+  Course project "Último Tren a Retiro" Software Construction Laboratory University Technical Degree in Computing
+  2D/3D art and level design
+  Gun reload sounds, by SpringySpringo, and Shotgun Reload Sound Effects, by zer0_sol (CC0, OpenGameArt)
+  Course project
+  Gunshots
+  Testing and QA
+  Flashbang explode, by MadPanCake (CC BY-NC 4.0, Freesound)
+  Lucas Huber David Ramos
+  Character and animations
+  Sci-fi Weapon - Game Ready Knife - FREE SAMPLE, by AF Creations (Unity Asset Store)
+  The Free Firearm Sound Library, by Ben Jaszczak, Brian Nelson, Kevin Heras and Matthew Nanney (CC0)
+  Development and gameplay
+  Back
+  Not so long ago, at a university very, very close by…
+  · · ·
+  Repository and Git
+  Weapon models
+  Space
+  Interface (UI/UX)
+  Sound and music
+  Scrum Master
+  Mixamo, by Adobe
+  A tactical shooter, a deathmatch and an alien invasion at university. Made by seven students in ten weeks, with more coffee than sleep.
+  Flashbang blast
+  Nicolás Gauna Franco Barreto Nahuel Velázquez Ulises Fonseca
+  JetBrains Mono
+  Jeremy Tribby · SIL Open Font License 1.1
+  Unity 6 · Universal Render Pipeline ProBuilder · TextMesh Pro · Input System · AI Navigation Photon PUN 2 (multiplayer) GitHub and GitHub Projects
+  Engine and tools
+  To our teachers, everyone who tested broken builds and to you, for playing.
+  Luka Gómez Franco Barreto
+  Esc
+  Thanks for playing
+  Barlow
+  3D Scifi Kit Starter Kit, by Creepy Cat (Unity Asset Store)
+  Special thanks
+  Ulises Fonseca Nahuel Velázquez
+  Credits
+  Teleport, by fins (CC0, Freesound and OpenGameArt)
+  Reloads
+  David Ramos
+  External assets
+  Documentation and backlog
+  Lucas Huber Nicolás Gauna Luka Gómez

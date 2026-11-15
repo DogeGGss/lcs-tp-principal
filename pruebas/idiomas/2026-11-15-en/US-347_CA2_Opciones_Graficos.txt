@@ -1,0 +1,41 @@
+US-347_CA2_Opciones_Graficos · idioma en · 2026-11-15 18:34:43
+Resultado: sin textos en español
+Textos en pantalla:
+  Quality
+  Resolution
+  60
+  Game settings
+  Sound
+  >
+  No
+  Press Apply to use your changes.
+  E
+  Show
+  Language
+  Apply
+  80°
+  144
+  Graphics
+  Image
+  Screen
+  Yes
+  Windowed
+  Hide
+  1920 x 1080 · 16:9
+  FPS and ping
+  <
+  « Menu
+  Field of view
+  Mode
+  FPS limit
+  Medium
+  Controls
+  Options
+  Fullscreen
+  Crosshair
+  Borderless
+  Reset
+  Unlimited
+  30
+  Q
+  VSync

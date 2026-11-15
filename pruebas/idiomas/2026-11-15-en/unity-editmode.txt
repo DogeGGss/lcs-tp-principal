@@ -1,0 +1,7 @@
+Pruebas EditMode TraduccionesCompletasTests · 15/11/2026 18:16
+PASS US349_CA1_Todo_texto_tiene_traduccion
+PASS US349_CA2_Datos_insertados_iguales
+PASS US349_CA3_Sin_textos_en_espanol_en_el_codigo
+PASS US350_CA6_Misma_frase_misma_traduccion
+
+4/4 passed · Passed

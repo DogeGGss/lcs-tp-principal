@@ -1,0 +1,88 @@
+US-348_CA6_Practica_tienda · idioma en · 2026-11-15 18:28:24
+Resultado: sin textos en español
+Textos en pantalla:
+  Knife
+  SMGs
+  1
+  / ∞
+  2
+  ›
+  Right click: sell
+  Get closer to see the objective
+  Mitre
+  Practice range
+  4
+  40 m
+  REACTION
+  Space
+  Category
+  Shield
+  Change it whenever you want
+  10 m
+  TACTICAL
+  Quietos · Kills: 0 · Headshots: 0
+  PRACTICE MAP
+  Shotguns
+  Back
+  Rifles
+  Choose
+  W
+  S
+  DEATHMATCH
+  45 m
+  · Skip
+  Tutorial · Step 1 of 6
+  30 / 60
+  3
+  Your team
+  MOVING
+  PRACTICE RANGE
+  Mouse
+  La Porteña
+  100
+  Empty
+  50 m
+  30 m
+  Secondary
+  Ctrl
+  35 m
+  Tab Skip step Hold Tab Skip tutorial
+  Shop
+  20 m
+  A
+  Smoke 1/1
+  Pick a mode: look at a button and press E , or shoot it
+  5 m
+  INVASION
+  25 m
+  Number or click
+  15 m
+  QUIETOS
+  B
+  · Look
+  FIRING LINE
+  Shrapnel ×1
+  H Map
+  · Move
+  Shift
+  DISTANCIAS
+  Pistols
+  5
+  REINICIAR
+  Shrapnel 1/1
+  SHOOTING ZONE
+  1–9
+  Snipers
+  Grenades
+  D
+  Move
+  All free
+  Flash 2/2
+  30
+  Primary
+  · Agacharse
+  Buy
+  Close
+  20 / 60
+  TUTORIAL
+  · Sprint (in Tactical, walk slowly)

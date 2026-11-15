@@ -1,0 +1,50 @@
+US-347_CA6_Seleccion_de_modo · idioma en · 2026-11-15 18:26:49
+Resultado: sin textos en español
+Textos en pantalla:
+  One team plants the device at A or B while the other defends. No respawns: if you die, spectate a teammate until the next round.
+  0:34
+  Join with code
+  Survive the invasion at university.
+  Record on Normal: not played yet
+  Tactical · with players in your region
+  10 waves
+  Online
+  Deathmatch
+  75% health and damage, with fewer enemies. Regenerate after 3 seconds.
+  4 vs 4
+  25 kills
+  Platform 3 · Online
+  Find match
+  Create room
+  1 to 4 players
+  Tactical
+  First to 7
+  As Riftwalker · your region · same version (v0.5.0-exp.1)
+  Invasion · with players in your region
+  Invasion
+  Main menu
+  Esc
+  125% health, 150% damage and more enemies. +25% points.
+  Platform 1
+  Platform 2 · Online
+  Choose a mode
+  Platform 2
+  8 min
+  Platform 1 · Online
+  Play solo
+  Normal
+  Switch sides in round 6
+  Free-for-all. Choose your weapons for free, heal 50 health per kill, and respawn after 3 seconds away from opponents.
+  Private room · with friends
+  Easy
+  20 s buy phase
+  Free-for-all. Respawn after 3 seconds.
+  Up to 8
+  The intended experience. Regenerate after 4 seconds.
+  Platform 3
+  Deathmatch · with players in your region
+  Free weapons
+  Project Riftwalker
+  1 to 4 players against the waves at the university. Every 10 waves the Boss arrives; beat it and you can keep going for a record.
+  Hard
+  Plant or defuse the device. No respawns.

@@ -1,0 +1,57 @@
+US-348_CA6_Practica_tutorial · idioma en · 2026-11-15 18:28:22
+Resultado: sin textos en español
+Textos en pantalla:
+  / ∞
+  Get closer to see the objective
+  Mitre
+  40 m
+  REACTION
+  Space
+  10 m
+  TACTICAL
+  Quietos · Kills: 0 · Headshots: 0
+  PRACTICE MAP
+  1
+  W
+  S
+  DEATHMATCH
+  45 m
+  · Skip
+  Tutorial · Step 1 of 6
+  MOVING
+  PRACTICE RANGE
+  Mouse
+  La Porteña
+  100
+  4
+  50 m
+  30 m
+  Ctrl
+  35 m
+  Tab Skip step Hold Tab Skip tutorial
+  2
+  20 m
+  3
+  A
+  Pick a mode: look at a button and press E , or shoot it
+  5 m
+  INVASION
+  25 m
+  15 m
+  QUIETOS
+  · Look
+  FIRING LINE
+  Shrapnel ×1
+  H Map
+  · Move
+  Shift
+  DISTANCIAS
+  REINICIAR
+  SHOOTING ZONE
+  D
+  Move
+  30
+  Knife
+  · Agacharse
+  TUTORIAL
+  · Sprint (in Tactical, walk slowly)
