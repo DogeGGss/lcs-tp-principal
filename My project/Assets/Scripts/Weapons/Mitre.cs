@@ -77,6 +77,7 @@ public class Mitre : MonoBehaviour, IHudWeapon
     {
         currentAmmo = MagazineSize;
         if (fullReserve < 0) fullReserve = reserveAmmo;
+        reserveAmmo = Municion.Reserva(fullReserve); // F31: en Invasión viene con el doble
         // Quien dispara: sus balas nunca le pegan a él mismo (US 165)
         PlayerMovement owner = GetComponentInParent<PlayerMovement>();
         shooter = owner != null ? owner.transform : transform.root;

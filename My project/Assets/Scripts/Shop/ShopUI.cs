@@ -910,7 +910,7 @@ public class ShopUI : MonoBehaviour
         string[] values =
         {
             item.burstCount > 1 ? $"{Number(item.fireRate)}×{item.burstCount}" : Number(item.fireRate),
-            $"{item.magazine}<color=#8E96A3><size=16> / {item.reserve}</size></color>",
+            $"{item.magazine}<color=#8E96A3><size=16> / {Municion.Reserva(item.reserve)}</size></color>", // (en Invasión, el doble)
             item.reloadTime > 0f ? $"{Number(item.reloadTime)} s" : "—",
             $"{Mathf.RoundToInt(item.mobility * 100f)}%",
             item.zoom > 0f ? $"{Number(item.zoom)}×" + (item.zoom2 > 0f ? $"/{Number(item.zoom2)}×" : "") : "—",
