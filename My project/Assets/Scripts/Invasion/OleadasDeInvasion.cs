@@ -27,6 +27,9 @@ using UnityEngine.UI;
 //   US 335, CA4 a CA7: mientras hay un puesto de suministros (US 292), los portales (también el del Jefe) se abren
 //   alrededor del puesto, entre 30 y 55 m de él, conectados caminando con el jugador y nunca a menos de 10 m de él
 //   (pueden verse); si no hay puesto o no se encuentra lugar ahí, como siempre.
+//   F31: con el jugador donde no se llega caminando (un techo, una pared alta), "conectado" es que se llegue hasta el
+//   punto caminable más cercano a él (donde lo esperan los enemigos, US 036, CA3). Si no se encuentra lugar, se vuelve
+//   a buscar un rato después (no en cada cuadro).
 // - CA5: la oleada termina cuando mueren todos (en la 10, también el Jefe): "Oleada N superada" y descanso.
 // US 303 reemplaza el final de la 10 (CA6) y el modo infinito (CA7):
 // - CA4: al superar cada oleada del Jefe, "Jefe derrotado" con "Seguir" (la elección del Jefe, EleccionDeInvasion, y
@@ -440,7 +443,8 @@ public class OleadasDeInvasion : MonoBehaviour
                 portales.Add(portal);
             }
             else foreach (PortalDeEnemigos p in portales) if (portal == null || p.Fila.Count < portal.Fila.Count) portal = p;
-            if (portal != null)
+            if (portal == null) proximoPortal = Time.time + ReintentoDeLugar; // no se encontró lugar: no en cada cuadro
+            else
             {
                 proximoPortal = Time.time + EntrePortales;
                 // Una jauría va entera a un portal (US 300, CA2); si no, de 3 a 5 sueltos (sin cortar una jauría).
@@ -471,7 +475,7 @@ public class OleadasDeInvasion : MonoBehaviour
         // grande (que queda abierto hasta el final de la oleada).
         Vector3 dondeJefe = Vector3.zero;
         if (DeJefe && !jefeSalio && (portalDelJefe == null || portalDelJefe.Fila.Count == 0) && tipoJefe != null
-            && muertos >= (total - escolta) / 2 && (portalDelJefe != null || LugarDePortal(jugador, out dondeJefe)))
+            && muertos >= (total - escolta) / 2 && (portalDelJefe != null || (Time.time >= proximoLugarJefe && LugarDelJefe(jugador, out dondeJefe))))
         {
             if (portalDelJefe == null) portalDelJefe = PortalDeEnemigos.Abrir(dondeJefe, jugador.position, ConfigInvasion.Actual.escalaJefe);
             portalDelJefe.Fila.Enqueue(tipoJefe); // (si el jefe se perdió, vuelve a salir por el mismo portal)
@@ -704,6 +708,17 @@ public class OleadasDeInvasion : MonoBehaviour
 
     // ---------- US 269, CA1: dónde se abre un portal ----------
 
+    private const float ReintentoDeLugar = 0.5f; // s hasta volver a buscar lugar si no se encontró (cada búsqueda es cara)
+    private float proximoLugarJefe;
+
+    // El del Jefe: si no se encuentra, se vuelve a buscar un rato después.
+    private bool LugarDelJefe(Transform jugador, out Vector3 lugar)
+    {
+        if (LugarDePortal(jugador, out lugar)) return true;
+        proximoLugarJefe = Time.time + ReintentoDeLugar;
+        return false;
+    }
+
     // Al azar en el NavMesh a 15–50 m, conectado con el jugador, con lugar para el portal y, primero, fuera de su vista;
     // si no, a la vista; si no hay NavMesh o no se encuentra, en los puntos de aparición (US 187) o alrededor del jugador.
     private bool LugarDePortal(Transform jugador, out Vector3 lugar)
@@ -844,10 +859,23 @@ public class OleadasDeInvasion : MonoBehaviour
         if (aca.position.y > suelo + AlturaDePlantaBaja) return false;
         if (!NavMesh.SamplePosition(jugador, out NavMeshHit alla, 3f, filtro)) { sobreNavMesh = aca.position; return true; }
         var camino = new NavMeshPath();
-        if (!NavMesh.CalculatePath(aca.position, alla.position, filtro, camino) || camino.status != NavMeshPathStatus.PathComplete) return false;
+        if (!NavMesh.CalculatePath(aca.position, alla.position, filtro, camino)) return false;
+        if (camino.status != NavMeshPathStatus.PathComplete)
+        {
+            // F31: el jugador está donde no se llega caminando (un techo): sirve si el camino llega hasta cerca de él,
+            // donde lo esperan los enemigos, abajo de él. Si termina lejos o a su altura, el portal quedó en un lugar cerrado.
+            if (camino.status != NavMeshPathStatus.PathPartial || camino.corners.Length == 0) return false;
+            Vector3 fin = camino.corners[camino.corners.Length - 1] - jugador;
+            if (fin.y > -AlturaDePlantaBaja) return false;
+            fin.y = 0f;
+            if (fin.magnitude > HastaDondeEsperan) return false;
+        }
         sobreNavMesh = aca.position;
         return true;
     }
+
+    // F31: m (en el plano) del jugador hasta donde puede terminar el camino si él está donde no se llega caminando.
+    private const float HastaDondeEsperan = 12f;
 
     // Cuánto más alto que el piso más bajo puede quedar un portal (escalones y desniveles de la planta baja).
     private const float AlturaDePlantaBaja = 1.2f;
