@@ -161,7 +161,7 @@ public class MenuRiftwalker : MonoBehaviour
 
         Keyboard teclado = Keyboard.current;
         if (teclado != null && teclado.f9Key.wasPressedThisFrame) SumarDebug();
-        if (teclado != null && teclado.escapeKey.wasPressedThisFrame && !PlayerNameScreen.IsOpen && !NotaPO.IsOpen)
+        if (teclado != null && teclado.escapeKey.wasPressedThisFrame && !PlayerNameScreen.IsOpen)
         {
             if (modalAbierto) CerrarModal();
             else if (actual != null && !actual.Escape()) VolverAlMenu();
@@ -490,7 +490,7 @@ public class MenuRiftwalker : MonoBehaviour
         avisoTienda.gameObject.SetActive(false);
         ArmarVolver(80f + AnchoTarjeta + 24f);
 
-        // Versión del juego abajo a la derecha, chiquita y en gris (US 204, CA1). Va debajo de la tarjeta "Nota para el PO".
+        // Versión del juego abajo a la derecha, chiquita y en gris (US 204, CA1).
         T(capaMenu, "Version", 1920f - 28f - 300f, 1080f - 12f - 24f, 300f, 24f, FTexto, 16f, Mute, "v" + Application.version,
             TextAlignmentOptions.BottomRight);
     }
