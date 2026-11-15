@@ -243,7 +243,7 @@ public class PlayerNameScreen : MonoBehaviour
     {
         chipName.text = name;
         avatarLetter.text = string.IsNullOrEmpty(name) ? "" : name.Substring(0, 1).ToUpperInvariant();
-        float textW = Mathf.Max(Width(chipName, name), Width(chipLabel, "Cambiar nombre"));
+        float textW = Mathf.Max(Width(chipName, name), Width(chipLabel, L10n.Source("Cambiar nombre", "ui."))); // US 350: el rótulo ya traducido
         chip.sizeDelta = new Vector2(80f + textW + 26f, 76f);
     }
 

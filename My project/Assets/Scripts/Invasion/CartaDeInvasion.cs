@@ -143,10 +143,11 @@ public class CartaDeInvasion
     public static readonly string[] SinUsoConAlimentacion = { "Cargador gemelo", "Reserva lista", "Filo", "Tiro de reserva" };
     public const string AlimentacionDirecta = "Alimentación directa";
 
-    /// <summary>US 303 / US 352: en el Sprint 4 no se entrega ninguna legendaria (Alimentación directa es de US 334,
-    /// Sprint 5). Mientras esté en false no salen en la elección: las chances de rareza no cambian (CA2 y CA3), pero
-    /// cuando toca legendaria sale la carta de la rareza más cercana (una épica). Para el Sprint 5, ponerlo en true.</summary>
-    public static bool LegendariasDisponibles = false;
+    /// <summary>US 303 / US 352: las legendarias en las elecciones. Después del primer Jefe: 15 % en la elección del Jefe
+    /// (CA1) y 2 % en las normales, restado de las comunes (CA2). Si toca legendaria y no queda ninguna que pueda salir,
+    /// sale la de la rareza más cercana, una épica (CA3, CartaAlAzar). Con false (para una entrega sin legendarias), las
+    /// chances no cambian pero la parte de la legendaria sale épica.</summary>
+    public static bool LegendariasDisponibles = true;
 
     /// <summary>US 361, CA3: lo que hace ahora, teniéndola esas veces (1 a 3).</summary>
     public string EfectoActual(int veces) => EfectoParaLaProxima(Mathf.Max(0, veces - 1));

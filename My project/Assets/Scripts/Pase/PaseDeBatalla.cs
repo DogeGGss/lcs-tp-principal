@@ -93,7 +93,7 @@ public static class PaseDeBatalla
     public static DateTime FinDeTemporada => Inicio.AddDays(TemporadaActual * DiasPorTemporada);
     public static int DiasQueFaltan => Mathf.Max(1, (int)Math.Ceiling((FinDeTemporada - Ahora).TotalDays));
     public static bool UltimaSemana => DiasQueFaltan <= 7;
-    public static string NombreTemporada => L10n.Source("Temporada", "profile.") + " " + TemporadaActual;
+    public static string NombreTemporada => L10n.T("profile.pass.season_fmt", TemporadaActual);
 
     // US 366, CA3 y CA4: lo desbloqueado y no reclamado de la temporada que terminó se reclama solo, y la nueva empieza de cero.
     private static void CerrarTemporada()
@@ -308,11 +308,16 @@ public static class PaseDeBatalla
 
     public sealed class Desafio
     {
-        public string id, nombre, modo;
+        public string id, nombre, modo, dato; // nombre: el texto en español del catálogo, con {0} para la meta o el dato
         public int[] metas, xp;
         public bool porMaximo; // "Llegar a la oleada": cuenta la mejor partida, no la suma
 
-        public string Nombre(int etapa) => metas.Length > 1 ? nombre.Replace("{n}", PerfilDatos.Numero(metas[etapa])) : nombre;
+        // US 350: el nombre en el idioma elegido; {0} es la meta de la etapa (si tiene varias) o el dato (personaje, arma).
+        public string Nombre(int etapa)
+        {
+            string valor = metas.Length > 1 ? PerfilDatos.Numero(metas[etapa]) : dato;
+            return L10n.TrySourceKey(nombre, out string clave, "profile.") ? L10n.T(clave, valor) : string.Format(nombre, valor);
+        }
         public int EtapasCompletas(int avance)
         {
             int n = 0;
@@ -326,19 +331,20 @@ public static class PaseDeBatalla
     private static List<Desafio> ArmarDesafios()
     {
         var l = new List<Desafio>();
-        void D(string id, string nombre, string modo, int meta, int xp) => l.Add(new Desafio { id = id, nombre = nombre, modo = modo, metas = new[] { meta }, xp = new[] { xp } });
+        void D(string id, string nombre, string modo, int meta, int xp, string dato = null) =>
+            l.Add(new Desafio { id = id, nombre = nombre, modo = modo, dato = dato, metas = new[] { meta }, xp = new[] { xp } });
         foreach (string p in new[] { "Soledad", "Unzué", "Goya", "Necochea" })
-            D("personaje." + IdDePersonaje(p), $"Jugar 3 partidas con {p}", "Táctico", 3, 300);
+            D("personaje." + IdDePersonaje(p), "Jugar 3 partidas con {0}", "Táctico", 3, 300, p);
         D("cabezas", "Eliminar 3 enemigos con disparos a la cabeza", "Deathmatch o Táctico", 3, 300);
-        l.Add(new Desafio { id = "invasion.bajas", nombre = "Eliminar {n} enemigos", modo = "Invasión",
+        l.Add(new Desafio { id = "invasion.bajas", nombre = "Eliminar {0} enemigos", modo = "Invasión",
             metas = new[] { 10, 20, 40, 80, 160, 320 }, xp = new[] { 300, 300, 500, 500, 750, 1000 } });
         D("ganar.tactico", "Ganar 2 partidas", "Táctico", 2, 300);
         D("ganar.deathmatch", "Ganar 1 partida", "Deathmatch", 1, 300);
-        l.Add(new Desafio { id = "invasion.oleada", nombre = "Llegar a la oleada {n}", modo = "Invasión", porMaximo = true,
+        l.Add(new Desafio { id = "invasion.oleada", nombre = "Llegar a la oleada {0}", modo = "Invasión", porMaximo = true,
             metas = new[] { 10, 20, 30, 40 }, xp = new[] { 300, 500, 750, 1000 } });
         D("sin-mira", "Eliminar 5 enemigos sin apuntar con el Último Tren", "Deathmatch o Táctico", 5, 500);
         foreach (CatalogoDeSkins.Arma a in CatalogoDeSkins.Armas)
-            D("arma." + a.id, $"Eliminar 15 enemigos con {a.nombre}", "Deathmatch o Táctico", 15, 300);
+            D("arma." + a.id, "Eliminar 15 enemigos con {0}", "Deathmatch o Táctico", 15, 300, a.nombre);
         D("invasion.puestos", "Cargar 3 puestos de suministros", "Invasión", 3, 300);
         D("invasion.jefe", "Eliminar al Jefe", "Invasión", 1, 750);
         D("invasion.alfas", "Eliminar 10 alfas", "Invasión", 10, 500);

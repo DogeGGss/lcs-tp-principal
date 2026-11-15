@@ -1632,7 +1632,7 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 7522316312
-    m_Localized: "## El pr\xF3ximo cruce empieza ac\xE1\nUn punto de encuentro para preparar tu pr\xF3xima partida.\n### Tu juego, al d\xEDa\n- Descarg\xE1 las nuevas versiones desde este launcher.\n- Conserv\xE1 tus opciones y tu progreso.\n- Consult\xE1 qu\xE9 cambi\xF3 antes de jugar.\n### Eleg\xED tu and\xE9n\n**T\xE1ctico \xB7 Deathmatch \xB7 Zombie**\n\nEsta es una vista previa de la interfaz, no las notas de una versi\xF3n publicada."
+    m_Localized: "## El pr\xF3ximo cruce empieza ac\xE1\nUn punto de encuentro para preparar tu pr\xF3xima partida.\n### Tu juego, al d\xEDa\n- Descarg\xE1 las nuevas versiones desde este launcher.\n- Conserv\xE1 tus opciones y tu progreso.\n- Consult\xE1 qu\xE9 cambi\xF3 antes de jugar.\n### Eleg\xED tu and\xE9n\n**T\xE1ctico \xB7 Deathmatch \xB7 Invasi\xF3n**\n\nEsta es una vista previa de la interfaz, no las notas de una versi\xF3n publicada."
     m_Metadata:
       m_Items: []
   - m_Id: 7522316313
@@ -6276,383 +6276,907 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 380227458789409
-    m_Localized: "1 a 4 jugadores"
+    m_Localized: 1 a 4 jugadores
     m_Metadata:
       m_Items: []
   - m_Id: 380227458789410
-    m_Localized: "Andén 3 · Online"
+    m_Localized: "And\xE9n 3 \xB7 Online"
     m_Metadata:
       m_Items: []
   - m_Id: 380227458789411
-    m_Localized: "De 1 a 4 jugadores contra las oleadas de la universidad. Cada 10 oleadas llega el Jefe; si lo bajan, pueden seguir para hacer récord."
+    m_Localized: "De 1 a 4 jugadores contra las oleadas de la universidad. Cada 10 oleadas llega el Jefe; si lo bajan, pueden seguir para hacer r\xE9cord."
     m_Metadata:
       m_Items: []
   - m_Id: 380227458789412
-    m_Localized: "Jugar solo"
+    m_Localized: Jugar solo
     m_Metadata:
       m_Items: []
   - m_Id: 380227458789413
-    m_Localized: "Pasale el código a tus amigos (hasta 4). Podés arrancar cuando quieras."
+    m_Localized: "Pasale el c\xF3digo a tus amigos (hasta 4). Pod\xE9s arrancar cuando quieras."
     m_Metadata:
       m_Items: []
   - m_Id: 380227458789414
-    m_Localized: " · En equipo: <color={0}>oleada {1}</color>"
+    m_Localized: " \xB7 En equipo: <color={0}>oleada {1}</color>"
     m_Metadata:
       m_Items: []
   - m_Id: 380227458789415
-    m_Localized: "Arranca sola con {0} jugadores, o con los que haya si pasan {1} s sin que entre nadie."
+    m_Localized: Arranca sola con {0} jugadores, o con los que haya si pasan {1} s sin que entre nadie.
     m_Metadata:
       m_Items: []
   - m_Id: 380227458789416
-    m_Localized: "En Invasión no hay habilidades"
+    m_Localized: "En Invasi\xF3n no hay habilidades"
     m_Metadata:
       m_Items: []
   - m_Id: 380227458789417
-    m_Localized: "Matar saca la pausa entre las próximas 5 ráfagas."
+    m_Localized: "Matar saca la pausa entre las pr\xF3ximas 5 r\xE1fagas."
     m_Metadata:
       m_Items: []
   - m_Id: 380227458789418
-    m_Localized: "Matar saca la pausa entre las próximas 7 ráfagas."
+    m_Localized: "Matar saca la pausa entre las pr\xF3ximas 7 r\xE1fagas."
     m_Metadata:
       m_Items: []
   - m_Id: 380227458789419
-    m_Localized: "Cada baja le suma una bala a las ráfagas, hasta 8. Al recargar vuelven a 3."
+    m_Localized: "Cada baja le suma una bala a las r\xE1fagas, hasta 8. Al recargar vuelven a 3."
     m_Metadata:
       m_Items: []
   - m_Id: 380227458789420
-    m_Localized: "Cada baja le suma una bala a las ráfagas, hasta 10. Al recargar vuelven a 3."
+    m_Localized: "Cada baja le suma una bala a las r\xE1fagas, hasta 10. Al recargar vuelven a 3."
     m_Metadata:
       m_Items: []
   - m_Id: 380227458789421
-    m_Localized: "Las granadas que tocan el piso quedan como minas (hasta 7)."
+    m_Localized: Las granadas que tocan el piso quedan como minas (hasta 7).
     m_Metadata:
       m_Items: []
   - m_Id: 380227458789422
-    m_Localized: "Las granadas que tocan el piso quedan como minas (hasta 9)."
+    m_Localized: Las granadas que tocan el piso quedan como minas (hasta 9).
     m_Metadata:
       m_Items: []
   - m_Id: 380227458789423
-    m_Localized: "80 % más de reserva en las dos armas (40 % más que ahora)."
+    m_Localized: "80 % m\xE1s de reserva en las dos armas (40 % m\xE1s que ahora)."
     m_Metadata:
       m_Items: []
   - m_Id: 380227458789424
-    m_Localized: "120 % más de reserva en las dos armas (40 % más que ahora)."
+    m_Localized: "120 % m\xE1s de reserva en las dos armas (40 % m\xE1s que ahora)."
     m_Metadata:
       m_Items: []
   - m_Id: 380227458789425
-    m_Localized: "Cada baja a la cabeza devuelve 10 balas al cargador."
+    m_Localized: Cada baja a la cabeza devuelve 10 balas al cargador.
     m_Metadata:
       m_Items: []
   - m_Id: 380227458789426
-    m_Localized: "Cada baja a la cabeza devuelve 15 balas al cargador."
+    m_Localized: Cada baja a la cabeza devuelve 15 balas al cargador.
     m_Metadata:
       m_Items: []
   - m_Id: 380227458789427
-    m_Localized: "1 de cada 4 invasores suelta un cargador al morir."
+    m_Localized: 1 de cada 4 invasores suelta un cargador al morir.
     m_Metadata:
       m_Items: []
   - m_Id: 380227458789428
-    m_Localized: "1 de cada 3 invasores suelta un cargador al morir."
+    m_Localized: 1 de cada 3 invasores suelta un cargador al morir.
     m_Metadata:
       m_Items: []
   - m_Id: 380227458789429
-    m_Localized: "El cuchillo mata de un golpe a los invasores con 30 % de vida o menos (salvo al Jefe)."
+    m_Localized: El cuchillo mata de un golpe a los invasores con 30 % de vida o menos (salvo al Jefe).
     m_Metadata:
       m_Items: []
   - m_Id: 380227458789430
-    m_Localized: "El cuchillo mata de un golpe a los invasores con 35 % de vida o menos (salvo al Jefe)."
+    m_Localized: El cuchillo mata de un golpe a los invasores con 35 % de vida o menos (salvo al Jefe).
     m_Metadata:
       m_Items: []
   - m_Id: 380227458789431
-    m_Localized: "Cada cuchillazo cura lo mismo que el daño que hace, hasta 35 de vida por golpe."
+    m_Localized: "Cada cuchillazo cura lo mismo que el da\xF1o que hace, hasta 35 de vida por golpe."
     m_Metadata:
       m_Items: []
   - m_Id: 380227458789432
-    m_Localized: "Cada cuchillazo cura lo mismo que el daño que hace, hasta 45 de vida por golpe."
+    m_Localized: "Cada cuchillazo cura lo mismo que el da\xF1o que hace, hasta 45 de vida por golpe."
     m_Metadata:
       m_Items: []
   - m_Id: 380227458789433
-    m_Localized: "Cuando un invasor te pega, tu próximo disparo suma 6 veces la vida que perdiste."
+    m_Localized: "Cuando un invasor te pega, tu pr\xF3ximo disparo suma 6 veces la vida que perdiste."
     m_Metadata:
       m_Items: []
   - m_Id: 380227458789434
-    m_Localized: "Cuando un invasor te pega, tu próximo disparo suma 7 veces la vida que perdiste."
+    m_Localized: "Cuando un invasor te pega, tu pr\xF3ximo disparo suma 7 veces la vida que perdiste."
     m_Metadata:
       m_Items: []
   - m_Id: 380227458789435
-    m_Localized: "Cuando el puesto se carga, una burbuja empuja 15 m a los invasores del anillo, salvo al Jefe."
+    m_Localized: Cuando el puesto se carga, una burbuja empuja 15 m a los invasores del anillo, salvo al Jefe.
     m_Metadata:
       m_Items: []
   - m_Id: 380227458789436
-    m_Localized: "Cuando el puesto se carga, una burbuja empuja 20 m a los invasores del anillo, salvo al Jefe."
+    m_Localized: Cuando el puesto se carga, una burbuja empuja 20 m a los invasores del anillo, salvo al Jefe.
     m_Metadata:
       m_Items: []
   - m_Id: 380227458789437
-    m_Localized: "No tenés lugar: descartá una carta para elegir una nueva"
+    m_Localized: "No ten\xE9s lugar: descart\xE1 una carta para elegir una nueva"
     m_Metadata:
       m_Items: []
   - m_Id: 380227458789438
-    m_Localized: "Sin lugar · descartá una"
+    m_Localized: "Sin lugar \xB7 descart\xE1 una"
     m_Metadata:
       m_Items: []
   - m_Id: 380227458789439
-    m_Localized: "Descartaste {0}"
+    m_Localized: Descartaste {0}
     m_Metadata:
       m_Items: []
   - m_Id: 380227458789440
-    m_Localized: "Descartar una carta"
+    m_Localized: Descartar una carta
     m_Metadata:
       m_Items: []
   - m_Id: 380227458789441
-    m_Localized: "Seguir sin elegir"
+    m_Localized: Seguir sin elegir
     m_Metadata:
       m_Items: []
   - m_Id: 380227458789442
-    m_Localized: "No hay cartas para elegir esta vez"
+    m_Localized: No hay cartas para elegir esta vez
     m_Metadata:
       m_Items: []
   - m_Id: 380227458789443
-    m_Localized: "Tus cartas {0} / {1}"
+    m_Localized: Tus cartas {0} / {1}
     m_Metadata:
       m_Items: []
   - m_Id: 380227458789444
-    m_Localized: "{0} / {1} lugares ocupados"
+    m_Localized: '{0} / {1} lugares ocupados'
     m_Metadata:
       m_Items: []
   - m_Id: 380227458789445
-    m_Localized: "Tus cartas"
+    m_Localized: Tus cartas
     m_Metadata:
       m_Items: []
   - m_Id: 380227458789446
-    m_Localized: "Elegí cuál descartar"
+    m_Localized: "Eleg\xED cu\xE1l descartar"
     m_Metadata:
       m_Items: []
   - m_Id: 380227458789447
-    m_Localized: "Perdés la carta con sus mejoras y esta vez no elegís  ·  Esc para volver"
+    m_Localized: "Perd\xE9s la carta con sus mejoras y esta vez no eleg\xEDs  \xB7  Esc para volver"
     m_Metadata:
       m_Items: []
   - m_Id: 380227458789448
-    m_Localized: "Soltá {0} para cerrar"
+    m_Localized: "Solt\xE1 {0} para cerrar"
     m_Metadata:
       m_Items: []
   - m_Id: 380227458789449
-    m_Localized: "Volver"
+    m_Localized: Volver
     m_Metadata:
       m_Items: []
   - m_Id: 380227458789450
-    m_Localized: "Cancelar"
+    m_Localized: Cancelar
     m_Metadata:
       m_Items: []
   - m_Id: 380227458789451
-    m_Localized: "Descartar"
+    m_Localized: Descartar
     m_Metadata:
       m_Items: []
   - m_Id: 380227458789452
-    m_Localized: "¿Descartar {0}? Perdés sus mejoras y esta vez no elegís."
+    m_Localized: "\xBFDescartar {0}? Perd\xE9s sus mejoras y esta vez no eleg\xEDs."
     m_Metadata:
       m_Items: []
   - m_Id: 380227458789453
-    m_Localized: "Libre"
+    m_Localized: Libre
     m_Metadata:
       m_Items: []
   - m_Id: 380227458789454
-    m_Localized: "{0} de {1}"
+    m_Localized: '{0} de {1}'
     m_Metadata:
       m_Items: []
   - m_Id: 380227458789455
-    m_Localized: "Única"
+    m_Localized: "\xDAnica"
     m_Metadata:
       m_Items: []
   - m_Id: 380227458789456
-    m_Localized: "Sin uso"
+    m_Localized: Sin uso
     m_Metadata:
       m_Items: []
   - m_Id: 380227458789457
-    m_Localized: "Rinde con: {0}"
+    m_Localized: 'Rinde con: {0}'
     m_Metadata:
       m_Items: []
   - m_Id: 380227458789458
-    m_Localized: "Cartas (Invasión)"
+    m_Localized: "Cartas (Invasi\xF3n)"
     m_Metadata:
       m_Items: []
   - m_Id: 380227458789459
-    m_Localized: "La partida sigue"
+    m_Localized: La partida sigue
     m_Metadata:
       m_Items: []
   - m_Id: 380227458789460
-    m_Localized: "¡Caíste! Esperá que te revivan"
+    m_Localized: "\xA1Ca\xEDste! Esper\xE1 que te revivan"
     m_Metadata:
       m_Items: []
   - m_Id: 380227458789461
-    m_Localized: "Caído · {0} s para que te revivan"
+    m_Localized: "Ca\xEDdo \xB7 {0} s para que te revivan"
     m_Metadata:
       m_Items: []
   - m_Id: 380227458789462
-    m_Localized: "{0} te está reviviendo"
+    m_Localized: "{0} te est\xE1 reviviendo"
     m_Metadata:
       m_Items: []
   - m_Id: 380227458789463
-    m_Localized: "¡Te levantaste!"
+    m_Localized: "\xA1Te levantaste!"
     m_Metadata:
       m_Items: []
   - m_Id: 380227458789464
-    m_Localized: "Mantené {0} para revivir a {1}"
+    m_Localized: "Manten\xE9 {0} para revivir a {1}"
     m_Metadata:
       m_Items: []
   - m_Id: 380227458789465
-    m_Localized: "Reviviendo a {0}"
+    m_Localized: Reviviendo a {0}
     m_Metadata:
       m_Items: []
   - m_Id: 380227458789466
-    m_Localized: "Reviviendo"
+    m_Localized: Reviviendo
     m_Metadata:
       m_Items: []
   - m_Id: 380227458789467
-    m_Localized: "Caído · {0} s"
+    m_Localized: "Ca\xEDdo \xB7 {0} s"
     m_Metadata:
       m_Items: []
   - m_Id: 380227458789468
-    m_Localized: "Caído"
+    m_Localized: "Ca\xEDdo"
     m_Metadata:
       m_Items: []
   - m_Id: 380227458789469
-    m_Localized: "Muerto"
+    m_Localized: Muerto
     m_Metadata:
       m_Items: []
   - m_Id: 380227458789470
-    m_Localized: "Desconectado"
+    m_Localized: Desconectado
     m_Metadata:
       m_Items: []
   - m_Id: 380227458789471
-    m_Localized: "Jugador"
+    m_Localized: Jugador
     m_Metadata:
       m_Items: []
   - m_Id: 380227458789472
-    m_Localized: "Bajas"
+    m_Localized: Bajas
     m_Metadata:
       m_Items: []
   - m_Id: 380227458789473
-    m_Localized: "Puntos"
+    m_Localized: Puntos
     m_Metadata:
       m_Items: []
   - m_Id: 380227458789474
-    m_Localized: "Estado"
+    m_Localized: Estado
     m_Metadata:
       m_Items: []
   - m_Id: 380227458789475
-    m_Localized: "se unió a la partida"
+    m_Localized: "se uni\xF3 a la partida"
     m_Metadata:
       m_Items: []
   - m_Id: 380227458789476
-    m_Localized: "Entraste a la partida"
+    m_Localized: Entraste a la partida
     m_Metadata:
       m_Items: []
   - m_Id: 380227458789477
-    m_Localized: "Aparecés al empezar la próxima oleada"
+    m_Localized: "Aparec\xE9s al empezar la pr\xF3xima oleada"
     m_Metadata:
       m_Items: []
   - m_Id: 380227458789478
-    m_Localized: "Récord cooperativo en {0}: <color=#F3F4F6>oleada {1}</color> · solo: oleada {2}"
+    m_Localized: "R\xE9cord cooperativo en {0}: <color=#F3F4F6>oleada {1}</color> \xB7 solo: oleada {2}"
     m_Metadata:
       m_Items: []
   - m_Id: 380227458789479
-    m_Localized: "Récord de un jugador: oleada {0}"
+    m_Localized: "R\xE9cord de un jugador: oleada {0}"
     m_Metadata:
       m_Items: []
   - m_Id: 380227458789480
-    m_Localized: "Se retiró"
+    m_Localized: "Se retir\xF3"
     m_Metadata:
       m_Items: []
   - m_Id: 380227458789481
-    m_Localized: "Enter o Esc  ·  Volver al menú"
+    m_Localized: "Enter o Esc  \xB7  Volver al men\xFA"
     m_Metadata:
       m_Items: []
   - m_Id: 380227458789482
-    m_Localized: "Rift"
+    m_Localized: Rift
     m_Metadata:
       m_Items: []
   - m_Id: 380227458789483
-    m_Localized: "Albiceleste"
+    m_Localized: Albiceleste
     m_Metadata:
       m_Items: []
   - m_Id: 380227458789484
-    m_Localized: "Brasa"
+    m_Localized: Brasa
     m_Metadata:
       m_Items: []
   - m_Id: 380227458789485
-    m_Localized: "Ártico"
+    m_Localized: "\xC1rtico"
     m_Metadata:
       m_Items: []
   - m_Id: 380227458789486
-    m_Localized: "Desierto"
+    m_Localized: Desierto
     m_Metadata:
       m_Items: []
   - m_Id: 380227458789487
-    m_Localized: "Armas"
+    m_Localized: Armas
     m_Metadata:
       m_Items: []
   - m_Id: 380227458789488
-    m_Localized: "Sin skin"
+    m_Localized: Sin skin
     m_Metadata:
       m_Items: []
   - m_Id: 380227458789489
-    m_Localized: "Equipada"
+    m_Localized: Equipada
     m_Metadata:
       m_Items: []
   - m_Id: 380227458789490
-    m_Localized: "Bloqueada"
+    m_Localized: Bloqueada
     m_Metadata:
       m_Items: []
   - m_Id: 380227458789491
-    m_Localized: "Skin de arma"
+    m_Localized: Skin de arma
     m_Metadata:
       m_Items: []
   - m_Id: 380227458789492
-    m_Localized: "El arma como viene, sin skin."
+    m_Localized: El arma como viene, sin skin.
     m_Metadata:
       m_Items: []
   - m_Id: 380227458789493
-    m_Localized: "Se consigue en el pase o en las cápsulas"
+    m_Localized: "Se consigue en el pase o en las c\xE1psulas"
     m_Metadata:
       m_Items: []
   - m_Id: 380227458789494
-    m_Localized: "{0} equipada"
+    m_Localized: '{0} equipada'
     m_Metadata:
       m_Items: []
   - m_Id: 380227458789495
-    m_Localized: "{0} sin skin"
+    m_Localized: '{0} sin skin'
     m_Metadata:
       m_Items: []
   - m_Id: 380227458789496
-    m_Localized: "Código binario"
+    m_Localized: "C\xF3digo binario"
     m_Metadata:
       m_Items: []
   - m_Id: 380227458789500
-    m_Localized: "Mármol de Retiro"
+    m_Localized: "M\xE1rmol de Retiro"
     m_Metadata:
       m_Items: []
   - m_Id: 380227458789501
-    m_Localized: "Azulejos del subte"
+    m_Localized: Azulejos del subte
     m_Metadata:
       m_Items: []
   - m_Id: 380227458789502
-    m_Localized: "Cristal del Rift"
+    m_Localized: Cristal del Rift
     m_Metadata:
       m_Items: []
   - m_Id: 380227458789503
-    m_Localized: "Dragón Abisal"
+    m_Localized: "Drag\xF3n Abisal"
     m_Metadata:
       m_Items: []
   - m_Id: 380227458789504
-    m_Localized: "Tormenta"
+    m_Localized: Tormenta
     m_Metadata:
       m_Items: []
   - m_Id: 380227458789505
-    m_Localized: "Próxima estación"
+    m_Localized: "Pr\xF3xima estaci\xF3n"
     m_Metadata:
       m_Items: []
   - m_Id: 380227458789506
-    m_Localized: "Mapa del subte"
+    m_Localized: Mapa del subte
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2722374174470144
+    m_Localized: Barrera
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2722374379991040
+    m_Localized: Callejero
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2722374379991041
+    m_Localized: Pulso
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2722374379991042
+    m_Localized: Silbato
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2722374379991043
+    m_Localized: Trasbordo
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2722374379991044
+    m_Localized: "Vista a\xE9rea"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2722374379991045
+    m_Localized: Metralla
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2722374379991046
+    m_Localized: Humo
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2722374379991047
+    m_Localized: Todo gratis
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2722374379991048
+    m_Localized: "C\xE1psulas"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2722374379991049
+    m_Localized: Pase de batalla
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2722374379991050
+    m_Localized: "01 / C\xE1psulas \xB7 Pase \xB7 Cristales"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2722374379991051
+    m_Localized: Sin azar
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2722374379991052
+    m_Localized: "Ofertas del d\xEDa"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2722374379991053
+    m_Localized: "El cosm\xE9tico que elijas, sin azar. Compras simuladas: no se cobra dinero real."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2722374379991054
+    m_Localized: Nuevas ofertas en {0} h {1:00} min
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2722374379991055
+    m_Localized: Te faltan {0} cristales
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2722374379991056
+    m_Localized: "Comprar \xB7 {0} cristales"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2722374379991057
+    m_Localized: "Te llevamos a la pesta\xF1a Cristales."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2722374379991058
+    m_Localized: Tienda directa
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2722374379991059
+    m_Localized: "\xBFComprar {0}?"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2722374379991060
+    m_Localized: "{0} \xB7 {1} por {2} cristales. Compra simulada: no se cobra dinero real."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2722374379991061
+    m_Localized: "\xA1{0}! Ya est\xE1 en tu colecci\xF3n del Perfil."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2722374379991062
+    m_Localized: "\xBFSin cristales? Comprar cristales \xBB"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2722374379991063
+    m_Localized: Temporada
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2722374379991064
+    m_Localized: Temporada {0}
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2722374379991065
+    m_Localized: Reclamar todo
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2722374379991066
+    m_Localized: Reclamar todo ({0})
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2722374379991067
+    m_Localized: Comprar pase
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2722374379991068
+    m_Localized: "Comprar pase \xB7 {0}"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2722374379991069
+    m_Localized: Pase comprado
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2722374379991070
+    m_Localized: Recompensas
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2722374379991071
+    m_Localized: "Desaf\xEDos"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2722374379991072
+    m_Localized: "Termina en {0} d\xEDa"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2722374379991073
+    m_Localized: "Termina en {0} d\xEDas"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2722374379991074
+    m_Localized: "Faltan {0} d\xEDas \xB7 40 niveles \xB7 {1} cristales gratis, {2} con el pase"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2722374379991075
+    m_Localized: Nivel {0}
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2722374379991076
+    m_Localized: Nivel
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2722374379991077
+    m_Localized: "Nivel m\xE1ximo"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2722374379991078
+    m_Localized: "P\xE1gina {0} / {1} \xB7 Niveles {2}\u2013{3}"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2722374379991079
+    m_Localized: Gratis
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2722374379991080
+    m_Localized: Pase
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2722374379991081
+    m_Localized: Reclamada
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2722374379991082
+    m_Localized: Reclamar
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2722374379991083
+    m_Localized: Con el pase
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2722374379991084
+    m_Localized: "Nivel {0} \xB7 {1}"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2722374379991085
+    m_Localized: "Ya est\xE1 en tu colecci\xF3n del Perfil."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2722374379991086
+    m_Localized: "Hac\xE9 clic en la carta para reclamarla."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2722374379991087
+    m_Localized: Se desbloquea con el pase de batalla.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2722374379991088
+    m_Localized: Se desbloquea al llegar al nivel {0}.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2722374379991089
+    m_Localized: 'Reclamaste: {0}'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2722374379991090
+    m_Localized: Reclamaste {0} recompensa
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2722374379991091
+    m_Localized: Reclamaste {0} recompensas
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2722374379991092
+    m_Localized: Te faltan {0} cristales para el pase
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2722374379991093
+    m_Localized: "\xBFComprar el pase de la {0}?"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2722374379991094
+    m_Localized: "Cuesta {0} cristales y desbloquea las 32 recompensas de pago (tambi\xE9n las de los niveles que ya pasaste). A lo largo de los niveles te devuelve cristales: 550 en total con el pase, contra 100 sin \xE9l. Compra simulada: no se cobra dinero real."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2722374379991095
+    m_Localized: "\xA1Pase comprado! Las recompensas de pago de tus niveles ya est\xE1n para reclamar."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2722374379991096
+    m_Localized: Etapa {0} / {1}
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2722374379991097
+    m_Localized: Completado
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2722374379991098
+    m_Localized: de la partida
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2722374379991099
+    m_Localized: "de desaf\xEDos"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2722374379991100
+    m_Localized: una recompensa con el pase
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2722374379991101
+    m_Localized: "Desaf\xEDo"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2722374379991102
+    m_Localized: repetido
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2722374379991103
+    m_Localized: "cr\xE9ditos"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2722374379991104
+    m_Localized: Ya compraste el pase de esta temporada
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2722374379991105
+    m_Localized: 'Pase: termina en'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2722374379991106
+    m_Localized: "d\xEDa"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2722374379991107
+    m_Localized: "d\xEDas"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2722374379991108
+    m_Localized: "Termin\xF3 la temporada: se reclam\xF3 solo lo que no hab\xEDas reclamado"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2722374379991109
+    m_Localized: "Tarjeta de presentaci\xF3n"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2722374379991110
+    m_Localized: "Deathmatch o T\xE1ctico"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2722374379991111
+    m_Localized: Jugar 3 partidas con {0}
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2722374379991112
+    m_Localized: Eliminar 3 enemigos con disparos a la cabeza
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2722374379991113
+    m_Localized: Eliminar {0} enemigos
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2722374379991114
+    m_Localized: Ganar 2 partidas
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2722374379991115
+    m_Localized: Ganar 1 partida
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2722374379991116
+    m_Localized: Llegar a la oleada {0}
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2722374379991117
+    m_Localized: "Eliminar 5 enemigos sin apuntar con el \xDAltimo Tren"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2722374379991118
+    m_Localized: Eliminar 15 enemigos con {0}
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2722374379991119
+    m_Localized: Cargar 3 puestos de suministros
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2722374379991120
+    m_Localized: Eliminar al Jefe
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2722374379991121
+    m_Localized: Eliminar 10 alfas
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2722374379991122
+    m_Localized: Nivel de jugador
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2722374379991123
+    m_Localized: Sube y baja en buscar partida
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2722374379991124
+    m_Localized: Pasajero
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2722374379991125
+    m_Localized: Guarda
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2722374379991126
+    m_Localized: "R\xE9cord F \xB7 N \xB7 D"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2722374379991127
+    m_Localized: Jefes derrotados
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2722374379991128
+    m_Localized: Puestos cargados
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2722374379991129
+    m_Localized: Carta favorita
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2722374379991130
+    m_Localized: Arma favorita
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2722374379991131
+    m_Localized: En cooperativo
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2722374379991132
+    m_Localized: (oleada {0})
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2722374379991133
+    m_Localized: Avatares
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2722374379991134
+    m_Localized: Banners
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2722374379991135
+    m_Localized: Marcos
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2722374379991136
+    m_Localized: Equipado
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2722374379991137
+    m_Localized: Bloqueado
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2722374379991138
+    m_Localized: Quitar
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2722374379991139
+    m_Localized: Derecha
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2722374379991140
+    m_Localized: Izquierda
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2722374379991141
+    m_Localized: "Espacio {0} \xB7 {1}"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2722374379991142
+    m_Localized: Payaseando
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2722374379991143
+    m_Localized: "El Cl\xE1sico"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2722374379991144
+    m_Localized: Pasito
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2722374379991145
+    m_Localized: Saludo
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2722374379991146
+    m_Localized: Giro Soul
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2722374379991147
+    m_Localized: Actualizar
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2722374379991148
+    m_Localized: Ranking
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2722374379991149
+    m_Localized: Confirmar
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2722374379991150
+    m_Localized: Confirmada
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2722374379991151
+    m_Localized: "Se consigue en las c\xE1psulas, el pase o la tienda"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2722374379991152
+    m_Localized: "Simulaci\xF3n"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2722374379991153
+    m_Localized: Adelante
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2722374379991154
+    m_Localized: Izquierda
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2722374379991155
+    m_Localized: Derecha
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2722374379991156
+    m_Localized: Apuntar
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2722374379991157
+    m_Localized: Correr / caminar despacio
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2722374379991158
+    m_Localized: Plantar / desactivar
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2722374379991159
+    m_Localized: Soltar arma
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2722374379991160
+    m_Localized: Mapa completo
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2722374379991161
+    m_Localized: Borde
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2722374379991162
+    m_Localized: Sin equipo
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2722374379991163
+    m_Localized: Equipo 1
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2722374379991164
+    m_Localized: Equipo 2
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2722374379991165
+    m_Localized: 'Hay jugadores sin equipo: cada uno elige con las flechas (o A y D).'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2722374379991166
+    m_Localized: Cada equipo necesita al menos un jugador.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2725322816319488
+    m_Localized: Escudo
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2725322841485312
+    m_Localized: Forma
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2725322841485313
+    m_Localized: Online
     m_Metadata:
       m_Items: []
   references:

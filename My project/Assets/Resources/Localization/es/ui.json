@@ -1483,6 +1483,70 @@
     {
       "key": "ui.search.minimum_wait_invasion",
       "text": "Arranca sola con {0} jugadores, o con los que haya si pasan {1} s sin que entre nadie."
+    },
+    {
+      "key": "ui.controls.forward",
+      "text": "Adelante"
+    },
+    {
+      "key": "ui.controls.left",
+      "text": "Izquierda"
+    },
+    {
+      "key": "ui.controls.right",
+      "text": "Derecha"
+    },
+    {
+      "key": "ui.controls.aim",
+      "text": "Apuntar"
+    },
+    {
+      "key": "ui.controls.sprint",
+      "text": "Correr / caminar despacio"
+    },
+    {
+      "key": "ui.controls.plant",
+      "text": "Plantar / desactivar"
+    },
+    {
+      "key": "ui.controls.drop",
+      "text": "Soltar arma"
+    },
+    {
+      "key": "ui.controls.map",
+      "text": "Mapa completo"
+    },
+    {
+      "key": "ui.crosshair.edge",
+      "text": "Borde"
+    },
+    {
+      "key": "ui.teams.none",
+      "text": "Sin equipo"
+    },
+    {
+      "key": "ui.teams.one",
+      "text": "Equipo 1"
+    },
+    {
+      "key": "ui.teams.two",
+      "text": "Equipo 2"
+    },
+    {
+      "key": "ui.teams.unassigned",
+      "text": "Hay jugadores sin equipo: cada uno elige con las flechas (o A y D)."
+    },
+    {
+      "key": "ui.teams.need_one",
+      "text": "Cada equipo necesita al menos un jugador."
+    },
+    {
+      "key": "ui.crosshair.shape",
+      "text": "Forma"
+    },
+    {
+      "key": "ui.modes.online",
+      "text": "Online"
     }
   ]
 }

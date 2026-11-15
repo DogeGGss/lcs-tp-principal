@@ -142,7 +142,7 @@ public class ResultadoDeInvasion : MonoBehaviour
             bool alFinal = r >= OleadasDeInvasion.Ultima - 1;
             TextMeshProUGUI bandera = Text(Place(Node("Record", viaRect), alFinal ? x - 125f : x + 15f, 3f, 110f, 16f), display, 11f, Accent,
                 alFinal ? TextAlignmentOptions.BaselineRight : TextAlignmentOptions.BaselineLeft, 12f, true);
-            bandera.text = "Récord";
+            bandera.text = L10n.Source("Récord");
         }
 
         // CA4: el récord.

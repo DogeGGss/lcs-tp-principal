@@ -211,7 +211,7 @@ public class CreditsScreen : MonoBehaviour
         {
             TextMeshProUGUI text = Text(Node("Accion", hint), labelFont, 22f, White(0.85f), TextAlignmentOptions.MidlineLeft, 8f, true);
             L10n.BindSource(text, label,"ui.");
-            float tw = Width(text, label.ToUpperInvariant());
+            float tw = Width(text, text.text.ToUpperInvariant()); // US 350: el ancho del texto ya traducido
             RectTransform keyRect = Node("Tecla", hint);
             TextMeshProUGUI keyText = Text(Stretch(Node("Letra", keyRect)), monoFont, 18f, Hex(0x111111), TextAlignmentOptions.Center, 4f, true);
             keyText.text = L10n.Source(key, "ui.");

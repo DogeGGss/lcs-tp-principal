@@ -186,12 +186,12 @@ public class IdiomaEnPantallaTests
         Assert.IsEmpty(enEspanol, DetectorDeIdioma.Mensaje(enEspanol));
     }
 
-    private static IEnumerator Menu()
+    internal static IEnumerator Menu()
     {
         yield return Escena("MenuPrincipal", MatchSettings.Mode, 2f);
     }
 
-    private static IEnumerator Pantalla(System.Func<MenuRiftwalker, PantallaBase> cual)
+    internal static IEnumerator Pantalla(System.Func<MenuRiftwalker, PantallaBase> cual)
     {
         yield return Menu();
         MenuRiftwalker menu = Object.FindAnyObjectByType<MenuRiftwalker>();
@@ -200,14 +200,14 @@ public class IdiomaEnPantallaTests
         yield return Esperar(1f);
     }
 
-    private static MenuUIController MenuUI()
+    internal static MenuUIController MenuUI()
     {
         MenuUIController ui = Object.FindAnyObjectByType<MenuUIController>();
         Assert.IsNotNull(ui, "No hay MenuUIController en el menú");
         return ui;
     }
 
-    private static IEnumerator Escena(string escena, GameMode modo, float espera)
+    internal static IEnumerator Escena(string escena, GameMode modo, float espera)
     {
         if (!Application.CanStreamedLevelBeLoaded(escena)) Assert.Ignore($"La escena {escena} no está en el Scene List del build.");
         MatchSettings.Mode = modo;
@@ -215,13 +215,13 @@ public class IdiomaEnPantallaTests
         yield return Esperar(espera);
     }
 
-    private static IEnumerator Esperar(float segundos)
+    internal static IEnumerator Esperar(float segundos)
     {
         float hasta = Time.realtimeSinceStartup + segundos;
         while (Time.realtimeSinceStartup < hasta) yield return null;
     }
 
-    private static IEnumerator EsperarHasta(System.Func<bool> condicion, float segundos)
+    internal static IEnumerator EsperarHasta(System.Func<bool> condicion, float segundos)
     {
         float hasta = Time.realtimeSinceStartup + segundos;
         while (!condicion() && Time.realtimeSinceStartup < hasta) yield return null;

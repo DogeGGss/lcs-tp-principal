@@ -93,7 +93,7 @@ public class PantallaTiendaDirecta : PantallaBase
         // CA2: cuánto falta para las ofertas nuevas; a las 00:00 cambian solas.
         DateTime hoy = HoyEnArgentina;
         TimeSpan falta = hoy.Date.AddDays(1) - hoy;
-        cuentaRegresiva.text = $"{L10n.Source("Nuevas ofertas en", "profile.")} {(int)falta.TotalHours} h {falta.Minutes:00} min";
+        cuentaRegresiva.text = L10n.T("profile.store.new_offers_fmt", (int)falta.TotalHours, falta.Minutes);
         if (Dia != diaDeLasOfertas) Refrescar();
     }
 
@@ -147,7 +147,8 @@ public class PantallaTiendaDirecta : PantallaBase
         n.textWrappingMode = TextWrappingModes.Normal;
 
         int precio = PrecioDe(p), faltan = precio - PerfilDatos.Cristales;
-        string texto = p.Tiene ? "Obtenido" : faltan > 0 ? $"Te faltan {PerfilDatos.Numero(faltan)} cristales" : $"Comprar · {PerfilDatos.Numero(precio)} cristales";
+        string texto = p.Tiene ? L10n.Source("Obtenido", "profile.") : faltan > 0 ? L10n.T("profile.store.missing_crystals_fmt", PerfilDatos.Numero(faltan))
+            : L10n.T("profile.store.buy_crystals_fmt", PerfilDatos.Numero(precio));
         Boton b = CrearBoton(panel, 24f, h - 24f - 64f, PanelW - 48f, 64f, texto, !p.Tiene && faltan <= 0, () => Comprar(p), 26f,
             faltan > 0 && !p.Tiene ? ColorCristales : (Color?)null);
         b.texto.text = texto;
@@ -161,13 +162,13 @@ public class PantallaTiendaDirecta : PantallaBase
         if (p.Tiene) return;
         int precio = PrecioDe(p);
         if (PerfilDatos.Cristales < precio) { menu.AbrirTienda(PestanaTienda.Cristales); return; } // CA4
-        menu.Confirmar("Tienda directa", $"¿Comprar {p.Nombre}?",
-            $"{p.NombreTipo} {NombreRareza(p.Rareza).ToLowerInvariant()} por {PerfilDatos.Numero(precio)} cristales. Compra simulada: no se cobra dinero real.",
+        menu.Confirmar(L10n.T("profile.store.direct"), L10n.T("profile.store.buy_question_fmt", p.Nombre),
+            L10n.T("profile.store.buy_body_fmt", p.NombreTipo, NombreRareza(p.Rareza), PerfilDatos.Numero(precio)),
             "Comprar", () => PerfilDatos.PagarCristales("tienda:" + p.Clave, precio, error =>
             {
                 if (error != null) { menu.Avisar(error); return; }
                 p.Dar("tienda");
-                menu.Avisar($"¡{p.Nombre}! Ya está en tu colección del Perfil.");
+                menu.Avisar(L10n.T("profile.store.bought_fmt", p.Nombre));
                 Refrescar();
             }));
     }

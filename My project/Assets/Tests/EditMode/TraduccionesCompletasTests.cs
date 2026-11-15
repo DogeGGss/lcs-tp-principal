@@ -57,6 +57,28 @@ public class TraduccionesCompletasTests
         Assert.IsEmpty(distintas, "Datos distintos: " + string.Join(", ", distintas.Take(20)));
     }
 
+    // US 350: el código busca muchos textos por su frase en español (L10n.Source). Si esa frase está en varias claves con
+    // traducciones distintas, el juego no sabe cuál usar y la deja en español en TODOS los idiomas. Solo se revisan
+    // las frases que en inglés se traducen igual (si en inglés ya son distintas, el código usa la clave).
+    [Test, Category("US 350"), Description("CA6: una misma frase en español se traduce igual en cada idioma")]
+    public void US350_CA6_Misma_frase_misma_traduccion()
+    {
+        var es = Catalogo("es");
+        var en = Catalogo("en");
+        var distintas = new List<string>();
+        foreach (var grupo in es.GroupBy(e => e.Value).Where(g => g.Count() > 1))
+        {
+            if (grupo.Select(e => en.TryGetValue(e.Key, out string t) ? t : null).Distinct().Count() > 1) continue;
+            foreach (string idioma in Idiomas())
+            {
+                var otro = Catalogo(idioma);
+                var traducciones = grupo.Select(e => otro.TryGetValue(e.Key, out string t) ? t : "").Distinct().ToList();
+                if (traducciones.Count > 1) distintas.Add($"{idioma}: «{grupo.Key}» = {string.Join(" / ", traducciones)}");
+            }
+        }
+        Assert.IsEmpty(distintas, "Frases con más de una traducción: " + string.Join(", ", distintas.Take(20)));
+    }
+
     private static string Variables(string texto) =>
         string.Join(",", Variable.Matches(texto).Cast<Match>().Select(m => m.Groups[1].Value).Distinct().OrderBy(v => v));
 

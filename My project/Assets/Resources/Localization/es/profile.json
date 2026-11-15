@@ -2219,6 +2219,426 @@
     {
       "key": "profile.skin.design.mapa_del_subte",
       "text": "Mapa del subte"
+    },
+    {
+      "key": "profile.store.tab.capsules",
+      "text": "Cápsulas"
+    },
+    {
+      "key": "profile.store.tab.pass",
+      "text": "Pase de batalla"
+    },
+    {
+      "key": "profile.store.card_sub",
+      "text": "01 / Cápsulas · Pase · Cristales"
+    },
+    {
+      "key": "profile.store.no_luck",
+      "text": "Sin azar"
+    },
+    {
+      "key": "profile.store.daily",
+      "text": "Ofertas del día"
+    },
+    {
+      "key": "profile.store.daily_detail",
+      "text": "El cosmético que elijas, sin azar. Compras simuladas: no se cobra dinero real."
+    },
+    {
+      "key": "profile.store.new_offers_fmt",
+      "text": "Nuevas ofertas en {0} h {1:00} min"
+    },
+    {
+      "key": "profile.store.missing_crystals_fmt",
+      "text": "Te faltan {0} cristales"
+    },
+    {
+      "key": "profile.store.buy_crystals_fmt",
+      "text": "Comprar · {0} cristales"
+    },
+    {
+      "key": "profile.store.to_crystals",
+      "text": "Te llevamos a la pestaña Cristales."
+    },
+    {
+      "key": "profile.store.direct",
+      "text": "Tienda directa"
+    },
+    {
+      "key": "profile.store.buy_question_fmt",
+      "text": "¿Comprar {0}?"
+    },
+    {
+      "key": "profile.store.buy_body_fmt",
+      "text": "{0} · {1} por {2} cristales. Compra simulada: no se cobra dinero real."
+    },
+    {
+      "key": "profile.store.bought_fmt",
+      "text": "¡{0}! Ya está en tu colección del Perfil."
+    },
+    {
+      "key": "profile.store.no_crystals_buy",
+      "text": "¿Sin cristales? Comprar cristales »"
+    },
+    {
+      "key": "profile.pass.season",
+      "text": "Temporada"
+    },
+    {
+      "key": "profile.pass.season_fmt",
+      "text": "Temporada {0}"
+    },
+    {
+      "key": "profile.pass.claim_all",
+      "text": "Reclamar todo"
+    },
+    {
+      "key": "profile.pass.claim_all_fmt",
+      "text": "Reclamar todo ({0})"
+    },
+    {
+      "key": "profile.pass.buy",
+      "text": "Comprar pase"
+    },
+    {
+      "key": "profile.pass.buy_fmt",
+      "text": "Comprar pase · {0}"
+    },
+    {
+      "key": "profile.pass.bought",
+      "text": "Pase comprado"
+    },
+    {
+      "key": "profile.pass.rewards",
+      "text": "Recompensas"
+    },
+    {
+      "key": "profile.pass.challenges",
+      "text": "Desafíos"
+    },
+    {
+      "key": "profile.pass.ends_in.one",
+      "text": "Termina en {0} día"
+    },
+    {
+      "key": "profile.pass.ends_in.other",
+      "text": "Termina en {0} días"
+    },
+    {
+      "key": "profile.pass.days_left_fmt",
+      "text": "Faltan {0} días · 40 niveles · {1} cristales gratis, {2} con el pase"
+    },
+    {
+      "key": "profile.pass.level_fmt",
+      "text": "Nivel {0}"
+    },
+    {
+      "key": "profile.pass.level",
+      "text": "Nivel"
+    },
+    {
+      "key": "profile.pass.max_level",
+      "text": "Nivel máximo"
+    },
+    {
+      "key": "profile.pass.page_fmt",
+      "text": "Página {0} / {1} · Niveles {2}–{3}"
+    },
+    {
+      "key": "profile.pass.free",
+      "text": "Gratis"
+    },
+    {
+      "key": "profile.pass.pass",
+      "text": "Pase"
+    },
+    {
+      "key": "profile.pass.claimed",
+      "text": "Reclamada"
+    },
+    {
+      "key": "profile.pass.claim",
+      "text": "Reclamar"
+    },
+    {
+      "key": "profile.pass.with_pass",
+      "text": "Con el pase"
+    },
+    {
+      "key": "profile.pass.level_kind_fmt",
+      "text": "Nivel {0} · {1}"
+    },
+    {
+      "key": "profile.pass.in_collection",
+      "text": "Ya está en tu colección del Perfil."
+    },
+    {
+      "key": "profile.pass.click_to_claim",
+      "text": "Hacé clic en la carta para reclamarla."
+    },
+    {
+      "key": "profile.pass.unlocks_with_pass",
+      "text": "Se desbloquea con el pase de batalla."
+    },
+    {
+      "key": "profile.pass.unlocks_at_fmt",
+      "text": "Se desbloquea al llegar al nivel {0}."
+    },
+    {
+      "key": "profile.pass.claimed_list_fmt",
+      "text": "Reclamaste: {0}"
+    },
+    {
+      "key": "profile.pass.claimed_count.one",
+      "text": "Reclamaste {0} recompensa"
+    },
+    {
+      "key": "profile.pass.claimed_count.other",
+      "text": "Reclamaste {0} recompensas"
+    },
+    {
+      "key": "profile.pass.missing_crystals_fmt",
+      "text": "Te faltan {0} cristales para el pase"
+    },
+    {
+      "key": "profile.pass.buy_question_fmt",
+      "text": "¿Comprar el pase de la {0}?"
+    },
+    {
+      "key": "profile.pass.buy_body_fmt",
+      "text": "Cuesta {0} cristales y desbloquea las 32 recompensas de pago (también las de los niveles que ya pasaste). A lo largo de los niveles te devuelve cristales: 550 en total con el pase, contra 100 sin él. Compra simulada: no se cobra dinero real."
+    },
+    {
+      "key": "profile.pass.bought_msg",
+      "text": "¡Pase comprado! Las recompensas de pago de tus niveles ya están para reclamar."
+    },
+    {
+      "key": "profile.pass.stage_fmt",
+      "text": "Etapa {0} / {1}"
+    },
+    {
+      "key": "profile.pass.completed",
+      "text": "Completado"
+    },
+    {
+      "key": "profile.pass.from_match",
+      "text": "de la partida"
+    },
+    {
+      "key": "profile.pass.from_challenges",
+      "text": "de desafíos"
+    },
+    {
+      "key": "profile.pass.reward_with_pass",
+      "text": "una recompensa con el pase"
+    },
+    {
+      "key": "profile.pass.challenge",
+      "text": "Desafío"
+    },
+    {
+      "key": "profile.pass.duplicate",
+      "text": "repetido"
+    },
+    {
+      "key": "profile.pass.credits_lower",
+      "text": "créditos"
+    },
+    {
+      "key": "profile.pass.already_bought",
+      "text": "Ya compraste el pase de esta temporada"
+    },
+    {
+      "key": "profile.pass.ends_notice",
+      "text": "Pase: termina en"
+    },
+    {
+      "key": "profile.pass.day",
+      "text": "día"
+    },
+    {
+      "key": "profile.pass.days",
+      "text": "días"
+    },
+    {
+      "key": "profile.pass.season_over",
+      "text": "Terminó la temporada: se reclamó solo lo que no habías reclamado"
+    },
+    {
+      "key": "profile.pass.banner_type",
+      "text": "Tarjeta de presentación"
+    },
+    {
+      "key": "profile.pass.mode.dm_or_tac",
+      "text": "Deathmatch o Táctico"
+    },
+    {
+      "key": "profile.pass.ch.play_with_fmt",
+      "text": "Jugar 3 partidas con {0}"
+    },
+    {
+      "key": "profile.pass.ch.headshots",
+      "text": "Eliminar 3 enemigos con disparos a la cabeza"
+    },
+    {
+      "key": "profile.pass.ch.kills_fmt",
+      "text": "Eliminar {0} enemigos"
+    },
+    {
+      "key": "profile.pass.ch.win_2",
+      "text": "Ganar 2 partidas"
+    },
+    {
+      "key": "profile.pass.ch.win_1",
+      "text": "Ganar 1 partida"
+    },
+    {
+      "key": "profile.pass.ch.wave_fmt",
+      "text": "Llegar a la oleada {0}"
+    },
+    {
+      "key": "profile.pass.ch.no_scope",
+      "text": "Eliminar 5 enemigos sin apuntar con el Último Tren"
+    },
+    {
+      "key": "profile.pass.ch.weapon_fmt",
+      "text": "Eliminar 15 enemigos con {0}"
+    },
+    {
+      "key": "profile.pass.ch.stations",
+      "text": "Cargar 3 puestos de suministros"
+    },
+    {
+      "key": "profile.pass.ch.boss",
+      "text": "Eliminar al Jefe"
+    },
+    {
+      "key": "profile.pass.ch.alphas",
+      "text": "Eliminar 10 alfas"
+    },
+    {
+      "key": "profile.level.title",
+      "text": "Nivel de jugador"
+    },
+    {
+      "key": "profile.level.help",
+      "text": "Sube y baja en buscar partida"
+    },
+    {
+      "key": "profile.level.rank.passenger",
+      "text": "Pasajero"
+    },
+    {
+      "key": "profile.level.rank.guard",
+      "text": "Guarda"
+    },
+    {
+      "key": "profile.inv.record_fnd",
+      "text": "Récord F · N · D"
+    },
+    {
+      "key": "profile.inv.bosses",
+      "text": "Jefes derrotados"
+    },
+    {
+      "key": "profile.inv.stations",
+      "text": "Puestos cargados"
+    },
+    {
+      "key": "profile.inv.fav_card",
+      "text": "Carta favorita"
+    },
+    {
+      "key": "profile.inv.fav_weapon",
+      "text": "Arma favorita"
+    },
+    {
+      "key": "profile.inv.coop",
+      "text": "En cooperativo"
+    },
+    {
+      "key": "profile.inv.wave_fmt",
+      "text": "(oleada {0})"
+    },
+    {
+      "key": "profile.custom.avatars",
+      "text": "Avatares"
+    },
+    {
+      "key": "profile.custom.banners",
+      "text": "Banners"
+    },
+    {
+      "key": "profile.custom.frames",
+      "text": "Marcos"
+    },
+    {
+      "key": "profile.custom.equipped",
+      "text": "Equipado"
+    },
+    {
+      "key": "profile.custom.locked",
+      "text": "Bloqueado"
+    },
+    {
+      "key": "profile.custom.remove",
+      "text": "Quitar"
+    },
+    {
+      "key": "profile.emotes.right",
+      "text": "Derecha"
+    },
+    {
+      "key": "profile.emotes.left",
+      "text": "Izquierda"
+    },
+    {
+      "key": "profile.emotes.slot_fmt",
+      "text": "Espacio {0} · {1}"
+    },
+    {
+      "key": "profile.emote.payaseando",
+      "text": "Payaseando"
+    },
+    {
+      "key": "profile.emote.el_clasico",
+      "text": "El Clásico"
+    },
+    {
+      "key": "profile.emote.pasito",
+      "text": "Pasito"
+    },
+    {
+      "key": "profile.emote.saludo",
+      "text": "Saludo"
+    },
+    {
+      "key": "profile.emote.giro_soul",
+      "text": "Giro Soul"
+    },
+    {
+      "key": "profile.ach.refresh",
+      "text": "Actualizar"
+    },
+    {
+      "key": "profile.ach.ranking",
+      "text": "Ranking"
+    },
+    {
+      "key": "profile.account.confirm",
+      "text": "Confirmar"
+    },
+    {
+      "key": "profile.account.confirmed",
+      "text": "Confirmada"
+    },
+    {
+      "key": "profile.custom.where_to_get",
+      "text": "Se consigue en las cápsulas, el pase o la tienda"
+    },
+    {
+      "key": "profile.store.simulation",
+      "text": "Simulación"
     }
   ]
 }

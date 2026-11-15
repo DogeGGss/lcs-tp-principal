@@ -25,22 +25,23 @@ public static class PerfilUI
         _ => Hex(0x8E96A3),
     };
 
-    public static string NombreRareza(Rareza r) => r switch
+    // US 350: en el idioma elegido (se usan también armados en otros textos, como "Avatar · Común").
+    public static string NombreRareza(Rareza r) => L10n.Source(r switch
     {
         Rareza.Comun => "Común",
         Rareza.Raro => "Raro",
         Rareza.Epico => "Épico",
         Rareza.Legendario => "Legendario",
         _ => "Inicial",
-    };
+    }, "profile.");
 
-    public static string NombreTipo(PerfilDatos.Tipo t) => t switch
+    public static string NombreTipo(PerfilDatos.Tipo t) => L10n.Source(t switch
     {
         PerfilDatos.Tipo.Avatar => "Avatar",
         PerfilDatos.Tipo.Banner => "Banner",
         PerfilDatos.Tipo.Marco => "Marco",
         _ => "Título",
-    };
+    }, "profile.");
 
     public static string Rich(Color c) => "#" + ColorUtility.ToHtmlStringRGB(c);
 

@@ -1,0 +1,1552 @@
+{
+  "entries": [
+    {
+      "key": "ui.options.reset_confirm",
+      "text": "Réinitialiser {0} ?"
+    },
+    {
+      "key": "ui.controls.conflict",
+      "text": "<color=#F3F4F6>{0}</color> est déjà sur <color=#F3F4F6>{1}</color>. Veux-tu les échanger ? {1} passerait sur {2}."
+    },
+    {
+      "key": "ui.loading.ready",
+      "text": "<color=#3DDC97>{0} / {1}</color> prêts"
+    },
+    {
+      "key": "ui.search.account",
+      "text": "Avec ton compte <color=#FFFFFF>{0}</color>"
+    },
+    {
+      "key": "ui.search.guest",
+      "text": "En tant que <color=#FFFFFF>{0}</color>"
+    },
+    {
+      "key": "ui.search.version",
+      "text": " · {0} · même version (v{1})"
+    },
+    {
+      "key": "ui.search.starts",
+      "text": "Commence dans <color={0}>{1}</color>"
+    },
+    {
+      "key": "ui.search.players",
+      "text": "<color={0}>{1}</color> / {2} joueurs"
+    },
+    {
+      "key": "ui.search.mode_version",
+      "text": "{0} · {1} · même version (v{2})"
+    },
+    {
+      "key": "ui.search.minimum_ready",
+      "text": "Le minimum pour {0} est atteint. Si personne d'autre n'arrive, ça commence dans {1}."
+    },
+    {
+      "key": "ui.search.minimum_wait",
+      "text": "Commence d'elle-même à {0} joueurs, ou à {1} si {2} s passent sans nouvel arrivant."
+    },
+    {
+      "key": "ui.mode.record",
+      "text": "Record en {0} : <color={1}>vague {2}</color>"
+    },
+    {
+      "key": "ui.mode.unplayed",
+      "text": "Record en {0} : <color={1}>pas encore joué</color>"
+    },
+    {
+      "key": "ui.name.invalid",
+      "text": "Impossible d'utiliser « {0} ». Seulement des lettres, chiffres, espaces, tirets et tirets bas."
+    },
+    {
+      "key": "ui.name.short",
+      "text": "Il manque {0} caractères : le minimum est 3."
+    },
+    {
+      "key": "ui.name.long",
+      "text": "{0} caractères en trop : le maximum est 16."
+    },
+    {
+      "key": "ui.po.pause",
+      "text": "<nobr><color=#{0}>Échap</color> Pause</nobr>"
+    },
+    {
+      "key": "ui.po.options",
+      "text": "     <color=#{0}>(se modifient dans Options, onglet Commandes)</color>"
+    },
+    {
+      "key": "ui.source.153ae1728463",
+      "text": "Champ d'entraînement"
+    },
+    {
+      "key": "ui.source.cdf64dc97d34",
+      "text": "Carte d'entraînement"
+    },
+    {
+      "key": "ui.source.e7400b35c242",
+      "text": "Succès débloqué"
+    },
+    {
+      "key": "ui.source.25ab720915f5",
+      "text": "Son"
+    },
+    {
+      "key": "ui.source.2b7e443d9918",
+      "text": "Volume"
+    },
+    {
+      "key": "ui.source.c910d474dcd7",
+      "text": "Général"
+    },
+    {
+      "key": "ui.source.0e0cc1a93fe5",
+      "text": "Musique"
+    },
+    {
+      "key": "ui.source.097eb1da61c2",
+      "text": "Effets"
+    },
+    {
+      "key": "ui.source.1528a9545c77",
+      "text": "Interface"
+    },
+    {
+      "key": "ui.source.79e4cac1daa9",
+      "text": "Déplacer un réglage joue un extrait. L'enregistrement se fait avec Appliquer."
+    },
+    {
+      "key": "ui.source.81cf595bb929",
+      "text": "le son"
+    },
+    {
+      "key": "ui.source.416e91fcab21",
+      "text": "Mode Tactique"
+    },
+    {
+      "key": "ui.source.acabc2c4f4c8",
+      "text": "Mode Invasion"
+    },
+    {
+      "key": "ui.source.90797c7dce81",
+      "text": "Salon "
+    },
+    {
+      "key": "ui.source.33e166676072",
+      "text": "En attente de l'hôte  ·  la partie commence une fois le chargement terminé"
+    },
+    {
+      "key": "ui.source.5cd100bc1db8",
+      "text": "En attente des autres joueurs  ·  la partie commence quand tout le monde a chargé"
+    },
+    {
+      "key": "ui.source.cf73b31f016a",
+      "text": "Accroupis-toi avec {Agacharse} avant de tirer : les balles dévient moins."
+    },
+    {
+      "key": "ui.source.964d0a404f4a",
+      "text": "Recharge avec {Recargar} avant de te montrer, pas en pleine fusillade."
+    },
+    {
+      "key": "ui.source.f7c33a1f57bf",
+      "text": "Tirer en mouvement augmente la dispersion : arrête-toi avant de tirer."
+    },
+    {
+      "key": "ui.source.7c9a7aa1ce00",
+      "text": "Les tirs à la tête font plus de dégâts."
+    },
+    {
+      "key": "ui.source.c1a37bc01675",
+      "text": "Utilise la compétence de ton personnage avec {Habilidad}."
+    },
+    {
+      "key": "ui.source.53fffdfafbc1",
+      "text": "Les touches, la sensibilité et le viseur se modifient dans Options ou depuis la pause."
+    },
+    {
+      "key": "ui.source.1507bc1df18f",
+      "text": "Maintiens la touche Tab pour voir le tableau des joueurs."
+    },
+    {
+      "key": "ui.source.f57ccbe15609",
+      "text": "Maintiens {Plantar} sur une zone pour poser le dispositif. Si tu bouges, ça s'interrompt."
+    },
+    {
+      "key": "ui.source.f590c58c9fcc",
+      "text": "Ouvre la boutique avec {Tienda} pendant la phase d'achat, dans ta base."
+    },
+    {
+      "key": "ui.source.d736f2d6cc07",
+      "text": "Lâche ton arme avec {Soltar} pour la passer à un coéquipier."
+    },
+    {
+      "key": "ui.source.0d04ac611154",
+      "text": "Si tu portes le dispositif, sors-le avec {Dispositivo}."
+    },
+    {
+      "key": "ui.source.00deb0ea7e50",
+      "text": "En mourant, tu ne réapparais qu'à la manche suivante : fais attention à ta vie."
+    },
+    {
+      "key": "ui.source.3c81f53a7dc9",
+      "text": "Perdre plusieurs manches d'affilée donne plus d'argent pour la suivante."
+    },
+    {
+      "key": "ui.source.0f540b9fc332",
+      "text": "Les défenseurs désamorcent le dispositif en maintenant {Plantar} à côté."
+    },
+    {
+      "key": "ui.source.a4a36b824a8a",
+      "text": "En Deathmatch, tu réapparais en quelques secondes : ne reste pas immobile."
+    },
+    {
+      "key": "ui.source.a44b4e91fd74",
+      "text": "Change d'arme avec {ArmaPrincipal}, {ArmaSecundaria} et {Cuchillo}."
+    },
+    {
+      "key": "ui.source.19a717d04b63",
+      "text": "Chaque vague est plus difficile que la précédente : économise tes balles."
+    },
+    {
+      "key": "ui.source.32359472c07f",
+      "text": "Si tu es encerclé, passe au couteau avec {Cuchillo} au lieu de recharger."
+    },
+    {
+      "key": "ui.source.8b09102ef42a",
+      "text": "Écran"
+    },
+    {
+      "key": "ui.source.d2f671e0a601",
+      "text": "Carte"
+    },
+    {
+      "key": "ui.source.6efe5e3c0bcc",
+      "text": "Mode"
+    },
+    {
+      "key": "ui.source.8a8aad457bb9",
+      "text": "Chargement"
+    },
+    {
+      "key": "ui.source.b18dd065ae9f",
+      "text": "Astuce"
+    },
+    {
+      "key": "ui.source.a6634c5e9d5a",
+      "text": "Chargement du menu"
+    },
+    {
+      "key": "ui.source.66608fa9afa7",
+      "text": "Chargement de la carte"
+    },
+    {
+      "key": "ui.source.1cc32e377815",
+      "text": "Carte chargée"
+    },
+    {
+      "key": "ui.source.d9a2f984a05d",
+      "text": "les commandes"
+    },
+    {
+      "key": "ui.source.9d6a29a0a2e9",
+      "text": "Appuie sur une touche"
+    },
+    {
+      "key": "ui.source.80b26f920e37",
+      "text": "Commandes"
+    },
+    {
+      "key": "ui.source.55c1520824a8",
+      "text": "Souris"
+    },
+    {
+      "key": "ui.source.809853d64fec",
+      "text": "Sensibilité"
+    },
+    {
+      "key": "ui.source.ec70aa839662",
+      "text": "En visant"
+    },
+    {
+      "key": "ui.source.ffa6a1dfffbe",
+      "text": "Clique sur une action et appuie sur la nouvelle touche. Échap annule."
+    },
+    {
+      "key": "ui.source.b367a7b98923",
+      "text": "Touches"
+    },
+    {
+      "key": "ui.source.9bd4d1e04ad5",
+      "text": "Pause"
+    },
+    {
+      "key": "ui.source.64df4bd0b5e0",
+      "text": "Échanger"
+    },
+    {
+      "key": "ui.source.bb9dbb406dcb",
+      "text": "Annuler"
+    },
+    {
+      "key": "ui.source.ab26ae7bca36",
+      "text": "Retour"
+    },
+    {
+      "key": "ui.source.9b0c3e4077f8",
+      "text": "Réinitialiser"
+    },
+    {
+      "key": "ui.source.3a660ff5fb7c",
+      "text": "Enregistré"
+    },
+    {
+      "key": "ui.source.0368c1371c14",
+      "text": "Inverser l'axe Y"
+    },
+    {
+      "key": "ui.source.0a029ed5a4ec",
+      "text": "Il n'y a pas si longtemps, dans une université\ntrès, très proche…"
+    },
+    {
+      "key": "ui.source.bb3b6a1a43dd",
+      "text": "Un shooter tactique, un deathmatch et une invasion extraterrestre à l'université. Fait par sept étudiants en dix semaines, avec plus de café que d'heures de sommeil."
+    },
+    {
+      "key": "ui.source.4c574f230e12",
+      "text": "Développement et mécaniques"
+    },
+    {
+      "key": "ui.source.2bd7479257b5",
+      "text": "Art 2D/3D et conception des niveaux"
+    },
+    {
+      "key": "ui.source.d0f435f93705",
+      "text": "Interface (UI/UX)"
+    },
+    {
+      "key": "ui.source.e02f0ba34dff",
+      "text": "Son et musique"
+    },
+    {
+      "key": "ui.source.f6fa1f21f857",
+      "text": "Tests et QA"
+    },
+    {
+      "key": "ui.source.499acbcf6230",
+      "text": "Documentation et backlog"
+    },
+    {
+      "key": "ui.source.8b8e6b098a76",
+      "text": "Dépôt et Git"
+    },
+    {
+      "key": "ui.source.5dc4e77ff9df",
+      "text": "Unity 6 · Universal Render Pipeline\nProBuilder · TextMesh Pro · Input System · AI Navigation\nPhoton PUN 2 (multijoueur)\nGitHub et GitHub Projects"
+    },
+    {
+      "key": "ui.source.e67678470e04",
+      "text": "Personnage et animations"
+    },
+    {
+      "key": "ui.source.3bb1bc4737c1",
+      "text": "Mixamo, d'Adobe"
+    },
+    {
+      "key": "ui.source.16043e03bb85",
+      "text": "Décor sci-fi"
+    },
+    {
+      "key": "ui.source.c9d5587df17a",
+      "text": "3D Scifi Kit Starter Kit, de Creepy Cat (Unity Asset Store)"
+    },
+    {
+      "key": "ui.source.7954fdb2c047",
+      "text": "Couteau"
+    },
+    {
+      "key": "ui.source.3244d64bcf31",
+      "text": "Sci-fi Weapon - Game Ready Knife - FREE SAMPLE, de AF Creations (Unity Asset Store)"
+    },
+    {
+      "key": "ui.source.43a2db17ec31",
+      "text": "Textures"
+    },
+    {
+      "key": "ui.source.57e1618ab718",
+      "text": "Modèles des armes"
+    },
+    {
+      "key": "ui.source.fec8fe8d2670",
+      "text": "Sci-Fi Modular Gun Pack, de Quaternius (CC0)"
+    },
+    {
+      "key": "ui.source.3aaa16eb605b",
+      "text": "Tirs"
+    },
+    {
+      "key": "ui.source.168146bfe8ba",
+      "text": "The Free Firearm Sound Library, de Ben Jaszczak, Brian Nelson, Kevin Heras et Matthew Nanney (CC0)"
+    },
+    {
+      "key": "ui.source.5fd0e7b860a5",
+      "text": "Rechargements"
+    },
+    {
+      "key": "ui.source.2728c4ba3595",
+      "text": "Gun reload sounds, de SpringySpringo, et Shotgun Reload Sound Effects, de zer0_sol (CC0, OpenGameArt)"
+    },
+    {
+      "key": "ui.source.14e090fa5f39",
+      "text": "Explosion de la flash"
+    },
+    {
+      "key": "ui.source.edb154f1d2aa",
+      "text": "Flashbang explode, de MadPanCake (CC BY-NC 4.0, Freesound)"
+    },
+    {
+      "key": "ui.source.726223bf1ced",
+      "text": "Musique du mode Deathmatch"
+    },
+    {
+      "key": "ui.source.63ea9651eebe",
+      "text": "action track 4, A.I. fight & jumping cyborg, mixage de glitchart : action track 4, d'Alexandr Zhelanov (CC BY 3.0), et A.I. fight & jumping cyborg, de tricksntraps (CC0, OpenGameArt)"
+    },
+    {
+      "key": "ui.source.ea6918aa1694",
+      "text": "Son de réapparition"
+    },
+    {
+      "key": "ui.source.1e0f670d8bfc",
+      "text": "Teleport, de fins (CC0, Freesound et OpenGameArt)"
+    },
+    {
+      "key": "ui.source.5c1c869d7942",
+      "text": "Travail pratique « Último Tren a Retiro »\nLaboratoire de construction de logiciels\nDiplôme universitaire en informatique"
+    },
+    {
+      "key": "ui.source.d6e9bddb7a8a",
+      "text": "Aux enseignants, à ceux qui ont testé les builds cassées\net à toi, d'avoir joué."
+    },
+    {
+      "key": "ui.source.16ab313b7913",
+      "text": "Merci d'avoir joué"
+    },
+    {
+      "key": "ui.source.49076adae25c",
+      "text": "Crédits"
+    },
+    {
+      "key": "ui.source.8432846981c5",
+      "text": "Moteur et outils"
+    },
+    {
+      "key": "ui.source.315f4e3e20a0",
+      "text": "Ressources externes"
+    },
+    {
+      "key": "ui.source.b50dbb34990d",
+      "text": "Polices"
+    },
+    {
+      "key": "ui.source.343dc127e0fa",
+      "text": "Travail pratique"
+    },
+    {
+      "key": "ui.source.cf291ffa3322",
+      "text": "Remerciements"
+    },
+    {
+      "key": "ui.source.cd50fe8f86b0",
+      "text": "Espace"
+    },
+    {
+      "key": "ui.source.a88536f37007",
+      "text": "Accélérer"
+    },
+    {
+      "key": "ui.source.d357175cfe89",
+      "text": "Moyenne"
+    },
+    {
+      "key": "ui.source.0b6af7d377da",
+      "text": "Basse"
+    },
+    {
+      "key": "ui.source.42719229fd62",
+      "text": "Haute"
+    },
+    {
+      "key": "ui.source.09c101d2650e",
+      "text": "Fenêtre"
+    },
+    {
+      "key": "ui.source.cdeddd731cd0",
+      "text": "Sans bordure"
+    },
+    {
+      "key": "ui.source.e13942698a59",
+      "text": "Plein écran"
+    },
+    {
+      "key": "ui.source.553f5b2ff5d0",
+      "text": "Illimité"
+    },
+    {
+      "key": "ui.source.dd680772877e",
+      "text": "Masquer"
+    },
+    {
+      "key": "ui.source.5c492f37a63f",
+      "text": "Afficher"
+    },
+    {
+      "key": "ui.source.3f3a9f9e67b3",
+      "text": "Graphismes"
+    },
+    {
+      "key": "ui.source.c7d72431d939",
+      "text": "Résolution"
+    },
+    {
+      "key": "ui.source.58d6f29b0633",
+      "text": "Image"
+    },
+    {
+      "key": "ui.source.aad67f106a08",
+      "text": "Qualité"
+    },
+    {
+      "key": "ui.source.378711fbd0e4",
+      "text": "Limite de FPS"
+    },
+    {
+      "key": "ui.source.d81e674b5478",
+      "text": "FPS et ping"
+    },
+    {
+      "key": "ui.source.56ce994f5e7d",
+      "text": "Champ de vision"
+    },
+    {
+      "key": "ui.source.1f34799e8e64",
+      "text": "Les changements s'appliquent avec Appliquer."
+    },
+    {
+      "key": "ui.source.599070f85bc6",
+      "text": "Paramètres graphiques appliqués et enregistrés."
+    },
+    {
+      "key": "ui.source.7f4de2797543",
+      "text": "les graphismes"
+    },
+    {
+      "key": "ui.source.ba25ff776d84",
+      "text": "Paramètres graphiques réinitialisés aux valeurs par défaut."
+    },
+    {
+      "key": "ui.source.8ae5261402b3",
+      "text": "Chercher une partie"
+    },
+    {
+      "key": "ui.source.aab7f54dacbc",
+      "text": " · avec des joueurs de ta région"
+    },
+    {
+      "key": "ui.source.b30593eb5232",
+      "text": "Salon privé · entre amis"
+    },
+    {
+      "key": "ui.source.2750bd2f99ad",
+      "text": "Créer un salon"
+    },
+    {
+      "key": "ui.source.ce6fc7dc8eaf",
+      "text": "Rejoindre avec un code"
+    },
+    {
+      "key": "ui.source.e616c2466dc7",
+      "text": "Chercher à nouveau"
+    },
+    {
+      "key": "ui.source.f674d306a0c6",
+      "text": "Ouvrir le launcher"
+    },
+    {
+      "key": "ui.source.e47ce2a916e0",
+      "text": "Joueur"
+    },
+    {
+      "key": "ui.source.8215d0adeaa3",
+      "text": "Recherche annulée."
+    },
+    {
+      "key": "ui.source.351d2bbeeffa",
+      "text": "Nous n'avons pas trouvé le launcher sur ce PC : nous t'ouvrons le guide du jeu pour le télécharger."
+    },
+    {
+      "key": "ui.source.66b0e5784678",
+      "text": "Annuler la recherche"
+    },
+    {
+      "key": "ui.source.ceabcf3eef35",
+      "text": "Quitter le salon"
+    },
+    {
+      "key": "ui.source.fabab14234b2",
+      "text": "Retour aux modes"
+    },
+    {
+      "key": "ui.source.50716d4cbd8d",
+      "text": "Une nouvelle version est disponible"
+    },
+    {
+      "key": "ui.source.1e290698f084",
+      "text": "Impossible de vérifier ton compte"
+    },
+    {
+      "key": "ui.source.20812e99701a",
+      "text": "Ton compte est déjà en jeu"
+    },
+    {
+      "key": "ui.source.29aaabb5e604",
+      "text": "La connexion a été coupée"
+    },
+    {
+      "key": "ui.source.811dc87efeed",
+      "text": "Seuls les joueurs ayant la même version du jeu sont réunis. Mets à jour depuis le launcher et cherche à nouveau."
+    },
+    {
+      "key": "ui.source.785ca8f737f7",
+      "text": "Ta session a expiré ou a été fermée. Reconnecte-toi dans le launcher et cherche à nouveau."
+    },
+    {
+      "key": "ui.source.0a536de09daa",
+      "text": "Ton compte est dans cette partie depuis un autre PC. Ferme le jeu là-bas et cherche à nouveau."
+    },
+    {
+      "key": "ui.source.906b58a64933",
+      "text": "Vérifie ta connexion et cherche à nouveau. Tu n'as rien perdu : ta progression est enregistrée."
+    },
+    {
+      "key": "ui.source.9648dfdc9eb4",
+      "text": "ta région"
+    },
+    {
+      "key": "ui.source.4de82dfd7d3b",
+      "text": "Amérique du Sud"
+    },
+    {
+      "key": "ui.source.20d1a5eb0b1a",
+      "text": "États-Unis"
+    },
+    {
+      "key": "ui.source.fc30e2a579cd",
+      "text": "Europe"
+    },
+    {
+      "key": "ui.source.7ac02ec1c874",
+      "text": "Asie"
+    },
+    {
+      "key": "ui.source.7f2bdfffa20c",
+      "text": "Partie trouvée"
+    },
+    {
+      "key": "ui.source.8a28f95ff297",
+      "text": "Recherche de partie"
+    },
+    {
+      "key": "ui.source.3779bf0441c7",
+      "text": "Chargement de la carte…"
+    },
+    {
+      "key": "ui.source.f4cb1ffad13c",
+      "text": "Connexion au serveur…"
+    },
+    {
+      "key": "ui.source.7860f97d560d",
+      "text": " <color=#FFFFFF80>(toi)</color>"
+    },
+    {
+      "key": "ui.source.82d69149e2c1",
+      "text": "Recherche…"
+    },
+    {
+      "key": "ui.source.9c573aa510ad",
+      "text": "Si quelqu'un d'autre arrive, il rejoint. Si quelqu'un part et qu'il reste moins que le minimum, la recherche continue."
+    },
+    {
+      "key": "ui.source.93fffbf7ce79",
+      "text": "Quitter"
+    },
+    {
+      "key": "ui.source.a64249139d0d",
+      "text": "Tactique"
+    },
+    {
+      "key": "ui.source.af61688462fc",
+      "text": "Invasion"
+    },
+    {
+      "key": "ui.source.feec439bd19e",
+      "text": "Pose ou désamorce le dispositif. Sans réapparition."
+    },
+    {
+      "key": "ui.source.622cc159ad92",
+      "text": "Chacun pour soi. Tu réapparais au bout de 3 s."
+    },
+    {
+      "key": "ui.source.db0595d76630",
+      "text": "Résiste à l'invasion à l'université."
+    },
+    {
+      "key": "ui.source.3142609f3640",
+      "text": "Premier à 7"
+    },
+    {
+      "key": "ui.source.28b6816f8adb",
+      "text": "Jusqu'à 8"
+    },
+    {
+      "key": "ui.source.30f330d5be66",
+      "text": "25 élim."
+    },
+    {
+      "key": "ui.source.f82bbd03f447",
+      "text": "1 joueur"
+    },
+    {
+      "key": "ui.source.809270a4adfe",
+      "text": "10 vagues"
+    },
+    {
+      "key": "ui.source.3882aa653eb3",
+      "text": "Quai 1 · En ligne"
+    },
+    {
+      "key": "ui.source.9efa41f18d21",
+      "text": "Quai 2 · En ligne"
+    },
+    {
+      "key": "ui.source.0dfbb275aeb3",
+      "text": "Quai 3 · Local"
+    },
+    {
+      "key": "ui.source.06bea83f1caa",
+      "text": "Une équipe pose le dispositif sur A ou B et l'autre le défend. Sans réapparition : si tu meurs, tu regardes un coéquipier jusqu'à la manche suivante."
+    },
+    {
+      "key": "ui.source.2cd59b33d55d",
+      "text": "Chacun pour soi. Tu choisis tes armes gratuitement, chaque élimination te soigne de 50 et tu réapparais au bout de 3 s loin des adversaires."
+    },
+    {
+      "key": "ui.source.edb1f952e2fd",
+      "text": "Toi seul contre 10 vagues à l'université. Ensuite, tu peux continuer en mode infini pour battre ton record."
+    },
+    {
+      "key": "ui.source.b7003361f10e",
+      "text": "Camps inversés à la 6"
+    },
+    {
+      "key": "ui.source.90106cd60e43",
+      "text": "Achat 20 s"
+    },
+    {
+      "key": "ui.source.3d67d2e48cb3",
+      "text": "Armes libres"
+    },
+    {
+      "key": "ui.source.7a6eabd661bb",
+      "text": "Facile"
+    },
+    {
+      "key": "ui.source.a7248eeb45eb",
+      "text": "Normal"
+    },
+    {
+      "key": "ui.source.fc3a43cb5e1f",
+      "text": "Difficile"
+    },
+    {
+      "key": "ui.source.2e3374e9d6a7",
+      "text": "75 % de vie et de dégâts, et moins d'ennemis. Tu te régénères au bout de 3 s."
+    },
+    {
+      "key": "ui.source.32215f843657",
+      "text": "Tel que prévu. Tu te régénères au bout de 4 s."
+    },
+    {
+      "key": "ui.source.cd05ca2e563a",
+      "text": "125 % de vie, 150 % de dégâts et plus d'ennemis. +25 % de points."
+    },
+    {
+      "key": "ui.source.afa55750f5e5",
+      "text": "Choisis le mode"
+    },
+    {
+      "key": "ui.source.1e9c027c8f80",
+      "text": "Menu principal"
+    },
+    {
+      "key": "ui.source.4105811890ae",
+      "text": "Entrer"
+    },
+    {
+      "key": "ui.source.b61eda6f4b63",
+      "text": "Jouer"
+    },
+    {
+      "key": "ui.source.46a6407e52eb",
+      "text": "Salon"
+    },
+    {
+      "key": "ui.source.a9fa23dfd4b8",
+      "text": "Joueurs"
+    },
+    {
+      "key": "ui.source.39dcf1cbeb5a",
+      "text": "Copier"
+    },
+    {
+      "key": "ui.source.2fdbb49ce922",
+      "text": "Changer de carte"
+    },
+    {
+      "key": "ui.source.e95e91ae3791",
+      "text": "Lancer la partie"
+    },
+    {
+      "key": "ui.source.2fbf9375e1ad",
+      "text": "Création du salon…"
+    },
+    {
+      "key": "ui.source.5fe4a00dce58",
+      "text": "Aucun salon n'a ce code."
+    },
+    {
+      "key": "ui.source.37891c7a08ad",
+      "text": "Connexion au salon…"
+    },
+    {
+      "key": "ui.source.d8dd878fb143",
+      "text": "Copié"
+    },
+    {
+      "key": "ui.source.d592d5da0bf9",
+      "text": "Chargement de la partie…"
+    },
+    {
+      "key": "ui.source.162d92c98acd",
+      "text": "Libre"
+    },
+    {
+      "key": "ui.source.d38ff634ec37",
+      "text": "  <color=#FFD2A1>· hôte</color>"
+    },
+    {
+      "key": "ui.source.b1c8db52ae3e",
+      "text": "Aucune carte pour ce mode"
+    },
+    {
+      "key": "ui.source.4fc3bc93335b",
+      "text": "En attente de l'hôte…"
+    },
+    {
+      "key": "ui.source.f9b8a7b10a14",
+      "text": "Donne le code à tes amis. Il faut au moins 2 joueurs."
+    },
+    {
+      "key": "ui.source.0a2368c48168",
+      "text": "Tout est prêt : lance la partie quand tu veux."
+    },
+    {
+      "key": "ui.source.92080239e1d4",
+      "text": "Mode Invasion · "
+    },
+    {
+      "key": "ui.source.0ed1d856189a",
+      "text": "Le mode Invasion est encore en développement (F08)."
+    },
+    {
+      "key": "ui.source.6f44df3aba76",
+      "text": "Avant de jouer"
+    },
+    {
+      "key": "ui.source.c1aea6315e28",
+      "text": "Note pour le PO"
+    },
+    {
+      "key": "ui.source.eeb3832dacd5",
+      "text": "Ce qui fonctionne"
+    },
+    {
+      "key": "ui.source.36295f9588b6",
+      "text": "Ce qui manque encore"
+    },
+    {
+      "key": "ui.source.3f3f7d88e05a",
+      "text": "Compris"
+    },
+    {
+      "key": "ui.source.13caa2989015",
+      "text": "<color=#F3F4F6>Entrée</color>  ou  <color=#F3F4F6>Échap</color>  Fermer"
+    },
+    {
+      "key": "ui.source.f5d2a65e1e59",
+      "text": "Fixe"
+    },
+    {
+      "key": "ui.source.50e6b570fb27",
+      "text": "S'ouvre"
+    },
+    {
+      "key": "ui.source.322f558435e3",
+      "text": "Couleur personnalisée"
+    },
+    {
+      "key": "ui.source.3868d2843d59",
+      "text": "Type"
+    },
+    {
+      "key": "ui.source.060bda593b21",
+      "text": "Longueur"
+    },
+    {
+      "key": "ui.source.6bb2637bf8fb",
+      "text": "Épaisseur"
+    },
+    {
+      "key": "ui.source.061a75d54f08",
+      "text": "Écart"
+    },
+    {
+      "key": "ui.source.9889c1f6fd48",
+      "text": "Point central"
+    },
+    {
+      "key": "ui.source.2be607bc990e",
+      "text": "Couleur et dispersion"
+    },
+    {
+      "key": "ui.source.cd89a436cdad",
+      "text": "Dispersion"
+    },
+    {
+      "key": "ui.source.c5341f198fc2",
+      "text": "Aperçu"
+    },
+    {
+      "key": "ui.source.cf1cb8303500",
+      "text": "Fond clair"
+    },
+    {
+      "key": "ui.source.150df8354c60",
+      "text": "Fond sombre"
+    },
+    {
+      "key": "ui.source.6b73191a0a4b",
+      "text": "Couleur"
+    },
+    {
+      "key": "ui.source.ee27f6a048e8",
+      "text": "Perso."
+    },
+    {
+      "key": "ui.source.7069e90c206b",
+      "text": "Rouge"
+    },
+    {
+      "key": "ui.source.40598e1cb1d2",
+      "text": "Vert"
+    },
+    {
+      "key": "ui.source.b0bf526b23af",
+      "text": "Bleu"
+    },
+    {
+      "key": "ui.source.b72f58ad6080",
+      "text": "le viseur"
+    },
+    {
+      "key": "ui.source.e4ce7c09d51e",
+      "text": "Précédent"
+    },
+    {
+      "key": "ui.source.49683b71c6ac",
+      "text": "Suivant"
+    },
+    {
+      "key": "ui.source.3a04898a6b8b",
+      "text": "Appliquer"
+    },
+    {
+      "key": "ui.source.c6c50c1cc280",
+      "text": "Paramètres du jeu"
+    },
+    {
+      "key": "ui.source.81db3b5709d0",
+      "text": "Options"
+    },
+    {
+      "key": "ui.source.ef9ee12da914",
+      "text": "Viseur"
+    },
+    {
+      "key": "ui.source.d3e35417f099",
+      "text": "Enregistrer les changements ?"
+    },
+    {
+      "key": "ui.source.d3fc27215fcb",
+      "text": "Des changements ne sont pas appliqués. Si tu quittes sans les enregistrer, ils seront perdus."
+    },
+    {
+      "key": "ui.source.13e51a210f45",
+      "text": "Enregistrer"
+    },
+    {
+      "key": "ui.source.1a878a55c594",
+      "text": "Abandonner"
+    },
+    {
+      "key": "ui.source.2d79b3654b66",
+      "text": "Les valeurs de cet onglet reviennent aux réglages d'usine et sont enregistrées."
+    },
+    {
+      "key": "ui.source.a184979c9c67",
+      "text": "Changements enregistrés"
+    },
+    {
+      "key": "ui.source.a937e9f3728a",
+      "text": "Entrée  Valider     Échap  Annuler"
+    },
+    {
+      "key": "ui.source.ab9892fdd889",
+      "text": "La partie continue"
+    },
+    {
+      "key": "ui.source.3c07cc2db9f9",
+      "text": "Partie en pause"
+    },
+    {
+      "key": "ui.source.b05607bfad0b",
+      "text": "Le menu n'apparaît que sur ton écran. Ton personnage reste immobile et peut subir des dégâts."
+    },
+    {
+      "key": "ui.source.d1d0949b326e",
+      "text": "Le temps, les ennemis et le son sont arrêtés jusqu'à ton retour."
+    },
+    {
+      "key": "ui.source.922266230561",
+      "text": "Ton équipe se retrouve <color=#FF5C5C>avec un joueur de moins</color>."
+    },
+    {
+      "key": "ui.source.d49930e58a5c",
+      "text": "<color=#FF5C5C>La progression de cette partie</color> est perdue. Le record enregistré ne change pas."
+    },
+    {
+      "key": "ui.source.3f3dec0d09b1",
+      "text": "<color=#FF5C5C>La progression de cette partie</color> est perdue."
+    },
+    {
+      "key": "ui.source.ef351711c0e7",
+      "text": "Recommencer la partie ?"
+    },
+    {
+      "key": "ui.source.4d1e6caec772",
+      "text": "Recommencer"
+    },
+    {
+      "key": "ui.source.68323510257a",
+      "text": "Tu reviens à la première vague et <color=#F29A38>la progression actuelle</color> est perdue."
+    },
+    {
+      "key": "ui.source.364eed285d97",
+      "text": "Tu reviens au début de la partie et <color=#F29A38>la progression actuelle</color> est perdue."
+    },
+    {
+      "key": "ui.source.484874031952",
+      "text": "Quitter la partie ?"
+    },
+    {
+      "key": "ui.source.5685e1faf0b3",
+      "text": "Reprendre"
+    },
+    {
+      "key": "ui.source.741114f9b233",
+      "text": "Recommencer"
+    },
+    {
+      "key": "ui.source.bb507137e363",
+      "text": "Paramètres"
+    },
+    {
+      "key": "ui.source.4aae0e1a642c",
+      "text": "Quitter la partie"
+    },
+    {
+      "key": "ui.source.18685946d8d4",
+      "text": "Chiffres"
+    },
+    {
+      "key": "ui.source.f213c041507f",
+      "text": "Choisir"
+    },
+    {
+      "key": "ui.source.640d6761c178",
+      "text": "Valider"
+    },
+    {
+      "key": "ui.source.a86f3abc7d6b",
+      "text": "Effacer"
+    },
+    {
+      "key": "ui.source.bc1b88907d3b",
+      "text": "Audio"
+    },
+    {
+      "key": "ui.source.d534be829e32",
+      "text": "Vidéo"
+    },
+    {
+      "key": "ui.source.34ee7506d3ef",
+      "text": "Changer les graphismes"
+    },
+    {
+      "key": "ui.source.37846d28c575",
+      "text": "Personnaliser le viseur"
+    },
+    {
+      "key": "ui.source.2bbd7f1f1d9b",
+      "text": "Changer les touches"
+    },
+    {
+      "key": "ui.source.006da31f9c29",
+      "text": "Flèches"
+    },
+    {
+      "key": "ui.source.239ef284d537",
+      "text": "Choisir et changer"
+    },
+    {
+      "key": "ui.source.c3195a68f28e",
+      "text": "De 3 à 16 caractères : lettres, chiffres, espace, tiret et tiret bas."
+    },
+    {
+      "key": "ui.source.83df5462b879",
+      "text": "Project Riftwalker · Joueur"
+    },
+    {
+      "key": "ui.source.dd7e82b29ac7",
+      "text": "Changer de nom"
+    },
+    {
+      "key": "ui.source.72609b83fdce",
+      "text": "<color=#F3F4F6>Entrée</color>  Valider"
+    },
+    {
+      "key": "ui.source.9490787570ea",
+      "text": "<color=#F3F4F6>Entrée</color>  Valider     <color=#F3F4F6>Échap</color>  Annuler"
+    },
+    {
+      "key": "ui.source.0ef0a6e6fd62",
+      "text": "C'est ainsi que les autres joueurs te verront."
+    },
+    {
+      "key": "ui.source.a1ef9fe3a6b0",
+      "text": "Comment t'appelles-tu ?"
+    },
+    {
+      "key": "ui.source.3e216191090e",
+      "text": "Ton nom dans les salons, le tableau et les éliminations."
+    },
+    {
+      "key": "ui.source.d36ae2c1bf45",
+      "text": "Ton nom"
+    },
+    {
+      "key": "ui.source.c3a7aa50a467",
+      "text": "Il manque 1 caractère : le minimum est 3."
+    },
+    {
+      "key": "ui.source.7ae9d418353b",
+      "text": "Langue"
+    },
+    {
+      "key": "ui.source.b0623970bc7b",
+      "text": "Langue du jeu"
+    },
+    {
+      "key": "ui.source.5f21f971ee06",
+      "text": "Le changement s'applique immédiatement et est partagé avec le launcher."
+    },
+    {
+      "key": "ui.source.739215889580",
+      "text": "Oui"
+    },
+    {
+      "key": "ui.source.1ea442a134b2",
+      "text": "Non"
+    },
+    {
+      "key": "ui.source.e80d6e8aa591",
+      "text": "Note pour le PO · Sprint 1"
+    },
+    {
+      "key": "ui.source.49d93243ca5c",
+      "text": "Bonjour, Amin"
+    },
+    {
+      "key": "ui.source.db3b5f70585e",
+      "text": "Voici la livraison du Sprint 1 de Project Riftwalker. Pour que tu saches quoi tester, voici ce qui fonctionne déjà et ce qui reste à implémenter."
+    },
+    {
+      "key": "ui.source.4ddad75ba8a8",
+      "text": "Déplacement : marcher, courir, sauter et s'accroupir, avec gravité, collisions et réapparition si tu tombes de la carte."
+    },
+    {
+      "key": "ui.source.6ce4700c7eaf",
+      "text": "Armes : pistolet La Porteña, fusil Mitre et couteau. Dégâts par zone (tête, corps et jambes) et selon la distance, dispersion, recul, rechargement et impacts de balles sur les murs."
+    },
+    {
+      "key": "ui.source.b8350f3e484c",
+      "text": "Boutique : pendant la phase d'achat et dans la zone d'achat, on peut acheter, revendre et annuler des achats. Les boucliers protègent vraiment."
+    },
+    {
+      "key": "ui.source.704f433e9618",
+      "text": "HUD : vie, bouclier, arme et munitions, viseur et marqueur d'impact. La compétence affiche son temps de recharge."
+    },
+    {
+      "key": "ui.source.973710256b48",
+      "text": "Menus : principal avec musique, options vidéo, son et commandes, nom du joueur, crédits et pause (reprendre, recommencer, options et quitter)."
+    },
+    {
+      "key": "ui.source.708bb918ebf5",
+      "text": "Autres armes : la boutique les affiche toutes, mais pour l'instant seuls le pistolet La Porteña, le Mitre et le couteau sont utilisables. Les autres s'achètent, mais ne s'utilisent pas encore."
+    },
+    {
+      "key": "ui.source.07ea9330f86b",
+      "text": "Grenades : elles s'achètent, mais ne se lancent pas encore."
+    },
+    {
+      "key": "ui.source.9f341de02316",
+      "text": "Compétence : le Sifflet se charge et s'affiche dans le HUD, mais n'a pas encore d'effet."
+    },
+    {
+      "key": "ui.source.fd23727140c4",
+      "text": "Modes et multijoueur : Tactique et Deathmatch affichent le salon, mais la connexion en ligne manque. Zombie n'a pas encore de zombies : Jouer ouvre la carte de l'université pour la parcourir avec les armes, la boutique et le HUD."
+    },
+    {
+      "key": "ui.source.719ab0dcfc1e",
+      "text": "Succès : l'écran est là, mais il n'y a pas encore de succès."
+    },
+    {
+      "key": "ui.source.e963f4d7372a",
+      "text": "Cartes et adversaires : Pruebas et Pruebas 2 ouvrent deux cartes de test, temporaires, pour montrer le gameplay. Dans Pruebas apparaissent des ennemis qui te poursuivent et qu'on peut tuer, mais ils n'attaquent pas encore."
+    },
+    {
+      "key": "ui.mode.platform",
+      "text": "Quai {0}"
+    },
+    {
+      "key": "ui.scene.f6b42a74de58",
+      "text": "ES-TU SÛR ?"
+    },
+    {
+      "key": "ui.scene.b1a5fe65d180",
+      "text": "ANNULER"
+    },
+    {
+      "key": "ui.scene.a75a52d014b5",
+      "text": "QUITTER"
+    },
+    {
+      "key": "ui.scene.dcead48ae36f",
+      "text": "Veux-tu quitter le jeu ?"
+    },
+    {
+      "key": "ui.scene.9d380f327d51",
+      "text": "OPTIONS"
+    },
+    {
+      "key": "ui.scene.83c8b91890ea",
+      "text": "SUCCÈS"
+    },
+    {
+      "key": "ui.scene.bf4705377b42",
+      "text": "JOUER"
+    },
+    {
+      "key": "ui.scene.25bae53ca291",
+      "text": "Créer un salon"
+    },
+    {
+      "key": "ui.scene.b35db8f5fa2e",
+      "text": "Multijoueur"
+    },
+    {
+      "key": "ui.scene.03dd1e126e49",
+      "text": "Rejoindre un salon"
+    },
+    {
+      "key": "ui.scene.bd62e781ec4e",
+      "text": "RETOUR"
+    },
+    {
+      "key": "ui.scene.9d7a5d755c74",
+      "text": "DIFFICULTÉ"
+    },
+    {
+      "key": "ui.scene.72ed8585d409",
+      "text": "MODE INVASION"
+    },
+    {
+      "key": "ui.scene.c425bf662041",
+      "text": "Difficile"
+    },
+    {
+      "key": "ui.scene.794b62510ba9",
+      "text": "Facile"
+    },
+    {
+      "key": "ui.scene.000a0602b41b",
+      "text": "GRAPHISMES"
+    },
+    {
+      "key": "ui.scene.4cdb40b1553e",
+      "text": "SON"
+    },
+    {
+      "key": "ui.scene.21b81f30b963",
+      "text": "LIMITE DE FPS"
+    },
+    {
+      "key": "ui.scene.38a945a2f681",
+      "text": "TESTS 2"
+    },
+    {
+      "key": "ui.scene.7ff1e38f9165",
+      "text": " VOLUME GÉNÉRAL"
+    },
+    {
+      "key": "ui.scene.72a1f3e10c23",
+      "text": "RÉINITIALISER"
+    },
+    {
+      "key": "ui.scene.9a048910b7ae",
+      "text": "PLEIN ÉCRAN"
+    },
+    {
+      "key": "ui.scene.d23e4bc17a4f",
+      "text": "COMMANDES"
+    },
+    {
+      "key": "ui.scene.5a205973971e",
+      "text": "RÉSOLUTION"
+    },
+    {
+      "key": "ui.scene.3db550736ade",
+      "text": "APPLIQUER"
+    },
+    {
+      "key": "ui.scene.f7c3a5724930",
+      "text": "  VOLUME EFFETS"
+    },
+    {
+      "key": "ui.scene.39c2a6b96eb1",
+      "text": "CRÉDITS"
+    },
+    {
+      "key": "ui.scene.bfa9cbe001c0",
+      "text": "VOLUME MUSIQUE"
+    },
+    {
+      "key": "ui.scene.82fb9cd0b771",
+      "text": "VISION"
+    },
+    {
+      "key": "ui.scene.5fb15a724911",
+      "text": "TESTS"
+    },
+    {
+      "key": "ui.scene.e93d0ef5f610",
+      "text": "ILLIMITÉ"
+    },
+    {
+      "key": "ui.scene.77459d47988e",
+      "text": "Fenêtre sans bordure"
+    },
+    {
+      "key": "ui.scene.93f2f9113746",
+      "text": "Plein écran"
+    },
+    {
+      "key": "ui.scene.e252efe69747",
+      "text": "Désactivé"
+    },
+    {
+      "key": "ui.scene.0a0ca661486c",
+      "text": "Activé"
+    },
+    {
+      "key": "ui.loading.room_fmt",
+      "text": "Salon {0}"
+    },
+    {
+      "key": "ui.crosshair.cross",
+      "text": "Croix"
+    },
+    {
+      "key": "ui.crosshair.circle",
+      "text": "Cercle"
+    },
+    {
+      "key": "ui.crosshair.dot",
+      "text": "Point"
+    },
+    {
+      "key": "ui.net.create_failed",
+      "text": "Impossible de créer le salon. Vérifie ta connexion."
+    },
+    {
+      "key": "ui.net.join_failed",
+      "text": "Impossible de rejoindre le salon. Vérifie ta connexion."
+    },
+    {
+      "key": "ui.net.rejoin_failed",
+      "text": "Impossible de revenir dans la partie. Vérifie ta connexion."
+    },
+    {
+      "key": "ui.net.search_failed",
+      "text": "Impossible de chercher une partie. Vérifie ta connexion et cherche à nouveau."
+    },
+    {
+      "key": "ui.net.account_in_match",
+      "text": "Ton compte est déjà dans cette partie, sur un autre PC."
+    },
+    {
+      "key": "ui.net.still_listed",
+      "text": "Tu figures encore dans la partie. Réessaie dans quelques secondes."
+    },
+    {
+      "key": "ui.net.match_over",
+      "text": "La partie est déjà terminée."
+    },
+    {
+      "key": "ui.net.room_full",
+      "text": "Le salon est plein."
+    },
+    {
+      "key": "ui.net.match_started",
+      "text": "La partie a déjà commencé."
+    },
+    {
+      "key": "ui.net.room_mode_fmt",
+      "text": "Ce salon est en {0}."
+    },
+    {
+      "key": "ui.net.connection_lost",
+      "text": "La connexion au serveur a été perdue."
+    },
+    {
+      "key": "ui.version.update_fmt",
+      "text": "Une nouvelle version est disponible ({0}). Mets à jour le jeu depuis le launcher pour jouer en ligne."
+    },
+    {
+      "key": "ui.text.buy",
+      "text": "Acheter"
+    },
+    {
+      "key": "ui.text.close",
+      "text": "Fermer"
+    },
+    {
+      "key": "ui.source.65ed8b5d8dd1",
+      "text": "1 à 4 joueurs"
+    },
+    {
+      "key": "ui.source.3c67bb4867c6",
+      "text": "Quai 3 · En ligne"
+    },
+    {
+      "key": "ui.source.48eab30f8694",
+      "text": "De 1 à 4 joueurs contre les vagues de l'université. Toutes les 10 vagues arrive le Boss ; si vous l'abattez, vous pouvez continuer pour battre le record."
+    },
+    {
+      "key": "ui.source.a4bca35542b6",
+      "text": "Jouer seul"
+    },
+    {
+      "key": "ui.source.32f4bec04ced",
+      "text": "Donne le code à tes amis (jusqu'à 4). Tu peux lancer quand tu veux."
+    },
+    {
+      "key": "ui.mode.record_coop",
+      "text": " · En équipe : <color={0}>vague {1}</color>"
+    },
+    {
+      "key": "ui.search.minimum_wait_invasion",
+      "text": "Commence d'elle-même à {0} joueurs, ou avec ceux présents si {1} s passent sans nouvel arrivant."
+    },
+    {
+      "key": "ui.controls.forward",
+      "text": "Avancer"
+    },
+    {
+      "key": "ui.controls.left",
+      "text": "Gauche"
+    },
+    {
+      "key": "ui.controls.right",
+      "text": "Droite"
+    },
+    {
+      "key": "ui.controls.aim",
+      "text": "Viser"
+    },
+    {
+      "key": "ui.controls.sprint",
+      "text": "Courir / marcher lentement"
+    },
+    {
+      "key": "ui.controls.plant",
+      "text": "Poser / désamorcer"
+    },
+    {
+      "key": "ui.controls.drop",
+      "text": "Lâcher l'arme"
+    },
+    {
+      "key": "ui.controls.map",
+      "text": "Carte complète"
+    },
+    {
+      "key": "ui.crosshair.edge",
+      "text": "Contour"
+    },
+    {
+      "key": "ui.teams.none",
+      "text": "Sans équipe"
+    },
+    {
+      "key": "ui.teams.one",
+      "text": "Équipe 1"
+    },
+    {
+      "key": "ui.teams.two",
+      "text": "Équipe 2"
+    },
+    {
+      "key": "ui.teams.unassigned",
+      "text": "Des joueurs n'ont pas d'équipe : chacun choisit avec les flèches (ou A et D)."
+    },
+    {
+      "key": "ui.teams.need_one",
+      "text": "Chaque équipe a besoin d'au moins un joueur."
+    },
+    {
+      "key": "ui.crosshair.shape",
+      "text": "Forme"
+    },
+    {
+      "key": "ui.modes.online",
+      "text": "En ligne"
+    }
+  ]
+}
