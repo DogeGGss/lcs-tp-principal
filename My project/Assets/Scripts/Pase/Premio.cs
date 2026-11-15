@@ -64,7 +64,7 @@ public sealed class Premio
 
     /// <summary>
     /// El arte del premio dentro del recuadro (x, y, w, h) de su padre: la imagen del avatar o del banner, el marco sobre el
-    /// banner equipado, el título escrito, los colores de la skin o el cristal.
+    /// banner equipado, el título escrito, el arma con la skin (girando) o el cristal.
     /// </summary>
     public void DibujarArte(RectTransform padre, float x, float y, float w, float h, bool apagado = false)
     {
@@ -74,16 +74,15 @@ public sealed class Premio
         Color colorR = ColorRareza(Rareza);
         if (skin != null)
         {
-            // Los cuatro colores de la skin, como en la colección del Perfil.
-            Color[] colores = CatalogoDeSkins.ColoresDeBarra(skin);
-            float[] partes = { 0.5f, 0.3f, 0.12f, 0.08f };
-            float bh = Mathf.Min(48f, h * 0.36f), bx = 14f, bw = w - 28f;
-            for (int i = 0; i < 4; i++)
-            {
-                Image(Place(Node("Color" + i, caja), bx, (h - bh) / 2f, bw * partes[i], bh), null, colores[i]);
-                bx += bw * partes[i];
-            }
-            T(caja, "Arma", 14f, (h + bh) / 2f + 6f, w - 28f, 24f, FRotulo, 16f, Soft, skin.arma.nombre, TextAlignmentOptions.MidlineLeft, 10f, true);
+            // El arma girando con la skin, como en las cápsulas (VistaPreviaDeSkin), con su nombre abajo.
+            const float rotulo = 26f;
+            float ah = h - rotulo, aw = Mathf.Min(w - 16f, ah * 1.5f); // la vista es de 3 × 2
+            ah = aw / 1.5f;
+            var imagen = Node("Arma", caja).gameObject.AddComponent<UnityEngine.UI.RawImage>();
+            Place(imagen.rectTransform, (w - aw) / 2f, (h - rotulo - ah) / 2f, aw, ah);
+            imagen.raycastTarget = false;
+            VistaPreviaDeSkin.Mostrar(imagen, skin);
+            T(caja, "Arma", 14f, h - rotulo, w - 28f, 22f, FRotulo, 16f, Soft, skin.arma.nombre, TextAlignmentOptions.MidlineLeft, 10f, true);
         }
         else if (cosmetico != null && cosmetico.tipo == Tipo.Titulo)
         {
