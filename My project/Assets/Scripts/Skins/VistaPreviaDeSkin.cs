@@ -5,6 +5,9 @@ using UnityEngine;
 // en una textura (Textura) que el perfil muestra. Como la de los emotes (VistaPreviaDeEmote).
 // US 382: también se pueden armar otras aparte (Nueva), cada una con su textura y en su lugar, para mostrar varias armas
 // a la vez (las cartas de las cápsulas); se borran con Destruir.
+// F35: las cartas del pase de batalla y de la tienda directa la muestran con Mostrar(imagen, skin): una por skin,
+// compartida entre las imágenes que la muestran (la carta y el panel), que dibuja solo mientras alguna está en pantalla y
+// se borra cuando ya no la usa ninguna (UsoDeVistaDeSkin).
 public class VistaPreviaDeSkin : MonoBehaviour
 {
     private static readonly Vector3 Lugar = new Vector3(0f, -3000f, 0f);
@@ -46,6 +49,45 @@ public class VistaPreviaDeSkin : MonoBehaviour
     public void Destruir()
     {
         if (this != null) Destroy(gameObject);
+    }
+
+    // ---------- Compartidas (pase de batalla y tienda directa) ----------
+
+    private static readonly System.Collections.Generic.Dictionary<string, VistaPreviaDeSkin> compartidas =
+        new System.Collections.Generic.Dictionary<string, VistaPreviaDeSkin>();
+    private string clave;
+    private int usos, enPantalla;
+
+    /// <summary>Muestra en esa imagen el arma de la skin girando. La vista previa se comparte entre las imágenes de la
+    /// misma skin y se borra sola cuando se borran todas.</summary>
+    public static void Mostrar(UnityEngine.UI.RawImage imagen, CatalogoDeSkins.Skin skin)
+    {
+        if (imagen == null || skin == null || skin.arma == null) return;
+        string k = skin.arma.id + "|" + skin.id;
+        if (!compartidas.TryGetValue(k, out VistaPreviaDeSkin v) || v == null)
+        {
+            v = Nueva(skin.arma.id, skin);
+            v.clave = k;
+            v.camara.enabled = false; // dibuja recién cuando una imagen está en pantalla
+            compartidas[k] = v;
+        }
+        imagen.texture = v.textura;
+        imagen.gameObject.AddComponent<UsoDeVistaDeSkin>().Usar(v);
+    }
+
+    internal void Tomar() => usos++;
+
+    internal void Soltar()
+    {
+        if (--usos > 0) return;
+        if (clave != null && compartidas.TryGetValue(clave, out VistaPreviaDeSkin v) && v == this) compartidas.Remove(clave);
+        Destruir();
+    }
+
+    internal void Visible(bool visible)
+    {
+        enPantalla = Mathf.Max(0, enPantalla + (visible ? 1 : -1));
+        if (camara != null) camara.enabled = enPantalla > 0;
     }
 
     private void Poner(string nueva, CatalogoDeSkins.Skin skin)
@@ -152,5 +194,38 @@ public class VistaPreviaDeSkin : MonoBehaviour
     {
         if (textura != null) { textura.Release(); Destroy(textura); }
         if (unica == this) unica = null;
+        if (clave != null && compartidas.TryGetValue(clave, out VistaPreviaDeSkin v) && v == this) compartidas.Remove(clave);
+    }
+}
+
+// F35: una imagen que muestra una vista previa compartida (VistaPreviaDeSkin.Mostrar): la hace dibujar mientras está en
+// pantalla y la suelta al borrarse.
+public class UsoDeVistaDeSkin : MonoBehaviour
+{
+    private VistaPreviaDeSkin vista;
+    private bool visible;
+
+    public void Usar(VistaPreviaDeSkin v)
+    {
+        vista = v;
+        vista.Tomar();
+        if (isActiveAndEnabled) Mostrar(true);
+    }
+
+    private void OnEnable() { if (vista != null) Mostrar(true); }
+    private void OnDisable() => Mostrar(false);
+
+    private void Mostrar(bool si)
+    {
+        if (vista == null || visible == si) return;
+        visible = si;
+        vista.Visible(si);
+    }
+
+    private void OnDestroy()
+    {
+        Mostrar(false);
+        if (vista != null) vista.Soltar();
+        vista = null;
     }
 }
