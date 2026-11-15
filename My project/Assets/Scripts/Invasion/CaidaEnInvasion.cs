@@ -16,7 +16,8 @@ using Hashtable = ExitGames.Client.Photon.Hashtable;
 //   el que revive queda agachado sobre él. Si suelta la tecla o se aleja, se corta (que lo golpeen no lo corta).
 // - CA4: el revivido se levanta con un 30 % de vida, con sus armas y su munición. Mientras se levanta (lo que dura la
 //   animación que ven los demás, CaidoEnTerceraPersona) no se mueve, no dispara y no tiene el arma en la mano; la cámara
-//   sube del piso a la altura de parado a la par.
+//   sube del piso a la altura de parado a la par. Desde que lo reviven, 3 s no recibe daño (InmortalAlRevivir), como al
+//   reaparecer (US 137): se ve igual y disparar lo corta.
 // - CA5: los invasores no lo atacan (con 0 de vida no cuenta como objetivo: van al vivo más cercano).
 // - CA6: si la oleada termina con él caído, se levanta solo con un 30 % de vida.
 // - CA7: si todos están caídos o muertos a la vez, la partida termina (el resultado, en todas las computadoras).
@@ -29,6 +30,7 @@ public class CaidaEnInvasion : MonoBehaviourPunCallbacks, IOnEventCallback
     public enum Estado : byte { Vivo = 0, Caido = 1, Muerto = 2, Retirado = 3 }
 
     public const float Desangra = 30f, TardaEnRevivir = 5f, Alcance = 2.2f, VidaAlLevantarse = 0.3f;
+    public const float InmortalAlRevivir = 3f; // CA4: s sin recibir daño desde que lo reviven
     private const float AlcanceParaCortar = 3f;
     private const string PropEstado = "inv.est", PropDesde = "inv.desde";
     private const byte EvReviviendo = 60, EvRevivido = 61; // (los de InvasoresEnRed van del 40 al 56)
@@ -208,6 +210,7 @@ public class CaidaEnInvasion : MonoBehaviourPunCallbacks, IOnEventCallback
         MatchHud.SetAction(null);
         if (vida != null) vida.SetState(Mathf.Max(1, Mathf.RoundToInt(vida.maxHealth * VidaAlLevantarse)), 0);
         MatchHud.Warn(L10n.T("gameplay.down.revived"), 1.5f);
+        if (local != null) local.HacerInvulnerable(InmortalAlRevivir); // CA4: 3 s sin recibir daño
         // Se levanta: hasta estar parado no se mueve ni dispara (las armas siguen trabadas, Bloquear).
         if (movimiento != null)
         {
