@@ -134,7 +134,9 @@ public static class WeaponFire
             bool lethal = target.WouldDie(damage);
             Impacto?.Invoke(target, damage, zone);
             HealthSystem.DamageOrigin = camera.transform.position; // US 192: desde dónde le dispararon
+            HealthSystem.DamageZone = zone; // US 375: para el resumen al morir de quien lo recibe
             target.TakeDamage(damage, zone == BodyZone.Head);
+            HealthSystem.DamageZone = null;
             anyHit = true;
             if (zone == BodyZone.Head) head = true;
             if (lethal)

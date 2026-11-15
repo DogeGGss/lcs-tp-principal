@@ -2042,7 +2042,7 @@
     },
     {
       "key": "gameplay.mates.next_wave",
-      "text": "Compari all'inizio della prossima pausa"
+      "text": "Compari all'inizio della prossima ondata"
     },
     {
       "key": "gameplay.result.record_coop_fmt",
@@ -2107,6 +2107,62 @@
     {
       "key": "gameplay.table.fixed_hint",
       "text": "Clicca un nome per vedere il profilo · Tab o Esc per chiudere"
+    },
+    {
+      "key": "gameplay.death.card.killed_by",
+      "text": "Eliminato da"
+    },
+    {
+      "key": "gameplay.death.card.title",
+      "text": "Riepilogo"
+    },
+    {
+      "key": "gameplay.death.card.distance",
+      "text": "Distanza"
+    },
+    {
+      "key": "gameplay.death.card.distance_fmt",
+      "text": "{0} m"
+    },
+    {
+      "key": "gameplay.death.card.remaining",
+      "text": "Gli è rimasto"
+    },
+    {
+      "key": "gameplay.death.card.hp_fmt",
+      "text": "{0} vita · {1} scudo"
+    },
+    {
+      "key": "gameplay.death.card.you_dealt",
+      "text": "Gli hai inflitto"
+    },
+    {
+      "key": "gameplay.death.card.they_dealt",
+      "text": "Ti ha inflitto"
+    },
+    {
+      "key": "gameplay.death.card.hits.one",
+      "text": "{1} danni in 1 colpo"
+    },
+    {
+      "key": "gameplay.death.card.hits.other",
+      "text": "{1} danni in {0} colpi"
+    },
+    {
+      "key": "gameplay.death.card.no_damage",
+      "text": "Nessun danno"
+    },
+    {
+      "key": "gameplay.death.card.others",
+      "text": "Altri che ti hanno colpito"
+    },
+    {
+      "key": "gameplay.death.card.received",
+      "text": "Danni subiti"
+    },
+    {
+      "key": "gameplay.death.card.headshot",
+      "text": "Colpo alla testa"
     }
   ]
 }

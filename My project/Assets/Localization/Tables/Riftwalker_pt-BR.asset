@@ -2071,7 +2071,7 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 380227458789477
-    m_Localized: "Voc\xEA aparece no in\xEDcio do pr\xF3ximo descanso"
+    m_Localized: "Voc\xEA aparece no in\xEDcio da pr\xF3xima onda"
     m_Metadata:
       m_Items: []
   - m_Id: 380227458789478
@@ -7203,7 +7203,7 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 2872270592503811
-    m_Localized: "Abates \xB7 mortes \xB7 assist\xEAncias"
+    m_Localized: Desempenho
     m_Metadata:
       m_Items: []
   - m_Id: 2872270592503812
@@ -7300,6 +7300,62 @@ MonoBehaviour:
       m_Items: []
   - m_Id: 2872270592503835
     m_Localized: "Ainda n\xE3o terminou nenhuma partida."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2881462216781824
+    m_Localized: "Voc\xEA foi eliminado por"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2881462250336256
+    m_Localized: Resumo
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2881462250336257
+    m_Localized: "Dist\xE2ncia"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2881462250336258
+    m_Localized: '{0} m'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2881462250336259
+    m_Localized: Ficou com
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2881462250336260
+    m_Localized: "{0} vida \xB7 {1} escudo"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2881462250336261
+    m_Localized: "Voc\xEA causou"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2881462250336262
+    m_Localized: Ele causou
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2881462250336263
+    m_Localized: '{1} de dano em 1 acerto'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2881462250336264
+    m_Localized: '{1} de dano em {0} acertos'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2881462250336265
+    m_Localized: Sem dano
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2881462250336266
+    m_Localized: Outros que causaram dano
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2881462250336267
+    m_Localized: Dano recebido
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2881462250336268
+    m_Localized: "Tiro na cabe\xE7a"
     m_Metadata:
       m_Items: []
   references:

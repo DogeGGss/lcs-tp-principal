@@ -2107,6 +2107,62 @@
     {
       "key": "gameplay.table.fixed_hint",
       "text": "Tocá un nombre para ver su perfil · Tab o Esc para cerrar"
+    },
+    {
+      "key": "gameplay.death.card.killed_by",
+      "text": "Te eliminó"
+    },
+    {
+      "key": "gameplay.death.card.title",
+      "text": "Resumen"
+    },
+    {
+      "key": "gameplay.death.card.distance",
+      "text": "Distancia"
+    },
+    {
+      "key": "gameplay.death.card.distance_fmt",
+      "text": "{0} m"
+    },
+    {
+      "key": "gameplay.death.card.remaining",
+      "text": "Le quedó"
+    },
+    {
+      "key": "gameplay.death.card.hp_fmt",
+      "text": "{0} vida · {1} escudo"
+    },
+    {
+      "key": "gameplay.death.card.you_dealt",
+      "text": "Vos le hiciste"
+    },
+    {
+      "key": "gameplay.death.card.they_dealt",
+      "text": "Te hizo"
+    },
+    {
+      "key": "gameplay.death.card.hits.one",
+      "text": "{1} de daño en 1 impacto"
+    },
+    {
+      "key": "gameplay.death.card.hits.other",
+      "text": "{1} de daño en {0} impactos"
+    },
+    {
+      "key": "gameplay.death.card.no_damage",
+      "text": "Sin daño"
+    },
+    {
+      "key": "gameplay.death.card.others",
+      "text": "Otros que te dañaron"
+    },
+    {
+      "key": "gameplay.death.card.received",
+      "text": "Daño recibido"
+    },
+    {
+      "key": "gameplay.death.card.headshot",
+      "text": "Tiro a la cabeza"
     }
   ]
 }

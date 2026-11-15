@@ -2071,7 +2071,7 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 380227458789477
-    m_Localized: "Tu apparais au d\xE9but de la prochaine pause"
+    m_Localized: "Tu apparais au d\xE9but de la prochaine vague"
     m_Metadata:
       m_Items: []
   - m_Id: 380227458789478
@@ -7203,7 +7203,7 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 2872270592503811
-    m_Localized: "\xC9liminations \xB7 morts \xB7 assistances"
+    m_Localized: Performance
     m_Metadata:
       m_Items: []
   - m_Id: 2872270592503812
@@ -7300,6 +7300,62 @@ MonoBehaviour:
       m_Items: []
   - m_Id: 2872270592503835
     m_Localized: "N'a encore termin\xE9 aucune partie."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2881462216781824
+    m_Localized: "\xC9limin\xE9 par"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2881462250336256
+    m_Localized: "R\xE9sum\xE9"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2881462250336257
+    m_Localized: Distance
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2881462250336258
+    m_Localized: '{0} m'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2881462250336259
+    m_Localized: Il lui restait
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2881462250336260
+    m_Localized: "{0} PV \xB7 {1} bouclier"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2881462250336261
+    m_Localized: "Tu lui as inflig\xE9"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2881462250336262
+    m_Localized: "Il t'a inflig\xE9"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2881462250336263
+    m_Localized: "{1} d\xE9g\xE2ts en 1 impact"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2881462250336264
+    m_Localized: "{1} d\xE9g\xE2ts en {0} impacts"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2881462250336265
+    m_Localized: "Aucun d\xE9g\xE2t"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2881462250336266
+    m_Localized: "Autres qui t'ont touch\xE9"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2881462250336267
+    m_Localized: "D\xE9g\xE2ts subis"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2881462250336268
+    m_Localized: "Tir dans la t\xEAte"
     m_Metadata:
       m_Items: []
   references:
