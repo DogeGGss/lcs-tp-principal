@@ -51,7 +51,9 @@ public class IdiomaEnPantallaTests
         yield return Esperar(1f);
         OpcionesPantalla opciones = Object.FindAnyObjectByType<OpcionesPantalla>();
         Assert.IsNotNull(opciones, "No se abrió Opciones");
-        var pestanas = opciones.GetComponentsInChildren<UnityEngine.UI.Button>(true).Where(b => b.name.StartsWith("Btn")).ToList();
+        // Solo las pestañas: Guardar, Restablecer y Volver cierran Opciones o abren un aviso, y las capturas siguientes saldrían de otra pantalla.
+        string[] soloPestanas = { "BtnGraficos", "BtnControles", "BtnSonido", "BtnMira", "BtnIdioma" };
+        var pestanas = opciones.GetComponentsInChildren<UnityEngine.UI.Button>(true).Where(b => soloPestanas.Contains(b.name)).ToList();
         Assert.IsNotEmpty(pestanas, "Opciones no tiene pestañas");
         var todos = new List<string>();
         foreach (var pestana in pestanas)
@@ -211,15 +213,16 @@ public class IdiomaEnPantallaTests
     {
         if (!Application.CanStreamedLevelBeLoaded(escena)) Assert.Ignore($"La escena {escena} no está en el Scene List del build.");
         MatchSettings.Mode = modo;
-        SinNotaPO();
+        SinAvisosEncima();
         yield return SceneManager.LoadSceneAsync(escena);
         yield return Esperar(espera);
     }
 
-    // La Nota para el PO se abre sola la primera vez de cada sesión y taparía las capturas:
-    // en las pruebas se la da por vista, y si igual está abierta se la cierra.
-    internal static void SinNotaPO()
+    // La Nota para el PO y el «¿Cómo te llamás?» se abren solos la primera vez y taparían las capturas:
+    // en las pruebas el jugador ya tiene nombre y la nota se da por vista (si igual está abierta, se cierra).
+    internal static void SinAvisosEncima()
     {
+        if (!PlayerProfile.HasName) PlayerProfile.TrySetName("Riftwalker", out _);
         typeof(NotaPO).GetField("shownThisSession", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Static)?.SetValue(null, true);
         foreach (NotaPO nota in Object.FindObjectsByType<NotaPO>(FindObjectsSortMode.None)) nota.Close();
     }
