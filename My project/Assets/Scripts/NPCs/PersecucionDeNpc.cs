@@ -21,6 +21,7 @@ using UnityEngine.AI;
 // - CA3: si el jugador está donde no se llega caminando, va al punto alcanzable más cercano y espera ahí.
 // - CA4: con el jugador muerto deja de perseguirlo y se queda quieto.
 // F31 (US 290, CA3): en Invasión cooperativa va hacia el jugador vivo más cercano, sea quien sea (Jugadores).
+// F31: el golpe y la embestida solo le llegan al jugador si está a su altura (AlcanzaEnAltura): subido a un techo no.
 // Lo agrega Npc.Crear.
 [RequireComponent(typeof(Npc))]
 public class PersecucionDeNpc : MonoBehaviour
@@ -28,6 +29,8 @@ public class PersecucionDeNpc : MonoBehaviour
     public const float DistanciaDeAtaque = 1.5f;      // US 037, CA1: m entre los cuerpos, como máximo, para golpear
     private const float Separacion = 0.25f;            // m entre los cuerpos donde se frena (dentro de los 1,5 m)
     private const float AvanceMaximo = 1.2f;           // m: lo más que se aleja por las animaciones que se adelantan
+    private const float AlcanceArriba = 0.5f;          // F31: m sobre su cabeza hasta donde llegan sus brazos
+    private const float AlcanceAbajo = 0.3f;           // F31: m bajo sus pies (uno que vuela y el jugador abajo)
     private const float CadaCuanto = 0.25f;            // s entre cálculos del camino (CA3)
     private const float VeHasta = 10f, MasRapido = 1.2f; // US 036, CA2
     private const float Rodear = 4f;                   // m: desde acá cada uno busca su lugar alrededor (CA4)
@@ -253,6 +256,24 @@ public class PersecucionDeNpc : MonoBehaviour
         Vector3 hasta = jugador.position - transform.position;
         hasta.y = 0f;
         return hasta.magnitude - npc.Frente - RadioDe(jugador);
+    }
+
+    /// <summary>
+    /// F31: si el jugador está a su altura para un golpe cuerpo a cuerpo (o una embestida). Arriba de un techo o una
+    /// pared alta no le llega aunque esté al lado: los pies del jugador tienen que quedar por debajo de la cabeza del
+    /// NPC, más lo que llegan sus brazos (AlcanceArriba); y su cabeza, por encima de los pies del NPC (AlcanceAbajo).
+    /// </summary>
+    public bool AlcanzaEnAltura(Transform jugador)
+    {
+        if (jugador == null) return false;
+        Collider propio = GetComponent<CapsuleCollider>();
+        if (propio == null) return true;
+        Bounds npcCaja = propio.bounds;
+        Collider suyo = jugador.GetComponent<CharacterController>();
+        if (suyo == null) suyo = jugador.GetComponent<Collider>();
+        float pies = suyo != null ? suyo.bounds.min.y : jugador.position.y;
+        float cabeza = suyo != null ? suyo.bounds.max.y : jugador.position.y + 1.8f;
+        return pies <= npcCaja.max.y + AlcanceArriba && cabeza >= npcCaja.min.y - AlcanceAbajo;
     }
 
     private static Transform radioDe;
