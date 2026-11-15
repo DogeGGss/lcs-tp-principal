@@ -358,7 +358,7 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
             StartCoroutine(Reaparecer(titulo, ConfigRed.Actual != null ? ConfigRed.Actual.reaparicion : 3f));
         // US 033: si la ronda ya terminó (por ejemplo, lo eliminó la explosión), el cartel de fin de ronda ya lo explica.
         else if (RondasTacticas.Actual == null || RondasTacticas.Actual.FaseActual == RondasTacticas.Fase.Combate)
-            partida.Aviso(titulo, L10n.T("gameplay.death.respawn_next_round"));
+            partida.Aviso(titulo, L10n.T(CooperativoDeInvasion.Activo ? "gameplay.mates.next_wave" : "gameplay.death.respawn_next_round")); // (Invasión: en el descanso, US 289)
     }
 
     private const float ReservaAntes = 0.5f; // s antes de reaparecer en que se reserva el punto (PartidaEnRed)

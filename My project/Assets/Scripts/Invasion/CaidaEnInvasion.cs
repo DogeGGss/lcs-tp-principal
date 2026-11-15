@@ -10,8 +10,8 @@ using Hashtable = ExitGames.Client.Photon.Hashtable;
 //   piso, y se arrastra despacio (PlayerMovement.Caido). No puede disparar, usar el cuchillo ni tirar granadas, y no
 //   recibe más daño. Sí elige cuando se abre el puesto (US 356).
 // - CA2: tiene 30 s para que lo revivan, con la cuenta en su pantalla (y arriba de él para los demás,
-//   CaidoEnTerceraPersona). Si se terminan, muere: mira a sus compañeros (Espectador) y vuelve al empezar la oleada
-//   siguiente, junto a un compañero vivo, con la vida llena (US 289, CA6).
+//   CaidoEnTerceraPersona). Si se terminan, muere: mira a sus compañeros (Espectador) y vuelve cuando arranca el
+//   descanso siguiente (al terminar esa oleada), junto a un compañero vivo, con la vida llena (US 289, CA6).
 // - CA3: un compañero vivo se acerca (2,2 m), mantiene la tecla de usar (E) y lo revive en 5 s, con la barra. Mientras,
 //   el que revive queda agachado sobre él. Si suelta la tecla o se aleja, se corta (que lo golpeen no lo corta).
 // - CA4: el revivido se levanta con un 30 % de vida, con sus armas y su munición.
@@ -47,7 +47,6 @@ public class CaidaEnInvasion : MonoBehaviourPunCallbacks, IOnEventCallback
     private readonly List<Behaviour> bloqueados = new List<Behaviour>();
     private Camera camaraArmas;
     private bool termino;
-    private bool entroEmpezada; // US 358 y US 359: entró (o volvió) con una oleada en juego: aparece en el descanso
 
     // CA3: el que revive (en su computadora).
     private JugadorEnRed reviviendoA;
@@ -146,7 +145,6 @@ public class CaidaEnInvasion : MonoBehaviourPunCallbacks, IOnEventCallback
         if ((Multijugador.EntroEmpezada || Reconexion.Volvio) && InvasoresEnRed.EnOleada)
         {
             estado = Estado.Muerto;
-            entroEmpezada = true;
             local.EsperarLaOleada();
         }
         Publicar();
@@ -309,7 +307,8 @@ public class CaidaEnInvasion : MonoBehaviourPunCallbacks, IOnEventCallback
         if (estado == Estado.Caido) Levantarse(); // CA6: se levanta solo
     }
 
-    // US 289, CA6: el que murió vuelve al empezar la oleada siguiente, junto a un compañero vivo, con la vida llena.
+    // US 289, CA6: el que murió vuelve en el descanso siguiente (AlEmpezarElDescanso), junto a un compañero vivo, con
+    // la vida llena. Si no llegó a volver ahí (por ejemplo, no hubo descanso), al empezar la oleada siguiente.
     private void AlEmpezar(int oleada)
     {
         if (estado != Estado.Muerto || local == null) return;
@@ -319,17 +318,16 @@ public class CaidaEnInvasion : MonoBehaviourPunCallbacks, IOnEventCallback
         Volver();
     }
 
-    // US 358 y US 359, CA2: el que entró (o volvió) con una oleada en juego aparece cuando arranca el descanso de 20 s
-    // siguiente, así tiene tiempo de prepararse (comprar, elegir dónde ir) antes de la oleada.
+    // US 289, CA6 (y US 358 y US 359, CA2): el que murió, o entró (o volvió) con una oleada en juego, aparece cuando
+    // arranca el descanso de 20 s siguiente, así tiene tiempo de prepararse antes de la oleada.
     private void AlEmpezarElDescanso(int oleada)
     {
-        if (!entroEmpezada || estado != Estado.Muerto || local == null) return;
+        if (estado != Estado.Muerto || local == null) return;
         Volver();
     }
 
     private void Volver()
     {
-        entroEmpezada = false;
         Pose punto = JuntoAUnCompanero();
         estado = Estado.Vivo;
         Publicar();
