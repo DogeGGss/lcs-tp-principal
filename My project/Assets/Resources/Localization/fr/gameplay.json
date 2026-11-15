@@ -2042,7 +2042,7 @@
     },
     {
       "key": "gameplay.mates.next_wave",
-      "text": "Tu apparais au début de la prochaine vague"
+      "text": "Tu apparais au début de la prochaine pause"
     },
     {
       "key": "gameplay.result.record_coop_fmt",

@@ -2042,7 +2042,7 @@
     },
     {
       "key": "gameplay.mates.next_wave",
-      "text": "You'll spawn when the next wave starts"
+      "text": "You'll spawn when the next break starts"
     },
     {
       "key": "gameplay.result.record_coop_fmt",

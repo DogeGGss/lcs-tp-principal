@@ -47,6 +47,7 @@ public class CaidaEnInvasion : MonoBehaviourPunCallbacks, IOnEventCallback
     private readonly List<Behaviour> bloqueados = new List<Behaviour>();
     private Camera camaraArmas;
     private bool termino;
+    private bool entroEmpezada; // US 358 y US 359: entró (o volvió) con una oleada en juego: aparece en el descanso
 
     // CA3: el que revive (en su computadora).
     private JugadorEnRed reviviendoA;
@@ -61,6 +62,7 @@ public class CaidaEnInvasion : MonoBehaviourPunCallbacks, IOnEventCallback
         reviviendo.Clear();
         OleadasDeInvasion.Supero += AlSuperar;
         OleadasDeInvasion.Empezo += AlEmpezar;
+        OleadasDeInvasion.EmpezoElDescanso += AlEmpezarElDescanso;
     }
 
     public override void OnDisable()
@@ -69,6 +71,7 @@ public class CaidaEnInvasion : MonoBehaviourPunCallbacks, IOnEventCallback
         if (Actual == this) Actual = null;
         OleadasDeInvasion.Supero -= AlSuperar;
         OleadasDeInvasion.Empezo -= AlEmpezar;
+        OleadasDeInvasion.EmpezoElDescanso -= AlEmpezarElDescanso;
         if (vida != null) vida.AntesDeMorir = null;
         if (movimiento != null) { movimiento.Caido = false; movimiento.ForzarAgachado = false; }
     }
@@ -138,11 +141,12 @@ public class CaidaEnInvasion : MonoBehaviourPunCallbacks, IOnEventCallback
             espectador = gameObject.AddComponent<Espectador>();
             espectador.Iniciar(partida);
         }
-        // US 358 y US 359, CA2: entró (o volvió) con una oleada en juego: mira a sus compañeros y aparece al empezar la
-        // siguiente, junto a uno vivo (AlEmpezar). En el descanso aparece enseguida.
+        // US 358 y US 359, CA2: entró (o volvió) con una oleada en juego: mira a sus compañeros y aparece cuando arranca
+        // el descanso siguiente, junto a uno vivo (AlEmpezarElDescanso). En el descanso aparece enseguida.
         if ((Multijugador.EntroEmpezada || Reconexion.Volvio) && InvasoresEnRed.EnOleada)
         {
             estado = Estado.Muerto;
+            entroEmpezada = true;
             local.EsperarLaOleada();
         }
         Publicar();
@@ -312,6 +316,20 @@ public class CaidaEnInvasion : MonoBehaviourPunCallbacks, IOnEventCallback
         // US 358 y US 359, CA2: entró o volvió en medio de una oleada y esta computadora se está poniendo al día con
         // ella: no es la siguiente, sigue mirando a sus compañeros.
         if (OleadasDeInvasion.PoniendoseAlDia) return;
+        Volver();
+    }
+
+    // US 358 y US 359, CA2: el que entró (o volvió) con una oleada en juego aparece cuando arranca el descanso de 20 s
+    // siguiente, así tiene tiempo de prepararse (comprar, elegir dónde ir) antes de la oleada.
+    private void AlEmpezarElDescanso(int oleada)
+    {
+        if (!entroEmpezada || estado != Estado.Muerto || local == null) return;
+        Volver();
+    }
+
+    private void Volver()
+    {
+        entroEmpezada = false;
         Pose punto = JuntoAUnCompanero();
         estado = Estado.Vivo;
         Publicar();
