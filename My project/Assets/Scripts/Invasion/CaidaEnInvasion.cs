@@ -44,6 +44,8 @@ public class CaidaEnInvasion : MonoBehaviourPunCallbacks, IOnEventCallback
 
     private Estado estado = Estado.Vivo;
     private double caidoDesde;
+    // CA2: desde cuándo lo están reviviendo (la cuenta está frenada), con el reloj de la red; -1 si no.
+    private double frenadoDesde = -1;
     private HealthSystem vida;
     private PlayerMovement movimiento;
     private JugadorEnRed local;
@@ -166,6 +168,7 @@ public class CaidaEnInvasion : MonoBehaviourPunCallbacks, IOnEventCallback
         CortarLevantarse(); // (cayó otra vez mientras se levantaba: las armas siguen trabadas)
         estado = Estado.Caido;
         caidoDesde = PhotonNetwork.Time;
+        frenadoDesde = -1;
         Publicar();
         CortarRevivir();
         if (movimiento != null) movimiento.Caido = true;
@@ -177,18 +180,29 @@ public class CaidaEnInvasion : MonoBehaviourPunCallbacks, IOnEventCallback
 
     private void MientrasCaido()
     {
-        float queda = Desangra - (float)(PhotonNetwork.Time - caidoDesde);
         int yo = PhotonNetwork.LocalPlayer.ActorNumber;
         if (reviviendo.TryGetValue(yo, out var r))
         {
+            // Mientras lo reviven no se desangra: la cuenta se frena con el reloj de la red (con Time.deltaTime se
+            // seguía desangrando si el juego iba a pocos cuadros, por ejemplo con la ventana en segundo plano).
+            if (frenadoDesde < 0) frenadoDesde = PhotonNetwork.Time;
             Player quien = PhotonNetwork.CurrentRoom != null ? PhotonNetwork.CurrentRoom.GetPlayer(r.quien) : null;
             float avance = Mathf.Clamp01((float)(PhotonNetwork.Time - r.desde) / TardaEnRevivir);
             MatchHud.SetAction(L10n.T("gameplay.down.reviving_you_fmt", quien != null ? quien.NickName : "?"), avance);
-            caidoDesde += Time.deltaTime; // mientras lo reviven no se desangra (al cortarse se avisa la cuenta nueva)
             return;
         }
+        SeguirDesangrando();
+        float queda = Desangra - (float)(PhotonNetwork.Time - caidoDesde);
         MatchHud.SetAction(L10n.T("gameplay.down.bleeding_fmt", Mathf.Max(0, Mathf.CeilToInt(queda))), Mathf.Clamp01(queda / Desangra));
         if (queda <= 0f) Morir(); // CA2
+    }
+
+    // CA2: se cortó el revivir: la cuenta sigue desde donde se frenó (lo que duró el revivir no cuenta).
+    private void SeguirDesangrando()
+    {
+        if (frenadoDesde < 0) return;
+        caidoDesde += PhotonNetwork.Time - frenadoDesde;
+        frenadoDesde = -1;
     }
 
     // CA2: se terminó el tiempo: muere de verdad (los demás lo ven caer como siempre, JugadorEnRed).
@@ -451,7 +465,11 @@ public class CaidaEnInvasion : MonoBehaviourPunCallbacks, IOnEventCallback
             else if (reviviendo.TryGetValue(actor, out var r) && r.quien == ev.Sender)
             {
                 reviviendo.Remove(actor);
-                if (PhotonNetwork.LocalPlayer != null && actor == PhotonNetwork.LocalPlayer.ActorNumber && estado == Estado.Caido) Publicar();
+                if (PhotonNetwork.LocalPlayer != null && actor == PhotonNetwork.LocalPlayer.ActorNumber && estado == Estado.Caido)
+                {
+                    SeguirDesangrando(); // (la cuenta nueva, para los demás)
+                    Publicar();
+                }
             }
         }
         else if (ev.Code == EvRevivido && ev.CustomData is int a && PhotonNetwork.LocalPlayer != null && a == PhotonNetwork.LocalPlayer.ActorNumber)
