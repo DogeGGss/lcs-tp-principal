@@ -1,0 +1,64 @@
+US-350_Perfil_Personalizacion_fr · idioma fr · 2026-11-15 14:52:03
+Resultado: todo traducido y todos los textos entran
+Ya pasaba en español (no cuenta para este idioma):
+  (cortado) Necochea · Émeraude  [MenuRiftwalker/MenuRiftwalkerCanvas/Contenido/Pantallas/Perfil/Personalizacion/Scroll/Contenido/Necochea · Esmeralda/Nombre]
+  (cortado) Blindage fragmenté  [MenuRiftwalker/MenuRiftwalkerCanvas/Contenido/Pantallas/Perfil/Personalizacion/Scroll/Contenido/Blindaje fragmentado/Nombre]
+Textos en pantalla:
+  Monnaie payante
+  Bastion d'encre
+  Dans l'ombre
+  Riftwalker
+  —
+  Collection 5 / 233
+  1/71
+  Contrôleur
+  KDA*
+  Verrouillé
+  Évolue en recherche de partie
+  +
+  Parties
+  0
+  1
+  Changer de nom
+  Pouls de points
+  Aperçu
+  Soledad électrique
+  Victoires
+  Bannières
+  Mort-vivant
+  Necochea · Émeraude
+  1.000
+  Avatars
+  Statistiques
+  Équipé
+  Cœur du Rift
+  Goya · Cramoisi
+  Fiche du joueur
+  Marée céleste
+  Personnalisation
+  Gagnés en jouant
+  Avatar · De départ · Icône
+  Niveau du joueur
+  2/20
+  Silence d'encre
+  Garde d'acier
+  Sans titre
+  Profil
+  Afficher les verrouillés
+  Blindage fragmenté
+  1/19
+  Ombre 8 bits
+  Armes
+  Unzué · Ambre
+  Emotes
+  Vague record
+  Orbite florale
+  Cadres
+  Compte
+  Ouvrent des capsules
+  Titres
+  « Menu
+  Soledad · Céleste
+  Fureur de couleur
+  Service de nuit
+  0/104

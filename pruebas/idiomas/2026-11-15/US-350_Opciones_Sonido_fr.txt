@@ -1,0 +1,22 @@
+US-350_Opciones_Sonido_fr · idioma fr · 2026-11-15 14:49:37
+Resultado: todo traducido y todos los textos entran
+Textos en pantalla:
+  100 %
+  Son
+  Effets
+  Réinitialiser
+  Musique
+  Appliquer
+  « Menu
+  Q
+  Langue
+  Options
+  Paramètres du jeu
+  E
+  Interface
+  Déplacer un réglage joue un extrait. L'enregistrement se fait avec Appliquer.
+  Volume
+  Général
+  Commandes
+  Viseur
+  Graphismes

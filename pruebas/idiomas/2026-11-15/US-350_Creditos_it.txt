@@ -1,0 +1,60 @@
+US-350_Creditos_it · idioma it · 2026-11-15 14:45:31
+Resultado: todo traducido y todos los textos entran
+Textos en pantalla:
+  Non molto tempo fa, in un'università molto, molto vicina…
+  Modelli delle armi
+  Nicolás Gauna Franco Barreto Nahuel Velázquez Ulises Fonseca
+  Jeremy Tribby · SIL Open Font License 1.1
+  Risorse esterne
+  Ai docenti, a chi ha provato le build rotte e a te, per aver giocato.
+  Scenario sci-fi
+  Lucas Huber Nicolás Gauna Luka Gómez
+  · · ·
+  Spazio
+  Coltello
+  Ulises Fonseca
+  JetBrains · SIL Open Font License 1.1
+  David Ramos
+  Documentazione e backlog
+  Ulises Fonseca Nahuel Velázquez
+  Suono di ricomparsa
+  Accelera
+  Progetto pratico
+  JetBrains Mono
+  Barlow
+  Scrum Master
+  Audio e musica
+  Texture
+  The Free Firearm Sound Library, di Ben Jaszczak, Brian Nelson, Kevin Heras e Matthew Nanney (CC0)
+  Esc
+  Lucas Huber David Ramos
+  Interfaccia (UI/UX)
+  Motore e strumenti
+  Personaggio e animazioni
+  Uno shooter tattico, un deathmatch e un'invasione aliena all'università. Fatto da sette studenti in dieci settimane, con più caffè che ore di sonno.
+  Teleport, di fins (CC0, Freesound e OpenGameArt)
+  Ricariche
+  Cartoon Texture Pack
+  Caratteri
+  Scoppio della flash
+  Progetto pratico "Último Tren a Retiro" Laboratorio di Costruzione del Software Corso universitario tecnico in Informatica
+  Sviluppo e meccaniche
+  action track 4, A.I. fight & jumping cyborg, mix di glitchart: action track 4, di Alexandr Zhelanov (CC BY 3.0), e A.I. fight & jumping cyborg, di tricksntraps (CC0, OpenGameArt)
+  Indietro
+  Musica della modalità Deathmatch
+  Arte 2D/3D e level design
+  Mixamo, di Adobe
+  Spari
+  Repository e Git
+  Crediti
+  Flashbang explode, di MadPanCake (CC BY-NC 4.0, Freesound)
+  Grazie per aver giocato
+  Sci-Fi Modular Gun Pack, di Quaternius (CC0)
+  Sci-fi Weapon - Game Ready Knife - FREE SAMPLE, di AF Creations (Unity Asset Store)
+  Gun reload sounds, di SpringySpringo, e Shotgun Reload Sound Effects, di zer0_sol (CC0, OpenGameArt)
+  Project Riftwalker
+  Luka Gómez Franco Barreto
+  Test e QA
+  Unity 6 · Universal Render Pipeline ProBuilder · TextMesh Pro · Input System · AI Navigation Photon PUN 2 (multigiocatore) GitHub e GitHub Projects
+  3D Scifi Kit Starter Kit, di Creepy Cat (Unity Asset Store)
+  Ringraziamenti

@@ -1,0 +1,45 @@
+US-350_Tienda_Tienda_it · idioma it · 2026-11-15 14:47:44
+Resultado: todo traducido y todos los textos entran
+Ya pasaba en español (no cuenta para este idioma):
+  (cortado) El Gran Capitán · Prossima stazione  [MenuRiftwalker/MenuRiftwalkerCanvas/Contenido/Pantallas/TiendaDirecta/Ofertas/El Gran Capitán · Prossima stazione/Nombre]
+  (cortado) La Porteña · Mappa della metro  [MenuRiftwalker/MenuRiftwalkerCanvas/Contenido/Pantallas/TiendaDirecta/Ofertas/La Porteña · Mappa della metro/Nombre]
+  (cortado) Belgrano Sur · Drago Abissale  [MenuRiftwalker/MenuRiftwalkerCanvas/Contenido/Pantallas/TiendaDirecta/Ofertas/Belgrano Sur · Drago Abissale/Nombre]
+Textos en pantalla:
+  400
+  Ti portiamo alla scheda Cristalli.
+  Si guadagnano giocando
+  Inchiostro silente
+  Belgrano Sur · Drago Abissale
+  Offerte del giorno
+  Belgrano Sur
+  El Gran Capitán · Prossima stazione
+  Avatar · Raro
+  Ricarico…
+  0
+  Urquiza
+  La Porteña · Mappa della metro
+  El Gran Capitán
+  +
+  Urquiza · Brace
+  Skin d'arma · Epico
+  Titolo · Comune
+  Ti mancano 3.200 cristalli
+  Biglietto da visita · Epico
+  Ombra a 8 bit
+  « Menu
+  Valuta a pagamento
+  La Porteña
+  Nuove offerte tra 9 h 12 min
+  Skin d'arma · Leggendario
+  Cornice · Epico
+  3.200
+  Negozio
+  Senza fortuna
+  Pass battaglia
+  1.600
+  Cristalli
+  Capsule
+  Skin d'arma · Comune
+  Il cosmetico che scegli, senza fortuna. Acquisti simulati: non si paga denaro reale.
+  Aprono capsule
+  800

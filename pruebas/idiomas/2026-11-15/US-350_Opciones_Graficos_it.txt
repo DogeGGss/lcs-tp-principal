@@ -1,0 +1,41 @@
+US-350_Opciones_Graficos_it · idioma it · 2026-11-15 14:49:45
+Resultado: todo traducido y todos los textos entran
+Textos en pantalla:
+  Grafica
+  « Menu
+  Nascondi
+  VSync
+  Immagine
+  >
+  Schermo
+  Q
+  Limite FPS
+  Mirino
+  30
+  Risoluzione
+  No
+  Qualità
+  Finestra
+  Impostazioni di gioco
+  Ripristina
+  Campo visivo
+  Mostra
+  FPS e ping
+  Le modifiche si usano premendo Applica.
+  Senza limite
+  144
+  Comandi
+  60
+  Schermo intero
+  Sì
+  Senza bordi
+  Applica
+  E
+  Media
+  Modalità
+  Audio
+  80°
+  <
+  Opzioni
+  1920 x 1080 · 16:9
+  Lingua

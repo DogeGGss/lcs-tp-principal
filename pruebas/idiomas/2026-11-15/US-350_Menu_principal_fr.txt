@@ -1,0 +1,29 @@
+US-350_Menu_principal_fr · idioma fr · 2026-11-15 14:49:16
+Resultado: todo traducido y todos los textos entran
+Textos en pantalla:
+  Gagnés en jouant
+  Note pour le PO
+  01 / Capsules · Passe · Cristaux
+  Succès
+  Riftwalker
+  Quai 01 · Point de rencontre
+  Monnaie payante
+  Champ d'entraînement
+  +
+  Terrains d'essai :
+  »
+  Avant de jouer
+  Ouvrent des capsules
+  Tu as 0 billets à ouvrir
+  Project
+  0
+  Crédits
+  Quitter
+  i
+  Tactique · Deathmatch · Invasion
+  Sans titre
+  Options
+  v0.4.0-exp.2
+  Donne ton avis
+  Jouer
+  Boutique

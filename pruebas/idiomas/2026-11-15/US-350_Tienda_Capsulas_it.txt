@@ -1,0 +1,42 @@
+US-350_Tienda_Capsulas_it · idioma it · 2026-11-15 14:47:45
+Resultado: todo traducido y todos los textos entran
+Textos en pantalla:
+  900 cristalli
+  per 10 biglietti · 10 % in meno
+  Capsule
+  Stazione del Rift
+  Epico o meglio garantito tra 10 capsule
+  per 1 biglietto
+  0
+  Pass battaglia
+  100 cristalli
+  +
+  Aprono capsule
+  Raro
+  Un biglietto, una capsula. Ognuna contiene un avatar, un banner, un titolo o una cornice.
+  Niente cristalli? Compra cristalli »
+  Simulazione di business: nessun pagamento reale. I biglietti si ottengono giocando (crediti) o con i cristalli del negozio. Le probabilità sono sempre visibili.
+  Comune
+  Vedi contenuto della capsula
+  30 %
+  Ultimi premi
+  Cristalli
+  Non hai ancora aperto nessuna capsula.
+  Riscatta
+  Negozio
+  « Menu
+  Probabilità
+  Ottieni biglietti
+  3 %
+  CAPSULA DEL RIFT · Nº 001
+  Si guadagnano giocando
+  600 crediti
+  Epico
+  55 %
+  Apri 1 · 1 biglietto
+  Apri 5 · 5 biglietti
+  • IN ATTESA
+  12 %
+  RW · RIFT
+  Valuta a pagamento
+  Leggendario

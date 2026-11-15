@@ -1,0 +1,79 @@
+US-350_Invasion_cartas_it · idioma it · 2026-11-15 14:48:48
+Resultado: todo traducido y todos los textos entran
+Ya pasaba en español (no cuenta para este idioma):
+  (cortado) La Porteña  [HUDCombate/HUDCanvas/Anden/Espacio2/Nombre]
+Textos en pantalla:
+  2
+  16
+  6
+  Universidad Nacional de General Sarmiento
+  TORT. - MALVINAS ARGENTINAS - ESTAC. MORENO - SAN MIGUEL LÍNEA 315/440
+  Record
+  SEGURIDAD
+  Módulo 7 Ingreso peatonal SECTOR A del Estacionamiento
+  2b
+  1
+  440
+  3
+  Arma
+  UNGS
+  5
+  52
+  4
+  IDH instituto de desarrollo humano
+  IDEI instituto de industria
+  —
+  B PAZ T.ALTAS
+  NUNCA MÁS
+  1 invasore su 5 lascia cadere un caricatore quando muore.
+  7a
+  Lanzagranadas
+  Comune
+  H Mappa
+  Quando un invasore ti colpisce, il tuo prossimo colpo aggiunge 5 volte la vita persa.
+  ICI instituto de ciencias
+  Vuoto
+  8
+  Hai 0 pti
+  Juan M. Gutiérrez
+  Coltello
+  INFORMES
+  100
+  / 60
+  0:16
+  LP GRAND BOURG
+  Ondata 1
+  9
+  ICO instituto del conurbano
+  COMPAÑEROS DETENIDOS DESAPARECIDOS EN CAMPO DE MAYO
+  Prossima ondata
+  SOY DE POLVORINES NI DE BOCA NI DE RIVER
+  ENTRADA
+  Spazzino
+  Scegline una
+  LPGB
+  R · Rilancia · 150 pti
+  La Porteña
+  Juan María Gutiérrez 1150
+  Va nel tuo spazio arma principale, che è vuoto. Arriva con le munizioni piene.
+  ∞
+  10
+  Juan Maza
+  aulas
+  Arma principale
+  Rende con: Tutte
+  7b
+  Pti
+  Posto di rifornimento
+  Rabbia
+  0
+  comedor
+  7
+  Le tue carte
+  Normale
+  SUM
+  Rara
+  20
+  Prossima ondata tra
+  di 10
+  Le tue carte 0 / 8

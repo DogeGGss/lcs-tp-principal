@@ -1,0 +1,81 @@
+US-350_Invasion_resultado_fr · idioma fr · 2026-11-15 14:48:43
+Resultado: todo traducido y todos los textos entran
+Ya pasaba en español (no cuenta para este idioma):
+  (cortado) La Porteña  [HUDCombate/HUDCanvas/Anden/Espacio2/Nombre]
+Textos en pantalla:
+  1
+  0
+  IDH instituto de desarrollo humano
+  LP GRAND BOURG
+  Tu es mort
+  6
+  sur 10
+  Entrée · Rejouer Échap · Retour au menu
+  52
+  TORT. - MALVINAS ARGENTINAS - ESTAC. MORENO - SAN MIGUEL LÍNEA 315/440
+  7a
+  aulas
+  Temps
+  Éliminations
+  UNGS
+  5
+  ICO instituto del conurbano
+  B PAZ T.ALTAS
+  0:18
+  Vague 1
+  INFORMES
+  IDEI instituto de industria
+  2
+  3
+  Juan María Gutiérrez 1150
+  2b
+  COMPAÑEROS DETENIDOS DESAPARECIDOS EN CAMPO DE MAYO
+  Tu es tombé à la vague 1 sur 10
+  Universidad Nacional de General Sarmiento
+  4
+  À la tête
+  ICI instituto de ciencias
+  440
+  H Carte
+  Passe de combat · Saison 1
+  7b
+  0:02
+  Record
+  NUNCA MÁS
+  Retour au menu
+  8
+  Vide
+  10
+  ∞
+  Normal
+  100
+  Tu n'as pas sauvé le monde
+  Juan Maza
+  20
+  9
+  0 / 1.000
+  Vague
+  comedor
+  SOY DE POLVORINES NI DE BOCA NI DE RIVER
+  7
+  Couteau
+  SUM
+  La Porteña
+  Niveau 0
+  ENTRADA
+  +0 XP
+  SEGURIDAD
+  Record en Normal : vague 1
+  Prochaine vague
+  Fin de la partie · Normal
+  Tes cartes
+  Prochaine vague dans
+  18
+  Juan M. Gutiérrez
+  LPGB
+  —
+  / 60
+  Pts
+  Rejouer
+  Módulo 7 Ingreso peatonal SECTOR A del Estacionamiento
+  Points

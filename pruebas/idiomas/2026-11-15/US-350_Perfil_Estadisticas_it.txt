@@ -1,0 +1,57 @@
+US-350_Perfil_Estadisticas_it · idioma it · 2026-11-15 14:52:08
+Resultado: todo traducido y todos los textos entran
+Textos en pantalla:
+  Assist
+  Ore giocate
+  Aprono capsule
+  Valuta a pagamento
+  Si guadagnano giocando
+  Non hai ancora finito nessuna partita di Tattico o Deathmatch.
+  0 min
+  Riftwalker
+  Partite
+  Invasori eliminati
+  —
+  0
+  Partite finite 0
+  In cooperativa
+  Profilo
+  — · 1 · —
+  1.000
+  KDA*
+  Non hai ancora finito nessuna partita di Deathmatch.
+  Tattico
+  Cambia nome
+  Mondo salvato
+  * KDA = (eliminazioni + assist) ÷ morti; senza morti, ÷ 1. Assist: hai danneggiato un avversario che un altro ha eliminato nei 10 s successivi. Contano le partite finite.
+  Varia nella ricerca partita
+  Ondata record
+  Arma preferita
+  1
+  Boss sconfitti
+  +
+  Nessun dato
+  Record F · N · D
+  Carta preferita
+  Invasione
+  % di vittorie
+  Statistiche
+  4
+  Eliminazioni
+  Capotreno
+  Account
+  Deathmatch
+  Scheda del giocatore
+  Livello giocatore
+  Non hai ancora finito nessuna partita di Tattico.
+  Personalizzazione
+  « Menu
+  Vittorie
+  Emote
+  Minigioco: comete
+  Posti caricati
+  Generale · Tattico e Deathmatch
+  Colpi alla testa
+  Non hai ancora sparato a nessuna cometa.
+  Nessun titolo
+  Morti

@@ -1,0 +1,62 @@
+US-350_Perfil_Emotes_fr · idioma fr · 2026-11-15 14:52:03
+Resultado: todo traducido y todos los textos entran
+Textos en pantalla:
+  Monnaie payante
+  Rare
+  Riftwalker
+  Verrouillé
+  —
+  Sur la roue 0 / 4
+  Shuffle
+  Contrôleur
+  Emplacement 4 · Gauche
+  KDA*
+  Round 1
+  Évolue en recherche de partie
+  Commun
+  +
+  Twist
+  Parties
+  Légendaire
+  0
+  Survole une danse pour la voir.
+  Choisis un emplacement de la roue, puis la danse qui y va. Maintiens T en partie pour ouvrir la roue.
+  Non équipé
+  Flair
+  1
+  Changer de nom
+  Unzué
+  Victoires
+  1.000
+  Le Classique
+  Statistiques
+  Fiche du joueur
+  Épique
+  Personnalisation
+  Gagnés en jouant
+  Petit pas
+  Emplacement 2 · Droite
+  Niveau du joueur
+  Vide
+  Emplacement 3 · Bas
+  Clownerie
+  >
+  Floss
+  Sans titre
+  Profil
+  Old School
+  <
+  Hip Hop
+  Emotes
+  Vague record
+  Tour Soul
+  Compte
+  Salut
+  Rumba
+  Aperçu
+  Twerk
+  Ouvrent des capsules
+  De départ
+  Freestyle
+  « Menu
+  Emplacement 1 · Haut

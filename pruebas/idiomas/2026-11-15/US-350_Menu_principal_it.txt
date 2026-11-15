@@ -1,0 +1,29 @@
+US-350_Menu_principal_it · idioma it · 2026-11-15 14:49:18
+Resultado: todo traducido y todos los textos entran
+Textos en pantalla:
+  0
+  Hai 0 biglietti da aprire
+  Prima di giocare
+  Riftwalker
+  Nota per il PO
+  Dacci la tua opinione
+  Valuta a pagamento
+  »
+  Campi di prova:
+  Opzioni
+  Campo di allenamento
+  01 / Capsule · Pass · Cristalli
+  i
+  Obiettivi
+  Aprono capsule
+  v0.4.0-exp.2
+  Crediti
+  Negozio
+  Nessun titolo
+  Si guadagnano giocando
+  Gioca
+  +
+  Esci
+  Binario 01 · Punto d'incontro
+  Project
+  Tattico · Deathmatch · Invasione

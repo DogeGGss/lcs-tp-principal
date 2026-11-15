@@ -1,0 +1,50 @@
+US-350_Seleccion_de_modo_pt-BR · idioma pt-BR · 2026-11-15 17:40:04
+Resultado: todo traducido y todos los textos entran
+Textos en pantalla:
+  Escolha o modo
+  25 baixas
+  Deathmatch
+  Como Riftwalker · sua região · mesma versão (v0.5.0-exp.1)
+  4 vs 4
+  Plataforma 1 · Online
+  Plataforma 3
+  Tático · com jogadores da sua região
+  Plataforma 3 · Online
+  75 % de vida e dano e menos inimigos. Você regenera em 3 s.
+  Criar sala
+  Menu principal
+  Procurar partida
+  Difícil
+  Um time planta o dispositivo em A ou B e o outro o defende. Sem reaparecimento: se você morrer, assiste a um companheiro até a rodada seguinte.
+  Jogar sozinho
+  8 min
+  125 % de vida, 150 % de dano e mais inimigos. +25 % de pontos.
+  Online
+  Todos contra todos. Você reaparece em 3 s.
+  Até 8
+  Todos contra todos. Você escolhe suas armas de graça, cada baixa te cura 50 e você reaparece em 3 s longe dos rivais.
+  Resista à invasão na universidade.
+  Tático
+  Sala privada · com amigos
+  Primeiro a 7
+  Como foi pensado. Você regenera em 4 s.
+  Project Riftwalker
+  10 ondas
+  Compra 20 s
+  Esc
+  Plante ou desative o dispositivo. Sem reaparecimento.
+  Plataforma 1
+  Recorde em Normal: você ainda não jogou
+  Troca de lado na 6
+  Armas grátis
+  Invasão
+  Plataforma 2 · Online
+  Normal
+  Entrar com código
+  De 1 a 4 jogadores contra as ondas da universidade. A cada 10 ondas chega o Chefe; se o derrubarem, podem continuar para bater recorde.
+  Fácil
+  Invasão · com jogadores da sua região
+  1 a 4 jogadores
+  Plataforma 2
+  0:18
+  Deathmatch · com jogadores da sua região

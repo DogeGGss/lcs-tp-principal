@@ -1,0 +1,69 @@
+US-350_Opciones_Controles_it · idioma it · 2026-11-15 14:49:43
+Resultado: todo traducido y todos los textos entran
+Textos en pantalla:
+  Ripristina
+  Lascia arma
+  Grafica
+  Sensibilità
+  1
+  Mirando
+  Arma principale
+  Applica
+  « Menu
+  2
+  Emote
+  Granate
+  ×1,00
+  Inverti asse Y
+  Clic sin.
+  Dispositivo
+  Q
+  1,5
+  Coltello
+  T
+  Mirino
+  S
+  Agacharse
+  Shift
+  Arma secondaria
+  B
+  No
+  5
+  Avanti
+  Ricarica
+  Mappa completa
+  Spazio
+  Impostazioni di gioco
+  Negozio
+  W
+  Mouse
+  Indietro
+  Mirare
+  Tasti
+  3
+  Comandi
+  Carte (Invasione)
+  4
+  G
+  R
+  D
+  A
+  C
+  Sì
+  Abilità
+  E
+  Audio
+  Sparare
+  Pausa
+  Ctrl
+  Clic des.
+  H
+  Opzioni
+  Correre / camminare piano
+  Fai clic su un'azione e premi il nuovo tasto. Esc annulla.
+  Salta
+  Sinistra
+  Esc
+  Piazza / disinnesca
+  Lingua
+  Destra

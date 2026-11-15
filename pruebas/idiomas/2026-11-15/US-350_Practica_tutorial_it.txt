@@ -1,0 +1,59 @@
+US-350_Practica_tutorial_it · idioma it · 2026-11-15 14:52:27
+Resultado: todo traducido y todos los textos entran
+Ya pasaba en español (no cuenta para este idioma):
+  (cortado) La Porteña  [HUDCombate/HUDCanvas/Anden/Espacio2/Nombre]
+Textos en pantalla:
+  30 m
+  Avvicinati per vedere l'obiettivo
+  10 m
+  REINICIAR
+  50 m
+  · Correre (in Tattico, camminare piano)
+  DEATHMATCH
+  Ctrl
+  35 m
+  A
+  INVASIONE
+  100
+  25 m
+  Schegge ×1
+  · Guardare
+  Tutorial · Passo 1 di 6
+  QUIETOS
+  MAPPA DI ALLENAMENTO
+  15 m
+  Mitre
+  Spazio
+  4
+  / ∞
+  45 m
+  ZONA DI TIRO
+  W
+  40 m
+  IN MOVIMENTO
+  20 m
+  · Salta
+  Quietos · Eliminazioni: 0 · Alla testa: 0
+  · Agacharse
+  DISTANCIAS
+  REAZIONE
+  Coltello
+  Shift
+  · Muoversi
+  3
+  TUTORIAL
+  La Porteña
+  5 m
+  TATTICO
+  Scegli una modalità: guarda un pulsante e premi E , oppure sparagli
+  Muoversi
+  LINEA DI TIRO
+  2
+  30
+  Tab Salta passo Tieni premuto Tab Salta il tutorial
+  D
+  CAMPO DI ALLENAMENTO
+  Mouse
+  1
+  H Mappa
+  S

@@ -1,0 +1,81 @@
+US-350_Invasion_resultado_it · idioma it · 2026-11-15 14:48:54
+Resultado: todo traducido y todos los textos entran
+Ya pasaba en español (no cuenta para este idioma):
+  (cortado) La Porteña  [HUDCombate/HUDCanvas/Anden/Espacio2/Nombre]
+Textos en pantalla:
+  UNGS
+  5
+  4
+  Le tue carte
+  0
+  Sei morto
+  Juan Maza
+  6
+  Normale
+  1
+  ICI instituto de ciencias
+  Sei caduto all'ondata 1 di 10
+  IDEI instituto de industria
+  SEGURIDAD
+  Record
+  2
+  INFORMES
+  440
+  2b
+  Coltello
+  52
+  TORT. - MALVINAS ARGENTINAS - ESTAC. MORENO - SAN MIGUEL LÍNEA 315/440
+  Prossima ondata tra
+  La Porteña
+  ENTRADA
+  8
+  aulas
+  Tempo
+  Pti
+  COMPAÑEROS DETENIDOS DESAPARECIDOS EN CAMPO DE MAYO
+  7b
+  20
+  Universidad Nacional de General Sarmiento
+  Gioca ancora
+  ∞
+  ICO instituto del conurbano
+  Vuoto
+  Invio · Gioca ancora Esc · Torna al menu
+  —
+  IDH instituto de desarrollo humano
+  +0 XP
+  0:02
+  10
+  NUNCA MÁS
+  B PAZ T.ALTAS
+  9
+  7
+  SUM
+  Non hai salvato il mondo
+  0 / 1.000
+  / 60
+  Ondata 1
+  3
+  7a
+  18
+  Torna al menu
+  Ondata
+  comedor
+  di 10
+  Juan María Gutiérrez 1150
+  Livello 0
+  H Mappa
+  100
+  Prossima ondata
+  Punti
+  Record in Normale: ondata 1
+  LP GRAND BOURG
+  Juan M. Gutiérrez
+  LPGB
+  Alla testa
+  SOY DE POLVORINES NI DE BOCA NI DE RIVER
+  Pass battaglia · Stagione 1
+  Eliminazioni
+  Fine partita · Normale
+  0:18
+  Módulo 7 Ingreso peatonal SECTOR A del Estacionamiento

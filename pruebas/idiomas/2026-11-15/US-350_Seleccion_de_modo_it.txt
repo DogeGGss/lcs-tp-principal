@@ -1,0 +1,50 @@
+US-350_Seleccion_de_modo_it · idioma it · 2026-11-15 17:40:11
+Resultado: todo traducido y todos los textos entran
+Textos en pantalla:
+  Come Riftwalker · la tua regione · stessa versione (v0.5.0-exp.1)
+  25 elim.
+  Binario 2 · Online
+  Invasione
+  4 vs 4
+  Scegli la modalità
+  Binario 2
+  Tutti contro tutti. Scegli le tue armi gratis, ogni eliminazione ti cura di 50 e ricompari dopo 3 s lontano dagli avversari.
+  Deathmatch
+  Invasione · con giocatori della tua regione
+  Online
+  10 ondate
+  Stanza privata · con amici
+  Tutti contro tutti. Ricompari dopo 3 s.
+  Cerca partita
+  Binario 3 · Online
+  Normale
+  Acquisto 20 s
+  Piazza o disinnesca il dispositivo. Senza ricomparsa.
+  0:10
+  Facile
+  Cambio di lato al 6
+  Difficile
+  Esc
+  Armi gratis
+  Crea stanza
+  Primo a 7
+  Entra con codice
+  Fino a 8
+  Gioca da solo
+  Tattico
+  Binario 1
+  Binario 3
+  75 % di vita e danni e meno nemici. Rigeneri dopo 3 s.
+  Tattico · con giocatori della tua regione
+  Una squadra piazza il dispositivo in A o B e l'altra lo difende. Senza ricomparsa: se muori, guardi un compagno fino al round successivo.
+  Menu principale
+  Binario 1 · Online
+  125 % di vita, 150 % di danni e più nemici. +25 % di punti.
+  Deathmatch · con giocatori della tua regione
+  Resisti all'invasione all'università.
+  Record in Normale: non hai ancora giocato
+  Project Riftwalker
+  Da 1 a 4 giocatori
+  Come è stato pensato. Rigeneri dopo 4 s.
+  8 min
+  Da 1 a 4 giocatori contro le ondate dell'università. Ogni 10 ondate arriva il Boss; se lo abbattete, potete continuare per fare record.

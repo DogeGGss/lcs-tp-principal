@@ -1,0 +1,41 @@
+US-350_Opciones_Graficos_fr · idioma fr · 2026-11-15 14:49:38
+Resultado: todo traducido y todos los textos entran
+Textos en pantalla:
+  Fenêtre
+  Écran
+  Masquer
+  Oui
+  >
+  FPS et ping
+  Champ de vision
+  Mode
+  VSync
+  Illimité
+  « Menu
+  <
+  Q
+  Limite de FPS
+  144
+  Moyenne
+  Langue
+  Résolution
+  Options
+  Paramètres du jeu
+  Graphismes
+  Appliquer
+  1920 x 1080 · 16:9
+  80°
+  E
+  Qualité
+  Son
+  Image
+  60
+  Réinitialiser
+  Plein écran
+  Les changements s'appliquent avec Appliquer.
+  Non
+  Sans bordure
+  Commandes
+  Viseur
+  30
+  Afficher

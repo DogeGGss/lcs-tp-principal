@@ -1,0 +1,30 @@
+US-350_CA1_Selector_de_idioma · idioma es · 2026-11-15 14:45:14
+Referencia en español
+Textos en pantalla:
+  El cambio se aplica al instante y se comparte con el launcher.
+  Idioma del juego
+  Português (Brasil)
+  • Movimiento: caminar, correr, saltar y agacharse, con gravedad, colisiones y reaparición si caés del mapa. • Armas: pistola La Porteña, fusil Mitre y cuchillo. Daño por zona (cabeza, cuerpo y piernas) y por distancia, dispersión, retroceso, recarga y marcas de bala en las paredes. • Tienda: en la fase de compra y dentro de la zona de compra se puede comprar, vender y deshacer compras. Los escudos protegen de verdad. • HUD: vida, escudo, arma y munición, mira y marcador de impacto. La habilidad muestra su tiempo de recarga. • Menús: principal con música, opciones de video, sonido y controles, nombre de jugador, créditos y pausa (seguir, reiniciar, opciones y salir).
+  Nota para el PO · Sprint 1
+  Entendido
+  Ajustes del juego
+  Idioma
+  Enter o Esc Cerrar
+  Gráficos
+  Lo que todavía falta
+  Italiano
+  Sonido
+  Esta es la entrega del Sprint 1 de Project Riftwalker. Para que sepas qué probar, acá va lo que ya funciona y lo que todavía falta implementar.
+  « Menú
+  Español
+  Q
+  Lo que funciona
+  E
+  • Resto de las armas: la tienda muestra todas, pero por ahora solo se usan la pistola La Porteña, el Mitre y el cuchillo. Las demás se pueden comprar, pero todavía no se pueden usar. • Granadas: se compran, pero todavía no se pueden tirar. • Habilidad: el Silbato carga y se ve en el HUD, pero todavía no tiene efecto. • Modos y multijugador: Táctico y Deathmatch muestran la sala, pero falta la conexión online. Zombie todavía no tiene zombis: Jugar abre el mapa de la universidad para recorrerlo con las armas, la tienda y el HUD. • Logros: la pantalla está, pero todavía no tiene logros. • Mapas y rivales: Pruebas y Pruebas 2 abren dos mapas de prueba, temporales, para mostrar la jugabilidad. En Pruebas aparecen enemigos que te persiguen y se pueden matar, pero todavía no atacan.
+  English
+  Controles
+  WASD Mover Shift Correr Espacio Saltar Ctrl Agacharse Clic izq. Disparar Clic der. Apuntar R Recargar 1 / 2 / 3 Mitre / pistola / cuchillo B Tienda Q Habilidad Esc Pausa (se cambian en Opciones, pestaña Controles)
+  Opciones
+  Hola, Amin
+  Mira
+  Français

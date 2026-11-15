@@ -1,0 +1,61 @@
+US-350_Tienda_Pase_fr · idioma fr · 2026-11-15 14:47:38
+Resultado: todo traducido y todos los textos entran
+Textos en pantalla:
+  Crédits
+  Avec le passe
+  Passe
+  Défis
+  Acheter le passe · 950
+  Cristaux
+  2
+  Boutique
+  4
+  Passe de combat
+  ‹
+  Skin d'arme
+  Encore 50 jours · 40 niveaux · 100 cristaux gratuits, 550 avec le passe
+  0
+  Saison 1
+  Dernière vague
+  Ouvrent des capsules
+  Titre
+  Capsules
+  Page 1 / 4 · Niveaux 1–10
+  Cadre
+  Roca
+  Niveau 1 · Gratuit
+  Saison
+  10
+  Gratuit
+  100 cristaux
+  1
+  ›
+  Avatar
+  +
+  Récompenses
+  Se débloque au niveau 1.
+  6
+  +500
+  Gagnés en jouant
+  8
+  Niveau 6
+  50 cristaux
+  9
+  Tout récupérer
+  Roca · Rift
+  Niveau 1
+  Avatar · Commun
+  « Menu
+  +50
+  7
+  500 crédits
+  5
+  Monnaie payante
+  Carte de visite
+  0 / 1.000
+  3
+  Entre les dimensions
+  Goya · Cramoisi
+  Voile émeraude
+  Niveau 0
+  +100

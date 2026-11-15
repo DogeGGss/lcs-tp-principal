@@ -1,0 +1,57 @@
+US-350_Perfil_Estadisticas_pt-BR · idioma pt-BR · 2026-11-15 14:51:56
+Resultado: todo traducido y todos los textos entran
+Textos en pantalla:
+  — · 1 · —
+  Nível de jogador
+  0
+  Você ainda não terminou nenhuma partida de Tático ou Deathmatch.
+  Partidas
+  Vitórias
+  Sem dados
+  Riftwalker
+  Chefes derrotados
+  Abrem cápsulas
+  Mundo salvo
+  Onda recorde
+  Você ainda não atirou em nenhum cometa.
+  1
+  4
+  Emotes
+  * KDA = (baixas + assistências) ÷ mortes; sem mortes, ÷ 1. Assistência: você causou dano a um rival que outro eliminou nos 10 s seguintes. Contam as partidas terminadas.
+  % de vitórias
+  Sobe e desce na busca de partida
+  Arma favorita
+  Perfil
+  Geral · Tático e Deathmatch
+  —
+  KDA*
+  Ganhos jogando
+  Minijogo: cometas
+  Personalização
+  +
+  Sem título
+  Invasão
+  Registro do jogador
+  Tiros na cabeça
+  Tático
+  Mudar nome
+  « Menu
+  Mortes
+  Guarda
+  Conta
+  Partidas terminadas 0
+  Invasores eliminados
+  1.000
+  Recorde F · N · D
+  Assistências
+  Estatísticas
+  Você ainda não terminou nenhuma partida de Tático.
+  Você ainda não terminou nenhuma partida de Deathmatch.
+  Moeda paga
+  0 min
+  Baixas
+  No cooperativo
+  Horas jogadas
+  Deathmatch
+  Postos carregados
+  Carta favorita

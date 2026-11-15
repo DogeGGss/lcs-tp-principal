@@ -1,0 +1,90 @@
+US-350_Practica_tienda_fr · idioma fr · 2026-11-15 14:52:24
+Resultado: todo traducido y todos los textos entran
+Ya pasaba en español (no cuenta para este idioma):
+  (cortado) La Porteña  [HUDCombate/HUDCanvas/Anden/Espacio2/Nombre]
+Textos en pantalla:
+  Mitre
+  Espace
+  · Agacharse
+  Boutique
+  Approche-toi pour voir l'objectif
+  25 m
+  5 m
+  Catégorie
+  Champ d'entraînement
+  4
+  RÉACTION
+  2
+  Éclats 1/1
+  30
+  D
+  10 m
+  1
+  Grenades
+  La Porteña
+  Shift
+  Couteau
+  / ∞
+  · Regarder
+  40 m
+  Ctrl
+  Quietos · Éliminations : 0 · À la tête : 0
+  REINICIAR
+  45 m
+  Fusils à pompe
+  ›
+  Tout gratuit
+  Retour
+  Change-la quand tu veux
+  50 m
+  Flash 2/2
+  EN MOUVEMENT
+  Ton équipe
+  30 m
+  TUTORIAL
+  Choisir
+  20 / 60
+  15 m
+  100
+  35 m
+  LIGNE DE TIR
+  H Carte
+  Tab Passer l'étape Maintiens Tab Passer le tutoriel
+  Acheter
+  20 m
+  Pistolets
+  B
+  W
+  3
+  Bouclier
+  Mouse
+  A
+  S
+  Fusils
+  Tutoriel · Étape 1 sur 6
+  Principale
+  1–9
+  30 / 60
+  Choisis un mode : regarde un bouton et appuie sur E , ou tire dessus
+  QUIETOS
+  Secondaire
+  DISTANCIAS
+  ZONE DE TIR
+  TACTIQUE
+  CARTE D'ENTRAÎNEMENT
+  Fusils de précision
+  Numéro ou clic
+  CHAMP D'ENTRAÎNEMENT
+  Fermer
+  Vide
+  INVASION
+  Clic dr. revendre
+  · Courir (en Tactique, marcher lentement)
+  · Se déplacer
+  · Passer
+  Fumée 1/1
+  DEATHMATCH
+  5
+  Éclats ×1
+  Mitraillettes
+  Se déplacer

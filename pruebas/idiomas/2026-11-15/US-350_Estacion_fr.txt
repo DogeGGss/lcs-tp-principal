@@ -1,0 +1,42 @@
+US-350_Estacion_fr · idioma fr · 2026-11-15 14:47:35
+Resultado: todo traducido y todos los textos entran
+Textos en pantalla:
+  100 cristaux
+  Probabilités
+  Échanger
+  55 %
+  Commun
+  Légendaire
+  Derniers prix
+  0
+  Rare
+  +
+  Simulation commerciale : aucun paiement réel. Les billets s'obtiennent en jouant (crédits) ou avec les cristaux de la boutique. Les probabilités sont toujours affichées.
+  3 %
+  CAPSULE DU RIFT · Nº 001
+  Boutique
+  RW · RIFT
+  Un billet, une capsule. Chacune contient un avatar, une bannière, un titre ou un cadre.
+  900 cristaux
+  pour 10 billets · 10 % de moins
+  Monnaie payante
+  Ouvrir 5 · 5 billets
+  600 crédits
+  Capsules
+  Épique
+  Épique ou mieux garanti dans 10 capsules
+  Tu n'as encore ouvert aucune capsule.
+  Ouvrir 1 · 1 billet
+  Obtenir des billets
+  Gare du Rift
+  Pas de cristaux ? Acheter des cristaux »
+  12 %
+  Gagnés en jouant
+  • EN ATTENTE
+  Voir le contenu de la capsule
+  pour 1 billet
+  Ouvrent des capsules
+  Passe de combat
+  Cristaux
+  30 %
+  « Menu

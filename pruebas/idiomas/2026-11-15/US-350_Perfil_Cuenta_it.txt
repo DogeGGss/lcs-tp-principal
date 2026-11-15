@@ -1,0 +1,42 @@
+US-350_Perfil_Cuenta_it · idioma it · 2026-11-15 14:52:10
+Resultado: todo traducido y todos los textos entran
+Textos en pantalla:
+  Aprono capsule
+  Valuta a pagamento
+  Si guadagnano giocando
+  Riftwalker
+  Vedi l'informativa completa
+  —
+  0
+  Crea account
+  Editor Senza account
+  Profilo
+  1.000
+  Cambia nome
+  Varia nella ricerca partita
+  Ondata record
+  Accedi
+  Partite
+  1
+  +
+  Cosa salviamo
+  Nel gioco pubblicato, l'account si gestisce dal launcher. Qui, nell'editor, puoi crearlo o accedere per provare.
+  Statistiche
+  Giochi senza account
+  Capotreno
+  La tua e-mail, il tuo nome, i tuoi progressi, le tue statistiche e le tue opinioni. Li usiamo per salvare i progressi, creare la classifica e cercare partite. Non li condividiamo con nessuno.
+  Account
+  I tuoi progressi nel cloud, su qualsiasi PC
+  Il tuo account
+  KDA*
+  Scheda del giocatore
+  Livello giocatore
+  Gli account richiedono il servizio online, che non è configurato in questa versione.
+  Compari nella classifica globale
+  Personalizzazione
+  « Menu
+  Emote
+  Privacy
+  Nessun titolo
+  Cerca partite con altri giocatori
+  Vittorie

@@ -1,0 +1,81 @@
+US-350_Invasion_resultado_pt-BR · idioma pt-BR · 2026-11-15 14:48:32
+Resultado: todo traducido y todos los textos entran
+Ya pasaba en español (no cuenta para este idioma):
+  (cortado) La Porteña  [HUDCombate/HUDCanvas/Anden/Espacio2/Nombre]
+Textos en pantalla:
+  4
+  Você não salvou o mundo
+  52
+  TORT. - MALVINAS ARGENTINAS - ESTAC. MORENO - SAN MIGUEL LÍNEA 315/440
+  ICI instituto de ciencias
+  ICO instituto del conurbano
+  La Porteña
+  Onda 1
+  0:02
+  B PAZ T.ALTAS
+  0:18
+  2b
+  0
+  Próxima onda
+  2
+  UNGS
+  6
+  +0 XP
+  SOY DE POLVORINES NI DE BOCA NI DE RIVER
+  INFORMES
+  1
+  IDH instituto de desarrollo humano
+  Baixas
+  ∞
+  7
+  Passe de batalha · Temporada 1
+  5
+  440
+  Juan M. Gutiérrez
+  Universidad Nacional de General Sarmiento
+  Juan María Gutiérrez 1150
+  10
+  Tempo
+  Pontos
+  7a
+  Fim da partida · Normal
+  Juan Maza
+  Recorde
+  LPGB
+  Módulo 7 Ingreso peatonal SECTOR A del Estacionamiento
+  3
+  9
+  / 60
+  Você caiu na onda 1 de 10
+  Recorde em Normal: onda 1
+  COMPAÑEROS DETENIDOS DESAPARECIDOS EN CAMPO DE MAYO
+  H Mapa
+  Enter · Jogar de novo Esc · Voltar ao menu
+  IDEI instituto de industria
+  Vazio
+  Você morreu
+  ENTRADA
+  100
+  20
+  Faca
+  de 10
+  8
+  Na cabeça
+  LP GRAND BOURG
+  comedor
+  SUM
+  aulas
+  NUNCA MÁS
+  Jogar de novo
+  7b
+  Suas cartas
+  Onda
+  —
+  SEGURIDAD
+  Pts
+  Próxima onda em
+  Normal
+  0 / 1.000
+  18
+  Voltar ao menu
+  Nível 0

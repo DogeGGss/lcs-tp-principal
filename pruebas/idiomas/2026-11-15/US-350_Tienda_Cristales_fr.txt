@@ -1,0 +1,46 @@
+US-350_Tienda_Cristales_fr · idioma fr · 2026-11-15 14:47:39
+Resultado: todo traducido y todos los textos entran
+Textos en pantalla:
+  Cristaux
+  $ 1.200
+  0
+  Meilleure offre
+  Tu n'as encore fait aucun achat simulé.
+  Acheter
+  $ 5.500
+  cristaux
+  +
+  Chambre forte de cristaux
+  Capsules
+  400
+  $ 3.300
+  $ 29.900
+  80
+  $ 1.990
+  2.500
+  Coffre de cristaux
+  +150 offerts
+  Bourse de cristaux
+  Gagnés en jouant
+  Réinitialiser les données de test
+  $ 0
+  Offre de bienvenue
+  Le plus choisi
+  -40 %
+  5 billets + 200 cristaux
+  $ 12.900
+  Total dépensé (simulé)
+  Boutique
+  0 achats
+  Achats simulés
+  « Menu
+  +500 offerts
+  +40 offerts
+  Une seule fois par compte
+  Achats simulés. C'est un projet universitaire : aucun argent réel n'est facturé. On teste comment fonctionnerait la boutique d'un jeu gratuit.
+  1.000
+  Ouvrent des capsules
+  Monnaie payante
+  Simulation
+  Caisse de cristaux
+  Passe de combat

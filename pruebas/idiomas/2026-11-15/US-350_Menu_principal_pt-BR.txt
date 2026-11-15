@@ -1,0 +1,29 @@
+US-350_Menu_principal_pt-BR · idioma pt-BR · 2026-11-15 14:49:13
+Resultado: todo traducido y todos los textos entran
+Textos en pantalla:
+  i
+  Project
+  Opções
+  Conquistas
+  Ganhos jogando
+  Riftwalker
+  Antes de jogar
+  Sair
+  Loja
+  0
+  01 / Cápsulas · Passe · Cristais
+  Créditos
+  +
+  Plataforma 01 · Ponto de encontro
+  »
+  Tático · Deathmatch · Invasão
+  v0.4.0-exp.2
+  Você tem 0 bilhetes para abrir
+  Jogar
+  Dê sua opinião
+  Nota para o PO
+  Campo de treino
+  Sem título
+  Abrem cápsulas
+  Campos de teste:
+  Moeda paga

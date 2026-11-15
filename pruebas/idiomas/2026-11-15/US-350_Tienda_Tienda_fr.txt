@@ -1,0 +1,45 @@
+US-350_Tienda_Tienda_fr · idioma fr · 2026-11-15 14:47:36
+Resultado: todo traducido y todos los textos entran
+Ya pasaba en español (no cuenta para este idioma):
+  (cortado) La Porteña · Plan du métro  [MenuRiftwalker/MenuRiftwalkerCanvas/Contenido/Pantallas/TiendaDirecta/Ofertas/La Porteña · Plan du métro/Nombre]
+  (cortado) Belgrano Sur · Dragon Abyssal  [MenuRiftwalker/MenuRiftwalkerCanvas/Contenido/Pantallas/TiendaDirecta/Ofertas/Belgrano Sur · Dragon Abyssal/Nombre]
+  (cortado) El Gran Capitán · Prochain arrêt  [MenuRiftwalker/MenuRiftwalkerCanvas/Contenido/Pantallas/TiendaDirecta/Ofertas/El Gran Capitán · Prochain arrêt/Nombre]
+Textos en pantalla:
+  Gagnés en jouant
+  3.200
+  0
+  Ouvrent des capsules
+  Le cosmétique de ton choix, sans hasard. Achats simulés : aucun argent réel n'est facturé.
+  Monnaie payante
+  Ombre 8 bits
+  Belgrano Sur · Dragon Abyssal
+  Boutique
+  On t'emmène à l'onglet Cristaux.
+  Skin d'arme · Légendaire
+  Carte de visite · Épique
+  Silence d'encre
+  La Porteña · Plan du métro
+  Skin d'arme · Épique
+  Avatar · Rare
+  Skin d'arme · Commun
+  « Menu
+  Cristaux
+  800
+  Nouvelles offres dans 9 h 12 min
+  Passe de combat
+  1.600
+  La Porteña
+  400
+  Cadre · Épique
+  Titre · Commun
+  Belgrano Sur
+  +
+  Urquiza
+  El Gran Capitán · Prochain arrêt
+  Rechargement…
+  Offres du jour
+  Capsules
+  Il te manque 3.200 cristaux
+  Sans hasard
+  Urquiza · Braise
+  El Gran Capitán

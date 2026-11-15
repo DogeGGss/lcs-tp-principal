@@ -1,0 +1,22 @@
+US-350_Opciones_Sonido_pt-BR · idioma pt-BR · 2026-11-15 14:49:30
+Resultado: todo traducido y todos los textos entran
+Textos en pantalla:
+  Som
+  100 %
+  Interface
+  Controles
+  Configurações do jogo
+  Q
+  « Menu
+  Gráficos
+  Música
+  Geral
+  Restaurar
+  Volume
+  Mira
+  Efeitos
+  Ao mover um controle, toca uma amostra. É salvo ao apertar Aplicar.
+  Opções
+  Aplicar
+  Idioma
+  E

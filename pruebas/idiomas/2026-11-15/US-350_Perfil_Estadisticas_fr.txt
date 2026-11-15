@@ -1,0 +1,57 @@
+US-350_Perfil_Estadisticas_fr · idioma fr · 2026-11-15 14:52:02
+Resultado: todo traducido y todos los textos entran
+Textos en pantalla:
+  0
+  Monnaie payante
+  Parties
+  Riftwalker
+  —
+  Parties terminées 0
+  Victoires
+  Contrôleur
+  Heures de jeu
+  KDA*
+  Évolue en recherche de partie
+  Envahisseurs éliminés
+  Morts
+  +
+  Aucune donnée
+  1
+  Changer de nom
+  Tu n'as encore tiré sur aucune comète.
+  Boss vaincus
+  En coopération
+  Tactique
+  1.000
+  Deathmatch
+  Statistiques
+  Éliminations
+  Tu n'as encore terminé aucune partie de Deathmatch.
+  Record F · N · D
+  Invasion
+  Fiche du joueur
+  Assistances
+  — · 1 · —
+  Tu n'as encore terminé aucune partie de Tactique ou de Deathmatch.
+  Personnalisation
+  Gagnés en jouant
+  Postes chargés
+  Mini-jeu : comètes
+  Niveau du joueur
+  % de victoires
+  Monde sauvé
+  0 min
+  Arme préférée
+  Sans titre
+  Profil
+  * KDA = (éliminations + assistances) ÷ morts ; sans mort, ÷ 1. Assistance : tu as blessé un adversaire qu'un autre a éliminé dans les 10 s suivantes. Seules les parties terminées comptent.
+  Emotes
+  Vague record
+  4
+  Compte
+  Général · Tactique et Deathmatch
+  Carte préférée
+  Ouvrent des capsules
+  Tirs à la tête
+  « Menu
+  Tu n'as encore terminé aucune partie de Tactique.

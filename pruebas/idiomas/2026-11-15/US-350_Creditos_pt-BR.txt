@@ -1,0 +1,60 @@
+US-350_Creditos_pt-BR · idioma pt-BR · 2026-11-15 14:45:22
+Resultado: todo traducido y todos los textos entran
+Textos en pantalla:
+  Espaço
+  Documentação e backlog
+  Faca
+  Trabalho prático
+  Música do Modo Deathmatch
+  Lucas Huber Nicolás Gauna Luka Gómez
+  Há não tanto tempo, em uma universidade muito, muito próxima…
+  Flashbang explode, de MadPanCake (CC BY-NC 4.0, Freesound)
+  Nicolás Gauna Franco Barreto Nahuel Velázquez Ulises Fonseca
+  Project Riftwalker
+  Tipografias
+  The Free Firearm Sound Library, de Ben Jaszczak, Brian Nelson, Kevin Heras e Matthew Nanney (CC0)
+  Gun reload sounds, de SpringySpringo, e Shotgun Reload Sound Effects, de zer0_sol (CC0, OpenGameArt)
+  Obrigado por jogar
+  Lucas Huber David Ramos
+  Ulises Fonseca
+  · · ·
+  Recargas
+  Um shooter tático, um deathmatch e uma invasão alienígena na universidade. Feito por sete estudantes em dez semanas, com mais café do que horas de sono.
+  Interface (UI/UX)
+  3D Scifi Kit Starter Kit, de Creepy Cat (Unity Asset Store)
+  Voltar
+  Esc
+  Disparos
+  Ulises Fonseca Nahuel Velázquez
+  Agradecimentos
+  Arte 2D/3D e design de níveis
+  Personagem e animações
+  Motor e ferramentas
+  action track 4, A.I. fight & jumping cyborg, mixagem de glitchart: action track 4, de Alexandr Zhelanov (CC BY 3.0), e A.I. fight & jumping cyborg, de tricksntraps (CC0, OpenGameArt)
+  Modelos das armas
+  David Ramos
+  Sci-Fi Modular Gun Pack, de Quaternius (CC0)
+  Luka Gómez Franco Barreto
+  Som de reaparecimento
+  Mixamo, da Adobe
+  Barlow
+  Cartoon Texture Pack
+  Repositório e Git
+  Testes e QA
+  Jeremy Tribby · SIL Open Font License 1.1
+  Acelerar
+  Créditos
+  JetBrains Mono
+  Som e música
+  Desenvolvimento e mecânicas
+  Cenário sci-fi
+  À cátedra, a quem testou as builds quebradas e a você, por jogar.
+  Sci-fi Weapon - Game Ready Knife - FREE SAMPLE, de AF Creations (Unity Asset Store)
+  Texturas
+  Scrum Master
+  Recursos externos
+  Explosão da flash
+  Teleport, de fins (CC0, Freesound e OpenGameArt)
+  JetBrains · SIL Open Font License 1.1
+  Trabalho prático "Último Tren a Retiro" Laboratório de Construção de Software Técnico Universitário em Informática
+  Unity 6 · Universal Render Pipeline ProBuilder · TextMesh Pro · Input System · AI Navigation Photon PUN 2 (multijogador) GitHub e GitHub Projects

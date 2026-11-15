@@ -1,0 +1,20 @@
+US-350_Opciones_Idioma_fr · idioma fr · 2026-11-15 14:49:39
+Resultado: todo traducido y todos los textos entran
+Textos en pantalla:
+  Langue
+  Português (Brasil)
+  Langue du jeu
+  Italiano
+  « Menu
+  Q
+  Options
+  Paramètres du jeu
+  E
+  English
+  Son
+  Le changement s'applique immédiatement et est partagé avec le launcher.
+  Español
+  Commandes
+  Viseur
+  Graphismes
+  Français

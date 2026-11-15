@@ -1,0 +1,42 @@
+US-350_Tienda_Capsulas_pt-BR · idioma pt-BR · 2026-11-15 14:47:29
+Resultado: todo traducido y todos los textos entran
+Textos en pantalla:
+  Probabilidades
+  por 10 bilhetes · 10 % a menos
+  Lendário
+  Passe de batalha
+  Comum
+  0
+  CÁPSULA DO RIFT · Nº 001
+  Você ainda não abriu nenhuma cápsula.
+  Abrir 1 · 1 bilhete
+  Conseguir bilhetes
+  Simulação de negócio: não há pagamentos reais. Os bilhetes são obtidos jogando (créditos) ou com cristais da loja. As probabilidades são sempre mostradas.
+  Abrir 5 · 5 bilhetes
+  Loja
+  • EM ESPERA
+  Trocar
+  Ganhos jogando
+  Cristais
+  Cápsulas
+  Épico
+  RW · RIFT
+  Épico ou melhor garantido em 10 cápsulas
+  Abrem cápsulas
+  Sem cristais? Comprar cristais »
+  Ver conteúdo da cápsula
+  por 1 bilhete
+  3 %
+  30 %
+  Últimos prêmios
+  100 cristais
+  +
+  Raro
+  « Menu
+  55 %
+  Um bilhete, uma cápsula. Cada uma traz um avatar, um banner, um título ou uma moldura.
+  Estação do Rift
+  Moeda paga
+  600 créditos
+  900 cristais
+  12 %

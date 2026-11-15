@@ -1,0 +1,91 @@
+US-350_Practica_tienda_pt-BR · idioma pt-BR · 2026-11-15 14:52:19
+Resultado: todo traducido y todos los textos entran
+Ya pasaba en español (no cuenta para este idioma):
+  (cortado) Estilhaços ×1  [HUDCombate/HUDCanvas/Anden/Espacio4/Nombre]
+  (cortado) La Porteña  [HUDCombate/HUDCanvas/Anden/Espacio2/Nombre]
+Textos en pantalla:
+  LINHA DE TIRO
+  A
+  Escudo
+  ›
+  DEATHMATCH
+  40 m
+  30
+  5 m
+  1–9
+  REAÇÃO
+  4
+  B
+  10 m
+  Secundária
+  INVASÃO
+  La Porteña
+  MAPA DE TREINO
+  3
+  2
+  Estilhaços ×1
+  Shift
+  1
+  Fumaça 1/1
+  Ctrl
+  CAMPO DE TREINO
+  · Correr (no Tático, andar devagar)
+  Submetralhadoras
+  Granadas
+  45 m
+  · Pular
+  Aproxime-se para ver o objetivo
+  Estilhaços 1/1
+  S
+  ZONA DE TIRO
+  Vazio
+  Espaço
+  REINICIAR
+  Fuzis
+  Escolha um modo: olhe para um botão e aperte E , ou dê um tiro nele
+  20 m
+  Flash 2/2
+  TÁTICO
+  50 m
+  30 m
+  Pistolas
+  Seu time
+  Mouse
+  30 / 60
+  Tutorial · Passo 1 de 6
+  Categoria
+  Troque quando quiser
+  Faca
+  100
+  Mover-se
+  H Mapa
+  DISTANCIAS
+  5
+  · Agacharse
+  Mitre
+  15 m
+  W
+  35 m
+  · Olhar
+  Principal
+  QUIETOS
+  Tudo grátis
+  Quietos · Baixas: 0 · Na cabeça: 0
+  25 m
+  EM MOVIMENTO
+  Snipers
+  Campo de treino
+  TUTORIAL
+  Fechar
+  · Mover-se
+  Escopetas
+  Comprar
+  / ∞
+  Loja
+  D
+  20 / 60
+  Voltar
+  Número ou clique
+  Escolher
+  Tab Pular passo Segure Tab Pular tutorial
+  Clique dir. vender

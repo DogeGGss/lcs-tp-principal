@@ -1,0 +1,62 @@
+US-350_Perfil_Emotes_pt-BR · idioma pt-BR · 2026-11-15 14:51:57
+Resultado: todo traducido y todos los textos entran
+Textos en pantalla:
+  Raro
+  Shuffle
+  Rumba
+  Comum
+  Nível de jogador
+  0
+  Partidas
+  Vitórias
+  Riftwalker
+  Abrem cápsulas
+  Onda recorde
+  Floss
+  Lendário
+  Bloqueado
+  1
+  Emotes
+  Flair
+  Sobe e desce na busca de partida
+  Vazio
+  Perfil
+  Espaço 4 · Esquerda
+  Passinho
+  Old School
+  —
+  O Clássico
+  Ganhos jogando
+  Unzué
+  Twerk
+  Espaço 1 · Cima
+  Personalização
+  Espaço 3 · Baixo
+  Round 1
+  Prévia
+  +
+  Sem título
+  Giro Soul
+  Passe o mouse sobre uma dança para vê-la.
+  Épico
+  Registro do jogador
+  >
+  Palhaçada
+  Mudar nome
+  « Menu
+  Twist
+  Escolha um espaço da roda e depois a dança que vai nele. Segure T na partida para abrir a roda.
+  Freestyle
+  Guarda
+  Conta
+  Aceno
+  Na roda 0 / 4
+  Não equipado
+  KDA*
+  Hip Hop
+  1.000
+  Estatísticas
+  Moeda paga
+  Espaço 2 · Direita
+  Inicial
+  <

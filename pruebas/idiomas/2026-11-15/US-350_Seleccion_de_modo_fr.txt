@@ -1,0 +1,50 @@
+US-350_Seleccion_de_modo_fr · idioma fr · 2026-11-15 17:40:08
+Resultado: todo traducido y todos los textos entran
+Textos en pantalla:
+  Armes libres
+  Chacun pour soi. Tu réapparais au bout de 3 s.
+  Créer un salon
+  Deathmatch · avec des joueurs de ta région
+  En ligne
+  Chercher une partie
+  0:14
+  Premier à 7
+  75 % de vie et de dégâts, et moins d'ennemis. Tu te régénères au bout de 3 s.
+  Difficile
+  Chacun pour soi. Tu choisis tes armes gratuitement, chaque élimination te soigne de 50 et tu réapparais au bout de 3 s loin des adversaires.
+  Salon privé · entre amis
+  Quai 2 · En ligne
+  Achat 20 s
+  Quai 3 · En ligne
+  125 % de vie, 150 % de dégâts et plus d'ennemis. +25 % de points.
+  De 1 à 4 joueurs contre les vagues de l'université. Toutes les 10 vagues arrive le Boss ; si vous l'abattez, vous pouvez continuer pour battre le record.
+  Project Riftwalker
+  Record en Normal : pas encore joué
+  Facile
+  Invasion
+  Tactique · avec des joueurs de ta région
+  Deathmatch
+  Normal
+  Rejoindre avec un code
+  Quai 2
+  Esc
+  Résiste à l'invasion à l'université.
+  Invasion · avec des joueurs de ta région
+  Une équipe pose le dispositif sur A ou B et l'autre le défend. Sans réapparition : si tu meurs, tu regardes un coéquipier jusqu'à la manche suivante.
+  Choisis le mode
+  En tant que Riftwalker · ta région · même version (v0.5.0-exp.1)
+  Tactique
+  Jouer seul
+  Pose ou désamorce le dispositif. Sans réapparition.
+  4 vs 4
+  Menu principal
+  25 élim.
+  Tel que prévu. Tu te régénères au bout de 4 s.
+  Jusqu'à 8
+  1 à 4 joueurs
+  Quai 3
+  Quai 1 · En ligne
+  10 vagues
+  Camps inversés à la 6
+  Quai 1
+  8 min

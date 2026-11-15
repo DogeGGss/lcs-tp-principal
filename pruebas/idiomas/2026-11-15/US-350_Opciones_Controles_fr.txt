@@ -1,0 +1,69 @@
+US-350_Opciones_Controles_fr · idioma fr · 2026-11-15 14:49:36
+Resultado: todo traducido y todos los textos entran
+Textos en pantalla:
+  Appliquer
+  Clique sur une action et appuie sur la nouvelle touche. Échap annule.
+  Dispositif
+  Touches
+  Carte complète
+  T
+  A
+  Arme secondaire
+  Lâcher l'arme
+  Compétence
+  G
+  Avancer
+  Q
+  Shift
+  Arme principale
+  D
+  Gauche
+  « Menu
+  1,5
+  Grenades
+  Couteau
+  Langue
+  Esc
+  Réinitialiser
+  Options
+  Emotes
+  Inverser l'axe Y
+  Paramètres du jeu
+  Cartes (Invasion)
+  Espace
+  Passer
+  E
+  3
+  ×1,00
+  H
+  2
+  1
+  4
+  Son
+  Pause
+  Souris
+  Boutique
+  Poser / désamorcer
+  C
+  En visant
+  Recharger
+  Courir / marcher lentement
+  Ctrl
+  R
+  Tirer
+  Clic gauche
+  5
+  Sensibilité
+  Droite
+  Agacharse
+  Retour
+  S
+  Clic droit
+  Commandes
+  Viseur
+  Graphismes
+  Oui
+  W
+  B
+  Non
+  Viser

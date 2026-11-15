@@ -1,0 +1,60 @@
+US-350_Creditos_fr · idioma fr · 2026-11-15 14:45:27
+Resultado: todo traducido y todos los textos entran
+Textos en pantalla:
+  Couteau
+  Polices
+  The Free Firearm Sound Library, de Ben Jaszczak, Brian Nelson, Kevin Heras et Matthew Nanney (CC0)
+  Lucas Huber Nicolás Gauna Luka Gómez
+  Ulises Fonseca
+  Personnage et animations
+  3D Scifi Kit Starter Kit, de Creepy Cat (Unity Asset Store)
+  Documentation et backlog
+  Ulises Fonseca Nahuel Velázquez
+  Textures
+  · · ·
+  Crédits
+  Luka Gómez Franco Barreto
+  Unity 6 · Universal Render Pipeline ProBuilder · TextMesh Pro · Input System · AI Navigation Photon PUN 2 (multijoueur) GitHub et GitHub Projects
+  Retour
+  Lucas Huber David Ramos
+  Travail pratique « Último Tren a Retiro » Laboratoire de construction de logiciels Diplôme universitaire en informatique
+  Rechargements
+  Jeremy Tribby · SIL Open Font License 1.1
+  Aux enseignants, à ceux qui ont testé les builds cassées et à toi, d'avoir joué.
+  Nicolás Gauna Franco Barreto Nahuel Velázquez Ulises Fonseca
+  Project Riftwalker
+  JetBrains Mono
+  Esc
+  Musique du mode Deathmatch
+  Gun reload sounds, de SpringySpringo, et Shotgun Reload Sound Effects, de zer0_sol (CC0, OpenGameArt)
+  Travail pratique
+  Accélérer
+  Ressources externes
+  Moteur et outils
+  Flashbang explode, de MadPanCake (CC BY-NC 4.0, Freesound)
+  Son de réapparition
+  Décor sci-fi
+  Barlow
+  JetBrains · SIL Open Font License 1.1
+  action track 4, A.I. fight & jumping cyborg, mixage de glitchart : action track 4, d'Alexandr Zhelanov (CC BY 3.0), et A.I. fight & jumping cyborg, de tricksntraps (CC0, OpenGameArt)
+  Tirs
+  Il n'y a pas si longtemps, dans une université très, très proche…
+  Un shooter tactique, un deathmatch et une invasion extraterrestre à l'université. Fait par sept étudiants en dix semaines, avec plus de café que d'heures de sommeil.
+  Son et musique
+  Interface (UI/UX)
+  Sci-fi Weapon - Game Ready Knife - FREE SAMPLE, de AF Creations (Unity Asset Store)
+  Espace
+  Modèles des armes
+  Scrum Master
+  Art 2D/3D et conception des niveaux
+  Remerciements
+  Teleport, de fins (CC0, Freesound et OpenGameArt)
+  Tests et QA
+  Développement et mécaniques
+  Dépôt et Git
+  David Ramos
+  Explosion de la flash
+  Merci d'avoir joué
+  Sci-Fi Modular Gun Pack, de Quaternius (CC0)
+  Cartoon Texture Pack
+  Mixamo, d'Adobe

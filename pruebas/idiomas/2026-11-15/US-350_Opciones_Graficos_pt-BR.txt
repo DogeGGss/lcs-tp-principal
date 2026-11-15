@@ -1,0 +1,41 @@
+US-350_Opciones_Graficos_pt-BR · idioma pt-BR · 2026-11-15 14:49:31
+Resultado: todo traducido y todos los textos entran
+Textos en pantalla:
+  As mudanças são usadas ao apertar Aplicar.
+  Controles
+  Configurações do jogo
+  Q
+  Sim
+  Som
+  « Menu
+  Não
+  Tela cheia
+  Resolução
+  Restaurar
+  Gráficos
+  Modo
+  Sem limite
+  Média
+  144
+  Qualidade
+  Ocultar
+  60
+  80°
+  Limite de FPS
+  Tela
+  Campo de visão
+  >
+  FPS e ping
+  <
+  Imagem
+  Mostrar
+  1920 x 1080 · 16:9
+  VSync
+  Aplicar
+  Mira
+  Janela
+  Opções
+  Sem bordas
+  30
+  Idioma
+  E

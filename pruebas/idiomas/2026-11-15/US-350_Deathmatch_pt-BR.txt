@@ -1,0 +1,23 @@
+US-350_Deathmatch_pt-BR · idioma pt-BR · 2026-11-15 14:47:00
+Resultado: todo traducido y todos los textos entran
+Ya pasaba en español (no cuenta para este idioma):
+  (cortado) La Porteña  [Prueba local (prender para recorrer sin red)/HUDCombate/HUDCanvas/Anden/Espacio2/Nombre]
+Textos en pantalla:
+  3
+  Mitre
+  2
+  Vazio
+  B
+  H Mapa
+  La Porteña
+  30
+  / ∞
+  Fase de compra
+  Rodada 1
+  —
+  Faca
+  1
+  4
+  100
+  Loja
+  0:18

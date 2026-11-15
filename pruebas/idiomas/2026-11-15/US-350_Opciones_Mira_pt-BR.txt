@@ -1,0 +1,46 @@
+US-350_Opciones_Mira_pt-BR · idioma pt-BR · 2026-11-15 14:49:30
+Resultado: todo traducido y todos los textos entran
+Textos en pantalla:
+  Azul
+  Controles
+  Forma
+  Configurações do jogo
+  Cor
+  Cor própria
+  Q
+  Som
+  Contorno
+  « Menu
+  Ponto central
+  61
+  Não
+  5
+  Cor e dispersão
+  Gráficos
+  151
+  Ponto
+  Aplicar
+  Sim
+  Fixa
+  2
+  Vermelho
+  8
+  Espaço
+  Espessura
+  Fundo claro
+  Mira
+  220
+  Círculo
+  Abre
+  Própria
+  Restaurar
+  Prévia
+  Comprimento
+  Dispersão
+  Tipo
+  Verde
+  Opções
+  Cruz
+  Fundo escuro
+  Idioma
+  E

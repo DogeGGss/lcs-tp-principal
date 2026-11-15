@@ -1,0 +1,46 @@
+US-350_Tienda_Cristales_pt-BR · idioma pt-BR · 2026-11-15 14:47:31
+Resultado: todo traducido y todos los textos entran
+Textos en pantalla:
+  Oferta de boas-vindas
+  cristais
+  $ 5.500
+  +500 de presente
+  0 compras
+  Você ainda não fez nenhuma compra simulada.
+  Compras simuladas. É um projeto universitário: nenhum dinheiro real é cobrado. Testa-se como funcionaria a loja de um jogo gratuito.
+  80
+  +150 de presente
+  $ 3.300
+  Comprar
+  Cápsulas
+  $ 1.200
+  400
+  0
+  Loja
+  2.500
+  Melhor valor
+  +40 de presente
+  Bolsa de cristais
+  $ 12.900
+  -40 %
+  Ganhos jogando
+  Cofre-forte de cristais
+  Total gasto (simulado)
+  1.000
+  Caixa de cristais
+  +
+  Reiniciar dados de teste
+  Passe de batalha
+  $ 0
+  Simulação
+  Uma única vez por conta
+  Moeda paga
+  Compras simuladas
+  « Menu
+  Baú de cristais
+  Abrem cápsulas
+  $ 29.900
+  Cristais
+  Mais escolhido
+  $ 1.990
+  5 bilhetes + 200 cristais

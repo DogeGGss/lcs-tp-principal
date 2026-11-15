@@ -1,0 +1,77 @@
+US-350_Invasion_cartas_pt-BR · idioma pt-BR · 2026-11-15 14:48:26
+Resultado: todo traducido y todos los textos entran
+Ya pasaba en español (no cuenta para este idioma):
+  (cortado) La Porteña  [HUDCombate/HUDCanvas/Anden/Espacio2/Nombre]
+Textos en pantalla:
+  Comum
+  4
+  Matar com a faca recarrega a última arma que você teve na mão.
+  Rende com: Faca
+  LPGB
+  Posto de suprimentos
+  6
+  UNGS
+  IDEI instituto de industria
+  52
+  5
+  Universidad Nacional de General Sarmiento
+  Fio
+  SEGURIDAD
+  IDH instituto de desarrollo humano
+  1
+  ICI instituto de ciencias
+  Suas cartas 0 / 8
+  Juan Maza
+  TORT. - MALVINAS ARGENTINAS - ESTAC. MORENO - SAN MIGUEL LÍNEA 315/440
+  ICO instituto del conurbano
+  —
+  NUNCA MÁS
+  Juan M. Gutiérrez
+  Você tem 0 pts
+  3
+  Quando um invasor te acerta, seu próximo tiro soma 5 vezes a vida que você perdeu.
+  Escolha uma
+  SOY DE POLVORINES NI DE BOCA NI DE RIVER
+  7b
+  7a
+  La Porteña
+  2
+  ENTRADA
+  440
+  ∞
+  Raiva
+  100
+  B PAZ T.ALTAS
+  Pts
+  Recorde
+  Vazio
+  Onda 1
+  COMPAÑEROS DETENIDOS DESAPARECIDOS EN CAMPO DE MAYO
+  H Mapa
+  R · Sortear de novo · 150 pts
+  aulas
+  Suas cartas
+  A faca mata com um golpe os invasores com 25 % de vida ou menos (exceto o Chefe).
+  LP GRAND BOURG
+  0:17
+  0
+  9
+  Juan María Gutiérrez 1150
+  2b
+  de 10
+  10
+  8
+  Próxima onda em
+  SUM
+  INFORMES
+  Módulo 7 Ingreso peatonal SECTOR A del Estacionamiento
+  17
+  Faca
+  20
+  Golpe final
+  Rende com: Todas
+  comedor
+  / 60
+  7
+  Próxima onda
+  Normal

@@ -1,0 +1,69 @@
+US-350_Opciones_Controles_pt-BR · idioma pt-BR · 2026-11-15 14:49:29
+Resultado: todo traducido y todos los textos entran
+Textos en pantalla:
+  Cartas (Invasão)
+  Pausa
+  Controles
+  Configurações do jogo
+  Q
+  2
+  Clique dir.
+  Som
+  « Menu
+  T
+  Correr / andar devagar
+  H
+  Agacharse
+  Sim
+  Gráficos
+  R
+  4
+  Soltar arma
+  Emotes
+  1,5
+  Loja
+  Granadas
+  Esc
+  Aplicar
+  Sensibilidade
+  Habilidade
+  Frente
+  Direita
+  1
+  Mirar
+  Restaurar
+  E
+  Clique em uma ação e aperte a nova tecla. Esc cancela.
+  Mapa completo
+  Arma principal
+  Clique esq.
+  5
+  C
+  A
+  D
+  Recarregar
+  Ctrl
+  Teclas
+  Voltar
+  Dispositivo
+  B
+  Atirar
+  Mira
+  S
+  Espaço
+  Pular
+  Não
+  Inverter eixo Y
+  Mouse
+  3
+  W
+  Ao mirar
+  Shift
+  G
+  Opções
+  Arma secundária
+  Faca
+  Plantar / desativar
+  ×1,00
+  Idioma
+  Esquerda

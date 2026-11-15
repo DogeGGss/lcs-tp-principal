@@ -1,0 +1,22 @@
+US-350_Opciones_Sonido_it · idioma it · 2026-11-15 14:49:43
+Resultado: todo traducido y todos los textos entran
+Textos en pantalla:
+  Grafica
+  Volume
+  « Menu
+  Interfaccia
+  Q
+  Effetti
+  Ripristina
+  Mirino
+  100 %
+  Impostazioni di gioco
+  Generale
+  Audio
+  Comandi
+  Muovendo un controllo si sente un'anteprima. Si salva premendo Applica.
+  E
+  Musica
+  Opzioni
+  Applica
+  Lingua

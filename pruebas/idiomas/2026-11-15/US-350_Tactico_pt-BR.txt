@@ -1,0 +1,26 @@
+US-350_Tactico_pt-BR · idioma pt-BR · 2026-11-15 17:41:21
+Resultado: todo traducido y todos los textos entran
+Ya pasaba en español (no cuenta para este idioma):
+  (cortado) La Porteña  [HUDCombate/HUDCanvas/Anden/Espacio2/Nombre]
+Textos en pantalla:
+  100
+  Barreira
+  Faca
+  Q
+  —
+  4
+  0:17
+  H Mapa
+  Loja
+  2
+  20
+  A
+  3
+  / 60
+  B
+  Fase de compra
+  La Porteña
+  Vazio
+  $ 4.200
+  1
+  Rodada 1

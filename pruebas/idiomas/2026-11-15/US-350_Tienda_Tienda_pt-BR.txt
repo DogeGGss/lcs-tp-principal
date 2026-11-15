@@ -1,0 +1,45 @@
+US-350_Tienda_Tienda_pt-BR · idioma pt-BR · 2026-11-15 14:47:28
+Resultado: todo traducido y todos los textos entran
+Ya pasaba en español (no cuenta para este idioma):
+  (cortado) El Gran Capitán · Próxima estação  [MenuRiftwalker/MenuRiftwalkerCanvas/Contenido/Pantallas/TiendaDirecta/Ofertas/El Gran Capitán · Próxima estação/Nombre]
+  (cortado) La Porteña · Mapa do metrô  [MenuRiftwalker/MenuRiftwalkerCanvas/Contenido/Pantallas/TiendaDirecta/Ofertas/La Porteña · Mapa do metrô/Nombre]
+  (cortado) Belgrano Sur · Dragão Abissal  [MenuRiftwalker/MenuRiftwalkerCanvas/Contenido/Pantallas/TiendaDirecta/Ofertas/Belgrano Sur · Dragão Abissal/Nombre]
+Textos en pantalla:
+  Novas ofertas em 9 h 12 min
+  Skin de arma · Lendário
+  Vamos te levar à aba Cristais.
+  Urquiza · Brasa
+  Passe de batalha
+  Cristais
+  3.200
+  Urquiza
+  1.600
+  Skin de arma · Comum
+  Belgrano Sur · Dragão Abissal
+  Ofertas do dia
+  Belgrano Sur
+  Recarregando…
+  0
+  Loja
+  800
+  El Gran Capitán · Próxima estação
+  La Porteña · Mapa do metrô
+  El Gran Capitán
+  Cartão de apresentação · Épico
+  Moeda paga
+  Título · Comum
+  +
+  Ganhos jogando
+  400
+  O cosmético que quiser, sem sorte. Compras simuladas: sem dinheiro real.
+  Sem sorte
+  Skin de arma · Épico
+  Silêncio de tinta
+  « Menu
+  Sombra de 8 bits
+  Cápsulas
+  Avatar · Raro
+  Faltam 3.200 cristais
+  La Porteña
+  Abrem cápsulas
+  Moldura · Épico

@@ -1,0 +1,74 @@
+US-350_Pausa_fr · idioma fr · 2026-11-15 14:49:58
+Resultado: todo traducido y todos los textos entran
+Ya pasaba en español (no cuenta para este idioma):
+  (cortado) La Porteña  [HUDCombate/HUDCanvas/Anden/Espacio2/Nombre]
+Textos en pantalla:
+  5 m
+  QUIETOS
+  30 m
+  Tactique
+  · Courir (en Tactique, marcher lentement)
+  Tutoriel · Étape 1 sur 6
+  2
+  H Carte
+  45 m
+  15 m
+  / ∞
+  10 m
+  Recommencer
+  Se déplacer
+  40 m
+  Choisir
+  3
+  1
+  REINICIAR
+  Reprendre
+  ZONE DE TIR
+  Shift
+  Le temps, les ennemis et le son sont arrêtés jusqu'à ton retour.
+  Éclats ×1
+  Quietos · Éliminations : 0 · À la tête : 0
+  Chiffres
+  · Agacharse
+  4
+  Partie en pause
+  W
+  Paramètres
+  EN MOUVEMENT
+  Espace
+  LIGNE DE TIR
+  50 m
+  Approche-toi pour voir l'objectif
+  La Porteña
+  · Regarder
+  20 m
+  35 m
+  DISTANCIAS
+  RÉACTION
+  Tab Passer l'étape Maintiens Tab Passer le tutoriel
+  Pause
+  Retour
+  Choisis un mode : regarde un bouton et appuie sur E , ou tire dessus
+  INVASION
+  TUTORIAL
+  Esc
+  D
+  Enter
+  Mitre
+  25 m
+  Effacer
+  CHAMP D'ENTRAÎNEMENT
+  A
+  Quitter la partie
+  Valider
+  · Passer
+  DEATHMATCH
+  30
+  Couteau
+  S
+  100
+  · Se déplacer
+  Ctrl
+  CARTE D'ENTRAÎNEMENT
+  TACTIQUE
+  Mouse

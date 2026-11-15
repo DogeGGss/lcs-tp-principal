@@ -1,0 +1,46 @@
+US-350_Opciones_Mira_it · idioma it · 2026-11-15 14:49:44
+Resultado: todo traducido y todos los textos entran
+Textos en pantalla:
+  Grafica
+  Sì
+  Sfondo scuro
+  Cerchio
+  Punto centrale
+  5
+  No
+  « Menu
+  Personale
+  Dispersione
+  Colore personalizzato
+  Mirino
+  Q
+  Verde
+  Colore e dispersione
+  Fisso
+  220
+  Impostazioni di gioco
+  Si apre
+  Spazio
+  Anteprima
+  Comandi
+  Applica
+  151
+  Forma
+  Croce
+  Spessore
+  Lunghezza
+  E
+  Ripristina
+  Audio
+  Tipo
+  Blu
+  Punto
+  8
+  Opzioni
+  Sfondo chiaro
+  61
+  2
+  Rosso
+  Bordo
+  Colore
+  Lingua

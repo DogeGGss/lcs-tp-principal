@@ -1,0 +1,46 @@
+US-350_Opciones_Mira_fr · idioma fr · 2026-11-15 14:49:37
+Resultado: todo traducido y todos los textos entran
+Textos en pantalla:
+  Croix
+  Couleur et dispersion
+  Fixe
+  Fond clair
+  Longueur
+  Bleu
+  Couleur
+  Perso.
+  « Menu
+  Q
+  Non
+  Écart
+  Langue
+  Options
+  Paramètres du jeu
+  Appliquer
+  Aperçu
+  Oui
+  Type
+  2
+  5
+  Couleur personnalisée
+  Point central
+  E
+  Cercle
+  Point
+  Son
+  8
+  Forme
+  Épaisseur
+  61
+  Viseur
+  S'ouvre
+  Rouge
+  Commandes
+  Contour
+  Graphismes
+  Fond sombre
+  Réinitialiser
+  Vert
+  220
+  151
+  Dispersion

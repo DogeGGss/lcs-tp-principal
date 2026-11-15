@@ -1,0 +1,42 @@
+US-350_Perfil_Cuenta_fr · idioma fr · 2026-11-15 14:52:04
+Resultado: todo traducido y todos los textos entran
+Textos en pantalla:
+  Monnaie payante
+  Confidentialité
+  Ton compte
+  Se connecter
+  Riftwalker
+  —
+  Éditeur Sans compte
+  Contrôleur
+  KDA*
+  Tu joues sans compte
+  Évolue en recherche de partie
+  +
+  Parties
+  Ce que nous conservons
+  0
+  1
+  Changer de nom
+  Victoires
+  Dans le jeu publié, le compte se gère depuis le launcher. Ici, dans l'éditeur, tu peux le créer ou te connecter pour tester.
+  1.000
+  Statistiques
+  Créer un compte
+  Fiche du joueur
+  Personnalisation
+  Gagnés en jouant
+  Ton e-mail, ton nom, ta progression, tes statistiques et tes avis. Nous les utilisons pour enregistrer ta progression, établir le classement et trouver des parties. Nous ne les partageons avec personne.
+  Niveau du joueur
+  Sans titre
+  Profil
+  Emotes
+  Vague record
+  Ta progression dans le cloud, sur n'importe quel PC
+  Trouve des parties avec d'autres joueurs
+  Les comptes nécessitent le service en ligne, qui n'est pas configuré dans cette version.
+  Voir l'avis complet
+  Compte
+  Ouvrent des capsules
+  Apparais dans le classement mondial
+  « Menu

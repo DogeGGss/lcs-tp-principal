@@ -1,0 +1,60 @@
+US-350_Practica_tutorial_pt-BR · idioma pt-BR · 2026-11-15 14:52:17
+Resultado: todo traducido y todos los textos entran
+Ya pasaba en español (no cuenta para este idioma):
+  (cortado) Estilhaços ×1  [HUDCombate/HUDCanvas/Anden/Espacio4/Nombre]
+  (cortado) La Porteña  [HUDCombate/HUDCanvas/Anden/Espacio2/Nombre]
+Textos en pantalla:
+  LINHA DE TIRO
+  A
+  DEATHMATCH
+  40 m
+  30
+  5 m
+  REAÇÃO
+  10 m
+  INVASÃO
+  MAPA DE TREINO
+  Estilhaços ×1
+  Shift
+  4
+  1
+  Ctrl
+  CAMPO DE TREINO
+  · Correr (no Tático, andar devagar)
+  45 m
+  · Pular
+  Aproxime-se para ver o objetivo
+  S
+  ZONA DE TIRO
+  Espaço
+  REINICIAR
+  Escolha um modo: olhe para um botão e aperte E , ou dê um tiro nele
+  20 m
+  TÁTICO
+  50 m
+  30 m
+  2
+  Mouse
+  Tutorial · Passo 1 de 6
+  100
+  Mover-se
+  H Mapa
+  DISTANCIAS
+  · Agacharse
+  15 m
+  W
+  35 m
+  · Olhar
+  QUIETOS
+  La Porteña
+  Quietos · Baixas: 0 · Na cabeça: 0
+  25 m
+  EM MOVIMENTO
+  TUTORIAL
+  Mitre
+  · Mover-se
+  Faca
+  / ∞
+  D
+  Tab Pular passo Segure Tab Pular tutorial
+  3

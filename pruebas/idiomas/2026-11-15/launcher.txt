@@ -1,0 +1,40 @@
+D:\Juego Unity\output\localization-es-en\My project\Assets\Scripts\Localization\Shared\TranslationCatalog.cs(8,84): warning CS8618: El elemento campo "entries" que no acepta valores NULL debe contener un valor distinto de NULL al salir del constructor. Considere la posibilidad de agregar el modificador "required'"o declarar el campo como un valor que acepta valores NULL. [D:\Juego Unity\output\localization-es-en\Launcher\Core\Riftwalker.Launcher.Core.csproj]
+D:\Juego Unity\output\localization-es-en\My project\Assets\Scripts\Localization\Shared\TranslationCatalog.cs(7,73): warning CS8618: El elemento campo "key" que no acepta valores NULL debe contener un valor distinto de NULL al salir del constructor. Considere la posibilidad de agregar el modificador "required'"o declarar el campo como un valor que acepta valores NULL. [D:\Juego Unity\output\localization-es-en\Launcher\Core\Riftwalker.Launcher.Core.csproj]
+D:\Juego Unity\output\localization-es-en\My project\Assets\Scripts\Localization\Shared\TranslationCatalog.cs(7,92): warning CS8618: El elemento campo "text" que no acepta valores NULL debe contener un valor distinto de NULL al salir del constructor. Considere la posibilidad de agregar el modificador "required'"o declarar el campo como un valor que acepta valores NULL. [D:\Juego Unity\output\localization-es-en\Launcher\Core\Riftwalker.Launcher.Core.csproj]
+D:\Juego Unity\output\localization-es-en\My project\Assets\Scripts\Localization\Shared\TranslationCatalog.cs(9,73): warning CS8618: El elemento campo "code" que no acepta valores NULL debe contener un valor distinto de NULL al salir del constructor. Considere la posibilidad de agregar el modificador "required'"o declarar el campo como un valor que acepta valores NULL. [D:\Juego Unity\output\localization-es-en\Launcher\Core\Riftwalker.Launcher.Core.csproj]
+D:\Juego Unity\output\localization-es-en\My project\Assets\Scripts\Localization\Shared\TranslationCatalog.cs(9,93): warning CS8618: El elemento campo "name" que no acepta valores NULL debe contener un valor distinto de NULL al salir del constructor. Considere la posibilidad de agregar el modificador "required'"o declarar el campo como un valor que acepta valores NULL. [D:\Juego Unity\output\localization-es-en\Launcher\Core\Riftwalker.Launcher.Core.csproj]
+D:\Juego Unity\output\localization-es-en\My project\Assets\Scripts\Localization\Shared\TranslationCatalog.cs(10,83): warning CS8618: El elemento campo "locales" que no acepta valores NULL debe contener un valor distinto de NULL al salir del constructor. Considere la posibilidad de agregar el modificador "required'"o declarar el campo como un valor que acepta valores NULL. [D:\Juego Unity\output\localization-es-en\Launcher\Core\Riftwalker.Launcher.Core.csproj]
+D:\Juego Unity\output\localization-es-en\Launcher\Core\LauncherLanguage.cs(57,110): warning CS8620: El argumento de tipo "object?[]" no se puede usar para el parámetro "args" de tipo "object[]" en "string TranslationCatalog.FormatText(string locale, string text, params object[] args)" debido a las diferencias en la nulabilidad de los tipos de referencia. [D:\Juego Unity\output\localization-es-en\Launcher\Core\Riftwalker.Launcher.Core.csproj]
+PASS SemVer numeric order and prerelease boundaries
+PASS Stable / experimental selection ignores drafts and legacy releases
+PASS Resume sends Range and appends only the remaining bytes
+PASS Server ignoring Range restarts cleanly
+PASS Wrong Content-Range is rejected without touching the partial download
+PASS Corrupt full download is removed
+PASS Cancelled transfer leaves the previous installation intact
+PASS Interrupted streaming download resumes its durable prefix
+PASS Install and update replace game only, preserving launcher settings and backup
+PASS ZIP rejects unsafe path ../escape.txt
+PASS ZIP rejects unsafe path /absolute.txt
+PASS ZIP rejects unsafe path file:stream
+PASS ZIP rejects unsafe path folder/../escape.txt
+PASS ZIP rejects unsafe path installed.json
+PASS Wrong build stamp does not replace the installed game
+PASS Declared unpacked size limits ZIP extraction
+PASS Startup recovers interrupted directory swap
+PASS Unmanaged game folder is never replaced
+PASS Manifest requires matching version, asset size and hash
+PASS Download URLs cannot point to another repository or scheme
+PASS API list is reused with its ETag (304 does not count against GitHub's limit)
+PASS Latest stable release is found without the API, from its release.json
+PASS Latest stable release without the launcher format is not offered
+PASS The launcher's own release: launcher.json is read and checked
+PASS Notes in the launcher stop at the publisher's footer
+PASS US 350 CA1: el launcher ofrece Español, English, Português, Français e Italiano
+PASS Cuenta: confirmar guarda la sesión con el formato que lee el juego
+PASS Cuenta: crear manda el código, y con un mail usado lo dice
+PASS Cuenta: errores al entrar y sin conexión
+PASS Cuenta: renovar al abrir, cerrar sesión y la carpeta del juego
+PASS Cuenta: recuperar la contraseña con el código del mail (US 271)
+PASS Cuenta: borrar pide la contraseña y saca de la PC la sesión y el archivo de la cuenta (US 273)
+32/32 passed

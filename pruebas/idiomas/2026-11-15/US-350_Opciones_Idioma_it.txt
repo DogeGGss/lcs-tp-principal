@@ -1,0 +1,20 @@
+US-350_Opciones_Idioma_it · idioma it · 2026-11-15 14:49:46
+Resultado: todo traducido y todos los textos entran
+Textos en pantalla:
+  Grafica
+  Lingua
+  « Menu
+  Q
+  Italiano
+  Mirino
+  Español
+  Português (Brasil)
+  Français
+  Impostazioni di gioco
+  Comandi
+  English
+  La modifica si applica all'istante ed è condivisa con il launcher.
+  E
+  Audio
+  Lingua del gioco
+  Opzioni

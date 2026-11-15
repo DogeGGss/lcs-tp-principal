@@ -1,0 +1,63 @@
+US-350_Invasion_HUD_fr · idioma fr · 2026-11-15 14:48:35
+Resultado: todo traducido y todos los textos entran
+Ya pasaba en español (no cuenta para este idioma):
+  (cortado) La Porteña  [HUDCombate/HUDCanvas/Anden/Espacio2/Nombre]
+Textos en pantalla:
+  2
+  2b
+  UNGS
+  IDH instituto de desarrollo humano
+  IDEI instituto de industria
+  52
+  1
+  sur 10
+  9
+  Couteau
+  6
+  0:18
+  ICO instituto del conurbano
+  TORT. - MALVINAS ARGENTINAS - ESTAC. MORENO - SAN MIGUEL LÍNEA 315/440
+  La Porteña
+  5
+  SUM
+  aulas
+  Módulo 7 Ingreso peatonal SECTOR A del Estacionamiento
+  4
+  100
+  Juan María Gutiérrez 1150
+  Universidad Nacional de General Sarmiento
+  Prochaine vague dans
+  NUNCA MÁS
+  LP GRAND BOURG
+  Pts
+  Vague 1
+  Juan Maza
+  7a
+  18
+  INFORMES
+  10
+  Record
+  ICI instituto de ciencias
+  ∞
+  Prochaine vague
+  0
+  —
+  3
+  B PAZ T.ALTAS
+  Juan M. Gutiérrez
+  comedor
+  8
+  Normal
+  H Carte
+  SEGURIDAD
+  LPGB
+  7
+  7b
+  440
+  COMPAÑEROS DETENIDOS DESAPARECIDOS EN CAMPO DE MAYO
+  Vide
+  Tes cartes
+  ENTRADA
+  / 60
+  20
+  SOY DE POLVORINES NI DE BOCA NI DE RIVER

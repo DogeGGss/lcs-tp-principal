@@ -1,0 +1,46 @@
+US-350_Tienda_Cristales_it · idioma it · 2026-11-15 14:47:47
+Resultado: todo traducido y todos los textos entran
+Textos en pantalla:
+  Pass battaglia
+  Forziere di cristalli
+  +
+  Cristalli
+  0 acquisti
+  1.000
+  0
+  Acquisti simulati. È un progetto universitario: non si paga denaro reale. Si prova come funzionerebbe il negozio di un gioco gratuito.
+  Capsule
+  Cassa di cristalli
+  Miglior valore
+  Reimposta i dati di prova
+  Offerta di benvenuto
+  $ 12.900
+  Compra
+  cristalli
+  $ 0
+  400
+  +40 in regalo
+  Totale speso (simulato)
+  2.500
+  Non hai ancora fatto nessun acquisto simulato.
+  $ 3.300
+  $ 1.990
+  +150 in regalo
+  Il più scelto
+  Acquisti simulati
+  Una sola volta per account
+  Aprono capsule
+  -40 %
+  « Menu
+  5 biglietti + 200 cristalli
+  Negozio
+  $ 29.900
+  Caveau di cristalli
+  Simulazione
+  Valuta a pagamento
+  80
+  $ 5.500
+  $ 1.200
+  Si guadagnano giocando
+  +500 in regalo
+  Borsa di cristalli

@@ -1,0 +1,42 @@
+US-350_Perfil_Cuenta_pt-BR · idioma pt-BR · 2026-11-15 14:51:58
+Resultado: todo traducido y todos los textos entran
+Textos en pantalla:
+  Apareça no ranking global
+  Nível de jogador
+  0
+  Partidas
+  Entrar
+  Vitórias
+  Riftwalker
+  Abrem cápsulas
+  Onda recorde
+  1
+  Emotes
+  Sobe e desce na busca de partida
+  Perfil
+  Criar conta
+  —
+  Ganhos jogando
+  Procure partidas com outros jogadores
+  Personalização
+  Seu e-mail, seu nome, seu progresso, suas estatísticas e suas opiniões. Usamos para salvar seu progresso, montar o ranking e procurar partidas. Não compartilhamos com ninguém.
+  O que guardamos
+  +
+  No jogo publicado, a conta é gerenciada pelo launcher. Aqui, no editor, você pode criá-la ou entrar para testar.
+  Sem título
+  Seu progresso na nuvem, em qualquer PC
+  Registro do jogador
+  Mudar nome
+  Você joga sem conta
+  « Menu
+  Ver o aviso completo
+  Guarda
+  Conta
+  Editor Sem conta
+  KDA*
+  1.000
+  Estatísticas
+  Moeda paga
+  Privacidade
+  As contas precisam do serviço online, que não está configurado nesta versão.
+  Sua conta

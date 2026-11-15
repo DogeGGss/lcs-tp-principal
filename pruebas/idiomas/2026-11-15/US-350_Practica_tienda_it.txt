@@ -1,0 +1,90 @@
+US-350_Practica_tienda_it · idioma it · 2026-11-15 14:52:28
+Resultado: todo traducido y todos los textos entran
+Ya pasaba en español (no cuenta para este idioma):
+  (cortado) La Porteña  [HUDCombate/HUDCanvas/Anden/Espacio2/Nombre]
+Textos en pantalla:
+  1
+  30 m
+  Avvicinati per vedere l'obiettivo
+  5
+  10 m
+  2
+  Schegge 1/1
+  REINICIAR
+  50 m
+  30 / 60
+  Granate
+  · Correre (in Tattico, camminare piano)
+  Vuoto
+  Fucili
+  Pistole
+  DEATHMATCH
+  Indietro
+  Ctrl
+  35 m
+  Numero o clic
+  A
+  INVASIONE
+  Negozio
+  100
+  4
+  25 m
+  Schegge ×1
+  · Guardare
+  Tutorial · Passo 1 di 6
+  B
+  Campo di allenamento
+  QUIETOS
+  MAPPA DI ALLENAMENTO
+  15 m
+  Mitre
+  ›
+  3
+  Coltello
+  Spazio
+  Cambiala quando vuoi
+  / ∞
+  1–9
+  45 m
+  Cecchini
+  La Porteña
+  ZONA DI TIRO
+  Chiudi
+  W
+  40 m
+  IN MOVIMENTO
+  Clic des. vendi
+  20 m
+  · Salta
+  Quietos · Eliminazioni: 0 · Alla testa: 0
+  · Agacharse
+  Scegli
+  Compra
+  Secondaria
+  DISTANCIAS
+  REAZIONE
+  Fumo 1/1
+  Shift
+  · Muoversi
+  Scudo
+  TUTORIAL
+  Fucili a pompa
+  20 / 60
+  5 m
+  TATTICO
+  Scegli una modalità: guarda un pulsante e premi E , oppure sparagli
+  Flash 2/2
+  Muoversi
+  LINEA DI TIRO
+  30
+  Tab Salta passo Tieni premuto Tab Salta il tutorial
+  D
+  Mitragliette
+  CAMPO DI ALLENAMENTO
+  Mouse
+  Tutto gratis
+  Principale
+  Categoria
+  H Mappa
+  S
+  La tua squadra

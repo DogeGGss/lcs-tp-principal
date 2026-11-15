@@ -1,0 +1,75 @@
+US-350_Pausa_pt-BR · idioma pt-BR · 2026-11-15 14:49:55
+Resultado: todo traducido y todos los textos entran
+Ya pasaba en español (no cuenta para este idioma):
+  (cortado) Estilhaços ×1  [HUDCombate/HUDCanvas/Anden/Espacio4/Nombre]
+  (cortado) La Porteña  [HUDCombate/HUDCanvas/Anden/Espacio2/Nombre]
+Textos en pantalla:
+  Partida pausada
+  20 m
+  Estilhaços ×1
+  25 m
+  Aproxime-se para ver o objetivo
+  S
+  4
+  O tempo, os inimigos e o áudio ficam parados até você voltar.
+  Pausa
+  W
+  Continuar
+  Escolha um modo: olhe para um botão e aperte E , ou dê um tiro nele
+  · Agacharse
+  Configurações
+  D
+  · Correr (no Tático, andar devagar)
+  REINICIAR
+  DISTANCIAS
+  Mitre
+  Enter
+  Faca
+  5 m
+  Mover-se
+  45 m
+  35 m
+  LINHA DE TIRO
+  Tutorial · Passo 1 de 6
+  QUIETOS
+  1
+  Backspace
+  50 m
+  Voltar
+  CAMPO DE TREINO
+  Reiniciar partida
+  · Mover-se
+  Escolher
+  2
+  40 m
+  Tab Pular passo Segure Tab Pular tutorial
+  REAÇÃO
+  ZONA DE TIRO
+  DEATHMATCH
+  30 m
+  Quietos · Baixas: 0 · Na cabeça: 0
+  Ctrl
+  A
+  Mouse
+  10 m
+  Shift
+  Sair da partida
+  15 m
+  · Pular
+  MAPA DE TREINO
+  3
+  La Porteña
+  Tático
+  / ∞
+  Esc
+  TUTORIAL
+  · Olhar
+  Números
+  INVASÃO
+  EM MOVIMENTO
+  H Mapa
+  100
+  Aceitar
+  30
+  TÁTICO
+  Espaço
