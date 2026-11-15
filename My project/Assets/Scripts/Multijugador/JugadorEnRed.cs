@@ -15,6 +15,7 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
     private const float AlcanceTrazadora = 300f;
     private const byte Agachado = 1, Corriendo = 2, Cayendo = 4, Invulnerable = 8, Despacio = 16;
     private const byte Caido = 32; // F31 (US 357): caído en Invasión cooperativa (se lo puede revivir)
+    private const byte Mira1 = 64, Mira2 = 128; // US 133: con la mira telescópica puesta (primer o segundo zoom), para el espectador
     // Arma en la mano: las principales van desde PrimeraPrincipal, en el orden de WeaponSwitcher.Principales(), y las
     // demás secundarias (Línea H...) desde PrimeraSecundaria, en el orden de WeaponSwitcher.otrasSecundarias (US 072).
     private const byte SinArma = 0, ArmaPistola = 2, ArmaCuchillo = 3, PrimeraSecundaria = 4, PrimeraPrincipal = 10;
@@ -97,6 +98,9 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
     public bool Vivo => !muerto;
     /// <summary>F31 (US 357): la copia de un compañero que está caído (en esta computadora lo dice su dueño).</summary>
     public bool EstaCaido => !muerto && (banderasRed & Caido) != 0;
+
+    /// <summary>US 133: con qué zoom de la mira telescópica está apuntando (0: sin la mira), para el espectador.</summary>
+    public int NivelDeMira => muerto ? 0 : (banderasRed & Mira2) != 0 ? 2 : (banderasRed & Mira1) != 0 ? 1 : 0;
 
     // US 138, CA5: para saber hasta cuándo se puede cambiar de equipo en Deathmatch.
     public const float TopeConTienda = 10f; // muerto y con la tienda abierta, como mucho se espera esto
@@ -646,6 +650,8 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
         if (vida != null && vida.Invulnerable) banderas |= Invulnerable;
         if (movimiento != null && movimiento.CaminandoDespacio) banderas |= Despacio; // US 198
         if (movimiento != null && movimiento.Caido) banderas |= Caido; // US 357
+        MiraTelescopica mira = MiraTelescopica.Activa; // US 133: la mira puesta, para el que lo mira como espectador
+        if (mira != null && mira.ConLente) banderas |= mira.Nivel == 2 ? Mira2 : Mira1;
         return banderas;
     }
 
