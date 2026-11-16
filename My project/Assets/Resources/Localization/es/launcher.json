@@ -867,6 +867,10 @@
     {
       "key": "launcher.language_save_error",
       "text": "No se pudo guardar el idioma: {0}"
+    },
+    {
+      "key": "launcher.session.other_pc",
+      "text": "Tu cuenta se abrió en otra computadora. Volvé a entrar para jugar acá."
     }
   ]
 }

@@ -2071,7 +2071,7 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 380227458789477
-    m_Localized: "Voc\xEA aparece no in\xEDcio da pr\xF3xima onda"
+    m_Localized: "Voc\xEA aparece no in\xEDcio do pr\xF3ximo descanso"
     m_Metadata:
       m_Items: []
   - m_Id: 380227458789478
@@ -5059,7 +5059,7 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 380227458789383
-    m_Localized: "Primeiro sai a raridade (com estas probabilidades), depois o tipo ({0} % avatar, {1} % banner, {2} % t\xEDtulo, {3} % moldura, {4} % skin de arma) e por \xFAltimo um item ao acaso. A cada {5} c\xE1psulas h\xE1 um \xE9pico ou melhor garantido. Os repetidos viram cr\xE9ditos."
+    m_Localized: "Primeiro sai a raridade (com estas probabilidades). Se for comum ou rara, depois sai o tipo ({0} % avatar, {1} % banner, {2} % t\xEDtulo, {3} % moldura, {4} % skin de arma, {5} % emote); os \xE9picos e lend\xE1rios s\xE3o skins de arma ou emotes. Por \xFAltimo, um item ao acaso dos das c\xE1psulas. A cada {6} c\xE1psulas h\xE1 um \xE9pico ou melhor garantido. Os repetidos viram cr\xE9ditos."
     m_Metadata:
       m_Items: []
   - m_Id: 380227458789384
@@ -7356,6 +7356,46 @@ MonoBehaviour:
       m_Items: []
   - m_Id: 2881462250336268
     m_Localized: "Tiro na cabe\xE7a"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3254013837275136
+    m_Localized: Sua conta foi aberta em outro computador. Entre de novo para jogar aqui.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3254014290259968
+    m_Localized: Emote
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3254014290259969
+    m_Localized: "Obtido nas c\xE1psulas"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3254014290259970
+    m_Localized: Obtido na loja
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3254014290259971
+    m_Localized: "Obtido no passe (n\xEDvel {0})"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3254014290259972
+    m_Localized: '{0} itens'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3254014290259973
+    m_Localized: obtido
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3254014290259974
+    m_Localized: Sua conta foi aberta em outro computador. Entre de novo para jogar aqui.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3254014290259975
+    m_Localized: Sua conta foi aberta em outro computador
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3254014290259976
+    m_Localized: "Algu\xE9m entrou na sua conta em outro computador e a sess\xE3o daqui foi encerrada: uma conta \xE9 jogada em um s\xF3 computador por vez. Para jogar aqui, entre de novo no launcher. Seu progresso est\xE1 salvo na conta."
     m_Metadata:
       m_Items: []
   references:

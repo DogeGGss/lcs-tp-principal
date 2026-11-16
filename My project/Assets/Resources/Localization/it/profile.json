@@ -2771,6 +2771,18 @@
     {
       "key": "profile.station.owned",
       "text": "ottenuto"
+    },
+    {
+      "key": "profile.session.other_pc",
+      "text": "Il tuo account è stato aperto su un altro computer. Accedi di nuovo per giocare qui."
+    },
+    {
+      "key": "profile.session.other_pc_title",
+      "text": "Il tuo account è stato aperto su un altro computer"
+    },
+    {
+      "key": "profile.session.other_pc_text",
+      "text": "Qualcuno ha effettuato l'accesso al tuo account su un altro computer e la sessione qui è stata chiusa: un account si gioca su un solo computer alla volta. Per giocare qui, accedi di nuovo nel launcher. I tuoi progressi sono salvati nell'account."
     }
   ]
 }

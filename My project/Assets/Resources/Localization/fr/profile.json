@@ -2771,6 +2771,18 @@
     {
       "key": "profile.station.owned",
       "text": "obtenu"
+    },
+    {
+      "key": "profile.session.other_pc",
+      "text": "Ton compte a été ouvert sur un autre ordinateur. Reconnecte-toi pour jouer ici."
+    },
+    {
+      "key": "profile.session.other_pc_title",
+      "text": "Ton compte a été ouvert sur un autre ordinateur"
+    },
+    {
+      "key": "profile.session.other_pc_text",
+      "text": "Quelqu'un s'est connecté à ton compte sur un autre ordinateur et la session ici a été fermée : un compte ne se joue que sur un seul ordinateur à la fois. Pour jouer ici, reconnecte-toi dans le launcher. Ta progression est sauvegardée sur ton compte."
     }
   ]
 }

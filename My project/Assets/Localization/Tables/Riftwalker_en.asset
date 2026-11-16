@@ -6197,7 +6197,7 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 380227458789383
-    m_Localized: First the rarity is rolled (with these odds), then the type ({0}% avatar, {1}% banner, {2}% title, {3}% frame, {4}% weapon skin) and finally a random item. Every {5} capsules an epic or better is guaranteed. Duplicates turn into credits.
+    m_Localized: First the rarity is rolled (with these odds). If it is common or rare, then the type ({0}% avatar, {1}% banner, {2}% title, {3}% frame, {4}% weapon skin, {5}% emote); epics and legendaries are weapon skins or emotes. Finally, a random item from the capsule items. Every {6} capsules an epic or better is guaranteed. Duplicates turn into credits.
     m_Metadata:
       m_Items: []
   - m_Id: 380227458789384
@@ -7377,6 +7377,46 @@ MonoBehaviour:
       m_Items: []
   - m_Id: 2881462250336268
     m_Localized: Headshot
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3254013837275136
+    m_Localized: Your account was opened on another computer. Log in again to play here.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3254014290259968
+    m_Localized: Emote
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3254014290259969
+    m_Localized: Get it in capsules
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3254014290259970
+    m_Localized: Get it in the store
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3254014290259971
+    m_Localized: Get it in the battle pass (level {0})
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3254014290259972
+    m_Localized: '{0} items'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3254014290259973
+    m_Localized: owned
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3254014290259974
+    m_Localized: Your account was opened on another computer. Log in again to play here.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3254014290259975
+    m_Localized: Your account was opened on another computer
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3254014290259976
+    m_Localized: 'Someone logged in to your account on another computer, so the session here was closed: an account can be played on only one computer at a time. To play here, log in again in the launcher. Your progress is saved in your account.'
     m_Metadata:
       m_Items: []
   references:

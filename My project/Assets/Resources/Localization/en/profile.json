@@ -2771,6 +2771,18 @@
     {
       "key": "profile.station.owned",
       "text": "owned"
+    },
+    {
+      "key": "profile.session.other_pc",
+      "text": "Your account was opened on another computer. Log in again to play here."
+    },
+    {
+      "key": "profile.session.other_pc_title",
+      "text": "Your account was opened on another computer"
+    },
+    {
+      "key": "profile.session.other_pc_text",
+      "text": "Someone logged in to your account on another computer, so the session here was closed: an account can be played on only one computer at a time. To play here, log in again in the launcher. Your progress is saved in your account."
     }
   ]
 }

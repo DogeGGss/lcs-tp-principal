@@ -138,7 +138,7 @@ public sealed partial class LogrosOnline : MonoBehaviour
         // Sin cuenta no se sube nada (US 281): la sesión anónima solo manda opiniones y pide el ranking.
         bool subir = enCuenta && (enviado != LogrosCometas.Revision || nombreEnviado != PlayerProfile.Name || (progresoDisponible && progresoCambio)
             || BilleteraPendiente || NombreDeCuentaPendiente);
-        if (pedir || subir || PerfilesPendientes || (opinionesDisponible && Opiniones.Pendientes > 0))
+        if (pedir || subir || PerfilesPendientes || RevisionDeSesionPendiente || (opinionesDisponible && Opiniones.Pendientes > 0))
             StartCoroutine(Trabajar());
     }
     /// <summary>Manda enseguida la opinión que acaba de guardar la ventana y avisa en el menú cómo le fue.</summary>
@@ -168,6 +168,9 @@ public sealed partial class LogrosOnline : MonoBehaviour
             string aviso = avisoSesion;
 
             // US 373: el perfil de otro jugador va primero, así la pantalla que lo espera no tarda.
+            // US 393: antes de subir nada, si esta sesión sigue siendo la de la cuenta (si no, sale de la cuenta).
+            yield return RevisarSesion();
+
             if (perfilPedido != null) yield return TraerPerfil();
 
             // Opiniones: una por vuelta y antes que lo demás, así llegan aunque falle otra cosa. Cada una lleva su id:

@@ -211,6 +211,7 @@ public sealed partial class LogrosOnline
         sesion = nueva;
         enCuenta = true;
         SinSesion = SesionCerrada = false;
+        SesionNueva(); // US 393: esta es la sesión que vale; se cierran las de otras computadoras
         GuardarSesion();
         GuardarPendiente(null);
         string nombreCuenta = nueva.user?.user_metadata?.nombre;

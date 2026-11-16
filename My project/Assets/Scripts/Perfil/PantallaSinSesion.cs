@@ -14,7 +14,7 @@ public class PantallaSinSesion
     public const string GuiaLauncher = "https://dogeggss.github.io/lcs-tp-principal/#launcher";
     private readonly GameObject lienzo;
     private readonly TextMeshProUGUI rotulo, texto, nota;
-    private bool? cerradaPintada;
+    private int pintada = -1;
 
     public PantallaSinSesion(RectTransform lienzo, RectTransform raiz)
     {
@@ -39,16 +39,21 @@ public class PantallaSinSesion
         nota = T(raiz, "Nota", 152f, 784f, 1200f, 30f, FTexto, 21f, Mute, "Si el launcher no está en esta PC, bajalo desde la guía del juego.");
     }
 
-    public void Mostrar(bool ver, bool cerrada)
+    /// <summary>desplazada: se entró con la cuenta en otra computadora (US 393, CA2).</summary>
+    public void Mostrar(bool ver, bool cerrada, bool desplazada = false)
     {
         if (lienzo.activeSelf != ver) lienzo.SetActive(ver);
-        if (!ver || cerradaPintada == cerrada) return;
-        cerradaPintada = cerrada;
-        rotulo.text = cerrada ? L10n.Source("Tu sesión se cerró", "profile.") : "Project Riftwalker";
-        rotulo.color = cerrada ? Bad : Accent;
-        texto.text = cerrada
+        int estado = desplazada ? 2 : cerrada ? 1 : 0;
+        if (!ver || pintada == estado) return;
+        pintada = estado;
+        rotulo.text = desplazada ? L10n.Source("Tu cuenta se abrió en otra computadora", "profile.")
+            : cerrada ? L10n.Source("Tu sesión se cerró", "profile.") : "Project Riftwalker";
+        rotulo.color = cerrada || desplazada ? Bad : Accent;
+        texto.text = L10n.Source(desplazada
+            ? "Alguien entró con tu cuenta en otra computadora y acá se cerró la sesión: una cuenta se juega en una sola computadora a la vez. Para jugar acá, volvé a entrar en el launcher. Tu progreso está guardado en la cuenta."
+            : cerrada
             ? "Se cerró la sesión de tu cuenta, por ejemplo desde el launcher. Volvé a entrar ahí para seguir jugando: tu progreso está guardado en la cuenta."
-            : "Para jugar hace falta una cuenta. Abrí el launcher, entrá con tu cuenta y tocá Jugar: el juego se abre con ella.";
+            : "Para jugar hace falta una cuenta. Abrí el launcher, entrá con tu cuenta y tocá Jugar: el juego se abre con ella.", "profile.");
     }
 
     private void Abrir()

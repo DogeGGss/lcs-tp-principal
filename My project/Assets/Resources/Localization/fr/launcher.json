@@ -867,6 +867,10 @@
     {
       "key": "launcher.language_save_error",
       "text": "Impossible d'enregistrer la langue : {0}"
+    },
+    {
+      "key": "launcher.session.other_pc",
+      "text": "Ton compte a été ouvert sur un autre ordinateur. Reconnecte-toi pour jouer ici."
     }
   ]
 }
