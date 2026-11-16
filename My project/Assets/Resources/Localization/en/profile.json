@@ -2102,7 +2102,7 @@
     },
     {
       "key": "profile.station.odds_fmt",
-      "text": "First the rarity is rolled (with these odds), then the type ({0}% avatar, {1}% banner, {2}% title, {3}% frame, {4}% weapon skin) and finally a random item. Every {5} capsules an epic or better is guaranteed. Duplicates turn into credits."
+      "text": "First the rarity is rolled (with these odds). If it is common or rare, then the type ({0}% avatar, {1}% banner, {2}% title, {3}% frame, {4}% weapon skin, {5}% emote); epics and legendaries are weapon skins or emotes. Finally, a random item from the capsule items. Every {6} capsules an epic or better is guaranteed. Duplicates turn into credits."
     },
     {
       "key": "profile.emote.equipped_fmt",
@@ -2747,6 +2747,30 @@
     {
       "key": "profile.other.no_matches",
       "text": "Hasn't finished any matches yet."
+    },
+    {
+      "key": "profile.type.emote",
+      "text": "Emote"
+    },
+    {
+      "key": "profile.origin.capsules",
+      "text": "Get it in capsules"
+    },
+    {
+      "key": "profile.origin.store",
+      "text": "Get it in the store"
+    },
+    {
+      "key": "profile.origin.pass_fmt",
+      "text": "Get it in the battle pass (level {0})"
+    },
+    {
+      "key": "profile.station.items_fmt",
+      "text": "{0} items"
+    },
+    {
+      "key": "profile.station.owned",
+      "text": "owned"
     }
   ]
 }

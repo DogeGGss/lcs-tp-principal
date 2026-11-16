@@ -1,16 +1,16 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
-using Cosmetico = PerfilDatos.Cosmetico;
-using Rareza = PerfilDatos.Rareza;
-using Tipo = PerfilDatos.Tipo;
 
 // F32: el pase de batalla. Datos y reglas; la pantalla es PantallaPase y el resumen al terminar la partida, ResumenDelPase.
 // - US 362: experiencia por partida (100, y 100 más si ganó; en Invasión 10 por oleada superada) y por desafío; un nivel
 //   cada 1.000, hasta el 40 (después se sigue sumando experiencia, pero no hay más niveles).
 // - US 363: 40 recompensas en 4 páginas de 10. Las de los niveles 1 y 6 de cada página son gratis; las otras 8, de pago.
-// - US 364: el pase cuesta 950 cristales y se compra una vez por temporada. Las recompensas de pago de los niveles 5, 15,
-//   25, 35 y 40 traen además 100 cristales cada una (500 en total).
+// - US 364: el pase cuesta 950 cristales y se compra una vez por temporada.
+// - US 392 (CA4 y CA5): lo que da cada nivel es fijo (OrigenDeCosmeticos.Pase): 35 cosméticos del pase (2 skins y un
+//   emote por página, de menor a mayor rareza) y cristales en 5 niveles (100 en el 11, gratis, y 100 en el 5, el 15 y el
+//   25 y 150 en el 35 con el pase comprado: 550 en total). No da créditos.
+// - US 392, CA10: con el catálogo nuevo se empieza de cero (la clave y las de la nube cambiaron).
 // - US 365: los desafíos de la temporada (Desafios), que avanzan al terminar cada partida (DesafiosDePartida).
 // - US 366: temporadas de 8 semanas desde el lunes 9/11/2026 (hora de Argentina). Al terminar una, lo desbloqueado y no
 //   reclamado se reclama solo y la siguiente empieza de cero, con otras recompensas.
@@ -19,24 +19,13 @@ using Tipo = PerfilDatos.Tipo;
 // la unión.
 public static class PaseDeBatalla
 {
-    public const string Clave = "Pase.Estado";
+    public const string Clave = "Pase.Estado2"; // US 392, CA10 (antes "Pase.Estado")
+    private const string Nube = "pase2."; // US 392, CA10: las claves de la nube (antes "pase.")
     public const int Niveles = 40, PorPagina = 10, Paginas = 4, XpPorNivel = 1000, Precio = 950;
     public const int XpPartida = 100, XpVictoria = 100, XpPorOleada = 10;
     public const int DiasPorTemporada = 56;
     private static readonly DateTime Inicio = new DateTime(2026, 11, 9, 3, 0, 0, DateTimeKind.Utc); // 00:00 en Argentina (UTC-3)
-    // US 364, CA3 (14/11/2026): no todo es un cosmético. Algunos niveles dan cristales o créditos: 100 cristales en el pase
-    // gratis y 550 en total con el pase comprado (450 en los niveles de pago), repartidos a medida que se sube.
-    private static readonly Dictionary<int, int> Cristales = new Dictionary<int, int>
-    {
-        { 16, 50 }, { 31, 50 },                                   // gratis: 100
-        { 5, 100 }, { 10, 50 }, { 15, 100 }, { 25, 100 }, { 35, 100 }, // pase: 450
-    };
-    private static readonly Dictionary<int, int> Creditos = new Dictionary<int, int>
-    {
-        { 6, 500 }, { 26, 1000 },                                 // gratis
-        { 3, 500 }, { 8, 500 }, { 18, 750 }, { 23, 750 }, { 33, 1000 }, { 38, 1000 }, // pase
-    };
-    public const int CristalesGratis = 100, CristalesConPase = 550;
+    public const int CristalesGratis = 100, CristalesConPase = 550; // US 392, CA5
 
     public static event Action Cambio;
 
@@ -250,59 +239,9 @@ public static class PaseDeBatalla
         });
     }
 
-    // Qué cosmético da cada nivel: sale del catálogo, con la rareza subiendo a lo largo de las páginas y los tipos
-    // alternados. Cada temporada sortea otros (con la temporada como semilla), siempre los mismos para todos.
-    private static readonly Dictionary<int, Premio[]> recompensas = new Dictionary<int, Premio[]>();
-
-    private static Premio CosmeticoDe(int temporada, int nivel)
-    {
-        if (!recompensas.TryGetValue(temporada, out Premio[] lista))
-        {
-            lista = ArmarRecompensas(temporada);
-            recompensas[temporada] = lista;
-        }
-        return nivel >= 1 && nivel <= Niveles ? lista[nivel - 1] : null;
-    }
-
-    private static Premio[] ArmarRecompensas(int temporada)
-    {
-        var rng = new System.Random(7919 * temporada + 17);
-        var usados = new HashSet<string>();
-        var lista = new Premio[Niveles];
-        // Avatar, skin, tarjeta de presentación (banner), título, marco: en ese orden, una y otra vez.
-        int[] tipos = { 0, 4, 1, 2, 3 };
-        int cosmeticos = 0;
-        for (int n = 1; n <= Niveles; n++)
-        {
-            if (Cristales.TryGetValue(n, out int cr)) { lista[n - 1] = new Premio { cristales = cr }; continue; }
-            if (Creditos.TryGetValue(n, out int cd)) { lista[n - 1] = new Premio { creditos = cd }; continue; }
-            Rareza r = n == Niveles ? Rareza.Legendario : n % 10 == 0 ? Rareza.Epico : n <= 10 ? (n % 3 == 0 ? Rareza.Raro : Rareza.Comun)
-                : n <= 20 ? Rareza.Raro : n <= 32 ? Rareza.Epico : (n % 4 == 0 ? Rareza.Legendario : Rareza.Epico);
-            // Corrido uno por página de 5: así las gratis (niveles 1 y 6 de cada página) no son siempre del mismo tipo.
-            int t = n == Niveles ? 4 : tipos[cosmeticos++ % tipos.Length];
-            // Si no hay de ese tipo con esa rareza (todavía no hay skins legendarias), primero otro tipo de la misma rareza.
-            Premio p = Elegir(rng, usados, t, r) ?? Elegir(rng, usados, -1, r) ?? Elegir(rng, usados, t, null) ?? Elegir(rng, usados, -1, null);
-            if (p != null) { usados.Add(p.Clave); usados.Add("n:" + p.Nombre); } // sin dos del mismo conjunto (avatar y banner)
-            lista[n - 1] = p;
-        }
-        return lista;
-    }
-
-    // tipo: 0 avatar, 1 banner, 2 título, 3 marco, 4 skin; -1 cualquiera. rareza null: cualquiera.
-    private static Premio Elegir(System.Random rng, HashSet<string> usados, int tipo, Rareza? rareza)
-    {
-        var posibles = new List<Premio>();
-        if (tipo == 4 || tipo < 0)
-            foreach (CatalogoDeSkins.Skin s in CatalogoDeSkins.Skins)
-                if ((rareza == null || s.rareza == rareza) && !usados.Contains("sk:" + s.id) && !usados.Contains("n:" + s.Texto)) posibles.Add(Premio.De(s));
-        if (tipo != 4)
-            foreach (Cosmetico c in PerfilDatos.Catalogo)
-            {
-                if (c.rareza == Rareza.Inicial || (tipo >= 0 && (int)c.tipo != tipo)) continue;
-                if ((rareza == null || c.rareza == rareza) && !usados.Contains(c.Clave) && !usados.Contains("n:" + L10n.Source(c.nombre, "profile."))) posibles.Add(Premio.De(c));
-            }
-        return posibles.Count > 0 ? posibles[rng.Next(posibles.Count)] : null;
-    }
+    // US 392, CA4 y CA5: lo que da cada nivel es siempre lo mismo, para todos y en todas las temporadas.
+    private static Premio CosmeticoDe(int temporada, int nivel) =>
+        nivel >= 1 && nivel <= Niveles && nivel <= OrigenDeCosmeticos.Pase.Count ? OrigenDeCosmeticos.Pase[nivel - 1] : null;
 
     // ================= Desafíos (US 365) =================
 
@@ -408,7 +347,7 @@ public static class PaseDeBatalla
         get
         {
             Estado s = E;
-            string t = "pase." + s.temporada + ".";
+            string t = Nube + s.temporada + ".";
             yield return (t + "xp", s.xp);
             if (s.comprado) yield return (t + "comprado", 1);
             foreach (Desafio d in Desafios)
@@ -420,14 +359,14 @@ public static class PaseDeBatalla
         }
     }
 
-    public static string ClaveReclamados => "pase." + E.temporada + ".reclamados";
+    public static string ClaveReclamados => Nube + E.temporada + ".reclamados";
     public static IEnumerable<string> Reclamados => E.reclamados;
 
     /// <summary>Junta lo que volvió de la nube: el máximo de cada contador y la unión de lo reclamado.</summary>
     public static void FusionarNube(Func<string, long> leer, IEnumerable<string> reclamados)
     {
         Estado s = E;
-        string t = "pase." + s.temporada + ".";
+        string t = Nube + s.temporada + ".";
         bool cambio = false;
         int xp = (int)leer(t + "xp");
         if (xp > s.xp) { s.xp = xp; cambio = true; }

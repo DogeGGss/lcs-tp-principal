@@ -576,8 +576,12 @@ public class PantallaPerfil : PantallaBase
         if (pj != null) detalle += " · " + pj.nombre;
         T(vista, "Detalle", 24f, 420f, 452f, 28f, FTexto, 20f, Mute, detalle);
 
-        if (!PerfilDatos.Tiene(c))
-            CrearBoton(vista, 24f, 464f, 452f, 56f, "Conseguilo en la estación »", false, () => menu.AbrirTienda(PestanaTienda.Capsulas), 24f);
+        if (!PerfilDatos.Tiene(c)) // US 392, CA9: dónde se consigue (lleva a esa pestaña de la tienda)
+        {
+            Premio premio = Premio.De(c);
+            CrearBoton(vista, 24f, 464f, 452f, 56f, OrigenDeCosmeticos.DondeSeConsigue(premio) + " »", false,
+                () => menu.AbrirTienda(OrigenDeCosmeticos.PestanaDe(premio)), 22f);
+        }
         else if (PerfilDatos.Equipado(c))
             CrearBoton(vista, 24f, 464f, 452f, 56f, "Equipado", true, null, 26f, Ok).button.interactable = false;
         else
@@ -726,8 +730,12 @@ public class PantallaPerfil : PantallaBase
         else T(vista, "Detalle", 24f, 420f, 452f, 28f, FTexto, 20f, Mute, "El arma como viene, sin skin.");
 
         bool tiene = s == null || SkinsDeArmas.Tiene(s);
-        if (!tiene) // CA4: se ve, pero no se equipa
-            CrearBoton(vista, 24f, 464f, 452f, 56f, "Se consigue en el pase o en las cápsulas", false, null, 20f).button.interactable = false;
+        if (!tiene) // CA4: se ve, pero no se equipa. US 392, CA9: dónde se consigue (lleva a esa pestaña de la tienda).
+        {
+            Premio premio = Premio.De(s);
+            CrearBoton(vista, 24f, 464f, 452f, 56f, OrigenDeCosmeticos.DondeSeConsigue(premio) + " »", false,
+                () => menu.AbrirTienda(OrigenDeCosmeticos.PestanaDe(premio)), 22f);
+        }
         else if (SkinsDeArmas.EquipadaDe(armaElegida) == s)
             CrearBoton(vista, 24f, 464f, 452f, 56f, "Equipada", true, null, 26f, Ok).button.interactable = false;
         else
@@ -763,7 +771,6 @@ public class PantallaPerfil : PantallaBase
     // vista previa pero no se equipan, y dicen dónde se consiguen; los recién conseguidos, marcados como nuevos hasta que
     // se los ve.
 
-    private const string DondeSeConsiguen = "Se consigue en las cápsulas, el pase o la tienda";
 
     private static readonly string[] LugaresDeLaRueda = { "Arriba", "Derecha", "Abajo", "Izquierda" };
     private int espacioElegido = 0;
@@ -888,7 +895,7 @@ public class PantallaPerfil : PantallaBase
                 // CA3: va al espacio elegido (F37: si lo tiene; bloqueado, solo se lo mira).
                 emoteVisto = k;
                 ColeccionDeEmotes.Visto(e);
-                if (!tiene) menu.Avisar($"<color={Rich(colorR)}>{e.nombre}</color>: {L10n.Source(DondeSeConsiguen, "profile.").ToLowerInvariant()}");
+                if (!tiene) menu.Avisar($"<color={Rich(colorR)}>{e.nombre}</color>: {OrigenDeCosmeticos.DondeSeConsigue(Premio.De(e))}"); // US 392, CA9
                 else if (espacioElegido >= 0)
                 {
                     EmotesEquipados.Poner(espacioElegido, k);
@@ -924,7 +931,7 @@ public class PantallaPerfil : PantallaBase
         nombreVisto.color = e != null ? ColorRareza(e.rareza) : Ink; // F37 (US 388): con el color de su rareza
         if (personajeVisto != null) personajeVisto.text = pj != null ? pj.displayName : "";
         ayudaVista.text = e == null ? L10n.Source("Pasá el mouse por un baile para verlo.", "profile.")
-            : !ColeccionDeEmotes.Tiene(e) ? NombreRareza(e.rareza) + " · " + L10n.Source(DondeSeConsiguen, "profile.")
+            : !ColeccionDeEmotes.Tiene(e) ? NombreRareza(e.rareza) + " · " + OrigenDeCosmeticos.DondeSeConsigue(Premio.De(e))
             : NombreRareza(e.rareza) + (pj != null ? " · " + pj.role : "");
     }
 

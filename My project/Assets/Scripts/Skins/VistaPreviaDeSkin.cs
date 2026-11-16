@@ -8,7 +8,7 @@ using UnityEngine;
 // F35: las cartas del pase de batalla y de la tienda directa la muestran con Mostrar(imagen, skin): una por skin,
 // compartida entre las imágenes que la muestran (la carta y el panel), que dibuja solo mientras alguna está en pantalla y
 // se borra cuando ya no la usa ninguna (UsoDeVistaDeSkin).
-public class VistaPreviaDeSkin : MonoBehaviour
+public class VistaPreviaDeSkin : MonoBehaviour, IVistaCompartida
 {
     private static readonly Vector3 Lugar = new Vector3(0f, -3000f, 0f);
     private const int Ancho = 900, Alto = 600;
@@ -75,16 +75,16 @@ public class VistaPreviaDeSkin : MonoBehaviour
         imagen.gameObject.AddComponent<UsoDeVistaDeSkin>().Usar(v);
     }
 
-    internal void Tomar() => usos++;
+    public void Tomar() => usos++;
 
-    internal void Soltar()
+    public void Soltar()
     {
         if (--usos > 0) return;
         if (clave != null && compartidas.TryGetValue(clave, out VistaPreviaDeSkin v) && v == this) compartidas.Remove(clave);
         Destruir();
     }
 
-    internal void Visible(bool visible)
+    public void Visible(bool visible)
     {
         enPantalla = Mathf.Max(0, enPantalla + (visible ? 1 : -1));
         if (camara != null) camara.enabled = enPantalla > 0;
@@ -198,14 +198,22 @@ public class VistaPreviaDeSkin : MonoBehaviour
     }
 }
 
-// F35: una imagen que muestra una vista previa compartida (VistaPreviaDeSkin.Mostrar): la hace dibujar mientras está en
-// pantalla y la suelta al borrarse.
+/// <summary>Una vista previa que comparten varias imágenes (la de una skin o la de un emote, US 392).</summary>
+public interface IVistaCompartida
+{
+    void Tomar();
+    void Soltar();
+    void Visible(bool visible);
+}
+
+// F35 (y US 392): una imagen que muestra una vista previa compartida (VistaPreviaDeSkin.Mostrar o
+// VistaPreviaDeEmote.Mostrar): la hace dibujar mientras está en pantalla y la suelta al borrarse.
 public class UsoDeVistaDeSkin : MonoBehaviour
 {
-    private VistaPreviaDeSkin vista;
+    private IVistaCompartida vista;
     private bool visible;
 
-    public void Usar(VistaPreviaDeSkin v)
+    public void Usar(IVistaCompartida v)
     {
         vista = v;
         vista.Tomar();

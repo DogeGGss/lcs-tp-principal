@@ -2102,7 +2102,7 @@
     },
     {
       "key": "profile.station.odds_fmt",
-      "text": "D'abord la rareté (avec ces probabilités), puis le type ({0} % avatar, {1} % bannière, {2} % titre, {3} % cadre, {4} % skin d'arme) et enfin un objet au hasard. Toutes les {5} capsules, un épique ou mieux est garanti. Les doublons sont convertis en crédits."
+      "text": "D'abord la rareté (avec ces probabilités). Si elle est commune ou rare, puis le type ({0} % avatar, {1} % bannière, {2} % titre, {3} % cadre, {4} % skin d'arme, {5} % emote) ; les épiques et légendaires sont des skins d'arme ou des emotes. Enfin, un objet au hasard parmi ceux des capsules. Toutes les {6} capsules, un épique ou mieux est garanti. Les doublons sont convertis en crédits."
     },
     {
       "key": "profile.emote.equipped_fmt",
@@ -2747,6 +2747,30 @@
     {
       "key": "profile.other.no_matches",
       "text": "N'a encore terminé aucune partie."
+    },
+    {
+      "key": "profile.type.emote",
+      "text": "Emote"
+    },
+    {
+      "key": "profile.origin.capsules",
+      "text": "S'obtient dans les capsules"
+    },
+    {
+      "key": "profile.origin.store",
+      "text": "S'obtient dans la boutique"
+    },
+    {
+      "key": "profile.origin.pass_fmt",
+      "text": "S'obtient dans le passe (niveau {0})"
+    },
+    {
+      "key": "profile.station.items_fmt",
+      "text": "{0} objets"
+    },
+    {
+      "key": "profile.station.owned",
+      "text": "obtenu"
     }
   ]
 }

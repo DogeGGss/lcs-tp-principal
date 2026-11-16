@@ -207,7 +207,7 @@ public class PantallaPase : PantallaBase
         T(panel, "Nivel", 24f, 20f, PanelW - 48f, 26f, FRotulo, 18f, Accent,
             L10n.T("profile.pass.level_kind_fmt", n, PaseDeBatalla.EsGratis(n) ? L10n.T("profile.pass.free") : L10n.T("profile.store.tab.pass")),
             TextAlignmentOptions.MidlineLeft, 12f, true);
-        float artH = p.cosmetico != null && p.cosmetico.tipo == PerfilDatos.Tipo.Avatar ? 300f : 220f;
+        float artH = (p.cosmetico != null && p.cosmetico.tipo == PerfilDatos.Tipo.Avatar) || p.emote != null ? 300f : 220f;
         p.DibujarArte(panel, 24f, 54f, PanelW - 48f, artH);
         float y = 54f + artH + 16f;
         T(panel, "Tipo", 24f, y, PanelW - 48f, 22f, FRotulo, 17f, ColorRareza(p.Rareza), $"{p.NombreTipo} · {NombreRareza(p.Rareza)}", TextAlignmentOptions.MidlineLeft, 12f, true);

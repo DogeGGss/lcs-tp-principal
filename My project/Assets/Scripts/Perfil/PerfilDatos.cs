@@ -45,12 +45,13 @@ public static class PerfilDatos
     {
         public Cosmetico cosmetico;
         public CatalogoDeSkins.Skin skin; // F35 (US 382): una skin de arma, en vez de un cosmético
+        public CatalogoDeEmotes.Emote emote; // US 392: un emote
         public bool nuevo, garantia;
         public int creditos; // por repetido
 
-        public Rareza Rareza => skin != null ? skin.rareza : cosmetico.rareza;
-        public string Nombre => skin != null ? skin.Texto : L10n.Source(cosmetico.nombre, "profile.");
-        public string Clave => skin != null ? ClaveSkin + skin.id : cosmetico.Clave;
+        public Rareza Rareza => skin != null ? skin.rareza : emote != null ? emote.rareza : cosmetico.rareza;
+        public string Nombre => skin != null ? skin.Texto : emote != null ? L10n.Source(emote.nombre, "profile.") : L10n.Source(cosmetico.nombre, "profile.");
+        public string Clave => skin != null ? ClaveSkin + skin.id : emote != null ? Premio.ClaveEmote + emote.estado : cosmetico.Clave;
     }
 
     /// <summary>F35 (US 382): las claves de las skins de armas (en los últimos premios), como en Premio.</summary>
@@ -84,7 +85,9 @@ public static class PerfilDatos
         public bool equipadoElegido; // el jugador equipó algo en esta PC
     }
 
-    public const string Clave = "Perfil.Prueba"; // la misma que en PlayerPrefs: así se migra solo (Guardado)
+    // US 392, CA10: con el catálogo nuevo se empieza de cero (cosméticos, cápsulas abiertas, compras y monedas): la clave
+    // cambió ("Perfil.Prueba" era la de antes, que queda sin usar).
+    public const string Clave = "Perfil.Catalogo2";
 
     // ----- Reglas de ejemplo -----
     public static readonly int[] Probabilidad = { 0, 55, 30, 12, 3 }; // por Rareza (Inicial no sale)
@@ -134,15 +137,15 @@ public static class PerfilDatos
         A("sigiloso-manga", "Entre sombras", "sigiloso", "Manga", Rareza.Raro);
         A("no-muerto", "No muerto", "", "Modo Invasión", Rareza.Raro);
         A("sigiloso-8bit", "Sombra de 8 bits", "sigiloso", "8 bits", Rareza.Raro);
-        A("astra-pop", "Soledad eléctrica", "astra", "Pop art", Rareza.Epico);
-        A("guerrero-fauve", "Furia de color", "guerrero", "Fauvismo", Rareza.Epico);
-        A("sigiloso-tinta", "Silencio de tinta", "sigiloso", "Tinta", Rareza.Epico);
-        A("corazon-del-rift", "Corazón del Rift", "", "Cristal", Rareza.Epico);
-        A("astra-acuarela", "Marea celeste", "astra", "Acuarela", Rareza.Epico);
-        A("pesado-tinta-china", "Bastión de tinta", "pesado", "Tinta china", Rareza.Epico);
-        A("astra-nouveau", "Órbita floral", "astra", "Art nouveau", Rareza.Legendario);
-        A("pesado-cubista", "Blindaje fragmentado", "pesado", "Cubismo", Rareza.Legendario);
-        A("guerrero-puntillismo", "Pulso de puntos", "guerrero", "Puntillismo", Rareza.Legendario);
+        A("astra-pop", "Soledad eléctrica", "astra", "Pop art", Rareza.Raro);
+        A("guerrero-fauve", "Furia de color", "guerrero", "Fauvismo", Rareza.Raro);
+        A("sigiloso-tinta", "Silencio de tinta", "sigiloso", "Tinta", Rareza.Raro);
+        A("corazon-del-rift", "Corazón del Rift", "", "Cristal", Rareza.Raro);
+        A("astra-acuarela", "Marea celeste", "astra", "Acuarela", Rareza.Raro);
+        A("pesado-tinta-china", "Bastión de tinta", "pesado", "Tinta china", Rareza.Raro);
+        A("astra-nouveau", "Órbita floral", "astra", "Art nouveau", Rareza.Raro);
+        A("pesado-cubista", "Blindaje fragmentado", "pesado", "Cubismo", Rareza.Raro);
+        A("guerrero-puntillismo", "Pulso de puntos", "guerrero", "Puntillismo", Rareza.Raro);
 
         B("anden-riftwalker", "Andén Riftwalker", "", "Ícono", Rareza.Inicial);
         B("umbral-celeste", "Umbral celeste", "astra", "Original", Rareza.Comun);
@@ -154,15 +157,15 @@ public static class PerfilDatos
         B("pesado-realista", "Guardia de acero", "pesado", "Hiperrealismo", Rareza.Raro);
         B("guerrero-synthwave", "Turno nocturno", "guerrero", "Synthwave", Rareza.Raro);
         B("sigiloso-8bit", "Sombra de 8 bits", "sigiloso", "8 bits", Rareza.Raro);
-        B("sigiloso-manga", "Entre sombras", "sigiloso", "Manga", Rareza.Epico);
-        B("astra-pop", "Soledad eléctrica", "astra", "Pop art", Rareza.Epico);
-        B("guerrero-fauve", "Furia de color", "guerrero", "Fauvismo", Rareza.Epico);
-        B("sigiloso-tinta", "Silencio de tinta", "sigiloso", "Tinta", Rareza.Epico);
-        B("astra-acuarela", "Marea celeste", "astra", "Acuarela", Rareza.Epico);
-        B("pesado-tinta-china", "Bastión de tinta", "pesado", "Tinta china", Rareza.Epico);
-        B("astra-nouveau", "Órbita floral", "astra", "Art nouveau", Rareza.Legendario);
-        B("pesado-cubista", "Blindaje fragmentado", "pesado", "Cubismo", Rareza.Legendario);
-        B("guerrero-puntillismo", "Pulso de puntos", "guerrero", "Puntillismo", Rareza.Legendario);
+        B("sigiloso-manga", "Entre sombras", "sigiloso", "Manga", Rareza.Raro);
+        B("astra-pop", "Soledad eléctrica", "astra", "Pop art", Rareza.Raro);
+        B("guerrero-fauve", "Furia de color", "guerrero", "Fauvismo", Rareza.Raro);
+        B("sigiloso-tinta", "Silencio de tinta", "sigiloso", "Tinta", Rareza.Raro);
+        B("astra-acuarela", "Marea celeste", "astra", "Acuarela", Rareza.Raro);
+        B("pesado-tinta-china", "Bastión de tinta", "pesado", "Tinta china", Rareza.Raro);
+        B("astra-nouveau", "Órbita floral", "astra", "Art nouveau", Rareza.Raro);
+        B("pesado-cubista", "Blindaje fragmentado", "pesado", "Cubismo", Rareza.Raro);
+        B("guerrero-puntillismo", "Pulso de puntos", "guerrero", "Puntillismo", Rareza.Raro);
 
         // Marcos de la cabecera del Perfil (y más adelante de la tabla con Tab): uno por conjunto, con el nombre,
         // el estilo y la rareza de su banner.
@@ -187,17 +190,15 @@ public static class PerfilDatos
             "Me bajé en la estación equivocada", "El tren tampoco me espera", "Puntual para morir", "Boleto de ida al respawn",
             "Alimentando a la horda", "El zombie tenía prioridad", "Aprobado por lástima", "Esto no entraba en el parcial",
         };
-        // Rarezas de ejemplo: la mitad comunes, y unos pocos fijos.
-        var fijos = new Dictionary<string, Rareza>
+        // US 392, CA1: los títulos son comunes o raros (la mitad de cada 20, y unos pocos fijos raros).
+        var raros = new HashSet<string>
         {
-            { "ACE", Rareza.Legendario }, { "Último pasajero", Rareza.Epico }, { "Exterminador de zombies", Rareza.Epico },
-            { "Jefe de estación", Rareza.Epico }, { "El del clutch", Rareza.Legendario }, { "Grieta viviente", Rareza.Legendario },
-            { "Viajero del Rift", Rareza.Raro }, { "Fumador", Rareza.Raro },
+            "ACE", "Último pasajero", "Exterminador de zombies", "Jefe de estación", "El del clutch", "Grieta viviente",
+            "Viajero del Rift", "Fumador",
         };
         for (int i = 0; i < titulos.Length; i++)
         {
-            int k = i % 20;
-            Rareza r = fijos.TryGetValue(titulos[i], out Rareza f) ? f : k < 10 ? Rareza.Comun : k < 16 ? Rareza.Raro : k < 19 ? Rareza.Epico : Rareza.Legendario;
+            Rareza r = raros.Contains(titulos[i]) || i % 20 >= 10 ? Rareza.Raro : Rareza.Comun;
             Catalogo.Add(new Cosmetico { id = "t" + (i + 1), nombre = titulos[i], tipo = Tipo.Titulo, rareza = r });
         }
     }
@@ -338,7 +339,7 @@ public static class PerfilDatos
             cambio |= Equipar(Tipo.Banner, nube.equipados, "banner", ref s.banner);
             cambio |= Equipar(Tipo.Titulo, nube.equipados, "titulo", ref s.titulo);
             cambio |= Equipar(Tipo.Marco, nube.equipados, "marco", ref s.marco);
-            var recientes = nube.recientes.FindAll(clave => DesdeClave(clave) != null || SkinDeClave(clave) != null);
+            var recientes = nube.recientes.FindAll(clave => DesdeClave(clave) != null || SkinDeClave(clave) != null || EmoteDeClave(clave) != null);
             if (recientes.Count > 0) { s.recientes = recientes; cambio = true; }
         }
         if (!s.nubeRecibida) { s.nubeRecibida = true; cambio = true; }
@@ -522,20 +523,29 @@ public static class PerfilDatos
             if (garantia && r < Rareza.Epico) r = Rareza.Epico;
             if (r >= Rareza.Epico) E.ultimoEpico = E.aperturas;
 
-            // Dentro de la rareza, primero el tipo (si no, casi todo serían títulos: son 71 de 129) y después el objeto.
-            // F35 (US 382): el tipo puede ser una skin de arma; queda en la colección de skins, marcada como nueva.
+            // Dentro de la rareza, primero el tipo (si no, casi todo serían títulos) y después el objeto, siempre de los
+            // de las cápsulas (US 392, CA2 y CA3). F35 (US 382): el tipo puede ser una skin de arma; queda en la
+            // colección de skins, marcada como nueva. US 392: o un emote. Las épicas y legendarias son skins o emotes
+            // (los cosméticos del perfil llegan hasta raros), así que con esas rarezas sale uno de esos dos tipos.
             int tipo = SortearTipo(r);
             Resultado res;
             if (tipo == TipoSkin)
             {
-                List<CatalogoDeSkins.Skin> skins = CatalogoDeSkins.Skins.FindAll(s => s.rareza == r);
+                List<CatalogoDeSkins.Skin> skins = CatalogoDeSkins.Skins.FindAll(s => s.rareza == r && DeLasCapsulas(s));
                 CatalogoDeSkins.Skin skin = skins[UnityEngine.Random.Range(0, skins.Count)];
                 res = new Resultado { skin = skin, garantia = garantia, nuevo = !SkinsDeArmas.Tiene(skin) };
                 if (res.nuevo) SkinsDeArmas.Desbloquear(skin.id);
             }
+            else if (tipo == TipoEmote)
+            {
+                List<CatalogoDeEmotes.Emote> emotes = CatalogoDeEmotes.Actual.emotes.FindAll(x => x != null && x.rareza == r && DeLasCapsulas(x));
+                CatalogoDeEmotes.Emote emote = emotes[UnityEngine.Random.Range(0, emotes.Count)];
+                res = new Resultado { emote = emote, garantia = garantia, nuevo = !ColeccionDeEmotes.Tiene(emote) };
+                if (res.nuevo) ColeccionDeEmotes.Desbloquear(emote.estado);
+            }
             else
             {
-                List<Cosmetico> posibles = Catalogo.FindAll(c => c.rareza == r && (int)c.tipo == tipo);
+                List<Cosmetico> posibles = Catalogo.FindAll(c => c.rareza == r && (int)c.tipo == tipo && DeLasCapsulas(c));
                 Cosmetico premio = posibles[UnityEngine.Random.Range(0, posibles.Count)];
                 res = new Resultado { cosmetico = premio, garantia = garantia, nuevo = !Tiene(premio) };
                 if (res.nuevo)
@@ -558,13 +568,25 @@ public static class PerfilDatos
         return lista;
     }
 
-    // Avatar, Banner, Título, Marco y (F35, US 382, 14/11/2026) skin de arma.
-    public static readonly int[] ProbabilidadTipo = { 35, 20, 20, 15, 10 };
-    public const int TipoSkin = 4; // el lugar de las skins de armas en ProbabilidadTipo
+    // Avatar, Banner, Título, Marco, (F35, US 382) skin de arma y (US 392, CA3) emote.
+    public static readonly int[] ProbabilidadTipo = { 20, 15, 20, 15, 20, 10 };
+    public const int TipoSkin = 4, TipoEmote = 5; // el lugar de las skins de armas y de los emotes en ProbabilidadTipo
 
-    // Si hay algún premio de ese tipo con esa rareza.
+    // US 392, CA2: lo que sale de las cápsulas.
+    private static bool DeLasCapsulas(Cosmetico c) => OrigenDeCosmeticos.De(c) == OrigenDeCosmeticos.Origen.Capsulas;
+    private static bool DeLasCapsulas(CatalogoDeSkins.Skin s) => OrigenDeCosmeticos.De(s) == OrigenDeCosmeticos.Origen.Capsulas;
+    private static bool DeLasCapsulas(CatalogoDeEmotes.Emote e) => OrigenDeCosmeticos.De(e) == OrigenDeCosmeticos.Origen.Capsulas;
+
+    /// <summary>US 392, CA8: cuántos premios de las cápsulas hay de esa rareza.</summary>
+    public static int EnLasCapsulas(Rareza r) =>
+        Catalogo.FindAll(c => c.rareza == r && DeLasCapsulas(c)).Count + CatalogoDeSkins.Skins.FindAll(s => s.rareza == r && DeLasCapsulas(s)).Count
+        + CatalogoDeEmotes.Actual.emotes.FindAll(e => e != null && e.rareza == r && DeLasCapsulas(e)).Count;
+
+    // Si hay algún premio de las cápsulas de ese tipo con esa rareza.
     private static bool HayDeTipo(Rareza r, int t) =>
-        t == TipoSkin ? CatalogoDeSkins.Skins.Exists(s => s.rareza == r) : Catalogo.Exists(c => c.rareza == r && (int)c.tipo == t);
+        t == TipoSkin ? CatalogoDeSkins.Skins.Exists(s => s.rareza == r && DeLasCapsulas(s))
+        : t == TipoEmote ? CatalogoDeEmotes.Actual.emotes.Exists(e => e != null && e.rareza == r && DeLasCapsulas(e))
+        : Catalogo.Exists(c => c.rareza == r && (int)c.tipo == t && DeLasCapsulas(c));
 
     private static int SortearTipo(Rareza r)
     {
@@ -596,9 +618,13 @@ public static class PerfilDatos
         return Rareza.Comun;
     }
 
+    /// <summary>US 392: el emote de una clave de los últimos premios ("em:estado"), o null.</summary>
+    public static CatalogoDeEmotes.Emote EmoteDeClave(string clave) =>
+        clave != null && clave.StartsWith(Premio.ClaveEmote) ? Premio.EmoteDe(clave.Substring(Premio.ClaveEmote.Length)) : null;
+
     public static Cosmetico DesdeClave(string clave)
     {
-        if (string.IsNullOrEmpty(clave) || clave.Length < 3 || clave.StartsWith(ClaveSkin)) return null;
+        if (string.IsNullOrEmpty(clave) || clave.Length < 3 || clave.StartsWith(ClaveSkin) || clave.StartsWith(Premio.ClaveEmote)) return null;
         Tipo t = clave.StartsWith("av:") ? Tipo.Avatar : clave.StartsWith("bn:") ? Tipo.Banner : clave.StartsWith("mc:") ? Tipo.Marco : Tipo.Titulo;
         return Buscar(t, clave.Substring(3));
     }

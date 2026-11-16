@@ -217,6 +217,7 @@ public class MenuRiftwalker : MonoBehaviour
         actual.rect.gameObject.SetActive(true);
         actual.rect.SetAsLastSibling();
         actual.grupo.alpha = 0f;
+        VistaPreviaDeEmote.NuevoSorteo(); // US 392, CA7: otro personaje en las vistas previas de los emotes
         actual.Refrescar();
     }
 

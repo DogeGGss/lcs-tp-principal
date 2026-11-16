@@ -29,9 +29,13 @@ public static class ProgresoNube
         public List<Texto> valores = new List<Texto>();
     }
 
+    // US 392, CA10: con el catálogo nuevo el Perfil, las skins y los emotes empiezan de cero: sus claves cambiaron (antes
+    // "perfil.", "skins." y "emotes.obtenidos"; lo viejo queda en la base sin usar).
     private const string Minijuego = "minijuego.", Zombie = "zombie.record.", Perfil = "perfil.";
-    private const string Skins = "skins.", SkinEquipada = Skins + "equipada.";
-    private const string Emotes = "emotes.obtenidos"; // F37 (US 388)
+    // US 392, CA10: lo conseguido va con claves nuevas (empieza de cero); lo equipado sigue en "perfil." (lo leen los perfiles).
+    private const string Coleccion = "perfil2.";
+    private const string Skins = "skins2.", SkinEquipada = Skins + "equipada.";
+    private const string Emotes = "emotes2.obtenidos"; // F37 (US 388)
     private const string Tactico = "estadisticas.tactico.", Deathmatch = "estadisticas.deathmatch.", Invasion = "estadisticas.invasion.";
     private static readonly string[] Tipos = { "comun", "raro", "epico" };
 
@@ -102,12 +106,12 @@ public static class ProgresoNube
             Sumar(d.contadores, Zombie + "coop." + z.ToString().ToLowerInvariant(), MatchSettings.ZombieRecordCoop(z)); // F31 (US 289, CA13)
         }
 
-        d.conjuntos.Add(Ordenado(Perfil + "obtenidos", PerfilDatos.ObtenidosIds));
-        d.conjuntos.Add(Ordenado(Perfil + "packs_usados", PerfilDatos.PacksUsados));
-        d.conjuntos.Add(Ordenado(Perfil + "compras", PerfilDatos.ComprasNube));
-        Sumar(d.contadores, Perfil + "aperturas", PerfilDatos.Aperturas);
-        Sumar(d.contadores, Perfil + "ultimo_epico", PerfilDatos.UltimoEpico);
-        Sumar(d.contadores, Perfil + "gastado", PerfilDatos.Gastado);
+        d.conjuntos.Add(Ordenado(Coleccion + "obtenidos", PerfilDatos.ObtenidosIds));
+        d.conjuntos.Add(Ordenado(Coleccion + "packs_usados", PerfilDatos.PacksUsados));
+        d.conjuntos.Add(Ordenado(Coleccion + "compras", PerfilDatos.ComprasNube));
+        Sumar(d.contadores, Coleccion + "aperturas", PerfilDatos.Aperturas);
+        Sumar(d.contadores, Coleccion + "ultimo_epico", PerfilDatos.UltimoEpico);
+        Sumar(d.contadores, Coleccion + "gastado", PerfilDatos.Gastado);
         if (PerfilDatos.EquipadoPropio) // en una PC nueva, lo de entrada no pisa lo de la nube
         {
             foreach (var (tipo, id) in PerfilDatos.Equipados) d.valores.Add(new Texto { clave = Perfil + tipo, valor = id });
@@ -151,7 +155,7 @@ public static class ProgresoNube
         return d;
     }
 
-    private const string Reciente = Perfil + "reciente.";
+    private const string Reciente = Coleccion + "reciente.";
     private const string NivelJugador = "nivel.jugador";
 
     /// <summary>El formato de clave que acepta la base: ^[a-z0-9_.-]{1,64}$.</summary>
@@ -246,17 +250,17 @@ public static class ProgresoNube
         // Perfil: lo que solo suma (unión y máximo) y lo equipado y los últimos premios (solo en una PC nueva)
         var perfil = new PerfilDatos.Nube
         {
-            aperturas = (int)Leer(Perfil + "aperturas"),
-            ultimoEpico = (int)Leer(Perfil + "ultimo_epico"),
-            gastado = (int)Leer(Perfil + "gastado"),
+            aperturas = (int)Leer(Coleccion + "aperturas"),
+            ultimoEpico = (int)Leer(Coleccion + "ultimo_epico"),
+            gastado = (int)Leer(Coleccion + "gastado"),
         };
         if (nube.conjuntos != null)
             foreach (Conjunto c in nube.conjuntos)
             {
                 if (c == null || c.elementos == null) continue;
-                if (c.clave == Perfil + "obtenidos") perfil.obtenidos.AddRange(c.elementos);
-                else if (c.clave == Perfil + "packs_usados") perfil.packs.AddRange(c.elementos);
-                else if (c.clave == Perfil + "compras") perfil.compras.AddRange(c.elementos);
+                if (c.clave == Coleccion + "obtenidos") perfil.obtenidos.AddRange(c.elementos);
+                else if (c.clave == Coleccion + "packs_usados") perfil.packs.AddRange(c.elementos);
+                else if (c.clave == Coleccion + "compras") perfil.compras.AddRange(c.elementos);
             }
         var recientes = new SortedDictionary<int, string>();
         if (nube.valores != null)

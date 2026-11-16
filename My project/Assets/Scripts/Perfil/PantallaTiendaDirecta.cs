@@ -15,6 +15,9 @@ using Rareza = PerfilDatos.Rareza;
 // - CA3: al elegir una se ve más grande, con "Comprar · N cristales", que pide confirmar. Lo comprado va a la colección.
 // - CA4: si no alcanzan los cristales, el botón dice cuántos faltan y lleva a la pestaña Cristales; si ya lo tiene, "Obtenido".
 // - CA5: el gasto va con el saldo de la cuenta (US 272) y el cosmético, con el Perfil a la nube.
+// US 392, CA6: las ofertas salen solo de los cosméticos de la tienda (OrigenDeCosmeticos): siempre al menos una skin de
+// arma y un emote (una de las dos, épica o legendaria), y las demás, piezas de conjuntos o títulos. El precio lo da la
+// rareza.
 public class PantallaTiendaDirecta : PantallaBase
 {
     public static readonly int[] Precios = { 0, 400, 800, 1600, 3200 }; // por Rareza (Inicial no se vende)
@@ -47,9 +50,11 @@ public class PantallaTiendaDirecta : PantallaBase
 
     public static List<Premio> OfertasDe(int dia)
     {
+        const OrigenDeCosmeticos.Origen Tienda = OrigenDeCosmeticos.Origen.Tienda;
         var todos = new List<Premio>();
-        foreach (Cosmetico c in PerfilDatos.Catalogo) if (c.rareza != Rareza.Inicial) todos.Add(Premio.De(c));
-        foreach (CatalogoDeSkins.Skin s in CatalogoDeSkins.Skins) todos.Add(Premio.De(s));
+        foreach (Cosmetico c in PerfilDatos.Catalogo) if (OrigenDeCosmeticos.De(c) == Tienda) todos.Add(Premio.De(c));
+        foreach (CatalogoDeSkins.Skin s in CatalogoDeSkins.Skins) if (OrigenDeCosmeticos.De(s) == Tienda) todos.Add(Premio.De(s));
+        foreach (CatalogoDeEmotes.Emote e in CatalogoDeEmotes.Actual.emotes) if (OrigenDeCosmeticos.De(e) == Tienda) todos.Add(Premio.De(e));
         var rng = new System.Random(dia * 31 + 7);
         var lista = new List<Premio>();
         var usados = new HashSet<string>();
@@ -61,12 +66,14 @@ public class PantallaTiendaDirecta : PantallaBase
             usados.Add(p.Clave);
             lista.Add(p);
         }
-        // Una épica o legendaria, una skin, una de cada tipo del Perfil y el resto de cualquier cosa.
+        // Una épica o legendaria (skin o emote), y que haya una skin y un emote; después, una de cada tipo del Perfil y el
+        // resto, piezas de conjuntos o títulos.
         Tomar(p => p.Rareza >= Rareza.Epico);
-        Tomar(p => p.skin != null);
+        if (!lista.Exists(p => p.skin != null)) Tomar(p => p.skin != null);
+        if (!lista.Exists(p => p.emote != null)) Tomar(p => p.emote != null);
         foreach (PerfilDatos.Tipo t in new[] { PerfilDatos.Tipo.Avatar, PerfilDatos.Tipo.Banner, PerfilDatos.Tipo.Marco, PerfilDatos.Tipo.Titulo })
             Tomar(p => p.cosmetico != null && p.cosmetico.tipo == t);
-        while (lista.Count < Ofertas && usados.Count < todos.Count) Tomar(p => true);
+        while (lista.Count < Ofertas && usados.Count < todos.Count) Tomar(p => p.cosmetico != null);
         // Ordenadas de la más rara a la más común, como una vidriera.
         lista.Sort((a, b) => b.Rareza.CompareTo(a.Rareza));
         return lista;
@@ -139,7 +146,7 @@ public class PantallaTiendaDirecta : PantallaBase
         Premio p = elegida;
         float h = panel.sizeDelta.y;
         Borde(panel, 8f, WithAlpha(ColorRareza(p.Rareza), 0.6f));
-        float artH = p.cosmetico != null && p.cosmetico.tipo == PerfilDatos.Tipo.Avatar ? PanelW - 48f : 230f;
+        float artH = (p.cosmetico != null && p.cosmetico.tipo == PerfilDatos.Tipo.Avatar) || p.emote != null ? PanelW - 48f : 230f;
         p.DibujarArte(panel, 24f, 24f, PanelW - 48f, artH);
         float y = 24f + artH + 18f;
         T(panel, "Tipo", 24f, y, PanelW - 48f, 22f, FRotulo, 17f, ColorRareza(p.Rareza), $"{p.NombreTipo} · {NombreRareza(p.Rareza)}", TextAlignmentOptions.MidlineLeft, 12f, true);
