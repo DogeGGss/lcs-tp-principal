@@ -165,8 +165,14 @@ public class VistaPreviaDeSkin : MonoBehaviour
         foreach (MonoBehaviour m in modelo.GetComponentsInChildren<MonoBehaviour>(true)) m.enabled = false;
         foreach (Collider col in modelo.GetComponentsInChildren<Collider>(true)) col.enabled = false;
         // El modelo del Último Tren no trae la mira: se la agrega como en la mano (PiezasDelTren), antes de medirlo y de
-        // ponerle la skin (así la mira también va con la skin, como el fuego del Dragón Abisal).
-        if (nuevo == "ultimo-tren") new PiezasDelTren(modelo, camara.transform).Poner(0f); // Poner(0): la arma (con el cerrojo cerrado)
+        // ponerle la skin (así la mira también va con la skin, como el fuego del Dragón Abisal). En el FBX el cuerpo y el
+        // cargador son dos hijos (en el prefab de la mano, el cuerpo es la raíz): las piezas van sobre el cuerpo, la malla
+        // más grande. Poner(0) las arma, con el cerrojo cerrado.
+        if (nuevo == "ultimo-tren")
+        {
+            GameObject cuerpo = MallaMasGrande(modelo);
+            if (cuerpo != null) new PiezasDelTren(cuerpo, camara.transform).Poner(0f);
+        }
 
         // De costado: lo más largo del arma (el caño) de izquierda a derecha, centrada y del tamaño de la vista.
         Bounds b = Limites();
@@ -175,6 +181,21 @@ public class VistaPreviaDeSkin : MonoBehaviour
         modelo.transform.localScale *= escala;
         b = Limites();
         modelo.transform.position -= b.center - pivote.position;
+    }
+
+    // La pieza del modelo con la malla más grande.
+    private static GameObject MallaMasGrande(GameObject go)
+    {
+        GameObject mejor = null;
+        float mayor = -1f;
+        foreach (MeshFilter f in go.GetComponentsInChildren<MeshFilter>(true))
+        {
+            if (f.sharedMesh == null) continue;
+            Vector3 t = f.sharedMesh.bounds.size;
+            float v = t.x * t.y * t.z;
+            if (v > mayor) { mayor = v; mejor = f.gameObject; }
+        }
+        return mejor;
     }
 
     // La caja de todo el modelo, en el mundo.
