@@ -97,6 +97,21 @@ public static class ColeccionDeEmotes
         if (e != null && D.nuevos.Remove(e.estado)) Guardar();
     }
 
+    /// <summary>
+    /// Solo para probar, en el editor: no trae los bailes de la nube. La nube nunca pierde uno, así que sin esto los que saca
+    /// "Bloquear todos los bailes" vuelven en la próxima sincronización. Lo prende "Bloquear todos los bailes" y lo apaga
+    /// "Desbloquear todos los bailes" (Riftwalker > Emotes). En el juego siempre es false.
+    /// </summary>
+#if UNITY_EDITOR
+    public static bool SinNube
+    {
+        get => UnityEditor.EditorPrefs.GetBool("Riftwalker.Emotes.SinNube", false);
+        set => UnityEditor.EditorPrefs.SetBool("Riftwalker.Emotes.SinNube", value);
+    }
+#else
+    public static bool SinNube => false;
+#endif
+
     /// <summary>Solo para probar (Riftwalker > Emotes): saca todos los conseguidos.</summary>
     public static void Quitar()
     {
@@ -110,6 +125,7 @@ public static class ColeccionDeEmotes
     /// <summary>Junta los que vuelven de la nube con los de esta PC (nunca se pierde uno).</summary>
     public static void FusionarNube(IEnumerable<string> obtenidos)
     {
+        if (SinNube) return; // "Bloquear todos los bailes" en el editor: la nube no los devuelve
         bool cambio = false;
         foreach (string estado in obtenidos)
             if (!string.IsNullOrEmpty(estado) && !D.obtenidos.Contains(estado)) { D.obtenidos.Add(estado); cambio = true; }
