@@ -9,7 +9,8 @@ using UnityEngine.Playables;
 // US 392, CA7: en el pase, la tienda y las cápsulas, cada emote se ve con uno de los cuatro personajes haciendo el baile
 // (Mostrar con una imagen): una vista por emote, compartida entre las imágenes que lo muestran (la carta y el panel),
 // que dibuja solo mientras alguna está en pantalla y se borra cuando ya no la usa ninguna (UsoDeVistaDeSkin). El
-// personaje se sortea cada vez que se abre una pantalla (cuando no había ninguna de estas vistas a la vista).
+// personaje se sortea cada vez que se abre una pantalla (MenuRiftwalker.Abrir llama a NuevoSorteo) y queda el mismo
+// mientras se está en ella, aunque se vuelvan a armar las cartas o el panel.
 public class VistaPreviaDeEmote : MonoBehaviour, IVistaCompartida
 {
     private static readonly Vector3 Lugar = new Vector3(0f, -2000f, 0f);
@@ -61,7 +62,7 @@ public class VistaPreviaDeEmote : MonoBehaviour, IVistaCompartida
     private static readonly System.Collections.Generic.Dictionary<string, VistaPreviaDeEmote> compartidas =
         new System.Collections.Generic.Dictionary<string, VistaPreviaDeEmote>();
     private static CharacterData sorteado;
-    private static int enPantallaTotal, siguienteLugar;
+    private static int siguienteLugar;
     private string clave;
     private int usos, enPantalla;
 
@@ -69,7 +70,7 @@ public class VistaPreviaDeEmote : MonoBehaviour, IVistaCompartida
     public static void Mostrar(UnityEngine.UI.RawImage imagen, CatalogoDeEmotes.Emote emote)
     {
         if (imagen == null || emote == null) return;
-        if (enPantallaTotal <= 0 || sorteado == null) Sortear(); // se abrió una pantalla: otro personaje
+        if (sorteado == null) Sortear();
         string k = emote.estado + "|" + (sorteado != null ? sorteado.name : "");
         if (!compartidas.TryGetValue(k, out VistaPreviaDeEmote v) || v == null)
         {
@@ -88,6 +89,9 @@ public class VistaPreviaDeEmote : MonoBehaviour, IVistaCompartida
         imagen.gameObject.AddComponent<UsoDeVistaDeSkin>().Usar(v);
     }
 
+    /// <summary>Se abrió una pantalla: la próxima vista previa de un emote sortea otro personaje.</summary>
+    public static void NuevoSorteo() => sorteado = null;
+
     // Uno de los personajes que tienen modelo, al azar.
     private static void Sortear()
     {
@@ -101,16 +105,13 @@ public class VistaPreviaDeEmote : MonoBehaviour, IVistaCompartida
     public void Soltar()
     {
         if (--usos > 0) return;
-        if (enPantalla > 0) { enPantallaTotal -= enPantalla; enPantalla = 0; }
         if (clave != null && compartidas.TryGetValue(clave, out VistaPreviaDeEmote v) && v == this) compartidas.Remove(clave);
         if (this != null) Destroy(gameObject);
     }
 
     public void Visible(bool visible)
     {
-        int antes = enPantalla;
         enPantalla = Mathf.Max(0, enPantalla + (visible ? 1 : -1));
-        enPantallaTotal = Mathf.Max(0, enPantallaTotal + enPantalla - antes);
         if (camara != null) camara.enabled = enPantalla > 0;
     }
 
@@ -181,14 +182,12 @@ public class VistaPreviaDeEmote : MonoBehaviour, IVistaCompartida
         if (textura != null) { textura.Release(); Destroy(textura); }
         if (unica == this) unica = null;
         if (clave != null && compartidas.TryGetValue(clave, out VistaPreviaDeEmote v) && v == this) compartidas.Remove(clave);
-        if (clave != null && enPantalla > 0) { enPantallaTotal = Mathf.Max(0, enPantallaTotal - enPantalla); enPantalla = 0; }
     }
 
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
     private static void ReiniciarSesion()
     {
         compartidas.Clear();
-        enPantallaTotal = 0;
         sorteado = null;
     }
 }
