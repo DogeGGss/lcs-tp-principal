@@ -31,7 +31,9 @@ public static class ProgresoNube
 
     // US 392, CA10: con el catálogo nuevo el Perfil, las skins y los emotes empiezan de cero: sus claves cambiaron (antes
     // "perfil.", "skins." y "emotes.obtenidos"; lo viejo queda en la base sin usar).
-    private const string Minijuego = "minijuego.", Zombie = "zombie.record.", Perfil = "perfil2.";
+    private const string Minijuego = "minijuego.", Zombie = "zombie.record.", Perfil = "perfil.";
+    // US 392, CA10: lo conseguido va con claves nuevas (empieza de cero); lo equipado sigue en "perfil." (lo leen los perfiles).
+    private const string Coleccion = "perfil2.";
     private const string Skins = "skins2.", SkinEquipada = Skins + "equipada.";
     private const string Emotes = "emotes2.obtenidos"; // F37 (US 388)
     private const string Tactico = "estadisticas.tactico.", Deathmatch = "estadisticas.deathmatch.", Invasion = "estadisticas.invasion.";
