@@ -36,6 +36,7 @@ public static class ProgresoNube
     private const string Coleccion = "perfil2.";
     private const string Skins = "skins2.", SkinEquipada = Skins + "equipada.";
     private const string Emotes = "emotes2.obtenidos"; // F37 (US 388)
+    private const string RuedaDeEmotes = "emotes2.rueda."; // los 4 espacios de la rueda (EmotesEquipados)
     private const string Tactico = "estadisticas.tactico.", Deathmatch = "estadisticas.deathmatch.", Invasion = "estadisticas.invasion.";
     private static readonly string[] Tipos = { "comun", "raro", "epico" };
 
@@ -123,6 +124,9 @@ public static class ProgresoNube
         d.conjuntos.Add(Ordenado(Skins + "obtenidas", SkinsDeArmas.Obtenidas));
         // Los bailes conseguidos (F37, US 388, CA5): la unión.
         d.conjuntos.Add(Ordenado(Emotes, ColeccionDeEmotes.Obtenidos));
+        if (EmotesEquipados.Propio) // en una PC nueva, la rueda vacía no pisa la de la nube
+            for (int i = 0; i < EmotesEquipados.Espacios; i++)
+                d.valores.Add(new Texto { clave = RuedaDeEmotes + i, valor = EmotesEquipados.EstadoEn(i) });
         if (SkinsDeArmas.EquipadoPropio)
         {
             var equipadas = new Dictionary<string, string>();
@@ -294,6 +298,14 @@ public static class ProgresoNube
             foreach (Conjunto c in nube.conjuntos)
                 if (c != null && c.elementos != null && c.clave == Emotes) emotes.AddRange(c.elementos);
         ColeccionDeEmotes.FusionarNube(emotes);
+        // La rueda de emotes (después de los conseguidos: solo se equipan los que se tienen).
+        var rueda = new Dictionary<int, string>();
+        if (nube.valores != null)
+            foreach (Texto t in nube.valores)
+                if (t != null && t.clave != null && t.clave.StartsWith(RuedaDeEmotes, StringComparison.Ordinal)
+                    && int.TryParse(t.clave.Substring(RuedaDeEmotes.Length), out int espacio))
+                    rueda[espacio] = t.valor ?? "";
+        EmotesEquipados.FusionarNube(rueda);
 
         // Pase de batalla (F32)
         var reclamados = new List<string>();

@@ -1,7 +1,11 @@
+using System.Collections.Generic;
+
 // F27 (Emotes): los emotes que el jugador lleva en la rueda (US 261), en sus 4 espacios y en orden. Se guardan con el
 // perfil (Guardado); cada espacio guarda el baile por su estado (el nombre de la animación), así no cambia si se agregan
 // bailes al catálogo. Se eligen desde el perfil (US 264); la primera vez, los 4 vienen vacíos. Solo se equipan (y solo
 // cuentan) los bailes que el jugador tiene (F37, US 388: ColeccionDeEmotes).
+// Los 4 espacios también van a la nube (ProgresoNube): en una PC nueva (donde todavía no se eligió nada) se ponen los de
+// la nube; después manda lo elegido en esa PC (como las skins equipadas, SkinsDeArmas).
 public static class EmotesEquipados
 {
     public const int Espacios = 4;
@@ -45,6 +49,45 @@ public static class EmotesEquipados
             for (int i = 0; i < Espacios; i++)
                 if (i != espacio && En(i) == emote) Guardado.SetString(Clave + i, "");
         Guardado.SetString(Clave + espacio, e != null ? e.estado : "");
+        Guardado.SetString(ClavePropia, "1");
+        Guardado.Save();
         Cambio?.Invoke();
+    }
+
+    // ---------- La nube ----------
+
+    private const string ClavePropia = Clave + ".propia", ClaveNube = Clave + ".nube";
+
+    /// <summary>Lo de esta PC manda (ya se trajo la nube, o se eligió algo acá): se sube a la nube.</summary>
+    public static bool Propio => Guardado.GetString(ClavePropia, "") == "1" || Guardado.GetString(ClaveNube, "") == "1";
+
+    /// <summary>El baile de cada espacio, por su estado ("" vacío).</summary>
+    public static string EstadoEn(int espacio)
+    {
+        int k = En(espacio);
+        CatalogoDeEmotes.Emote e = k >= 0 ? CatalogoDeEmotes.Actual.De(k) : null;
+        return e != null ? e.estado : "";
+    }
+
+    /// <summary>Lo que volvió de la nube (el estado de cada espacio): en una PC nueva, se pone eso. Después de juntar los
+    /// bailes conseguidos (solo se equipan los que se tienen).</summary>
+    public static void FusionarNube(IReadOnlyDictionary<int, string> espacios)
+    {
+        if (Propio) return;
+        bool cambio = false;
+        var lista = CatalogoDeEmotes.Actual.emotes;
+        foreach (KeyValuePair<int, string> par in espacios)
+        {
+            if (par.Key < 0 || par.Key >= Espacios) continue;
+            string estado = "";
+            CatalogoDeEmotes.Emote e = lista.Find(x => x != null && x.estado == par.Value);
+            if (e != null && ColeccionDeEmotes.Tiene(e)) estado = e.estado;
+            if (Guardado.GetString(Clave + par.Key, "") == estado) continue;
+            Guardado.SetString(Clave + par.Key, estado);
+            cambio = true;
+        }
+        Guardado.SetString(ClaveNube, "1");
+        Guardado.Save();
+        if (cambio) Cambio?.Invoke();
     }
 }
