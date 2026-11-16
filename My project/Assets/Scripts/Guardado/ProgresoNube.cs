@@ -32,6 +32,7 @@ public static class ProgresoNube
     private const string Minijuego = "minijuego.", Zombie = "zombie.record.", Perfil = "perfil.";
     private const string Skins = "skins.", SkinEquipada = Skins + "equipada.";
     private const string Emotes = "emotes.obtenidos"; // F37 (US 388)
+    private const string EmoteEspacio = "emotes.espacio."; // los 4 de la rueda (F27)
     private const string Tactico = "estadisticas.tactico.", Deathmatch = "estadisticas.deathmatch.", Invasion = "estadisticas.invasion.";
     private static readonly string[] Tipos = { "comun", "raro", "epico" };
 
@@ -119,6 +120,10 @@ public static class ProgresoNube
         d.conjuntos.Add(Ordenado(Skins + "obtenidas", SkinsDeArmas.Obtenidas));
         // Los bailes conseguidos (F37, US 388, CA5): la unión.
         d.conjuntos.Add(Ordenado(Emotes, ColeccionDeEmotes.Obtenidos));
+        // Los bailes de la rueda (espacio por espacio, "" vacío): los de esta PC, salvo en una PC nueva.
+        if (EmotesEquipados.EquipadoPropio)
+            for (int i = 0; i < EmotesEquipados.Espacios; i++)
+                d.valores.Add(new Texto { clave = EmoteEspacio + i, valor = EmotesEquipados.EstadoEn(i) });
         if (SkinsDeArmas.EquipadoPropio)
         {
             var equipadas = new Dictionary<string, string>();
@@ -290,6 +295,13 @@ public static class ProgresoNube
             foreach (Conjunto c in nube.conjuntos)
                 if (c != null && c.elementos != null && c.clave == Emotes) emotes.AddRange(c.elementos);
         ColeccionDeEmotes.FusionarNube(emotes);
+        var espacios = new Dictionary<int, string>();
+        if (nube.valores != null)
+            foreach (Texto t in nube.valores)
+                if (t != null && t.clave != null && t.clave.StartsWith(EmoteEspacio, StringComparison.Ordinal)
+                    && int.TryParse(t.clave.Substring(EmoteEspacio.Length), out int espacio))
+                    espacios[espacio] = t.valor ?? "";
+        EmotesEquipados.FusionarNube(espacios); // después de los conseguidos: solo cuentan los que tiene
 
         // Pase de batalla (F32)
         var reclamados = new List<string>();

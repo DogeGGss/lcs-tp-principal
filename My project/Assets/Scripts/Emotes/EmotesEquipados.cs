@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+
 // F27 (Emotes): los emotes que el jugador lleva en la rueda (US 261), en sus 4 espacios y en orden. Se guardan con el
 // perfil (Guardado); cada espacio guarda el baile por su estado (el nombre de la animación), así no cambia si se agregan
 // bailes al catálogo. Se eligen desde el perfil (US 264); la primera vez, los 4 vienen vacíos. Solo se equipan (y solo
@@ -6,6 +8,8 @@ public static class EmotesEquipados
 {
     public const int Espacios = 4;
     private const string Clave = "Riftwalker.Emote";
+    // Ya hay una elección propia en esta PC (se eligió acá o ya se trajo la de la nube): desde ahí se sube la de esta PC.
+    private const string ClavePropio = "Riftwalker.Emote.Propio";
 
     /// <summary>Cambió algún espacio.</summary>
     public static event System.Action Cambio;
@@ -45,6 +49,35 @@ public static class EmotesEquipados
             for (int i = 0; i < Espacios; i++)
                 if (i != espacio && En(i) == emote) Guardado.SetString(Clave + i, "");
         Guardado.SetString(Clave + espacio, e != null ? e.estado : "");
+        Guardado.SetInt(ClavePropio, 1);
         Cambio?.Invoke();
+    }
+
+    // ---------- Nube (ProgresoNube) ----------
+    // Los 4 espacios se guardan con la cuenta, como la skin equipada de cada arma: se sube lo de esta PC, salvo en una PC
+    // nueva, que primero trae lo de la nube.
+
+    /// <summary>Si lo equipado en esta PC ya se puede subir: en una PC nueva primero se trae lo de la nube.</summary>
+    public static bool EquipadoPropio => Guardado.GetInt(ClavePropio, 0) != 0;
+
+    /// <summary>El baile de ese espacio, por su estado ("" vacío), tal como está guardado.</summary>
+    public static string EstadoEn(int espacio) => Guardado.GetString(Clave + espacio, "");
+
+    /// <summary>Lo que vuelve de la nube (espacio, estado): en una PC nueva lo equipa; después, manda lo de esta PC.</summary>
+    public static void FusionarNube(IReadOnlyDictionary<int, string> espacios)
+    {
+        if (!EquipadoPropio)
+        {
+            bool cambio = false;
+            foreach (KeyValuePair<int, string> e in espacios)
+            {
+                if (e.Key < 0 || e.Key >= Espacios || EstadoEn(e.Key) == (e.Value ?? "")) continue;
+                Guardado.SetString(Clave + e.Key, e.Value ?? "");
+                cambio = true;
+            }
+            if (cambio) Cambio?.Invoke();
+        }
+        Guardado.SetInt(ClavePropio, 1);
+        Guardado.Save();
     }
 }
