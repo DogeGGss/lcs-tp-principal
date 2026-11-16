@@ -272,7 +272,7 @@ public class PartidaEnRed : MonoBehaviour
         float sobrePiso = inicio.position.y - piso.point.y;
 
         CharacterController cuerpo = inicio.GetComponent<CharacterController>();
-        float escala = inicio.lossyScale.y; // en metros: en algunos mapas el jugador es más chico (EscalaDelJugador)
+        float escala = inicio.lossyScale.y; // en metros: en algunos mapas el jugador es más chico (si el jugador tuviera otra escala)
         float alto = (cuerpo != null ? cuerpo.height : 2f) * escala, radio = (cuerpo != null ? cuerpo.radius : 0.5f) * escala;
         float medio = alto / 2f - radio;
 

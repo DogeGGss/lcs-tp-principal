@@ -296,7 +296,7 @@ public class BrazosEnCamara : MonoBehaviour
         go.transform.localPosition = camaraDerecha.inverse.MultiplyPoint3x4(brazosCuerpo.transform.position) + Corrimiento;
         go.transform.localRotation = Quaternion.Inverse(camaraDerecha.rotation) * brazosCuerpo.transform.rotation;
         // La foto queda del tamaño de los brazos del cuerpo. Con el jugador de escala 1 es 1; con uno más chico
-        // (EscalaDelJugador) la malla horneada no trae su escala y salía más grande y corrida del arma.
+        // (si el jugador tuviera otra escala) la malla horneada no trae su escala y salía más grande y corrida del arma.
         Vector3 escala = camara.lossyScale, cuerpo = brazosCuerpo.transform.lossyScale;
         go.transform.localScale = new Vector3(cuerpo.x / escala.x, cuerpo.y / escala.y, cuerpo.z / escala.z);
         arma.transform.localPosition += Corrimiento;
