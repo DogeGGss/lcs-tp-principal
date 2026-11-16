@@ -7343,6 +7343,46 @@ MonoBehaviour:
     m_Key: gameplay.death.card.headshot
     m_Metadata:
       m_Items: []
+  - m_Id: 3254013837275136
+    m_Key: launcher.session.other_pc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3254014290259968
+    m_Key: profile.type.emote
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3254014290259969
+    m_Key: profile.origin.capsules
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3254014290259970
+    m_Key: profile.origin.store
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3254014290259971
+    m_Key: profile.origin.pass_fmt
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3254014290259972
+    m_Key: profile.station.items_fmt
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3254014290259973
+    m_Key: profile.station.owned
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3254014290259974
+    m_Key: profile.session.other_pc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3254014290259975
+    m_Key: profile.session.other_pc_title
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3254014290259976
+    m_Key: profile.session.other_pc_text
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

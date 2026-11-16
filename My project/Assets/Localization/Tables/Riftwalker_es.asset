@@ -6172,7 +6172,7 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 380227458789383
-    m_Localized: "Primero sale la rareza (con estas probabilidades), despu\xE9s el tipo ({0} % avatar, {1} % banner, {2} % t\xEDtulo, {3} % marco, {4} % skin de arma) y por \xFAltimo un objeto al azar. Cada {5} c\xE1psulas hay uno \xE9pico o mejor asegurado. Los repetidos se convierten en cr\xE9ditos."
+    m_Localized: "Primero sale la rareza (con estas probabilidades). Si es com\xFAn o rara, despu\xE9s sale el tipo ({0} % avatar, {1} % banner, {2} % t\xEDtulo, {3} % marco, {4} % skin de arma, {5} % emote); las \xE9picas y legendarias son skins de armas o emotes. Por \xFAltimo, un objeto al azar de los de las c\xE1psulas. Cada {6} c\xE1psulas hay uno \xE9pico o mejor asegurado. Los repetidos se convierten en cr\xE9ditos."
     m_Metadata:
       m_Items: []
   - m_Id: 380227458789384
@@ -7349,6 +7349,46 @@ MonoBehaviour:
       m_Items: []
   - m_Id: 2881462250336268
     m_Localized: Tiro a la cabeza
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3254013837275136
+    m_Localized: "Tu cuenta se abri\xF3 en otra computadora. Volv\xE9 a entrar para jugar ac\xE1."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3254014290259968
+    m_Localized: Emote
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3254014290259969
+    m_Localized: "Se consigue en las c\xE1psulas"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3254014290259970
+    m_Localized: Se consigue en la tienda
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3254014290259971
+    m_Localized: Se consigue en el pase (nivel {0})
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3254014290259972
+    m_Localized: '{0} objetos'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3254014290259973
+    m_Localized: "ten\xE9s"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3254014290259974
+    m_Localized: "Tu cuenta se abri\xF3 en otra computadora. Volv\xE9 a entrar para jugar ac\xE1."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3254014290259975
+    m_Localized: "Tu cuenta se abri\xF3 en otra computadora"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3254014290259976
+    m_Localized: "Alguien entr\xF3 con tu cuenta en otra computadora y ac\xE1 se cerr\xF3 la sesi\xF3n: una cuenta se juega en una sola computadora a la vez. Para jugar ac\xE1, volv\xE9 a entrar en el launcher. Tu progreso est\xE1 guardado en la cuenta."
     m_Metadata:
       m_Items: []
   references:

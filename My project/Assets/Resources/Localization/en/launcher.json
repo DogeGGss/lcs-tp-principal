@@ -867,6 +867,10 @@
     {
       "key": "launcher.language_save_error",
       "text": "Could not save the language: {0}"
+    },
+    {
+      "key": "launcher.session.other_pc",
+      "text": "Your account was opened on another computer. Log in again to play here."
     }
   ]
 }

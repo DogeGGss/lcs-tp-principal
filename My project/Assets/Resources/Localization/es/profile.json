@@ -2771,6 +2771,18 @@
     {
       "key": "profile.station.owned",
       "text": "tenés"
+    },
+    {
+      "key": "profile.session.other_pc",
+      "text": "Tu cuenta se abrió en otra computadora. Volvé a entrar para jugar acá."
+    },
+    {
+      "key": "profile.session.other_pc_title",
+      "text": "Tu cuenta se abrió en otra computadora"
+    },
+    {
+      "key": "profile.session.other_pc_text",
+      "text": "Alguien entró con tu cuenta en otra computadora y acá se cerró la sesión: una cuenta se juega en una sola computadora a la vez. Para jugar acá, volvé a entrar en el launcher. Tu progreso está guardado en la cuenta."
     }
   ]
 }

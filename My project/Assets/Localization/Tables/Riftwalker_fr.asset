@@ -2071,7 +2071,7 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 380227458789477
-    m_Localized: "Tu apparais au d\xE9but de la prochaine vague"
+    m_Localized: "Tu apparais au d\xE9but de la prochaine pause"
     m_Metadata:
       m_Items: []
   - m_Id: 380227458789478
@@ -5059,7 +5059,7 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 380227458789383
-    m_Localized: "D'abord la raret\xE9 (avec ces probabilit\xE9s), puis le type ({0} % avatar, {1} % banni\xE8re, {2} % titre, {3} % cadre, {4} % skin d'arme) et enfin un objet au hasard. Toutes les {5} capsules, un \xE9pique ou mieux est garanti. Les doublons sont convertis en cr\xE9dits."
+    m_Localized: "D'abord la raret\xE9 (avec ces probabilit\xE9s). Si elle est commune ou rare, puis le type ({0} % avatar, {1} % banni\xE8re, {2} % titre, {3} % cadre, {4} % skin d'arme, {5} % emote) ; les \xE9piques et l\xE9gendaires sont des skins d'arme ou des emotes. Enfin, un objet au hasard parmi ceux des capsules. Toutes les {6} capsules, un \xE9pique ou mieux est garanti. Les doublons sont convertis en cr\xE9dits."
     m_Metadata:
       m_Items: []
   - m_Id: 380227458789384
@@ -7356,6 +7356,46 @@ MonoBehaviour:
       m_Items: []
   - m_Id: 2881462250336268
     m_Localized: "Tir dans la t\xEAte"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3254013837275136
+    m_Localized: "Ton compte a \xE9t\xE9 ouvert sur un autre ordinateur. Reconnecte-toi pour jouer ici."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3254014290259968
+    m_Localized: Emote
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3254014290259969
+    m_Localized: S'obtient dans les capsules
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3254014290259970
+    m_Localized: S'obtient dans la boutique
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3254014290259971
+    m_Localized: S'obtient dans le passe (niveau {0})
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3254014290259972
+    m_Localized: '{0} objets'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3254014290259973
+    m_Localized: obtenu
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3254014290259974
+    m_Localized: "Ton compte a \xE9t\xE9 ouvert sur un autre ordinateur. Reconnecte-toi pour jouer ici."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3254014290259975
+    m_Localized: "Ton compte a \xE9t\xE9 ouvert sur un autre ordinateur"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3254014290259976
+    m_Localized: "Quelqu'un s'est connect\xE9 \xE0 ton compte sur un autre ordinateur et la session ici a \xE9t\xE9 ferm\xE9e : un compte ne se joue que sur un seul ordinateur \xE0 la fois. Pour jouer ici, reconnecte-toi dans le launcher. Ta progression est sauvegard\xE9e sur ton compte."
     m_Metadata:
       m_Items: []
   references:

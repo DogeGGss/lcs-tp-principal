@@ -277,10 +277,13 @@ Test("US 350 CA1: el launcher ofrece Español, English, Português, Français e 
 Test("Cuenta: confirmar guarda la sesión con el formato que lee el juego", async () =>
 {
     using var temp = new TestFolder();
-    string? pedido = null;
-    var cuentas = NuevaCuenta(temp, req => { pedido = req.RequestUri!.PathAndQuery + " " + req.Content!.ReadAsStringAsync().Result; Equal("sb_publishable_prueba", req.Headers.GetValues("apikey").Single()); return Json(HttpStatusCode.OK, SesionJson); });
+    var pedidos = new List<string>();
+    var cuentas = NuevaCuenta(temp, req => { pedidos.Add(req.RequestUri!.PathAndQuery + " " + req.Content!.ReadAsStringAsync().Result); Equal("sb_publishable_prueba", req.Headers.GetValues("apikey").Single()); return Json(HttpStatusCode.OK, SesionJson); });
     Equal<string?>(null, await cuentas.ConfirmarAsync("ulises@gmail.com", "481 902", default));
-    Equal(true, pedido!.StartsWith("/auth/v1/verify ") && pedido.Contains("\"type\":\"signup\"") && pedido.Contains("\"token\":\"481902\""));
+    string pedido = pedidos[0];
+    Equal(true, pedido.StartsWith("/auth/v1/verify ") && pedido.Contains("\"type\":\"signup\"") && pedido.Contains("\"token\":\"481902\""));
+    // US 393, CA1: al entrar se cierran las demás sesiones de la cuenta.
+    Equal(true, pedidos[^1].StartsWith("/auth/v1/logout?scope=others "));
     Equal(Path.Combine(temp.Path, "cuenta-sesion-prueba.supabase.co.json"), cuentas.RutaSesion);
     string guardada = File.ReadAllText(cuentas.RutaSesion);
     foreach (string campo in new[] { "\"access_token\":\"a1\"", "\"refresh_token\":\"r1\"", "\"expires_at\":", "\"user\":{\"id\":\"u1\"" }) Equal(true, guardada.Contains(campo));
@@ -288,6 +291,21 @@ Test("Cuenta: confirmar guarda la sesión con el formato que lee el juego", asyn
     Equal(false, guardada.Contains("Nombre") || guardada.Contains("Desde")); // solo los campos de Supabase
     Equal(true, cuentas.LeerSesion()!.ExpiresAt > DateTimeOffset.UtcNow.ToUnixTimeSeconds() + 3000);
     Equal("ulises", cuentas.Sesion!.User!.Nombre);
+});
+Test("US 393: la sesión sigue vigente o se abrió en otra computadora", async () =>
+{
+    using var temp = new TestFolder();
+    string respuesta = "{\"active\": true}";
+    var cuentas = NuevaCuenta(temp, req => req.RequestUri!.AbsolutePath.EndsWith("/rpc/rw_check_session")
+        ? Json(HttpStatusCode.OK, respuesta) : Json(HttpStatusCode.OK, SesionJson));
+    Equal<string?>(null, await cuentas.ConfirmarAsync("ulises@gmail.com", "481902", default));
+    Equal<bool?>(true, await cuentas.SigueVigenteAsync(default));
+    respuesta = "{\"active\": false}";
+    Equal<bool?>(false, await cuentas.SigueVigenteAsync(default)); // CA3: se entró en otra computadora
+    var sinFuncion = NuevaCuenta(temp, req => req.RequestUri!.AbsolutePath.EndsWith("/rpc/rw_check_session")
+        ? Json(HttpStatusCode.NotFound, "{}") : Json(HttpStatusCode.OK, SesionJson));
+    sinFuncion.Cargar();
+    Equal<bool?>(null, await sinFuncion.SigueVigenteAsync(default)); // sin la función en la base no se echa a nadie
 });
 Test("Cuenta: crear manda el código, y con un mail usado lo dice", async () =>
 {

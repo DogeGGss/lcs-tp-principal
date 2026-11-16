@@ -2071,7 +2071,7 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 380227458789477
-    m_Localized: Compari all'inizio della prossima ondata
+    m_Localized: Compari all'inizio della prossima pausa
     m_Metadata:
       m_Items: []
   - m_Id: 380227458789478
@@ -5063,7 +5063,7 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 380227458789383
-    m_Localized: "Prima esce la rarit\xE0 (con queste probabilit\xE0), poi il tipo ({0} % avatar, {1} % banner, {2} % titolo, {3} % cornice, {4} % skin d'arma) e infine un oggetto a caso. Ogni {5} capsule c'\xE8 un epico o meglio garantito. I doppioni diventano crediti."
+    m_Localized: "Prima esce la rarit\xE0 (con queste probabilit\xE0). Se \xE8 comune o rara, poi il tipo ({0} % avatar, {1} % banner, {2} % titolo, {3} % cornice, {4} % skin d'arma, {5} % emote); gli epici e i leggendari sono skin d'arma o emote. Infine, un oggetto a caso tra quelli delle capsule. Ogni {6} capsule c'\xE8 un epico o meglio garantito. I doppioni diventano crediti."
     m_Metadata:
       m_Items: []
   - m_Id: 380227458789384
@@ -7365,6 +7365,46 @@ MonoBehaviour:
       m_Items: []
   - m_Id: 2881462250336268
     m_Localized: Colpo alla testa
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3254013837275136
+    m_Localized: "Il tuo account \xE8 stato aperto su un altro computer. Accedi di nuovo per giocare qui."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3254014290259968
+    m_Localized: Emote
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3254014290259969
+    m_Localized: Si ottiene nelle capsule
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3254014290259970
+    m_Localized: Si ottiene nel negozio
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3254014290259971
+    m_Localized: Si ottiene nel pass (livello {0})
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3254014290259972
+    m_Localized: '{0} oggetti'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3254014290259973
+    m_Localized: ottenuto
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3254014290259974
+    m_Localized: "Il tuo account \xE8 stato aperto su un altro computer. Accedi di nuovo per giocare qui."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3254014290259975
+    m_Localized: "Il tuo account \xE8 stato aperto su un altro computer"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3254014290259976
+    m_Localized: "Qualcuno ha effettuato l'accesso al tuo account su un altro computer e la sessione qui \xE8 stata chiusa: un account si gioca su un solo computer alla volta. Per giocare qui, accedi di nuovo nel launcher. I tuoi progressi sono salvati nell'account."
     m_Metadata:
       m_Items: []
   references:

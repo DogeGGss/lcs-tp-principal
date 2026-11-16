@@ -189,7 +189,7 @@ public class MenuRiftwalker : MonoBehaviour
             sinSesion = new PantallaSinSesion(lienzo, rootSinSesion);
             Encajar();
         }
-        sinSesion?.Mostrar(bloqueado, online != null && online.SesionCerrada);
+        sinSesion?.Mostrar(bloqueado, online != null && online.SesionCerrada, online != null && online.SesionDesplazada);
         return bloqueado;
     }
 
