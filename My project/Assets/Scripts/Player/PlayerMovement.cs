@@ -429,7 +429,7 @@ public class PlayerMovement : MonoBehaviour
     // Un poco más angosta que el cuerpo, para no contar las paredes que ya está tocando.
     private bool HayLugarParaPararse()
     {
-        // El radio va en metros: en un mapa con el jugador más chico (EscalaDelJugador) la cápsula se achica con él.
+        // El radio va en metros: en un mapa con el jugador más chico (si el jugador tuviera otra escala) la cápsula se achica con él.
         float radio = controller.radius * 0.95f * transform.lossyScale.y;
         Vector3 abajo = transform.TransformPoint(crounchCenter + Vector3.up * (crounchHeight * 0.5f - controller.radius));
         Vector3 arriba = transform.TransformPoint(standingCenter + Vector3.up * (standingHeight * 0.5f - controller.radius));
@@ -450,7 +450,7 @@ public class PlayerMovement : MonoBehaviour
         const float RadioSonda = 0.05f;
         Transform cuerpo = cc.transform;
         Vector3 centro = cuerpo.TransformPoint(cc.center);
-        // Alto y radio en metros (la cápsula se escala con el jugador, EscalaDelJugador).
+        // Alto y radio en metros (la cápsula se escala con el jugador).
         float escala = cuerpo.lossyScale.y, medioAlto = cc.height * 0.5f * escala, radioCuerpo = cc.radius * escala;
         float piso = centro.y - medioAlto - cc.skinWidth;
         float altura = piso + alturaMaxima + 0.03f + RadioSonda;
@@ -485,7 +485,7 @@ public class PlayerMovement : MonoBehaviour
     {
         if (controller == null) controller = GetComponent<CharacterController>();
         float maximo = avance * Mathf.Tan(controller.slopeLimit * Mathf.Deg2Rad) + controller.skinWidth + 0.05f;
-        float escala = transform.lossyScale.y; // la cápsula en metros (EscalaDelJugador)
+        float escala = transform.lossyScale.y; // la cápsula en metros (si el jugador tuviera otra escala)
         float radioCuerpo = controller.radius * escala;
         float radio = radioCuerpo * 0.9f;
         Vector3 centro = transform.TransformPoint(controller.center);
