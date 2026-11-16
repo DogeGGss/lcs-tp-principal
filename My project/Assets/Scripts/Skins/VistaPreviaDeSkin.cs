@@ -166,7 +166,7 @@ public class VistaPreviaDeSkin : MonoBehaviour
         foreach (Collider col in modelo.GetComponentsInChildren<Collider>(true)) col.enabled = false;
         // El modelo del Último Tren no trae la mira: se la agrega como en la mano (PiezasDelTren), antes de medirlo y de
         // ponerle la skin (así la mira también va con la skin, como el fuego del Dragón Abisal).
-        if (nuevo == "ultimo-tren") new PiezasDelTren(modelo, camara.transform).Quieta();
+        if (nuevo == "ultimo-tren") new PiezasDelTren(modelo, camara.transform).Poner(0f); // Poner(0): la arma (con el cerrojo cerrado)
 
         // De costado: lo más largo del arma (el caño) de izquierda a derecha, centrada y del tamaño de la vista.
         Bounds b = Limites();
