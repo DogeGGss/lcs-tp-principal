@@ -11,7 +11,8 @@ public static class ColeccionDeEmotes
 {
     public enum Estado { Bloqueado, Disponible, Equipado }
 
-    public const string Clave = "Riftwalker.Emotes"; // (empieza con "Riftwalker.Emote": va a la cuenta)
+    // (empieza con "Riftwalker.Emote": va a la cuenta). US 392, CA10: se empieza de cero (antes "Riftwalker.Emotes").
+    public const string Clave = "Riftwalker.Emotes2";
 
     [Serializable]
     private class Datos

@@ -9,7 +9,7 @@ using UnityEngine.TestTools;
 [PrebuildSetup(typeof(PruebasAisladas)), PostBuildCleanup(typeof(PruebasAisladas))]
 public class NubeTests
 {
-    private static readonly string[] Progreso = { "minijuego.", "estadisticas.", "zombie.record.", "perfil." };
+    private static readonly string[] Progreso = { "minijuego.", "estadisticas.", "zombie.record.", "perfil.", "perfil2." };
     private static readonly string[] NoSeSuben = { "credito", "boleto", "cristal", "moneda", "mira", "volumen", "opcion", "sensibilidad" };
 
     [Test, Category("US 162"), Description("TC-1021 CA3: se sube el progreso; las opciones y las monedas no")]
@@ -28,7 +28,7 @@ public class NubeTests
         foreach (ProgresoNube.Conjunto c in doc.conjuntos) claves.Add(c.clave);
         foreach (ProgresoNube.Texto t in doc.valores) claves.Add(t.clave);
 
-        CollectionAssert.Contains(claves, "perfil.obtenidos", "los cosméticos obtenidos se suben");
+        CollectionAssert.Contains(claves, "perfil2.obtenidos", "los cosméticos obtenidos se suben"); // US 392, CA10: "perfil2."
         foreach (string clave in claves)
         {
             Assert.IsTrue(System.Array.Exists(Progreso, p => clave.StartsWith(p)), "se sube algo que no es progreso: " + clave);
@@ -55,8 +55,8 @@ public class NubeTests
 
         var contadores = new Dictionary<string, long>();
         foreach (ProgresoNube.Numero n in ProgresoNube.Armar().contadores) contadores[n.clave] = n.valor;
-        Assert.AreEqual(15, contadores["perfil.aperturas"]);
-        Assert.AreEqual(12, contadores["perfil.ultimo_epico"]);
+        Assert.AreEqual(15, contadores["perfil2.aperturas"]);
+        Assert.AreEqual(12, contadores["perfil2.ultimo_epico"]);
     }
 
     [Test, Category("US 269"), Description("CA2: en una PC nueva, lo de entrada no pisa lo equipado en la nube")]

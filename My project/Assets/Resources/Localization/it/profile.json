@@ -2102,7 +2102,7 @@
     },
     {
       "key": "profile.station.odds_fmt",
-      "text": "Prima esce la rarità (con queste probabilità), poi il tipo ({0} % avatar, {1} % banner, {2} % titolo, {3} % cornice, {4} % skin d'arma) e infine un oggetto a caso. Ogni {5} capsule c'è un epico o meglio garantito. I doppioni diventano crediti."
+      "text": "Prima esce la rarità (con queste probabilità). Se è comune o rara, poi il tipo ({0} % avatar, {1} % banner, {2} % titolo, {3} % cornice, {4} % skin d'arma, {5} % emote); gli epici e i leggendari sono skin d'arma o emote. Infine, un oggetto a caso tra quelli delle capsule. Ogni {6} capsule c'è un epico o meglio garantito. I doppioni diventano crediti."
     },
     {
       "key": "profile.emote.equipped_fmt",
@@ -2747,6 +2747,30 @@
     {
       "key": "profile.other.no_matches",
       "text": "Non ha ancora concluso nessuna partita."
+    },
+    {
+      "key": "profile.type.emote",
+      "text": "Emote"
+    },
+    {
+      "key": "profile.origin.capsules",
+      "text": "Si ottiene nelle capsule"
+    },
+    {
+      "key": "profile.origin.store",
+      "text": "Si ottiene nel negozio"
+    },
+    {
+      "key": "profile.origin.pass_fmt",
+      "text": "Si ottiene nel pass (livello {0})"
+    },
+    {
+      "key": "profile.station.items_fmt",
+      "text": "{0} oggetti"
+    },
+    {
+      "key": "profile.station.owned",
+      "text": "ottenuto"
     }
   ]
 }

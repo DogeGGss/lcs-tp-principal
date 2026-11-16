@@ -10,7 +10,7 @@ public static class SkinsDeArmas
 {
     public enum Estado { Bloqueada, Disponible, Equipada }
 
-    public const string Clave = "Riftwalker.Skins";
+    public const string Clave = "Riftwalker.Skins2"; // US 392, CA10: se empieza de cero (antes "Riftwalker.Skins")
 
     [Serializable] private class Equipada { public string arma, skin; }
 

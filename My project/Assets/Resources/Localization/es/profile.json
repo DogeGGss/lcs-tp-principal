@@ -2102,7 +2102,7 @@
     },
     {
       "key": "profile.station.odds_fmt",
-      "text": "Primero sale la rareza (con estas probabilidades), después el tipo ({0} % avatar, {1} % banner, {2} % título, {3} % marco, {4} % skin de arma) y por último un objeto al azar. Cada {5} cápsulas hay uno épico o mejor asegurado. Los repetidos se convierten en créditos."
+      "text": "Primero sale la rareza (con estas probabilidades). Si es común o rara, después sale el tipo ({0} % avatar, {1} % banner, {2} % título, {3} % marco, {4} % skin de arma, {5} % emote); las épicas y legendarias son skins de armas o emotes. Por último, un objeto al azar de los de las cápsulas. Cada {6} cápsulas hay uno épico o mejor asegurado. Los repetidos se convierten en créditos."
     },
     {
       "key": "profile.emote.equipped_fmt",
@@ -2747,6 +2747,30 @@
     {
       "key": "profile.other.no_matches",
       "text": "Todavía no terminó ninguna partida."
+    },
+    {
+      "key": "profile.type.emote",
+      "text": "Emote"
+    },
+    {
+      "key": "profile.origin.capsules",
+      "text": "Se consigue en las cápsulas"
+    },
+    {
+      "key": "profile.origin.store",
+      "text": "Se consigue en la tienda"
+    },
+    {
+      "key": "profile.origin.pass_fmt",
+      "text": "Se consigue en el pase (nivel {0})"
+    },
+    {
+      "key": "profile.station.items_fmt",
+      "text": "{0} objetos"
+    },
+    {
+      "key": "profile.station.owned",
+      "text": "tenés"
     }
   ]
 }
