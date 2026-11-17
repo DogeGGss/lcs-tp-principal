@@ -705,8 +705,8 @@ public static class Destellos
         }
     }
 
-    /// <summary>Un chispazo en ese lugar (donde pega un rayo o revienta una bola).</summary>
-    public static void En(Vector3 lugar, Color color, int chispas)
+    /// <summary>Un chispazo en ese lugar (donde pega un rayo o revienta una bola). tamano: el del fogonazo (m).</summary>
+    public static void En(Vector3 lugar, Color color, int chispas, float tamano = 1.2f)
     {
         var go = new GameObject("Destello");
         go.transform.position = lugar;
@@ -716,7 +716,7 @@ public static class Destellos
         m.duration = 0.1f;
         m.startLifetime = 0.18f;
         m.startSpeed = 0f;
-        m.startSize = 1.2f;
+        m.startSize = tamano;
         m.maxParticles = 1;
         var e = flash.emission;
         e.rateOverTime = 0f;

@@ -78,6 +78,7 @@ public class PartidaDeInvasion : MonoBehaviour
         gameObject.AddComponent<EleccionDeInvasion>();  // US 293
         gameObject.AddComponent<MisCartasInvasion>();   // US 361: tus cartas (con la C) y el descarte (US 360)
         gameObject.AddComponent<CartasEnJuego>();       // las cartas que actúan durante el juego (US 316 y otras)
+        gameObject.AddComponent<EscoltaDeInvasion>();   // US 394: el dron de la carta Escolta (y los de los compañeros)
         if (CooperativoDeInvasion.Activo)
         {
             gameObject.AddComponent<InvasoresEnRed>(); // F31 (US 290): los mismos invasores para todos

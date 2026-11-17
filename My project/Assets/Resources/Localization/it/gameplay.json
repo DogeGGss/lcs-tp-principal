@@ -325,6 +325,10 @@
       "text": "Alimentazione diretta"
     },
     {
+      "key": "gameplay.card.escort",
+      "text": "Scorta"
+    },
+    {
       "key": "gameplay.card.instant_delivery",
       "text": "Consegna immediata"
     },
@@ -543,6 +547,10 @@
     {
       "key": "gameplay.card.fx.direct_feed",
       "text": "Caricatore e riserva sono un solo serbatoio: non ricarichi mai, finché non finiscono i proiettili."
+    },
+    {
+      "key": "gameplay.card.fx.escort",
+      "text": "Un drone ti accompagna: il suo raggio scioglie l'invasore più vicino e ogni 8 s lancia archi elettrici che paralizzano quelli intorno."
     },
     {
       "key": "gameplay.card.fx.instant_delivery",
