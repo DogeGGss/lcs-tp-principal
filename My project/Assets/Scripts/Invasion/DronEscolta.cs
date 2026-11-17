@@ -16,7 +16,7 @@ using UnityEngine.Rendering;
 // - CA5: el daño lo hace esta computadora como cualquier disparo (HealthSystem.TakeDamage; a la copia de un invasor se
 //   le manda al anfitrión con este jugador como atacante), así las bajas son del dueño: puntos, estadísticas y cartas.
 // - CA7: esfera blanca con las franjas celestes (los materiales de Resources/Escolta), el Sol de Mayo en la tapa de atrás
-//   (el propulsor: brilla y larga una llama corta, más cuanto más rápido va) y una
+//   (el propulsor: brilla, ilumina apenas y larga una llama corta, más cuanto más rápido va) y una
 //   banderita argentina en una antena; el ojo brilla más mientras el rayo carga.
 public class DronEscolta : MonoBehaviour
 {
@@ -25,6 +25,7 @@ public class DronEscolta : MonoBehaviour
     public const float ArcosCada = 8f, ArcosEntre = 6f, ArcosParaliza = 1.5f;                  // CA4
     public const int ArcosDanio = 35, ArcosSaltos = 4;                                           // CA4
     public const float Diametro = 0.35f;              // CA7 (m)
+    public const float LuzDelPropulsor = 0.12f, RangoDeLaLuz = 0.6f; // CA7: la luz dorada del Sol de Mayo (intensidad y m)
     public const float AnchoDelRayo = 0.07f, AnchoDelRayoMaximo = 0.22f; // CA3 (m): al engancharse y con toda la carga
     private const float BuscarCada = 0.2f;
     // CA2: cada cuánto cambia de lugar alrededor del jugador (s), cuánto tarda en llegar (s) y su velocidad máxima (m/s).
@@ -53,6 +54,7 @@ public class DronEscolta : MonoBehaviour
     private Transform modelo, bandera;
     private Material materialSol, materialLlama;
     private LineRenderer llama;
+    private Light luzDelSol;
     private Material materialOjo;
     private LineRenderer rayo, nucleo;
     private Material materialRayo, materialNucleo;
@@ -231,10 +233,20 @@ public class DronEscolta : MonoBehaviour
         return oro;
     }
 
-    // CA7: el Sol de Mayo de atrás es el propulsor: brilla un poco y larga una llama corta hacia atrás (sin luz que
-    // ilumine alrededor: atravesaría las paredes). Todo late suave y crece cuanto más rápido va (Propulsar).
+    // CA7: el Sol de Mayo de atrás es el propulsor: brilla, ilumina apenas alrededor (una luz dorada chica y débil) y
+    // larga una llama corta hacia atrás. Todo late suave y crece cuanto más rápido va (Propulsar).
     private void ArmarPropulsor()
     {
+        var luz = new GameObject("Luz del propulsor");
+        luz.transform.SetParent(modelo, false);
+        luz.transform.localPosition = TapaDeAtras + Vector3.back * 0.25f;
+        luzDelSol = luz.AddComponent<Light>();
+        luzDelSol.type = LightType.Point;
+        luzDelSol.color = new Color(1f, 0.72f, 0.25f);
+        luzDelSol.range = RangoDeLaLuz;
+        luzDelSol.intensity = LuzDelPropulsor;
+        luzDelSol.shadows = LightShadows.None;
+
         var go = new GameObject("Llama del propulsor");
         go.transform.SetParent(modelo, false);
         llama = go.AddComponent<LineRenderer>();
@@ -244,24 +256,25 @@ public class DronEscolta : MonoBehaviour
         llama.receiveShadows = false;
         llama.numCapVertices = 4;
         materialLlama = Rayo.Material(new Color(1f, 0.65f, 0.15f));
-        if (materialLlama.HasProperty("_Color")) materialLlama.SetColor("_Color", new Color(1f, 0.65f, 0.15f, 1f) * 0.45f); // suave, sin encandilar
+        if (materialLlama.HasProperty("_Color")) materialLlama.SetColor("_Color", new Color(1f, 0.65f, 0.15f, 1f) * 0.9f); // suave, sin encandilar
         llama.sharedMaterial = materialLlama;
     }
 
     private void Propulsar()
     {
-        if (llama == null) return;
+        if (llama == null || luzDelSol == null) return;
         float rapido = Mathf.Clamp01(velocidad.magnitude / 3f);
         float late = 0.85f + 0.15f * Mathf.Sin(Time.time * 9f) + 0.05f * Mathf.Sin(Time.time * 23f);
         float fuerza = (0.55f + 0.45f * rapido) * late;
-        if (materialSol != null && materialSol.HasProperty("_EmissionColor")) materialSol.SetColor("_EmissionColor", Oro * (0.12f + 0.18f * fuerza));
+        if (materialSol != null && materialSol.HasProperty("_EmissionColor")) materialSol.SetColor("_EmissionColor", Oro * (0.35f + 0.5f * fuerza));
         Vector3 desde = modelo.TransformPoint(TapaDeAtras + Vector3.back * 0.02f);
         Vector3 atras = -transform.forward;
+        luzDelSol.intensity = LuzDelPropulsor * (0.6f + 0.6f * fuerza);
         llama.SetPosition(0, desde);
         llama.SetPosition(1, desde + atras * Diametro * (0.25f + 0.9f * rapido) * late);
         llama.startWidth = Diametro * 0.2f * late;
         llama.endWidth = Diametro * 0.04f;
-        float c = 0.2f + 0.2f * fuerza;
+        float c = 0.35f + 0.3f * fuerza;
         llama.startColor = new Color(c, c, c, 1f);
         llama.endColor = new Color(c * 0.6f, c * 0.4f, c * 0.2f, 1f);
     }
