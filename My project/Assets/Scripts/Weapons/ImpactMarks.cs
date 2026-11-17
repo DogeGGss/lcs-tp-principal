@@ -5,6 +5,8 @@ using UnityEngine;
 // superarlo se reutiliza la más vieja). Sobre personajes no quedan marcas: esos impactos se ven con
 // el marcador de impacto (US 165). Se crea sola la primera vez que se la usa; no hace falta ponerla
 // en la escena.
+// Las marcas siguen a lo que golpearon: en una puerta que se abre (o cualquier cosa que se mueve) se van con ella, y si
+// eso desaparece, la marca también.
 public class ImpactMarks : MonoBehaviour
 {
     public const int MaxMarks = 64;
@@ -39,6 +41,9 @@ public class ImpactMarks : MonoBehaviour
         public ParticleSystem dust;
         public float bornAt;
         public bool active;
+        public Transform on;          // lo que golpeó la bala (la marca lo sigue si se mueve)
+        public Vector3 localPoint;    // dónde, en el espacio de "on"
+        public Quaternion localRotation;
     }
 
     private static ImpactMarks instance;
@@ -57,7 +62,7 @@ public class ImpactMarks : MonoBehaviour
         if (hit.collider.GetComponentInParent<HealthSystem>() != null) return;
 
         ImpactMarks marks = Instance();
-        if (marks != null) marks.Place(hit.point, hit.normal);
+        if (marks != null) marks.Place(hit.point, hit.normal, hit.collider.transform);
     }
 
     // Borra todas las marcas (por ejemplo, al reiniciar los blancos del campo de práctica).
@@ -110,7 +115,7 @@ public class ImpactMarks : MonoBehaviour
         if (instance == this) instance = null;
     }
 
-    private void Place(Vector3 point, Vector3 normal)
+    private void Place(Vector3 point, Vector3 normal, Transform on)
     {
         Mark mark = marks[next];
         if (mark == null)
@@ -130,6 +135,12 @@ public class ImpactMarks : MonoBehaviour
         // El +Z de la marca apunta hacia adentro de la superficie: el agujero queda mirando hacia afuera,
         // apenas separado para que no parpadee, con giro y tamaño al azar para que no se vean iguales.
         mark.root.transform.SetPositionAndRotation(point + normal * 0.003f, Quaternion.LookRotation(-normal));
+        mark.on = on;
+        if (on != null)
+        {
+            mark.localPoint = on.InverseTransformPoint(mark.root.transform.position);
+            mark.localRotation = Quaternion.Inverse(on.rotation) * mark.root.transform.rotation;
+        }
         mark.hole.localRotation = Quaternion.Euler(0f, 0f, Random.Range(0f, 360f));
         mark.hole.localScale = Vector3.one * Random.Range(0.055f, 0.08f);
         SetAlpha(mark, 1f);
@@ -142,6 +153,25 @@ public class ImpactMarks : MonoBehaviour
             mark.dust.Clear();
             mark.dust.Play();
         }
+    }
+
+    // Cada marca, pegada a lo que golpeó (una puerta que baja, algo que se mueve).
+    private void LateUpdate()
+    {
+        foreach (Mark mark in marks)
+        {
+            if (mark == null || !mark.active || ReferenceEquals(mark.on, null)) continue;
+            // Lo que golpeó se borró o se apagó: la marca se va con eso.
+            if (mark.on == null || !mark.on.gameObject.activeInHierarchy) { Hide(mark); continue; }
+            mark.root.transform.SetPositionAndRotation(mark.on.TransformPoint(mark.localPoint), mark.on.rotation * mark.localRotation);
+        }
+    }
+
+    private static void Hide(Mark mark)
+    {
+        mark.active = false;
+        mark.on = null;
+        mark.root.SetActive(false);
     }
 
     private void Update()
