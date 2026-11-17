@@ -24,6 +24,7 @@ public class DronEscolta : MonoBehaviour
     public const float ArcosCada = 8f, ArcosEntre = 6f, ArcosParaliza = 1.5f;                  // CA4
     public const int ArcosDanio = 35, ArcosSaltos = 4;                                           // CA4
     public const float Diametro = 0.35f;              // CA7 (m)
+    public const float AnchoDelRayo = 0.07f, AnchoDelRayoMaximo = 0.22f; // CA3 (m): al engancharse y con toda la carga
     private const float BuscarCada = 0.2f;
     // CA2: cada cuánto cambia de lugar alrededor del jugador (s), cuánto tarda en llegar (s) y su velocidad máxima (m/s).
     private const float CambiaLugarMin = 2.5f, CambiaLugarMax = 5f, Suavidad = 0.55f, Rapidez = 9f;
@@ -50,10 +51,11 @@ public class DronEscolta : MonoBehaviour
 
     private Transform modelo, bandera;
     private Material materialOjo;
-    private LineRenderer rayo;
-    private Material materialRayo;
+    private LineRenderer rayo, nucleo;
+    private Material materialRayo, materialNucleo;
     private Vector3 velocidad, alrededor = new Vector3(0.9f, 0.4f, -0.6f);
-    private float cambiaLugarEn;
+    private float cambiaLugarEn, cambiaMiradaEn;
+    private Vector3 mirada = Vector3.forward;
     private float aparecio;
 
     private Npc objetivo;
@@ -275,11 +277,24 @@ public class DronEscolta : MonoBehaviour
     {
         if (Sigue == null) return;
         transform.position = Vector3.SmoothDamp(transform.position, Lugar(), ref velocidad, Suavidad, Rapidez);
-        // Mira al objetivo del rayo (o hacia donde mira el jugador).
-        Vector3 hacia = objetivo != null ? Centro(objetivo) - transform.position
-                      : (Mira != null ? Mira.forward : Sigue.forward);
+        // Hacia dónde mira: al invasor del rayo (el rayo sale del ojo); si no, hacia donde va (así el Sol de Mayo, atrás,
+        // queda para atrás); y quieto, mira a su aire, hacia un lado que cambia cada tanto (no hacia donde mira el jugador).
+        Vector3 hacia;
+        float giro = 3f;
+        if (objetivo != null && objetivo.Vivo) { hacia = Centro(objetivo) - transform.position; giro = 8f; }
+        else if (velocidad.sqrMagnitude > 0.09f) hacia = velocidad + Vector3.down * velocidad.y * 0.6f; // casi sin cabecear
+        else
+        {
+            if (Time.time >= cambiaMiradaEn)
+            {
+                cambiaMiradaEn = Time.time + Random.Range(1.5f, 4f);
+                mirada = Quaternion.Euler(Random.Range(-15f, 20f), Random.Range(0f, 360f), 0f) * Vector3.forward;
+            }
+            hacia = mirada;
+            giro = 1.5f;
+        }
         if (hacia.sqrMagnitude > 0.0001f)
-            transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(hacia, Vector3.up), 8f * Time.deltaTime);
+            transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(hacia, Vector3.up), giro * Time.deltaTime);
         if (bandera != null) bandera.localRotation = Quaternion.Euler(0f, 90f + Mathf.Sin(Time.time * 3.3f) * 18f, 0f); // flamea hacia atrás
         DibujarRayo();
     }
@@ -453,7 +468,7 @@ public class DronEscolta : MonoBehaviour
         float carga = hay ? Mathf.Clamp01((Time.time - enganchadoDesde) / RayoCarga) : 0f;
         if (materialOjo != null && materialOjo.HasProperty("_EmissionColor"))
             materialOjo.SetColor("_EmissionColor", ColorElectrico * (hay ? 1.5f + 3.5f * carga : 1.2f));
-        if (!hay) { if (rayo != null) rayo.enabled = false; return; }
+        if (!hay) { if (rayo != null) rayo.enabled = nucleo.enabled = false; return; }
         if (rayo == null)
         {
             var go = new GameObject("Rayo del ojo");
@@ -466,15 +481,33 @@ public class DronEscolta : MonoBehaviour
             rayo.numCapVertices = 3;
             materialRayo = Rayo.Material(ColorElectrico);
             rayo.sharedMaterial = materialRayo;
+            // El centro blanco, más finito, adentro del rayo.
+            var centro = new GameObject("Centro del rayo");
+            centro.transform.SetParent(go.transform, false);
+            nucleo = centro.AddComponent<LineRenderer>();
+            nucleo.positionCount = 2;
+            nucleo.useWorldSpace = true;
+            nucleo.shadowCastingMode = ShadowCastingMode.Off;
+            nucleo.receiveShadows = false;
+            nucleo.numCapVertices = 3;
+            materialNucleo = Rayo.Material(Color.white);
+            nucleo.sharedMaterial = materialNucleo;
         }
-        rayo.enabled = true;
-        rayo.SetPosition(0, transform.TransformPoint(Ojo * Diametro));
-        rayo.SetPosition(1, Centro(objetivo));
-        float ancho = Mathf.Lerp(0.025f, 0.07f, carga) * (1f + 0.15f * Mathf.Sin(Time.time * 40f));
-        rayo.startWidth = ancho * 0.7f;
+        rayo.enabled = nucleo.enabled = true;
+        Vector3 desde = transform.TransformPoint(Ojo * Diametro), hasta = Centro(objetivo);
+        rayo.SetPosition(0, desde);
+        rayo.SetPosition(1, hasta);
+        nucleo.SetPosition(0, desde);
+        nucleo.SetPosition(1, hasta);
+        // CA3: más ancho que se ensancha con el daño (de AnchoDelRayo a AnchoDelRayoMaximo), latiendo un poco.
+        float ancho = Mathf.Lerp(AnchoDelRayo, AnchoDelRayoMaximo, carga * carga) * (1f + 0.12f * Mathf.Sin(Time.time * 40f));
+        rayo.startWidth = ancho * 0.8f;
         rayo.endWidth = ancho;
-        float brillo = Mathf.Lerp(0.6f, 1f, carga);
+        nucleo.startWidth = ancho * 0.3f;
+        nucleo.endWidth = ancho * 0.35f;
+        float brillo = Mathf.Lerp(0.7f, 1f, carga);
         rayo.startColor = rayo.endColor = new Color(brillo, brillo, brillo, 1f);
+        nucleo.startColor = nucleo.endColor = new Color(1f, 1f, 1f, Mathf.Lerp(0.6f, 1f, carga));
     }
 
     // ---------- Ayudas ----------
@@ -518,5 +551,6 @@ public class DronEscolta : MonoBehaviour
     private void OnDestroy()
     {
         if (materialRayo != null) Destroy(materialRayo);
+        if (materialNucleo != null) Destroy(materialNucleo);
     }
 }
