@@ -5,7 +5,7 @@ using UnityEngine.Rendering;
 // F29 (Modo Invasión+), US 394: la Escolta, el dron de la carta legendaria. Lo arma EscoltaDeInvasion: el del jugador de
 // esta computadora (Propio: busca a quién atacar y hace el daño) y, en cooperativo, los de los compañeros (solo se ven:
 // el rayo y los arcos llegan por la red).
-// - CA2: flota cerca del hombro del jugador y lo sigue con un leve retraso; no se puede destruir ni choca con nada
+// - CA2: flota alrededor del jugador, cambiando de lugar cada tanto, y lo sigue con un leve retraso; no se puede destruir ni choca con nada
 //   (no tiene colliders) y sigue atacando con el jugador caído.
 // - CA3: el rayo del ojo se engancha al invasor más cercano a la vista (hasta Alcance) y no lo suelta hasta que muere,
 //   sale de la vista o se aleja; hace RayoDanio por segundo, que sube hasta RayoDanioMaximo en RayoCarga segundos sobre
@@ -25,6 +25,8 @@ public class DronEscolta : MonoBehaviour
     public const int ArcosDanio = 35, ArcosSaltos = 4;                                           // CA4
     public const float Diametro = 0.35f;              // CA7 (m)
     private const float BuscarCada = 0.2f;
+    // CA2: cada cuánto cambia de lugar alrededor del jugador (s), cuánto tarda en llegar (s) y su velocidad máxima (m/s).
+    private const float CambiaLugarMin = 2.5f, CambiaLugarMax = 5f, Suavidad = 0.55f, Rapidez = 9f;
 
     public static readonly Color ColorElectrico = new Color(0.35f, 0.7f, 1f);
     private static readonly Color Celeste = new Color(0.455f, 0.675f, 0.875f);
@@ -50,7 +52,8 @@ public class DronEscolta : MonoBehaviour
     private Material materialOjo;
     private LineRenderer rayo;
     private Material materialRayo;
-    private Vector3 velocidad;
+    private Vector3 velocidad, alrededor = new Vector3(0.9f, 0.4f, -0.6f);
+    private float cambiaLugarEn;
     private float aparecio;
 
     private Npc objetivo;
@@ -236,23 +239,42 @@ public class DronEscolta : MonoBehaviour
 
     // ---------- CA2: seguir al jugador ----------
 
-    // Arriba y al costado del hombro derecho (un poco adelante, así el dueño lo ve en una esquina).
+    // Da vueltas alrededor del jugador: cada tanto elige otro lugar libre a su alrededor (a cualquier lado, a un poco más
+    // de 1 m y algo más arriba de la cabeza) y va flotando hasta ahí. El lugar no gira con la cámara, así que en la
+    // pantalla del dueño entra y sale de la vista; delante de los ojos no se pone (taparía la mira), y si hay una
+    // pared, se queda de este lado.
     private Vector3 Lugar()
     {
-        Transform hacia = Mira != null ? Mira : Sigue;
-        Vector3 adelante = hacia != null ? Vector3.ProjectOnPlane(hacia.forward, Vector3.up) : Vector3.forward;
-        if (adelante.sqrMagnitude < 0.001f) adelante = Sigue != null ? Sigue.forward : Vector3.forward;
-        adelante.Normalize();
-        Vector3 derecha = Vector3.Cross(Vector3.up, adelante);
-        Vector3 base_ = Mira != null ? Mira.position : (Sigue != null ? Sigue.position + Vector3.up * 1.7f : transform.position);
-        float vaiven = Mathf.Sin((Time.time - aparecio) * 2.1f) * 0.05f;
-        return base_ + derecha * 0.65f + Vector3.up * (0.3f + vaiven) + adelante * 0.35f;
+        Vector3 cabeza = Mira != null ? Mira.position : (Sigue != null ? Sigue.position + Vector3.up * 1.7f : transform.position);
+        if (Time.time >= cambiaLugarEn) ElegirLugar();
+        Vector3 lugar = cabeza + alrededor;
+        Vector3 hacia = lugar - cabeza;
+        if (Physics.Raycast(cabeza, hacia.normalized, out RaycastHit pared, hacia.magnitude + Diametro, ~0, QueryTriggerInteraction.Ignore)
+            && pared.collider.GetComponentInParent<PlayerMovement>() == null && pared.collider.GetComponentInParent<JugadorEnRed>() == null)
+            lugar = cabeza + hacia.normalized * Mathf.Max(0.3f, pared.distance - Diametro);
+        float vaiven = Mathf.Sin((Time.time - aparecio) * 2.1f) * 0.06f;
+        return lugar + Vector3.up * vaiven;
+    }
+
+    private void ElegirLugar()
+    {
+        cambiaLugarEn = Time.time + Random.Range(CambiaLugarMin, CambiaLugarMax);
+        Vector3 ojos = Mira != null ? Vector3.ProjectOnPlane(Mira.forward, Vector3.up) : Vector3.zero;
+        for (int intento = 0; intento < 8; intento++)
+        {
+            float angulo = Random.Range(0f, 360f);
+            Vector3 lado = Quaternion.Euler(0f, angulo, 0f) * Vector3.forward;
+            // Delante de los ojos del dueño, no (taparía la mira).
+            if (ojos.sqrMagnitude > 0.001f && Vector3.Angle(lado, ojos) < 35f) continue;
+            alrededor = lado * Random.Range(0.9f, 1.6f) + Vector3.up * Random.Range(0.15f, 0.7f);
+            return;
+        }
     }
 
     private void LateUpdate()
     {
         if (Sigue == null) return;
-        transform.position = Vector3.SmoothDamp(transform.position, Lugar(), ref velocidad, 0.18f);
+        transform.position = Vector3.SmoothDamp(transform.position, Lugar(), ref velocidad, Suavidad, Rapidez);
         // Mira al objetivo del rayo (o hacia donde mira el jugador).
         Vector3 hacia = objetivo != null ? Centro(objetivo) - transform.position
                       : (Mira != null ? Mira.forward : Sigue.forward);
