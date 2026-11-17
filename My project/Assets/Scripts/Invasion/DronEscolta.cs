@@ -15,7 +15,7 @@ using UnityEngine.Rendering;
 //   ArcosDanio a cada uno y ArcosParaliza segundos aturdidos (Npc.Aturdir), salvo el Jefe. Sin nadie a tiro, espera.
 // - CA5: el daño lo hace esta computadora como cualquier disparo (HealthSystem.TakeDamage; a la copia de un invasor se
 //   le manda al anfitrión con este jugador como atacante), así las bajas son del dueño: puntos, estadísticas y cartas.
-// - CA7: esfera blanca con las franjas celestes (la textura del modelo), el Sol de Mayo en la tapa de atrás y una
+// - CA7: esfera blanca con las franjas celestes (los materiales de Resources/Escolta), el Sol de Mayo en la tapa de atrás y una
 //   banderita argentina en una antena; el ojo brilla más mientras el rayo carga.
 public class DronEscolta : MonoBehaviour
 {
@@ -116,17 +116,15 @@ public class DronEscolta : MonoBehaviour
         foreach (Renderer r in GetComponentsInChildren<Renderer>(true)) r.shadowCastingMode = ShadowCastingMode.Off;
     }
 
-    // Los materiales del modelo, por el nombre de cada parte (los del .obj).
+    // Los materiales del modelo (Resources/Escolta: URP Lit con sus texturas, normales y brillo), por el nombre de cada
+    // parte en el .obj (Main, Back, Eye_Detail, Eye, Lights, Inside). El del ojo es una copia: su brillo cambia (CA7).
     private void PonerMateriales(GameObject cuerpo)
     {
-        Texture2D textura = Resources.Load<Texture2D>("Escolta/EscoltaCuerpo");
-        Material casco = Lit(Color.white, textura, 0.5f, 0.55f);
-        Material metal = Lit(new Color(0.85f, 0.85f, 0.87f), null, 0.7f, 0.6f);
-        Material adentro = Lit(new Color(0.12f, 0.12f, 0.13f), null, 0.3f, 0.3f);
-        materialOjo = Lit(new Color(0.45f, 0.65f, 0.95f), null, 0.1f, 0.9f);
+        Material casco = Cargar("EscoltaCasco", Color.white), tapa = Cargar("EscoltaTapa", new Color(0.85f, 0.85f, 0.87f));
+        Material aro = Cargar("EscoltaAro", new Color(0.9f, 0.9f, 0.9f)), luces = Cargar("EscoltaLuces", new Color(0.7f, 0.85f, 1f));
+        Material adentro = Cargar("EscoltaAdentro", new Color(0.12f, 0.12f, 0.13f));
+        materialOjo = new Material(Cargar("EscoltaOjo", new Color(0.45f, 0.65f, 0.95f)));
         Brillar(materialOjo, ColorElectrico * 1.2f);
-        Material luces = Lit(new Color(0.7f, 0.85f, 1f), null, 0.1f, 0.9f);
-        Brillar(luces, new Color(0.6f, 0.85f, 1f) * 2f);
         string[] orden = { "Main", "Inside", "Eye", "Lights", "Eye_Detail", "Back" };
         foreach (Renderer r in cuerpo.GetComponentsInChildren<Renderer>(true))
         {
@@ -134,13 +132,30 @@ public class DronEscolta : MonoBehaviour
             var nuevos = new Material[actuales.Length];
             for (int i = 0; i < actuales.Length; i++)
             {
-                string parte = actuales[i] != null ? actuales[i].name : (i < orden.Length ? orden[i] : "");
-                if (System.Array.IndexOf(orden, parte) < 0 && i < orden.Length) parte = orden[i];
-                nuevos[i] = parte == "Main" ? casco : parte == "Inside" ? adentro : parte == "Eye" ? materialOjo
-                          : parte == "Lights" ? luces : metal;
+                string parte = actuales[i] != null ? actuales[i].name : "";
+                if (parte.Contains("Detail")) nuevos[i] = aro;
+                else if (parte.Contains("Eye")) nuevos[i] = materialOjo;
+                else if (parte.Contains("Light")) nuevos[i] = luces;
+                else if (parte.Contains("Inside")) nuevos[i] = adentro;
+                else if (parte.Contains("Back")) nuevos[i] = tapa;
+                else if (parte.Contains("Main")) nuevos[i] = casco;
+                else
+                {
+                    Debug.LogWarning("Escolta: parte sin material conocido: '" + parte + "' (" + i + ")");
+                    string porOrden = i < orden.Length ? orden[i] : "Main";
+                    nuevos[i] = porOrden == "Inside" ? adentro : porOrden == "Eye" ? materialOjo : porOrden == "Lights" ? luces
+                              : porOrden == "Eye_Detail" ? aro : porOrden == "Back" ? tapa : casco;
+                }
             }
             r.sharedMaterials = nuevos;
         }
+    }
+
+    // Un material de Resources/Escolta (o, si falta, uno liso de ese color).
+    private static Material Cargar(string nombre, Color color)
+    {
+        Material m = Resources.Load<Material>("Escolta/" + nombre);
+        return m != null ? m : Lit(color, null, 0.5f, 0.6f);
     }
 
     private static Material Lit(Color color, Texture textura, float metal, float liso)
@@ -552,5 +567,6 @@ public class DronEscolta : MonoBehaviour
     {
         if (materialRayo != null) Destroy(materialRayo);
         if (materialNucleo != null) Destroy(materialNucleo);
+        if (materialOjo != null) Destroy(materialOjo);
     }
 }

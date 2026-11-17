@@ -68,6 +68,8 @@ public class EscoltaTests
     public void CA7_El_modelo()
     {
         Assert.IsNotNull(Resources.Load<GameObject>("Escolta/Escolta"), "Resources/Escolta/Escolta.obj");
-        Assert.IsNotNull(Resources.Load<Texture2D>("Escolta/EscoltaCuerpo"), "la textura con las franjas celestes");
+        foreach (string m in new[] { "EscoltaCasco", "EscoltaTapa", "EscoltaAro", "EscoltaOjo", "EscoltaLuces", "EscoltaAdentro" })
+            Assert.IsNotNull(Resources.Load<Material>("Escolta/" + m), m);
+        Assert.IsNotNull(Resources.Load<Material>("Escolta/EscoltaCasco").GetTexture("_BaseMap"), "el casco con las franjas celestes");
     }
 }
