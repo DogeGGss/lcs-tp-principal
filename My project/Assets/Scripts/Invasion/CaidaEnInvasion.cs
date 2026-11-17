@@ -79,7 +79,7 @@ public class CaidaEnInvasion : MonoBehaviourPunCallbacks, IOnEventCallback
         OleadasDeInvasion.Supero -= AlSuperar;
         OleadasDeInvasion.Empezo -= AlEmpezar;
         OleadasDeInvasion.EmpezoElDescanso -= AlEmpezarElDescanso;
-        if (vida != null) vida.AntesDeMorir = null;
+        if (vida != null) { vida.AntesDeMorir = null; vida.Died -= AlMorir; }
         if (movimiento != null) { movimiento.Caido = false; movimiento.ForzarAgachado = false; movimiento.Levantandose = false; }
     }
 
@@ -143,6 +143,8 @@ public class CaidaEnInvasion : MonoBehaviourPunCallbacks, IOnEventCallback
         movimiento = local.GetComponent<PlayerMovement>();
         if (vida == null) return false;
         vida.AntesDeMorir = AlQuedarseSinVida;
+        vida.Died -= AlMorir;
+        vida.Died += AlMorir;
         // CA2: muerto, mira a sus compañeros (como en el Táctico, US 133).
         if (FindFirstObjectByType<Espectador>() == null)
         {
@@ -203,6 +205,21 @@ public class CaidaEnInvasion : MonoBehaviourPunCallbacks, IOnEventCallback
         if (frenadoDesde < 0) return;
         caidoDesde += PhotonNetwork.Time - frenadoDesde;
         frenadoDesde = -1;
+    }
+
+    // US 289, CA6: murió sin pasar por caído (caerse del mapa mata directo, JugadorEnRed.Eliminar) o lo remataron
+    // estando caído: queda muerto, así vuelve en el descanso siguiente como cualquier muerto. (Antes quedaba "vivo" y no
+    // volvía nunca.)
+    private void AlMorir()
+    {
+        if (estado == Estado.Muerto || estado == Estado.Retirado) return;
+        CortarRevivir();
+        if (estado == Estado.Caido || levantandoDesde >= 0f) CortarLevantarse();
+        estado = Estado.Muerto;
+        Publicar();
+        MatchHud.SetAction(null);
+        Bloquear(false);
+        if (movimiento != null) movimiento.Caido = false;
     }
 
     // CA2: se terminó el tiempo: muere de verdad (los demás lo ven caer como siempre, JugadorEnRed).
