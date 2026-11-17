@@ -87,20 +87,27 @@ public static class PaseDeBatalla
     // US 366, CA3 y CA4: lo desbloqueado y no reclamado de la temporada que terminó se reclama solo, y la nueva empieza de cero.
     private static void CerrarTemporada()
     {
+        // Primero la temporada nueva y después los premios: dar un premio avisa a la pantalla (PerfilDatos.Cambio), que
+        // vuelve a leer el pase; con la temporada vieja todavía puesta, eso volvía a cerrarla y a dar los premios otra vez,
+        // sin fin, y el juego quedaba trabado.
+        Estado anterior = e;
         var aviso = new List<string>();
-        int vieja = e.temporada;
-        int nivel = NivelDe(e.xp);
+        e = new Estado { temporada = TemporadaActual };
+        Guardar();
+        int vieja = anterior.temporada;
+        int nivel = NivelDe(anterior.xp);
         for (int n = 1; n <= nivel; n++)
         {
             bool pago = !EsGratis(n);
-            if ((pago && !e.comprado) || e.reclamados.Contains(n + (pago ? "p" : "g"))) continue;
+            if ((pago && !anterior.comprado) || anterior.reclamados.Contains(n + (pago ? "p" : "g"))) continue;
             foreach (Premio p in PremiosDe(vieja, n, pago))
             {
                 p.Dar("pase");
                 aviso.Add(p.Nombre);
             }
         }
-        e = new Estado { temporada = TemporadaActual, aviso = aviso };
+        if (aviso.Count == 0) return;
+        e.aviso.AddRange(aviso); // al final: el aviso sale una vez, con todo
         Guardar();
     }
 
