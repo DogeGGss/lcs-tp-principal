@@ -15,7 +15,8 @@ using UnityEngine.Rendering;
 //   ArcosDanio a cada uno y ArcosParaliza segundos aturdidos (Npc.Aturdir), salvo el Jefe. Sin nadie a tiro, espera.
 // - CA5: el daño lo hace esta computadora como cualquier disparo (HealthSystem.TakeDamage; a la copia de un invasor se
 //   le manda al anfitrión con este jugador como atacante), así las bajas son del dueño: puntos, estadísticas y cartas.
-// - CA7: esfera blanca con las franjas celestes (los materiales de Resources/Escolta), el Sol de Mayo en la tapa de atrás y una
+// - CA7: esfera blanca con las franjas celestes (los materiales de Resources/Escolta), el Sol de Mayo en la tapa de atrás
+//   (el propulsor: brilla, ilumina y larga una llama corta, más cuanto más rápido va) y una
 //   banderita argentina en una antena; el ojo brilla más mientras el rayo carga.
 public class DronEscolta : MonoBehaviour
 {
@@ -50,6 +51,9 @@ public class DronEscolta : MonoBehaviour
     public System.Action<Vector3[]> SalieronArcos;
 
     private Transform modelo, bandera;
+    private Material materialSol, materialLlama;
+    private Light luzDelSol;
+    private LineRenderer llama;
     private Material materialOjo;
     private LineRenderer rayo, nucleo;
     private Material materialRayo, materialNucleo;
@@ -111,7 +115,8 @@ public class DronEscolta : MonoBehaviour
             esfera.transform.SetParent(modelo, false);
             esfera.GetComponent<Renderer>().sharedMaterial = Lit(Color.white, null, 0.5f, 0.6f);
         }
-        SolDeMayo(modelo, TapaDeAtras, 0.15f, Vector3.back);
+        materialSol = SolDeMayo(modelo, TapaDeAtras, 0.15f, Vector3.back);
+        ArmarPropulsor();
         ArmarBandera();
         foreach (Renderer r in GetComponentsInChildren<Renderer>(true)) r.shadowCastingMode = ShadowCastingMode.Off;
     }
@@ -186,7 +191,7 @@ public class DronEscolta : MonoBehaviour
 
     // El Sol de Mayo: un círculo con 32 rayos (rectos y ondulados alternados, los ondulados más cortos), de radio
     // radio, en lugar, mirando hacia frente.
-    private static void SolDeMayo(Transform padre, Vector3 lugar, float radio, Vector3 frente)
+    private static Material SolDeMayo(Transform padre, Vector3 lugar, float radio, Vector3 frente)
     {
         var go = new GameObject("Sol de Mayo");
         go.transform.SetParent(padre, false);
@@ -223,6 +228,52 @@ public class DronEscolta : MonoBehaviour
         Material oro = Lit(Oro, null, 0.8f, 0.55f);
         Brillar(oro, Oro * 0.25f);
         go.AddComponent<MeshRenderer>().sharedMaterial = oro;
+        return oro;
+    }
+
+    // CA7: el Sol de Mayo de atrás es el propulsor: brilla, ilumina un poco alrededor (una luz dorada) y larga una llama
+    // corta hacia atrás. Todo late suave y crece cuanto más rápido va (Propulsar).
+    private void ArmarPropulsor()
+    {
+        var luz = new GameObject("Luz del propulsor");
+        luz.transform.SetParent(modelo, false);
+        luz.transform.localPosition = TapaDeAtras + Vector3.back * 0.25f;
+        luzDelSol = luz.AddComponent<Light>();
+        luzDelSol.type = LightType.Point;
+        luzDelSol.color = new Color(1f, 0.72f, 0.25f);
+        luzDelSol.range = 1.6f;
+        luzDelSol.intensity = 1.5f;
+        luzDelSol.shadows = LightShadows.None;
+
+        var go = new GameObject("Llama del propulsor");
+        go.transform.SetParent(modelo, false);
+        llama = go.AddComponent<LineRenderer>();
+        llama.positionCount = 2;
+        llama.useWorldSpace = true;
+        llama.shadowCastingMode = ShadowCastingMode.Off;
+        llama.receiveShadows = false;
+        llama.numCapVertices = 4;
+        materialLlama = Rayo.Material(new Color(1f, 0.65f, 0.15f));
+        llama.sharedMaterial = materialLlama;
+    }
+
+    private void Propulsar()
+    {
+        if (luzDelSol == null || llama == null) return;
+        float rapido = Mathf.Clamp01(velocidad.magnitude / 3f);
+        float late = 0.85f + 0.15f * Mathf.Sin(Time.time * 9f) + 0.05f * Mathf.Sin(Time.time * 23f);
+        float fuerza = (0.55f + 0.45f * rapido) * late;
+        if (materialSol != null && materialSol.HasProperty("_EmissionColor")) materialSol.SetColor("_EmissionColor", Oro * (1.2f + 2.5f * fuerza));
+        luzDelSol.intensity = 0.8f + 2.2f * fuerza;
+        Vector3 desde = modelo.TransformPoint(TapaDeAtras + Vector3.back * 0.02f);
+        Vector3 atras = -transform.forward;
+        llama.SetPosition(0, desde);
+        llama.SetPosition(1, desde + atras * Diametro * (0.25f + 0.9f * rapido) * late);
+        llama.startWidth = Diametro * 0.32f * late;
+        llama.endWidth = Diametro * 0.04f;
+        float c = 0.6f + 0.4f * fuerza;
+        llama.startColor = new Color(c, c, c, 1f);
+        llama.endColor = new Color(c * 0.6f, c * 0.4f, c * 0.2f, 1f);
     }
 
     // La antena con la banderita (celeste, blanca y celeste, con el sol), que flamea.
@@ -310,6 +361,7 @@ public class DronEscolta : MonoBehaviour
         }
         if (hacia.sqrMagnitude > 0.0001f)
             transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(hacia, Vector3.up), giro * Time.deltaTime);
+        Propulsar();
         if (bandera != null) bandera.localRotation = Quaternion.Euler(0f, 90f + Mathf.Sin(Time.time * 3.3f) * 18f, 0f); // flamea hacia atrás
         DibujarRayo();
     }
@@ -568,5 +620,6 @@ public class DronEscolta : MonoBehaviour
         if (materialRayo != null) Destroy(materialRayo);
         if (materialNucleo != null) Destroy(materialNucleo);
         if (materialOjo != null) Destroy(materialOjo);
+        if (materialLlama != null) Destroy(materialLlama);
     }
 }
