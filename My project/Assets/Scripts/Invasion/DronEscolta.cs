@@ -55,6 +55,7 @@ public class DronEscolta : MonoBehaviour
     private Material materialSol, materialLlama;
     private LineRenderer llama;
     private Light luzDelSol;
+    private AudioSource sonidoZumbido, sonidoRayo;
     private Material materialOjo;
     private LineRenderer rayo, nucleo;
     private Material materialRayo, materialNucleo;
@@ -120,6 +121,10 @@ public class DronEscolta : MonoBehaviour
         materialSol = SolDeMayo(modelo, TapaDeAtras, 0.15f, Vector3.back);
         ArmarPropulsor();
         ArmarBandera();
+        // Los sonidos (SonidosDeEscolta): el zumbido siempre; el rayo, mientras está enganchado.
+        sonidoZumbido = SonidosDeEscolta.Fuente(gameObject, SonidosDeEscolta.Zumbido(), true, 0.2f, 14f);
+        sonidoZumbido.Play();
+        sonidoRayo = SonidosDeEscolta.Fuente(gameObject, SonidosDeEscolta.Rayo(), true, 0.3f, 18f);
         foreach (Renderer r in GetComponentsInChildren<Renderer>(true)) r.shadowCastingMode = ShadowCastingMode.Off;
     }
 
@@ -270,6 +275,7 @@ public class DronEscolta : MonoBehaviour
         Vector3 desde = modelo.TransformPoint(TapaDeAtras + Vector3.back * 0.02f);
         Vector3 atras = -transform.forward;
         luzDelSol.intensity = LuzDelPropulsor * (0.6f + 0.6f * fuerza);
+        if (sonidoZumbido != null) { sonidoZumbido.pitch = 0.95f + 0.25f * rapido; sonidoZumbido.volume = 0.16f + 0.12f * rapido; }
         llama.SetPosition(0, desde);
         llama.SetPosition(1, desde + atras * Diametro * (0.25f + 0.9f * rapido) * late);
         llama.startWidth = Diametro * 0.2f * late;
@@ -611,10 +617,12 @@ public class DronEscolta : MonoBehaviour
     {
         if (puntos == null) return;
         var efectos = new CatalogoDeSkins.Efectos { fuego = ColorElectrico, nucleo = Color.white, rayo = true };
+        if (puntos.Length > 0) SonidosDeEscolta.En(puntos[0], SonidosDeEscolta.Chasquido(), 0.7f, 25f);
         for (int i = 1; i < puntos.Length; i++)
         {
             RayoDeSkin.Crear(puntos[i - 1], puntos[i], efectos, 0.03f, 0.06f, 2, 0.4f);
             Destellos.En(puntos[i], ColorElectrico, 6, 0.6f);
+            SonidosDeEscolta.En(puntos[i], SonidosDeEscolta.Chispazo(), 0.45f, 15f, Random.Range(0.9f, 1.25f));
         }
     }
 
@@ -633,6 +641,16 @@ public class DronEscolta : MonoBehaviour
         float carga = hay ? Mathf.Clamp01((Time.time - enganchadoDesde) / RayoCarga) : 0f;
         if (materialOjo != null && materialOjo.HasProperty("_EmissionColor"))
             materialOjo.SetColor("_EmissionColor", ColorElectrico * (hay ? 1.5f + 3.5f * carga : 1.2f));
+        if (sonidoRayo != null)
+        {
+            if (!hay) { if (sonidoRayo.isPlaying) sonidoRayo.Stop(); }
+            else
+            {
+                if (!sonidoRayo.isPlaying) sonidoRayo.Play();
+                sonidoRayo.pitch = 0.9f + 0.6f * carga;      // más agudo mientras carga
+                sonidoRayo.volume = 0.22f + 0.23f * carga;
+            }
+        }
         if (!hay) { if (rayo != null) rayo.enabled = nucleo.enabled = false; return; }
         if (rayo == null)
         {
