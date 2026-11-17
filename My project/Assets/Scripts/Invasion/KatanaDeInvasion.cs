@@ -37,6 +37,14 @@ public class KatanaDeInvasion : MonoBehaviourPunCallbacks
         actual.Revisar();
     }
 
+    /// <summary>Para probar (Riftwalker > Armas > Darme un arma...): la saca y vuelve el cuchillo.</summary>
+    public static void Quitar()
+    {
+        if (actual == null) return;
+        actual.tiene = false;
+        actual.Publicar();
+    }
+
     /// <summary>CA9: si ese jugador de la sala tiene la katana.</summary>
     public static bool TieneEl(Player p) => p != null && p.CustomProperties.TryGetValue(PropTiene, out object v) && v is bool b && b;
 
