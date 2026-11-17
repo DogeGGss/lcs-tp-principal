@@ -601,7 +601,7 @@ public class DronEscolta : MonoBehaviour
         Vector3 desde = transform.TransformPoint((delRayo ? Ojo : Luces) * Diametro);
         HealthSystem.DamageOrigin = desde;
         npc.Vida.TakeDamage(danio, false);
-        if (delRayo) Destellos.En(Centro(npc), ColorElectrico * 0.7f, 1, 0.3f); // chiquito
+        if (delRayo) Destellos.En(Centro(npc), ColorElectrico, 3, 0.6f); // la mitad del de siempre
     }
 
     // ---------- Lo que se ve del ataque ----------
