@@ -15,7 +15,8 @@ using UnityEngine.Rendering;
 //   paredes.
 // - Mientras disparan vuelan alrededor del jugador (de costado, cambiando de sentido de a ratos o si algo los frena),
 //   acomodándose a mitad de su distancia, y de a ratos toman más altura (hasta 2,5 m más) y vuelven a bajar.
-// - Flotan a alturaDeVuelo con un leve vaivén; al morir caen al piso. Aturdidos (la flash, US 038) no disparan.
+// - Flotan a alturaDeVuelo con un leve vaivén (bajando para pasar bajo techos y puertas: no los atraviesan); al morir
+//   caen al piso. Aturdidos (la flash, US 038) no disparan.
 // F31 (US 290, CA4): en Invasión cooperativa la mira, el rayo y las bolas salen en todas las computadoras
 // (InvasoresEnRed) y cada una le hace el daño al jugador de su computadora.
 // Los valores salen de TipoDeNpc (sección "A distancia"). Lo agrega Npc.Crear (después de la persecución: la usa).
@@ -59,6 +60,7 @@ public class DistanciaDeNpc : MonoBehaviour
     private void Start()
     {
         altura = npc.Tipo != null ? npc.Tipo.alturaDeVuelo : 0f;
+        flotando = altura;
         Transform modelo = npc.Modelo != null ? npc.Modelo : transform;
         ojo = Buscar(modelo, "EyeBall") ?? Buscar(modelo, "Eye") ?? Buscar(modelo, "Head");
         boca = Buscar(modelo, "Jaw") ?? ojo;
@@ -193,10 +195,63 @@ public class DistanciaDeNpc : MonoBehaviour
                 }
         }
         extra = Mathf.MoveTowards(extra, metaExtra, Sube * Time.deltaTime);
+        // No atraviesa techos, dinteles ni pisos de arriba: su agente va por el piso (pasa por las puertas), pero el
+        // cuerpo flota más arriba. Mira cuánto lugar hay arriba de donde está y de adonde va, y baja para pasar.
+        if (Time.time >= proximoTecho) { proximoTecho = Time.time + 0.1f; libre = LugarArriba(); }
+        float deseada = altura + extra;
+        float tope = Mathf.Max(0f, libre - Cuerpo() - 0.15f);
+        float meta = Mathf.Min(deseada, tope);
+        flotando = Mathf.MoveTowards(flotando, meta, (meta < flotando ? BajaParaPasar : Sube) * Time.deltaTime);
+        if (flotando > tope) flotando = tope; // (si no llegó a bajar a tiempo, no se mete en el techo)
         Vector3 p = npc.Modelo.localPosition;
-        p.y = altura + extra + Mathf.Sin((Time.time + vaivenDesde) * 2f) * Vaiven;
+        float vaiven = flotando + Vaiven < tope ? Mathf.Sin((Time.time + vaivenDesde) * 2f) * Vaiven : 0f;
+        p.y = flotando + vaiven;
         npc.Modelo.localPosition = p;
-        if (capsula != null) capsula.center = centroCapsula + Vector3.up * extra;
+        if (capsula != null) capsula.center = centroCapsula + Vector3.up * (flotando - altura);
+    }
+
+    // F11: m que baja por segundo para pasar bajo un techo o una puerta.
+    private const float BajaParaPasar = 6f;
+    private float flotando = -1f, libre = float.MaxValue, proximoTecho, cuerpo = -1f;
+    private static readonly RaycastHit[] techos = new RaycastHit[8];
+
+    // m libres desde el piso hasta lo primero que hay arriba, acá y un poco más adelante (hacia donde va).
+    private float LugarArriba()
+    {
+        float menor = Arriba(transform.position);
+        NavMeshAgent agente = persecucion != null ? persecucion.Agente : null;
+        Vector3 va = agente != null && agente.enabled ? agente.velocity : Vector3.zero;
+        va.y = 0f;
+        if (va.sqrMagnitude > 0.01f) menor = Mathf.Min(menor, Arriba(transform.position + va.normalized * 1.2f));
+        return menor;
+    }
+
+    private float Arriba(Vector3 piso)
+    {
+        int n = Physics.RaycastNonAlloc(piso + Vector3.up * 0.2f, Vector3.up, techos, 12f, Physics.DefaultRaycastLayers, QueryTriggerInteraction.Ignore);
+        float menor = float.MaxValue;
+        for (int i = 0; i < n; i++)
+        {
+            Collider c = techos[i].collider;
+            if (c == null || c.transform.IsChildOf(transform) || c.GetComponentInParent<Npc>() != null || c is CharacterController) continue;
+            menor = Mathf.Min(menor, techos[i].distance + 0.2f);
+        }
+        return menor;
+    }
+
+    // Lo alto del cuerpo que flota (sus partes que se ven), medido una vez.
+    private float Cuerpo()
+    {
+        if (cuerpo > 0f) return cuerpo;
+        bool hay = false;
+        Bounds b = default;
+        foreach (Renderer r in npc.Modelo.GetComponentsInChildren<Renderer>())
+        {
+            if (!r.enabled || r is ParticleSystemRenderer || r is LineRenderer || r is TrailRenderer) continue;
+            if (!hay) { b = r.bounds; hay = true; } else b.Encapsulate(r.bounds);
+        }
+        cuerpo = hay ? Mathf.Clamp(b.max.y - npc.Modelo.position.y, 0.4f, 3f) : 1.2f;
+        return cuerpo;
     }
 
     private void Caer()
