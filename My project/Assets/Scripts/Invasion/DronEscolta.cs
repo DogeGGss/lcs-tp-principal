@@ -677,9 +677,18 @@ public class DronEscolta : MonoBehaviour
 
     // ---------- Ayudas ----------
 
-    // El centro del cuerpo del invasor (sus zonas de impacto), adonde apunta.
+    // CA3: adonde apunta: el pecho del invasor (la parte de arriba de su zona de impacto del cuerpo, que va de la pelvis
+    // al cuello). Sin esa zona, a tres cuartos de la altura de su cuerpo.
     private static Vector3 Centro(Npc npc)
     {
+        foreach (HitZone z in npc.GetComponentsInChildren<HitZone>())
+        {
+            if (z.zone != BodyZone.Body) continue;
+            Collider c = z.GetComponent<Collider>();
+            if (c == null || !c.enabled) continue;
+            Bounds b = c.bounds;
+            return b.center + Vector3.up * b.extents.y * 0.4f;
+        }
         Bounds caja = default;
         bool hay = false;
         foreach (Collider c in npc.GetComponentsInChildren<Collider>())
@@ -687,7 +696,7 @@ public class DronEscolta : MonoBehaviour
             if (c.isTrigger || !c.enabled) continue;
             if (!hay) { caja = c.bounds; hay = true; } else caja.Encapsulate(c.bounds);
         }
-        return hay ? caja.center : npc.transform.position + Vector3.up;
+        return hay ? caja.center + Vector3.up * caja.extents.y * 0.5f : npc.transform.position + Vector3.up * 1.3f;
     }
 
     // CA2: si una esfera del tamaño del dron, yendo de desde hacia dir, choca contra algo del escenario antes de distancia
