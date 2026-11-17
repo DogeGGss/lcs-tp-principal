@@ -597,6 +597,18 @@
       "text": "Arma secondaria"
     },
     {
+      "key": "gameplay.card.katana",
+      "text": "Katana"
+    },
+    {
+      "key": "gameplay.card.melee",
+      "text": "Arma da mischia"
+    },
+    {
+      "key": "gameplay.card.replaces_knife",
+      "text": "Sostituisce il tuo coltello, nel suo posto e nel suo tasto. Taglia tutti quelli che hai davanti."
+    },
+    {
       "key": "gameplay.card.works_with_fmt",
       "text": "Rende con: {0}"
     },

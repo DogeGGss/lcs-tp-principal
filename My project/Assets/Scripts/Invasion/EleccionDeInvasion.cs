@@ -76,6 +76,7 @@ public class EleccionDeInvasion : MonoBehaviour
     {
         public CartaDeInvasion carta;
         public ShopItem arma;
+        public bool katana; // US 395: la katana (va en el lugar del cuchillo, no es del catálogo)
         public bool sinLugar; // US 360, CA4: una legendaria nueva con los lugares llenos (se ve, no se elige)
     }
 
@@ -319,14 +320,15 @@ public class EleccionDeInvasion : MonoBehaviour
             return;
         }
 
-        // US 294, CA3: como mucho un arma, en 1 de cada 3 tiradas.
-        ShopItem arma = Random.value < 1f / 3f ? ArmaAlAzar() : null;
-        int lugarArma = arma != null ? Random.Range(0, 3) : -1;
+        // US 294, CA3: como mucho un arma, en 1 de cada 3 tiradas (la katana, US 395, es una más de las que pueden salir).
+        bool katana = false;
+        ShopItem arma = Random.value < 1f / 3f ? ArmaAlAzar(out katana) : null;
+        int lugarArma = arma != null || katana ? Random.Range(0, 3) : -1;
         var yaSalieron = new HashSet<CartaDeInvasion>();
         bool lleno = elegidas.Count >= Lugares; // US 360, CA3
         for (int i = 0; i < 3; i++)
         {
-            if (i == lugarArma) { opciones.Add(new Opcion { arma = arma }); continue; }
+            if (i == lugarArma) { opciones.Add(new Opcion { arma = arma, katana = katana }); continue; }
             CartaDeInvasion carta = CartaAlAzar(oleada, yaSalieron, lleno);
             if (carta == null) continue;
             yaSalieron.Add(carta);
@@ -364,8 +366,10 @@ public class EleccionDeInvasion : MonoBehaviour
 
     // US 294, CA1 y CA2: un arma del catálogo que no se tiene (o una de las que solo existen en Invasión, como el Gran
     // Capitán: US 287).
-    private ShopItem ArmaAlAzar()
+    // US 395, CA1: la katana sale como una más (si todavía no la tiene): "katana" dice si salió ella.
+    private ShopItem ArmaAlAzar(out bool katana)
     {
+        katana = false;
         if (equipo == null || equipo.Catalog == null) return null;
         var posibles = new List<ShopItem>();
         var armas = new List<ShopItem>(equipo.Catalog.items);
@@ -378,7 +382,12 @@ public class EleccionDeInvasion : MonoBehaviour
             if (item.kind == ShopItemKind.SecondaryWeapon && Veces("Sin respaldo") > 0) continue; // US 331: ya no tiene secundaria
             posibles.Add(item);
         }
-        return posibles.Count > 0 ? posibles[Random.Range(0, posibles.Count)] : null;
+        bool hayKatana = !KatanaDeInvasion.Tiene && KatanaData.Cargar() != null;
+        int total = posibles.Count + (hayKatana ? 1 : 0);
+        if (total == 0) return null;
+        int elegida = Random.Range(0, total);
+        if (elegida >= posibles.Count) { katana = true; return null; }
+        return posibles[elegida];
     }
 
     // F31: hasta n armas principales distintas que no se tienen, al azar (del catálogo o solo de Invasión).
@@ -402,7 +411,8 @@ public class EleccionDeInvasion : MonoBehaviour
         if (!Abierta || !Lista || i < 0 || i >= opciones.Count || MisCartasInvasion.Abierta) return;
         Opcion o = opciones[i];
         if (o.sinLugar) { MatchHud.Warn(L10n.T("gameplay.card.no_room"), 2f); return; } // US 360, CA4
-        if (o.arma != null) equipo.Recibir(o.arma); // US 294, CA4
+        if (o.katana) KatanaDeInvasion.Dar(); // US 395, CA2: en el lugar del cuchillo
+        else if (o.arma != null) equipo.Recibir(o.arma); // US 294, CA4
         else if (o.carta != null)
         {
             int veces = elegidas.TryGetValue(o.carta, out int n) ? n + 1 : 1; // CA5: se suman
@@ -708,12 +718,14 @@ public class EleccionDeInvasion : MonoBehaviour
 
     private void DibujarCarta(int i, Opcion o, float x)
     {
-        bool esArma = o.arma != null;
+        bool esArma = o.arma != null || o.katana;
         Color color = esArma ? CartaDeInvasion.ColorArma : CartaDeInvasion.ColorDe(o.carta.rareza);
         string rareza = esArma ? L10n.T("gameplay.card.weapon") : L10n.Source(CartaDeInvasion.NombreDe(o.carta.rareza));
-        string nombre = esArma ? NombreDelArma(o.arma) : L10n.Source(o.carta.nombre);
-        string efecto = esArma ? QueReemplaza(o.arma) : L10n.Source(o.carta.EfectoParaLaProxima(Veces(o.carta))); // repetida: lo que da en total
-        string rinde = esArma ? L10n.T(o.arma.kind == ShopItemKind.PrimaryWeapon ? "gameplay.card.primary" : "gameplay.card.secondary")
+        string nombre = o.katana ? L10n.T("gameplay.card.katana") : esArma ? NombreDelArma(o.arma) : L10n.Source(o.carta.nombre);
+        string efecto = o.katana ? L10n.T("gameplay.card.replaces_knife") // US 395, CA1
+                      : esArma ? QueReemplaza(o.arma) : L10n.Source(o.carta.EfectoParaLaProxima(Veces(o.carta))); // repetida: lo que da en total
+        string rinde = o.katana ? L10n.T("gameplay.card.melee")
+                     : esArma ? L10n.T(o.arma.kind == ShopItemKind.PrimaryWeapon ? "gameplay.card.primary" : "gameplay.card.secondary")
                               : L10n.T("gameplay.card.works_with_fmt", L10n.Source(o.carta.rindeCon));
         if (!esArma) rinde = AvisoDeAlimentacion(o.carta) ?? rinde; // US 334
         if (o.sinLugar) rinde = L10n.T("gameplay.card.no_room_short"); // US 360, CA4
@@ -746,9 +758,10 @@ public class EleccionDeInvasion : MonoBehaviour
 
         // El ícono del arma, si es un arma.
         float y = 76f;
-        if (esArma && o.arma.icon != null)
+        Sprite dibujo = o.katana ? (KatanaData.Cargar() != null ? KatanaData.Cargar().icono : null) : esArma ? o.arma.icon : null;
+        if (dibujo != null)
         {
-            UnityEngine.UI.Image icono = Image(Place(Node("Icono", carta), 40f, y, AnchoCarta - 80f, 90f), o.arma.icon, Ink);
+            UnityEngine.UI.Image icono = Image(Place(Node("Icono", carta), 40f, y, AnchoCarta - 80f, 90f), dibujo, Ink);
             icono.preserveAspect = true;
             y += 104f;
         }

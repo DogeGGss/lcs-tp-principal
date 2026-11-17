@@ -597,6 +597,18 @@
       "text": "Arma secundária"
     },
     {
+      "key": "gameplay.card.katana",
+      "text": "Katana"
+    },
+    {
+      "key": "gameplay.card.melee",
+      "text": "Arma corpo a corpo"
+    },
+    {
+      "key": "gameplay.card.replaces_knife",
+      "text": "Substitui sua faca, no lugar e na tecla dela. Corta todos que estão na sua frente."
+    },
+    {
       "key": "gameplay.card.works_with_fmt",
       "text": "Rende com: {0}"
     },

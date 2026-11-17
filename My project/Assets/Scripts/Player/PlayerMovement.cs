@@ -29,6 +29,8 @@ public class PlayerMovement : MonoBehaviour
     public float alturaMaximaEscalon = 0.5f;
 
     [HideInInspector] public float speedMultiplier = 1f;
+    /// <summary>US 395: un freno que se suma al del arma (la guardia de la katana). 1 = sin freno.</summary>
+    [HideInInspector] public float frenoExtra = 1f;
 
     // Para el multijugador (US 025): los demás repiten el salto y el aterrizaje en su copia de este jugador.
     public event System.Action Jumped, Landed;
@@ -240,7 +242,7 @@ public class PlayerMovement : MonoBehaviour
             animator.SetFloat("VelZ", z * lento);
         }
 
-        currentSpeed *= speedMultiplier;
+        currentSpeed *= speedMultiplier * frenoExtra;
 
         // Apoyado se anota la velocidad; en el aire se sigue con esa (agacharse en el aire bajaba a 2,5 m/s).
         if (controller.isGrounded) velocidadAlDespegar = currentSpeed;

@@ -148,6 +148,24 @@ public class AnimacionPrimeraPersona : MonoBehaviour
     [Tooltip("Cuánto gira la punta hacia cada lado (grados).")]
     public float corteGiro = 40f;
 
+    [Header("Katana (US 395)")]
+    [Tooltip("Tajo: dónde arranca la hoja, levantada a la derecha (metros, en la cámara).")]
+    public Vector3 katanaArribaPos = new Vector3(0.10f, 0.10f, -0.04f);
+    [Tooltip("Tajo: giro al levantarla (grados).")]
+    public Vector3 katanaArribaGiro = new Vector3(-20f, 25f, -35f);
+    [Tooltip("Tajo: dónde termina, cruzada abajo a la izquierda (metros).")]
+    public Vector3 katanaAbajoPos = new Vector3(-0.24f, -0.12f, 0.08f);
+    [Tooltip("Tajo: giro al terminar (grados).")]
+    public Vector3 katanaAbajoGiro = new Vector3(35f, -45f, 55f);
+    [Tooltip("Cuánto más amplio es el tajo fuerte (CA4).")]
+    public float katanaFuerte = 1.35f;
+    [Tooltip("Estocada (CA5): cuánto va la hoja hacia adelante (metros) y cuánto baja la punta para apuntar adelante (grados).")]
+    public Vector3 katanaEstocadaPos = new Vector3(-0.08f, 0.04f, 0.22f);
+    public Vector3 katanaEstocadaGiro = new Vector3(48f, -8f, 0f);
+    [Tooltip("Guardia (CA6): la hoja cruzada delante, casi horizontal (metros y grados).")]
+    public Vector3 katanaGuardiaPos = new Vector3(-0.12f, 0.12f, 0.04f);
+    public Vector3 katanaGuardiaGiro = new Vector3(10f, 0f, 65f);
+
     [Header("Granadas (US 258): como una piedra")]
     [Tooltip("Cuánto tarda la mano en traer la granada desde abajo (s).")]
     public float granadaSacar = 0.35f;
@@ -330,6 +348,7 @@ public class AnimacionPrimeraPersona : MonoBehaviour
         mover = Vector3.zero;
         girar = Quaternion.identity;
         if (ataque == null) ataque = jugador.GetComponentInChildren<MeleeAttack>(true);
+        if (ataque != null && ataque.Katana != null) { Katana(out mover, out girar); return; } // US 395
         float avance = ataque != null ? ataque.AvanceDelCorte : -1f;
         if (avance < 0f) return;
         float t = avance * MeleeAttack.Total;
@@ -353,6 +372,48 @@ public class AnimacionPrimeraPersona : MonoBehaviour
             float f = Mathf.SmoothStep(0f, 1f, (t - MeleeAttack.Preparacion - MeleeAttack.Corte) / MeleeAttack.Vuelta);
             pos = finPos * (1f - f); giro = finGiro * (1f - f);
         }
+        mover = pos;
+        girar = Quaternion.Euler(giro);
+    }
+
+    // US 395: la katana. El tajo cruza en diagonal, de arriba a la derecha hacia abajo a la izquierda (el tajo fuerte,
+    // más amplio); la estocada lleva la hoja hacia adelante con la punta al frente; la guardia la cruza delante, casi
+    // horizontal. Se mueven la katana y el brazo derecho.
+    private void Katana(out Vector3 mover, out Quaternion girar)
+    {
+        Vector3 pos = Vector3.zero, giro = Vector3.zero;
+        float avance = ataque.AvanceDelCorte;
+        if (avance >= 0f)
+        {
+            float t = avance * MeleeAttack.Total, k = ataque.TajoFuerte ? katanaFuerte : 1f;
+            Vector3 aPos = katanaArribaPos * k, aGiro = katanaArribaGiro * k, bPos = katanaAbajoPos * k, bGiro = katanaAbajoGiro * k;
+            if (t < MeleeAttack.Preparacion)
+            {
+                float f = Mathf.SmoothStep(0f, 1f, t / MeleeAttack.Preparacion);
+                pos = aPos * f; giro = aGiro * f;
+            }
+            else if (t < MeleeAttack.Preparacion + MeleeAttack.Corte)
+            {
+                float f = (t - MeleeAttack.Preparacion) / MeleeAttack.Corte;
+                f = 1f - (1f - f) * (1f - f); // rápido al principio
+                pos = Vector3.Lerp(aPos, bPos, f); giro = Vector3.Lerp(aGiro, bGiro, f);
+            }
+            else
+            {
+                float f = Mathf.SmoothStep(0f, 1f, (t - MeleeAttack.Preparacion - MeleeAttack.Corte) / MeleeAttack.Vuelta);
+                pos = bPos * (1f - f); giro = bGiro * (1f - f);
+            }
+        }
+        float estocada = ataque.AvanceDeLaEstocada;
+        if (estocada >= 0f)
+        {
+            // Va enseguida hacia adelante, se queda mientras avanza y vuelve al final.
+            float f = Mathf.Min(1f, estocada / 0.25f) * (estocada > 0.8f ? (1f - estocada) / 0.2f : 1f);
+            f = Mathf.SmoothStep(0f, 1f, f);
+            pos += katanaEstocadaPos * f; giro += katanaEstocadaGiro * f;
+        }
+        float guardia = Mathf.SmoothStep(0f, 1f, ataque.Guardia);
+        pos += katanaGuardiaPos * guardia; giro += katanaGuardiaGiro * guardia;
         mover = pos;
         girar = Quaternion.Euler(giro);
     }
