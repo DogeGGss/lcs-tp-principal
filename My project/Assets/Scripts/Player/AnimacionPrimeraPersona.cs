@@ -482,7 +482,8 @@ public class AnimacionPrimeraPersona : MonoBehaviour
     {
         float dt = Mathf.Min(Time.deltaTime, 0.05f);
         Quaternion giro = transform.rotation;
-        GameObject arma = activa && camara != null && camara.enabled ? Animable() : null;
+        // Ajustando a mano (BrazosEnCamara) el arma queda quieta: si no, cada cuadro la devolvía a su lugar y no se podía mover.
+        GameObject arma = activa && camara != null && camara.enabled && !BrazosEnCamara.AjustandoAMano ? Animable() : null;
 
         // Retraso al mirar: el arma se queda un poco atrás del giro de la cámara y vuelve sola.
         Vector3 delta = (Quaternion.Inverse(giroAnterior) * giro).eulerAngles;

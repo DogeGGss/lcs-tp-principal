@@ -42,7 +42,7 @@ public class MovimientoDeKatana : MonoBehaviour
 
     private void LateUpdate()
     {
-        if (modelo == null || ataque == null) return;
+        if (modelo == null || ataque == null || BrazosEnCamara.AjustandoAMano) return; // (ajustando a mano: quieta)
         Vector3 giro = Vector3.zero;
 
         float avance = ataque.AvanceDelCorte;

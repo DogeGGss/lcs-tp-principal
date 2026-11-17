@@ -28,6 +28,12 @@ public class BrazosEnCamara : MonoBehaviour
              "Prendido, en vez de la foto se ven los brazos en vivo agarrando el arma, tal como va a quedar la foto: " +
              "al mover el arma o los agarres se ve al momento. Hay que mirar derecho. Al apagarlo se sacan las fotos de nuevo.")]
     public bool ajustarAMano;
+    /// <summary>Se está ajustando a mano: nada más mueve el arma en la mano (AnimacionPrimeraPersona, la muñeca de la
+    /// katana), así lo que se mueve en el Inspector queda donde se lo deja.</summary>
+    public static bool AjustandoAMano { get; private set; }
+    [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+    private static void Reiniciar() => AjustandoAMano = false;
+    private void OnDestroy() { if (ajustando) AjustandoAMano = false; }
 
     private WeaponSwitcher switcher;
     private HealthSystem vida;
@@ -375,6 +381,7 @@ public class BrazosEnCamara : MonoBehaviour
         }
         ajustada = null;
         ajustando = true;
+        AjustandoAMano = true;
     }
 
     // Cada cuadro: los brazos del cuerpo agarran en vivo el arma en la mano, por donde estén sus agarres.
@@ -416,6 +423,7 @@ public class BrazosEnCamara : MonoBehaviour
 #if UNITY_EDITOR
         GuardarAjuste(true);
 #endif
+        AjustandoAMano = false;
         if (prestados) VolverALineaA(); else GuardarLineaA();
         prestados = false;
         brazosCuerpo.gameObject.layer = capaBrazos;
