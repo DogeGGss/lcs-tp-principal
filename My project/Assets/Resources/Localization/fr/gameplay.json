@@ -325,6 +325,10 @@
       "text": "Alimentation directe"
     },
     {
+      "key": "gameplay.card.escort",
+      "text": "Escorte"
+    },
+    {
       "key": "gameplay.card.instant_delivery",
       "text": "Livraison immédiate"
     },
@@ -543,6 +547,10 @@
     {
       "key": "gameplay.card.fx.direct_feed",
       "text": "Le chargeur et la réserve ne font qu'un : tu ne recharges jamais, jusqu'à épuisement des balles."
+    },
+    {
+      "key": "gameplay.card.fx.escort",
+      "text": "Un drone t'accompagne : son rayon fait fondre l'envahisseur le plus proche et toutes les 8 s il lance des arcs électriques qui paralysent ceux qui l'entourent."
     },
     {
       "key": "gameplay.card.fx.instant_delivery",

@@ -1,0 +1,500 @@
+using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.Rendering;
+
+// F29 (Modo Invasión+), US 394: la Escolta, el dron de la carta legendaria. Lo arma EscoltaDeInvasion: el del jugador de
+// esta computadora (Propio: busca a quién atacar y hace el daño) y, en cooperativo, los de los compañeros (solo se ven:
+// el rayo y los arcos llegan por la red).
+// - CA2: flota cerca del hombro del jugador y lo sigue con un leve retraso; no se puede destruir ni choca con nada
+//   (no tiene colliders) y sigue atacando con el jugador caído.
+// - CA3: el rayo del ojo se engancha al invasor más cercano a la vista (hasta Alcance) y no lo suelta hasta que muere,
+//   sale de la vista o se aleja; hace RayoDanio por segundo, que sube hasta RayoDanioMaximo en RayoCarga segundos sobre
+//   el mismo invasor (al cambiar de objetivo vuelve a empezar). El daño va de a golpes cada RayoCada segundos.
+// - CA4: cada ArcosCada segundos, arcos eléctricos desde las dos luces de abajo del ojo (sin cortar el rayo) al grupo
+//   con más invasores a su alcance: saltan entre hasta ArcosSaltos invasores a menos de ArcosEntre metros entre sí, con
+//   ArcosDanio a cada uno y ArcosParaliza segundos aturdidos (Npc.Aturdir), salvo el Jefe. Sin nadie a tiro, espera.
+// - CA5: el daño lo hace esta computadora como cualquier disparo (HealthSystem.TakeDamage; a la copia de un invasor se
+//   le manda al anfitrión con este jugador como atacante), así las bajas son del dueño: puntos, estadísticas y cartas.
+// - CA7: esfera blanca con las franjas celestes (la textura del modelo), el Sol de Mayo en la tapa de atrás y una
+//   banderita argentina en una antena; el ojo brilla más mientras el rayo carga.
+public class DronEscolta : MonoBehaviour
+{
+    public const float Alcance = 20f;                 // CA3 y CA4 (m)
+    public const float RayoDanio = 40f, RayoDanioMaximo = 80f, RayoCarga = 3f, RayoCada = 0.5f; // CA3
+    public const float ArcosCada = 8f, ArcosEntre = 6f, ArcosParaliza = 1.5f;                  // CA4
+    public const int ArcosDanio = 35, ArcosSaltos = 4;                                           // CA4
+    public const float Diametro = 0.35f;              // CA7 (m)
+    private const float BuscarCada = 0.2f;
+
+    public static readonly Color ColorElectrico = new Color(0.35f, 0.7f, 1f);
+    private static readonly Color Celeste = new Color(0.455f, 0.675f, 0.875f);
+    private static readonly Color Oro = new Color(0.96f, 0.7f, 0.06f);
+
+    // Dónde están el ojo y las luces en el modelo (Resources/Escolta/Escolta.obj: 1 m de diámetro, el ojo mira a +Z).
+    private static readonly Vector3 Ojo = new Vector3(0f, 0.01f, 0.47f), Luces = new Vector3(0f, -0.32f, 0.47f);
+    private static readonly Vector3 TapaDeAtras = new Vector3(0f, 0.01f, -0.475f), Antena = new Vector3(0.17f, 0.44f, -0.17f);
+
+    /// <summary>El de esta computadora: elige los objetivos y hace el daño.</summary>
+    public bool Propio { get; private set; }
+    /// <summary>Al lado de quién va (el jugador, o la copia de un compañero).</summary>
+    public Transform Sigue { get; set; }
+    /// <summary>Hacia dónde mira el jugador (la cámara, en el propio; null: hacia donde mira Sigue).</summary>
+    public Transform Mira { get; set; }
+
+    /// <summary>CA3: el rayo cambió de objetivo (el invasor, o null si se apagó). Lo manda EscoltaDeInvasion por la red.</summary>
+    public System.Action<Npc> CambioElRayo;
+    /// <summary>CA4: salieron los arcos (los puntos: de las luces al primero y de invasor en invasor).</summary>
+    public System.Action<Vector3[]> SalieronArcos;
+
+    private Transform modelo, bandera;
+    private Material materialOjo;
+    private LineRenderer rayo;
+    private Material materialRayo;
+    private Vector3 velocidad;
+    private float aparecio;
+
+    private Npc objetivo;
+    private float enganchadoDesde, proximaBusqueda, acumulado, proximoGolpe, arcosListosEn;
+    private readonly List<Npc> candidatos = new List<Npc>();
+    private static readonly RaycastHit[] golpes = new RaycastHit[16];
+
+    /// <summary>Arma un dron (el del jugador de esta computadora si propio) al lado de sigue.</summary>
+    public static DronEscolta Crear(Transform sigue, Transform mira, bool propio)
+    {
+        var go = new GameObject(propio ? "Escolta (US 394)" : "Escolta de un compañero (US 394)");
+        DronEscolta d = go.AddComponent<DronEscolta>();
+        d.Propio = propio;
+        d.Sigue = sigue;
+        d.Mira = mira;
+        d.Armar();
+        if (sigue != null) go.transform.position = d.Lugar();
+        d.arcosListosEn = Time.time + ArcosCada;
+        return d;
+    }
+
+    // ---------- CA7: cómo se ve ----------
+
+    private void Armar()
+    {
+        aparecio = Time.time;
+        modelo = new GameObject("Modelo").transform;
+        modelo.SetParent(transform, false);
+        modelo.localScale = Vector3.one * Diametro;
+        GameObject molde = Resources.Load<GameObject>("Escolta/Escolta");
+        if (molde != null)
+        {
+            GameObject cuerpo = Instantiate(molde, modelo, false);
+            cuerpo.transform.localPosition = Vector3.zero;
+            cuerpo.transform.localRotation = Quaternion.identity;
+            foreach (Collider c in cuerpo.GetComponentsInChildren<Collider>(true)) Destroy(c);
+            PonerMateriales(cuerpo);
+            // El .obj mide 1 m de diámetro; por si se importó con otra escala, se lo lleva a Diametro.
+            Bounds caja = default;
+            bool hay = false;
+            foreach (Renderer r in cuerpo.GetComponentsInChildren<Renderer>(true))
+            {
+                if (!hay) { caja = r.bounds; hay = true; } else caja.Encapsulate(r.bounds);
+            }
+            float mayor = hay ? Mathf.Max(caja.size.x, caja.size.y, caja.size.z) : 0f;
+            if (mayor > 0.0001f) cuerpo.transform.localScale *= Diametro / mayor;
+        }
+        else
+        {
+            // Sin el modelo, una esfera blanca (para no quedarse sin dron).
+            GameObject esfera = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+            Destroy(esfera.GetComponent<Collider>());
+            esfera.transform.SetParent(modelo, false);
+            esfera.GetComponent<Renderer>().sharedMaterial = Lit(Color.white, null, 0.5f, 0.6f);
+        }
+        SolDeMayo(modelo, TapaDeAtras, 0.15f, Vector3.back);
+        ArmarBandera();
+        foreach (Renderer r in GetComponentsInChildren<Renderer>(true)) r.shadowCastingMode = ShadowCastingMode.Off;
+    }
+
+    // Los materiales del modelo, por el nombre de cada parte (los del .obj).
+    private void PonerMateriales(GameObject cuerpo)
+    {
+        Texture2D textura = Resources.Load<Texture2D>("Escolta/EscoltaCuerpo");
+        Material casco = Lit(Color.white, textura, 0.5f, 0.55f);
+        Material metal = Lit(new Color(0.85f, 0.85f, 0.87f), null, 0.7f, 0.6f);
+        Material adentro = Lit(new Color(0.12f, 0.12f, 0.13f), null, 0.3f, 0.3f);
+        materialOjo = Lit(new Color(0.45f, 0.65f, 0.95f), null, 0.1f, 0.9f);
+        Brillar(materialOjo, ColorElectrico * 1.2f);
+        Material luces = Lit(new Color(0.7f, 0.85f, 1f), null, 0.1f, 0.9f);
+        Brillar(luces, new Color(0.6f, 0.85f, 1f) * 2f);
+        string[] orden = { "Main", "Inside", "Eye", "Lights", "Eye_Detail", "Back" };
+        foreach (Renderer r in cuerpo.GetComponentsInChildren<Renderer>(true))
+        {
+            Material[] actuales = r.sharedMaterials;
+            var nuevos = new Material[actuales.Length];
+            for (int i = 0; i < actuales.Length; i++)
+            {
+                string parte = actuales[i] != null ? actuales[i].name : (i < orden.Length ? orden[i] : "");
+                if (System.Array.IndexOf(orden, parte) < 0 && i < orden.Length) parte = orden[i];
+                nuevos[i] = parte == "Main" ? casco : parte == "Inside" ? adentro : parte == "Eye" ? materialOjo
+                          : parte == "Lights" ? luces : metal;
+            }
+            r.sharedMaterials = nuevos;
+        }
+    }
+
+    private static Material Lit(Color color, Texture textura, float metal, float liso)
+    {
+        Shader shader = Shader.Find("Universal Render Pipeline/Lit");
+        if (shader == null) shader = Shader.Find("Standard");
+        var m = new Material(shader) { name = "Escolta" };
+        m.color = color;
+        if (m.HasProperty("_BaseColor")) m.SetColor("_BaseColor", color);
+        if (textura != null)
+        {
+            m.mainTexture = textura;
+            if (m.HasProperty("_BaseMap")) m.SetTexture("_BaseMap", textura);
+        }
+        if (m.HasProperty("_Metallic")) m.SetFloat("_Metallic", metal);
+        if (m.HasProperty("_Smoothness")) m.SetFloat("_Smoothness", liso);
+        if (m.HasProperty("_Cull")) m.SetFloat("_Cull", 0f); // de los dos lados (el sol y la bandera son planos)
+        return m;
+    }
+
+    private static void Brillar(Material m, Color color)
+    {
+        if (m == null || !m.HasProperty("_EmissionColor")) return;
+        m.EnableKeyword("_EMISSION");
+        m.globalIlluminationFlags = MaterialGlobalIlluminationFlags.RealtimeEmissive;
+        m.SetColor("_EmissionColor", color);
+    }
+
+    // El Sol de Mayo: un círculo con 32 rayos (rectos y ondulados alternados, los ondulados más cortos), de radio
+    // radio, en lugar, mirando hacia frente.
+    private static void SolDeMayo(Transform padre, Vector3 lugar, float radio, Vector3 frente)
+    {
+        var go = new GameObject("Sol de Mayo");
+        go.transform.SetParent(padre, false);
+        go.transform.localPosition = lugar;
+        go.transform.localRotation = Quaternion.LookRotation(-frente, Vector3.up); // la cara (+Z del plano) hacia afuera
+        var vertices = new List<Vector3>();
+        var triangulos = new List<int>();
+        float centro = radio * 0.42f;
+        const int Lados = 24;
+        vertices.Add(Vector3.zero);
+        for (int i = 0; i < Lados; i++)
+        {
+            float a = i * Mathf.PI * 2f / Lados;
+            vertices.Add(new Vector3(Mathf.Cos(a), Mathf.Sin(a), 0f) * centro);
+        }
+        for (int i = 0; i < Lados; i++) { triangulos.Add(0); triangulos.Add(1 + i); triangulos.Add(1 + (i + 1) % Lados); }
+        for (int i = 0; i < 32; i++)
+        {
+            float a = i * Mathf.PI / 16f, ancho = i % 2 == 0 ? 0.09f : 0.05f;
+            float largo = i % 2 == 0 ? radio : radio * 0.8f;
+            float torcido = i % 2 == 0 ? 0f : 0.12f; // los ondulados, un poco torcidos
+            int b = vertices.Count;
+            vertices.Add(new Vector3(Mathf.Cos(a - ancho), Mathf.Sin(a - ancho), 0f) * centro * 0.95f);
+            vertices.Add(new Vector3(Mathf.Cos(a + ancho), Mathf.Sin(a + ancho), 0f) * centro * 0.95f);
+            vertices.Add(new Vector3(Mathf.Cos(a + torcido), Mathf.Sin(a + torcido), 0f) * largo);
+            triangulos.Add(b); triangulos.Add(b + 1); triangulos.Add(b + 2);
+        }
+        var malla = new Mesh { name = "Sol de Mayo" };
+        malla.SetVertices(vertices);
+        malla.SetTriangles(triangulos, 0);
+        malla.RecalculateNormals();
+        malla.RecalculateBounds();
+        go.AddComponent<MeshFilter>().sharedMesh = malla;
+        Material oro = Lit(Oro, null, 0.8f, 0.55f);
+        Brillar(oro, Oro * 0.25f);
+        go.AddComponent<MeshRenderer>().sharedMaterial = oro;
+    }
+
+    // La antena con la banderita (celeste, blanca y celeste, con el sol), que flamea.
+    private void ArmarBandera()
+    {
+        GameObject palo = GameObject.CreatePrimitive(PrimitiveType.Cylinder);
+        Destroy(palo.GetComponent<Collider>());
+        palo.name = "Antena";
+        palo.transform.SetParent(modelo, false);
+        palo.transform.localPosition = Antena + Vector3.up * 0.22f;
+        palo.transform.localScale = new Vector3(0.025f, 0.22f, 0.025f);
+        palo.GetComponent<Renderer>().sharedMaterial = Lit(new Color(0.8f, 0.8f, 0.82f), null, 0.8f, 0.7f);
+
+        bandera = new GameObject("Bandera").transform;
+        bandera.SetParent(modelo, false);
+        bandera.localPosition = Antena + Vector3.up * 0.4f;
+        const float Ancho = 0.36f, Alto = 0.24f;
+        Material celeste = Lit(Celeste, null, 0f, 0.3f), blanco = Lit(Color.white, null, 0f, 0.3f);
+        for (int i = 0; i < 3; i++)
+        {
+            GameObject franja = GameObject.CreatePrimitive(PrimitiveType.Quad);
+            Destroy(franja.GetComponent<Collider>());
+            franja.transform.SetParent(bandera, false);
+            franja.transform.localPosition = new Vector3(Ancho / 2f, Alto / 3f * (1 - i), 0f);
+            franja.transform.localScale = new Vector3(Ancho, Alto / 3f, 1f);
+            franja.GetComponent<Renderer>().sharedMaterial = i == 1 ? blanco : celeste;
+        }
+        SolDeMayo(bandera, new Vector3(Ancho / 2f, 0f, -0.004f), Alto / 6f * 0.95f, Vector3.back);
+        SolDeMayo(bandera, new Vector3(Ancho / 2f, 0f, 0.004f), Alto / 6f * 0.95f, Vector3.forward);
+    }
+
+    // ---------- CA2: seguir al jugador ----------
+
+    // Arriba y al costado del hombro derecho (un poco adelante, así el dueño lo ve en una esquina).
+    private Vector3 Lugar()
+    {
+        Transform hacia = Mira != null ? Mira : Sigue;
+        Vector3 adelante = hacia != null ? Vector3.ProjectOnPlane(hacia.forward, Vector3.up) : Vector3.forward;
+        if (adelante.sqrMagnitude < 0.001f) adelante = Sigue != null ? Sigue.forward : Vector3.forward;
+        adelante.Normalize();
+        Vector3 derecha = Vector3.Cross(Vector3.up, adelante);
+        Vector3 base_ = Mira != null ? Mira.position : (Sigue != null ? Sigue.position + Vector3.up * 1.7f : transform.position);
+        float vaiven = Mathf.Sin((Time.time - aparecio) * 2.1f) * 0.05f;
+        return base_ + derecha * 0.65f + Vector3.up * (0.3f + vaiven) + adelante * 0.35f;
+    }
+
+    private void LateUpdate()
+    {
+        if (Sigue == null) return;
+        transform.position = Vector3.SmoothDamp(transform.position, Lugar(), ref velocidad, 0.18f);
+        // Mira al objetivo del rayo (o hacia donde mira el jugador).
+        Vector3 hacia = objetivo != null ? Centro(objetivo) - transform.position
+                      : (Mira != null ? Mira.forward : Sigue.forward);
+        if (hacia.sqrMagnitude > 0.0001f)
+            transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(hacia, Vector3.up), 8f * Time.deltaTime);
+        if (bandera != null) bandera.localRotation = Quaternion.Euler(0f, 90f + Mathf.Sin(Time.time * 3.3f) * 18f, 0f); // flamea hacia atrás
+        DibujarRayo();
+    }
+
+    // ---------- CA3 y CA4: el ataque (solo el propio) ----------
+
+    private void Update()
+    {
+        if (!Propio) return;
+        if (objetivo != null && !Sirve(objetivo, true)) Soltar();
+        if (Time.time >= proximaBusqueda)
+        {
+            proximaBusqueda = Time.time + BuscarCada;
+            if (objetivo == null) Enganchar(MasCercano());
+            if (Time.time >= arcosListosEn && Arcos()) arcosListosEn = Time.time + ArcosCada; // sin nadie a tiro, esperan
+        }
+        if (objetivo != null)
+        {
+            acumulado += DanioPorSegundo(Time.time - enganchadoDesde) * Time.deltaTime;
+            if (Time.time >= proximoGolpe)
+            {
+                proximoGolpe = Time.time + RayoCada;
+                int danio = Mathf.FloorToInt(acumulado);
+                acumulado -= danio;
+                if (danio > 0) Daniar(objetivo, danio, true);
+            }
+        }
+    }
+
+    /// <summary>CA3: cuánto pega el rayo por segundo, con tantos segundos sobre el mismo invasor.</summary>
+    public static float DanioPorSegundo(float segundos) =>
+        Mathf.Lerp(RayoDanio, RayoDanioMaximo, Mathf.Clamp01(segundos / RayoCarga));
+
+    private void Enganchar(Npc npc)
+    {
+        if (npc == objetivo) return;
+        objetivo = npc;
+        enganchadoDesde = Time.time;
+        acumulado = 0f;
+        proximoGolpe = Time.time + RayoCada;
+        CambioElRayo?.Invoke(npc);
+    }
+
+    private void Soltar() => Enganchar(null);
+
+    /// <summary>A quién le está dando el rayo (null: a nadie).</summary>
+    public Npc Objetivo => objetivo;
+
+    /// <summary>Para los de los compañeros: el rayo que llegó por la red (si es el mismo, sigue cargando).</summary>
+    public void RayoA(Npc npc)
+    {
+        if (npc == objetivo) return;
+        objetivo = npc;
+        enganchadoDesde = Time.time;
+    }
+
+    // Vivo, cerca y (si hace falta) a la vista.
+    private bool Sirve(Npc npc, bool vista)
+    {
+        if (npc == null || !npc.Vivo || npc.Vida == null) return false;
+        Vector3 c = Centro(npc);
+        if ((c - transform.position).sqrMagnitude > Alcance * Alcance) return false;
+        return !vista || ALaVista(npc, c);
+    }
+
+    private Npc MasCercano()
+    {
+        candidatos.Clear();
+        foreach (Npc n in Npc.Todos) if (n != null && n.Vivo && n.Vida != null) candidatos.Add(n);
+        Vector3 yo = transform.position;
+        candidatos.Sort((a, b) => (a.transform.position - yo).sqrMagnitude.CompareTo((b.transform.position - yo).sqrMagnitude));
+        foreach (Npc n in candidatos) if (Sirve(n, true)) return n;
+        return null;
+    }
+
+    // CA4: los arcos. Devuelve si salieron (sin nadie a tiro, esperan).
+    private bool Arcos()
+    {
+        candidatos.Clear();
+        foreach (Npc n in Npc.Todos) if (Sirve(n, true)) candidatos.Add(n);
+        if (candidatos.Count == 0) return false;
+        var lugares = new List<Vector3>(candidatos.Count);
+        foreach (Npc n in candidatos) lugares.Add(Centro(n));
+        List<int> cadena = Cadena(lugares, ArcosSaltos, ArcosEntre);
+        var puntos = new Vector3[cadena.Count + 1];
+        puntos[0] = transform.TransformPoint(Luces * Diametro);
+        for (int i = 0; i < cadena.Count; i++)
+        {
+            Npc npc = candidatos[cadena[i]];
+            puntos[i + 1] = lugares[cadena[i]];
+            Daniar(npc, ArcosDanio, false);
+            if (npc != null && npc.Vivo && (npc.Tipo == null || !npc.Tipo.esJefe)) npc.Aturdir(ArcosParaliza);
+        }
+        MostrarArcos(puntos);
+        SalieronArcos?.Invoke(puntos);
+        return true;
+    }
+
+    /// <summary>
+    /// CA4: a quiénes van los arcos (sus índices en lugares, en orden): el primero es el que tiene más invasores a
+    /// menos de entre metros (el grupo más grande; si empatan, el primero de la lista); después, cada salto va al más
+    /// cercano del último que todavía no recibió, si está a menos de entre metros. Hasta saltos invasores.
+    /// </summary>
+    public static List<int> Cadena(IReadOnlyList<Vector3> lugares, int saltos, float entre)
+    {
+        var cadena = new List<int>();
+        if (lugares == null || lugares.Count == 0 || saltos <= 0) return cadena;
+        float entre2 = entre * entre;
+        int primero = 0, mejor = -1;
+        for (int i = 0; i < lugares.Count; i++)
+        {
+            int cerca = 0;
+            for (int k = 0; k < lugares.Count; k++)
+                if (k != i && (lugares[k] - lugares[i]).sqrMagnitude <= entre2) cerca++;
+            if (cerca > mejor) { mejor = cerca; primero = i; }
+        }
+        cadena.Add(primero);
+        while (cadena.Count < saltos)
+        {
+            Vector3 ultimo = lugares[cadena[cadena.Count - 1]];
+            int siguiente = -1;
+            float menor = entre2;
+            for (int k = 0; k < lugares.Count; k++)
+            {
+                if (cadena.Contains(k)) continue;
+                float d = (lugares[k] - ultimo).sqrMagnitude;
+                if (d <= menor) { menor = d; siguiente = k; }
+            }
+            if (siguiente < 0) break;
+            cadena.Add(siguiente);
+        }
+        return cadena;
+    }
+
+    // CA5: el daño, como un disparo del dueño (a la copia de un invasor se le manda al anfitrión).
+    private void Daniar(Npc npc, int danio, bool delRayo)
+    {
+        if (npc == null || !npc.Vivo || npc.Vida == null || danio <= 0) return;
+        Vector3 desde = transform.TransformPoint((delRayo ? Ojo : Luces) * Diametro);
+        HealthSystem.DamageOrigin = desde;
+        npc.Vida.TakeDamage(danio, false);
+        if (delRayo) Destellos.En(Centro(npc), ColorElectrico, 4);
+    }
+
+    // ---------- Lo que se ve del ataque ----------
+
+    /// <summary>CA4: los arcos en zigzag, de las luces al primero y de invasor en invasor.</summary>
+    public static void MostrarArcos(Vector3[] puntos)
+    {
+        if (puntos == null) return;
+        var efectos = new CatalogoDeSkins.Efectos { fuego = ColorElectrico, nucleo = Color.white, rayo = true };
+        for (int i = 1; i < puntos.Length; i++)
+        {
+            RayoDeSkin.Crear(puntos[i - 1], puntos[i], efectos, 0.03f, 0.06f, 2, 0.4f);
+            Destellos.En(puntos[i], ColorElectrico, 10);
+        }
+    }
+
+    /// <summary>La copia del dron de un compañero: sus arcos.</summary>
+    public void ArcosDeLaRed(Vector3[] puntos)
+    {
+        if (puntos == null || puntos.Length == 0) return;
+        puntos[0] = transform.TransformPoint(Luces * Diametro); // desde donde está acá
+        MostrarArcos(puntos);
+    }
+
+    // CA3 y CA7: el rayo del ojo y el brillo del ojo, que crecen con la carga.
+    private void DibujarRayo()
+    {
+        bool hay = objetivo != null && objetivo.Vivo;
+        float carga = hay ? Mathf.Clamp01((Time.time - enganchadoDesde) / RayoCarga) : 0f;
+        if (materialOjo != null && materialOjo.HasProperty("_EmissionColor"))
+            materialOjo.SetColor("_EmissionColor", ColorElectrico * (hay ? 1.5f + 3.5f * carga : 1.2f));
+        if (!hay) { if (rayo != null) rayo.enabled = false; return; }
+        if (rayo == null)
+        {
+            var go = new GameObject("Rayo del ojo");
+            go.transform.SetParent(transform, false);
+            rayo = go.AddComponent<LineRenderer>();
+            rayo.positionCount = 2;
+            rayo.useWorldSpace = true;
+            rayo.shadowCastingMode = ShadowCastingMode.Off;
+            rayo.receiveShadows = false;
+            rayo.numCapVertices = 3;
+            materialRayo = Rayo.Material(ColorElectrico);
+            rayo.sharedMaterial = materialRayo;
+        }
+        rayo.enabled = true;
+        rayo.SetPosition(0, transform.TransformPoint(Ojo * Diametro));
+        rayo.SetPosition(1, Centro(objetivo));
+        float ancho = Mathf.Lerp(0.025f, 0.07f, carga) * (1f + 0.15f * Mathf.Sin(Time.time * 40f));
+        rayo.startWidth = ancho * 0.7f;
+        rayo.endWidth = ancho;
+        float brillo = Mathf.Lerp(0.6f, 1f, carga);
+        rayo.startColor = rayo.endColor = new Color(brillo, brillo, brillo, 1f);
+    }
+
+    // ---------- Ayudas ----------
+
+    // El centro del cuerpo del invasor (sus zonas de impacto), adonde apunta.
+    private static Vector3 Centro(Npc npc)
+    {
+        Bounds caja = default;
+        bool hay = false;
+        foreach (Collider c in npc.GetComponentsInChildren<Collider>())
+        {
+            if (c.isTrigger || !c.enabled) continue;
+            if (!hay) { caja = c.bounds; hay = true; } else caja.Encapsulate(c.bounds);
+        }
+        return hay ? caja.center : npc.transform.position + Vector3.up;
+    }
+
+    // Si el ojo lo ve: lo primero que cruza la línea (sin contar a los jugadores) es él.
+    private bool ALaVista(Npc npc, Vector3 centro)
+    {
+        Vector3 desde = transform.position;
+        Vector3 hacia = centro - desde;
+        float distancia = hacia.magnitude;
+        if (distancia < 0.01f) return true;
+        int n = Physics.RaycastNonAlloc(desde, hacia / distancia, golpes, distancia + 0.5f, ~0, QueryTriggerInteraction.Ignore);
+        float masCerca = float.MaxValue;
+        Npc primero = null;
+        bool pared = false;
+        for (int i = 0; i < n; i++)
+        {
+            Collider c = golpes[i].collider;
+            if (c == null || golpes[i].distance >= masCerca) continue;
+            if (c.GetComponentInParent<PlayerMovement>() != null || c.GetComponentInParent<JugadorEnRed>() != null) continue;
+            masCerca = golpes[i].distance;
+            primero = c.GetComponentInParent<Npc>();
+            pared = primero == null;
+        }
+        return !pared && (primero == null || primero == npc);
+    }
+
+    private void OnDestroy()
+    {
+        if (materialRayo != null) Destroy(materialRayo);
+    }
+}

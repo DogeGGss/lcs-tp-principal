@@ -325,6 +325,10 @@
       "text": "Direct feed"
     },
     {
+      "key": "gameplay.card.escort",
+      "text": "Escort"
+    },
+    {
       "key": "gameplay.card.instant_delivery",
       "text": "Instant delivery"
     },
@@ -543,6 +547,10 @@
     {
       "key": "gameplay.card.fx.direct_feed",
       "text": "Magazine and reserve are a single pool: you never reload until you run out of bullets."
+    },
+    {
+      "key": "gameplay.card.fx.escort",
+      "text": "A drone follows you: its beam melts the nearest invader, and every 8 s it fires electric arcs that paralyze those around."
     },
     {
       "key": "gameplay.card.fx.instant_delivery",

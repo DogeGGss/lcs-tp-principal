@@ -132,6 +132,9 @@ public class CartaDeInvasion
             efecto = "Cuando un invasor te pega, tu próximo disparo suma 5 veces la vida que perdiste.", efectoRepetida = new[] { "Cuando un invasor te pega, tu próximo disparo suma 6 veces la vida que perdiste.", "Cuando un invasor te pega, tu próximo disparo suma 7 veces la vida que perdiste." }, aplicar = EfectosDeCartas.EnElJuego },
         new CartaDeInvasion { nombre = "Alimentación directa", rareza = RarezaDeCarta.Legendaria, rindeCon = "Todas", unaVez = true,
             efecto = "El cargador y la reserva son un solo depósito: no recargás nunca, hasta que se acaban las balas.", aplicar = EfectosDeCartas.EnElJuego },
+        // F29, US 394: la Escolta, un dron que acompaña al jugador (EscoltaDeInvasion y DronEscolta).
+        new CartaDeInvasion { nombre = "Escolta", rareza = RarezaDeCarta.Legendaria, rindeCon = "Todas", unaVez = true,
+            efecto = "Un dron te acompaña: su rayo derrite al invasor más cercano y cada 8 s lanza arcos eléctricos que paralizan a los de alrededor.", aplicar = EfectosDeCartas.EnElJuego },
         new CartaDeInvasion { nombre = "Entrega inmediata", rareza = RarezaDeCarta.Epica, rindeCon = "Todas", unaVez = true,
             efecto = "La elección del puesto se abre apenas se carga, sin esperar a que termine la oleada.", aplicar = EfectosDeCartas.EnElJuego },
         new CartaDeInvasion { nombre = "Despeje", rareza = RarezaDeCarta.Comun, rindeCon = "Todas",
