@@ -241,8 +241,8 @@ public class DronEscolta : MonoBehaviour
         luzDelSol = luz.AddComponent<Light>();
         luzDelSol.type = LightType.Point;
         luzDelSol.color = new Color(1f, 0.72f, 0.25f);
-        luzDelSol.range = 1.6f;
-        luzDelSol.intensity = 1.5f;
+        luzDelSol.range = 0.9f;
+        luzDelSol.intensity = 0.3f;
         luzDelSol.shadows = LightShadows.None;
 
         var go = new GameObject("Llama del propulsor");
@@ -254,6 +254,7 @@ public class DronEscolta : MonoBehaviour
         llama.receiveShadows = false;
         llama.numCapVertices = 4;
         materialLlama = Rayo.Material(new Color(1f, 0.65f, 0.15f));
+        if (materialLlama.HasProperty("_Color")) materialLlama.SetColor("_Color", new Color(1f, 0.65f, 0.15f, 1f) * 0.9f); // suave, sin encandilar
         llama.sharedMaterial = materialLlama;
     }
 
@@ -263,15 +264,15 @@ public class DronEscolta : MonoBehaviour
         float rapido = Mathf.Clamp01(velocidad.magnitude / 3f);
         float late = 0.85f + 0.15f * Mathf.Sin(Time.time * 9f) + 0.05f * Mathf.Sin(Time.time * 23f);
         float fuerza = (0.55f + 0.45f * rapido) * late;
-        if (materialSol != null && materialSol.HasProperty("_EmissionColor")) materialSol.SetColor("_EmissionColor", Oro * (1.2f + 2.5f * fuerza));
-        luzDelSol.intensity = 0.8f + 2.2f * fuerza;
+        if (materialSol != null && materialSol.HasProperty("_EmissionColor")) materialSol.SetColor("_EmissionColor", Oro * (0.35f + 0.5f * fuerza));
+        luzDelSol.intensity = 0.15f + 0.35f * fuerza;
         Vector3 desde = modelo.TransformPoint(TapaDeAtras + Vector3.back * 0.02f);
         Vector3 atras = -transform.forward;
         llama.SetPosition(0, desde);
         llama.SetPosition(1, desde + atras * Diametro * (0.25f + 0.9f * rapido) * late);
-        llama.startWidth = Diametro * 0.32f * late;
+        llama.startWidth = Diametro * 0.2f * late;
         llama.endWidth = Diametro * 0.04f;
-        float c = 0.6f + 0.4f * fuerza;
+        float c = 0.35f + 0.3f * fuerza;
         llama.startColor = new Color(c, c, c, 1f);
         llama.endColor = new Color(c * 0.6f, c * 0.4f, c * 0.2f, 1f);
     }
