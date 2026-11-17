@@ -27,9 +27,10 @@ using UnityEngine.UI;
 //   US 335, CA4 a CA7: mientras hay un puesto de suministros (US 292), los portales (también el del Jefe) se abren
 //   alrededor del puesto, entre 30 y 55 m de él, conectados caminando con el jugador y nunca a menos de 10 m de él
 //   (pueden verse); si no hay puesto o no se encuentra lugar ahí, como siempre.
-//   F31: con el jugador donde no se llega caminando (un techo, una pared alta), "conectado" es que se llegue hasta el
-//   punto caminable más cercano a él (donde lo esperan los enemigos, US 036, CA3). Si no se encuentra lugar, se vuelve
-//   a buscar un rato después (no en cada cuadro).
+//   F31: con el jugador donde no se llega caminando (un techo, una pared alta), "conectado" es que se llegue caminando
+//   hasta el último lugar caminable donde estuvo (de donde se subió; ahí lo esperan los enemigos, US 036, CA3), así no
+//   se abren adentro de un edificio cerrado. Si no se encuentra lugar, se vuelve a buscar un rato después (no en cada
+//   cuadro).
 // - CA5: la oleada termina cuando mueren todos (en la 10, también el Jefe): "Oleada N superada" y descanso.
 // US 303 reemplaza el final de la 10 (CA6) y el modo infinito (CA7):
 // - CA4: al superar cada oleada del Jefe, "Jefe derrotado" con "Seguir" (la elección del Jefe, EleccionDeInvasion, y
@@ -404,6 +405,7 @@ public class OleadasDeInvasion : MonoBehaviour
             if (yo != null) { navMeshPedido = true; NavMeshEnVivo.Preparar(yo.position); }
         }
 
+        RecordarCaminable();
         if (fase != Fase.Oleada || Espejo) return; // US 290: en espejo no larga a nadie: las copias llegan por la red
 
         jugadorAhora = Jugador();
@@ -857,21 +859,54 @@ public class OleadasDeInvasion : MonoBehaviour
         if (!NavMeshEnVivo.Listo && !NavMesh.SamplePosition(jugador, out _, 5f, filtro)) return true; // sin NavMesh todavía
         if (!NavMesh.SamplePosition(p, out NavMeshHit aca, 2f, filtro)) return false;
         if (aca.position.y > suelo + AlturaDePlantaBaja) return false;
-        if (!NavMesh.SamplePosition(jugador, out NavMeshHit alla, 3f, filtro)) { sobreNavMesh = aca.position; return true; }
         var camino = new NavMeshPath();
-        if (!NavMesh.CalculatePath(aca.position, alla.position, filtro, camino)) return false;
-        if (camino.status != NavMeshPathStatus.PathComplete)
+        bool cerca = NavMesh.SamplePosition(jugador, out NavMeshHit alla, 3f, filtro);
+        if (cerca && NavMesh.CalculatePath(aca.position, alla.position, filtro, camino) && camino.status == NavMeshPathStatus.PathComplete)
         {
-            // F31: el jugador está donde no se llega caminando (un techo): sirve si el camino llega hasta cerca de él,
-            // donde lo esperan los enemigos, abajo de él. Si termina lejos o a su altura, el portal quedó en un lugar cerrado.
-            if (camino.status != NavMeshPathStatus.PathPartial || camino.corners.Length == 0) return false;
-            Vector3 fin = camino.corners[camino.corners.Length - 1] - jugador;
-            if (fin.y > -AlturaDePlantaBaja) return false;
-            fin.y = 0f;
-            if (fin.magnitude > HastaDondeEsperan) return false;
+            sobreNavMesh = aca.position;
+            return true;
         }
+        // F31: el jugador está donde no se llega caminando (un techo, una pared alta): sirve si desde el portal se llega
+        // caminando hasta el último lugar caminable donde estuvo (de ahí se subió: ahí lo esperan los enemigos). Así no
+        // se abre en un lugar cerrado (adentro de un edificio sin salida), aunque quede abajo de él.
+        if (hayCaminable)
+        {
+            if (!NavMesh.CalculatePath(aca.position, ultimoCaminable, filtro, camino) || camino.status != NavMeshPathStatus.PathComplete) return false;
+            sobreNavMesh = aca.position;
+            return true;
+        }
+        // Sin un lugar caminable conocido (arrancó arriba): el camino tiene que terminar cerca de él y abajo de él.
+        if (!cerca) return false;
+        if (camino.status != NavMeshPathStatus.PathPartial || camino.corners.Length == 0) return false;
+        Vector3 fin = camino.corners[camino.corners.Length - 1] - jugador;
+        if (fin.y > -AlturaDePlantaBaja) return false;
+        fin.y = 0f;
+        if (fin.magnitude > HastaDondeEsperan) return false;
         sobreNavMesh = aca.position;
         return true;
+    }
+
+    // F31: el último lugar del NavMesh donde estuvo parado el jugador (lo usa Conectado si se subió a un techo).
+    private static Vector3 ultimoCaminable;
+    private static bool hayCaminable;
+    private static Transform caminableDe;
+    private float proximoCaminable;
+
+    private void RecordarCaminable()
+    {
+        if (Time.time < proximoCaminable) return;
+        proximoCaminable = Time.time + 0.3f;
+        Transform yo = Jugador();
+        if (yo == null) return;
+        if (yo != caminableDe) { caminableDe = yo; hayCaminable = false; }
+        if (!NavMeshEnVivo.Listo) return;
+        var filtro = new NavMeshQueryFilter { agentTypeID = NavMeshEnVivo.Tipo, areaMask = NavMesh.AllAreas };
+        // Parado sobre el NavMesh: un punto del NavMesh justo debajo de los pies (o a la altura del cuerpo).
+        if (NavMesh.SamplePosition(yo.position, out NavMeshHit aca, 1.2f, filtro) && Mathf.Abs(aca.position.y - yo.position.y) < 1.2f)
+        {
+            ultimoCaminable = aca.position;
+            hayCaminable = true;
+        }
     }
 
     // F31: m (en el plano) del jugador hasta donde puede terminar el camino si él está donde no se llega caminando.
