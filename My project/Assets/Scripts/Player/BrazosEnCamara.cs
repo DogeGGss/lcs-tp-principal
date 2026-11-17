@@ -90,13 +90,16 @@ public class BrazosEnCamara : MonoBehaviour
             return;
         }
 
-        // Las fotos se sacan al empezar, una tras otra, primero la del arma en la mano.
+        // Las fotos se sacan al empezar, una tras otra, primero la del arma en la mano. Muerto no: el cuerpo no agarra
+        // nada (por ejemplo, el que entra a una Invasión empezada arranca afuera, US 358) y la foto quedaba con los brazos
+        // sueltos para siempre. Se sacan cuando vuelve.
         if (preparando != null)
         {
             LlevarIKDerecho(preparando); // la pose sigue siendo la de la cámara derecha aunque el jugador mire a otro lado
-            if (Time.frameCount >= fotoEnCuadro) SacarFoto(preparando);
+            if (Time.frameCount >= fotoEnCuadro && vivo) SacarFoto(preparando);
+            else if (!vivo) fotoEnCuadro = Time.frameCount + 2; // (al volver, unos cuadros para que el IK se acomode)
         }
-        else if (Time.frameCount >= listoEnCuadro)
+        else if (vivo && Time.frameCount >= listoEnCuadro)
         {
             GameObject falta = enMano != null && !fotos.ContainsKey(enMano) && TieneAgarres(enMano) ? enMano : null;
             if (falta == null && faltanFotos)

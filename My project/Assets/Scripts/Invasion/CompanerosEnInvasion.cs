@@ -23,6 +23,7 @@ public class CompanerosEnInvasion : MonoBehaviour
     private const float CadaPublicar = 0.5f;
     private const float ListaX = 24f, ListaY = 430f, AnchoFila = 260f, AltoFila = 46f, EntreFilas = 6f; // CA1
     private const float AlturaDelNombre = 2.15f, AlturaCaido = 0.9f;                                   // CA2 (m)
+    private const float SobreLaCabeza = 0.3f; // CA2: m del nombre sobre lo más alto del cuerpo (el de cada personaje)
     private static readonly Color Rojo = Hex(0xFF5C5C);
 
     private class Fila
@@ -38,6 +39,8 @@ public class CompanerosEnInvasion : MonoBehaviour
         public RectTransform caja, icono;
         public TextMeshProUGUI nombre;
         public CanvasGroup grupo;
+        public SkinnedMeshRenderer[] cuerpo; // para saber dónde está la cabeza
+        public float buscarCuerpo;
     }
 
     private RectTransform lienzo, lista;
@@ -192,6 +195,27 @@ public class CompanerosEnInvasion : MonoBehaviour
         }
     }
 
+    // CA2: lo más alto del cuerpo que se ve de la copia (la cabeza), para poner el nombre justo arriba: cada personaje
+    // tiene su altura y la copia no tiene el punto de apoyo en los pies. Sin cuerpo a la vista, la altura fija.
+    private static bool Cabeza(Marca m, JugadorEnRed j, out float cima)
+    {
+        cima = 0f;
+        if ((m.cuerpo == null || m.cuerpo.Length == 0 || System.Array.Exists(m.cuerpo, r => r == null)) && Time.time >= m.buscarCuerpo)
+        {
+            m.cuerpo = j.GetComponentsInChildren<SkinnedMeshRenderer>(false);
+            m.buscarCuerpo = Time.time + 1f; // (el personaje puede cambiar: no se busca en cada cuadro)
+        }
+        if (m.cuerpo == null) return false;
+        bool hay = false;
+        foreach (SkinnedMeshRenderer r in m.cuerpo)
+        {
+            if (r == null || !r.enabled || !r.gameObject.activeInHierarchy) continue;
+            float y = r.bounds.max.y;
+            if (!hay || y > cima) { cima = y; hay = true; }
+        }
+        return hay;
+    }
+
     // CA2: el nombre arriba de cada uno (y el ícono de caído).
     private void Marcas()
     {
@@ -211,6 +235,7 @@ public class CompanerosEnInvasion : MonoBehaviour
             if (!ver) continue;
 
             Vector3 arriba = j.transform.position + Vector3.up * (caido ? AlturaCaido : AlturaDelNombre);
+            if (Cabeza(m, j, out float cima)) arriba.y = cima + (caido ? 0.35f : SobreLaCabeza); // justo arriba de la cabeza
             Vector3 pantalla = cam.WorldToScreenPoint(arriba);
             bool atras = pantalla.z <= 0f;
             bool afuera = atras || pantalla.x < 0f || pantalla.x > Screen.width || pantalla.y < 0f || pantalla.y > Screen.height;

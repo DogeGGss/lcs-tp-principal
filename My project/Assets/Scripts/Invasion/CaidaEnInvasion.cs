@@ -79,7 +79,7 @@ public class CaidaEnInvasion : MonoBehaviourPunCallbacks, IOnEventCallback
         OleadasDeInvasion.Supero -= AlSuperar;
         OleadasDeInvasion.Empezo -= AlEmpezar;
         OleadasDeInvasion.EmpezoElDescanso -= AlEmpezarElDescanso;
-        if (vida != null) vida.AntesDeMorir = null;
+        if (vida != null) { vida.AntesDeMorir = null; vida.Died -= AlMorir; }
         if (movimiento != null) { movimiento.Caido = false; movimiento.ForzarAgachado = false; movimiento.Levantandose = false; }
     }
 
@@ -143,6 +143,8 @@ public class CaidaEnInvasion : MonoBehaviourPunCallbacks, IOnEventCallback
         movimiento = local.GetComponent<PlayerMovement>();
         if (vida == null) return false;
         vida.AntesDeMorir = AlQuedarseSinVida;
+        vida.Died -= AlMorir;
+        vida.Died += AlMorir;
         // CA2: muerto, mira a sus compañeros (como en el Táctico, US 133).
         if (FindFirstObjectByType<Espectador>() == null)
         {
@@ -203,6 +205,21 @@ public class CaidaEnInvasion : MonoBehaviourPunCallbacks, IOnEventCallback
         if (frenadoDesde < 0) return;
         caidoDesde += PhotonNetwork.Time - frenadoDesde;
         frenadoDesde = -1;
+    }
+
+    // US 289, CA6: murió sin pasar por caído (caerse del mapa mata directo, JugadorEnRed.Eliminar) o lo remataron
+    // estando caído: queda muerto, así vuelve en el descanso siguiente como cualquier muerto. (Antes quedaba "vivo" y no
+    // volvía nunca.)
+    private void AlMorir()
+    {
+        if (estado == Estado.Muerto || estado == Estado.Retirado) return;
+        CortarRevivir();
+        if (estado == Estado.Caido || levantandoDesde >= 0f) CortarLevantarse();
+        estado = Estado.Muerto;
+        Publicar();
+        MatchHud.SetAction(null);
+        Bloquear(false);
+        if (movimiento != null) movimiento.Caido = false;
     }
 
     // CA2: se terminó el tiempo: muere de verdad (los demás lo ven caer como siempre, JugadorEnRed).
@@ -390,16 +407,30 @@ public class CaidaEnInvasion : MonoBehaviourPunCallbacks, IOnEventCallback
         local.EmpezarRonda(punto);
     }
 
+    // Atrás, a un costado o adelante de un compañero vivo, en un lugar libre. El punto del jugador es el centro de su
+    // cápsula (no los pies): se lo pone a esa altura sobre el piso, si no aparecía medio enterrado y se caía del mapa.
     private Pose JuntoAUnCompanero()
     {
+        CharacterController cuerpo = local.GetComponent<CharacterController>();
+        float alPiso = cuerpo != null ? cuerpo.height * 0.5f - cuerpo.center.y + cuerpo.skinWidth + 0.05f : 1.1f;
+        float radio = cuerpo != null ? cuerpo.radius : 0.5f, alto = cuerpo != null ? cuerpo.height : 2f;
         foreach (JugadorEnRed j in FindObjectsByType<JugadorEnRed>(FindObjectsSortMode.None))
         {
             if (j == null || j.photonView == null || j.photonView.IsMine || !j.Vivo || j.EstaCaido) continue;
-            Vector3 lugar = j.transform.position - j.transform.forward * 1.5f;
-            if (UnityEngine.AI.NavMesh.SamplePosition(lugar, out UnityEngine.AI.NavMeshHit piso, 3f, UnityEngine.AI.NavMesh.AllAreas))
-                lugar = piso.position + Vector3.up * 0.1f;
-            else lugar = j.transform.position + Vector3.up * 0.1f;
-            return new Pose(lugar, Quaternion.Euler(0f, j.transform.eulerAngles.y, 0f));
+            Transform t = j.transform;
+            Quaternion mira = Quaternion.Euler(0f, t.eulerAngles.y, 0f);
+            foreach (Vector3 lado in new[] { -t.forward, t.right, -t.right, t.forward })
+            {
+                Vector3 cerca = t.position + lado * 1.5f;
+                if (!UnityEngine.AI.NavMesh.SamplePosition(cerca, out UnityEngine.AI.NavMeshHit piso, 3f, UnityEngine.AI.NavMesh.AllAreas)) continue;
+                if (Mathf.Abs(piso.position.y - (t.position.y - alPiso)) > 1.5f) continue; // otro piso (abajo o arriba)
+                Vector3 lugar = piso.position + Vector3.up * alPiso;
+                Vector3 abajo = lugar + Vector3.down * (alto * 0.5f - radio - 0.05f), arriba = lugar + Vector3.up * (alto * 0.5f - radio);
+                if (Physics.CheckCapsule(abajo, arriba, radio * 0.9f, Physics.DefaultRaycastLayers, QueryTriggerInteraction.Ignore)) continue;
+                return new Pose(lugar, mira);
+            }
+            // Sin lugar libre al lado: un poco arriba de donde está él (su punto también es el centro de su cuerpo).
+            return new Pose(t.position + Vector3.up * 0.3f - t.forward * 0.6f, mira);
         }
         return new Pose(local.transform.position, local.transform.rotation);
     }
