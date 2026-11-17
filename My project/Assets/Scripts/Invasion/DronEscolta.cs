@@ -5,7 +5,7 @@ using UnityEngine.Rendering;
 // F29 (Modo Invasión+), US 394: la Escolta, el dron de la carta legendaria. Lo arma EscoltaDeInvasion: el del jugador de
 // esta computadora (Propio: busca a quién atacar y hace el daño) y, en cooperativo, los de los compañeros (solo se ven:
 // el rayo y los arcos llegan por la red).
-// - CA2: flota alrededor del jugador, cambiando de lugar cada tanto, y lo sigue con un leve retraso; no se puede destruir ni choca con nada
+// - CA2: flota alrededor del jugador, cambiando de lugar cada tanto, y lo sigue con un leve retraso, sin atravesar paredes; no se puede destruir ni choca con nada
 //   (no tiene colliders) y sigue atacando con el jugador caído.
 // - CA3: el rayo del ojo se engancha al invasor más cercano a la vista (hasta Alcance) y no lo suelta hasta que muere,
 //   sale de la vista o se aleja; hace RayoDanio por segundo, que sube hasta RayoDanioMaximo en RayoCarga segundos sobre
@@ -16,7 +16,7 @@ using UnityEngine.Rendering;
 // - CA5: el daño lo hace esta computadora como cualquier disparo (HealthSystem.TakeDamage; a la copia de un invasor se
 //   le manda al anfitrión con este jugador como atacante), así las bajas son del dueño: puntos, estadísticas y cartas.
 // - CA7: esfera blanca con las franjas celestes (los materiales de Resources/Escolta), el Sol de Mayo en la tapa de atrás
-//   (el propulsor: brilla, ilumina y larga una llama corta, más cuanto más rápido va) y una
+//   (el propulsor: brilla y larga una llama corta, más cuanto más rápido va) y una
 //   banderita argentina en una antena; el ojo brilla más mientras el rayo carga.
 public class DronEscolta : MonoBehaviour
 {
@@ -52,13 +52,13 @@ public class DronEscolta : MonoBehaviour
 
     private Transform modelo, bandera;
     private Material materialSol, materialLlama;
-    private Light luzDelSol;
     private LineRenderer llama;
     private Material materialOjo;
     private LineRenderer rayo, nucleo;
     private Material materialRayo, materialNucleo;
     private Vector3 velocidad, alrededor = new Vector3(0.9f, 0.4f, -0.6f);
-    private float cambiaLugarEn, cambiaMiradaEn;
+    private float cambiaLugarEn, cambiaMiradaEn, tapadoDesde = -1f;
+    private static readonly RaycastHit[] choques = new RaycastHit[16];
     private Vector3 mirada = Vector3.forward;
     private float aparecio;
 
@@ -231,20 +231,10 @@ public class DronEscolta : MonoBehaviour
         return oro;
     }
 
-    // CA7: el Sol de Mayo de atrás es el propulsor: brilla, ilumina un poco alrededor (una luz dorada) y larga una llama
-    // corta hacia atrás. Todo late suave y crece cuanto más rápido va (Propulsar).
+    // CA7: el Sol de Mayo de atrás es el propulsor: brilla un poco y larga una llama corta hacia atrás (sin luz que
+    // ilumine alrededor: atravesaría las paredes). Todo late suave y crece cuanto más rápido va (Propulsar).
     private void ArmarPropulsor()
     {
-        var luz = new GameObject("Luz del propulsor");
-        luz.transform.SetParent(modelo, false);
-        luz.transform.localPosition = TapaDeAtras + Vector3.back * 0.25f;
-        luzDelSol = luz.AddComponent<Light>();
-        luzDelSol.type = LightType.Point;
-        luzDelSol.color = new Color(1f, 0.72f, 0.25f);
-        luzDelSol.range = 0.9f;
-        luzDelSol.intensity = 0.3f;
-        luzDelSol.shadows = LightShadows.None;
-
         var go = new GameObject("Llama del propulsor");
         go.transform.SetParent(modelo, false);
         llama = go.AddComponent<LineRenderer>();
@@ -254,25 +244,24 @@ public class DronEscolta : MonoBehaviour
         llama.receiveShadows = false;
         llama.numCapVertices = 4;
         materialLlama = Rayo.Material(new Color(1f, 0.65f, 0.15f));
-        if (materialLlama.HasProperty("_Color")) materialLlama.SetColor("_Color", new Color(1f, 0.65f, 0.15f, 1f) * 0.9f); // suave, sin encandilar
+        if (materialLlama.HasProperty("_Color")) materialLlama.SetColor("_Color", new Color(1f, 0.65f, 0.15f, 1f) * 0.45f); // suave, sin encandilar
         llama.sharedMaterial = materialLlama;
     }
 
     private void Propulsar()
     {
-        if (luzDelSol == null || llama == null) return;
+        if (llama == null) return;
         float rapido = Mathf.Clamp01(velocidad.magnitude / 3f);
         float late = 0.85f + 0.15f * Mathf.Sin(Time.time * 9f) + 0.05f * Mathf.Sin(Time.time * 23f);
         float fuerza = (0.55f + 0.45f * rapido) * late;
-        if (materialSol != null && materialSol.HasProperty("_EmissionColor")) materialSol.SetColor("_EmissionColor", Oro * (0.35f + 0.5f * fuerza));
-        luzDelSol.intensity = 0.15f + 0.35f * fuerza;
+        if (materialSol != null && materialSol.HasProperty("_EmissionColor")) materialSol.SetColor("_EmissionColor", Oro * (0.12f + 0.18f * fuerza));
         Vector3 desde = modelo.TransformPoint(TapaDeAtras + Vector3.back * 0.02f);
         Vector3 atras = -transform.forward;
         llama.SetPosition(0, desde);
         llama.SetPosition(1, desde + atras * Diametro * (0.25f + 0.9f * rapido) * late);
         llama.startWidth = Diametro * 0.2f * late;
         llama.endWidth = Diametro * 0.04f;
-        float c = 0.35f + 0.3f * fuerza;
+        float c = 0.2f + 0.2f * fuerza;
         llama.startColor = new Color(c, c, c, 1f);
         llama.endColor = new Color(c * 0.6f, c * 0.4f, c * 0.2f, 1f);
     }
@@ -318,9 +307,9 @@ public class DronEscolta : MonoBehaviour
         if (Time.time >= cambiaLugarEn) ElegirLugar();
         Vector3 lugar = cabeza + alrededor;
         Vector3 hacia = lugar - cabeza;
-        if (Physics.Raycast(cabeza, hacia.normalized, out RaycastHit pared, hacia.magnitude + Diametro, ~0, QueryTriggerInteraction.Ignore)
-            && pared.collider.GetComponentInParent<PlayerMovement>() == null && pared.collider.GetComponentInParent<JugadorEnRed>() == null)
-            lugar = cabeza + hacia.normalized * Mathf.Max(0.3f, pared.distance - Diametro);
+        float largo = hacia.magnitude;
+        if (largo > 0.001f && Choque(cabeza, hacia / largo, largo, out float pared))
+            lugar = cabeza + hacia / largo * Mathf.Max(0f, pared - 0.05f);
         float vaiven = Mathf.Sin((Time.time - aparecio) * 2.1f) * 0.06f;
         return lugar + Vector3.up * vaiven;
     }
@@ -343,7 +332,24 @@ public class DronEscolta : MonoBehaviour
     private void LateUpdate()
     {
         if (Sigue == null) return;
-        transform.position = Vector3.SmoothDamp(transform.position, Lugar(), ref velocidad, Suavidad, Rapidez);
+        // CA2: no atraviesa paredes: si en el camino hay una, se queda de este lado. Si queda del otro lado del jugador (por
+        // ejemplo, si el jugador pasó una puerta y el dron se trabó), vuelve a su lado.
+        Vector3 antes = transform.position;
+        Vector3 nueva = Vector3.SmoothDamp(antes, Lugar(), ref velocidad, Suavidad, Rapidez);
+        Vector3 paso = nueva - antes;
+        float mide = paso.magnitude;
+        if (mide > 0.0001f && Choque(antes, paso / mide, mide, out float hasta))
+        {
+            nueva = antes + paso / mide * Mathf.Max(0f, hasta - 0.01f);
+            velocidad = Vector3.zero;
+        }
+        transform.position = nueva;
+        Vector3 cabeza = Mira != null ? Mira.position : Sigue.position + Vector3.up * 1.7f;
+        Vector3 alJugador = nueva - cabeza;
+        bool tapado = alJugador.sqrMagnitude > 0.01f && Choque(cabeza, alJugador.normalized, alJugador.magnitude, out _);
+        if (!tapado) tapadoDesde = -1f;
+        else if (tapadoDesde < 0f) tapadoDesde = Time.time;
+        else if (Time.time - tapadoDesde > 0.6f) { transform.position = Lugar(); velocidad = Vector3.zero; tapadoDesde = -1f; }
         // Hacia dónde mira: al invasor del rayo (el rayo sale del ojo); si no, hacia donde va (así el Sol de Mayo, atrás,
         // queda para atrás); y quieto, mira a su aire, hacia un lado que cambia cada tanto (no hacia donde mira el jugador).
         Vector3 hacia;
@@ -591,6 +597,25 @@ public class DronEscolta : MonoBehaviour
             if (!hay) { caja = c.bounds; hay = true; } else caja.Encapsulate(c.bounds);
         }
         return hay ? caja.center : npc.transform.position + Vector3.up;
+    }
+
+    // CA2: si una esfera del tamaño del dron, yendo de desde hacia dir, choca contra algo del escenario antes de distancia
+    // (los jugadores y los invasores no cuentan: pasa por arriba); en hasta, a cuánto.
+    private static bool Choque(Vector3 desde, Vector3 dir, float distancia, out float hasta)
+    {
+        hasta = distancia;
+        int n = Physics.SphereCastNonAlloc(desde, Diametro * 0.5f, dir, choques, distancia, ~0, QueryTriggerInteraction.Ignore);
+        bool hay = false;
+        for (int i = 0; i < n; i++)
+        {
+            Collider c = choques[i].collider;
+            if (c == null || choques[i].distance <= 0f || choques[i].distance >= hasta) continue; // (0: ya estaba tocando)
+            if (c.GetComponentInParent<PlayerMovement>() != null || c.GetComponentInParent<JugadorEnRed>() != null
+                || c.GetComponentInParent<Npc>() != null || c.GetComponentInParent<CharacterController>() != null) continue;
+            hasta = choques[i].distance;
+            hay = true;
+        }
+        return hay;
     }
 
     // Si el ojo lo ve: lo primero que cruza la línea (sin contar a los jugadores) es él.
