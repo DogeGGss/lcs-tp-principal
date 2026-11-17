@@ -43,9 +43,9 @@ public class BrilloDeKatana : MonoBehaviour
         go.layer = filo != null ? filo.gameObject.layer : gameObject.layer;
         go.transform.SetParent(filo != null ? filo : transform, false);
         estela = go.AddComponent<TrailRenderer>();
-        estela.time = 0.12f;
+        estela.time = 0.1f;
         estela.minVertexDistance = 0.02f;
-        estela.widthMultiplier = 0.42f;
+        estela.widthMultiplier = 0.32f;
         estela.widthCurve = new AnimationCurve(new Keyframe(0f, 1f), new Keyframe(1f, 0.2f));
         Color c = katana != null ? katana.energia : new Color(0.45f, 0.85f, 1f);
         var colores = new Gradient();

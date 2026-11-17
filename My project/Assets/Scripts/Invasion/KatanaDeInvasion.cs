@@ -147,7 +147,7 @@ public class KatanaDeInvasion : MonoBehaviourPunCallbacks
     private void AlFrenar(MeleeAttack ataque, Vector3 donde)
     {
         KatanaData katana = ataque != null ? ataque.Katana : null;
-        Destellos.En(donde, katana != null ? (Color)katana.energia : new Color(0.45f, 0.85f, 1f), 10, 0.5f);
+        Destellos.En(donde, new Color(0.35f, 0.75f, 1f), 6, 0.16f); // chico: es a un brazo de los ojos
         Sonar(ataque, SonidosDeKatana.Freno(), 0.9f);
         BrilloDeKatana brillo = ataque != null && ataque.GetComponent<MeleeWeaponHolder>() != null && ataque.GetComponent<MeleeWeaponHolder>().CurrentViewModel != null
             ? ataque.GetComponent<MeleeWeaponHolder>().CurrentViewModel.GetComponent<BrilloDeKatana>() : null;

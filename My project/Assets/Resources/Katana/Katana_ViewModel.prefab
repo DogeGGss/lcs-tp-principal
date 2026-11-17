@@ -9,6 +9,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3950000000000000002}
+  - component: {fileID: 3950000000000000017}
   m_Layer: 0
   m_Name: Katana_ViewModel
   m_TagString: Untagged
@@ -60,8 +61,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3950000000000000003}
   serializedVersion: 2
-  m_LocalRotation: {x: -0.104817, y: 0.351036, z: 0.922132, w: -0.124338}
-  m_LocalPosition: {x: 0.1721, y: -0.2377, z: 0.4811}
+  m_LocalRotation: {x: -0.311152, y: 0.227699, z: 0.732852, w: 0.560594}
+  m_LocalPosition: {x: 0.1939, y: -0.079, z: 0.4784}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -207,7 +208,7 @@ Transform:
   m_GameObject: {fileID: 3950000000000000011}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -0.045, y: 0, z: -0.09}
+  m_LocalPosition: {x: -0.045, y: 0, z: -0.15}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -275,3 +276,20 @@ Transform:
   m_Children: []
   m_Father: {fileID: 3950000000000000004}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &3950000000000000017
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3950000000000000001}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bec4891da9f1458ea14f3b6e943201ce, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Riftwalker::MovimientoDeKatana
+  tajoArriba: {x: -10, y: 0, z: -30}
+  tajoAbajo: {x: 25, y: -20, z: 80}
+  fuerte: 1.3
+  estocada: {x: 50, y: 0, z: 0}
+  guardia: {x: 10, y: 0, z: 80}
