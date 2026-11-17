@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 3950000000000000002}
   - component: {fileID: 3950000000000000017}
+  - component: {fileID: 8951167608691410142}
   m_Layer: 0
   m_Name: Katana_ViewModel
   m_TagString: Untagged
@@ -25,8 +26,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3950000000000000001}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalRotation: {x: -0.35903904, y: -0.62761754, z: -0.63358927, w: 0.27523062}
+  m_LocalPosition: {x: 0.114, y: -0.738, z: 0.306}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -35,6 +36,84 @@ Transform:
   - {fileID: 3950000000000000010}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &3950000000000000017
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3950000000000000001}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bec4891da9f1458ea14f3b6e943201ce, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Riftwalker::MovimientoDeKatana
+  tajoArriba: {x: 0.45, y: 0.85, z: -0.25}
+  tajoMedio: {x: -0.2, y: 0.35, z: 0.9}
+  tajoAbajo: {x: -0.75, y: -0.35, z: 0.55}
+  tajoFuerteAbajo: {x: -0.6, y: -0.65, z: 0.45}
+  estocada: {x: 0, y: 0.08, z: 1}
+  guardia: {x: -0.95, y: 0.15, z: 0.25}
+--- !u!114 &8951167608691410142
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3950000000000000001}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f8fe9436db594eb3a3c105abe90fc757, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Riftwalker::DedosDelArma
+  manoDerecha:
+    pulgar:
+      abrir: -6
+      separar: 0
+      girar: 0
+    indice:
+      abrir: -60
+      separar: -14
+      girar: 0
+    mayor:
+      abrir: 0
+      separar: 0
+      girar: 0
+    anular:
+      abrir: 0
+      separar: 0
+      girar: 0
+    menique:
+      abrir: 0
+      separar: 0
+      girar: 0
+  manoIzquierda:
+    pulgar:
+      abrir: 0
+      separar: 0
+      girar: 0
+    indice:
+      abrir: 0
+      separar: 0
+      girar: 0
+    mayor:
+      abrir: 0
+      separar: 0
+      girar: 0
+    anular:
+      abrir: 0
+      separar: 0
+      girar: 0
+    menique:
+      abrir: 0
+      separar: 0
+      girar: 0
+  dedosDerecha: 0
+  indiceDerecho: 0
+  pulgarDerecho: 0
+  dedosIzquierda: 0
+  indiceIzquierdo: 0
+  pulgarIzquierdo: 0
 --- !u!1 &3950000000000000003
 GameObject:
   m_ObjectHideFlags: 0
@@ -96,6 +175,11 @@ MeshRenderer:
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 2
   m_RayTraceProcedural: 0
+  m_RayTracingAccelStructBuildFlagsOverride: 0
+  m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
+  m_ForceMeshLod: -1
+  m_MeshLodSelectionBias: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -117,9 +201,11 @@ MeshRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
+  m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+  m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
 --- !u!1 &3950000000000000007
 GameObject:
@@ -145,8 +231,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3950000000000000007}
   serializedVersion: 2
-  m_LocalRotation: {x: -0.37867427, y: 0.5280489, z: 0.55660653, w: -0.5176479}
-  m_LocalPosition: {x: 0.226, y: -0.225, z: 0.394}
+  m_LocalRotation: {x: -0.44527227, y: -0.083300024, z: 0.5913959, w: -0.66711664}
+  m_LocalPosition: {x: 0.1489, y: -0.0984, z: 0.3904}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -176,8 +262,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3950000000000000009}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.6735498, y: 0.432676, z: 0.07285302, w: 0.59482324}
-  m_LocalPosition: {x: 0.003, y: -0.255, z: 0.337}
+  m_LocalRotation: {x: 0.33183485, y: 0.8678594, z: 0.31415385, w: -0.19496952}
+  m_LocalPosition: {x: 0.188, y: -0.255, z: 0.342}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -276,20 +362,3 @@ Transform:
   m_Children: []
   m_Father: {fileID: 3950000000000000004}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &3950000000000000017
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3950000000000000001}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: bec4891da9f1458ea14f3b6e943201ce, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Riftwalker::MovimientoDeKatana
-  tajoArriba: {x: -10, y: 0, z: -30}
-  tajoAbajo: {x: 25, y: -20, z: 80}
-  fuerte: 1.3
-  estocada: {x: 50, y: 0, z: 0}
-  guardia: {x: 10, y: 0, z: 80}

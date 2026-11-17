@@ -150,21 +150,21 @@ public class AnimacionPrimeraPersona : MonoBehaviour
 
     [Header("Katana (US 395): el brazo y la katana juntos, poco (el giro grande es de la muñeca: MovimientoDeKatana)")]
     [Tooltip("Tajo: dónde arranca la hoja, levantada a la derecha (metros, en la cámara).")]
-    public Vector3 katanaArribaPos = new Vector3(0.06f, 0.06f, -0.03f);
+    public Vector3 katanaArribaPos = new Vector3(0.06f, 0.08f, -0.02f);
     [Tooltip("Tajo: giro al levantarla (grados).")]
-    public Vector3 katanaArribaGiro = new Vector3(-5f, 8f, -6f);
+    public Vector3 katanaArribaGiro = Vector3.zero;
     [Tooltip("Tajo: dónde termina, cruzada abajo a la izquierda (metros).")]
-    public Vector3 katanaAbajoPos = new Vector3(-0.14f, -0.06f, 0.05f);
+    public Vector3 katanaAbajoPos = new Vector3(-0.16f, -0.10f, 0.06f);
     [Tooltip("Tajo: giro al terminar (grados).")]
-    public Vector3 katanaAbajoGiro = new Vector3(8f, -10f, 10f);
+    public Vector3 katanaAbajoGiro = Vector3.zero;
     [Tooltip("Cuánto más amplio es el tajo fuerte (CA4).")]
     public float katanaFuerte = 1.35f;
     [Tooltip("Estocada (CA5): cuánto va la hoja hacia adelante (metros) y cuánto baja la punta para apuntar adelante (grados).")]
-    public Vector3 katanaEstocadaPos = new Vector3(-0.04f, 0.02f, 0.18f);
-    public Vector3 katanaEstocadaGiro = new Vector3(8f, 0f, 0f);
+    public Vector3 katanaEstocadaPos = new Vector3(-0.03f, 0.03f, 0.2f);
+    public Vector3 katanaEstocadaGiro = Vector3.zero;
     [Tooltip("Guardia (CA6): la hoja cruzada delante, casi horizontal (metros y grados).")]
-    public Vector3 katanaGuardiaPos = new Vector3(-0.10f, 0.10f, 0.04f);
-    public Vector3 katanaGuardiaGiro = new Vector3(0f, 0f, 10f);
+    public Vector3 katanaGuardiaPos = new Vector3(-0.06f, 0.08f, 0.02f);
+    public Vector3 katanaGuardiaGiro = Vector3.zero;
 
     [Header("Granadas (US 258): como una piedra")]
     [Tooltip("Cuánto tarda la mano en traer la granada desde abajo (s).")]
