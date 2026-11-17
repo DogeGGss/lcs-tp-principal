@@ -31,7 +31,8 @@ public class Minimapa : MonoBehaviour
     private const float LadoGrande = 780f;             // CA6: el mapa completo
     private const float Celda = 0.4f;                  // metros por punto del dibujo
     private const int MaximoPuntos = 1024;
-    private const float MapaMaximo = 400f;             // m: mapas más grandes se recortan alrededor del jugador
+    private const float MapaMaximo = 1000f;            // m: mapas más grandes se recortan alrededor del jugador
+    private const float PisoEnorme = 500f;             // m: un piso (o terreno) más ancho no cuenta para el tamaño del mapa
     private const float AlturaDeCorte = 2.5f;          // m sobre el jugador: lo que está más arriba (techos) no se dibuja
     private const float AlturaDePared = 1.2f;          // m sobre el piso donde se mira si hay pared
     private const float AlturaMinimaDePared = 0.9f;    // m: más bajo que esto no cuenta como obstáculo
@@ -410,16 +411,33 @@ public class Minimapa : MonoBehaviour
 
         // Qué parte del mundo se dibuja: todo lo que tiene colisión, sin los personajes.
         Vector3 centro = jugador.position;
-        bool hay = false;
+        // Un piso o un terreno enorme (que pasa de PisoEnorme) no define hasta dónde llega el mapa: se usa lo demás
+        // (edificios, muros, caminos); si no hay nada más, él.
+        bool hay = false, hayEnorme = false;
+        Bounds enorme = default;
         foreach (Collider c in FindObjectsByType<Collider>(FindObjectsSortMode.None))
         {
             if (!EsDelMapa(c)) continue;
-            if (!hay) { limites = c.bounds; hay = true; }
-            else limites.Encapsulate(c.bounds);
+            Bounds b = c.bounds;
+            if (b.size.x > PisoEnorme || b.size.z > PisoEnorme)
+            {
+                if (!hayEnorme) { enorme = b; hayEnorme = true; } else enorme.Encapsulate(b);
+                continue;
+            }
+            if (!hay) { limites = b; hay = true; }
+            else limites.Encapsulate(b);
         }
+        if (!hay && hayEnorme) { limites = enorme; hay = true; }
         if (!hay) yield break;
+        if (hayEnorme) // la altura del piso enorme sí cuenta (para mirar desde arriba hasta abajo)
+        {
+            Vector3 bajo = limites.min, alto_ = limites.max;
+            bajo.y = Mathf.Min(bajo.y, enorme.min.y); alto_.y = Mathf.Max(alto_.y, enorme.max.y);
+            limites.SetMinMax(bajo, alto_);
+        }
+        limites.Expand(new Vector3(10f, 0f, 10f)); // un margen alrededor
 
-        // Un piso enorme no agranda el dibujo: se recorta alrededor del jugador.
+        // Un mapa más grande que MapaMaximo se recorta alrededor del jugador.
         Vector3 min = limites.min, max = limites.max;
         min.x = Mathf.Max(min.x, centro.x - MapaMaximo * 0.5f); max.x = Mathf.Min(max.x, centro.x + MapaMaximo * 0.5f);
         min.z = Mathf.Max(min.z, centro.z - MapaMaximo * 0.5f); max.z = Mathf.Min(max.z, centro.z + MapaMaximo * 0.5f);
