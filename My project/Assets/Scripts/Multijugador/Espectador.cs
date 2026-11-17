@@ -92,7 +92,29 @@ public class Espectador : MonoBehaviour
         this.partida = partida;
     }
 
-    private void OnDestroy() => Terminar();
+    private void OnDestroy()
+    {
+        Terminar();
+        if (actual == this) actual = null;
+    }
+
+    private void OnEnable() => actual = this;
+
+    private static Espectador actual;
+
+    /// <summary>
+    /// Si esta computadora está mirando a ese compañero en primera persona con un arma en la mano: dónde está la boca
+    /// del arma que se ve (sus disparos salen de ahí; la de su cuerpo queda abajo, fuera de la vista).
+    /// </summary>
+    public static bool BocaDe(JugadorEnRed quien, out Vector3 boca)
+    {
+        boca = Vector3.zero;
+        Espectador e = actual;
+        if (e == null || !e.muerto || e.mirando == null || e.mirando != quien || e.camara == null) return false;
+        if (e.vistaArma == null || !e.vistaArma.gameObject.activeInHierarchy || e.conMira) return false;
+        boca = Trazadora.BocaLocal(e.camara);
+        return true;
+    }
 
     // =====================================================================
     // Cuadro a cuadro
@@ -267,12 +289,15 @@ public class Espectador : MonoBehaviour
             if (vistaArma != null) vistaArma.gameObject.SetActive(false);
             vistaArma = granada != null ? VistaDeGranada(granada) : dispositivo ? VistaDeDispositivo() : arma != null ? VistaDe(arma) : null;
             if (vistaArma != null) vistaArma.gameObject.SetActive(true);
+            skinVista = null; // (se vuelve a pintar abajo)
+            proximaSkin = 0f;
             sacudon = 0f;
             sacadaEn = Time.time; // la saca desde abajo
             fuerzaDelGolpe = FuerzaDelGolpe(arma, granada != null || dispositivo);
         }
         if (camaraArmas != null) camaraArmas.enabled = vistaArma != null;
         if (vistaArma == null) return;
+        PintarConSuSkin(arma);
 
         sacudon = Mathf.MoveTowards(sacudon, 0f, SacudonVuelta * Time.deltaTime);
         float t = Time.time - punaladaEn, estocada = 0f;
@@ -314,6 +339,23 @@ public class Espectador : MonoBehaviour
             -SacudonArriba * sacudon * fuerzaDelGolpe + SacarGiro * falta + RecargaGiro * r,
             balanceoX * 60f,
             -RecargaLado * r);
+    }
+
+    // F35 (US 380): la copia del arma es de las propias (con la skin propia): se pinta con la skin que tiene el compañero
+    // en esa arma (la que publicó). Se revisa cada tanto: puede cambiar de skin o de compañero mirado.
+    private CatalogoDeSkins.Skin skinVista;
+    private JugadorEnRed skinDe;
+    private float proximaSkin;
+
+    private void PintarConSuSkin(GameObject arma)
+    {
+        if (arma == null || Time.time < proximaSkin && skinDe == mirando) return;
+        proximaSkin = Time.time + 0.5f;
+        CatalogoDeSkins.Skin skin = mirando != null ? mirando.SkinEnLaMano(mirando.ArmaVisible) : null;
+        if (skin == skinVista && skinDe == mirando && skinVista != null) return;
+        skinVista = skin;
+        skinDe = mirando;
+        SkinDeArma.Poner(vistaArma.gameObject, skin);
     }
 
     // La fuerza del golpe de cada disparo según el tipo de arma, como en la pantalla del que dispara (más fuerte el
