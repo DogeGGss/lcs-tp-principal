@@ -4,7 +4,8 @@ using UnityEngine;
 
 // Manos de las armas en primera persona (US 173). En Play, con "Ajustar a mano" (BrazosEnCamara), cada arma y sus
 // agarres se ubican a mano; BrazosEnCamara guarda dónde quedaron en Library/AjusteDeManos.json. Acá se pasa eso al
-// Player.prefab (y el cuchillo, a su propio prefab) al salir del Play, o al abrir Unity si se cerró en medio del ajuste.
+// Player.prefab (y el cuchillo y la katana, US 395, a sus propios prefabs) al salir del Play, o al abrir Unity si se
+// cerró en medio del ajuste.
 [InitializeOnLoad]
 public static class AjusteDeManos
 {
@@ -49,21 +50,25 @@ public static class AjusteDeManos
         if (ajuste == null || ajuste.armas.Count == 0 || (ajuste.aplicado && !aunqueYaEste)) return;
 
         int cambiadas = 0;
-        string rutaCuchillo = null;
-        BrazosEnCamara.Agarres cuchillo = null;
+        // Los que se crean al empezar el juego desde su propio prefab ("Knife_ViewModel(Clone)", "Katana_ViewModel(Clone)"):
+        // el cuchillo y la katana (US 395). Su ajuste va a su prefab.
+        var propios = new System.Collections.Generic.Dictionary<string, string>();
+        var ajustesPropios = new System.Collections.Generic.Dictionary<string, BrazosEnCamara.Agarres>();
+        KatanaData katana = KatanaData.Cargar();
+        if (katana != null && katana.viewModelPrefab != null)
+            propios[katana.viewModelPrefab.name + "(Clone)"] = AssetDatabase.GetAssetPath(katana.viewModelPrefab);
 
         GameObject raiz = PrefabUtility.LoadPrefabContents(Prefab);
         try
         {
             WeaponSwitcher camara = raiz.GetComponentInChildren<WeaponSwitcher>(true);
             GameObject vistaCuchillo = PrefabDelCuchillo(raiz);
-            if (vistaCuchillo != null) rutaCuchillo = AssetDatabase.GetAssetPath(vistaCuchillo);
+            if (vistaCuchillo != null) propios[vistaCuchillo.name + "(Clone)"] = AssetDatabase.GetAssetPath(vistaCuchillo);
             foreach (BrazosEnCamara.Agarres a in ajuste.armas)
             {
-                // El cuchillo se crea al empezar el juego desde su propio prefab ("Knife_ViewModel(Clone)").
-                if (vistaCuchillo != null && a.arma == vistaCuchillo.name + "(Clone)")
+                if (propios.ContainsKey(a.arma))
                 {
-                    cuchillo = a;
+                    ajustesPropios[a.arma] = a;
                     continue;
                 }
                 Transform arma = camara.transform.Find(a.arma);
@@ -76,14 +81,16 @@ public static class AjusteDeManos
             PrefabUtility.UnloadPrefabContents(raiz);
         }
 
-        if (cuchillo != null && !string.IsNullOrEmpty(rutaCuchillo))
+        foreach (var propio in ajustesPropios)
         {
-            GameObject vista = PrefabUtility.LoadPrefabContents(rutaCuchillo);
+            string ruta = propios[propio.Key];
+            if (string.IsNullOrEmpty(ruta)) continue;
+            GameObject vista = PrefabUtility.LoadPrefabContents(ruta);
             try
             {
-                if (PonerArma(vista.transform, cuchillo))
+                if (PonerArma(vista.transform, propio.Value))
                 {
-                    PrefabUtility.SaveAsPrefabAsset(vista, rutaCuchillo);
+                    PrefabUtility.SaveAsPrefabAsset(vista, ruta);
                     cambiadas++;
                 }
             }
