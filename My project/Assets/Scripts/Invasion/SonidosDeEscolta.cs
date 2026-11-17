@@ -1,12 +1,14 @@
 using UnityEngine;
 
-// F29, US 394: los sonidos de la Escolta, generados por código (como el zumbido de las naves de paso): el zumbido del
-// dron, el rayo del ojo, el chasquido de los arcos y el chispazo en cada invasor que tocan. Todos en 3D y por el grupo
-// de efectos (los volúmenes de Opciones).
+// F29, US 394: los sonidos de la Escolta: el zumbido del dron, el rayo del ojo, el chasquido de los arcos y el chispazo
+// en cada invasor que tocan. Los tres primeros son grabaciones (Resources/Escolta/Sonidos: Zumbido y Rayo en bucle, y
+// Arcos1 a Arcos3, de los que sale uno al azar); si falta alguna, se genera por código (como el zumbido de las naves de
+// paso), igual que el chispazo. Todos en 3D y por el grupo de efectos (los volúmenes de Opciones).
 public static class SonidosDeEscolta
 {
     private const int Frecuencia = 44100;
     private static AudioClip zumbido, rayo, chasquido, chispazo;
+    private static AudioClip[] grabados;
     private static UnityEngine.Audio.AudioMixerGroup efectos;
     private static bool efectosBuscados;
 
@@ -54,6 +56,8 @@ public static class SonidosDeEscolta
     public static AudioClip Zumbido()
     {
         if (zumbido != null) return zumbido;
+        zumbido = Resources.Load<AudioClip>("Escolta/Sonidos/Zumbido");
+        if (zumbido != null) return zumbido;
         int n = Frecuencia * 2;
         var datos = new float[n];
         var azar = new System.Random(394);
@@ -78,6 +82,8 @@ public static class SonidosDeEscolta
     public static AudioClip Rayo()
     {
         if (rayo != null) return rayo;
+        rayo = Resources.Load<AudioClip>("Escolta/Sonidos/Rayo");
+        if (rayo != null) return rayo;
         int n = Frecuencia;
         var datos = new float[n];
         var azar = new System.Random(3940);
@@ -101,6 +107,17 @@ public static class SonidosDeEscolta
     // Los arcos: un chasquido eléctrico fuerte (ruido en ráfagas que se apaga, con un tono que baja). 0,5 s.
     public static AudioClip Chasquido()
     {
+        if (grabados == null)
+        {
+            var lista = new System.Collections.Generic.List<AudioClip>();
+            for (int i = 1; i <= 3; i++)
+            {
+                AudioClip c = Resources.Load<AudioClip>("Escolta/Sonidos/Arcos" + i);
+                if (c != null) lista.Add(c);
+            }
+            grabados = lista.ToArray();
+        }
+        if (grabados.Length > 0) return grabados[Random.Range(0, grabados.Length)]; // uno de los tres, al azar
         if (chasquido != null) return chasquido;
         int n = (int)(Frecuencia * 0.5f);
         var datos = new float[n];

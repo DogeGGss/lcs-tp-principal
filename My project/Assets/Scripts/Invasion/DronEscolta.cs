@@ -647,7 +647,7 @@ public class DronEscolta : MonoBehaviour
             else
             {
                 if (!sonidoRayo.isPlaying) sonidoRayo.Play();
-                sonidoRayo.pitch = 0.9f + 0.6f * carga;      // más agudo mientras carga
+                sonidoRayo.pitch = 0.92f + 0.35f * carga;    // más agudo mientras carga
                 sonidoRayo.volume = 0.22f + 0.23f * carga;
             }
         }

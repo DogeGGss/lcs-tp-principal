@@ -71,5 +71,7 @@ public class EscoltaTests
         foreach (string m in new[] { "EscoltaCasco", "EscoltaTapa", "EscoltaAro", "EscoltaOjo", "EscoltaLuces", "EscoltaAdentro" })
             Assert.IsNotNull(Resources.Load<Material>("Escolta/" + m), m);
         Assert.IsNotNull(Resources.Load<Material>("Escolta/EscoltaCasco").GetTexture("_BaseMap"), "el casco con las franjas celestes");
+        foreach (string s in new[] { "Zumbido", "Rayo", "Arcos1", "Arcos2", "Arcos3" })
+            Assert.IsNotNull(Resources.Load<AudioClip>("Escolta/Sonidos/" + s), "el sonido " + s);
     }
 }
