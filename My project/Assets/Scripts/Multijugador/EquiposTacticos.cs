@@ -67,7 +67,8 @@ public static class EquiposTacticos
         {
             int equipo = enEquipo0[i] ? 0 : 1;
             propiedades[Clave(jugadores[i].ActorNumber)] = equipo;
-            if (equipo == 0) equipo0 += " " + jugadores[i].ActorNumber; else equipo1 += " " + jugadores[i].ActorNumber;
+            string quien = " " + jugadores[i].ActorNumber + (publica ? " (nivel " + NivelDeJugador.De(jugadores[i]) + ")" : "");
+            if (equipo == 0) equipo0 += quien; else equipo1 += quien;
         }
 
         // CA3 (y US 280, CA4; US 377, CA6): un equipo al azar ataca en las rondas 1 a 6 y el otro defiende.
