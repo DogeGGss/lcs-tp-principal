@@ -601,7 +601,7 @@ public class DronEscolta : MonoBehaviour
         Vector3 desde = transform.TransformPoint((delRayo ? Ojo : Luces) * Diametro);
         HealthSystem.DamageOrigin = desde;
         npc.Vida.TakeDamage(danio, false);
-        if (delRayo) Destellos.En(Centro(npc), ColorElectrico, 4);
+        if (delRayo) Destellos.En(Centro(npc), ColorElectrico * 0.7f, 1, 0.3f); // chiquito
     }
 
     // ---------- Lo que se ve del ataque ----------
@@ -614,7 +614,7 @@ public class DronEscolta : MonoBehaviour
         for (int i = 1; i < puntos.Length; i++)
         {
             RayoDeSkin.Crear(puntos[i - 1], puntos[i], efectos, 0.03f, 0.06f, 2, 0.4f);
-            Destellos.En(puntos[i], ColorElectrico, 10);
+            Destellos.En(puntos[i], ColorElectrico, 6, 0.6f);
         }
     }
 
@@ -687,7 +687,7 @@ public class DronEscolta : MonoBehaviour
             Collider c = z.GetComponent<Collider>();
             if (c == null || !c.enabled) continue;
             Bounds b = c.bounds;
-            return b.center + Vector3.up * b.extents.y * 0.4f;
+            return b.center + Vector3.up * b.extents.y * 0.15f;
         }
         Bounds caja = default;
         bool hay = false;
