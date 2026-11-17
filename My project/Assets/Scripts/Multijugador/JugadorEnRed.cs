@@ -1415,7 +1415,7 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
     }
 
     // F35 (US 381): la skin que publicó su dueño para el arma con ese código, o null.
-    private CatalogoDeSkins.Skin SkinEnLaMano(byte arma)
+    public CatalogoDeSkins.Skin SkinEnLaMano(byte arma)
     {
         ShopItem ficha = arma == ArmaPistola ? (fichaPistola != null ? fichaPistola : catalogo != null ? catalogo.starterSecondary : null)
             : FichaDeCodigo(arma);
@@ -1448,7 +1448,9 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
             : esSecundaria && secundaria < sonidosSecundarias.Count ? sonidosSecundarias[secundaria] : sonidoPistola;
         if (clip != null && sonido != null) sonido.PlayOneShot(clip);
 
-        Vector3 boca = Boca(arma, origen); // US 182, CA5: del caño del arma en la mano
+        // US 182, CA5: del caño del arma en la mano. Si esta computadora lo está mirando en primera persona (el
+        // espectador), de la boca del arma que se ve: la de su cuerpo queda muy abajo de la vista.
+        Vector3 boca = Espectador.BocaDe(this, out Vector3 enLaVista) ? enLaVista : Boca(arma, origen);
         // F35 (US 381, CA4): con su skin legendaria, el fogonazo y la estela de la skin, y su fuego se enciende.
         CatalogoDeSkins.Efectos legendaria = EfectosDeSkin.De(SkinEnLaMano(arma));
         Vector3 adelante = direcciones.Length >= 3 ? new Vector3(direcciones[0], direcciones[1], direcciones[2]) : transform.forward;

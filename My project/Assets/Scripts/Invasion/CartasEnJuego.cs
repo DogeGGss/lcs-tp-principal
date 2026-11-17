@@ -179,9 +179,13 @@ public class CartasEnJuego : MonoBehaviour
 
     // US 330: mientras la bronca está cargada, una luz roja que late sobre el arma en la mano (abajo a la derecha de la
     // cámara, donde se ve el arma).
+    // Va en la cámara del jugador (la de sus armas), no en la que se esté usando: muerto, mirando a un compañero (el
+    // espectador), no se ve en la vista del compañero.
     private void MostrarBronca()
     {
-        bool cargada = bronca > 0;
+        WeaponSwitcher armas = Armas();
+        HealthSystem vida = armas != null ? armas.GetComponentInParent<HealthSystem>() : null;
+        bool cargada = bronca > 0 && armas != null && (vida == null || vida.currentHealth > 0) && !CaidaEnInvasion.YoAfuera;
         if (!cargada)
         {
             if (brilloDeBronca != null) brilloDeBronca.enabled = false;
@@ -189,10 +193,8 @@ public class CartasEnJuego : MonoBehaviour
         }
         if (brilloDeBronca == null)
         {
-            Camera camara = Camera.main;
-            if (camara == null) return;
             var go = new GameObject("Bronca cargada");
-            go.transform.SetParent(camara.transform, false);
+            go.transform.SetParent(armas.transform, false);
             go.transform.localPosition = new Vector3(0.18f, -0.1f, 0.45f);
             brilloDeBronca = go.AddComponent<Light>();
             brilloDeBronca.type = LightType.Point;
@@ -295,10 +297,10 @@ public class CartasEnJuego : MonoBehaviour
         }
         if (brilloDeCarga == null)
         {
-            Camera camara = Camera.main;
+            Transform camara = Armas() != null ? Armas().transform : Camera.main != null ? Camera.main.transform : null; // la del jugador
             if (camara == null) return;
             var go = new GameObject("Disparo cargado");
-            go.transform.SetParent(camara.transform, false);
+            go.transform.SetParent(camara, false);
             go.transform.localPosition = new Vector3(0.16f, -0.1f, 0.45f);
             brilloDeCarga = go.AddComponent<Light>();
             brilloDeCarga.type = LightType.Point;
@@ -395,10 +397,10 @@ public class CartasEnJuego : MonoBehaviour
         }
         if (destelloGemelo == null)
         {
-            Camera camara = Camera.main;
+            Transform camara = Armas() != null ? Armas().transform : Camera.main != null ? Camera.main.transform : null; // la del jugador
             if (camara == null) return;
             var go = new GameObject("Cargador gemelo");
-            go.transform.SetParent(camara.transform, false);
+            go.transform.SetParent(camara, false);
             go.transform.localPosition = new Vector3(0.18f, -0.1f, 0.4f);
             destelloGemelo = go.AddComponent<Light>();
             destelloGemelo.type = LightType.Point;

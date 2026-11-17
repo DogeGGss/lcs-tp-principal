@@ -31,7 +31,7 @@ MonoBehaviour:
   reloadTime: 3.5
   reloadPerShell: 0
   mobility: 0.85
-  realLength: 1
+  realLength: 0.75
   zoom: 0
   zoom2: 0
   pellets: 1

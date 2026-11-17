@@ -718,16 +718,10 @@ public class PantallaPerfil : PantallaBase
         CatalogoDeSkins.Skin s = SkinElegida;
         CatalogoDeSkins.Arma arma = CatalogoDeSkins.ArmaDe(armaElegida);
         string nombreArma = arma != null ? L10n.Source(arma.nombre, "profile.") : "";
-        TextMeshProUGUI n = T(vista, "Nombre", 24f, 366f, 452f, 58f, FTitulo, 40f, Ink,
-            s != null ? s.Texto : nombreArma + " · " + L10n.Source("Sin skin", "profile."), TextAlignmentOptions.MidlineLeft, 3f, true);
-        n.overflowMode = TextOverflowModes.Ellipsis;
-        if (s != null)
-        {
-            Color colorR = ColorRareza(s.rareza);
-            T(vista, "Detalle", 24f, 420f, 452f, 28f, FTexto, 20f, Mute,
-                $"{L10n.Source("Skin de arma", "profile.")} · <color={Rich(colorR)}>{NombreRareza(s.rareza)}</color>");
-        }
-        else T(vista, "Detalle", 24f, 420f, 452f, 28f, FTexto, 20f, Mute, "El arma como viene, sin skin.");
+        nombreSkinVista = T(vista, "Nombre", 24f, 366f, 452f, 58f, FTitulo, 40f, Ink, "", TextAlignmentOptions.MidlineLeft, 3f, true);
+        nombreSkinVista.overflowMode = TextOverflowModes.Ellipsis;
+        detalleSkinVista = T(vista, "Detalle", 24f, 420f, 452f, 28f, FTexto, 20f, Mute, "");
+        TextosDeSkin(s);
 
         bool tiene = s == null || SkinsDeArmas.Tiene(s);
         if (!tiene) // CA4: se ve, pero no se equipa. US 392, CA9: dónde se consigue (lleva a esa pestaña de la tienda).
@@ -754,12 +748,27 @@ public class PantallaPerfil : PantallaBase
         VerSkin(s);
     }
 
-    // La vista previa: el arma elegida con esa skin (o la original), solo si se está viendo.
+    // La vista previa: el arma elegida con esa skin (o la original), solo si se está viendo, con su nombre y su rareza
+    // (también la que se mira pasando el mouse).
     private void VerSkin(CatalogoDeSkins.Skin s)
     {
+        TextosDeSkin(s);
         if (vistaSkin == null || pestana != 1 || !armas) return;
         VistaPreviaDeSkin.Mostrar(armaElegida, s);
         vistaSkin.texture = VistaPreviaDeSkin.Textura;
+    }
+
+    private TextMeshProUGUI nombreSkinVista, detalleSkinVista;
+
+    private void TextosDeSkin(CatalogoDeSkins.Skin s)
+    {
+        if (nombreSkinVista == null || detalleSkinVista == null) return;
+        CatalogoDeSkins.Arma arma = CatalogoDeSkins.ArmaDe(armaElegida);
+        string nombreArma = arma != null ? L10n.Source(arma.nombre, "profile.") : "";
+        nombreSkinVista.text = s != null ? s.Texto : nombreArma + " · " + L10n.Source("Sin skin", "profile.");
+        detalleSkinVista.text = s != null
+            ? $"{L10n.Source("Skin de arma", "profile.")} · <color={Rich(ColorRareza(s.rareza))}>{NombreRareza(s.rareza)}</color>"
+            : L10n.Source("El arma como viene, sin skin.", "profile.");
     }
 
     // ================= Emotes (US 264) =================
