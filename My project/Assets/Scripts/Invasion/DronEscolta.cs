@@ -280,32 +280,109 @@ public class DronEscolta : MonoBehaviour
     }
 
     // La antena con la banderita (celeste, blanca y celeste, con el sol), que flamea.
+    private const float AnchoBandera = 0.36f, AltoBandera = 0.24f, AlturaBandera = 0.4f, AlturaMastil = 0.58f; // (unidades del modelo)
+    private const int ColumnasTela = 18, FilasTela = 10;
+    private Mesh tela;
+    private Vector3[] puntosTela, puntosFlameando;
+    private static Texture2D texturaBandera;
+
+    // El mástil hasta arriba, con una esfera dorada en la punta, y la bandera de tela (una malla que flamea, Flamear).
     private void ArmarBandera()
     {
         GameObject palo = GameObject.CreatePrimitive(PrimitiveType.Cylinder);
         Destroy(palo.GetComponent<Collider>());
-        palo.name = "Antena";
+        palo.name = "Mastil";
         palo.transform.SetParent(modelo, false);
-        palo.transform.localPosition = Antena + Vector3.up * 0.22f;
-        palo.transform.localScale = new Vector3(0.025f, 0.22f, 0.025f);
+        palo.transform.localPosition = Antena + Vector3.up * (AlturaMastil / 2f);
+        palo.transform.localScale = new Vector3(0.022f, AlturaMastil / 2f, 0.022f);
         palo.GetComponent<Renderer>().sharedMaterial = Lit(new Color(0.8f, 0.8f, 0.82f), null, 0.8f, 0.7f);
+        GameObject punta = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+        Destroy(punta.GetComponent<Collider>());
+        punta.name = "Punta del mastil";
+        punta.transform.SetParent(modelo, false);
+        punta.transform.localPosition = Antena + Vector3.up * (AlturaMastil + 0.02f);
+        punta.transform.localScale = Vector3.one * 0.055f;
+        punta.GetComponent<Renderer>().sharedMaterial = Lit(Oro, null, 0.85f, 0.75f);
 
         bandera = new GameObject("Bandera").transform;
         bandera.SetParent(modelo, false);
-        bandera.localPosition = Antena + Vector3.up * 0.4f;
-        const float Ancho = 0.36f, Alto = 0.24f;
-        Material celeste = Lit(Celeste, null, 0f, 0.3f), blanco = Lit(Color.white, null, 0f, 0.3f);
-        for (int i = 0; i < 3; i++)
+        bandera.localPosition = Antena + Vector3.up * AlturaBandera;
+        puntosTela = new Vector3[(ColumnasTela + 1) * (FilasTela + 1)];
+        var uv = new Vector2[puntosTela.Length];
+        var triangulos = new int[ColumnasTela * FilasTela * 6];
+        for (int y = 0, k = 0; y <= FilasTela; y++)
+            for (int x = 0; x <= ColumnasTela; x++, k++)
+            {
+                uv[k] = new Vector2((float)x / ColumnasTela, (float)y / FilasTela);
+                puntosTela[k] = new Vector3(uv[k].x * AnchoBandera, (uv[k].y - 0.5f) * AltoBandera, 0f);
+            }
+        for (int y = 0, t = 0; y < FilasTela; y++)
+            for (int x = 0; x < ColumnasTela; x++)
+            {
+                int a = y * (ColumnasTela + 1) + x, b = a + ColumnasTela + 1;
+                triangulos[t++] = a; triangulos[t++] = b; triangulos[t++] = a + 1;
+                triangulos[t++] = a + 1; triangulos[t++] = b; triangulos[t++] = b + 1;
+            }
+        tela = new Mesh { name = "Bandera" };
+        tela.MarkDynamic();
+        tela.vertices = puntosTela;
+        tela.uv = uv;
+        tela.triangles = triangulos;
+        tela.RecalculateNormals();
+        var go = new GameObject("Tela");
+        go.transform.SetParent(bandera, false);
+        go.AddComponent<MeshFilter>().sharedMesh = tela;
+        go.AddComponent<MeshRenderer>().sharedMaterial = Lit(Color.white, TexturaBandera(), 0f, 0.25f);
+    }
+
+    // La bandera flamea: ondas que corren del mástil a la punta, más grandes lejos del mástil y cuanto más rápido va.
+    private void Flamear()
+    {
+        if (tela == null) return;
+        float t = Time.time, viento = 1f + Mathf.Clamp01(velocidad.magnitude / 3f);
+        if (puntosFlameando == null) puntosFlameando = new Vector3[puntosTela.Length];
+        Vector3[] puntos = puntosFlameando;
+        for (int k = 0; k < puntos.Length; k++)
         {
-            GameObject franja = GameObject.CreatePrimitive(PrimitiveType.Quad);
-            Destroy(franja.GetComponent<Collider>());
-            franja.transform.SetParent(bandera, false);
-            franja.transform.localPosition = new Vector3(Ancho / 2f, Alto / 3f * (1 - i), 0f);
-            franja.transform.localScale = new Vector3(Ancho, Alto / 3f, 1f);
-            franja.GetComponent<Renderer>().sharedMaterial = i == 1 ? blanco : celeste;
+            Vector3 p = puntosTela[k];
+            float lejos = p.x / AnchoBandera; // 0 en el mástil, 1 en la punta
+            float onda = Mathf.Sin(p.x * 26f - t * 7f * viento) * 0.035f + Mathf.Sin(p.x * 41f + p.y * 18f - t * 11f) * 0.012f;
+            float cae = (1f - Mathf.Clamp01(viento - 1f)) * 0.03f * lejos * lejos; // sin viento, la punta cae un poco
+            puntos[k] = new Vector3(p.x * (1f - 0.04f * lejos), p.y - cae, onda * lejos * viento);
         }
-        SolDeMayo(bandera, new Vector3(Ancho / 2f, 0f, -0.004f), Alto / 6f * 0.95f, Vector3.back);
-        SolDeMayo(bandera, new Vector3(Ancho / 2f, 0f, 0.004f), Alto / 6f * 0.95f, Vector3.forward);
+        tela.vertices = puntos;
+        tela.RecalculateNormals();
+        tela.RecalculateBounds();
+    }
+
+    // La bandera argentina pintada en una textura (celeste, blanca y celeste, con el Sol de Mayo en el medio).
+    private static Texture2D TexturaBandera()
+    {
+        if (texturaBandera != null) return texturaBandera;
+        const int Ancho = 384, Alto = 256;
+        texturaBandera = new Texture2D(Ancho, Alto, TextureFormat.RGBA32, true) { name = "Bandera", wrapMode = TextureWrapMode.Clamp };
+        var pixeles = new Color32[Ancho * Alto];
+        Color32 celeste = Celeste, blanco = Color.white, oro = Oro, borde = new Color(0.52f, 0.2f, 0.06f);
+        float cx = Ancho / 2f, cy = Alto / 2f, radio = Alto / 6f * 0.95f, centro = radio * 0.42f;
+        for (int y = 0; y < Alto; y++)
+            for (int x = 0; x < Ancho; x++)
+            {
+                Color32 c = y < Alto / 3 || y >= Alto * 2 / 3 ? celeste : blanco;
+                float dx = x + 0.5f - cx, dy = y + 0.5f - cy, r = Mathf.Sqrt(dx * dx + dy * dy);
+                if (r <= radio)
+                {
+                    float a = Mathf.Atan2(dy, dx), paso = Mathf.PI / 16f;
+                    int i = Mathf.RoundToInt(a / paso);
+                    float dist = Mathf.Abs(a - i * paso), largo = (i & 1) == 0 ? radio : radio * 0.8f;
+                    bool rayo = r <= largo && dist <= 0.09f * (1f - (r - centro) / (largo - centro));
+                    if (r <= centro * 0.93f || rayo) c = oro;
+                    else if (r <= centro) c = borde;
+                }
+                pixeles[y * Ancho + x] = c;
+            }
+        texturaBandera.SetPixels32(pixeles);
+        texturaBandera.Apply(true, true);
+        return texturaBandera;
     }
 
     // ---------- CA2: seguir al jugador ----------
@@ -382,7 +459,8 @@ public class DronEscolta : MonoBehaviour
         if (hacia.sqrMagnitude > 0.0001f)
             transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(hacia, Vector3.up), giro * Time.deltaTime);
         Propulsar();
-        if (bandera != null) bandera.localRotation = Quaternion.Euler(0f, 90f + Mathf.Sin(Time.time * 3.3f) * 18f, 0f); // flamea hacia atrás
+        if (bandera != null) bandera.localRotation = Quaternion.Euler(0f, 90f + Mathf.Sin(Time.time * 1.7f) * 8f, 0f); // hacia atrás
+        Flamear();
         DibujarRayo();
     }
 
