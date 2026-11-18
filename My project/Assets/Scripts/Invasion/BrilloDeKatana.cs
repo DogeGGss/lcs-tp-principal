@@ -13,6 +13,7 @@ public class BrilloDeKatana : MonoBehaviour
     private Material[] materiales;
     private Color[] emisionBase;
     private float brillo = BrilloNormal, destello;
+    private FiloDeEnergia filo;
 
     public void Iniciar(MeleeAttack ataque, KatanaData katana)
     {
@@ -114,6 +115,32 @@ public class BrilloDeKatana : MonoBehaviour
         malla.SetUVs(0, uvs, 0, cuantas * 2);
         malla.SetTriangles(triangulos, 0, (cuantas - 1) * 6, 0, false);
         malla.RecalculateBounds();
+    }
+
+    private void LateUpdate()
+    {
+        if (ataque == null) return;
+        bool estocada = ataque.AvanceDeLaEstocada >= 0f;
+        bool cortando = ataque.AvanceDelCorte >= 0f;
+        // La estela solo mientras la hoja cruza (no al prepararse ni al volver), y en toda la estocada.
+        float t = ataque.AvanceDelCorte * MeleeAttack.Total;
+        bool cruza = cortando && t >= MeleeAttack.Preparacion * 0.6f && t <= MeleeAttack.Preparacion + MeleeAttack.Corte * 1.4f;
+        Estela(cruza || estocada);
+
+        float objetivo = ataque.TajoFuerte || estocada ? BrilloFuerte : BrilloNormal;
+        brillo = Mathf.MoveTowards(brillo, objetivo, Time.deltaTime * 12f);
+        destello = Mathf.MoveTowards(destello, 0f, Time.deltaTime * 4f);
+        float total = brillo + destello * BrilloDestello;
+        for (int i = 0; i < materiales.Length; i++)
+            if (materiales[i] != null) materiales[i].SetColor("_EmissionColor", emisionBase[i] * total);
+        if (filo == null) filo = GetComponent<FiloDeEnergia>();
+        if (filo != null) filo.Intensidad = total; // el filo de energía también
+    }
+
+    private void OnDisable()
+    {
+        cuantas = 0;
+        if (estela != null) estela.gameObject.SetActive(false);
     }
 
     private void OnDestroy()

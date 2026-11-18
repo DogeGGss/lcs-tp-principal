@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 3950000000000000002}
   - component: {fileID: 3950000000000000017}
   - component: {fileID: 8951167608691410142}
+  - component: {fileID: 3950000000000000200}
   m_Layer: 0
   m_Name: Katana_ViewModel
   m_TagString: Untagged
@@ -26,8 +27,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3950000000000000001}
   serializedVersion: 2
-  m_LocalRotation: {x: -0.18183613, y: -0.78914064, z: -0.4213568, w: 0.4082292}
-  m_LocalPosition: {x: 0.677, y: -0.577, z: 0.4}
+  m_LocalRotation: {x: -0.33138725, y: -0.758692, z: -0.522501, w: 0.20386693}
+  m_LocalPosition: {x: 0.34579933, y: -0.70922405, z: 0.5453741}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -52,6 +53,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bec4891da9f1458ea14f3b6e943201ce, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Riftwalker::MovimientoDeKatana
+  giroDelBrazo: 1
 --- !u!114 &8951167608691410142
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -229,8 +231,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3950000000000000007}
   serializedVersion: 2
-  m_LocalRotation: {x: -0.07398967, y: -0.35479563, z: 0.48042497, w: -0.7986473}
-  m_LocalPosition: {x: 0.124, y: -0.163, z: 0.451}
+  m_LocalRotation: {x: 0.063098244, y: -0.43142793, z: 0.41298673, w: -0.79958147}
+  m_LocalPosition: {x: 0.1389, y: -0.1739, z: 0.4699}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -260,8 +262,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3950000000000000009}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.10628247, y: 0.70848197, z: -0.2777946, w: -0.6399902}
-  m_LocalPosition: {x: 0.2683, y: -0.2551, z: 0.4187}
+  m_LocalRotation: {x: 0.14188819, y: 0.7401023, z: -0.10806909, w: -0.6484115}
+  m_LocalPosition: {x: 0.2356, y: -0.2696, z: 0.3996}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -386,8 +388,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3950000000000000100}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.156374, y: 0.430507, z: 0.331550, w: 0.824794}
-  m_LocalPosition: {x: 0.3721, y: -0.3379, z: 0.4015}
+  m_LocalRotation: {x: 0.12127743, y: 0.6710586, z: -0.20270325, w: 0.70276845}
+  m_LocalPosition: {x: 0.365, y: -0.346, z: 0.49}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -476,8 +478,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3950000000000000104}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.248704, y: 0.424376, z: 0.175925, w: 0.852703}
-  m_LocalPosition: {x: 0.3892, y: -0.4067, z: 0.3749}
+  m_LocalRotation: {x: 0.29318202, y: 0.725353, z: 0.3202253, w: 0.53419393}
+  m_LocalPosition: {x: 0.438, y: -0.181, z: 0.462}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -567,7 +569,7 @@ Transform:
   m_GameObject: {fileID: 3950000000000000108}
   serializedVersion: 2
   m_LocalRotation: {x: -0.049211, y: 0.753834, z: 0.390449, w: 0.526177}
-  m_LocalPosition: {x: 0.3797, y: -0.0750, z: 0.3496}
+  m_LocalPosition: {x: 0.3797, y: -0.075, z: 0.3496}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -656,8 +658,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3950000000000000112}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.170698, y: 0.100710, z: 0.720390, w: 0.664648}
-  m_LocalPosition: {x: 0.2259, y: -0.0968, z: 0.5308}
+  m_LocalRotation: {x: 0.652791, y: 0.14811347, z: 0.53831005, w: 0.51200455}
+  m_LocalPosition: {x: 0.11508119, y: 0.003078103, z: 0.64127094}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -720,3 +722,21 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!114 &3950000000000000200
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3950000000000000001}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cf926947db4d4aca97690716741c2933, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Riftwalker::FiloDeEnergia
+  color: {r: 0.3, g: 0.78, b: 1, a: 1}
+  desde: 0.035
+  hasta: 0.61
+  afuera: 0.012
+  adentro: 0.004
+  latido: 0.25
