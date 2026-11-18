@@ -358,16 +358,17 @@ public class AnimacionPrimeraPersona : MonoBehaviour
         girar = Quaternion.Euler(giro);
     }
 
-    // US 395: la katana. El brazo derecho y la katana se corren juntos lo que diga la pose de este momento
-    // (MovimientoDeKatana, que también gira la katana alrededor de la mano); el brazo no gira: si girara mucho, el brazo
-    // de la foto se saldría de lugar.
+    // US 395: la katana. El brazo derecho y la katana se mueven y giran juntos lo que diga la pose de este momento
+    // (MovimientoDeKatana), así la mano no la suelta.
     private MovimientoDeKatana movimientoKatana;
     private void Katana(out Vector3 mover, out Quaternion girar)
     {
         girar = Quaternion.identity;
         GameObject vista = switcher != null && switcher.meleeScript != null ? switcher.meleeScript.CurrentViewModel : null;
         if (vista != null && (movimientoKatana == null || movimientoKatana.gameObject != vista)) movimientoKatana = vista.GetComponent<MovimientoDeKatana>();
-        mover = movimientoKatana != null && movimientoKatana.isActiveAndEnabled ? movimientoKatana.Brazo : Vector3.zero;
+        bool hay = movimientoKatana != null && movimientoKatana.isActiveAndEnabled;
+        mover = hay ? movimientoKatana.Brazo : Vector3.zero;
+        girar = hay ? movimientoKatana.BrazoGiro : Quaternion.identity;
     }
 
     private IPiezasDelArma Piezas(GameObject arma)
