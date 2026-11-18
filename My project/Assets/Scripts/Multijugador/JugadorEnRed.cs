@@ -1518,7 +1518,9 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
         if (photonView.IsMine) return;
         armaRed = ArmaCuchillo;
         MostrarArma(ArmaCuchillo);
-        if (sonidoCuchillo != null && sonido != null) sonido.PlayOneShot(sonidoCuchillo);
+        // US 395: con la katana, sus sonidos (el tajo; se turnan como en primera persona).
+        AudioClip corte = cuchillo != null && cuchillo.CurrentWeapon is KatanaData ? SonidosDeKatana.Corte(false) : sonidoCuchillo;
+        if (corte != null && sonido != null) sonido.PlayOneShot(corte);
         // US 257, CA2: el brazo hace el corte (sin el muñeco de tercera persona, el cuchillo solo va adelante y vuelve).
         if (cuchilloVisto != null) cuchilloVisto.Atacar();
         else if (enLaMano.TryGetValue(ArmaCuchillo, out ModeloEnMano hoja) && hoja.go != null) StartCoroutine(Estocada(hoja.go.transform));

@@ -69,7 +69,7 @@ public class KatanaTests
         Assert.IsFalse(MeleeAttack.FrenaDisparo(null, Vector3.zero), "sin nadie en guardia no frena nada");
     }
 
-    [Test, Category("US 395"), Description("CA9: los sonidos de la katana")]
+    [Test, Category("US 395"), Description("CA9: los sonidos de la katana (las grabaciones de Resources/Katana/Sonidos)")]
     public void CA9_Sonidos()
     {
         Assert.IsNotNull(SonidosDeKatana.Corte(false));
@@ -77,6 +77,8 @@ public class KatanaTests
         Assert.IsNotNull(SonidosDeKatana.Estocada());
         Assert.IsNotNull(SonidosDeKatana.Golpe());
         Assert.IsNotNull(SonidosDeKatana.Freno());
-        Assert.Greater(SonidosDeKatana.Corte(true).length, SonidosDeKatana.Corte(false).length, "el tajo fuerte suena más largo");
+        Assert.AreNotSame(SonidosDeKatana.Corte(false), SonidosDeKatana.Corte(false), "los tajos se turnan entre las grabaciones");
+        AudioClip freno = SonidosDeKatana.Freno();
+        Assert.AreNotSame(freno, SonidosDeKatana.Freno(), "el freno no repite el mismo sonido dos veces seguidas");
     }
 }

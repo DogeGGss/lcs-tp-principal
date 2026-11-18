@@ -2,23 +2,53 @@ using UnityEngine;
 
 // US 395, CA9: los sonidos de la katana, generados por código (como el chispazo de la Escolta): el corte del aire (más
 // grave y largo en el tajo fuerte), la estocada (un corte largo con un zumbido de energía), el golpe al tocar a alguien
-// y el choque metálico al frenar un disparo con la guardia. Si hay grabaciones en Resources/Katana/Sonidos (Corte,
-// CorteFuerte, Estocada, Golpe, Freno) se usan esas.
+// y el choque metálico al frenar un disparo con la guardia. Si hay grabaciones en Resources/Katana/Sonidos se usan
+// esas: Corte1, Corte2... (los tajos, normales y fuertes, se van turnando), Estocada, Golpe y Freno1, Freno2... (uno
+// al azar, sin repetir el anterior).
 public static class SonidosDeKatana
 {
     private const int Frecuencia = 44100;
     private static AudioClip corte, corteFuerte, estocada, golpe, freno;
+    private static AudioClip[] cortes, frenos;
+    private static int turnoDeCorte, ultimoFreno = -1;
 
-    public static AudioClip Corte(bool fuerte) => fuerte
-        ? Cargar(ref corteFuerte, "CorteFuerte", () => Silbido("KatanaCorteFuerte", 0.38f, 900f, 260f, 0.95f, 0f, 3951))
-        : Cargar(ref corte, "Corte", () => Silbido("KatanaCorte", 0.24f, 1500f, 450f, 0.8f, 0f, 3952));
+    public static AudioClip Corte(bool fuerte)
+    {
+        if (cortes == null) cortes = Varios("Corte");
+        if (cortes.Length > 0) return cortes[turnoDeCorte++ % cortes.Length]; // se turnan (también en el tajo fuerte)
+        return fuerte
+            ? Cargar(ref corteFuerte, "CorteFuerte", () => Silbido("KatanaCorteFuerte", 0.38f, 900f, 260f, 0.95f, 0f, 3951))
+            : Cargar(ref corte, "Corte", () => Silbido("KatanaCorte", 0.24f, 1500f, 450f, 0.8f, 0f, 3952));
+    }
 
     public static AudioClip Estocada() =>
         Cargar(ref estocada, "Estocada", () => Silbido("KatanaEstocada", 0.45f, 700f, 1800f, 0.9f, 0.35f, 3953));
 
     public static AudioClip Golpe() => Cargar(ref golpe, "Golpe", CrearGolpe);
 
-    public static AudioClip Freno() => Cargar(ref freno, "Freno", CrearFreno);
+    public static AudioClip Freno()
+    {
+        if (frenos == null) frenos = Varios("Freno");
+        if (frenos.Length == 0) return Cargar(ref freno, "Freno", CrearFreno);
+        int i = Random.Range(0, frenos.Length);
+        if (frenos.Length > 1 && i == ultimoFreno) i = (i + 1) % frenos.Length; // no el mismo dos veces seguidas
+        ultimoFreno = i;
+        return frenos[i];
+    }
+
+    // Las grabaciones "nombre", "nombre1", "nombre2"... que haya.
+    private static AudioClip[] Varios(string nombre)
+    {
+        var lista = new System.Collections.Generic.List<AudioClip>();
+        AudioClip solo = Resources.Load<AudioClip>("Katana/Sonidos/" + nombre);
+        if (solo != null) lista.Add(solo);
+        for (int i = 1; i <= 9; i++)
+        {
+            AudioClip c = Resources.Load<AudioClip>("Katana/Sonidos/" + nombre + i);
+            if (c != null) lista.Add(c);
+        }
+        return lista.ToArray();
+    }
 
     private static AudioClip Cargar(ref AudioClip clip, string nombre, System.Func<AudioClip> generar)
     {
