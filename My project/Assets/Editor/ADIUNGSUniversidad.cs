@@ -977,7 +977,57 @@ public static class ADIUNGSUniversidad
             if (!SinColision.Contains(kv.Key)) hijo.AddComponent<MeshCollider>().sharedMesh = mesh;
         }
         lotes.Clear();
+        GrafitiTUM(zona, contenedor);
         EditorSceneManager.MarkSceneDirty(scene); AssetDatabase.SaveAssets(); EditorSceneManager.SaveScene(scene);
         Debug.Log("ADIUNGS armado.");
+    }
+
+    // Easter egg del TUM (US 343, CA3): el grafiti «Plaga Gris» en la pared de paneles blancos que mira a -z, en la punta
+    // derecha, a la derecha del segundo aire: es el pedazo más grande que queda a la vista de piso a techo sin que lo tape
+    // la puerta, el portón ni los aires. La imagen ya viene sin el fondo claro (transparente desde los bordes, con la
+    // niebla del aerosol semitransparente), así que sobre la pared no se ve ningún cuadrado.
+    const string GrafitiTex = "Assets/Materials/Uni/Uni_TUM_Grafiti.png", GrafitiMat = "Assets/Materials/Uni/Uni_TUM_Grafiti.mat";
+    // Arranca a 1,3 m, por encima de los aires (1,35 m y 2 m adelante), para que las letras se vean también de costado.
+    const float GrafitiZ = 239.95f - .01f, GrafitiX0 = 360.35f, GrafitiAncho = 2.4f, GrafitiY0 = 1.3f;
+
+    static void GrafitiTUM(Transform zona, Mesh contenedor)
+    {
+        var anterior = zona.Find("TUM_GrafitiPlagaGris"); if (anterior != null) UnityEngine.Object.DestroyImmediate(anterior.gameObject);
+        var tex = AssetDatabase.LoadAssetAtPath<Texture2D>(GrafitiTex);
+        if (tex == null) { Debug.LogWarning("Falta " + GrafitiTex); return; }
+        var imp = (TextureImporter)AssetImporter.GetAtPath(GrafitiTex);
+        // Sin llevarla a potencia de dos, para que conserve la proporción del dibujo.
+        if (!imp.alphaIsTransparency || imp.wrapMode != TextureWrapMode.Clamp || imp.maxTextureSize < 2048 || imp.npotScale != TextureImporterNPOTScale.None)
+        {
+            imp.alphaIsTransparency = true; imp.mipmapEnabled = true; imp.wrapMode = TextureWrapMode.Clamp; imp.maxTextureSize = 2048;
+            imp.npotScale = TextureImporterNPOTScale.None;
+            imp.SaveAndReimport(); tex = AssetDatabase.LoadAssetAtPath<Texture2D>(GrafitiTex);
+        }
+        var mat = AssetDatabase.LoadAssetAtPath<Material>(GrafitiMat);
+        if (mat == null)
+        {
+            // Transparente con mezcla por alfa, sin escribir profundidad: los bordes suaves del aerosol se funden con la pared.
+            mat = new Material(Shader.Find("Universal Render Pipeline/Lit")) { name = "Uni_TUM_Grafiti" };
+            mat.SetTexture("_BaseMap", tex); mat.SetColor("_BaseColor", Color.white);
+            mat.SetFloat("_Surface", 1); mat.SetFloat("_Blend", 0); mat.SetFloat("_AlphaClip", 0);
+            mat.SetFloat("_SrcBlend", (float)UnityEngine.Rendering.BlendMode.SrcAlpha); mat.SetFloat("_DstBlend", (float)UnityEngine.Rendering.BlendMode.OneMinusSrcAlpha);
+            mat.SetFloat("_SrcBlendAlpha", (float)UnityEngine.Rendering.BlendMode.One); mat.SetFloat("_DstBlendAlpha", (float)UnityEngine.Rendering.BlendMode.OneMinusSrcAlpha);
+            mat.SetFloat("_ZWrite", 0); mat.SetFloat("_Smoothness", .1f);
+            mat.EnableKeyword("_SURFACE_TYPE_TRANSPARENT"); mat.SetOverrideTag("RenderType", "Transparent");
+            mat.renderQueue = (int)UnityEngine.Rendering.RenderQueue.Transparent;
+            AssetDatabase.CreateAsset(mat, GrafitiMat);
+        }
+        // Mirando la pared desde afuera (hacia +z), la derecha es +x: la u va de x0 a x1.
+        float alto = GrafitiAncho * tex.height / tex.width, x1 = GrafitiX0 + GrafitiAncho, y1 = GrafitiY0 + alto;
+        var mesh = new Mesh { name = "TUM_Grafiti" };
+        mesh.SetVertices(new List<Vector3> { new Vector3(GrafitiX0, GrafitiY0, GrafitiZ), new Vector3(x1, GrafitiY0, GrafitiZ), new Vector3(x1, y1, GrafitiZ), new Vector3(GrafitiX0, y1, GrafitiZ) });
+        mesh.SetUVs(0, new List<Vector2> { new Vector2(0, 0), new Vector2(1, 0), new Vector2(1, 1), new Vector2(0, 1) });
+        mesh.SetTriangles(new[] { 0, 2, 1, 0, 3, 2 }, 0);
+        mesh.RecalculateNormals(); mesh.RecalculateTangents(); mesh.RecalculateBounds();
+        if (Vector3.Dot(mesh.normals[0], Vector3.back) < 0) { mesh.SetTriangles(new[] { 0, 1, 2, 0, 2, 3 }, 0); mesh.RecalculateNormals(); mesh.RecalculateTangents(); }
+        AssetDatabase.AddObjectToAsset(mesh, contenedor);
+        var go = new GameObject("TUM_GrafitiPlagaGris"); go.transform.SetParent(zona, false);
+        go.AddComponent<MeshFilter>().sharedMesh = mesh;
+        var mr = go.AddComponent<MeshRenderer>(); mr.sharedMaterial = mat; mr.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
     }
 }
