@@ -281,6 +281,8 @@ public class Espectador : MonoBehaviour
         // nunca lo llevó no hay nada que copiar.
         bool dispositivo = granada == null && mirando.DispositivoVisible;
         GameObject arma = granada == null && !dispositivo && local != null ? local.PrimeraPersona(mirando.ArmaVisible) : null;
+        // US 395, CA9: el cuchillo o la katana, según lo que tenga el compañero (no lo que tiene este jugador).
+        if (arma != null && mirando.CuerpoACuerpoVisible) arma = KatanaDeInvasion.ParaEspectador(KatanaDeInvasion.TieneEl(mirando.Dueno), arma);
         if (arma != armaMirada || granada != granadaMirada || dispositivo != dispositivoMirado)
         {
             armaMirada = arma;

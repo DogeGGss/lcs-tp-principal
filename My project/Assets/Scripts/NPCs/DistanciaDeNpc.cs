@@ -336,7 +336,7 @@ public class DistanciaDeNpc : MonoBehaviour
         foreach (PlayerMovement jugador in Tocados(desde, fin))
         {
             HealthSystem vida = jugador.GetComponent<HealthSystem>();
-            if (vida != null && vida.currentHealth > 0)
+            if (vida != null && vida.currentHealth > 0 && !MeleeAttack.FrenaDisparo(vida, desde)) // US 395, CA6: la guardia de la katana
             {
                 HealthSystem.DamageOrigin = desde;
                 HealthSystem.DamageSource = npc.Tipo.nombre;
@@ -479,6 +479,7 @@ public class DistanciaDeNpc : MonoBehaviour
         {
             HealthSystem vida = jugador.GetComponent<HealthSystem>();
             if (vida == null || vida.currentHealth <= 0) continue;
+            if (MeleeAttack.FrenaDisparo(vida, desde)) continue; // US 395, CA6: la guardia de la katana
             HealthSystem.DamageOrigin = desde;
             HealthSystem.DamageSource = npc.Tipo.nombre;
             vida.TakeDamage(npc.Danio(npc.Tipo.danioADistancia));
@@ -643,7 +644,7 @@ public class BolaDeEnergia : MonoBehaviour
             if (jugador != null)
             {
                 HealthSystem vida = jugador.GetComponent<HealthSystem>();
-                if (vida != null && vida.currentHealth > 0)
+                if (vida != null && vida.currentHealth > 0 && !MeleeAttack.FrenaDisparo(vida, antes)) // US 395, CA6: la guardia de la katana
                 {
                     HealthSystem.DamageOrigin = antes;
                     HealthSystem.DamageSource = tipo != null ? tipo.nombre : null;

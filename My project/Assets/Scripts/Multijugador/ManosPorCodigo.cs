@@ -32,6 +32,10 @@ public abstract class ManosPorCodigo : MonoBehaviour
     /// <summary>Si tiene que mover las manos ahora (por ejemplo, tiene la granada en la mano o la está lanzando).</summary>
     protected abstract bool Prendida { get; }
 
+    /// <summary>La mano izquierda agarra lo que tiene la derecha (la katana, US 395): va ahí aunque quede cerca del
+    /// cuerpo (no se la corre hacia afuera).</summary>
+    protected virtual bool IzquierdaEnElArma => false;
+
     /// <summary>Dónde van las manos ahora, en el marco (metros), y el giro de cada muñeca.</summary>
     protected abstract void Pose(out Vector3 der, out Vector3 izq, out Quaternion giroDerecha, out Quaternion giroIzquierda);
 
@@ -63,7 +67,9 @@ public abstract class ManosPorCodigo : MonoBehaviour
 
         AgarresTerceraPersona a = AgarresTerceraPersona.Actual;
         Pose(out Vector3 der, out Vector3 izq, out giroDer, out giroIzq);
-        arma.ManosDeGranada(pesoVisto, FueraDelCuerpo(origen + giro * der, origen, a), FueraDelCuerpo(origen + giro * izq, origen, a),
+        Vector3 izquierda = origen + giro * izq;
+        if (!IzquierdaEnElArma) izquierda = FueraDelCuerpo(izquierda, origen, a); // (agarrando algo, va donde está eso)
+        arma.ManosDeGranada(pesoVisto, FueraDelCuerpo(origen + giro * der, origen, a), izquierda,
             Codo(HumanBodyBones.RightUpperArm, 1f, a), Codo(HumanBodyBones.LeftUpperArm, -1f, a));
     }
 

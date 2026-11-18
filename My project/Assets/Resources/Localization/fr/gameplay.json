@@ -597,6 +597,18 @@
       "text": "Arme secondaire"
     },
     {
+      "key": "gameplay.card.katana",
+      "text": "Katana"
+    },
+    {
+      "key": "gameplay.card.melee",
+      "text": "Arme de mêlée"
+    },
+    {
+      "key": "gameplay.card.replaces_knife",
+      "text": "Remplace ton couteau, à sa place et sur sa touche. Tranche tous ceux qui sont devant toi."
+    },
+    {
       "key": "gameplay.card.works_with_fmt",
       "text": "Efficace avec : {0}"
     },

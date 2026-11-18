@@ -597,6 +597,18 @@
       "text": "Secondary weapon"
     },
     {
+      "key": "gameplay.card.katana",
+      "text": "Katana"
+    },
+    {
+      "key": "gameplay.card.melee",
+      "text": "Melee weapon"
+    },
+    {
+      "key": "gameplay.card.replaces_knife",
+      "text": "Replaces your knife, in its slot and key. Cuts everyone in front of you."
+    },
+    {
       "key": "gameplay.card.works_with_fmt",
       "text": "Works with: {0}"
     },

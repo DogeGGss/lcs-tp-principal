@@ -91,7 +91,8 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
     private Pasos pasos; // US 001 y US 198: sus pasos se escuchan desde donde está (salvo agachado o despacio)
 
     // US 182: el arma a tamaño real en la mano derecha, una por código de arma (las de primera persona no se ven).
-    private class ModeloEnMano { public GameObject go; public Bounds limites; }
+    // "lugar": dónde va el modelo respecto de la mano (la katana se agarra del mango, no del centro: US 395).
+    private class ModeloEnMano { public GameObject go; public Bounds limites; public Vector3 lugar; }
     private readonly Dictionary<byte, ModeloEnMano> enLaMano = new Dictionary<byte, ModeloEnMano>();
     private Transform manoDerecha, soporteMano;
 
@@ -1288,7 +1289,8 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
             cuchilloListo = modeloCuchillo;
             if (modeloCuchillo != null)
             {
-                ArmarEnMano(ArmaCuchillo, modeloCuchillo, null, LargoCuchillo);
+                if (cuchillo.CurrentWeapon is KatanaData katana) ArmarKatanaEnMano(modeloCuchillo, katana); // US 395
+                else ArmarEnMano(ArmaCuchillo, modeloCuchillo, null, LargoCuchillo);
                 modeloCuchillo.SetActive(false); // CA4: no se ve el de primera persona
             }
             armaVista = 255;
@@ -1354,6 +1356,40 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
         armaVista = 255;
     }
 
+    // US 395, CA9: la katana en la mano (KatanaData.Crear), agarrada del mango, a su tamaño.
+    private void ArmarKatanaEnMano(GameObject arma, KatanaData katana)
+    {
+        if (enLaMano.TryGetValue(ArmaCuchillo, out ModeloEnMano viejo) && viejo.go != null) Destroy(viejo.go);
+        GameObject modelo = katana.Crear(arma.name + " (en la mano)");
+        modelo.transform.SetParent(SoporteMano(), false);
+        modelo.SetActive(true); // (arma el filo)
+        modelo.SetActive(false);
+        enLaMano[ArmaCuchillo] = new ModeloEnMano { go = modelo, limites = new Bounds(Vector3.zero, Vector3.one), lugar = Vector3.zero };
+        armaVista = 255;
+    }
+
+    private static Transform BuscarHijo(Transform t, string nombre)
+    {
+        if (t.name == nombre) return t;
+        foreach (Transform h in t)
+        {
+            Transform r = BuscarHijo(h, nombre);
+            if (r != null) return r;
+        }
+        return null;
+    }
+
+    /// <summary>US 395, CA9: pone esa arma en el lugar del cuchillo de la copia (la katana del compañero que la tiene).
+    /// Su modelo para la mano se arma solo (MostrarArma).</summary>
+    public void PonerCuerpoACuerpo(MeleeWeaponData arma)
+    {
+        if (arma == null || cuchillo == null || cuchillo.CurrentWeapon == null || cuchillo.CurrentWeapon == arma) return;
+        cuchillo.Equip(arma);
+    }
+
+    /// <summary>US 395, CA9: tiene en la mano el arma cuerpo a cuerpo (el cuchillo o la katana).</summary>
+    public bool CuerpoACuerpoVisible => ArmaVisible == ArmaCuchillo;
+
     // Sigue a la mano derecha del personaje y apunta hacia donde mira el jugador (LateUpdate).
     private Transform SoporteMano()
     {
@@ -1379,16 +1415,26 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
         if (lanzamiento != null) lanzamiento.ConGranada = !muerto && armaVista >= PrimeraGranada && armaVista != ArmaDesconocida;
         // US 257, CA1: con el cuchillo en la mano, la pose de tenerlo (no la de rifle), con el cuchillo en la mano derecha.
         if (cuchilloVisto != null) cuchilloVisto.ConCuchillo = !muerto && armaVista == ArmaCuchillo;
+        if (cuchilloVisto != null) // US 395: con la katana, la mano izquierda la agarra del mango
+        {
+            cuchilloVisto.Katana = cuchillo != null ? cuchillo.CurrentWeapon as KatanaData : null;
+            cuchilloVisto.KatanaEnLaMano = cuchilloVisto.Katana != null ? soporteMano : null;
+        }
         if (cuchilloVisto != null && manoDerecha != null && armaVista == ArmaCuchillo &&
             (terceraPersona == null || !terceraPersona.Manejando))
         {
             AgarresTerceraPersona agarres = AgarresTerceraPersona.Actual;
             cuchilloVisto.Munecas(); // la muñeca ya girada: el cuchillo gira con ella
-            agarres.PoseDeCuchillo(manoDerecha, out Vector3 lugarCuchillo, out Quaternion giroCuchillo);
+            KatanaData katana = cuchillo != null ? cuchillo.CurrentWeapon as KatanaData : null; // US 395: la katana, con su ajuste
+            Vector3 lugarCuchillo;
+            Quaternion giroCuchillo;
+            if (katana != null) katana.PoseEnLaMano(manoDerecha, out lugarCuchillo, out giroCuchillo);
+            else agarres.PoseDeCuchillo(manoDerecha, out lugarCuchillo, out giroCuchillo);
             soporteMano.SetPositionAndRotation(lugarCuchillo, giroCuchillo);
-            soporteMano.localScale = Vector3.one * agarres.cuchilloEscala;
+            soporteMano.localScale = Vector3.one * (katana != null ? 1f : agarres.cuchilloEscala);
             if (enLaMano.TryGetValue(ArmaCuchillo, out ModeloEnMano hojaEnMano) && hojaEnMano.go != null)
-                hojaEnMano.go.transform.localPosition = Vector3.zero;
+                hojaEnMano.go.transform.localPosition = hojaEnMano.lugar;
+            if (katana != null) cuchilloVisto.IzquierdaConLaKatana(); // US 395: la mano izquierda, con la katana
             return;
         }
         // CA2: la granada sale de la mano al final del lanzamiento; la siguiente aparece cuando la saca.
@@ -1473,7 +1519,9 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
         if (photonView.IsMine) return;
         armaRed = ArmaCuchillo;
         MostrarArma(ArmaCuchillo);
-        if (sonidoCuchillo != null && sonido != null) sonido.PlayOneShot(sonidoCuchillo);
+        // US 395: con la katana, sus sonidos (el tajo; se turnan como en primera persona).
+        AudioClip corte = cuchillo != null && cuchillo.CurrentWeapon is KatanaData ? SonidosDeKatana.Corte(false) : sonidoCuchillo;
+        if (corte != null && sonido != null) sonido.PlayOneShot(corte);
         // US 257, CA2: el brazo hace el corte (sin el muñeco de tercera persona, el cuchillo solo va adelante y vuelve).
         if (cuchilloVisto != null) cuchilloVisto.Atacar();
         else if (enLaMano.TryGetValue(ArmaCuchillo, out ModeloEnMano hoja) && hoja.go != null) StartCoroutine(Estocada(hoja.go.transform));

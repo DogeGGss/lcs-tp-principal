@@ -718,7 +718,7 @@ public class CombatHud : MonoBehaviour
         if (melee != null && melee.CurrentViewModel != null && melee.CurrentViewModel.activeInHierarchy)
         {
             name = L10n.Source(melee.CurrentWeapon != null ? melee.CurrentWeapon.weaponName : "Cuchillo");
-            WeaponIcon = knifeIcon; // para el aviso de baja con cuchillo
+            WeaponIcon = melee.CurrentWeapon is KatanaData katana && katana.icono != null ? katana.icono : knifeIcon; // para el aviso de baja con cuchillo (o la katana, US 395)
         }
     }
 
@@ -1005,7 +1005,8 @@ public class CombatHud : MonoBehaviour
         if (sinSenal) SetSlot(1, false, false, L10n.T("gameplay.hud.no_signal"), null, KeyBindings.Label(GameAction.ArmaSecundaria));
         else SetSlot(1, hasSecondary, held == 1, secondaryName, secondary != null ? secondary.icon : null, KeyBindings.Label(GameAction.ArmaSecundaria));
         SinSenal(invSlots[1], sinSenal);
-        SetSlot(2, hasKnife, held == 2, knifeName, knifeIcon, KeyBindings.Label(GameAction.Cuchillo));
+        Sprite meleeIcon = hasKnife && melee.CurrentWeapon is KatanaData katana && katana.icono != null ? katana.icono : knifeIcon; // US 395
+        SetSlot(2, hasKnife, held == 2, knifeName, meleeIcon, KeyBindings.Label(GameAction.Cuchillo));
         SetSlot(3, grenade != null, held == 3, grenadeName, grenade != null ? grenade.icon : null, KeyBindings.Label(GameAction.Granadas));
         // US 291, CA3: en Invasión el equipo es las dos armas y el cuchillo (1, 2 y 3), sin el espacio de las granadas.
         bool grenadeSlot = !PlayerLoadout.SinTienda;

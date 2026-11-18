@@ -278,6 +278,9 @@ public class TrucosDeInvasion : MonoBehaviour
             if (GUILayout.Button($"{Nombre(arma)}  ·  {lugar}", tiene ? botonActivo : boton, GUILayout.Height(44f)) && equipo != null)
                 equipo.Recibir(arma);
         }
+        // US 395: la katana, en el lugar del cuchillo.
+        if (KatanaData.Cargar() != null && GUILayout.Button("Katana  ·  cuerpo a cuerpo", KatanaDeInvasion.Tiene ? botonActivo : boton, GUILayout.Height(44f)))
+            KatanaDeInvasion.Dar();
         GUILayout.EndScrollView();
         GUILayout.EndArea();
 

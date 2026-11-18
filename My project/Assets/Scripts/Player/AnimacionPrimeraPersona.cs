@@ -330,6 +330,7 @@ public class AnimacionPrimeraPersona : MonoBehaviour
         mover = Vector3.zero;
         girar = Quaternion.identity;
         if (ataque == null) ataque = jugador.GetComponentInChildren<MeleeAttack>(true);
+        if (ataque != null && ataque.Katana != null) { Katana(out mover, out girar); return; } // US 395
         float avance = ataque != null ? ataque.AvanceDelCorte : -1f;
         if (avance < 0f) return;
         float t = avance * MeleeAttack.Total;
@@ -355,6 +356,19 @@ public class AnimacionPrimeraPersona : MonoBehaviour
         }
         mover = pos;
         girar = Quaternion.Euler(giro);
+    }
+
+    // US 395: la katana. El brazo derecho y la katana se mueven y giran juntos lo que diga la pose de este momento
+    // (MovimientoDeKatana), así la mano no la suelta.
+    private MovimientoDeKatana movimientoKatana;
+    private void Katana(out Vector3 mover, out Quaternion girar)
+    {
+        girar = Quaternion.identity;
+        GameObject vista = switcher != null && switcher.meleeScript != null ? switcher.meleeScript.CurrentViewModel : null;
+        if (vista != null && (movimientoKatana == null || movimientoKatana.gameObject != vista)) movimientoKatana = vista.GetComponent<MovimientoDeKatana>();
+        bool hay = movimientoKatana != null && movimientoKatana.isActiveAndEnabled;
+        mover = hay ? movimientoKatana.Brazo : Vector3.zero;
+        girar = hay ? movimientoKatana.BrazoGiro : Quaternion.identity;
     }
 
     private IPiezasDelArma Piezas(GameObject arma)
@@ -421,7 +435,8 @@ public class AnimacionPrimeraPersona : MonoBehaviour
     {
         float dt = Mathf.Min(Time.deltaTime, 0.05f);
         Quaternion giro = transform.rotation;
-        GameObject arma = activa && camara != null && camara.enabled ? Animable() : null;
+        // Ajustando a mano (BrazosEnCamara) el arma queda quieta: si no, cada cuadro la devolvía a su lugar y no se podía mover.
+        GameObject arma = activa && camara != null && camara.enabled && !BrazosEnCamara.AjustandoAMano ? Animable() : null;
 
         // Retraso al mirar: el arma se queda un poco atrás del giro de la cámara y vuelve sola.
         Vector3 delta = (Quaternion.Inverse(giroAnterior) * giro).eulerAngles;

@@ -28,8 +28,9 @@ public static class ModeloReal
     }
 
     // Arma el modelo a tamaño real de "arma" (un arma de primera persona, hija de la cámara). "limites" es su caja
-    // en el espacio del modelo: el caño está en (0, 0, limites.max.z).
-    public static GameObject Crear(GameObject arma, float largo, out Bounds limites, string nombre = null)
+    // en el espacio del modelo: el caño está en (0, 0, limites.max.z). Con "largoEsEscala", "largo" es directamente la
+    // escala del modelo (la katana, US 395: su caja en la cámara va inclinada y no mide el largo del arma).
+    public static GameObject Crear(GameObject arma, float largo, out Bounds limites, string nombre = null, bool largoEsEscala = false)
     {
         limites = new Bounds();
         if (arma == null) return null;
@@ -44,7 +45,7 @@ public static class ModeloReal
         if (!hayCaja) return raiz;
 
         // Del largo del modelo de primera persona al real, con el centro en el origen.
-        float escala = (largo > 0f ? largo : LargoSinFicha) / Mathf.Max(0.0001f, caja.size.z);
+        float escala = largoEsEscala && largo > 0f ? largo : (largo > 0f ? largo : LargoSinFicha) / Mathf.Max(0.0001f, caja.size.z);
         piezas.localScale = Vector3.one * escala;
         piezas.localPosition = -caja.center * escala;
         limites = new Bounds(Vector3.zero, caja.size * escala);
