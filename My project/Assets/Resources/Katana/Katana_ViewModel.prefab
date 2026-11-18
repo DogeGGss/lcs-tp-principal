@@ -739,5 +739,6 @@ MonoBehaviour:
   hasta: 0.61
   afuera: 0.022
   adentro: 0.006
+  ladoDelFilo: -1
   fuerza: 3
   latido: 0.25

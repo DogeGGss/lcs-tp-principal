@@ -3,7 +3,7 @@ using UnityEngine;
 
 // US 395, CA9: el filo de energía de la katana. Una cinta que brilla (Efectos/LineaBrillante, con el bloom) pegada al
 // filo de la hoja, de la guarda a la punta, que late despacio. Se arma al crear el modelo, sacando el filo de la malla
-// de la katana ("Modelo"): en cada tramo de la hoja, el punto más hacia el filo (+y). Es una malla común, así que
+// de la katana ("Modelo"): en cada tramo de la hoja, el punto más hacia el filo (-y en el modelo). Es una malla común, así que
 // también la copian el modelo en la mano de los compañeros (ModeloReal) y el espectador.
 // Va en el modelo de primera persona de la katana (Resources/Katana/Katana_ViewModel). BrilloDeKatana la hace brillar
 // más en el tajo fuerte y la estocada (Intensidad).
@@ -15,6 +15,8 @@ public class FiloDeEnergia : MonoBehaviour
     public float desde = 0.035f, hasta = 0.61f;
     [Tooltip("Cuánto sobresale la cinta del filo hacia afuera y hacia adentro (metros).")]
     public float afuera = 0.022f, adentro = 0.006f;
+    [Tooltip("De qué lado de la hoja está el filo, en el modelo: -1 (hacia -y) o 1 (hacia +y, el lomo).")]
+    public float ladoDelFilo = -1f;
     [Tooltip("Cuánto brilla (con el bloom: más de 1 resplandece).")]
     public float fuerza = 3f;
     [Tooltip("Cuánto late (0: fijo).")]
@@ -23,6 +25,7 @@ public class FiloDeEnergia : MonoBehaviour
     /// <summary>Cuánto brilla, además del latido (1 normal; más en el tajo fuerte).</summary>
     [System.NonSerialized] public float Intensidad = 1f;
 
+    private float Lado => ladoDelFilo < 0f ? -1f : 1f;
     private Material material;
     private Color colorBase;
 
@@ -53,7 +56,7 @@ public class FiloDeEnergia : MonoBehaviour
         material.SetColor("_Color", colorBase * (l * Intensidad));
     }
 
-    // El filo: en cada tramo de la hoja, el vértice que más sale hacia +y (el filo; el lomo es -y).
+    // El filo: en cada tramo de la hoja, el vértice que más sale hacia el lado del filo.
     private List<Vector3> Filo(Mesh malla)
     {
         Vector3[] v = malla.vertices;
@@ -64,7 +67,7 @@ public class FiloDeEnergia : MonoBehaviour
             bool hay = false;
             Vector3 mejor = Vector3.zero;
             foreach (Vector3 p in v)
-                if (Mathf.Abs(p.z - z) <= medio && (!hay || p.y > mejor.y)) { mejor = p; hay = true; }
+                if (Mathf.Abs(p.z - z) <= medio && (!hay || p.y * Lado > mejor.y * Lado)) { mejor = p; hay = true; }
             if (hay) puntos.Add(new Vector3(mejor.x, mejor.y, z));
         }
         // Suavizado (que no tiemble entre tramos).
@@ -86,11 +89,11 @@ public class FiloDeEnergia : MonoBehaviour
         {
             float k = i / (float)(n - 1);
             float ancho = Mathf.Lerp(1f, 0.35f, Mathf.InverseLerp(0.8f, 1f, k)); // más fina en la punta
-            Vector3 normal = Vector3.up;
+            Vector3 normal = Vector3.up * Lado; // hacia afuera del filo
             if (i > 0 && i < n - 1)
             {
                 Vector3 a = (filo[i + 1] - filo[i - 1]).normalized; // a lo largo
-                normal = Vector3.ProjectOnPlane(Vector3.up, a).normalized;
+                normal = Vector3.ProjectOnPlane(Vector3.up * Lado, a).normalized;
             }
             vertices[i * 2] = filo[i] - normal * adentro * ancho;
             vertices[i * 2 + 1] = filo[i] + normal * afuera * ancho;
