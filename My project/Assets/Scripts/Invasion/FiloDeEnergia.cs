@@ -14,7 +14,9 @@ public class FiloDeEnergia : MonoBehaviour
     [Tooltip("Dónde arranca y termina la hoja, a lo largo de la katana (metros del modelo).")]
     public float desde = 0.035f, hasta = 0.61f;
     [Tooltip("Cuánto sobresale la cinta del filo hacia afuera y hacia adentro (metros).")]
-    public float afuera = 0.012f, adentro = 0.004f;
+    public float afuera = 0.022f, adentro = 0.006f;
+    [Tooltip("Cuánto brilla (con el bloom: más de 1 resplandece).")]
+    public float fuerza = 3f;
     [Tooltip("Cuánto late (0: fijo).")]
     [Range(0f, 1f)] public float latido = 0.25f;
 
@@ -40,7 +42,7 @@ public class FiloDeEnergia : MonoBehaviour
         r.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
         r.receiveShadows = false;
         material = Rayo.Material(color);
-        colorBase = material.GetColor("_Color");
+        colorBase = material.GetColor("_Color") * fuerza;
         r.sharedMaterial = material;
     }
 

@@ -113,9 +113,9 @@ public class KatanaDeInvasion : MonoBehaviourPunCallbacks
     {
         if (holder == null)
         {
-            PlayerLoadout equipo = FindFirstObjectByType<PlayerLoadout>();
+            PlayerLoadout equipo = FindAnyObjectByType<PlayerLoadout>();
             holder = equipo != null ? equipo.GetComponentInChildren<MeleeWeaponHolder>(true) : null;
-            if (holder == null) holder = FindFirstObjectByType<MeleeWeaponHolder>();
+            if (holder == null) holder = FindAnyObjectByType<MeleeWeaponHolder>();
         }
         if (holder == null || holder.CurrentWeapon == null) return; // (todavía no armó el cuchillo)
         if (tiene && holder.CurrentWeapon != katana) holder.Cambiar(katana);

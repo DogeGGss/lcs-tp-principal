@@ -737,6 +737,7 @@ MonoBehaviour:
   color: {r: 0.3, g: 0.78, b: 1, a: 1}
   desde: 0.035
   hasta: 0.61
-  afuera: 0.012
-  adentro: 0.004
+  afuera: 0.022
+  adentro: 0.006
+  fuerza: 3
   latido: 0.25
