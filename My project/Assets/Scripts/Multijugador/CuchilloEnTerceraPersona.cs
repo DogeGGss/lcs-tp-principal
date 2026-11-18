@@ -95,25 +95,27 @@ public class CuchilloEnTerceraPersona : ManosPorCodigo
     private int cuadroAnterior = -10;
     private Vector3 derAnterior, origenAnterior;
     private Quaternion dgAnterior, giroAnterior;
+    private Vector3 desdeSuave;
+    private Quaternion giroDesdeSuave = Quaternion.identity;
 
     private void ManoIzquierdaEnLaKatana(ref Vector3 der, Quaternion dg, Quaternion guardiaG, ref Vector3 izq, ref Quaternion ig)
     {
         KatanaData k = Katana;
         if (k == null || KatanaEnLaMano == null || !KatanaEnLaMano.gameObject.activeInHierarchy || !Marco(out Vector3 origen, out Quaternion giro))
             return;
-        Vector3 katanaLugar = Quaternion.Inverse(giro) * (KatanaEnLaMano.position - origen); // en el marco
-        Quaternion katanaGiro = Quaternion.Inverse(giro) * KatanaEnLaMano.rotation;
-        if (cuadroAnterior == Time.frameCount - 1) // (si se cortó, desde donde está)
-        {
-            Quaternion inversa = Quaternion.Inverse(giroAnterior);
-            Vector3 lugarAntes = inversa * (KatanaEnLaMano.position - origenAnterior);
-            Quaternion giroAntes = inversa * KatanaEnLaMano.rotation;
-            Quaternion respecto = Quaternion.Inverse(dgAnterior);
-            Vector3 desdeLaMano = respecto * (lugarAntes - derAnterior);
-            Quaternion giroDesdeLaMano = respecto * giroAntes;
-            katanaLugar = der + dg * desdeLaMano;
-            katanaGiro = dg * giroDesdeLaMano;
-        }
+        bool seguido = cuadroAnterior == Time.frameCount - 1; // (si se cortó, desde donde está ahora)
+        Quaternion inversa = Quaternion.Inverse(seguido ? giroAnterior : giro);
+        Vector3 lugarAntes = inversa * (KatanaEnLaMano.position - (seguido ? origenAnterior : origen));
+        Quaternion giroAntes = inversa * KatanaEnLaMano.rotation;
+        Quaternion respecto = Quaternion.Inverse(seguido ? dgAnterior : dg);
+        Vector3 desdeLaMano = respecto * (lugarAntes - (seguido ? derAnterior : der));
+        Quaternion giroDesdeLaMano = respecto * giroAntes;
+        // Suavizado: así no se arma un ida y vuelta entre la mano izquierda y la derecha (temblaba).
+        float f = seguido ? 1f - Mathf.Exp(-Time.deltaTime / 0.12f) : 1f;
+        desdeSuave = Vector3.Lerp(desdeSuave, desdeLaMano, f);
+        giroDesdeSuave = Quaternion.Slerp(giroDesdeSuave, giroDesdeLaMano, f);
+        Vector3 katanaLugar = der + dg * desdeSuave;
+        Quaternion katanaGiro = dg * giroDesdeSuave;
         izq = katanaLugar + katanaGiro * Vector3.Scale(KatanaEnLaMano.lossyScale, k.manoIzquierdaEnElMango);
         if (AlcanceIzquierdo(origen, giro, out Vector3 hombro, out float largo))
         {
