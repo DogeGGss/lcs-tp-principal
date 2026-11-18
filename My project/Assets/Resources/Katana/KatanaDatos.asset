@@ -34,5 +34,16 @@ MonoBehaviour:
   velocidadEnGuardia: 0.55
   curaPorBaja: 10
   icono: {fileID: 21300000, guid: 5d677b1b981b4151b440e373b8fe04c6, type: 3}
-  escalaEnTerceraPersona: 1.1
+  escalaEnTerceraPersona: 0.9880296
+  ajustadaEnLaMano: 1
+  lugarEnLaMano: {x: 0.058665905, y: 0.039995715, z: 0.08164865}
+  giroEnLaMano: {x: -27.240662, y: -91.70935, z: 169.33974}
+  manoIzquierdaEnElMango: {x: -0.051378775, y: 0.0022737328, z: -0.0040697567}
+  giroManoIzquierda: {x: -29.20284, y: 0.00013101073, z: 13.156129}
+  manoDerecha: {x: 0.14303924, y: -0.05471576, z: 0.29482618}
+  giroManoDerecha: {x: -48.1297, y: 0.0002100629, z: 0}
+  manoAtras: {x: 0.19600017, y: -0.08899999, z: 0.22199999}
+  giroManoAtras: {x: 0, y: 0, z: 0}
+  manoCorte: {x: 0.3939999, y: -0.08000004, z: 0.25100014}
+  giroManoCorte: {x: 0, y: 0, z: 0}
   energia: {r: 0.45, g: 0.85, b: 1.6, a: 1}

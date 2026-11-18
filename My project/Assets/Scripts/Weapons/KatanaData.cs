@@ -56,8 +56,21 @@ public class KatanaData : MeleeWeaponData
     public Vector3 giroEnLaMano;
     [Tooltip("Dónde agarra la mano izquierda el mango, en el espacio de la katana (metros: z hacia la punta; negativo, más abajo que la derecha).")]
     public Vector3 manoIzquierdaEnElMango = new Vector3(0f, 0f, -0.09f);
-    [Tooltip("Giro de la mano izquierda en el mango (grados, respecto de hacia dónde mira el personaje).")]
-    public Vector3 giroManoIzquierda;
+    [Tooltip("Giro de la muñeca izquierda en el mango (grados, respecto de hacia dónde mira el personaje).")]
+    public Vector3 giroManoIzquierda = new Vector3(-29.2f, 0f, 13.16f);
+
+    // Los puntos de la mano derecha en tercera persona, como los del cuchillo (AgarresTerceraPersona) pero propios: así
+    // ajustar la katana con el muñeco espejo no cambia el cuchillo. Metros respecto del pecho y de hacia dónde mira.
+    [Tooltip("Dónde va la mano derecha en guardia.")]
+    public Vector3 manoDerecha = new Vector3(0.143f, -0.0547f, 0.2948f);
+    [Tooltip("Giro de la muñeca derecha en guardia (grados).")]
+    public Vector3 giroManoDerecha = new Vector3(-48.13f, 0f, 0f);
+    [Tooltip("Adónde va la mano derecha al prepararse para el tajo.")]
+    public Vector3 manoAtras = new Vector3(0.196f, -0.089f, 0.222f);
+    public Vector3 giroManoAtras;
+    [Tooltip("Dónde termina la mano derecha el tajo.")]
+    public Vector3 manoCorte = new Vector3(0.394f, -0.08f, 0.251f);
+    public Vector3 giroManoCorte;
     [Tooltip("Color de la energía (la estela, los destellos y el brillo del filo).")]
     [ColorUsage(false, true)] public Color energia = new Color(0.45f, 0.85f, 1.6f);
 

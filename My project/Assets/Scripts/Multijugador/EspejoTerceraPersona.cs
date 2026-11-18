@@ -420,6 +420,9 @@ public class EspejoTerceraPersona : MonoBehaviour
         public bool soloProbando, cuchillo;
         public System.Func<AgarresTerceraPersona, Vector3> leer, leerGiro;
         public System.Action<AgarresTerceraPersona, Vector3> escribir, escribirGiro;
+        // US 395: con la katana, sus propios puntos (así no cambia el cuchillo).
+        public System.Func<KatanaData, Vector3> leerK, leerGiroK;
+        public System.Action<KatanaData, Vector3> escribirK, escribirGiroK;
         public ManijaDeAjuste manija;
         public Vector3 ultimo;
         public Quaternion ultimoGiro;
@@ -441,13 +444,16 @@ public class EspejoTerceraPersona : MonoBehaviour
             leerGiro = a => a.granadaGiroApunta, escribirGiro = (a, v) => a.granadaGiroApunta = v },
         // US 257: el cuchillo.
         new PuntoDeGranada { nombre = "Cuchillo: Mano derecha", color = Color.cyan, cuchillo = true, leer = a => a.cuchilloDerecha, escribir = (a, v) => a.cuchilloDerecha = v,
-            leerGiro = a => a.cuchilloGiroDerecha, escribirGiro = (a, v) => a.cuchilloGiroDerecha = v },
+            leerGiro = a => a.cuchilloGiroDerecha, escribirGiro = (a, v) => a.cuchilloGiroDerecha = v,
+            leerK = k => k.manoDerecha, escribirK = (k, v) => k.manoDerecha = v, leerGiroK = k => k.giroManoDerecha, escribirGiroK = (k, v) => k.giroManoDerecha = v },
         new PuntoDeGranada { nombre = "Cuchillo: Mano izquierda", color = Color.magenta, cuchillo = true, leer = a => a.cuchilloIzquierda, escribir = (a, v) => a.cuchilloIzquierda = v,
             leerGiro = a => a.cuchilloGiroIzquierda, escribirGiro = (a, v) => a.cuchilloGiroIzquierda = v },
         new PuntoDeGranada { nombre = "Cuchillo: Atrás", color = new Color(1f, 0.5f, 0.1f), cuchillo = true, soloProbando = true, leer = a => a.cuchilloAtras, escribir = (a, v) => a.cuchilloAtras = v,
-            leerGiro = a => a.cuchilloGiroAtras, escribirGiro = (a, v) => a.cuchilloGiroAtras = v },
+            leerGiro = a => a.cuchilloGiroAtras, escribirGiro = (a, v) => a.cuchilloGiroAtras = v,
+            leerK = k => k.manoAtras, escribirK = (k, v) => k.manoAtras = v, leerGiroK = k => k.giroManoAtras, escribirGiroK = (k, v) => k.giroManoAtras = v },
         new PuntoDeGranada { nombre = "Cuchillo: Corte", color = Color.red, cuchillo = true, soloProbando = true, leer = a => a.cuchilloCorte, escribir = (a, v) => a.cuchilloCorte = v,
-            leerGiro = a => a.cuchilloGiroCorte, escribirGiro = (a, v) => a.cuchilloGiroCorte = v },
+            leerGiro = a => a.cuchilloGiroCorte, escribirGiro = (a, v) => a.cuchilloGiroCorte = v,
+            leerK = k => k.manoCorte, escribirK = (k, v) => k.manoCorte = v, leerGiroK = k => k.giroManoCorte, escribirGiroK = (k, v) => k.giroManoCorte = v },
     };
 
     // US 395: la manija de la mano izquierda del cuchillo, con la katana, es la de dónde agarra el mango.
@@ -456,6 +462,9 @@ public class EspejoTerceraPersona : MonoBehaviour
         katana = p.cuchillo && !p.soloProbando && p.nombre == "Cuchillo: Mano izquierda" && soporte != null ? Katana : null;
         return katana != null;
     }
+
+    // US 395: con la katana, los demás puntos del cuchillo (la mano derecha, atrás y el corte) son los de ella.
+    private KatanaData PuntoDeLaKatana(PuntoDeGranada p) => p.cuchillo && p.leerK != null ? Katana : null;
 
     private void PonerManijasDeLasManos(bool granada, bool conCuchillo)
     {
@@ -475,7 +484,13 @@ public class EspejoTerceraPersona : MonoBehaviour
             if (IzquierdaEnLaKatana(p, out KatanaData katana)) // US 395: con la katana, la izquierda va en el mango
             {
                 p.manija.transform.SetPositionAndRotation(p.ultimo = soporte.TransformPoint(katana.manoIzquierdaEnElMango),
-                    p.ultimoGiro = giro * Quaternion.Euler(p.leerGiro(a)) * Quaternion.Euler(katana.giroManoIzquierda));
+                    p.ultimoGiro = giro * Quaternion.Euler(katana.giroManoIzquierda));
+                continue;
+            }
+            KatanaData propia = PuntoDeLaKatana(p);
+            if (propia != null)
+            {
+                p.manija.transform.SetPositionAndRotation(p.ultimo = origen + giro * p.leerK(propia), p.ultimoGiro = giro * Quaternion.Euler(p.leerGiroK(propia)));
                 continue;
             }
             p.manija.transform.SetPositionAndRotation(p.ultimo = origen + giro * p.leer(a), p.ultimoGiro = giro * Quaternion.Euler(p.leerGiro(a)));
@@ -497,12 +512,28 @@ public class EspejoTerceraPersona : MonoBehaviour
                 if ((t.position - p.ultimo).sqrMagnitude > 1e-8f) { katana.manoIzquierdaEnElMango = soporte.InverseTransformPoint(t.position); movida = true; }
                 if (Quaternion.Angle(t.rotation, p.ultimoGiro) > 0.01f)
                 {
-                    Vector3 e = (Quaternion.Inverse(giro * Quaternion.Euler(p.leerGiro(a))) * t.rotation).eulerAngles;
+                    Vector3 e = (Quaternion.Inverse(giro) * t.rotation).eulerAngles;
                     katana.giroManoIzquierda = new Vector3(Mathf.DeltaAngle(0f, e.x), Mathf.DeltaAngle(0f, e.y), Mathf.DeltaAngle(0f, e.z));
                     movida = true;
                 }
 #if UNITY_EDITOR
                 if (movida) UnityEditor.EditorUtility.SetDirty(katana); // así queda guardado en la katana
+#endif
+                continue;
+            }
+            KatanaData propia = PuntoDeLaKatana(p);
+            if (propia != null)
+            {
+                bool movida = false;
+                if ((t.position - p.ultimo).sqrMagnitude > 1e-8f) { p.escribirK(propia, Quaternion.Inverse(giro) * (t.position - origen)); movida = true; }
+                if (Quaternion.Angle(t.rotation, p.ultimoGiro) > 0.01f)
+                {
+                    Vector3 e = (Quaternion.Inverse(giro) * t.rotation).eulerAngles;
+                    p.escribirGiroK(propia, new Vector3(Mathf.DeltaAngle(0f, e.x), Mathf.DeltaAngle(0f, e.y), Mathf.DeltaAngle(0f, e.z)));
+                    movida = true;
+                }
+#if UNITY_EDITOR
+                if (movida) UnityEditor.EditorUtility.SetDirty(propia);
 #endif
                 continue;
             }

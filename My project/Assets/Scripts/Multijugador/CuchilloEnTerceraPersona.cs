@@ -44,48 +44,80 @@ public class CuchilloEnTerceraPersona : ManosPorCodigo
     protected override void Pose(out Vector3 der, out Vector3 izq, out Quaternion dg, out Quaternion ig)
     {
         AgarresTerceraPersona a = AgarresTerceraPersona.Actual;
+        KatanaData k = Katana; // US 395: la katana tiene sus propios puntos (no toca los del cuchillo)
+        Vector3 guardia = k != null ? k.manoDerecha : a.cuchilloDerecha;
+        Vector3 atras = k != null ? k.manoAtras : a.cuchilloAtras;
+        Vector3 corte = k != null ? k.manoCorte : a.cuchilloCorte;
+        Quaternion guardiaG = Quaternion.Euler(k != null ? k.giroManoDerecha : a.cuchilloGiroDerecha);
+        Quaternion atrasG = Quaternion.Euler(k != null ? k.giroManoAtras : a.cuchilloGiroAtras);
+        Quaternion corteG = Quaternion.Euler(k != null ? k.giroManoCorte : a.cuchilloGiroCorte);
         float t = Pasado;
-        der = a.cuchilloDerecha;
+        der = guardia;
         izq = a.cuchilloIzquierda;
-        dg = Quaternion.Euler(a.cuchilloGiroDerecha);
+        dg = guardiaG;
         ig = Quaternion.Euler(a.cuchilloGiroIzquierda);
-        if (!Atacando) { ManoIzquierdaEnLaKatana(ref izq, ref ig); return; }
-        Quaternion atrasG = Quaternion.Euler(a.cuchilloGiroAtras), corteG = Quaternion.Euler(a.cuchilloGiroCorte);
+        if (!Atacando) { ManoIzquierdaEnLaKatana(der, dg, guardiaG, ref izq, ref ig); return; }
         float izqMueve;
         if (t < Atras)
         {
-            float k = Suave(t / Atras);
-            der = Vector3.Lerp(a.cuchilloDerecha, a.cuchilloAtras, k);
-            dg = Quaternion.Slerp(dg, atrasG, k);
-            izqMueve = k;
+            float f = Suave(t / Atras);
+            der = Vector3.Lerp(guardia, atras, f);
+            dg = Quaternion.Slerp(guardiaG, atrasG, f);
+            izqMueve = f;
         }
         else if (t < Corte)
         {
             // El corte: un arco de adentro hacia afuera, que pasa por adelante (rápido al principio).
-            float k = 1f - Mathf.Pow(1f - (t - Atras) / (Corte - Atras), 2f);
-            Vector3 medio = (a.cuchilloAtras + a.cuchilloCorte) * 0.5f + Vector3.forward * a.cuchilloArco;
-            der = Bezier(a.cuchilloAtras, medio, a.cuchilloCorte, k);
-            dg = Quaternion.Slerp(atrasG, corteG, k);
+            float f = 1f - Mathf.Pow(1f - (t - Atras) / (Corte - Atras), 2f);
+            Vector3 medio = (atras + corte) * 0.5f + Vector3.forward * a.cuchilloArco;
+            der = Bezier(atras, medio, corte, f);
+            dg = Quaternion.Slerp(atrasG, corteG, f);
             izqMueve = 1f;
         }
         else
         {
-            float k = Suave((t - Corte) / (Vuelta - Corte));
-            der = Vector3.Lerp(a.cuchilloCorte, a.cuchilloDerecha, k);
-            dg = Quaternion.Slerp(corteG, dg, k);
-            izqMueve = 1f - k;
+            float f = Suave((t - Corte) / (Vuelta - Corte));
+            der = Vector3.Lerp(corte, guardia, f);
+            dg = Quaternion.Slerp(corteG, guardiaG, f);
+            izqMueve = 1f - f;
         }
         // La izquierda se recoge un poco hacia el pecho mientras corta.
         izq = Vector3.Lerp(a.cuchilloIzquierda, a.cuchilloIzquierda + new Vector3(0.05f, 0.04f, -0.08f), izqMueve * a.granadaIzquierdaMueve);
-        ManoIzquierdaEnLaKatana(ref izq, ref ig);
+        ManoIzquierdaEnLaKatana(der, dg, guardiaG, ref izq, ref ig);
     }
 
-    // US 395: con la katana, la izquierda va al mango (donde estaba la katana el cuadro anterior: se pone después).
-    private void ManoIzquierdaEnLaKatana(ref Vector3 izq, ref Quaternion ig)
+    // US 395: con la katana, la izquierda va al mango. La katana se pone después (con la mano derecha ya movida), así
+    // que lo que se sabe es dónde quedó el cuadro anterior respecto del punto de la derecha de ese cuadro: se lleva eso
+    // al punto de la derecha de ahora (si no, en el tajo, que es rápido, la izquierda queda atrás y se sale del mango).
+    // La muñeca izquierda gira con la derecha.
+    private int cuadroAnterior = -10;
+    private Vector3 derAnterior, origenAnterior;
+    private Quaternion dgAnterior, giroAnterior;
+
+    private void ManoIzquierdaEnLaKatana(Vector3 der, Quaternion dg, Quaternion guardiaG, ref Vector3 izq, ref Quaternion ig)
     {
-        if (Katana == null || KatanaEnLaMano == null || !KatanaEnLaMano.gameObject.activeInHierarchy || !Marco(out Vector3 origen, out Quaternion giro)) return;
-        Vector3 mango = KatanaEnLaMano.TransformPoint(Katana.manoIzquierdaEnElMango);
-        izq = Quaternion.Inverse(giro) * (mango - origen);
-        ig = ig * Quaternion.Euler(Katana.giroManoIzquierda);
+        KatanaData k = Katana;
+        if (k == null || KatanaEnLaMano == null || !KatanaEnLaMano.gameObject.activeInHierarchy || !Marco(out Vector3 origen, out Quaternion giro))
+            return;
+        Vector3 katanaLugar = Quaternion.Inverse(giro) * (KatanaEnLaMano.position - origen); // en el marco
+        Quaternion katanaGiro = Quaternion.Inverse(giro) * KatanaEnLaMano.rotation;
+        if (cuadroAnterior == Time.frameCount - 1) // (si se cortó, desde donde está)
+        {
+            Quaternion inversa = Quaternion.Inverse(giroAnterior);
+            Vector3 lugarAntes = inversa * (KatanaEnLaMano.position - origenAnterior);
+            Quaternion giroAntes = inversa * KatanaEnLaMano.rotation;
+            Quaternion respecto = Quaternion.Inverse(dgAnterior);
+            Vector3 desdeLaMano = respecto * (lugarAntes - derAnterior);
+            Quaternion giroDesdeLaMano = respecto * giroAntes;
+            katanaLugar = der + dg * desdeLaMano;
+            katanaGiro = dg * giroDesdeLaMano;
+        }
+        cuadroAnterior = Time.frameCount;
+        derAnterior = der;
+        dgAnterior = dg;
+        origenAnterior = origen;
+        giroAnterior = giro;
+        izq = katanaLugar + katanaGiro * Vector3.Scale(KatanaEnLaMano.lossyScale, k.manoIzquierdaEnElMango);
+        ig = dg * Quaternion.Inverse(guardiaG) * Quaternion.Euler(k.giroManoIzquierda);
     }
 }
