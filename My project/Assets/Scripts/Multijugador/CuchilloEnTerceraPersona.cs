@@ -111,7 +111,7 @@ public class CuchilloEnTerceraPersona : ManosPorCodigo
         Vector3 desdeLaMano = respecto * (lugarAntes - (seguido ? derAnterior : der));
         Quaternion giroDesdeLaMano = respecto * giroAntes;
         // Suavizado: así no se arma un ida y vuelta entre la mano izquierda y la derecha (temblaba).
-        float f = seguido ? 1f - Mathf.Exp(-Time.deltaTime / 0.12f) : 1f;
+        float f = seguido ? 1f - Mathf.Exp(-Mathf.Max(Time.unscaledDeltaTime, 0.001f) / 0.12f) : 1f; // (también en pausa, con el muñeco espejo)
         desdeSuave = Vector3.Lerp(desdeSuave, desdeLaMano, f);
         giroDesdeSuave = Quaternion.Slerp(giroDesdeSuave, giroDesdeLaMano, f);
         Vector3 katanaLugar = der + dg * desdeSuave;
