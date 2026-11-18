@@ -204,9 +204,9 @@ public class AnimacionPrimeraPersona : MonoBehaviour
     private readonly Dictionary<GameObject, IPiezasDelArma> piezas = new Dictionary<GameObject, IPiezasDelArma>();
 
     // Lo que se le sumó en este cuadro, para sacarlo al empezar el siguiente.
-    private Transform[] movidos = new Transform[5]; // arma, foto, brazo derecho, antebrazo y mano (la katana)
-    private Vector3[] lugarBase = new Vector3[5];
-    private Quaternion[] giroBase = new Quaternion[5];
+    private Transform[] movidos = new Transform[3];
+    private Vector3[] lugarBase = new Vector3[3];
+    private Quaternion[] giroBase = new Quaternion[3];
     private int cuantos;
 
     // Estado de cada animación
@@ -366,7 +366,6 @@ public class AnimacionPrimeraPersona : MonoBehaviour
         girar = Quaternion.identity;
         GameObject vista = switcher != null && switcher.meleeScript != null ? switcher.meleeScript.CurrentViewModel : null;
         if (vista != null && (movimientoKatana == null || movimientoKatana.gameObject != vista)) movimientoKatana = vista.GetComponent<MovimientoDeKatana>();
-        doblarCodo = true;
         bool hay = movimientoKatana != null && movimientoKatana.isActiveAndEnabled;
         mover = hay ? movimientoKatana.Brazo : Vector3.zero;
         girar = hay ? movimientoKatana.BrazoGiro : Quaternion.identity;
@@ -621,7 +620,6 @@ public class AnimacionPrimeraPersona : MonoBehaviour
 
         Vector3 moverDerecha = Vector3.zero;
         Quaternion girarDerecha = Quaternion.identity;
-        doblarCodo = false;
         if (EsCuchillo(arma)) Corte(out moverDerecha, out girarDerecha); // el cuchillo no tiene piezas
         else if (EsGranada(arma)) // la granada tampoco
         {
@@ -682,37 +680,7 @@ public class AnimacionPrimeraPersona : MonoBehaviour
                                  moverIzquierdaExtra;
         Mover(foto, pivote, moverIzquierdo, girarIzquierdo);
         Guardar(derecho);
-        Vector3 antesLugar = derecho.position;
-        Quaternion antesGiro = derecho.rotation;
-        Transform codo = doblarCodo ? derecho.Find(BrazosEnCamara.NombreCodo) : null;
-        Transform muneca = doblarCodo ? derecho.Find(BrazosEnCamara.NombreMuneca) : null;
-        Vector3 codoAntes = codo != null ? codo.position : Vector3.zero, munecaAntes = muneca != null ? muneca.position : Vector3.zero;
         derecho.SetPositionAndRotation(transform.TransformPoint(lugarDerecho), transform.rotation * giroDerecho);
-        if (codo != null && muneca != null) DoblarCodo(derecho, codoAntes, munecaAntes, muneca.position, antesLugar, antesGiro);
-    }
-
-    // US 395: con la katana el brazo derecho no gira entero (se salía de lugar y se veía el hombro). La mano va con la
-    // katana (no la suelta); el antebrazo acompaña solo una parte del giro, colgando de la muñeca; y el brazo solo se
-    // corre hasta donde quedó el codo, sin girar. Así se doblan la muñeca y el codo.
-    [Tooltip("US 395: cuánto del giro de la mano con la katana acompaña el antebrazo (el resto lo dobla la muñeca).")]
-    [Range(0f, 1f)] public float katanaAntebrazo = 0.35f;
-    private bool doblarCodo;
-    private void DoblarCodo(Transform derecho, Vector3 codoAntes, Vector3 munecaAntes, Vector3 munecaAhora, Vector3 antesLugar, Quaternion antesGiro)
-    {
-        Transform antebrazo = derecho.Find(BrazosEnCamara.NombreAntebrazo), mano = derecho.Find(BrazosEnCamara.NombreMano);
-        if (antebrazo == null) return;
-        Vector3 conLaKatana = derecho.position;
-        Quaternion conLaKatanaGiro = derecho.rotation;
-        // Sin la mano aparte, el antebrazo hace de mano (va entero con la katana).
-        Quaternion giroMano = conLaKatanaGiro * Quaternion.Inverse(antesGiro);
-        Quaternion giroAntebrazo = mano != null ? Quaternion.Slerp(Quaternion.identity, giroMano, katanaAntebrazo) : giroMano;
-        // El antebrazo: colgado de la muñeca (que va con la mano), con su parte del giro.
-        Vector3 Antebrazo(Vector3 p) => munecaAhora + giroAntebrazo * (p - munecaAntes);
-        Guardar(antebrazo);
-        if (mano != null) Guardar(mano);
-        derecho.SetPositionAndRotation(antesLugar + (Antebrazo(codoAntes) - codoAntes), antesGiro);
-        antebrazo.SetPositionAndRotation(Antebrazo(antesLugar), giroAntebrazo * antesGiro);
-        if (mano != null) mano.SetPositionAndRotation(conLaKatana, conLaKatanaGiro);
     }
 
     // ---------- Último Tren (US 254) ----------

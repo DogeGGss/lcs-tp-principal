@@ -5,10 +5,10 @@ using UnityEngine;
 // "Pose Tajo", "Pose Tajo fuerte", "Pose Estocada" y "Pose Guardia". En el juego no se ven; con el ajuste a mano
 // (Riftwalker > Manos de las armas > Ajustar a mano en Play) aparecen, y se las mueve y gira con las herramientas de
 // la escena hasta donde tiene que terminar la katana en cada ataque. Al salir del Play se guardan en el prefab.
-// La mano no suelta la katana: el brazo derecho (la foto) se mueve y gira con ella, como una sola pieza (lo aplica
-// AnimacionPrimeraPersona con Brazo y BrazoGiro). Si el brazo gira demasiado y se ve raro, "giroDelBrazo" deja que
-// gire solo una parte y el resto lo gira la katana sola en la mano (alrededor del "Agarre"), aunque así el agarre se
-// nota menos firme.
+// El brazo: BrazosEnCamara saca una foto del brazo derecho agarrando cada katana de muestra (BrazoConPoses), y acá se
+// mezclan con la quieta con el mismo peso que la katana: el brazo se dobla de a poco y la mano la acompaña.
+// Mientras esas fotos no están (los primeros cuadros), el brazo derecho se mueve y gira con la katana como una sola
+// pieza (Brazo y BrazoGiro, que aplica AnimacionPrimeraPersona; "giroDelBrazo" deja que gire solo una parte).
 public class MovimientoDeKatana : MonoBehaviour
 {
     [Tooltip("Cuánto del giro de la katana gira también el brazo (1: todo, la mano nunca la suelta; 0: el brazo solo se corre y la katana gira sola en la mano).")]
@@ -24,6 +24,15 @@ public class MovimientoDeKatana : MonoBehaviour
     private Vector3 basePos, agarre; // agarre: dónde agarra la mano, en el espacio de la katana
     private Quaternion baseGiro;
     private bool mostrando;
+    private BrazosEnCamara brazos;
+    private BrazoConPoses brazoConPoses;
+    private readonly System.Collections.Generic.List<System.Collections.Generic.KeyValuePair<string, float>> pesos =
+        new System.Collections.Generic.List<System.Collections.Generic.KeyValuePair<string, float>>();
+
+    /// <summary>Dónde está la katana quieta (en el espacio de este modelo), para las fotos de las poses.</summary>
+    public bool Iniciado { get; private set; }
+    public Vector3 BasePos => basePos;
+    public Quaternion BaseGiro => baseGiro;
 
     /// <summary>Lo que se corre y gira el brazo (con la katana) en este momento, en el espacio de la cámara, alrededor
     /// de la mano derecha (lo aplica AnimacionPrimeraPersona).</summary>
@@ -51,7 +60,20 @@ public class MovimientoDeKatana : MonoBehaviour
             Transform punto = modelo.Find("Agarre"); // dónde la agarra la mano, en el mango
             agarre = punto != null ? punto.localPosition : Quaternion.Inverse(baseGiro) * ((mano != null ? mano.localPosition : basePos) - basePos);
         }
+        Iniciado = modelo != null;
+        brazos = GetComponentInParent<BrazosEnCamara>();
         if (ataque == null) enabled = false; // (la copia de otro jugador o la del espectador: queda quieta)
+    }
+
+    // El brazo derecho de la foto de esta katana, con las poses (null hasta que estén las fotos).
+    private BrazoConPoses BrazoConPoses()
+    {
+        if (brazoConPoses != null) return brazoConPoses;
+        MeshRenderer foto = brazos != null ? brazos.FotoDe(gameObject) : null;
+        Transform derecho = foto != null ? foto.transform.Find("Brazo derecho") : null;
+        BrazoConPoses b = derecho != null ? derecho.GetComponent<BrazoConPoses>() : null;
+        if (b != null && b.Cuantas > 0) brazoConPoses = b;
+        return brazoConPoses;
     }
 
     // Las katanas de muestra se ven solo mientras se ajusta a mano.
@@ -69,6 +91,7 @@ public class MovimientoDeKatana : MonoBehaviour
 
         Vector3 pos = basePos;
         Quaternion giro = baseGiro;
+        pesos.Clear();
 
         // Tajo: va hasta la pose (rápido en el corte), se queda un instante y vuelve.
         float corte = ataque.AvanceDelCorte;
@@ -85,7 +108,19 @@ public class MovimientoDeKatana : MonoBehaviour
         // Guardia: mientras la tiene puesta.
         if (ataque.Guardia > 0f) Hacia(guardia, Mathf.SmoothStep(0f, 1f, ataque.Guardia), ref pos, ref giro);
 
-        // El brazo hace parte del movimiento (todo, con giroDelBrazo en 1) y la katana lo que falta, en la mano.
+        // Con las fotos de las poses: el brazo se dobla (mezclando las fotos) y la katana va derecho a su lugar.
+        BrazoConPoses brazo = BrazoConPoses();
+        if (brazo != null)
+        {
+            brazo.Mezclar(pesos);
+            modelo.localPosition = pos;
+            modelo.localRotation = giro;
+            Brazo = Vector3.zero;
+            BrazoGiro = Quaternion.identity;
+            return;
+        }
+
+        // Sin ellas: el brazo hace parte del movimiento (todo, con giroDelBrazo en 1) y la katana lo que falta, en la mano.
         // En el espacio de este modelo: el mango va de g0 (quieta) a g1 (la pose); el brazo gira "parte" y lleva g0 a g1.
         Vector3 g0 = basePos + baseGiro * agarre, g1 = pos + giro * agarre;
         Quaternion parte = Quaternion.Slerp(Quaternion.identity, giro * Quaternion.Inverse(baseGiro), giroDelBrazo);
@@ -102,17 +137,21 @@ public class MovimientoDeKatana : MonoBehaviour
         Brazo = g1c - h + BrazoGiro * (h - g0c);
     }
 
-    private static void Hacia(Transform pose, float f, ref Vector3 pos, ref Quaternion giro)
+    // Lleva la katana hacia esa pose (f de 0 a 1) y anota cuánto pesa cada pose (para mezclar las fotos del brazo).
+    private void Hacia(Transform pose, float f, ref Vector3 pos, ref Quaternion giro)
     {
         if (pose == null || f <= 0f) return;
         pos = Vector3.Lerp(pos, pose.localPosition, f);
         giro = Quaternion.Slerp(giro, pose.localRotation, f);
+        for (int i = 0; i < pesos.Count; i++) pesos[i] = new System.Collections.Generic.KeyValuePair<string, float>(pesos[i].Key, pesos[i].Value * (1f - f));
+        pesos.Add(new System.Collections.Generic.KeyValuePair<string, float>(pose.name, f));
     }
 
     private void OnDisable()
     {
         Brazo = Vector3.zero;
         BrazoGiro = Quaternion.identity;
+        if (brazoConPoses != null) { pesos.Clear(); brazoConPoses.Mezclar(pesos); }
         if (modelo != null) modelo.SetLocalPositionAndRotation(basePos, baseGiro);
     }
 }

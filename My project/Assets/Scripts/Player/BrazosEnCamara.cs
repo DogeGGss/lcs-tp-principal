@@ -50,13 +50,12 @@ public class BrazosEnCamara : MonoBehaviour
     private readonly Dictionary<GameObject, MeshRenderer> brazoDerecho = new Dictionary<GameObject, MeshRenderer>(); // hijo de la foto
     private readonly Dictionary<GameObject, Vector3> armaEnFoto = new Dictionary<GameObject, Vector3>(); // dónde estaba el arma al sacar su foto
     private bool[] verticeDerecho; // qué vértices de los brazos son del brazo derecho
-    // US 395: el brazo derecho de la foto, en tres partes (el brazo, el antebrazo y la mano, hijas del brazo), para que
-    // con la katana se doblen el codo y la muñeca.
-    private bool[] verticeAntebrazo, verticeMano;
-    public const string NombreAntebrazo = "Antebrazo derecho", NombreMano = "Mano derecha", NombreCodo = "Codo derecho", NombreMuneca = "Muñeca derecha";
-    private readonly Dictionary<GameObject, List<MeshRenderer>> partesDelBrazo = new Dictionary<GameObject, List<MeshRenderer>>();
     private readonly Dictionary<GameObject, Vector3> lugarOriginal = new Dictionary<GameObject, Vector3>();
     private GameObject preparando;
+    // US 395: las poses de la katana (MovimientoDeKatana): después de su foto se saca una del brazo derecho en cada pose.
+    private Transform poseActual;
+    private readonly Queue<Transform> posesQueFaltan = new Queue<Transform>();
+    private Matrix4x4 fotoEnCamara; // dónde quedó la foto de la katana respecto de la cámara (para pasar las poses a ella)
     private int fotoEnCuadro, listoEnCuadro;
     private bool faltanFotos;
 
@@ -127,8 +126,6 @@ public class BrazosEnCamara : MonoBehaviour
             bool ver = foto.Key == enMano && !MiraTelescopica.Puesta;
             if (foto.Value != null) foto.Value.enabled = ver;
             if (brazoDerecho.TryGetValue(foto.Key, out MeshRenderer derecho) && derecho != null) derecho.enabled = ver;
-            if (partesDelBrazo.TryGetValue(foto.Key, out List<MeshRenderer> partes))
-                foreach (MeshRenderer parte in partes) if (parte != null) parte.enabled = ver;
         }
 
         // Los brazos del cuerpo no se ven nunca sueltos: mientras se saca una foto siguen prendidos para el IK, pero sin
@@ -192,8 +189,6 @@ public class BrazosEnCamara : MonoBehaviour
         animador = brazosCuerpo.GetComponentInParent<Animator>();
         if (animador != null) cullingOriginal = animador.cullingMode;
         verticeDerecho = VerticesDelBrazoDerecho();
-        verticeAntebrazo = VerticesDe(HumanBodyBones.RightLowerArm);
-        verticeMano = VerticesDe(HumanBodyBones.RightHand);
         listoEnCuadro = Time.frameCount + CuadrosAlEmpezar;
         faltanFotos = true;
         return true;
@@ -201,14 +196,11 @@ public class BrazosEnCamara : MonoBehaviour
 
     // Un vértice es del brazo derecho si se mueve sobre todo con sus huesos (del brazo a los dedos). Sin esqueleto
     // humanoide o sin poder leer la malla, null: la foto queda entera.
-    private bool[] VerticesDelBrazoDerecho() => VerticesDe(HumanBodyBones.RightUpperArm);
-
-    // Los vértices que se mueven sobre todo con ese hueso y los que cuelgan de él.
-    private bool[] VerticesDe(HumanBodyBones hueso)
+    private bool[] VerticesDelBrazoDerecho()
     {
         Mesh malla = brazosCuerpo.sharedMesh;
         if (animador == null || !animador.isHuman || malla == null || !malla.isReadable) return null;
-        Transform brazo = animador.GetBoneTransform(hueso);
+        Transform brazo = animador.GetBoneTransform(HumanBodyBones.RightUpperArm);
         if (brazo == null) return null;
         Transform[] huesos = brazosCuerpo.bones;
         var esDerecho = new bool[huesos.Length];
@@ -226,14 +218,11 @@ public class BrazosEnCamara : MonoBehaviour
     }
 
     // Pasa los triángulos del brazo derecho de "malla" a una malla aparte, que devuelve; en "malla" queda el izquierdo.
-    private Mesh SepararBrazoDerecho(Mesh malla) => Separar(malla, verticeDerecho, " (brazo derecho)");
-
-    // Pasa a una malla aparte los triángulos de esos vértices, y la devuelve (null si no puede).
-    private static Mesh Separar(Mesh malla, bool[] verticeDerecho, string nombre)
+    private Mesh SepararBrazoDerecho(Mesh malla)
     {
         if (verticeDerecho == null || verticeDerecho.Length != malla.vertexCount) return null;
         Mesh derecha = Instantiate(malla);
-        derecha.name = malla.name + nombre;
+        derecha.name = malla.name + " (brazo derecho)";
         var izquierdos = new List<int>();
         var derechos = new List<int>();
         for (int s = 0; s < malla.subMeshCount; s++)
@@ -287,8 +276,27 @@ public class BrazosEnCamara : MonoBehaviour
         Matrix4x4 derecha = CamaraDerecha();
         bool lineaA = arma == switcher.pistolObj;
         Transform derecho = arma.transform.Find(AgarreDerecho), izquierdo = arma.transform.Find(AgarreIzquierdo);
-        Ubicar(objetivoDerecho, arma.transform, lineaA ? derechoLocal : derecho.localPosition, lineaA ? derechoGiro : derecho.localRotation, derecha);
+        Vector3 lugarDerecho = lineaA ? derechoLocal : derecho.localPosition;
+        Quaternion giroDerecho = lineaA ? derechoGiro : derecho.localRotation;
+        if (poseActual != null) EnLaPose(arma, ref lugarDerecho, ref giroDerecho);
+        Ubicar(objetivoDerecho, arma.transform, lugarDerecho, giroDerecho, derecha);
         Ubicar(objetivoIzquierdo, arma.transform, lineaA ? izquierdoLocal : izquierdo.localPosition, lineaA ? izquierdoGiro : izquierdo.localRotation, derecha);
+    }
+
+    // US 395: dónde iría la mano derecha si la katana estuviera en la pose (la katana de muestra): la mano la agarra
+    // igual que quieta.
+    private void EnLaPose(GameObject arma, ref Vector3 lugar, ref Quaternion giro)
+    {
+        MovimientoDeKatana mov = arma.GetComponent<MovimientoDeKatana>();
+        Transform modelo = arma.transform.Find("Modelo");
+        if (modelo == null) return;
+        Vector3 basePos = mov != null && mov.Iniciado ? mov.BasePos : modelo.localPosition;
+        Quaternion baseGiro = mov != null && mov.Iniciado ? mov.BaseGiro : modelo.localRotation;
+        Quaternion aBase = Quaternion.Inverse(baseGiro);
+        Vector3 enLaKatana = aBase * (lugar - basePos);
+        Quaternion giroEnLaKatana = aBase * giro;
+        lugar = poseActual.localPosition + poseActual.localRotation * enLaKatana;
+        giro = poseActual.localRotation * giroEnLaKatana;
     }
 
     // Pone "objetivo" donde estaría el agarre (lugar y giro dentro del arma) con la cámara en "derecha".
@@ -303,6 +311,7 @@ public class BrazosEnCamara : MonoBehaviour
     // brazos se corren juntos y los objetivos del IK vuelven a la Línea A.
     private void SacarFoto(GameObject arma)
     {
+        if (poseActual != null) { SacarFotoDePose(arma); return; }
         var malla = new Mesh { name = "Brazos con " + arma.name };
         DedosDelArma dedos = arma.GetComponent<DedosDelArma>(); // US 244: los dedos abiertos o cerrados para esta arma
         if (dedos != null) dedos.Aplicar(animador);
@@ -346,41 +355,67 @@ public class BrazosEnCamara : MonoBehaviour
             vistaBrazo.lightProbeUsage = brazosCuerpo.lightProbeUsage;
             brazoDerecho[arma] = vistaBrazo;
 
-            // US 395: el antebrazo y la mano, aparte (hijos del brazo, en el mismo lugar), y dónde están el codo y la
-            // muñeca: así se pueden doblar (con la katana, la mano la sigue y el brazo no se sale de lugar).
-            Transform codo = animador != null && animador.isHuman ? animador.GetBoneTransform(HumanBodyBones.RightLowerArm) : null;
-            Transform muneca = animador != null && animador.isHuman ? animador.GetBoneTransform(HumanBodyBones.RightHand) : null;
-            Mesh antebrazo = codo != null && muneca != null ? Separar(derecha, verticeAntebrazo, " (antebrazo)") : null;
-            Mesh mano = antebrazo != null ? Separar(antebrazo, verticeMano, " (mano)") : null;
-            if (antebrazo != null)
+            // US 395: la katana tiene poses: una foto más del brazo derecho en cada una.
+            posesQueFaltan.Clear();
+            if (arma.GetComponent<MovimientoDeKatana>() != null)
+                foreach (Transform hijo in arma.transform)
+                    if (MovimientoDeKatana.EsPose(hijo.name)) posesQueFaltan.Enqueue(hijo);
+            if (posesQueFaltan.Count > 0)
             {
-                var partes = new List<MeshRenderer>();
-                foreach ((string nombre, Mesh pieza) in new[] { (NombreAntebrazo, antebrazo), (NombreMano, mano) })
-                {
-                    if (pieza == null) continue; // (sin hueso de la mano, la mano queda con el antebrazo)
-                    var parte = new GameObject(nombre);
-                    parte.layer = capa;
-                    parte.transform.SetParent(brazo.transform, false);
-                    parte.AddComponent<MeshFilter>().sharedMesh = pieza;
-                    MeshRenderer vista = parte.AddComponent<MeshRenderer>();
-                    vista.sharedMaterials = brazosCuerpo.sharedMaterials;
-                    vista.shadowCastingMode = ShadowCastingMode.Off;
-                    vista.lightProbeUsage = brazosCuerpo.lightProbeUsage;
-                    partes.Add(vista);
-                }
-                partesDelBrazo[arma] = partes;
-                foreach ((string nombre, Transform hueso) in new[] { (NombreCodo, codo), (NombreMuneca, muneca) })
-                {
-                    var marca = new GameObject(nombre);
-                    marca.transform.SetParent(brazo.transform, false);
-                    marca.transform.localPosition = brazosCuerpo.transform.InverseTransformPoint(hueso.position);
-                }
+                brazo.AddComponent<BrazoConPoses>().Iniciar(derecha);
+                fotoEnCamara = Matrix4x4.TRS(go.transform.localPosition, go.transform.localRotation, go.transform.localScale);
+                SiguientePose(arma);
+                return;
             }
         }
 
         VolverALineaA();
         if (animador != null) animador.cullingMode = cullingOriginal;
         preparando = null;
+    }
+
+    // US 395: prepara la foto de la siguiente pose de la katana (o termina).
+    private void SiguientePose(GameObject arma)
+    {
+        poseActual = posesQueFaltan.Count > 0 ? posesQueFaltan.Dequeue() : null;
+        if (poseActual == null)
+        {
+            arma.transform.localPosition = lugarOriginal[arma] + Corrimiento;
+            VolverALineaA();
+            if (animador != null) animador.cullingMode = cullingOriginal;
+            preparando = null;
+            return;
+        }
+        arma.transform.localPosition = lugarOriginal[arma];
+        LlevarIKDerecho(arma);
+        preparando = arma;
+        fotoEnCuadro = Time.frameCount + CuadrosParaElIK;
+    }
+
+    // US 395: el brazo derecho en la pose, pasado al espacio de la foto de la katana (el cuerpo pudo moverse un poco).
+    private void SacarFotoDePose(GameObject arma)
+    {
+        MeshRenderer vista = brazoDerecho.TryGetValue(arma, out MeshRenderer d) ? d : null;
+        BrazoConPoses poses = vista != null ? vista.GetComponent<BrazoConPoses>() : null;
+        if (poses != null)
+        {
+            var malla = new Mesh();
+            DedosDelArma dedos = arma.GetComponent<DedosDelArma>();
+            if (dedos != null) dedos.Aplicar(animador);
+            brazosCuerpo.BakeMesh(malla, true);
+            Matrix4x4 camaraDerecha = CamaraDerecha();
+            Vector3 escala = camara.lossyScale, cuerpo = brazosCuerpo.transform.lossyScale;
+            Matrix4x4 ahora = Matrix4x4.TRS(camaraDerecha.inverse.MultiplyPoint3x4(brazosCuerpo.transform.position) + Corrimiento,
+                                            Quaternion.Inverse(camaraDerecha.rotation) * brazosCuerpo.transform.rotation,
+                                            new Vector3(cuerpo.x / escala.x, cuerpo.y / escala.y, cuerpo.z / escala.z));
+            Matrix4x4 aLaFoto = fotoEnCamara.inverse * ahora;
+            Vector3[] vertices = malla.vertices, normales = malla.normals;
+            for (int i = 0; i < vertices.Length; i++) vertices[i] = aLaFoto.MultiplyPoint3x4(vertices[i]);
+            for (int i = 0; i < normales.Length; i++) normales[i] = aLaFoto.MultiplyVector(normales[i]).normalized;
+            poses.AgregarPose(poseActual.name, vertices, normales);
+            Destroy(malla);
+        }
+        SiguientePose(arma);
     }
 
     // Los objetivos del IK (los agarres de la Línea A) van a los agarres de otra arma.
@@ -495,7 +530,8 @@ public class BrazosEnCamara : MonoBehaviour
             if (foto.Value != null) Destroy(foto.Value.gameObject);
         fotos.Clear();
         brazoDerecho.Clear();
-        partesDelBrazo.Clear();
+        posesQueFaltan.Clear();
+        poseActual = null;
         armaEnFoto.Clear();
         foreach (KeyValuePair<GameObject, Vector3> lugar in lugarOriginal)
             if (lugar.Key != null) lugar.Key.transform.localPosition = lugar.Value;
