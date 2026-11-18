@@ -450,6 +450,13 @@ public class EspejoTerceraPersona : MonoBehaviour
             leerGiro = a => a.cuchilloGiroCorte, escribirGiro = (a, v) => a.cuchilloGiroCorte = v },
     };
 
+    // US 395: la manija de la mano izquierda del cuchillo, con la katana, es la de dónde agarra el mango.
+    private bool IzquierdaEnLaKatana(PuntoDeGranada p, out KatanaData katana)
+    {
+        katana = p.cuchillo && !p.soloProbando && p.nombre == "Cuchillo: Mano izquierda" && soporte != null ? Katana : null;
+        return katana != null;
+    }
+
     private void PonerManijasDeLasManos(bool granada, bool conCuchillo)
     {
         bool hayMarco = lanzamiento != null && lanzamiento.Marco(out Vector3 origen, out Quaternion giro);
@@ -465,6 +472,12 @@ public class EspejoTerceraPersona : MonoBehaviour
             }
             if (p.manija == null) p.manija = Manija(p.nombre, p.color, 0.03f);
             lanzamiento.Marco(out origen, out giro);
+            if (IzquierdaEnLaKatana(p, out KatanaData katana)) // US 395: con la katana, la izquierda va en el mango
+            {
+                p.manija.transform.SetPositionAndRotation(p.ultimo = soporte.TransformPoint(katana.manoIzquierdaEnElMango),
+                    p.ultimoGiro = giro * Quaternion.Euler(p.leerGiro(a)) * Quaternion.Euler(katana.giroManoIzquierda));
+                continue;
+            }
             p.manija.transform.SetPositionAndRotation(p.ultimo = origen + giro * p.leer(a), p.ultimoGiro = giro * Quaternion.Euler(p.leerGiro(a)));
         }
     }
@@ -478,6 +491,21 @@ public class EspejoTerceraPersona : MonoBehaviour
         {
             if (p.manija == null) continue;
             Transform t = p.manija.transform;
+            if (IzquierdaEnLaKatana(p, out KatanaData katana)) // US 395: el ajuste de la mano izquierda va en la katana
+            {
+                bool movida = false;
+                if ((t.position - p.ultimo).sqrMagnitude > 1e-8f) { katana.manoIzquierdaEnElMango = soporte.InverseTransformPoint(t.position); movida = true; }
+                if (Quaternion.Angle(t.rotation, p.ultimoGiro) > 0.01f)
+                {
+                    Vector3 e = (Quaternion.Inverse(giro * Quaternion.Euler(p.leerGiro(a))) * t.rotation).eulerAngles;
+                    katana.giroManoIzquierda = new Vector3(Mathf.DeltaAngle(0f, e.x), Mathf.DeltaAngle(0f, e.y), Mathf.DeltaAngle(0f, e.z));
+                    movida = true;
+                }
+#if UNITY_EDITOR
+                if (movida) UnityEditor.EditorUtility.SetDirty(katana); // así queda guardado en la katana
+#endif
+                continue;
+            }
             if ((t.position - p.ultimo).sqrMagnitude > 1e-8f)
             {
                 p.escribir(a, Quaternion.Inverse(giro) * (t.position - origen));
