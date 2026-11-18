@@ -129,6 +129,12 @@ public static class AjusteDeManos
         cambio |= Poner(derecho, a.derecho, a.derechoGiro);
         cambio |= Poner(izquierdo, a.izquierdo, a.izquierdoGiro);
         cambio |= PonerDedos(arma, a);
+        if (a.poses != null) // US 395: las poses de la katana
+            foreach (BrazosEnCamara.Pose pose in a.poses)
+            {
+                Transform t = arma.Find(pose.nombre);
+                if (t != null) cambio |= Poner(t, pose.lugar, pose.giro);
+            }
         return cambio;
     }
 

@@ -474,6 +474,16 @@ public class BrazosEnCamara : MonoBehaviour
         public Quaternion giro, derechoGiro, izquierdoGiro;
         // US 244: los dedos (DedosDelArma, en JSON), si el arma tiene.
         public string dedos;
+        // US 395: las poses de la katana ("Pose Tajo"...: MovimientoDeKatana), si el arma tiene.
+        public List<Pose> poses = new List<Pose>();
+    }
+
+    [System.Serializable]
+    public class Pose
+    {
+        public string nombre;
+        public Vector3 lugar;
+        public Quaternion giro;
     }
 
     [System.Serializable]
@@ -510,6 +520,9 @@ public class BrazosEnCamara : MonoBehaviour
             });
             DedosDelArma dedos = arma.GetComponent<DedosDelArma>();
             if (dedos != null) ajuste.armas[ajuste.armas.Count - 1].dedos = JsonUtility.ToJson(dedos);
+            foreach (Transform hijo in arma)
+                if (MovimientoDeKatana.EsPose(hijo.name))
+                    ajuste.armas[ajuste.armas.Count - 1].poses.Add(new Pose { nombre = hijo.name, lugar = hijo.localPosition, giro = hijo.localRotation });
         }
         string json = JsonUtility.ToJson(ajuste, true);
         if (json == ultimoGuardado) return;
