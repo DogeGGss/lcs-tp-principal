@@ -50,8 +50,11 @@ public class BrazosEnCamara : MonoBehaviour
     private readonly Dictionary<GameObject, MeshRenderer> brazoDerecho = new Dictionary<GameObject, MeshRenderer>(); // hijo de la foto
     private readonly Dictionary<GameObject, Vector3> armaEnFoto = new Dictionary<GameObject, Vector3>(); // dónde estaba el arma al sacar su foto
     private bool[] verticeDerecho; // qué vértices de los brazos son del brazo derecho
-    private bool[] verticeAntebrazo; // y cuáles del antebrazo y la mano derechos (US 395: el codo se dobla con la katana)
-    public const string NombreAntebrazo = "Antebrazo derecho", NombreCodo = "Codo derecho";
+    // US 395: el brazo derecho de la foto, en tres partes (el brazo, el antebrazo y la mano, hijas del brazo), para que
+    // con la katana se doblen el codo y la muñeca.
+    private bool[] verticeAntebrazo, verticeMano;
+    public const string NombreAntebrazo = "Antebrazo derecho", NombreMano = "Mano derecha", NombreCodo = "Codo derecho", NombreMuneca = "Muñeca derecha";
+    private readonly Dictionary<GameObject, List<MeshRenderer>> partesDelBrazo = new Dictionary<GameObject, List<MeshRenderer>>();
     private readonly Dictionary<GameObject, Vector3> lugarOriginal = new Dictionary<GameObject, Vector3>();
     private GameObject preparando;
     private int fotoEnCuadro, listoEnCuadro;
@@ -124,6 +127,8 @@ public class BrazosEnCamara : MonoBehaviour
             bool ver = foto.Key == enMano && !MiraTelescopica.Puesta;
             if (foto.Value != null) foto.Value.enabled = ver;
             if (brazoDerecho.TryGetValue(foto.Key, out MeshRenderer derecho) && derecho != null) derecho.enabled = ver;
+            if (partesDelBrazo.TryGetValue(foto.Key, out List<MeshRenderer> partes))
+                foreach (MeshRenderer parte in partes) if (parte != null) parte.enabled = ver;
         }
 
         // Los brazos del cuerpo no se ven nunca sueltos: mientras se saca una foto siguen prendidos para el IK, pero sin
@@ -188,6 +193,7 @@ public class BrazosEnCamara : MonoBehaviour
         if (animador != null) cullingOriginal = animador.cullingMode;
         verticeDerecho = VerticesDelBrazoDerecho();
         verticeAntebrazo = VerticesDe(HumanBodyBones.RightLowerArm);
+        verticeMano = VerticesDe(HumanBodyBones.RightHand);
         listoEnCuadro = Time.frameCount + CuadrosAlEmpezar;
         faltanFotos = true;
         return true;
@@ -340,23 +346,35 @@ public class BrazosEnCamara : MonoBehaviour
             vistaBrazo.lightProbeUsage = brazosCuerpo.lightProbeUsage;
             brazoDerecho[arma] = vistaBrazo;
 
-            // US 395: el antebrazo y la mano, aparte (hijos del brazo, en el mismo lugar), y dónde está el codo: así
-            // el codo se puede doblar (la katana gira con la mano y el brazo no se sale de lugar).
+            // US 395: el antebrazo y la mano, aparte (hijos del brazo, en el mismo lugar), y dónde están el codo y la
+            // muñeca: así se pueden doblar (con la katana, la mano la sigue y el brazo no se sale de lugar).
             Transform codo = animador != null && animador.isHuman ? animador.GetBoneTransform(HumanBodyBones.RightLowerArm) : null;
-            Mesh antebrazo = codo != null ? Separar(derecha, verticeAntebrazo, " (antebrazo)") : null;
+            Transform muneca = animador != null && animador.isHuman ? animador.GetBoneTransform(HumanBodyBones.RightHand) : null;
+            Mesh antebrazo = codo != null && muneca != null ? Separar(derecha, verticeAntebrazo, " (antebrazo)") : null;
+            Mesh mano = antebrazo != null ? Separar(antebrazo, verticeMano, " (mano)") : null;
             if (antebrazo != null)
             {
-                var ante = new GameObject(NombreAntebrazo);
-                ante.layer = capa;
-                ante.transform.SetParent(brazo.transform, false);
-                ante.AddComponent<MeshFilter>().sharedMesh = antebrazo;
-                MeshRenderer vistaAnte = ante.AddComponent<MeshRenderer>();
-                vistaAnte.sharedMaterials = brazosCuerpo.sharedMaterials;
-                vistaAnte.shadowCastingMode = ShadowCastingMode.Off;
-                vistaAnte.lightProbeUsage = brazosCuerpo.lightProbeUsage;
-                var marca = new GameObject(NombreCodo);
-                marca.transform.SetParent(brazo.transform, false);
-                marca.transform.localPosition = brazosCuerpo.transform.InverseTransformPoint(codo.position);
+                var partes = new List<MeshRenderer>();
+                foreach ((string nombre, Mesh pieza) in new[] { (NombreAntebrazo, antebrazo), (NombreMano, mano) })
+                {
+                    if (pieza == null) continue; // (sin hueso de la mano, la mano queda con el antebrazo)
+                    var parte = new GameObject(nombre);
+                    parte.layer = capa;
+                    parte.transform.SetParent(brazo.transform, false);
+                    parte.AddComponent<MeshFilter>().sharedMesh = pieza;
+                    MeshRenderer vista = parte.AddComponent<MeshRenderer>();
+                    vista.sharedMaterials = brazosCuerpo.sharedMaterials;
+                    vista.shadowCastingMode = ShadowCastingMode.Off;
+                    vista.lightProbeUsage = brazosCuerpo.lightProbeUsage;
+                    partes.Add(vista);
+                }
+                partesDelBrazo[arma] = partes;
+                foreach ((string nombre, Transform hueso) in new[] { (NombreCodo, codo), (NombreMuneca, muneca) })
+                {
+                    var marca = new GameObject(nombre);
+                    marca.transform.SetParent(brazo.transform, false);
+                    marca.transform.localPosition = brazosCuerpo.transform.InverseTransformPoint(hueso.position);
+                }
             }
         }
 
@@ -477,6 +495,7 @@ public class BrazosEnCamara : MonoBehaviour
             if (foto.Value != null) Destroy(foto.Value.gameObject);
         fotos.Clear();
         brazoDerecho.Clear();
+        partesDelBrazo.Clear();
         armaEnFoto.Clear();
         foreach (KeyValuePair<GameObject, Vector3> lugar in lugarOriginal)
             if (lugar.Key != null) lugar.Key.transform.localPosition = lugar.Value;
