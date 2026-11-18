@@ -54,6 +54,10 @@ public class KatanaData : MeleeWeaponData
     public Vector3 lugarEnLaMano;
     [Tooltip("Giro de la katana respecto de la mano derecha (grados).")]
     public Vector3 giroEnLaMano;
+    [Tooltip("Dónde agarra la mano izquierda el mango, en el espacio de la katana (metros: z hacia la punta; negativo, más abajo que la derecha).")]
+    public Vector3 manoIzquierdaEnElMango = new Vector3(0f, 0f, -0.09f);
+    [Tooltip("Giro de la mano izquierda en el mango (grados, respecto de hacia dónde mira el personaje).")]
+    public Vector3 giroManoIzquierda;
     [Tooltip("Color de la energía (la estela, los destellos y el brillo del filo).")]
     [ColorUsage(false, true)] public Color energia = new Color(0.45f, 0.85f, 1.6f);
 

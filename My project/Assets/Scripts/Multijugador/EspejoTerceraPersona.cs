@@ -325,6 +325,8 @@ public class EspejoTerceraPersona : MonoBehaviour
         if (cuchillo != null)
         {
             cuchillo.ConCuchillo = conCuchillo;
+            cuchillo.Katana = conCuchillo ? Katana : null; // US 395: la mano izquierda, en el mango
+            cuchillo.KatanaEnLaMano = cuchillo.Katana != null ? soporte : null;
             cuchillo.Probar = probarElAtaque && conCuchillo ? momentoDelAtaque : -1f;
             cuchillo.Munecas();
         }

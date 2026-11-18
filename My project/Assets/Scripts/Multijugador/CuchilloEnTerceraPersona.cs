@@ -23,6 +23,11 @@ public class CuchilloEnTerceraPersona : ManosPorCodigo
     /// <summary>Tiene el cuchillo en la mano (lo pone el que maneja la copia).</summary>
     public bool ConCuchillo { get; set; }
 
+    /// <summary>US 395: la katana (en el lugar del cuchillo) y dónde está en la mano (el mango en el origen): la mano
+    /// izquierda la agarra del mango, más abajo que la derecha. Los pone el que maneja la copia.</summary>
+    public KatanaData Katana { get; set; }
+    public Transform KatanaEnLaMano { get; set; }
+
     public static CuchilloEnTerceraPersona Crear(GameObject personaje, ArmaEnTerceraPersona arma) =>
         Crear<CuchilloEnTerceraPersona>(personaje, arma);
 
@@ -42,7 +47,7 @@ public class CuchilloEnTerceraPersona : ManosPorCodigo
         izq = a.cuchilloIzquierda;
         dg = Quaternion.Euler(a.cuchilloGiroDerecha);
         ig = Quaternion.Euler(a.cuchilloGiroIzquierda);
-        if (!Atacando) return;
+        if (!Atacando) { ManoIzquierdaEnLaKatana(ref izq, ref ig); return; }
         Quaternion atrasG = Quaternion.Euler(a.cuchilloGiroAtras), corteG = Quaternion.Euler(a.cuchilloGiroCorte);
         float izqMueve;
         if (t < Atras)
@@ -70,5 +75,15 @@ public class CuchilloEnTerceraPersona : ManosPorCodigo
         }
         // La izquierda se recoge un poco hacia el pecho mientras corta.
         izq = Vector3.Lerp(a.cuchilloIzquierda, a.cuchilloIzquierda + new Vector3(0.05f, 0.04f, -0.08f), izqMueve * a.granadaIzquierdaMueve);
+        ManoIzquierdaEnLaKatana(ref izq, ref ig);
+    }
+
+    // US 395: con la katana, la izquierda va al mango (donde estaba la katana el cuadro anterior: se pone después).
+    private void ManoIzquierdaEnLaKatana(ref Vector3 izq, ref Quaternion ig)
+    {
+        if (Katana == null || KatanaEnLaMano == null || !KatanaEnLaMano.gameObject.activeInHierarchy || !Marco(out Vector3 origen, out Quaternion giro)) return;
+        Vector3 mango = KatanaEnLaMano.TransformPoint(Katana.manoIzquierdaEnElMango);
+        izq = Quaternion.Inverse(giro) * (mango - origen);
+        ig = ig * Quaternion.Euler(Katana.giroManoIzquierda);
     }
 }

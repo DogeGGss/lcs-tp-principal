@@ -1415,6 +1415,11 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
         if (lanzamiento != null) lanzamiento.ConGranada = !muerto && armaVista >= PrimeraGranada && armaVista != ArmaDesconocida;
         // US 257, CA1: con el cuchillo en la mano, la pose de tenerlo (no la de rifle), con el cuchillo en la mano derecha.
         if (cuchilloVisto != null) cuchilloVisto.ConCuchillo = !muerto && armaVista == ArmaCuchillo;
+        if (cuchilloVisto != null) // US 395: con la katana, la mano izquierda la agarra del mango
+        {
+            cuchilloVisto.Katana = cuchillo != null ? cuchillo.CurrentWeapon as KatanaData : null;
+            cuchilloVisto.KatanaEnLaMano = cuchilloVisto.Katana != null ? soporteMano : null;
+        }
         if (cuchilloVisto != null && manoDerecha != null && armaVista == ArmaCuchillo &&
             (terceraPersona == null || !terceraPersona.Manejando))
         {
