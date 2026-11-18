@@ -67,13 +67,9 @@ public abstract class ManosPorCodigo : MonoBehaviour
 
         AgarresTerceraPersona a = AgarresTerceraPersona.Actual;
         Pose(out Vector3 der, out Vector3 izq, out giroDer, out giroIzq);
-        Vector3 derecha = origen + giro * der, izquierda = origen + giro * izq;
-        if (!IzquierdaEnElArma) // (agarrando algo con las dos manos, van donde está eso)
-        {
-            derecha = FueraDelCuerpo(derecha, origen, a);
-            izquierda = FueraDelCuerpo(izquierda, origen, a);
-        }
-        arma.ManosDeGranada(pesoVisto, derecha, izquierda,
+        Vector3 izquierda = origen + giro * izq;
+        if (!IzquierdaEnElArma) izquierda = FueraDelCuerpo(izquierda, origen, a); // (agarrando algo, va donde está eso)
+        arma.ManosDeGranada(pesoVisto, FueraDelCuerpo(origen + giro * der, origen, a), izquierda,
             Codo(HumanBodyBones.RightUpperArm, 1f, a), Codo(HumanBodyBones.LeftUpperArm, -1f, a));
     }
 
