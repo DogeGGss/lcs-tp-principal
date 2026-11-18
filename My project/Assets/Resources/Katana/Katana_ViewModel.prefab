@@ -48,12 +48,30 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bec4891da9f1458ea14f3b6e943201ce, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Riftwalker::MovimientoDeKatana
-  tajoArriba: {x: 0.45, y: 0.85, z: -0.25}
-  tajoMedio: {x: -0.2, y: 0.35, z: 0.9}
-  tajoAbajo: {x: -0.75, y: -0.35, z: 0.55}
-  tajoFuerteAbajo: {x: -0.6, y: -0.65, z: 0.45}
-  estocada: {x: 0, y: 0.08, z: 1}
-  guardia: {x: -0.95, y: 0.15, z: 0.25}
+  tajoArriba:
+    brazo: {x: 0.06, y: 0.08, z: -0.02}
+    muneca: {x: -20, y: 0, z: -25}
+    corrimiento: {x: 0, y: 0, z: 0}
+  tajoMedio:
+    brazo: {x: -0.04, y: 0, z: 0.04}
+    muneca: {x: 35, y: 0, z: 20}
+    corrimiento: {x: 0, y: 0, z: 0}
+  tajoAbajo:
+    brazo: {x: -0.16, y: -0.1, z: 0.06}
+    muneca: {x: 60, y: -20, z: 45}
+    corrimiento: {x: 0, y: 0, z: 0}
+  tajoFuerteAbajo:
+    brazo: {x: -0.2, y: -0.14, z: 0.08}
+    muneca: {x: 75, y: -25, z: 55}
+    corrimiento: {x: 0, y: 0, z: 0}
+  estocada:
+    brazo: {x: -0.03, y: 0.03, z: 0.2}
+    muneca: {x: 50, y: 0, z: 0}
+    corrimiento: {x: 0, y: 0, z: 0}
+  guardia:
+    brazo: {x: -0.06, y: 0.08, z: 0.02}
+    muneca: {x: 10, y: 0, z: 80}
+    corrimiento: {x: 0, y: 0, z: 0}
 --- !u!114 &8951167608691410142
 MonoBehaviour:
   m_ObjectHideFlags: 0

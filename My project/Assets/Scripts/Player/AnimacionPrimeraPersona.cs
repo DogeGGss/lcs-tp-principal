@@ -148,24 +148,6 @@ public class AnimacionPrimeraPersona : MonoBehaviour
     [Tooltip("Cuánto gira la punta hacia cada lado (grados).")]
     public float corteGiro = 40f;
 
-    [Header("Katana (US 395): el brazo y la katana juntos, poco (el giro grande es de la muñeca: MovimientoDeKatana)")]
-    [Tooltip("Tajo: dónde arranca la hoja, levantada a la derecha (metros, en la cámara).")]
-    public Vector3 katanaArribaPos = new Vector3(0.06f, 0.08f, -0.02f);
-    [Tooltip("Tajo: giro al levantarla (grados).")]
-    public Vector3 katanaArribaGiro = Vector3.zero;
-    [Tooltip("Tajo: dónde termina, cruzada abajo a la izquierda (metros).")]
-    public Vector3 katanaAbajoPos = new Vector3(-0.16f, -0.10f, 0.06f);
-    [Tooltip("Tajo: giro al terminar (grados).")]
-    public Vector3 katanaAbajoGiro = Vector3.zero;
-    [Tooltip("Cuánto más amplio es el tajo fuerte (CA4).")]
-    public float katanaFuerte = 1.35f;
-    [Tooltip("Estocada (CA5): cuánto va la hoja hacia adelante (metros) y cuánto baja la punta para apuntar adelante (grados).")]
-    public Vector3 katanaEstocadaPos = new Vector3(-0.03f, 0.03f, 0.2f);
-    public Vector3 katanaEstocadaGiro = Vector3.zero;
-    [Tooltip("Guardia (CA6): la hoja cruzada delante, casi horizontal (metros y grados).")]
-    public Vector3 katanaGuardiaPos = new Vector3(-0.06f, 0.08f, 0.02f);
-    public Vector3 katanaGuardiaGiro = Vector3.zero;
-
     [Header("Granadas (US 258): como una piedra")]
     [Tooltip("Cuánto tarda la mano en traer la granada desde abajo (s).")]
     public float granadaSacar = 0.35f;
@@ -376,46 +358,16 @@ public class AnimacionPrimeraPersona : MonoBehaviour
         girar = Quaternion.Euler(giro);
     }
 
-    // US 395: la katana. El brazo derecho y la katana se corren juntos (arriba a la derecha y abajo a la izquierda en el
-    // tajo, adelante en la estocada, arriba al centro en la guardia) y giran poco: si giraran mucho, el brazo de la foto
-    // se sale de lugar. El giro grande lo hace solo la katana, alrededor de la mano (MovimientoDeKatana).
+    // US 395: la katana. El brazo derecho y la katana se corren juntos lo que diga la pose de este momento
+    // (MovimientoDeKatana, que también gira la katana alrededor de la mano); el brazo no gira: si girara mucho, el brazo
+    // de la foto se saldría de lugar.
+    private MovimientoDeKatana movimientoKatana;
     private void Katana(out Vector3 mover, out Quaternion girar)
     {
-        Vector3 pos = Vector3.zero, giro = Vector3.zero;
-        float avance = ataque.AvanceDelCorte;
-        if (avance >= 0f)
-        {
-            float t = avance * MeleeAttack.Total, k = ataque.TajoFuerte ? katanaFuerte : 1f;
-            Vector3 aPos = katanaArribaPos * k, aGiro = katanaArribaGiro * k, bPos = katanaAbajoPos * k, bGiro = katanaAbajoGiro * k;
-            if (t < MeleeAttack.Preparacion)
-            {
-                float f = Mathf.SmoothStep(0f, 1f, t / MeleeAttack.Preparacion);
-                pos = aPos * f; giro = aGiro * f;
-            }
-            else if (t < MeleeAttack.Preparacion + MeleeAttack.Corte)
-            {
-                float f = (t - MeleeAttack.Preparacion) / MeleeAttack.Corte;
-                f = 1f - (1f - f) * (1f - f); // rápido al principio
-                pos = Vector3.Lerp(aPos, bPos, f); giro = Vector3.Lerp(aGiro, bGiro, f);
-            }
-            else
-            {
-                float f = Mathf.SmoothStep(0f, 1f, (t - MeleeAttack.Preparacion - MeleeAttack.Corte) / MeleeAttack.Vuelta);
-                pos = bPos * (1f - f); giro = bGiro * (1f - f);
-            }
-        }
-        float estocada = ataque.AvanceDeLaEstocada;
-        if (estocada >= 0f)
-        {
-            // Va enseguida hacia adelante, se queda mientras avanza y vuelve al final.
-            float f = Mathf.Min(1f, estocada / 0.25f) * (estocada > 0.8f ? (1f - estocada) / 0.2f : 1f);
-            f = Mathf.SmoothStep(0f, 1f, f);
-            pos += katanaEstocadaPos * f; giro += katanaEstocadaGiro * f;
-        }
-        float guardia = Mathf.SmoothStep(0f, 1f, ataque.Guardia);
-        pos += katanaGuardiaPos * guardia; giro += katanaGuardiaGiro * guardia;
-        mover = pos;
-        girar = Quaternion.Euler(giro);
+        girar = Quaternion.identity;
+        GameObject vista = switcher != null && switcher.meleeScript != null ? switcher.meleeScript.CurrentViewModel : null;
+        if (vista != null && (movimientoKatana == null || movimientoKatana.gameObject != vista)) movimientoKatana = vista.GetComponent<MovimientoDeKatana>();
+        mover = movimientoKatana != null && movimientoKatana.isActiveAndEnabled ? movimientoKatana.Brazo : Vector3.zero;
     }
 
     private IPiezasDelArma Piezas(GameObject arma)
