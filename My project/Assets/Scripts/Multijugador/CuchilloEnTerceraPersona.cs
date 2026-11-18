@@ -28,6 +28,8 @@ public class CuchilloEnTerceraPersona : ManosPorCodigo
     public KatanaData Katana { get; set; }
     public Transform KatanaEnLaMano { get; set; }
 
+    protected override bool IzquierdaEnElArma => Katana != null && KatanaEnLaMano != null;
+
     public static CuchilloEnTerceraPersona Crear(GameObject personaje, ArmaEnTerceraPersona arma) =>
         Crear<CuchilloEnTerceraPersona>(personaje, arma);
 
