@@ -1356,23 +1356,15 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
         armaVista = 255;
     }
 
-    // US 395, CA9: la katana en la mano, a su tamaño (KatanaData.escalaEnTerceraPersona) y agarrada del mango (el
-    // punto "Agarre" de su modelo de primera persona), no del centro.
+    // US 395, CA9: la katana en la mano (KatanaData.Crear), agarrada del mango, a su tamaño.
     private void ArmarKatanaEnMano(GameObject arma, KatanaData katana)
     {
         if (enLaMano.TryGetValue(ArmaCuchillo, out ModeloEnMano viejo) && viejo.go != null) Destroy(viejo.go);
-        GameObject modelo = ModeloReal.Crear(arma, katana.escalaEnTerceraPersona, out Bounds limites, arma.name + " (en la mano)", true);
+        GameObject modelo = katana.Crear(arma.name + " (en la mano)");
         modelo.transform.SetParent(SoporteMano(), false);
-        Vector3 agarre = Vector3.zero;
-        Transform punto = BuscarHijo(arma.transform, "Agarre"), piezas = modelo.transform.Find("Piezas");
-        if (punto != null && piezas != null)
-        {
-            Transform marco = arma.transform.parent != null ? arma.transform.parent : arma.transform;
-            agarre = piezas.localPosition + marco.InverseTransformPoint(punto.position) * piezas.localScale.x;
-        }
-        modelo.transform.localPosition = -agarre;
+        modelo.SetActive(true); // (arma el filo)
         modelo.SetActive(false);
-        enLaMano[ArmaCuchillo] = new ModeloEnMano { go = modelo, limites = limites, lugar = -agarre };
+        enLaMano[ArmaCuchillo] = new ModeloEnMano { go = modelo, limites = new Bounds(Vector3.zero, Vector3.one), lugar = Vector3.zero };
         armaVista = 255;
     }
 
@@ -1428,10 +1420,13 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
         {
             AgarresTerceraPersona agarres = AgarresTerceraPersona.Actual;
             cuchilloVisto.Munecas(); // la muñeca ya girada: el cuchillo gira con ella
-            agarres.PoseDeCuchillo(manoDerecha, out Vector3 lugarCuchillo, out Quaternion giroCuchillo);
+            KatanaData katana = cuchillo != null ? cuchillo.CurrentWeapon as KatanaData : null; // US 395: la katana, con su ajuste
+            Vector3 lugarCuchillo;
+            Quaternion giroCuchillo;
+            if (katana != null) katana.PoseEnLaMano(manoDerecha, out lugarCuchillo, out giroCuchillo);
+            else agarres.PoseDeCuchillo(manoDerecha, out lugarCuchillo, out giroCuchillo);
             soporteMano.SetPositionAndRotation(lugarCuchillo, giroCuchillo);
-            bool conKatana = cuchillo != null && cuchillo.CurrentWeapon is KatanaData; // US 395: a su tamaño
-            soporteMano.localScale = Vector3.one * (conKatana ? 1f : agarres.cuchilloEscala);
+            soporteMano.localScale = Vector3.one * (katana != null ? 1f : agarres.cuchilloEscala);
             if (enLaMano.TryGetValue(ArmaCuchillo, out ModeloEnMano hojaEnMano) && hojaEnMano.go != null)
                 hojaEnMano.go.transform.localPosition = hojaEnMano.lugar;
             return;

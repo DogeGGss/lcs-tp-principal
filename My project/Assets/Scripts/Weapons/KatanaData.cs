@@ -46,6 +46,14 @@ public class KatanaData : MeleeWeaponData
     public Sprite icono;
     [Tooltip("Tamaño del modelo en la mano de los demás (1 = el del modelo).")]
     public float escalaEnTerceraPersona = 1.1f;
+
+    [Header("En la mano de los demás (tercera persona)")]
+    [Tooltip("Ya se ajustó con el muñeco espejo (Riftwalker > Muñeco espejo, manija \"Katana\"). Sin ajustar, va como el cuchillo.")]
+    public bool ajustadaEnLaMano;
+    [Tooltip("Dónde va el mango respecto de la mano derecha (metros, en el espacio del hueso de la mano).")]
+    public Vector3 lugarEnLaMano;
+    [Tooltip("Giro de la katana respecto de la mano derecha (grados).")]
+    public Vector3 giroEnLaMano;
     [Tooltip("Color de la energía (la estela, los destellos y el brillo del filo).")]
     [ColorUsage(false, true)] public Color energia = new Color(0.45f, 0.85f, 1.6f);
 
@@ -56,6 +64,58 @@ public class KatanaData : MeleeWeaponData
         return cargada;
     }
     private static KatanaData cargada;
+
+    /// <summary>CA9: dónde va la katana (su mango) con la mano derecha ahí. Sin ajustar, en el lugar del cuchillo y
+    /// apuntando como él.</summary>
+    public void PoseEnLaMano(Transform mano, out Vector3 lugar, out Quaternion giro)
+    {
+        if (ajustadaEnLaMano)
+        {
+            lugar = mano.position + mano.rotation * lugarEnLaMano;
+            giro = mano.rotation * Quaternion.Euler(giroEnLaMano);
+            return;
+        }
+        AgarresTerceraPersona.Actual.PoseDeCuchillo(mano, out lugar, out giro);
+        giro *= Quaternion.Euler(-45f, -5f, -6f); // como el cuchillo en su modelo de primera persona
+    }
+
+    /// <summary>Pasa al ajuste dónde quedó la manija de la katana (muñeco espejo).</summary>
+    public void DesdeManija(Transform mano, Transform manija)
+    {
+        Quaternion inversa = Quaternion.Inverse(mano.rotation);
+        lugarEnLaMano = inversa * (manija.position - mano.position);
+        Vector3 e = (inversa * manija.rotation).eulerAngles;
+        giroEnLaMano = new Vector3(Mathf.DeltaAngle(0f, e.x), Mathf.DeltaAngle(0f, e.y), Mathf.DeltaAngle(0f, e.z));
+        escalaEnTerceraPersona = Mathf.Clamp(manija.localScale.x, 0.5f, 2f);
+        ajustadaEnLaMano = true;
+#if UNITY_EDITOR
+        UnityEditor.EditorUtility.SetDirty(this);
+#endif
+    }
+
+    /// <summary>CA9: la katana para la mano de los demás (y el muñeco espejo): su malla y el filo de energía, en su
+    /// propio espacio (la hoja hacia +z), con el mango en el origen y a su tamaño (escalaEnTerceraPersona).</summary>
+    public GameObject Crear(string nombre)
+    {
+        Transform modelo = viewModelPrefab != null ? viewModelPrefab.transform.Find("Modelo") : null;
+        MeshFilter filtro = modelo != null ? modelo.GetComponent<MeshFilter>() : null;
+        MeshRenderer vista = modelo != null ? modelo.GetComponent<MeshRenderer>() : null;
+        var raiz = new GameObject(nombre);
+        raiz.SetActive(false); // (el filo se arma al prenderla, con su ajuste)
+        if (filtro == null || vista == null) return raiz;
+        var hoja = new GameObject("Modelo");
+        hoja.transform.SetParent(raiz.transform, false);
+        hoja.AddComponent<MeshFilter>().sharedMesh = filtro.sharedMesh;
+        MeshRenderer r = hoja.AddComponent<MeshRenderer>();
+        r.sharedMaterials = vista.sharedMaterials;
+        Transform agarre = modelo.Find("Agarre");
+        float e = escalaEnTerceraPersona > 0f ? escalaEnTerceraPersona : 1f;
+        hoja.transform.localScale = Vector3.one * e;
+        hoja.transform.localPosition = -(agarre != null ? agarre.localPosition : Vector3.zero) * e;
+        FiloDeEnergia filo = viewModelPrefab.GetComponent<FiloDeEnergia>();
+        if (filo != null) JsonUtility.FromJsonOverwrite(JsonUtility.ToJson(filo), raiz.AddComponent<FiloDeEnergia>());
+        return raiz;
+    }
 
     /// <summary>CA4: si el golpe número "golpe" de una seguidilla (1, 2, 3...) es el tajo fuerte.</summary>
     public static bool EsTajoFuerte(int golpe, int golpesDelCombo) => golpesDelCombo > 1 && golpe > 0 && golpe % golpesDelCombo == 0;

@@ -339,10 +339,12 @@ public class EspejoTerceraPersona : MonoBehaviour
             AgarresTerceraPersona a = AgarresTerceraPersona.Actual;
             Vector3 lugar;
             Quaternion giro;
-            if (conCuchillo) a.PoseDeCuchillo(mano, out lugar, out giro);
+            KatanaData katana = conCuchillo ? Katana : null; // US 395: la katana, con su ajuste
+            if (katana != null) katana.PoseEnLaMano(mano, out lugar, out giro);
+            else if (conCuchillo) a.PoseDeCuchillo(mano, out lugar, out giro);
             else a.PoseDeGranada(mano, out lugar, out giro);
             soporte.SetPositionAndRotation(lugar, giro);
-            soporte.localScale = Vector3.one * (conCuchillo ? a.cuchilloEscala : a.granadaEscala);
+            soporte.localScale = Vector3.one * (katana != null ? 1f : conCuchillo ? a.cuchilloEscala : a.granadaEscala);
             modeloEnMano.transform.localPosition = Vector3.zero;
             return;
         }
@@ -350,6 +352,12 @@ public class EspejoTerceraPersona : MonoBehaviour
         if (mano != null) soporte.position = mano.position;
         soporte.rotation = ojos.rotation;
     }
+
+    // US 395: la katana, si es lo que tiene en el lugar del cuchillo (y ese es el modelo de primera persona).
+    private KatanaData KatanaDelEspejo(GameObject primeraPersona) =>
+        switcher != null && switcher.meleeScript != null && primeraPersona == switcher.meleeScript.CurrentViewModel
+            ? switcher.meleeScript.CurrentWeapon as KatanaData : null;
+    private KatanaData Katana => switcher != null && switcher.meleeScript != null ? switcher.meleeScript.CurrentWeapon as KatanaData : null;
 
     // Tiene el cuchillo en la mano (US 257).
     private bool ConCuchillo => switcher != null && switcher.meleeScript != null && switcher.meleeScript.CurrentViewModel != null &&
@@ -380,17 +388,19 @@ public class EspejoTerceraPersona : MonoBehaviour
         bool nueva = manijaGranada == null;
         if (nueva)
         {
-            manijaGranada = Manija(esCuchillo ? "Manija: Cuchillo" : "Manija: Granada", new Color(0.6f, 1f, 0.2f), 0.03f);
+            manijaGranada = Manija(esCuchillo ? (Katana != null ? "Manija: Katana" : "Manija: Cuchillo") : "Manija: Granada", new Color(0.6f, 1f, 0.2f), 0.03f);
             manijaEsCuchillo = esCuchillo;
         }
         AgarresTerceraPersona agarres = AgarresTerceraPersona.Actual;
         Vector3 lugar;
         Quaternion giro;
-        if (esCuchillo) agarres.PoseDeCuchillo(mano, out lugar, out giro);
+        KatanaData katana = esCuchillo ? Katana : null; // US 395: la manija de la katana mueve su ajuste (KatanaData)
+        if (katana != null) katana.PoseEnLaMano(mano, out lugar, out giro);
+        else if (esCuchillo) agarres.PoseDeCuchillo(mano, out lugar, out giro);
         else agarres.PoseDeGranada(mano, out lugar, out giro);
         Transform t = manijaGranada.transform;
         t.SetPositionAndRotation(lugar, giro);
-        t.localScale = Vector3.one * (esCuchillo ? agarres.cuchilloEscala : agarres.granadaEscala);
+        t.localScale = Vector3.one * (katana != null ? katana.escalaEnTerceraPersona : esCuchillo ? agarres.cuchilloEscala : agarres.granadaEscala);
         granadaUltimoLugar = t.position;
         granadaUltimoGiro = t.rotation;
         granadaUltimaEscala = t.localScale;
@@ -492,11 +502,26 @@ public class EspejoTerceraPersona : MonoBehaviour
                       (t.localScale - granadaUltimaEscala).sqrMagnitude > 1e-8f;
         Transform mano = copia.GetBoneTransform(HumanBodyBones.RightHand);
         if (!movida || mano == null) return;
+        KatanaData katana = manijaEsCuchillo ? Katana : null;
+        if (katana != null) { katana.DesdeManija(mano, t); RehacerKatana(); return; } // US 395
         if (manijaEsCuchillo) AgarresTerceraPersona.Actual.CuchilloDesde(mano, t);
         else AgarresTerceraPersona.Actual.GranadaDesde(mano, t);
 #if UNITY_EDITOR
         UnityEditor.EditorUtility.SetDirty(AgarresTerceraPersona.Actual); // así queda guardado en el asset
 #endif
+    }
+
+    // US 395: con otro tamaño, la katana del muñeco se vuelve a armar.
+    private float escalaKatana = -1f;
+    private void RehacerKatana()
+    {
+        KatanaData katana = Katana;
+        granadaUltimoLugar = manijaGranada.transform.position;
+        granadaUltimoGiro = manijaGranada.transform.rotation;
+        granadaUltimaEscala = manijaGranada.transform.localScale;
+        if (katana == null || Mathf.Approximately(katana.escalaEnTerceraPersona, escalaKatana)) return;
+        escalaKatana = katana.escalaEnTerceraPersona;
+        if (enMano != null) Mostrar(enMano);
     }
 
     private ManijaDeAjuste Manija(string nombre, Color color, float tamano)
@@ -641,7 +666,10 @@ public class EspejoTerceraPersona : MonoBehaviour
                         : primeraPersona.name == "GranadaEnMano" ? 0.12f
                         : switcher != null && switcher.meleeScript != null && primeraPersona == switcher.meleeScript.CurrentViewModel ? 0.3f
                         : ModeloReal.LargoSinFicha;
-            modeloEnMano = ModeloReal.Crear(Original(primeraPersona, out GameObject borrar), largo, out Bounds _, primeraPersona.name + " (espejo)");
+            KatanaData katana = KatanaDelEspejo(primeraPersona);
+            GameObject borrar = null;
+            if (katana != null) { modeloEnMano = katana.Crear(primeraPersona.name + " (espejo)"); modeloEnMano.SetActive(true); } // US 395
+            else modeloEnMano = ModeloReal.Crear(Original(primeraPersona, out borrar), largo, out Bounds _, primeraPersona.name + " (espejo)");
             if (borrar != null) Destroy(borrar);
             modeloEnMano.transform.SetParent(soporte, false);
             foreach (Transform t in modeloEnMano.GetComponentsInChildren<Transform>(true)) t.gameObject.layer = 0;
