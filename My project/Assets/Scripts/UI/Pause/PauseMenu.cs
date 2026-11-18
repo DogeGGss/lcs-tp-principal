@@ -176,8 +176,13 @@ public class PauseMenu : MonoBehaviour
         AudioListener.pause = false;
     }
 
+    /// <summary>US 395: mientras una ventana del editor ajusta algo en Play (Poses de la katana), no se pausa al pasar
+    /// a esa ventana.</summary>
+    public static bool NoPausarAlPerderElFoco;
+
     private void OnApplicationFocus(bool hasFocus)
     {
+        if (NoPausarAlPerderElFoco) return;
         // Con los tests automáticos (ModoPruebas) no se pausa: si el editor pierde el foco mientras corren, el juego
         // quedaría congelado y los tests que esperan unos segundos no terminarían nunca.
         if (!hasFocus && pauseOnFocusLoss && !IsPaused && AllowPause && !ShopUI.IsOpen && !ModoPruebas.Activo) Pause();

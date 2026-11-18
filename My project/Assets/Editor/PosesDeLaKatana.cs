@@ -13,10 +13,17 @@ public class PosesDeLaKatana : EditorWindow
     [MenuItem("Riftwalker/Armas/Poses de la katana")]
     public static void Abrir() => GetWindow<PosesDeLaKatana>("Poses de la katana").Show();
 
-    private void OnEnable() => EditorApplication.playModeStateChanged += AlCambiarPlay;
+    // Mientras está abierta, el juego no se pausa al tocar la ventana (pierde el foco).
+    private void OnEnable()
+    {
+        EditorApplication.playModeStateChanged += AlCambiarPlay;
+        PauseMenu.NoPausarAlPerderElFoco = true;
+    }
+
     private void OnDisable()
     {
         EditorApplication.playModeStateChanged -= AlCambiarPlay;
+        PauseMenu.NoPausarAlPerderElFoco = false;
         MovimientoDeKatana.PoseFija = -1;
         MovimientoDeKatana.Probando = -1;
     }
@@ -44,6 +51,9 @@ public class PosesDeLaKatana : EditorWindow
             MovimientoDeKatana.PoseFija = -1;
             return;
         }
+        PauseMenu.NoPausarAlPerderElFoco = true; // (por si se recargaron los scripts)
+        if (PauseMenu.IsPaused)
+            EditorGUILayout.HelpBox("El juego está en pausa: reanudalo (Esc) para ver la katana moverse.", MessageType.Warning);
         if (BrazosEnCamara.AjustandoAMano)
             EditorGUILayout.HelpBox("Con «Ajustar a mano en Play» prendido la katana no se mueve: apagalo para ver las poses.", MessageType.Warning);
 
