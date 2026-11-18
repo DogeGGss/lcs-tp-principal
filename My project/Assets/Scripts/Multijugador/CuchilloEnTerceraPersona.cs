@@ -137,4 +137,33 @@ public class CuchilloEnTerceraPersona : ManosPorCodigo
         Vector3 desdeElHombro = der - hombro;
         if (largo > 0.1f && desdeElHombro.magnitude > largo) der = hombro + desdeElHombro.normalized * largo;
     }
+
+    // US 395: lo último, con la katana ya puesta en la mano derecha de este cuadro (lo llama el que la pone): la muñeca
+    // izquierda gira con la katana (en guardia se mide cómo está respecto de ella, con su ajuste, y en el tajo se
+    // mantiene así) y, si quedó un poco corrida del mango, se la acerca. Si no, en el tajo la katana gira y la mano
+    // izquierda no: la palma quedaba afuera del mango.
+    private Quaternion izquierdaRespectoDeLaKatana;
+    private bool hayIzquierdaRespecto;
+    private const float AcercarHasta = 0.05f;
+
+    public void IzquierdaConLaKatana()
+    {
+        KatanaData k = Katana;
+        Animator animador = arma != null ? arma.Animador : null;
+        Transform mano = animador != null ? animador.GetBoneTransform(HumanBodyBones.LeftHand) : null;
+        if (k == null || KatanaEnLaMano == null || mano == null || !ConCuchillo || arma.Manejando || arma.SinManos)
+        {
+            hayIzquierdaRespecto = false;
+            return;
+        }
+        if (!Atacando)
+        {
+            izquierdaRespectoDeLaKatana = Quaternion.Inverse(KatanaEnLaMano.rotation) * mano.rotation;
+            hayIzquierdaRespecto = true;
+        }
+        else if (hayIzquierdaRespecto)
+            mano.rotation = KatanaEnLaMano.rotation * izquierdaRespectoDeLaKatana;
+        Vector3 mango = KatanaEnLaMano.TransformPoint(k.manoIzquierdaEnElMango);
+        mano.position += Vector3.ClampMagnitude(mango - mano.position, AcercarHasta);
+    }
 }

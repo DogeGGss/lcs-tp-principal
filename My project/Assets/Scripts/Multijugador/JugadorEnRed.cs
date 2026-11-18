@@ -1434,6 +1434,7 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
             soporteMano.localScale = Vector3.one * (katana != null ? 1f : agarres.cuchilloEscala);
             if (enLaMano.TryGetValue(ArmaCuchillo, out ModeloEnMano hojaEnMano) && hojaEnMano.go != null)
                 hojaEnMano.go.transform.localPosition = hojaEnMano.lugar;
+            if (katana != null) cuchilloVisto.IzquierdaConLaKatana(); // US 395: la mano izquierda, con la katana
             return;
         }
         // CA2: la granada sale de la mano al final del lanzamiento; la siguiente aparece cuando la saca.

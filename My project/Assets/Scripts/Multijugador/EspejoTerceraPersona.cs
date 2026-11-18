@@ -348,6 +348,7 @@ public class EspejoTerceraPersona : MonoBehaviour
             soporte.SetPositionAndRotation(lugar, giro);
             soporte.localScale = Vector3.one * (katana != null ? 1f : conCuchillo ? a.cuchilloEscala : a.granadaEscala);
             modeloEnMano.transform.localPosition = Vector3.zero;
+            if (katana != null && cuchillo != null) cuchillo.IzquierdaConLaKatana(); // US 395
             return;
         }
         soporte.localScale = Vector3.one;
