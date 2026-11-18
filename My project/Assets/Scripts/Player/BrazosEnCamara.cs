@@ -50,6 +50,8 @@ public class BrazosEnCamara : MonoBehaviour
     private readonly Dictionary<GameObject, MeshRenderer> brazoDerecho = new Dictionary<GameObject, MeshRenderer>(); // hijo de la foto
     private readonly Dictionary<GameObject, Vector3> armaEnFoto = new Dictionary<GameObject, Vector3>(); // dónde estaba el arma al sacar su foto
     private bool[] verticeDerecho; // qué vértices de los brazos son del brazo derecho
+    private bool[] verticeAntebrazo; // y cuáles del antebrazo y la mano derechos (US 395: el codo se dobla con la katana)
+    public const string NombreAntebrazo = "Antebrazo derecho", NombreCodo = "Codo derecho";
     private readonly Dictionary<GameObject, Vector3> lugarOriginal = new Dictionary<GameObject, Vector3>();
     private GameObject preparando;
     private int fotoEnCuadro, listoEnCuadro;
@@ -185,6 +187,7 @@ public class BrazosEnCamara : MonoBehaviour
         animador = brazosCuerpo.GetComponentInParent<Animator>();
         if (animador != null) cullingOriginal = animador.cullingMode;
         verticeDerecho = VerticesDelBrazoDerecho();
+        verticeAntebrazo = VerticesDe(HumanBodyBones.RightLowerArm);
         listoEnCuadro = Time.frameCount + CuadrosAlEmpezar;
         faltanFotos = true;
         return true;
@@ -192,11 +195,14 @@ public class BrazosEnCamara : MonoBehaviour
 
     // Un vértice es del brazo derecho si se mueve sobre todo con sus huesos (del brazo a los dedos). Sin esqueleto
     // humanoide o sin poder leer la malla, null: la foto queda entera.
-    private bool[] VerticesDelBrazoDerecho()
+    private bool[] VerticesDelBrazoDerecho() => VerticesDe(HumanBodyBones.RightUpperArm);
+
+    // Los vértices que se mueven sobre todo con ese hueso y los que cuelgan de él.
+    private bool[] VerticesDe(HumanBodyBones hueso)
     {
         Mesh malla = brazosCuerpo.sharedMesh;
         if (animador == null || !animador.isHuman || malla == null || !malla.isReadable) return null;
-        Transform brazo = animador.GetBoneTransform(HumanBodyBones.RightUpperArm);
+        Transform brazo = animador.GetBoneTransform(hueso);
         if (brazo == null) return null;
         Transform[] huesos = brazosCuerpo.bones;
         var esDerecho = new bool[huesos.Length];
@@ -214,11 +220,14 @@ public class BrazosEnCamara : MonoBehaviour
     }
 
     // Pasa los triángulos del brazo derecho de "malla" a una malla aparte, que devuelve; en "malla" queda el izquierdo.
-    private Mesh SepararBrazoDerecho(Mesh malla)
+    private Mesh SepararBrazoDerecho(Mesh malla) => Separar(malla, verticeDerecho, " (brazo derecho)");
+
+    // Pasa a una malla aparte los triángulos de esos vértices, y la devuelve (null si no puede).
+    private static Mesh Separar(Mesh malla, bool[] verticeDerecho, string nombre)
     {
         if (verticeDerecho == null || verticeDerecho.Length != malla.vertexCount) return null;
         Mesh derecha = Instantiate(malla);
-        derecha.name = malla.name + " (brazo derecho)";
+        derecha.name = malla.name + nombre;
         var izquierdos = new List<int>();
         var derechos = new List<int>();
         for (int s = 0; s < malla.subMeshCount; s++)
@@ -330,6 +339,25 @@ public class BrazosEnCamara : MonoBehaviour
             vistaBrazo.shadowCastingMode = ShadowCastingMode.Off;
             vistaBrazo.lightProbeUsage = brazosCuerpo.lightProbeUsage;
             brazoDerecho[arma] = vistaBrazo;
+
+            // US 395: el antebrazo y la mano, aparte (hijos del brazo, en el mismo lugar), y dónde está el codo: así
+            // el codo se puede doblar (la katana gira con la mano y el brazo no se sale de lugar).
+            Transform codo = animador != null && animador.isHuman ? animador.GetBoneTransform(HumanBodyBones.RightLowerArm) : null;
+            Mesh antebrazo = codo != null ? Separar(derecha, verticeAntebrazo, " (antebrazo)") : null;
+            if (antebrazo != null)
+            {
+                var ante = new GameObject(NombreAntebrazo);
+                ante.layer = capa;
+                ante.transform.SetParent(brazo.transform, false);
+                ante.AddComponent<MeshFilter>().sharedMesh = antebrazo;
+                MeshRenderer vistaAnte = ante.AddComponent<MeshRenderer>();
+                vistaAnte.sharedMaterials = brazosCuerpo.sharedMaterials;
+                vistaAnte.shadowCastingMode = ShadowCastingMode.Off;
+                vistaAnte.lightProbeUsage = brazosCuerpo.lightProbeUsage;
+                var marca = new GameObject(NombreCodo);
+                marca.transform.SetParent(brazo.transform, false);
+                marca.transform.localPosition = brazosCuerpo.transform.InverseTransformPoint(codo.position);
+            }
         }
 
         VolverALineaA();
