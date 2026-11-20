@@ -739,13 +739,17 @@ public class EspejoTerceraPersona : MonoBehaviour
         if (primeraPersona != null)
         {
             ShopItem ficha = WeaponSwitcher.FichaDe(primeraPersona);
+            bool esCuchillo = ficha == null && switcher != null && switcher.meleeScript != null &&
+                              primeraPersona == switcher.meleeScript.CurrentViewModel;
             float largo = ficha != null && ficha.realLength > 0f ? ficha.realLength
                         : primeraPersona.name == "GranadaEnMano" ? 0.12f
-                        : switcher != null && switcher.meleeScript != null && primeraPersona == switcher.meleeScript.CurrentViewModel ? 0.3f
+                        : esCuchillo ? 0.3f
                         : ModeloReal.LargoSinFicha;
             KatanaData katana = KatanaDelEspejo(primeraPersona);
             GameObject borrar = null;
             if (katana != null) { modeloEnMano = katana.Crear(primeraPersona.name + " (espejo)"); modeloEnMano.SetActive(true); } // US 395
+            else if (esCuchillo) // US 257: el cuchillo, con el giro de su ajuste (no el de primera persona)
+                modeloEnMano = ModeloReal.CrearCuchillo(Original(primeraPersona, out borrar), largo, out Bounds _, primeraPersona.name + " (espejo)");
             else modeloEnMano = ModeloReal.Crear(Original(primeraPersona, out borrar), largo, out Bounds _, primeraPersona.name + " (espejo)");
             if (borrar != null) Destroy(borrar);
             modeloEnMano.transform.SetParent(soporte, false);
