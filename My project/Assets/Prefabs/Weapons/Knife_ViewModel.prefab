@@ -25,7 +25,7 @@ Transform:
   m_GameObject: {fileID: 1813220408186067183}
   serializedVersion: 2
   m_LocalRotation: {x: -0.37867427, y: 0.5280489, z: 0.55660653, w: -0.5176479}
-  m_LocalPosition: {x: 0.226, y: -0.225, z: 0.394}
+  m_LocalPosition: {x: 0.2201, y: -0.229, z: 0.3968}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -40,6 +40,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 5065533004506507437}
+  - component: {fileID: 6529379696358861317}
   m_Layer: 0
   m_Name: Knife_ViewModel
   m_TagString: Untagged
@@ -55,8 +56,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4244842791037685011}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalRotation: {x: -0.16923587, y: -0.0000000019610402, z: -7.0080514e-10, w: 0.98557556}
+  m_LocalPosition: {x: -0.00000006239861, y: -0.17437989, z: -0.018438485}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -65,6 +66,66 @@ Transform:
   - {fileID: 1570231751058709474}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &6529379696358861317
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4244842791037685011}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f8fe9436db594eb3a3c105abe90fc757, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Riftwalker::DedosDelArma
+  manoDerecha:
+    pulgar:
+      abrir: 0
+      separar: 0
+      girar: 0
+    indice:
+      abrir: -35
+      separar: 0
+      girar: 0
+    mayor:
+      abrir: 7
+      separar: 0
+      girar: 0
+    anular:
+      abrir: 7
+      separar: 0
+      girar: 0
+    menique:
+      abrir: -2
+      separar: 0
+      girar: 0
+  manoIzquierda:
+    pulgar:
+      abrir: 0
+      separar: 0
+      girar: 0
+    indice:
+      abrir: 0
+      separar: 0
+      girar: 0
+    mayor:
+      abrir: 0
+      separar: 0
+      girar: 0
+    anular:
+      abrir: 0
+      separar: 0
+      girar: 0
+    menique:
+      abrir: 0
+      separar: 0
+      girar: 0
+  dedosDerecha: 0
+  indiceDerecho: 0
+  pulgarDerecho: 0
+  dedosIzquierda: 0
+  indiceIzquierdo: 0
+  pulgarIzquierdo: 0
 --- !u!1 &6334108745574436971
 GameObject:
   m_ObjectHideFlags: 0
@@ -110,31 +171,31 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5461352889429511768, guid: 430ad75d2b884f0458414f31a0b614c3, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 0.2163909
+      value: 0.2107
       objectReference: {fileID: 0}
     - target: {fileID: 5461352889429511768, guid: 430ad75d2b884f0458414f31a0b614c3, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -0.22217953
+      value: -0.2239
       objectReference: {fileID: 0}
     - target: {fileID: 5461352889429511768, guid: 430ad75d2b884f0458414f31a0b614c3, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 0.42187235
+      value: 0.4816
       objectReference: {fileID: 0}
     - target: {fileID: 5461352889429511768, guid: 430ad75d2b884f0458414f31a0b614c3, type: 3}
       propertyPath: m_LocalRotation.w
-      value: 0.92077327
+      value: 0.7776178
       objectReference: {fileID: 0}
     - target: {fileID: 5461352889429511768, guid: 430ad75d2b884f0458414f31a0b614c3, type: 3}
       propertyPath: m_LocalRotation.x
-      value: -0.37960482
+      value: -0.619482
       objectReference: {fileID: 0}
     - target: {fileID: 5461352889429511768, guid: 430ad75d2b884f0458414f31a0b614c3, type: 3}
       propertyPath: m_LocalRotation.y
-      value: -0.06076438
+      value: -0.00633816
       objectReference: {fileID: 0}
     - target: {fileID: 5461352889429511768, guid: 430ad75d2b884f0458414f31a0b614c3, type: 3}
       propertyPath: m_LocalRotation.z
-      value: -0.066216365
+      value: -0.10729647
       objectReference: {fileID: 0}
     - target: {fileID: 5461352889429511768, guid: 430ad75d2b884f0458414f31a0b614c3, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
