@@ -6,13 +6,11 @@
 //     adelante), tiembla (_Abrir: cuánto creció, de 0 a 1) y se curva hacia un costado (_Enrosque).
 //   3 Rayo: una línea (LineRenderer) eléctrica, con el centro casi blanco y el borde del color del rayo; el color y la
 //     transparencia de la línea la tiñen y la apagan (RayoDeSkin).
-//   4 Llama: una lengua de fuego que sube (las partículas del arma prendida fuego, FuegoDeSkin): ancha abajo y en punta
-//     arriba (uv.y hacia arriba), que tiembla; el color de la partícula es el del fuego y su transparencia la apaga.
 Shader "Riftwalker/Skins/Efectos"
 {
     Properties
     {
-        _Modo ("Modo (0 alas, 1 brasa, 2 llamarada, 3 rayo, 4 llama)", Float) = 0
+        _Modo ("Modo (0 alas, 1 brasa, 2 llamarada, 3 rayo)", Float) = 0
         _ColorFuego ("Fuego", Color) = (0.118, 0.42, 1, 1)
         _ColorNucleo ("Centro del fuego", Color) = (0.81, 0.98, 1, 1)
         _Brillo ("Brillo", Float) = 2
@@ -57,19 +55,6 @@ Shader "Riftwalker/Skins/Efectos"
             float4 frag(Varyings i) : SV_Target
             {
                 float3 color;
-                if ((int)round(_Modo) == 4)
-                {
-                    float x = i.uv.x * 2.0 - 1.0, y = i.uv.y;
-                    // Cada llama tiembla distinto (su color varía un poco: se usa como semilla).
-                    float semilla = dot(i.color.rgb, float3(13.1, 7.7, 3.3));
-                    x += 0.12 * sin(y * 7.0 + _Time.y * 9.0 + semilla) * y;
-                    float ancho = 0.75 * pow(saturate(y * 3.0), 0.45) * pow(saturate(1.0 - y), 0.9);
-                    ancho *= 0.85 + 0.15 * sin(y * 19.0 - _Time.y * 14.0 + semilla * 2.0);
-                    float forma = saturate((ancho - abs(x)) / 0.2);
-                    float centro = saturate(1.0 - abs(x) / max(ancho, 0.01)) * saturate(1.0 - y * 1.3);
-                    color = lerp(i.color.rgb, _ColorNucleo.rgb, centro * centro) * forma * _Brillo;
-                    return float4(color * i.color.a, 1);
-                }
                 if ((int)round(_Modo) == 3)
                 {
                     float centro = saturate(1.0 - abs(i.uv.y * 2.0 - 1.0));

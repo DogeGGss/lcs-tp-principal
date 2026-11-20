@@ -171,7 +171,7 @@ public class MeleeAttack : MonoBehaviour
 
         GameObject viewModel = weaponHolder.CurrentViewModel;
         inicioDelCorte = Time.time;
-        if (!(data is KatanaData)) CalorDeSkin.Disparo(viewModel); // F35: el fuego de la skin del cuchillo se aviva al cortar
+        if (!(data is KatanaData)) CalorDeSkin.Disparo(viewModel); // F35: las grietas de la skin del cuchillo brillan más al cortar
 
         // CA3 (US 256): el golpe, en la mitad del corte. CA4: si cambió de arma antes, el corte se interrumpe sin golpe.
         yield return new WaitForSeconds(Preparacion + Corte * 0.5f);

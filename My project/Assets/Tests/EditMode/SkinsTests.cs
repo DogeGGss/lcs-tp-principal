@@ -156,8 +156,8 @@ public class SkinsTests
             Assert.IsNotNull(modelos.MaterialDe(id), id);
     }
 
-    [Test, Category("F35"), Description("El cuchillo: solo la legendaria Dragón Abisal, en su material, con su material y prendido fuego")]
-    public void El_cuchillo_tiene_el_dragon_abisal_prendido_fuego()
+    [Test, Category("F35"), Description("El cuchillo: solo la legendaria Dragón Abisal, en su material, con su material")]
+    public void El_cuchillo_tiene_el_dragon_abisal()
     {
         List<CatalogoDeSkins.Skin> delCuchillo = CatalogoDeSkins.DelArma("cuchillo");
         Assert.AreEqual(1, delCuchillo.Count);
@@ -168,15 +168,11 @@ public class SkinsTests
         Assert.IsNull(CatalogoDeSkins.De("cuchillo-rift")); // sin las comunes
         Assert.AreEqual("dragon-cuchillo", CatalogoDeSkins.ExtraPara(s, "M_Knife").material);
         Assert.IsNull(CatalogoDeSkins.ExtraPara(s, "White"));
-        CatalogoDeSkins.Efectos e = EfectosDeSkin.De(s);
-        Assert.IsNotNull(e);
-        Assert.IsTrue(e.prendida);
-        Assert.IsFalse(EfectosDeSkin.De(CatalogoDeSkins.De("mitre-dragon-abisal")).prendida); // las armas de fuego, no
+        Assert.IsNull(EfectosDeSkin.De(s)); // (no dispara: sin fogonazo ni estela)
         Assert.AreEqual(OrigenDeCosmeticos.Origen.Capsulas, OrigenDeCosmeticos.De(s)); // como el de las armas de fuego
         var modelos = Resources.Load<ModelosDeArmas>("Skins/ModelosDeArmas");
         Assert.IsNotNull(modelos.De("cuchillo"));
-        foreach (string id in new[] { "dragon-cuchillo", "efecto-llama", "efecto-brasa" })
-            Assert.IsNotNull(modelos.MaterialDe(id), id);
+        Assert.IsNotNull(modelos.MaterialDe("dragon-cuchillo"));
         // La katana (US 395), que va en el lugar del cuchillo, no lleva su skin.
         var katana = ScriptableObject.CreateInstance<KatanaData>();
         Assert.IsFalse(SkinsEnLasArmas.EsElCuchillo(katana));
