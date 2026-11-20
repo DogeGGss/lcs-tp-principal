@@ -9,7 +9,7 @@
 //   3 Cuchillo (19/11/2026): el cuchillo entero, con su textura (_BaseMap) ennegrecida, recorrido por una red de grietas
 //     de fuego azul que no se apaga, por la que corre el fuego (pulsos que avanzan por la red), y donde además se abren
 //     grietas más grandes, como en los paneles. El borde brilla un poco del color del fuego (está prendido). Eso, en la
-//     hoja; el mango es de escamas negras con el filo azul verdoso, como el cuerpo de las armas (para que se distinga).
+//     hoja; el mango es negro, con apenas el relieve de unas escamas (para que se distinga).
 //     La hoja se distingue por el largo: _Eje (el eje del cuchillo hacia la punta y su largo, en la malla) lo pone
 //     CuchilloDeSkin, y la hoja empieza en _Hoja.
 // El fuego "respira" (sube y baja despacio) y se enciende con cada disparo (_Calor, de 0 a 1, lo pone CalorDeSkin en
@@ -234,18 +234,16 @@ Shader "Riftwalker/Skins/Dragon"
                 float3 fuego = lerp(_ColorFuego.rgb, _ColorNucleo.rgb, nucleo * nucleo);
                 float3 hoja = lerp(color, fuego * fuerza * 0.5, saturate(max(nucleo, halo * 0.6)));
 
-                // El mango: escamas negras (la textura de escamas, proyectada desde los tres ejes), con el filo de cada
-                // escama azul verdoso de costado y un poco de fuego entre las escamas.
+                // El mango: negro, con apenas el dibujo de unas escamas (la textura de escamas, proyectada desde los
+                // tres ejes) en el brillo.
                 float3 w = pow(abs(normalize(i.normalOS)), 4.0);
                 w /= w.x + w.y + w.z;
                 float3 P = i.posM / _TileMango;
                 float gris = SAMPLE_TEXTURE2D(_Escamas, sampler_Escamas, P.zy).r * w.x
                            + SAMPLE_TEXTURE2D(_Escamas, sampler_Escamas, P.xz).r * w.y
                            + SAMPLE_TEXTURE2D(_Escamas, sampler_Escamas, P.xy).r * w.z;
-                float3 escama = _ColorEscama.rgb * (0.35 + 1.3 * gris);
-                float3 mango = escama * (luz.color * saturate(dot(N, L)) * 0.9 + ambiente) + pow(saturate(dot(N, H)), 64.0) * 0.6 * gris * luz.color;
-                mango += _ColorFilo.rgb * pow(1.0 - saturate(dot(N, V)), 3.0) * 0.5;
-                mango += _ColorFuego.rgb * smoothstep(0.3, 0.1, gris) * 0.12 * fuerza;
+                float3 negro = float3(0.012, 0.012, 0.014) * (0.6 + 0.6 * gris);
+                float3 mango = negro * (luz.color * saturate(dot(N, L)) + ambiente) + pow(saturate(dot(N, H)), 64.0) * 0.25 * gris * luz.color;
                 float largo = dot(i.posOS, normalize(_Eje.xyz)) / max(_Eje.w, 0.0001);
                 return lerp(mango, hoja, smoothstep(_Hoja - 0.02, _Hoja + 0.02, largo));
             }
