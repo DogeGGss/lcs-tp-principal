@@ -42,6 +42,7 @@ Shader "Riftwalker/Skins/Dragon"
         _Oscuro ("Cuánto queda de la textura (cuchillo)", Range(0, 1)) = 0.35
         _Red ("Tamaño de la red de grietas (m, cuchillo)", Float) = 0.018
         _Corre ("Velocidad del fuego por las grietas (cuchillo)", Float) = 0.6
+    }
 
     SubShader
     {
@@ -72,7 +73,7 @@ Shader "Riftwalker/Skins/Dragon"
             TEXTURE2D(_EscamasNormal); SAMPLER(sampler_EscamasNormal);
             TEXTURE2D(_Piedra); SAMPLER(sampler_Piedra);
             TEXTURE2D(_PiedraNormal); SAMPLER(sampler_PiedraNormal);
-            TEXTURE2D(_BaseMap); SAMPLER(sampler_BaseMap);
+            TEXTURE2D(_BaseMap); // (con el sampler de la piedra: no suma otro)
 
             // Gira (x, y) de a 90°: así la punta de las escamas de la textura queda hacia la culata.
             float2 Girar(float2 v, int vueltas)
@@ -192,7 +193,7 @@ Shader "Riftwalker/Skins/Dragon"
                 float3 V = normalize(i.viewWS);
                 Light luz = GetMainLight();
                 float3 L = normalize(luz.direction);
-                float3 textura = SAMPLE_TEXTURE2D(_BaseMap, sampler_BaseMap, i.uv).rgb;
+                float3 textura = SAMPLE_TEXTURE2D(_BaseMap, sampler_Piedra, i.uv).rgb;
                 // Ennegrecido, un poco hacia el color de las escamas (negro azulado).
                 float3 base = lerp(_ColorEscama.rgb, textura * _ColorEscama.rgb * 6.0, _Oscuro);
                 float3 H = normalize(L + V);
