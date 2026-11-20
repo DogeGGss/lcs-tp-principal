@@ -58,7 +58,7 @@ public class SkinDeArma : MonoBehaviour
     public void Poner(Material skin, params string[] partes)
     {
         Cambiar(m => EsParte(m, partes) ? skin : m);
-        BrasasDeSkin.Poner(gameObject, null);
+        CuchilloDeSkin.Poner(gameObject, null);
         Skin = skin;
     }
 
@@ -85,7 +85,7 @@ public class SkinDeArma : MonoBehaviour
             Color? color = m != null ? CatalogoDeSkins.ColorPara(skin, m.name) : null;
             return color.HasValue ? Pintado(m, color.Value) : m;
         });
-        BrasasDeSkin.Poner(gameObject, skin); // las que largan brasitas (el cuchillo Dragón Abisal)
+        CuchilloDeSkin.Poner(gameObject, skin); // las del cuchillo: dónde está la hoja y sus partículas
         Puesta = skin;
     }
 

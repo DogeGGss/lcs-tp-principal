@@ -10,7 +10,7 @@ using Rareza = PerfilDatos.Rareza;
 // Las armas de fuego tienen los mismos cuatro materiales, así que una combinación sirve para todas. Por lo que tapa cada
 // uno (medido en los modelos): Black es el cuerpo (la mitad del arma), White los paneles (un tercio), Grey los detalles y
 // Main el acento (unas franjas). El cuchillo (otro modelo, con textura y un solo material) tiene solo sus propias skins
-// (DisenosDelCuchillo): la legendaria Dragón Abisal, con grietas de fuego azul y brasitas (19/11/2026).
+// (DisenosDelCuchillo): legendarias, cada una con sus partículas (CuchilloDeSkin) (19/11/2026).
 // Las demás rarezas ponen un material en algunas partes del arma (Diseno): el material está en
 // Resources/Skins/ModelosDeArmas, con el id del diseño. Épicas: Código binario (13/11/2026), en todas las armas.
 // El id de cada skin ("mitre-rift") es el que se guarda (SkinsDeArmas) y el que va por la red: no se cambia.
@@ -50,9 +50,12 @@ public static class CatalogoDeSkins
         public Extra[] extras = new Extra[0];
         /// <summary>Las legendarias (US 381): su fogonazo y su estela. null: los de siempre.</summary>
         public Efectos efectos;
-        /// <summary>Al arma se le salen brasitas del color de la muestra todo el tiempo (BrasasDeSkin; el cuchillo).</summary>
-        public bool brasitas;
+        /// <summary>Lo que se le sale al arma todo el tiempo, del color de la muestra (CuchilloDeSkin; el cuchillo).</summary>
+        public Particulas particulas;
     }
+
+    /// <summary>Las partículas de las skins del cuchillo (CuchilloDeSkin).</summary>
+    public enum Particulas { Ninguna, Brasas, Chispas, Estrellas, Escarcha, Gotas, Pixeles }
 
     /// <summary>US 381: lo que cambia al disparar con una legendaria (EfectosDeSkin): el color y la forma del fogonazo y
     /// la estela.</summary>
@@ -104,15 +107,32 @@ public static class CatalogoDeSkins
     // Las del cuchillo (19/11/2026). Su modelo tiene un solo material (M_Knife, con textura), que cambia entero.
     // Legendaria: Dragón Abisal, como la de las armas de fuego (mismo id: es el mismo estilo), con el cuchillo negro
     // recorrido por grietas de fuego azul que se abren, laten y corren (Art/Skins/SkinDragon.shader, parte 3), y se le
-    // salen brasitas azules (BrasasDeSkin); al cortar, brillan más y salen más brasas (CalorDeSkin). (Prendido fuego con
-    // llamas quedó descartado, 19/11/2026.)
+    // salen brasitas azules; al cortar, brillan más y salen más brasas (CalorDeSkin). (Prendido fuego con llamas quedó
+    // descartado, 19/11/2026.)
+    // Las demás (19/11/2026) van con Art/Skins/SkinCuchillo.shader, un modo cada una, y sus partículas:
+    // - Hoja de plasma: la hoja de energía violeta que corre hacia la punta y late; chispitas que saltan.
+    // - Rift abierto: la hoja es una ventana al Rift (estrellas y nebulosa); estrellitas que flotan.
+    // - Cristal de hielo: hielo celeste con grietas y escarcha que crece y se derrite; el frío que cae y, al cortar,
+    //   esquirlas.
+    // - Sangre de invasor: metal negro con venas rojas que laten como un corazón; gotas que caen.
+    // - Holograma: un holograma celeste con líneas de escaneo, parpadeos y cortes; píxeles que suben.
     public const string MaterialCuchillo = "M_Knife";
     public static readonly List<Diseno> DisenosDelCuchillo = new List<Diseno>
     {
         new Diseno { id = "dragon-abisal", nombre = "Dragón Abisal", rareza = Rareza.Legendario, partes = new string[0], muestra = Hex(0x1E6BFF),
             extras = new[] { new Extra { parte = MaterialCuchillo, material = "dragon-cuchillo", muestra = Hex(0x1A1C24) } },
-            brasitas = true },
+            particulas = Particulas.Brasas },
+        Cuchillo("hoja-de-plasma", "Hoja de plasma", 0x9B4DFF, Particulas.Chispas),
+        Cuchillo("rift-abierto", "Rift abierto", 0x7B3FE4, Particulas.Estrellas),
+        Cuchillo("cristal-de-hielo", "Cristal de hielo", 0x8CCBFF, Particulas.Escarcha),
+        Cuchillo("sangre-de-invasor", "Sangre de invasor", 0xE0141E, Particulas.Gotas),
+        Cuchillo("holograma", "Holograma", 0x26C0FF, Particulas.Pixeles),
     };
+
+    // Una legendaria del cuchillo con su material ("cuchillo-" + id, en ModelosDeArmas) en todo el cuchillo.
+    private static Diseno Cuchillo(string id, string nombre, int muestra, Particulas particulas) =>
+        new Diseno { id = id, nombre = nombre, rareza = Rareza.Legendario, partes = new string[0], muestra = Hex(muestra), particulas = particulas,
+            extras = new[] { new Extra { parte = MaterialCuchillo, material = "cuchillo-" + id, muestra = Hex(muestra) } } };
 
     public static readonly List<Arma> Armas = new List<Arma>
     {

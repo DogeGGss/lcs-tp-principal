@@ -13,7 +13,7 @@ public class CalorDeSkin : MonoBehaviour
     private MaterialPropertyBlock bloque;
     private float calor, puesto = -1f;
 
-    /// <summary>Cuánto calor tiene ahora (0 a 1; BrasasDeSkin larga más brasas con eso).</summary>
+    /// <summary>Cuánto calor tiene ahora (0 a 1; CuchilloDeSkin larga más partículas con eso).</summary>
     public float Valor => calor;
 
     /// <summary>Esa arma disparó (si es null, nada).</summary>
