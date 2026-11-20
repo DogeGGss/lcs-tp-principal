@@ -47,7 +47,8 @@ using UnityEngine;
 //   última (ArmaDeFuego.DescargaRapida, CargaDeDescarga y EtapaDeDescarga).
 // - US 321, Acople: cada 3 tiros de pistola que aciertan, el arma principal (guardada) dispara sola un tiro hacia la
 //   mira, con sus balas y su cadencia; si está vacía (o recargando, o no le toca), ese tiro se pierde
-//   (WeaponFire.Acerto y DispararGuardada).
+//   (WeaponFire.Acerto y DispararGuardada). Sale un momento después del de la pistola, con su estela y su fogonazo
+//   celestes y su sonido, para que se distinga (WeaponFire.Acople).
 // - US 313, Campo minado: las granadas del Gran Capitán que tocan el piso quedan como minas (MinaDeGranada) y explotan
 //   cuando pasa un invasor a menos de 2 m en horizontal; hasta 5 a la vez (7 y 9 con la carta repetida): al poner
 //   una de más, la más vieja explota sola (Grenade1.QuedaComoMina).
@@ -333,11 +334,20 @@ public class CartasEnJuego : MonoBehaviour
         aciertosDePistola++;
         if (aciertosDePistola < AciertosParaAcople) return;
         aciertosDePistola = 0;
+        StartCoroutine(AcopleEnUnRato());
+    }
+
+    // Un momento después del tiro de la pistola (si salen juntos, el sonido y la estela de la principal se pierden).
+    private const float DemoraDelAcople = 0.12f;
+
+    private System.Collections.IEnumerator AcopleEnUnRato()
+    {
+        yield return new WaitForSeconds(DemoraDelAcople);
         WeaponSwitcher a = Armas();
         GameObject principal = a != null ? a.PrimaryObj : null;
-        if (principal == null) return;
+        if (principal == null) yield break;
         ArmaDeFuego fuego = principal.GetComponent<ArmaDeFuego>();
-        if (fuego != null) { fuego.DispararGuardada(); return; }
+        if (fuego != null) { fuego.DispararGuardada(); yield break; }
         Mitre mitre = principal.GetComponent<Mitre>();
         if (mitre != null) mitre.DispararGuardada();
     }

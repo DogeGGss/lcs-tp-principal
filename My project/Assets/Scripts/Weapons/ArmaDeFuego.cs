@@ -287,10 +287,13 @@ public class ArmaDeFuego : MonoBehaviour, IHudWeapon
         if (cam == null) return false;
         nextShot = Time.time + 1f / Mathf.Max(0.01f, shopItem.fireRate);
         if (!MinijuegoCometas.Activo) currentAmmo--;
-        if (shootSound != null) AudioSource.PlayClipAtPoint(shootSound, cam.transform.position, 0.7f); // (guardada no suena)
-        if (shopItem.velocidadDelProyectil > 0f && shopItem.grenadePrefab != null)
-            WeaponFire.FireProjectile(shopItem, cam, shooter, false);
-        else WeaponFire.Fire(shopItem, cam, shooter, false, alcance);
+        // (Guardada, su fuente no suena: el sonido y la estela celeste del Acople, WeaponFire.Acople.)
+        WeaponFire.Acople(shootSound, () =>
+        {
+            if (shopItem.velocidadDelProyectil > 0f && shopItem.grenadePrefab != null)
+                WeaponFire.FireProjectile(shopItem, cam, shooter, false);
+            else WeaponFire.Fire(shopItem, cam, shooter, false, alcance);
+        });
         return true;
     }
 
