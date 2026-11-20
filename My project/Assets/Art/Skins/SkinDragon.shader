@@ -8,7 +8,10 @@
 //   2 Franjas: fuego azul vivo que corre a lo largo del arma.
 //   3 Cuchillo (19/11/2026): el cuchillo entero, con su textura (_BaseMap) ennegrecida, recorrido por una red de grietas
 //     de fuego azul que no se apaga, por la que corre el fuego (pulsos que avanzan por la red), y donde además se abren
-//     grietas más grandes, como en los paneles. El borde brilla un poco del color del fuego (está prendido).
+//     grietas más grandes, como en los paneles. El borde brilla un poco del color del fuego (está prendido). Eso, en la
+//     hoja; el mango es de escamas negras con el filo azul verdoso, como el cuerpo de las armas (para que se distinga).
+//     La hoja se distingue por el largo: _Eje (el eje del cuchillo hacia la punta y su largo, en la malla) lo pone
+//     CuchilloDeSkin, y la hoja empieza en _Hoja.
 // El fuego "respira" (sube y baja despacio) y se enciende con cada disparo (_Calor, de 0 a 1, lo pone CalorDeSkin en
 // cada arma). En los modelos de las armas el largo (el caño) es el eje X, con el caño hacia +X, y el alto el Z.
 Shader "Riftwalker/Skins/Dragon"
@@ -42,6 +45,9 @@ Shader "Riftwalker/Skins/Dragon"
         _Oscuro ("Cuánto queda de la textura (cuchillo)", Range(0, 1)) = 0.35
         _Red ("Tamaño de la red de grietas (m, cuchillo)", Float) = 0.018
         _Corre ("Velocidad del fuego por las grietas (cuchillo)", Float) = 0.6
+        _Eje ("Eje hacia la punta (xyz) y largo (w), en la malla (cuchillo)", Vector) = (0, 0, -1, 0.3)
+        _Hoja ("Dónde empieza la hoja (parte del largo, cuchillo)", Range(0, 1)) = 0.34
+        _TileMango ("Tamaño de las escamas del mango (m, cuchillo)", Float) = 0.08
     }
 
     SubShader
@@ -67,7 +73,8 @@ Shader "Riftwalker/Skins/Dragon"
                 float _AjusteEscala;
                 float4 _ColorEscama, _ColorFilo, _ColorFuego, _ColorNucleo, _ColorPiedra;
                 float _Parte, _Escala, _Brillo, _Calor, _Tile, _Giro, _Relieve, _Ciclo, _Pausa, _DosTandas, _Grieta, _TilePiedra, _RelievePiedra;
-                float _Oscuro, _Red, _Corre;
+                float _Oscuro, _Red, _Corre, _Hoja, _TileMango;
+                float4 _Eje;
             CBUFFER_END
             TEXTURE2D(_Escamas); SAMPLER(sampler_Escamas);
             TEXTURE2D(_EscamasNormal); SAMPLER(sampler_EscamasNormal);
@@ -96,6 +103,7 @@ Shader "Riftwalker/Skins/Dragon"
                 float fog : TEXCOORD4;
                 float3 posWS : TEXCOORD5;
                 float2 uv : TEXCOORD6;
+                float3 posOS : TEXCOORD7;
             };
 
             Varyings vert(Attributes v)
@@ -111,6 +119,7 @@ Shader "Riftwalker/Skins/Dragon"
                 o.fog = ComputeFogFactor(p.positionCS.z);
                 o.posWS = p.positionWS;
                 o.uv = v.uv;
+                o.posOS = v.positionOS.xyz;
                 return o;
             }
 
@@ -223,7 +232,22 @@ Shader "Riftwalker/Skins/Dragon"
                 float halo = max(resplandor * pulso * 0.8, haloT);
                 color += _ColorFuego.rgb * halo * 0.2 * fuerza;
                 float3 fuego = lerp(_ColorFuego.rgb, _ColorNucleo.rgb, nucleo * nucleo);
-                return lerp(color, fuego * fuerza * 0.5, saturate(max(nucleo, halo * 0.6)));
+                float3 hoja = lerp(color, fuego * fuerza * 0.5, saturate(max(nucleo, halo * 0.6)));
+
+                // El mango: escamas negras (la textura de escamas, proyectada desde los tres ejes), con el filo de cada
+                // escama azul verdoso de costado y un poco de fuego entre las escamas.
+                float3 w = pow(abs(normalize(i.normalOS)), 4.0);
+                w /= w.x + w.y + w.z;
+                float3 P = i.posM / _TileMango;
+                float gris = SAMPLE_TEXTURE2D(_Escamas, sampler_Escamas, P.zy).r * w.x
+                           + SAMPLE_TEXTURE2D(_Escamas, sampler_Escamas, P.xz).r * w.y
+                           + SAMPLE_TEXTURE2D(_Escamas, sampler_Escamas, P.xy).r * w.z;
+                float3 escama = _ColorEscama.rgb * (0.35 + 1.3 * gris);
+                float3 mango = escama * (luz.color * saturate(dot(N, L)) * 0.9 + ambiente) + pow(saturate(dot(N, H)), 64.0) * 0.6 * gris * luz.color;
+                mango += _ColorFilo.rgb * pow(1.0 - saturate(dot(N, V)), 3.0) * 0.5;
+                mango += _ColorFuego.rgb * smoothstep(0.3, 0.1, gris) * 0.12 * fuerza;
+                float largo = dot(i.posOS, normalize(_Eje.xyz)) / max(_Eje.w, 0.0001);
+                return lerp(mango, hoja, smoothstep(_Hoja - 0.02, _Hoja + 0.02, largo));
             }
 
             float4 frag(Varyings i) : SV_Target

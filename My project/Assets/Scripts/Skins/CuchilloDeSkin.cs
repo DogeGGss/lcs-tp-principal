@@ -110,7 +110,7 @@ public class CuchilloDeSkin : MonoBehaviour
         Color color = diseno.muestra;
         Color claro = Color.Lerp(color, Color.white, 0.6f);
         Color a1 = color, a2 = claro;
-        if (tipo == CatalogoDeSkins.Particulas.Estrellas || tipo == CatalogoDeSkins.Particulas.Escarcha) { a1 = claro; a2 = Color.white; }
+        if (tipo == CatalogoDeSkins.Particulas.Escarcha) { a1 = claro; a2 = Color.white; }
         if (tipo == CatalogoDeSkins.Particulas.Gotas) { a1 = color * 0.7f; a1.a = 1f; a2 = color; }
 
         ps = gameObject.AddComponent<ParticleSystem>();
@@ -130,14 +130,10 @@ public class CuchilloDeSkin : MonoBehaviour
         hereda.enabled = true;
         hereda.mode = ParticleSystemInheritVelocityMode.Current;
         hereda.curve = 0.85f;
-        var col = ps.colorOverLifetime; // aparecen, brillan y se apagan (las estrellas titilan)
+        var col = ps.colorOverLifetime; // aparecen, brillan y se apagan
         col.enabled = true;
         var g = new Gradient();
-        if (tipo == CatalogoDeSkins.Particulas.Estrellas)
-            g.SetKeys(new[] { new GradientColorKey(Color.white, 0f), new GradientColorKey(Color.white, 1f) },
-                new[] { new GradientAlphaKey(0f, 0f), new GradientAlphaKey(1f, 0.2f), new GradientAlphaKey(0.3f, 0.4f), new GradientAlphaKey(1f, 0.6f), new GradientAlphaKey(0f, 1f) });
-        else
-            g.SetKeys(new[] { new GradientColorKey(Color.white, 0f), new GradientColorKey(Color.white, 1f) },
+        g.SetKeys(new[] { new GradientColorKey(Color.white, 0f), new GradientColorKey(Color.white, 1f) },
                 new[] { new GradientAlphaKey(0f, 0f), new GradientAlphaKey(1f, 0.1f), new GradientAlphaKey(0.8f, 0.6f), new GradientAlphaKey(0f, 1f) });
         col.color = g;
         var tam = ps.sizeOverLifetime;
@@ -220,10 +216,6 @@ public class CuchilloDeSkin : MonoBehaviour
             case CatalogoDeSkins.Particulas.Chispas: // chispitas rápidas para cualquier lado
                 Poner(main, emision, mueve, 0.15f, 0.35f, 0.01f, 0.02f, 14f * aviva, largo, new Vector2(-1.2f, 1.2f), new Vector2(-1.2f, 1.2f));
                 ruido.strength = 0.1f * largo;
-                break;
-            case CatalogoDeSkins.Particulas.Estrellas: // flotan despacio y titilan
-                Poner(main, emision, mueve, 1f, 2f, 0.012f, 0.03f, 7f * aviva, largo, new Vector2(-0.1f, 0.1f), new Vector2(-0.1f, 0.1f));
-                ruido.strength = 0.15f * largo;
                 break;
             case CatalogoDeSkins.Particulas.Escarcha: // el frío baja
                 Poner(main, emision, mueve, 0.8f, 1.5f, 0.012f, 0.03f, 10f * aviva, largo, new Vector2(-0.1f, 0.1f), new Vector2(-0.45f, -0.15f));

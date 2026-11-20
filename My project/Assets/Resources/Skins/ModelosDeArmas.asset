@@ -81,8 +81,6 @@ MonoBehaviour:
     material: {fileID: 2100000, guid: e3fe59d3d94248c3a077e106f5450073, type: 2}
   - diseno: cuchillo-hoja-de-plasma
     material: {fileID: 2100000, guid: ccd4b675cf67402f8cccba61e44b8682, type: 2}
-  - diseno: cuchillo-rift-abierto
-    material: {fileID: 2100000, guid: 737fd61724fe4a96a1b497f1bd4df06d, type: 2}
   - diseno: cuchillo-cristal-de-hielo
     material: {fileID: 2100000, guid: 35497d94a26a4c7287aceb7b7b1d1523, type: 2}
   - diseno: cuchillo-sangre-de-invasor

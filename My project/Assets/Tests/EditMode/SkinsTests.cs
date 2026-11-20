@@ -160,7 +160,7 @@ public class SkinsTests
     public void El_cuchillo_tiene_sus_legendarias()
     {
         List<CatalogoDeSkins.Skin> delCuchillo = CatalogoDeSkins.DelArma("cuchillo");
-        Assert.AreEqual(6, delCuchillo.Count);
+        Assert.AreEqual(5, delCuchillo.Count);
         var modelosDelCuchillo = Resources.Load<ModelosDeArmas>("Skins/ModelosDeArmas");
         foreach (CatalogoDeSkins.Skin k in delCuchillo)
         {
@@ -168,7 +168,8 @@ public class SkinsTests
             Assert.AreNotEqual(CatalogoDeSkins.Particulas.Ninguna, k.diseno.particulas, k.id);
             Assert.IsNotNull(modelosDelCuchillo.MaterialDe(CatalogoDeSkins.ExtraPara(k, "M_Knife").material), k.id);
         }
-        foreach (string id in new[] { "hoja-de-plasma", "rift-abierto", "cristal-de-hielo", "sangre-de-invasor", "holograma" })
+        Assert.IsNull(CatalogoDeSkins.De("cuchillo-rift-abierto")); // descartada
+        foreach (string id in new[] { "hoja-de-plasma", "cristal-de-hielo", "sangre-de-invasor", "holograma" })
             Assert.IsNotNull(CatalogoDeSkins.De("cuchillo-" + id), id);
         // Se ponen de verdad: el material del cuchillo cambia (aunque el diseño no tenga material propio).
         var prueba = new GameObject("Cuchillo de prueba");

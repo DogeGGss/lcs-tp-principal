@@ -55,7 +55,7 @@ public static class CatalogoDeSkins
     }
 
     /// <summary>Las partículas de las skins del cuchillo (CuchilloDeSkin).</summary>
-    public enum Particulas { Ninguna, Brasas, Chispas, Estrellas, Escarcha, Gotas, Pixeles }
+    public enum Particulas { Ninguna, Brasas, Chispas, Escarcha, Gotas, Pixeles }
 
     /// <summary>US 381: lo que cambia al disparar con una legendaria (EfectosDeSkin): el color y la forma del fogonazo y
     /// la estela.</summary>
@@ -105,16 +105,16 @@ public static class CatalogoDeSkins
     public const string Main = "Main", Grey = "Grey", Black = "Black", White = "White";
 
     // Las del cuchillo (19/11/2026). Su modelo tiene un solo material (M_Knife, con textura), que cambia entero.
-    // Legendaria: Dragón Abisal, como la de las armas de fuego (mismo id: es el mismo estilo), con el cuchillo negro
-    // recorrido por grietas de fuego azul que se abren, laten y corren (Art/Skins/SkinDragon.shader, parte 3), y se le
+    // Legendaria: Dragón Abisal, como la de las armas de fuego (mismo id: es el mismo estilo), con el mango de escamas
+    // negras y la hoja negra recorrida por grietas de fuego azul que se abren, laten y corren (Art/Skins/SkinDragon.shader, parte 3), y se le
     // salen brasitas azules; al cortar, brillan más y salen más brasas (CalorDeSkin). (Prendido fuego con llamas quedó
     // descartado, 19/11/2026.)
     // Las demás (19/11/2026) van con Art/Skins/SkinCuchillo.shader, un modo cada una, y sus partículas:
     // - Hoja de plasma: la hoja de energía violeta que corre hacia la punta y late; chispitas que saltan.
-    // - Rift abierto: la hoja es una ventana al Rift (estrellas y nebulosa); estrellitas que flotan.
     // - Cristal de hielo: hielo celeste con grietas y escarcha que crece y se derrite; el frío que cae y, al cortar,
     //   esquirlas.
-    // - Sangre de invasor: metal negro con venas rojas que laten como un corazón; gotas que caen.
+    // - Sangre de invasor: metal negro con venas por las que corre sangre con cada latido; gotas que caen.
+    // (Rift abierto quedó descartada, 19/11/2026.)
     // - Holograma: un holograma celeste con líneas de escaneo, parpadeos y cortes; píxeles que suben.
     public const string MaterialCuchillo = "M_Knife";
     public static readonly List<Diseno> DisenosDelCuchillo = new List<Diseno>
@@ -123,7 +123,6 @@ public static class CatalogoDeSkins
             extras = new[] { new Extra { parte = MaterialCuchillo, material = "dragon-cuchillo", muestra = Hex(0x1A1C24) } },
             particulas = Particulas.Brasas },
         Cuchillo("hoja-de-plasma", "Hoja de plasma", 0x9B4DFF, Particulas.Chispas),
-        Cuchillo("rift-abierto", "Rift abierto", 0x7B3FE4, Particulas.Estrellas),
         Cuchillo("cristal-de-hielo", "Cristal de hielo", 0x8CCBFF, Particulas.Escarcha),
         Cuchillo("sangre-de-invasor", "Sangre de invasor", 0xE0141E, Particulas.Gotas),
         Cuchillo("holograma", "Holograma", 0x26C0FF, Particulas.Pixeles),

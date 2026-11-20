@@ -3,10 +3,10 @@
 // el espacio de la malla, _Eje.xyz es el eje del cuchillo hacia la punta y _Eje.w lo que mide de la empuñadura a la
 // punta (lo pone CuchilloDeSkin según la malla). La hoja empieza en _Hoja (la parte del largo).
 //   0 Hoja de plasma: la hoja es energía que corre hacia la punta y late; el mango, metal oscuro con vetas encendidas.
-//   1 Rift abierto: la hoja es una ventana al Rift (estrellas y nebulosa que se ven según desde dónde se mire, como si
-//     adentro hubiera espacio), con el borde encendido; el mango, metal oscuro.
 //   2 Cristal de hielo: hielo celeste con grietas adentro y escarcha que crece y se derrite; el mango, con escarcha.
-//   3 Sangre de invasor: metal negro con venas rojas que laten como un corazón (más rápido al cortar).
+//   3 Sangre de invasor: metal negro con venas a lo largo del cuchillo (más gruesas junto al mango, se ramifican y se
+//     afinan hacia la punta) por las que corre sangre: tandas que avanzan hacia la punta con cada latido (dos golpes y
+//     una pausa; más rápido al cortar).
 //   4 Holograma: el cuchillo como un holograma celeste (suma luz: va con Blend One One), con líneas de escaneo, una
 //     barra que lo recorre, parpadeos y cortes ("glitch") por franjas.
 // Todos brillan más al cortar (_Calor, de 0 a 1: CalorDeSkin).
@@ -15,7 +15,7 @@ Shader "Riftwalker/Skins/Cuchillo"
     Properties
     {
         [HideInInspector] _AjusteEscala ("Ajuste del tamaño del patrón", Float) = 1
-        _Modo ("Modo (0 plasma, 1 rift, 2 hielo, 3 sangre, 4 holograma)", Float) = 0
+        _Modo ("Modo (0 plasma, 2 hielo, 3 sangre, 4 holograma)", Float) = 0
         [NoScaleOffset] _BaseMap ("Textura del cuchillo", 2D) = "white" {}
         _Color ("Color", Color) = (0.6, 0.3, 1, 1)
         _ColorNucleo ("Color del centro", Color) = (0.95, 0.85, 1, 1)
@@ -161,24 +161,6 @@ Shader "Riftwalker/Skins/Cuchillo"
                     float3 plasma = lerp(_Color.rgb, _ColorNucleo.rgb, pow(energia, 2.0)) * (0.5 + 1.2 * energia + borde) * fuerza;
                     color = lerp(mango, plasma, hoja);
                 }
-                else if (modo == 1) // rift abierto
-                {
-                    float3 mango = Metal(i, N, V, 0.2, float3(0.85, 0.8, 1.0)) + _Color.rgb * borde * 0.4;
-                    // Lo que se ve "adentro": según la dirección desde la cámara (no pegado a la superficie).
-                    float3 dir = normalize(-V);
-                    float3 neb = dir * 3.0 + float3(t * 0.05, 0.0, t * 0.03);
-                    float nube = Fbm3(neb);
-                    float3 nebulosa = lerp(float3(0.02, 0.0, 0.06), _Color.rgb * 0.6, saturate(nube * 1.6 - 0.45));
-                    nebulosa += float3(0.05, 0.15, 0.5) * saturate(Fbm3(neb * 2.0 + 9.0) * 1.8 - 0.9);
-                    float3 celda = floor(dir * 70.0);
-                    float azar = Azar3(celda);
-                    float3 centro = (celda + 0.5) / 70.0;
-                    float estrella = step(0.97, azar) * pow(saturate(1.0 - length(dir - normalize(centro)) * 70.0), 3.0);
-                    estrella *= 0.6 + 0.4 * sin(t * 3.0 + azar * 40.0);
-                    float3 espacio = nebulosa * 1.5 + _ColorNucleo.rgb * estrella * 4.0;
-                    espacio += _Color.rgb * borde * fuerza * 0.8; // el borde de la hoja, encendido
-                    color = lerp(mango, espacio * (1.0 + 0.6 * _Calor), hoja);
-                }
                 else if (modo == 2) // hielo
                 {
                     Light luz = GetMainLight();
@@ -200,15 +182,28 @@ Shader "Riftwalker/Skins/Cuchillo"
                 }
                 else if (modo == 3) // sangre
                 {
-                    float3 metal = Metal(i, N, V, 0.22, float3(1.0, 0.85, 0.85));
-                    // El latido: dos golpes y una pausa, que viajan hacia la punta; al cortar, más rápido.
-                    float f = frac(t * (1.1 + 1.4 * _Calor) - u * 0.35);
-                    float latido = Campana(f / 0.06) + 0.6 * Campana((f - 0.2) / 0.06);
-                    float halo;
-                    float vena = Red(p, 5.0, 0.035, halo);
-                    float vivas = 0.35 + 1.1 * latido;
-                    color = metal + _Color.rgb * halo * 0.35 * vivas * fuerza * 0.4;
-                    color = lerp(color, lerp(_Color.rgb, _ColorNucleo.rgb, latido * vena) * vivas * fuerza * 0.5, vena);
+                    float3 metal = Metal(i, N, V, 0.2, float3(1.0, 0.8, 0.8));
+                    // Las venas: el ruido estirado a lo largo del cuchillo, así las líneas corren hacia la punta y se
+                    // ramifican; más gruesas junto al mango.
+                    float3 e = normalize(_Eje.xyz);
+                    float a = dot(i.posM, e);
+                    float3 lado = i.posM - e * a;
+                    float3 q = lado / _Tamano + e * (a / (_Tamano * 5.0));
+                    float d = abs(Fbm3(q + 5.0) - 0.5);
+                    float ancho = lerp(0.07, 0.025, saturate(u));
+                    float vena = saturate(1.0 - d / ancho);
+                    float rodea = saturate(1.0 - d / (ancho * 2.2));
+                    // La sangre corre hacia la punta: tandas que salen con cada latido (dos golpes y una pausa).
+                    float ritmo = 1.1 + 1.4 * _Calor;
+                    float f = frac(t * ritmo - u * 1.6);
+                    float tanda = Campana(f / 0.07) + 0.6 * Campana((f - 0.22) / 0.07);
+                    float3 oscura = float3(0.18, 0.0, 0.01), viva = _Color.rgb, clara = _ColorNucleo.rgb;
+                    float3 sangre = lerp(oscura, viva, 0.35 + 0.65 * tanda);
+                    sangre = lerp(sangre, clara, tanda * vena * vena * 0.6);
+                    // Brillo húmedo de la sangre y un poco de rojo que se transparenta alrededor de la vena.
+                    float brillo = pow(saturate(dot(N, normalize(normalize(GetMainLight().direction) + V))), 64.0);
+                    color = metal + viva * (rodea - vena) * 0.12 * (0.5 + tanda);
+                    color = lerp(color, sangre * fuerza * (0.45 + 0.35 * tanda) + brillo * 0.6, vena);
                 }
                 else // holograma (suma luz)
                 {
