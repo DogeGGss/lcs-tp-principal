@@ -33,6 +33,7 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
     private GameObject pistola;
     private List<GameObject> secundarias = new List<GameObject>(); // las demás secundarias (sin la Línea A)
     private MeleeWeaponHolder cuchillo;
+    private MeleeAttack ataqueCuerpoACuerpo; // US 395: la guardia de la katana, para mandarla
     private WeaponSwitcher cambioLocal; // dueño: para saber qué granada tiene en la mano
     private PartidaEnRed partida;
     private bool muerto;
@@ -48,6 +49,7 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
     private BaileEnTerceraPersona baile;         // US 262: el baile (emote) que hace
     private CaidoEnTerceraPersona caidoVisto;    // F31 (US 357): caído, arrastrándose o levantándose
     private byte emoteRed;                       // US 262: el baile que llega por la red (0: ninguno; si no, su número + 1)
+    private bool guardiaRed;                     // US 395: con la katana en guardia (para el espectador)
     private readonly HashSet<int> granadasExplotadas = new HashSet<int>();
     private bool cuerpoPropio;              // la copia ya tiene el modelo de su personaje (CharacterData.modelo)
     private CharacterData cuerpoDe;         // de qué personaje es el cuerpo que tiene ahora
@@ -142,6 +144,7 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
         movimiento = GetComponent<PlayerMovement>();
         animador = GetComponentInChildren<Animator>();
         cuchillo = GetComponent<MeleeWeaponHolder>();
+        ataqueCuerpoACuerpo = GetComponentInChildren<MeleeAttack>(true);
         WeaponSwitcher cambio = GetComponentInChildren<WeaponSwitcher>(true);
         camara = cambio != null ? cambio.transform : transform.Find("Main Camera");
         if (cambio != null) { principales = cambio.Principales(); pistola = cambio.pistolObj; secundarias = OtrasSecundarias(cambio); }
@@ -229,7 +232,9 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
         if (ataque.gameObject != gameObject || muerto) return;
         if (vida != null) vida.Invulnerable = false;
         atacoDesdeReaparicion = true;
-        photonView.RPC(nameof(RpcCuchillo), RpcTarget.Others);
+        // US 395: qué ataque es (el espectador hace el mismo movimiento con la katana).
+        byte tipo = ataque.AvanceDeLaEstocada >= 0f ? CorteEstocada : ataque.TajoFuerte ? CorteFuerte : CorteTajo;
+        photonView.RPC(nameof(RpcCuchillo), RpcTarget.Others, tipo);
     }
 
     // US 259, CA2: este jugador empezó a lanzar una granada (el clic); en las demás computadoras su brazo va hacia atrás y
@@ -906,6 +911,14 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
     /// <summary>US 133: avisa en la copia cada puñalada de su dueño (el espectador mueve el cuchillo).</summary>
     public event System.Action Punalada;
 
+    /// <summary>US 395 (espectador): qué fue el último ataque cuerpo a cuerpo de su dueño (CorteTajo, CorteFuerte o
+    /// CorteEstocada).</summary>
+    public byte UltimoCorte { get; private set; }
+    public const byte CorteTajo = 0, CorteFuerte = 1, CorteEstocada = 2;
+
+    /// <summary>US 395 (espectador): su dueño tiene la katana en guardia.</summary>
+    public bool KatanaEnGuardia => !muerto && guardiaRed;
+
     /// <summary>US 133: avisa en la copia cada disparo de su dueño (el espectador mueve el arma).</summary>
     public event System.Action Disparo;
 
@@ -1530,9 +1543,10 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
     }
 
     [PunRPC]
-    private void RpcCuchillo()
+    private void RpcCuchillo(byte tipo)
     {
         if (photonView.IsMine) return;
+        UltimoCorte = tipo;
         armaRed = ArmaCuchillo;
         MostrarArma(ArmaCuchillo);
         // US 395: con la katana, sus sonidos (el tajo; se turnan como en primera persona).
@@ -1917,6 +1931,7 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
             stream.SendNext(reserva);
             stream.SendNext(recarga);
             stream.SendNext(muerto ? (byte)0 : (byte)(Emotes.Actual + 1)); // US 262: el baile que hace
+            stream.SendNext(!muerto && ataqueCuerpoACuerpo != null && ataqueCuerpoACuerpo.EnGuardia); // US 395: en guardia
             return;
         }
 
@@ -1942,6 +1957,7 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
                 recargaRed = (byte)stream.ReceiveNext();
                 // US 262: el baile (si el que manda tiene una versión anterior, no viene: no baila).
                 emoteRed = stream.PeekNext() is byte ? (byte)stream.ReceiveNext() : (byte)0;
+                guardiaRed = stream.PeekNext() is bool && (bool)stream.ReceiveNext(); // US 395
             }
         }
         catch (System.IndexOutOfRangeException) { }

@@ -40,6 +40,36 @@ public class BrazoConPoses : MonoBehaviour
         lista.CopyTo(cambian);
     }
 
+    /// <summary>US 395 (espectador): el mismo brazo con sus poses en otra copia ("destino"), con una malla propia
+    /// para que mezclar las poses ahí no mueva el brazo de este.</summary>
+    public BrazoConPoses CopiarEn(MeshFilter destino)
+    {
+        if (malla == null || destino == null) return null;
+        Mesh propia = Instantiate(malla);
+        propia.name = malla.name + " (copia)";
+        propia.SetVertices(quieto);
+        propia.SetNormals(normalesQuieto);
+        destino.sharedMesh = propia;
+        BrazoConPoses copia = destino.gameObject.AddComponent<BrazoConPoses>();
+        copia.malla = propia;
+        copia.mallaPropia = true;
+        propia.MarkDynamic();
+        copia.quieto = quieto;
+        copia.normalesQuieto = normalesQuieto;
+        copia.ahora = (Vector3[])quieto.Clone();
+        copia.normalesAhora = (Vector3[])normalesQuieto.Clone();
+        foreach (KeyValuePair<string, Vector3[]> p in poses) copia.poses[p.Key] = p.Value;
+        foreach (KeyValuePair<string, Vector3[]> p in normalesPoses) copia.normalesPoses[p.Key] = p.Value;
+        copia.cambian = cambian;
+        return copia;
+    }
+
+    private bool mallaPropia;
+    private void OnDestroy()
+    {
+        if (mallaPropia && malla != null) Destroy(malla);
+    }
+
     public bool Tiene(string nombre) => poses.ContainsKey(nombre);
     public int Cuantas => poses.Count;
 

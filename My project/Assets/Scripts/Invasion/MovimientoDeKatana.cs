@@ -39,9 +39,22 @@ public class MovimientoDeKatana : MonoBehaviour
     public Vector3 Brazo { get; private set; }
     public Quaternion BrazoGiro { get; private set; } = Quaternion.identity;
 
+    private bool buscado;
+
     private void Start()
     {
         ataque = GetComponentInParent<MeleeAttack>();
+        Buscar();
+        Mostrar(false);
+        brazos = GetComponentInParent<BrazosEnCamara>();
+        if (ataque == null) enabled = false; // (la copia de otro jugador o la del espectador: queda quieta)
+    }
+
+    // Las poses y dónde está la katana quieta. También para el espectador (Pose), que puede usar una copia apagada.
+    private void Buscar()
+    {
+        if (buscado) return;
+        buscado = true;
         modelo = transform.Find("Modelo");
         mano = transform.Find(BrazosEnCamara.AgarreDerecho);
         tajo = transform.Find(PoseTajo);
@@ -52,7 +65,6 @@ public class MovimientoDeKatana : MonoBehaviour
         foreach (Transform t in transform)
             if (EsPose(t.name)) lista.AddRange(t.GetComponentsInChildren<Renderer>(true));
         muestras = lista.ToArray();
-        Mostrar(false);
         if (modelo != null)
         {
             basePos = modelo.localPosition;
@@ -61,8 +73,36 @@ public class MovimientoDeKatana : MonoBehaviour
             agarre = punto != null ? punto.localPosition : Quaternion.Inverse(baseGiro) * ((mano != null ? mano.localPosition : basePos) - basePos);
         }
         Iniciado = modelo != null;
-        brazos = GetComponentInParent<BrazosEnCamara>();
-        if (ataque == null) enabled = false; // (la copia de otro jugador o la del espectador: queda quieta)
+    }
+
+    /// <summary>El modelo de la katana (el que se mueve a las poses).</summary>
+    public Transform Modelo { get { Buscar(); return modelo; } }
+
+    /// <summary>
+    /// Dónde va el modelo de la katana (en el espacio de este objeto) con ese avance del tajo ("corte", de 0 a 1, o -1),
+    /// de la estocada ("estocadaAvance", de 0 a 1, o -1) y de la guardia (0 a 1), y cuánto pesa cada pose (para el brazo).
+    /// Lo usa también el modo espectador, con lo que hace el compañero que se mira.
+    /// </summary>
+    public void Pose(float corte, bool fuerte, float estocadaAvance, float guardiaAvance, out Vector3 pos, out Quaternion giro,
+                     System.Collections.Generic.List<System.Collections.Generic.KeyValuePair<string, float>> pesosDeLasPoses)
+    {
+        Buscar();
+        pos = basePos;
+        giro = baseGiro;
+        pesosDeLasPoses.Clear();
+        // Tajo: va hasta la pose (rápido en el corte), se queda un instante y vuelve.
+        if (corte >= 0f)
+        {
+            float t = corte * MeleeAttack.Total, ida = MeleeAttack.Preparacion + MeleeAttack.Corte;
+            float f = t < ida ? Mathf.SmoothStep(0f, 1f, t / ida)
+                              : 1f - Mathf.SmoothStep(0f, 1f, (t - ida) / MeleeAttack.Vuelta);
+            Hacia(fuerte && tajoFuerte != null ? tajoFuerte : tajo, f, ref pos, ref giro, pesosDeLasPoses);
+        }
+        // Estocada: llega enseguida, se queda mientras avanza y vuelve al final.
+        float e = estocadaAvance;
+        if (e >= 0f) Hacia(estocada, Mathf.SmoothStep(0f, 1f, Mathf.Min(1f, e / 0.25f) * (e > 0.8f ? (1f - e) / 0.2f : 1f)), ref pos, ref giro, pesosDeLasPoses);
+        // Guardia: mientras la tiene puesta.
+        if (guardiaAvance > 0f) Hacia(guardia, Mathf.SmoothStep(0f, 1f, guardiaAvance), ref pos, ref giro, pesosDeLasPoses);
     }
 
     // El brazo derecho de la foto de esta katana, con las poses (null hasta que estén las fotos).
@@ -89,24 +129,7 @@ public class MovimientoDeKatana : MonoBehaviour
         if (ajustando != mostrando) Mostrar(ajustando);
         if (modelo == null || ataque == null || ajustando) { Brazo = Vector3.zero; BrazoGiro = Quaternion.identity; return; } // (ajustando: quieta)
 
-        Vector3 pos = basePos;
-        Quaternion giro = baseGiro;
-        pesos.Clear();
-
-        // Tajo: va hasta la pose (rápido en el corte), se queda un instante y vuelve.
-        float corte = ataque.AvanceDelCorte;
-        if (corte >= 0f)
-        {
-            float t = corte * MeleeAttack.Total, ida = MeleeAttack.Preparacion + MeleeAttack.Corte;
-            float f = t < ida ? Mathf.SmoothStep(0f, 1f, t / ida)
-                              : 1f - Mathf.SmoothStep(0f, 1f, (t - ida) / MeleeAttack.Vuelta);
-            Hacia(ataque.TajoFuerte && tajoFuerte != null ? tajoFuerte : tajo, f, ref pos, ref giro);
-        }
-        // Estocada: llega enseguida, se queda mientras avanza y vuelve al final.
-        float e = ataque.AvanceDeLaEstocada;
-        if (e >= 0f) Hacia(estocada, Mathf.SmoothStep(0f, 1f, Mathf.Min(1f, e / 0.25f) * (e > 0.8f ? (1f - e) / 0.2f : 1f)), ref pos, ref giro);
-        // Guardia: mientras la tiene puesta.
-        if (ataque.Guardia > 0f) Hacia(guardia, Mathf.SmoothStep(0f, 1f, ataque.Guardia), ref pos, ref giro);
+        Pose(ataque.AvanceDelCorte, ataque.TajoFuerte, ataque.AvanceDeLaEstocada, ataque.Guardia, out Vector3 pos, out Quaternion giro, pesos);
 
         // Con las fotos de las poses: el brazo se dobla (mezclando las fotos) y la katana va derecho a su lugar.
         BrazoConPoses brazo = BrazoConPoses();
@@ -138,7 +161,8 @@ public class MovimientoDeKatana : MonoBehaviour
     }
 
     // Lleva la katana hacia esa pose (f de 0 a 1) y anota cuánto pesa cada pose (para mezclar las fotos del brazo).
-    private void Hacia(Transform pose, float f, ref Vector3 pos, ref Quaternion giro)
+    private static void Hacia(Transform pose, float f, ref Vector3 pos, ref Quaternion giro,
+                              System.Collections.Generic.List<System.Collections.Generic.KeyValuePair<string, float>> pesos)
     {
         if (pose == null || f <= 0f) return;
         pos = Vector3.Lerp(pos, pose.localPosition, f);
