@@ -333,7 +333,19 @@ public class AnimacionPrimeraPersona : MonoBehaviour
         if (ataque != null && ataque.Katana != null) { Katana(out mover, out girar); return; } // US 395
         float avance = ataque != null ? ataque.AvanceDelCorte : -1f;
         if (avance < 0f) return;
-        float t = avance * MeleeAttack.Total;
+        CorteEn(avance * MeleeAttack.Total, out mover, out girar);
+    }
+
+    /// <summary>US 256: cuánto se corren y giran el cuchillo y el brazo derecho (alrededor de la mano) a "t" segundos de
+    /// empezar el corte. Lo usa también el modo espectador, para hacer el mismo corte con la copia (US 133).</summary>
+    public void CorteEn(float t, out Vector3 mover, out Quaternion girar) =>
+        PoseDelCorte(t, corteAncho, corteAlto, corteGiro, out mover, out girar);
+
+    public static void PoseDelCorte(float t, float corteAncho, float corteAlto, float corteGiro, out Vector3 mover, out Quaternion girar)
+    {
+        mover = Vector3.zero;
+        girar = Quaternion.identity;
+        if (t < 0f || t >= MeleeAttack.Total) return;
         // De adentro para afuera: arranca hacia el centro de la pantalla (izquierda) y cruza hacia la derecha.
         Vector3 atrasPos = new Vector3(-corteAncho * 0.45f, corteAlto, -0.02f), finPos = new Vector3(corteAncho * 0.55f, -corteAlto * 0.6f, 0.05f);
         Vector3 atrasGiro = new Vector3(-15f, -corteGiro, 35f), finGiro = new Vector3(10f, corteGiro * 1.1f, 60f);
