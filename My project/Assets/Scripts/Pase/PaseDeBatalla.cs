@@ -290,7 +290,8 @@ public static class PaseDeBatalla
             metas = new[] { 10, 20, 30, 40 }, xp = new[] { 300, 500, 750, 1000 } });
         D("sin-mira", "Eliminar 5 enemigos sin apuntar con el Último Tren", "Deathmatch o Táctico", 5, 500);
         foreach (CatalogoDeSkins.Arma a in CatalogoDeSkins.Armas)
-            D("arma." + a.id, "Eliminar 15 enemigos con {0}", "Deathmatch o Táctico", 15, 300, a.nombre);
+            if (!a.cuerpoACuerpo) // (las armas de fuego; el cuchillo está en el catálogo por sus skins)
+                D("arma." + a.id, "Eliminar 15 enemigos con {0}", "Deathmatch o Táctico", 15, 300, a.nombre);
         D("invasion.puestos", "Cargar 3 puestos de suministros", "Invasión", 3, 300);
         D("invasion.jefe", "Eliminar al Jefe", "Invasión", 1, 750);
         D("invasion.alfas", "Eliminar 10 alfas", "Invasión", 10, 500);

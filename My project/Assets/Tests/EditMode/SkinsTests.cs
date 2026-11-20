@@ -10,9 +10,14 @@ public class SkinsTests
     public void La_primera_tanda_son_comunes_en_todas_las_armas()
     {
         int porArma = CatalogoDeSkins.Combinaciones.Count + CatalogoDeSkins.Disenos.Count;
-        Assert.AreEqual(CatalogoDeSkins.Armas.Count * porArma, CatalogoDeSkins.Skins.Count);
+        int total = 0;
         foreach (CatalogoDeSkins.Arma a in CatalogoDeSkins.Armas)
-            Assert.AreEqual(porArma, CatalogoDeSkins.DelArma(a.id).Count, a.nombre);
+        {
+            int deEsta = a.cuerpoACuerpo ? a.disenos.Count : porArma; // el cuchillo, solo sus diseños
+            Assert.AreEqual(deEsta, CatalogoDeSkins.DelArma(a.id).Count, a.nombre);
+            total += deEsta;
+        }
+        Assert.AreEqual(total, CatalogoDeSkins.Skins.Count);
         foreach (CatalogoDeSkins.Skin s in CatalogoDeSkins.Skins)
             Assert.AreEqual(s.colores != null ? PerfilDatos.Rareza.Comun : s.diseno.rareza, s.rareza, s.nombre);
     }
@@ -140,6 +145,7 @@ public class SkinsTests
         foreach (CatalogoDeSkins.Arma a in CatalogoDeSkins.Armas)
             foreach (string id in new[] { "proxima-estacion", "mapa-del-subte" })
             {
+                if (a.cuerpoACuerpo) continue; // (el cuchillo tiene sus propios diseños)
                 CatalogoDeSkins.Skin s = CatalogoDeSkins.De(a.id + "-" + id);
                 Assert.IsNotNull(s, a.id + "-" + id);
                 Assert.AreEqual(PerfilDatos.Rareza.Epico, s.rareza);
@@ -148,5 +154,53 @@ public class SkinsTests
         var modelos = Resources.Load<ModelosDeArmas>("Skins/ModelosDeArmas");
         foreach (string id in new[] { "proxima-estacion", "proxima-estacion-franjas", "mapa-del-subte", "mapa-franjas" })
             Assert.IsNotNull(modelos.MaterialDe(id), id);
+    }
+
+    [Test, Category("F35"), Description("El cuchillo: solo legendarias (el Dragón Abisal y las suyas), cada una con su material y sus partículas")]
+    public void El_cuchillo_tiene_sus_legendarias()
+    {
+        List<CatalogoDeSkins.Skin> delCuchillo = CatalogoDeSkins.DelArma("cuchillo");
+        Assert.AreEqual(5, delCuchillo.Count);
+        var modelosDelCuchillo = Resources.Load<ModelosDeArmas>("Skins/ModelosDeArmas");
+        foreach (CatalogoDeSkins.Skin k in delCuchillo)
+        {
+            Assert.AreEqual(PerfilDatos.Rareza.Legendario, k.rareza, k.id);
+            Assert.AreNotEqual(CatalogoDeSkins.Particulas.Ninguna, k.diseno.particulas, k.id);
+            Assert.IsNotNull(modelosDelCuchillo.MaterialDe(CatalogoDeSkins.ExtraPara(k, "M_Knife").material), k.id);
+        }
+        Assert.IsNull(CatalogoDeSkins.De("cuchillo-rift-abierto")); // descartada
+        foreach (string id in new[] { "hoja-de-plasma", "cristal-de-hielo", "sangre-de-invasor", "holograma" })
+            Assert.IsNotNull(CatalogoDeSkins.De("cuchillo-" + id), id);
+        // Se ponen de verdad: el material del cuchillo cambia (aunque el diseño no tenga material propio).
+        var prueba = new GameObject("Cuchillo de prueba");
+        var original = new Material(Shader.Find("Universal Render Pipeline/Lit")) { name = "M_Knife" };
+        prueba.AddComponent<MeshFilter>();
+        prueba.AddComponent<MeshRenderer>().sharedMaterial = original;
+        foreach (CatalogoDeSkins.Skin k in delCuchillo)
+        {
+            SkinDeArma.Poner(prueba, k);
+            Assert.AreNotEqual(original, prueba.GetComponent<MeshRenderer>().sharedMaterial, k.id);
+        }
+        Object.DestroyImmediate(prueba);
+        Object.DestroyImmediate(original);
+        CatalogoDeSkins.Skin s = CatalogoDeSkins.De("cuchillo-dragon-abisal");
+        Assert.IsNotNull(s);
+        Assert.AreEqual("Cuchillo · Dragón Abisal", s.nombre);
+        Assert.AreEqual(PerfilDatos.Rareza.Legendario, s.rareza);
+        Assert.IsNull(CatalogoDeSkins.De("cuchillo-rift")); // sin las comunes
+        Assert.AreEqual("dragon-cuchillo", CatalogoDeSkins.ExtraPara(s, "M_Knife").material);
+        Assert.IsNull(CatalogoDeSkins.ExtraPara(s, "White"));
+        Assert.IsNull(EfectosDeSkin.De(s)); // (no dispara: sin fogonazo ni estela)
+        Assert.AreEqual(CatalogoDeSkins.Particulas.Brasas, s.diseno.particulas);
+        Assert.AreEqual(CatalogoDeSkins.Particulas.Ninguna, CatalogoDeSkins.De("mitre-dragon-abisal").diseno.particulas); // las armas de fuego, no
+        Assert.AreEqual(OrigenDeCosmeticos.Origen.Capsulas, OrigenDeCosmeticos.De(s)); // como el de las armas de fuego
+        var modelos = Resources.Load<ModelosDeArmas>("Skins/ModelosDeArmas");
+        Assert.IsNotNull(modelos.De("cuchillo"));
+        Assert.IsNotNull(modelos.MaterialDe("dragon-cuchillo"));
+        Assert.IsNotNull(modelos.MaterialDe("efecto-brasa"));
+        // La katana (US 395), que va en el lugar del cuchillo, no lleva su skin.
+        var katana = ScriptableObject.CreateInstance<KatanaData>();
+        Assert.IsFalse(SkinsEnLasArmas.EsElCuchillo(katana));
+        Object.DestroyImmediate(katana);
     }
 }

@@ -58,6 +58,7 @@ public class SkinDeArma : MonoBehaviour
     public void Poner(Material skin, params string[] partes)
     {
         Cambiar(m => EsParte(m, partes) ? skin : m);
+        CuchilloDeSkin.Poner(gameObject, null);
         Skin = skin;
     }
 
@@ -68,13 +69,13 @@ public class SkinDeArma : MonoBehaviour
         Material diseno = skin?.diseno != null ? ModelosDeArmas.Actual.MaterialDe(skin.diseno.id) : null;
         Cambiar(m =>
         {
-            if (diseno != null)
+            if (skin?.diseno != null) // (el material del diseño puede no estar: las del cuchillo solo cambian su parte)
             {
                 if (m == null) return m;
                 // La mira que se le agrega al Último Tren (PiezasDelTren): en las legendarias, como las franjas.
                 string parte = m.name == PiezasDelTren.NombreMira && skin.rareza == PerfilDatos.Rareza.Legendario
                     ? CatalogoDeSkins.Main : m.name;
-                if (CatalogoDeSkins.EsParteDelDiseno(skin, parte)) return ConDiseno(m, diseno);
+                if (diseno != null && CatalogoDeSkins.EsParteDelDiseno(skin, parte)) return ConDiseno(m, diseno);
                 // Otras partes del diseño: con otro material (el cuerpo de madera del cobre) o un color (las franjas).
                 CatalogoDeSkins.Extra extra = CatalogoDeSkins.ExtraPara(skin, parte);
                 if (extra == null) return m;
@@ -84,6 +85,7 @@ public class SkinDeArma : MonoBehaviour
             Color? color = m != null ? CatalogoDeSkins.ColorPara(skin, m.name) : null;
             return color.HasValue ? Pintado(m, color.Value) : m;
         });
+        CuchilloDeSkin.Poner(gameObject, skin); // las del cuchillo: dónde está la hoja y sus partículas
         Puesta = skin;
     }
 
@@ -161,8 +163,15 @@ public class SkinDeArma : MonoBehaviour
         }
     }
 
-    private static Mesh MallaDe(Renderer r) =>
-        r is SkinnedMeshRenderer s ? s.sharedMesh : r.GetComponent<MeshFilter>() is MeshFilter f ? f.sharedMesh : null;
+    // (Con "!= null": en el editor, un componente que falta no es null para "is", y las partículas de las skins del
+    // cuchillo no tienen malla.)
+    private static Mesh MallaDe(Renderer r)
+    {
+        if (r is SkinnedMeshRenderer s) return s.sharedMesh;
+        if (r is ParticleSystemRenderer || r is LineRenderer || r is TrailRenderer) return null;
+        MeshFilter f = r.GetComponent<MeshFilter>();
+        return f != null ? f.sharedMesh : null;
+    }
 
     // La pieza más grande del arma (por su malla).
     private static Renderer Principal(GameObject go)

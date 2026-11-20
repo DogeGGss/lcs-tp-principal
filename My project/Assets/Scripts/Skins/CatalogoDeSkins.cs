@@ -9,7 +9,8 @@ using Rareza = PerfilDatos.Rareza;
 // - Rara: otro material, sin animar. Épica: material animado. Legendaria: además, su fogonazo y su proyectil (US 381).
 // Las armas de fuego tienen los mismos cuatro materiales, así que una combinación sirve para todas. Por lo que tapa cada
 // uno (medido en los modelos): Black es el cuerpo (la mitad del arma), White los paneles (un tercio), Grey los detalles y
-// Main el acento (unas franjas). El cuchillo (otro modelo, con textura) por ahora no tiene skins.
+// Main el acento (unas franjas). El cuchillo (otro modelo, con textura y un solo material) tiene solo sus propias skins
+// (DisenosDelCuchillo): legendarias, cada una con sus partículas (CuchilloDeSkin) (19/11/2026).
 // Las demás rarezas ponen un material en algunas partes del arma (Diseno): el material está en
 // Resources/Skins/ModelosDeArmas, con el id del diseño. Épicas: Código binario (13/11/2026), en todas las armas.
 // El id de cada skin ("mitre-rift") es el que se guarda (SkinsDeArmas) y el que va por la red: no se cambia.
@@ -22,6 +23,10 @@ public static class CatalogoDeSkins
         public string ficha;
         /// <summary>Se tiñe con el acento (un modelo con textura, sin los cuatro materiales).</summary>
         public bool tenir;
+        /// <summary>Un arma cuerpo a cuerpo (el cuchillo): sin las comunes ni los diseños de las armas de fuego.</summary>
+        public bool cuerpoACuerpo;
+        /// <summary>Sus propios diseños (null: los de las armas de fuego, Disenos).</summary>
+        public List<Diseno> disenos;
     }
 
     /// <summary>Los cuatro colores de una skin común.</summary>
@@ -45,7 +50,12 @@ public static class CatalogoDeSkins
         public Extra[] extras = new Extra[0];
         /// <summary>Las legendarias (US 381): su fogonazo y su estela. null: los de siempre.</summary>
         public Efectos efectos;
+        /// <summary>Lo que se le sale al arma todo el tiempo, del color de la muestra (CuchilloDeSkin; el cuchillo).</summary>
+        public Particulas particulas;
     }
+
+    /// <summary>Las partículas de las skins del cuchillo (CuchilloDeSkin).</summary>
+    public enum Particulas { Ninguna, Brasas, Chispas, Escarcha, Gotas, Pixeles }
 
     /// <summary>US 381: lo que cambia al disparar con una legendaria (EfectosDeSkin): el color y la forma del fogonazo y
     /// la estela.</summary>
@@ -94,6 +104,35 @@ public static class CatalogoDeSkins
 
     public const string Main = "Main", Grey = "Grey", Black = "Black", White = "White";
 
+    // Las del cuchillo (19/11/2026). Su modelo tiene un solo material (M_Knife, con textura), que cambia entero.
+    // Legendaria: Dragón Abisal, como la de las armas de fuego (mismo id: es el mismo estilo), con el mango de escamas
+    // negras y la hoja negra recorrida por grietas de fuego azul que se abren, laten y corren (Art/Skins/SkinDragon.shader, parte 3), y se le
+    // salen brasitas azules; al cortar, brillan más y salen más brasas (CalorDeSkin). (Prendido fuego con llamas quedó
+    // descartado, 19/11/2026.)
+    // Las demás (19/11/2026) van con Art/Skins/SkinCuchillo.shader, un modo cada una, y sus partículas:
+    // - Hoja de plasma: la hoja de energía violeta que corre hacia la punta y late; chispitas que saltan.
+    // - Cristal de hielo: hielo celeste con grietas y escarcha que crece y se derrite; el frío que cae y, al cortar,
+    //   esquirlas.
+    // - Sangre de invasor: metal negro con venas por las que corre sangre con cada latido; gotas que caen.
+    // (Rift abierto quedó descartada, 19/11/2026.)
+    // - Holograma: un holograma celeste con líneas de escaneo, parpadeos y cortes; píxeles que suben.
+    public const string MaterialCuchillo = "M_Knife";
+    public static readonly List<Diseno> DisenosDelCuchillo = new List<Diseno>
+    {
+        new Diseno { id = "dragon-abisal", nombre = "Dragón Abisal", rareza = Rareza.Legendario, partes = new string[0], muestra = Hex(0x1E6BFF),
+            extras = new[] { new Extra { parte = MaterialCuchillo, material = "dragon-cuchillo", muestra = Hex(0x1A1C24) } },
+            particulas = Particulas.Brasas },
+        Cuchillo("hoja-de-plasma", "Hoja de plasma", 0x9B4DFF, Particulas.Chispas),
+        Cuchillo("cristal-de-hielo", "Cristal de hielo", 0x8CCBFF, Particulas.Escarcha),
+        Cuchillo("sangre-de-invasor", "Sangre de invasor", 0xE0141E, Particulas.Gotas),
+        Cuchillo("holograma", "Holograma", 0x26C0FF, Particulas.Pixeles),
+    };
+
+    // Una legendaria del cuchillo con su material ("cuchillo-" + id, en ModelosDeArmas) en todo el cuchillo.
+    private static Diseno Cuchillo(string id, string nombre, int muestra, Particulas particulas) =>
+        new Diseno { id = id, nombre = nombre, rareza = Rareza.Legendario, partes = new string[0], muestra = Hex(muestra), particulas = particulas,
+            extras = new[] { new Extra { parte = MaterialCuchillo, material = "cuchillo-" + id, muestra = Hex(muestra) } } };
+
     public static readonly List<Arma> Armas = new List<Arma>
     {
         new Arma { id = "mitre", nombre = "Mitre", ficha = "Fusil" },
@@ -104,7 +143,8 @@ public static class CatalogoDeSkins
         new Arma { id = "gran-capitan", nombre = "El Gran Capitán", ficha = "GranCapitan" },
         new Arma { id = "la-portena", nombre = "La Porteña", ficha = "Pistola" },
         new Arma { id = "la-trochita", nombre = "La Trochita", ficha = "PistolaPesada" },
-        // El cuchillo, por ahora sin skins: teñido con un color no quedó bien (13/11/2026). Con tenir = true lo tiñen los paneles.
+        // El cuchillo: teñido con un color no quedó bien (13/11/2026), así que solo tiene sus propios diseños (19/11/2026).
+        new Arma { id = "cuchillo", nombre = "Cuchillo", cuerpoACuerpo = true, disenos = DisenosDelCuchillo },
     };
 
     // La primera tanda (13/11/2026): cinco combinaciones, comunes, en todas las armas. Cuerpo / paneles / detalles / acento.
@@ -181,10 +221,11 @@ public static class CatalogoDeSkins
     {
         foreach (Arma a in Armas)
         {
-            foreach (Colores c in Combinaciones)
-                Sumar(new Skin { id = a.id + "-" + c.id, nombre = a.nombre + " · " + c.nombre, arma = a, rareza = Rareza.Comun, colores = c });
-            if (a.tenir) continue; // el cuchillo no tiene los cuatro materiales
-            foreach (Diseno d in Disenos)
+            if (!a.cuerpoACuerpo)
+                foreach (Colores c in Combinaciones)
+                    Sumar(new Skin { id = a.id + "-" + c.id, nombre = a.nombre + " · " + c.nombre, arma = a, rareza = Rareza.Comun, colores = c });
+            if (a.tenir) continue; // un arma que solo se tiñe no tiene los cuatro materiales
+            foreach (Diseno d in a.disenos ?? Disenos)
                 Sumar(new Skin { id = a.id + "-" + d.id, nombre = a.nombre + " · " + d.nombre, arma = a, rareza = d.rareza, diseno = d });
         }
     }
@@ -227,6 +268,11 @@ public static class CatalogoDeSkins
     {
         if (skin == null) return Originales;
         if (skin.colores != null) return new[] { skin.colores.cuerpo, skin.colores.paneles, skin.colores.detalles, skin.colores.acento };
+        if (skin.arma.cuerpoACuerpo && skin.diseno != null) // el cuchillo: su material y el color del diseño
+        {
+            Color cuerpo = skin.diseno.extras.Length > 0 ? skin.diseno.extras[0].muestra : skin.diseno.muestra;
+            return new[] { cuerpo, skin.diseno.muestra, cuerpo, skin.diseno.muestra };
+        }
         string[] orden = { Black, White, Grey, Main };
         var barra = new Color[4];
         for (int i = 0; i < 4; i++)

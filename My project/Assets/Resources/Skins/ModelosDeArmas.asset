@@ -29,6 +29,8 @@ MonoBehaviour:
     modelo: {fileID: 919132149155446097, guid: b6850ddfbb71bac42adc4da0872aaad2, type: 3}
   - arma: la-trochita
     modelo: {fileID: 919132149155446097, guid: ea59be7a4287c084e9ac1e85035af213, type: 3}
+  - arma: cuchillo
+    modelo: {fileID: 919132149155446097, guid: 9ddea76d95a1d9942bc26424ebdfa7aa, type: 3}
   bocas:
   - arma: mitre
     corrimiento: {x: -0, y: 0.038}
@@ -75,3 +77,13 @@ MonoBehaviour:
     material: {fileID: 2100000, guid: 943801872e444f3d800b54a12d900e2a, type: 2}
   - diseno: efecto-humo
     material: {fileID: 2100000, guid: c321e3817fef49a0b6afd2420db31ef9, type: 2}
+  - diseno: dragon-cuchillo
+    material: {fileID: 2100000, guid: e3fe59d3d94248c3a077e106f5450073, type: 2}
+  - diseno: cuchillo-hoja-de-plasma
+    material: {fileID: 2100000, guid: ccd4b675cf67402f8cccba61e44b8682, type: 2}
+  - diseno: cuchillo-cristal-de-hielo
+    material: {fileID: 2100000, guid: 35497d94a26a4c7287aceb7b7b1d1523, type: 2}
+  - diseno: cuchillo-sangre-de-invasor
+    material: {fileID: 2100000, guid: 53eb1e9ac43a45e0b8ba7d1a84c36a55, type: 2}
+  - diseno: cuchillo-holograma
+    material: {fileID: 2100000, guid: 2f59a6bde0674a3abf0c5f4c4ac1bf11, type: 2}
