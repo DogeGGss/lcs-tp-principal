@@ -5,6 +5,7 @@ using UnityEngine;
 // atrás al sacarla. Cambia los materiales del modelo, por su nombre (las armas de fuego traen Main, Grey, Black y White):
 // - una skin del catálogo (CatalogoDeSkins): las comunes, cada material con su color (US 378);
 // - un material (la prueba de código binario, Art/Skins): en las partes elegidas, o en toda el arma.
+// Las que prenden fuego el arma (Efectos.prendida) le agregan sus llamas (FuegoDeSkin).
 // No toca las estelas, las líneas ni las partículas. Las piezas que el arma arma después (el cargador del Mitre que se
 // separa al recargar) copian el material de la malla, así que también salen con la skin.
 public class SkinDeArma : MonoBehaviour
@@ -58,6 +59,7 @@ public class SkinDeArma : MonoBehaviour
     public void Poner(Material skin, params string[] partes)
     {
         Cambiar(m => EsParte(m, partes) ? skin : m);
+        FuegoDeSkin.Poner(gameObject, null);
         Skin = skin;
     }
 
@@ -84,6 +86,7 @@ public class SkinDeArma : MonoBehaviour
             Color? color = m != null ? CatalogoDeSkins.ColorPara(skin, m.name) : null;
             return color.HasValue ? Pintado(m, color.Value) : m;
         });
+        FuegoDeSkin.Poner(gameObject, skin); // las que prenden fuego el arma (el cuchillo Dragón Abisal)
         Puesta = skin;
     }
 

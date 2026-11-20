@@ -1292,6 +1292,7 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
                 if (cuchillo.CurrentWeapon is KatanaData katana) ArmarKatanaEnMano(modeloCuchillo, katana); // US 395
                 else ArmarEnMano(ArmaCuchillo, modeloCuchillo, null, LargoCuchillo);
                 modeloCuchillo.SetActive(false); // CA4: no se ve el de primera persona
+                SkinsDeJugadorEnRed.Poner(this); // F35: el cuchillo nuevo, con su skin
             }
             armaVista = 255;
         }
@@ -1387,6 +1388,15 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
         cuchillo.Equip(arma);
     }
 
+    /// <summary>F35: los modelos del cuchillo de esta copia (el de la mano y el de primera persona, apagado), si tiene el
+    /// cuchillo (no la katana).</summary>
+    public IEnumerable<GameObject> ModelosDelCuchillo()
+    {
+        if (cuchillo == null || !SkinsEnLasArmas.EsElCuchillo(cuchillo.CurrentWeapon)) yield break;
+        if (enLaMano.TryGetValue(ArmaCuchillo, out ModeloEnMano hoja) && hoja.go != null) yield return hoja.go;
+        if (cuchillo.CurrentViewModel != null) yield return cuchillo.CurrentViewModel;
+    }
+
     /// <summary>US 395, CA9: tiene en la mano el arma cuerpo a cuerpo (el cuchillo o la katana).</summary>
     public bool CuerpoACuerpoVisible => ArmaVisible == ArmaCuchillo;
 
@@ -1463,6 +1473,9 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
     // F35 (US 381): la skin que publicó su dueño para el arma con ese código, o null.
     public CatalogoDeSkins.Skin SkinEnLaMano(byte arma)
     {
+        if (arma == ArmaCuchillo) // F35: el cuchillo (la katana no lleva su skin)
+            return cuchillo != null && SkinsEnLasArmas.EsElCuchillo(cuchillo.CurrentWeapon) &&
+                   SkinsEnLasArmas.De(Dueno).TryGetValue(SkinsEnLasArmas.Cuchillo, out CatalogoDeSkins.Skin delCuchillo) ? delCuchillo : null;
         ShopItem ficha = arma == ArmaPistola ? (fichaPistola != null ? fichaPistola : catalogo != null ? catalogo.starterSecondary : null)
             : FichaDeCodigo(arma);
         CatalogoDeSkins.Arma a = ficha != null ? CatalogoDeSkins.ArmaDeFicha(ficha.name) : null;
@@ -1525,6 +1538,8 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
         // US 257, CA2: el brazo hace el corte (sin el muñeco de tercera persona, el cuchillo solo va adelante y vuelve).
         if (cuchilloVisto != null) cuchilloVisto.Atacar();
         else if (enLaMano.TryGetValue(ArmaCuchillo, out ModeloEnMano hoja) && hoja.go != null) StartCoroutine(Estocada(hoja.go.transform));
+        if (cuchillo != null && SkinsEnLasArmas.EsElCuchillo(cuchillo.CurrentWeapon) && enLaMano.TryGetValue(ArmaCuchillo, out ModeloEnMano conFuego))
+            CalorDeSkin.Disparo(conFuego.go); // F35: el fuego de la skin del cuchillo se aviva
         Punalada?.Invoke();
     }
 

@@ -6,6 +6,9 @@
 //     grietas se calculan en 3D (no apoyadas en cada cara): pasan de una cara a otra
 //     sin cortarse.
 //   2 Franjas: fuego azul vivo que corre a lo largo del arma.
+//   3 Cuchillo (19/11/2026): el cuchillo entero, con su textura (_BaseMap) ennegrecida, recorrido por una red de grietas
+//     de fuego azul que no se apaga, por la que corre el fuego (pulsos que avanzan por la red), y donde además se abren
+//     grietas más grandes, como en los paneles. El borde brilla un poco del color del fuego (está prendido).
 // El fuego "respira" (sube y baja despacio) y se enciende con cada disparo (_Calor, de 0 a 1, lo pone CalorDeSkin en
 // cada arma). En los modelos de las armas el largo (el caño) es el eje X, con el caño hacia +X, y el alto el Z.
 Shader "Riftwalker/Skins/Dragon"
@@ -13,7 +16,7 @@ Shader "Riftwalker/Skins/Dragon"
     Properties
     {
         [HideInInspector] _AjusteEscala ("Ajuste del tamaño del patrón", Float) = 1
-        _Parte ("Parte (0 cuerpo, 1 paneles, 2 franjas)", Float) = 0
+        _Parte ("Parte (0 cuerpo, 1 paneles, 2 franjas, 3 cuchillo)", Float) = 0
         _Escala ("Tamaño de las escamas (m)", Float) = 0.04
         _ColorEscama ("Escama", Color) = (0.165, 0.173, 0.212, 1)
         _ColorFilo ("Filo de la escama", Color) = (0.169, 0.722, 0.788, 1)
@@ -35,7 +38,10 @@ Shader "Riftwalker/Skins/Dragon"
         _ColorPiedra ("Tinte de la piedra", Color) = (1, 1, 1, 1)
         _TilePiedra ("Tamaño de la piedra (m)", Float) = 0.25
         _RelievePiedra ("Relieve de la piedra", Range(0, 2)) = 1
-    }
+        [NoScaleOffset] _BaseMap ("Textura del arma (cuchillo)", 2D) = "white" {}
+        _Oscuro ("Cuánto queda de la textura (cuchillo)", Range(0, 1)) = 0.35
+        _Red ("Tamaño de la red de grietas (m, cuchillo)", Float) = 0.018
+        _Corre ("Velocidad del fuego por las grietas (cuchillo)", Float) = 0.6
 
     SubShader
     {
@@ -60,11 +66,13 @@ Shader "Riftwalker/Skins/Dragon"
                 float _AjusteEscala;
                 float4 _ColorEscama, _ColorFilo, _ColorFuego, _ColorNucleo, _ColorPiedra;
                 float _Parte, _Escala, _Brillo, _Calor, _Tile, _Giro, _Relieve, _Ciclo, _Pausa, _DosTandas, _Grieta, _TilePiedra, _RelievePiedra;
+                float _Oscuro, _Red, _Corre;
             CBUFFER_END
             TEXTURE2D(_Escamas); SAMPLER(sampler_Escamas);
             TEXTURE2D(_EscamasNormal); SAMPLER(sampler_EscamasNormal);
             TEXTURE2D(_Piedra); SAMPLER(sampler_Piedra);
             TEXTURE2D(_PiedraNormal); SAMPLER(sampler_PiedraNormal);
+            TEXTURE2D(_BaseMap); SAMPLER(sampler_BaseMap);
 
             // Gira (x, y) de a 90°: así la punta de las escamas de la textura queda hacia la culata.
             float2 Girar(float2 v, int vueltas)
@@ -76,7 +84,7 @@ Shader "Riftwalker/Skins/Dragon"
                 return v;
             }
 
-            struct Attributes { float4 positionOS : POSITION; float3 normalOS : NORMAL; };
+            struct Attributes { float4 positionOS : POSITION; float3 normalOS : NORMAL; float2 uv : TEXCOORD0; };
             struct Varyings
             {
                 float4 positionCS : SV_POSITION;
@@ -86,6 +94,7 @@ Shader "Riftwalker/Skins/Dragon"
                 float3 viewWS : TEXCOORD3;
                 float fog : TEXCOORD4;
                 float3 posWS : TEXCOORD5;
+                float2 uv : TEXCOORD6;
             };
 
             Varyings vert(Attributes v)
@@ -100,6 +109,7 @@ Shader "Riftwalker/Skins/Dragon"
                 o.viewWS = GetWorldSpaceViewDir(p.positionWS);
                 o.fog = ComputeFogFactor(p.positionCS.z);
                 o.posWS = p.positionWS;
+                o.uv = v.uv;
                 return o;
             }
 
@@ -156,6 +166,65 @@ Shader "Riftwalker/Skins/Dragon"
                 halo = pow(saturate(1.0 - d / (ancho * 4.0 + 0.0005)), 2.0) * abierta * cierra * (0.7 + 0.8 * punta);
             }
 
+            // Las grietas que se abren (dos tandas a destiempo, como en los paneles).
+            void Grietas(float3 p, out float nucleo, out float halo)
+            {
+                float ciclo = max(_Ciclo, 0.1);
+                float periodo = ciclo + max(_Pausa, 0.0);
+                float t = _Time.y / periodo;
+                float n2 = 0.0, h2 = 0.0;
+                nucleo = 0.0; halo = 0.0;
+                float fase = frac(t) * periodo / ciclo; // pasa de 1 durante la pausa
+                if (fase < 1.0) Tanda(p, fase, floor(t), nucleo, halo);
+                if (_DosTandas > 0.5)
+                {
+                    float fase2 = frac(t + 0.5) * periodo / ciclo;
+                    if (fase2 < 1.0) Tanda(p, fase2, floor(t + 0.5) + 100.0, n2, h2);
+                    nucleo = max(nucleo, n2);
+                    halo = max(halo, h2);
+                }
+            }
+
+            // Parte 3, el cuchillo: su textura ennegrecida, con la red de grietas encendida y el fuego corriendo por ella.
+            float3 Cuchillo(Varyings i, float fuerza)
+            {
+                float3 N = normalize(i.normalWS);
+                float3 V = normalize(i.viewWS);
+                Light luz = GetMainLight();
+                float3 L = normalize(luz.direction);
+                float3 textura = SAMPLE_TEXTURE2D(_BaseMap, sampler_BaseMap, i.uv).rgb;
+                // Ennegrecido, un poco hacia el color de las escamas (negro azulado).
+                float3 base = lerp(_ColorEscama.rgb, textura * _ColorEscama.rgb * 6.0, _Oscuro);
+                float3 H = normalize(L + V);
+                float especular = pow(saturate(dot(N, H)), 48.0) * 0.6;
+                float ambiente = dot(SampleSH(N), float3(0.299, 0.587, 0.114));
+                float3 color = base * (luz.color * saturate(dot(N, L)) * 0.9 + ambiente) + especular * 0.35 * luz.color;
+                float3 brillo;
+                float3 extra = LucesExtra(i.posWS, N, V, i.positionCS, 48.0, brillo);
+                color += base * extra + brillo * 0.3;
+                // El borde, del color del fuego (está prendido).
+                float borde = pow(1.0 - saturate(dot(N, V)), 3.0);
+                color += _ColorFuego.rgb * borde * 0.35 * fuerza * 0.4;
+
+                // La red de grietas, siempre encendida (en 3D: sigue de una cara a otra).
+                float3 p = i.posM;
+                float g = Fbm3(p / _Red + 3.7);
+                float d = abs(g - 0.5);
+                float red = saturate(1.0 - d / 0.02);
+                float resplandor = pow(saturate(1.0 - d / 0.08), 2.0);
+                // El fuego corre por la red: pulsos que avanzan (sobre todo a lo largo del cuchillo).
+                float corre = Fbm3(p / (_Red * 2.5) - _Time.y * _Corre * float3(1.0, 0.35, 0.6));
+                float pulso = 0.3 + 0.9 * smoothstep(0.45, 0.72, corre);
+                // Y además se abren grietas más grandes, como en los paneles.
+                float nucleoT, haloT;
+                Grietas(p, nucleoT, haloT);
+                float nucleo = max(red * pulso, nucleoT);
+                float halo = max(resplandor * pulso * 0.8, haloT);
+                color += _ColorFuego.rgb * halo * 0.2 * fuerza;
+                float3 fuego = lerp(_ColorFuego.rgb, _ColorNucleo.rgb, nucleo * nucleo);
+                return lerp(color, fuego * fuerza * 0.5, saturate(max(nucleo, halo * 0.6)));
+            }
+
             float4 frag(Varyings i) : SV_Target
             {
                 // El plano del patrón según la cara, con x siempre a lo largo del arma cuando se puede.
@@ -173,7 +242,8 @@ Shader "Riftwalker/Skins/Dragon"
                 float fresnel = pow(1.0 - saturate(dot(N, V)), 4.0);
 
                 float3 color;
-                if (parte == 2) // franjas: la llama corre hacia el caño
+                if (parte == 3) color = Cuchillo(i, fuerza);
+                else if (parte == 2) // franjas: la llama corre hacia el caño
                 {
                     float t = Fbm(float2(p.x / 0.03 - _Time.y * 2.0, p.y / 0.012));
                     float3 llama = lerp(_ColorFuego.rgb, _ColorNucleo.rgb, saturate(t * 1.4 - 0.2));

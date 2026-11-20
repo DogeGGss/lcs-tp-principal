@@ -29,6 +29,8 @@ MonoBehaviour:
     modelo: {fileID: 919132149155446097, guid: b6850ddfbb71bac42adc4da0872aaad2, type: 3}
   - arma: la-trochita
     modelo: {fileID: 919132149155446097, guid: ea59be7a4287c084e9ac1e85035af213, type: 3}
+  - arma: cuchillo
+    modelo: {fileID: 919132149155446097, guid: 9ddea76d95a1d9942bc26424ebdfa7aa, type: 3}
   bocas:
   - arma: mitre
     corrimiento: {x: -0, y: 0.038}
@@ -75,3 +77,7 @@ MonoBehaviour:
     material: {fileID: 2100000, guid: 943801872e444f3d800b54a12d900e2a, type: 2}
   - diseno: efecto-humo
     material: {fileID: 2100000, guid: c321e3817fef49a0b6afd2420db31ef9, type: 2}
+  - diseno: dragon-cuchillo
+    material: {fileID: 2100000, guid: e3fe59d3d94248c3a077e106f5450073, type: 2}
+  - diseno: efecto-llama
+    material: {fileID: 2100000, guid: 4b784286b324435da16f318cc0c1a01f, type: 2}

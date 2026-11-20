@@ -11,6 +11,8 @@ using Hashtable = ExitGames.Client.Photon.Hashtable;
 //   principio y se pintan juntas.
 // - CA4: un arma soltada lleva la skin de su dueño (ArmaEnPiso); el que la levanta la usa con esa skin hasta que la
 //   pierde (la suelta, muere o la cambia) y los demás también la ven así.
+// - El cuchillo (19/11/2026): su modelo de primera persona lo arma MeleeWeaponHolder (y lo rearma al cambiar de arma
+//   cuerpo a cuerpo), así que se pinta cuando aparece. La katana (US 395) no lleva la skin del cuchillo.
 public class SkinsEnLasArmas : MonoBehaviour
 {
     /// <summary>Propiedad del jugador en la sala: "arma=skin;arma=skin" (skin vacía: sin skin).</summary>
@@ -23,6 +25,7 @@ public class SkinsEnLasArmas : MonoBehaviour
     // CA4: las armas levantadas del piso, con la skin de quien la soltó ("": sin skin), por arma.
     private readonly Dictionary<string, string> levantadas = new Dictionary<string, string>();
     private string publicado;
+    private GameObject cuchilloPintado;
 
     private void Awake()
     {
@@ -115,7 +118,29 @@ public class SkinsEnLasArmas : MonoBehaviour
             foreach (GameObject arma in switcher.Principales()) Pintar(arma);
             foreach (GameObject arma in switcher.Secundarias()) Pintar(arma);
         }
+        cuchilloPintado = null; // (lo pinta Update)
+        PintarCuchillo();
         Publicar();
+    }
+
+    private void Update()
+    {
+        if (switcher != null && switcher.meleeScript != null && switcher.meleeScript.CurrentViewModel != cuchilloPintado) PintarCuchillo();
+    }
+
+    /// <summary>El arma del catálogo del cuchillo.</summary>
+    public const string Cuchillo = "cuchillo";
+
+    /// <summary>Si esa arma cuerpo a cuerpo es el cuchillo (no la katana): la que lleva las skins del cuchillo.</summary>
+    public static bool EsElCuchillo(MeleeWeaponData arma) => arma != null && !(arma is KatanaData);
+
+    private void PintarCuchillo()
+    {
+        MeleeWeaponHolder holder = switcher != null ? switcher.meleeScript : null;
+        cuchilloPintado = holder != null ? holder.CurrentViewModel : null;
+        if (cuchilloPintado == null || !EsElCuchillo(holder.CurrentWeapon)) return;
+        SkinDeArma.Poner(cuchilloPintado, SkinsDeArmas.EquipadaDe(Cuchillo));
+        SkinDeArma.RecordarEscalaEnLaMano(Cuchillo, cuchilloPintado);
     }
 
     private void Pintar(GameObject arma)

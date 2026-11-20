@@ -6,7 +6,8 @@ using UnityEngine;
 
 // F35 (Skins de armas), US 380, CA2: en la copia de otro jugador (JugadorEnRed), sus armas con las skins que publicó
 // (SkinsEnLasArmas.PropSkins): la de la mano y las de primera persona apagadas (de esas copia el espectador, US 133).
-// Se vuelven a pintar cuando las cambia (por ejemplo, al levantar un arma con otra skin, CA4).
+// Se vuelven a pintar cuando las cambia (por ejemplo, al levantar un arma con otra skin, CA4). También el cuchillo, cuando
+// se arma su modelo (JugadorEnRed lo vuelve a llamar).
 public class SkinsDeJugadorEnRed : MonoBehaviourPunCallbacks
 {
     private JugadorEnRed jugador;
@@ -36,5 +37,8 @@ public class SkinsDeJugadorEnRed : MonoBehaviourPunCallbacks
             if (arma == null || a == null) continue;
             SkinDeArma.Poner(arma, skins.TryGetValue(a.id, out CatalogoDeSkins.Skin s) ? s : null);
         }
+        // El cuchillo (si no es la katana): el de la mano y el de primera persona apagado.
+        skins.TryGetValue(SkinsEnLasArmas.Cuchillo, out CatalogoDeSkins.Skin delCuchillo);
+        foreach (GameObject cuchillo in jugador.ModelosDelCuchillo()) SkinDeArma.Poner(cuchillo, delCuchillo);
     }
 }
