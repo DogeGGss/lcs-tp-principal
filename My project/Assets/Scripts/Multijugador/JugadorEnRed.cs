@@ -1347,7 +1347,10 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
         if (arma == null) return;
         if (enLaMano.TryGetValue(codigo, out ModeloEnMano viejo) && viejo.go != null) Destroy(viejo.go);
         float largo = ficha != null && ficha.realLength > 0f ? ficha.realLength : largoSinFicha;
-        GameObject modelo = ModeloReal.Crear(arma, largo, out Bounds limites, arma.name + " (en la mano)");
+        Bounds limites;
+        GameObject modelo = codigo == ArmaCuchillo // US 257: el cuchillo, con el giro de su ajuste (no el de primera persona)
+            ? ModeloReal.CrearCuchillo(arma, largo, out limites, arma.name + " (en la mano)")
+            : ModeloReal.Crear(arma, largo, out limites, arma.name + " (en la mano)");
         modelo.transform.SetParent(SoporteMano(), false);
         // La mano agarra la empuñadura: el centro del arma queda un poco más arriba y más adelante.
         modelo.transform.localPosition = new Vector3(0f, limites.extents.y * 0.5f, limites.extents.z * 0.45f);
