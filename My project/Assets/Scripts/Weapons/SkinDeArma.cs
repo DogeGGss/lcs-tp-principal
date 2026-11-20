@@ -163,8 +163,15 @@ public class SkinDeArma : MonoBehaviour
         }
     }
 
-    private static Mesh MallaDe(Renderer r) =>
-        r is SkinnedMeshRenderer s ? s.sharedMesh : r.GetComponent<MeshFilter>() is MeshFilter f ? f.sharedMesh : null;
+    // (Con "!= null": en el editor, un componente que falta no es null para "is", y las partículas de las skins del
+    // cuchillo no tienen malla.)
+    private static Mesh MallaDe(Renderer r)
+    {
+        if (r is SkinnedMeshRenderer s) return s.sharedMesh;
+        if (r is ParticleSystemRenderer || r is LineRenderer || r is TrailRenderer) return null;
+        MeshFilter f = r.GetComponent<MeshFilter>();
+        return f != null ? f.sharedMesh : null;
+    }
 
     // La pieza más grande del arma (por su malla).
     private static Renderer Principal(GameObject go)
