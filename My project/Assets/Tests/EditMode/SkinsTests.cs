@@ -170,6 +170,18 @@ public class SkinsTests
         }
         foreach (string id in new[] { "hoja-de-plasma", "rift-abierto", "cristal-de-hielo", "sangre-de-invasor", "holograma" })
             Assert.IsNotNull(CatalogoDeSkins.De("cuchillo-" + id), id);
+        // Se ponen de verdad: el material del cuchillo cambia (aunque el diseño no tenga material propio).
+        var prueba = new GameObject("Cuchillo de prueba");
+        var original = new Material(Shader.Find("Universal Render Pipeline/Lit")) { name = "M_Knife" };
+        prueba.AddComponent<MeshFilter>();
+        prueba.AddComponent<MeshRenderer>().sharedMaterial = original;
+        foreach (CatalogoDeSkins.Skin k in delCuchillo)
+        {
+            SkinDeArma.Poner(prueba, k);
+            Assert.AreNotEqual(original, prueba.GetComponent<MeshRenderer>().sharedMaterial, k.id);
+        }
+        Object.DestroyImmediate(prueba);
+        Object.DestroyImmediate(original);
         CatalogoDeSkins.Skin s = CatalogoDeSkins.De("cuchillo-dragon-abisal");
         Assert.IsNotNull(s);
         Assert.AreEqual("Cuchillo · Dragón Abisal", s.nombre);

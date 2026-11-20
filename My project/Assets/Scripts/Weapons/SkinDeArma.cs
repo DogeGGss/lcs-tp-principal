@@ -69,13 +69,13 @@ public class SkinDeArma : MonoBehaviour
         Material diseno = skin?.diseno != null ? ModelosDeArmas.Actual.MaterialDe(skin.diseno.id) : null;
         Cambiar(m =>
         {
-            if (diseno != null)
+            if (skin?.diseno != null) // (el material del diseño puede no estar: las del cuchillo solo cambian su parte)
             {
                 if (m == null) return m;
                 // La mira que se le agrega al Último Tren (PiezasDelTren): en las legendarias, como las franjas.
                 string parte = m.name == PiezasDelTren.NombreMira && skin.rareza == PerfilDatos.Rareza.Legendario
                     ? CatalogoDeSkins.Main : m.name;
-                if (CatalogoDeSkins.EsParteDelDiseno(skin, parte)) return ConDiseno(m, diseno);
+                if (diseno != null && CatalogoDeSkins.EsParteDelDiseno(skin, parte)) return ConDiseno(m, diseno);
                 // Otras partes del diseño: con otro material (el cuerpo de madera del cobre) o un color (las franjas).
                 CatalogoDeSkins.Extra extra = CatalogoDeSkins.ExtraPara(skin, parte);
                 if (extra == null) return m;
