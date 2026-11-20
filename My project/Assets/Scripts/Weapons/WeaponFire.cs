@@ -60,6 +60,27 @@ public static class WeaponFire
 
     /// <summary>cartuchos: cuántos cartuchos salen juntos (US 309, Doble cartucho: 2; los perdigones se multiplican).
     /// balasJuntas: cuántas balas valen en un solo impacto (US 323, Disparo concentrado: el daño se multiplica).</summary>
+    /// <summary>US 321, Acople: el color del tiro de la principal que sale sola (celeste: se distingue del de la pistola).</summary>
+    public static readonly Color ColorDeAcople = new Color(0.35f, 0.85f, 1f);
+
+    /// <summary>US 321, Acople: el tiro de la principal guardada (lo que hace "disparar"), con su estela y su fogonazo
+    /// celestes y su sonido (sin ubicar, un poco más bajo que el de la mano).</summary>
+    public static void Acople(AudioClip sonido, System.Action disparar)
+    {
+        if (sonido != null)
+        {
+            var go = new GameObject("SonidoDelAcople");
+            AudioSource fuente = go.AddComponent<AudioSource>();
+            fuente.spatialBlend = 0f;
+            fuente.volume = 0.8f;
+            fuente.PlayOneShot(sonido);
+            Object.Destroy(go, sonido.length + 0.1f);
+        }
+        Trazadora.Tinte = ColorDeAcople;
+        try { disparar(); }
+        finally { Trazadora.Tinte = null; }
+    }
+
     public static void Fire(ShopItem weapon, Camera camera, Transform shooter, bool aiming, float range, int cartuchos = 1, int balasJuntas = 1)
     {
         if (weapon == null || camera == null) return;
