@@ -1539,7 +1539,7 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
         if (cuchilloVisto != null) cuchilloVisto.Atacar();
         else if (enLaMano.TryGetValue(ArmaCuchillo, out ModeloEnMano hoja) && hoja.go != null) StartCoroutine(Estocada(hoja.go.transform));
         if (cuchillo != null && SkinsEnLasArmas.EsElCuchillo(cuchillo.CurrentWeapon) && enLaMano.TryGetValue(ArmaCuchillo, out ModeloEnMano conFuego))
-            CalorDeSkin.Disparo(conFuego.go); // F35: las grietas de la skin del cuchillo brillan más
+            CalorDeSkin.Disparo(conFuego.go); // F35: la skin del cuchillo brilla más y larga más brasas
         Punalada?.Invoke();
     }
 

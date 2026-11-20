@@ -10,7 +10,7 @@ using Rareza = PerfilDatos.Rareza;
 // Las armas de fuego tienen los mismos cuatro materiales, así que una combinación sirve para todas. Por lo que tapa cada
 // uno (medido en los modelos): Black es el cuerpo (la mitad del arma), White los paneles (un tercio), Grey los detalles y
 // Main el acento (unas franjas). El cuchillo (otro modelo, con textura y un solo material) tiene solo sus propias skins
-// (DisenosDelCuchillo): la legendaria Dragón Abisal, con grietas de fuego azul (19/11/2026).
+// (DisenosDelCuchillo): la legendaria Dragón Abisal, con grietas de fuego azul y brasitas (19/11/2026).
 // Las demás rarezas ponen un material en algunas partes del arma (Diseno): el material está en
 // Resources/Skins/ModelosDeArmas, con el id del diseño. Épicas: Código binario (13/11/2026), en todas las armas.
 // El id de cada skin ("mitre-rift") es el que se guarda (SkinsDeArmas) y el que va por la red: no se cambia.
@@ -50,6 +50,8 @@ public static class CatalogoDeSkins
         public Extra[] extras = new Extra[0];
         /// <summary>Las legendarias (US 381): su fogonazo y su estela. null: los de siempre.</summary>
         public Efectos efectos;
+        /// <summary>Al arma se le salen brasitas del color de la muestra todo el tiempo (BrasasDeSkin; el cuchillo).</summary>
+        public bool brasitas;
     }
 
     /// <summary>US 381: lo que cambia al disparar con una legendaria (EfectosDeSkin): el color y la forma del fogonazo y
@@ -101,13 +103,15 @@ public static class CatalogoDeSkins
 
     // Las del cuchillo (19/11/2026). Su modelo tiene un solo material (M_Knife, con textura), que cambia entero.
     // Legendaria: Dragón Abisal, como la de las armas de fuego (mismo id: es el mismo estilo), con el cuchillo negro
-    // recorrido por grietas de fuego azul que se abren, laten y corren (Art/Skins/SkinDragon.shader, parte 3); al cortar,
-    // brillan más (CalorDeSkin). (Prendido fuego con llamas quedó descartado, 19/11/2026.)
+    // recorrido por grietas de fuego azul que se abren, laten y corren (Art/Skins/SkinDragon.shader, parte 3), y se le
+    // salen brasitas azules (BrasasDeSkin); al cortar, brillan más y salen más brasas (CalorDeSkin). (Prendido fuego con
+    // llamas quedó descartado, 19/11/2026.)
     public const string MaterialCuchillo = "M_Knife";
     public static readonly List<Diseno> DisenosDelCuchillo = new List<Diseno>
     {
         new Diseno { id = "dragon-abisal", nombre = "Dragón Abisal", rareza = Rareza.Legendario, partes = new string[0], muestra = Hex(0x1E6BFF),
-            extras = new[] { new Extra { parte = MaterialCuchillo, material = "dragon-cuchillo", muestra = Hex(0x1A1C24) } } },
+            extras = new[] { new Extra { parte = MaterialCuchillo, material = "dragon-cuchillo", muestra = Hex(0x1A1C24) } },
+            brasitas = true },
     };
 
     public static readonly List<Arma> Armas = new List<Arma>
