@@ -559,6 +559,10 @@ public class BrazosEnCamara : MonoBehaviour
         public string dedos;
         // US 395: las poses de la katana ("Pose Tajo"...: MovimientoDeKatana), si el arma tiene.
         public List<Pose> poses = new List<Pose>();
+        // Las piezas del arma (sus hijos que no son agarres), en las que se arman desde su propio prefab (el cuchillo,
+        // "Knife_ViewModel(Clone)"): el modelo se puede mover dentro del arma. (En las armas del Player.prefab no: sus
+        // piezas las mueven los scripts, como el cerrojo.)
+        public List<Pose> piezas = new List<Pose>();
     }
 
     [System.Serializable]
@@ -567,6 +571,7 @@ public class BrazosEnCamara : MonoBehaviour
         public string nombre;
         public Vector3 lugar;
         public Quaternion giro;
+        public Vector3 escala; // (las piezas; 0: no se guardó)
     }
 
     [System.Serializable]
@@ -603,9 +608,12 @@ public class BrazosEnCamara : MonoBehaviour
             });
             DedosDelArma dedos = arma.GetComponent<DedosDelArma>();
             if (dedos != null) ajuste.armas[ajuste.armas.Count - 1].dedos = JsonUtility.ToJson(dedos);
+            bool propia = arma.name.EndsWith("(Clone)") && arma.GetComponent<MovimientoDeKatana>() == null; // (la katana: sus poses)
             foreach (Transform hijo in arma)
                 if (MovimientoDeKatana.EsPose(hijo.name))
                     ajuste.armas[ajuste.armas.Count - 1].poses.Add(new Pose { nombre = hijo.name, lugar = hijo.localPosition, giro = hijo.localRotation });
+                else if (propia && hijo != derecho && hijo != izquierdo)
+                    ajuste.armas[ajuste.armas.Count - 1].piezas.Add(new Pose { nombre = hijo.name, lugar = hijo.localPosition, giro = hijo.localRotation, escala = hijo.localScale });
         }
         string json = JsonUtility.ToJson(ajuste, true);
         if (json == ultimoGuardado) return;

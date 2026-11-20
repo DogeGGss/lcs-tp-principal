@@ -3,7 +3,7 @@ using UnityEditor;
 using UnityEngine;
 
 // Manos de las armas en primera persona (US 173). En Play, con "Ajustar a mano" (BrazosEnCamara), cada arma y sus
-// agarres se ubican a mano; BrazosEnCamara guarda dónde quedaron en Library/AjusteDeManos.json. Acá se pasa eso al
+// agarres se ubican a mano (en el cuchillo, también su modelo dentro del arma); BrazosEnCamara guarda dónde quedaron en Library/AjusteDeManos.json. Acá se pasa eso al
 // Player.prefab (y el cuchillo y la katana, US 395, a sus propios prefabs) al salir del Play, o al abrir Unity si se
 // cerró en medio del ajuste.
 [InitializeOnLoad]
@@ -134,6 +134,14 @@ public static class AjusteDeManos
             {
                 Transform t = arma.Find(pose.nombre);
                 if (t != null) cambio |= Poner(t, pose.lugar, pose.giro);
+            }
+        if (a.piezas != null) // el modelo dentro del arma (el cuchillo)
+            foreach (BrazosEnCamara.Pose pieza in a.piezas)
+            {
+                Transform t = arma.Find(pieza.nombre);
+                if (t == null) continue;
+                cambio |= Poner(t, pieza.lugar, pieza.giro);
+                if (pieza.escala != Vector3.zero && t.localScale != pieza.escala) { t.localScale = pieza.escala; cambio = true; }
             }
         return cambio;
     }
