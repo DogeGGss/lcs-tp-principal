@@ -15,7 +15,7 @@ MonoBehaviour:
   m_DefaultGroup: b2e4b98144dd2f1449922b7d6a2b248e
   m_currentHash:
     serializedVersion: 2
-    Hash: 00000000000000000000000000000000
+    Hash: 9531ba0852522ffe7925d828698ab780
   m_ExtractTypeTreeData: 0
   m_DisableWriteTypeTree: 0
   m_OptimizeCatalogSize: 0
@@ -26,11 +26,11 @@ MonoBehaviour:
   m_InternalBundleIdMode: 1
   m_AssetLoadMode: 0
   m_BundledAssetProviderType:
-    m_AssemblyName: 
-    m_ClassName: 
+    m_AssemblyName: Unity.ResourceManager, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+    m_ClassName: UnityEngine.ResourceManagement.ResourceProviders.BundledAssetProvider
   m_AssetBundleProviderType:
-    m_AssemblyName: 
-    m_ClassName: 
+    m_AssemblyName: Unity.ResourceManager, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+    m_ClassName: UnityEngine.ResourceManagement.ResourceProviders.AssetBundleProvider
   m_IgnoreUnsupportedFilesInBuild: 0
   m_UniqueBundleIds: 0
   m_EnableJsonCatalog: 0
@@ -63,10 +63,13 @@ MonoBehaviour:
   m_BuildAddressablesWithPlayerBuild: 0
   m_overridePlayerVersion: '[UnityEditor.PlayerSettings.bundleVersion]'
   m_GroupAssets:
+  - {fileID: 11400000, guid: e5aeda029fdaa5b44b4caef81326428d, type: 2}
+  - {fileID: 11400000, guid: 5706c6df73763924684c4a31e02e48fe, type: 2}
   - {fileID: 11400000, guid: 9de673d951f008e4daedd159ef7ecb50, type: 2}
   - {fileID: 11400000, guid: 16fa34e0e3e02ba498206a03f053652f, type: 2}
   - {fileID: 11400000, guid: 2ae57f33202202745b959d7a9e7cb6ae, type: 2}
   - {fileID: 11400000, guid: 9c97b9c8f33d3e1478f89862ec201d0d, type: 2}
+  - {fileID: 11400000, guid: f541ec178682bf34888fda34e60ee48e, type: 2}
   - {fileID: 11400000, guid: ded7a7e3a7a987b408e4368113122e54, type: 2}
   m_BuildSettings:
     m_LogResourceManagerExceptions: 1
@@ -111,6 +114,9 @@ MonoBehaviour:
     - Locale-es
     - Locale-en
     - Preload
+    - Locale-pt-BR
+    - Locale-fr
+    - Locale-it
   m_SchemaTemplates: []
   m_GroupTemplateObjects:
   - {fileID: 11400000, guid: 3c346b4dbdb095d4e9d2e4447f557545, type: 2}

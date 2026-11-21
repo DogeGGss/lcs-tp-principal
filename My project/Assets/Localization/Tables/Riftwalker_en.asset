@@ -7419,6 +7419,42 @@ MonoBehaviour:
     m_Localized: 'Someone logged in to your account on another computer, so the session here was closed: an account can be played on only one computer at a time. To play here, log in again in the launcher. Your progress is saved in your account.'
     m_Metadata:
       m_Items: []
+  - m_Id: 4954606238789632
+    m_Localized: Escort
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4954606385590272
+    m_Localized: 'A drone follows you: its beam melts the nearest invader, and every 8 s it fires electric arcs that paralyze those around.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4954606385590273
+    m_Localized: Katana
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4954606385590274
+    m_Localized: Melee weapon
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4954606385590275
+    m_Localized: Replaces your knife, in its slot and key. Cuts everyone in front of you.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4954606385590276
+    m_Localized: Plasma Blade
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4954606385590277
+    m_Localized: Ice Crystal
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4954606385590278
+    m_Localized: Invader Blood
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4954606385590279
+    m_Localized: Hologram
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

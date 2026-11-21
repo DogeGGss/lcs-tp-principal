@@ -7398,6 +7398,42 @@ MonoBehaviour:
     m_Localized: "Quelqu'un s'est connect\xE9 \xE0 ton compte sur un autre ordinateur et la session ici a \xE9t\xE9 ferm\xE9e : un compte ne se joue que sur un seul ordinateur \xE0 la fois. Pour jouer ici, reconnecte-toi dans le launcher. Ta progression est sauvegard\xE9e sur ton compte."
     m_Metadata:
       m_Items: []
+  - m_Id: 4954606238789632
+    m_Localized: Escorte
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4954606385590272
+    m_Localized: "Un drone t'accompagne : son rayon fait fondre l'envahisseur le plus proche et toutes les 8 s il lance des arcs \xE9lectriques qui paralysent ceux qui l'entourent."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4954606385590273
+    m_Localized: Katana
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4954606385590274
+    m_Localized: "Arme de m\xEAl\xE9e"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4954606385590275
+    m_Localized: "Remplace ton couteau, \xE0 sa place et sur sa touche. Tranche tous ceux qui sont devant toi."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4954606385590276
+    m_Localized: Lame de plasma
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4954606385590277
+    m_Localized: Cristal de glace
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4954606385590278
+    m_Localized: Sang d'envahisseur
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4954606385590279
+    m_Localized: Hologramme
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []
