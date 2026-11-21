@@ -17,7 +17,7 @@ using UnityEngine;
 public static class BibliotecaUniversidad
 {
     const string MeshPath = "Assets/Meshes/Uni/Biblioteca.asset", Grupo = "Ambiente_Biblioteca";
-    static readonly string[] CajasViejas = { "Biblioteca_Oficinas", "Biblioteca_Bloque" };
+    static readonly string[] CajasViejas = { "Biblioteca_Oficinas", "Biblioteca_Bloque", "Biblioteca_Sala" };
     static readonly HashSet<string> SinColision = new HashSet<string> { "MetalNegro" };
     // Oficinas (de la sala al callejón) y su bloque de baños.
     const float XS = 147.5f, XB = 178.9f, XBa = 182.0f, ZBa = 200.0f, ZN = 215.5f, HO = 4.0f;
@@ -446,6 +446,65 @@ public static class BibliotecaUniversidad
         Cilindro("PinturaBlanca", new Vector3(XB + .06f, 0, ZBa - .1f), new Vector3(XB + .06f, HO, ZBa - .1f), .045f, 8);
     }
 
+    // ---------------------------------------------------------------- Sala grande
+
+    // La sala de lectura: caja de ladrillo con la fachada vidriada de dos plantas al sur (hacia el patio de la escuela
+    // infantil) y al oeste (hacia la calle), las dos con los parasoles de lamas metálicas entre los postes, el alero
+    // oscuro que sube hacia afuera y los lucernarios en diente de sierra; en la esquina suroeste se cruzan las lamas y el
+    // alero, y queda el pilar de ladrillo de la punta este.
+    static void SalaGrande()
+    {
+        var planta = new[] { new Vector2(93.8f, 180f), new Vector2(147.5f, 180f), new Vector2(147.5f, 215.5f), new Vector2(96.5f, 215.5f) };
+        Prisma("LadrilloChico", "Techo", planta, -.2f, 9.0f);
+        var so = new Vector3(93.8f, 0, 180f);
+        // La sur se queda con la esquina de las lamas (y su poste); la oeste llega hasta ellas y cierra las bandas.
+        FachadaVidriada(so, new Vector3(147.5f, 0, 180f), 1.6f, 0f, 2.75f, .5f, false);
+        FachadaVidriada(new Vector3(96.5f, 0, 215.5f), so, 0f, 1.36f, .5f, 2.8f, true);
+        Box("PinturaBlanca", 93.36f, .5f, 179.56f, 93.84f, 8.0f, 180.04f);
+        Box("LadrilloChico", 147.5f - .9f, -.2f, 180f - 1.8f, 147.5f + .4f, 8.95f, 180f);
+    }
+
+    // Fachada vidriada de «a» a «b» (la sala queda a la izquierda, mirando de «a» a «b»): zócalo, dos plantas de vidrio
+    // con montantes blancos, bandas de losa, postes cada ~6,65 m con lamas, alero que sube hacia afuera y lucernarios.
+    // lama/alero A y B: cuánto siguen las lamas y el alero más allá de cada punta (para resolver una esquina); con
+    // lamaA > 1 va también el poste de la esquina. bandasHastaB: las bandas siguen en «b» hasta tapar la esquina.
+    static void FachadaVidriada(Vector3 a, Vector3 b, float lamaA, float lamaB, float aleroA, float aleroB, bool bandasHastaB)
+    {
+        a.y = 0; b.y = 0; float L = Vector3.Distance(a, b); var u = (b - a) / L; var n = Vector3.Cross(up, u);
+        void F(string mat, float s0, float y0, float d0, float s1, float y1, float d1) =>
+            Caja(mat, a + u * (s0 + s1) / 2 + n * (d0 + d1) / 2 + up * (y0 + y1) / 2, u * Mathf.Abs(s1 - s0) / 2, up * Mathf.Abs(y1 - y0) / 2, n * Mathf.Abs(d1 - d0) / 2);
+        Vector3 P(float s, float y, float d) => a + u * s + up * y + n * d;
+        float Fin(float d) => bandasHastaB ? L + d : L;
+        F("Hormigon", 0, -.2f, 0, Fin(.5f), .5f, .5f);
+        foreach (var (y0, y1) in new[] { (.5f, 4.0f), (4.5f, 8.0f) })
+        {
+            F("Vidrio", 0, y0, .32f, L, y1, .38f);
+            for (float s = .1f; s < L; s += 1.65f) F("PinturaBlanca", s - .04f, y0, .32f, s + .04f, y1, .42f);
+            foreach (var y in new[] { y0 + .05f, y0 + (y1 - y0) * .62f, y1 - .05f }) F("PinturaBlanca", 0, y - .03f, .32f, L, y + .03f, .42f);
+        }
+        F("Hormigon", 0, 4.0f, 0, Fin(.7f), 4.5f, .7f);
+        F("Hormigon", 0, 8.0f, 0, Fin(.5f), 8.7f, .5f);
+        // Parasoles: postes y lamas horizontales delante de la planta alta y de la mitad de arriba de la baja.
+        int k = Mathf.Max(1, Mathf.RoundToInt((L - .5f) / 6.65f)); float paso = (L - .5f) / k;
+        for (int i = lamaA > 1f ? -1 : 0; i <= k; i++)
+        {
+            float s = i < 0 ? -1.43f : Mathf.Min(L - .15f, .5f + i * paso);
+            F("Galvanizado", s - .12f, -.2f, 1.31f, s + .12f, 8.9f, 1.55f);
+            if (i >= 0) F("Galvanizado", s - .06f, 4.15f, .7f, s + .06f, 4.3f, 1.31f);
+        }
+        for (float y = 2.6f; y < 4.1f; y += .3f) F("Galvanizado", -lamaA, y, 1.25f, L + lamaB, y + .035f, 1.6f);
+        for (float y = 4.7f; y < 8.5f; y += .32f) F("Galvanizado", -lamaA, y, 1.25f, L + lamaB, y + .035f, 1.6f);
+        // Alero oscuro que sube hacia afuera y lucernarios en diente de sierra entre la banda de arriba y el alero.
+        Placa("ChapaFascia", P(-aleroA, 8.95f, -.3f), u * (L + aleroA + aleroB), up * .75f + n * 2.9f, .1f);
+        for (int i = 0; i < k; i++)
+        {
+            float s0 = .5f + i * paso, s1 = s0 + paso;
+            Tri("Vidrio", P(s0, 8.7f, .4f), P(s1, 8.7f, .4f), P(s1, 9.15f, .4f), n);
+            Tri("Vidrio", P(s0, 8.7f, .4f), P(s1, 8.7f, .4f), P(s1, 9.15f, .4f), -n);
+            F("PinturaBlanca", s1 - .05f, 8.7f, .35f, s1 + .05f, 9.2f, .45f);
+        }
+    }
+
     // ---------------------------------------------------------------- Bloque
 
     // Techo de chapa a un agua del ala revocada: alto contra el ladrillo y bajando hacia el este, con 0,8 de alero.
@@ -695,6 +754,126 @@ public static class BibliotecaUniversidad
         Arbusto(grupo, "Arbusto1", "Arbusto del callejón", new Vector3(184.6f, 0, 199.25f), new Vector3(.8f, 1.7f, 1.0f), 30);
     }
 
+    // ---------------------------------------------------------------- Patio de lectura
+
+    // El patio entre la sala, el Bloque y las Oficinas (inventado, sin fotos): sendero de baldosas desde el camino, una
+    // placita contra las Oficinas con el árbol en su cantero redondo y los bancos alrededor, el cantero largo de ladrillo
+    // contra la sala, una mesa de madera para estudiar afuera, el bicicletero contra el Bloque y la cajita de «libros
+    // libres» para dejar uno y llevarse otro.
+    static readonly Rect PlazaPatio = Rect.MinMaxRect(148.3f, 188.6f, 156.9f, 195.9f), SenderoPatio = Rect.MinMaxRect(151.8f, 179.0f, 153.4f, 188.6f);
+    static readonly Rect CanteroPatio = Rect.MinMaxRect(148.0f, 181.0f, 149.35f, 188.2f), BicisPatio = Rect.MinMaxRect(155.6f, 180.6f, 157.3f, 185.6f);
+
+    static void PatioDeLectura(Transform grupo, Transform mapa)
+    {
+        float yMax = float.MinValue, yMin = float.MaxValue;
+        for (float x = 148f; x <= 157.2f; x += 1f)
+            for (float z = 179f; z <= 195.9f; z += 1f) { float h = ArmadoUni.AlturaTerreno(mapa, x, z); yMax = Mathf.Max(yMax, h); yMin = Mathf.Min(yMin, h); }
+        float y = yMax + .05f, yb = yMin - .25f;
+        // Pisos: la placita, el sendero con su cordón y la losa del bicicletero.
+        foreach (var r in new[] { PlazaPatio, SenderoPatio }) Box("BaldosaGris", r.xMin, yb, r.yMin, r.xMax, y, r.yMax);
+        foreach (var x in new[] { SenderoPatio.xMin - .1f, SenderoPatio.xMax }) Box("HormigonGris", x, yb, SenderoPatio.yMin, x + .1f, y + .04f, SenderoPatio.yMax);
+        Box("HormigonGris", BicisPatio.xMin, yb, BicisPatio.yMin, BicisPatio.xMax, y, BicisPatio.yMax);
+        // Cantero largo contra la sala, con su borde de hormigón, la tierra y dos arbustos.
+        var c = CanteroPatio; const float hc = .45f, borde = .18f;
+        Box("LadrilloChico", c.xMin, yb, c.yMin, c.xMax, y + hc, c.yMax);
+        Box("HormigonGris", c.xMin, y + hc, c.yMin, c.xMin + borde, y + hc + .05f, c.yMax);
+        Box("HormigonGris", c.xMax - borde, y + hc, c.yMin, c.xMax, y + hc + .05f, c.yMax);
+        Box("HormigonGris", c.xMin + borde, y + hc, c.yMin, c.xMax - borde, y + hc + .05f, c.yMin + borde);
+        Box("HormigonGris", c.xMin + borde, y + hc, c.yMax - borde, c.xMax - borde, y + hc + .05f, c.yMax);
+        Box("TierraMonticulo", c.xMin + borde, y + hc, c.yMin + borde, c.xMax - borde, y + hc + .02f, c.yMax - borde);
+        Arbusto(grupo, "Arbusto0", "Arbusto del cantero (sur)", new Vector3(c.center.x, y + hc + .02f, 183.1f), new Vector3(2.7f, 1.0f, .9f), 90);
+        Arbusto(grupo, "Arbusto1", "Arbusto del cantero (norte)", new Vector3(c.center.x, y + hc + .02f, 186.2f), new Vector3(2.5f, .9f, .85f), 90);
+        // Placita: cantero redondo con el árbol, bancos alrededor mirándolo, el cesto y el farol del sendero.
+        var ca = new Vector3(152.6f, y, 192.9f);
+        Cilindro("LadrilloChico", ca - up * .3f, ca + up * .45f, 1.15f, 16);
+        Cilindro("HormigonGris", ca + up * .45f, ca + up * .5f, 1.22f, 16);
+        Cilindro("TierraMonticulo", ca + up * .4f, ca + up * .52f, 1.0f, 16);
+        var arbol = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Prefabs/Uni/Arboles/Arbol_Copa0.prefab");
+        if (arbol != null) ArmadoUni.Colocar(grupo, arbol, "Árbol del patio de lectura", ca + up * .5f, 35f).transform.localScale = Vector3.one * .6f;
+        GameObject Mueble(string n) => AssetDatabase.LoadAssetAtPath<GameObject>(CarpetaMobiliario + "/" + n + ".prefab");
+        var banco = Mueble("Banco"); var tacho = Mueble("Tacho"); var farol = Mueble("FarolUNGS"); var bici = Mueble("Bicicleta");
+        if (banco != null)
+        {
+            Colocar(grupo, banco, "Banco del patio (oeste)", new Vector3(150.05f, y, 192.9f), 90f);
+            Colocar(grupo, banco, "Banco del patio (este)", new Vector3(155.15f, y, 192.9f), 270f);
+            Colocar(grupo, banco, "Banco del patio (norte)", new Vector3(152.6f, y, 195.35f), 180f);
+        }
+        if (tacho != null) Colocar(grupo, tacho, "Cesto del patio", new Vector3(149.95f, y, 194.7f), 0f);
+        if (farol != null) Colocar(grupo, farol, "Farol del patio", new Vector3(151.3f, ArmadoUni.AlturaTerreno(mapa, 151.3f, 180.6f), 180.6f), 90f);
+        // Bicicletero de arcos galvanizados contra el Bloque, con tres bicicletas.
+        var zs = new[] { 181.0f, 181.95f, 182.9f, 183.85f, 184.8f };
+        foreach (var z in zs)
+        {
+            Barra("Galvanizado", new Vector3(155.95f, y - .1f, z), new Vector3(155.95f, y + .75f, z), .05f);
+            Barra("Galvanizado", new Vector3(156.75f, y - .1f, z), new Vector3(156.75f, y + .75f, z), .05f);
+            Barra("Galvanizado", new Vector3(155.925f, y + .75f, z), new Vector3(156.775f, y + .75f, z), .05f);
+        }
+        if (bici != null) foreach (var i in new[] { 0, 1, 3 }) Colocar(grupo, bici, "Bicicleta del patio " + (i + 1), new Vector3(156.35f, y, zs[i] + .32f), i == 1 ? 270f : 90f);
+        // Mesa de madera con sus dos bancos, para estudiar afuera.
+        var m = new Vector3(150.45f, ArmadoUni.AlturaTerreno(mapa, 150.45f, 184.6f), 184.6f); const float lm = .9f;
+        for (int i = 0; i < 4; i++) Box("Madera", m.x - .37f + i * .185f, m.y + .72f, m.z - lm, m.x - .37f + i * .185f + .17f, m.y + .76f, m.z + lm);
+        foreach (var s in new[] { -1f, 1f })
+        {
+            Box("Madera", m.x + s * .57f - .14f, m.y + .42f, m.z - lm, m.x + s * .57f + .14f, m.y + .46f, m.z + lm);
+            foreach (var dz in new[] { -.6f, .6f })
+            {
+                Barra("MetalNegro", new Vector3(m.x + s * .2f, m.y + .72f, m.z + dz), new Vector3(m.x + s * .55f, m.y - .05f, m.z + dz), .05f);
+                Box("MetalNegro", m.x - .72f, m.y + .38f, m.z + dz - .025f, m.x + .72f, m.y + .42f, m.z + dz + .025f);
+            }
+        }
+        LibrosLibres(grupo, new Vector3(154.4f, y, 189.5f));
+    }
+
+    // Cajita de libros libres sobre un poste: frente abierto hacia el sendero (al oeste), un estante con libros de
+    // colores, el cartel y el techito a dos aguas de chapa verde.
+    static void LibrosLibres(Transform grupo, Vector3 p)
+    {
+        float x0 = p.x, x1 = p.x + .45f, z0 = p.z - .4f, z1 = p.z + .4f, y0 = p.y + 1.0f, y1 = p.y + 1.75f;
+        Box("MaderaOscura", x0 + .18f, p.y - .3f, p.z - .05f, x0 + .28f, y0, p.z + .05f);
+        Box("VerdeSalvia", x1 - .04f, y0, z0, x1, y1, z1);
+        Box("VerdeSalvia", x0, y0, z0, x1 - .04f, y1, z0 + .04f);
+        Box("VerdeSalvia", x0, y0, z1 - .04f, x1 - .04f, y1, z1);
+        Box("VerdeSalvia", x0, y0, z0 + .04f, x1 - .04f, y0 + .04f, z1 - .04f);
+        Box("VerdeSalvia", x0, y1 - .04f, z0 + .04f, x1 - .04f, y1, z1 - .04f);
+        Box("Madera", x0 + .02f, y0 + .345f, z0 + .04f, x1 - .04f, y0 + .365f, z1 - .04f);
+        Box("PinturaBlanca", x0 - .02f, y0 + .56f, z0 + .04f, x0, y1 - .04f, z1 - .04f);
+        Texto(grupo, "Cartel libros libres", "<b>LIBROS LIBRES</b>\n<size=60%>tomá uno, dejá uno</size>", new Vector3(x0 - .025f, y0 + .655f, p.z), Vector3.left, .7f, new Vector2(.72f, .17f), new Color(.12f, .3f, .25f));
+        var colores = new[] { "AmarilloUbyd", "CianBiblioteca", "BannerBiblioteca", "VinilVerde", "TachoAzul", "PinturaBlanca", "MaderaOscura", "TachoAmarillo" };
+        var azar = new System.Random(7);
+        foreach (var yb in new[] { y0 + .04f, y0 + .365f })
+            for (float z = z0 + .06f; z < z1 - .1f;)
+            {
+                float e = .03f + (float)azar.NextDouble() * .025f, h = .15f + (float)azar.NextDouble() * .06f;
+                Box(colores[azar.Next(colores.Length)], x0 + .06f, yb, z, x1 - .1f, yb + h, z + e);
+                z += e + .004f;
+            }
+        Placa("ChapaVerde", new Vector3(x0 - .07f, y1, z0 - .08f), new Vector3(x1 - x0 + .14f, 0, 0), new Vector3(0, .2f, p.z - z0 + .08f), .03f);
+        Placa("ChapaVerde", new Vector3(x0 - .07f, y1, z1 + .08f), new Vector3(x1 - x0 + .14f, 0, 0), new Vector3(0, .2f, p.z - z1 - .08f), .03f);
+        Tri("VerdeSalvia", new Vector3(x0, y1, z0), new Vector3(x0, y1, z1), new Vector3(x0, y1 + .18f, p.z), Vector3.left);
+        Tri("VerdeSalvia", new Vector3(x1, y1, z0), new Vector3(x1, y1, z1), new Vector3(x1, y1 + .18f, p.z), Vector3.right);
+    }
+
+    // Alambrado de malla entre postes negros (igual al de ArmadoUni, pero en los lotes de la biblioteca).
+    static void Alambrado(Vector3 a, Vector3 b, float alto = 2.1f)
+    {
+        var d = b - a; d.y = 0; float largo = d.magnitude; if (largo < .05f) return;
+        var u = d / largo; var n = Vector3.Cross(up, u); b = a + d; var m = (a + b) / 2;
+        Caja("RejaMalla", m + up * (.1f + alto) / 2, u * largo / 2, up * (alto - .1f) / 2, n * .01f);
+        int k = Mathf.Max(1, Mathf.CeilToInt(largo / 2.2f));
+        for (int i = 0; i <= k; i++) { var q = a + u * (largo * i / k); Caja("MetalNegro", q + up * (alto - .1f) / 2, u * .04f, up * (alto + .3f) / 2, n * .05f); }
+        foreach (var y in new[] { .09f, alto + .03f }) Caja("MetalNegro", m + up * y, u * largo / 2, up * .03f, n * .04f);
+    }
+
+    // Alambrado entre la punta suroeste de la sala y la reja de la calle, con su colisión alta: no se puede pasar a la
+    // franja que queda detrás de la biblioteca.
+    static void CierreOeste(Transform grupo, Transform mapa)
+    {
+        const float z = 179.75f, xa = 93.85f, xb = 88.7f;
+        float y = Mathf.Min(ArmadoUni.AlturaTerreno(mapa, xa, z), ArmadoUni.AlturaTerreno(mapa, xb, z));
+        Alambrado(new Vector3(xa, y, z), new Vector3(xb, y, z));
+        ArmadoUni.Bloqueo(grupo, "Bloqueo_DetrasBiblioteca", new Vector3((xa + xb) / 2, y + 2.5f, z), new Vector3(xa - xb + .4f, 5.0f, .4f));
+    }
+
     // ---------------------------------------------------------------- Terreno
 
     // Pasto: se saca debajo de la explanada, las veredas y los caminos con el trazado nuevo, y vuelve donde estaban los
@@ -707,7 +886,7 @@ public static class BibliotecaUniversidad
         var viejos = new[] { new[] { new Vector2(180f, 177f), new Vector2(176.5f, 195.5f) }, new[] { new Vector2(181f, 158f), new Vector2(171f, 166f), new Vector2(156f, 166f), new Vector2(148f, 170f) } };
         const float medio = 2.3f;
         bool En(Vector2 q, float x0, float z0, float x1, float z1) => q.x >= x0 && q.x <= x1 && q.y >= z0 && q.y <= z1;
-        bool Piso(Vector2 q) => En(q, XE - .1f, 183f, XCordon + .2f, 192.9f) || En(q, XW, ZS - .1f, XE, ZL) || En(q, XE2 - .1f, ZV - .1f, XV1, ZG + .1f) || En(q, XE2, ZQ, XE, ZV) || En(q, 172.3f, ZS - 1.5f, 174.1f, 183f);
+        bool Piso(Vector2 q) => En(q, XE - .1f, 183f, XCordon + .2f, 192.9f) || En(q, XW, ZS - .1f, XE, ZL) || En(q, XE2 - .1f, ZV - .1f, XV1, ZG + .1f) || En(q, XE2, ZQ, XE, ZV) || En(q, 172.3f, ZS - 1.5f, 174.1f, 183f) || PlazaPatio.Contains(q) || SenderoPatio.Contains(q) || CanteroPatio.Contains(q) || BicisPatio.Contains(q);
         float Dist(IList<Vector2> l, Vector2 q, out Vector2 cerca, out Vector2 tan)
         {
             float dm = float.MaxValue; cerca = l[0]; tan = Vector2.up;
@@ -790,7 +969,7 @@ public static class BibliotecaUniversidad
         var g2 = go.transform;
         // Los muebles sueltos van primero: sus prefabs usan los mismos lotes.
         Equipamiento(g2); lotes.Clear();
-        Oficinas(); Bloque(g2); Casona(g2); Vestibulo(g2); MuroCurvo(g2); Explanada();
+        Oficinas(); SalaGrande(); Bloque(g2); Casona(g2); Vestibulo(g2); MuroCurvo(g2); Explanada(); PatioDeLectura(g2, mapa); CierreOeste(g2, mapa);
         var contenedor = new Mesh { name = "Biblioteca" }; AssetDatabase.CreateAsset(contenedor, MeshPath);
         var mallas = new GameObject("Biblioteca"); mallas.transform.SetParent(g2, false);
         foreach (var kv in lotes)
