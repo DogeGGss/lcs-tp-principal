@@ -7407,6 +7407,42 @@ MonoBehaviour:
     m_Localized: "Qualcuno ha effettuato l'accesso al tuo account su un altro computer e la sessione qui \xE8 stata chiusa: un account si gioca su un solo computer alla volta. Per giocare qui, accedi di nuovo nel launcher. I tuoi progressi sono salvati nell'account."
     m_Metadata:
       m_Items: []
+  - m_Id: 4954606238789632
+    m_Localized: Scorta
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4954606385590272
+    m_Localized: "Un drone ti accompagna: il suo raggio scioglie l'invasore pi\xF9 vicino e ogni 8 s lancia archi elettrici che paralizzano quelli intorno."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4954606385590273
+    m_Localized: Katana
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4954606385590274
+    m_Localized: Arma da mischia
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4954606385590275
+    m_Localized: Sostituisce il tuo coltello, nel suo posto e nel suo tasto. Taglia tutti quelli che hai davanti.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4954606385590276
+    m_Localized: Lama al plasma
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4954606385590277
+    m_Localized: Cristallo di ghiaccio
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4954606385590278
+    m_Localized: Sangue d'invasore
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4954606385590279
+    m_Localized: Ologramma
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

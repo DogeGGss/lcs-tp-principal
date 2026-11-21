@@ -7398,6 +7398,42 @@ MonoBehaviour:
     m_Localized: "Algu\xE9m entrou na sua conta em outro computador e a sess\xE3o daqui foi encerrada: uma conta \xE9 jogada em um s\xF3 computador por vez. Para jogar aqui, entre de novo no launcher. Seu progresso est\xE1 salvo na conta."
     m_Metadata:
       m_Items: []
+  - m_Id: 4954606238789632
+    m_Localized: Escolta
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4954606385590272
+    m_Localized: "Um drone te acompanha: seu raio derrete o invasor mais pr\xF3ximo e a cada 8 s lan\xE7a arcos el\xE9tricos que paralisam os que est\xE3o em volta."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4954606385590273
+    m_Localized: Katana
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4954606385590274
+    m_Localized: Arma corpo a corpo
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4954606385590275
+    m_Localized: "Substitui sua faca, no lugar e na tecla dela. Corta todos que est\xE3o na sua frente."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4954606385590276
+    m_Localized: "L\xE2mina de plasma"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4954606385590277
+    m_Localized: Cristal de gelo
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4954606385590278
+    m_Localized: Sangue de invasor
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4954606385590279
+    m_Localized: Holograma
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []
