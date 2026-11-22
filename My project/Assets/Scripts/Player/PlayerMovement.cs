@@ -398,6 +398,7 @@ public class PlayerMovement : MonoBehaviour
             Collider c = debajo[i].collider;
             if (c == null || c.transform.IsChildOf(transform)) continue; // su propio cuerpo
             if (debajo[i].distance <= 0f) continue; // ya lo tocaba de costado
+            if (PortalDeEnemigos.Debajo(c, transform.position, out Vector3 delPortal)) { haciaAfuera = delPortal; return true; } // F08
             HealthSystem otro = c.GetComponentInParent<HealthSystem>();
             if (otro == null || otro.transform == transform) continue;
             Afuera(otro.transform.position);
@@ -415,12 +416,19 @@ public class PlayerMovement : MonoBehaviour
     }
 
     // Lo llama el CharacterController en el Move por cada cosa que toca. Si lo que tiene debajo es otro jugador
-    // (o cualquier cosa con vida, como un bot), no cuenta como piso.
+    // (o cualquier cosa con vida, como un bot) o un portal de Invasión, no cuenta como piso.
     private void OnControllerColliderHit(ControllerColliderHit golpe)
     {
         VallaElectrica.Tocar(transform, golpe.collider, golpe.point); // US 240, CA6: la valla del borde electrocuta
         // Cualquier apoyo que empuje un poco hacia arriba: también el borde del hombro, donde el piso es casi vertical.
         if (golpe.normal.y < 0.05f || golpe.collider == null) return; // de costado, no lo tiene debajo
+        // F08: tampoco se puede subir a un portal de Invasión: resbala hacia adelante o atrás del portal.
+        if (PortalDeEnemigos.Debajo(golpe.collider, transform.position, out Vector3 delPortal))
+        {
+            haciaAfuera = delPortal;
+            sobreJugador = true;
+            return;
+        }
         HealthSystem otro = golpe.collider.GetComponentInParent<HealthSystem>();
         if (otro == null || otro.transform == transform) return;
         Afuera(otro.transform.position);
