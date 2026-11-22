@@ -24,6 +24,7 @@ public class CaidoEnTerceraPersona : MonoBehaviour
     private bool hayParametro, buscado;
     private float peso, levantandoHasta = -1f, largoLevantarse = -1f;
     private bool estaba;
+    private int pedidoEn = -10; // el cuadro en que se pidió la última animación de la capa
     private Vector3 antes;
     private TextMeshPro cartel;
 
@@ -66,6 +67,7 @@ public class CaidoEnTerceraPersona : MonoBehaviour
         if (Caido && !estaba)
         {
             animador.CrossFadeInFixedTime(Caer, 0.1f, capa, 0f); // (al terminar sigue sola con la de arrastrarse)
+            pedidoEn = Time.frameCount;
             estaba = true;
             levantandoHasta = -1f;
         }
@@ -74,8 +76,10 @@ public class CaidoEnTerceraPersona : MonoBehaviour
             estaba = false;
             // CA4: se levanta. Con una mezcla larga: la de arrastrarse y la de levantarse no están en la misma pose.
             animador.CrossFadeInFixedTime(Levantarse, MezclaLevantarse, capa, 0f);
+            pedidoEn = Time.frameCount;
             levantandoHasta = Time.time + LargoDeLevantarse();
         }
+        else if (Caido) SeguirEnElPiso();
         if (Caido && hayParametro)
         {
             float v = (transform.position - antes).magnitude / Mathf.Max(0.001f, Time.deltaTime);
@@ -86,6 +90,21 @@ public class CaidoEnTerceraPersona : MonoBehaviour
         peso = Mathf.MoveTowards(peso, prendida ? 1f : 0f, Time.deltaTime / (prendida ? Entrar : Salir));
         animador.SetLayerWeight(capa, peso * peso * (3f - 2f * peso));
     }
+
+    // Caído, la capa tiene que estar en la de caer o en la de arrastrarse. Si el Animator se apagó y se volvió a prender
+    // (por ejemplo, el cuerpo que se oculta en el modo espectador) o se reinició, vuelve a su estado vacío ("Nada") y con
+    // la capa prendida se veía la de abajo: agachado en vez de tirado en el piso. Si pasa, vuelve a la de arrastrarse.
+    private void SeguirEnElPiso()
+    {
+        if (!animador.isActiveAndEnabled || Time.frameCount <= pedidoEn + 1) return; // (lo pedido todavía no se ve)
+        if (EnEstado(Caer) || EnEstado(Arrastrarse)) return;
+        animador.CrossFadeInFixedTime(Arrastrarse, 0.1f, capa, 0f);
+        pedidoEn = Time.frameCount;
+    }
+
+    private bool EnEstado(string nombre) =>
+        animador.GetCurrentAnimatorStateInfo(capa).IsName(nombre) ||
+        (animador.IsInTransition(capa) && animador.GetNextAnimatorStateInfo(capa).IsName(nombre));
 
     private float LargoDeLevantarse()
     {

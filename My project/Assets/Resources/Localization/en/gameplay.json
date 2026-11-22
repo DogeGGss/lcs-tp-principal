@@ -381,6 +381,10 @@
       "text": "Knife"
     },
     {
+      "key": "gameplay.weapon.knife_and_katana",
+      "text": "Knife and katana"
+    },
+    {
       "key": "gameplay.card.fx.reserve_shot",
       "text": "With an empty magazine, holding the trigger keeps firing from the reserve at half the fire rate."
     },

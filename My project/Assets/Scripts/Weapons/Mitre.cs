@@ -214,7 +214,7 @@ public class Mitre : MonoBehaviour, IHudWeapon
         nextTimeToFire = Time.time + 1f / fireRate;
         if (!MinijuegoCometas.Activo) currentAmmo--;
         // (Guardado, su fuente no suena: el sonido y la estela celeste del Acople, WeaponFire.Acople.)
-        WeaponFire.Acople(shootSound, () => WeaponFire.Fire(Data, cam, shooter, false, maxRange));
+        WeaponFire.Acople(shootSound, audioSource, sfxGroup, () => WeaponFire.Fire(Data, cam, shooter, false, maxRange));
         return true;
     }
 

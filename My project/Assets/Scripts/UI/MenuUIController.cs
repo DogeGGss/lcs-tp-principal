@@ -31,6 +31,58 @@ public class MenuUIController : MonoBehaviour
 [SerializeField] private float duracionEntradaPanel = 0.3f;
 
     private static bool opcionesCargadas;
+    private bool transicionando;
+    private GameObject panelDestino;
+
+    // El menú siempre tiene que responder al mouse. A veces quedaba trabado (el puntero no hacía nada y ningún botón
+    // respondía), en el juego y en el editor. Las causas posibles se arreglan cada cuadro:
+    // - el cursor trabado o escondido (de la partida de la que se volvió);
+    // - el velo de la transición entre paneles, que tapa los clics mientras dura: si la transición se cortaba (el menú
+    //   se apagaba en el medio), quedaba invisible tapando todo;
+    // - sin EventSystem prendido (el que lleva los clics a los botones);
+    // - el tiempo frenado (de la pausa de la partida): las animaciones de los botones no avanzaban.
+    private void Update()
+    {
+        if (Cursor.lockState != CursorLockMode.None) Cursor.lockState = CursorLockMode.None;
+        if (!Cursor.visible) Cursor.visible = true;
+        if (!transicionando && overlayTransicion != null && overlayTransicion.blocksRaycasts)
+        {
+            overlayTransicion.blocksRaycasts = false;
+            overlayTransicion.alpha = 0f;
+        }
+        if (Time.timeScale <= 0f) Time.timeScale = 1f;
+        AsegurarEventSystem();
+    }
+
+    private static void AsegurarEventSystem()
+    {
+        UnityEngine.EventSystems.EventSystem actual = UnityEngine.EventSystems.EventSystem.current;
+        if (actual != null && actual.isActiveAndEnabled) return;
+        foreach (UnityEngine.EventSystems.EventSystem e in FindObjectsByType<UnityEngine.EventSystems.EventSystem>(FindObjectsInactive.Include, FindObjectsSortMode.None))
+        {
+            if (e == null || e.gameObject.scene.name == null) continue; // (un prefab)
+            e.gameObject.SetActive(true);
+            e.enabled = true;
+            UnityEngine.EventSystems.BaseInputModule modulo = e.GetComponent<UnityEngine.EventSystems.BaseInputModule>();
+            if (modulo != null) modulo.enabled = true;
+            return;
+        }
+        new GameObject("EventSystem", typeof(UnityEngine.EventSystems.EventSystem), typeof(UnityEngine.InputSystem.UI.InputSystemUIInputModule));
+    }
+
+    // Si el menú se apaga en medio de una transición, la corrutina se corta: se deja todo como al terminar.
+    private void OnDisable()
+    {
+        if (!transicionando) return;
+        transicionando = false;
+        if (overlayTransicion != null) { overlayTransicion.alpha = 0f; overlayTransicion.blocksRaycasts = false; }
+        if (panelDestino != null)
+        {
+            panelDestino.SetActive(true);
+            CanvasGroup grupo = panelDestino.GetComponent<CanvasGroup>();
+            if (grupo != null) grupo.alpha = 1f;
+        }
+    }
 
     private void LocalizarTextosDePrefabs()
     {
@@ -180,6 +232,8 @@ public void ConfirmarSalida()
 
    private IEnumerator Transicionar(GameObject nuevoPanel)
 {
+    transicionando = true;
+    panelDestino = nuevoPanel;
     overlayTransicion.blocksRaycasts = true;
 
     // Oscurecer la pantalla
@@ -207,6 +261,7 @@ public void ConfirmarSalida()
     }
 
     overlayTransicion.blocksRaycasts = false;
+    transicionando = false;
 }
 
     private IEnumerator Fade(float inicio, float fin)

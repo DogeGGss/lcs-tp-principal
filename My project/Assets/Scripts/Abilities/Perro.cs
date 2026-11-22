@@ -162,6 +162,10 @@ public class Perro : MonoBehaviour
         choque.radius = 0.24f;
         choque.height = 0.95f;
         choque.center = new Vector3(0f, 0.42f, 0f);
+        // Los jugadores lo atraviesan: si no, el que lo lanza se trababa con él un momento (sale justo adelante), y el
+        // perro cortaba el paso en los pasillos. Las balas lo siguen tocando (van con rayos, no con el cuerpo).
+        foreach (CharacterController jugador in FindObjectsByType<CharacterController>(FindObjectsSortMode.None))
+            if (jugador != null) Physics.IgnoreCollision(choque, jugador);
 
         ArmarDibujo();
 

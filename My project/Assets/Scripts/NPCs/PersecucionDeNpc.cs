@@ -207,7 +207,8 @@ public class PersecucionDeNpc : MonoBehaviour
         bool grande = npc.Tipo != null && npc.Tipo.esJefe; // no entra a lugares angostos (NavMeshEnVivo)
         if (tipoDeAgente < 0)
         {
-            // ¿El mapa tiene NavMesh horneado (el tipo de agente común, Humanoid)?
+            // ¿El mapa tiene NavMesh horneado (el tipo de agente común, Humanoid)? También para el Jefe: así entra a los
+            // edificios a buscar al jugador (se aparta de las paredes con LejosDeLasParedes).
             int humanoide = NavMesh.GetSettingsByIndex(0).agentTypeID;
             var filtro = new NavMeshQueryFilter { agentTypeID = humanoide, areaMask = NavMesh.AllAreas };
             if (NavMesh.SamplePosition(transform.position, out _, 3f, filtro)) tipoDeAgente = humanoide;
@@ -235,6 +236,7 @@ public class PersecucionDeNpc : MonoBehaviour
             agente.autoBraking = true;
             agente.obstacleAvoidanceType = ObstacleAvoidanceType.HighQualityObstacleAvoidance; // CA4: no se enciman
             agente.avoidancePriority = Random.Range(30, 70);
+            LejosDeLasParedes.Poner(npc, agente); // F11 y US 146: el cuerpo grande (o el que flota) no se mete en la pared
         }
         else agente.Warp(piso.position);
         proximoCamino = 0f;

@@ -83,7 +83,10 @@ public class BrazosEnCamara : MonoBehaviour
         if (switcher == null || switcher.pistolObj == null) return;
         if (brazosCuerpo == null && !Preparar()) return;
 
-        bool vivo = vida == null || vida.currentHealth > 0;
+        // Mirando a los compañeros (Espectador) tampoco: en Invasión se puede estar afuera con vida (el que entra a una
+        // partida empezada, US 358) y la foto del arma que tenía en la mano se veía pegada a la cámara del espectador,
+        // además de las manos del arma del compañero (dos pares de manos).
+        bool vivo = (vida == null || vida.currentHealth > 0) && !Espectador.Activo;
         GameObject enMano = vivo ? EnMano() : null;
 
         if (ajustarAMano != ajustando)

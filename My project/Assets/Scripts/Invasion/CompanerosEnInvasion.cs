@@ -317,6 +317,8 @@ public class CompanerosEnInvasion : MonoBehaviour
                 cells = new[] { string.IsNullOrEmpty(p.NickName) ? "?" : p.NickName, Numero(p, PropBajas).ToString(), Numero(p, PropPuntos).ToString(), estado },
                 highlight = p.IsLocal,
                 dim = e == CaidaEnInvasion.Estado.Muerto || e == CaidaEnInvasion.Estado.Retirado || p.IsInactive,
+                perfil = p, // US 376 y US 373: su placa, y con la tabla fija se abre su perfil (como en Táctico)
+                columnaPerfil = 0
             });
         }
         tabla.sections.Add(seccion);

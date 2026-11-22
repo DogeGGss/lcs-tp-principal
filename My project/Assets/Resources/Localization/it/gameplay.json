@@ -381,6 +381,10 @@
       "text": "Coltello"
     },
     {
+      "key": "gameplay.weapon.knife_and_katana",
+      "text": "Coltello e katana"
+    },
+    {
       "key": "gameplay.card.fx.reserve_shot",
       "text": "Con il caricatore vuoto, tenendo premuto il grilletto continua a sparare dalla riserva, a metà cadenza."
     },
