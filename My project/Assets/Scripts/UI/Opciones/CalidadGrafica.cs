@@ -13,6 +13,8 @@ using UnityEngine.SceneManagement;
 // - las cascadas y la resolución de las sombras (Media usa 2 cascadas en vez de 4; Baja, 1 y a menos resolución),
 // - la vegetación del terreno: hasta dónde se dibujan los árboles y el pasto, cuánto pasto hay y el detalle del suelo.
 //   Nunca más de lo que tiene puesto la escena: el nivel solo recorta. Se aplica a cada escena que se carga.
+// US 189 (Mapa 3, rendimiento): en Baja, los mapas grandes (MapasGrandes) van sin pasto y sin sombra del terreno, de
+//   los árboles ni de los objetos chicos.
 // Los valores del asset se cambian en memoria; en el editor se devuelven al salir del Play para no ensuciar el asset.
 public static class CalidadGrafica
 {
@@ -23,10 +25,20 @@ public static class CalidadGrafica
         public AnisotropicFiltering anisotropico;
         public int cascadas, resolucionSombras;
         public float arboles, pasto, densidadPasto, errorSuelo; // terreno: m, m, 0 a 1, píxeles
+        public bool livianoEnMapasGrandes; // US 189: los mapas de MapasGrandes van sin pasto y con menos sombras
     }
 
+    // US 189 (Mapa 3, rendimiento): la universidad tiene casi 1,8 millones de matas de pasto en el terreno y miles de
+    // objetos que proyectan sombra. En Baja no se dibuja el pasto, y el terreno, los árboles y los objetos chicos no
+    // proyectan sombra (con la sombra hasta 15 m casi no se nota). Media y Alta se ven igual que siempre.
+    // Escena → objeto raíz del mapa (solo se tocan las sombras de lo que está adentro, nunca jugadores ni armas).
+    private static readonly Dictionary<string, string> MapasGrandes = new Dictionary<string, string> { { "universidadMAPA", "Mapa (escala 1,25)" } };
+    private const string Vegetacion = "Ambiente_Vegetacion";
+    private const float ObjetoChico = 1.5f; // m, la diagonal de la caja del objeto
+    private static readonly Dictionary<Renderer, ShadowCastingMode> sombrasApagadas = new Dictionary<Renderer, ShadowCastingMode>();
+
     private static readonly Nivel Baja = new Nivel { escala = 0.6f, sombras = 15f, lod = 0.4f, msaa = 1, texturas = 2, anisotropico = AnisotropicFiltering.Disable,
-        cascadas = 1, resolucionSombras = 1024, arboles = 150f, pasto = 30f, densidadPasto = 0.35f, errorSuelo = 10f };
+        cascadas = 1, resolucionSombras = 1024, arboles = 150f, pasto = 30f, densidadPasto = 0.35f, errorSuelo = 10f, livianoEnMapasGrandes = true };
     private static readonly Nivel Media = new Nivel { escala = 0.85f, sombras = 40f, lod = 1.2f, msaa = 2, texturas = 0, anisotropico = AnisotropicFiltering.Enable,
         cascadas = 2, resolucionSombras = 2048, arboles = 260f, pasto = 55f, densidadPasto = 0.6f, errorSuelo = 6f };
     private static readonly Nivel Alta = new Nivel { escala = 1f, sombras = 90f, lod = 2f, msaa = 4, texturas = 0, anisotropico = AnisotropicFiltering.ForceEnable,
@@ -38,7 +50,7 @@ public static class CalidadGrafica
     private static Nivel? elegido;
 
     // Lo que trae cada terreno de su escena (el nivel recorta a partir de esto, así se puede volver a subir).
-    private struct Terreno { public float arboles, pasto, densidad, error; }
+    private struct Terreno { public float arboles, pasto, densidad, error; public ShadowCastingMode sombra; }
     private static readonly Dictionary<Terrain, Terreno> terrenos = new Dictionary<Terrain, Terreno>();
 
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
@@ -52,7 +64,7 @@ public static class CalidadGrafica
     {
         // Entrando al Play directo en un mapa (sin pasar por el menú), se usa lo guardado igual.
         if (elegido == null) GraficosUIController.AplicarGuardado();
-        else Terrenos(elegido.Value);
+        else { Terrenos(elegido.Value); SombrasDeMapasGrandes(elegido.Value); }
     }
 
     /// <summary>Lo llama GraficosUIController después de elegir el nivel de calidad ("Baja", "Media" o "Alta").</summary>
@@ -61,6 +73,7 @@ public static class CalidadGrafica
         Nivel nivel = nombre == "Baja" ? Baja : nombre == "Alta" ? Alta : Media;
         elegido = nivel;
         Terrenos(nivel);
+        SombrasDeMapasGrandes(nivel);
 
         QualitySettings.globalTextureMipmapLimit = nivel.texturas;
         QualitySettings.anisotropicFiltering = nivel.anisotropico;
@@ -107,14 +120,49 @@ public static class CalidadGrafica
         {
             if (!terrenos.TryGetValue(t, out Terreno original))
             {
-                original = new Terreno { arboles = t.treeDistance, pasto = t.detailObjectDistance, densidad = t.detailObjectDensity, error = t.heightmapPixelError };
+                original = new Terreno { arboles = t.treeDistance, pasto = t.detailObjectDistance, densidad = t.detailObjectDensity, error = t.heightmapPixelError, sombra = t.shadowCastingMode };
                 terrenos[t] = original;
                 t.drawInstanced = true; // el suelo, dibujado por la placa de video en menos llamadas
             }
+            bool liviano = nivel.livianoEnMapasGrandes && MapasGrandes.ContainsKey(t.gameObject.scene.name);
             t.treeDistance = Mathf.Min(original.arboles, nivel.arboles);
-            t.detailObjectDistance = Mathf.Min(original.pasto, nivel.pasto);
-            t.detailObjectDensity = Mathf.Min(original.densidad, nivel.densidadPasto);
+            t.detailObjectDistance = liviano ? 0f : Mathf.Min(original.pasto, nivel.pasto);
+            t.detailObjectDensity = liviano ? 0f : Mathf.Min(original.densidad, nivel.densidadPasto);
             t.heightmapPixelError = Mathf.Max(original.error, nivel.errorSuelo);
+            t.shadowCastingMode = liviano ? ShadowCastingMode.Off : original.sombra;
+        }
+    }
+
+    // US 189: en los mapas grandes con un nivel liviano, los árboles y los objetos chicos del mapa no proyectan sombra.
+    // Se guarda cómo venía cada uno, así al pasar a Media o Alta vuelven a estar como en la escena.
+    private static void SombrasDeMapasGrandes(Nivel nivel)
+    {
+        var listos = new List<Renderer>();
+        foreach (var par in sombrasApagadas)
+        {
+            if (par.Key == null) listos.Add(par.Key);
+            else if (!nivel.livianoEnMapasGrandes) { par.Key.shadowCastingMode = par.Value; listos.Add(par.Key); }
+        }
+        foreach (Renderer r in listos) sombrasApagadas.Remove(r);
+        if (!nivel.livianoEnMapasGrandes) return;
+
+        for (int i = 0; i < SceneManager.sceneCount; i++)
+        {
+            Scene escena = SceneManager.GetSceneAt(i);
+            if (!escena.isLoaded || !MapasGrandes.TryGetValue(escena.name, out string raizDelMapa)) continue;
+            foreach (GameObject raiz in escena.GetRootGameObjects())
+            {
+                if (raiz.name != raizDelMapa) continue;
+                Transform vegetacion = raiz.transform.Find(Vegetacion);
+                foreach (MeshRenderer r in raiz.GetComponentsInChildren<MeshRenderer>())
+                {
+                    if (r.shadowCastingMode == ShadowCastingMode.Off || sombrasApagadas.ContainsKey(r)) continue;
+                    bool arbol = vegetacion != null && r.transform.IsChildOf(vegetacion);
+                    if (!arbol && r.bounds.size.magnitude >= ObjetoChico) continue;
+                    sombrasApagadas[r] = r.shadowCastingMode;
+                    r.shadowCastingMode = ShadowCastingMode.Off;
+                }
+            }
         }
     }
 
@@ -136,6 +184,7 @@ public static class CalidadGrafica
         Restaurar();
         elegido = null; // el próximo Play vuelve a aplicar todo (aunque no se recarguen los scripts)
         terrenos.Clear();
+        sombrasApagadas.Clear(); // los objetos de la escena vuelven solos a como estaban al salir del Play
     }
 #endif
 }
