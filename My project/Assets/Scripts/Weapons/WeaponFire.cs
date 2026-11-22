@@ -23,6 +23,9 @@ public static class WeaponFire
     // Cada disparo, con quién tiró, desde dónde y la dirección de cada perdigón. El multijugador lo repite
     // en las demás computadoras (US 028).
     public static event System.Action<Transform, Vector3, Vector3[]> Fired;
+    /// <summary>US 287 (F31, US 355): salió una granada del Gran Capitán (quién, la granada, desde dónde, a qué velocidad
+    /// y si va con bronca), para que en las demás computadoras se vea una igual (JugadorEnRed).</summary>
+    public static event System.Action<Transform, Grenade1, Vector3, Vector3, bool> ProjectileFired;
     // Daño de más para el disparo que sale ahora (la carta Bronca de Invasión: US 330): se pide una vez por disparo y
     // se reparte entre los perdigones.
     public static System.Func<int> DanioDeMas;
@@ -261,13 +264,14 @@ public static class WeaponFire
         if (deMas > 0) Brasa(thrown.transform); // US 330: la granada con bronca vuela roja
         Rigidbody body = thrown.GetComponent<Rigidbody>();
         if (body != null) body.linearVelocity = direction * weapon.velocidadDelProyectil;
+        if (grenade != null) ProjectileFired?.Invoke(shooter, grenade, muzzle, direction * weapon.velocidadDelProyectil, deMas > 0);
 
         aim.Kick(weapon);
         Fired?.Invoke(shooter, camera.transform.position, new[] { direction });
     }
 
     // US 330: una luz roja que acompaña a la granada con bronca hasta que explota.
-    private static void Brasa(Transform granada)
+    public static void Brasa(Transform granada)
     {
         var go = new GameObject("Bronca");
         go.transform.SetParent(granada, false);
