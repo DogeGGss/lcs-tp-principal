@@ -381,6 +381,10 @@
       "text": "Couteau"
     },
     {
+      "key": "gameplay.weapon.knife_and_katana",
+      "text": "Couteau et katana"
+    },
+    {
       "key": "gameplay.card.fx.reserve_shot",
       "text": "Chargeur vide, en maintenant la détente, tu continues à tirer depuis la réserve, à la moitié de la cadence."
     },

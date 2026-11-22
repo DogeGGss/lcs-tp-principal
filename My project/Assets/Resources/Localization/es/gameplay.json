@@ -381,6 +381,10 @@
       "text": "Cuchillo"
     },
     {
+      "key": "gameplay.weapon.knife_and_katana",
+      "text": "Cuchillo y katana"
+    },
+    {
       "key": "gameplay.card.fx.reserve_shot",
       "text": "Con el cargador vacío, manteniendo el gatillo sigue disparando desde la reserva, a la mitad de la cadencia."
     },

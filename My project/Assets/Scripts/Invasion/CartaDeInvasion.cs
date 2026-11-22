@@ -117,14 +117,14 @@ public class CartaDeInvasion
             efecto = "40 % más de reserva en las dos armas.", efectoRepetida = new[] { "80 % más de reserva en las dos armas (40 % más que ahora).", "120 % más de reserva en las dos armas (40 % más que ahora)." }, aplicar = EfectosDeCartas.Mochila, quitar = EfectosDeCartas.SacarMochila },
         new CartaDeInvasion { nombre = "Reciclador", rareza = RarezaDeCarta.Rara, rindeCon = "Todas",
             efecto = "Cada baja a la cabeza devuelve 5 balas al cargador.", efectoRepetida = new[] { "Cada baja a la cabeza devuelve 10 balas al cargador.", "Cada baja a la cabeza devuelve 15 balas al cargador." }, aplicar = EfectosDeCartas.EnElJuego },
-        new CartaDeInvasion { nombre = "Filo", rareza = RarezaDeCarta.Comun, rindeCon = "Cuchillo", unaVez = true,
+        new CartaDeInvasion { nombre = "Filo", rareza = RarezaDeCarta.Comun, rindeCon = "Cuchillo y katana", unaVez = true,
             efecto = "Matar con el cuchillo recarga la última arma que tuviste en la mano.", aplicar = EfectosDeCartas.EnElJuego },
         new CartaDeInvasion { nombre = "Carroñero", rareza = RarezaDeCarta.Rara, rindeCon = "Todas",
             efecto = "1 de cada 5 invasores suelta un cargador al morir.", efectoRepetida = new[] { "1 de cada 4 invasores suelta un cargador al morir.", "1 de cada 3 invasores suelta un cargador al morir." }, aplicar = EfectosDeCartas.EnElJuego },
         // US 319 a 334 (la segunda tanda): se suman al catálogo a medida que tienen su efecto.
-        new CartaDeInvasion { nombre = "Remate", rareza = RarezaDeCarta.Comun, rindeCon = "Cuchillo",
+        new CartaDeInvasion { nombre = "Remate", rareza = RarezaDeCarta.Comun, rindeCon = "Cuchillo y katana",
             efecto = "El cuchillo mata de un golpe a los invasores con 25 % de vida o menos (salvo al Jefe).", efectoRepetida = new[] { "El cuchillo mata de un golpe a los invasores con 30 % de vida o menos (salvo al Jefe).", "El cuchillo mata de un golpe a los invasores con 35 % de vida o menos (salvo al Jefe)." }, aplicar = EfectosDeCartas.EnElJuego },
-        new CartaDeInvasion { nombre = "Filo voraz", rareza = RarezaDeCarta.Rara, rindeCon = "Cuchillo",
+        new CartaDeInvasion { nombre = "Filo voraz", rareza = RarezaDeCarta.Rara, rindeCon = "Cuchillo y katana",
             efecto = "Cada cuchillazo cura lo mismo que el daño que hace, hasta 25 de vida por golpe.", efectoRepetida = new[] { "Cada cuchillazo cura lo mismo que el daño que hace, hasta 35 de vida por golpe.", "Cada cuchillazo cura lo mismo que el daño que hace, hasta 45 de vida por golpe." }, aplicar = EfectosDeCartas.EnElJuego },
         new CartaDeInvasion { nombre = "Reserva lista", rareza = RarezaDeCarta.Rara, rindeCon = "Todas", unaVez = true,
             efecto = "El arma guardada se recarga sola desde su reserva después de 2 s.", aplicar = EfectosDeCartas.EnElJuego },
@@ -179,7 +179,7 @@ public class CartaDeInvasion
             case "Gran Capitán": return Hay(ShopCategory.Launchers);
             case "Escopeta": return Hay(ShopCategory.Shotguns);
             case "Francotirador": return Hay(ShopCategory.Snipers);
-            default: return true; // Todas, Cuchillo
+            default: return true; // Todas, Cuchillo y katana (el cuchillo siempre se tiene; la katana lo reemplaza, US 395)
         }
     }
 

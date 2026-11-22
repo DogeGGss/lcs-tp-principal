@@ -381,6 +381,10 @@
       "text": "Faca"
     },
     {
+      "key": "gameplay.weapon.knife_and_katana",
+      "text": "Faca e katana"
+    },
+    {
       "key": "gameplay.card.fx.reserve_shot",
       "text": "Com o carregador vazio, segurando o gatilho continua atirando da reserva, na metade da cadência."
     },
