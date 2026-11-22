@@ -64,6 +64,7 @@ MonoBehaviour:
   - RpcGranadaPegada
   - RpcLanzandoGranada
   - RpcPortal
+  - RpcGranadaDeArma
   DisableAutoOpenWizard: 1
   ShowSettings: 0
   DevRegionSetOnce: 0

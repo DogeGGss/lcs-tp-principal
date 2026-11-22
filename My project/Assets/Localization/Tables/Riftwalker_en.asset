@@ -1821,7 +1821,7 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 7522316354
-    m_Localized: " \xB7 {0:mm\\\\:ss} remaining"
+    m_Localized: " \xB7 {0} remaining"
     m_Metadata:
       m_Items: []
   - m_Id: 7522316355
@@ -7453,6 +7453,10 @@ MonoBehaviour:
       m_Items: []
   - m_Id: 4954606385590279
     m_Localized: Hologram
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5310333163761664
+    m_Localized: The notes for this version are only available in Spanish.
     m_Metadata:
       m_Items: []
   references:
