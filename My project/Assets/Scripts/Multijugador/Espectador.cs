@@ -126,6 +126,7 @@ public class Espectador : MonoBehaviour
 
     private void OnDestroy()
     {
+        if (muerto) Activo = false;
         Terminar();
         if (actual == this) actual = null;
     }
@@ -229,9 +230,16 @@ public class Espectador : MonoBehaviour
         MostrarCartel();
     }
 
+    /// <summary>El jugador de esta computadora está mirando a sus compañeros (muerto o afuera de la Invasión).</summary>
+    public static bool Activo { get; private set; }
+
+    [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+    private static void Olvidar() => Activo = false; // (se entra al Play sin recargar los scripts)
+
     private void Empezar(JugadorEnRed local)
     {
         muerto = true;
+        Activo = true;
         viendoDispositivo = false;
         murioEn = Time.time;
         mirando = null;
@@ -273,6 +281,7 @@ public class Espectador : MonoBehaviour
     {
         if (!muerto) return;
         muerto = false;
+        Activo = false;
         Mirar(null);
         SacarMira();
         if (camara != null)
