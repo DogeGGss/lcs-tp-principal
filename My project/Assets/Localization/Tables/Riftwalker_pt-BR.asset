@@ -2623,7 +2623,7 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 7522316354
-    m_Localized: " \xB7 {0:mm\\\\:ss} restantes"
+    m_Localized: " \xB7 {0} restantes"
     m_Metadata:
       m_Items: []
   - m_Id: 7522316355
@@ -7432,6 +7432,10 @@ MonoBehaviour:
       m_Items: []
   - m_Id: 4954606385590279
     m_Localized: Holograma
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5310333163761664
+    m_Localized: "As notas desta vers\xE3o est\xE3o dispon\xEDveis apenas em espanhol."
     m_Metadata:
       m_Items: []
   references:

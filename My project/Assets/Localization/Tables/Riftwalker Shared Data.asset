@@ -7419,6 +7419,10 @@ MonoBehaviour:
     m_Key: profile.skin.design.holograma
     m_Metadata:
       m_Items: []
+  - m_Id: 5310333163761664
+    m_Key: launcher.notes_spanish_only
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

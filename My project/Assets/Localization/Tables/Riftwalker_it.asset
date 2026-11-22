@@ -2627,7 +2627,7 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 7522316354
-    m_Localized: " \xB7 {0:mm\\\\:ss} rimanenti"
+    m_Localized: " \xB7 {0} rimanenti"
     m_Metadata:
       m_Items: []
   - m_Id: 7522316355
@@ -7441,6 +7441,10 @@ MonoBehaviour:
       m_Items: []
   - m_Id: 4954606385590279
     m_Localized: Ologramma
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5310333163761664
+    m_Localized: Le note di questa versione sono disponibili solo in spagnolo.
     m_Metadata:
       m_Items: []
   references:
