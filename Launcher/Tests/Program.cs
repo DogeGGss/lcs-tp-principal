@@ -210,6 +210,22 @@ Test("Notes in the launcher stop at the publisher's footer", () =>
     Equal("", ReleaseClient.NotesForLauncher(null));
     return Task.CompletedTask;
 });
+Test("Notes in the launcher follow the language when the release has that section (US 346)", () =>
+{
+    const string body = "## Qué trae\n- Algo\n\n<!-- riftwalker:idioma:en -->\n## What's new\n- Something\n\n<!-- riftwalker:idioma:pt-BR -->\n## Novidades\n- Algo\n\n<!-- riftwalker:pie -->\n---\n**Pie**";
+    Equal("## Qué trae\n- Algo", ReleaseClient.NotesForLauncher(body));
+    Equal("## What's new\n- Something", ReleaseClient.NotesForLauncher(body, "en"));
+    Equal("## Novidades\n- Algo", ReleaseClient.NotesForLauncher(body, "pt-BR"));
+    // No section for that language: the Spanish notes, and the launcher says they are only in Spanish.
+    Equal("## Qué trae\n- Algo", ReleaseClient.NotesForLauncher(body, "fr"));
+    Equal(true, ReleaseClient.HasNotesIn(body, "es"));
+    Equal(true, ReleaseClient.HasNotesIn(body, "en"));
+    Equal(false, ReleaseClient.HasNotesIn(body, "fr"));
+    Equal(false, ReleaseClient.HasNotesIn("Solo español", "en"));
+    // A marker after the footer is not part of the notes.
+    Equal(false, ReleaseClient.HasNotesIn("Notas\n<!-- riftwalker:pie -->\n<!-- riftwalker:idioma:en -->\nX", "en"));
+    return Task.CompletedTask;
+});
 int packageIndex = Array.IndexOf(args, "--package-root");
 if (packageIndex >= 0)
     Test("Publisher manifest and ZIP install together", async () =>
