@@ -44,7 +44,7 @@ public partial class MainWindow : Window
         int pedido = Array.IndexOf(args, "--tamano"); // vista previa de un tamaño: --tamano chica|normal|grande
         AplicarTamano(pedido >= 0 && pedido + 1 < args.Length ? args[pedido + 1] : settings.Size, false);
         LauncherVersionText.Text = $"PROJECT RIFTWALKER / LAUNCHER {App.LauncherVersion}";
-        Notes.Document = MarkdownNotes.Render("## Preparando las novedades\nLas notas del parche aparecerán acá.");
+        Notes.Document = MarkdownNotes.Render(LauncherText.Source("## Preparando las novedades\nLas notas del parche aparecerán acá."));
         InitializeLanguages();
         Loaded += OnLoaded;
         Closing += OnClosing;
@@ -56,13 +56,13 @@ public partial class MainWindow : Window
         StartPlatform();
         if (App.Preview)
         {
-            StateTitle.Text = "TU EQUIPO TE ESPERA"; InstalledText.Text = "Vista previa del diseño";
-            StatusText.Text = "Todo en un lugar. Actualizá el juego, leé las novedades y entrá a la próxima partida.";
-            MainAction.Content = "JUGAR  →"; MainAction.IsEnabled = true;
-            Progress.IsIndeterminate = false; Progress.Value = 100; ProgressText.Text = "Vista previa · no instala ni abre el juego";
-            ConnectionText.Text = "VISTA PREVIA"; Retry.Visibility = Visibility.Collapsed;
-            ReleasePicker.Items.Add(new { Label = "Vista previa" }); ReleasePicker.SelectedIndex = 0;
-            Notes.Document = MarkdownNotes.Render("## El próximo cruce empieza acá\nUn punto de encuentro para preparar tu próxima partida.\n### Tu juego, al día\n- Descargá las nuevas versiones desde este launcher.\n- Conservá tus opciones y tu progreso.\n- Consultá qué cambió antes de jugar.\n### Elegí tu andén\n**Táctico · Deathmatch · Invasión**\n\nEsta es una vista previa de la interfaz, no las notas de una versión publicada.");
+            LauncherText.Bind(StateTitle, "TU EQUIPO TE ESPERA"); LauncherText.Bind(InstalledText, "Vista previa del diseño");
+            LauncherText.Bind(StatusText, "Todo en un lugar. Actualizá el juego, leé las novedades y entrá a la próxima partida.");
+            LauncherText.BindContent(MainAction, "JUGAR  →"); MainAction.IsEnabled = true;
+            Progress.IsIndeterminate = false; Progress.Value = 100; LauncherText.Bind(ProgressText, "Vista previa · no instala ni abre el juego");
+            LauncherText.Bind(ConnectionText, "VISTA PREVIA"); Retry.Visibility = Visibility.Collapsed;
+            ReleasePicker.Items.Add(new { Label = LauncherText.Source("Vista previa") }); ReleasePicker.SelectedIndex = 0;
+            Notes.Document = MarkdownNotes.Render(LauncherText.Source("## El próximo cruce empieza acá\nUn punto de encuentro para preparar tu próxima partida.\n### Tu juego, al día\n- Descargá las nuevas versiones desde este launcher.\n- Conservá tus opciones y tu progreso.\n- Consultá qué cambió antes de jugar.\n### Elegí tu andén\n**Táctico · Deathmatch · Invasión**\n\nEsta es una vista previa de la interfaz, no las notas de una versión publicada."));
             if (args.Contains("--settings-preview")) OpenSettings(true);
             int cuenta = Array.IndexOf(args, "--cuenta"); // the account's steps: --cuenta entrar|crear|confirmar|listo|menu…
             if (cuenta >= 0) VistaPreviaCuenta(cuenta + 1 < args.Length ? args[cuenta + 1] : "entrar");
@@ -90,7 +90,7 @@ public partial class MainWindow : Window
     private void Begin(string text, bool cancellable)
     {
         busy = true; operation?.Dispose(); operation = new();
-        StatusText.Text = text; MainAction.IsEnabled = false; MainAction.Content = text;
+        LauncherText.Bind(StatusText, text); MainAction.IsEnabled = false; LauncherText.BindContent(MainAction, text);
         Progress.IsIndeterminate = true; Retry.Visibility = Visibility.Collapsed;
         Cancel.Visibility = cancellable ? Visibility.Visible : Visibility.Collapsed;
     }
@@ -100,16 +100,20 @@ public partial class MainWindow : Window
         Retry.Visibility = installedLauncher ? Visibility.Visible : Visibility.Collapsed;
         MainAction.IsEnabled = true;
         var local = installedLauncher ? installer.Installed : null;
-        InstalledText.Text = local == null ? "Juego sin instalar" : $"Versión {local.Version} instalada";
+        // Every text goes through LauncherText: it follows the language picked in Ajustes, also when it changes later.
+        if (local == null) LauncherText.Bind(InstalledText, "Juego sin instalar");
+        else LauncherText.BindFormat(InstalledText, $"Versión {local.Version} instalada");
         bool returnStable = local != null && !settings.Experimental && ReleaseVersion.Parse(local.Version).IsExperimental;
-        MainAction.Content = !installedLauncher ? "CONFIGURAR  →" : NeedsUpdate ? local == null ? "INSTALAR  ↓" : returnStable ? "VOLVER A LA ESTABLE  ↓" : "ACTUALIZAR  ↓" : local != null ? "JUGAR  →" : "REINTENTAR  ↻";
-        StateTitle.Text = !installedLauncher ? "BIENVENIDO AL ANDÉN" : local == null ? "PRIMERA PARADA" : NeedsUpdate ? "HAY ALGO NUEVO" : "LISTO PARA ENTRAR";
-        if (message != null) StatusText.Text = message;
-        else if (target != null && NeedsUpdate) StatusText.Text = $"{(target.Prerelease ? "Experimental" : "Nueva versión")} {target.Version}. Instalá esta versión para jugar desde el launcher.";
-        else if (local != null && ConSesion) StatusText.Text = EstadoConCuenta(online);
-        else if (local != null) StatusText.Text = online ? $"Versión {local.Version} · Actualizado" : "No se pudo buscar actualizaciones. Podés jugar con la versión instalada.";
-        else StatusText.Text = "Configurá la instalación para comenzar.";
-        ChannelBadge.Text = settings.Experimental ? "EXPERIMENTAL" : "ESTABLE";
+        LauncherText.BindContent(MainAction, !installedLauncher ? "CONFIGURAR  →" : NeedsUpdate ? local == null ? "INSTALAR  ↓" : returnStable ? "VOLVER A LA ESTABLE  ↓" : "ACTUALIZAR  ↓" : local != null ? "JUGAR  →" : "REINTENTAR  ↻");
+        LauncherText.Bind(StateTitle, !installedLauncher ? "BIENVENIDO AL ANDÉN" : local == null ? "PRIMERA PARADA" : NeedsUpdate ? "HAY ALGO NUEVO" : "LISTO PARA ENTRAR");
+        var nueva = target;
+        bool conectado = online;
+        if (message != null) LauncherText.BindValue(StatusText, () => LauncherText.Source(message));
+        else if (nueva != null && NeedsUpdate) LauncherText.BindValue(StatusText, () => LauncherText.F($"{LauncherText.Source(nueva.Prerelease ? "Experimental" : "Nueva versión")} {nueva.Version}. Instalá esta versión para jugar desde el launcher."));
+        else if (local != null && ConSesion) LauncherText.BindValue(StatusText, () => EstadoConCuenta(conectado));
+        else if (local != null) LauncherText.BindValue(StatusText, () => conectado ? LauncherText.F($"Versión {local.Version} · Actualizado") : LauncherText.Source("No se pudo buscar actualizaciones. Podés jugar con la versión instalada."));
+        else LauncherText.Bind(StatusText, "Configurá la instalación para comenzar.");
+        LauncherText.Bind(ChannelBadge, settings.Experimental ? "EXPERIMENTAL" : "ESTABLE");
         ChannelBadge.Foreground = (Brush)FindResource(settings.Experimental ? "Accent" : "Ink");
         if (closeAfterCancel) Close();
     }
@@ -117,7 +121,7 @@ public partial class MainWindow : Window
     {
         if (busy || App.Preview) return;
         Begin("Buscando actualizaciones…", false);
-        ProgressText.Text = "Consultando las versiones publicadas";
+        LauncherText.Bind(ProgressText, "Consultando las versiones publicadas");
         try
         {
             var client = new ReleaseClient(http, Path.Combine(root, ".riftwalker"));
@@ -136,11 +140,11 @@ public partial class MainWindow : Window
                 fullList = false;
                 releases = Storage.Read<List<GitHubRelease>>(NotesPath) ?? [];
                 if (await client.LatestStableAsync(operation!.Token) is { } latest && !releases.Any(r => r.Tag == latest.Release.Tag))
-                    releases.Insert(0, latest.Release with { Body = "## Notas no disponibles por ahora\nGitHub no devolvió la lista de versiones. Las notas de esta versión están en [GitHub Releases](" + ReleaseClient.ReleasesUrl + ")." });
+                    releases.Insert(0, latest.Release with { Body = LauncherText.Source("## Notas no disponibles por ahora\nGitHub no devolvió la lista de versiones. Las notas de esta versión están en [GitHub Releases](") + ReleaseClient.ReleasesUrl + ")." });
                 releases = releases.OrderByDescending(r => r.Version).ToList();
             }
             target = ReleaseClient.Select(releases, settings.Experimental); online = true;
-            ConnectionText.Text = fullList ? "CONECTADO A GITHUB" : "CONECTADO · NOTAS GUARDADAS";
+            LauncherText.Bind(ConnectionText, fullList ? "CONECTADO A GITHUB" : "CONECTADO · NOTAS GUARDADAS");
             ConnectionDot.Fill = new SolidColorBrush(Color.FromRgb(61, 220, 151));
             ShowReleases();
             if (!args.Contains("--skip-self-update"))
@@ -151,7 +155,7 @@ public partial class MainWindow : Window
                     if (await client.LauncherAsync(operation!.Token) is { } launcher
                         && ReleaseVersion.Parse(launcher.Version).CompareTo(ReleaseVersion.Parse(App.LauncherVersion)) > 0)
                     {
-                        StatusText.Text = "Actualizando el launcher…"; MainAction.Content = "ACTUALIZANDO LAUNCHER…";
+                        LauncherText.Bind(StatusText, "Actualizando el launcher…"); LauncherText.BindContent(MainAction, "ACTUALIZANDO LAUNCHER…");
                         await SelfUpdate.StartAsync(root, ReleaseClient.LauncherDownloadUrl, launcher, http, DownloadProgress(), operation.Token);
                         ((App)Application.Current).ReleaseLock();
                         busy = false; Close(); return;
@@ -160,21 +164,23 @@ public partial class MainWindow : Window
                 catch (Exception ex) when (!operation.Token.IsCancellationRequested)
                 {
                     // Launcher update failure must not discard the successfully fetched game version.
-                    Log(ex); ProgressText.Text = "El launcher no pudo actualizarse. Lo intentará la próxima vez.";
+                    Log(ex); LauncherText.Bind(ProgressText, "El launcher no pudo actualizarse. Lo intentará la próxima vez.");
                     Idle(); return;
                 }
             }
-            ProgressText.Text = target == null ? "Todavía no hay un release compatible con este launcher." : $"Canal {(settings.Experimental ? "experimental" : "estable")} · v{target.Version}";
+            var elegida = target; bool experimental = settings.Experimental;
+            LauncherText.BindValue(ProgressText, () => elegida == null ? LauncherText.Source("Todavía no hay un release compatible con este launcher.")
+                : LauncherText.F($"Canal {LauncherText.Source(experimental ? "experimental" : "estable")} · v{elegida.Version}"));
             Idle(target == null ? "El equipo todavía no publicó una versión con el nuevo formato. Volvé a comprobar más tarde." : null);
         }
         catch (Exception ex)
         {
             target = null; online = false;
             releases = Storage.Read<List<GitHubRelease>>(NotesPath) ?? [];
-            ShowReleases(); ConnectionText.Text = "SIN CONEXIÓN / DATOS GUARDADOS";
+            ShowReleases(); LauncherText.Bind(ConnectionText, "SIN CONEXIÓN / DATOS GUARDADOS");
             ConnectionDot.Fill = new SolidColorBrush(Color.FromRgb(142, 150, 163));
-            ProgressText.Text = "Podés volver a intentarlo cuando tengas conexión.";
-            Log(ex); Idle("No se pudo buscar actualizaciones. " + (installer.Installed != null ? "Podés jugar con la versión instalada." : "Reintentá para instalar el juego."));
+            LauncherText.Bind(ProgressText, "Podés volver a intentarlo cuando tengas conexión.");
+            Log(ex); Idle(LauncherText.Source("No se pudo buscar actualizaciones. ") + LauncherText.Source(installer.Installed != null ? "Podés jugar con la versión instalada." : "Reintentá para instalar el juego."));
         }
     }
     private sealed record NoteChoice(GitHubRelease Release, string Label);
@@ -182,23 +188,28 @@ public partial class MainWindow : Window
     {
         var local = installer.Installed;
         var choices = releases.Where(r => settings.Experimental || !r.Prerelease).Select(r => new NoteChoice(r,
-            $"v{r.Version}" + (local != null && r.Version.CompareTo(ReleaseVersion.Parse(local.Version)) > 0 ? " · NUEVO" : ""))).ToList();
+            $"v{r.Version}" + (local != null && r.Version.CompareTo(ReleaseVersion.Parse(local.Version)) > 0 ? LauncherText.Source(" · NUEVO") : ""))).ToList();
         ReleasePicker.ItemsSource = choices;
         if (choices.Count > 0) ReleasePicker.SelectedIndex = 0;
-        else Notes.Document = MarkdownNotes.Render(online ? "## El andén está listo\nLas notas aparecerán cuando el equipo publique la primera versión compatible.\n\nPodés consultar las versiones anteriores en [GitHub Releases](" + ReleaseClient.ReleasesUrl + ")." : "## Sin notas guardadas\nNo se pudieron cargar las notas del parche. Volvé a intentarlo cuando tengas conexión.");
+        else Notes.Document = MarkdownNotes.Render(online ? LauncherText.Source("## El andén está listo\nLas notas aparecerán cuando el equipo publique la primera versión compatible.\n\nPodés consultar las versiones anteriores en [GitHub Releases](") + ReleaseClient.ReleasesUrl + ")." : LauncherText.Source("## Sin notas guardadas\nNo se pudieron cargar las notas del parche. Volvé a intentarlo cuando tengas conexión."));
     }
     private void Release_Changed(object sender, SelectionChangedEventArgs e)
     {
         if (ReleasePicker.SelectedItem is not NoteChoice choice) return;
-        string kind = choice.Release.Prerelease ? "Experimental" : "Versión estable";
+        string kind = LauncherText.Source(choice.Release.Prerelease ? "Experimental" : "Versión estable");
         NotesSubtitle.Text = choice.Release.Published == default ? kind : $"{choice.Release.Published:dd/MM/yyyy} · {kind}";
-        string notas = ReleaseClient.NotesForLauncher(choice.Release.Body);
-        Notes.Document = MarkdownNotes.Render(string.IsNullOrWhiteSpace(notas) ? "Sin notas para esta versión." : notas);
+        // The notes in the chosen language when the release has them; if not, the Spanish ones with a line that says so.
+        string idioma = LauncherText.Language.Code;
+        string notas = ReleaseClient.NotesForLauncher(choice.Release.Body, idioma);
+        if (!string.IsNullOrWhiteSpace(notas) && !ReleaseClient.HasNotesIn(choice.Release.Body, idioma))
+            notas = LauncherText.Source("Las notas de esta versión están solo en español.") + "\n\n" + notas;
+        Notes.Document = MarkdownNotes.Render(string.IsNullOrWhiteSpace(notas) ? LauncherText.Source("Sin notas para esta versión.") : notas);
     }
     private Progress<TransferProgress> DownloadProgress() => new(p =>
     {
         Progress.IsIndeterminate = false; Progress.Value = p.Percent;
-        string eta = double.IsFinite(p.SecondsLeft) ? $" · {TimeSpan.FromSeconds(Math.Clamp(p.SecondsLeft, 0, 86399)):mm\\:ss} restantes" : "";
+        string tiempo = double.IsFinite(p.SecondsLeft) ? TimeSpan.FromSeconds(Math.Clamp(p.SecondsLeft, 0, 86399)).ToString(@"mm\:ss") : "";
+        string eta = tiempo.Length > 0 ? LauncherText.F($" · {tiempo} restantes") : "";
         ProgressText.Text = $"{p.Percent:0}% · {p.Downloaded / 1048576d:N1} / {p.Total / 1048576d:N1} MB{eta}";
     });
     private async void Main_Click(object sender, RoutedEventArgs e)
@@ -226,17 +237,17 @@ public partial class MainWindow : Window
                 {
                     await new Downloader(http).DownloadAsync(release.Assets.Single(a => a.Name == manifest.Game.Asset).Url,
                         manifest.Game, zip, DownloadProgress(), operation.Token);
-                    await installer.InstallAsync(zip, manifest, new Progress<string>(s => { StatusText.Text = s; Progress.IsIndeterminate = true; }), operation.Token);
+                    await installer.InstallAsync(zip, manifest, new Progress<string>(s => { LauncherText.Bind(StatusText, s); Progress.IsIndeterminate = true; }), operation.Token);
                     break;
                 }
                 catch (InvalidDataException) when (attempt == 0)
                 {
                     if (File.Exists(zip)) File.Delete(zip);
-                    StatusText.Text = "El archivo estaba dañado. Descargando otra vez…";
+                    LauncherText.Bind(StatusText, "El archivo estaba dañado. Descargando otra vez…");
                 }
             }
-            Progress.Value = 100; ProgressText.Text = "Instalación completada";
-            ShowReleases(); Idle($"Versión {manifest.Version} instalada. Ya podés jugar.");
+            Progress.Value = 100; LauncherText.Bind(ProgressText, "Instalación completada");
+            ShowReleases(); Idle(LauncherText.F($"Versión {manifest.Version} instalada. Ya podés jugar."));
         }
         catch (OperationCanceledException) when (operation!.IsCancellationRequested) { Idle("Descarga cancelada. La instalación anterior se conserva."); }
         catch (Exception ex) { Log(ex); Idle(Cortada(ex) ? "Se interrumpió la descarga. Tocá Actualizar o Instalar para continuar desde donde quedó." : ex.Message); }
@@ -319,15 +330,15 @@ public partial class MainWindow : Window
         Experimental.IsChecked = settings.Experimental;
         TamanoChica.IsChecked = settings.Size == "chica"; TamanoGrande.IsChecked = settings.Size == "grande";
         TamanoNormal.IsChecked = settings.Size != "chica" && settings.Size != "grande";
-        SettingsTitle.Text = first ? "TU PRIMERA PARADA" : "TU ANDÉN, A TU MANERA";
-        SaveSettings.Content = first ? "Instalar launcher" : "Guardar";
-        SetupHint.Text = first ? "Instalá el launcher y sus accesos directos. Después podrás descargar el juego." : "La carpeta contiene el launcher y el juego. Tus partidas guardadas se conservan por separado.";
+        LauncherText.Bind(SettingsTitle, first ? "TU PRIMERA PARADA" : "TU ANDÉN, A TU MANERA");
+        LauncherText.BindContent(SaveSettings, first ? "Instalar launcher" : "Guardar");
+        LauncherText.Bind(SetupHint, first ? "Instalá el launcher y sus accesos directos. Después podrás descargar el juego." : "La carpeta contiene el launcher y el juego. Tus partidas guardadas se conservan por separado.");
         SettingsError.Text = "";
     }
     private void CloseSettings_Click(object sender, RoutedEventArgs e) => SettingsPanel.Visibility = Visibility.Collapsed;
     private void Browse_Click(object sender, RoutedEventArgs e)
     {
-        var dialog = new OpenFolderDialog { Title = "Elegí la carpeta para Project Riftwalker" };
+        var dialog = new OpenFolderDialog { Title = LauncherText.Source("Elegí la carpeta para Project Riftwalker") };
         if (dialog.ShowDialog(this) == true) InstallPath.Text = Path.Combine(dialog.FolderName, "Project Riftwalker");
     }
     private async void SaveSettings_Click(object sender, RoutedEventArgs e)
@@ -350,7 +361,7 @@ public partial class MainWindow : Window
             AplicarTamano(tamano, true);
             if (canal) await RefreshAsync(); // only a channel change needs to ask GitHub again
         }
-        catch (Exception ex) { SettingsError.Text = "No se pudo guardar: " + ex.Message; }
+        catch (Exception ex) { SettingsError.Text = LauncherText.Source("No se pudo guardar: ") + LauncherText.Source(ex.Message); }
     }
     private void OnClosing(object? sender, CancelEventArgs e)
     {

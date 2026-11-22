@@ -92,13 +92,14 @@ public partial class MainWindow
         CuentaNombre.Text = nombre.ToUpperInvariant();
         CuentaMail.Text = usuario.Email;
         CuentaMenuMail.Text = usuario.Email;
-        CuentaMenuDesde.Text = usuario.Desde.Length > 0 ? $"Cuenta confirmada · desde el {usuario.Desde}" : "Cuenta confirmada";
+        if (usuario.Desde.Length > 0) LauncherText.BindFormat(CuentaMenuDesde, $"Cuenta confirmada · desde el {usuario.Desde}");
+        else LauncherText.Bind(CuentaMenuDesde, "Cuenta confirmada");
     }
 
-    // The text of the right card when the game is installed and up to date.
+    // The text of the right card when the game is installed and up to date, in the launcher's language.
     private string EstadoConCuenta(bool conectado) => conectado
-        ? $"Entrás como {cuentas!.Sesion!.User!.Nombre}. Tu progreso está en la cuenta."
-        : "No se pudo buscar actualizaciones. Podés jugar con tu cuenta: lo que juegues se sube cuando vuelva la conexión.";
+        ? LauncherText.F($"Entrás como {cuentas!.Sesion!.User!.Nombre}. Tu progreso está en la cuenta.")
+        : LauncherText.Source("No se pudo buscar actualizaciones. Podés jugar con tu cuenta: lo que juegues se sube cuando vuelva la conexión.");
 
     // ---------- Account menu ----------
 
@@ -686,8 +687,8 @@ public partial class MainWindow
         if (conCuenta)
         {
             cuentas.UsarVistaPrevia(new SesionCuenta { User = new UsuarioCuenta { Id = "vista-previa", Email = mailCuenta, CreatedAt = "2026-10-29T12:00:00Z", UserMetadata = new MetaCuenta { Nombre = "Ulises" } } });
-            StateTitle.Text = "LISTO PARA ENTRAR"; InstalledText.Text = "Versión 0.3.0 instalada";
-            StatusText.Text = EstadoConCuenta(true);
+            LauncherText.Bind(StateTitle, "LISTO PARA ENTRAR"); LauncherText.Bind(InstalledText, "Versión 0.3.0 instalada");
+            LauncherText.BindValue(StatusText, () => EstadoConCuenta(true));
         }
         PintarCuenta();
         ultimoCodigo = DateTime.UtcNow.AddSeconds(-18);

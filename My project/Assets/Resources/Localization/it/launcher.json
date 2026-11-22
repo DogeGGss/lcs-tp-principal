@@ -534,7 +534,7 @@
     },
     {
       "key": "launcher.remaining",
-      "text": " · {0:mm\\\\:ss} rimanenti"
+      "text": " · {0} rimanenti"
     },
     {
       "key": "launcher.close_for_update_help",
@@ -871,6 +871,10 @@
     {
       "key": "launcher.session.other_pc",
       "text": "Il tuo account è stato aperto su un altro computer. Accedi di nuovo per giocare qui."
+    },
+    {
+      "key": "launcher.notes_spanish_only",
+      "text": "Le note di questa versione sono disponibili solo in spagnolo."
     }
   ]
 }
