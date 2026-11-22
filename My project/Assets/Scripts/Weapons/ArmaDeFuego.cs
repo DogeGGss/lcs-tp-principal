@@ -288,7 +288,7 @@ public class ArmaDeFuego : MonoBehaviour, IHudWeapon
         nextShot = Time.time + 1f / Mathf.Max(0.01f, shopItem.fireRate);
         if (!MinijuegoCometas.Activo) currentAmmo--;
         // (Guardada, su fuente no suena: el sonido y la estela celeste del Acople, WeaponFire.Acople.)
-        WeaponFire.Acople(shootSound, () =>
+        WeaponFire.Acople(shootSound, audioSource, sfxGroup, () =>
         {
             if (shopItem.velocidadDelProyectil > 0f && shopItem.grenadePrefab != null)
                 WeaponFire.FireProjectile(shopItem, cam, shooter, false);

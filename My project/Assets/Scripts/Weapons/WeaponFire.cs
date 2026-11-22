@@ -67,15 +67,19 @@ public static class WeaponFire
     public static readonly Color ColorDeAcople = new Color(0.35f, 0.85f, 1f);
 
     /// <summary>US 321, Acople: el tiro de la principal guardada (lo que hace "disparar"), con su estela y su fogonazo
-    /// celestes y su sonido (sin ubicar, un poco más bajo que el de la mano).</summary>
-    public static void Acople(AudioClip sonido, System.Action disparar)
+    /// celestes y su sonido (sin ubicar, un poco más bajo que el de la mano). "fuente" y "grupo": la fuente del arma y su
+    /// canal, para sonar por el mismo canal (el volumen de efectos de Opciones) y a su volumen.</summary>
+    public static void Acople(AudioClip sonido, AudioSource fuenteDelArma, UnityEngine.Audio.AudioMixerGroup grupo, System.Action disparar)
     {
         if (sonido != null)
         {
             var go = new GameObject("SonidoDelAcople");
             AudioSource fuente = go.AddComponent<AudioSource>();
             fuente.spatialBlend = 0f;
-            fuente.volume = 0.8f;
+            // (la fuente del arma puede no estar armada todavía si el arma nunca se sacó: el canal de la ficha)
+            fuente.outputAudioMixerGroup = fuenteDelArma != null && fuenteDelArma.outputAudioMixerGroup != null
+                ? fuenteDelArma.outputAudioMixerGroup : grupo;
+            fuente.volume = 0.8f * (fuenteDelArma != null ? fuenteDelArma.volume : 1f);
             fuente.PlayOneShot(sonido);
             Object.Destroy(go, sonido.length + 0.1f);
         }
