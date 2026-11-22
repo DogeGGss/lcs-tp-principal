@@ -170,6 +170,7 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
         WeaponFire.Fired += AlDisparar;
         MeleeAttack.Swung += AlAcuchillar;
         GrenadeThrower.Thrown += AlLanzarGranada;
+        WeaponFire.ProjectileFired += AlDispararGranada; // US 287: las granadas del Gran Capitán
         GrenadeThrower.Started += AlEmpezarGranada;
         Grenade1.Exploded += AlExplotarGranada;
         MinaDeGranada.SePuso += AlPonerMina;         // F31 (US 355)
@@ -190,6 +191,7 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
         WeaponFire.Fired -= AlDisparar;
         MeleeAttack.Swung -= AlAcuchillar;
         GrenadeThrower.Thrown -= AlLanzarGranada;
+        WeaponFire.ProjectileFired -= AlDispararGranada;
         GrenadeThrower.Started -= AlEmpezarGranada;
         Grenade1.Exploded -= AlExplotarGranada;
         MinaDeGranada.SePuso -= AlPonerMina;
@@ -265,12 +267,31 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
             granada.LaunchOrigin, granada.LaunchDirection, granada.LaunchInherited);
     }
 
+    // US 287 (F31, US 355): este jugador disparó una granada con el Gran Capitán; en las demás computadoras sale una igual
+    // del arma (RpcGranadaDeArma), que explota, queda como mina o se pega a un invasor cuando lo hace la de verdad.
+    private void AlDispararGranada(Transform tirador, Grenade1 granada, Vector3 origen, Vector3 velocidad, bool bronca)
+    {
+        if (tirador != transform || muerto || granada == null || !photonView.IsMine) return;
+        granada.netId = ++ultimaGranada;
+        photonView.RPC(nameof(RpcGranadaDeArma), RpcTarget.Others, granada.netId, CodigoDePrincipal(granada.Item), origen, velocidad, bronca);
+    }
+
+    // El código del arma principal con esa ficha (con Acople el Gran Capitán dispara con la pistola en la mano: US 321).
+    private byte CodigoDePrincipal(ShopItem ficha)
+    {
+        if (ficha != null && principales != null)
+            for (int i = 0; i < principales.Count && PrimeraPrincipal + i <= byte.MaxValue; i++)
+                if (principales[i] != null && WeaponSwitcher.FichaDe(principales[i]) == ficha) return (byte)(PrimeraPrincipal + i);
+        return ArmaEnMano();
+    }
+
     // Explotó una granada de este jugador: en las demás computadoras explota en el mismo lugar.
     private void AlExplotarGranada(Grenade1 granada, Vector3 centro)
     {
         if (granada == null || granada.thrower != transform || granada.netId == 0) return;
         int indice = catalogo != null ? catalogo.items.IndexOf(granada.Item) : -1;
-        photonView.RPC(nameof(RpcExplosionGranada), RpcTarget.Others, granada.netId, (byte)Mathf.Clamp(indice, 0, byte.MaxValue), centro);
+        // (la del Gran Capitán no está en el catálogo: sin ficha, con la explosión común si la copia no llegó a salir)
+        photonView.RPC(nameof(RpcExplosionGranada), RpcTarget.Others, granada.netId, indice < 0 ? byte.MaxValue : (byte)Mathf.Min(indice, byte.MaxValue), centro);
     }
 
     // US 184, CA10: este jugador soltó un arma; en las demás computadoras cae igual, en el mismo lugar.
@@ -1533,7 +1554,10 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
         if (legendaria != null) EfectosDeSkin.DisparoDeOtro(boca, adelante, legendaria, conCalor?.go);
         else global::Trazadora.Fogonazo(boca);
         if (conCalor != null) CalorDeSkin.Disparo(conCalor.go);
-        for (int i = 0; i + 2 < direcciones.Length; i += 3)
+        // US 287: el Gran Capitán no tira balas: su granada llega aparte (RpcGranadaDeArma).
+        ShopItem fichaDelArma = FichaDeCodigo(arma);
+        bool lanzaGranadas = fichaDelArma != null && fichaDelArma.grenadePrefab != null && fichaDelArma.velocidadDelProyectil > 0f;
+        for (int i = 0; !lanzaGranadas && i + 2 < direcciones.Length; i += 3)
         {
             Vector3 direccion = new Vector3(direcciones[i], direcciones[i + 1], direcciones[i + 2]);
             Vector3 fin = WeaponFire.Replay(origen, direccion, AlcanceTrazadora, transform);
@@ -1590,6 +1614,29 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
         granada.thrower = transform; // que no choque con la copia de quien la tiró
         granada.Configure(item);
         granada.Throw(direccion, heredada);
+        granadasRemotas[id] = granada;
+    }
+
+    // US 287: la granada que disparó este jugador con el Gran Capitán. Acá sale una de muestra que vuela igual, sin daño.
+    [PunRPC]
+    private void RpcGranadaDeArma(int id, byte arma, Vector3 origen, Vector3 velocidad, bool bronca)
+    {
+        if (photonView.IsMine || granadasExplotadas.Remove(id)) return;
+        ShopItem ficha = FichaDeCodigo(arma);
+        if (ficha == null || ficha.grenadePrefab == null) return;
+        Vector3 direccion = velocidad.sqrMagnitude > 1e-6f ? velocidad.normalized : transform.forward;
+        GameObject go = Instantiate(ficha.grenadePrefab, origen, Quaternion.LookRotation(direccion));
+        Grenade1 granada = go.GetComponent<Grenade1>();
+        if (granada == null) { Destroy(go); return; }
+        granada.cosmetic = true;
+        granada.netId = id;
+        granada.thrower = transform; // que no choque con la copia de quien la tiró
+        granada.Configure(ficha);
+        granada.throwForce = 0f;
+        granada.Throw(direccion);
+        Rigidbody cuerpo = go.GetComponent<Rigidbody>();
+        if (cuerpo != null) cuerpo.linearVelocity = velocidad;
+        if (bronca) WeaponFire.Brasa(go.transform); // US 330
         granadasRemotas[id] = granada;
     }
 
