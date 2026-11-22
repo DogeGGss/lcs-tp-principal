@@ -242,7 +242,7 @@ public class ResultadoDeInvasion : MonoBehaviour
         int Bajas(Photon.Realtime.Player p) => p.IsLocal && mios != null ? mios.Bajas : CompanerosEnInvasion.Numero(p, CompanerosEnInvasion.PropBajas);
         int Puntos(Photon.Realtime.Player p) => p.IsLocal && mios != null ? mios.PuntosGanados : CompanerosEnInvasion.Numero(p, CompanerosEnInvasion.PropPuntos);
         lista.Sort((a, b) => Puntos(b).CompareTo(Puntos(a)));
-        const float Ancho = 720f, Alto = 34f, Y = 728f;
+        const float Ancho = 720f, Alto = 48f, Y = 728f; // (más alta: el nombre va en la placa del perfil, US 376)
         float x = (1920f - Ancho) / 2f;
         Text(Place(Node("Jugadores", raiz), x + 16f, Y, 300f, 24f), label, 15f, Mute, TextAlignmentOptions.MidlineLeft, 14f, true).text = L10n.T("gameplay.mates.player");
         Text(Place(Node("ColBajas", raiz), x + Ancho - 300f, Y, 140f, 24f), label, 15f, Mute, TextAlignmentOptions.MidlineRight, 14f, true).text = L10n.T("gameplay.mates.kills");
@@ -253,8 +253,10 @@ public class ResultadoDeInvasion : MonoBehaviour
             RectTransform fila = Place(Node("Jugador " + p.ActorNumber, raiz), x, y, Ancho, Alto);
             Image(fila, redondeado, p.IsLocal ? WithAlpha(Accent, 0.18f) : Rgb(10, 12, 17, DarkAlpha(0.9f)), 6f);
             Color tinta = p.IsInactive ? Mute : Ink;
-            Text(Place(Node("Nombre", fila), 16f, 0f, 380f, Alto), label, 20f, tinta, TextAlignmentOptions.MidlineLeft).text =
-                string.IsNullOrEmpty(p.NickName) ? "?" : p.NickName;
+            // US 376: el nombre va en la placa con el perfil del jugador; US 373, CA1: tocándola se abre su perfil.
+            string nombre = string.IsNullOrEmpty(p.NickName) ? "?" : p.NickName;
+            PerfilEnPartida.Placa(fila, 6f, 3f, 400f, Alto - 6f, p, nombre, display, label, redondeado, p.IsInactive);
+            PerfilEnPartida.AbrirAlTocar(Place(Node("AbrirPerfil", fila), 6f, 3f, 400f, Alto - 6f), p, p.NickName);
             Text(Place(Node("Bajas", fila), Ancho - 300f, 0f, 140f, Alto), mono, 20f, tinta, TextAlignmentOptions.MidlineRight).text = Bajas(p).ToString();
             Text(Place(Node("Puntos", fila), Ancho - 156f, 0f, 140f, Alto), mono, 20f, tinta, TextAlignmentOptions.MidlineRight).text = Miles(Puntos(p));
             y += Alto + 4f;
