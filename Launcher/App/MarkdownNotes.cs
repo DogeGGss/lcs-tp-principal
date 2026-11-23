@@ -25,6 +25,13 @@ public static class MarkdownNotes
                 p.FontWeight = FontWeights.Bold; p.FontSize = heading.Groups[1].Length <= 2 ? 24 : 20;
                 p.Foreground = Brush("#F3F4F6"); p.Margin = new Thickness(0, 12, 0, 7);
             }
+            else if (Regex.IsMatch(line, @"^\s*>\s?"))
+            {
+                // A quote (the notice at the top of the experimental versions): a box with an accent line on the left.
+                line = Regex.Replace(line, @"^\s*>\s?", "");
+                p.BorderBrush = Brush("#F29A38"); p.BorderThickness = new Thickness(3, 0, 0, 0);
+                p.Background = Brush("#1A1F27"); p.Padding = new Thickness(12, 8, 10, 8); p.Margin = new Thickness(0, 3, 0, 12);
+            }
             else if (Regex.IsMatch(line, @"^\s*[-*+]\s+")) line = "•  " + Regex.Replace(line, @"^\s*[-*+]\s+", "");
             int pos = 0;
             foreach (Match m in Regex.Matches(line, @"\*\*(.+?)\*\*|\[([^\]]+)\]\((https?://[^\s)]+)\)"))

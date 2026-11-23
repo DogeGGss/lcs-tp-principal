@@ -44,7 +44,7 @@ public partial class MainWindow : Window
         int pedido = Array.IndexOf(args, "--tamano"); // vista previa de un tamaño: --tamano chica|normal|grande
         AplicarTamano(pedido >= 0 && pedido + 1 < args.Length ? args[pedido + 1] : settings.Size, false);
         LauncherVersionText.Text = $"PROJECT RIFTWALKER / LAUNCHER {App.LauncherVersion}";
-        Notes.Document = MarkdownNotes.Render(LauncherText.Source("## Preparando las novedades\nLas notas del parche aparecerán acá."));
+        ShowNotesWithoutVersion(() => LauncherText.Source("## Preparando las novedades\nLas notas del parche aparecerán acá."));
         InitializeLanguages();
         Loaded += OnLoaded;
         Closing += OnClosing;
@@ -62,7 +62,19 @@ public partial class MainWindow : Window
             Progress.IsIndeterminate = false; Progress.Value = 100; LauncherText.Bind(ProgressText, "Vista previa · no instala ni abre el juego");
             LauncherText.Bind(ConnectionText, "VISTA PREVIA"); Retry.Visibility = Visibility.Collapsed;
             ReleasePicker.Items.Add(new { Label = LauncherText.Source("Vista previa") }); ReleasePicker.SelectedIndex = 0;
-            Notes.Document = MarkdownNotes.Render(LauncherText.Source("## El próximo cruce empieza acá\nUn punto de encuentro para preparar tu próxima partida.\n### Tu juego, al día\n- Descargá las nuevas versiones desde este launcher.\n- Conservá tus opciones y tu progreso.\n- Consultá qué cambió antes de jugar.\n### Elegí tu andén\n**Táctico · Deathmatch · Invasión**\n\nEsta es una vista previa de la interfaz, no las notas de una versión publicada."));
+            ShowNotesWithoutVersion(() => LauncherText.Source("## El próximo cruce empieza acá\nUn punto de encuentro para preparar tu próxima partida.\n### Tu juego, al día\n- Descargá las nuevas versiones desde este launcher.\n- Conservá tus opciones y tu progreso.\n- Consultá qué cambió antes de jugar.\n### Elegí tu andén\n**Táctico · Deathmatch · Invasión**\n\nEsta es una vista previa de la interfaz, no las notas de una versión publicada."));
+            if (args.Contains("--notas")) // the published notes (experimental ones too), to check them in the preview; needs a connection
+            {
+                try
+                {
+                    settings = settings with { Experimental = true };
+                    releases = await new ReleaseClient(http, Path.Combine(Path.GetTempPath(), "riftwalker-vista-previa")).FetchAsync(CancellationToken.None);
+                    online = true; ReleasePicker.Items.Clear(); ShowReleases();
+                }
+                catch (Exception ex) { Log(ex); }
+            }
+            int cambio = Array.IndexOf(args, "--cambiar-idioma"); // changes the language after loading, to check that everything follows it
+            if (cambio >= 0 && cambio + 1 < args.Length) LauncherText.Language.Select(args[cambio + 1], false);
             if (args.Contains("--settings-preview")) OpenSettings(true);
             int cuenta = Array.IndexOf(args, "--cuenta"); // the account's steps: --cuenta entrar|crear|confirmar|listo|menu…
             if (cuenta >= 0) VistaPreviaCuenta(cuenta + 1 < args.Length ? args[cuenta + 1] : "entrar");
@@ -191,11 +203,30 @@ public partial class MainWindow : Window
             $"v{r.Version}" + (local != null && r.Version.CompareTo(ReleaseVersion.Parse(local.Version)) > 0 ? LauncherText.Source(" · NUEVO") : ""))).ToList();
         ReleasePicker.ItemsSource = choices;
         if (choices.Count > 0) ReleasePicker.SelectedIndex = 0;
-        else Notes.Document = MarkdownNotes.Render(online ? LauncherText.Source("## El andén está listo\nLas notas aparecerán cuando el equipo publique la primera versión compatible.\n\nPodés consultar las versiones anteriores en [GitHub Releases](") + ReleaseClient.ReleasesUrl + ")." : LauncherText.Source("## Sin notas guardadas\nNo se pudieron cargar las notas del parche. Volvé a intentarlo cuando tengas conexión."));
+        else
+        {
+            bool conectado = online;
+            ShowNotesWithoutVersion(() => conectado ? LauncherText.Source("## El andén está listo\nLas notas aparecerán cuando el equipo publique la primera versión compatible.\n\nPodés consultar las versiones anteriores en [GitHub Releases](") + ReleaseClient.ReleasesUrl + ")." : LauncherText.Source("## Sin notas guardadas\nNo se pudieron cargar las notas del parche. Volvé a intentarlo cuando tengas conexión."));
+        }
     }
-    private void Release_Changed(object sender, SelectionChangedEventArgs e)
+    // The notes shown when no version is selected (loading, preview, offline): kept as a function, so they can be
+    // written again in another language.
+    private Func<string>? notesWithoutVersion;
+    private void ShowNotesWithoutVersion(Func<string> notes)
     {
-        if (ReleasePicker.SelectedItem is not NoteChoice choice) return;
+        notesWithoutVersion = notes;
+        Notes.Document = MarkdownNotes.Render(notes());
+    }
+    private void Release_Changed(object sender, SelectionChangedEventArgs e) => RenderNotes();
+    // Draws the notes of the selected version in the current language. Also called when the language changes: the
+    // version list is rebuilt with equal records, so the picker does not always raise SelectionChanged by itself.
+    private void RenderNotes()
+    {
+        if (ReleasePicker.SelectedItem is not NoteChoice choice)
+        {
+            if (notesWithoutVersion != null) Notes.Document = MarkdownNotes.Render(notesWithoutVersion());
+            return;
+        }
         string kind = LauncherText.Source(choice.Release.Prerelease ? "Experimental" : "Versión estable");
         NotesSubtitle.Text = choice.Release.Published == default ? kind : $"{choice.Release.Published:dd/MM/yyyy} · {kind}";
         // The notes in the chosen language when the release has them; if not, the Spanish ones with a line that says so.
