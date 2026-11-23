@@ -83,7 +83,10 @@ public static class NavMeshEnVivo
         instancia = NavMesh.AddNavMeshData(datos);
         armando = NavMeshBuilder.UpdateNavMeshDataAsync(datos, ajustes, fuentes, limites);
 
-        // El de los grandes, con las mismas colisiones.
+        // El de los grandes, con las mismas colisiones menos las de las pasarelas entre los módulos de la uni (escaleras,
+        // columnas, barandas): son la única forma de pasar de un lado al otro de los módulos, y con ellas el Jefe y los
+        // Watcher se quedaban esperando del otro lado. Las atraviesan, pero los edificios no.
+        var fuentesGrande = fuentes.FindAll(f => !DePasarela(f.component));
         NavMeshBuildSettings grande = NavMesh.CreateSettings();
         grande.agentRadius = RadioGrande;
         grande.agentHeight = AltoGrande;
@@ -94,7 +97,7 @@ public static class NavMeshEnVivo
         tipoGrande = grande.agentTypeID;
         datosGrande = new NavMeshData(tipoGrande);
         instanciaGrande = NavMesh.AddNavMeshData(datosGrande);
-        armandoGrande = NavMeshBuilder.UpdateNavMeshDataAsync(datosGrande, grande, fuentes, limites);
+        armandoGrande = NavMeshBuilder.UpdateNavMeshDataAsync(datosGrande, grande, fuentesGrande, limites);
     }
 
     // Todo el mapa: la caja de todas sus colisiones (sin el terreno ni lo que no es mapa), con un margen y un tope.
@@ -116,6 +119,15 @@ public static class NavMeshEnVivo
         Vector3 max = Vector3.Min(b.max, centro + new Vector3(MaximoDeLado, MaximoDeAlto, MaximoDeLado) * 0.5f);
         b.SetMinMax(min, max);
         return b;
+    }
+
+    // Las colisiones de las pasarelas entre los módulos (Conector_1, 2 y 3 del Mapa 3), salvo su vereda (el piso).
+    private static bool DePasarela(Component c)
+    {
+        if (c == null || c.name == "Vereda") return false;
+        for (Transform t = c.transform; t != null; t = t.parent)
+            if (t.name.StartsWith("Conector_")) return true;
+        return false;
     }
 
     // Lo que cuenta como mapa: colisiones sólidas que no son de personajes ni se mueven con física. Las barreras
