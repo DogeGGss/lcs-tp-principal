@@ -1,0 +1,2804 @@
+{
+  "entries": [
+    {
+      "key": "profile.rarity.common",
+      "text": "Commun"
+    },
+    {
+      "key": "profile.rarity.rare",
+      "text": "Rare"
+    },
+    {
+      "key": "profile.rarity.epic",
+      "text": "Épique"
+    },
+    {
+      "key": "profile.rarity.legendary",
+      "text": "Légendaire"
+    },
+    {
+      "key": "profile.rarity.starter",
+      "text": "De départ"
+    },
+    {
+      "key": "profile.type.avatar",
+      "text": "Avatar"
+    },
+    {
+      "key": "profile.type.banner",
+      "text": "Bannière"
+    },
+    {
+      "key": "profile.type.frame",
+      "text": "Cadre"
+    },
+    {
+      "key": "profile.type.title",
+      "text": "Titre"
+    },
+    {
+      "key": "profile.menu.back",
+      "text": "« Menu"
+    },
+    {
+      "key": "profile.currency.credits",
+      "text": "Crédits"
+    },
+    {
+      "key": "profile.currency.tickets",
+      "text": "Billets"
+    },
+    {
+      "key": "profile.currency.crystals",
+      "text": "Cristaux"
+    },
+    {
+      "key": "profile.currency.earned",
+      "text": "Gagnés en jouant"
+    },
+    {
+      "key": "profile.currency.opens",
+      "text": "Ouvrent des capsules"
+    },
+    {
+      "key": "profile.currency.premium",
+      "text": "Monnaie payante"
+    },
+    {
+      "key": "profile.menu.feedback",
+      "text": "Donne ton avis"
+    },
+    {
+      "key": "profile.menu.hub",
+      "text": "Quai 01 · Point de rencontre"
+    },
+    {
+      "key": "profile.menu.play",
+      "text": "Jouer"
+    },
+    {
+      "key": "profile.menu.modes",
+      "text": "Tactique  ·  Deathmatch  ·  Invasion"
+    },
+    {
+      "key": "profile.menu.options",
+      "text": "Options"
+    },
+    {
+      "key": "profile.menu.achievements",
+      "text": "Succès"
+    },
+    {
+      "key": "profile.menu.credits",
+      "text": "Crédits"
+    },
+    {
+      "key": "profile.menu.quit",
+      "text": "Quitter"
+    },
+    {
+      "key": "profile.menu.testing",
+      "text": "Terrains d'essai :"
+    },
+    {
+      "key": "profile.menu.practice",
+      "text": "Champ d'entraînement"
+    },
+    {
+      "key": "profile.menu.capsules",
+      "text": "01 / Capsules"
+    },
+    {
+      "key": "profile.menu.station",
+      "text": "Gare du Rift"
+    },
+    {
+      "key": "profile.menu.return",
+      "text": "Retour"
+    },
+    {
+      "key": "profile.menu.return_failed",
+      "text": "Impossible de revenir"
+    },
+    {
+      "key": "profile.menu.in_progress",
+      "text": "Partie en cours"
+    },
+    {
+      "key": "profile.menu.rejoining",
+      "text": "Retour en cours…"
+    },
+    {
+      "key": "profile.menu.public_match",
+      "text": "Partie publique"
+    },
+    {
+      "key": "profile.player.default",
+      "text": "Joueur"
+    },
+    {
+      "key": "profile.title.none",
+      "text": "Sans titre"
+    },
+    {
+      "key": "profile.frame.none",
+      "text": "Sans cadre"
+    },
+    {
+      "key": "profile.menu.exit_question",
+      "text": "Quitter le jeu ?"
+    },
+    {
+      "key": "profile.menu.exit_body",
+      "text": "Project Riftwalker va se fermer."
+    },
+    {
+      "key": "profile.action.cancel",
+      "text": "Annuler"
+    },
+    {
+      "key": "profile.action.close",
+      "text": "Fermer"
+    },
+    {
+      "key": "profile.action.equip",
+      "text": "Équiper"
+    },
+    {
+      "key": "profile.action.buy",
+      "text": "Acheter"
+    },
+    {
+      "key": "profile.action.reset",
+      "text": "Réinitialiser"
+    },
+    {
+      "key": "profile.action.redeem",
+      "text": "Échanger"
+    },
+    {
+      "key": "profile.action.skip",
+      "text": "Passer"
+    },
+    {
+      "key": "profile.header.record",
+      "text": "Fiche du joueur"
+    },
+    {
+      "key": "profile.header.profile",
+      "text": "Profil"
+    },
+    {
+      "key": "profile.tab.stats",
+      "text": "Statistiques"
+    },
+    {
+      "key": "profile.tab.customization",
+      "text": "Personnalisation"
+    },
+    {
+      "key": "profile.tab.emotes",
+      "text": "Emotes"
+    },
+    {
+      "key": "profile.tab.account",
+      "text": "Compte"
+    },
+    {
+      "key": "profile.action.rename",
+      "text": "Changer de nom"
+    },
+    {
+      "key": "profile.stat.matches",
+      "text": "Parties"
+    },
+    {
+      "key": "profile.stat.wins",
+      "text": "Victoires"
+    },
+    {
+      "key": "profile.stat.record_wave",
+      "text": "Vague record"
+    },
+    {
+      "key": "profile.stat.no_data",
+      "text": "Aucune donnée"
+    },
+    {
+      "key": "profile.stat.general",
+      "text": "Général · Tactique et Deathmatch"
+    },
+    {
+      "key": "profile.stat.no_completed",
+      "text": "Tu n'as encore terminé aucune partie de Tactique ou de Deathmatch."
+    },
+    {
+      "key": "profile.stat.win_rate",
+      "text": "% de victoires"
+    },
+    {
+      "key": "profile.stat.kills",
+      "text": "Éliminations"
+    },
+    {
+      "key": "profile.stat.deaths",
+      "text": "Morts"
+    },
+    {
+      "key": "profile.stat.assists",
+      "text": "Assistances"
+    },
+    {
+      "key": "profile.stat.headshots",
+      "text": "Tirs à la tête"
+    },
+    {
+      "key": "profile.stat.hours",
+      "text": "Heures de jeu"
+    },
+    {
+      "key": "profile.stat.no_tactical",
+      "text": "Tu n'as encore terminé aucune partie de Tactique."
+    },
+    {
+      "key": "profile.stat.round_wins",
+      "text": "Manches gagnées"
+    },
+    {
+      "key": "profile.stat.plants",
+      "text": "Poses"
+    },
+    {
+      "key": "profile.stat.defuses",
+      "text": "Désamorçages"
+    },
+    {
+      "key": "profile.stat.no_deathmatch",
+      "text": "Tu n'as encore terminé aucune partie de Deathmatch."
+    },
+    {
+      "key": "profile.stat.first_place",
+      "text": "Première place"
+    },
+    {
+      "key": "profile.stat.best_streak",
+      "text": "Meilleure série"
+    },
+    {
+      "key": "profile.stat.no_invasion",
+      "text": "Tu n'as encore terminé aucune partie d'Invasion."
+    },
+    {
+      "key": "profile.stat.world_saved",
+      "text": "Monde sauvé"
+    },
+    {
+      "key": "profile.stat.invaders",
+      "text": "Envahisseurs éliminés"
+    },
+    {
+      "key": "profile.stat.easy_record",
+      "text": "Record en Facile"
+    },
+    {
+      "key": "profile.stat.normal_record",
+      "text": "Record en Normal"
+    },
+    {
+      "key": "profile.stat.hard_record",
+      "text": "Record en Difficile"
+    },
+    {
+      "key": "profile.stat.comet_minigame",
+      "text": "Mini-jeu : comètes"
+    },
+    {
+      "key": "profile.stat.no_comets",
+      "text": "Tu n'as encore tiré sur aucune comète."
+    },
+    {
+      "key": "profile.store.business",
+      "text": "Simulation commerciale"
+    },
+    {
+      "key": "profile.store.title",
+      "text": "Boutique"
+    },
+    {
+      "key": "profile.store.simulated",
+      "text": "Achats simulés"
+    },
+    {
+      "key": "profile.store.one_per_account",
+      "text": "Une seule fois par compte"
+    },
+    {
+      "key": "profile.store.crystals_lower",
+      "text": "cristaux"
+    },
+    {
+      "key": "profile.store.popular",
+      "text": "Le plus choisi"
+    },
+    {
+      "key": "profile.store.best_value",
+      "text": "Meilleure offre"
+    },
+    {
+      "key": "profile.store.total_spent",
+      "text": "Total dépensé (simulé)"
+    },
+    {
+      "key": "profile.store.reset_data",
+      "text": "Réinitialiser les données de test"
+    },
+    {
+      "key": "profile.store.menu_test",
+      "text": "Test du menu"
+    },
+    {
+      "key": "profile.store.reset_title",
+      "text": "Réinitialiser les données"
+    },
+    {
+      "key": "profile.store.reset_body",
+      "text": "Remet tout comme au début du test : monnaies, collection, équipement, achats et capsules ouvertes."
+    },
+    {
+      "key": "profile.store.reset_done",
+      "text": "Données de test réinitialisées"
+    },
+    {
+      "key": "profile.store.simulated_purchase",
+      "text": "Achat simulé"
+    },
+    {
+      "key": "profile.store.simulated_buy",
+      "text": "Acheter (simulé)"
+    },
+    {
+      "key": "profile.store.no_charge",
+      "text": "Rien n'est facturé : c'est une simulation commerciale pour le TP."
+    },
+    {
+      "key": "profile.store.already_bought",
+      "text": "Tu l'as déjà acheté"
+    },
+    {
+      "key": "profile.store.account_no_reset",
+      "text": "Avec un compte, pas de réinitialisation"
+    },
+    {
+      "key": "profile.store.empty",
+      "text": "Tu n'as encore fait aucun achat simulé."
+    },
+    {
+      "key": "profile.station.header",
+      "text": "Ravitaillement de l'autre côté"
+    },
+    {
+      "key": "profile.station.open_one",
+      "text": "Ouvrir 1 · 1 billet"
+    },
+    {
+      "key": "profile.station.open_five",
+      "text": "Ouvrir 5 · 5 billets"
+    },
+    {
+      "key": "profile.station.open_another",
+      "text": "En ouvrir une autre · 1 billet"
+    },
+    {
+      "key": "profile.station.odds",
+      "text": "Probabilités"
+    },
+    {
+      "key": "profile.station.get_tickets",
+      "text": "Obtenir des billets"
+    },
+    {
+      "key": "profile.station.one_ticket",
+      "text": "1 billet"
+    },
+    {
+      "key": "profile.station.ten_tickets",
+      "text": "10 billets · 10 % de moins"
+    },
+    {
+      "key": "profile.station.add_one_ticket",
+      "text": "+1 billet"
+    },
+    {
+      "key": "profile.station.add_ten_tickets",
+      "text": "+10 billets"
+    },
+    {
+      "key": "profile.station.go_store",
+      "text": "Pas de cristaux ? Aller à la boutique »"
+    },
+    {
+      "key": "profile.station.recent",
+      "text": "Derniers prix"
+    },
+    {
+      "key": "profile.station.contents",
+      "text": "Voir le contenu de la capsule"
+    },
+    {
+      "key": "profile.station.receiving",
+      "text": "Réception de la cargaison…"
+    },
+    {
+      "key": "profile.station.explanation",
+      "text": "Un billet, une capsule. Chacune contient un avatar, une bannière, un titre ou un cadre."
+    },
+    {
+      "key": "profile.station.new",
+      "text": "Nouveau"
+    },
+    {
+      "key": "profile.station.contents_title",
+      "text": "Contenu de la capsule"
+    },
+    {
+      "key": "profile.station.opening",
+      "text": "• OUVERTURE"
+    },
+    {
+      "key": "profile.station.delivered",
+      "text": "• LIVRÉ"
+    },
+    {
+      "key": "profile.station.waiting",
+      "text": "• EN ATTENTE"
+    },
+    {
+      "key": "profile.station.next_guaranteed",
+      "text": "La prochaine contient <color=#B061FF>épique ou mieux</color> garanti !"
+    },
+    {
+      "key": "profile.station.empty",
+      "text": "Tu n'as encore ouvert aucune capsule."
+    },
+    {
+      "key": "profile.feedback.help",
+      "text": "Aide-nous à nous améliorer"
+    },
+    {
+      "key": "profile.feedback.title",
+      "text": "Ton avis compte"
+    },
+    {
+      "key": "profile.feedback.type_question",
+      "text": "Que veux-tu nous dire ?"
+    },
+    {
+      "key": "profile.feedback.opinion",
+      "text": "Avis"
+    },
+    {
+      "key": "profile.feedback.suggestion",
+      "text": "Suggestion"
+    },
+    {
+      "key": "profile.feedback.error",
+      "text": "Bug"
+    },
+    {
+      "key": "profile.feedback.very_bad",
+      "text": "Très mauvais"
+    },
+    {
+      "key": "profile.feedback.bad",
+      "text": "Mauvais"
+    },
+    {
+      "key": "profile.feedback.average",
+      "text": "Moyen"
+    },
+    {
+      "key": "profile.feedback.good",
+      "text": "Bon"
+    },
+    {
+      "key": "profile.feedback.very_good",
+      "text": "Très bon"
+    },
+    {
+      "key": "profile.feedback.tell_us",
+      "text": "Raconte-nous avec tes mots…"
+    },
+    {
+      "key": "profile.feedback.bug_question",
+      "text": "Que s'est-il passé ?"
+    },
+    {
+      "key": "profile.feedback.suggestion_question",
+      "text": "Qu'aimerais-tu qu'on ajoute ou qu'on change ?"
+    },
+    {
+      "key": "profile.feedback.opinion_question",
+      "text": "Dis-nous ce que tu en as pensé"
+    },
+    {
+      "key": "profile.feedback.submit",
+      "text": "Envoyer l'avis"
+    },
+    {
+      "key": "profile.feedback.sending",
+      "text": "Envoi de ton avis…"
+    },
+    {
+      "key": "profile.feedback.saved",
+      "text": "Merci ! Ton avis a été enregistré sur ce PC."
+    },
+    {
+      "key": "profile.cosmetic.astra_blue",
+      "text": "Soledad · Céleste"
+    },
+    {
+      "key": "profile.cosmetic.alfa_amber",
+      "text": "Unzué · Ambre"
+    },
+    {
+      "key": "profile.cosmetic.charlie_crimson",
+      "text": "Goya · Cramoisi"
+    },
+    {
+      "key": "profile.cosmetic.bravo_emerald",
+      "text": "Necochea · Émeraude"
+    },
+    {
+      "key": "profile.cosmetic.steel_guard",
+      "text": "Garde d'acier"
+    },
+    {
+      "key": "profile.cosmetic.night_shift",
+      "text": "Service de nuit"
+    },
+    {
+      "key": "profile.cosmetic.in_shadows",
+      "text": "Dans l'ombre"
+    },
+    {
+      "key": "profile.cosmetic.undead",
+      "text": "Mort-vivant"
+    },
+    {
+      "key": "profile.cosmetic.shadow_8bit",
+      "text": "Ombre 8 bits"
+    },
+    {
+      "key": "profile.cosmetic.electric_astra",
+      "text": "Soledad électrique"
+    },
+    {
+      "key": "profile.cosmetic.color_fury",
+      "text": "Fureur de couleur"
+    },
+    {
+      "key": "profile.cosmetic.ink_silence",
+      "text": "Silence d'encre"
+    },
+    {
+      "key": "profile.cosmetic.rift_heart",
+      "text": "Cœur du Rift"
+    },
+    {
+      "key": "profile.cosmetic.blue_tide",
+      "text": "Marée céleste"
+    },
+    {
+      "key": "profile.cosmetic.ink_bastion",
+      "text": "Bastion d'encre"
+    },
+    {
+      "key": "profile.cosmetic.floral_orbit",
+      "text": "Orbite florale"
+    },
+    {
+      "key": "profile.cosmetic.fragmented_armor",
+      "text": "Blindage fragmenté"
+    },
+    {
+      "key": "profile.cosmetic.point_pulse",
+      "text": "Pouls de points"
+    },
+    {
+      "key": "profile.cosmetic.riftwalker_platform",
+      "text": "Quai Riftwalker"
+    },
+    {
+      "key": "profile.cosmetic.blue_threshold",
+      "text": "Seuil céleste"
+    },
+    {
+      "key": "profile.cosmetic.amber_forge",
+      "text": "Forge ambre"
+    },
+    {
+      "key": "profile.cosmetic.crimson_pulse",
+      "text": "Pulsation cramoisie"
+    },
+    {
+      "key": "profile.cosmetic.emerald_veil",
+      "text": "Voile émeraude"
+    },
+    {
+      "key": "profile.cosmetic.last_wave",
+      "text": "Dernière vague"
+    },
+    {
+      "key": "profile.cosmetic.rift_core",
+      "text": "Noyau du Rift"
+    },
+    {
+      "key": "profile.style.icon",
+      "text": "Icône"
+    },
+    {
+      "key": "profile.style.original",
+      "text": "Original"
+    },
+    {
+      "key": "profile.style.hyperrealism",
+      "text": "Hyperréalisme"
+    },
+    {
+      "key": "profile.style.invasion",
+      "text": "Mode Invasion"
+    },
+    {
+      "key": "profile.style.fauvism",
+      "text": "Fauvisme"
+    },
+    {
+      "key": "profile.style.ink",
+      "text": "Encre"
+    },
+    {
+      "key": "profile.style.crystal",
+      "text": "Cristal"
+    },
+    {
+      "key": "profile.style.watercolor",
+      "text": "Aquarelle"
+    },
+    {
+      "key": "profile.style.chinese_ink",
+      "text": "Encre de Chine"
+    },
+    {
+      "key": "profile.style.cubism",
+      "text": "Cubisme"
+    },
+    {
+      "key": "profile.style.pointillism",
+      "text": "Pointillisme"
+    },
+    {
+      "key": "profile.pack.welcome",
+      "text": "Offre de bienvenue"
+    },
+    {
+      "key": "profile.pack.welcome_contents",
+      "text": "5 billets + 200 cristaux"
+    },
+    {
+      "key": "profile.pack.pouch",
+      "text": "Bourse de cristaux"
+    },
+    {
+      "key": "profile.pack.chest",
+      "text": "Coffre de cristaux"
+    },
+    {
+      "key": "profile.pack.box",
+      "text": "Caisse de cristaux"
+    },
+    {
+      "key": "profile.pack.vault",
+      "text": "Chambre forte de cristaux"
+    },
+    {
+      "key": "profile.title.t1",
+      "text": "Dernier passager"
+    },
+    {
+      "key": "profile.title.t2",
+      "text": "Fumeur"
+    },
+    {
+      "key": "profile.title.t3",
+      "text": "Exterminateur de zombies"
+    },
+    {
+      "key": "profile.title.t4",
+      "text": "ACE"
+    },
+    {
+      "key": "profile.title.t5",
+      "text": "Voyageur du Rift"
+    },
+    {
+      "key": "profile.title.t6",
+      "text": "Prochain arrêt : chaos"
+    },
+    {
+      "key": "profile.title.t7",
+      "text": "Sans billet"
+    },
+    {
+      "key": "profile.title.t8",
+      "text": "Conducteur de l'apocalypse"
+    },
+    {
+      "key": "profile.title.t9",
+      "text": "Première classe"
+    },
+    {
+      "key": "profile.title.t10",
+      "text": "Dernier wagon"
+    },
+    {
+      "key": "profile.title.t11",
+      "text": "Hors service"
+    },
+    {
+      "key": "profile.title.t12",
+      "text": "Voie morte"
+    },
+    {
+      "key": "profile.title.t13",
+      "text": "Express pour l'enfer"
+    },
+    {
+      "key": "profile.title.t14",
+      "text": "Passager fantôme"
+    },
+    {
+      "key": "profile.title.t15",
+      "text": "Destination inconnue"
+    },
+    {
+      "key": "profile.title.t16",
+      "text": "Changement de voie"
+    },
+    {
+      "key": "profile.title.t17",
+      "text": "Sans retour"
+    },
+    {
+      "key": "profile.title.t18",
+      "text": "Chef de gare"
+    },
+    {
+      "key": "profile.title.t19",
+      "text": "J'ai raté le train"
+    },
+    {
+      "key": "profile.title.t20",
+      "text": "Service interrompu"
+    },
+    {
+      "key": "profile.title.t21",
+      "text": "Une balle suffit"
+    },
+    {
+      "key": "profile.title.t22",
+      "text": "Zéro munition"
+    },
+    {
+      "key": "profile.title.t23",
+      "text": "Doigt sur la détente"
+    },
+    {
+      "key": "profile.title.t24",
+      "text": "À bout portant"
+    },
+    {
+      "key": "profile.title.t25",
+      "text": "Coup de grâce"
+    },
+    {
+      "key": "profile.title.t26",
+      "text": "Le roi du clutch"
+    },
+    {
+      "key": "profile.title.t27",
+      "text": "Dernier debout"
+    },
+    {
+      "key": "profile.title.t28",
+      "text": "Sans couverture"
+    },
+    {
+      "key": "profile.title.t29",
+      "text": "Tirs croisés"
+    },
+    {
+      "key": "profile.title.t30",
+      "text": "Rechargement…"
+    },
+    {
+      "key": "profile.title.t31",
+      "text": "J'ai visé sans le vouloir"
+    },
+    {
+      "key": "profile.title.t32",
+      "text": "Encore une manche"
+    },
+    {
+      "key": "profile.title.t33",
+      "text": "Cauchemar de la horde"
+    },
+    {
+      "key": "profile.title.t34",
+      "text": "Ce n'était pas une égratignure"
+    },
+    {
+      "key": "profile.title.t35",
+      "text": "Survécu par miracle"
+    },
+    {
+      "key": "profile.title.t36",
+      "text": "Collectionneur de têtes"
+    },
+    {
+      "key": "profile.title.t37",
+      "text": "Encore les zombies"
+    },
+    {
+      "key": "profile.title.t38",
+      "text": "Jusqu'à la dernière vague"
+    },
+    {
+      "key": "profile.title.t39",
+      "text": "Celui qui est resté derrière"
+    },
+    {
+      "key": "profile.title.t40",
+      "text": "Je respire encore"
+    },
+    {
+      "key": "profile.title.t41",
+      "text": "Entre les dimensions"
+    },
+    {
+      "key": "profile.title.t42",
+      "text": "Bug dans la réalité"
+    },
+    {
+      "key": "profile.title.t43",
+      "text": "De l'autre côté"
+    },
+    {
+      "key": "profile.title.t44",
+      "text": "Faille vivante"
+    },
+    {
+      "key": "profile.title.t45",
+      "text": "Perdu dans le temps"
+    },
+    {
+      "key": "profile.title.t46",
+      "text": "Je n'aurais pas dû traverser"
+    },
+    {
+      "key": "profile.title.t47",
+      "text": "Chasseur de comètes"
+    },
+    {
+      "key": "profile.title.t48",
+      "text": "Mauvaise visée, bonne attitude"
+    },
+    {
+      "key": "profile.title.t49",
+      "text": "Je suis venu pour le cours"
+    },
+    {
+      "key": "profile.title.t50",
+      "text": "Examen final en attente"
+    },
+    {
+      "key": "profile.title.t51",
+      "text": "C'était le lag"
+    },
+    {
+      "key": "profile.title.t52",
+      "text": "Clairement un tricheur"
+    },
+    {
+      "key": "profile.title.t53",
+      "text": "Tout était calculé"
+    },
+    {
+      "key": "profile.title.t54",
+      "text": "Tir de sommation"
+    },
+    {
+      "key": "profile.title.t55",
+      "text": "MVP de l'équipe adverse"
+    },
+    {
+      "key": "profile.title.t56",
+      "text": "Spécialiste de la réapparition"
+    },
+    {
+      "key": "profile.title.t57",
+      "text": "Couverture décorative"
+    },
+    {
+      "key": "profile.title.t58",
+      "text": "Je m'échauffe"
+    },
+    {
+      "key": "profile.title.t59",
+      "text": "Ma souris ne marche pas"
+    },
+    {
+      "key": "profile.title.t60",
+      "text": "J'ai failli toucher"
+    },
+    {
+      "key": "profile.title.t61",
+      "text": "Stratégie discutable"
+    },
+    {
+      "key": "profile.title.t62",
+      "text": "Je suis venu regarder"
+    },
+    {
+      "key": "profile.title.t63",
+      "text": "Je suis descendu au mauvais arrêt"
+    },
+    {
+      "key": "profile.title.t64",
+      "text": "Le train ne m'attend pas non plus"
+    },
+    {
+      "key": "profile.title.t65",
+      "text": "Ponctuel pour mourir"
+    },
+    {
+      "key": "profile.title.t66",
+      "text": "Aller simple pour le respawn"
+    },
+    {
+      "key": "profile.title.t67",
+      "text": "Je nourris la horde"
+    },
+    {
+      "key": "profile.title.t68",
+      "text": "Le zombie avait la priorité"
+    },
+    {
+      "key": "profile.title.t69",
+      "text": "Reçu par pitié"
+    },
+    {
+      "key": "profile.title.t70",
+      "text": "Ce n'était pas au programme"
+    },
+    {
+      "key": "profile.ui.at_least_5_finished_matches",
+      "text": "Minimum 5 parties terminées"
+    },
+    {
+      "key": "profile.ui.at_least_50_shots_at",
+      "text": "Minimum 50 tirs sur des comètes"
+    },
+    {
+      "key": "profile.ui.headshot_kills",
+      "text": "Éliminations à la tête"
+    },
+    {
+      "key": "profile.ui.comets_destroyed",
+      "text": "Comètes détruites"
+    },
+    {
+      "key": "profile.ui.accuracy",
+      "text": "Précision"
+    },
+    {
+      "key": "profile.ui.achievements_earned",
+      "text": "Succès obtenus"
+    },
+    {
+      "key": "profile.ui.couldn_t_read_your_achievement",
+      "text": "Impossible de lire la progression des succès. Elle a été conservée telle quelle."
+    },
+    {
+      "key": "profile.ui.this_achievement_progress_needs_a",
+      "text": "Cette progression des succès nécessite une version plus récente du jeu."
+    },
+    {
+      "key": "profile.ui.opening_capsules_and_redeeming_needs",
+      "text": "Ouvrir des capsules et échanger nécessite une connexion"
+    },
+    {
+      "key": "profile.ui.you_re_already_signed_in",
+      "text": "Tu es déjà connecté à un compte. Déconnecte-toi pour en créer un autre."
+    },
+    {
+      "key": "profile.ui.online_ranking_not_configured_progress",
+      "text": "Classement en ligne non configuré. La progression est enregistrée sur ce PC."
+    },
+    {
+      "key": "profile.ui.online_achievements",
+      "text": "Succès en ligne"
+    },
+    {
+      "key": "profile.ui.waiting_for_a_connection",
+      "text": "En attente de connexion."
+    },
+    {
+      "key": "profile.ui.syncing",
+      "text": "Synchronisation…"
+    },
+    {
+      "key": "profile.ui.couldn_t_send_your_feedback",
+      "text": "Impossible d'envoyer ton avis."
+    },
+    {
+      "key": "profile.ui.thanks_your_feedback_reached_the",
+      "text": "Merci ! Ton avis est bien arrivé à l'équipe."
+    },
+    {
+      "key": "profile.ui.your_feedback_stayed_on_this",
+      "text": "Ton avis est resté sur le PC : le service en ligne doit être mis à jour."
+    },
+    {
+      "key": "profile.ui.thanks_your_feedback_will_be",
+      "text": "Merci ! Ton avis sera envoyé dans un instant."
+    },
+    {
+      "key": "profile.ui.couldn_t_recover_your_online",
+      "text": "Impossible de récupérer l'identité en ligne. La progression locale est conservée."
+    },
+    {
+      "key": "profile.ui.couldn_t_sign_in_check",
+      "text": "Authentification impossible. Vérifie l'accès anonyme du projet."
+    },
+    {
+      "key": "profile.ui.couldn_t_save_your_online",
+      "text": "Impossible d'enregistrer l'identité en ligne. Vérifie les autorisations du dossier de progression."
+    },
+    {
+      "key": "profile.ui.couldn_t_sign_in",
+      "text": "Authentification impossible."
+    },
+    {
+      "key": "profile.ui.offline_your_local_progress_and",
+      "text": "Hors ligne. La progression locale et le dernier classement disponible sont conservés."
+    },
+    {
+      "key": "profile.ui.the_supabase_project_doesn_t",
+      "text": "Le projet Supabase n'autorise pas les joueurs anonymes : il faut activer Anonymous Sign-Ins (voir Backend/Supabase/README.md)."
+    },
+    {
+      "key": "profile.ui.the_online_ranking_didn_t",
+      "text": "Le classement en ligne a refusé ton nom. Essaie-en un autre (lettres, chiffres, espace, - ou _)."
+    },
+    {
+      "key": "profile.ui.offline_your_feedback_will_be",
+      "text": "Hors ligne : ton avis sera envoyé au retour de la connexion."
+    },
+    {
+      "key": "profile.ui.couldn_t_send_it_now",
+      "text": "Envoi impossible pour l'instant : ton avis sera envoyé plus tard."
+    },
+    {
+      "key": "profile.ui.1_new",
+      "text": "1 nouveau"
+    },
+    {
+      "key": "profile.ui.you_have_1_ticket_to",
+      "text": "Tu as 1 billet à ouvrir"
+    },
+    {
+      "key": "profile.ui.rw_rift",
+      "text": "RW · RIFT"
+    },
+    {
+      "key": "profile.ui.business_simulation_there_are_no",
+      "text": "Simulation commerciale : aucun paiement réel. Les billets s'obtiennent en jouant (crédits) ou avec les cristaux de la boutique. "
+    },
+    {
+      "key": "profile.ui.odds_are_always_shown",
+      "text": "Les probabilités sont toujours affichées."
+    },
+    {
+      "key": "profile.ui.an_epic_or_better_one",
+      "text": "un épique ou mieux est garanti. Les doublons sont convertis en crédits."
+    },
+    {
+      "key": "profile.ui.total_progress_global_ranking",
+      "text": "Progression cumulée · Classement mondial"
+    },
+    {
+      "key": "profile.ui.achievements_and_ranking",
+      "text": "Succès et classement"
+    },
+    {
+      "key": "profile.ui.your_progress",
+      "text": "Ta progression"
+    },
+    {
+      "key": "profile.ui.your_progress_2",
+      "text": "TA PROGRESSION"
+    },
+    {
+      "key": "profile.ui.achievements_earned_2",
+      "text": "succès obtenus"
+    },
+    {
+      "key": "profile.ui.progress_is_saved_on_this",
+      "text": "La progression est enregistrée sur ce PC."
+    },
+    {
+      "key": "profile.ui.create_an_account_to_show",
+      "text": "Crée un compte pour apparaître dans le classement (Profil › Compte).\n"
+    },
+    {
+      "key": "profile.ui.1_registered_player",
+      "text": "1 joueur inscrit"
+    },
+    {
+      "key": "profile.ui.connection",
+      "text": "Connexion"
+    },
+    {
+      "key": "profile.ui.comets_of_every_color_and",
+      "text": "Comètes de chaque couleur et combat en Tactique et Deathmatch"
+    },
+    {
+      "key": "profile.ui.back_to_the_ranking",
+      "text": "Retour au classement"
+    },
+    {
+      "key": "profile.ui.percentages_are_based_on_players",
+      "text": "Les pourcentages concernent les joueurs ayant un compte."
+    },
+    {
+      "key": "profile.ui.achievements_earned_ties_share_a",
+      "text": "Succès obtenus · les ex æquo partagent la place"
+    },
+    {
+      "key": "profile.ui.the_ranking_will_be_available",
+      "text": "Le classement sera disponible une fois le service en ligne connecté."
+    },
+    {
+      "key": "profile.ui.looking_up_players",
+      "text": "Recherche des joueurs…"
+    },
+    {
+      "key": "profile.ui.there_are_no_players_in",
+      "text": "Il n'y a encore aucun joueur dans cette liste."
+    },
+    {
+      "key": "profile.ui.no_data_available_try_refreshing",
+      "text": "Aucune donnée disponible. Essaie d'actualiser."
+    },
+    {
+      "key": "profile.ui.all_players",
+      "text": "Tous les joueurs"
+    },
+    {
+      "key": "profile.ui.page",
+      "text": "Page"
+    },
+    {
+      "key": "profile.ui.ties_share_a_place",
+      "text": "les ex æquo partagent la place"
+    },
+    {
+      "key": "profile.ui.this_ranking_isn_t_available",
+      "text": "Ce classement n'est pas encore disponible : le service en ligne doit être mis à jour."
+    },
+    {
+      "key": "profile.ui.there_are_no_players_in_2",
+      "text": "Il n'y a encore aucun joueur dans cette catégorie."
+    },
+    {
+      "key": "profile.ui.create_an_account_to_show_2",
+      "text": "Crée un compte pour apparaître dans le classement."
+    },
+    {
+      "key": "profile.ui.you_don_t_show_up",
+      "text": "Tu n'apparais pas encore dans cette catégorie."
+    },
+    {
+      "key": "profile.ui.description",
+      "text": "Description"
+    },
+    {
+      "key": "profile.ui.of_players",
+      "text": "des joueurs"
+    },
+    {
+      "key": "profile.ui.see_players",
+      "text": "Voir les joueurs"
+    },
+    {
+      "key": "profile.ui.see_achievements",
+      "text": "Voir les succès"
+    },
+    {
+      "key": "profile.ui.kda_kills_assists_deaths_with",
+      "text": "* KDA = (éliminations + assistances) ÷ morts ; sans mort, ÷ 1. Assistance : tu as blessé un adversaire qu'un autre a éliminé dans les 10 s suivantes. "
+    },
+    {
+      "key": "profile.ui.only_finished_matches_count",
+      "text": "Seules les parties terminées comptent."
+    },
+    {
+      "key": "profile.ui.blue_green_gold",
+      "text": "Bleues · vertes · dorées"
+    },
+    {
+      "key": "profile.ui.average_reaction",
+      "text": "Réaction moyenne"
+    },
+    {
+      "key": "profile.ui.best_in_one_phase",
+      "text": "Record en une phase"
+    },
+    {
+      "key": "profile.ui.best_reaction",
+      "text": "Meilleure réaction"
+    },
+    {
+      "key": "profile.ui.show_locked",
+      "text": "Afficher les verrouillés"
+    },
+    {
+      "key": "profile.ui.titles",
+      "text": "Titres"
+    },
+    {
+      "key": "profile.ui.this_is_how_the_frame",
+      "text": "Voici le cadre dans l'en-tête de ton Profil. Plus tard, aussi dans le tableau avec Tab."
+    },
+    {
+      "key": "profile.ui.this_is_how_your_header",
+      "text": "Voici ton en-tête dans le Profil.\nLe côté gauche de la bannière est réservé à ton avatar et à ton nom."
+    },
+    {
+      "key": "profile.ui.get_it_at_the_station",
+      "text": "Obtiens-le à la gare »"
+    },
+    {
+      "key": "profile.ui.pick_a_slot_on_the",
+      "text": "Choisis un emplacement de la roue, puis la danse qui y va. Maintiens T en partie pour ouvrir la roue."
+    },
+    {
+      "key": "profile.ui.not_equipped",
+      "text": "Non équipé"
+    },
+    {
+      "key": "profile.ui.hover_over_a_dance_to",
+      "text": "Survole une danse pour la voir."
+    },
+    {
+      "key": "profile.ui.sign_in_on_the_launcher",
+      "text": "Connecte-toi dans le launcher"
+    },
+    {
+      "key": "profile.ui.open_the_launcher",
+      "text": "Ouvre le launcher"
+    },
+    {
+      "key": "profile.ui.sign_in_with_your_account",
+      "text": "Connecte-toi avec ton compte"
+    },
+    {
+      "key": "profile.ui.press_play",
+      "text": "Clique sur Jouer"
+    },
+    {
+      "key": "profile.ui.if_the_launcher_isn_t",
+      "text": "Si le launcher n'est pas sur ce PC, télécharge-le depuis le guide du jeu."
+    },
+    {
+      "key": "profile.ui.your_session_ended",
+      "text": "Ta session a été fermée"
+    },
+    {
+      "key": "profile.ui.your_account_s_session_was",
+      "text": "La session de ton compte a été fermée, par exemple depuis le launcher. Reconnecte-toi là-bas pour continuer à jouer : ta progression est enregistrée sur le compte."
+    },
+    {
+      "key": "profile.ui.you_need_an_account_to",
+      "text": "Il faut un compte pour jouer. Ouvre le launcher, connecte-toi avec ton compte et clique sur Jouer : le jeu s'ouvre avec ce compte."
+    },
+    {
+      "key": "profile.ui.simulated_purchases_this_is_a",
+      "text": "<color=#F29A38><b>Achats simulés.</b></color>  C'est un projet universitaire : aucun argent réel n'est facturé. On teste comment fonctionnerait la boutique d'un jeu gratuit."
+    },
+    {
+      "key": "profile.ui.1_purchase",
+      "text": "1 achat"
+    },
+    {
+      "key": "profile.ui.you_have_no_tickets_redeem",
+      "text": "Tu n'as pas de billets : échange des crédits ou des cristaux"
+    },
+    {
+      "key": "profile.ui.with_an_account",
+      "text": "Avec compte"
+    },
+    {
+      "key": "profile.ui.needs_confirmation",
+      "text": "À confirmer"
+    },
+    {
+      "key": "profile.ui.no_account",
+      "text": "Sans compte"
+    },
+    {
+      "key": "profile.ui.didn_t_get_it_request",
+      "text": "Rien reçu ? <color=#F29A38><u>Demande un autre code</u></color>"
+    },
+    {
+      "key": "profile.ui.you_re_playing_without_an",
+      "text": "Tu joues sans compte"
+    },
+    {
+      "key": "profile.ui.in_the_released_game_the",
+      "text": "Dans le jeu publié, le compte se gère depuis le launcher. Ici, dans l'éditeur, tu peux le créer ou te connecter pour tester."
+    },
+    {
+      "key": "profile.ui.the_account_is_managed_from",
+      "text": "Le compte se gère depuis le launcher : connecte-toi là-bas et clique sur Jouer."
+    },
+    {
+      "key": "profile.ui.your_progress_in_the_cloud",
+      "text": "Ta progression dans le cloud, sur n'importe quel PC"
+    },
+    {
+      "key": "profile.ui.show_up_in_the_global",
+      "text": "Apparais dans le classement mondial"
+    },
+    {
+      "key": "profile.ui.find_matches_with_other_players",
+      "text": "Trouve des parties avec d'autres joueurs"
+    },
+    {
+      "key": "profile.ui.your_account_one_step_left",
+      "text": "Ton compte · Plus qu'une étape"
+    },
+    {
+      "key": "profile.ui.confirm_your_email",
+      "text": "Confirme ton e-mail"
+    },
+    {
+      "key": "profile.ui.wrong_email_change_it",
+      "text": "Mauvais e-mail ? <color=#F29A38><u>Change-le</u></color>"
+    },
+    {
+      "key": "profile.ui.meanwhile_you_keep_playing_as",
+      "text": "En attendant, tu continues à jouer comme d'habitude."
+    },
+    {
+      "key": "profile.ui.in_the_editor_the_launcher",
+      "text": "Dans l'éditeur, on utilise la session du launcher ou celle ouverte ici."
+    },
+    {
+      "key": "profile.ui.you_signed_in_from_the",
+      "text": "Tu t'es connecté depuis le launcher."
+    },
+    {
+      "key": "profile.ui.in_the_cloud",
+      "text": "Dans le cloud"
+    },
+    {
+      "key": "profile.ui.to_switch_accounts_or_sign",
+      "text": "Pour changer de compte ou te déconnecter, utilise le <color=#F3F4F6>launcher</color> : le menu du compte est en haut, à côté de Paramètres."
+    },
+    {
+      "key": "profile.ui.in_the_editor_you_go",
+      "text": "Dans l'éditeur, tu reviens à la progression sans compte. Celle du compte y reste enregistrée et revient quand tu te connectes (dans le jeu publié, depuis le launcher)."
+    },
+    {
+      "key": "profile.ui.you_signed_out",
+      "text": "Tu t'es déconnecté"
+    },
+    {
+      "key": "profile.ui.in_the_released_game_the_2",
+      "text": "Dans le jeu publié, le compte se change depuis le launcher."
+    },
+    {
+      "key": "profile.ui.what_we_store",
+      "text": "Ce que nous conservons"
+    },
+    {
+      "key": "profile.ui.your_email_your_name_your",
+      "text": "Ton e-mail, ton nom, ta progression, tes statistiques et tes avis. Nous les utilisons pour enregistrer ta progression, établir le classement et trouver des parties. Nous ne les partageons avec personne."
+    },
+    {
+      "key": "profile.ui.read_the_full_notice",
+      "text": "Voir l'avis complet"
+    },
+    {
+      "key": "profile.ui.done_your_account_is_active",
+      "text": "C'est fait : ton compte est actif"
+    },
+    {
+      "key": "profile.ui.we_sent_you_another_code",
+      "text": "Nous t'avons envoyé un autre code"
+    },
+    {
+      "key": "profile.ui.new_account",
+      "text": "Nouveau compte"
+    },
+    {
+      "key": "profile.ui.password",
+      "text": "Mot de passe"
+    },
+    {
+      "key": "profile.ui.repeat_the_password",
+      "text": "Répéter le mot de passe"
+    },
+    {
+      "key": "profile.ui.sign_in",
+      "text": "<u>Se connecter</u>"
+    },
+    {
+      "key": "profile.ui.by_creating_the_account_you",
+      "text": "En créant le compte, tu acceptes l'<color=#F29A38><u>avis de confidentialité</u></color>."
+    },
+    {
+      "key": "profile.ui.creating",
+      "text": "Création…"
+    },
+    {
+      "key": "profile.ui.we_sent_a_code_to",
+      "text": "Nous avons envoyé un code à ton e-mail"
+    },
+    {
+      "key": "profile.ui.signing_in",
+      "text": "Connexion…"
+    },
+    {
+      "key": "profile.ui.you_signed_in_to_your",
+      "text": "Tu es connecté à ton compte"
+    },
+    {
+      "key": "profile.ui.don_t_have_an_account",
+      "text": "Pas de compte ? <color=#F29A38><u>Créer un compte</u></color>"
+    },
+    {
+      "key": "profile.ui.your_email_and_your_password",
+      "text": "Ton e-mail et ton mot de passe (chiffré), ton nom, ta progression (succès, cosmétiques, monnaies), tes statistiques de partie et les avis que tu envoies."
+    },
+    {
+      "key": "profile.ui.what_for",
+      "text": "Pourquoi"
+    },
+    {
+      "key": "profile.ui.where",
+      "text": "Où"
+    },
+    {
+      "key": "profile.ui.in_the_game_s_database",
+      "text": "Dans la base de données du jeu (Supabase). Les parties passent par les serveurs de Photon, qui reçoivent ton nom de joueur, ton id de compte et ta connexion (IP), comme tout jeu en ligne."
+    },
+    {
+      "key": "profile.ui.your_rights",
+      "text": "Tes droits"
+    },
+    {
+      "key": "profile.ui.you_can_see_your_data",
+      "text": "Tu peux voir tes données dans le Profil et supprimer ton compte avec tout son contenu depuis le launcher, dans le menu du compte (loi argentine 25.326 sur la protection des données personnelles)."
+    },
+    {
+      "key": "profile.ui.enter_a_valid_email",
+      "text": "Saisis un e-mail valide."
+    },
+    {
+      "key": "profile.ui.the_password_needs_8_characters",
+      "text": "Le mot de passe doit contenir au moins 8 caractères."
+    },
+    {
+      "key": "profile.ui.the_passwords_don_t_match",
+      "text": "Les mots de passe ne correspondent pas."
+    },
+    {
+      "key": "profile.ui.that_email_already_has_an",
+      "text": "Cet e-mail a déjà un compte."
+    },
+    {
+      "key": "profile.ui.the_email_or_password_don",
+      "text": "L'e-mail ou le mot de passe est incorrect."
+    },
+    {
+      "key": "profile.ui.your_email_isn_t_confirmed",
+      "text": "Ton e-mail n'est pas encore confirmé. Nous t'avons envoyé un autre code."
+    },
+    {
+      "key": "profile.ui.your_session_expired_sign_in",
+      "text": "Ta session a expiré. Reconnecte-toi."
+    },
+    {
+      "key": "profile.ui.enter_the_6_digits_of",
+      "text": "Saisis les 6 chiffres du code."
+    },
+    {
+      "key": "profile.ui.the_code_expired_or_isn",
+      "text": "Le code a expiré ou est incorrect. Demandes-en un autre."
+    },
+    {
+      "key": "profile.ui.this_needs_an_internet_connection",
+      "text": "Il faut une connexion internet pour ça."
+    },
+    {
+      "key": "profile.ui.we_sent_you_a_code",
+      "text": "Nous t'avons envoyé un code il y a peu. Attends une minute et demandes-en un autre."
+    },
+    {
+      "key": "profile.ui.accounts_need_the_online_service",
+      "text": "Les comptes nécessitent le service en ligne, qui n'est pas configuré dans cette version."
+    },
+    {
+      "key": "profile.ui.couldn_t_send_the_email",
+      "text": "Impossible d'envoyer l'e-mail. Réessaie dans un moment."
+    },
+    {
+      "key": "profile.ui.couldn_t_complete_it_try",
+      "text": "Impossible de terminer. Réessaie dans un moment."
+    },
+    {
+      "key": "profile.ui.the_password_isn_t_correct",
+      "text": "Le mot de passe est incorrect."
+    },
+    {
+      "key": "profile.ui.couldn_t_verify_your_account",
+      "text": "Impossible de vérifier ton compte. Reconnecte-toi dans le launcher."
+    },
+    {
+      "key": "profile.ui.how_was_your_experience_optional",
+      "text": "Comment s'est passée ton expérience ? <color=#8E96A3><size=18>(facultatif)</size></color>"
+    },
+    {
+      "key": "profile.ui.it_reaches_the_team_with",
+      "text": "Il arrive à l'équipe avec ton nom et la version. Pas de données personnelles, s'il te plaît."
+    },
+    {
+      "key": "profile.ach.azul_10",
+      "text": "Première traînée bleue"
+    },
+    {
+      "key": "profile.ach.azul_50",
+      "text": "Chasseur céleste"
+    },
+    {
+      "key": "profile.ach.azul_100",
+      "text": "Domination bleue"
+    },
+    {
+      "key": "profile.ach.verde_10",
+      "text": "Éclat émeraude"
+    },
+    {
+      "key": "profile.ach.verde_50",
+      "text": "Orbite émeraude"
+    },
+    {
+      "key": "profile.ach.verde_100",
+      "text": "Domination verte"
+    },
+    {
+      "key": "profile.ach.dorado_10",
+      "text": "Poussière d'or"
+    },
+    {
+      "key": "profile.ach.dorado_50",
+      "text": "Ruée vers l'or"
+    },
+    {
+      "key": "profile.ach.dorado_100",
+      "text": "Domination dorée"
+    },
+    {
+      "key": "profile.ach.bajas_10",
+      "text": "Billet composté"
+    },
+    {
+      "key": "profile.ach.bajas_100",
+      "text": "Heure de pointe"
+    },
+    {
+      "key": "profile.ach.bajas_500",
+      "text": "Locomotive"
+    },
+    {
+      "key": "profile.ach.cabezas_10",
+      "text": "Tête de ligne"
+    },
+    {
+      "key": "profile.ach.cabezas_50",
+      "text": "Œil de faucon"
+    },
+    {
+      "key": "profile.ach.cabezas_200",
+      "text": "Tireur d'élite du quai"
+    },
+    {
+      "key": "profile.ach.asistencias_50",
+      "text": "Compagnon de wagon"
+    },
+    {
+      "key": "profile.ach.victorias_1",
+      "text": "Première gare"
+    },
+    {
+      "key": "profile.ach.victorias_25",
+      "text": "Maître de la ligne"
+    },
+    {
+      "key": "profile.ach.mvp_1",
+      "text": "Conducteur"
+    },
+    {
+      "key": "profile.ach.racha_5",
+      "text": "Sans arrêt"
+    },
+    {
+      "key": "profile.ach.racha_10",
+      "text": "Train à grande vitesse"
+    },
+    {
+      "key": "profile.ach.plantados_10",
+      "text": "Colis suspect"
+    },
+    {
+      "key": "profile.ach.desactivados_10",
+      "text": "Service rétabli"
+    },
+    {
+      "key": "profile.ach.partidas_50",
+      "text": "Voyageur régulier"
+    },
+    {
+      "key": "profile.ach.desc.azul_10",
+      "text": "Détruis 10 comètes bleues au total."
+    },
+    {
+      "key": "profile.ach.desc.azul_50",
+      "text": "Détruis 50 comètes bleues au total."
+    },
+    {
+      "key": "profile.ach.desc.azul_100",
+      "text": "Détruis 100 comètes bleues au total."
+    },
+    {
+      "key": "profile.ach.desc.verde_10",
+      "text": "Détruis 10 comètes vertes au total."
+    },
+    {
+      "key": "profile.ach.desc.verde_50",
+      "text": "Détruis 50 comètes vertes au total."
+    },
+    {
+      "key": "profile.ach.desc.verde_100",
+      "text": "Détruis 100 comètes vertes au total."
+    },
+    {
+      "key": "profile.ach.desc.dorado_10",
+      "text": "Détruis 10 comètes dorées au total."
+    },
+    {
+      "key": "profile.ach.desc.dorado_50",
+      "text": "Détruis 50 comètes dorées au total."
+    },
+    {
+      "key": "profile.ach.desc.dorado_100",
+      "text": "Détruis 100 comètes dorées au total."
+    },
+    {
+      "key": "profile.ach.desc.bajas_10",
+      "text": "Fais 10 éliminations."
+    },
+    {
+      "key": "profile.ach.desc.bajas_100",
+      "text": "Fais 100 éliminations."
+    },
+    {
+      "key": "profile.ach.desc.bajas_500",
+      "text": "Fais 500 éliminations."
+    },
+    {
+      "key": "profile.ach.desc.cabezas_10",
+      "text": "Fais 10 éliminations par des tirs à la tête."
+    },
+    {
+      "key": "profile.ach.desc.cabezas_50",
+      "text": "Fais 50 éliminations par des tirs à la tête."
+    },
+    {
+      "key": "profile.ach.desc.cabezas_200",
+      "text": "Fais 200 éliminations par des tirs à la tête."
+    },
+    {
+      "key": "profile.ach.desc.asistencias_50",
+      "text": "Obtiens 50 assistances."
+    },
+    {
+      "key": "profile.ach.desc.victorias_1",
+      "text": "Gagne ta première partie."
+    },
+    {
+      "key": "profile.ach.desc.victorias_25",
+      "text": "Gagne 25 parties."
+    },
+    {
+      "key": "profile.ach.desc.mvp_1",
+      "text": "Termine une partie de Tactique en tant que MVP."
+    },
+    {
+      "key": "profile.ach.desc.mvp_10",
+      "text": "Termine 10 parties de Tactique en tant que MVP."
+    },
+    {
+      "key": "profile.ach.desc.racha_5",
+      "text": "Fais 5 éliminations d'affilée sans mourir en Deathmatch."
+    },
+    {
+      "key": "profile.ach.desc.racha_10",
+      "text": "Fais 10 éliminations d'affilée sans mourir en Deathmatch."
+    },
+    {
+      "key": "profile.ach.desc.plantados_10",
+      "text": "Pose le dispositif 10 fois."
+    },
+    {
+      "key": "profile.ach.desc.desactivados_10",
+      "text": "Désamorce le dispositif 10 fois."
+    },
+    {
+      "key": "profile.ach.desc.partidas_50",
+      "text": "Termine 50 parties."
+    },
+    {
+      "key": "profile.ach.got",
+      "text": "Obtenu"
+    },
+    {
+      "key": "profile.ach.pending",
+      "text": "En attente"
+    },
+    {
+      "key": "profile.ach.group.blue",
+      "text": "BLEUES"
+    },
+    {
+      "key": "profile.ach.group.green",
+      "text": "VERTES"
+    },
+    {
+      "key": "profile.ach.group.gold",
+      "text": "DORÉES"
+    },
+    {
+      "key": "profile.ach.group.combat",
+      "text": "COMBAT"
+    },
+    {
+      "key": "profile.ach.destroyed_fmt",
+      "text": "{0} détruites"
+    },
+    {
+      "key": "profile.ach.kills_heads_fmt",
+      "text": "{0} éliminations · {1} à la tête"
+    },
+    {
+      "key": "profile.ach.rank_none",
+      "text": "RANG EN SUCCÈS : —"
+    },
+    {
+      "key": "profile.ach.rank_fmt",
+      "text": "RANG EN SUCCÈS : #{0}"
+    },
+    {
+      "key": "profile.ach.registered.one",
+      "text": "{0} joueur inscrit"
+    },
+    {
+      "key": "profile.ach.registered.other",
+      "text": "{0} joueurs inscrits"
+    },
+    {
+      "key": "profile.ach.of_fmt",
+      "text": "Succès de {0}"
+    },
+    {
+      "key": "profile.ach.who_fmt",
+      "text": "Qui l'a obtenu : {0}"
+    },
+    {
+      "key": "profile.ach.page_fmt",
+      "text": "Page {0}"
+    },
+    {
+      "key": "profile.ach.your_place_fmt",
+      "text": "Ton rang : <color=#F3F4F6>#{0}</color> · {1}"
+    },
+    {
+      "key": "profile.ach.you_suffix",
+      "text": "{0} (toi)"
+    },
+    {
+      "key": "profile.ach.player_total_fmt",
+      "text": "{0} / {1} succès obtenus"
+    },
+    {
+      "key": "profile.ach.unlocked_fmt",
+      "text": "Succès débloqué : {0}"
+    },
+    {
+      "key": "profile.rank.blue",
+      "text": "Bleues"
+    },
+    {
+      "key": "profile.rank.green",
+      "text": "Vertes"
+    },
+    {
+      "key": "profile.rank.gold",
+      "text": "Dorées"
+    },
+    {
+      "key": "profile.rank.points",
+      "text": "Points"
+    },
+    {
+      "key": "profile.rank.minigame",
+      "text": "Mini-jeu"
+    },
+    {
+      "key": "profile.rank.general",
+      "text": "Général"
+    },
+    {
+      "key": "profile.rank.tactical",
+      "text": "Tactique"
+    },
+    {
+      "key": "profile.rank.reaction_note",
+      "text": "Minimum 50 tirs sur des comètes · le temps le plus court gagne"
+    },
+    {
+      "key": "profile.rank.previous",
+      "text": "Précédent"
+    },
+    {
+      "key": "profile.rank.next",
+      "text": "Suivant"
+    },
+    {
+      "key": "profile.menu.room_fmt",
+      "text": "Salon {0}"
+    },
+    {
+      "key": "profile.menu.rejoin_window_fmt",
+      "text": "Tu peux revenir pendant {0}:{1:00}"
+    },
+    {
+      "key": "profile.new.one",
+      "text": "{0} nouveau"
+    },
+    {
+      "key": "profile.new.other",
+      "text": "{0} nouveaux"
+    },
+    {
+      "key": "profile.station.tickets.one",
+      "text": "Tu as {0} billet à ouvrir"
+    },
+    {
+      "key": "profile.station.tickets.other",
+      "text": "Tu as {0} billets à ouvrir"
+    },
+    {
+      "key": "profile.station.new_item_fmt",
+      "text": "Nouveau ! <color={0}>{1}</color> est dans ta collection."
+    },
+    {
+      "key": "profile.station.duplicate_fmt",
+      "text": "Doublon : converti en <color=#D6DAE0>{0} crédits</color>."
+    },
+    {
+      "key": "profile.station.duplicates_fmt",
+      "text": "{0} · doublons convertis en {1} crédits"
+    },
+    {
+      "key": "profile.station.capsule_number_fmt",
+      "text": "CAPSULE DU RIFT · Nº {0:000}"
+    },
+    {
+      "key": "profile.station.guarantee_in_fmt",
+      "text": "Épique ou mieux garanti dans <color=#F3F4F6>{0} capsules</color>"
+    },
+    {
+      "key": "profile.station.equipped_fmt",
+      "text": "<color={0}>{1}</color> équipé"
+    },
+    {
+      "key": "profile.station.credits_fmt",
+      "text": "{0} crédits"
+    },
+    {
+      "key": "profile.station.crystals_fmt",
+      "text": "{0} cristaux"
+    },
+    {
+      "key": "profile.station.plus_credits_fmt",
+      "text": "+{0} crédits"
+    },
+    {
+      "key": "profile.info.matches_fmt",
+      "text": "Parties terminées  <color=#F3F4F6>{0}</color>"
+    },
+    {
+      "key": "profile.info.wheel_fmt",
+      "text": "Sur la roue  <color=#F3F4F6>{0} / {1}</color>"
+    },
+    {
+      "key": "profile.info.collection_fmt",
+      "text": "Collection  <color=#F3F4F6>{0} / {1}</color>"
+    },
+    {
+      "key": "profile.emotes.slot_empty_fmt",
+      "text": "Emplacement {0} vide"
+    },
+    {
+      "key": "profile.emotes.in_slot_fmt",
+      "text": "Dans l'emplacement {0}"
+    },
+    {
+      "key": "profile.store.purchases.one",
+      "text": "{0} achat"
+    },
+    {
+      "key": "profile.store.purchases.other",
+      "text": "{0} achats"
+    },
+    {
+      "key": "profile.store.gift_fmt",
+      "text": "+{0} offerts"
+    },
+    {
+      "key": "profile.account.info_launcher_fmt",
+      "text": "Compte  <color=#F3F4F6>{0}</color>"
+    },
+    {
+      "key": "profile.account.from_launcher",
+      "text": "Depuis le launcher"
+    },
+    {
+      "key": "profile.account.info_editor_fmt",
+      "text": "Éditeur  <color=#F3F4F6>{0}</color>"
+    },
+    {
+      "key": "profile.account.resend_in_fmt",
+      "text": "Rien reçu ? Tu peux en demander un autre dans 0:{0:00}"
+    },
+    {
+      "key": "profile.account.code_sent_to_fmt",
+      "text": "Nous avons envoyé un code à 6 chiffres à <color=#F3F4F6>{0}</color>. Saisis-le pour activer le compte."
+    },
+    {
+      "key": "profile.account.signed_in_body",
+      "text": " Ta progression, tes monnaies et ta place au classement sont sur le compte, et tu les retrouves sur n'importe quel PC."
+    },
+    {
+      "key": "profile.account.show",
+      "text": "Afficher"
+    },
+    {
+      "key": "profile.account.hide",
+      "text": "Masquer"
+    },
+    {
+      "key": "profile.account.create",
+      "text": "Créer un compte"
+    },
+    {
+      "key": "profile.account.sign_in",
+      "text": "Se connecter"
+    },
+    {
+      "key": "profile.account.enter",
+      "text": "Entrer"
+    },
+    {
+      "key": "profile.account.sign_out",
+      "text": "Se déconnecter"
+    },
+    {
+      "key": "profile.account.your_account",
+      "text": "Ton compte"
+    },
+    {
+      "key": "profile.account.privacy",
+      "text": "Confidentialité"
+    },
+    {
+      "key": "profile.account.privacy_notice",
+      "text": "Avis de confidentialité"
+    },
+    {
+      "key": "profile.account.email",
+      "text": "E-mail"
+    },
+    {
+      "key": "profile.account.from",
+      "text": "Depuis"
+    },
+    {
+      "key": "profile.account.name",
+      "text": "Nom"
+    },
+    {
+      "key": "profile.account.progress",
+      "text": "Progression"
+    },
+    {
+      "key": "profile.session.no_launcher",
+      "text": "Nous n'avons pas trouvé le launcher sur ce PC : nous t'ouvrons le guide du jeu pour le télécharger."
+    },
+    {
+      "key": "profile.tickets.missing_fmt",
+      "text": "Il te manque des billets pour ouvrir {0}"
+    },
+    {
+      "key": "profile.text.couldn_t_save_your_progress",
+      "text": "Impossible d'enregistrer ta progression ; une nouvelle tentative aura lieu."
+    },
+    {
+      "key": "profile.text.your_progress_was_restored_from",
+      "text": "Ta progression a été récupérée depuis la sauvegarde."
+    },
+    {
+      "key": "profile.text.couldn_t_load_your_progress",
+      "text": "Impossible de charger ta progression : le jeu est reparti de zéro et le fichier endommagé a été conservé à part."
+    },
+    {
+      "key": "profile.text.your_progress_is_from_a",
+      "text": "Ta progression vient d'une version plus récente du jeu : mets-le à jour pour continuer à enregistrer. En attendant, rien n'est enregistré."
+    },
+    {
+      "key": "profile.text.not_enough_credits_you_earn",
+      "text": "Il te manque des crédits : on les gagne en jouant des parties"
+    },
+    {
+      "key": "profile.text.not_enough_crystals",
+      "text": "Il te manque des cristaux"
+    },
+    {
+      "key": "profile.station.guarantee_tag",
+      "text": " · garantie"
+    },
+    {
+      "key": "profile.station.odds_fmt",
+      "text": "D'abord la rareté (avec ces probabilités). Si elle est commune ou rare, puis le type ({0} % avatar, {1} % bannière, {2} % titre, {3} % cadre, {4} % skin d'arme, {5} % emote) ; les épiques et légendaires sont des skins d'arme ou des emotes. Enfin, un objet au hasard parmi ceux des capsules. Toutes les {6} capsules, un épique ou mieux est garanti. Les doublons sont convertis en crédits."
+    },
+    {
+      "key": "profile.emote.equipped_fmt",
+      "text": "{0} dans l'emplacement {1} ({2})"
+    },
+    {
+      "key": "profile.store.gift_suffix_fmt",
+      "text": " + {0} offerts"
+    },
+    {
+      "key": "profile.store.receive_fmt",
+      "text": "Tu reçois <color=#F3F4F6>{0}</color> pour <color=#F3F4F6>{1}</color>.\n\n"
+    },
+    {
+      "key": "profile.text.destroy_0_1_comets_in",
+      "text": "Détruis {0} comètes {1} au total."
+    },
+    {
+      "key": "profile.station.for_fmt",
+      "text": "pour {0}"
+    },
+    {
+      "key": "profile.text.business_simulation_there_are_no",
+      "text": "Simulation commerciale : aucun paiement réel. Les billets s'obtiennent en jouant (crédits) ou avec les cristaux de la boutique. Les probabilités sont toujours affichées."
+    },
+    {
+      "key": "profile.text.kda_kills_assists_deaths_with",
+      "text": "* KDA = (éliminations + assistances) ÷ morts ; sans mort, ÷ 1. Assistance : tu as blessé un adversaire qu'un autre a éliminé dans les 10 s suivantes. Seules les parties terminées comptent."
+    },
+    {
+      "key": "profile.skin.colors.rift",
+      "text": "Rift"
+    },
+    {
+      "key": "profile.skin.colors.albiceleste",
+      "text": "Albiceleste"
+    },
+    {
+      "key": "profile.skin.colors.ember",
+      "text": "Braise"
+    },
+    {
+      "key": "profile.skin.colors.arctic",
+      "text": "Arctique"
+    },
+    {
+      "key": "profile.skin.colors.desert",
+      "text": "Désert"
+    },
+    {
+      "key": "profile.skin.weapons",
+      "text": "Armes"
+    },
+    {
+      "key": "profile.skin.none",
+      "text": "Sans skin"
+    },
+    {
+      "key": "profile.skin.equipped",
+      "text": "Équipé"
+    },
+    {
+      "key": "profile.skin.locked",
+      "text": "Verrouillé"
+    },
+    {
+      "key": "profile.skin.type",
+      "text": "Skin d'arme"
+    },
+    {
+      "key": "profile.skin.none_detail",
+      "text": "L'arme telle quelle, sans skin."
+    },
+    {
+      "key": "profile.skin.get_it",
+      "text": "S'obtient dans le passe ou les capsules"
+    },
+    {
+      "key": "profile.skin.equipped_fmt",
+      "text": "{0} équipé"
+    },
+    {
+      "key": "profile.skin.removed_fmt",
+      "text": "{0} sans skin"
+    },
+    {
+      "key": "profile.skin.design.binary_code",
+      "text": "Code binaire"
+    },
+    {
+      "key": "profile.skin.design.marmol_de_retiro",
+      "text": "Marbre de Retiro"
+    },
+    {
+      "key": "profile.skin.design.azulejos_del_subte",
+      "text": "Carreaux du métro"
+    },
+    {
+      "key": "profile.skin.design.cristal_del_rift",
+      "text": "Cristal du Rift"
+    },
+    {
+      "key": "profile.skin.design.dragon_abisal",
+      "text": "Dragon Abyssal"
+    },
+    {
+      "key": "profile.skin.design.tormenta",
+      "text": "Tempête"
+    },
+    {
+      "key": "profile.skin.design.hoja_de_plasma",
+      "text": "Lame de plasma"
+    },
+    {
+      "key": "profile.skin.design.cristal_de_hielo",
+      "text": "Cristal de glace"
+    },
+    {
+      "key": "profile.skin.design.sangre_de_invasor",
+      "text": "Sang d'envahisseur"
+    },
+    {
+      "key": "profile.skin.design.holograma",
+      "text": "Hologramme"
+    },
+    {
+      "key": "profile.skin.design.proxima_estacion",
+      "text": "Prochain arrêt"
+    },
+    {
+      "key": "profile.skin.design.mapa_del_subte",
+      "text": "Plan du métro"
+    },
+    {
+      "key": "profile.store.tab.capsules",
+      "text": "Capsules"
+    },
+    {
+      "key": "profile.store.tab.pass",
+      "text": "Passe de combat"
+    },
+    {
+      "key": "profile.store.card_sub",
+      "text": "01 / Capsules · Passe · Cristaux"
+    },
+    {
+      "key": "profile.store.no_luck",
+      "text": "Sans hasard"
+    },
+    {
+      "key": "profile.store.daily",
+      "text": "Offres du jour"
+    },
+    {
+      "key": "profile.store.daily_detail",
+      "text": "Le cosmétique de ton choix, sans hasard. Achats simulés : aucun argent réel n'est facturé."
+    },
+    {
+      "key": "profile.store.new_offers_fmt",
+      "text": "Nouvelles offres dans {0} h {1:00} min"
+    },
+    {
+      "key": "profile.store.missing_crystals_fmt",
+      "text": "Il te manque {0} cristaux"
+    },
+    {
+      "key": "profile.store.buy_crystals_fmt",
+      "text": "Acheter · {0} cristaux"
+    },
+    {
+      "key": "profile.store.to_crystals",
+      "text": "On t'emmène à l'onglet Cristaux."
+    },
+    {
+      "key": "profile.store.direct",
+      "text": "Boutique directe"
+    },
+    {
+      "key": "profile.store.buy_question_fmt",
+      "text": "Acheter {0} ?"
+    },
+    {
+      "key": "profile.store.buy_body_fmt",
+      "text": "{0} · {1} pour {2} cristaux. Achat simulé : aucun argent réel n'est facturé."
+    },
+    {
+      "key": "profile.store.bought_fmt",
+      "text": "{0} ! C'est dans ta collection du Profil."
+    },
+    {
+      "key": "profile.store.no_crystals_buy",
+      "text": "Pas de cristaux ? Acheter des cristaux »"
+    },
+    {
+      "key": "profile.pass.season",
+      "text": "Saison"
+    },
+    {
+      "key": "profile.pass.season_fmt",
+      "text": "Saison {0}"
+    },
+    {
+      "key": "profile.pass.claim_all",
+      "text": "Tout récupérer"
+    },
+    {
+      "key": "profile.pass.claim_all_fmt",
+      "text": "Tout récupérer ({0})"
+    },
+    {
+      "key": "profile.pass.buy",
+      "text": "Acheter le passe"
+    },
+    {
+      "key": "profile.pass.buy_fmt",
+      "text": "Acheter le passe · {0}"
+    },
+    {
+      "key": "profile.pass.bought",
+      "text": "Passe acheté"
+    },
+    {
+      "key": "profile.pass.rewards",
+      "text": "Récompenses"
+    },
+    {
+      "key": "profile.pass.challenges",
+      "text": "Défis"
+    },
+    {
+      "key": "profile.pass.ends_in.one",
+      "text": "Se termine dans {0} jour"
+    },
+    {
+      "key": "profile.pass.ends_in.other",
+      "text": "Se termine dans {0} jours"
+    },
+    {
+      "key": "profile.pass.days_left_fmt",
+      "text": "Encore {0} jours · 40 niveaux · {1} cristaux gratuits, {2} avec le passe"
+    },
+    {
+      "key": "profile.pass.level_fmt",
+      "text": "Niveau {0}"
+    },
+    {
+      "key": "profile.pass.level",
+      "text": "Niveau"
+    },
+    {
+      "key": "profile.pass.max_level",
+      "text": "Niveau maximum"
+    },
+    {
+      "key": "profile.pass.page_fmt",
+      "text": "Page {0} / {1} · Niveaux {2}–{3}"
+    },
+    {
+      "key": "profile.pass.free",
+      "text": "Gratuit"
+    },
+    {
+      "key": "profile.pass.pass",
+      "text": "Passe"
+    },
+    {
+      "key": "profile.pass.claimed",
+      "text": "Récupérée"
+    },
+    {
+      "key": "profile.pass.claim",
+      "text": "Récupérer"
+    },
+    {
+      "key": "profile.pass.with_pass",
+      "text": "Avec le passe"
+    },
+    {
+      "key": "profile.pass.level_kind_fmt",
+      "text": "Niveau {0} · {1}"
+    },
+    {
+      "key": "profile.pass.in_collection",
+      "text": "C'est déjà dans ta collection du Profil."
+    },
+    {
+      "key": "profile.pass.click_to_claim",
+      "text": "Clique sur la carte pour la récupérer."
+    },
+    {
+      "key": "profile.pass.unlocks_with_pass",
+      "text": "Se débloque avec le passe de combat."
+    },
+    {
+      "key": "profile.pass.unlocks_at_fmt",
+      "text": "Se débloque au niveau {0}."
+    },
+    {
+      "key": "profile.pass.claimed_list_fmt",
+      "text": "Tu as récupéré : {0}"
+    },
+    {
+      "key": "profile.pass.claimed_count.one",
+      "text": "Tu as récupéré {0} récompense"
+    },
+    {
+      "key": "profile.pass.claimed_count.other",
+      "text": "Tu as récupéré {0} récompenses"
+    },
+    {
+      "key": "profile.pass.missing_crystals_fmt",
+      "text": "Il te manque {0} cristaux pour le passe"
+    },
+    {
+      "key": "profile.pass.buy_question_fmt",
+      "text": "Acheter le passe de la {0} ?"
+    },
+    {
+      "key": "profile.pass.buy_body_fmt",
+      "text": "Il coûte {0} cristaux et débloque les 32 récompenses payantes (y compris celles des niveaux déjà passés). Au fil des niveaux, il te rend des cristaux : 550 au total avec le passe, contre 100 sans. Achat simulé : aucun argent réel n'est facturé."
+    },
+    {
+      "key": "profile.pass.bought_msg",
+      "text": "Passe acheté ! Les récompenses payantes de tes niveaux sont prêtes à être récupérées."
+    },
+    {
+      "key": "profile.pass.stage_fmt",
+      "text": "Étape {0} / {1}"
+    },
+    {
+      "key": "profile.pass.completed",
+      "text": "Terminé"
+    },
+    {
+      "key": "profile.pass.from_match",
+      "text": "de la partie"
+    },
+    {
+      "key": "profile.pass.from_challenges",
+      "text": "des défis"
+    },
+    {
+      "key": "profile.pass.reward_with_pass",
+      "text": "une récompense avec le passe"
+    },
+    {
+      "key": "profile.pass.challenge",
+      "text": "Défi"
+    },
+    {
+      "key": "profile.pass.duplicate",
+      "text": "doublon"
+    },
+    {
+      "key": "profile.pass.credits_lower",
+      "text": "crédits"
+    },
+    {
+      "key": "profile.pass.already_bought",
+      "text": "Tu as déjà acheté le passe de cette saison"
+    },
+    {
+      "key": "profile.pass.ends_notice",
+      "text": "Passe : se termine dans"
+    },
+    {
+      "key": "profile.pass.day",
+      "text": "jour"
+    },
+    {
+      "key": "profile.pass.days",
+      "text": "jours"
+    },
+    {
+      "key": "profile.pass.season_over",
+      "text": "La saison est terminée : ce que tu n'avais pas récupéré l'a été automatiquement"
+    },
+    {
+      "key": "profile.pass.banner_type",
+      "text": "Carte de visite"
+    },
+    {
+      "key": "profile.pass.mode.dm_or_tac",
+      "text": "Deathmatch ou Tactique"
+    },
+    {
+      "key": "profile.pass.ch.play_with_fmt",
+      "text": "Jouer 3 parties avec {0}"
+    },
+    {
+      "key": "profile.pass.ch.headshots",
+      "text": "Éliminer 3 ennemis avec des tirs à la tête"
+    },
+    {
+      "key": "profile.pass.ch.kills_fmt",
+      "text": "Éliminer {0} ennemis"
+    },
+    {
+      "key": "profile.pass.ch.win_2",
+      "text": "Gagner 2 parties"
+    },
+    {
+      "key": "profile.pass.ch.win_1",
+      "text": "Gagner 1 partie"
+    },
+    {
+      "key": "profile.pass.ch.wave_fmt",
+      "text": "Atteindre la vague {0}"
+    },
+    {
+      "key": "profile.pass.ch.no_scope",
+      "text": "Éliminer 5 ennemis sans viser avec l'Último Tren"
+    },
+    {
+      "key": "profile.pass.ch.weapon_fmt",
+      "text": "Éliminer 15 ennemis avec {0}"
+    },
+    {
+      "key": "profile.pass.ch.stations",
+      "text": "Charger 3 postes de ravitaillement"
+    },
+    {
+      "key": "profile.pass.ch.boss",
+      "text": "Éliminer le Boss"
+    },
+    {
+      "key": "profile.pass.ch.alphas",
+      "text": "Éliminer 10 alphas"
+    },
+    {
+      "key": "profile.level.title",
+      "text": "Niveau du joueur"
+    },
+    {
+      "key": "profile.level.help",
+      "text": "Évolue en recherche de partie"
+    },
+    {
+      "key": "profile.level.rank.passenger",
+      "text": "Passager"
+    },
+    {
+      "key": "profile.level.rank.guard",
+      "text": "Contrôleur"
+    },
+    {
+      "key": "profile.inv.record_fnd",
+      "text": "Record F · N · D"
+    },
+    {
+      "key": "profile.inv.bosses",
+      "text": "Boss vaincus"
+    },
+    {
+      "key": "profile.inv.stations",
+      "text": "Postes chargés"
+    },
+    {
+      "key": "profile.inv.fav_card",
+      "text": "Carte préférée"
+    },
+    {
+      "key": "profile.inv.fav_weapon",
+      "text": "Arme préférée"
+    },
+    {
+      "key": "profile.inv.coop",
+      "text": "En coopération"
+    },
+    {
+      "key": "profile.inv.wave_fmt",
+      "text": "(vague {0})"
+    },
+    {
+      "key": "profile.custom.avatars",
+      "text": "Avatars"
+    },
+    {
+      "key": "profile.custom.banners",
+      "text": "Bannières"
+    },
+    {
+      "key": "profile.custom.frames",
+      "text": "Cadres"
+    },
+    {
+      "key": "profile.custom.equipped",
+      "text": "Équipé"
+    },
+    {
+      "key": "profile.custom.locked",
+      "text": "Verrouillé"
+    },
+    {
+      "key": "profile.custom.remove",
+      "text": "Retirer"
+    },
+    {
+      "key": "profile.emotes.right",
+      "text": "Droite"
+    },
+    {
+      "key": "profile.emotes.left",
+      "text": "Gauche"
+    },
+    {
+      "key": "profile.emotes.slot_fmt",
+      "text": "Emplacement {0} · {1}"
+    },
+    {
+      "key": "profile.emote.payaseando",
+      "text": "Clownerie"
+    },
+    {
+      "key": "profile.emote.el_clasico",
+      "text": "Le Classique"
+    },
+    {
+      "key": "profile.emote.pasito",
+      "text": "Petit pas"
+    },
+    {
+      "key": "profile.emote.saludo",
+      "text": "Salut"
+    },
+    {
+      "key": "profile.emote.giro_soul",
+      "text": "Tour Soul"
+    },
+    {
+      "key": "profile.ach.refresh",
+      "text": "Actualiser"
+    },
+    {
+      "key": "profile.ach.ranking",
+      "text": "Classement"
+    },
+    {
+      "key": "profile.account.confirm",
+      "text": "Confirmer"
+    },
+    {
+      "key": "profile.account.confirmed",
+      "text": "Confirmé"
+    },
+    {
+      "key": "profile.custom.where_to_get",
+      "text": "S'obtient dans les capsules, le passe ou la boutique"
+    },
+    {
+      "key": "profile.store.simulation",
+      "text": "Simulation"
+    },
+    {
+      "key": "profile.tab.history",
+      "text": "Historique"
+    },
+    {
+      "key": "profile.hist.col.result",
+      "text": "Résultat"
+    },
+    {
+      "key": "profile.hist.col.kda",
+      "text": "Performance"
+    },
+    {
+      "key": "profile.hist.col.date",
+      "text": "Date"
+    },
+    {
+      "key": "profile.hist.col.duration",
+      "text": "Durée"
+    },
+    {
+      "key": "profile.hist.place_fmt",
+      "text": "{0}e place"
+    },
+    {
+      "key": "profile.hist.invasion_fmt",
+      "text": "{0} · vague {1} · {2}"
+    },
+    {
+      "key": "profile.hist.coop",
+      "text": "coopératif"
+    },
+    {
+      "key": "profile.hist.solo",
+      "text": "solo"
+    },
+    {
+      "key": "profile.hist.kda_fmt",
+      "text": "{0} / {1} / {2} · KDA {3}"
+    },
+    {
+      "key": "profile.hist.synced",
+      "text": "Les 20 dernières parties terminées de ton compte, de la plus récente à la plus ancienne."
+    },
+    {
+      "key": "profile.hist.no_account",
+      "text": "Sans compte : seules les parties jouées sur cet ordinateur s'affichent."
+    },
+    {
+      "key": "profile.hist.update_service",
+      "text": "Parties de cet ordinateur : le service en ligne doit être mis à jour."
+    },
+    {
+      "key": "profile.hist.offline",
+      "text": "Hors ligne : parties de cet ordinateur. Elles seront envoyées sur ton compte au retour de la connexion."
+    },
+    {
+      "key": "profile.hist.empty",
+      "text": "Tu n'as encore terminé aucune partie. Elles apparaissent ici en arrivant à l'écran des résultats."
+    },
+    {
+      "key": "profile.info.history_fmt",
+      "text": "{0} sur {1} parties"
+    },
+    {
+      "key": "profile.other.back",
+      "text": "« Retour"
+    },
+    {
+      "key": "profile.other.view_only",
+      "text": "Profil d'un autre joueur · consultation seule"
+    },
+    {
+      "key": "profile.other.rank_title",
+      "text": "Place au classement"
+    },
+    {
+      "key": "profile.other.mode_empty",
+      "text": "N'a encore terminé aucune partie dans ce mode."
+    },
+    {
+      "key": "profile.other.kda_note",
+      "text": "* KDA = (éliminations + assistances) ÷ morts ; sans mort, ÷ 1. Seules les parties terminées comptent."
+    },
+    {
+      "key": "profile.other.loading",
+      "text": "Chargement du profil…"
+    },
+    {
+      "key": "profile.other.no_account",
+      "text": "Ce joueur n'a pas de compte : son profil n'est pas disponible."
+    },
+    {
+      "key": "profile.other.offline",
+      "text": "Hors ligne : le profil n'est pas disponible pour le moment."
+    },
+    {
+      "key": "profile.other.update_service",
+      "text": "Le profil n'est pas disponible : le service en ligne doit être mis à jour."
+    },
+    {
+      "key": "profile.other.unavailable",
+      "text": "Impossible de charger le profil. Réessaie dans un moment."
+    },
+    {
+      "key": "profile.other.no_matches",
+      "text": "N'a encore terminé aucune partie."
+    },
+    {
+      "key": "profile.type.emote",
+      "text": "Emote"
+    },
+    {
+      "key": "profile.origin.capsules",
+      "text": "S'obtient dans les capsules"
+    },
+    {
+      "key": "profile.origin.store",
+      "text": "S'obtient dans la boutique"
+    },
+    {
+      "key": "profile.origin.pass_fmt",
+      "text": "S'obtient dans le passe (niveau {0})"
+    },
+    {
+      "key": "profile.station.items_fmt",
+      "text": "{0} objets"
+    },
+    {
+      "key": "profile.station.owned",
+      "text": "obtenu"
+    },
+    {
+      "key": "profile.session.other_pc",
+      "text": "Ton compte a été ouvert sur un autre ordinateur. Reconnecte-toi pour jouer ici."
+    },
+    {
+      "key": "profile.session.other_pc_title",
+      "text": "Ton compte a été ouvert sur un autre ordinateur"
+    },
+    {
+      "key": "profile.session.other_pc_text",
+      "text": "Quelqu'un s'est connecté à ton compte sur un autre ordinateur et la session ici a été fermée : un compte ne se joue que sur un seul ordinateur à la fois. Pour jouer ici, reconnecte-toi dans le launcher. Ta progression est sauvegardée sur ton compte."
+    }
+  ]
+}

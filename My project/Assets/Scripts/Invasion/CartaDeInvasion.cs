@@ -23,6 +23,9 @@ public class CartaDeInvasion
     /// <summary>Lo que hace al elegirla: el jugador y cuántas veces la tiene ahora (1 a 3). Vacío: todavía no tiene
     /// efecto. Las que actúan después (por ejemplo, al matar) preguntan cuántas tiene con EleccionDeInvasion.Veces.</summary>
     public System.Action<GameObject, int> aplicar;
+    /// <summary>US 360, CA6: lo que se deshace al descartarla (solo las que cambian algo al elegirlas, como Mochila).
+    /// Las que actúan durante el juego dejan de actuar solas: preguntan cuántas veces se tiene (Veces).</summary>
+    public System.Action<GameObject> quitar;
     /// <summary>Si no es null, la carta sale en la elección solo si da true (por ejemplo, Sin respaldo y Acople no
     /// salen juntas: US 331).</summary>
     public System.Func<bool> puedeSalir;
@@ -65,7 +68,7 @@ public class CartaDeInvasion
 
     // Con false no salen (ni en el puesto ni en los trucos) las cartas que se prueban en el Sprint 5 (F29), para las
     // entregas en las que todavía no entran.
-    public static readonly bool CartasDelSprint5 = false; // Entrega del Sprint 4: las del Sprint 5 no entran
+    public static readonly bool CartasDelSprint5 = true;
     private static readonly string[] DelSprint5 =
     {
         "Cargador gemelo", "Sin intervalo", "Campo minado", "Bala compacta", "Descarga rápida", "Acople", "Tiro de reserva",
@@ -87,7 +90,7 @@ public class CartaDeInvasion
             efecto = "Cada 3 tiros de pistola que aciertan, el arma principal dispara sola un tiro hacia la mira.", aplicar = EfectosDeCartas.EnElJuego,
             puedeSalir = () => EleccionDeInvasion.Veces("Sin respaldo") == 0 }, // US 331
         new CartaDeInvasion { nombre = "Sin respaldo", rareza = RarezaDeCarta.Rara, rindeCon = "Cualquier principal", unaVez = true,
-            efecto = "Tu arma principal tiene el doble de cargador, pero perdés la secundaria por el resto de la partida.", aplicar = EfectosDeCartas.SinRespaldo,
+            efecto = "Tu arma principal tiene el doble de cargador, pero perdés la secundaria por el resto de la partida.", aplicar = EfectosDeCartas.SinRespaldo, quitar = EfectosDeCartas.SacarSinRespaldo,
             puedeSalir = () => EleccionDeInvasion.Veces("Acople") == 0 && TienePrincipal() },
         new CartaDeInvasion { nombre = "Carga adherente", rareza = RarezaDeCarta.Epica, rindeCon = "Gran Capitán", unaVez = true,
             efecto = "Las granadas que le pegan directo a un invasor se le pegan 1 s y explotan con el doble de daño.", aplicar = EfectosDeCartas.EnElJuego },
@@ -111,17 +114,17 @@ public class CartaDeInvasion
         new CartaDeInvasion { nombre = "Logística", rareza = RarezaDeCarta.Rara, rindeCon = "Todas", unaVez = true,
             efecto = "Desde ahora, los puestos recargan toda la munición en vez de la mitad.", aplicar = EfectosDeCartas.EnElJuego }, // US 314: EleccionDeInvasion.Abrir
         new CartaDeInvasion { nombre = "Mochila", rareza = RarezaDeCarta.Comun, rindeCon = "Todas",
-            efecto = "40 % más de reserva en las dos armas.", efectoRepetida = new[] { "80 % más de reserva en las dos armas (40 % más que ahora).", "120 % más de reserva en las dos armas (40 % más que ahora)." }, aplicar = EfectosDeCartas.Mochila },
+            efecto = "40 % más de reserva en las dos armas.", efectoRepetida = new[] { "80 % más de reserva en las dos armas (40 % más que ahora).", "120 % más de reserva en las dos armas (40 % más que ahora)." }, aplicar = EfectosDeCartas.Mochila, quitar = EfectosDeCartas.SacarMochila },
         new CartaDeInvasion { nombre = "Reciclador", rareza = RarezaDeCarta.Rara, rindeCon = "Todas",
             efecto = "Cada baja a la cabeza devuelve 5 balas al cargador.", efectoRepetida = new[] { "Cada baja a la cabeza devuelve 10 balas al cargador.", "Cada baja a la cabeza devuelve 15 balas al cargador." }, aplicar = EfectosDeCartas.EnElJuego },
-        new CartaDeInvasion { nombre = "Filo", rareza = RarezaDeCarta.Comun, rindeCon = "Cuchillo", unaVez = true,
+        new CartaDeInvasion { nombre = "Filo", rareza = RarezaDeCarta.Comun, rindeCon = "Cuchillo y katana", unaVez = true,
             efecto = "Matar con el cuchillo recarga la última arma que tuviste en la mano.", aplicar = EfectosDeCartas.EnElJuego },
         new CartaDeInvasion { nombre = "Carroñero", rareza = RarezaDeCarta.Rara, rindeCon = "Todas",
             efecto = "1 de cada 5 invasores suelta un cargador al morir.", efectoRepetida = new[] { "1 de cada 4 invasores suelta un cargador al morir.", "1 de cada 3 invasores suelta un cargador al morir." }, aplicar = EfectosDeCartas.EnElJuego },
         // US 319 a 334 (la segunda tanda): se suman al catálogo a medida que tienen su efecto.
-        new CartaDeInvasion { nombre = "Remate", rareza = RarezaDeCarta.Comun, rindeCon = "Cuchillo",
+        new CartaDeInvasion { nombre = "Remate", rareza = RarezaDeCarta.Comun, rindeCon = "Cuchillo y katana",
             efecto = "El cuchillo mata de un golpe a los invasores con 25 % de vida o menos (salvo al Jefe).", efectoRepetida = new[] { "El cuchillo mata de un golpe a los invasores con 30 % de vida o menos (salvo al Jefe).", "El cuchillo mata de un golpe a los invasores con 35 % de vida o menos (salvo al Jefe)." }, aplicar = EfectosDeCartas.EnElJuego },
-        new CartaDeInvasion { nombre = "Filo voraz", rareza = RarezaDeCarta.Rara, rindeCon = "Cuchillo",
+        new CartaDeInvasion { nombre = "Filo voraz", rareza = RarezaDeCarta.Rara, rindeCon = "Cuchillo y katana",
             efecto = "Cada cuchillazo cura lo mismo que el daño que hace, hasta 25 de vida por golpe.", efectoRepetida = new[] { "Cada cuchillazo cura lo mismo que el daño que hace, hasta 35 de vida por golpe.", "Cada cuchillazo cura lo mismo que el daño que hace, hasta 45 de vida por golpe." }, aplicar = EfectosDeCartas.EnElJuego },
         new CartaDeInvasion { nombre = "Reserva lista", rareza = RarezaDeCarta.Rara, rindeCon = "Todas", unaVez = true,
             efecto = "El arma guardada se recarga sola desde su reserva después de 2 s.", aplicar = EfectosDeCartas.EnElJuego },
@@ -129,6 +132,9 @@ public class CartaDeInvasion
             efecto = "Cuando un invasor te pega, tu próximo disparo suma 5 veces la vida que perdiste.", efectoRepetida = new[] { "Cuando un invasor te pega, tu próximo disparo suma 6 veces la vida que perdiste.", "Cuando un invasor te pega, tu próximo disparo suma 7 veces la vida que perdiste." }, aplicar = EfectosDeCartas.EnElJuego },
         new CartaDeInvasion { nombre = "Alimentación directa", rareza = RarezaDeCarta.Legendaria, rindeCon = "Todas", unaVez = true,
             efecto = "El cargador y la reserva son un solo depósito: no recargás nunca, hasta que se acaban las balas.", aplicar = EfectosDeCartas.EnElJuego },
+        // F29, US 394: la Escolta, un dron que acompaña al jugador (EscoltaDeInvasion y DronEscolta).
+        new CartaDeInvasion { nombre = "Escolta", rareza = RarezaDeCarta.Legendaria, rindeCon = "Todas", unaVez = true,
+            efecto = "Un dron te acompaña: su rayo derrite al invasor más cercano y cada 8 s lanza arcos eléctricos que paralizan a los de alrededor.", aplicar = EfectosDeCartas.EnElJuego },
         new CartaDeInvasion { nombre = "Entrega inmediata", rareza = RarezaDeCarta.Epica, rindeCon = "Todas", unaVez = true,
             efecto = "La elección del puesto se abre apenas se carga, sin esperar a que termine la oleada.", aplicar = EfectosDeCartas.EnElJuego },
         new CartaDeInvasion { nombre = "Despeje", rareza = RarezaDeCarta.Comun, rindeCon = "Todas",
@@ -140,10 +146,42 @@ public class CartaDeInvasion
     public static readonly string[] SinUsoConAlimentacion = { "Cargador gemelo", "Reserva lista", "Filo", "Tiro de reserva" };
     public const string AlimentacionDirecta = "Alimentación directa";
 
-    /// <summary>US 303 / US 352: en el Sprint 4 no se entrega ninguna legendaria (Alimentación directa es de US 334,
-    /// Sprint 5). Mientras esté en false no salen en la elección: las chances de rareza no cambian (CA2 y CA3), pero
-    /// cuando toca legendaria sale la carta de la rareza más cercana (una épica). Para el Sprint 5, ponerlo en true.</summary>
-    public static bool LegendariasDisponibles = false;
+    /// <summary>US 303 / US 352: las legendarias en las elecciones. Después del primer Jefe: 15 % en la elección del Jefe
+    /// (CA1) y 2 % en las normales, restado de las comunes (CA2). Si toca legendaria y no queda ninguna que pueda salir,
+    /// sale la de la rareza más cercana, una épica (CA3, CartaAlAzar). Con false (para una entrega sin legendarias), las
+    /// chances no cambian pero la parte de la legendaria sale épica.</summary>
+    public static bool LegendariasDisponibles = true;
+
+    /// <summary>US 361, CA3: lo que hace ahora, teniéndola esas veces (1 a 3).</summary>
+    public string EfectoActual(int veces) => EfectoParaLaProxima(Mathf.Max(0, veces - 1));
+
+    /// <summary>US 361, CA4: si rinde con las armas que tiene el jugador ahora (rindeCon). El cuchillo siempre se tiene.</summary>
+    public bool RindeConLoQueTenes()
+    {
+        WeaponSwitcher armas = Object.FindFirstObjectByType<WeaponSwitcher>();
+        if (armas == null) return true;
+        GameObject principal = armas.PrimaryObj, secundaria = armas.SecondaryObj;
+        ShopItem p = WeaponSwitcher.FichaDe(principal), s = WeaponSwitcher.FichaDe(secundaria);
+        bool Hay(ShopCategory c) => (p != null && p.category == c) || (s != null && s.category == c);
+        bool mitre = principal != null && principal.GetComponent<Mitre>() != null;
+        bool rafaga = (p != null && p.burstCount > 1) || (s != null && s.burstCount > 1);
+        bool pesada = (principal != null && p != null && p.category == ShopCategory.Pistols && principal.GetComponent<ArmaDeFuego>() != null)
+                   || (secundaria != null && s != null && s.category == ShopCategory.Pistols && secundaria.GetComponent<ArmaDeFuego>() != null);
+        switch (rindeCon)
+        {
+            case "Subfusil": return Hay(ShopCategory.SMGs);
+            case "Fusil": return mitre;
+            case "Subfusil y fusil": return Hay(ShopCategory.SMGs) || mitre;
+            case "Fusil de ráfaga": return rafaga;
+            case "Pistola pesada": return pesada;
+            case "Pistolas y arma principal": return Hay(ShopCategory.Pistols) && principal != null;
+            case "Cualquier principal": return principal != null;
+            case "Gran Capitán": return Hay(ShopCategory.Launchers);
+            case "Escopeta": return Hay(ShopCategory.Shotguns);
+            case "Francotirador": return Hay(ShopCategory.Snipers);
+            default: return true; // Todas, Cuchillo y katana (el cuchillo siempre se tiene; la katana lo reemplaza, US 395)
+        }
+    }
 
     /// <summary>El texto del efecto para la vez que se va a elegir: si ya se tiene, el de la segunda o la tercera vez.</summary>
     public string EfectoParaLaProxima(int yaLaTiene)

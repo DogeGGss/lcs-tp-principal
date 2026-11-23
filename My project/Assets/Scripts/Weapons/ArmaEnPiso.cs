@@ -20,6 +20,8 @@ public class ArmaEnPiso : MonoBehaviour
 
     public int Id { get; private set; }
     public ShopItem Item { get; private set; }
+    /// <summary>F35 (US 380, CA4): la skin que tiene (la de quien la soltó; null: ninguna).</summary>
+    public string Skin { get; private set; }
     public int Cargador { get; private set; }
     public int Reserva { get; private set; }
     // La soltó el jugador de esta computadora: cuando se queda quieta, avisa dónde quedó.
@@ -46,10 +48,14 @@ public class ArmaEnPiso : MonoBehaviour
 
     // Crea el arma en "desde", mirando hacia "yaw", y la tira con "velocidad". El giro sale del id, así es igual en
     // todas las computadoras. Si acá no está el modelo de esa ficha, igual queda (sin verse) para poder levantarla.
-    public static ArmaEnPiso Crear(int id, ShopItem item, Vector3 desde, Vector3 velocidad, float yaw, int cargador, int reserva, bool propia)
+    public static ArmaEnPiso Crear(int id, ShopItem item, Vector3 desde, Vector3 velocidad, float yaw, int cargador, int reserva, bool propia,
+        string skin = null)
     {
         Quitar(id);
         GameObject go = ModeloReal.Crear(item, ModeloReal.Molde(item), out Bounds limites);
+        // F35 (US 380, CA4): el molde es el arma de este jugador (con su skin): se le pone la de quien la soltó.
+        CatalogoDeSkins.Skin conSkin = CatalogoDeSkins.De(skin);
+        if (CatalogoDeSkins.ArmaDeFicha(item != null ? item.name : null) != null) SkinDeArma.Poner(go, conSkin);
         go.name = "Arma en el piso: " + ModeloReal.NombreDe(item);
         go.transform.SetPositionAndRotation(desde, Quaternion.Euler(0f, yaw, 0f));
         foreach (Transform parte in go.GetComponentsInChildren<Transform>(true)) parte.gameObject.layer = CapaSinBalas;
@@ -73,6 +79,7 @@ public class ArmaEnPiso : MonoBehaviour
         arma.Item = item;
         arma.Cargador = cargador;
         arma.Reserva = reserva;
+        arma.Skin = conSkin != null ? conSkin.id : null;
         arma.Propia = propia;
         arma.creada = Time.time;
         todas[id] = arma;

@@ -46,6 +46,7 @@ public class Pistola : MonoBehaviour, IHudWeapon
     void Awake()
     {
         if (fullReserve < 0) fullReserve = reserveAmmo;
+        reserveAmmo = Municion.Reserva(fullReserve); // F31: en Invasión viene con el doble
     }
 
     /// <summary>Cargador lleno y la reserva con la que viene el arma. Lo usan el inicio de cada ronda del Táctico
@@ -71,6 +72,12 @@ public class Pistola : MonoBehaviour, IHudWeapon
     {
         if (fullReserve < 0) fullReserve = reserveAmmo;
         reserveAmmo += Municion.Agrandada(fullReserve, antes);
+    }
+
+    /// <summary>US 360, CA6: al descartar Mochila, lo que sobra de la reserva se pierde.</summary>
+    public void RecortarMunicion()
+    {
+        if (fullReserve >= 0) reserveAmmo = Mathf.Min(reserveAmmo, Municion.Reserva(fullReserve));
     }
 
     /// <summary>US 293, CA2: suma balas a la reserva sin pasarse de la llena; lo que sobra va al cargador.</summary>
@@ -179,6 +186,9 @@ public class Pistola : MonoBehaviour, IHudWeapon
         // Retroceso, dispersión, zonas, daño por distancia, marcas y marcador de impacto (núcleo de disparo).
         WeaponFire.Fire(Data, playerCamera, shooter, false, 100f);
     }
+
+    /// <summary>F35 (US 381): la ficha del arma (la asignada o la pistola inicial), para saber qué skin lleva.</summary>
+    public ShopItem Ficha => Data;
 
     // Ficha del arma: la asignada o, si falta, la pistola inicial del catálogo de la tienda.
     private ShopItem Data

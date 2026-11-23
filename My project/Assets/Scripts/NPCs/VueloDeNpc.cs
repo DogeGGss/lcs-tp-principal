@@ -19,6 +19,8 @@ using UnityEngine.AI;
 //   charco en el piso más cercano.
 // Mientras tanto la persecución lo deja quieto (Ocupado) y no lo gira (Controlado): lo mueve esto. Si muere volando, cae
 // al piso (US 146, CA5). CadaCuanto y Bolas los cambia la furia (US 268).
+// F31 (US 290, CA4): en Invasión cooperativa cada bola sale en todas las computadoras (InvasoresEnRed) y cada una le
+// hace el daño al jugador de su computadora (las nubes y los charcos también).
 // Lo agrega Npc.Crear.
 [RequireComponent(typeof(Npc))]
 public class VueloDeNpc : MonoBehaviour
@@ -211,6 +213,7 @@ public class VueloDeNpc : MonoBehaviour
         Vector3 boca = Boca();
         BolaDeVeneno.Lanzar(boca, jugador.position, npc.Tipo.nombre, transform, npc.Tipo.veneno, npc.Tipo.materialDeNube,
             npc.Tipo.sonidoDeImpactoDeVeneno, TamanioDeNubes);
+        InvasoresEnRed.AvisarBolaDeVeneno(npc, boca, jugador.position, TamanioDeNubes); // F31 (US 290, CA4)
     }
 
     // La boca: la zona de impacto de la cabeza (o el frente del cuerpo, si no tiene).

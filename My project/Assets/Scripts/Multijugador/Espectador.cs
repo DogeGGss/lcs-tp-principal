@@ -18,6 +18,8 @@ using static ShopUIKit;
 // Animación de la copia (por código, con lo que llega por la red; sin las piezas que se mueven, como la corredera o el
 // tambor): el golpe de cada disparo con la fuerza de su tipo de arma, la recarga (baja, se inclina y vuelve, siguiendo
 // el avance que manda el compañero), sacar el arma desde abajo cuando cambia y el balanceo al caminar o correr.
+// Si el compañero apunta con la mira telescópica (el Último Tren), se ve como él: con el zoom y la lente de la mira
+// (MiraTelescopicaHud), sin el arma en la mano. El nivel de la mira viaja con el jugador (JugadorEnRed.NivelDeMira).
 // US 262: si el compañero que se mira baila (un emote), la cámara sale de sus ojos a tercera persona, atrás y un poco
 // arriba (como la del que baila, CamaraDeEmotes), para ver el baile: se ve su cuerpo y no el arma en primera persona,
 // el mouse gira alrededor y no atraviesa paredes. Al terminar el baile vuelve a sus ojos.
@@ -38,6 +40,11 @@ public class Espectador : MonoBehaviour
     private Camera camara;
     private Vector3 camaraPos;
     private Quaternion camaraRot;
+    private float camaraFov;
+    // La mira telescópica del compañero que se mira (el Último Tren): con su zoom y su lente, sin el arma en la mano.
+    private bool conMira;
+    private float zoomMira = 1f;
+    private readonly RaycastHit[] impactosMira = new RaycastHit[16];
     private readonly List<Behaviour> apagados = new List<Behaviour>();
     private readonly List<Renderer> ocultos = new List<Renderer>();
     private readonly List<Renderer> armasOcultas = new List<Renderer>(); // el arma en la mano del que murió
@@ -69,6 +76,38 @@ public class Espectador : MonoBehaviour
     // La puñalada del compañero: el cuchillo va para adelante y vuelve, como en su pantalla.
     private float punaladaEn = -10f;
     private const float PunaladaIda = 0.08f, PunaladaVuelta = 0.12f, PunaladaLargo = 0.3f;
+    // US 256: con el cuchillo no es una puñalada sino el corte de costado, como en su pantalla: el cuchillo y el brazo
+    // derecho de la copia giran alrededor de la mano (AnimacionPrimeraPersona.CorteEn); el brazo izquierdo queda quieto.
+    private sealed class CorteDeLaCopia
+    {
+        public Transform[] piezas;
+        public Vector3[] lugar;
+        public Quaternion[] giro;
+        public Vector3 mano;
+    }
+    private readonly Dictionary<Transform, CorteDeLaCopia> cortes = new Dictionary<Transform, CorteDeLaCopia>();
+    // US 395: con la katana, los mismos movimientos que en su pantalla (MovimientoDeKatana): el tajo, el tajo fuerte, la
+    // estocada y la guardia. La katana de la copia va a la pose; el brazo derecho se dobla con sus fotos de las poses
+    // (BrazoConPoses) o, si no las hay, acompaña a la katana como una sola pieza.
+    private sealed class KatanaDeLaCopia
+    {
+        public MovimientoDeKatana movimiento;
+        public Transform[] piezas;
+        public Vector3[] lugar;
+        public Quaternion[] giro;
+        public Matrix4x4 raiz;          // de la katana (su objeto) a la cámara
+        public Vector3 modeloPos;       // dónde estaba su modelo al copiarla (en el espacio de la katana)
+        public Quaternion modeloGiro;
+        public BrazoConPoses brazo;     // el brazo derecho de la copia, con sus poses
+        public Transform derecho;       // el brazo derecho de la copia, si no tiene poses
+        public Vector3 derechoLugar;
+        public Quaternion derechoGiro;
+    }
+    private readonly Dictionary<Transform, KatanaDeLaCopia> katanas = new Dictionary<Transform, KatanaDeLaCopia>();
+    private readonly List<KeyValuePair<string, float>> pesosKatana = new List<KeyValuePair<string, float>>();
+    private byte corteMirado;          // el ataque que hizo (JugadorEnRed.UltimoCorte)
+    private float guardiaVista;        // 0 a 1, suavizada
+    private AnimacionPrimeraPersona animacionLocal;
 
     // US 262: el compañero que se mira baila: la cámara en tercera persona.
     private const float Pasar = 0.3f, Distancia = 2.8f, Arriba = 0.35f, AlturaPecho = 1.15f, RadioDeLaCamara = 0.2f;
@@ -85,7 +124,30 @@ public class Espectador : MonoBehaviour
         this.partida = partida;
     }
 
-    private void OnDestroy() => Terminar();
+    private void OnDestroy()
+    {
+        if (muerto) Activo = false;
+        Terminar();
+        if (actual == this) actual = null;
+    }
+
+    private void OnEnable() => actual = this;
+
+    private static Espectador actual;
+
+    /// <summary>
+    /// Si esta computadora está mirando a ese compañero en primera persona con un arma en la mano: dónde está la boca
+    /// del arma que se ve (sus disparos salen de ahí; la de su cuerpo queda abajo, fuera de la vista).
+    /// </summary>
+    public static bool BocaDe(JugadorEnRed quien, out Vector3 boca)
+    {
+        boca = Vector3.zero;
+        Espectador e = actual;
+        if (e == null || !e.muerto || e.mirando == null || e.mirando != quien || e.camara == null) return false;
+        if (e.vistaArma == null || !e.vistaArma.gameObject.activeInHierarchy || e.conMira) return false;
+        boca = Trazadora.BocaLocal(e.camara);
+        return true;
+    }
 
     // =====================================================================
     // Cuadro a cuadro
@@ -122,11 +184,12 @@ public class Espectador : MonoBehaviour
         {
             Transform ojos = mirando.Ojos;
             camara.transform.SetPositionAndRotation(ojos.position, ojos.rotation);
-            if (VerBaile(ojos)) return;
+            if (VerBaile(ojos)) { SacarMira(); return; }
             // Lo que su cuerpo arme después de empezar a mirarlo (la granada en la mano se arma la primera vez
             // que la saca) tampoco se dibuja: si no, se ve flotando al lado de la cámara.
             OcultarCuerpo(mirando);
             VerArmaDelCompanero();
+            VerMira();
         }
         else if (viendoDispositivo)
             camara.transform.SetPositionAndRotation(dispositivoPos, dispositivoRot); // CA5, con dispositivo plantado
@@ -167,9 +230,16 @@ public class Espectador : MonoBehaviour
         MostrarCartel();
     }
 
+    /// <summary>El jugador de esta computadora está mirando a sus compañeros (muerto o afuera de la Invasión).</summary>
+    public static bool Activo { get; private set; }
+
+    [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+    private static void Olvidar() => Activo = false; // (se entra al Play sin recargar los scripts)
+
     private void Empezar(JugadorEnRed local)
     {
         muerto = true;
+        Activo = true;
         viendoDispositivo = false;
         murioEn = Time.time;
         mirando = null;
@@ -178,6 +248,7 @@ public class Espectador : MonoBehaviour
         {
             camaraPos = camara.transform.localPosition;
             camaraRot = camara.transform.localRotation;
+            camaraFov = camara.fieldOfView;
         }
 
         // CA1: ni mirar alrededor (el movimiento y las armas ya los traba JugadorEnRed al morir).
@@ -210,7 +281,9 @@ public class Espectador : MonoBehaviour
     {
         if (!muerto) return;
         muerto = false;
+        Activo = false;
         Mirar(null);
+        SacarMira();
         if (camara != null)
         {
             camara.transform.localPosition = camaraPos;
@@ -218,6 +291,8 @@ public class Espectador : MonoBehaviour
         }
         foreach (Transform vista in vistas.Values) if (vista != null) Destroy(vista.gameObject);
         vistas.Clear();
+        cortes.Clear();
+        katanas.Clear();
         foreach (Transform vista in vistasGranada.Values) if (vista != null) Destroy(vista.gameObject);
         vistasGranada.Clear();
         if (vistaDispositivo != null) Destroy(vistaDispositivo.gameObject);
@@ -249,24 +324,33 @@ public class Espectador : MonoBehaviour
         // nunca lo llevó no hay nada que copiar.
         bool dispositivo = granada == null && mirando.DispositivoVisible;
         GameObject arma = granada == null && !dispositivo && local != null ? local.PrimeraPersona(mirando.ArmaVisible) : null;
+        // US 395, CA9: el cuchillo o la katana, según lo que tenga el compañero (no lo que tiene este jugador).
+        bool conKatana = mirando.CuerpoACuerpoVisible && KatanaDeInvasion.TieneEl(mirando.Dueno);
+        if (arma != null && mirando.CuerpoACuerpoVisible) arma = KatanaDeInvasion.ParaEspectador(conKatana, arma);
         if (arma != armaMirada || granada != granadaMirada || dispositivo != dispositivoMirado)
         {
             armaMirada = arma;
             granadaMirada = granada;
             dispositivoMirado = dispositivo;
             if (vistaArma != null) vistaArma.gameObject.SetActive(false);
-            vistaArma = granada != null ? VistaDeGranada(granada) : dispositivo ? VistaDeDispositivo() : arma != null ? VistaDe(arma) : null;
+            vistaArma = granada != null ? VistaDeGranada(granada) : dispositivo ? VistaDeDispositivo()
+                      : arma != null ? VistaDe(arma, mirando.CuerpoACuerpoVisible && !conKatana, mirando.CuerpoACuerpoVisible && conKatana) : null;
             if (vistaArma != null) vistaArma.gameObject.SetActive(true);
+            skinVista = null; // (se vuelve a pintar abajo)
+            proximaSkin = 0f;
             sacudon = 0f;
             sacadaEn = Time.time; // la saca desde abajo
             fuerzaDelGolpe = FuerzaDelGolpe(arma, granada != null || dispositivo);
         }
         if (camaraArmas != null) camaraArmas.enabled = vistaArma != null;
         if (vistaArma == null) return;
+        PintarConSuSkin(arma);
 
         sacudon = Mathf.MoveTowards(sacudon, 0f, SacudonVuelta * Time.deltaTime);
         float t = Time.time - punaladaEn, estocada = 0f;
-        if (t >= 0f && t < PunaladaIda + PunaladaVuelta)
+        if (cortes.TryGetValue(vistaArma, out CorteDeLaCopia corte)) Cortar(corte, t); // US 256: el cuchillo
+        else if (katanas.TryGetValue(vistaArma, out KatanaDeLaCopia conKatanaVista)) MoverKatana(conKatanaVista, t); // US 395
+        else if (t >= 0f && t < PunaladaIda + PunaladaVuelta)
             estocada = t < PunaladaIda ? t / PunaladaIda : 1f - (t - PunaladaIda) / PunaladaVuelta;
 
         // Sacar: sube desde abajo y se endereza.
@@ -306,6 +390,23 @@ public class Espectador : MonoBehaviour
             -RecargaLado * r);
     }
 
+    // F35 (US 380): la copia del arma es de las propias (con la skin propia): se pinta con la skin que tiene el compañero
+    // en esa arma (la que publicó). Se revisa cada tanto: puede cambiar de skin o de compañero mirado.
+    private CatalogoDeSkins.Skin skinVista;
+    private JugadorEnRed skinDe;
+    private float proximaSkin;
+
+    private void PintarConSuSkin(GameObject arma)
+    {
+        if (arma == null || Time.time < proximaSkin && skinDe == mirando) return;
+        proximaSkin = Time.time + 0.5f;
+        CatalogoDeSkins.Skin skin = mirando != null ? mirando.SkinEnLaMano(mirando.ArmaVisible) : null;
+        if (skin == skinVista && skinDe == mirando && skinVista != null) return;
+        skinVista = skin;
+        skinDe = mirando;
+        SkinDeArma.Poner(vistaArma.gameObject, skin);
+    }
+
     // La fuerza del golpe de cada disparo según el tipo de arma, como en la pantalla del que dispara (más fuerte el
     // francotirador, la escopeta y la pistola pesada; más suave el subfusil y el fusil, que son automáticos).
     private static float FuerzaDelGolpe(GameObject arma, bool sinArmaDeFuego)
@@ -327,8 +428,114 @@ public class Espectador : MonoBehaviour
         }
     }
 
+    // US 256: pone el cuchillo y el brazo derecho de la copia donde van a "t" segundos de empezar el corte.
+    private void Cortar(CorteDeLaCopia corte, float t)
+    {
+        if (animacionLocal == null && local != null) animacionLocal = local.GetComponentInChildren<AnimacionPrimeraPersona>(true);
+        Vector3 mover;
+        Quaternion girar;
+        if (animacionLocal != null) animacionLocal.CorteEn(t, out mover, out girar);
+        else AnimacionPrimeraPersona.PoseDelCorte(t, 0.16f, 0.05f, 40f, out mover, out girar);
+        for (int i = 0; i < corte.piezas.Length; i++)
+        {
+            if (corte.piezas[i] == null) continue;
+            corte.piezas[i].SetLocalPositionAndRotation(corte.mano + girar * (corte.lugar[i] - corte.mano) + mover,
+                                                        girar * corte.giro[i]);
+        }
+    }
+
+    // US 395: pone la katana de la copia (y el brazo derecho) en la pose de lo que está haciendo el compañero, "t"
+    // segundos después de su último ataque.
+    private void MoverKatana(KatanaDeLaCopia k, float t)
+    {
+        if (k.movimiento == null) return;
+        bool estocada = corteMirado == JugadorEnRed.CorteEstocada;
+        KatanaData datos = KatanaData.Cargar();
+        float dura = datos != null ? Mathf.Max(0.05f, datos.duracionDeLaEstocada) : 0.25f;
+        float corte = !estocada && t >= 0f && t < MeleeAttack.Total ? t / MeleeAttack.Total : -1f;
+        float avanceEstocada = estocada && t >= 0f && t < dura ? t / dura : -1f;
+        guardiaVista = Mathf.MoveTowards(guardiaVista, mirando.KatanaEnGuardia ? 1f : 0f, Time.deltaTime / 0.12f);
+        k.movimiento.Pose(corte, corteMirado == JugadorEnRed.CorteFuerte, avanceEstocada, guardiaVista,
+                          out Vector3 pos, out Quaternion giro, pesosKatana);
+        // Lo que se movió el modelo (en el espacio de la katana), pasado al de la cámara, donde están las piezas.
+        Matrix4x4 cambio = Matrix4x4.TRS(pos, giro, Vector3.one) * Matrix4x4.TRS(k.modeloPos, k.modeloGiro, Vector3.one).inverse;
+        Matrix4x4 enCamara = k.raiz * cambio * k.raiz.inverse;
+        Quaternion giroEnCamara = enCamara.rotation;
+        for (int i = 0; i < k.piezas.Length; i++)
+            if (k.piezas[i] != null)
+                k.piezas[i].SetLocalPositionAndRotation(enCamara.MultiplyPoint3x4(k.lugar[i]), giroEnCamara * k.giro[i]);
+        if (k.brazo != null) k.brazo.Mezclar(pesosKatana);
+        else if (k.derecho != null)
+            k.derecho.SetLocalPositionAndRotation(enCamara.MultiplyPoint3x4(k.derechoLugar), giroEnCamara * k.derechoGiro);
+    }
+
+    // US 395: lo que hace falta para mover la katana de la copia.
+    private KatanaDeLaCopia KatanaDe(GameObject arma, Transform copia, Transform brazos, MeshRenderer foto)
+    {
+        MovimientoDeKatana movimiento = arma.GetComponent<MovimientoDeKatana>();
+        Transform modelo = movimiento != null ? movimiento.Modelo : null;
+        if (modelo == null) return null;
+        var piezas = new List<Transform>();
+        foreach (Transform pieza in copia) if (pieza != brazos) piezas.Add(pieza);
+        var k = new KatanaDeLaCopia
+        {
+            movimiento = movimiento,
+            piezas = piezas.ToArray(),
+            lugar = new Vector3[piezas.Count],
+            giro = new Quaternion[piezas.Count],
+            raiz = camara.transform.worldToLocalMatrix * arma.transform.localToWorldMatrix,
+            modeloPos = modelo.localPosition,
+            modeloGiro = modelo.localRotation,
+        };
+        for (int i = 0; i < piezas.Count; i++)
+        {
+            k.lugar[i] = piezas[i].localPosition;
+            k.giro[i] = piezas[i].localRotation;
+        }
+        Transform derecho = brazos != null ? brazos.Find("Brazo derecho") : null;
+        if (derecho != null)
+        {
+            Transform fuente = foto != null ? foto.transform.Find("Brazo derecho") : null;
+            BrazoConPoses poses = fuente != null ? fuente.GetComponent<BrazoConPoses>() : null;
+            if (poses != null && poses.Cuantas > 0) k.brazo = poses.CopiarEn(derecho.GetComponent<MeshFilter>());
+            if (k.brazo == null)
+            {
+                k.derecho = derecho;
+                k.derechoLugar = derecho.localPosition;
+                k.derechoGiro = derecho.localRotation;
+            }
+        }
+        return k;
+    }
+
+    // US 256: las piezas que se mueven en el corte del cuchillo: las del cuchillo y el brazo derecho (no el izquierdo).
+    private CorteDeLaCopia CorteDe(GameObject arma, Transform copia, Transform brazos)
+    {
+        var piezas = new List<Transform>();
+        foreach (Transform pieza in copia) if (pieza != brazos) piezas.Add(pieza);
+        Transform derecho = brazos != null ? brazos.Find("Brazo derecho") : null;
+        if (derecho != null) piezas.Add(derecho);
+        Transform agarre = arma.transform.Find(BrazosEnCamara.AgarreDerecho);
+        var corte = new CorteDeLaCopia
+        {
+            piezas = piezas.ToArray(),
+            lugar = new Vector3[piezas.Count],
+            giro = new Quaternion[piezas.Count],
+            // Las piezas están en el espacio de la cámara (CopiaEnPrimeraPersona), igual que la mano.
+            mano = agarre != null ? camara.transform.InverseTransformPoint(agarre.position) : Vector3.zero,
+        };
+        for (int i = 0; i < piezas.Count; i++)
+        {
+            corte.lugar[i] = piezas[i].localPosition;
+            corte.giro[i] = piezas[i].localRotation;
+        }
+        return corte;
+    }
+
     // La copia (en primera persona) de un arma propia, con la mano si hay foto de los brazos con esa arma.
-    private Transform VistaDe(GameObject arma)
+    // "cuchillo": es el cuchillo (no la katana): la copia hace el corte de costado (US 256).
+    // "katana": es la katana (US 395): la copia hace sus movimientos.
+    private Transform VistaDe(GameObject arma, bool cuchillo, bool katana)
     {
         if (vistas.TryGetValue(arma, out Transform vista) && vista != null) return vista;
         // También las partes que se ocultaron al morir (el arma que tenía en la mano).
@@ -336,11 +543,15 @@ public class Espectador : MonoBehaviour
         GameObject copia = ModeloReal.CopiaEnPrimeraPersona(arma, camara.transform, visible, "Espectador: " + arma.name);
         BrazosEnCamara brazos = local.GetComponentInChildren<BrazosEnCamara>(true);
         MeshRenderer foto = brazos != null ? brazos.FotoDe(arma) : null;
+        GameObject mano = null;
         if (foto != null)
         {
-            GameObject mano = ModeloReal.CopiaEnPrimeraPersona(foto.gameObject, camara.transform, r => true, "Brazos");
+            mano = ModeloReal.CopiaEnPrimeraPersona(foto.gameObject, camara.transform, r => true, "Brazos");
             mano.transform.SetParent(copia.transform, false);
         }
+        if (cuchillo) cortes[copia.transform] = CorteDe(arma, copia.transform, mano != null ? mano.transform : null);
+        else if (katana && KatanaDe(arma, copia.transform, mano != null ? mano.transform : null, foto) is KatanaDeLaCopia k)
+            katanas[copia.transform] = k;
 
         int capa = camaraArmas != null ? CapaVisible(camaraArmas) : copia.layer;
         foreach (Transform parte in copia.GetComponentsInChildren<Transform>(true)) parte.gameObject.layer = capa;
@@ -432,7 +643,11 @@ public class Espectador : MonoBehaviour
     }
 
     private void AlDispararElCompanero() => sacudon = 1f;
-    private void AlAcuchillarElCompanero() => punaladaEn = Time.time;
+    private void AlAcuchillarElCompanero()
+    {
+        punaladaEn = Time.time;
+        corteMirado = mirando != null ? mirando.UltimoCorte : JugadorEnRed.CorteTajo; // US 395
+    }
 
     // US 262: si el compañero baila, la cámara pasa de sus ojos a atrás de él (en Pasar segundos) y se ve su cuerpo.
     // Devuelve true mientras no está del todo en sus ojos (ahí no se esconde el cuerpo ni se muestra el arma).
@@ -491,6 +706,53 @@ public class Espectador : MonoBehaviour
         return false;
     }
 
+    // ---------- La mira telescópica del compañero (US 133) ----------
+
+    // Si el compañero apunta con la mira (el Último Tren), se ve como él: con el zoom y la lente, sin el arma en la mano.
+    private void VerMira()
+    {
+        MiraTelescopica mira = armaMirada != null ? armaMirada.GetComponentInChildren<MiraTelescopica>(true) : null;
+        ArmaDeFuego fuego = armaMirada != null ? armaMirada.GetComponentInChildren<ArmaDeFuego>(true) : null;
+        ShopItem ficha = fuego != null ? fuego.shopItem : null;
+        int nivel = mirando != null ? mirando.NivelDeMira : 0;
+        float zoom = mira == null || ficha == null || nivel == 0 ? 1f : nivel == 2 && ficha.zoom2 > 1f ? ficha.zoom2 : ficha.zoom;
+        if (zoom <= 1f) { SacarMira(); return; }
+
+        zoomMira = zoom;
+        camara.fieldOfView = Mathf.Lerp(camara.fieldOfView, camaraFov / zoom, 1f - Mathf.Exp(-25f * Time.deltaTime));
+        if (vistaArma != null) vistaArma.gameObject.SetActive(false);
+        if (camaraArmas != null) camaraArmas.enabled = false;
+        if (conMira) return;
+        conMira = true;
+        MiraTelescopicaHud.MostrarDeOtro(mira.fuenteNumeros, mira.fuenteTextos, () => zoomMira, DistanciaDeLaMira,
+            () => conMira && muerto && mirando != null);
+    }
+
+    private void SacarMira()
+    {
+        if (camara != null && Mathf.Abs(camara.fieldOfView - camaraFov) > 0.01f && camaraFov > 0f) camara.fieldOfView = camaraFov;
+        if (!conMira) return;
+        conMira = false;
+        MiraTelescopicaHud.Ocultar();
+        if (vistaArma != null) vistaArma.gameObject.SetActive(true);
+    }
+
+    // Lo que muestra la lente: la distancia a lo que está en el centro (sin contar al compañero ni al propio cuerpo).
+    private float DistanciaDeLaMira()
+    {
+        if (camara == null) return -1f;
+        Transform t = camara.transform;
+        int cantidad = Physics.RaycastNonAlloc(t.position, t.forward, impactosMira, 500f, Physics.DefaultRaycastLayers, QueryTriggerInteraction.Ignore);
+        float cerca = -1f;
+        for (int i = 0; i < cantidad; i++)
+        {
+            Transform otro = impactosMira[i].collider.transform;
+            if ((mirando != null && otro.IsChildOf(mirando.transform)) || (local != null && otro.IsChildOf(local.transform))) continue;
+            if (cerca < 0f || impactosMira[i].distance < cerca) cerca = impactosMira[i].distance;
+        }
+        return cerca;
+    }
+
     // El cuerpo del que se mira no se dibuja (si no, la cámara queda adentro de su cabeza).
     private void OcultarCuerpo(JugadorEnRed jugador)
     {
@@ -524,6 +786,7 @@ public class Espectador : MonoBehaviour
     private void Mirar(JugadorEnRed jugador)
     {
         if (jugador == mirando && (jugador != null || !muerto)) { MostrarCartel(); return; }
+        SacarMira(); // (la del que se miraba)
 
         // El cuerpo del que se mira no se dibuja (si no, la cámara queda adentro de su cabeza).
         foreach (Renderer r in ocultos) if (r != null) r.enabled = true;
@@ -532,6 +795,7 @@ public class Espectador : MonoBehaviour
         mirando = jugador;
         if (mirando != null) { mirando.Disparo += AlDispararElCompanero; mirando.Punalada += AlAcuchillarElCompanero; }
         punaladaEn = -10f;
+        guardiaVista = 0f;
         hayPosAnterior = false; // el balanceo arranca de nuevo con el que se mira
         velocidadVista = 0f;
         recargaVista = 0f;

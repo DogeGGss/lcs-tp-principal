@@ -24,6 +24,8 @@ public class MiraTelescopica : MonoBehaviour
     // La mira que está puesta ahora, o null.
     public static MiraTelescopica Activa { get; private set; }
     public static bool Puesta => Activa != null;
+    // F32 (US 365): cuándo se sacó la mira por última vez (el desafío de eliminar sin apuntar con el Último Tren).
+    public static float UltimaVezPuesta { get; private set; } = -100f;
 
     // El francotirador que el jugador tiene en la mano, o null. Sin la mira puesta no tiene mira en el HUD (US 068).
     public static MiraTelescopica EnMano { get; private set; }
@@ -188,6 +190,7 @@ public class MiraTelescopica : MonoBehaviour
         else if (Activa == this)
         {
             Activa = null;
+            UltimaVezPuesta = Time.unscaledTime;
             MiraTelescopicaHud.Ocultar();
         }
     }

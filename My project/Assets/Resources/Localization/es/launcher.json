@@ -534,7 +534,7 @@
     },
     {
       "key": "launcher.remaining",
-      "text": " · {0:mm\\\\:ss} restantes"
+      "text": " · {0} restantes"
     },
     {
       "key": "launcher.close_for_update_help",
@@ -867,6 +867,14 @@
     {
       "key": "launcher.language_save_error",
       "text": "No se pudo guardar el idioma: {0}"
+    },
+    {
+      "key": "launcher.session.other_pc",
+      "text": "Tu cuenta se abrió en otra computadora. Volvé a entrar para jugar acá."
+    },
+    {
+      "key": "launcher.notes_spanish_only",
+      "text": "Las notas de esta versión están solo en español."
     }
   ]
 }

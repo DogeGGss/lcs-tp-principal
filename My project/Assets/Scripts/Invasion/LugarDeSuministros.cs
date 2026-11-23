@@ -30,8 +30,19 @@ public class LugarDeSuministros : MonoBehaviour
         Match m = Modulo.Match(objeto);
         if (m.Success) return L10n.T("gameplay.place.module_fmt", m.Groups[1].Value + m.Groups[2].Value.ToUpperInvariant());
         if (objeto.StartsWith("Biblioteca")) return L10n.T("gameplay.place.library");
-        if (objeto == "Patio_Bar") return "el Bar"; // el patio de la galería del Módulo 9
+        if (objeto == "Patio_Bar") return L10n.T("gameplay.place.bar"); // el patio de la galería del Módulo 9
         return null;
+    }
+
+    private static readonly Regex ModuloConArticulo = new Regex(@"^el Módulo (\w+)$");
+
+    /// <summary>El nombre de un lugar puesto a mano (en español, con el artículo: «el Auditorio», «el Módulo 7») en el
+    /// idioma del juego. Los edificios del mapa están en el catálogo (gameplay.place.*); uno que no está queda igual.</summary>
+    public static string Traducido(string nombre)
+    {
+        if (L10n.TrySourceKey(nombre, out string clave, "gameplay.place.")) return L10n.T(clave);
+        Match m = ModuloConArticulo.Match(nombre ?? "");
+        return m.Success ? L10n.T("gameplay.place.module_fmt", m.Groups[1].Value) : nombre;
     }
 
     /// <summary>Un lugar por módulo (y la biblioteca y el bar) a partir de los nombres de los objetos del mapa: el
@@ -57,6 +68,33 @@ public class LugarDeSuministros : MonoBehaviour
             lugares.Add((nombre, new Vector3(b.center.x, b.min.y + 0.5f, b.center.z)));
         }
         return lugares;
+    }
+
+    /// <summary>El punto apoyado en el piso que tiene abajo (por si quedó un poco arriba o abajo al moverlo a mano).</summary>
+    public static Vector3 Apoyado(Vector3 punto)
+    {
+        return Physics.Raycast(punto + Vector3.up * 0.75f, Vector3.down, out RaycastHit piso, 6f, Physics.DefaultRaycastLayers, QueryTriggerInteraction.Ignore)
+            ? piso.point : punto;
+    }
+
+    /// <summary>Cerca de "centro", el primer punto a cielo abierto apoyado en el piso (buscando en anillos de 2 m hasta
+    /// "hasta"), o null. Para armar los lugares en el editor, donde todavía no hay NavMesh.</summary>
+    public static Vector3? ACieloAbierto(Vector3 centro, float hasta)
+    {
+        for (float r = 0f; r <= hasta; r += 2f)
+        {
+            int pasos = r <= 0f ? 1 : Mathf.CeilToInt(2f * Mathf.PI * r / 2f);
+            for (int k = 0; k < pasos; k++)
+            {
+                float a = k * Mathf.PI * 2f / pasos;
+                Vector3 p = centro + new Vector3(Mathf.Cos(a), 0f, Mathf.Sin(a)) * r;
+                // Desde arriba, lo primero que se toca es el piso (no un techo): a la altura del suelo del lugar.
+                if (!Physics.Raycast(new Vector3(p.x, centro.y + 80f, p.z), Vector3.down, out RaycastHit piso, 90f, Physics.DefaultRaycastLayers, QueryTriggerInteraction.Ignore)) continue;
+                if (piso.point.y > centro.y + 1f || Vector3.Angle(piso.normal, Vector3.up) > 20f) continue;
+                if (PuestoDeSuministros.CieloAbierto(piso.point)) return piso.point;
+            }
+        }
+        return null;
     }
 
     private void OnDrawGizmos()

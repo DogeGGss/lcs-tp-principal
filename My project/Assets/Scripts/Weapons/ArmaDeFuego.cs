@@ -162,6 +162,15 @@ public class ArmaDeFuego : MonoBehaviour, IHudWeapon
         if (shopItem != null) reserveAmmo += Municion.Agrandada(shopItem.reserve, antes);
     }
 
+    /// <summary>US 360, CA6: al descartar una carta que agrandaba el cargador o la reserva (Sin respaldo, Mochila), lo que
+    /// no entra en el cargador vuelve a la reserva y lo que sobra de la reserva se pierde.</summary>
+    public void RecortarMunicion()
+    {
+        if (shopItem == null) return;
+        if (currentAmmo > MagazineSize) { reserveAmmo += currentAmmo - MagazineSize; currentAmmo = MagazineSize; }
+        if (ReservaLlena >= 0) reserveAmmo = Mathf.Min(reserveAmmo, ReservaLlena);
+    }
+
     /// <summary>US 293, CA2: suma balas a la reserva sin pasarse de la llena; lo que sobra va al cargador.</summary>
     public void SumarBalas(int balas)
     {
@@ -278,10 +287,13 @@ public class ArmaDeFuego : MonoBehaviour, IHudWeapon
         if (cam == null) return false;
         nextShot = Time.time + 1f / Mathf.Max(0.01f, shopItem.fireRate);
         if (!MinijuegoCometas.Activo) currentAmmo--;
-        if (shootSound != null) AudioSource.PlayClipAtPoint(shootSound, cam.transform.position, 0.7f); // (guardada no suena)
-        if (shopItem.velocidadDelProyectil > 0f && shopItem.grenadePrefab != null)
-            WeaponFire.FireProjectile(shopItem, cam, shooter, false);
-        else WeaponFire.Fire(shopItem, cam, shooter, false, alcance);
+        // (Guardada, su fuente no suena: el sonido y la estela celeste del Acople, WeaponFire.Acople.)
+        WeaponFire.Acople(shootSound, audioSource, sfxGroup, () =>
+        {
+            if (shopItem.velocidadDelProyectil > 0f && shopItem.grenadePrefab != null)
+                WeaponFire.FireProjectile(shopItem, cam, shooter, false);
+            else WeaponFire.Fire(shopItem, cam, shooter, false, alcance);
+        });
         return true;
     }
 

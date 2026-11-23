@@ -20,6 +20,29 @@ public static class EfectosDeCartas
         if (armas != null) armas.AgrandarReservas(antes);
     }
 
+    /// <summary>US 360, CA6: al descartar Mochila, la reserva vuelve a la normal y lo que sobra se pierde.</summary>
+    public static void SacarMochila(GameObject jugador)
+    {
+        Municion.MasReserva = 1f;
+        Recortar(jugador);
+    }
+
+    /// <summary>US 360: al descartar Sin respaldo, el cargador de la principal vuelve a su tamaño (lo que no entra va a
+    /// la reserva) y se puede volver a tener secundaria (vuelve la del arranque).</summary>
+    public static void SacarSinRespaldo(GameObject jugador)
+    {
+        Municion.MasCargadorPrincipal = 1f;
+        WeaponSwitcher.SinSecundaria = false;
+        Recortar(jugador);
+    }
+
+    private static void Recortar(GameObject jugador)
+    {
+        WeaponSwitcher armas = jugador != null ? jugador.GetComponentInChildren<WeaponSwitcher>(true) : null;
+        if (armas == null) armas = Object.FindFirstObjectByType<WeaponSwitcher>();
+        if (armas != null) armas.RecortarMunicion();
+    }
+
     /// <summary>US 331, Sin respaldo: el arma principal tiene el doble de cargador (también las que agarre después) y se
     /// pierde la secundaria por el resto de la partida. Al elegirla, el cargador de la principal se llena desde la
     /// reserva.</summary>

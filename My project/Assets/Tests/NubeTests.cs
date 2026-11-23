@@ -9,7 +9,7 @@ using UnityEngine.TestTools;
 [PrebuildSetup(typeof(PruebasAisladas)), PostBuildCleanup(typeof(PruebasAisladas))]
 public class NubeTests
 {
-    private static readonly string[] Progreso = { "minijuego.", "estadisticas.", "zombie.record.", "perfil." };
+    private static readonly string[] Progreso = { "minijuego.", "estadisticas.", "zombie.record.", "perfil.", "perfil2.", "skins2.", "emotes2.", "pase2.", "nivel." };
     private static readonly string[] NoSeSuben = { "credito", "boleto", "cristal", "moneda", "mira", "volumen", "opcion", "sensibilidad" };
 
     [Test, Category("US 162"), Description("TC-1021 CA3: se sube el progreso; las opciones y las monedas no")]
@@ -28,7 +28,7 @@ public class NubeTests
         foreach (ProgresoNube.Conjunto c in doc.conjuntos) claves.Add(c.clave);
         foreach (ProgresoNube.Texto t in doc.valores) claves.Add(t.clave);
 
-        CollectionAssert.Contains(claves, "perfil.obtenidos", "los cosméticos obtenidos se suben");
+        CollectionAssert.Contains(claves, "perfil2.obtenidos", "los cosméticos obtenidos se suben"); // US 392, CA10: "perfil2."
         foreach (string clave in claves)
         {
             Assert.IsTrue(System.Array.Exists(Progreso, p => clave.StartsWith(p)), "se sube algo que no es progreso: " + clave);
@@ -55,8 +55,8 @@ public class NubeTests
 
         var contadores = new Dictionary<string, long>();
         foreach (ProgresoNube.Numero n in ProgresoNube.Armar().contadores) contadores[n.clave] = n.valor;
-        Assert.AreEqual(15, contadores["perfil.aperturas"]);
-        Assert.AreEqual(12, contadores["perfil.ultimo_epico"]);
+        Assert.AreEqual(15, contadores["perfil2.aperturas"]);
+        Assert.AreEqual(12, contadores["perfil2.ultimo_epico"]);
     }
 
     [Test, Category("US 269"), Description("CA2: en una PC nueva, lo de entrada no pisa lo equipado en la nube")]
@@ -78,6 +78,27 @@ public class NubeTests
         nube.equipados["avatar"] = "astra-pop";
         PerfilDatos.FusionarNube(nube);
         Assert.AreEqual("riftwalker", PerfilDatos.Avatar.id, "lo que el jugador equipa en esta PC no se pisa");
+    }
+
+    [Test, Category("US 388"), Description("La rueda de emotes llega de la nube a una PC nueva, y lo que se elige en la PC no se pisa")]
+    public void Rueda_de_emotes_en_otra_PC()
+    {
+        var lista = CatalogoDeEmotes.Actual.emotes;
+        CatalogoDeEmotes.Emote baile = lista.Find(e => e != null && e.rareza != PerfilDatos.Rareza.Inicial);
+        Assume.That(baile, Is.Not.Null);
+        ColeccionDeEmotes.Desbloquear(baile.estado);
+        for (int i = 0; i < EmotesEquipados.Espacios; i++) Guardado.SetString("Riftwalker.Emote" + i, "");
+        Guardado.SetString("Riftwalker.Emote.propia", "");
+        Guardado.SetString("Riftwalker.Emote.nube", "");
+        Assert.IsFalse(Tiene(ProgresoNube.Armar(), "emotes2.rueda.0"), "antes de traer la nube no se sube la rueda vacía");
+
+        EmotesEquipados.FusionarNube(new Dictionary<int, string> { { 2, baile.estado } });
+        Assert.AreEqual(lista.IndexOf(baile), EmotesEquipados.En(2), "se pone lo de la otra PC");
+        Assert.IsTrue(Tiene(ProgresoNube.Armar(), "emotes2.rueda.2"), "con la nube ya traída, la rueda se sube");
+
+        EmotesEquipados.Poner(2, -1);
+        EmotesEquipados.FusionarNube(new Dictionary<int, string> { { 2, baile.estado } });
+        Assert.AreEqual(-1, EmotesEquipados.En(2), "lo que el jugador elige en esta PC no se pisa");
     }
 
     [Test, Category("US 269"), Description("CA2: las compras y la oferta de bienvenida llegan de la otra PC")]

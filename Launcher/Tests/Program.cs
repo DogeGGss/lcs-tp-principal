@@ -210,6 +210,22 @@ Test("Notes in the launcher stop at the publisher's footer", () =>
     Equal("", ReleaseClient.NotesForLauncher(null));
     return Task.CompletedTask;
 });
+Test("Notes in the launcher follow the language when the release has that section (US 346)", () =>
+{
+    const string body = "## Qué trae\n- Algo\n\n<!-- riftwalker:idioma:en -->\n## What's new\n- Something\n\n<!-- riftwalker:idioma:pt-BR -->\n## Novidades\n- Algo\n\n<!-- riftwalker:pie -->\n---\n**Pie**";
+    Equal("## Qué trae\n- Algo", ReleaseClient.NotesForLauncher(body));
+    Equal("## What's new\n- Something", ReleaseClient.NotesForLauncher(body, "en"));
+    Equal("## Novidades\n- Algo", ReleaseClient.NotesForLauncher(body, "pt-BR"));
+    // No section for that language: the Spanish notes, and the launcher says they are only in Spanish.
+    Equal("## Qué trae\n- Algo", ReleaseClient.NotesForLauncher(body, "fr"));
+    Equal(true, ReleaseClient.HasNotesIn(body, "es"));
+    Equal(true, ReleaseClient.HasNotesIn(body, "en"));
+    Equal(false, ReleaseClient.HasNotesIn(body, "fr"));
+    Equal(false, ReleaseClient.HasNotesIn("Solo español", "en"));
+    // A marker after the footer is not part of the notes.
+    Equal(false, ReleaseClient.HasNotesIn("Notas\n<!-- riftwalker:pie -->\n<!-- riftwalker:idioma:en -->\nX", "en"));
+    return Task.CompletedTask;
+});
 int packageIndex = Array.IndexOf(args, "--package-root");
 if (packageIndex >= 0)
     Test("Publisher manifest and ZIP install together", async () =>
@@ -259,13 +275,31 @@ const string SesionJson = "{\"access_token\":\"a1\",\"refresh_token\":\"r1\",\"e
 HttpResponseMessage Json(HttpStatusCode code, string body) => new(code) { Content = new StringContent(body, Encoding.UTF8, "application/json") };
 Cuentas NuevaCuenta(TestFolder temp, Func<HttpRequestMessage, HttpResponseMessage> responder) =>
     new(new HttpClient(new Handler(responder)), new ServicioCuentas("https://prueba.supabase.co", "sb_publishable_prueba"), temp.Path);
+// US 350 (CA1): el selector del launcher ofrece los cinco idiomas y cada uno tiene todos los textos del launcher.
+Test("US 350 CA1: el launcher ofrece Español, English, Português, Français e Italiano", () =>
+{
+    var language = LauncherLanguage.FromResources(Path.Combine(Path.GetTempPath(), "riftwalker-us350-" + Guid.NewGuid().ToString("N") + ".json"));
+    Equal("Español, English, Português (Brasil), Français, Italiano", string.Join(", ", language.Locales.Select(l => l.name)));
+    var spanish = language.Resources.ToDictionary(r => r.Key, r => r.Value);
+    foreach (var code in new[] { "pt-BR", "fr", "it" })
+    {
+        language.Select(code, persist: false);
+        var sinTraducir = language.Resources.Where(r => string.IsNullOrWhiteSpace(r.Value) || r.Value.StartsWith("[")).Select(r => r.Key).ToList();
+        if (sinTraducir.Count > 0) throw new Exception($"{code}: sin texto en {string.Join(", ", sinTraducir.Take(5))}");
+        if (language.Resources.Count(r => r.Value == spanish[r.Key]) > spanish.Count / 2) throw new Exception($"{code}: la mayoría de los textos siguen en español");
+    }
+    return Task.CompletedTask;
+});
 Test("Cuenta: confirmar guarda la sesión con el formato que lee el juego", async () =>
 {
     using var temp = new TestFolder();
-    string? pedido = null;
-    var cuentas = NuevaCuenta(temp, req => { pedido = req.RequestUri!.PathAndQuery + " " + req.Content!.ReadAsStringAsync().Result; Equal("sb_publishable_prueba", req.Headers.GetValues("apikey").Single()); return Json(HttpStatusCode.OK, SesionJson); });
+    var pedidos = new List<string>();
+    var cuentas = NuevaCuenta(temp, req => { pedidos.Add(req.RequestUri!.PathAndQuery + " " + req.Content!.ReadAsStringAsync().Result); Equal("sb_publishable_prueba", req.Headers.GetValues("apikey").Single()); return Json(HttpStatusCode.OK, SesionJson); });
     Equal<string?>(null, await cuentas.ConfirmarAsync("ulises@gmail.com", "481 902", default));
-    Equal(true, pedido!.StartsWith("/auth/v1/verify ") && pedido.Contains("\"type\":\"signup\"") && pedido.Contains("\"token\":\"481902\""));
+    string pedido = pedidos[0];
+    Equal(true, pedido.StartsWith("/auth/v1/verify ") && pedido.Contains("\"type\":\"signup\"") && pedido.Contains("\"token\":\"481902\""));
+    // US 393, CA1: al entrar se cierran las demás sesiones de la cuenta.
+    Equal(true, pedidos[^1].StartsWith("/auth/v1/logout?scope=others "));
     Equal(Path.Combine(temp.Path, "cuenta-sesion-prueba.supabase.co.json"), cuentas.RutaSesion);
     string guardada = File.ReadAllText(cuentas.RutaSesion);
     foreach (string campo in new[] { "\"access_token\":\"a1\"", "\"refresh_token\":\"r1\"", "\"expires_at\":", "\"user\":{\"id\":\"u1\"" }) Equal(true, guardada.Contains(campo));
@@ -273,6 +307,21 @@ Test("Cuenta: confirmar guarda la sesión con el formato que lee el juego", asyn
     Equal(false, guardada.Contains("Nombre") || guardada.Contains("Desde")); // solo los campos de Supabase
     Equal(true, cuentas.LeerSesion()!.ExpiresAt > DateTimeOffset.UtcNow.ToUnixTimeSeconds() + 3000);
     Equal("ulises", cuentas.Sesion!.User!.Nombre);
+});
+Test("US 393: la sesión sigue vigente o se abrió en otra computadora", async () =>
+{
+    using var temp = new TestFolder();
+    string respuesta = "{\"active\": true}";
+    var cuentas = NuevaCuenta(temp, req => req.RequestUri!.AbsolutePath.EndsWith("/rpc/rw_check_session")
+        ? Json(HttpStatusCode.OK, respuesta) : Json(HttpStatusCode.OK, SesionJson));
+    Equal<string?>(null, await cuentas.ConfirmarAsync("ulises@gmail.com", "481902", default));
+    Equal<bool?>(true, await cuentas.SigueVigenteAsync(default));
+    respuesta = "{\"active\": false}";
+    Equal<bool?>(false, await cuentas.SigueVigenteAsync(default)); // CA3: se entró en otra computadora
+    var sinFuncion = NuevaCuenta(temp, req => req.RequestUri!.AbsolutePath.EndsWith("/rpc/rw_check_session")
+        ? Json(HttpStatusCode.NotFound, "{}") : Json(HttpStatusCode.OK, SesionJson));
+    sinFuncion.Cargar();
+    Equal<bool?>(null, await sinFuncion.SigueVigenteAsync(default)); // sin la función en la base no se echa a nadie
 });
 Test("Cuenta: crear manda el código, y con un mail usado lo dice", async () =>
 {

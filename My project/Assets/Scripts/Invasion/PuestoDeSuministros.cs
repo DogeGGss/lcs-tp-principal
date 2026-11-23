@@ -8,6 +8,8 @@ using static ShopUIKit;
 // - CA1: desde la oleada 2, al empezar cada oleada cae un puesto en uno de los lugares del mapa (LugarDeSuministros),
 //   nunca en el mismo que el anterior. Cae a cielo abierto cerca de ese lugar (nunca adentro de un edificio ni sobre
 //   un techo) y es la caja de los mapas de práctica y Táctico (ConfigInvasion.cajaPuesto).
+//   Si la escena tiene lugares puestos a mano (23/11/2026), cae exacto en el punto elegido, sin correrse: cuál de los
+//   puntos sigue siendo al azar, nunca el mismo dos veces seguidas.
 // - CA2: al caer aparece «Suministros en <lugar>», el puesto se ve en el minimapa (Minimapa) y tiene una marca encima
 //   con la distancia, que se dibuja en la pantalla: se ve a través de las paredes.
 // - CA3: alrededor hay un anillo verde (15 m de radio) en el piso y en el minimapa.
@@ -20,8 +22,13 @@ using static ShopUIKit;
 // minimapa, más tenues, y la caja en el lugar exacto, verde y transparente, con el holograma; CA3: al empezar la
 // oleada cae ahí, con la misma vuelta). CA8 y CA9: el camino en el piso hasta el puesto
 // (CaminoAlPuesto).
-// El radio, la meta y los puntos por invasor están en ConfigInvasion. De a varios (US 289) la carga va a sumar lo de
-// todos; por ahora cuenta lo del jugador local.
+// El radio, la meta y los puntos por invasor están en ConfigInvasion.
+// F31 (Invasión cooperativa), US 353: el puesto lo decide el anfitrión y los demás lo repiten (InvasoresEnRed):
+// - CA1: dónde cae, con su vuelta, y cuándo se va. CA3: el próximo (la marca, el camino y el holograma).
+// - CA2: los puntos que gana cada jugador adentro del anillo se le mandan al anfitrión, que lleva la carga y la
+//   reparte: la barra sube igual para todos, y al llegar al 100 % se carga para todos (SeCargo).
+// - CA4 y CA6: al superar la oleada, si está cargado se abre para todos (cada uno elige lo suyo y recibe su munición).
+// - CA5: los portales cerca del puesto los abre el anfitrión (US 290: los ven todos).
 public class PuestoDeSuministros : MonoBehaviour
 {
     public const int DesdeLaOleada = 2; // CA1 y CA6
@@ -47,6 +54,23 @@ public class PuestoDeSuministros : MonoBehaviour
     public bool Cargado => Meta > 0 && Carga >= Meta;
     /// <summary>CA4: el jugador está adentro del anillo.</summary>
     public bool Adentro { get; private set; }
+
+    /// <summary>F31 (US 353, CA6): hay al menos un jugador vivo adentro del anillo (este o un compañero).</summary>
+    public bool AlguienAdentro()
+    {
+        if (!Hay) return false;
+        if (Adentro) return true;
+        PartidaEnRed partida = PartidaEnRed.Actual;
+        if (partida == null) return false;
+        foreach (JugadorEnRed j in partida.Jugadores)
+        {
+            if (j == null || !j.Vivo || j.EstaCaido) continue;
+            Vector3 d = j.transform.position - Lugar;
+            d.y = 0f;
+            if (d.sqrMagnitude <= Radio * Radio) return true;
+        }
+        return false;
+    }
     /// <summary>US 335: ya se sabe dónde cae el próximo (en el descanso).</summary>
     public bool HayProximo { get; private set; }
     public Vector3 LugarProximo { get; private set; }
@@ -104,6 +128,7 @@ public class PuestoDeSuministros : MonoBehaviour
 
     private void AlEmpezar(int oleada)
     {
+        if (InvasoresEnRed.EsCopia) return; // US 353: cae donde dice el anfitrión (CaeEnElAnfitrion)
         Quitar(); // (Ir a la oleada 10 corta una oleada a la mitad)
         if (oleada < DesdeLaOleada) return;
         if (oleadas == null) oleadas = GetComponent<OleadasDeInvasion>();
@@ -124,11 +149,65 @@ public class PuestoDeSuministros : MonoBehaviour
         anterior = nombre;
         Armar(giro);
         Avisar(L10n.T("gameplay.station.supplies_in_fmt", nombre)); // CA2
+        InvasoresEnRed.AvisarPuesto(nombre, lugar, giro, Meta, Carga); // US 353, CA1
+    }
+
+    // ---------- F31 (US 353): el puesto del anfitrión ----------
+
+    /// <summary>US 353, CA1: el anfitrión largó el puesto de esta oleada: cae acá igual.</summary>
+    public void CaeEnElAnfitrion(string nombre, Vector3 lugar, float giro, int meta, int carga)
+    {
+        Quitar();
+        HayProximo = false;
+        QuitarFantasma();
+        Meta = meta;
+        Carga = Mathf.Min(meta, carga);
+        NombreDelLugar = nombre;
+        Lugar = lugar;
+        anterior = nombre;
+        Armar(giro);
+        Avisar(L10n.T("gameplay.station.supplies_in_fmt", nombre));
+    }
+
+    /// <summary>US 353, CA3: el anfitrión eligió dónde cae el próximo.</summary>
+    public void ProximoEnElAnfitrion(string nombre, Vector3 lugar, float giro)
+    {
+        QuitarFantasma();
+        NombreProximo = nombre;
+        LugarProximo = lugar;
+        giroProximo = giro;
+        HayProximo = true;
+        ArmarFantasma();
+        Avisar(L10n.T("gameplay.station.next_fmt", nombre));
+    }
+
+    /// <summary>US 353, CA2: la carga que lleva el anfitrión (seCargo: llegó al 100 % peleando).</summary>
+    public void CargaDelAnfitrion(int carga, int meta, bool seCargo)
+    {
+        if (!Hay) return;
+        bool antes = Cargado;
+        Meta = meta;
+        Carga = Mathf.Min(meta, carga);
+        if (seCargo && !antes && Cargado) { Avisar(L10n.T("gameplay.station.charged")); SeCargo?.Invoke(this); }
+    }
+
+    /// <summary>US 353, CA2: en el anfitrión, los puntos que un compañero ganó adentro del anillo.</summary>
+    public void SumarDeUnCompanero(int puntos) => Cargar(puntos);
+
+    // CA4: suma a la carga (en cooperativo, solo el anfitrión, que se la manda a todos).
+    private void Cargar(int puntos)
+    {
+        if (!Hay || Cargado || puntos <= 0) return;
+        Carga = Mathf.Min(Meta, Carga + puntos);
+        bool seCargo = Cargado;
+        if (seCargo) { Avisar(L10n.T("gameplay.station.charged")); SeCargo?.Invoke(this); }
+        InvasoresEnRed.AvisarCargaDelPuesto(Carga, Meta, seCargo);
     }
 
     // US 335, CA1: al empezar el descanso se elige dónde cae el próximo y se avisa.
     private void AlEmpezarElDescanso(int proxima)
     {
+        if (InvasoresEnRed.EsCopia) return; // US 353, CA3: el próximo lo elige el anfitrión (ProximoEnElAnfitrion)
         HayProximo = false;
         QuitarFantasma();
         if (proxima < DesdeLaOleada || !Elegir(out string nombre, out Vector3 lugar)) return;
@@ -138,6 +217,7 @@ public class PuestoDeSuministros : MonoBehaviour
         HayProximo = true;
         ArmarFantasma();
         Avisar(L10n.T("gameplay.station.next_fmt", nombre));
+        InvasoresEnRed.AvisarProximoPuesto(nombre, lugar, giroProximo); // US 353, CA3
     }
 
     // US 335, CA2: la caja del puesto en el lugar exacto donde va a caer, verde y transparente (el holograma del perro
@@ -203,6 +283,8 @@ public class PuestoDeSuministros : MonoBehaviour
         while (opciones.Count > 0)
         {
             int i = Random.Range(0, opciones.Count);
+            // Puntos puestos a mano: cae exacto ahí, sin correrse. El que lo pone se asegura de que esté a cielo abierto.
+            if (lugaresAMano) { nombre = opciones[i].nombre; lugar = opciones[i].lugar; return true; }
             if (Afuera(opciones[i].lugar, desde, BuscarHasta, out lugar)) { nombre = opciones[i].nombre; return true; }
             opciones.RemoveAt(i);
         }
@@ -211,6 +293,7 @@ public class PuestoDeSuministros : MonoBehaviour
     }
 
     private const float BuscarHasta = 40f, PasoDeBusqueda = 4f;
+    private bool lugaresAMano; // la escena tiene LugarDeSuministros: se usan esos puntos exactos
     private NavMeshPath camino;
 
     // En anillos de 4 m alrededor de "cerca": un punto del NavMesh con el cielo libre y conectado con "desde".
@@ -243,7 +326,7 @@ public class PuestoDeSuministros : MonoBehaviour
     // Nada encima en 80 m (con un poco de ancho, para que la caja no roce un alero al caer). También se mira desde
     // arriba hacia abajo: los techos de malla no se ven desde adentro del edificio, así que solo con el rayo hacia
     // arriba el puesto podía caer adentro de un edificio. Desde arriba, lo primero que se toca tiene que ser el piso.
-    private static bool CieloAbierto(Vector3 piso)
+    public static bool CieloAbierto(Vector3 piso)
     {
         if (Physics.SphereCast(piso + Vector3.up * 1.2f, 0.9f, Vector3.up, out RaycastHit _, 80f, Physics.DefaultRaycastLayers, QueryTriggerInteraction.Ignore))
             return false;
@@ -254,14 +337,15 @@ public class PuestoDeSuministros : MonoBehaviour
     private void BuscarLugares()
     {
         var crudos = new List<(string nombre, Vector3 lugar)>();
+        lugaresAMano = LugarDeSuministros.Todos.Count > 0;
         foreach (LugarDeSuministros l in LugarDeSuministros.Todos)
-            crudos.Add((string.IsNullOrWhiteSpace(l.nombre) ? l.name : l.nombre, l.transform.position));
-        if (crudos.Count == 0) crudos = LugarDeSuministros.Automaticos();
+            crudos.Add((string.IsNullOrWhiteSpace(l.nombre) ? l.name : LugarDeSuministros.Traducido(l.nombre), LugarDeSuministros.Apoyado(l.transform.position)));
+        if (!lugaresAMano) crudos = LugarDeSuministros.Automaticos();
 
         lugares = new List<(string, Vector3)>();
         foreach (var c in crudos)
-            if (NavMesh.SamplePosition(c.lugar, out NavMeshHit hit, 20f, NavMesh.AllAreas)) lugares.Add((c.nombre, hit.position));
-            else if (LugarDeSuministros.Todos.Count > 0) lugares.Add(c); // los puestos a mano se respetan
+            if (lugaresAMano) lugares.Add(c); // los puestos a mano se respetan: cae exacto en el punto
+            else if (NavMesh.SamplePosition(c.lugar, out NavMeshHit hit, 20f, NavMesh.AllAreas)) lugares.Add((c.nombre, hit.position));
     }
 
     // ---------- CA4: la carga ----------
@@ -271,17 +355,21 @@ public class PuestoDeSuministros : MonoBehaviour
         if (!Hay || Cargado) return;
         ActualizarAdentro();
         if (!Adentro) return; // afuera cuenta para el récord, no para el puesto
-        Carga = Mathf.Min(Meta, Carga + puntos);
-        if (Cargado) { Avisar(L10n.T("gameplay.station.charged")); SeCargo?.Invoke(this); }
+        EstadisticasDeInvasion.AporteAlPuesto(this); // US 308, CA2: este jugador le aportó puntos
+        // US 353, CA2: en cooperativo la carga la lleva el anfitrión (los puntos de cada uno se le mandan).
+        if (InvasoresEnRed.EsCopia) { InvasoresEnRed.MandarPuntosAlPuesto(puntos); return; }
+        Cargar(puntos);
     }
 
     /// <summary>Para probar (Riftwalker > Invasión > Cargar el puesto).</summary>
     public void CargarDePrueba()
     {
         if (!Hay || Cargado) return;
+        if (InvasoresEnRed.EsCopia) { InvasoresEnRed.MandarPuntosAlPuesto(Meta); return; } // US 353: lo carga el anfitrión
         Carga = Meta;
         Avisar("Puesto cargado");
         SeCargo?.Invoke(this);
+        InvasoresEnRed.AvisarCargaDelPuesto(Carga, Meta, true);
     }
 
     private void ActualizarAdentro()

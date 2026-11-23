@@ -117,6 +117,9 @@ Pruebas/PruebaDeRendimiento.cs: Prueba de rendimiento ({i + 1}/{pasos.Count}): {
 Pruebas/PruebaDeRendimiento.cs: \nGuardado en 
 Pruebas/PruebaDeRendimiento.cs:   (F2 de nuevo para repetir)
 Pruebas/PruebaDeRendimiento.cs: Con sombra ({conSombra.Count}):
+Skins/CatalogoDeSkins.cs: Último Tren
+Skins/CatalogoDeSkins.cs: El Gran Capitán
+Skins/CatalogoDeSkins.cs: La Porteña
 UI/Credits/CreditsScreen.cs: Nicolás Gauna\nFranco Barreto\nNahuel Velázquez\nUlises Fonseca
 UI/Credits/CreditsScreen.cs: Ulises Fonseca\nNahuel Velázquez
 UI/Credits/CreditsScreen.cs: Lucas Huber\nNicolás Gauna\nLuka Gómez
@@ -145,3 +148,23 @@ Weapons/Grenades/RadiosGranada.cs: Radios de la granada (prueba)
 Weapons/Grenades/RadiosGranada.cs: {distancia:0.0} m · {dano} de daño
 Weapons/Pistola.cs: ¡PUM! Balas en cargador: 
 Weapons/Trazadora.cs:  (teñida)
+# US 350: el menú de trucos de Invasión (para mostrarle el modo al PO), nombres propios y nombres de objetos.
+Invasion/TrucosDeInvasion.cs: Todavía no hay un puesto en el mapa (cae desde la oleada 2).
+Invasion/TrucosDeInvasion.cs: WASD para moverte, Espacio sube, Ctrl baja, Shift más rápido.
+Invasion/TrucosDeInvasion.cs: Matar de un tiro
+Invasion/TrucosDeInvasion.cs: Tenés 
+Invasion/TrucosDeInvasion.cs: . Las del Jefe son la 10, la 20, la 30…
+Invasion/TrucosDeInvasion.cs: Matar a todos los invasores
+Invasion/TrucosDeInvasion.cs: Cargar el puesto de suministros
+Invasion/TrucosDeInvasion.cs: Te la pone en la mano, en el lugar de la principal o de la secundaria.
+Invasion/TrucosDeInvasion.cs: Te la suma como si la hubieras elegido en el puesto.
+Invasion/TrucosDeInvasion.cs:   ·  SÍ
+Invasion/TrucosDeInvasion.cs:   ·  NO
+Pase/PaseDeBatalla.cs: Unzué
+Player/PiezasDelTren.cs: Mira del Último Tren
+Player/PiezasDelTren.cs: Vidrio de la mira del Último Tren
+Skins/CatalogoDeSkins.cs: La Trochita
+Skins/EfectosDeSkin.cs: Chispas de las skins (propias)
+Skins/EfectosDeSkin.cs: Chispas de las skins
+Skins/EfectosDeSkin.cs: Humo de las skins (propio)
+Skins/EfectosDeSkin.cs: Humo de las skins

@@ -62,6 +62,13 @@ public class ArmaEnTerceraPersona : MonoBehaviour
     /// </summary>
     public bool Bailando { get; set; }
 
+    /// <summary>F31 (US 357): está caído o levantándose (CaidoEnTerceraPersona): como al bailar, las manos dejan el arma.
+    /// Va aparte de Bailando porque el baile lo pone en cada cuadro.</summary>
+    public bool Caido { get; set; }
+
+    /// <summary>Las manos no van al arma (bailando o caído).</summary>
+    public bool SinManos => Bailando || Caido;
+
     /// <summary>Lo que gira hacia dónde mira (los ojos de la copia).</summary>
     public Transform Ojos => ojos;
     /// <summary>El Animator del personaje.</summary>
@@ -430,9 +437,9 @@ public class ArmaEnTerceraPersona : MonoBehaviour
             pendiente = null;
             mostrar();
         }
-        if (Bailando)
+        if (SinManos)
         {
-            // US 262: bailando, las manos son del baile.
+            // US 262: bailando, las manos son del baile (y caído, de las animaciones de caído, US 357).
             if (capa != null) capa.weight = 0f;
             ApagarIK();
             return;

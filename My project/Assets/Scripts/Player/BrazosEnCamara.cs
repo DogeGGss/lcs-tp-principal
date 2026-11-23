@@ -28,6 +28,12 @@ public class BrazosEnCamara : MonoBehaviour
              "Prendido, en vez de la foto se ven los brazos en vivo agarrando el arma, tal como va a quedar la foto: " +
              "al mover el arma o los agarres se ve al momento. Hay que mirar derecho. Al apagarlo se sacan las fotos de nuevo.")]
     public bool ajustarAMano;
+    /// <summary>Se está ajustando a mano: nada más mueve el arma en la mano (AnimacionPrimeraPersona, la muñeca de la
+    /// katana), así lo que se mueve en el Inspector queda donde se lo deja.</summary>
+    public static bool AjustandoAMano { get; private set; }
+    [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+    private static void Reiniciar() => AjustandoAMano = false;
+    private void OnDestroy() { if (ajustando) AjustandoAMano = false; }
 
     private WeaponSwitcher switcher;
     private HealthSystem vida;
@@ -46,6 +52,10 @@ public class BrazosEnCamara : MonoBehaviour
     private bool[] verticeDerecho; // qué vértices de los brazos son del brazo derecho
     private readonly Dictionary<GameObject, Vector3> lugarOriginal = new Dictionary<GameObject, Vector3>();
     private GameObject preparando;
+    // US 395: las poses de la katana (MovimientoDeKatana): después de su foto se saca una del brazo derecho en cada pose.
+    private Transform poseActual;
+    private readonly Queue<Transform> posesQueFaltan = new Queue<Transform>();
+    private Matrix4x4 fotoEnCamara; // dónde quedó la foto de la katana respecto de la cámara (para pasar las poses a ella)
     private int fotoEnCuadro, listoEnCuadro;
     private bool faltanFotos;
 
@@ -73,7 +83,10 @@ public class BrazosEnCamara : MonoBehaviour
         if (switcher == null || switcher.pistolObj == null) return;
         if (brazosCuerpo == null && !Preparar()) return;
 
-        bool vivo = vida == null || vida.currentHealth > 0;
+        // Mirando a los compañeros (Espectador) tampoco: en Invasión se puede estar afuera con vida (el que entra a una
+        // partida empezada, US 358) y la foto del arma que tenía en la mano se veía pegada a la cámara del espectador,
+        // además de las manos del arma del compañero (dos pares de manos).
+        bool vivo = (vida == null || vida.currentHealth > 0) && !Espectador.Activo;
         GameObject enMano = vivo ? EnMano() : null;
 
         if (ajustarAMano != ajustando)
@@ -90,13 +103,16 @@ public class BrazosEnCamara : MonoBehaviour
             return;
         }
 
-        // Las fotos se sacan al empezar, una tras otra, primero la del arma en la mano.
+        // Las fotos se sacan al empezar, una tras otra, primero la del arma en la mano. Muerto no: el cuerpo no agarra
+        // nada (por ejemplo, el que entra a una Invasión empezada arranca afuera, US 358) y la foto quedaba con los brazos
+        // sueltos para siempre. Se sacan cuando vuelve.
         if (preparando != null)
         {
             LlevarIKDerecho(preparando); // la pose sigue siendo la de la cámara derecha aunque el jugador mire a otro lado
-            if (Time.frameCount >= fotoEnCuadro) SacarFoto(preparando);
+            if (Time.frameCount >= fotoEnCuadro && vivo) SacarFoto(preparando);
+            else if (!vivo) fotoEnCuadro = Time.frameCount + 2; // (al volver, unos cuadros para que el IK se acomode)
         }
-        else if (Time.frameCount >= listoEnCuadro)
+        else if (vivo && Time.frameCount >= listoEnCuadro)
         {
             GameObject falta = enMano != null && !fotos.ContainsKey(enMano) && TieneAgarres(enMano) ? enMano : null;
             if (falta == null && faltanFotos)
@@ -263,8 +279,27 @@ public class BrazosEnCamara : MonoBehaviour
         Matrix4x4 derecha = CamaraDerecha();
         bool lineaA = arma == switcher.pistolObj;
         Transform derecho = arma.transform.Find(AgarreDerecho), izquierdo = arma.transform.Find(AgarreIzquierdo);
-        Ubicar(objetivoDerecho, arma.transform, lineaA ? derechoLocal : derecho.localPosition, lineaA ? derechoGiro : derecho.localRotation, derecha);
+        Vector3 lugarDerecho = lineaA ? derechoLocal : derecho.localPosition;
+        Quaternion giroDerecho = lineaA ? derechoGiro : derecho.localRotation;
+        if (poseActual != null) EnLaPose(arma, ref lugarDerecho, ref giroDerecho);
+        Ubicar(objetivoDerecho, arma.transform, lugarDerecho, giroDerecho, derecha);
         Ubicar(objetivoIzquierdo, arma.transform, lineaA ? izquierdoLocal : izquierdo.localPosition, lineaA ? izquierdoGiro : izquierdo.localRotation, derecha);
+    }
+
+    // US 395: dónde iría la mano derecha si la katana estuviera en la pose (la katana de muestra): la mano la agarra
+    // igual que quieta.
+    private void EnLaPose(GameObject arma, ref Vector3 lugar, ref Quaternion giro)
+    {
+        MovimientoDeKatana mov = arma.GetComponent<MovimientoDeKatana>();
+        Transform modelo = arma.transform.Find("Modelo");
+        if (modelo == null) return;
+        Vector3 basePos = mov != null && mov.Iniciado ? mov.BasePos : modelo.localPosition;
+        Quaternion baseGiro = mov != null && mov.Iniciado ? mov.BaseGiro : modelo.localRotation;
+        Quaternion aBase = Quaternion.Inverse(baseGiro);
+        Vector3 enLaKatana = aBase * (lugar - basePos);
+        Quaternion giroEnLaKatana = aBase * giro;
+        lugar = poseActual.localPosition + poseActual.localRotation * enLaKatana;
+        giro = poseActual.localRotation * giroEnLaKatana;
     }
 
     // Pone "objetivo" donde estaría el agarre (lugar y giro dentro del arma) con la cámara en "derecha".
@@ -279,6 +314,7 @@ public class BrazosEnCamara : MonoBehaviour
     // brazos se corren juntos y los objetivos del IK vuelven a la Línea A.
     private void SacarFoto(GameObject arma)
     {
+        if (poseActual != null) { SacarFotoDePose(arma); return; }
         var malla = new Mesh { name = "Brazos con " + arma.name };
         DedosDelArma dedos = arma.GetComponent<DedosDelArma>(); // US 244: los dedos abiertos o cerrados para esta arma
         if (dedos != null) dedos.Aplicar(animador);
@@ -296,7 +332,7 @@ public class BrazosEnCamara : MonoBehaviour
         go.transform.localPosition = camaraDerecha.inverse.MultiplyPoint3x4(brazosCuerpo.transform.position) + Corrimiento;
         go.transform.localRotation = Quaternion.Inverse(camaraDerecha.rotation) * brazosCuerpo.transform.rotation;
         // La foto queda del tamaño de los brazos del cuerpo. Con el jugador de escala 1 es 1; con uno más chico
-        // (EscalaDelJugador) la malla horneada no trae su escala y salía más grande y corrida del arma.
+        // (si el jugador tuviera otra escala) la malla horneada no trae su escala y salía más grande y corrida del arma.
         Vector3 escala = camara.lossyScale, cuerpo = brazosCuerpo.transform.lossyScale;
         go.transform.localScale = new Vector3(cuerpo.x / escala.x, cuerpo.y / escala.y, cuerpo.z / escala.z);
         arma.transform.localPosition += Corrimiento;
@@ -321,11 +357,68 @@ public class BrazosEnCamara : MonoBehaviour
             vistaBrazo.shadowCastingMode = ShadowCastingMode.Off;
             vistaBrazo.lightProbeUsage = brazosCuerpo.lightProbeUsage;
             brazoDerecho[arma] = vistaBrazo;
+
+            // US 395: la katana tiene poses: una foto más del brazo derecho en cada una.
+            posesQueFaltan.Clear();
+            if (arma.GetComponent<MovimientoDeKatana>() != null)
+                foreach (Transform hijo in arma.transform)
+                    if (MovimientoDeKatana.EsPose(hijo.name)) posesQueFaltan.Enqueue(hijo);
+            if (posesQueFaltan.Count > 0)
+            {
+                brazo.AddComponent<BrazoConPoses>().Iniciar(derecha);
+                fotoEnCamara = Matrix4x4.TRS(go.transform.localPosition, go.transform.localRotation, go.transform.localScale);
+                SiguientePose(arma);
+                return;
+            }
         }
 
         VolverALineaA();
         if (animador != null) animador.cullingMode = cullingOriginal;
         preparando = null;
+    }
+
+    // US 395: prepara la foto de la siguiente pose de la katana (o termina).
+    private void SiguientePose(GameObject arma)
+    {
+        poseActual = posesQueFaltan.Count > 0 ? posesQueFaltan.Dequeue() : null;
+        if (poseActual == null)
+        {
+            arma.transform.localPosition = lugarOriginal[arma] + Corrimiento;
+            VolverALineaA();
+            if (animador != null) animador.cullingMode = cullingOriginal;
+            preparando = null;
+            return;
+        }
+        arma.transform.localPosition = lugarOriginal[arma];
+        LlevarIKDerecho(arma);
+        preparando = arma;
+        fotoEnCuadro = Time.frameCount + CuadrosParaElIK;
+    }
+
+    // US 395: el brazo derecho en la pose, pasado al espacio de la foto de la katana (el cuerpo pudo moverse un poco).
+    private void SacarFotoDePose(GameObject arma)
+    {
+        MeshRenderer vista = brazoDerecho.TryGetValue(arma, out MeshRenderer d) ? d : null;
+        BrazoConPoses poses = vista != null ? vista.GetComponent<BrazoConPoses>() : null;
+        if (poses != null)
+        {
+            var malla = new Mesh();
+            DedosDelArma dedos = arma.GetComponent<DedosDelArma>();
+            if (dedos != null) dedos.Aplicar(animador);
+            brazosCuerpo.BakeMesh(malla, true);
+            Matrix4x4 camaraDerecha = CamaraDerecha();
+            Vector3 escala = camara.lossyScale, cuerpo = brazosCuerpo.transform.lossyScale;
+            Matrix4x4 ahora = Matrix4x4.TRS(camaraDerecha.inverse.MultiplyPoint3x4(brazosCuerpo.transform.position) + Corrimiento,
+                                            Quaternion.Inverse(camaraDerecha.rotation) * brazosCuerpo.transform.rotation,
+                                            new Vector3(cuerpo.x / escala.x, cuerpo.y / escala.y, cuerpo.z / escala.z));
+            Matrix4x4 aLaFoto = fotoEnCamara.inverse * ahora;
+            Vector3[] vertices = malla.vertices, normales = malla.normals;
+            for (int i = 0; i < vertices.Length; i++) vertices[i] = aLaFoto.MultiplyPoint3x4(vertices[i]);
+            for (int i = 0; i < normales.Length; i++) normales[i] = aLaFoto.MultiplyVector(normales[i]).normalized;
+            poses.AgregarPose(poseActual.name, vertices, normales);
+            Destroy(malla);
+        }
+        SiguientePose(arma);
     }
 
     // Los objetivos del IK (los agarres de la Línea A) van a los agarres de otra arma.
@@ -372,6 +465,7 @@ public class BrazosEnCamara : MonoBehaviour
         }
         ajustada = null;
         ajustando = true;
+        AjustandoAMano = true;
     }
 
     // Cada cuadro: los brazos del cuerpo agarran en vivo el arma en la mano, por donde estén sus agarres.
@@ -413,6 +507,7 @@ public class BrazosEnCamara : MonoBehaviour
 #if UNITY_EDITOR
         GuardarAjuste(true);
 #endif
+        AjustandoAMano = false;
         if (prestados) VolverALineaA(); else GuardarLineaA();
         prestados = false;
         brazosCuerpo.gameObject.layer = capaBrazos;
@@ -438,6 +533,8 @@ public class BrazosEnCamara : MonoBehaviour
             if (foto.Value != null) Destroy(foto.Value.gameObject);
         fotos.Clear();
         brazoDerecho.Clear();
+        posesQueFaltan.Clear();
+        poseActual = null;
         armaEnFoto.Clear();
         foreach (KeyValuePair<GameObject, Vector3> lugar in lugarOriginal)
             if (lugar.Key != null) lugar.Key.transform.localPosition = lugar.Value;
@@ -463,6 +560,21 @@ public class BrazosEnCamara : MonoBehaviour
         public Quaternion giro, derechoGiro, izquierdoGiro;
         // US 244: los dedos (DedosDelArma, en JSON), si el arma tiene.
         public string dedos;
+        // US 395: las poses de la katana ("Pose Tajo"...: MovimientoDeKatana), si el arma tiene.
+        public List<Pose> poses = new List<Pose>();
+        // Las piezas del arma (sus hijos que no son agarres), en las que se arman desde su propio prefab (el cuchillo,
+        // "Knife_ViewModel(Clone)"): el modelo se puede mover dentro del arma. (En las armas del Player.prefab no: sus
+        // piezas las mueven los scripts, como el cerrojo.)
+        public List<Pose> piezas = new List<Pose>();
+    }
+
+    [System.Serializable]
+    public class Pose
+    {
+        public string nombre;
+        public Vector3 lugar;
+        public Quaternion giro;
+        public Vector3 escala; // (las piezas; 0: no se guardó)
     }
 
     [System.Serializable]
@@ -499,6 +611,12 @@ public class BrazosEnCamara : MonoBehaviour
             });
             DedosDelArma dedos = arma.GetComponent<DedosDelArma>();
             if (dedos != null) ajuste.armas[ajuste.armas.Count - 1].dedos = JsonUtility.ToJson(dedos);
+            bool propia = arma.name.EndsWith("(Clone)") && arma.GetComponent<MovimientoDeKatana>() == null; // (la katana: sus poses)
+            foreach (Transform hijo in arma)
+                if (MovimientoDeKatana.EsPose(hijo.name))
+                    ajuste.armas[ajuste.armas.Count - 1].poses.Add(new Pose { nombre = hijo.name, lugar = hijo.localPosition, giro = hijo.localRotation });
+                else if (propia && hijo != derecho && hijo != izquierdo)
+                    ajuste.armas[ajuste.armas.Count - 1].piezas.Add(new Pose { nombre = hijo.name, lugar = hijo.localPosition, giro = hijo.localRotation, escala = hijo.localScale });
         }
         string json = JsonUtility.ToJson(ajuste, true);
         if (json == ultimoGuardado) return;

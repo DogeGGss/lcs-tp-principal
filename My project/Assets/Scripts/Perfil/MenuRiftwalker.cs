@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -46,6 +47,8 @@ public class MenuRiftwalker : MonoBehaviour
     public PantallaPerfil Perfil { get; private set; }
     public PantallaEstacion Estacion { get; private set; }
     public PantallaTienda Tienda { get; private set; }
+    public PantallaTiendaDirecta TiendaDirecta { get; private set; } // US 385
+    public PantallaPase Pase { get; private set; }
     public PantallaLogros Logros { get; private set; }
 
     private PantallaBase actual, saliendo;
@@ -66,6 +69,7 @@ public class MenuRiftwalker : MonoBehaviour
     private float inicioA, inicioB, proximoFondo, mezcla = 1f;
     private Img avatarMenu, marcoAvatar;
     private TextMeshProUGUI nombreMenu, tituloMenu, nuevosMenu, subEstacion;
+    private RectTransform avisoTienda; // US 385, CA4: hay recompensas del pase para reclamar
     private RectTransform chipNuevos;
     private Monedas monedasMenu;
 
@@ -157,7 +161,7 @@ public class MenuRiftwalker : MonoBehaviour
 
         Keyboard teclado = Keyboard.current;
         if (teclado != null && teclado.f9Key.wasPressedThisFrame) SumarDebug();
-        if (teclado != null && teclado.escapeKey.wasPressedThisFrame && !PlayerNameScreen.IsOpen && !NotaPO.IsOpen)
+        if (teclado != null && teclado.escapeKey.wasPressedThisFrame && !PlayerNameScreen.IsOpen && !PerfilAjeno.Abierto)
         {
             if (modalAbierto) CerrarModal();
             else if (actual != null && !actual.Escape()) VolverAlMenu();
@@ -185,7 +189,7 @@ public class MenuRiftwalker : MonoBehaviour
             sinSesion = new PantallaSinSesion(lienzo, rootSinSesion);
             Encajar();
         }
-        sinSesion?.Mostrar(bloqueado, online != null && online.SesionCerrada);
+        sinSesion?.Mostrar(bloqueado, online != null && online.SesionCerrada, online != null && online.SesionDesplazada);
         return bloqueado;
     }
 
@@ -213,7 +217,18 @@ public class MenuRiftwalker : MonoBehaviour
         actual.rect.gameObject.SetActive(true);
         actual.rect.SetAsLastSibling();
         actual.grupo.alpha = 0f;
+        VistaPreviaDeEmote.NuevoSorteo(); // US 392, CA7: otro personaje en las vistas previas de los emotes
         actual.Refrescar();
+    }
+
+    /// <summary>US 385: abre el menú de la tienda en una pestaña. Si ya está en otra pestaña, cambia sin fundido.</summary>
+    public void AbrirTienda(PestanaTienda pestana)
+    {
+        PantallaBase destino = pestana == PestanaTienda.Capsulas ? Estacion : pestana == PestanaTienda.Pase ? Pase
+            : pestana == PestanaTienda.Cristales ? (PantallaBase)Tienda : TiendaDirecta;
+        bool enLaTienda = actual != null && (actual == Estacion || actual == Pase || actual == Tienda || actual == TiendaDirecta);
+        Abrir(destino);
+        if (enLaTienda && actual == destino) actual.grupo.alpha = 1f;
     }
 
     public void VolverAlMenu()
@@ -319,8 +334,10 @@ public class MenuRiftwalker : MonoBehaviour
         Perfil = new PantallaPerfil(this, capaPantallas);
         Estacion = new PantallaEstacion(this, capaPantallas);
         Tienda = new PantallaTienda(this, capaPantallas);
+        TiendaDirecta = new PantallaTiendaDirecta(this, capaPantallas);
+        Pase = new PantallaPase(this, capaPantallas);
         Logros = new PantallaLogros(this, capaPantallas);
-        foreach (PantallaBase p in new PantallaBase[] { Perfil, Estacion, Tienda, Logros }) p.rect.gameObject.SetActive(false);
+        foreach (PantallaBase p in new PantallaBase[] { Perfil, Estacion, Tienda, TiendaDirecta, Pase, Logros }) p.rect.gameObject.SetActive(false);
 
         capaModal = Place(Node("Ventana", root), 0f, 0f, 1920f, 1080f);
         grupoModal = capaModal.gameObject.AddComponent<CanvasGroup>();
@@ -402,7 +419,7 @@ public class MenuRiftwalker : MonoBehaviour
         po.Exited = () => bordeOpinion.color = White(0.1f);
 
         // ----- Monedas y credencial -----
-        monedasMenu = new Monedas(capaMenu, 1478f, 44f, () => Abrir(Estacion), () => Abrir(Tienda));
+        monedasMenu = new Monedas(capaMenu, 1478f, 44f, () => AbrirTienda(PestanaTienda.Capsulas), () => AbrirTienda(PestanaTienda.Cristales));
         RectTransform cred = Place(Node("Credencial", capaMenu), 1490f, 30f, 370f, 84f);
         Image(cred, Rounded, PanelColor, 8f, true);
         Img bordeCred = Borde(cred, 8f, White(0.1f));
@@ -465,12 +482,16 @@ public class MenuRiftwalker : MonoBehaviour
         }
 
         // ----- Tarjetas de abajo -----
-        // El Perfil se abre desde la credencial de arriba a la derecha y la Tienda desde el + de los cristales.
-        subEstacion = Tarjeta(80f, "01 / Cápsulas", "Estación del Rift", () => Abrir(Estacion), out RectTransform tEstacion);
+        // El Perfil se abre desde la credencial de arriba a la derecha. US 385: la tarjeta Tienda reúne la tienda directa,
+        // las cápsulas, el pase de batalla y los cristales (antes era la Estación del Rift sola).
+        subEstacion = Tarjeta(80f, "01 / Cápsulas · Pase · Cristales", "Tienda", () => AbrirTienda(PestanaTienda.Tienda), out RectTransform tEstacion);
         DibujarCapsula(tEstacion, 64f, 66f, 0.34f);
+        avisoTienda = Place(Node("Aviso", tEstacion), AnchoTarjeta - 30f, -8f, 20f, 20f);
+        Image(avisoTienda, Rounded, Accent, 10f);
+        avisoTienda.gameObject.SetActive(false);
         ArmarVolver(80f + AnchoTarjeta + 24f);
 
-        // Versión del juego abajo a la derecha, chiquita y en gris (US 204, CA1). Va debajo de la tarjeta "Nota para el PO".
+        // Versión del juego abajo a la derecha, chiquita y en gris (US 204, CA1).
         T(capaMenu, "Version", 1920f - 28f - 300f, 1080f - 12f - 24f, 300f, 24f, FTexto, 16f, Mute, "v" + Application.version,
             TextAlignmentOptions.BottomRight);
     }
@@ -608,6 +629,14 @@ public class MenuRiftwalker : MonoBehaviour
         chipNuevos.gameObject.SetActive(nuevos > 0);
         nuevosMenu.text = L10n.Plural("profile.new", nuevos);
         subEstacion.text = L10n.Plural("profile.station.tickets", PerfilDatos.Boletos);
+        // F32 (US 366, CA2): en la última semana de la temporada, la tarjeta avisa cuándo termina el pase.
+        if (PaseDeBatalla.UltimaSemana)
+            subEstacion.text = $"<color=#F29A38>{L10n.Source("Pase: termina en", "profile.")} {PaseDeBatalla.DiasQueFaltan} {(PaseDeBatalla.DiasQueFaltan == 1 ? L10n.Source("día", "profile.") : L10n.Source("días", "profile."))}</color>";
+        if (avisoTienda != null) avisoTienda.gameObject.SetActive(PestanasDeTienda.RecompensasDelPase() > 0);
+        // US 366, CA3: lo que se reclamó solo al terminar la temporada anterior.
+        List<string> reclamado = PaseDeBatalla.TomarAviso();
+        if (reclamado.Count > 0)
+            Avisar($"{L10n.Source("Terminó la temporada: se reclamó solo lo que no habías reclamado", "profile.")} ({string.Join(", ", reclamado)})");
         monedasMenu.Refrescar();
     }
 

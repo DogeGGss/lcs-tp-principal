@@ -27,6 +27,7 @@ public class PartidaDeathmatch : MonoBehaviour
     public enum Fase { Cuenta, Combate, Terminada }
 
     public const float DuracionCuenta = 10f, DuracionCombate = 8f * 60f;
+    public const float MinimoParaEntrar = 2f * 60f; // US 279, CA1: con menos tiempo, ya no se entra a la partida empezada
     public const int BajasParaGanar = 25, BajasDeAviso = 20;
     public const float SegundosDeAviso = 60f;
 
@@ -243,6 +244,9 @@ public class PartidaDeathmatch : MonoBehaviour
 
         Atajos();
         Fase fase = FaseActual;
+        // US 279, CA1: la sala de buscar partida queda abierta para entrar con la partida empezada mientras falten más
+        // de 2 minutos; después (o si terminó) se cierra.
+        if (Sala.IsOpen && (fase == Fase.Terminada || (fase == Fase.Combate && Restante <= MinimoParaEntrar))) Sala.IsOpen = false;
         int enLaSala = PhotonNetwork.PlayerList.Length;
         if (fase != Fase.Terminada && enLaSala == 1 && maximoDeJugadores > 1 && !PruebaSolo.Activa && Time.unscaledTime >= proximoArranque)
         {

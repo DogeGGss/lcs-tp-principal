@@ -23,6 +23,9 @@ public static class WeaponFire
     // Cada disparo, con quién tiró, desde dónde y la dirección de cada perdigón. El multijugador lo repite
     // en las demás computadoras (US 028).
     public static event System.Action<Transform, Vector3, Vector3[]> Fired;
+    /// <summary>US 287 (F31, US 355): salió una granada del Gran Capitán (quién, la granada, desde dónde, a qué velocidad
+    /// y si va con bronca), para que en las demás computadoras se vea una igual (JugadorEnRed).</summary>
+    public static event System.Action<Transform, Grenade1, Vector3, Vector3, bool> ProjectileFired;
     // Daño de más para el disparo que sale ahora (la carta Bronca de Invasión: US 330): se pide una vez por disparo y
     // se reparte entre los perdigones.
     public static System.Func<int> DanioDeMas;
@@ -60,6 +63,31 @@ public static class WeaponFire
 
     /// <summary>cartuchos: cuántos cartuchos salen juntos (US 309, Doble cartucho: 2; los perdigones se multiplican).
     /// balasJuntas: cuántas balas valen en un solo impacto (US 323, Disparo concentrado: el daño se multiplica).</summary>
+    /// <summary>US 321, Acople: el color del tiro de la principal que sale sola (celeste: se distingue del de la pistola).</summary>
+    public static readonly Color ColorDeAcople = new Color(0.35f, 0.85f, 1f);
+
+    /// <summary>US 321, Acople: el tiro de la principal guardada (lo que hace "disparar"), con su estela y su fogonazo
+    /// celestes y su sonido (sin ubicar, un poco más bajo que el de la mano). "fuente" y "grupo": la fuente del arma y su
+    /// canal, para sonar por el mismo canal (el volumen de efectos de Opciones) y a su volumen.</summary>
+    public static void Acople(AudioClip sonido, AudioSource fuenteDelArma, UnityEngine.Audio.AudioMixerGroup grupo, System.Action disparar)
+    {
+        if (sonido != null)
+        {
+            var go = new GameObject("SonidoDelAcople");
+            AudioSource fuente = go.AddComponent<AudioSource>();
+            fuente.spatialBlend = 0f;
+            // (la fuente del arma puede no estar armada todavía si el arma nunca se sacó: el canal de la ficha)
+            fuente.outputAudioMixerGroup = fuenteDelArma != null && fuenteDelArma.outputAudioMixerGroup != null
+                ? fuenteDelArma.outputAudioMixerGroup : grupo;
+            fuente.volume = 0.8f * (fuenteDelArma != null ? fuenteDelArma.volume : 1f);
+            fuente.PlayOneShot(sonido);
+            Object.Destroy(go, sonido.length + 0.1f);
+        }
+        Trazadora.Tinte = ColorDeAcople;
+        try { disparar(); }
+        finally { Trazadora.Tinte = null; }
+    }
+
     public static void Fire(ShopItem weapon, Camera camera, Transform shooter, bool aiming, float range, int cartuchos = 1, int balasJuntas = 1)
     {
         if (weapon == null || camera == null) return;
@@ -84,20 +112,26 @@ public static class WeaponFire
         Vector3 muzzle = Trazadora.BocaLocal(camera);
         if (MinijuegoCometas.Activo)
         {
-            Trazadora.Fogonazo(muzzle);
             FirePractice(weapon, camera, aim, view, spread, pellets, muzzle, range);
             return;
         }
         int deMas = DanioDeMas != null ? Mathf.Max(0, DanioDeMas()) : 0; // US 330
         bool conBronca = deMas > 0; // US 330: el disparo con bronca se ve rojo
-        Trazadora.Fogonazo(muzzle, conBronca);
+        // F35 (US 381): con una skin legendaria, su fogonazo y su estela (la bronca y la descarga tienen prioridad).
+        CatalogoDeSkins.Efectos legendaria = conBronca || Trazadora.Tinte.HasValue ? null : SkinsEnLasArmas.EfectosDe(weapon);
+        if (legendaria == null) Trazadora.Fogonazo(muzzle, conBronca);
+        Vector3[] finales = legendaria != null ? new Vector3[pellets] : null; // (sus estelas salen todas juntas, al final)
+        GameObject conSkin = SkinsEnLasArmas.ArmaDe(weapon);
+        CalorDeSkin.Disparo(conSkin); // el fuego de la skin se enciende con cada tiro
         int deMasPorPerdigon = deMas / pellets, deMasSobra = deMas - deMasPorPerdigon * pellets;
         for (int i = 0; i < pellets; i++)
         {
             Vector3 direction = view * Deviation(spread) * Vector3.forward;
             directions[i] = direction;
             bool touched = Trace(camera.transform.position, direction, range, shooter, out RaycastHit hit, out HealthSystem target, out BodyZone zone);
-            Trazadora.Mostrar(muzzle, touched ? hit.point : camera.transform.position + direction * Mathf.Min(range, 300f), conBronca);
+            Vector3 fin = touched ? hit.point : camera.transform.position + direction * Mathf.Min(range, 300f);
+            if (legendaria != null) finales[i] = fin;
+            else Trazadora.Mostrar(muzzle, fin, conBronca);
             if (!touched)
                 continue;
 
@@ -128,7 +162,9 @@ public static class WeaponFire
             bool lethal = target.WouldDie(damage);
             Impacto?.Invoke(target, damage, zone);
             HealthSystem.DamageOrigin = camera.transform.position; // US 192: desde dónde le dispararon
+            HealthSystem.DamageZone = zone; // US 375: para el resumen al morir de quien lo recibe
             target.TakeDamage(damage, zone == BodyZone.Head);
+            HealthSystem.DamageZone = null;
             anyHit = true;
             if (zone == BodyZone.Head) head = true;
             if (lethal)
@@ -137,6 +173,8 @@ public static class WeaponFire
                 Killed?.Invoke(zone == BodyZone.Head);
             }
         }
+        // F35 (US 381): el fogonazo y las estelas de la skin legendaria, desde la punta del arma como se ve.
+        if (legendaria != null) EfectosDeSkin.DisparoPropio(conSkin, weapon, muzzle, finales, legendaria);
 
         aim.Kick(weapon); // (US 309: con el doble cartucho patea igual que uno)
         Fired?.Invoke(shooter, camera.transform.position, directions);
@@ -153,13 +191,22 @@ public static class WeaponFire
         MinijuegoCometas.ContarDisparo();
         float reach = MinijuegoCometas.Alcance(range);
         bool anyHit = false;
+        // F35 (US 381): con una skin legendaria, su fogonazo y sus estelas también en la fase de compra.
+        CatalogoDeSkins.Efectos legendaria = Trazadora.Tinte.HasValue ? null : SkinsEnLasArmas.EfectosDe(weapon);
+        if (legendaria == null) Trazadora.Fogonazo(muzzle);
+        Vector3[] finales = legendaria != null ? new Vector3[pellets] : null;
+        GameObject conSkin = SkinsEnLasArmas.ArmaDe(weapon);
+        CalorDeSkin.Disparo(conSkin);
         for (int i = 0; i < pellets; i++)
         {
             Vector3 direction = view * Deviation(spread) * Vector3.forward;
             Cometa comet = MinijuegoCometas.Buscar(camera.transform.position, direction, reach, out Vector3 point);
-            Trazadora.Mostrar(muzzle, comet != null ? point : camera.transform.position + direction * Mathf.Min(reach, 300f));
+            Vector3 fin = comet != null ? point : camera.transform.position + direction * Mathf.Min(reach, 300f);
+            if (legendaria != null) finales[i] = fin;
+            else Trazadora.Mostrar(muzzle, fin);
             if (comet != null && MinijuegoCometas.Acertar(comet, point)) anyHit = true;
         }
+        if (legendaria != null) EfectosDeSkin.DisparoPropio(conSkin, weapon, muzzle, finales, legendaria);
         aim.Kick(weapon);
         if (anyHit) Hit?.Invoke(HitMarkerKind.Body);
     }
@@ -221,13 +268,14 @@ public static class WeaponFire
         if (deMas > 0) Brasa(thrown.transform); // US 330: la granada con bronca vuela roja
         Rigidbody body = thrown.GetComponent<Rigidbody>();
         if (body != null) body.linearVelocity = direction * weapon.velocidadDelProyectil;
+        if (grenade != null) ProjectileFired?.Invoke(shooter, grenade, muzzle, direction * weapon.velocidadDelProyectil, deMas > 0);
 
         aim.Kick(weapon);
         Fired?.Invoke(shooter, camera.transform.position, new[] { direction });
     }
 
     // US 330: una luz roja que acompaña a la granada con bronca hasta que explota.
-    private static void Brasa(Transform granada)
+    public static void Brasa(Transform granada)
     {
         var go = new GameObject("Bronca");
         go.transform.SetParent(granada, false);

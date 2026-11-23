@@ -58,7 +58,8 @@ public class AtaqueDeNpc : MonoBehaviour
 
         // CA1 y CA4: al lado del jugador, de frente, y pasado un segundo del golpe anterior.
         // (No mientras otro ataque, como la embestida del jefe, lo tiene ocupado.)
-        if (!persecucion.Ocupado && persecucion.EnDistanciaDeAtaque && persecucion.Objetivo != null && Time.time >= proximo && DeFrente(persecucion.Objetivo))
+        if (!persecucion.Ocupado && persecucion.EnDistanciaDeAtaque && persecucion.Objetivo != null && Time.time >= proximo && DeFrente(persecucion.Objetivo)
+            && persecucion.AlcanzaEnAltura(persecucion.Objetivo)) // subido a un techo, no le llega: no lo intenta
             Empezar(persecucion.Objetivo);
     }
 
@@ -92,11 +93,14 @@ public class AtaqueDeNpc : MonoBehaviour
         HealthSystem vida = objetivo.GetComponent<HealthSystem>();
         if (vida == null || vida.currentHealth <= 0) return;
         if (persecucion.EntreCuerpos(objetivo) > llega || !DeFrente(objetivo)) return; // CA2: se alejó o quedó atrás: falla
+        if (!persecucion.AlcanzaEnAltura(objetivo)) return; // F31: se subió a algo alto: no le llega
 
         int danio = npc.Danio(npc.Tipo.danio); // US 161, CA3 (y el alfa, US 301)
         HealthSystem.DamageOrigin = transform.position + Vector3.up; // CA5: el aviso de daño hacia el lado del golpe
         HealthSystem.DamageSource = npc.Tipo.nombre;
+        Npc.Pegando = true; // F31 (US 290): a la copia de un compañero le llega a su dueño
         vida.TakeDamage(danio); // CA3: primero el escudo y después la vida
+        Npc.Pegando = false;
         HealthSystem.DamageSource = null;
         Golpeo?.Invoke(npc, vida, danio);
     }

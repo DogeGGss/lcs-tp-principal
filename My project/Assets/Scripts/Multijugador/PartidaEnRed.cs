@@ -40,6 +40,32 @@ public class PartidaEnRed : MonoBehaviour
         Actual = this;
     }
 
+    // Cada cuánto se revisa que no quede la copia de alguien que ya no está en la sala.
+    private const float CadaRevision = 1f;
+    private float proximaRevision;
+
+    // Por si se perdió el aviso de que se fue (Photon avisa que cambió el anfitrión antes de avisar quién se fue, y un
+    // error en ese aviso cortaba el otro: quedaba el personaje del anfitrión que salió): la copia de un jugador que ya
+    // no está en la sala (ni desconectado esperando volver, US 195) se quita igual.
+    private void Update()
+    {
+        if (!Lista || Time.unscaledTime < proximaRevision || PhotonNetwork.CurrentRoom == null) return;
+        proximaRevision = Time.unscaledTime + CadaRevision;
+        List<int> idos = null;
+        foreach (KeyValuePair<int, JugadorEnRed> par in jugadores)
+        {
+            if (par.Value == Local) continue;
+            Player dueno = PhotonNetwork.CurrentRoom.GetPlayer(par.Key);
+            if (dueno == null || dueno.IsInactive) (idos ??= new List<int>()).Add(par.Key);
+        }
+        if (idos == null) return;
+        foreach (int actor in idos)
+        {
+            Debug.LogWarning($"PartidaEnRed: quedaba la copia del jugador {actor}, que ya no está en la sala: se quita.");
+            QuitarJugador(actor);
+        }
+    }
+
     private void OnDestroy()
     {
         if (Actual == this) Actual = null;
@@ -108,6 +134,7 @@ public class PartidaEnRed : MonoBehaviour
         gameObject.AddComponent<Reconexion>();                       // US 195: anota la partida para poder volver
         gameObject.AddComponent<MarcasDeCompaneros>().Iniciar(this); // US 193: solo se ven cuando hay equipos
         gameObject.AddComponent<RivalesVistos>().Iniciar(this);      // US 194, CA4: rivales vistos, para el minimapa
+        if (MatchSettings.Mode == GameMode.Zombie) gameObject.AddComponent<PersonajesInvasion>(); // F31: se elige el aspecto al entrar
         if (MatchSettings.Mode == GameMode.Tactico)
         {
             gameObject.AddComponent<MarcadorTactico>().Iniciar(this); // US 134
@@ -164,6 +191,13 @@ public class PartidaEnRed : MonoBehaviour
         QuitarJugador(jugador.ActorNumber);
         MatchHud.ReportEvent(jugador.NickName, JugadorEnRed.ColorDe(jugador.ActorNumber),
             L10n.T(jugador.IsInactive ? "gameplay.event.disconnected" : "gameplay.event.left"));
+    }
+
+    /// <summary>F31 (US 358, CA5): alguien nuevo se sumó a la partida empezada (Invasión cooperativa).</summary>
+    public void AlEntrar(Player jugador)
+    {
+        if (jugador == null) return;
+        MatchHud.ReportEvent(jugador.NickName, JugadorEnRed.ColorDe(jugador.ActorNumber), L10n.T("gameplay.event.joined"));
     }
 
     /// <summary>CA2: alguien volvió a la partida. Su copia aparece cuando avisa que terminó de cargar el mapa.</summary>
@@ -238,7 +272,7 @@ public class PartidaEnRed : MonoBehaviour
         float sobrePiso = inicio.position.y - piso.point.y;
 
         CharacterController cuerpo = inicio.GetComponent<CharacterController>();
-        float escala = inicio.lossyScale.y; // en metros: en algunos mapas el jugador es más chico (EscalaDelJugador)
+        float escala = inicio.lossyScale.y; // en metros: en algunos mapas el jugador es más chico (si el jugador tuviera otra escala)
         float alto = (cuerpo != null ? cuerpo.height : 2f) * escala, radio = (cuerpo != null ? cuerpo.radius : 0.5f) * escala;
         float medio = alto / 2f - radio;
 
@@ -293,6 +327,9 @@ public class PartidaEnRed : MonoBehaviour
         }
 
         int indice = Mathf.Max(0, actores.IndexOf(local));
+        // F31 (US 289, CA12): en Invasión arrancan juntos, uno al lado del otro, alrededor del inicio del mapa (los puntos
+        // en su orden, sin repartirlos lejos como en el Deathmatch).
+        if (MatchSettings.Mode == GameMode.Zombie) return puntos[indice % puntos.Count];
         List<Pose> repartidos = PuntosRepartidos();
         return repartidos[indice % repartidos.Count];
     }

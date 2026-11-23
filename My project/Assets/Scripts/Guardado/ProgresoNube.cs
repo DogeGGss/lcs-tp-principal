@@ -4,7 +4,8 @@ using UnityEngine;
 
 // El progreso del jugador que se guarda también en la nube (F18, US 162, CA3, y US 163, CA2), además de los logros, que
 // van con el ranking (LogrosOnline, rw_sync_comets): las estadísticas del minijuego (US 159) y las del jugador (F24), los
-// récords de Zombie y el Perfil (cosméticos, cápsulas abiertas, pity, compras y últimos premios). Arma el documento que
+// récords de Zombie, el Perfil (cosméticos, cápsulas abiertas, pity, compras y últimos premios) y las skins de las armas
+// (F35, US 378: las obtenidas y la equipada de cada arma). Arma el documento que
 // sube LogrosOnline (rw_sync_progress) y junta el que vuelve:
 // - contadores que solo suben: el máximo (el pity va como «cápsula del último épico», que también solo sube);
 // - mejores tiempos: el mínimo; cosméticos, packs de una vez y compras: la unión;
@@ -28,7 +29,14 @@ public static class ProgresoNube
         public List<Texto> valores = new List<Texto>();
     }
 
+    // US 392, CA10: con el catálogo nuevo el Perfil, las skins y los emotes empiezan de cero: sus claves cambiaron (antes
+    // "perfil.", "skins." y "emotes.obtenidos"; lo viejo queda en la base sin usar).
     private const string Minijuego = "minijuego.", Zombie = "zombie.record.", Perfil = "perfil.";
+    // US 392, CA10: lo conseguido va con claves nuevas (empieza de cero); lo equipado sigue en "perfil." (lo leen los perfiles).
+    private const string Coleccion = "perfil2.";
+    private const string Skins = "skins2.", SkinEquipada = Skins + "equipada.";
+    private const string Emotes = "emotes2.obtenidos"; // F37 (US 388)
+    private const string RuedaDeEmotes = "emotes2.rueda."; // los 4 espacios de la rueda (EmotesEquipados)
     private const string Tactico = "estadisticas.tactico.", Deathmatch = "estadisticas.deathmatch.", Invasion = "estadisticas.invasion.";
     private static readonly string[] Tipos = { "comun", "raro", "epico" };
 
@@ -47,6 +55,10 @@ public static class ProgresoNube
             else if (clave == EstadisticasMinijuego.Clave) EstadisticasMinijuego.Recargar();
             else if (clave == EstadisticasJugador.Clave) EstadisticasJugador.Recargar();
             else if (clave == PerfilDatos.Clave) PerfilDatos.Recargar();
+            else if (clave == PaseDeBatalla.Clave) PaseDeBatalla.Recargar();
+            else if (clave == NivelDeJugador.Clave) NivelDeJugador.Recargar();
+            else if (clave == EstadisticasDeInvasion.Clave) EstadisticasDeInvasion.Recargar();
+            else if (clave == ColeccionDeEmotes.Clave) ColeccionDeEmotes.Recargar();
         };
         // Se entró o se salió de una cuenta (US 237): todo lo del jugador es otro. Logros antes que estadísticas: al
         // recargarlas, los logros de combate se revisan con lo de la cuenta.
@@ -56,6 +68,11 @@ public static class ProgresoNube
             EstadisticasMinijuego.Recargar();
             EstadisticasJugador.Recargar();
             PerfilDatos.Recargar();
+            SkinsDeArmas.Recargar();
+            ColeccionDeEmotes.Recargar();
+            PaseDeBatalla.Recargar();
+            NivelDeJugador.Recargar();
+            EstadisticasDeInvasion.Recargar();
         };
     }
 
@@ -85,24 +102,74 @@ public static class ProgresoNube
         Sumar(d.contadores, Deathmatch + "mejor_racha", e.mejorRacha);
 
         foreach (ZombieDifficulty z in Enum.GetValues(typeof(ZombieDifficulty)))
+        {
             Sumar(d.contadores, Zombie + z.ToString().ToLowerInvariant(), MatchSettings.ZombieRecord(z));
+            Sumar(d.contadores, Zombie + "coop." + z.ToString().ToLowerInvariant(), MatchSettings.ZombieRecordCoop(z)); // F31 (US 289, CA13)
+        }
 
-        d.conjuntos.Add(Ordenado(Perfil + "obtenidos", PerfilDatos.ObtenidosIds));
-        d.conjuntos.Add(Ordenado(Perfil + "packs_usados", PerfilDatos.PacksUsados));
-        d.conjuntos.Add(Ordenado(Perfil + "compras", PerfilDatos.ComprasNube));
-        Sumar(d.contadores, Perfil + "aperturas", PerfilDatos.Aperturas);
-        Sumar(d.contadores, Perfil + "ultimo_epico", PerfilDatos.UltimoEpico);
-        Sumar(d.contadores, Perfil + "gastado", PerfilDatos.Gastado);
+        d.conjuntos.Add(Ordenado(Coleccion + "obtenidos", PerfilDatos.ObtenidosIds));
+        d.conjuntos.Add(Ordenado(Coleccion + "packs_usados", PerfilDatos.PacksUsados));
+        d.conjuntos.Add(Ordenado(Coleccion + "compras", PerfilDatos.ComprasNube));
+        Sumar(d.contadores, Coleccion + "aperturas", PerfilDatos.Aperturas);
+        Sumar(d.contadores, Coleccion + "ultimo_epico", PerfilDatos.UltimoEpico);
+        Sumar(d.contadores, Coleccion + "gastado", PerfilDatos.Gastado);
         if (PerfilDatos.EquipadoPropio) // en una PC nueva, lo de entrada no pisa lo de la nube
         {
             foreach (var (tipo, id) in PerfilDatos.Equipados) d.valores.Add(new Texto { clave = Perfil + tipo, valor = id });
             IReadOnlyList<string> recientes = PerfilDatos.Recientes;
             for (int i = 0; i < recientes.Count; i++) d.valores.Add(new Texto { clave = Reciente + i, valor = recientes[i] });
         }
+
+        // Skins de las armas (F35, US 378): las obtenidas (unión) y la equipada de cada arma ("" sin skin).
+        d.conjuntos.Add(Ordenado(Skins + "obtenidas", SkinsDeArmas.Obtenidas));
+        // Los bailes conseguidos (F37, US 388, CA5): la unión.
+        d.conjuntos.Add(Ordenado(Emotes, ColeccionDeEmotes.Obtenidos));
+        if (EmotesEquipados.Propio) // en una PC nueva, la rueda vacía no pisa la de la nube
+            for (int i = 0; i < EmotesEquipados.Espacios; i++)
+                d.valores.Add(new Texto { clave = RuedaDeEmotes + i, valor = EmotesEquipados.EstadoEn(i) });
+        if (SkinsDeArmas.EquipadoPropio)
+        {
+            var equipadas = new Dictionary<string, string>();
+            foreach (var (arma, skin) in SkinsDeArmas.Equipadas) equipadas[arma] = skin;
+            foreach (CatalogoDeSkins.Arma a in CatalogoDeSkins.Armas)
+                d.valores.Add(new Texto { clave = SkinEquipada + a.id, valor = equipadas.TryGetValue(a.id, out string s) ? s : "" });
+        }
+
+        // Estadísticas de la Invasión nueva (US 308): contadores que solo suben.
+        foreach (var (clave, valor) in EstadisticasDeInvasion.Contadores) Sumar(d.contadores, clave, valor);
+
+        // Pase de batalla (F32): la experiencia, la compra y los desafíos de la temporada (máximo) y lo reclamado (unión).
+        foreach (var (clave, valor) in PaseDeBatalla.Contadores) Sumar(d.contadores, clave, valor);
+        d.conjuntos.Add(Ordenado(PaseDeBatalla.ClaveReclamados, PaseDeBatalla.Reclamados));
+
+        // Nivel de jugador (US 278): sube y baja, así que va como texto "nivel|partidas" (manda el que contó más partidas).
+        if (NivelDeJugador.Partidas > 0)
+            d.valores.Add(new Texto { clave = NivelJugador, valor = NivelDeJugador.Valor + "|" + NivelDeJugador.Partidas });
+
+        // La base rechaza el documento entero si una sola clave no tiene el formato que acepta (rw_sync_progress): lo que
+        // no lo cumpla no se sube, así el resto del progreso sigue llegando.
+        int antes = d.contadores.Count + d.minimos.Count + d.conjuntos.Count + d.valores.Count;
+        d.contadores.RemoveAll(n => !ClaveValida(n.clave));
+        d.minimos.RemoveAll(n => !ClaveValida(n.clave));
+        d.conjuntos.RemoveAll(c => !ClaveValida(c.clave));
+        d.valores.RemoveAll(t => !ClaveValida(t.clave) || t.valor == null || t.valor.Length > 64);
+        foreach (Conjunto c in d.conjuntos) c.elementos = Array.FindAll(c.elementos, x => x != null && x.Length <= 64);
+        int sacadas = antes - (d.contadores.Count + d.minimos.Count + d.conjuntos.Count + d.valores.Count);
+        if (sacadas > 0) Debug.LogWarning($"ProgresoNube: {sacadas} datos con una clave que la base no acepta no se subieron.");
         return d;
     }
 
-    private const string Reciente = Perfil + "reciente.";
+    private const string Reciente = Coleccion + "reciente.";
+    private const string NivelJugador = "nivel.jugador";
+
+    /// <summary>El formato de clave que acepta la base: ^[a-z0-9_.-]{1,64}$.</summary>
+    public static bool ClaveValida(string clave)
+    {
+        if (string.IsNullOrEmpty(clave) || clave.Length > 64) return false;
+        foreach (char c in clave)
+            if (!((c >= 'a' && c <= 'z') || (c >= '0' && c <= '9') || c == '_' || c == '.' || c == '-')) return false;
+        return true;
+    }
 
     private static Conjunto Ordenado(string clave, IEnumerable<string> elementos)
     {
@@ -179,22 +246,25 @@ public static class ProgresoNube
 
         // Récords de Zombie
         foreach (ZombieDifficulty z in Enum.GetValues(typeof(ZombieDifficulty)))
+        {
             MatchSettings.SubirZombieRecord(z, (int)Leer(Zombie + z.ToString().ToLowerInvariant()));
+            MatchSettings.SubirZombieRecordCoop(z, (int)Leer(Zombie + "coop." + z.ToString().ToLowerInvariant())); // F31 (US 289, CA13)
+        }
 
         // Perfil: lo que solo suma (unión y máximo) y lo equipado y los últimos premios (solo en una PC nueva)
         var perfil = new PerfilDatos.Nube
         {
-            aperturas = (int)Leer(Perfil + "aperturas"),
-            ultimoEpico = (int)Leer(Perfil + "ultimo_epico"),
-            gastado = (int)Leer(Perfil + "gastado"),
+            aperturas = (int)Leer(Coleccion + "aperturas"),
+            ultimoEpico = (int)Leer(Coleccion + "ultimo_epico"),
+            gastado = (int)Leer(Coleccion + "gastado"),
         };
         if (nube.conjuntos != null)
             foreach (Conjunto c in nube.conjuntos)
             {
                 if (c == null || c.elementos == null) continue;
-                if (c.clave == Perfil + "obtenidos") perfil.obtenidos.AddRange(c.elementos);
-                else if (c.clave == Perfil + "packs_usados") perfil.packs.AddRange(c.elementos);
-                else if (c.clave == Perfil + "compras") perfil.compras.AddRange(c.elementos);
+                if (c.clave == Coleccion + "obtenidos") perfil.obtenidos.AddRange(c.elementos);
+                else if (c.clave == Coleccion + "packs_usados") perfil.packs.AddRange(c.elementos);
+                else if (c.clave == Coleccion + "compras") perfil.compras.AddRange(c.elementos);
             }
         var recientes = new SortedDictionary<int, string>();
         if (nube.valores != null)
@@ -209,5 +279,52 @@ public static class ProgresoNube
             }
         perfil.recientes.AddRange(recientes.Values);
         PerfilDatos.FusionarNube(perfil);
+
+        // Skins de las armas (F35, US 378)
+        var skins = new List<string>();
+        var equipadas = new Dictionary<string, string>();
+        if (nube.conjuntos != null)
+            foreach (Conjunto c in nube.conjuntos)
+                if (c != null && c.elementos != null && c.clave == Skins + "obtenidas") skins.AddRange(c.elementos);
+        if (nube.valores != null)
+            foreach (Texto t in nube.valores)
+                if (t != null && t.clave != null && t.clave.StartsWith(SkinEquipada, StringComparison.Ordinal))
+                    equipadas[t.clave.Substring(SkinEquipada.Length)] = t.valor ?? "";
+        SkinsDeArmas.FusionarNube(skins, equipadas);
+
+        // Los bailes conseguidos (F37, US 388)
+        var emotes = new List<string>();
+        if (nube.conjuntos != null)
+            foreach (Conjunto c in nube.conjuntos)
+                if (c != null && c.elementos != null && c.clave == Emotes) emotes.AddRange(c.elementos);
+        ColeccionDeEmotes.FusionarNube(emotes);
+        // La rueda de emotes (después de los conseguidos: solo se equipan los que se tienen).
+        var rueda = new Dictionary<int, string>();
+        if (nube.valores != null)
+            foreach (Texto t in nube.valores)
+                if (t != null && t.clave != null && t.clave.StartsWith(RuedaDeEmotes, StringComparison.Ordinal)
+                    && int.TryParse(t.clave.Substring(RuedaDeEmotes.Length), out int espacio))
+                    rueda[espacio] = t.valor ?? "";
+        EmotesEquipados.FusionarNube(rueda);
+
+        // Pase de batalla (F32)
+        var reclamados = new List<string>();
+        if (nube.conjuntos != null)
+            foreach (Conjunto c in nube.conjuntos)
+                if (c != null && c.elementos != null && c.clave == PaseDeBatalla.ClaveReclamados) reclamados.AddRange(c.elementos);
+        PaseDeBatalla.FusionarNube(Leer, reclamados);
+
+        // Estadísticas de la Invasión nueva (US 308, CA6)
+        EstadisticasDeInvasion.FusionarNube(contadores);
+
+        // Nivel de jugador (US 278, CA6)
+        if (nube.valores != null)
+            foreach (Texto t in nube.valores)
+            {
+                if (t == null || t.clave != NivelJugador || string.IsNullOrEmpty(t.valor)) continue;
+                string[] partes = t.valor.Split('|');
+                if (partes.Length == 2 && int.TryParse(partes[0], out int nivel) && int.TryParse(partes[1], out int partidas))
+                    NivelDeJugador.FusionarNube(nivel, partidas);
+            }
     }
 }

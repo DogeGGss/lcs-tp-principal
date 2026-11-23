@@ -29,6 +29,7 @@ public static class SonidoDeNpc
     public static AudioSource Uno(AudioClip clip, Transform bicho, float hasta = 30f, float volumen = 1f)
     {
         if (clip == null || bicho == null) return null;
+        InvasoresEnRed.AvisarSonido(clip, bicho, hasta, volumen); // F31 (US 290): el del anfitrión suena en todas
         AudioSource fuente = Fuente(clip, bicho, hasta, volumen, false, "NPC (" + clip.name + ")");
         fuente.Play();
         Object.Destroy(fuente.gameObject, clip.length + 0.1f);

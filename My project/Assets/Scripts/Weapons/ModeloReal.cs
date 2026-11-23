@@ -28,13 +28,47 @@ public static class ModeloReal
     }
 
     // Arma el modelo a tamaño real de "arma" (un arma de primera persona, hija de la cámara). "limites" es su caja
-    // en el espacio del modelo: el caño está en (0, 0, limites.max.z).
-    public static GameObject Crear(GameObject arma, float largo, out Bounds limites, string nombre = null)
+    // en el espacio del modelo: el caño está en (0, 0, limites.max.z). Con "largoEsEscala", "largo" es directamente la
+    // escala del modelo (la katana, US 395: su caja en la cámara va inclinada y no mide el largo del arma).
+    public static GameObject Crear(GameObject arma, float largo, out Bounds limites, string nombre = null, bool largoEsEscala = false)
     {
         limites = new Bounds();
         if (arma == null) return null;
         // El marco es la cámara: así "adelante" es hacia donde apunta el caño en primera persona.
         Transform marco = arma.transform.parent != null ? arma.transform.parent : arma.transform;
+        return Crear(arma, marco, largo, out limites, nombre, largoEsEscala);
+    }
+
+    // Giro del cuchillo respecto de la cámara con el que se ajustó su agarre en tercera persona (US 257,
+    // AgarresTerceraPersona): el de primera persona de antes de ajustarlo a mano. Con él, el cuchillo de los demás mide
+    // lo mismo (37 cm, el modelo a su tamaño) y queda igual en la mano, aunque se cambie el de primera persona.
+    private static readonly Quaternion GiroDelCuchillo = new Quaternion(-0.37960482f, -0.06076438f, -0.066216365f, 0.92077327f);
+
+    /// <summary>US 257: el cuchillo a tamaño real para la mano de los demás. No depende de cómo se ve en primera
+    /// persona: se arma como si estuviera con el giro con el que se ajustó su agarre (si no, al cambiar el agarre de
+    /// primera persona cambia el largo que se mide, y el cuchillo de los demás salía de más de un metro).</summary>
+    public static GameObject CrearCuchillo(GameObject arma, float largo, out Bounds limites, string nombre = null)
+    {
+        limites = new Bounds();
+        if (arma == null) return null;
+        MeshRenderer hoja = null;
+        foreach (MeshRenderer r in arma.GetComponentsInChildren<MeshRenderer>(true))
+        {
+            MeshFilter filtro = r.GetComponent<MeshFilter>();
+            if (r.enabled && filtro != null && filtro.sharedMesh != null) { hoja = r; break; }
+        }
+        if (hoja == null) return Crear(arma, largo, out limites, nombre);
+        var marco = new GameObject("Marco del cuchillo").transform;
+        marco.SetPositionAndRotation(hoja.transform.position, hoja.transform.rotation * Quaternion.Inverse(GiroDelCuchillo));
+        GameObject modelo = Crear(arma, marco, largo, out limites, nombre, false);
+        if (Application.isPlaying) Object.Destroy(marco.gameObject);
+        else Object.DestroyImmediate(marco.gameObject);
+        return modelo;
+    }
+
+    private static GameObject Crear(GameObject arma, Transform marco, float largo, out Bounds limites, string nombre, bool largoEsEscala)
+    {
+        limites = new Bounds();
 
         var raiz = new GameObject(nombre ?? arma.name + " (tamaño real)");
         var piezas = new GameObject("Piezas").transform;
@@ -44,7 +78,7 @@ public static class ModeloReal
         if (!hayCaja) return raiz;
 
         // Del largo del modelo de primera persona al real, con el centro en el origen.
-        float escala = (largo > 0f ? largo : LargoSinFicha) / Mathf.Max(0.0001f, caja.size.z);
+        float escala = largoEsEscala && largo > 0f ? largo : (largo > 0f ? largo : LargoSinFicha) / Mathf.Max(0.0001f, caja.size.z);
         piezas.localScale = Vector3.one * escala;
         piezas.localPosition = -caja.center * escala;
         limites = new Bounds(Vector3.zero, caja.size * escala);

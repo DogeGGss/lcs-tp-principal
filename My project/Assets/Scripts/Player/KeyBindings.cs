@@ -12,6 +12,7 @@ public enum GameAction
     ArmaPrincipal, ArmaSecundaria, Cuchillo, Granadas,
     Tienda, Plantar, Soltar, Dispositivo, Mapa,
     Emotes, // F27 (US 261): mientras se mantiene, la rueda de emotes
+    Cartas, // F29 (US 361): mientras se mantiene, tus cartas de Invasión
 }
 
 // Teclas del jugador (US 155). Sigue usando el Input clásico: los scripts preguntan
@@ -45,6 +46,7 @@ public static class KeyBindings
         { GameAction.Dispositivo, KeyCode.Alpha5 }, // US 130: sacar el dispositivo (solo el portador, en Táctico)
         { GameAction.Mapa, KeyCode.H }, // US 194, CA6: mientras se mantiene, el mapa completo
         { GameAction.Emotes, KeyCode.T }, // US 261: mientras se mantiene, la rueda de emotes (la B es la tienda)
+        { GameAction.Cartas, KeyCode.C }, // US 361: mientras se mantiene, tus cartas (solo en Invasión)
     };
 
     private static readonly Dictionary<GameAction, string> Names = new Dictionary<GameAction, string>
@@ -70,6 +72,7 @@ public static class KeyBindings
         { GameAction.Dispositivo, "Dispositivo" },
         { GameAction.Mapa, "Mapa completo" },
         { GameAction.Emotes, "Emotes" },
+        { GameAction.Cartas, "Cartas (Invasión)" },
     };
 
     // ---------- Opciones del mouse (CA1, CA2) ----------
@@ -115,8 +118,32 @@ public static class KeyBindings
     /// <summary>US 261, CA1: con la rueda de emotes abierta no se dispara ni se apunta.</summary>
     public static bool SinDisparar { get; set; }
 
-    private static bool Bloqueada(GameAction action) =>
-        SinDisparar && (action == GameAction.Disparar || action == GameAction.Apuntar);
+    private static bool Bloqueada(GameAction action)
+    {
+        if (action != GameAction.Disparar && action != GameAction.Apuntar) return false;
+        if (SinDisparar) return true;
+        // Con una pantalla encima (elegir personaje, el resultado al morir...) el clic es para la pantalla: no dispara ni
+        // apunta. Al cerrarla, si el botón sigue apretado (el clic que la cerró), espera a que se suelte.
+        if (PantallaEncima)
+        {
+            esperandoSoltar.Add(action);
+            return true;
+        }
+        if (esperandoSoltar.Contains(action))
+        {
+            if (Input.GetKey(Key(action))) return true;
+            esperandoSoltar.Remove(action);
+        }
+        return false;
+    }
+
+    private static readonly HashSet<GameAction> esperandoSoltar = new HashSet<GameAction>();
+
+    /// <summary>Hay una pantalla encima de la partida en la que se hace clic: elegir personaje (US 015) o el resultado
+    /// (al morir o al terminar la partida, con "Volver al menú").</summary>
+    public static bool PantallaEncima =>
+        CharacterSelectScreen.IsOpen || Time.frameCount - CharacterSelectScreen.ClosedFrame <= 1
+        || ResultadoDeInvasion.Actual != null || ResultadoPartida.Actual != null || ResultadoDeathmatch.Actual != null;
     public static bool Up(GameAction action) => Input.GetKeyUp(Key(action)) || SimuladaUp(action);
 
     // ---------- Tests de regresión ----------

@@ -21,6 +21,13 @@ public class PuntosDeInvasion : MonoBehaviour
     public int BajasALaCabeza { get; private set; }
     public int PuntosGanados { get; private set; }
 
+    /// <summary>F31 (US 359, CA2): volvió a la partida: lo que llevaba (lo publicó en la sala, CompanerosEnInvasion).</summary>
+    public void Recuperar(int bajas, int puntosGanados)
+    {
+        Bajas = Mathf.Max(Bajas, bajas);
+        PuntosGanados = Mathf.Max(PuntosGanados, puntosGanados);
+    }
+
     private PlayerWallet billetera;
 
     private void OnEnable()
@@ -39,6 +46,7 @@ public class PuntosDeInvasion : MonoBehaviour
 
     private void AlMorir(Npc npc, int puntos, bool cabeza)
     {
+        if (npc != null && npc.LoMatoOtro) return; // F31 (US 290, CA2): en cooperativo, la baja y sus puntos son del que lo mató
         Bajas++;
         if (cabeza) BajasALaCabeza++;
         Sumar(puntos, cabeza);

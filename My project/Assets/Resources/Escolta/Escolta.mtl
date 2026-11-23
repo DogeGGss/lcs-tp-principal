@@ -1,0 +1,18 @@
+newmtl Back
+Kd 0.8 0.8 0.8
+
+newmtl Eye
+Kd 0.8 0.8 0.8
+
+newmtl Eye_Detail
+Kd 0.8 0.8 0.8
+
+newmtl Inside
+Kd 0.8 0.8 0.8
+
+newmtl Lights
+Kd 0.8 0.8 0.8
+
+newmtl Main
+Kd 0.8 0.8 0.8
+

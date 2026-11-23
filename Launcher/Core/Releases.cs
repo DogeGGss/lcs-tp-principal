@@ -158,11 +158,36 @@ public sealed class ReleaseClient(HttpClient http, string? cacheDirectory = null
     // The publisher ends each version's notes with a footer for whoever opens the release page ("se instala desde el
     // launcher"). The launcher shows the notes without it.
     public const string NotesFooterMark = "<!-- riftwalker:pie -->";
-    public static string NotesForLauncher(string? body)
+    // The notes can also come in other languages: each one starts with «<!-- riftwalker:idioma:en -->» (the code of the
+    // language) after the Spanish notes and before the footer. The launcher shows the section of its language, or the
+    // Spanish notes (everything before the first section) when the release does not have it.
+    public const string NotesLanguageMark = "<!-- riftwalker:idioma:";
+    private static readonly System.Text.RegularExpressions.Regex LanguageSection = new(@"<!--\s*riftwalker:idioma:([A-Za-z]{2}(?:-[A-Za-z]{2})?)\s*-->");
+    public static string NotesForLauncher(string? body, string language = "es")
     {
         body ??= "";
         int at = body.IndexOf(NotesFooterMark, StringComparison.Ordinal);
-        return (at >= 0 ? body[..at] : body).TrimEnd();
+        if (at >= 0) body = body[..at];
+        var sections = LanguageSection.Matches(body);
+        if (sections.Count == 0) return body.TrimEnd();
+        for (int i = 0; i < sections.Count; i++)
+        {
+            if (!string.Equals(sections[i].Groups[1].Value, language, StringComparison.OrdinalIgnoreCase)) continue;
+            int start = sections[i].Index + sections[i].Length, end = i + 1 < sections.Count ? sections[i + 1].Index : body.Length;
+            return body[start..end].Trim();
+        }
+        return body[..sections[0].Index].TrimEnd();
+    }
+    // Whether the notes are in that language: Spanish is the base; any other one needs its own section.
+    public static bool HasNotesIn(string? body, string language)
+    {
+        if (string.Equals(language, "es", StringComparison.OrdinalIgnoreCase)) return true;
+        body ??= "";
+        int at = body.IndexOf(NotesFooterMark, StringComparison.Ordinal);
+        if (at >= 0) body = body[..at];
+        foreach (System.Text.RegularExpressions.Match m in LanguageSection.Matches(body))
+            if (string.Equals(m.Groups[1].Value, language, StringComparison.OrdinalIgnoreCase)) return true;
+        return false;
     }
 
     // A release built only from its manifest: the asset addresses follow from the tag. Each file is still checked

@@ -9,6 +9,10 @@ public class MeleeWeaponHolder : MonoBehaviour
 
     public MeleeWeaponData CurrentWeapon { get; private set; }
     public GameObject CurrentViewModel { get; private set; }
+    /// <summary>El arma con la que arranca (el cuchillo).</summary>
+    public MeleeWeaponData DefaultWeapon => defaultWeapon;
+    /// <summary>Donde va el modelo de primera persona (la cámara).</summary>
+    public Transform ViewModelParent => viewModelParent;
 
     private PlayerMovement movement;
     private AudioSource sounds;
@@ -40,6 +44,18 @@ public class MeleeWeaponHolder : MonoBehaviour
             CurrentViewModel = Instantiate(weapon.viewModelPrefab, viewModelParent, false);
         if (movement != null)
             movement.speedMultiplier = weapon.MoveSpeedMultiplier;
+    }
+
+    /// <summary>US 395: cambia el arma de este lugar en medio de la partida (el cuchillo por la katana) sin cambiar lo
+    /// que tiene en la mano: si tenía el cuchillo, queda con la nueva; si no, la nueva queda guardada.</summary>
+    public void Cambiar(MeleeWeaponData weapon)
+    {
+        if (weapon == null || weapon == CurrentWeapon) return;
+        bool enMano = CurrentViewModel != null && CurrentViewModel.activeSelf;
+        float velocidad = movement != null ? movement.speedMultiplier : 1f;
+        Equip(weapon);
+        if (CurrentViewModel != null && !enMano) CurrentViewModel.SetActive(false);
+        if (movement != null && !enMano) movement.speedMultiplier = velocidad; // la velocidad sigue siendo la del arma en la mano
     }
 
     public void Unequip()

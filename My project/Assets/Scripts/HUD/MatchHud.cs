@@ -62,6 +62,8 @@ public class MatchHud : MonoBehaviour
         public string[] cells;
         public bool highlight;                     // la fila del jugador (resaltada en naranja)
         public bool dim;                           // apagada (por ejemplo, jugador muerto)
+        public Player perfil;                      // US 376: la celda del nombre va en la placa del perfil de este jugador
+        public int columnaPerfil;                  // la columna del nombre
     }
 
     /// <summary>Si un modo lo asigna, la tabla con Tab muestra lo que devuelve.</summary>
@@ -73,7 +75,7 @@ public class MatchHud : MonoBehaviour
     private const float MarkerW = 2f * (RosterW + Gap + ScoreW + Gap) + CenterW;
     private const float FeedRowH = 32f, FeedGap = 6f, FeedTime = 4f, FeedFade = 0.5f;
     private const int FeedMax = 5, MaxTicks = 12;
-    private const float TableW = 860f, TableRowH = 36f;
+    private const float TableW = 860f, TableRowH = 36f, TablePerfilH = 48f; // US 376: las filas con perfil son más altas
 
     private TMP_FontAsset displayFont, labelFont;
     private Sprite rounded;
@@ -107,6 +109,12 @@ public class MatchHud : MonoBehaviour
     private string bannerFooterFormat;
     private float bannerStart, bannerEnd, warningEnd;
     private float nextTableRefresh;
+    // US 373, CA1: con Tab apretado, el clic derecho deja la tabla fija y libera el mouse para tocar un nombre y ver su
+    // perfil (PerfilAjeno). Tab o Esc la cierran. Mientras está fija no se mueve la cámara ni se dispara.
+    private bool tableFixed;
+    private readonly List<Behaviour> tableBlocked = new List<Behaviour>();
+    private CursorLockMode tableCursor;
+    private bool tableCursorVisible, tablePause, tableHadPause;
 
     // Bajas y muertes que pasan por los avisos, por nombre.
     private readonly Dictionary<string, int> kills = new Dictionary<string, int>();
@@ -211,6 +219,11 @@ public class MatchHud : MonoBehaviour
         table.anchorMin = table.anchorMax = table.pivot = new Vector2(0.5f, 0.5f);
         table.anchoredPosition = new Vector2(0f, 30f);
         table.sizeDelta = new Vector2(TableW, 200f);
+        // Su propio canvas con raycaster, para poder tocar los nombres con la tabla fija (US 373).
+        var capa = table.gameObject.AddComponent<Canvas>();
+        capa.overrideSorting = true;
+        capa.sortingOrder = 150;
+        table.gameObject.AddComponent<UnityEngine.UI.GraphicRaycaster>();
         table.gameObject.SetActive(false);
     }
 
@@ -817,7 +830,10 @@ public class MatchHud : MonoBehaviour
     private void UpdateTable()
     {
         // En el campo de práctica no hay tabla: ahí Tab saltea los pasos del tutorial (US 166, CA4).
-        bool held = Input.GetKey(KeyCode.Tab) && !PauseMenu.IsPaused && !CampoDePractica.Activo;
+        bool allowed = !PauseMenu.IsPaused && !CampoDePractica.Activo;
+        if (tableFixed && (!allowed || Input.GetKeyDown(KeyCode.Tab) || (Input.GetKeyDown(KeyCode.Escape) && !PerfilAjeno.Abierto))) ReleaseTable();
+        else if (!tableFixed && allowed && Input.GetKey(KeyCode.Tab) && Input.GetMouseButtonDown(1)) FixTable();
+        bool held = ((Input.GetKey(KeyCode.Tab) || tableFixed) && allowed) && !PerfilAjeno.Abierto;
         if (table.gameObject.activeSelf != held) { table.gameObject.SetActive(held); nextTableRefresh = 0f; }
         if (!held || Time.unscaledTime < nextTableRefresh) return;
         nextTableRefresh = Time.unscaledTime + 0.25f;
@@ -830,8 +846,12 @@ public class MatchHud : MonoBehaviour
         if (data == null || data.columns == null) return;
 
         float h = 72f;
-        foreach (Section s in data.sections) h += (string.IsNullOrEmpty(s.title) ? 0f : 26f) + TableRowH * (s.rows.Count + 1) + 10f;
-        h += 10f;
+        foreach (Section s in data.sections)
+        {
+            h += (string.IsNullOrEmpty(s.title) ? 0f : 26f) + TableRowH + 10f;
+            foreach (Row r in s.rows) h += RowH(r);
+        }
+        h += 10f + TableHintH;
         table.sizeDelta = new Vector2(TableW, h);
 
         Image(Stretch(Node("Fondo", table)), rounded, Rgb(10, 12, 17, DarkAlpha(0.9f)), 10f);
@@ -849,22 +869,66 @@ public class MatchHud : MonoBehaviour
             }
             DrawRow(data, new Row { cells = data.columns }, y, true, 0);
             y += TableRowH;
-            for (int r = 0; r < s.rows.Count; r++, y += TableRowH) DrawRow(data, s.rows[r], y, false, r);
+            for (int r = 0; r < s.rows.Count; y += RowH(s.rows[r]), r++) DrawRow(data, s.rows[r], y, false, r);
             y += 10f;
         }
+        // US 373: cómo se ve el perfil de un jugador desde acá.
+        Text(Place(Node("Ayuda", table), 24f, y, TableW - 48f, TableHintH - 8f), labelFont, 13f, tableFixed ? Accent : Mute,
+            TextAlignmentOptions.MidlineLeft, 10f, true).text = L10n.T(tableFixed ? "gameplay.table.fixed_hint" : "gameplay.table.mouse_hint");
     }
+
+    private const float TableHintH = 34f;
+
+    private void FixTable()
+    {
+        tableFixed = true;
+        nextTableRefresh = 0f;
+        tableCursor = Cursor.lockState;
+        tableCursorVisible = Cursor.visible;
+        tableHadPause = PauseMenu.Instance != null;
+        if (tableHadPause) { tablePause = PauseMenu.Instance.AllowPause; PauseMenu.Instance.AllowPause = false; } // Esc cierra la tabla
+        BlockTable(FindObjectsByType<CameraLook>(FindObjectsSortMode.None));
+        BlockTable(FindObjectsByType<MeleeAttack>(FindObjectsSortMode.None));
+        BlockTable(FindObjectsByType<Pistola>(FindObjectsSortMode.None));
+        BlockTable(FindObjectsByType<Mitre>(FindObjectsSortMode.None));
+        BlockTable(FindObjectsByType<ArmaDeFuego>(FindObjectsSortMode.None));
+        BlockTable(FindObjectsByType<WeaponSwitcher>(FindObjectsSortMode.None));
+        if (FindAnyObjectByType<UnityEngine.EventSystems.EventSystem>() == null)
+            new GameObject("EventSystem", typeof(UnityEngine.EventSystems.EventSystem), typeof(UnityEngine.EventSystems.StandaloneInputModule));
+        Cursor.lockState = CursorLockMode.None;
+        Cursor.visible = true;
+    }
+
+    private void BlockTable<T>(T[] all) where T : Behaviour
+    {
+        foreach (T c in all) if (c != null && c.enabled) { c.enabled = false; tableBlocked.Add(c); }
+    }
+
+    private void ReleaseTable()
+    {
+        tableFixed = false;
+        nextTableRefresh = 0f;
+        foreach (Behaviour c in tableBlocked) if (c != null) c.enabled = true;
+        tableBlocked.Clear();
+        Cursor.lockState = tableCursor;
+        Cursor.visible = tableCursorVisible;
+        if (tableHadPause && PauseMenu.Instance != null) PerfilAjenoPausa.Devolver(tablePause); // el mismo Esc no abre la pausa
+    }
+
+    private static float RowH(Row row) => row.perfil != null ? TablePerfilH : TableRowH;
 
     private void DrawRow(Table data, Row row, float y, bool header, int index)
     {
+        float rowH = header ? TableRowH : RowH(row);
         if (!header)
         {
             if (row.highlight)
             {
-                Image(Place(Node("Resaltada", table), 16f, y, TableW - 32f, TableRowH), rounded, Over(WithAlpha(Accent, 0.16f), Rgb(10, 12, 17)), 3f);
-                Image(Place(Node("Borde", table), 16f, y, 3f, TableRowH), null, Accent);
+                Image(Place(Node("Resaltada", table), 16f, y, TableW - 32f, rowH), rounded, Over(WithAlpha(Accent, 0.16f), Rgb(10, 12, 17)), 3f);
+                Image(Place(Node("Borde", table), 16f, y, 3f, rowH), null, Accent);
             }
             else if (index % 2 == 0)
-                Image(Place(Node("Franja", table), 16f, y, TableW - 32f, TableRowH), rounded, White(0.035f), 3f);
+                Image(Place(Node("Franja", table), 16f, y, TableW - 32f, rowH), rounded, White(0.035f), 3f);
         }
         else Image(Place(Node("Separador", table), 24f, y + TableRowH - 1f, TableW - 48f, 1f), null, White(0.08f));
 
@@ -872,10 +936,18 @@ public class MatchHud : MonoBehaviour
         for (int c = 0; c < row.cells.Length && c < data.columns.Length; c++)
         {
             float w = data.widths != null && c < data.widths.Length ? data.widths[c] : (c == 0 ? 420f : 130f);
-            var align = c == 0 ? TextAlignmentOptions.MidlineLeft : TextAlignmentOptions.MidlineRight;
+            var align = c == 0 || (row.perfil != null && c == row.columnaPerfil) ? TextAlignmentOptions.MidlineLeft : TextAlignmentOptions.MidlineRight;
+            if (!header && row.perfil != null && c == row.columnaPerfil)
+            {
+                PerfilEnPartida.Placa(table, x, y + 3f, w - 16f, rowH - 6f, row.perfil, row.cells[c], displayFont, labelFont, rounded, row.dim);
+                // US 373, CA1: con la tabla fija, tocando el nombre se abre el perfil.
+                if (tableFixed) PerfilEnPartida.AbrirAlTocar(Place(Node("AbrirPerfil", table), x, y + 3f, w - 16f, rowH - 6f), row.perfil, row.perfil.NickName);
+                x += w;
+                continue;
+            }
             TextMeshProUGUI t = header
-                ? Text(Place(Node("Columna", table), x, y, w, TableRowH), labelFont, 12f, Mute, align, 12f, true)
-                : Text(Place(Node("Celda", table), x, y, w, TableRowH), displayFont, c == 0 ? 19f : 20f, Ink, align, c == 0 ? 2f : 0f);
+                ? Text(Place(Node("Columna", table), x, y, w, rowH), labelFont, 12f, Mute, align, 12f, true)
+                : Text(Place(Node("Celda", table), x, y, w, rowH), displayFont, c == 0 ? 19f : 20f, Ink, align, c == 0 ? 2f : 0f);
             t.text = row.cells[c];
             if (row.dim) t.alpha = 0.45f;
             x += w;

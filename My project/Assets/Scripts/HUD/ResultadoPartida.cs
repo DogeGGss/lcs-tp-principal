@@ -18,7 +18,7 @@ using static ShopUIKit;
 public class ResultadoPartida : MonoBehaviour
 {
     private const string EscenaMenu = "MenuPrincipal";
-    private const float TablaW = 920f, FilaH = 38f;
+    private const float TablaW = 920f, FilaH = 48f; // US 376: filas altas para la placa del perfil
     private static readonly float[] Anchos = { 352f, 110f, 110f, 130f, 170f }; // suman 872 (la tabla menos los márgenes)
     private static readonly string[] Columnas = { "Jugador", "Bajas", "Muertes", "Plantadas", "Desactivaciones" };
 
@@ -94,8 +94,11 @@ public class ResultadoPartida : MonoBehaviour
         // Prueba del menú (Perfil y cápsulas): los créditos se ganan jugando.
         int creditos = PerfilDatos.GanarPorPartida(gane);
         RegistroDePartida.Tactico(rondas, gane); // F24: estadísticas del jugador
+        // F32 (US 362, CA3): la experiencia del pase y los desafíos completados, arriba a la izquierda.
+        ResumenDelPase.Dibujar(root, 40f, 40f, DesafiosDePartida.TerminarMultijugador(false, gane), displayFont, labelFont, rounded);
         Text(Place(Node("Creditos", root), 1420f, 40f, 460f, 34f), labelFont, 24f, Accent, TextAlignmentOptions.MidlineRight, 12f, true).text =
             L10n.T("gameplay.dm.credits_fmt", creditos);
+        NivelEnResultado(root, NivelDeJugador.AlTerminarTactico(gane), labelFont); // US 278
 
         // CA3: tabla (se arma de nuevo cada tanto, por si llegan estadísticas atrasadas).
         tabla = Place(Node("Tabla", root), (1920f - TablaW) / 2f, 450f, TablaW, 100f);
@@ -111,6 +114,15 @@ public class ResultadoPartida : MonoBehaviour
         puntero.Clicked = VolverAlMenu;
 
         Congelar();
+    }
+
+    /// <summary>US 278: en buscar partida, el nivel de jugador nuevo y cuánto cambió, debajo de los créditos.</summary>
+    public static void NivelEnResultado(RectTransform root, int? cambio, TMP_FontAsset fuente)
+    {
+        if (cambio == null) return;
+        string signo = cambio.Value > 0 ? "+" : cambio.Value < 0 ? "−" : "±";
+        Text(Place(Node("NivelDeJugador", root), 1420f, 78f, 460f, 30f), fuente, 20f, Soft, TextAlignmentOptions.MidlineRight, 10f, true).text =
+            $"{L10n.Source("Nivel de jugador", "gameplay.")} {PerfilDatos.Numero(NivelDeJugador.Valor)}  <color=#8E96A3>({signo}{Mathf.Abs(cambio.Value)})</color>";
     }
 
     private float DibujarTabla()
@@ -145,12 +157,12 @@ public class ResultadoPartida : MonoBehaviour
                 Bajas(p).ToString(), Muertes(p).ToString(),
                 Estadistica(p, RondasTacticas.PropPlantadas).ToString(),
                 Estadistica(p, RondasTacticas.PropDesactivaciones).ToString()
-            }, false, p.IsLocal, i);
+            }, false, p.IsLocal, i, p);
         }
         return y;
     }
 
-    private void Fila(float y, string[] celdas, bool encabezado, bool resaltada, int indice)
+    private void Fila(float y, string[] celdas, bool encabezado, bool resaltada, int indice, Player jugador = null)
     {
         float ancho = TablaW - 48f;
         if (encabezado)
@@ -169,6 +181,15 @@ public class ResultadoPartida : MonoBehaviour
             float w = Anchos[c] - (c == 0 ? 10f : 0f);
             if (c == celdas.Length - 1) w -= 10f;
             var alineacion = c == 0 ? TextAlignmentOptions.MidlineLeft : TextAlignmentOptions.MidlineRight;
+            if (!encabezado && c == 0)
+            {
+                // US 376: el nombre va en la placa con el perfil del jugador.
+                PerfilEnPartida.Placa(tabla, x - 4f, y + 3f, w - 6f, h - 6f, jugador, celdas[c], displayFont, labelFont, rounded, false);
+                // US 373, CA1: tocando el nombre se abre su perfil.
+                if (jugador != null) PerfilEnPartida.AbrirAlTocar(Place(Node("AbrirPerfil", tabla), x - 4f, y + 3f, w - 6f, h - 6f), jugador, jugador.NickName);
+                x += w;
+                continue;
+            }
             TextMeshProUGUI t = encabezado
                 ? Text(Place(Node("Columna", tabla), x, y, w, h), labelFont, 13f, Mute, alineacion, 12f, true)
                 : Text(Place(Node("Celda", tabla), x, y, w, h), displayFont, c == 0 ? 20f : 21f, Ink, alineacion, c == 0 ? 2f : 0f);

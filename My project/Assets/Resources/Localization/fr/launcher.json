@@ -1,0 +1,880 @@
+{
+  "entries": [
+    {
+      "key": "launcher.already_open",
+      "text": "Le launcher est peut-être déjà ouvert dans cette installation.\n\n"
+    },
+    {
+      "key": "launcher.startup_error",
+      "text": "Impossible d'ouvrir le launcher. "
+    },
+    {
+      "key": "launcher.install_not_root",
+      "text": "Choisis un dossier dédié au jeu, pas la racine du disque."
+    },
+    {
+      "key": "launcher.install_empty",
+      "text": "Choisis un dossier vide pour installer Riftwalker."
+    },
+    {
+      "key": "launcher.account_since",
+      "text": "Compte confirmé · depuis le {0}"
+    },
+    {
+      "key": "launcher.account_verified",
+      "text": "Compte confirmé"
+    },
+    {
+      "key": "launcher.account_ready",
+      "text": "Tu te connectes en tant que {0}. Ta progression est sur le compte."
+    },
+    {
+      "key": "launcher.account_offline",
+      "text": "Impossible de rechercher les mises à jour. Tu peux jouer avec ton compte : ce que tu joues sera envoyé au retour de la connexion."
+    },
+    {
+      "key": "launcher.sign_out",
+      "text": "Se déconnecter"
+    },
+    {
+      "key": "launcher.delete_account",
+      "text": "Supprimer le compte"
+    },
+    {
+      "key": "launcher.your_account",
+      "text": "TON COMPTE"
+    },
+    {
+      "key": "launcher.sign_in_heading",
+      "text": "CONNECTE-TOI"
+    },
+    {
+      "key": "launcher.account_required",
+      "text": "Il faut un compte pour jouer. Ta progression y reste et tu la retrouves sur n'importe quel PC."
+    },
+    {
+      "key": "launcher.email",
+      "text": "E-MAIL"
+    },
+    {
+      "key": "launcher.password",
+      "text": "MOT DE PASSE"
+    },
+    {
+      "key": "launcher.forgot_password",
+      "text": "Mot de passe oublié ?"
+    },
+    {
+      "key": "launcher.sign_in_action",
+      "text": "ENTRER  →"
+    },
+    {
+      "key": "launcher.signing_in",
+      "text": "CONNEXION…"
+    },
+    {
+      "key": "launcher.signed_in",
+      "text": "Tu es connecté à ton compte."
+    },
+    {
+      "key": "launcher.no_account",
+      "text": "Pas de compte ?"
+    },
+    {
+      "key": "launcher.create_account",
+      "text": "Créer un compte"
+    },
+    {
+      "key": "launcher.new_account",
+      "text": "NOUVEAU COMPTE"
+    },
+    {
+      "key": "launcher.create_heading",
+      "text": "CRÉER UN COMPTE"
+    },
+    {
+      "key": "launcher.new_account_help",
+      "text": "Le compte part de zéro : il sauvegarde ta progression dans le cloud et te permet de jouer sur n'importe quel PC."
+    },
+    {
+      "key": "launcher.password_hint",
+      "text": "8 caractères ou plus"
+    },
+    {
+      "key": "launcher.repeat_password",
+      "text": "RÉPÈTE LE MOT DE PASSE"
+    },
+    {
+      "key": "launcher.sign_in_link",
+      "text": "Se connecter"
+    },
+    {
+      "key": "launcher.privacy_accept",
+      "text": "En créant le compte, tu acceptes "
+    },
+    {
+      "key": "launcher.privacy_link",
+      "text": "l'avis de confidentialité"
+    },
+    {
+      "key": "launcher.back",
+      "text": "Retour"
+    },
+    {
+      "key": "launcher.creating",
+      "text": "CRÉATION…"
+    },
+    {
+      "key": "launcher.account_active",
+      "text": "C'est fait : ton compte est actif."
+    },
+    {
+      "key": "launcher.account_one_step",
+      "text": "TON COMPTE · ENCORE UNE ÉTAPE"
+    },
+    {
+      "key": "launcher.verify_email",
+      "text": "CONFIRME TON E-MAIL"
+    },
+    {
+      "key": "launcher.code_sent_prefix",
+      "text": "Nous avons envoyé un code à 6 chiffres à "
+    },
+    {
+      "key": "launcher.code_sent_suffix",
+      "text": ". Si tu ne le vois pas, vérifie les spams."
+    },
+    {
+      "key": "launcher.code_wait",
+      "text": "Pas reçu ? Tu pourras en demander un autre dans 0:{0:00}"
+    },
+    {
+      "key": "launcher.code_not_received",
+      "text": "Pas reçu ? "
+    },
+    {
+      "key": "launcher.code_request",
+      "text": "Demande un autre code"
+    },
+    {
+      "key": "launcher.code_resent",
+      "text": "Nous t'avons envoyé un autre code."
+    },
+    {
+      "key": "launcher.wrong_email",
+      "text": "Erreur d'e-mail ? "
+    },
+    {
+      "key": "launcher.change_email",
+      "text": "Change-le"
+    },
+    {
+      "key": "launcher.confirm",
+      "text": "CONFIRMER"
+    },
+    {
+      "key": "launcher.confirming",
+      "text": "CONFIRMATION…"
+    },
+    {
+      "key": "launcher.recover_password",
+      "text": "RÉCUPÉRER LE MOT DE PASSE"
+    },
+    {
+      "key": "launcher.recover_help",
+      "text": "Écris ton e-mail et nous t'enverrons un code pour choisir un nouveau mot de passe."
+    },
+    {
+      "key": "launcher.send_code",
+      "text": "ENVOYER LE CODE"
+    },
+    {
+      "key": "launcher.sending",
+      "text": "ENVOI…"
+    },
+    {
+      "key": "launcher.new_password",
+      "text": "NOUVEAU MOT DE PASSE"
+    },
+    {
+      "key": "launcher.recovery_sent",
+      "text": "S'il existe un compte avec cet e-mail, tu as reçu un code à 6 chiffres."
+    },
+    {
+      "key": "launcher.code",
+      "text": "CODE"
+    },
+    {
+      "key": "launcher.change_sign_in",
+      "text": "CHANGER ET ENTRER"
+    },
+    {
+      "key": "launcher.changing",
+      "text": "CHANGEMENT…"
+    },
+    {
+      "key": "launcher.password_changed",
+      "text": "Mot de passe changé. Tu es connecté à ton compte."
+    },
+    {
+      "key": "launcher.privacy",
+      "text": "CONFIDENTIALITÉ"
+    },
+    {
+      "key": "launcher.privacy_heading",
+      "text": "AVIS DE CONFIDENTIALITÉ"
+    },
+    {
+      "key": "launcher.privacy_what",
+      "text": "CE QUE NOUS CONSERVONS"
+    },
+    {
+      "key": "launcher.privacy_what_body",
+      "text": "Ton e-mail et ton mot de passe (chiffré), ton nom, ta progression (succès, cosmétiques et monnaies), tes statistiques de partie et les avis que tu envoies."
+    },
+    {
+      "key": "launcher.privacy_why",
+      "text": "POURQUOI"
+    },
+    {
+      "key": "launcher.privacy_why_body",
+      "text": "Pour que tu retrouves ta progression sur n'importe quel PC, pour le classement mondial et la recherche de partie. Nous ne l'utilisons pas pour la publicité et ne le partageons avec personne."
+    },
+    {
+      "key": "launcher.privacy_where",
+      "text": "OÙ"
+    },
+    {
+      "key": "launcher.privacy_where_body",
+      "text": "Dans la base du jeu (Supabase). Les parties passent par les serveurs de Photon, qui reçoivent ton nom de joueur, ton identifiant de compte et ta connexion (IP)."
+    },
+    {
+      "key": "launcher.privacy_rights",
+      "text": "TES DROITS"
+    },
+    {
+      "key": "launcher.privacy_rights_body",
+      "text": "Tu peux voir tes données dans le Profil du jeu et supprimer le compte avec tout son contenu depuis ce launcher (loi argentine 25.326 sur la protection des données personnelles)."
+    },
+    {
+      "key": "launcher.understood",
+      "text": "COMPRIS"
+    },
+    {
+      "key": "launcher.sign_out_confirm",
+      "text": "SE DÉCONNECTER ?"
+    },
+    {
+      "key": "launcher.sign_out_body",
+      "text": "Ce PC n'utilisera plus ton compte et il faudra te reconnecter pour jouer. Ta progression reste sur le compte et revient quand tu te reconnectes."
+    },
+    {
+      "key": "launcher.sign_out_action",
+      "text": "SE DÉCONNECTER"
+    },
+    {
+      "key": "launcher.signing_out",
+      "text": "DÉCONNEXION…"
+    },
+    {
+      "key": "launcher.signed_out",
+      "text": "Tu t'es déconnecté. Ta progression est restée sur le compte."
+    },
+    {
+      "key": "launcher.close_game_first",
+      "text": "FERME D'ABORD LE JEU"
+    },
+    {
+      "key": "launcher.close_account_game",
+      "text": "Project Riftwalker est ouvert avec ton compte. Ferme-le et touche à nouveau « {0} »."
+    },
+    {
+      "key": "launcher.irreversible",
+      "text": "CETTE ACTION EST IRRÉVERSIBLE"
+    },
+    {
+      "key": "launcher.delete_heading",
+      "text": "SUPPRIMER LE COMPTE"
+    },
+    {
+      "key": "launcher.delete_body",
+      "text": "Ton compte, sa progression, ses monnaies, ses cosmétiques et ta place au classement seront supprimés. L'e-mail redevient libre pour créer un autre compte."
+    },
+    {
+      "key": "launcher.delete_password",
+      "text": "TON MOT DE PASSE, POUR CONFIRMER"
+    },
+    {
+      "key": "launcher.deleting",
+      "text": "SUPPRESSION…"
+    },
+    {
+      "key": "launcher.account_deleted",
+      "text": "Tu as supprimé ton compte et tout son contenu. L'e-mail est libre pour en créer un autre."
+    },
+    {
+      "key": "launcher.show_password",
+      "text": "VOIR"
+    },
+    {
+      "key": "launcher.hide_password",
+      "text": "MASQUER"
+    },
+    {
+      "key": "launcher.code_accessibility",
+      "text": "Code à 6 chiffres"
+    },
+    {
+      "key": "launcher.ready",
+      "text": "PRÊT À ENTRER"
+    },
+    {
+      "key": "launcher.preview_version",
+      "text": "Version 0.3.0 installée"
+    },
+    {
+      "key": "launcher.notes_preparing",
+      "text": "## Préparation des nouveautés\nLes notes de mise à jour apparaîtront ici."
+    },
+    {
+      "key": "launcher.team_waits",
+      "text": "TON ÉQUIPE T'ATTEND"
+    },
+    {
+      "key": "launcher.design_preview",
+      "text": "Aperçu du design"
+    },
+    {
+      "key": "launcher.preview_intro",
+      "text": "Tout au même endroit. Mets le jeu à jour, lis les nouveautés et lance ta prochaine partie."
+    },
+    {
+      "key": "launcher.play",
+      "text": "JOUER  →"
+    },
+    {
+      "key": "launcher.preview_no_install",
+      "text": "Aperçu · n'installe ni n'ouvre le jeu"
+    },
+    {
+      "key": "launcher.preview_badge",
+      "text": "APERÇU"
+    },
+    {
+      "key": "launcher.preview",
+      "text": "Aperçu"
+    },
+    {
+      "key": "launcher.preview_notes",
+      "text": "## La prochaine traversée commence ici\nUn point de rendez-vous pour préparer ta prochaine partie.\n### Ton jeu, à jour\n- Télécharge les nouvelles versions depuis ce launcher.\n- Garde tes options et ta progression.\n- Découvre ce qui a changé avant de jouer.\n### Choisis ton quai\n**Tactique · Deathmatch · Invasion**\n\nCeci est un aperçu de l'interface, pas les notes d'une version publiée."
+    },
+    {
+      "key": "launcher.not_installed",
+      "text": "Jeu non installé"
+    },
+    {
+      "key": "launcher.installed_version",
+      "text": "Version {0} installée"
+    },
+    {
+      "key": "launcher.configure",
+      "text": "CONFIGURER  →"
+    },
+    {
+      "key": "launcher.install",
+      "text": "INSTALLER  ↓"
+    },
+    {
+      "key": "launcher.return_stable",
+      "text": "REVENIR À LA STABLE  ↓"
+    },
+    {
+      "key": "launcher.update",
+      "text": "METTRE À JOUR  ↓"
+    },
+    {
+      "key": "launcher.retry_action",
+      "text": "RÉESSAYER  ↻"
+    },
+    {
+      "key": "launcher.welcome",
+      "text": "BIENVENUE SUR LE QUAI"
+    },
+    {
+      "key": "launcher.first_stop",
+      "text": "PREMIER ARRÊT"
+    },
+    {
+      "key": "launcher.something_new",
+      "text": "IL Y A DU NOUVEAU"
+    },
+    {
+      "key": "launcher.release_available",
+      "text": "{0} {1}. Installe cette version pour jouer depuis le launcher."
+    },
+    {
+      "key": "launcher.experimental_title",
+      "text": "Expérimentale"
+    },
+    {
+      "key": "launcher.new_version",
+      "text": "Nouvelle version"
+    },
+    {
+      "key": "launcher.updated_version",
+      "text": "Version {0} · À jour"
+    },
+    {
+      "key": "launcher.updates_offline_play",
+      "text": "Impossible de rechercher les mises à jour. Tu peux jouer avec la version installée."
+    },
+    {
+      "key": "launcher.configure_start",
+      "text": "Configure l'installation pour commencer."
+    },
+    {
+      "key": "launcher.experimental_badge",
+      "text": "EXPÉRIMENTALE"
+    },
+    {
+      "key": "launcher.stable_badge",
+      "text": "STABLE"
+    },
+    {
+      "key": "launcher.checking_updates",
+      "text": "Recherche des mises à jour…"
+    },
+    {
+      "key": "launcher.query_versions",
+      "text": "Consultation des versions publiées"
+    },
+    {
+      "key": "launcher.notes_unavailable_prefix",
+      "text": "## Notes indisponibles pour le moment\nGitHub n'a pas renvoyé la liste des versions. Les notes de cette version sont sur [GitHub Releases]("
+    },
+    {
+      "key": "launcher.connected",
+      "text": "CONNECTÉ À GITHUB"
+    },
+    {
+      "key": "launcher.connected_cache",
+      "text": "CONNECTÉ · NOTES ENREGISTRÉES"
+    },
+    {
+      "key": "launcher.updating_launcher",
+      "text": "Mise à jour du launcher…"
+    },
+    {
+      "key": "launcher.updating_launcher_action",
+      "text": "MISE À JOUR DU LAUNCHER…"
+    },
+    {
+      "key": "launcher.self_update_retry",
+      "text": "Le launcher n'a pas pu se mettre à jour. Il réessaiera la prochaine fois."
+    },
+    {
+      "key": "launcher.no_compatible_release",
+      "text": "Il n'y a pas encore de version compatible avec ce launcher."
+    },
+    {
+      "key": "launcher.channel_version",
+      "text": "Canal {0} · v{1}"
+    },
+    {
+      "key": "launcher.experimental",
+      "text": "expérimental"
+    },
+    {
+      "key": "launcher.stable",
+      "text": "stable"
+    },
+    {
+      "key": "launcher.no_new_format",
+      "text": "L'équipe n'a pas encore publié de version au nouveau format. Reviens plus tard."
+    },
+    {
+      "key": "launcher.offline_cached",
+      "text": "HORS LIGNE / DONNÉES ENREGISTRÉES"
+    },
+    {
+      "key": "launcher.retry_when_online",
+      "text": "Tu pourras réessayer quand tu auras une connexion."
+    },
+    {
+      "key": "launcher.updates_error_prefix",
+      "text": "Impossible de rechercher les mises à jour. "
+    },
+    {
+      "key": "launcher.play_installed",
+      "text": "Tu peux jouer avec la version installée."
+    },
+    {
+      "key": "launcher.retry_install",
+      "text": "Réessaie pour installer le jeu."
+    },
+    {
+      "key": "launcher.new_badge",
+      "text": " · NOUVEAU"
+    },
+    {
+      "key": "launcher.notes_ready_prefix",
+      "text": "## Le quai est prêt\nLes notes apparaîtront quand l'équipe publiera la première version compatible.\n\nTu peux consulter les versions précédentes sur [GitHub Releases]("
+    },
+    {
+      "key": "launcher.no_cached_notes",
+      "text": "## Aucune note enregistrée\nImpossible de charger les notes de mise à jour. Réessaie quand tu auras une connexion."
+    },
+    {
+      "key": "launcher.stable_version",
+      "text": "Version stable"
+    },
+    {
+      "key": "launcher.no_version_notes",
+      "text": "Aucune note pour cette version."
+    },
+    {
+      "key": "launcher.remaining",
+      "text": " · {0} restantes"
+    },
+    {
+      "key": "launcher.close_for_update_help",
+      "text": "Ferme le jeu pour mettre à jour. Ensuite, touche Mettre à jour."
+    },
+    {
+      "key": "launcher.downloading",
+      "text": "Téléchargement…"
+    },
+    {
+      "key": "launcher.corrupt_retry",
+      "text": "Le fichier était endommagé. Nouveau téléchargement…"
+    },
+    {
+      "key": "launcher.install_complete",
+      "text": "Installation terminée"
+    },
+    {
+      "key": "launcher.installed_can_play",
+      "text": "Version {0} installée. Tu peux jouer."
+    },
+    {
+      "key": "launcher.download_cancelled",
+      "text": "Téléchargement annulé. L'installation précédente est conservée."
+    },
+    {
+      "key": "launcher.download_resume",
+      "text": "Le téléchargement a été interrompu. Touche Mettre à jour ou Installer pour reprendre où il s'est arrêté."
+    },
+    {
+      "key": "launcher.first_setup",
+      "text": "TON PREMIER ARRÊT"
+    },
+    {
+      "key": "launcher.settings_title",
+      "text": "TON QUAI, À TA FAÇON"
+    },
+    {
+      "key": "launcher.install_launcher",
+      "text": "Installer le launcher"
+    },
+    {
+      "key": "launcher.save",
+      "text": "Enregistrer"
+    },
+    {
+      "key": "launcher.first_setup_help",
+      "text": "Installe le launcher et ses raccourcis. Tu pourras ensuite télécharger le jeu."
+    },
+    {
+      "key": "launcher.settings_help",
+      "text": "Le dossier contient le launcher et le jeu. Tes sauvegardes sont conservées à part."
+    },
+    {
+      "key": "launcher.choose_game_folder",
+      "text": "Choisis le dossier de Project Riftwalker"
+    },
+    {
+      "key": "launcher.save_error_prefix",
+      "text": "Impossible d'enregistrer : "
+    },
+    {
+      "key": "launcher.self_update_start_error",
+      "text": "Impossible de lancer la mise à jour du launcher."
+    },
+    {
+      "key": "launcher.self_update_outside",
+      "text": "Mise à jour hors de l'installation."
+    },
+    {
+      "key": "launcher.self_update_corrupt",
+      "text": "La mise à jour du launcher est endommagée."
+    },
+    {
+      "key": "launcher.self_update_open_error",
+      "text": "Impossible d'ouvrir le nouveau launcher."
+    },
+    {
+      "key": "launcher.self_update_start_timeout",
+      "text": "Le nouveau launcher n'a pas fini de démarrer."
+    },
+    {
+      "key": "launcher.bad_server_range",
+      "text": "Le serveur a renvoyé un fragment incorrect."
+    },
+    {
+      "key": "launcher.download_wrong_size",
+      "text": "La taille du téléchargement ne correspond pas à la version."
+    },
+    {
+      "key": "launcher.download_too_large",
+      "text": "Le téléchargement dépasse la taille publiée."
+    },
+    {
+      "key": "launcher.download_interrupted",
+      "text": "Le téléchargement a été interrompu. Tu peux reprendre où il s'est arrêté."
+    },
+    {
+      "key": "launcher.download_corrupt",
+      "text": "Le fichier est endommagé. Réessaie pour le télécharger à nouveau."
+    },
+    {
+      "key": "launcher.invalid_game_folder",
+      "text": "Le dossier game n'est pas une installation valide. Vérifie-le avant de continuer."
+    },
+    {
+      "key": "launcher.not_enough_space",
+      "text": "Espace insuffisant. Il manque {0:N0} Mo."
+    },
+    {
+      "key": "launcher.close_for_update",
+      "text": "Ferme le jeu pour mettre à jour."
+    },
+    {
+      "key": "launcher.verification_failed",
+      "text": "Le fichier téléchargé n'a pas passé la vérification."
+    },
+    {
+      "key": "launcher.verifying_installing",
+      "text": "Vérification et installation…"
+    },
+    {
+      "key": "launcher.zip_many_files",
+      "text": "Le ZIP contient trop de fichiers."
+    },
+    {
+      "key": "launcher.zip_bad_path",
+      "text": "Le ZIP contient un chemin non autorisé."
+    },
+    {
+      "key": "launcher.zip_too_large",
+      "text": "Le ZIP dépasse la taille décompressée publiée."
+    },
+    {
+      "key": "launcher.zip_invalid",
+      "text": "Contenu ZIP invalide."
+    },
+    {
+      "key": "launcher.zip_incomplete",
+      "text": "Fichier ZIP incomplet."
+    },
+    {
+      "key": "launcher.zip_missing_build",
+      "text": "Le ZIP ne contient pas le build complet de Project Riftwalker à sa racine."
+    },
+    {
+      "key": "launcher.build_version_mismatch",
+      "text": "La version du build ne correspond pas à la version publiée."
+    },
+    {
+      "key": "launcher.install_first",
+      "text": "Installe d'abord le jeu."
+    },
+    {
+      "key": "launcher.incompatible_release",
+      "text": "La version n'a pas un format compatible."
+    },
+    {
+      "key": "launcher.invalid_launcher_version",
+      "text": "Version du launcher invalide."
+    },
+    {
+      "key": "launcher.invalid_file_metadata",
+      "text": "Taille ou vérification du fichier invalides."
+    },
+    {
+      "key": "launcher.missing_release_manifest",
+      "text": "Le manifeste de la version est manquant."
+    },
+    {
+      "key": "launcher.missing_launcher_manifest",
+      "text": "Le manifeste du launcher est manquant."
+    },
+    {
+      "key": "launcher.invalid_launcher_manifest",
+      "text": "Le manifeste du launcher n'est pas valide."
+    },
+    {
+      "key": "launcher.manifest_too_large",
+      "text": "Manifeste trop volumineux."
+    },
+    {
+      "key": "launcher.download_foreign",
+      "text": "Le téléchargement n'appartient pas aux versions de Riftwalker."
+    },
+    {
+      "key": "launcher.outside_install",
+      "text": "Chemin hors de l'installation."
+    },
+    {
+      "key": "launcher.symlink_folder",
+      "text": "Le dossier contient un lien ; choisis un dossier normal."
+    },
+    {
+      "key": "launcher.your_account_accessibility",
+      "text": "Ton compte"
+    },
+    {
+      "key": "launcher.guide",
+      "text": "GUIDE DU JEU ↗"
+    },
+    {
+      "key": "launcher.settings",
+      "text": "⚙  RÉGLAGES"
+    },
+    {
+      "key": "launcher.settings_accessibility",
+      "text": "Ouvrir les réglages du launcher"
+    },
+    {
+      "key": "launcher.minimize",
+      "text": "Réduire"
+    },
+    {
+      "key": "launcher.close",
+      "text": "Fermer"
+    },
+    {
+      "key": "launcher.close_accessibility",
+      "text": "Fermer le launcher"
+    },
+    {
+      "key": "launcher.next_crossing",
+      "text": "LA PROCHAINE TRAVERSÉE EST À TOI"
+    },
+    {
+      "key": "launcher.choose_team",
+      "text": "Choisis ton équipe. Prépare ta prochaine partie."
+    },
+    {
+      "key": "launcher.meeting_point",
+      "text": "01 / POINT DE RENDEZ-VOUS"
+    },
+    {
+      "key": "launcher.platform_news",
+      "text": "NOUVEAUTÉS DU QUAI"
+    },
+    {
+      "key": "launcher.notes_subtitle",
+      "text": "Les nouveautés, avant d'entrer."
+    },
+    {
+      "key": "launcher.notes_version_accessibility",
+      "text": "Version des notes de mise à jour"
+    },
+    {
+      "key": "launcher.retry",
+      "text": "↻ Réessayer"
+    },
+    {
+      "key": "launcher.cancel",
+      "text": "Annuler"
+    },
+    {
+      "key": "launcher.checking",
+      "text": "RECHERCHE…"
+    },
+    {
+      "key": "launcher.next_match",
+      "text": "TA PROCHAINE PARTIE"
+    },
+    {
+      "key": "launcher.preparing_platform",
+      "text": "PRÉPARATION DU QUAI"
+    },
+    {
+      "key": "launcher.connecting",
+      "text": "CONNEXION"
+    },
+    {
+      "key": "launcher.privacy_menu",
+      "text": "Avis de confidentialité"
+    },
+    {
+      "key": "launcher.setup_choose",
+      "text": "Choisis où installer le jeu et quelles versions recevoir."
+    },
+    {
+      "key": "launcher.installation_folder",
+      "text": "DOSSIER D'INSTALLATION"
+    },
+    {
+      "key": "launcher.installation_folder_accessibility",
+      "text": "Dossier d'installation"
+    },
+    {
+      "key": "launcher.browse",
+      "text": "Choisir…"
+    },
+    {
+      "key": "launcher.experimental_versions",
+      "text": "Versions expérimentales"
+    },
+    {
+      "key": "launcher.experimental_help",
+      "text": "Essaie ce qui est en développement. Tu ne pourras jouer en ligne qu'avec des joueurs ayant exactement ta version."
+    },
+    {
+      "key": "launcher.window_size",
+      "text": "TAILLE DE LA FENÊTRE"
+    },
+    {
+      "key": "launcher.small",
+      "text": "Petite"
+    },
+    {
+      "key": "launcher.normal",
+      "text": "Normal"
+    },
+    {
+      "key": "launcher.large",
+      "text": "Grande · 16:9"
+    },
+    {
+      "key": "launcher.large_help",
+      "text": "Grande occupe presque tout l'écran."
+    },
+    {
+      "key": "launcher.language",
+      "text": "LANGUE"
+    },
+    {
+      "key": "launcher.language_hint",
+      "text": "S'applique aussi au jeu."
+    },
+    {
+      "key": "launcher.language_accessible",
+      "text": "Langue du launcher et du jeu"
+    },
+    {
+      "key": "launcher.language_save_error",
+      "text": "Impossible d'enregistrer la langue : {0}"
+    },
+    {
+      "key": "launcher.session.other_pc",
+      "text": "Ton compte a été ouvert sur un autre ordinateur. Reconnecte-toi pour jouer ici."
+    },
+    {
+      "key": "launcher.notes_spanish_only",
+      "text": "Les notes de cette version ne sont disponibles qu'en espagnol."
+    }
+  ]
+}

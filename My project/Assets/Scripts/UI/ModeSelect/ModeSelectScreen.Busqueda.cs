@@ -11,6 +11,7 @@ using Img = UnityEngine.UI.Image;
 // a los botones (el tiempo, cuántos hay, los 8 lugares, la regla para arrancar y «Cancelar») y a la derecha aparece un
 // radar del color del modo, con un punto por jugador. Sin conexión o con una versión vieja, el panel de error. La
 // búsqueda y el arranque automático (US 276) están en Multijugador.
+// F31 (US 289): Invasión también busca partida, de hasta 4 jugadores y con los de la misma dificultad.
 public partial class ModeSelectScreen
 {
     // Lo que ocupa el lugar de los botones del andén.
@@ -101,7 +102,10 @@ public partial class ModeSelectScreen
     private void BuildPanelBusqueda(Detail d, int mode, Color c, float y)
     {
         Busqueda b = d.busqueda;
-        b.panel = Place(Node("Busqueda", d.rect), 0f, y, AnchoPanel, 460f);
+        // En Invasión hay 4 lugares (2 filas en vez de 4): el panel es más bajo (US 289, CA1).
+        int lugares = Multijugador.MaxPara((GameMode)mode);
+        float menos = (8 - lugares) / 2 * 46f;
+        b.panel = Place(Node("Busqueda", d.rect), 0f, y, AnchoPanel, 460f - menos);
         Image(b.panel, rounded, new Color(0f, 0f, 0f, DarkAlpha(0.62f)), 12f, true);
         Border(b.panel, 8f, White(0.18f));
         Image(Place(Node("Barra", b.panel), 0f, 0f, AnchoPanel, 5f), null, c);
@@ -109,21 +113,21 @@ public partial class ModeSelectScreen
         b.reloj = Text(Place(Node("Reloj", b.panel), 560f, 18f, 270f, 50f), monoFont, 46f, Ink, TextAlignmentOptions.MidlineRight);
         b.grande = Text(Place(Node("Grande", b.panel), 30f, 62f, 800f, 76f), displayFont, 72f, Ink, TextAlignmentOptions.MidlineLeft, 2f, true);
         b.datos = Text(Place(Node("Datos", b.panel), 30f, 142f, 800f, 24f), monoFont, 20f, White(0.62f), TextAlignmentOptions.MidlineLeft);
-        for (int s = 0; s < 8; s++)
+        for (int s = 0; s < lugares; s++)
         {
             float lx = 30f + (s % 2) * 415f, ly = 182f + (s / 2) * 46f;
             Segment(b.panel, new Vector2(lx, ly + 45f), new Vector2(lx + 385f, ly + 45f), 1f, White(FadeAlpha(0.08f)));
             b.puntos[s] = Circle(b.panel, lx + 6f, ly + 23f, 6f, c);
             b.lugares[s] = Text(Place(Node("Lugar", b.panel), lx + 26f, ly, 360f, 46f), bodyFont, 24f, Ink, TextAlignmentOptions.MidlineLeft);
         }
-        b.pie = Text(Place(Node("Pie", b.panel), 30f, 376f, 540f, 54f), bodyFont, 21f, White(0.72f), TextAlignmentOptions.TopLeft);
+        b.pie = Text(Place(Node("Pie", b.panel), 30f, 376f - menos, 540f, 54f), bodyFont, 21f, White(0.72f), TextAlignmentOptions.TopLeft);
         b.pie.textWrappingMode = TextWrappingModes.Normal;
-        b.progreso = Place(Node("Progreso", b.panel), 30f, 432f, 520f, 6f);
+        b.progreso = Place(Node("Progreso", b.panel), 30f, 432f - menos, 520f, 6f);
         Image(b.progreso, rounded, White(FadeAlpha(0.12f)), 3f);
         b.progresoLleno = Place(Node("Lleno", b.progreso), 0f, 0f, 0f, 6f);
         Image(b.progresoLleno, rounded, c, 3f);
         RectTransform salir = ButtonRect(b.panel, 0f, 0f, "Cancelar", false, c, () => CancelarBusqueda(mode), 26f, 60f);
-        salir.anchoredPosition = new Vector2(AnchoPanel - 30f - salir.sizeDelta.x / 2f, -(378f + 30f));
+        salir.anchoredPosition = new Vector2(AnchoPanel - 30f - salir.sizeDelta.x / 2f, -(378f - menos + 30f));
         b.salir = salir.GetComponentInChildren<TextMeshProUGUI>();
         b.panel.gameObject.SetActive(false);
     }
@@ -228,6 +232,8 @@ public partial class ModeSelectScreen
         if (net.Buscando || (suya && net.EnPartidaPublica)) MostrarBloque(d, Bloque.Busqueda);
         else if (suya) { MostrarBloque(d, Bloque.Sala); RefreshRoom(d, mode); }
         else MostrarBloque(d, Bloque.Acciones);
+        // US 289, CA3: en Invasión las tarjetas muestran la dificultad de la sala mientras se está en una.
+        if (mode == 2) PintarDificultad(suya ? net.DificultadSala : MatchSettings.Difficulty);
     }
 
     private void MostrarBloque(Detail d, Bloque bloque)
@@ -295,9 +301,9 @@ public partial class ModeSelectScreen
         float p = Mathf.Repeat(now / 2.2f, 1f), e = EaseOut(p);
         float t = Mathf.Repeat(now / 3.4f, 1f);
         float brilloX = t < 0.55f ? -160f : Mathf.Lerp(-160f, AnchoBuscar + 40f, (t - 0.55f) / 0.45f);
-        for (int i = 0; i < 2; i++)
+        for (int i = 0; i < 3; i++)
         {
-            Busqueda b = details[i].busqueda;
+            Busqueda b = details[i] != null ? details[i].busqueda : null;
             if (b == null || !b.acciones.gameObject.activeInHierarchy) continue;
             b.pulso.sizeDelta = new Vector2(AnchoBuscar + 44f * e, AltoBuscar + 44f * e);
             b.pulso.GetComponent<Img>().color = WithAlpha(ModeColor[i], FadeAlpha(0.5f * (1f - p)));
@@ -305,11 +311,11 @@ public partial class ModeSelectScreen
             b.aguja.localEulerAngles = new Vector3(0f, 0f, -360f * now / 2.4f);
         }
 
-        int modo = open == 0 || open == 1 ? open : -1;
+        int modo = open >= 0 && details[open].busqueda != null ? open : -1;
         bool ver = modo >= 0 && details[modo].busqueda.bloque == Bloque.Busqueda;
         radarGroup.alpha = Mathf.MoveTowards(radarGroup.alpha, ver ? 1f : 0f, dt / 0.3f);
         // Mientras se ve el radar, el dibujo del andén (la grilla y el sitio del Táctico, la mira del Deathmatch) se apaga.
-        for (int i = 0; i < 2; i++)
+        for (int i = 0; i < 3; i++)
             if (andenes[i].figura != null) andenes[i].figura.alpha = 1f - (i == radarModo ? radarGroup.alpha : 0f);
         if (!ver) return;
         PintarBusqueda(details[modo], modo, now);
@@ -328,19 +334,22 @@ public partial class ModeSelectScreen
         float empezar = net.FaltaParaEmpezar, conMinimo = net.FaltaConMinimo;
         bool encontrada = empezar >= 0f;
 
+        int maximo = Multijugador.MaxPara((GameMode)mode), espera = Multijugador.EsperaPara((GameMode)mode);
         L10n.BindSource(b.titulo, encontrada ? "Partida encontrada" : "Buscando partida","ui.");
-        b.reloj.text = encontrada ? $"{n} / {Multijugador.MaxJugadores}" : Reloj(net.SegundosBuscando);
+        b.reloj.text = encontrada ? $"{n} / {maximo}" : Reloj(net.SegundosBuscando);
         int segundos = Mathf.CeilToInt(empezar);
         b.grande.text = encontrada
             ? segundos > 0 ? L10n.T("ui.search.starts",ModeHex[mode],segundos) : L10n.Source("Cargando el mapa…","ui.")
-            : L10n.T("ui.search.players",ModeHex[mode],n,Multijugador.MaxJugadores);
+            : L10n.T("ui.search.players",ModeHex[mode],n,maximo);
         ConfigRed.Mapa mapa = enSala ? net.MapaActual : null;
+        // US 289, CA1: en Invasión, también la dificultad (solo se junta con los de la misma).
+        string titulo = L10n.Source(Titles[mode],"ui.") + (mode == 2 ? " · " + L10n.Source(DifficultyName[(int)MatchSettings.Difficulty], "ui.") : "");
         b.datos.text = !enSala ? L10n.Source("Conectando con el servidor…","ui.")
-            : encontrada && mapa != null ? $"{L10n.Source(Titles[mode],"ui.")} · {mapa.nombre} · {Region()}"
-            : L10n.T("ui.search.mode_version",L10n.Source(Titles[mode],"ui."),Region(),Application.version);
+            : encontrada && mapa != null ? $"{titulo} · {mapa.nombre} · {Region()}"
+            : L10n.T("ui.search.mode_version",titulo,Region(),Application.version);
 
         float latido = 0.3f + 0.7f * (0.5f + 0.5f * Mathf.Cos(now * Mathf.PI * 2f / 1.6f));
-        for (int s = 0; s < 8; s++)
+        for (int s = 0; s < maximo && s < 8; s++)
         {
             bool ocupado = s < n;
             string nombre = ocupado ? jugadores[s].nombre + (jugadores[s].vos ? L10n.Source(" <color=#FFFFFF80>(vos)</color>","ui.") : "") : L10n.Source("Buscando…","ui.");
@@ -352,9 +361,10 @@ public partial class ModeSelectScreen
         bool barra = !encontrada && conMinimo >= 0f;
         b.pie.text = encontrada ? L10n.Source("Si entra alguien más, se suma. Si sale alguien y quedan menos que el mínimo, sigue buscando.","ui.")
             : barra ? L10n.T("ui.search.minimum_ready",L10n.Source(Titles[mode],"ui."),Reloj(Mathf.Ceil(conMinimo)))
-            : L10n.T("ui.search.minimum_wait",Multijugador.MaxJugadores,Multijugador.MinimoPara((GameMode)mode),Multijugador.EsperaConMinimo);
+            : mode == 2 ? L10n.T("ui.search.minimum_wait_invasion",maximo,espera)
+            : L10n.T("ui.search.minimum_wait",maximo,Multijugador.MinimoPara((GameMode)mode),espera);
         b.progreso.gameObject.SetActive(barra);
-        if (barra) b.progresoLleno.sizeDelta = new Vector2(520f * (1f - conMinimo / Multijugador.EsperaConMinimo), 6f);
+        if (barra) b.progresoLleno.sizeDelta = new Vector2(520f * (1f - conMinimo / espera), 6f);
         L10n.BindSource(b.salir, encontrada ? "Salir" : "Cancelar","ui.");
 
         // El radar: del color del modo, más rápido con la partida encontrada.

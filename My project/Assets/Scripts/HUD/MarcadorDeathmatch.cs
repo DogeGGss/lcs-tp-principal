@@ -73,21 +73,23 @@ public class MarcadorDeathmatch : MonoBehaviour
         var tabla = new MatchHud.Table
         {
             corner = L10n.T("gameplay.dm.header_fmt", Meta),
-            columns = new[] { "Jugador", "Bajas", "Muertes", "Diferencia" },
-            widths = new[] { 470f, 110f, 110f, 110f }
+            columns = new[] { "", "Jugador", "Bajas", "Muertes", "Diferencia" },
+            widths = new[] { 30f, 440f, 110f, 110f, 110f }
         };
         var seccion = new MatchHud.Section();
         for (int i = 0; i < puestos.Count; i++)
         {
             Player p = puestos[i];
             int b = PartidaDeathmatch.Bajas(p.ActorNumber), m = PartidaDeathmatch.Muertes(p.ActorNumber), dif = b - m;
-            string nombre = $"<color=#8E96A3>{i + 1}.</color>  {p.NickName}" + (p.IsLocal ? L10n.T("gameplay.dm.you_tag")
+            string nombre = p.NickName + (p.IsLocal ? L10n.T("gameplay.dm.you_tag")
                 : p.IsInactive ? L10n.T("gameplay.dm.disconnected_tag") : ""); // US 195, CA1
             seccion.rows.Add(new MatchHud.Row
             {
-                cells = new[] { nombre, b.ToString(), m.ToString(), dif > 0 ? $"+{dif}" : dif.ToString() },
+                cells = new[] { $"<color=#8E96A3>{i + 1}</color>", nombre, b.ToString(), m.ToString(), dif > 0 ? $"+{dif}" : dif.ToString() },
                 highlight = p.IsLocal,
-                dim = p.IsInactive
+                dim = p.IsInactive,
+                perfil = p, // US 376
+                columnaPerfil = 1
             });
         }
         tabla.sections.Add(seccion);

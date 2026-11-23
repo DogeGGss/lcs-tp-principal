@@ -51,7 +51,9 @@ public class IdiomaEnPantallaTests
         yield return Esperar(1f);
         OpcionesPantalla opciones = Object.FindAnyObjectByType<OpcionesPantalla>();
         Assert.IsNotNull(opciones, "No se abrió Opciones");
-        var pestanas = opciones.GetComponentsInChildren<UnityEngine.UI.Button>(true).Where(b => b.name.StartsWith("Btn")).ToList();
+        // Solo las pestañas: Guardar, Restablecer y Volver cierran Opciones o abren un aviso, y las capturas siguientes saldrían de otra pantalla.
+        string[] soloPestanas = { "BtnGraficos", "BtnControles", "BtnSonido", "BtnMira", "BtnIdioma" };
+        var pestanas = opciones.GetComponentsInChildren<UnityEngine.UI.Button>(true).Where(b => soloPestanas.Contains(b.name)).ToList();
         Assert.IsNotEmpty(pestanas, "Opciones no tiene pestañas");
         var todos = new List<string>();
         foreach (var pestana in pestanas)
@@ -186,12 +188,12 @@ public class IdiomaEnPantallaTests
         Assert.IsEmpty(enEspanol, DetectorDeIdioma.Mensaje(enEspanol));
     }
 
-    private static IEnumerator Menu()
+    internal static IEnumerator Menu()
     {
         yield return Escena("MenuPrincipal", MatchSettings.Mode, 2f);
     }
 
-    private static IEnumerator Pantalla(System.Func<MenuRiftwalker, PantallaBase> cual)
+    internal static IEnumerator Pantalla(System.Func<MenuRiftwalker, PantallaBase> cual)
     {
         yield return Menu();
         MenuRiftwalker menu = Object.FindAnyObjectByType<MenuRiftwalker>();
@@ -200,28 +202,35 @@ public class IdiomaEnPantallaTests
         yield return Esperar(1f);
     }
 
-    private static MenuUIController MenuUI()
+    internal static MenuUIController MenuUI()
     {
         MenuUIController ui = Object.FindAnyObjectByType<MenuUIController>();
         Assert.IsNotNull(ui, "No hay MenuUIController en el menú");
         return ui;
     }
 
-    private static IEnumerator Escena(string escena, GameMode modo, float espera)
+    internal static IEnumerator Escena(string escena, GameMode modo, float espera)
     {
         if (!Application.CanStreamedLevelBeLoaded(escena)) Assert.Ignore($"La escena {escena} no está en el Scene List del build.");
         MatchSettings.Mode = modo;
+        SinAvisosEncima();
         yield return SceneManager.LoadSceneAsync(escena);
         yield return Esperar(espera);
     }
 
-    private static IEnumerator Esperar(float segundos)
+    // El «¿Cómo te llamás?» se abre solo la primera vez y taparía las capturas: en las pruebas el jugador ya tiene nombre.
+    internal static void SinAvisosEncima()
+    {
+        if (!PlayerProfile.HasName) PlayerProfile.TrySetName("Riftwalker", out _);
+    }
+
+    internal static IEnumerator Esperar(float segundos)
     {
         float hasta = Time.realtimeSinceStartup + segundos;
         while (Time.realtimeSinceStartup < hasta) yield return null;
     }
 
-    private static IEnumerator EsperarHasta(System.Func<bool> condicion, float segundos)
+    internal static IEnumerator EsperarHasta(System.Func<bool> condicion, float segundos)
     {
         float hasta = Time.realtimeSinceStartup + segundos;
         while (!condicion() && Time.realtimeSinceStartup < hasta) yield return null;

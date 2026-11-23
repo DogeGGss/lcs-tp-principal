@@ -44,10 +44,12 @@ public static class CaminosUniversidad
         new Camino("Del2BAl3B", 4f, false, 224.5f, 212.5f, 239.5f, 231.5f),
         // Pasaje entre las Aulas Anexas 2A y el Módulo 2A, hasta la Biblioteca.
         new Camino("PasajeAulasAnexas", 2.8f, false, 224f, 203.35f, 183f, 203.35f),
-        // Del cruce de la escalinata (cota 1,6) a la Biblioteca, entre el bloque de abajo y el Módulo 2A.
-        new Camino("DelCruceALaBiblioteca", 4f, false, 198.5f, 148.5f, 180f, 177f, 176.5f, 195.5f),
-        // Del cruce a José León Suárez, por debajo de la Biblioteca y arriba de la Escuela Infantil.
-        new Camino("DelCruceALeonSuarez", 4f, false, 198.5f, 148.5f, 181f, 158f, 171f, 166f, 156f, 166f, 148f, 170f, 97f, 170f),
+        // Del cruce de la escalinata (cota 1,6) a la Biblioteca, entre el bloque de abajo y el Módulo 2A: llega a la
+        // explanada de la entrada (US 336).
+        new Camino("DelCruceALaBiblioteca", 4f, false, 198.5f, 148.5f, 180f, 177f, 177f, 184.5f),
+        // Del cruce a José León Suárez, por debajo de la Biblioteca y arriba de la Escuela Infantil; frente a la casona
+        // pasa pegado a la recova (US 336).
+        new Camino("DelCruceALeonSuarez", 4f, false, 198.5f, 148.5f, 181f, 158f, 171f, 163.9f, 156f, 163.9f, 148f, 170f, 97f, 170f),
         // Del portón de Gutiérrez (entre los muretes) al cruce, por la escalinata.
         new Camino("DelPortonAlCruce", 4f, false, 190.2f, 77.3f, 192f, 95f, 196f, 120f, 198.5f, 148.5f),
         // Del cruce a la punta noroeste del Módulo 1.
@@ -174,6 +176,28 @@ public static class CaminosUniversidad
                 }
             if (cambio) td.SetDetailLayer(x0, z0, capa, datos);
         }
+    }
+
+    // El trazado de un camino, para los armadores de los edificios que lo tocan.
+    public static List<Vector2> LineaDe(string nombre)
+    {
+        var c = Caminos.FirstOrDefault(x => x.nombre == nombre);
+        return c == null ? null : Linea(c);
+    }
+
+    // Rehace solo la losa de un camino ya armado, cuando un edificio corrige su trazado: reemplaza su malla en el
+    // contenedor y en el objeto. El pasto lo acomoda el armador del edificio.
+    public static void RehacerCamino(Transform mapa, string nombre)
+    {
+        var c = Caminos.FirstOrDefault(x => x.nombre == nombre); var t = mapa.Find(Raiz + "/" + nombre);
+        var contenedor = AssetDatabase.LoadMainAssetAtPath(MeshPath);
+        if (c == null || t == null || contenedor == null) return;
+        var mf = t.GetComponent<MeshFilter>(); if (mf == null) return;
+        var vieja = mf.sharedMesh; var mesh = Losa(c, Linea(c), Terrain.activeTerrain);
+        AssetDatabase.AddObjectToAsset(mesh, contenedor);
+        mf.sharedMesh = mesh; var mc = t.GetComponent<MeshCollider>(); if (mc != null) mc.sharedMesh = mesh;
+        if (vieja != null && vieja != contenedor && AssetDatabase.GetAssetPath(vieja) == MeshPath) AssetDatabase.RemoveObjectFromAsset(vieja);
+        EditorUtility.SetDirty(t.gameObject); EditorUtility.SetDirty(contenedor);
     }
 
     [MenuItem("Riftwalker/Universidad/Caminos que faltan")]

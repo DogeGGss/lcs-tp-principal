@@ -15,7 +15,10 @@ using UnityEngine.Rendering;
 //   paredes.
 // - Mientras disparan vuelan alrededor del jugador (de costado, cambiando de sentido de a ratos o si algo los frena),
 //   acomodándose a mitad de su distancia, y de a ratos toman más altura (hasta 2,5 m más) y vuelven a bajar.
-// - Flotan a alturaDeVuelo con un leve vaivén; al morir caen al piso. Aturdidos (la flash, US 038) no disparan.
+// - Flotan a alturaDeVuelo con un leve vaivén (bajando para pasar bajo techos y puertas: no los atraviesan); al morir
+//   caen al piso. Aturdidos (la flash, US 038) no disparan.
+// F31 (US 290, CA4): en Invasión cooperativa la mira, el rayo y las bolas salen en todas las computadoras
+// (InvasoresEnRed) y cada una le hace el daño al jugador de su computadora.
 // Los valores salen de TipoDeNpc (sección "A distancia"). Lo agrega Npc.Crear (después de la persecución: la usa).
 [RequireComponent(typeof(Npc))]
 public class DistanciaDeNpc : MonoBehaviour
@@ -57,6 +60,7 @@ public class DistanciaDeNpc : MonoBehaviour
     private void Start()
     {
         altura = npc.Tipo != null ? npc.Tipo.alturaDeVuelo : 0f;
+        flotando = altura;
         Transform modelo = npc.Modelo != null ? npc.Modelo : transform;
         ojo = Buscar(modelo, "EyeBall") ?? Buscar(modelo, "Eye") ?? Buscar(modelo, "Head");
         boca = Buscar(modelo, "Jaw") ?? ojo;
@@ -76,6 +80,7 @@ public class DistanciaDeNpc : MonoBehaviour
 
     private void Update()
     {
+        if (npc != null && npc.EsEspejo) { MiraRemota(); return; } // F31 (US 290): la copia solo muestra la mira
         if (persecucion == null) persecucion = GetComponent<PersecucionDeNpc>();
         if (npc == null || npc.Tipo == null || persecucion == null) return;
 
@@ -190,10 +195,63 @@ public class DistanciaDeNpc : MonoBehaviour
                 }
         }
         extra = Mathf.MoveTowards(extra, metaExtra, Sube * Time.deltaTime);
+        // No atraviesa techos, dinteles ni pisos de arriba: su agente va por el piso (pasa por las puertas), pero el
+        // cuerpo flota más arriba. Mira cuánto lugar hay arriba de donde está y de adonde va, y baja para pasar.
+        if (Time.time >= proximoTecho) { proximoTecho = Time.time + 0.1f; libre = LugarArriba(); }
+        float deseada = altura + extra;
+        float tope = Mathf.Max(0f, libre - Cuerpo() - 0.15f);
+        float meta = Mathf.Min(deseada, tope);
+        flotando = Mathf.MoveTowards(flotando, meta, (meta < flotando ? BajaParaPasar : Sube) * Time.deltaTime);
+        if (flotando > tope) flotando = tope; // (si no llegó a bajar a tiempo, no se mete en el techo)
         Vector3 p = npc.Modelo.localPosition;
-        p.y = altura + extra + Mathf.Sin((Time.time + vaivenDesde) * 2f) * Vaiven;
+        float vaiven = flotando + Vaiven < tope ? Mathf.Sin((Time.time + vaivenDesde) * 2f) * Vaiven : 0f;
+        p.y = flotando + vaiven;
         npc.Modelo.localPosition = p;
-        if (capsula != null) capsula.center = centroCapsula + Vector3.up * extra;
+        if (capsula != null) capsula.center = centroCapsula + Vector3.up * (flotando - altura);
+    }
+
+    // F11: m que baja por segundo para pasar bajo un techo o una puerta.
+    private const float BajaParaPasar = 6f;
+    private float flotando = -1f, libre = float.MaxValue, proximoTecho, cuerpo = -1f;
+    private static readonly RaycastHit[] techos = new RaycastHit[8];
+
+    // m libres desde el piso hasta lo primero que hay arriba, acá y un poco más adelante (hacia donde va).
+    private float LugarArriba()
+    {
+        float menor = Arriba(transform.position);
+        NavMeshAgent agente = persecucion != null ? persecucion.Agente : null;
+        Vector3 va = agente != null && agente.enabled ? agente.velocity : Vector3.zero;
+        va.y = 0f;
+        if (va.sqrMagnitude > 0.01f) menor = Mathf.Min(menor, Arriba(transform.position + va.normalized * 1.2f));
+        return menor;
+    }
+
+    private float Arriba(Vector3 piso)
+    {
+        int n = Physics.RaycastNonAlloc(piso + Vector3.up * 0.2f, Vector3.up, techos, 12f, Physics.DefaultRaycastLayers, QueryTriggerInteraction.Ignore);
+        float menor = float.MaxValue;
+        for (int i = 0; i < n; i++)
+        {
+            Collider c = techos[i].collider;
+            if (c == null || c.transform.IsChildOf(transform) || c.GetComponentInParent<Npc>() != null || c is CharacterController) continue;
+            menor = Mathf.Min(menor, techos[i].distance + 0.2f);
+        }
+        return menor;
+    }
+
+    // Lo alto del cuerpo que flota (sus partes que se ven), medido una vez.
+    private float Cuerpo()
+    {
+        if (cuerpo > 0f) return cuerpo;
+        bool hay = false;
+        Bounds b = default;
+        foreach (Renderer r in npc.Modelo.GetComponentsInChildren<Renderer>())
+        {
+            if (!r.enabled || r is ParticleSystemRenderer || r is LineRenderer || r is TrailRenderer) continue;
+            if (!hay) { b = r.bounds; hay = true; } else b.Encapsulate(r.bounds);
+        }
+        cuerpo = hay ? Mathf.Clamp(b.max.y - npc.Modelo.position.y, 0.4f, 3f) : 1.2f;
+        return cuerpo;
     }
 
     private void Caer()
@@ -233,6 +291,7 @@ public class DistanciaDeNpc : MonoBehaviour
         bolasTiradas = 0;
         apuntaA = Pecho(jugador);
         SonidoDeNpc.Uno(npc.Tipo.sonidoDeCarga, transform, 35f);
+        if (npc.Tipo.aDistancia == AtaqueADistancia.RayoDelOjo) InvasoresEnRed.AvisarCargaDelRayo(npc, jugador); // US 290, CA4
         Animar(npc.Tipo.quietoEnCombate != null ? npc.Tipo.quietoEnCombate : npc.Tipo.quieto);
     }
 
@@ -260,7 +319,9 @@ public class DistanciaDeNpc : MonoBehaviour
     {
         if (Time.time < proximaBola) return;
         Vector3 desde = BocaPos() + transform.forward * 0.3f;
-        BolaDeEnergia.Lanzar(desde, Pecho(jugador), npc.Tipo, transform);
+        Vector3 pecho = Pecho(jugador);
+        BolaDeEnergia.Lanzar(desde, pecho, npc.Tipo, transform);
+        InvasoresEnRed.AvisarBolaDeEnergia(npc, desde, pecho); // F31 (US 290, CA4): sale en todas las computadoras
         SonidoDeNpc.Uno(npc.Tipo.sonidoDeDisparo, transform, 40f);
         Golpe();
         bolasTiradas++;
@@ -275,7 +336,7 @@ public class DistanciaDeNpc : MonoBehaviour
         foreach (PlayerMovement jugador in Tocados(desde, fin))
         {
             HealthSystem vida = jugador.GetComponent<HealthSystem>();
-            if (vida != null && vida.currentHealth > 0)
+            if (vida != null && vida.currentHealth > 0 && !MeleeAttack.FrenaDisparo(vida, desde)) // US 395, CA6: la guardia de la katana
             {
                 HealthSystem.DamageOrigin = desde;
                 HealthSystem.DamageSource = npc.Tipo.nombre;
@@ -285,6 +346,7 @@ public class DistanciaDeNpc : MonoBehaviour
         }
         BorrarMira();
         Rayo.Mostrar(desde, fin, npc.Tipo.colorADistancia);
+        InvasoresEnRed.AvisarRayo(npc, desde, fin); // F31 (US 290, CA4): en cada computadora le pega a su jugador
         SonidoDeNpc.Uno(npc.Tipo.sonidoDeDisparo, transform, 50f);
         SonidoDeNpc.En(npc.Tipo.sonidoDeImpactoADistancia, fin, 30f);
         Golpe();
@@ -392,6 +454,51 @@ public class DistanciaDeNpc : MonoBehaviour
             return false;
         }
         return true;
+    }
+
+    // ---------- La copia en otra computadora (F31, US 290, CA4) ----------
+
+    private Transform objetivoRemoto;
+    private float cargaRemotaDesde = -10f;
+
+    /// <summary>El del anfitrión empezó a cargar el rayo contra ese jugador: la copia muestra la mira.</summary>
+    public void CargaRemota(Transform jugador)
+    {
+        objetivoRemoto = jugador;
+        cargaRemotaDesde = Time.time;
+        if (jugador != null) apuntaA = Pecho(jugador);
+    }
+
+    /// <summary>El del anfitrión disparó el rayo: se ve en esta computadora y, si toca al jugador de acá, le hace su daño.</summary>
+    public void RayoRemoto(Vector3 desde, Vector3 fin)
+    {
+        cargaRemotaDesde = -10f;
+        BorrarMira();
+        if (npc == null || npc.Tipo == null) return;
+        foreach (PlayerMovement jugador in Tocados(desde, fin))
+        {
+            HealthSystem vida = jugador.GetComponent<HealthSystem>();
+            if (vida == null || vida.currentHealth <= 0) continue;
+            if (MeleeAttack.FrenaDisparo(vida, desde)) continue; // US 395, CA6: la guardia de la katana
+            HealthSystem.DamageOrigin = desde;
+            HealthSystem.DamageSource = npc.Tipo.nombre;
+            vida.TakeDamage(npc.Danio(npc.Tipo.danioADistancia));
+            HealthSystem.DamageSource = null;
+        }
+        Rayo.Mostrar(desde, fin, npc.Tipo.colorADistancia);
+        SonidoDeNpc.En(npc.Tipo.sonidoDeImpactoADistancia, fin, 30f);
+    }
+
+    // Como la del anfitrión: sigue al jugador y el último cuarto de segundo se queda quieta.
+    private void MiraRemota()
+    {
+        float t = Time.time - cargaRemotaDesde;
+        if (!npc.Vivo || t > CargaRayo + 0.5f) { if (mira != null && mira.enabled) BorrarMira(); return; }
+        if (objetivoRemoto != null && t < CargaRayo - MiraQuieta) apuntaA = Pecho(objetivoRemoto);
+        Vector3 desde = OjoPos();
+        float latido = 0.5f + 0.5f * Mathf.Sin(t * 30f);
+        float k = Mathf.Clamp01(t / CargaRayo);
+        DibujarMira(desde, HastaDondeLlega(desde, apuntaA), Mathf.Lerp(0.03f, 0.09f, k), Color.white * Mathf.Lerp(0.25f, 0.6f + 0.4f * latido, k));
     }
 
     // ---------- La mira (US 285) ----------
@@ -537,7 +644,7 @@ public class BolaDeEnergia : MonoBehaviour
             if (jugador != null)
             {
                 HealthSystem vida = jugador.GetComponent<HealthSystem>();
-                if (vida != null && vida.currentHealth > 0)
+                if (vida != null && vida.currentHealth > 0 && !MeleeAttack.FrenaDisparo(vida, antes)) // US 395, CA6: la guardia de la katana
                 {
                     HealthSystem.DamageOrigin = antes;
                     HealthSystem.DamageSource = tipo != null ? tipo.nombre : null;
@@ -654,8 +761,8 @@ public static class Destellos
         }
     }
 
-    /// <summary>Un chispazo en ese lugar (donde pega un rayo o revienta una bola).</summary>
-    public static void En(Vector3 lugar, Color color, int chispas)
+    /// <summary>Un chispazo en ese lugar (donde pega un rayo o revienta una bola). tamano: el del fogonazo (m).</summary>
+    public static void En(Vector3 lugar, Color color, int chispas, float tamano = 1.2f)
     {
         var go = new GameObject("Destello");
         go.transform.position = lugar;
@@ -665,7 +772,7 @@ public static class Destellos
         m.duration = 0.1f;
         m.startLifetime = 0.18f;
         m.startSpeed = 0f;
-        m.startSize = 1.2f;
+        m.startSize = tamano;
         m.maxParticles = 1;
         var e = flash.emission;
         e.rateOverTime = 0f;

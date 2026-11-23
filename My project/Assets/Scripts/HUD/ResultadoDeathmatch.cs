@@ -15,7 +15,7 @@ public class ResultadoDeathmatch : MonoBehaviour
 {
     private const string EscenaMenu = "MenuPrincipal";
     private const float Espera = 2f;
-    private const float TablaW = 920f, TablaY = 384f, FilaH = 38f;
+    private const float TablaW = 920f, TablaY = 384f, FilaH = 48f; // US 376: filas altas para la placa del perfil
     private static readonly float[] Anchos = { 56f, 306f, 150f, 150f, 190f }; // suman 852 (la tabla menos márgenes)
     private static readonly string[] Columnas = { "#", "Jugador", "Bajas", "Muertes", "Bajas de cabeza" };
 
@@ -93,8 +93,11 @@ public class ResultadoDeathmatch : MonoBehaviour
                     PartidaDeathmatch.Actual.Ganador == Photon.Pun.PhotonNetwork.LocalPlayer.ActorNumber;
         int creditos = PerfilDatos.GanarPorPartida(gane);
         RegistroDePartida.Deathmatch(gane); // F24: estadísticas del jugador
+        // F32 (US 362, CA3): la experiencia del pase y los desafíos completados, arriba a la izquierda.
+        ResumenDelPase.Dibujar(root, 40f, 40f, DesafiosDePartida.TerminarMultijugador(true, gane), displayFont, labelFont, rounded);
         Text(Place(Node("Creditos", root), 1420f, 40f, 460f, 34f), labelFont, 24f, Accent, TextAlignmentOptions.MidlineRight, 12f, true).text =
             L10n.T("gameplay.dm.credits_fmt", creditos);
+        ResultadoPartida.NivelEnResultado(root, NivelDeJugador.AlTerminarDeathmatch(), labelFont); // US 278
 
         tabla = Place(Node("Tabla", root), (1920f - TablaW) / 2f, TablaY, TablaW, 100f);
 
@@ -163,13 +166,13 @@ public class ResultadoDeathmatch : MonoBehaviour
                 p.IsLocal ? $"{p.NickName} <color=#8E96A3>(vos)</color>" : p.NickName,
                 PartidaDeathmatch.Bajas(actor).ToString(), PartidaDeathmatch.Muertes(actor).ToString(),
                 PartidaDeathmatch.Cabezas(actor).ToString()
-            }, false, p.IsLocal, i, i == 0);
+            }, false, p.IsLocal, i, i == 0, p);
         }
 
         boton.anchoredPosition = new Vector2(830f, -(TablaY + alto + 36f));
     }
 
-    private void Fila(float y, string[] celdas, bool encabezado, bool resaltada, int indice, bool ganador)
+    private void Fila(float y, string[] celdas, bool encabezado, bool resaltada, int indice, bool ganador, Player jugador = null)
     {
         float ancho = TablaW - 48f;
         if (encabezado)
@@ -188,6 +191,24 @@ public class ResultadoDeathmatch : MonoBehaviour
             float w = Anchos[c];
             var alineacion = c <= 1 ? TextAlignmentOptions.MidlineLeft : TextAlignmentOptions.MidlineRight;
             Color tinta = c == 0 ? (ganador ? Accent : Mute) : Ink;
+            if (!encabezado && c == 1)
+            {
+                // US 376: el nombre va en la placa con el perfil del jugador; "Ganador", a la derecha de la placa.
+                PerfilEnPartida.Placa(tabla, x - 4f, y + 3f, w - 6f, h - 6f, jugador, celdas[c], displayFont, labelFont, rounded, false);
+                // US 373, CA1: tocando el nombre se abre su perfil.
+                if (jugador != null) PerfilEnPartida.AbrirAlTocar(Place(Node("AbrirPerfil", tabla), x - 4f, y + 3f, w - 6f, h - 6f), jugador, jugador.NickName);
+                if (ganador)
+                {
+                    RectTransform chip = Place(Node("Ganador", tabla), 0f, y + (h - 20f) / 2f, 10f, 20f);
+                    Image(chip, rounded, Accent, 3f);
+                    TextMeshProUGUI ct = Text(Stretch(Node("Texto", chip)), labelFont, 13f, AccentInk, TextAlignmentOptions.Center, 10f);
+                    ct.text = "GANADOR";
+                    float cw = Width(ct, "GANADOR") + 16f;
+                    Place(chip, x + w - 18f - cw, y + (h - 20f) / 2f, cw, 20f);
+                }
+                x += w;
+                continue;
+            }
             TextMeshProUGUI t = encabezado
                 ? Text(Place(Node("Columna", tabla), x, y, w, h), labelFont, 13f, Mute, alineacion, 12f)
                 : Text(Place(Node("Celda", tabla), x, y, w, h), displayFont, c == 1 ? 20f : 21f, tinta, alineacion, c == 1 ? 2f : 0f);

@@ -29,6 +29,8 @@ public class PlayerMovement : MonoBehaviour
     public float alturaMaximaEscalon = 0.5f;
 
     [HideInInspector] public float speedMultiplier = 1f;
+    /// <summary>US 395: un freno que se suma al del arma (la guardia de la katana). 1 = sin freno.</summary>
+    [HideInInspector] public float frenoExtra = 1f;
 
     // Para el multijugador (US 025): los demás repiten el salto y el aterrizaje en su copia de este jugador.
     public event System.Action Jumped, Landed;
@@ -42,6 +44,18 @@ public class PlayerMovement : MonoBehaviour
     /// y apagando este componente el personaje quedaba flotando en el aire (y no llegaba a caerse del mapa, US 006).
     /// </summary>
     public bool SinControles { get; set; }
+
+    /// <summary>F31 (US 357, CA1): caído en Invasión cooperativa: se arrastra despacio, con la cámara casi en el piso,
+    /// sin saltar ni correr (lo pone CaidaEnInvasion).</summary>
+    public bool Caido { get; set; }
+    /// <summary>F31 (US 357, CA4): se está levantando después de que lo revivieron: no se mueve ni salta, y la cámara
+    /// sube del piso a la altura de parado según el avance (LevantarseAvance, de 0 a 1). Lo pone CaidaEnInvasion.</summary>
+    public bool Levantandose { get; set; }
+    public float LevantarseAvance { get; set; }
+    /// <summary>US 357, CA3: agachado sin apretar la tecla (el que revive a un compañero).</summary>
+    public bool ForzarAgachado { get; set; }
+    public float caidoSpeed = 0.9f;
+    public float caidoCameraHeight = -0.35f;
 
     private float verticalVelocity;
 
@@ -131,8 +145,9 @@ public class PlayerMovement : MonoBehaviour
         // =====================================================
 
         // Teclas reasignables (US 155), suavizadas como Input.GetAxis.
-        moveX = SmoothAxis(moveX, SinControles ? 0f : KeyBindings.Axis(GameAction.Izquierda, GameAction.Derecha));
-        moveZ = SmoothAxis(moveZ, SinControles ? 0f : KeyBindings.Axis(GameAction.Atras, GameAction.Adelante));
+        bool sinTeclas = SinControles || Levantandose; // (levantándose después de revivir, US 357: quieto)
+        moveX = SmoothAxis(moveX, sinTeclas ? 0f : KeyBindings.Axis(GameAction.Izquierda, GameAction.Derecha));
+        moveZ = SmoothAxis(moveZ, sinTeclas ? 0f : KeyBindings.Axis(GameAction.Atras, GameAction.Adelante));
         float x = moveX;
         float z = moveZ;
 
@@ -151,7 +166,7 @@ public class PlayerMovement : MonoBehaviour
 
         // US 004: si suelta Ctrl con algo encima, sigue agachado hasta que haya lugar para pararse (si no, la cápsula
         // de 2 m quedaba metida en el objeto y no se podía mover).
-        bool quiereAgacharse = SinControles ? Agachado : KeyBindings.Held(GameAction.Agacharse);
+        bool quiereAgacharse = Caido || ForzarAgachado || (SinControles ? Agachado : KeyBindings.Held(GameAction.Agacharse));
         bool isCrounching = quiereAgacharse || (Agachado && !HayLugarParaPararse());
         animator.SetBool("isCrouching", isCrounching);
         Agachado = isCrounching;
@@ -172,10 +187,16 @@ public class PlayerMovement : MonoBehaviour
         // CÁMARA
         // =====================================================
 
-        float targetCameraHeight = isCrounching ? crouchCameraHeight : standingCameraHeight;
+        float targetCameraHeight = Caido ? caidoCameraHeight : isCrounching ? crouchCameraHeight : standingCameraHeight;
         Vector3 cameraPosition = cameraTransform.localPosition;
 
-        cameraPosition.y = Mathf.Lerp(cameraPosition.y, targetCameraHeight, cameraCrouchSpeed * Time.deltaTime);
+        if (Levantandose)
+        {
+            // US 357: la cámara sube con el cuerpo, al ritmo de la animación de levantarse que ven los demás.
+            float a = Mathf.Clamp01(LevantarseAvance);
+            cameraPosition.y = Mathf.Lerp(caidoCameraHeight, standingCameraHeight, a * a * (3f - 2f * a));
+        }
+        else cameraPosition.y = Mathf.Lerp(cameraPosition.y, targetCameraHeight, cameraCrouchSpeed * Time.deltaTime);
         cameraTransform.localPosition = cameraPosition;
 
 
@@ -188,11 +209,15 @@ public class PlayerMovement : MonoBehaviour
         bool isSprinting = false;
         bool despacio = false;
 
-        if (isCrounching)
+        if (Caido)
+        {
+            currentSpeed = caidoSpeed; // US 357, CA1: se arrastra
+        }
+        else if (isCrounching)
         {
             currentSpeed = crounchSpeed;
         }
-        else if (!SinControles && KeyBindings.Held(GameAction.Correr))
+        else if (!sinTeclas && KeyBindings.Held(GameAction.Correr))
         {
             // US 198: en el Táctico no se corre; Shift camina despacio y sin ruido. En el campo de práctica (que no es
             // ningún modo, aunque quede elegido el último) se corre (US 166).
@@ -217,7 +242,7 @@ public class PlayerMovement : MonoBehaviour
             animator.SetFloat("VelZ", z * lento);
         }
 
-        currentSpeed *= speedMultiplier;
+        currentSpeed *= speedMultiplier * frenoExtra;
 
         // Apoyado se anota la velocidad; en el aire se sigue con esa (agacharse en el aire bajaba a 2,5 m/s).
         if (controller.isGrounded) velocidadAlDespegar = currentSpeed;
@@ -247,7 +272,7 @@ public class PlayerMovement : MonoBehaviour
         // SALTO
         // =====================================================
 
-        if (!SinControles && KeyBindings.Down(GameAction.Saltar) && controller.isGrounded && !arribaDeOtro)
+        if (!sinTeclas && !Caido && KeyBindings.Down(GameAction.Saltar) && controller.isGrounded && !arribaDeOtro)
         {
             verticalVelocity = jumpForce;
             saltoEsteCuadro = true;
@@ -373,6 +398,7 @@ public class PlayerMovement : MonoBehaviour
             Collider c = debajo[i].collider;
             if (c == null || c.transform.IsChildOf(transform)) continue; // su propio cuerpo
             if (debajo[i].distance <= 0f) continue; // ya lo tocaba de costado
+            if (PortalDeEnemigos.Debajo(c, transform.position, out Vector3 delPortal)) { haciaAfuera = delPortal; return true; } // F08
             HealthSystem otro = c.GetComponentInParent<HealthSystem>();
             if (otro == null || otro.transform == transform) continue;
             Afuera(otro.transform.position);
@@ -390,12 +416,19 @@ public class PlayerMovement : MonoBehaviour
     }
 
     // Lo llama el CharacterController en el Move por cada cosa que toca. Si lo que tiene debajo es otro jugador
-    // (o cualquier cosa con vida, como un bot), no cuenta como piso.
+    // (o cualquier cosa con vida, como un bot) o un portal de Invasión, no cuenta como piso.
     private void OnControllerColliderHit(ControllerColliderHit golpe)
     {
         VallaElectrica.Tocar(transform, golpe.collider, golpe.point); // US 240, CA6: la valla del borde electrocuta
         // Cualquier apoyo que empuje un poco hacia arriba: también el borde del hombro, donde el piso es casi vertical.
         if (golpe.normal.y < 0.05f || golpe.collider == null) return; // de costado, no lo tiene debajo
+        // F08: tampoco se puede subir a un portal de Invasión: resbala hacia adelante o atrás del portal.
+        if (PortalDeEnemigos.Debajo(golpe.collider, transform.position, out Vector3 delPortal))
+        {
+            haciaAfuera = delPortal;
+            sobreJugador = true;
+            return;
+        }
         HealthSystem otro = golpe.collider.GetComponentInParent<HealthSystem>();
         if (otro == null || otro.transform == transform) return;
         Afuera(otro.transform.position);
@@ -406,7 +439,7 @@ public class PlayerMovement : MonoBehaviour
     // Un poco más angosta que el cuerpo, para no contar las paredes que ya está tocando.
     private bool HayLugarParaPararse()
     {
-        // El radio va en metros: en un mapa con el jugador más chico (EscalaDelJugador) la cápsula se achica con él.
+        // El radio va en metros: en un mapa con el jugador más chico (si el jugador tuviera otra escala) la cápsula se achica con él.
         float radio = controller.radius * 0.95f * transform.lossyScale.y;
         Vector3 abajo = transform.TransformPoint(crounchCenter + Vector3.up * (crounchHeight * 0.5f - controller.radius));
         Vector3 arriba = transform.TransformPoint(standingCenter + Vector3.up * (standingHeight * 0.5f - controller.radius));
@@ -427,7 +460,7 @@ public class PlayerMovement : MonoBehaviour
         const float RadioSonda = 0.05f;
         Transform cuerpo = cc.transform;
         Vector3 centro = cuerpo.TransformPoint(cc.center);
-        // Alto y radio en metros (la cápsula se escala con el jugador, EscalaDelJugador).
+        // Alto y radio en metros (la cápsula se escala con el jugador).
         float escala = cuerpo.lossyScale.y, medioAlto = cc.height * 0.5f * escala, radioCuerpo = cc.radius * escala;
         float piso = centro.y - medioAlto - cc.skinWidth;
         float altura = piso + alturaMaxima + 0.03f + RadioSonda;
@@ -462,7 +495,7 @@ public class PlayerMovement : MonoBehaviour
     {
         if (controller == null) controller = GetComponent<CharacterController>();
         float maximo = avance * Mathf.Tan(controller.slopeLimit * Mathf.Deg2Rad) + controller.skinWidth + 0.05f;
-        float escala = transform.lossyScale.y; // la cápsula en metros (EscalaDelJugador)
+        float escala = transform.lossyScale.y; // la cápsula en metros (si el jugador tuviera otra escala)
         float radioCuerpo = controller.radius * escala;
         float radio = radioCuerpo * 0.9f;
         Vector3 centro = transform.TransformPoint(controller.center);

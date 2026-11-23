@@ -27,6 +27,10 @@ using UnityEngine.UI;
 //   US 335, CA4 a CA7: mientras hay un puesto de suministros (US 292), los portales (también el del Jefe) se abren
 //   alrededor del puesto, entre 30 y 55 m de él, conectados caminando con el jugador y nunca a menos de 10 m de él
 //   (pueden verse); si no hay puesto o no se encuentra lugar ahí, como siempre.
+//   F31: con el jugador donde no se llega caminando (un techo, una pared alta), "conectado" es que se llegue caminando
+//   hasta el último lugar caminable donde estuvo (de donde se subió; ahí lo esperan los enemigos, US 036, CA3), así no
+//   se abren adentro de un edificio cerrado. Si no se encuentra lugar, se vuelve a buscar un rato después (no en cada
+//   cuadro).
 // - CA5: la oleada termina cuando mueren todos (en la 10, también el Jefe): "Oleada N superada" y descanso.
 // US 303 reemplaza el final de la 10 (CA6) y el modo infinito (CA7):
 // - CA4: al superar cada oleada del Jefe, "Jefe derrotado" con "Seguir" (la elección del Jefe, EleccionDeInvasion, y
@@ -44,8 +48,13 @@ using UnityEngine.UI;
 // - CA4: desde la 40, 1.500 de vida más cada vez, y sus nubes de veneno más grandes y sus vuelos más seguidos.
 // Lo de cada vuelta se suma a lo de las anteriores (la escolta y las embestidas dobles siguen después).
 // El marcador (la oleada, cuántos quedan, el descanso y los puntos) es la US 150: MarcadorInvasion.
+// F31 (US 290): en Invasión cooperativa las oleadas las lleva el anfitrión. En las demás computadoras esto queda como
+// espejo (Espejo): no larga invasores (las copias las arma InvasoresEnRed) y la oleada empieza y se supera cuando avisa
+// el anfitrión. Si el anfitrión se va, el nuevo sigue la oleada desde donde estaba (TomarElMando, CA5).
 public class OleadasDeInvasion : MonoBehaviour
 {
+    /// <summary>US 290: las oleadas las lleva otra computadora (el anfitrión): acá solo se repiten.</summary>
+    public static bool Espejo => InvasoresEnRed.EsCopia;
     public const int Ultima = 10;                         // CA6
     private const float Cerca = 15f, Lejos = 50f;         // CA4: m del jugador
 
@@ -72,6 +81,11 @@ public class OleadasDeInvasion : MonoBehaviour
 
     /// <summary>Avisa cada oleada que empieza y cada oleada superada (para el marcador y los puntos).</summary>
     public static event System.Action<int> Empezo, Supero;
+    /// <summary>
+    /// US 358 y US 359, CA2: el Empezo que corre ahora no es una oleada que arranca: esta computadora recién entró (o
+    /// volvió) y se pone al día con la que ya estaba en juego en el anfitrión (EstadoDelAnfitrion).
+    /// </summary>
+    public static bool PoniendoseAlDia { get; private set; }
     /// <summary>US 335: arrancó el descanso de 20 s antes de esa oleada (después de la elección, si la hubo).</summary>
     public static event System.Action<int> EmpezoElDescanso;
 
@@ -130,7 +144,11 @@ public class OleadasDeInvasion : MonoBehaviour
         if (finalUi != null) Destroy(finalUi);
     }
 
-    private void AlTerminarDescanso() => Empezar();
+    private void AlTerminarDescanso()
+    {
+        if (Espejo) return; // US 290: la oleada arranca cuando avisa el anfitrión
+        Empezar();
+    }
 
     // ---------- La oleada ----------
 
@@ -139,7 +157,8 @@ public class OleadasDeInvasion : MonoBehaviour
         if (fase != Fase.Descanso) return; // solo desde el descanso: una oleada no corta a la anterior
         Oleada++;
         fase = Fase.Oleada;
-        total = Mathf.Max(1, Mathf.RoundToInt(ConfigInvasion.Actual.Invasores(Oleada) * DificultadDeInvasion.Cantidad)); // US 299, CA1 (y CA7), US 161
+        total = Mathf.Max(1, Mathf.RoundToInt(ConfigInvasion.Actual.Invasores(Oleada) * DificultadDeInvasion.Cantidad
+                                              * CooperativoDeInvasion.MasInvasores)); // US 299, CA1 (y CA7), US 161, US 289 (CA4)
         // US 302, CA2: desde la 20, el Jefe llega con su escolta (cuentan en la oleada).
         escolta = DeJefe && Vuelta(Oleada) >= 2 && tanque != null && tipoJefe != null ? ConfigInvasion.Actual.escoltaDelJefe : 0;
         escoltaPorSalir = escolta;
@@ -155,6 +174,151 @@ public class OleadasDeInvasion : MonoBehaviour
         proximoPortal = Time.time + 1f;
         MatchHud.ShowBanner(L10n.T("gameplay.ui.invasion_mode"), L10n.T("gameplay.wave.title_fmt", Oleada), ShopUIKit.Bad, DeJefe ? L10n.T("gameplay.wave.boss_coming") : L10n.T("gameplay.wave.enemies_fmt", total), null, 2.5f);
         Empezo?.Invoke(Oleada);
+        InvasoresEnRed.AvisarOleada(InvasoresEnRed.OleadaEmpezo, Oleada, Total, JefesDerrotados); // US 290
+    }
+
+    // ---------- F31 (US 290): las oleadas del anfitrión ----------
+
+    /// <summary>US 290: el anfitrión arrancó la oleada n (con total invasores): acá arranca igual, sin largar a nadie.</summary>
+    public void EmpezoEnElAnfitrion(int n, int totalConJefe, int jefesDerrotados)
+    {
+        if (!Espejo || (fase == Fase.Oleada && Oleada == n)) return;
+        CancelInvoke(nameof(Empezar));
+        esperandoEleccion = false;
+        if (finalUi != null) CerrarFinal();
+        JefesDerrotados = Mathf.Max(JefesDerrotados, jefesDerrotados);
+        Oleada = n;
+        fase = Fase.Oleada;
+        bool conJefe = DeJefe && tipoJefe != null;
+        total = Mathf.Max(0, totalConJefe - (conJefe ? 1 : 0));
+        escolta = escoltaPorSalir = 0;
+        muertos = 0;
+        jefeSalio = jefeVivo = jefeMuerto = false;
+        // El descanso de esta computadora se corta (si todavía estaba comprando, la tienda se cierra).
+        if (descanso != null && descanso.IsActive) descanso.Terminar();
+        MatchHud.ShowBanner(L10n.T("gameplay.ui.invasion_mode"), L10n.T("gameplay.wave.title_fmt", Oleada), ShopUIKit.Bad, DeJefe ? L10n.T("gameplay.wave.boss_coming") : L10n.T("gameplay.wave.enemies_fmt", total), null, 2.5f);
+        Empezo?.Invoke(Oleada);
+    }
+
+    /// <summary>US 290: el anfitrión superó la oleada n.</summary>
+    public void SuperoEnElAnfitrion(int n, int jefesDerrotados)
+    {
+        if (!Espejo || fase != Fase.Oleada || Oleada != n) return;
+        JefesDerrotados = Mathf.Max(JefesDerrotados, jefesDerrotados);
+        if (DeJefe) { jefeVivo = false; jefeMuerto = true; }
+        muertos = total;
+        Superar();
+    }
+
+    /// <summary>US 290: en el anfitrión llegó el Jefe.</summary>
+    public void LlegoElJefeEnElAnfitrion()
+    {
+        if (!Espejo || fase != Fase.Oleada) return;
+        jefeSalio = jefeVivo = true;
+        MatchHud.ShowBanner(L10n.T("gameplay.wave.title_fmt", Oleada), L10n.T("gameplay.wave.boss_arrived"), ShopUIKit.Bad, "", null, 3f);
+        LlegoElJefe?.Invoke();
+    }
+
+    /// <summary>US 290: en el anfitrión cayó un invasor (para que "quedan" baje enseguida).</summary>
+    public void MurioEnElAnfitrion(bool esJefe)
+    {
+        if (!Espejo || fase != Fase.Oleada) return;
+        if (esJefe) { jefeVivo = false; jefeMuerto = true; }
+        else muertos = Mathf.Min(total, muertos + 1);
+    }
+
+    /// <summary>US 290: cómo va la oleada, para las demás computadoras (y para seguirla si el anfitrión se va, CA5).</summary>
+    public object[] EstadoParaLaRed()
+    {
+        var pendientes = new List<string>();
+        foreach (List<TipoDeNpc> grupo in porAparecer) foreach (TipoDeNpc t in grupo) if (t != null) pendientes.Add(t.name);
+        foreach (PortalDeEnemigos p in portales) if (p != null) foreach (TipoDeNpc t in p.Fila) if (t != null) pendientes.Add(t.name);
+        int jefeEnFila = portalDelJefe != null && portalDelJefe.Fila.Count > 0 ? 1 : 0;
+        return new object[]
+        {
+            Oleada, (byte)fase, total, muertos, JefesDerrotados, pendientes.ToArray(),
+            jefeSalio && jefeEnFila == 0, jefeVivo, jefeMuerto, escolta, escoltaPorSalir, salidosParaAlfa, alfasPerdidos
+        };
+    }
+
+    private object[] ultimoEstado;
+
+    /// <summary>US 290: lo que mandó el anfitrión. Acá corrige la cuenta (por si se perdió un aviso).</summary>
+    public void EstadoDelAnfitrion(object[] e)
+    {
+        if (!Espejo || e == null || e.Length < 13) return;
+        ultimoEstado = e;
+        int n = (int)e[0];
+        var suFase = (Fase)(byte)e[1];
+        JefesDerrotados = Mathf.Max(JefesDerrotados, (int)e[4]);
+        if (suFase == Fase.Oleada && (fase != Fase.Oleada || Oleada != n))
+        {
+            bool conJefe = EsDeJefe(n) && tipoJefe != null;
+            PoniendoseAlDia = true;
+            try { EmpezoEnElAnfitrion(n, (int)e[2] + (conJefe ? 1 : 0), (int)e[4]); }
+            finally { PoniendoseAlDia = false; }
+        }
+        if (fase == Fase.Oleada && Oleada == n)
+        {
+            total = (int)e[2];
+            muertos = (int)e[3];
+            jefeSalio = (bool)e[6];
+            jefeVivo = (bool)e[7];
+            jefeMuerto = (bool)e[8];
+        }
+    }
+
+    /// <summary>
+    /// US 290, CA5: el anfitrión se fue y esta computadora pasa a llevar la partida: sigue la oleada desde donde estaba,
+    /// con los invasores que ya estaban (las copias pasan a ser de verdad) y los que faltaban salir.
+    /// </summary>
+    public void TomarElMando(List<Npc> invasores)
+    {
+        object[] e = ultimoEstado;
+        vivos.Clear();
+        tipos.Clear();
+        aparecio.Clear();
+        porAparecer.Clear();
+        CerrarPortales();
+        jefe = null;
+        foreach (Npc n in invasores)
+        {
+            if (n == null || !n.Vivo) continue;
+            if (n.Tipo != null && n.Tipo.esJefe) { jefe = n; continue; }
+            vivos.Add(n);
+            tipos[n] = n.Tipo;
+            aparecio[n] = Time.time;
+        }
+        if (e != null && e.Length >= 13 && (int)e[0] == Oleada)
+        {
+            total = (int)e[2];
+            muertos = (int)e[3];
+            foreach (string nombre in (string[])e[5])
+            {
+                TipoDeNpc t = TipoDeNpc.Buscar(nombre);
+                if (t != null) porAparecer.Enqueue(new List<TipoDeNpc> { t });
+            }
+            jefeSalio = (bool)e[6];
+            jefeMuerto = (bool)e[8];
+            escolta = (int)e[9];
+            escoltaPorSalir = (int)e[10];
+            salidosParaAlfa = (int)e[11];
+            alfasPerdidos = (int)e[12];
+        }
+        // Lo que no se sabe (se perdió el último estado): los que están, más los que se sabe que murieron.
+        muertos = Mathf.Max(0, Mathf.Min(muertos, total - vivos.Count - porAparecer.Count));
+        jefeVivo = jefe != null;
+        if (jefeVivo) { jefeSalio = true; aparecio[jefe] = Time.time; }
+        else if (!jefeMuerto) jefeSalio = false; // si estaba por salir, vuelve a salir
+        proximoPortal = Time.time + 1f;
+        // En el descanso: sigue el de esta computadora (al terminar arranca la oleada siguiente, ahora desde acá). Si
+        // todavía no había arrancado, espera a que elijan todos (US 356).
+        if (fase == Fase.Descanso && !esperandoEleccion && finalUi == null && (descanso == null || !descanso.IsActive)
+            && descansoDe != Oleada)
+        {
+            esperandoATodos = true;
+            esperandoDesde = Time.unscaledTime;
+        }
     }
 
     // US 300, CA1 y CA2: los invasores de la oleada según su mezcla, mezclados, con los Rápidos en jaurías (cada jauría es
@@ -232,6 +396,7 @@ public class OleadasDeInvasion : MonoBehaviour
 
     private void Update()
     {
+        RevisarSiEligieronTodos(); // US 356
         // El NavMesh del mapa se arma con el juego andando (NavMeshEnVivo) recién cuando alguien lo pide: se pide ya,
         // durante el primer descanso, así está listo cuando aparecen los enemigos (sin él no se podía elegir dónde).
         if (!navMeshPedido)
@@ -240,7 +405,8 @@ public class OleadasDeInvasion : MonoBehaviour
             if (yo != null) { navMeshPedido = true; NavMeshEnVivo.Preparar(yo.position); }
         }
 
-        if (fase != Fase.Oleada) return;
+        RecordarCaminable();
+        if (fase != Fase.Oleada || Espejo) return; // US 290: en espejo no larga a nadie: las copias llegan por la red
 
         jugadorAhora = Jugador();
         // Los que cayeron cuentan como muertos. Los que desaparecieron sin morir (se borraron, se cayeron del mapa o
@@ -268,7 +434,7 @@ public class OleadasDeInvasion : MonoBehaviour
         portales.RemoveAll(p => p == null || p.Cerrando);
         int esperando = 0;
         foreach (PortalDeEnemigos p in portales) esperando += p.Fila.Count;
-        int maximoVivos = ConfigInvasion.Actual.TopeDeVivos(Oleada); // US 299, CA2
+        int maximoVivos = ConfigInvasion.Actual.TopeDeVivos(Oleada) + CooperativoDeInvasion.MasTope; // US 299, CA2 (US 289, CA4)
         if (porAparecer.Count > 0 && Time.time >= proximoPortal && vivos.Count + esperando < maximoVivos)
         {
             PortalDeEnemigos portal = null;
@@ -279,7 +445,8 @@ public class OleadasDeInvasion : MonoBehaviour
                 portales.Add(portal);
             }
             else foreach (PortalDeEnemigos p in portales) if (portal == null || p.Fila.Count < portal.Fila.Count) portal = p;
-            if (portal != null)
+            if (portal == null) proximoPortal = Time.time + ReintentoDeLugar; // no se encontró lugar: no en cada cuadro
+            else
             {
                 proximoPortal = Time.time + EntrePortales;
                 // Una jauría va entera a un portal (US 300, CA2); si no, de 3 a 5 sueltos (sin cortar una jauría).
@@ -310,12 +477,13 @@ public class OleadasDeInvasion : MonoBehaviour
         // grande (que queda abierto hasta el final de la oleada).
         Vector3 dondeJefe = Vector3.zero;
         if (DeJefe && !jefeSalio && (portalDelJefe == null || portalDelJefe.Fila.Count == 0) && tipoJefe != null
-            && muertos >= (total - escolta) / 2 && (portalDelJefe != null || LugarDePortal(jugador, out dondeJefe)))
+            && muertos >= (total - escolta) / 2 && (portalDelJefe != null || (Time.time >= proximoLugarJefe && LugarDelJefe(jugador, out dondeJefe))))
         {
             if (portalDelJefe == null) portalDelJefe = PortalDeEnemigos.Abrir(dondeJefe, jugador.position, ConfigInvasion.Actual.escalaJefe);
             portalDelJefe.Fila.Enqueue(tipoJefe); // (si el jefe se perdió, vuelve a salir por el mismo portal)
             MatchHud.ShowBanner(L10n.T("gameplay.wave.title_fmt", Oleada), L10n.T("gameplay.wave.boss_arrived"), ShopUIKit.Bad, escoltaPorSalir > 0 ? L10n.T("gameplay.wave.with_escort") : "", null, 3f);
             LlegoElJefe?.Invoke();
+            InvasoresEnRed.AvisarOleada(InvasoresEnRed.OleadaLlegoElJefe, Oleada, Total, JefesDerrotados); // US 290
         }
         if (portalDelJefe != null && !portalDelJefe.Cerrando && portalDelJefe.Listo && portalDelJefe.Fila.Count > 0
             && Time.time >= portalDelJefe.Proximo)
@@ -388,11 +556,14 @@ public class OleadasDeInvasion : MonoBehaviour
     private void Endurecer(Npc j)
     {
         int vuelta = Vuelta(Oleada);
-        if (vuelta <= 1 || j.Vida == null) return; // la 10: el Jefe de siempre
+        if (j.Vida == null) return;
         ConfigInvasion config = ConfigInvasion.Actual;
-        int vida = DificultadDeInvasion.VidaDeEnemigo(j.Tipo.vida + config.vidaDelJefePorVuelta * (vuelta - 1)); // US 161
+        // US 161; US 289, CA4: un 50 % más de vida por cada jugador de más (con uno solo, la de siempre).
+        int vida = Mathf.RoundToInt(DificultadDeInvasion.VidaDeEnemigo(j.Tipo.vida + config.vidaDelJefePorVuelta * Mathf.Max(0, vuelta - 1))
+                                    * CooperativoDeInvasion.VidaDelJefe);
         j.Vida.maxHealth = vida;
         j.Vida.SetState(vida, 0);
+        if (vuelta <= 1) return; // la 10: el Jefe de siempre (solo con más vida si son varios)
 
         FuriaDeNpc furia = j.GetComponent<FuriaDeNpc>();
         float umbral = vuelta >= 3 ? 1f : config.furiaDesdeLaVuelta2; // CA3: desde la 30 arranca enfurecido
@@ -426,6 +597,7 @@ public class OleadasDeInvasion : MonoBehaviour
     private void Superar()
     {
         CerrarPortales();
+        InvasoresEnRed.AvisarOleada(InvasoresEnRed.OleadaSupero, Oleada, Total, JefesDerrotados); // US 290
         Supero?.Invoke(Oleada);
         if (DeJefe)
         {
@@ -445,8 +617,56 @@ public class OleadasDeInvasion : MonoBehaviour
         fase = Fase.Descanso;
         EleccionDeInvasion eleccion = GetComponent<EleccionDeInvasion>();
         if (eleccion != null && eleccion.Retener()) { esperandoEleccion = true; return; }
+        if (CooperativoDeInvasion.Activo) { EsperarATodos(); return; } // F31 (US 356, CA2)
+        EmpezarElDescanso();
+    }
+
+    private void EmpezarElDescanso()
+    {
         if (descanso != null) descanso.Begin(); else Invoke(nameof(Empezar), 20f);
         EmpezoElDescanso?.Invoke(Oleada + 1);
+    }
+
+    // ---------- F31 (US 356, CA2): el descanso espera a que elijan todos ----------
+
+    private const float EsperaMaxima = 40f; // s: por si alguien no avisa (se trabó o se fue sin que se sepa)
+    private bool esperandoATodos;
+    private float esperandoDesde;
+    private int descansoDe = -1; // la oleada cuyo descanso ya arrancó
+
+    // Esta computadora ya eligió (o no tenía nada que elegir): lo avisa. El anfitrión arranca el descanso cuando
+    // eligieron todos; los demás, cuando él avisa (DescansoDelAnfitrion).
+    private void EsperarATodos()
+    {
+        if (descansoDe == Oleada) // el anfitrión ya lo arrancó (se terminó la espera mientras esta elegía)
+        {
+            InvasoresEnRed.AvisarListo(Oleada);
+            if (descanso == null || !descanso.IsActive) EmpezarElDescanso();
+            return;
+        }
+        esperandoATodos = true;
+        esperandoDesde = Time.unscaledTime;
+        InvasoresEnRed.AvisarListo(Oleada);
+    }
+
+    private void RevisarSiEligieronTodos()
+    {
+        if (!esperandoATodos || Espejo || fase != Fase.Descanso) return;
+        if (!InvasoresEnRed.TodosListos(Oleada) && Time.unscaledTime - esperandoDesde < EsperaMaxima) return;
+        esperandoATodos = false;
+        descansoDe = Oleada;
+        InvasoresEnRed.AvisarDescanso(Oleada);
+        EmpezarElDescanso();
+    }
+
+    /// <summary>US 356, CA2: el anfitrión arrancó el descanso (eligieron todos).</summary>
+    public void DescansoDelAnfitrion(int oleada)
+    {
+        if (!Espejo || oleada != Oleada || fase != Fase.Descanso || descansoDe == oleada) return;
+        descansoDe = oleada;
+        if (esperandoEleccion) return; // todavía elige: al terminar arranca el suyo (EsperarATodos)
+        esperandoATodos = false;
+        EmpezarElDescanso();
     }
 
     /// <summary>US 293, CA6: se eligió en el puesto, arranca el respiro.</summary>
@@ -461,7 +681,7 @@ public class OleadasDeInvasion : MonoBehaviour
     /// oleada n.</summary>
     public void IrA(int n)
     {
-        if (fase == Fase.Final) return;
+        if (fase == Fase.Final || Espejo) return; // (en cooperativo, solo el anfitrión)
         foreach (Npc v in vivos) if (v != null) Destroy(v.gameObject);
         if (jefe != null) Destroy(jefe.gameObject);
         CerrarPortales();
@@ -489,6 +709,17 @@ public class OleadasDeInvasion : MonoBehaviour
     }
 
     // ---------- US 269, CA1: dónde se abre un portal ----------
+
+    private const float ReintentoDeLugar = 0.5f; // s hasta volver a buscar lugar si no se encontró (cada búsqueda es cara)
+    private float proximoLugarJefe;
+
+    // El del Jefe: si no se encuentra, se vuelve a buscar un rato después.
+    private bool LugarDelJefe(Transform jugador, out Vector3 lugar)
+    {
+        if (LugarDePortal(jugador, out lugar)) return true;
+        proximoLugarJefe = Time.time + ReintentoDeLugar;
+        return false;
+    }
 
     // Al azar en el NavMesh a 15–50 m, conectado con el jugador, con lugar para el portal y, primero, fuera de su vista;
     // si no, a la vista; si no hay NavMesh o no se encuentra, en los puntos de aparición (US 187) o alrededor del jugador.
@@ -628,12 +859,58 @@ public class OleadasDeInvasion : MonoBehaviour
         if (!NavMeshEnVivo.Listo && !NavMesh.SamplePosition(jugador, out _, 5f, filtro)) return true; // sin NavMesh todavía
         if (!NavMesh.SamplePosition(p, out NavMeshHit aca, 2f, filtro)) return false;
         if (aca.position.y > suelo + AlturaDePlantaBaja) return false;
-        if (!NavMesh.SamplePosition(jugador, out NavMeshHit alla, 3f, filtro)) { sobreNavMesh = aca.position; return true; }
         var camino = new NavMeshPath();
-        if (!NavMesh.CalculatePath(aca.position, alla.position, filtro, camino) || camino.status != NavMeshPathStatus.PathComplete) return false;
+        bool cerca = NavMesh.SamplePosition(jugador, out NavMeshHit alla, 3f, filtro);
+        if (cerca && NavMesh.CalculatePath(aca.position, alla.position, filtro, camino) && camino.status == NavMeshPathStatus.PathComplete)
+        {
+            sobreNavMesh = aca.position;
+            return true;
+        }
+        // F31: el jugador está donde no se llega caminando (un techo, una pared alta): sirve si desde el portal se llega
+        // caminando hasta el último lugar caminable donde estuvo (de ahí se subió: ahí lo esperan los enemigos). Así no
+        // se abre en un lugar cerrado (adentro de un edificio sin salida), aunque quede abajo de él.
+        if (hayCaminable)
+        {
+            if (!NavMesh.CalculatePath(aca.position, ultimoCaminable, filtro, camino) || camino.status != NavMeshPathStatus.PathComplete) return false;
+            sobreNavMesh = aca.position;
+            return true;
+        }
+        // Sin un lugar caminable conocido (arrancó arriba): el camino tiene que terminar cerca de él y abajo de él.
+        if (!cerca) return false;
+        if (camino.status != NavMeshPathStatus.PathPartial || camino.corners.Length == 0) return false;
+        Vector3 fin = camino.corners[camino.corners.Length - 1] - jugador;
+        if (fin.y > -AlturaDePlantaBaja) return false;
+        fin.y = 0f;
+        if (fin.magnitude > HastaDondeEsperan) return false;
         sobreNavMesh = aca.position;
         return true;
     }
+
+    // F31: el último lugar del NavMesh donde estuvo parado el jugador (lo usa Conectado si se subió a un techo).
+    private static Vector3 ultimoCaminable;
+    private static bool hayCaminable;
+    private static Transform caminableDe;
+    private float proximoCaminable;
+
+    private void RecordarCaminable()
+    {
+        if (Time.time < proximoCaminable) return;
+        proximoCaminable = Time.time + 0.3f;
+        Transform yo = Jugador();
+        if (yo == null) return;
+        if (yo != caminableDe) { caminableDe = yo; hayCaminable = false; }
+        if (!NavMeshEnVivo.Listo) return;
+        var filtro = new NavMeshQueryFilter { agentTypeID = NavMeshEnVivo.Tipo, areaMask = NavMesh.AllAreas };
+        // Parado sobre el NavMesh: un punto del NavMesh justo debajo de los pies (o a la altura del cuerpo).
+        if (NavMesh.SamplePosition(yo.position, out NavMeshHit aca, 1.2f, filtro) && Mathf.Abs(aca.position.y - yo.position.y) < 1.2f)
+        {
+            ultimoCaminable = aca.position;
+            hayCaminable = true;
+        }
+    }
+
+    // F31: m (en el plano) del jugador hasta donde puede terminar el camino si él está donde no se llega caminando.
+    private const float HastaDondeEsperan = 12f;
 
     // Cuánto más alto que el piso más bajo puede quedar un portal (escalones y desniveles de la planta baja).
     private const float AlturaDePlantaBaja = 1.2f;
@@ -652,12 +929,15 @@ public class OleadasDeInvasion : MonoBehaviour
         return float.IsPositiveInfinity(suelo) ? p.y : suelo;
     }
 
+    private static readonly List<HealthSystem> jugadores = new List<HealthSystem>();
+
+    // El jugador de esta computadora; en cooperativo, si está muerto, un compañero vivo (US 290: la oleada sigue).
     private static Transform Jugador()
     {
-        PlayerMovement p = FindFirstObjectByType<PlayerMovement>();
-        if (p == null) return null;
-        HealthSystem vida = p.GetComponent<HealthSystem>();
-        return vida != null && vida.currentHealth <= 0 ? null : p.transform;
+        PersecucionDeNpc.Jugadores(jugadores);
+        foreach (HealthSystem vida in jugadores)
+            if (vida != null && vida.currentHealth > 0) return vida.transform;
+        return null;
     }
 
     // ---------- US 303, CA4: Jefe derrotado: seguir o retirarse ----------
@@ -665,7 +945,7 @@ public class OleadasDeInvasion : MonoBehaviour
     private void Final()
     {
         MatchHud.ClearCenter();
-        Time.timeScale = 0f;
+        if (!CooperativoDeInvasion.Activo) Time.timeScale = 0f; // US 356: en cooperativo la partida sigue
         Cursor.lockState = CursorLockMode.None;
         Cursor.visible = true;
         CameraLook.Quieta = true;

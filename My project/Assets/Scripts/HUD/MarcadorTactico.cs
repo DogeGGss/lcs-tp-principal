@@ -203,7 +203,9 @@ public class MarcadorTactico : MonoBehaviour
                     plata
                 },
                 highlight = p.IsLocal,
-                dim = p.IsInactive || !EstaVivo(p.ActorNumber)
+                dim = p.IsInactive || !EstaVivo(p.ActorNumber),
+                perfil = p, // US 376
+                columnaPerfil = 1
             });
         }
         return seccion;

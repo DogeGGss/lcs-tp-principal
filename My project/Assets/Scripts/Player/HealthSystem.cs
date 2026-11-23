@@ -16,6 +16,12 @@ public class HealthSystem : MonoBehaviour
     public System.Action<int, bool> DamageRedirect;
     public bool Invulnerable;
 
+    // F31 (US 357): en Invasión cooperativa, al quedarse sin vida primero cae (CaidaEnInvasion). Si devuelve true, queda
+    // con 0 de vida pero sin morir: no recibe más daño y se lo puede revivir. Rematar lo mata de verdad.
+    public System.Func<bool> AntesDeMorir;
+    // Mientras es true, la muerte es directa aunque pueda caer (por ejemplo, al caerse del mapa).
+    public static bool MuerteDirecta;
+
     // Si el golpe que lo dejó en 0 fue a la cabeza: el aviso de baja lo marca (US 057, CA4).
     public bool KilledByHeadshot { get; private set; }
 
@@ -26,6 +32,9 @@ public class HealthSystem : MonoBehaviour
     // Desde dónde viene el daño (US 192): el lugar del que disparó o donde explotó la granada. Lo pone quien hace el
     // daño justo antes de TakeDamage y se borra al usarlo. Sin lugar, el indicador de dirección no muestra nada.
     public static Vector3? DamageOrigin;
+    // US 375: en qué zona pegó el tiro (cabeza, cuerpo o piernas), para el resumen al morir del que lo recibe. Lo pone
+    // el disparo justo antes de TakeDamage y se borra al usarlo; sin zona (cuchillo, granada) cuenta como cuerpo.
+    public static BodyZone? DamageZone;
     // US 260: desde dónde vino el último daño que recibió (para empujar el cuerpo al morir), o null si no se sabe.
     public Vector3? LastDamageOrigin { get; private set; }
 
@@ -76,6 +85,13 @@ public class HealthSystem : MonoBehaviour
         currentShield = Mathf.Clamp(value, 0, maxShield);
     }
 
+    // F31 (US 290): avisa un golpe sin tocar la vida. Lo usa la copia de un invasor en otra computadora (la vida la
+    // decide el anfitrión): así quien le pegó ve enseguida su reacción, la sangre y el destello.
+    public void AvisarGolpe(int damageAmount, Vector3? origin)
+    {
+        if (damageAmount > 0) Damaged?.Invoke(this, damageAmount, origin);
+    }
+
     // head: el golpe fue a la cabeza (zona de impacto, US 165).
     public void TakeDamage(int damageAmount, bool head = false)
     {
@@ -116,8 +132,16 @@ public class HealthSystem : MonoBehaviour
         if (currentHealth <= 0)
         {
             KilledByHeadshot = head;
+            if (!MuerteDirecta && AntesDeMorir != null && AntesDeMorir()) return; // US 357: cae
             Die();
         }
+    }
+
+    /// <summary>F31 (US 357): el que estaba caído (con 0 de vida) muere de verdad.</summary>
+    public void Rematar()
+    {
+        currentHealth = 0;
+        Die();
     }
 
     private void Die()

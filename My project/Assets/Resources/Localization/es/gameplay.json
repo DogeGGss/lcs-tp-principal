@@ -325,6 +325,10 @@
       "text": "Alimentación directa"
     },
     {
+      "key": "gameplay.card.escort",
+      "text": "Escolta"
+    },
+    {
       "key": "gameplay.card.instant_delivery",
       "text": "Entrega inmediata"
     },
@@ -375,6 +379,10 @@
     {
       "key": "gameplay.weapon.knife",
       "text": "Cuchillo"
+    },
+    {
+      "key": "gameplay.weapon.knife_and_katana",
+      "text": "Cuchillo y katana"
     },
     {
       "key": "gameplay.card.fx.reserve_shot",
@@ -545,6 +553,10 @@
       "text": "El cargador y la reserva son un solo depósito: no recargás nunca, hasta que se acaban las balas."
     },
     {
+      "key": "gameplay.card.fx.escort",
+      "text": "Un dron te acompaña: su rayo derrite al invasor más cercano y cada 8 s lanza arcos eléctricos que paralizan a los de alrededor."
+    },
+    {
       "key": "gameplay.card.fx.instant_delivery",
       "text": "La elección del puesto se abre apenas se carga, sin esperar a que termine la oleada."
     },
@@ -587,6 +599,18 @@
     {
       "key": "gameplay.card.secondary",
       "text": "Arma secundaria"
+    },
+    {
+      "key": "gameplay.card.katana",
+      "text": "Katana"
+    },
+    {
+      "key": "gameplay.card.melee",
+      "text": "Arma cuerpo a cuerpo"
+    },
+    {
+      "key": "gameplay.card.replaces_knife",
+      "text": "Reemplaza a tu cuchillo, en su lugar y su tecla. Corta a todos los que tenés delante."
     },
     {
       "key": "gameplay.card.works_with_fmt",
@@ -739,6 +763,38 @@
     {
       "key": "gameplay.place.library",
       "text": "la Biblioteca"
+    },
+    {
+      "key": "gameplay.place.auditorium",
+      "text": "el Auditorio"
+    },
+    {
+      "key": "gameplay.place.nursery_school",
+      "text": "la Escuela Infantil"
+    },
+    {
+      "key": "gameplay.place.leon_suarez",
+      "text": "el edificio de León Suárez"
+    },
+    {
+      "key": "gameplay.place.tum",
+      "text": "el TUM"
+    },
+    {
+      "key": "gameplay.place.adiungs",
+      "text": "ADIUNGS"
+    },
+    {
+      "key": "gameplay.place.parking",
+      "text": "el Estacionamiento"
+    },
+    {
+      "key": "gameplay.place.bar",
+      "text": "el Bar"
+    },
+    {
+      "key": "gameplay.place.entrance",
+      "text": "la Entrada"
     },
     {
       "key": "gameplay.result.survived_fmt",
@@ -1879,6 +1935,290 @@
     {
       "key": "gameplay.text.grenades",
       "text": "Granadas"
+    },
+    {
+      "key": "gameplay.card.no_room",
+      "text": "No tenés lugar: descartá una carta para elegir una nueva"
+    },
+    {
+      "key": "gameplay.card.no_room_short",
+      "text": "Sin lugar · descartá una"
+    },
+    {
+      "key": "gameplay.card.discarded_fmt",
+      "text": "Descartaste {0}"
+    },
+    {
+      "key": "gameplay.card.discard",
+      "text": "Descartar una carta"
+    },
+    {
+      "key": "gameplay.card.skip",
+      "text": "Seguir sin elegir"
+    },
+    {
+      "key": "gameplay.card.no_options",
+      "text": "No hay cartas para elegir esta vez"
+    },
+    {
+      "key": "gameplay.card.slots_fmt",
+      "text": "Tus cartas {0} / {1}"
+    },
+    {
+      "key": "gameplay.card.occupied_fmt",
+      "text": "{0} / {1} lugares ocupados"
+    },
+    {
+      "key": "gameplay.card.your_cards",
+      "text": "Tus cartas"
+    },
+    {
+      "key": "gameplay.card.pick_discard",
+      "text": "Elegí cuál descartar"
+    },
+    {
+      "key": "gameplay.card.discard_hint",
+      "text": "Perdés la carta con sus mejoras y esta vez no elegís  ·  Esc para volver"
+    },
+    {
+      "key": "gameplay.card.hold_hint",
+      "text": "Soltá {0} para cerrar"
+    },
+    {
+      "key": "gameplay.card.back",
+      "text": "Volver"
+    },
+    {
+      "key": "gameplay.card.cancel",
+      "text": "Cancelar"
+    },
+    {
+      "key": "gameplay.card.discard_confirm",
+      "text": "Descartar"
+    },
+    {
+      "key": "gameplay.card.discard_question_fmt",
+      "text": "¿Descartar {0}? Perdés sus mejoras y esta vez no elegís."
+    },
+    {
+      "key": "gameplay.card.free_slot",
+      "text": "Libre"
+    },
+    {
+      "key": "gameplay.card.times_fmt",
+      "text": "{0} de {1}"
+    },
+    {
+      "key": "gameplay.card.single",
+      "text": "Única"
+    },
+    {
+      "key": "gameplay.card.unused",
+      "text": "Sin uso"
+    },
+    {
+      "key": "gameplay.card.unused_weapon_fmt",
+      "text": "Rinde con: {0}"
+    },
+    {
+      "key": "gameplay.controls.cards",
+      "text": "Cartas (Invasión)"
+    },
+    {
+      "key": "gameplay.card.match_continues",
+      "text": "La partida sigue"
+    },
+    {
+      "key": "gameplay.down.you_are_down",
+      "text": "¡Caíste! Esperá que te revivan"
+    },
+    {
+      "key": "gameplay.down.bleeding_fmt",
+      "text": "Caído · {0} s para que te revivan"
+    },
+    {
+      "key": "gameplay.down.reviving_you_fmt",
+      "text": "{0} te está reviviendo"
+    },
+    {
+      "key": "gameplay.down.revived",
+      "text": "¡Te levantaste!"
+    },
+    {
+      "key": "gameplay.down.hold_to_revive_fmt",
+      "text": "Mantené {0} para revivir a {1}"
+    },
+    {
+      "key": "gameplay.down.reviving_fmt",
+      "text": "Reviviendo a {0}"
+    },
+    {
+      "key": "gameplay.down.being_revived",
+      "text": "Reviviendo"
+    },
+    {
+      "key": "gameplay.down.overhead_fmt",
+      "text": "Caído · {0} s"
+    },
+    {
+      "key": "gameplay.mates.down",
+      "text": "Caído"
+    },
+    {
+      "key": "gameplay.mates.dead",
+      "text": "Muerto"
+    },
+    {
+      "key": "gameplay.mates.disconnected",
+      "text": "Desconectado"
+    },
+    {
+      "key": "gameplay.mates.player",
+      "text": "Jugador"
+    },
+    {
+      "key": "gameplay.mates.kills",
+      "text": "Bajas"
+    },
+    {
+      "key": "gameplay.mates.points",
+      "text": "Puntos"
+    },
+    {
+      "key": "gameplay.mates.state",
+      "text": "Estado"
+    },
+    {
+      "key": "gameplay.event.joined",
+      "text": "se unió a la partida"
+    },
+    {
+      "key": "gameplay.mates.joined_title",
+      "text": "Entraste a la partida"
+    },
+    {
+      "key": "gameplay.mates.next_wave",
+      "text": "Aparecés al empezar el próximo descanso"
+    },
+    {
+      "key": "gameplay.result.record_coop_fmt",
+      "text": "Récord cooperativo en {0}: <color=#F3F4F6>oleada {1}</color> · solo: oleada {2}"
+    },
+    {
+      "key": "gameplay.result.record_solo_fmt",
+      "text": "Récord de un jugador: oleada {0}"
+    },
+    {
+      "key": "gameplay.mates.retired",
+      "text": "Se retiró"
+    },
+    {
+      "key": "gameplay.result.keys_hint_coop",
+      "text": "Enter o Esc  ·  Volver al menú"
+    },
+    {
+      "key": "gameplay.ability.barrera",
+      "text": "Barrera"
+    },
+    {
+      "key": "gameplay.ability.callejero",
+      "text": "Callejero"
+    },
+    {
+      "key": "gameplay.ability.pulso",
+      "text": "Pulso"
+    },
+    {
+      "key": "gameplay.ability.silbato",
+      "text": "Silbato"
+    },
+    {
+      "key": "gameplay.ability.trasbordo",
+      "text": "Trasbordo"
+    },
+    {
+      "key": "gameplay.ability.vista_aerea",
+      "text": "Vista aérea"
+    },
+    {
+      "key": "gameplay.grenade.shrapnel",
+      "text": "Metralla"
+    },
+    {
+      "key": "gameplay.grenade.smoke",
+      "text": "Humo"
+    },
+    {
+      "key": "gameplay.shop.all_free",
+      "text": "Todo gratis"
+    },
+    {
+      "key": "gameplay.shop.shield",
+      "text": "Escudo"
+    },
+    {
+      "key": "gameplay.table.mouse_hint",
+      "text": "Clic derecho: usar el mouse para ver un perfil"
+    },
+    {
+      "key": "gameplay.table.fixed_hint",
+      "text": "Tocá un nombre para ver su perfil · Tab o Esc para cerrar"
+    },
+    {
+      "key": "gameplay.death.card.killed_by",
+      "text": "Te eliminó"
+    },
+    {
+      "key": "gameplay.death.card.title",
+      "text": "Resumen"
+    },
+    {
+      "key": "gameplay.death.card.distance",
+      "text": "Distancia"
+    },
+    {
+      "key": "gameplay.death.card.distance_fmt",
+      "text": "{0} m"
+    },
+    {
+      "key": "gameplay.death.card.remaining",
+      "text": "Le quedó"
+    },
+    {
+      "key": "gameplay.death.card.hp_fmt",
+      "text": "{0} vida · {1} escudo"
+    },
+    {
+      "key": "gameplay.death.card.you_dealt",
+      "text": "Vos le hiciste"
+    },
+    {
+      "key": "gameplay.death.card.they_dealt",
+      "text": "Te hizo"
+    },
+    {
+      "key": "gameplay.death.card.hits.one",
+      "text": "{1} de daño en 1 impacto"
+    },
+    {
+      "key": "gameplay.death.card.hits.other",
+      "text": "{1} de daño en {0} impactos"
+    },
+    {
+      "key": "gameplay.death.card.no_damage",
+      "text": "Sin daño"
+    },
+    {
+      "key": "gameplay.death.card.others",
+      "text": "Otros que te dañaron"
+    },
+    {
+      "key": "gameplay.death.card.received",
+      "text": "Daño recibido"
+    },
+    {
+      "key": "gameplay.death.card.headshot",
+      "text": "Tiro a la cabeza"
     }
   ]
 }

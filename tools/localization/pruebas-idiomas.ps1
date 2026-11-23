@@ -1,7 +1,8 @@
 # F30 (Idiomas): corre todas las pruebas automáticas de idiomas y deja la evidencia para el plan de pruebas.
 #   1. Validador del catálogo (node tools/localization/manage.mjs validate).
 #   2. Unity EditMode, categoría US 349: catálogo completo, datos insertados y textos sin traducir en el código.
-#   3. Unity PlayMode, categorías US 347 y US 348: menús, perfil y partidas en inglés (captura + textos por caso).
+#   3. Unity PlayMode, categorías US 347, US 348 y US 350: menús, perfil y partidas en inglés, y en portugués, francés e
+#      italiano (captura + textos por caso; en US 350 también que ningún texto se corte ni se salga de su recuadro).
 #   4. Pruebas del launcher.
 # Uso (con Unity cerrado en este proyecto):
 #   powershell -ExecutionPolicy Bypass -File tools/localization/pruebas-idiomas.ps1 [-Unity "D:\unity\6000.6.2f1\Editor\Unity.exe"]
@@ -39,9 +40,11 @@ function Unity-Tests([string]$plataforma, [string]$filtro, [string]$nombre) {
 }
 
 Write-Host "2/4 Unity EditMode (US 349)"
-Unity-Tests "EditMode" "US 349" "unity-editmode"
-Write-Host "3/4 Unity PlayMode (US 347 y US 348)"
-Unity-Tests "PlayMode" "US 347;US 348" "unity-playmode"
+Unity-Tests "EditMode" "US 349;US 350" "unity-editmode"
+Write-Host "3/4 Unity PlayMode (US 347, US 348 y US 350)"
+Unity-Tests "PlayMode" "US 347;US 348;US 350" "unity-playmode"
+$us350 = Join-Path $evidencia "US-350_resumen.txt"
+if (Test-Path $us350) { $resumen.Add("US 350 por pantalla e idioma:"); Get-Content -Encoding utf8 $us350 | ForEach-Object { $resumen.Add("  " + $_) } }
 
 if (-not $SinLauncher) {
     Write-Host "4/4 Launcher"

@@ -50,6 +50,8 @@ public class ArmasDePrueba : EditorWindow
             Lista("Principales", principales, equipo, equipo != null ? equipo.Primary : null);
             EditorGUILayout.Space();
             Lista("Secundarias", secundarias, equipo, equipo != null ? equipo.Secondary : null);
+            EditorGUILayout.Space();
+            CuerpoACuerpo();
         }
         EditorGUILayout.EndScrollView();
     }
@@ -63,6 +65,29 @@ public class ArmasDePrueba : EditorWindow
             string texto = Nombre(arma) + (string.IsNullOrWhiteSpace(arma.alias) ? "" : $" ({arma.alias})") +
                            (arma == enUso ? "  · la tenés" : "");
             if (GUILayout.Button(texto)) equipo.Recibir(arma);
+        }
+    }
+
+    // US 395: la katana (o volver al cuchillo), en el lugar del cuchillo. En Invasión queda como si la hubieras elegido
+    // en el puesto (KatanaDeInvasion); en otro modo solo cambia el arma de ese lugar.
+    private static void CuerpoACuerpo()
+    {
+        EditorGUILayout.LabelField("Cuerpo a cuerpo", EditorStyles.boldLabel);
+        MeleeWeaponHolder lugar = Application.isPlaying ? Object.FindFirstObjectByType<MeleeWeaponHolder>() : null;
+        KatanaData katana = KatanaData.Cargar();
+        bool conKatana = lugar != null && lugar.CurrentWeapon is KatanaData;
+        using (new EditorGUI.DisabledScope(lugar == null || lugar.CurrentWeapon == null))
+        {
+            if (katana != null && GUILayout.Button("Katana" + (conKatana ? "  · la tenés" : "")))
+            {
+                KatanaDeInvasion.Dar();
+                if (!KatanaDeInvasion.Tiene) lugar.Cambiar(katana);
+            }
+            if (GUILayout.Button("Cuchillo" + (!conKatana ? "  · lo tenés" : "")))
+            {
+                KatanaDeInvasion.Quitar();
+                lugar.Cambiar(lugar.DefaultWeapon);
+            }
         }
     }
 

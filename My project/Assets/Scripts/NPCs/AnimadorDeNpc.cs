@@ -48,6 +48,36 @@ public class AnimadorDeNpc
     /// <summary>El clip que está sonando (o null).</summary>
     public AnimationClip Clip => actual != null ? actual.clip : null;
 
+    // F31 (US 290): lo que el anfitrión le manda a las copias de los invasores. Cada vez que se pone una animación (o
+    // se reinicia) y cada golpe suman uno, así la copia sabe que tiene que repetirlo aunque se haya perdido un envío.
+    /// <summary>Cuántas veces se puso una animación.</summary>
+    public int Puestas { get; private set; }
+    /// <summary>La animación puesta va en loop.</summary>
+    public bool EnLoop => enLoop;
+    /// <summary>La velocidad de la animación puesta.</summary>
+    public float VelocidadActual => velocidad;
+    /// <summary>Cuántos golpes (la capa de arriba) se pusieron, y el último.</summary>
+    public int Golpes { get; private set; }
+    public AnimationClip UltimoGolpe { get; private set; }
+    public float PesoDelGolpe { get; private set; }
+
+    private static readonly Dictionary<TipoDeNpc, List<AnimationClip>> clipsDe = new Dictionary<TipoDeNpc, List<AnimationClip>>();
+
+    /// <summary>US 290: las animaciones de ese tipo, siempre en el mismo orden (el número de cada una viaja por la red).</summary>
+    public static List<AnimationClip> ClipsDe(TipoDeNpc tipo)
+    {
+        if (tipo == null) return new List<AnimationClip>();
+        if (clipsDe.TryGetValue(tipo, out List<AnimationClip> lista)) return lista;
+        lista = new List<AnimationClip>();
+        foreach (AnimationClip clip in new[] { tipo.quieto, tipo.quietoEnCombate, tipo.caminar, tipo.correr, tipo.morir,
+                     tipo.aturdido, tipo.preparaEmbestida, tipo.embestida, tipo.volar, tipo.escupir, tipo.rugido,
+                     tipo.animacionADistancia, tipo.golpeRecibido })
+            if (clip != null && !lista.Contains(clip)) lista.Add(clip);
+        if (tipo.ataques != null) foreach (AnimationClip clip in tipo.ataques) if (clip != null && !lista.Contains(clip)) lista.Add(clip);
+        clipsDe[tipo] = lista;
+        return lista;
+    }
+
     /// <summary>Cuánto va del clip actual (0 a 1; sin loop, 1 al terminar).</summary>
     public float Avance
     {
@@ -143,6 +173,9 @@ public class AnimadorDeNpc
         reproductor.Play();
         golpePeso = Mathf.Clamp01(peso);
         golpeT = 0f;
+        Golpes++;
+        UltimoGolpe = clip;
+        PesoDelGolpe = golpePeso;
     }
 
     /// <summary>Saca la reacción al golpe (por ejemplo, al morir).</summary>
@@ -186,6 +219,7 @@ public class AnimadorDeNpc
         Entrada[] par = Entradas(clip);
         // De las dos entradas del clip, la que no está sonando (para volver a empezarlo fundido con donde estaba), o la
         // que menos se ve.
+        Puestas++;
         Entrada nueva = par[0] == actual ? par[1] : par[1] == actual ? par[0] : par[0].peso <= par[1].peso ? par[0] : par[1];
         nueva.reproductor.SetTime(0);
         nueva.reproductor.SetSpeed(velocidad);

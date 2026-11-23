@@ -187,7 +187,7 @@ public class OpcionesPantalla : MonoBehaviour
             string nombre = NombrePestaña(i);
             TextMeshProUGUI texto = Text(Stretch(Node("Texto", celda)), PerfilUI.FTitulo, 28f, Mute, TextAlignmentOptions.Center, 6f, true);
             L10n.BindSource(texto,nombre,"ui.");
-            float ancho = Width(texto, nombre.ToUpperInvariant());
+            float ancho = Width(texto, texto.text.ToUpperInvariant()); // US 350: el ancho del texto ya traducido
             Img linea = Image(Place(Node("Linea", celda), (w - 8f - ancho) / 2f, h - 9f, ancho, 3f), null, Accent);
             ShopPointerTarget puntero = celda.gameObject.AddComponent<ShopPointerTarget>();
             puntero.Clicked = () => MostrarPestaña(k);

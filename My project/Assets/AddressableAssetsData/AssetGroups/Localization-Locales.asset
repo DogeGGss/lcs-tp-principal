@@ -15,8 +15,26 @@ MonoBehaviour:
   m_GroupName: Localization-Locales
   m_GUID: 97fd995772aeadd45b7131c7dee8aa66
   m_SerializeEntries:
+  - m_GUID: 215c40d4cdbda764a86ae780e8420ed6
+    m_Address: "Fran\xE7ais"
+    m_ReadOnly: 1
+    m_SerializedLabels:
+    - Locale
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 37e47577945fd6742b47fb67f6b47a3e
+    m_Address: "Portugu\xEAs (Brasil)"
+    m_ReadOnly: 1
+    m_SerializedLabels:
+    - Locale
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: b41a709661c6a6246800a81db1a5bf94
     m_Address: "Espa\xF1ol"
+    m_ReadOnly: 1
+    m_SerializedLabels:
+    - Locale
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: e6c23047fd66ae84d9ae52b9d5beebe6
+    m_Address: Italiano
     m_ReadOnly: 1
     m_SerializedLabels:
     - Locale

@@ -7,7 +7,8 @@ using UnityEngine;
 // - US 317, Filo: matar con el cuchillo recarga al instante la última arma de fuego que se tuvo en la mano (desde su
 //   reserva), porque en ese momento la mano tiene el cuchillo.
 // - US 318, Carroñero: 1 de cada 5 invasores que mueren suelta un cargador (1 de cada 4 y 1 de cada 3 con la carta
-//   repetida), que se junta pasando por encima (CargadorEnElPiso).
+//   repetida), que se junta pasando por encima (CargadorEnElPiso). En cooperativo cuentan solo las bajas del que tiene
+//   la carta, y el cargador lo puede juntar cualquiera.
 // - US 328, Remate: el cuchillo mata de un golpe a un invasor con el 25 % de la vida o menos (30 % y 35 % con la carta
 //   repetida), salvo al Jefe.
 // - US 329, Reserva lista: el arma guardada (la principal o la secundaria que no está en la mano) se recarga sola desde
@@ -46,7 +47,8 @@ using UnityEngine;
 //   última (ArmaDeFuego.DescargaRapida, CargaDeDescarga y EtapaDeDescarga).
 // - US 321, Acople: cada 3 tiros de pistola que aciertan, el arma principal (guardada) dispara sola un tiro hacia la
 //   mira, con sus balas y su cadencia; si está vacía (o recargando, o no le toca), ese tiro se pierde
-//   (WeaponFire.Acerto y DispararGuardada).
+//   (WeaponFire.Acerto y DispararGuardada). Sale un momento después del de la pistola, con su estela y su fogonazo
+//   celestes y su sonido, para que se distinga (WeaponFire.Acople).
 // - US 313, Campo minado: las granadas del Gran Capitán que tocan el piso quedan como minas (MinaDeGranada) y explotan
 //   cuando pasa un invasor a menos de 2 m en horizontal; hasta 5 a la vez (7 y 9 con la carta repetida): al poner
 //   una de más, la más vieja explota sola (Grenade1.QuedaComoMina).
@@ -178,9 +180,13 @@ public class CartasEnJuego : MonoBehaviour
 
     // US 330: mientras la bronca está cargada, una luz roja que late sobre el arma en la mano (abajo a la derecha de la
     // cámara, donde se ve el arma).
+    // Va en la cámara del jugador (la de sus armas), no en la que se esté usando: muerto, mirando a un compañero (el
+    // espectador), no se ve en la vista del compañero.
     private void MostrarBronca()
     {
-        bool cargada = bronca > 0;
+        WeaponSwitcher armas = Armas();
+        HealthSystem vida = armas != null ? armas.GetComponentInParent<HealthSystem>() : null;
+        bool cargada = bronca > 0 && armas != null && (vida == null || vida.currentHealth > 0) && !CaidaEnInvasion.YoAfuera;
         if (!cargada)
         {
             if (brilloDeBronca != null) brilloDeBronca.enabled = false;
@@ -188,10 +194,8 @@ public class CartasEnJuego : MonoBehaviour
         }
         if (brilloDeBronca == null)
         {
-            Camera camara = Camera.main;
-            if (camara == null) return;
             var go = new GameObject("Bronca cargada");
-            go.transform.SetParent(camara.transform, false);
+            go.transform.SetParent(armas.transform, false);
             go.transform.localPosition = new Vector3(0.18f, -0.1f, 0.45f);
             brilloDeBronca = go.AddComponent<Light>();
             brilloDeBronca.type = LightType.Point;
@@ -234,6 +238,7 @@ public class CartasEnJuego : MonoBehaviour
         Vector3 centro = puesto.Lugar;
         float radio = puesto.Radio;
         int empujados = BurbujaDeDespeje.Lanzar(centro, radio, metros);
+        InvasoresEnRed.AvisarDespeje(centro, radio, metros); // F31 (US 355, CA3): la ven todos
         Debug.Log($"Despeje: {empujados} invasores empujados {metros:0} m.");
     }
 
@@ -293,10 +298,10 @@ public class CartasEnJuego : MonoBehaviour
         }
         if (brilloDeCarga == null)
         {
-            Camera camara = Camera.main;
+            Transform camara = Armas() != null ? Armas().transform : Camera.main != null ? Camera.main.transform : null; // la del jugador
             if (camara == null) return;
             var go = new GameObject("Disparo cargado");
-            go.transform.SetParent(camara.transform, false);
+            go.transform.SetParent(camara, false);
             go.transform.localPosition = new Vector3(0.16f, -0.1f, 0.45f);
             brilloDeCarga = go.AddComponent<Light>();
             brilloDeCarga.type = LightType.Point;
@@ -329,11 +334,20 @@ public class CartasEnJuego : MonoBehaviour
         aciertosDePistola++;
         if (aciertosDePistola < AciertosParaAcople) return;
         aciertosDePistola = 0;
+        StartCoroutine(AcopleEnUnRato());
+    }
+
+    // Un momento después del tiro de la pistola (si salen juntos, el sonido y la estela de la principal se pierden).
+    private const float DemoraDelAcople = 0.12f;
+
+    private System.Collections.IEnumerator AcopleEnUnRato()
+    {
+        yield return new WaitForSeconds(DemoraDelAcople);
         WeaponSwitcher a = Armas();
         GameObject principal = a != null ? a.PrimaryObj : null;
-        if (principal == null) return;
+        if (principal == null) yield break;
         ArmaDeFuego fuego = principal.GetComponent<ArmaDeFuego>();
-        if (fuego != null) { fuego.DispararGuardada(); return; }
+        if (fuego != null) { fuego.DispararGuardada(); yield break; }
         Mitre mitre = principal.GetComponent<Mitre>();
         if (mitre != null) mitre.DispararGuardada();
     }
@@ -393,10 +407,10 @@ public class CartasEnJuego : MonoBehaviour
         }
         if (destelloGemelo == null)
         {
-            Camera camara = Camera.main;
+            Transform camara = Armas() != null ? Armas().transform : Camera.main != null ? Camera.main.transform : null; // la del jugador
             if (camara == null) return;
             var go = new GameObject("Cargador gemelo");
-            go.transform.SetParent(camara.transform, false);
+            go.transform.SetParent(camara, false);
             go.transform.localPosition = new Vector3(0.18f, -0.1f, 0.4f);
             destelloGemelo = go.AddComponent<Light>();
             destelloGemelo.type = LightType.Point;
@@ -467,20 +481,30 @@ public class CartasEnJuego : MonoBehaviour
         return Mathf.Max(danio, vida.currentHealth + vida.currentShield); // de un golpe
     }
 
-    // US 318: cada invasor que muere (por lo que sea) cuenta para el Carroñero.
+    // US 318: cada invasor que muere cuenta para el Carroñero. En cooperativo, solo los que mata el que tiene la carta
+    // (los de los compañeros no): el cargador que suelta lo puede juntar cualquiera (US 355, CA5).
     private void AlMorirUnInvasor(Npc npc, int puntos, bool cabeza)
     {
         int carronero = EleccionDeInvasion.Veces("Carroñero");
-        if (carronero <= 0 || npc == null) return;
+        if (carronero <= 0 || npc == null || npc.LoMatoOtro) return;
         if (++muertesParaCarronero < Mathf.Max(1, CarroneroCada - (carronero - 1))) return;
         muertesParaCarronero = 0;
-        CargadorEnElPiso.Soltar(npc.transform.position, npc.transform, () => MunicionDelArma.SumarUnCargador(MunicionDelArma.EnLaMano(Armas())));
+        CargadorEnElPiso c = CargadorEnElPiso.Soltar(npc.transform.position, npc.transform, JuntarCargador);
+        InvasoresEnRed.AvisarCargador(c); // F31 (US 355, CA5): lo ven todos y lo agarra el primero que pasa
     }
 
     // US 317: una baja con el cuchillo.
     private void AlMatarConElCuchillo(MeleeAttack cuchillo)
     {
         if (EleccionDeInvasion.Veces("Filo") > 0) MunicionDelArma.LlenarCargador(MunicionDelArma.EnLaMano(Armas()));
+    }
+
+    /// <summary>US 318: juntó un cargador del piso: un cargador entero al arma que tiene en la mano (también uno que
+    /// soltó la carta de un compañero, US 355).</summary>
+    public static void JuntarCargador()
+    {
+        CartasEnJuego cartas = FindFirstObjectByType<CartasEnJuego>();
+        if (cartas != null) MunicionDelArma.SumarUnCargador(MunicionDelArma.EnLaMano(cartas.Armas()));
     }
 
     private WeaponSwitcher Armas()
@@ -525,7 +549,7 @@ public class BurbujaDeDespeje : MonoBehaviour
 
     /// <summary>Lanza la burbuja desde el centro del puesto: empuja esos metros a los invasores del anillo (no al Jefe).
     /// Devuelve cuántos va a empujar.</summary>
-    public static int Lanzar(Vector3 centro, float radio, float metros)
+    public static int Lanzar(Vector3 centro, float radio, float metros, bool empujar = true)
     {
         var go = new GameObject("Burbuja de Despeje");
         go.transform.position = centro;
@@ -536,6 +560,7 @@ public class BurbujaDeDespeje : MonoBehaviour
         b.desde = Time.time;
         foreach (Npc npc in Npc.Todos)
         {
+            if (!empujar) break; // F31 (US 355, CA3): la de un compañero solo se ve (el empujón ya lo pidió él)
             if (npc == null || !npc.Vivo || (npc.Tipo != null && npc.Tipo.esJefe)) continue;
             Vector3 d = npc.transform.position - centro;
             d.y = 0f;

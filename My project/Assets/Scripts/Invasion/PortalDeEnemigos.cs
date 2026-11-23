@@ -10,6 +10,7 @@ using UnityEngine;
 //   dibujan después de la marca (MarcaAtraves.DespuesDeLaMarca).
 // El modelo, el tamaño y los sonidos salen de ConfigInvasion. Es sólido: el marco y el centro tienen colisión (los
 // jugadores no lo atraviesan y las balas pegan en él); los enemigos salen por delante (Salida), así que no lo cruzan.
+// No se puede subir a él (Debajo): el que se para arriba resbala hacia adelante o hacia atrás y no puede saltar ahí.
 public class PortalDeEnemigos : MonoBehaviour
 {
     private const float AbreEn = 0.5f, CierraEn = 0.5f; // CA2
@@ -17,6 +18,8 @@ public class PortalDeEnemigos : MonoBehaviour
 
     /// <summary>Los enemigos que le quedan por largar (CA3).</summary>
     public readonly Queue<TipoDeNpc> Fila = new Queue<TipoDeNpc>();
+    /// <summary>F31 (US 290): su número en la partida en red (0: jugando solo).</summary>
+    public int IdRed { get; set; }
     /// <summary>Cuándo puede largar el próximo (lo maneja OleadasDeInvasion).</summary>
     public float Proximo { get; set; }
     /// <summary>Ya terminó de abrirse y todavía no se está cerrando: puede largar enemigos.</summary>
@@ -43,6 +46,7 @@ public class PortalDeEnemigos : MonoBehaviour
         var portal = go.AddComponent<PortalDeEnemigos>();
         portal.escala = escala;
         portal.Armar();
+        InvasoresEnRed.AvisarPortal(portal, piso, mira, escala); // F31 (US 290, CA1): todos ven los mismos portales
         return portal;
     }
 
@@ -88,6 +92,23 @@ public class PortalDeEnemigos : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// No se puede subir a un portal: si "c" es parte de uno, el jugador que lo tiene debajo resbala hacia "afuera" (para
+    /// adelante o para atrás del portal, del lado donde está) y no puede saltar desde ahí (PlayerMovement, igual que
+    /// arriba de otro jugador).
+    /// </summary>
+    public static bool Debajo(Collider c, Vector3 jugador, out Vector3 afuera)
+    {
+        afuera = Vector3.zero;
+        PortalDeEnemigos portal = c != null ? c.GetComponentInParent<PortalDeEnemigos>() : null;
+        if (portal == null) return false;
+        Vector3 frente = portal.transform.forward;
+        frente.y = 0f;
+        frente = frente.sqrMagnitude > 1e-4f ? frente.normalized : Vector3.forward;
+        afuera = Vector3.Dot(jugador - portal.transform.position, frente) >= 0f ? frente : -frente;
+        return true;
+    }
+
     // Sin modelo cargado: un disco rojo parado.
     private GameObject Disco()
     {
@@ -111,6 +132,7 @@ public class PortalDeEnemigos : MonoBehaviour
         if (cerrando) return;
         cerrando = true;
         Fila.Clear();
+        InvasoresEnRed.AvisarCierre(this); // F31 (US 290)
     }
 
     private void Update()

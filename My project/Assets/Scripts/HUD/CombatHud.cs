@@ -140,6 +140,8 @@ public class CombatHud : MonoBehaviour
 
     // US 139, CA3: aviso verde "+50" al lado de la vida durante 1 s.
     private static CombatHud current;
+    /// <summary>US 308: el arma que el jugador tiene en la mano (para contar los invasores eliminados con cada una).</summary>
+    public static string ArmaActual => current != null ? current.WeaponName : null;
     private TextMeshProUGUI healText;
     private float healUntil = -1f;
     private const float HealSeconds = 1f;
@@ -475,8 +477,8 @@ public class CombatHud : MonoBehaviour
         icon.sprite = data.icon;
         icon.enabled = data.icon != null;
         keyText.text = KeyBindings.Label(GameAction.Habilidad);
-        nameText.text = data.displayName;
-        float nameW = Width(nameText, data.displayName.ToUpperInvariant());
+        nameText.text = L10n.Source(data.displayName);
+        float nameW = Width(nameText, nameText.text.ToUpperInvariant());
         float x = (SkillW - (24f + 8f + nameW)) / 2f;
         keyChip.rectTransform.anchoredPosition = new Vector2(x, 0f);
         nameText.rectTransform.anchoredPosition = new Vector2(x + 32f, 0f);
@@ -716,7 +718,7 @@ public class CombatHud : MonoBehaviour
         if (melee != null && melee.CurrentViewModel != null && melee.CurrentViewModel.activeInHierarchy)
         {
             name = L10n.Source(melee.CurrentWeapon != null ? melee.CurrentWeapon.weaponName : "Cuchillo");
-            WeaponIcon = knifeIcon; // para el aviso de baja con cuchillo
+            WeaponIcon = melee.CurrentWeapon is KatanaData katana && katana.icono != null ? katana.icono : knifeIcon; // para el aviso de baja con cuchillo (o la katana, US 395)
         }
     }
 
@@ -1003,7 +1005,8 @@ public class CombatHud : MonoBehaviour
         if (sinSenal) SetSlot(1, false, false, L10n.T("gameplay.hud.no_signal"), null, KeyBindings.Label(GameAction.ArmaSecundaria));
         else SetSlot(1, hasSecondary, held == 1, secondaryName, secondary != null ? secondary.icon : null, KeyBindings.Label(GameAction.ArmaSecundaria));
         SinSenal(invSlots[1], sinSenal);
-        SetSlot(2, hasKnife, held == 2, knifeName, knifeIcon, KeyBindings.Label(GameAction.Cuchillo));
+        Sprite meleeIcon = hasKnife && melee.CurrentWeapon is KatanaData katana && katana.icono != null ? katana.icono : knifeIcon; // US 395
+        SetSlot(2, hasKnife, held == 2, knifeName, meleeIcon, KeyBindings.Label(GameAction.Cuchillo));
         SetSlot(3, grenade != null, held == 3, grenadeName, grenade != null ? grenade.icon : null, KeyBindings.Label(GameAction.Granadas));
         // US 291, CA3: en Invasión el equipo es las dos armas y el cuchillo (1, 2 y 3), sin el espacio de las granadas.
         bool grenadeSlot = !PlayerLoadout.SinTienda;
@@ -1106,7 +1109,7 @@ public class CombatHud : MonoBehaviour
         slot.keyBg.color = inHand ? new Color(0f, 0f, 0f, 0.12f) : new Color(0f, 0f, 0f, DarkAlpha(0.35f));
     }
 
-    private static string ItemName(ShopItem item) => string.IsNullOrEmpty(item.alias) ? item.displayName : item.alias;
+    private static string ItemName(ShopItem item) => L10n.Source(string.IsNullOrEmpty(item.alias) ? item.displayName : item.alias);
 
     private void BuildSleepers(int count)
     {

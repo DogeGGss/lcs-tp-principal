@@ -19,13 +19,15 @@ public static class DetectorDeIdioma
     public const string VariableEvidencia = "RIFTWALKER_EVIDENCIA";
 
     // Nombres que no se traducen y que no salen en el catálogo en inglés.
-    private static readonly string[] NombresPropios =
+    internal static readonly string[] NombresPropios =
     {
         "Nicolás", "Gauna", "Velázquez", "Gómez", "Huber", "Barreto", "Fonseca", "Ramos", "Lucas", "Luka", "Franco",
         "Nahuel", "Ulises", "David", "Unzué", "Porteña", "Capitán", "UNGS", "Riftwalker",
+        // Cada idioma del selector se muestra con su propio nombre (Español, Português, Français...).
+        "Español", "Português", "Brasil", "Français", "Italiano",
     };
     // Carteles reales de los mapas (la UNGS, sus calles, el colectivo, los murales): son parte del lugar y no se traducen.
-    private static readonly HashSet<string> CartelesDelMapa = new HashSet<string>(StringComparer.Ordinal)
+    internal static readonly HashSet<string> CartelesDelMapa = new HashSet<string>(StringComparer.Ordinal)
     {
         "Universidad Nacional de General Sarmiento", "Juan María Gutiérrez 1150", "Juan M. Gutiérrez", "NUNCA MÁS",
         "ICO instituto del conurbano", "ICI instituto de ciencias", "IDH instituto de desarrollo humano", "IDEI instituto de industria",
@@ -133,7 +135,7 @@ public static class DetectorDeIdioma
                 if (m.Value.IndexOfAny("áéíóúñÁÉÍÓÚÑ".ToCharArray()) >= 0) palabrasPropias.Add(m.Value);
     }
 
-    private static TranslationEntry[] Leer(string idioma, string dominio)
+    internal static TranslationEntry[] Leer(string idioma, string dominio)
     {
         var archivo = Resources.Load<TextAsset>($"Localization/{idioma}/{dominio}");
         if (archivo == null) return Array.Empty<TranslationEntry>();

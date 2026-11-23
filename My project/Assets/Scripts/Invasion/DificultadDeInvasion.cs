@@ -14,7 +14,7 @@ public static class DificultadDeInvasion
 {
     public static readonly string[] Nombres = { "Fácil", "Normal", "Difícil" };
 
-    public static string Nombre => Nombres[(int)MatchSettings.Difficulty];
+    public static string Nombre => L10n.Source(Nombres[(int)MatchSettings.Difficulty]); // US 350: en el idioma elegido
 
     /// <summary>CA3: multiplica la vida de cada enemigo.</summary>
     public static float Vida => MatchSettings.Difficulty switch

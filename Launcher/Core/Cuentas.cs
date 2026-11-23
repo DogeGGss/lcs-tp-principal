@@ -74,7 +74,7 @@ public sealed class Cuentas(HttpClient http, ServicioCuentas servicio, string ca
         var r = await PedirAsync(HttpMethod.Post, "/auth/v1/verify", new Verificacion("signup", mail.Trim(), numeros), null, token);
         if (!r.Bien && r.Codigo != 0) // newer Supabase projects confirm the sign-up with the type «email»
             r = await PedirAsync(HttpMethod.Post, "/auth/v1/verify", new Verificacion("email", mail.Trim(), numeros), null, token);
-        return Entrar(r);
+        return await EntrarYCerrarOtrasAsync(r, token);
     }
 
     /// <summary>«¿No te llegó?»: mails another code.</summary>
@@ -98,7 +98,7 @@ public sealed class Cuentas(HttpClient http, ServicioCuentas servicio, string ca
             await PedirAsync(HttpMethod.Post, "/auth/v1/resend", new Reenvio("signup", mail), null, token);
             return ReglasCuenta.SinConfirmar;
         }
-        return Entrar(r);
+        return await EntrarYCerrarOtrasAsync(r, token);
     }
 
     /// <summary>US 271, CA1: mails a code to choose a new password. Supabase answers the same whether the mail has an
@@ -131,7 +131,41 @@ public sealed class Cuentas(HttpClient http, ServicioCuentas servicio, string ca
         if (!cambio.Bien && !cambio.Cuerpo.Contains("same_password", StringComparison.OrdinalIgnoreCase))
             return ReglasCuenta.Mensaje(cambio.Codigo, cambio.Cuerpo);
         Guardar(sesion);
+        await CerrarOtrasAsync(token); // US 393
         return null;
+    }
+
+    // US 393, CA1: vale el último inicio de sesión. El que entra cierra las demás sesiones de la cuenta (las de otras
+    // PCs): ya no se pueden renovar, y su juego y su launcher salen solos al preguntar (SigueVigenteAsync).
+    private async Task<string?> EntrarYCerrarOtrasAsync(Respuesta r, CancellationToken token)
+    {
+        string? problema = Entrar(r);
+        if (problema == null) await CerrarOtrasAsync(token);
+        return problema;
+    }
+
+    private async Task CerrarOtrasAsync(CancellationToken token)
+    {
+        if (Sesion is { AccessToken.Length: > 0 } s) await PedirAsync(HttpMethod.Post, "/auth/v1/logout?scope=others", new { }, s.AccessToken, token);
+    }
+
+    /// <summary>
+    /// US 393, CA3: si la sesión de esta PC sigue siendo la de la cuenta (rw_check_session, sesion-unica.sql). false si
+    /// se entró con la cuenta en otra PC (o Supabase ya no la acepta); null si no se sabe (sin internet, o falta correr el
+    /// SQL): ahí no se echa a nadie.
+    /// </summary>
+    public async Task<bool?> SigueVigenteAsync(CancellationToken token)
+    {
+        if (!await RenovarAsync(token)) return Sesion == null ? false : null;
+        if (Sesion is not { AccessToken.Length: > 0 } s) return false;
+        var r = await PedirAsync(HttpMethod.Post, "/rest/v1/rpc/rw_check_session", new { }, s.AccessToken, token);
+        if (!r.Bien) return null;
+        try
+        {
+            using var doc = JsonDocument.Parse(r.Cuerpo);
+            return !doc.RootElement.TryGetProperty("active", out var activa) || activa.ValueKind != JsonValueKind.False;
+        }
+        catch (JsonException) { return null; }
     }
 
     /// <summary>US 270: tells Supabase (if online) and deletes the session from the PC.</summary>

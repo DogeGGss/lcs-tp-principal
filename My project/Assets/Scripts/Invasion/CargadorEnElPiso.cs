@@ -3,6 +3,8 @@ using UnityEngine;
 // US 318 (carta Carroñero): el cargador que suelta un invasor al morir. Queda en el piso girando y flotando un poco, con
 // un brillo, y se junta pasando por encima: suma un cargador entero al arma que se tiene en la mano (a la reserva; si
 // está llena, al cargador). Si nadie lo junta, a los 25 s se va (los últimos 5 titila).
+// F31 (US 355, CA5): en Invasión cooperativa lo ven todos y lo agarra el primero que pasa, para su arma; al agarrarlo
+// desaparece para todos (InvasoresEnRed).
 public class CargadorEnElPiso : MonoBehaviour
 {
     private const float Dura = 25f, Titila = 5f;
@@ -10,6 +12,8 @@ public class CargadorEnElPiso : MonoBehaviour
     private static readonly Color Brillo = new Color(1f, 0.72f, 0.2f);
 
     private System.Action alJuntar;
+    /// <summary>F31 (US 355, CA5): su número en la partida en red (0: jugando solo).</summary>
+    public int IdRed { get; set; }
     private Transform jugador;
     private Renderer dibujo;
     private float nacio;
@@ -77,6 +81,7 @@ public class CargadorEnElPiso : MonoBehaviour
         Vector3 d = jugador.position - piso;
         if (Mathf.Abs(d.y) > 2f || new Vector2(d.x, d.z).magnitude > Alcance) return;
         alJuntar?.Invoke();
+        InvasoresEnRed.AvisarCargadorJuntado(this); // F31 (US 355, CA5): desaparece para todos
         Destroy(gameObject);
     }
 }

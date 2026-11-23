@@ -52,6 +52,9 @@ public class Mitre : MonoBehaviour, IHudWeapon
     private Transform shooter;
     private ShopItem data;
 
+    /// <summary>F35 (US 381): la ficha del arma (la asignada o la del catálogo), para saber qué skin lleva.</summary>
+    public ShopItem Ficha => Data;
+
     // Ficha del arma: la asignada o, si falta, la del catálogo de la tienda con este nombre.
     private ShopItem Data
     {
@@ -74,6 +77,7 @@ public class Mitre : MonoBehaviour, IHudWeapon
     {
         currentAmmo = MagazineSize;
         if (fullReserve < 0) fullReserve = reserveAmmo;
+        reserveAmmo = Municion.Reserva(fullReserve); // F31: en Invasión viene con el doble
         // Quien dispara: sus balas nunca le pegan a él mismo (US 165)
         PlayerMovement owner = GetComponentInParent<PlayerMovement>();
         shooter = owner != null ? owner.transform : transform.root;
@@ -143,6 +147,13 @@ public class Mitre : MonoBehaviour, IHudWeapon
         reserveAmmo += Municion.Agrandada(fullReserve, antes);
     }
 
+    /// <summary>US 360, CA6: al descartar Sin respaldo o Mochila (ver ArmaDeFuego.RecortarMunicion).</summary>
+    public void RecortarMunicion()
+    {
+        if (currentAmmo > MagazineSize) { reserveAmmo += currentAmmo - MagazineSize; currentAmmo = MagazineSize; }
+        if (fullReserve >= 0) reserveAmmo = Mathf.Min(reserveAmmo, ReservaLlena);
+    }
+
     /// <summary>US 293, CA2: suma balas a la reserva sin pasarse de la llena; lo que sobra va al cargador.</summary>
     public void SumarBalas(int balas)
     {
@@ -202,8 +213,8 @@ public class Mitre : MonoBehaviour, IHudWeapon
         if (cam == null) return false;
         nextTimeToFire = Time.time + 1f / fireRate;
         if (!MinijuegoCometas.Activo) currentAmmo--;
-        if (shootSound != null) AudioSource.PlayClipAtPoint(shootSound, cam.transform.position, 0.7f); // (guardado no suena)
-        WeaponFire.Fire(Data, cam, shooter, false, maxRange);
+        // (Guardado, su fuente no suena: el sonido y la estela celeste del Acople, WeaponFire.Acople.)
+        WeaponFire.Acople(shootSound, audioSource, sfxGroup, () => WeaponFire.Fire(Data, cam, shooter, false, maxRange));
         return true;
     }
 

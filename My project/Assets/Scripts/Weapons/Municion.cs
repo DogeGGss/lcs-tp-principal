@@ -4,6 +4,8 @@
 // La usan ArmaDeFuego, Mitre y Pistola al recargar, y el HUD para mostrar "∞" en lugar del número de la reserva.
 // US 315 (carta Mochila, Invasión): MasReserva agranda la reserva llena de todas las armas (Reserva); vuelve a 1 al
 // empezar y al terminar cada partida de Invasión (PartidaDeInvasion).
+// F31: en Invasión la reserva llena de todas las armas es el doble que en los demás modos (EnInvasion), y la Mochila
+// agranda esa.
 public static class Municion
 {
     public static bool ReservaInfinita => CampoDePractica.Activo || MatchSettings.Mode == GameMode.Deathmatch;
@@ -22,13 +24,19 @@ public static class Municion
     public static System.Func<bool> TiroDeReserva;
     public const float CadenciaDeReserva = 0.5f;
 
-    /// <summary>US 315: la reserva llena de un arma que viene con esa (con la Mochila, más).</summary>
-    public static int Reserva(int llena) => llena < 0 ? llena : UnityEngine.Mathf.RoundToInt(llena * MasReserva);
+    /// <summary>F31: cuántas veces la reserva de la ficha tiene cada arma en Invasión.</summary>
+    public const float EnInvasion = 2f;
+
+    // La del modo: el doble en Invasión (no en el campo de práctica, que es infinita).
+    private static float DelModo => MatchSettings.Mode == GameMode.Zombie && !CampoDePractica.Activo ? EnInvasion : 1f;
+
+    /// <summary>US 315: la reserva llena de un arma que viene con esa (en Invasión, el doble; con la Mochila, más).</summary>
+    public static int Reserva(int llena) => llena < 0 ? llena : UnityEngine.Mathf.RoundToInt(llena * DelModo * MasReserva);
 
     /// <summary>US 315: cuántas balas más tiene la reserva llena de un arma que viene con esa, desde que la reserva era
     /// "antes" veces más grande.</summary>
     public static int Agrandada(int llena, float antes) =>
-        llena <= 0 ? 0 : Reserva(llena) - UnityEngine.Mathf.RoundToInt(llena * antes);
+        llena <= 0 ? 0 : Reserva(llena) - UnityEngine.Mathf.RoundToInt(llena * DelModo * antes);
 
     [UnityEngine.RuntimeInitializeOnLoadMethod(UnityEngine.RuntimeInitializeLoadType.SubsystemRegistration)]
     private static void Limpiar() { MasReserva = 1f; MasCargadorPrincipal = 1f; }

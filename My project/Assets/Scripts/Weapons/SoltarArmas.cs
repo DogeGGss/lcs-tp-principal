@@ -27,6 +27,7 @@ public class SoltarArmas : MonoBehaviour
         public Vector3 desde, velocidad;
         public float yaw;
         public int cargador, reserva;
+        public string skin; // F35 (US 380, CA4): la skin que tenía (null o "": ninguna)
     }
 
     // Jugador de esta computadora.
@@ -167,14 +168,17 @@ public class SoltarArmas : MonoBehaviour
         Vector3 donde = arma.Centro;
         ShopItem item = arma.Item;
         int cargador = arma.Cargador, reserva = arma.Reserva;
+        string skin = arma.Skin;
         ArmaEnPiso.Quitar(arma.Id);
 
         // Si mientras tanto llenó ese espacio (por ejemplo, compró), el arma vuelve al piso.
         if (!loadout.PickUp(item))
         {
-            Tirar(item, donde + Vector3.up * 0.3f, Vector3.zero, duenio.eulerAngles.y, cargador, reserva);
+            Tirar(item, donde + Vector3.up * 0.3f, Vector3.zero, duenio.eulerAngles.y, cargador, reserva, skin);
             return;
         }
+        // F35 (US 380, CA4): la usa con la skin de quien la soltó.
+        if (SkinsEnLasArmas.Local != null) SkinsEnLasArmas.Local.Levantada(item, skin);
         GameObject nueva = item.kind == ShopItemKind.PrimaryWeapon ? switcher.PrimaryObj : switcher.SecondaryObj;
         PonerBalas(nueva, cargador, reserva);
         ArmaEnPiso.Sonar(ConfigRed.Actual != null ? ConfigRed.Actual.sonidoLevantarArma : null, donde, grupo);
@@ -198,6 +202,7 @@ public class SoltarArmas : MonoBehaviour
         IHudWeapon datos = arma.GetComponent<IHudWeapon>();
         int cargador = datos != null ? datos.Ammo : 0;
         int reserva = datos != null ? Mathf.Max(0, datos.Reserve) : 0;
+        string skin = SkinsEnLasArmas.Local != null ? SkinsEnLasArmas.Local.SkinDe(item) : null; // F35 (US 380, CA4)
         if (!loadout.Drop(item)) return; // CA4: WeaponSwitcher saca la siguiente
 
         Vector3 frente = camara.forward;
@@ -211,7 +216,7 @@ public class SoltarArmas : MonoBehaviour
         Vector3 velocidad = alMorir ? Vector3.up * 0.5f : frente * TiroAdelante + Vector3.up * TiroArriba;
         if (!alMorir && cuerpo != null) velocidad += cuerpo.velocity; // si va corriendo, sale con su velocidad
 
-        int id = Tirar(item, desde, velocidad, Mathf.Atan2(frente.x, frente.z) * Mathf.Rad2Deg, cargador, reserva);
+        int id = Tirar(item, desde, velocidad, Mathf.Atan2(frente.x, frente.z) * Mathf.Rad2Deg, cargador, reserva, skin);
         propia = id;
         propiaHasta = Time.time + SinVolverALevantar;
     }
@@ -226,7 +231,7 @@ public class SoltarArmas : MonoBehaviour
     }
 
     // Crea el arma en el piso acá y se la avisa a los demás.
-    private int Tirar(ShopItem item, Vector3 desde, Vector3 velocidad, float yaw, int cargador, int reserva)
+    private int Tirar(ShopItem item, Vector3 desde, Vector3 velocidad, float yaw, int cargador, int reserva, string skin)
     {
         var suelta = new Suelta
         {
@@ -236,9 +241,10 @@ public class SoltarArmas : MonoBehaviour
             velocidad = velocidad,
             yaw = yaw,
             cargador = cargador,
-            reserva = reserva
+            reserva = reserva,
+            skin = skin
         };
-        ArmaEnPiso.Crear(suelta.id, item, desde, velocidad, yaw, cargador, reserva, true);
+        ArmaEnPiso.Crear(suelta.id, item, desde, velocidad, yaw, cargador, reserva, true, skin);
         Soltada?.Invoke(suelta);
         return suelta.id;
     }

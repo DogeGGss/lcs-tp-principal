@@ -295,10 +295,12 @@ public class RuedaDeEmotes : MonoBehaviour
             fondos[i].color = esMarcado ? PorcionMarcada : vacio ? PorcionVacia : Porcion;
             fondos[i].rectTransform.localScale = Vector3.one * (esMarcado ? 1.04f : 1f);
             iconos[i].rectTransform.localScale = Vector3.one * (esMarcado ? 1.15f : 1f);
-            nombres[i].color = esMarcado ? ShopUIKit.AccentInk : vacio ? ShopUIKit.Mute : ShopUIKit.Ink;
+            CatalogoDeEmotes.Emote em = CatalogoDeEmotes.Actual.De(EmotesEquipados.En(i));
+            nombres[i].color = esMarcado ? ShopUIKit.AccentInk : vacio ? ShopUIKit.Mute : em != null ? PerfilUI.ColorRareza(em.rareza) : ShopUIKit.Ink;
         }
         CatalogoDeEmotes.Emote e = marcado >= 0 ? CatalogoDeEmotes.Actual.De(EmotesEquipados.En(marcado)) : null;
         elegido.text = e != null ? e.nombre : "";
+        elegido.color = e != null ? PerfilUI.ColorRareza(e.rareza) : ShopUIKit.Ink; // F37 (US 388): con el color de su rareza
         ayuda.text = e != null ? "Soltá " + KeyBindings.Label(GameAction.Emotes) : L10n.T("gameplay.ui.move_the_mouse");
     }
 

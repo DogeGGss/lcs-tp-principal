@@ -14,6 +14,8 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
 {
     private const float AlcanceTrazadora = 300f;
     private const byte Agachado = 1, Corriendo = 2, Cayendo = 4, Invulnerable = 8, Despacio = 16;
+    private const byte Caido = 32; // F31 (US 357): caído en Invasión cooperativa (se lo puede revivir)
+    private const byte Mira1 = 64, Mira2 = 128; // US 133: con la mira telescópica puesta (primer o segundo zoom), para el espectador
     // Arma en la mano: las principales van desde PrimeraPrincipal, en el orden de WeaponSwitcher.Principales(), y las
     // demás secundarias (Línea H...) desde PrimeraSecundaria, en el orden de WeaponSwitcher.otrasSecundarias (US 072).
     private const byte SinArma = 0, ArmaPistola = 2, ArmaCuchillo = 3, PrimeraSecundaria = 4, PrimeraPrincipal = 10;
@@ -31,6 +33,7 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
     private GameObject pistola;
     private List<GameObject> secundarias = new List<GameObject>(); // las demás secundarias (sin la Línea A)
     private MeleeWeaponHolder cuchillo;
+    private MeleeAttack ataqueCuerpoACuerpo; // US 395: la guardia de la katana, para mandarla
     private WeaponSwitcher cambioLocal; // dueño: para saber qué granada tiene en la mano
     private PartidaEnRed partida;
     private bool muerto;
@@ -44,7 +47,9 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
     private LanzamientoDeGranada lanzamiento;    // US 259: las manos con la granada y el lanzamiento
     private CuchilloEnTerceraPersona cuchilloVisto; // US 257: las manos con el cuchillo y el corte
     private BaileEnTerceraPersona baile;         // US 262: el baile (emote) que hace
+    private CaidoEnTerceraPersona caidoVisto;    // F31 (US 357): caído, arrastrándose o levantándose
     private byte emoteRed;                       // US 262: el baile que llega por la red (0: ninguno; si no, su número + 1)
+    private bool guardiaRed;                     // US 395: con la katana en guardia (para el espectador)
     private readonly HashSet<int> granadasExplotadas = new HashSet<int>();
     private bool cuerpoPropio;              // la copia ya tiene el modelo de su personaje (CharacterData.modelo)
     private CharacterData cuerpoDe;         // de qué personaje es el cuerpo que tiene ahora
@@ -88,11 +93,17 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
     private Pasos pasos; // US 001 y US 198: sus pasos se escuchan desde donde está (salvo agachado o despacio)
 
     // US 182: el arma a tamaño real en la mano derecha, una por código de arma (las de primera persona no se ven).
-    private class ModeloEnMano { public GameObject go; public Bounds limites; }
+    // "lugar": dónde va el modelo respecto de la mano (la katana se agarra del mango, no del centro: US 395).
+    private class ModeloEnMano { public GameObject go; public Bounds limites; public Vector3 lugar; }
     private readonly Dictionary<byte, ModeloEnMano> enLaMano = new Dictionary<byte, ModeloEnMano>();
     private Transform manoDerecha, soporteMano;
 
     public bool Vivo => !muerto;
+    /// <summary>F31 (US 357): la copia de un compañero que está caído (en esta computadora lo dice su dueño).</summary>
+    public bool EstaCaido => !muerto && (banderasRed & Caido) != 0;
+
+    /// <summary>US 133: con qué zoom de la mira telescópica está apuntando (0: sin la mira), para el espectador.</summary>
+    public int NivelDeMira => muerto ? 0 : (banderasRed & Mira2) != 0 ? 2 : (banderasRed & Mira1) != 0 ? 1 : 0;
 
     // US 138, CA5: para saber hasta cuándo se puede cambiar de equipo en Deathmatch.
     public const float TopeConTienda = 10f; // muerto y con la tienda abierta, como mucho se espera esto
@@ -117,6 +128,9 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
 
     // Número de jugador de Photon y equipo táctico (US 031).
     public int Actor => photonView != null && photonView.Owner != null ? photonView.Owner.ActorNumber : -1;
+
+    /// <summary>Su vida y escudo (en las copias, los que manda el dueño). US 375: lo que le quedó al que te mató.</summary>
+    public HealthSystem Vida => vida;
     public int Equipo => EquiposTacticos.DeActor(Actor);
 
     // =====================================================================
@@ -130,6 +144,7 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
         movimiento = GetComponent<PlayerMovement>();
         animador = GetComponentInChildren<Animator>();
         cuchillo = GetComponent<MeleeWeaponHolder>();
+        ataqueCuerpoACuerpo = GetComponentInChildren<MeleeAttack>(true);
         WeaponSwitcher cambio = GetComponentInChildren<WeaponSwitcher>(true);
         camara = cambio != null ? cambio.transform : transform.Find("Main Camera");
         if (cambio != null) { principales = cambio.Principales(); pistola = cambio.pistolObj; secundarias = OtrasSecundarias(cambio); }
@@ -151,11 +166,15 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
             movimiento.Landed += () => aterrizajes++;
         }
         if (vida != null) vida.Died += AlMorir;
+        ResumenDeMuerte.Seguir(vida); // US 375: el daño que recibe en cada vida
         WeaponFire.Fired += AlDisparar;
         MeleeAttack.Swung += AlAcuchillar;
         GrenadeThrower.Thrown += AlLanzarGranada;
+        WeaponFire.ProjectileFired += AlDispararGranada; // US 287: las granadas del Gran Capitán
         GrenadeThrower.Started += AlEmpezarGranada;
         Grenade1.Exploded += AlExplotarGranada;
+        MinaDeGranada.SePuso += AlPonerMina;         // F31 (US 355)
+        GranadaPegada.SePego += AlPegarGranada;      // F31 (US 355)
         HabilidadTrasbordo.Usado += AlTrasbordar;
         PortalDeTeletransporte.Paso += AlPasarPortal;   // Mapa 1: los portales
         HabilidadBarrera.Levantada += AlLevantarBarrera;
@@ -172,8 +191,11 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
         WeaponFire.Fired -= AlDisparar;
         MeleeAttack.Swung -= AlAcuchillar;
         GrenadeThrower.Thrown -= AlLanzarGranada;
+        WeaponFire.ProjectileFired -= AlDispararGranada;
         GrenadeThrower.Started -= AlEmpezarGranada;
         Grenade1.Exploded -= AlExplotarGranada;
+        MinaDeGranada.SePuso -= AlPonerMina;
+        GranadaPegada.SePego -= AlPegarGranada;
         HabilidadTrasbordo.Usado -= AlTrasbordar;
         PortalDeTeletransporte.Paso -= AlPasarPortal;
         HabilidadBarrera.Levantada -= AlLevantarBarrera;
@@ -212,7 +234,9 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
         if (ataque.gameObject != gameObject || muerto) return;
         if (vida != null) vida.Invulnerable = false;
         atacoDesdeReaparicion = true;
-        photonView.RPC(nameof(RpcCuchillo), RpcTarget.Others);
+        // US 395: qué ataque es (el espectador hace el mismo movimiento con la katana).
+        byte tipo = ataque.AvanceDeLaEstocada >= 0f ? CorteEstocada : ataque.TajoFuerte ? CorteFuerte : CorteTajo;
+        photonView.RPC(nameof(RpcCuchillo), RpcTarget.Others, tipo);
     }
 
     // US 259, CA2: este jugador empezó a lanzar una granada (el clic); en las demás computadoras su brazo va hacia atrás y
@@ -243,12 +267,31 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
             granada.LaunchOrigin, granada.LaunchDirection, granada.LaunchInherited);
     }
 
+    // US 287 (F31, US 355): este jugador disparó una granada con el Gran Capitán; en las demás computadoras sale una igual
+    // del arma (RpcGranadaDeArma), que explota, queda como mina o se pega a un invasor cuando lo hace la de verdad.
+    private void AlDispararGranada(Transform tirador, Grenade1 granada, Vector3 origen, Vector3 velocidad, bool bronca)
+    {
+        if (tirador != transform || muerto || granada == null || !photonView.IsMine) return;
+        granada.netId = ++ultimaGranada;
+        photonView.RPC(nameof(RpcGranadaDeArma), RpcTarget.Others, granada.netId, CodigoDePrincipal(granada.Item), origen, velocidad, bronca);
+    }
+
+    // El código del arma principal con esa ficha (con Acople el Gran Capitán dispara con la pistola en la mano: US 321).
+    private byte CodigoDePrincipal(ShopItem ficha)
+    {
+        if (ficha != null && principales != null)
+            for (int i = 0; i < principales.Count && PrimeraPrincipal + i <= byte.MaxValue; i++)
+                if (principales[i] != null && WeaponSwitcher.FichaDe(principales[i]) == ficha) return (byte)(PrimeraPrincipal + i);
+        return ArmaEnMano();
+    }
+
     // Explotó una granada de este jugador: en las demás computadoras explota en el mismo lugar.
     private void AlExplotarGranada(Grenade1 granada, Vector3 centro)
     {
         if (granada == null || granada.thrower != transform || granada.netId == 0) return;
         int indice = catalogo != null ? catalogo.items.IndexOf(granada.Item) : -1;
-        photonView.RPC(nameof(RpcExplosionGranada), RpcTarget.Others, granada.netId, (byte)Mathf.Clamp(indice, 0, byte.MaxValue), centro);
+        // (la del Gran Capitán no está en el catálogo: sin ficha, con la explosión común si la copia no llegó a salir)
+        photonView.RPC(nameof(RpcExplosionGranada), RpcTarget.Others, granada.netId, indice < 0 ? byte.MaxValue : (byte)Mathf.Min(indice, byte.MaxValue), centro);
     }
 
     // US 184, CA10: este jugador soltó un arma; en las demás computadoras cae igual, en el mismo lugar.
@@ -257,14 +300,15 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
         int indice = catalogo != null ? catalogo.items.IndexOf(suelta.item) : -1;
         if (indice < 0 || indice > byte.MaxValue) return;
         photonView.RPC(nameof(RpcArmaSoltada), RpcTarget.Others, suelta.id, (byte)indice, suelta.desde, suelta.velocidad,
-            suelta.yaw, suelta.cargador, suelta.reserva);
+            suelta.yaw, suelta.cargador, suelta.reserva, suelta.skin ?? "");
     }
 
+    // F35 (US 380, CA4): con la skin que tenía.
     [PunRPC]
-    private void RpcArmaSoltada(int id, byte indice, Vector3 desde, Vector3 velocidad, float yaw, int cargador, int reserva)
+    private void RpcArmaSoltada(int id, byte indice, Vector3 desde, Vector3 velocidad, float yaw, int cargador, int reserva, string skin)
     {
         ShopItem item = FichaDe(indice);
-        if (item != null) ArmaEnPiso.Crear(id, item, desde, velocidad, yaw, cargador, reserva, false);
+        if (item != null) ArmaEnPiso.Crear(id, item, desde, velocidad, yaw, cargador, reserva, false, skin);
     }
 
     // CA10: la que soltó este jugador ya se quedó quieta; en las demás computadoras queda en el mismo lugar.
@@ -313,10 +357,12 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
     // codigo: el arma que tenía en la mano el atacante cuando hizo el daño. Va al aviso de baja aunque, por el lag,
     // cuando llega el aviso ya tenga otra (por ejemplo, mató con el Mitre y enseguida sacó el cuchillo).
     [PunRPC]
-    private void RpcDanio(int danio, int atacante, bool cabeza, string arma, byte codigo, Vector3 origen)
+    private void RpcDanio(int danio, int atacante, bool cabeza, string arma, byte codigo, Vector3 origen, byte zona)
     {
         if (!photonView.IsMine || muerto || vida == null) return;
-        if (EquiposTacticos.SonAliados(atacante, Actor)) return; // US 031, CA6: por las dudas, también acá
+        if (atacante != 0 && EquiposTacticos.SonAliados(atacante, Actor)) return; // US 031, CA6: por las dudas, también acá (0: un invasor, US 290)
+        if (atacante > 0 && atacante != Actor && !vida.Invulnerable)
+            ResumenDeMuerte.Recibido(atacante, danio, cabeza ? BodyZone.Head : (BodyZone)zona); // US 375, CA3 y CA4
         if (atacante > 0 && atacante != Actor) danos[atacante] = Time.unscaledTime;
         ultimoAtacante = atacante;
         ultimaArma = arma ?? "";
@@ -340,6 +386,7 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
         if (MatchSettings.Mode == GameMode.Deathmatch) ShopUI.Cerrar();
         Bloquear(true);
         AvisarBaja(ultimoAtacante, cabeza, ultimaArma, ultimoCodigo, asistentes); // US 057, CA4
+        MostrarResumen(cabeza); // US 375
 
         Player asesino = ultimoAtacante != 0 && PhotonNetwork.CurrentRoom != null ? PhotonNetwork.CurrentRoom.GetPlayer(ultimoAtacante) : null;
         string titulo = asesino != null ? L10n.T("gameplay.death.killed_by_fmt", asesino.NickName) : ultimaArma == Caida ? L10n.T("gameplay.death.fell")
@@ -349,7 +396,7 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
             StartCoroutine(Reaparecer(titulo, ConfigRed.Actual != null ? ConfigRed.Actual.reaparicion : 3f));
         // US 033: si la ronda ya terminó (por ejemplo, lo eliminó la explosión), el cartel de fin de ronda ya lo explica.
         else if (RondasTacticas.Actual == null || RondasTacticas.Actual.FaseActual == RondasTacticas.Fase.Combate)
-            partida.Aviso(titulo, L10n.T("gameplay.death.respawn_next_round"));
+            partida.Aviso(titulo, L10n.T(CooperativoDeInvasion.Activo ? "gameplay.mates.next_wave" : "gameplay.death.respawn_next_round")); // (Invasión: en el descanso, US 289)
     }
 
     private const float ReservaAntes = 0.5f; // s antes de reaparecer en que se reserva el punto (PartidaEnRed)
@@ -389,6 +436,7 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
         ultimaArma = "";
         ultimoCodigo = ArmaDesconocida;
         danos.Clear();
+        ResumenDeMuerte.NuevaVida(); // US 375: se esconde la tarjeta y la vida nueva empieza de cero
         Bloquear(false);
         AbrirVentanaDeEquipo();
 
@@ -438,6 +486,7 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
         ultimaArma = "";
         ultimoCodigo = ArmaDesconocida;
         danos.Clear();
+        ResumenDeMuerte.NuevaVida(); // US 375: se esconde la tarjeta y la vida nueva empieza de cero
         Bloquear(false);
         vida.Invulnerable = false;
         photonView.RPC(nameof(RpcReaparecio), RpcTarget.Others, punto.position, punto.rotation.eulerAngles.y);
@@ -471,6 +520,35 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
             QuedarAfuera();
             StartCoroutine(Reaparecer(L10n.T("gameplay.death.rejoined"), ConfigRed.Actual != null ? ConfigRed.Actual.reaparicion : 3f));
         }
+    }
+
+    /// <summary>
+    /// F31 (US 357, CA4): invulnerable esos segundos, como al reaparecer (US 137): los demás lo ven igual y disparar lo
+    /// corta.
+    /// </summary>
+    public void HacerInvulnerable(float segundos)
+    {
+        if (photonView == null || !photonView.IsMine || vida == null || segundos <= 0f) return;
+        vida.Invulnerable = true;
+        finInvulnerable = Time.time + segundos;
+    }
+
+    /// <summary>
+    /// F31 (US 358 y US 359, CA2): entró (o volvió) a una Invasión cooperativa durante una oleada: mira a sus compañeros
+    /// y aparece al empezar la siguiente (CaidaEnInvasion), sin aviso de baja.
+    /// </summary>
+    public void EsperarLaOleada()
+    {
+        if (photonView == null || !photonView.IsMine || vida == null || muerto) return;
+        QuedarAfuera();
+        partida.Aviso(L10n.T(Reconexion.Volvio ? "gameplay.death.rejoined" : "gameplay.mates.joined_title"), L10n.T("gameplay.mates.next_wave"));
+    }
+
+    /// <summary>F31 (US 289, CA9): se retiró de una Invasión cooperativa: queda afuera hasta que sale de la sala.</summary>
+    public void QuedarFueraDeLaPartida()
+    {
+        if (photonView == null || !photonView.IsMine || vida == null || muerto) return;
+        QuedarAfuera();
     }
 
     // Como muerto, pero sin morir: no hay aviso de baja ni suma una muerte, y no se le cae nada. Los demás lo ven
@@ -512,10 +590,13 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
             velocidad = Vector3.up * 0.5f,
             yaw = otro.transform.eulerAngles.y,
             cargador = item.magazine > 0 ? item.magazine : -1,
-            reserva = item.magazine > 0 ? item.reserve : -1
+            reserva = item.magazine > 0 ? Municion.Reserva(item.reserve) : -1
         };
+        // F35 (US 380, CA4): con la skin que tenía (la que publicó).
+        CatalogoDeSkins.Arma arma = CatalogoDeSkins.ArmaDeFicha(item.name);
+        if (arma != null && SkinsEnLasArmas.De(dueno).TryGetValue(arma.id, out CatalogoDeSkins.Skin skin)) suelta.skin = skin.id;
         // Propia: cuando se queda quieta, esta computadora les avisa a las demás dónde quedó (AlQuedarQuieta).
-        ArmaEnPiso.Crear(suelta.id, item, suelta.desde, suelta.velocidad, suelta.yaw, suelta.cargador, suelta.reserva, true);
+        ArmaEnPiso.Crear(suelta.id, item, suelta.desde, suelta.velocidad, suelta.yaw, suelta.cargador, suelta.reserva, true, suelta.skin);
         AlSoltarArma(suelta);
     }
 
@@ -558,7 +639,10 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
         ultimaArma = causa ?? "";
         ultimoCodigo = ArmaDesconocida;
         vida.Invulnerable = false;
+        if (vida.currentHealth <= 0) { vida.Rematar(); return; } // F31 (US 357): estaba caído
+        HealthSystem.MuerteDirecta = true; // US 357: caerse del mapa mata, no deja caído
         vida.TakeDamage(vida.currentHealth + vida.currentShield + 1);
+        HealthSystem.MuerteDirecta = false;
     }
 
     // Muerto no se mueve, no dispara ni cambia de arma; puede seguir mirando alrededor. Si muere con la pausa
@@ -601,6 +685,9 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
         }
         if (vida != null && vida.Invulnerable) banderas |= Invulnerable;
         if (movimiento != null && movimiento.CaminandoDespacio) banderas |= Despacio; // US 198
+        if (movimiento != null && movimiento.Caido) banderas |= Caido; // US 357
+        MiraTelescopica mira = MiraTelescopica.Activa; // US 133: la mira puesta, para el que lo mira como espectador
+        if (mira != null && mira.ConLente) banderas |= mira.Nivel == 2 ? Mira2 : Mira1;
         return banderas;
     }
 
@@ -609,6 +696,35 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
     // que el asesino tiene en la mano (por ejemplo, una granada, US 073); vacío, el arma en la mano.
     // codigo: el arma que tenía en la mano el asesino al hacer el daño (si no se sabe, la que tiene ahora).
     // asistentes: los que lo habían dañado en los últimos 10 s, sin contar al que lo mató (F24, asistencias).
+    // US 375: la tarjeta con el resumen del enfrentamiento (Táctico y Deathmatch): quién lo mató, con qué, a qué
+    // distancia, lo que le quedó, el daño de los dos y los demás que lo dañaron. Sin un jugador que lo haya matado (se
+    // cayó, la valla, su propia granada), dice qué pasó y muestra solo el daño recibido (CA5).
+    private void MostrarResumen(bool cabeza)
+    {
+        if (MatchSettings.Mode != GameMode.Tactico && MatchSettings.Mode != GameMode.Deathmatch) return;
+        Player asesino = ultimoAtacante > 0 && ultimoAtacante != Actor && PhotonNetwork.CurrentRoom != null
+            ? PhotonNetwork.CurrentRoom.GetPlayer(ultimoAtacante) : null;
+        var m = new ResumenDeMuerte.Muerte { cabeza = cabeza };
+        if (asesino != null)
+        {
+            JugadorEnRed tirador = partida != null ? partida.Buscar(ultimoAtacante) : null;
+            byte usada = tirador == null ? SinArma : ultimoCodigo != SinArma && ultimoCodigo != ArmaDesconocida ? ultimoCodigo : tirador.ArmaActual;
+            m.asesino = ultimoAtacante;
+            m.nombre = asesino.NickName;
+            CharacterData personaje = PersonajeDe(ultimoAtacante);
+            m.personaje = personaje != null ? personaje.displayName : "";
+            m.arma = !string.IsNullOrEmpty(ultimaArma) ? ultimaArma : tirador != null ? tirador.NombreDeArma(usada) : "";
+            if (tirador != null)
+            {
+                m.distancia = Vector3.Distance(transform.position, tirador.transform.position);
+                if (tirador.vida != null) { m.vida = tirador.vida.currentHealth; m.escudo = tirador.vida.currentShield; m.conVida = true; }
+            }
+        }
+        else m.causa = ultimaArma == Caida ? L10n.T("gameplay.death.fell") : ultimaArma == VallaElectrica.Causa ? L10n.T("gameplay.death.fence")
+            : L10n.T("gameplay.ui.you_were_eliminated");
+        ResumenDeMuerte.Mostrar(m);
+    }
+
     private void AvisarBaja(int atacante, bool cabeza, string arma, byte codigo, int[] asistentes)
     {
         RondasTacticas.ContarBaja(atacante, photonView.OwnerActorNr, cabeza, asistentes); // US 135, CA2: $ 200 al que mató
@@ -622,6 +738,8 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
         Sprite icono = otraArma ? IconoDe(arma) : tirador != null ? tirador.IconoDeArma(usada) : null;
         MatchHud.ReportKill(asesino != null ? asesino.NickName : "", nombreArma, Nombre,
             ColorDe(atacante), ColorDe(photonView.OwnerActorNr), cabeza, icono);
+        // F32 (US 365): los desafíos del pase cuentan las bajas del jugador local a otros jugadores.
+        if (asesino != null && asesino.IsLocal && !photonView.IsMine) DesafiosDePartida.BajaPvP(nombreArma, cabeza);
     }
 
     // F24: los que lo dañaron en los últimos 10 s y no son el que lo mató. Sin alguien que lo haya matado (se cayó, su
@@ -720,6 +838,18 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
     private readonly List<ShopItem> fichasSecundarias = new List<ShopItem>();
     private ShopItem fichaPistola;
 
+    /// <summary>F35 (US 380): las armas de fuego de esta copia con su ficha: las de primera persona (apagadas) y las de la
+    /// mano.</summary>
+    public IEnumerable<(GameObject arma, ShopItem ficha)> ArmasConFicha()
+    {
+        for (int i = 0; i < principales.Count; i++) yield return (principales[i], i < fichasPrincipales.Count ? fichasPrincipales[i] : null);
+        ShopItem pistolaInicial = fichaPistola != null ? fichaPistola : catalogo != null ? catalogo.starterSecondary : null;
+        yield return (pistola, pistolaInicial);
+        for (int i = 0; i < secundarias.Count; i++) yield return (secundarias[i], i < fichasSecundarias.Count ? fichasSecundarias[i] : null);
+        foreach (KeyValuePair<byte, ModeloEnMano> m in enLaMano)
+            if (m.Value.go != null) yield return (m.Value.go, m.Key == ArmaPistola ? pistolaInicial : FichaDeCodigo(m.Key));
+    }
+
     private bool EsSecundaria(byte arma) => arma >= PrimeraSecundaria && arma < PrimeraPrincipal && arma - PrimeraSecundaria < secundarias.Count;
 
     // Las secundarias que no son la Línea A (US 072), en el orden de WeaponSwitcher.otrasSecundarias.
@@ -802,6 +932,14 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
     /// <summary>US 133: avisa en la copia cada puñalada de su dueño (el espectador mueve el cuchillo).</summary>
     public event System.Action Punalada;
 
+    /// <summary>US 395 (espectador): qué fue el último ataque cuerpo a cuerpo de su dueño (CorteTajo, CorteFuerte o
+    /// CorteEstocada).</summary>
+    public byte UltimoCorte { get; private set; }
+    public const byte CorteTajo = 0, CorteFuerte = 1, CorteEstocada = 2;
+
+    /// <summary>US 395 (espectador): su dueño tiene la katana en guardia.</summary>
+    public bool KatanaEnGuardia => !muerto && guardiaRed;
+
     /// <summary>US 133: avisa en la copia cada disparo de su dueño (el espectador mueve el arma).</summary>
     public event System.Action Disparo;
 
@@ -871,7 +1009,6 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
         var soporte = new GameObject("Cargando jugador");
         soporte.SetActive(false);
         GameObject go = Instantiate(molde, posicion, rotacion, soporte.transform);
-        EscalaDelJugador.Aplicar(go.transform); // del mismo tamaño que el jugador local en este mapa
         go.name = "Jugador en red (" + dueno.NickName + ")";
         go.tag = "Untagged";
 
@@ -916,6 +1053,7 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
         Quitar<EfectoHabilidad>(go); // el Trasbordo o la Barrera de su dueño llegan por la red
         Quitar<GrenadeThrower>(go); // la copia no tira granadas: las que tiró su dueño llegan por RpcGranada (US 073)
         Quitar<SoltarArmas>(go);    // ni suelta armas: las que soltó su dueño llegan por RpcArmaSoltada (US 184)
+        Quitar<SkinsEnLasArmas>(go); // sus skins llegan por la red (F35, US 380: SkinsDeJugadorEnRed)
         PlayerLoadout carga = go.GetComponentInChildren<PlayerLoadout>(true);
         jugador.catalogo = carga != null ? carga.Catalog : null; // para saber qué granada tiró
         Quitar<PlayerLoadout>(go); // antes que la billetera, que la necesita
@@ -962,6 +1100,7 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
         Destroy(soporte);
         vista.ViewID = viewId;
         jugador.IniciarCopia(efectos);
+        SkinsDeJugadorEnRed.Poner(jugador); // F35 (US 380, CA2): sus armas con sus skins
         return jugador;
     }
 
@@ -1003,8 +1142,16 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
                     JugadorEnRed yo = this.partida != null ? this.partida.Local : null;
                     Vector3 origen = HealthSystem.DamageOrigin ?? (yo != null ? yo.transform.position : transform.position);
                     // El arma en la mano de quien hizo el daño, ahora: el daño se calcula en el mismo cuadro del tiro.
-                    photonView.RPC(nameof(RpcDanio), photonView.Owner, danio, PhotonNetwork.LocalPlayer.ActorNumber, cabeza,
-                        HealthSystem.DamageSource ?? "", yo != null ? yo.ArmaActual : ArmaDesconocida, origen);
+                    // F31 (US 290): el golpe de un invasor (que lleva el anfitrión) va sin atacante: no es fuego amigo.
+                    int atacante = Npc.Pegando ? 0 : PhotonNetwork.LocalPlayer.ActorNumber;
+                    // US 375: en qué zona pegó (sin zona, como el cuchillo o la granada, cuenta como cuerpo).
+                    byte zona = (byte)(cabeza ? BodyZone.Head : HealthSystem.DamageZone ?? BodyZone.Body);
+                    HealthSystem.DamageZone = null;
+                    photonView.RPC(nameof(RpcDanio), photonView.Owner, danio, atacante, cabeza,
+                        HealthSystem.DamageSource ?? "", yo != null ? yo.ArmaActual : ArmaDesconocida, origen, zona);
+                    // US 375, CA3: lo que el jugador de esta computadora le hizo a este (vivo, y si no es compañero).
+                    if (atacante != 0 && !muerto && !vida.Invulnerable && !EquiposTacticos.SonAliados(atacante, Actor))
+                        ResumenDeMuerte.Hecho(Actor, danio);
                 }
             };
 
@@ -1015,6 +1162,7 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
         lanzamiento = LanzamientoDeGranada.Crear(gameObject, terceraPersona); // US 259
         cuchilloVisto = CuchilloEnTerceraPersona.Crear(gameObject, terceraPersona); // US 257
         baile = BaileEnTerceraPersona.Crear(gameObject, animador, terceraPersona);    // US 262
+        caidoVisto = CaidoEnTerceraPersona.Crear(gameObject, animador, terceraPersona, this); // F31 (US 357)
     }
 
     private void CrearContorno()
@@ -1092,10 +1240,12 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
 
     /// <summary>El personaje de ese jugador en la partida: el que eligió en el Táctico o su aspecto en el Deathmatch.</summary>
     public static CharacterData PersonajeDe(int actor) =>
-        PersonajesDeathmatch.Actual != null ? PersonajesDeathmatch.De(actor) : PersonajesTacticos.De(actor);
+        CooperativoDeInvasion.Activo ? CooperativoDeInvasion.PersonajeDe(actor) // F31: el que eligió en el menú
+        : PersonajesDeathmatch.Actual != null ? PersonajesDeathmatch.De(actor) : PersonajesTacticos.De(actor);
 
     // Si hay que fijarse el personaje: hasta tener el suyo y, en el Deathmatch, siempre (lo puede cambiar).
-    private bool MirarCuerpo => (!cuerpoPropio || PersonajesDeathmatch.Actual != null) && Time.time >= proximoCuerpo;
+    // (En Invasión cooperativa también: se elige adentro de la partida, PersonajesInvasion.)
+    private bool MirarCuerpo => (!cuerpoPropio || PersonajesDeathmatch.Actual != null || CooperativoDeInvasion.Activo) && Time.time >= proximoCuerpo;
 
     private void Update()
     {
@@ -1153,7 +1303,9 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
             pasos.Muerto = muerto;
         }
 
-        MostrarArma(muerto ? SinArma : armaRed);
+        bool caido = (banderasRed & Caido) != 0;
+        if (caidoVisto != null) caidoVisto.Caido = !muerto && caido; // US 357, CA8: cae, se arrastra y se levanta
+        MostrarArma(muerto || caido ? SinArma : armaRed);
         if (terceraPersona != null)
         {
             terceraPersona.Recarga = muerto || recargaRed == SinRecarga ? -1f : recargaRed / 200f;
@@ -1171,8 +1323,10 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
             cuchilloListo = modeloCuchillo;
             if (modeloCuchillo != null)
             {
-                ArmarEnMano(ArmaCuchillo, modeloCuchillo, null, LargoCuchillo);
+                if (cuchillo.CurrentWeapon is KatanaData katana) ArmarKatanaEnMano(modeloCuchillo, katana); // US 395
+                else ArmarEnMano(ArmaCuchillo, modeloCuchillo, null, LargoCuchillo);
                 modeloCuchillo.SetActive(false); // CA4: no se ve el de primera persona
+                SkinsDeJugadorEnRed.Poner(this); // F35: el cuchillo nuevo, con su skin
             }
             armaVista = 255;
         }
@@ -1227,7 +1381,10 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
         if (arma == null) return;
         if (enLaMano.TryGetValue(codigo, out ModeloEnMano viejo) && viejo.go != null) Destroy(viejo.go);
         float largo = ficha != null && ficha.realLength > 0f ? ficha.realLength : largoSinFicha;
-        GameObject modelo = ModeloReal.Crear(arma, largo, out Bounds limites, arma.name + " (en la mano)");
+        Bounds limites;
+        GameObject modelo = codigo == ArmaCuchillo // US 257: el cuchillo, con el giro de su ajuste (no el de primera persona)
+            ? ModeloReal.CrearCuchillo(arma, largo, out limites, arma.name + " (en la mano)")
+            : ModeloReal.Crear(arma, largo, out limites, arma.name + " (en la mano)");
         modelo.transform.SetParent(SoporteMano(), false);
         // La mano agarra la empuñadura: el centro del arma queda un poco más arriba y más adelante.
         modelo.transform.localPosition = new Vector3(0f, limites.extents.y * 0.5f, limites.extents.z * 0.45f);
@@ -1236,6 +1393,49 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
         if (arma.scene.IsValid()) arma.SetActive(false); // el prefab de la granada no se toca
         armaVista = 255;
     }
+
+    // US 395, CA9: la katana en la mano (KatanaData.Crear), agarrada del mango, a su tamaño.
+    private void ArmarKatanaEnMano(GameObject arma, KatanaData katana)
+    {
+        if (enLaMano.TryGetValue(ArmaCuchillo, out ModeloEnMano viejo) && viejo.go != null) Destroy(viejo.go);
+        GameObject modelo = katana.Crear(arma.name + " (en la mano)");
+        modelo.transform.SetParent(SoporteMano(), false);
+        modelo.SetActive(true); // (arma el filo)
+        modelo.SetActive(false);
+        enLaMano[ArmaCuchillo] = new ModeloEnMano { go = modelo, limites = new Bounds(Vector3.zero, Vector3.one), lugar = Vector3.zero };
+        armaVista = 255;
+    }
+
+    private static Transform BuscarHijo(Transform t, string nombre)
+    {
+        if (t.name == nombre) return t;
+        foreach (Transform h in t)
+        {
+            Transform r = BuscarHijo(h, nombre);
+            if (r != null) return r;
+        }
+        return null;
+    }
+
+    /// <summary>US 395, CA9: pone esa arma en el lugar del cuchillo de la copia (la katana del compañero que la tiene).
+    /// Su modelo para la mano se arma solo (MostrarArma).</summary>
+    public void PonerCuerpoACuerpo(MeleeWeaponData arma)
+    {
+        if (arma == null || cuchillo == null || cuchillo.CurrentWeapon == null || cuchillo.CurrentWeapon == arma) return;
+        cuchillo.Equip(arma);
+    }
+
+    /// <summary>F35: los modelos del cuchillo de esta copia (el de la mano y el de primera persona, apagado), si tiene el
+    /// cuchillo (no la katana).</summary>
+    public IEnumerable<GameObject> ModelosDelCuchillo()
+    {
+        if (cuchillo == null || !SkinsEnLasArmas.EsElCuchillo(cuchillo.CurrentWeapon)) yield break;
+        if (enLaMano.TryGetValue(ArmaCuchillo, out ModeloEnMano hoja) && hoja.go != null) yield return hoja.go;
+        if (cuchillo.CurrentViewModel != null) yield return cuchillo.CurrentViewModel;
+    }
+
+    /// <summary>US 395, CA9: tiene en la mano el arma cuerpo a cuerpo (el cuchillo o la katana).</summary>
+    public bool CuerpoACuerpoVisible => ArmaVisible == ArmaCuchillo;
 
     // Sigue a la mano derecha del personaje y apunta hacia donde mira el jugador (LateUpdate).
     private Transform SoporteMano()
@@ -1262,16 +1462,26 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
         if (lanzamiento != null) lanzamiento.ConGranada = !muerto && armaVista >= PrimeraGranada && armaVista != ArmaDesconocida;
         // US 257, CA1: con el cuchillo en la mano, la pose de tenerlo (no la de rifle), con el cuchillo en la mano derecha.
         if (cuchilloVisto != null) cuchilloVisto.ConCuchillo = !muerto && armaVista == ArmaCuchillo;
+        if (cuchilloVisto != null) // US 395: con la katana, la mano izquierda la agarra del mango
+        {
+            cuchilloVisto.Katana = cuchillo != null ? cuchillo.CurrentWeapon as KatanaData : null;
+            cuchilloVisto.KatanaEnLaMano = cuchilloVisto.Katana != null ? soporteMano : null;
+        }
         if (cuchilloVisto != null && manoDerecha != null && armaVista == ArmaCuchillo &&
             (terceraPersona == null || !terceraPersona.Manejando))
         {
             AgarresTerceraPersona agarres = AgarresTerceraPersona.Actual;
             cuchilloVisto.Munecas(); // la muñeca ya girada: el cuchillo gira con ella
-            agarres.PoseDeCuchillo(manoDerecha, out Vector3 lugarCuchillo, out Quaternion giroCuchillo);
+            KatanaData katana = cuchillo != null ? cuchillo.CurrentWeapon as KatanaData : null; // US 395: la katana, con su ajuste
+            Vector3 lugarCuchillo;
+            Quaternion giroCuchillo;
+            if (katana != null) katana.PoseEnLaMano(manoDerecha, out lugarCuchillo, out giroCuchillo);
+            else agarres.PoseDeCuchillo(manoDerecha, out lugarCuchillo, out giroCuchillo);
             soporteMano.SetPositionAndRotation(lugarCuchillo, giroCuchillo);
-            soporteMano.localScale = Vector3.one * agarres.cuchilloEscala;
+            soporteMano.localScale = Vector3.one * (katana != null ? 1f : agarres.cuchilloEscala);
             if (enLaMano.TryGetValue(ArmaCuchillo, out ModeloEnMano hojaEnMano) && hojaEnMano.go != null)
-                hojaEnMano.go.transform.localPosition = Vector3.zero;
+                hojaEnMano.go.transform.localPosition = hojaEnMano.lugar;
+            if (katana != null) cuchilloVisto.IzquierdaConLaKatana(); // US 395: la mano izquierda, con la katana
             return;
         }
         // CA2: la granada sale de la mano al final del lanzamiento; la siguiente aparece cuando la saca.
@@ -1295,6 +1505,18 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
         soporteMano.localScale = Vector3.one;
         if (manoDerecha != null) soporteMano.position = manoDerecha.position;
         if (camara != null) soporteMano.rotation = camara.rotation;
+    }
+
+    // F35 (US 381): la skin que publicó su dueño para el arma con ese código, o null.
+    public CatalogoDeSkins.Skin SkinEnLaMano(byte arma)
+    {
+        if (arma == ArmaCuchillo) // F35: el cuchillo (la katana no lleva su skin)
+            return cuchillo != null && SkinsEnLasArmas.EsElCuchillo(cuchillo.CurrentWeapon) &&
+                   SkinsEnLasArmas.De(Dueno).TryGetValue(SkinsEnLasArmas.Cuchillo, out CatalogoDeSkins.Skin delCuchillo) ? delCuchillo : null;
+        ShopItem ficha = arma == ArmaPistola ? (fichaPistola != null ? fichaPistola : catalogo != null ? catalogo.starterSecondary : null)
+            : FichaDeCodigo(arma);
+        CatalogoDeSkins.Arma a = ficha != null ? CatalogoDeSkins.ArmaDeFicha(ficha.name) : null;
+        return a != null && SkinsEnLasArmas.De(Dueno).TryGetValue(a.id, out CatalogoDeSkins.Skin s) ? s : null;
     }
 
     // CA5: la boca del caño del arma que tiene en la mano; si no tiene ninguna, "siNo".
@@ -1322,26 +1544,43 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
             : esSecundaria && secundaria < sonidosSecundarias.Count ? sonidosSecundarias[secundaria] : sonidoPistola;
         if (clip != null && sonido != null) sonido.PlayOneShot(clip);
 
-        Vector3 boca = Boca(arma, origen); // US 182, CA5: del caño del arma en la mano
-        global::Trazadora.Fogonazo(boca);
-        for (int i = 0; i + 2 < direcciones.Length; i += 3)
+        // US 182, CA5: del caño del arma en la mano. Si esta computadora lo está mirando en primera persona (el
+        // espectador), de la boca del arma que se ve: la de su cuerpo queda muy abajo de la vista.
+        Vector3 boca = Espectador.BocaDe(this, out Vector3 enLaVista) ? enLaVista : Boca(arma, origen);
+        // F35 (US 381, CA4): con su skin legendaria, el fogonazo y la estela de la skin, y su fuego se enciende.
+        CatalogoDeSkins.Efectos legendaria = EfectosDeSkin.De(SkinEnLaMano(arma));
+        Vector3 adelante = direcciones.Length >= 3 ? new Vector3(direcciones[0], direcciones[1], direcciones[2]) : transform.forward;
+        enLaMano.TryGetValue(arma, out ModeloEnMano conCalor);
+        if (legendaria != null) EfectosDeSkin.DisparoDeOtro(boca, adelante, legendaria, conCalor?.go);
+        else global::Trazadora.Fogonazo(boca);
+        if (conCalor != null) CalorDeSkin.Disparo(conCalor.go);
+        // US 287: el Gran Capitán no tira balas: su granada llega aparte (RpcGranadaDeArma).
+        ShopItem fichaDelArma = FichaDeCodigo(arma);
+        bool lanzaGranadas = fichaDelArma != null && fichaDelArma.grenadePrefab != null && fichaDelArma.velocidadDelProyectil > 0f;
+        for (int i = 0; !lanzaGranadas && i + 2 < direcciones.Length; i += 3)
         {
             Vector3 direccion = new Vector3(direcciones[i], direcciones[i + 1], direcciones[i + 2]);
             Vector3 fin = WeaponFire.Replay(origen, direccion, AlcanceTrazadora, transform);
-            global::Trazadora.Mostrar(boca, fin);
+            if (legendaria != null) EfectosDeSkin.Estela(boca, fin, legendaria);
+            else global::Trazadora.Mostrar(boca, fin);
         }
     }
 
     [PunRPC]
-    private void RpcCuchillo()
+    private void RpcCuchillo(byte tipo)
     {
         if (photonView.IsMine) return;
+        UltimoCorte = tipo;
         armaRed = ArmaCuchillo;
         MostrarArma(ArmaCuchillo);
-        if (sonidoCuchillo != null && sonido != null) sonido.PlayOneShot(sonidoCuchillo);
+        // US 395: con la katana, sus sonidos (el tajo; se turnan como en primera persona).
+        AudioClip corte = cuchillo != null && cuchillo.CurrentWeapon is KatanaData ? SonidosDeKatana.Corte(false) : sonidoCuchillo;
+        if (corte != null && sonido != null) sonido.PlayOneShot(corte);
         // US 257, CA2: el brazo hace el corte (sin el muñeco de tercera persona, el cuchillo solo va adelante y vuelve).
         if (cuchilloVisto != null) cuchilloVisto.Atacar();
         else if (enLaMano.TryGetValue(ArmaCuchillo, out ModeloEnMano hoja) && hoja.go != null) StartCoroutine(Estocada(hoja.go.transform));
+        if (cuchillo != null && SkinsEnLasArmas.EsElCuchillo(cuchillo.CurrentWeapon) && enLaMano.TryGetValue(ArmaCuchillo, out ModeloEnMano conFuego))
+            CalorDeSkin.Disparo(conFuego.go); // F35: la skin del cuchillo brilla más y larga más brasas
         Punalada?.Invoke();
     }
 
@@ -1378,6 +1617,29 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
         granadasRemotas[id] = granada;
     }
 
+    // US 287: la granada que disparó este jugador con el Gran Capitán. Acá sale una de muestra que vuela igual, sin daño.
+    [PunRPC]
+    private void RpcGranadaDeArma(int id, byte arma, Vector3 origen, Vector3 velocidad, bool bronca)
+    {
+        if (photonView.IsMine || granadasExplotadas.Remove(id)) return;
+        ShopItem ficha = FichaDeCodigo(arma);
+        if (ficha == null || ficha.grenadePrefab == null) return;
+        Vector3 direccion = velocidad.sqrMagnitude > 1e-6f ? velocidad.normalized : transform.forward;
+        GameObject go = Instantiate(ficha.grenadePrefab, origen, Quaternion.LookRotation(direccion));
+        Grenade1 granada = go.GetComponent<Grenade1>();
+        if (granada == null) { Destroy(go); return; }
+        granada.cosmetic = true;
+        granada.netId = id;
+        granada.thrower = transform; // que no choque con la copia de quien la tiró
+        granada.Configure(ficha);
+        granada.throwForce = 0f;
+        granada.Throw(direccion);
+        Rigidbody cuerpo = go.GetComponent<Rigidbody>();
+        if (cuerpo != null) cuerpo.linearVelocity = velocidad;
+        if (bronca) WeaponFire.Brasa(go.transform); // US 330
+        granadasRemotas[id] = granada;
+    }
+
     // Explotó la granada de verdad: la de muestra explota en el mismo lugar (si no llegó a verse, solo el efecto).
     [PunRPC]
     private void RpcExplosionGranada(int id, byte indice, Vector3 centro)
@@ -1391,6 +1653,39 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
             Grenade1.PlayExplosion(item != null && item.grenadePrefab != null ? item.grenadePrefab.GetComponent<Grenade1>() : null, centro, item);
         }
         granadasRemotas.Remove(id);
+    }
+
+    // F31 (US 355, CA2): la granada de este jugador quedó como mina (Campo minado) o se le pegó a un invasor (Carga
+    // adherente): en las demás computadoras la copia hace lo mismo, y explota cuando explota la de verdad.
+    private void AlPonerMina(Grenade1 granada, Vector3 punto)
+    {
+        if (granada == null || granada.thrower != transform || granada.netId == 0 || !photonView.IsMine) return;
+        photonView.RPC(nameof(RpcGranadaMina), RpcTarget.Others, granada.netId, punto, granada.transform.rotation);
+    }
+
+    private void AlPegarGranada(Grenade1 granada, Npc invasor, Vector3 punto)
+    {
+        if (granada == null || invasor == null || granada.thrower != transform || granada.netId == 0 || !photonView.IsMine) return;
+        if (invasor.IdRed == 0) return; // (un invasor que no está en la red)
+        photonView.RPC(nameof(RpcGranadaPegada), RpcTarget.Others, granada.netId, invasor.IdRed, punto, granada.transform.rotation);
+    }
+
+    [PunRPC]
+    private void RpcGranadaMina(int id, Vector3 punto, Quaternion giro)
+    {
+        if (photonView.IsMine || !granadasRemotas.TryGetValue(id, out Grenade1 granada) || granada == null) return;
+        granada.transform.rotation = giro;
+        MinaDeGranada.Poner(granada, punto);
+    }
+
+    [PunRPC]
+    private void RpcGranadaPegada(int id, int invasor, Vector3 punto, Quaternion giro)
+    {
+        if (photonView.IsMine || !granadasRemotas.TryGetValue(id, out Grenade1 granada) || granada == null) return;
+        Npc npc = InvasoresEnRed.Invasor(invasor);
+        if (npc == null) return;
+        granada.transform.rotation = giro;
+        GranadaPegada.Pegar(granada, npc, null, punto);
     }
 
     private ShopItem FichaDe(byte indice) => catalogo != null && indice < catalogo.items.Count ? catalogo.items[indice] : null;
@@ -1683,6 +1978,7 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
             stream.SendNext(reserva);
             stream.SendNext(recarga);
             stream.SendNext(muerto ? (byte)0 : (byte)(Emotes.Actual + 1)); // US 262: el baile que hace
+            stream.SendNext(!muerto && ataqueCuerpoACuerpo != null && ataqueCuerpoACuerpo.EnGuardia); // US 395: en guardia
             return;
         }
 
@@ -1708,6 +2004,7 @@ public class JugadorEnRed : MonoBehaviourPun, IPunObservable
                 recargaRed = (byte)stream.ReceiveNext();
                 // US 262: el baile (si el que manda tiene una versión anterior, no viene: no baila).
                 emoteRed = stream.PeekNext() is byte ? (byte)stream.ReceiveNext() : (byte)0;
+                guardiaRed = stream.PeekNext() is bool && (bool)stream.ReceiveNext(); // US 395
             }
         }
         catch (System.IndexOutOfRangeException) { }

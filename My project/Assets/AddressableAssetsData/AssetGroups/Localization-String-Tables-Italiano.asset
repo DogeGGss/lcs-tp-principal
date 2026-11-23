@@ -1,0 +1,31 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbb281ee3bf0b054c82ac2347e9e782c, type: 3}
+  m_Name: Localization-String-Tables-Italiano
+  m_EditorClassIdentifier: Unity.Addressables.Editor::UnityEditor.AddressableAssets.Settings.AddressableAssetGroup
+  m_GroupName: Localization-String-Tables-Italiano
+  m_GUID: 6ca005aff34c7c14b93ea3131ad736c5
+  m_SerializeEntries:
+  - m_GUID: b7eb5b38380ca0e418301728c922c8cc
+    m_Address: Riftwalker_it
+    m_ReadOnly: 1
+    m_SerializedLabels:
+    - Locale-it
+    - Preload
+    FlaggedDuringContentUpdateRestriction: 0
+  m_ReadOnly: 1
+  m_Settings: {fileID: 11400000, guid: 9c6f7299c19352843a19542cba084122, type: 2}
+  m_SchemaSet:
+    m_Schemas:
+    - {fileID: 11400000, guid: 9d5ee4b6b02a56c4f90f896bfeb439d5, type: 2}
+    - {fileID: 11400000, guid: abb1446f11c083541862ffb31f65bc68, type: 2}
+    - {fileID: 11400000, guid: 94d287e23cde11c44b9ae15534137c2c, type: 2}

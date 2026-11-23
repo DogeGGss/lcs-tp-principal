@@ -20,6 +20,8 @@ using UnityEngine.AI;
 // - CA2: si lo ve (sin paredes en el medio) a menos de 10 m, grita una vez y va 20 % más rápido mientras lo vea.
 // - CA3: si el jugador está donde no se llega caminando, va al punto alcanzable más cercano y espera ahí.
 // - CA4: con el jugador muerto deja de perseguirlo y se queda quieto.
+// F31 (US 290, CA3): en Invasión cooperativa va hacia el jugador vivo más cercano, sea quien sea (Jugadores).
+// F31: el golpe y la embestida solo le llegan al jugador si está a su altura (AlcanzaEnAltura): subido a un techo no.
 // Lo agrega Npc.Crear.
 [RequireComponent(typeof(Npc))]
 public class PersecucionDeNpc : MonoBehaviour
@@ -27,6 +29,8 @@ public class PersecucionDeNpc : MonoBehaviour
     public const float DistanciaDeAtaque = 1.5f;      // US 037, CA1: m entre los cuerpos, como máximo, para golpear
     private const float Separacion = 0.25f;            // m entre los cuerpos donde se frena (dentro de los 1,5 m)
     private const float AvanceMaximo = 1.2f;           // m: lo más que se aleja por las animaciones que se adelantan
+    private const float AlcanceArriba = 0.5f;          // F31: m sobre su cabeza hasta donde llegan sus brazos
+    private const float AlcanceAbajo = 0.3f;           // F31: m bajo sus pies (uno que vuela y el jugador abajo)
     private const float CadaCuanto = 0.25f;            // s entre cálculos del camino (CA3)
     private const float VeHasta = 10f, MasRapido = 1.2f; // US 036, CA2
     private const float Rodear = 4f;                   // m: desde acá cada uno busca su lugar alrededor (CA4)
@@ -203,7 +207,8 @@ public class PersecucionDeNpc : MonoBehaviour
         bool grande = npc.Tipo != null && npc.Tipo.esJefe; // no entra a lugares angostos (NavMeshEnVivo)
         if (tipoDeAgente < 0)
         {
-            // ¿El mapa tiene NavMesh horneado (el tipo de agente común, Humanoid)?
+            // ¿El mapa tiene NavMesh horneado (el tipo de agente común, Humanoid)? También para el Jefe: así entra a los
+            // edificios a buscar al jugador (se aparta de las paredes con LejosDeLasParedes).
             int humanoide = NavMesh.GetSettingsByIndex(0).agentTypeID;
             var filtro = new NavMeshQueryFilter { agentTypeID = humanoide, areaMask = NavMesh.AllAreas };
             if (NavMesh.SamplePosition(transform.position, out _, 3f, filtro)) tipoDeAgente = humanoide;
@@ -231,6 +236,7 @@ public class PersecucionDeNpc : MonoBehaviour
             agente.autoBraking = true;
             agente.obstacleAvoidanceType = ObstacleAvoidanceType.HighQualityObstacleAvoidance; // CA4: no se enciman
             agente.avoidancePriority = Random.Range(30, 70);
+            LejosDeLasParedes.Poner(npc, agente); // F11 y US 146: el cuerpo grande (o el que flota) no se mete en la pared
         }
         else agente.Warp(piso.position);
         proximoCamino = 0f;
@@ -252,6 +258,24 @@ public class PersecucionDeNpc : MonoBehaviour
         Vector3 hasta = jugador.position - transform.position;
         hasta.y = 0f;
         return hasta.magnitude - npc.Frente - RadioDe(jugador);
+    }
+
+    /// <summary>
+    /// F31: si el jugador está a su altura para un golpe cuerpo a cuerpo (o una embestida). Arriba de un techo o una
+    /// pared alta no le llega aunque esté al lado: los pies del jugador tienen que quedar por debajo de la cabeza del
+    /// NPC, más lo que llegan sus brazos (AlcanceArriba); y su cabeza, por encima de los pies del NPC (AlcanceAbajo).
+    /// </summary>
+    public bool AlcanzaEnAltura(Transform jugador)
+    {
+        if (jugador == null) return false;
+        Collider propio = GetComponent<CapsuleCollider>();
+        if (propio == null) return true;
+        Bounds npcCaja = propio.bounds;
+        Collider suyo = jugador.GetComponent<CharacterController>();
+        if (suyo == null) suyo = jugador.GetComponent<Collider>();
+        float pies = suyo != null ? suyo.bounds.min.y : jugador.position.y;
+        float cabeza = suyo != null ? suyo.bounds.max.y : jugador.position.y + 1.8f;
+        return pies <= npcCaja.max.y + AlcanceArriba && cabeza >= npcCaja.min.y - AlcanceAbajo;
     }
 
     private static Transform radioDe;
@@ -284,6 +308,27 @@ public class PersecucionDeNpc : MonoBehaviour
     private static readonly List<HealthSystem> jugadores = new List<HealthSystem>();
     private static float jugadoresEn = -10f;
 
+    /// <summary>
+    /// Los jugadores a los que van los invasores: el de esta computadora y, en Invasión cooperativa, las copias de los
+    /// compañeros (F31, US 290, CA3: el anfitrión los lleva a todos; el daño a una copia le llega a su dueño).
+    /// </summary>
+    public static void Jugadores(List<HealthSystem> lista)
+    {
+        lista.Clear();
+        foreach (PlayerMovement p in FindObjectsByType<PlayerMovement>(FindObjectsSortMode.None))
+        {
+            HealthSystem v = p.GetComponent<HealthSystem>();
+            if (v != null && !lista.Contains(v)) lista.Add(v);
+        }
+        if (!CooperativoDeInvasion.Activo) return;
+        foreach (JugadorEnRed j in FindObjectsByType<JugadorEnRed>(FindObjectsSortMode.None))
+        {
+            if (j == null || j.photonView == null || j.photonView.IsMine || !j.Vivo) continue;
+            HealthSystem v = j.GetComponent<HealthSystem>();
+            if (v != null && !lista.Contains(v)) lista.Add(v);
+        }
+    }
+
     /// <summary>El jugador vivo más cercano a ese punto (US 036, CA1), o null si no hay ninguno vivo (CA4).</summary>
     public static Transform JugadorMasCercano(Vector3 desde)
     {
@@ -291,18 +336,13 @@ public class PersecucionDeNpc : MonoBehaviour
         if (Time.time - jugadoresEn > 1f || Time.time < jugadoresEn || jugadores.Count == 0 || jugadores.Exists(j => j == null))
         {
             jugadoresEn = Time.time;
-            jugadores.Clear();
-            foreach (PlayerMovement p in FindObjectsByType<PlayerMovement>(FindObjectsSortMode.None))
-            {
-                HealthSystem v = p.GetComponent<HealthSystem>();
-                if (v != null) jugadores.Add(v);
-            }
+            Jugadores(jugadores);
         }
         Transform mejor = null;
         float mejorDistancia = float.MaxValue;
         foreach (HealthSystem v in jugadores)
         {
-            if (v == null || v.currentHealth <= 0) continue;
+            if (v == null || v.currentHealth <= 0 || !v.isActiveAndEnabled) continue;
             float d = (v.transform.position - desde).sqrMagnitude;
             if (d < mejorDistancia) { mejorDistancia = d; mejor = v.transform; }
         }

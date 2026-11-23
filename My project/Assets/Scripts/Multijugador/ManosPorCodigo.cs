@@ -32,6 +32,10 @@ public abstract class ManosPorCodigo : MonoBehaviour
     /// <summary>Si tiene que mover las manos ahora (por ejemplo, tiene la granada en la mano o la está lanzando).</summary>
     protected abstract bool Prendida { get; }
 
+    /// <summary>La mano izquierda agarra lo que tiene la derecha (la katana, US 395): va ahí aunque quede cerca del
+    /// cuerpo (no se la corre hacia afuera).</summary>
+    protected virtual bool IzquierdaEnElArma => false;
+
     /// <summary>Dónde van las manos ahora, en el marco (metros), y el giro de cada muñeca.</summary>
     protected abstract void Pose(out Vector3 der, out Vector3 izq, out Quaternion giroDerecha, out Quaternion giroIzquierda);
 
@@ -55,15 +59,17 @@ public abstract class ManosPorCodigo : MonoBehaviour
     {
         if (arma == null) return;
         // Mientras guarda el arma anterior (la sigue manejando ArmaEnTerceraPersona), todavía no.
-        bool prendida = !arma.Manejando && !arma.Bailando && Prendida; // bailando (US 262), tampoco
+        bool prendida = !arma.Manejando && !arma.SinManos && Prendida; // bailando (US 262) o caído (US 357), tampoco
         peso = Mathf.MoveTowards(peso, prendida ? 1f : 0f, Time.deltaTime / (prendida ? Entrar : Salir));
-        if (arma.Manejando || arma.Bailando) peso = 0f; // un arma con ajuste en la mano: las manos (y las muñecas) son de ella
+        if (arma.Manejando || arma.SinManos) peso = 0f; // un arma con ajuste en la mano: las manos (y las muñecas) son de ella
         pesoVisto = Suave(peso);
         if (peso <= 0f || !Marco(out Vector3 origen, out Quaternion giro)) { arma.ManosDeGranada(0f, Vector3.zero, Vector3.zero); return; }
 
         AgarresTerceraPersona a = AgarresTerceraPersona.Actual;
         Pose(out Vector3 der, out Vector3 izq, out giroDer, out giroIzq);
-        arma.ManosDeGranada(pesoVisto, FueraDelCuerpo(origen + giro * der, origen, a), FueraDelCuerpo(origen + giro * izq, origen, a),
+        Vector3 izquierda = origen + giro * izq;
+        if (!IzquierdaEnElArma) izquierda = FueraDelCuerpo(izquierda, origen, a); // (agarrando algo, va donde está eso)
+        arma.ManosDeGranada(pesoVisto, FueraDelCuerpo(origen + giro * der, origen, a), izquierda,
             Codo(HumanBodyBones.RightUpperArm, 1f, a), Codo(HumanBodyBones.LeftUpperArm, -1f, a));
     }
 

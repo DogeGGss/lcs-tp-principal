@@ -9,8 +9,8 @@ using Cosmetico = PerfilDatos.Cosmetico;
 
 // Perfil del jugador (menú principal). Arriba, la cabecera con el banner, el avatar, el nombre, el título y un
 // resumen; abajo, cuatro pestañas: Estadísticas (US 221: las del jugador, F24, y las del minijuego, US 159), Personalización
-// (avatares, banners, títulos y marcos), Emotes (US 264: los bailes que se llevan en la rueda) y Cuenta (US 237,
-// PestanaCuenta).
+// (avatares, banners, títulos y marcos; y las skins de las armas, F35, US 379), Emotes (US 264: los bailes que se llevan
+// en la rueda), Historial (US 374: las últimas 20 partidas, ListaDeHistorial) y Cuenta (US 237, PestanaCuenta).
 public class PantallaPerfil : PantallaBase
 {
     private const float Y0 = 520f, AnchoGrilla = 1260f;
@@ -21,9 +21,18 @@ public class PantallaPerfil : PantallaBase
     private Transform bajoMarco;
     private TextMeshProUGUI nombre, titulo, infoPestana;
     private readonly TextMeshProUGUI[] resumen = new TextMeshProUGUI[4];
-    private readonly TextMeshProUGUI[] pestanas = new TextMeshProUGUI[4];
+    private TextMeshProUGUI nivelValor, nivelRango; // US 278, CA4: el nivel de jugador, con su propio lugar en la cabecera
+    private UIPolygon nivelEmblema;
+    private RectTransform nivelLogo;
+    private Img nivelBorde;
+    private readonly TextMeshProUGUI[] pestanas = new TextMeshProUGUI[5];
+    private const int PestanaHistorial = 3, PestanaDeCuenta = 4;
     private Img subrayado;
-    private RectTransform panelEstad, panelPers, panelEmotes, panelCuenta, grilla, vista;
+    private RectTransform panelEstad, panelPers, panelEmotes, panelHistorial, panelCuenta, grilla, vista;
+    private RectTransform listaHistorial;
+    private UnityEngine.UI.ScrollRect scrollHistorial;
+    private TextMeshProUGUI avisoHistorial;
+    private LogrosOnline.EstadoDelHistorial estadoHistorialDibujado;
     private PestanaCuenta cuenta;
     private RectTransform cuerpoMinijuego;
     private float anchoTarjeta;
@@ -33,7 +42,7 @@ public class PantallaPerfil : PantallaBase
     private Tipo categoria = Tipo.Avatar;
     private bool mostrarBloqueados = true;
     private Cosmetico seleccionado;
-    private readonly RectTransform[] chips = new RectTransform[4];
+    private readonly RectTransform[] chips = new RectTransform[5];
     private Img check;
 
     public PantallaPerfil(MenuRiftwalker menu, RectTransform parent) : base(menu, parent, "Perfil")
@@ -44,6 +53,7 @@ public class PantallaPerfil : PantallaBase
         ArmarEstadisticas();
         ArmarPersonalizacion();
         ArmarEmotes();
+        ArmarHistorial();
         panelCuenta = Place(Node("Cuenta", rect), 60f, Y0, 1800f, 540f);
         cuenta = new PestanaCuenta(menu, panelCuenta);
         ElegirPestana(0);
@@ -85,19 +95,51 @@ public class PantallaPerfil : PantallaBase
             PlayerNameScreen pantalla = Object.FindAnyObjectByType<PlayerNameScreen>();
             if (pantalla != null) pantalla.Open(false);
         }, 20f);
+
+        // US 278, CA4: el nivel de jugador, aparte y más grande que las estadísticas: un emblema con el color de su rango.
+        RectTransform nivel = Place(Node("NivelDeJugador", cab), 1800f - 150f - 360f, 34f, 360f, 172f);
+        Image(nivel, Rounded, new Color(0f, 0f, 0f, DarkAlpha(0.62f)), 10f);
+        nivelBorde = Borde(nivel, 8f, WithAlpha(Accent, 0.6f));
+        nivelEmblema = Poligono(nivel, "Emblema", Accent, Hexagono(70f, 86f, 52f));
+        Poligono(nivel, "Interior", Hex(0x0B0E14), Hexagono(70f, 86f, 44f));
+        nivelLogo = Place(Node("Logo", nivel), 0f, 0f, 140f, 172f); // el logo del rango (EmblemaDeNivel), se dibuja al refrescar
+        T(nivel, "Rotulo", 140f, 18f, 210f, 22f, FRotulo, 16f, Accent, "Nivel de jugador", TextAlignmentOptions.MidlineLeft, 14f, true);
+        nivelValor = T(nivel, "Valor", 136f, 40f, 216f, 80f, FTitulo, 78f, Ink, "", TextAlignmentOptions.MidlineLeft, 2f);
+        nivelRango = T(nivel, "Rango", 140f, 118f, 210f, 26f, FTitulo, 24f, Soft, "", TextAlignmentOptions.MidlineLeft, 6f, true);
+        T(nivel, "Ayuda", 140f, 144f, 210f, 20f, FTexto, 14f, Mute, "Sube y baja en buscar partida", TextAlignmentOptions.MidlineLeft);
+    }
+
+    private static Vector2[] Hexagono(float cx, float cy, float r)
+    {
+        var p = new Vector2[6];
+        for (int i = 0; i < 6; i++)
+        {
+            float a = Mathf.Deg2Rad * (60f * i - 90f);
+            p[i] = new Vector2(cx + r * Mathf.Cos(a), cy + r * Mathf.Sin(a));
+        }
+        return p;
+    }
+
+    /// <summary>El rango del nivel de jugador, con su color (los de las rarezas): para que el número tenga peso.</summary>
+    private static readonly string[] Rangos = { "Pasajero", "Guarda", "Maquinista", "Jefe de estación" };
+
+    private static (string nombre, Color color) Rango(int nivel)
+    {
+        int r = EmblemaDeNivel.RangoDe(nivel);
+        return (Rangos[r], ColorRareza((PerfilDatos.Rareza)(r + 1))); // común, raro, épico y legendario
     }
 
     // ================= Pestañas =================
 
     private void ArmarPestanas()
     {
-        string[] nombres = { "Estadísticas", "Personalización", "Emotes", "Cuenta" };
+        string[] nombres = { "Estadísticas", "Personalización", "Emotes", "Historial", "Cuenta" };
         float x = 60f;
         for (int i = 0; i < nombres.Length; i++)
         {
             int k = i;
             pestanas[i] = T(rect, nombres[i], x, 438f, 360f, 50f, FTitulo, 36f, Mute, nombres[i], TextAlignmentOptions.MidlineLeft, 6f, true);
-            float w = Width(pestanas[i], nombres[i].ToUpperInvariant());
+            float w = Width(pestanas[i], pestanas[i].text.ToUpperInvariant()); // US 350: el ancho del texto ya traducido
             pestanas[i].rectTransform.sizeDelta = new Vector2(w, 50f);
             pestanas[i].raycastTarget = true;
             var p = pestanas[i].gameObject.AddComponent<ShopPointerTarget>();
@@ -121,16 +163,21 @@ public class PantallaPerfil : PantallaBase
         panelEstad.gameObject.SetActive(i == 0);
         panelPers.gameObject.SetActive(i == 1);
         panelEmotes.gameObject.SetActive(i == 2);
-        panelCuenta.gameObject.SetActive(i == 3);
-        if (i == 3) cuenta.Refrescar();
+        panelHistorial.gameObject.SetActive(i == PestanaHistorial);
+        panelCuenta.gameObject.SetActive(i == PestanaDeCuenta);
+        if (i == PestanaDeCuenta) cuenta.Refrescar();
+        if (i == PestanaHistorial) RefrescarHistorial();
         if (i == 2) VerEmote(emoteVisto); else VistaPreviaDeEmote.Apagar(); // la vista previa solo dibuja si se ve
+        if (i == 1 && armas) VerSkin(SkinElegida); else VistaPreviaDeSkin.Apagar();
         RefrescarInfo();
     }
 
     private void RefrescarInfo()
     {
         if (pestana == 0) infoPestana.text = L10n.T("profile.info.matches_fmt", N(EstadisticasJugador.Datos.Partidas));
-        else if (pestana == 3) infoPestana.text = cuenta.Info;
+        else if (pestana == PestanaDeCuenta) infoPestana.text = cuenta.Info;
+        else if (pestana == PestanaHistorial)
+            infoPestana.text = L10n.T("profile.info.history_fmt", HistorialDePartidas.Partidas.Count, HistorialDePartidas.Maximo);
         else if (pestana == 2)
         {
             int equipados = 0;
@@ -139,8 +186,10 @@ public class PantallaPerfil : PantallaBase
         }
         else
         {
-            int tiene = PerfilDatos.Obtenidos(Tipo.Avatar) + PerfilDatos.Obtenidos(Tipo.Banner) + PerfilDatos.Obtenidos(Tipo.Titulo) + PerfilDatos.Obtenidos(Tipo.Marco);
-            int total = PerfilDatos.Total(Tipo.Avatar) + PerfilDatos.Total(Tipo.Banner) + PerfilDatos.Total(Tipo.Titulo) + PerfilDatos.Total(Tipo.Marco);
+            int tiene = PerfilDatos.Obtenidos(Tipo.Avatar) + PerfilDatos.Obtenidos(Tipo.Banner) + PerfilDatos.Obtenidos(Tipo.Titulo) + PerfilDatos.Obtenidos(Tipo.Marco)
+                + SkinsDeArmas.CantidadObtenidas;
+            int total = PerfilDatos.Total(Tipo.Avatar) + PerfilDatos.Total(Tipo.Banner) + PerfilDatos.Total(Tipo.Titulo) + PerfilDatos.Total(Tipo.Marco)
+                + CatalogoDeSkins.Skins.Count;
             infoPestana.text = L10n.T("profile.info.collection_fmt", tiene, total);
         }
     }
@@ -210,14 +259,23 @@ public class PantallaPerfil : PantallaBase
         // US 222, CA2: aparte del multijugador, con los récords de oleada por dificultad (US 151 y US 161).
         int facil = MatchSettings.ZombieRecord(ZombieDifficulty.Facil), normal = MatchSettings.ZombieRecord(ZombieDifficulty.Normal),
             dificil = MatchSettings.ZombieRecord(ZombieDifficulty.Dificil);
+        // US 308 (CA5): lo de la Invasión nueva. Los tres récords van en una fila para que entre todo.
+        int coopMejor = Mathf.Max(MatchSettings.ZombieRecordCoop(ZombieDifficulty.Facil), MatchSettings.ZombieRecordCoop(ZombieDifficulty.Normal),
+            MatchSettings.ZombieRecordCoop(ZombieDifficulty.Dificil));
+        string carta = EstadisticasDeInvasion.CartaFavorita, arma = EstadisticasDeInvasion.ArmaFavorita;
+        int jefes = EstadisticasDeInvasion.Jefes;
         Tarjeta(2, "Invasión", "#7DE05A", e.invasion.partidas == 0 && facil + normal + dificil == 0 ? "Todavía no terminaste ninguna partida de Invasión." : null, new[]
         {
             ("Partidas", N(e.invasion.partidas)),
             ("Mundo salvado", N(e.invasion.victorias)),
             ("Invasores eliminados", N(e.invasion.bajas)),
-            ("Récord en Fácil", Oleada(facil)),
-            ("Récord en Normal", Oleada(normal)),
-            ("Récord en Difícil", Oleada(dificil)),
+            ("Récord F · N · D", $"{Oleada(facil)} · {Oleada(normal)} · {Oleada(dificil)}"),
+            ("Jefes derrotados", jefes > 0 ? $"{N(jefes)} <size=70%><color=#8E96A3>{L10n.T("profile.inv.wave_fmt", EstadisticasDeInvasion.JefeMasDificil)}</color></size>" : SinDatos),
+            ("Puestos cargados", N(EstadisticasDeInvasion.Puestos)),
+            ("Carta favorita", carta != null ? L10n.Source(carta) : SinDatos),
+            ("Arma favorita", arma ?? SinDatos),
+            ("En cooperativo", EstadisticasDeInvasion.PartidasCoop > 0
+                ? $"{N(EstadisticasDeInvasion.PartidasCoop)} <size=70%><color=#8E96A3>{L10n.T("profile.inv.wave_fmt", Oleada(coopMejor))}</color></size>" : SinDatos),
         });
         RectTransform minijuego = Tarjeta(3, "Minijuego: cometas", "#4CC3FF", null, null);
         cuerpoMinijuego = Place(Node("Datos", minijuego), 0f, 60f, w, 236f);
@@ -246,12 +304,18 @@ public class PantallaPerfil : PantallaBase
             return tarjeta;
         }
         if (filas == null) return tarjeta;
+        // Con más de 6 filas (la de Invasión, US 308), más juntas y más chicas, así entran en el mismo alto.
+        float paso = Mathf.Min(37f, 226f / filas.Length);
+        bool compacta = paso < 37f;
         for (int j = 0; j < filas.Length; j++)
         {
-            float y = 66f + j * 37f;
-            T(tarjeta, "Dato" + j, 24f, y, w - 140f, 32f, FTexto, 21f, Soft, filas[j].nombre);
-            T(tarjeta, "Valor" + j, w - 164f, y, 140f, 32f, FTitulo, 28f, Ink, filas[j].valor, TextAlignmentOptions.MidlineRight);
-            if (j < filas.Length - 1) Image(Place(Node("Linea" + j, tarjeta), 24f, y + 34f, w - 48f, 1f), null, White(0.06f));
+            float y = 66f + j * paso;
+            float altoFila = paso - 4f;
+            T(tarjeta, "Dato" + j, 24f, y, compacta ? w * 0.48f : w - 140f, altoFila, FTexto, compacta ? 17f : 21f, Soft, filas[j].nombre);
+            TextMeshProUGUI valor = T(tarjeta, "Valor" + j, compacta ? w * 0.42f : w - 164f, compacta ? y - 2f : y, compacta ? w * 0.58f - 24f : 140f, compacta ? paso : altoFila,
+                FTitulo, compacta ? 21f : 28f, Ink, filas[j].valor, TextAlignmentOptions.MidlineRight);
+            if (compacta) { valor.enableAutoSizing = true; valor.fontSizeMin = 15f; valor.fontSizeMax = 22f; } // un nombre largo (la carta favorita) se achica
+            if (j < filas.Length - 1) Image(Place(Node("Linea" + j, tarjeta), 24f, y + paso - 3f, w - 48f, 1f), null, White(0.06f));
         }
         return tarjeta;
     }
@@ -314,11 +378,14 @@ public class PantallaPerfil : PantallaBase
         for (int i = 0; i < 4; i++)
         {
             Tipo t = tipos[i];
-            chips[i] = Place(Node("Categoria" + i, panelPers), i * 242f, 0f, 230f, 52f);
-            Clickeable(chips[i], () => { categoria = t; seleccionado = null; scroll.verticalNormalizedPosition = 1f; Refrescar(); });
+            chips[i] = Place(Node("Categoria" + i, panelPers), i * AnchoChip, 0f, AnchoChip - 12f, 52f);
+            Clickeable(chips[i], () => { categoria = t; armas = false; seleccionado = null; scroll.verticalNormalizedPosition = 1f; Refrescar(); });
         }
+        // F35, US 379, CA1: el apartado de las armas, con sus skins.
+        chips[4] = Place(Node("CategoriaArmas", panelPers), 4 * AnchoChip, 0f, AnchoChip - 12f, 52f);
+        Clickeable(chips[4], () => { armas = true; scroll.verticalNormalizedPosition = 1f; Refrescar(); });
 
-        RectTransform toggle = Place(Node("Bloqueados", panelPers), 1000f, 8f, 260f, 36f);
+        RectTransform toggle = Place(Node("Bloqueados", panelPers), 1012f, 8f, 248f, 36f);
         Image(Place(Node("Caja", toggle), 0f, 6f, 24f, 24f), Rounded, White(0.12f), 4f);
         check = Image(Place(Node("Check", toggle), 5f, 11f, 14f, 14f), Rounded, Accent, 3f);
         T(toggle, "Texto", 36f, 0f, 220f, 36f, FRotulo, 19f, Soft, "Mostrar bloqueados", TextAlignmentOptions.MidlineLeft, 8f, true);
@@ -330,25 +397,28 @@ public class PantallaPerfil : PantallaBase
 
     private void RefrescarChips()
     {
-        string[] nombres = { "Avatares", "Banners", "Títulos", "Marcos" };
+        string[] nombres = { "Avatares", "Banners", "Títulos", "Marcos", "Armas" };
         Tipo[] tipos = { Tipo.Avatar, Tipo.Banner, Tipo.Titulo, Tipo.Marco };
-        for (int i = 0; i < 4; i++)
+        const float w = AnchoChip - 12f;
+        for (int i = 0; i < chips.Length; i++)
         {
             RectTransform c = chips[i];
             BorrarHijos(c);
             Img fondo = c.GetComponent<Img>();
-            bool activo = tipos[i] == categoria;
+            bool esArmas = i == 4;
+            bool activo = esArmas ? armas : !armas && tipos[i] == categoria;
             fondo.sprite = Rounded;
             fondo.type = Img.Type.Sliced;
             fondo.pixelsPerUnitMultiplier = 16f / 8f;
             fondo.color = activo ? Accent : PanelColor;
-            T(c, "Nombre", 20f, 0f, 150f, 52f, FTitulo, 28f, activo ? AccentInk : Soft, nombres[i], TextAlignmentOptions.MidlineLeft, 6f, true);
-            T(c, "Cuenta", 118f, 0f, 96f, 52f, FMono, 18f, activo ? AccentInk : Mute,
-                $"{PerfilDatos.Obtenidos(tipos[i])}/{PerfilDatos.Total(tipos[i])}", TextAlignmentOptions.MidlineRight);
-            int nuevos = PerfilDatos.CantidadNuevos(tipos[i]);
+            T(c, "Nombre", 16f, 0f, w - 24f, 52f, FTitulo, 24f, activo ? AccentInk : Soft, nombres[i], TextAlignmentOptions.MidlineLeft, 5f, true);
+            int tiene = esArmas ? SkinsDeArmas.CantidadObtenidas : PerfilDatos.Obtenidos(tipos[i]);
+            int total = esArmas ? CatalogoDeSkins.Skins.Count : PerfilDatos.Total(tipos[i]);
+            T(c, "Cuenta", w - 100f, 0f, 88f, 52f, FMono, 16f, activo ? AccentInk : Mute, $"{tiene}/{total}", TextAlignmentOptions.MidlineRight);
+            int nuevos = esArmas ? SkinsDeArmas.CantidadNuevas : PerfilDatos.CantidadNuevos(tipos[i]);
             if (nuevos > 0)
             {
-                RectTransform badge = Place(Node("Nuevos", c), 194f, -10f, 44f, 24f);
+                RectTransform badge = Place(Node("Nuevos", c), w - 36f, -10f, 44f, 24f);
                 Image(badge, Rounded, activo ? Ink : Accent, 6f);
                 T(badge, "N", 0f, 0f, 44f, 24f, FRotulo, 15f, AccentInk, "+" + nuevos, TextAlignmentOptions.Center);
             }
@@ -358,6 +428,7 @@ public class PantallaPerfil : PantallaBase
 
     private void RefrescarGrilla()
     {
+        if (armas) { RefrescarArmas(); return; }
         BorrarHijos(grilla);
         var lista = new List<Cosmetico>();
         foreach (Cosmetico c in PerfilDatos.Catalogo)
@@ -443,6 +514,8 @@ public class PantallaPerfil : PantallaBase
 
     private void RefrescarVista()
     {
+        if (armas) { RefrescarVistaSkin(); return; }
+        VistaPreviaDeSkin.Apagar();
         BorrarHijos(vista);
         Image(Stretch(Node("Fondo", vista)), Rounded, PanelColor, 8f);
         Borde(Stretch(Node("Marco", vista)), 8f, White(0.08f));
@@ -498,13 +571,17 @@ public class PantallaPerfil : PantallaBase
         n.overflowMode = TextOverflowModes.Ellipsis;
         string tipo = NombreTipo(c.tipo);
         string detalle = $"{tipo} · <color={Rich(colorR)}>{PerfilUI.NombreRareza(c.rareza)}</color>";
-        if (!string.IsNullOrEmpty(c.estilo)) detalle += " · " + c.estilo;
+        if (!string.IsNullOrEmpty(c.estilo)) detalle += " · " + L10n.Source(c.estilo, "profile.");
         PerfilDatos.Personaje pj = PerfilDatos.Personajes.Find(x => x.id == c.personaje);
         if (pj != null) detalle += " · " + pj.nombre;
         T(vista, "Detalle", 24f, 420f, 452f, 28f, FTexto, 20f, Mute, detalle);
 
-        if (!PerfilDatos.Tiene(c))
-            CrearBoton(vista, 24f, 464f, 452f, 56f, "Conseguilo en la estación »", false, () => menu.Abrir(menu.Estacion), 24f);
+        if (!PerfilDatos.Tiene(c)) // US 392, CA9: dónde se consigue (lleva a esa pestaña de la tienda)
+        {
+            Premio premio = Premio.De(c);
+            CrearBoton(vista, 24f, 464f, 452f, 56f, OrigenDeCosmeticos.DondeSeConsigue(premio) + " »", false,
+                () => menu.AbrirTienda(OrigenDeCosmeticos.PestanaDe(premio)), 22f);
+        }
         else if (PerfilDatos.Equipado(c))
             CrearBoton(vista, 24f, 464f, 452f, 56f, "Equipado", true, null, 26f, Ok).button.interactable = false;
         else
@@ -514,11 +591,195 @@ public class PantallaPerfil : PantallaBase
             }, 26f);
     }
 
+    // ================= Skins de las armas (F35, US 379) =================
+    // Arriba, las armas; abajo, las skins del arma elegida, empezando por "Sin skin" (la original, siempre disponible); a la
+    // derecha, el arma girando con la skin que se mira (CA2: pasando el mouse, o la elegida). Una skin equipada por arma
+    // (CA3); las bloqueadas se ven pero no se equipan (CA4). Se guarda en la cuenta y en la nube (CA5, SkinsDeArmas).
+
+    private const float AnchoChip = 202f;
+    private bool armas;
+    private string armaElegida = CatalogoDeSkins.Armas[0].id;
+    private string skinElegida; // id de la skin que se mira ("": sin skin; null: la equipada)
+    private UnityEngine.UI.RawImage vistaSkin;
+
+    // Lo que tapa cada material del arma (cuerpo, paneles, detalles y acento): así es la barra de colores de cada carta.
+    private static readonly float[] Partes = { 0.5f, 0.3f, 0.12f, 0.08f };
+
+    private CatalogoDeSkins.Skin SkinElegida
+    {
+        get
+        {
+            if (skinElegida == null) return SkinsDeArmas.EquipadaDe(armaElegida);
+            CatalogoDeSkins.Skin s = CatalogoDeSkins.De(skinElegida);
+            return s != null && s.arma.id == armaElegida ? s : null;
+        }
+    }
+
+    private void RefrescarArmas()
+    {
+        BorrarHijos(grilla);
+        // Las armas, en una fila.
+        var lista = CatalogoDeSkins.Armas;
+        const float Gap = 10f, AltoArma = 48f;
+        float aw = (AnchoGrilla - (lista.Count - 1) * Gap) / lista.Count;
+        for (int i = 0; i < lista.Count; i++)
+        {
+            CatalogoDeSkins.Arma a = lista[i];
+            bool activa = a.id == armaElegida;
+            RectTransform chip = Place(Node(a.id, grilla), i * (aw + Gap), 0f, aw, AltoArma);
+            Image(chip, Rounded, activa ? SelectedColor : PanelColor, 6f, true);
+            CatalogoDeSkins.Skin puesta = SkinsDeArmas.EquipadaDe(a.id);
+            if (puesta != null) Image(Place(Node("Skin", chip), 10f, 19f, 10f, 10f), Rounded, CatalogoDeSkins.ColoresDeBarra(puesta)[1], 3f);
+            TextMeshProUGUI n = T(chip, "Nombre", puesta != null ? 26f : 12f, 0f, aw - (puesta != null ? 34f : 24f), AltoArma, FRotulo, 17f,
+                activa ? Accent : Soft, L10n.Source(a.nombre, "profile."), TextAlignmentOptions.MidlineLeft, 3f, true);
+            n.enableAutoSizing = true; // "El Gran Capitán" es largo
+            n.fontSizeMin = 11f;
+            n.fontSizeMax = 17f;
+            Img borde = Borde(chip, 6f, activa ? Accent : White(0.08f));
+            var p = Clickeable(chip, () => { armaElegida = a.id; skinElegida = null; Refrescar(); });
+            p.Hovered = () => { if (borde != null && armaElegida != a.id) borde.color = White(0.35f); };
+            p.Exited = () => { if (borde != null && armaElegida != a.id) borde.color = White(0.08f); };
+        }
+
+        // Sus skins: primero "Sin skin", después las que tiene y (si se muestran) las bloqueadas.
+        var skins = new List<CatalogoDeSkins.Skin> { null };
+        foreach (CatalogoDeSkins.Skin s in CatalogoDeSkins.DelArma(armaElegida)) if (SkinsDeArmas.Tiene(s)) skins.Add(s);
+        if (mostrarBloqueados)
+            foreach (CatalogoDeSkins.Skin s in CatalogoDeSkins.DelArma(armaElegida)) if (!SkinsDeArmas.Tiene(s)) skins.Add(s);
+        const int Columnas = 3;
+        const float GapCarta = 18f, AltoCarta = 128f, Y = AltoArma + 18f;
+        float w = (AnchoGrilla - (Columnas - 1) * GapCarta) / Columnas;
+        for (int i = 0; i < skins.Count; i++)
+            CartaSkin(skins[i], (i % Columnas) * (w + GapCarta), Y + (i / Columnas) * (AltoCarta + GapCarta), w, AltoCarta);
+        int filas = (skins.Count + Columnas - 1) / Columnas;
+        grilla.sizeDelta = new Vector2(AnchoGrilla, Mathf.Max(472f, Y + filas * (AltoCarta + GapCarta)));
+    }
+
+    private void CartaSkin(CatalogoDeSkins.Skin s, float x, float y, float w, float h)
+    {
+        string id = s != null ? s.id : "";
+        bool tiene = s == null || SkinsDeArmas.Tiene(s);
+        bool equipada = SkinsDeArmas.EquipadaDe(armaElegida) == s;
+        bool elegida = SkinElegida == s;
+        bool nueva = SkinsDeArmas.EsNueva(s);
+        Color colorR = s != null ? ColorRareza(s.rareza) : Mute;
+        RectTransform carta = Place(Node(s != null ? s.nombre : "Sin skin", grilla), x, y, w, h);
+        Image(carta, Rounded, PanelColor, 8f, true);
+
+        // Los cuatro colores, cada uno del ancho de lo que tapa en el arma.
+        RectTransform barra = Place(Node("Colores", carta), 16f, 16f, w - 32f, 40f);
+        Color[] colores = CatalogoDeSkins.ColoresDeBarra(s); // "Sin skin": los originales
+        float bx = 0f;
+        for (int i = 0; i < 4; i++)
+        {
+            float bw = (w - 32f) * Partes[i];
+            Image(Place(Node("Color" + i, barra), bx, 0f, bw, 40f), null, colores[i]);
+            bx += bw;
+        }
+        Borde(barra, 4f, White(0.12f));
+        if (!tiene)
+        {
+            Image(Stretch(Node("Velo", barra)), null, new Color(0f, 0f, 0f, DarkAlpha(0.55f)));
+            Candado(barra, (w - 32f) / 2f, 20f, 26f, Soft);
+        }
+
+        TextMeshProUGUI n = T(carta, "Nombre", 16f, 62f, w - 32f, 32f, FTitulo, 26f, tiene ? Ink : Mute,
+            s != null ? s.Texto : "Sin skin", TextAlignmentOptions.MidlineLeft, 2f);
+        n.overflowMode = TextOverflowModes.Ellipsis;
+        string estado = equipada ? "Equipada" : !tiene ? "Bloqueada" : s == null ? "Original" : NombreRareza(s.rareza);
+        T(carta, "Estado", 16f, 96f, w - 32f, 20f, FRotulo, 15f, equipada ? Ok : !tiene ? Mute : colorR, estado, TextAlignmentOptions.MidlineLeft, 14f, true);
+        if (s != null) Image(Place(Node("Rareza", carta), 0f, h - 4f, w, 4f), null, colorR);
+
+        if (nueva)
+        {
+            const float AnchoNuevo = 64f;
+            RectTransform etiqueta = Place(Node("Nuevo", carta), w - AnchoNuevo - 8f, 64f, AnchoNuevo, 24f);
+            Image(etiqueta, Rounded, Accent, 5f);
+            T(etiqueta, "T", 0f, 0f, AnchoNuevo, 24f, FRotulo, 14f, AccentInk, "Nuevo", TextAlignmentOptions.Center, 12f, true);
+        }
+
+        Img borde = Borde(carta, 8f, elegida ? Accent : White(0.08f));
+        var p = Clickeable(carta, () => { skinElegida = id; SkinsDeArmas.Vista(s); Refrescar(); });
+        // CA2: pasando el mouse se ve en la vista previa.
+        p.Hovered = () => { VerSkin(s); if (borde != null && SkinElegida != s) borde.color = White(0.35f); };
+        p.Exited = () => { VerSkin(SkinElegida); if (borde != null && SkinElegida != s) borde.color = White(0.08f); };
+    }
+
+    private void RefrescarVistaSkin()
+    {
+        BorrarHijos(vista);
+        Image(Stretch(Node("Fondo", vista)), Rounded, PanelColor, 8f);
+        Borde(Stretch(Node("Marco", vista)), 8f, White(0.08f));
+        T(vista, "Rotulo", 24f, 18f, 400f, 22f, FRotulo, 17f, Accent, "Vista previa", TextAlignmentOptions.MidlineLeft, 16f, true);
+        RectTransform caja = Place(Node("Arma", vista), 24f, 54f, 452f, 301f);
+        vistaSkin = caja.gameObject.AddComponent<UnityEngine.UI.RawImage>();
+        vistaSkin.raycastTarget = false;
+
+        CatalogoDeSkins.Skin s = SkinElegida;
+        CatalogoDeSkins.Arma arma = CatalogoDeSkins.ArmaDe(armaElegida);
+        string nombreArma = arma != null ? L10n.Source(arma.nombre, "profile.") : "";
+        nombreSkinVista = T(vista, "Nombre", 24f, 366f, 452f, 58f, FTitulo, 40f, Ink, "", TextAlignmentOptions.MidlineLeft, 3f, true);
+        nombreSkinVista.overflowMode = TextOverflowModes.Ellipsis;
+        detalleSkinVista = T(vista, "Detalle", 24f, 420f, 452f, 28f, FTexto, 20f, Mute, "");
+        TextosDeSkin(s);
+
+        bool tiene = s == null || SkinsDeArmas.Tiene(s);
+        if (!tiene) // CA4: se ve, pero no se equipa. US 392, CA9: dónde se consigue (lleva a esa pestaña de la tienda).
+        {
+            Premio premio = Premio.De(s);
+            CrearBoton(vista, 24f, 464f, 452f, 56f, OrigenDeCosmeticos.DondeSeConsigue(premio) + " »", false,
+                () => menu.AbrirTienda(OrigenDeCosmeticos.PestanaDe(premio)), 22f);
+        }
+        else if (SkinsDeArmas.EquipadaDe(armaElegida) == s)
+            CrearBoton(vista, 24f, 464f, 452f, 56f, "Equipada", true, null, 26f, Ok).button.interactable = false;
+        else
+            CrearBoton(vista, 24f, 464f, 452f, 56f, "Equipar", true, () =>
+            {
+                // CA3: una por arma; "Sin skin" la saca.
+                if (s == null)
+                {
+                    SkinsDeArmas.Desequipar(armaElegida);
+                    menu.Avisar(L10n.T("profile.skin.removed_fmt", nombreArma));
+                }
+                else if (SkinsDeArmas.Equipar(s)) menu.Avisar(L10n.T("profile.skin.equipped_fmt", $"<color={Rich(ColorRareza(s.rareza))}>{s.Texto}</color>"));
+                skinElegida = null;
+                Refrescar();
+            }, 26f);
+        VerSkin(s);
+    }
+
+    // La vista previa: el arma elegida con esa skin (o la original), solo si se está viendo, con su nombre y su rareza
+    // (también la que se mira pasando el mouse).
+    private void VerSkin(CatalogoDeSkins.Skin s)
+    {
+        TextosDeSkin(s);
+        if (vistaSkin == null || pestana != 1 || !armas) return;
+        VistaPreviaDeSkin.Mostrar(armaElegida, s);
+        vistaSkin.texture = VistaPreviaDeSkin.Textura;
+    }
+
+    private TextMeshProUGUI nombreSkinVista, detalleSkinVista;
+
+    private void TextosDeSkin(CatalogoDeSkins.Skin s)
+    {
+        if (nombreSkinVista == null || detalleSkinVista == null) return;
+        CatalogoDeSkins.Arma arma = CatalogoDeSkins.ArmaDe(armaElegida);
+        string nombreArma = arma != null ? L10n.Source(arma.nombre, "profile.") : "";
+        nombreSkinVista.text = s != null ? s.Texto : nombreArma + " · " + L10n.Source("Sin skin", "profile.");
+        detalleSkinVista.text = s != null
+            ? $"{L10n.Source("Skin de arma", "profile.")} · <color={Rich(ColorRareza(s.rareza))}>{NombreRareza(s.rareza)}</color>"
+            : L10n.Source("El arma como viene, sin skin.", "profile.");
+    }
+
     // ================= Emotes (US 264) =================
     // Arriba, los 4 espacios de la rueda, en el mismo orden (arriba, derecha, abajo, izquierda); abajo, todos los bailes;
     // a la derecha, el personaje elegido haciendo el que se mira (CA2). Se elige un espacio y después un emote para
     // ponerlo ahí (CA3: si ya estaba en otro espacio, sale de ese); "Quitar" vacía un espacio (CA4). Se guarda con el
     // perfil (CA5, EmotesEquipados).
+    // F37 (US 388): cada baile con su rareza (el nombre y una franja de su color) y su estado. Los bloqueados se ven en la
+    // vista previa pero no se equipan, y dicen dónde se consiguen; los recién conseguidos, marcados como nuevos hasta que
+    // se los ve.
+
 
     private static readonly string[] LugaresDeLaRueda = { "Arriba", "Derecha", "Abajo", "Izquierda" };
     private int espacioElegido = 0;
@@ -569,7 +830,7 @@ public class PantallaPerfil : PantallaBase
             RectTransform carta = Place(Node("Espacio" + (i + 1), espaciosEmotes), i * (w + 18f), 0f, w, 124f);
             Image(carta, Rounded, elegido ? SelectedColor : PanelColor, 8f, true);
             T(carta, "Lugar", 18f, 12f, w - 36f, 20f, FRotulo, 15f, elegido ? Accent : Mute,
-                $"Espacio {i + 1} · {LugaresDeLaRueda[i]}", TextAlignmentOptions.MidlineLeft, 14f, true);
+                L10n.T("profile.emotes.slot_fmt", i + 1, L10n.Source(LugaresDeLaRueda[i], "profile.")), TextAlignmentOptions.MidlineLeft, 14f, true);
             if (e != null && e.icono != null)
                 Image(Place(Node("Icono", carta), 18f, 42f, 64f, 64f), e.icono, Color.white).preserveAspect = true;
             float tx = e != null && e.icono != null ? 96f : 18f;
@@ -607,8 +868,11 @@ public class PantallaPerfil : PantallaBase
             int k = i;
             int espacio = EspacioDe(i);
             bool visto = emoteVisto == i;
+            bool tiene = ColeccionDeEmotes.Tiene(e);
+            Color colorR = ColorRareza(e.rareza);
             RectTransform carta = Place(Node(e.nombre, grillaEmotes), (i % Columnas) * (cw + Gap), (i / Columnas) * (Alto + Gap), cw, Alto);
             Image(carta, Rounded, PanelColor, 8f, true);
+            Image(Place(Node("Rareza", carta), 0f, Alto - 5f, cw, 5f), null, colorR); // la franja de su rareza
             if (e.icono != null) Image(Place(Node("Icono", carta), 16f, 16f, 72f, 72f), e.icono, Color.white).preserveAspect = true;
             else
             {
@@ -617,16 +881,31 @@ public class PantallaPerfil : PantallaBase
                 Image(ini, Rounded, ChipColor, 6f);
                 T(ini, "Letra", 0f, 0f, 72f, 72f, FTitulo, 40f, Soft, e.nombre.Length > 0 ? e.nombre.Substring(0, 1) : "?", TextAlignmentOptions.Center);
             }
-            TextMeshProUGUI n = T(carta, "Nombre", 104f, 18f, cw - 120f, 40f, FTitulo, 30f, Ink, e.nombre, TextAlignmentOptions.MidlineLeft, 3f, true);
+            TextMeshProUGUI n = T(carta, "Nombre", 104f, 12f, cw - 120f, 40f, FTitulo, 30f, tiene ? Ink : Soft, e.nombre, TextAlignmentOptions.MidlineLeft, 3f, true);
             n.overflowMode = TextOverflowModes.Ellipsis;
-            T(carta, "Estado", 104f, 60f, cw - 120f, 24f, FRotulo, 16f, espacio >= 0 ? Ok : Mute,
-                espacio >= 0 ? L10n.T("profile.emotes.in_slot_fmt", espacio + 1) : L10n.T("profile.ui.not_equipped"), TextAlignmentOptions.MidlineLeft, 12f, true);
+            T(carta, "Rareza", 104f, 50f, cw - 120f, 20f, FRotulo, 14f, colorR, NombreRareza(e.rareza), TextAlignmentOptions.MidlineLeft, 12f, true);
+            T(carta, "Estado", 104f, 72f, cw - 120f, 22f, FRotulo, 15f, !tiene ? Mute : espacio >= 0 ? Ok : Soft,
+                !tiene ? L10n.Source("Bloqueado", "profile.") : espacio >= 0 ? L10n.T("profile.emotes.in_slot_fmt", espacio + 1) : L10n.T("profile.ui.not_equipped"),
+                TextAlignmentOptions.MidlineLeft, 12f, true);
+            if (!tiene)
+            {
+                Image(Stretch(Node("Velo", carta)), Rounded, new Color(0f, 0f, 0f, DarkAlpha(0.35f)), 8f);
+                Candado(carta, cw - 26f, 26f, 22f, Mute);
+            }
+            else if (ColeccionDeEmotes.EsNuevo(e))
+            {
+                RectTransform chip = Place(Node("Nuevo", carta), cw - 86f, 10f, 76f, 24f);
+                Image(chip, Rounded, Accent, 5f);
+                T(chip, "Texto", 0f, 0f, 76f, 24f, FRotulo, 14f, AccentInk, L10n.Source("Nuevo", "profile."), TextAlignmentOptions.Center, 12f, true);
+            }
             Img borde = Borde(carta, 8f, visto ? Accent : White(0.08f));
             var p = Clickeable(carta, () =>
             {
-                // CA3: va al espacio elegido.
+                // CA3: va al espacio elegido (F37: si lo tiene; bloqueado, solo se lo mira).
                 emoteVisto = k;
-                if (espacioElegido >= 0)
+                ColeccionDeEmotes.Visto(e);
+                if (!tiene) menu.Avisar($"<color={Rich(colorR)}>{e.nombre}</color>: {OrigenDeCosmeticos.DondeSeConsigue(Premio.De(e))}"); // US 392, CA9
+                else if (espacioElegido >= 0)
                 {
                     EmotesEquipados.Poner(espacioElegido, k);
                     menu.Avisar(L10n.T("profile.emote.equipped_fmt", L10n.Source(e.nombre, "profile."), espacioElegido + 1, L10n.Source(LugaresDeLaRueda[espacioElegido], "profile.").ToLowerInvariant()));
@@ -634,7 +913,7 @@ public class PantallaPerfil : PantallaBase
                 Refrescar();
             });
             // CA2: pasando el mouse se ve en la vista previa.
-            p.Hovered = () => { VerEmote(k); if (borde != null && emoteVisto != k) borde.color = White(0.35f); };
+            p.Hovered = () => { VerEmote(k); ColeccionDeEmotes.Visto(e); if (borde != null && emoteVisto != k) borde.color = White(0.35f); };
             p.Exited = () => { VerEmote(emoteVisto); if (borde != null && emoteVisto != k) borde.color = White(0.08f); };
         }
         int filas = (catalogo.emotes.Count + Columnas - 1) / Columnas;
@@ -658,8 +937,11 @@ public class PantallaPerfil : PantallaBase
         VistaPreviaDeEmote.Mostrar(pj, e != null ? e.clip : null);
         vistaEmote.texture = VistaPreviaDeEmote.Textura;
         nombreVisto.text = e != null ? e.nombre : "";
+        nombreVisto.color = e != null ? ColorRareza(e.rareza) : Ink; // F37 (US 388): con el color de su rareza
         if (personajeVisto != null) personajeVisto.text = pj != null ? pj.displayName : "";
-        ayudaVista.text = e == null ? L10n.Source("Pasá el mouse por un baile para verlo.", "profile.") : pj != null ? pj.role : "";
+        ayudaVista.text = e == null ? L10n.Source("Pasá el mouse por un baile para verlo.", "profile.")
+            : !ColeccionDeEmotes.Tiene(e) ? NombreRareza(e.rareza) + " · " + OrigenDeCosmeticos.DondeSeConsigue(Premio.De(e))
+            : NombreRareza(e.rareza) + (pj != null ? " · " + pj.role : "");
     }
 
     private CharacterData PersonajeDeLaVista()
@@ -703,6 +985,15 @@ public class PantallaPerfil : PantallaBase
         titulo.text = sinTitulo ? L10n.T("profile.title.none") : L10n.Source(ti.nombre, "profile.");
         titulo.color = sinTitulo ? Mute : Ink;
         EstadisticasJugador.Totales e = EstadisticasJugador.Datos;
+        int nivelJugador = NivelDeJugador.Valor;
+        var (rango, colorRango) = Rango(nivelJugador);
+        nivelValor.text = N(nivelJugador);
+        nivelRango.text = L10n.Source(rango, "profile.");
+        nivelRango.color = colorRango;
+        nivelEmblema.color = colorRango;
+        BorrarHijos(nivelLogo);
+        EmblemaDeNivel.Dibujar(nivelLogo, 70f, 86f, EmblemaDeNivel.RangoDe(nivelJugador), colorRango);
+        if (nivelBorde != null) nivelBorde.color = WithAlpha(colorRango, 0.7f);
         resumen[0].text = N(e.Partidas);
         resumen[1].text = N(e.Victorias);
         resumen[2].text = e.SinDatos ? "—" : Kda(e);
@@ -713,12 +1004,46 @@ public class PantallaPerfil : PantallaBase
         RefrescarGrilla();
         RefrescarVista();
         RefrescarEmotes();
-        if (pestana == 3) cuenta.Refrescar();
+        RefrescarHistorial();
+        if (pestana == PestanaDeCuenta) cuenta.Refrescar();
     }
 
     public override void Tick()
     {
         base.Tick();
-        if (pestana == 3) { cuenta.Tick(); RefrescarInfo(); }
+        if (pestana == PestanaDeCuenta) { cuenta.Tick(); RefrescarInfo(); }
+        // CA4: el aviso cambia cuando la nube termina de sincronizar (o se corta la conexión).
+        if (pestana == PestanaHistorial && LogrosOnline.Instancia != null && LogrosOnline.Instancia.Historial != estadoHistorialDibujado)
+            RefrescarHistorial();
+    }
+
+    // ================= Historial (US 374) =================
+
+    private void ArmarHistorial()
+    {
+        panelHistorial = Place(Node("Historial", rect), 60f, Y0, 1800f, 540f);
+        avisoHistorial = T(panelHistorial, "Aviso", 0f, 0f, 1800f, 30f, FTexto, 20f, Mute, "", TextAlignmentOptions.MidlineLeft);
+        scrollHistorial = Scroll(panelHistorial, 0f, 40f, 1800f, 500f, out listaHistorial);
+        HistorialDePartidas.Cambio += () => { if (rect != null && pestana == PestanaHistorial) RefrescarHistorial(); };
+    }
+
+    // CA1: las últimas 20 partidas terminadas, de la más nueva a la más vieja. CA4: dice si son las de la cuenta o solo
+    // las de esta computadora.
+    private void RefrescarHistorial()
+    {
+        if (panelHistorial == null) return;
+        LogrosOnline online = LogrosOnline.Instancia;
+        estadoHistorialDibujado = online != null ? online.Historial : LogrosOnline.EstadoDelHistorial.SinCuenta;
+        avisoHistorial.text = estadoHistorialDibujado switch
+        {
+            LogrosOnline.EstadoDelHistorial.EnLaNube => L10n.T("profile.hist.synced"),
+            LogrosOnline.EstadoDelHistorial.SinCuenta => L10n.T("profile.hist.no_account"),
+            LogrosOnline.EstadoDelHistorial.FaltaActualizarLaBase => L10n.T("profile.hist.update_service"),
+            _ => L10n.T("profile.hist.offline"),
+        };
+        avisoHistorial.color = estadoHistorialDibujado == LogrosOnline.EstadoDelHistorial.EnLaNube ? Mute : Accent;
+        float alto = ListaDeHistorial.Dibujar(listaHistorial, HistorialDePartidas.Partidas, 1800f, L10n.T("profile.hist.empty"));
+        listaHistorial.sizeDelta = new Vector2(1800f, Mathf.Max(500f, alto));
+        if (pestana == PestanaHistorial) RefrescarInfo();
     }
 }

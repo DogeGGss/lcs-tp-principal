@@ -325,6 +325,10 @@
       "text": "Direct feed"
     },
     {
+      "key": "gameplay.card.escort",
+      "text": "Escort"
+    },
+    {
       "key": "gameplay.card.instant_delivery",
       "text": "Instant delivery"
     },
@@ -375,6 +379,10 @@
     {
       "key": "gameplay.weapon.knife",
       "text": "Knife"
+    },
+    {
+      "key": "gameplay.weapon.knife_and_katana",
+      "text": "Knife and katana"
     },
     {
       "key": "gameplay.card.fx.reserve_shot",
@@ -545,6 +553,10 @@
       "text": "Magazine and reserve are a single pool: you never reload until you run out of bullets."
     },
     {
+      "key": "gameplay.card.fx.escort",
+      "text": "A drone follows you: its beam melts the nearest invader, and every 8 s it fires electric arcs that paralyze those around."
+    },
+    {
       "key": "gameplay.card.fx.instant_delivery",
       "text": "The station's choice opens as soon as it's charged, without waiting for the wave to end."
     },
@@ -587,6 +599,18 @@
     {
       "key": "gameplay.card.secondary",
       "text": "Secondary weapon"
+    },
+    {
+      "key": "gameplay.card.katana",
+      "text": "Katana"
+    },
+    {
+      "key": "gameplay.card.melee",
+      "text": "Melee weapon"
+    },
+    {
+      "key": "gameplay.card.replaces_knife",
+      "text": "Replaces your knife, in its slot and key. Cuts everyone in front of you."
     },
     {
       "key": "gameplay.card.works_with_fmt",
@@ -739,6 +763,38 @@
     {
       "key": "gameplay.place.library",
       "text": "the Library"
+    },
+    {
+      "key": "gameplay.place.auditorium",
+      "text": "the Auditorium"
+    },
+    {
+      "key": "gameplay.place.nursery_school",
+      "text": "the Nursery School"
+    },
+    {
+      "key": "gameplay.place.leon_suarez",
+      "text": "the León Suárez building"
+    },
+    {
+      "key": "gameplay.place.tum",
+      "text": "the TUM"
+    },
+    {
+      "key": "gameplay.place.adiungs",
+      "text": "ADIUNGS"
+    },
+    {
+      "key": "gameplay.place.parking",
+      "text": "the Parking Lot"
+    },
+    {
+      "key": "gameplay.place.bar",
+      "text": "the Bar"
+    },
+    {
+      "key": "gameplay.place.entrance",
+      "text": "the Entrance"
     },
     {
       "key": "gameplay.result.survived_fmt",
@@ -1879,6 +1935,290 @@
     {
       "key": "gameplay.text.grenades",
       "text": "Grenades"
+    },
+    {
+      "key": "gameplay.card.no_room",
+      "text": "No room: discard a card to pick a new one"
+    },
+    {
+      "key": "gameplay.card.no_room_short",
+      "text": "No room · discard one"
+    },
+    {
+      "key": "gameplay.card.discarded_fmt",
+      "text": "You discarded {0}"
+    },
+    {
+      "key": "gameplay.card.discard",
+      "text": "Discard a card"
+    },
+    {
+      "key": "gameplay.card.skip",
+      "text": "Continue without picking"
+    },
+    {
+      "key": "gameplay.card.no_options",
+      "text": "No cards to pick this time"
+    },
+    {
+      "key": "gameplay.card.slots_fmt",
+      "text": "Your cards {0} / {1}"
+    },
+    {
+      "key": "gameplay.card.occupied_fmt",
+      "text": "{0} / {1} slots used"
+    },
+    {
+      "key": "gameplay.card.your_cards",
+      "text": "Your cards"
+    },
+    {
+      "key": "gameplay.card.pick_discard",
+      "text": "Pick one to discard"
+    },
+    {
+      "key": "gameplay.card.discard_hint",
+      "text": "You lose the card and its upgrades, and you don't pick this time  ·  Esc to go back"
+    },
+    {
+      "key": "gameplay.card.hold_hint",
+      "text": "Release {0} to close"
+    },
+    {
+      "key": "gameplay.card.back",
+      "text": "Back"
+    },
+    {
+      "key": "gameplay.card.cancel",
+      "text": "Cancel"
+    },
+    {
+      "key": "gameplay.card.discard_confirm",
+      "text": "Discard"
+    },
+    {
+      "key": "gameplay.card.discard_question_fmt",
+      "text": "Discard {0}? You lose its upgrades and you don't pick this time."
+    },
+    {
+      "key": "gameplay.card.free_slot",
+      "text": "Free"
+    },
+    {
+      "key": "gameplay.card.times_fmt",
+      "text": "{0} of {1}"
+    },
+    {
+      "key": "gameplay.card.single",
+      "text": "Single"
+    },
+    {
+      "key": "gameplay.card.unused",
+      "text": "No use"
+    },
+    {
+      "key": "gameplay.card.unused_weapon_fmt",
+      "text": "Works with: {0}"
+    },
+    {
+      "key": "gameplay.controls.cards",
+      "text": "Cards (Invasion)"
+    },
+    {
+      "key": "gameplay.card.match_continues",
+      "text": "The match goes on"
+    },
+    {
+      "key": "gameplay.down.you_are_down",
+      "text": "You're down! Wait for a revive"
+    },
+    {
+      "key": "gameplay.down.bleeding_fmt",
+      "text": "Down · {0} s to be revived"
+    },
+    {
+      "key": "gameplay.down.reviving_you_fmt",
+      "text": "{0} is reviving you"
+    },
+    {
+      "key": "gameplay.down.revived",
+      "text": "You're back up!"
+    },
+    {
+      "key": "gameplay.down.hold_to_revive_fmt",
+      "text": "Hold {0} to revive {1}"
+    },
+    {
+      "key": "gameplay.down.reviving_fmt",
+      "text": "Reviving {0}"
+    },
+    {
+      "key": "gameplay.down.being_revived",
+      "text": "Being revived"
+    },
+    {
+      "key": "gameplay.down.overhead_fmt",
+      "text": "Down · {0} s"
+    },
+    {
+      "key": "gameplay.mates.down",
+      "text": "Down"
+    },
+    {
+      "key": "gameplay.mates.dead",
+      "text": "Dead"
+    },
+    {
+      "key": "gameplay.mates.disconnected",
+      "text": "Disconnected"
+    },
+    {
+      "key": "gameplay.mates.player",
+      "text": "Player"
+    },
+    {
+      "key": "gameplay.mates.kills",
+      "text": "Kills"
+    },
+    {
+      "key": "gameplay.mates.points",
+      "text": "Points"
+    },
+    {
+      "key": "gameplay.mates.state",
+      "text": "Status"
+    },
+    {
+      "key": "gameplay.event.joined",
+      "text": "joined the match"
+    },
+    {
+      "key": "gameplay.mates.joined_title",
+      "text": "You joined the match"
+    },
+    {
+      "key": "gameplay.mates.next_wave",
+      "text": "You'll spawn when the next break starts"
+    },
+    {
+      "key": "gameplay.result.record_coop_fmt",
+      "text": "Co-op record on {0}: <color=#F3F4F6>wave {1}</color> · solo: wave {2}"
+    },
+    {
+      "key": "gameplay.result.record_solo_fmt",
+      "text": "Single-player record: wave {0}"
+    },
+    {
+      "key": "gameplay.mates.retired",
+      "text": "Retired"
+    },
+    {
+      "key": "gameplay.result.keys_hint_coop",
+      "text": "Enter or Esc  ·  Back to menu"
+    },
+    {
+      "key": "gameplay.ability.barrera",
+      "text": "Barrier"
+    },
+    {
+      "key": "gameplay.ability.callejero",
+      "text": "Streetwise"
+    },
+    {
+      "key": "gameplay.ability.pulso",
+      "text": "Pulse"
+    },
+    {
+      "key": "gameplay.ability.silbato",
+      "text": "Whistle"
+    },
+    {
+      "key": "gameplay.ability.trasbordo",
+      "text": "Transfer"
+    },
+    {
+      "key": "gameplay.ability.vista_aerea",
+      "text": "Aerial view"
+    },
+    {
+      "key": "gameplay.grenade.shrapnel",
+      "text": "Shrapnel"
+    },
+    {
+      "key": "gameplay.grenade.smoke",
+      "text": "Smoke"
+    },
+    {
+      "key": "gameplay.shop.all_free",
+      "text": "All free"
+    },
+    {
+      "key": "gameplay.shop.shield",
+      "text": "Shield"
+    },
+    {
+      "key": "gameplay.table.mouse_hint",
+      "text": "Right-click: use the mouse to view a profile"
+    },
+    {
+      "key": "gameplay.table.fixed_hint",
+      "text": "Click a name to view their profile · Tab or Esc to close"
+    },
+    {
+      "key": "gameplay.death.card.killed_by",
+      "text": "Killed by"
+    },
+    {
+      "key": "gameplay.death.card.title",
+      "text": "Summary"
+    },
+    {
+      "key": "gameplay.death.card.distance",
+      "text": "Distance"
+    },
+    {
+      "key": "gameplay.death.card.distance_fmt",
+      "text": "{0} m"
+    },
+    {
+      "key": "gameplay.death.card.remaining",
+      "text": "They had left"
+    },
+    {
+      "key": "gameplay.death.card.hp_fmt",
+      "text": "{0} HP · {1} shield"
+    },
+    {
+      "key": "gameplay.death.card.you_dealt",
+      "text": "You dealt"
+    },
+    {
+      "key": "gameplay.death.card.they_dealt",
+      "text": "They dealt"
+    },
+    {
+      "key": "gameplay.death.card.hits.one",
+      "text": "{1} damage in 1 hit"
+    },
+    {
+      "key": "gameplay.death.card.hits.other",
+      "text": "{1} damage in {0} hits"
+    },
+    {
+      "key": "gameplay.death.card.no_damage",
+      "text": "No damage"
+    },
+    {
+      "key": "gameplay.death.card.others",
+      "text": "Others who damaged you"
+    },
+    {
+      "key": "gameplay.death.card.received",
+      "text": "Damage taken"
+    },
+    {
+      "key": "gameplay.death.card.headshot",
+      "text": "Headshot"
     }
   ]
 }

@@ -34,5 +34,11 @@ public partial class MainWindow
             ShowReleases();
             if(selectedTag!=null&&ReleasePicker.ItemsSource is IEnumerable<NoteChoice> choices)ReleasePicker.SelectedItem=choices.FirstOrDefault(c=>c.Release.Tag==selectedTag)??choices.FirstOrDefault();
         }
+        else if(App.Preview&&ReleasePicker.ItemsSource==null)
+        {
+            ReleasePicker.Items.Clear();ReleasePicker.Items.Add(new{Label=LauncherText.Source("Vista previa")});ReleasePicker.SelectedIndex=0;
+        }
+        // The notes are drawn again even when the picker keeps the same version selected (US 346, TC-1831).
+        RenderNotes();
     }
 }
