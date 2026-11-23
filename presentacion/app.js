@@ -174,7 +174,8 @@ const questionTopics = [
   ['Miras', 'Elegí tu mira', 'miras'],
   ['Modo Invasión', 'Modo Invasión · De 1 a 4 jugadores', 'invasion'],
   ['Cuenta', 'Tu cuenta Riftwalker', 'cuenta'],
-  ['Launcher', 'El launcher de Riftwalker', 'launcher']
+  ['Launcher', 'El launcher de Riftwalker', 'launcher'],
+  ['Arsenal', 'Cada arma cambia una decisión', 'arsenal']
 ];
 const proofImages = '../pruebas/idiomas/2026-11-08/';
 const invasionView = proofImages + 'US-348_CA1_Invasion_HUD_y_oleada.png';
@@ -202,6 +203,8 @@ function questionVisual(key) {
       const cartas=D.cards.map(c=>`<article class="qa-carta ${rar[c.rarity]}"><span class="qa-rareza">${esc(c.rarity)}</span><strong>${esc(c.name)}</strong><p>${esc(c.text)}</p><small>${esc(c.with)} · ${c.max>1?'hasta 3 veces':'una sola vez'}</small></article>`).join('');
       return `<div class="qa-run qa-invasion"><figure><img src="${invasionView}" alt="Oleada en el campus"><figcaption>Sobreviví a la oleada</figcaption></figure><figure><img src="${proofImages}US-348_CA2_Invasion_eleccion_de_cartas.png" alt="Tres recompensas del puesto"><figcaption>Cargá el puesto y elegí 1 de 3</figcaption></figure></div><p class="qa-caption">Solo o con hasta tres amigos. Matando se carga el puesto de suministros y ahí cada uno elige 1 de 3: un arma, la Katana o una carta. Hay 27 cartas y 8 lugares; algunas se acumulan hasta 3 veces. Cuanto más avanzan las oleadas, más salen las raras y las épicas, y después del primer Jefe, las legendarias. Volver a tirar cuesta 150 puntos.</p><div class="qa-cartas">${cartas}</div>`;
     }
+    // La ficha de cada arma (antes, la diapositiva Arsenal): se elige con el desplegable y se vuelve a dibujar adentro del popup.
+    case 'arsenal': return `<div class="qa-arsenal">${arsenal()}</div>`;
     case 'launcher': return '<img class="qa-picture" style="display:block;width:100%;height:auto;max-height:56dvh;object-fit:contain" src="media/launcher.png" alt="Launcher de Project Riftwalker con las novedades de la versión 0.4.0 y el botón Jugar"><div class="qa-actions"><strong>Instala y actualiza</strong><span>Novedades de cada versión</span><span>Entrás con tu cuenta</span><span>Canal estable y experimental</span></div>';
     case 'cuenta': return '<div class="qa-account"><div><strong>Crear cuenta</strong><span>Mail y contraseña</span></div><div><strong>Ingresar con Steam</strong><span>Acceso previsto</span></div></div><img class="qa-picture" style="display:block;width:100%;height:auto;max-height:38dvh;object-fit:contain" src="media/cuenta-confirmacion.png" alt="Correo de Project Riftwalker para confirmar el registro de una cuenta"><p class="qa-caption">Tu perfil, logros y monedas te acompañan al cambiar de PC.</p>';
   }
@@ -215,7 +218,8 @@ const questionSketch = [
   [18, 66, -13, 'M35 61 Q34 61 32 60 T18 66'],
   [81, 67, 8, 'M65 61 C70 60 69 66 81 67'],
   [49, 86, 11, 'M50 70 Q48 74 49 86'],
-  [48, 11, -4, 'M50 34 C51 28 47 22 48 11']
+  [48, 11, -4, 'M50 34 C51 28 47 22 48 11'],
+  [67, 88, 6, 'M57 69 C59 76 62 83 67 88']
 ];
 function questionsScreen() {
   const buttons = questionTopics.map(([name], index) => {
@@ -350,7 +354,7 @@ document.addEventListener('input',event=>{
     campusPhotos=files.map(file=>URL.createObjectURL(file));campusPhoto=0;mapPhoto();
   }
 });
-document.addEventListener('change',e=>{if(e.target.id==='weaponSelect'){weaponId=e.target.value;render()}});
+document.addEventListener('change',e=>{if(e.target.id==='weaponSelect'){weaponId=e.target.value;if(e.target.closest('#questionDialog')){$('#questionBody').innerHTML=questionVisual('arsenal');$('#weaponSelect').focus()}else render()}});
 document.addEventListener('keydown',e=>{if(document.body.classList.contains('trailer-expanded')){if(e.key==='Escape'){e.preventDefault();closeTrailer()}return}if(secreto.abierto){if(['Escape','ArrowLeft','PageUp'].includes(e.key)){e.preventDefault();cerrarSecreto()}return}if(document.querySelector('dialog[open]')||document.fullscreenElement?.tagName==='VIDEO'||e.target.closest('input,select,textarea,button,a,video'))return;
  if(e.key==='ArrowRight'||e.key==='PageDown'){e.preventDefault();go(current+1)}if(e.key==='ArrowLeft'||e.key==='PageUp'){e.preventDefault();go(current-1)}if(e.key.toLowerCase()==='f')$('#fullscreen').click();
 });
