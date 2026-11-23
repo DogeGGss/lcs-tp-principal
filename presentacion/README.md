@@ -109,3 +109,15 @@ Además:
 - **Preguntas del cierre:** Idiomas muestra los cinco idiomas en el juego. Modo Invasión cuenta el cooperativo y muestra 10 de las 27 cartas, de las cuatro rarezas.
 - **Datos de Historia:** el modo Invasión tiene su mapa. Esa diapositiva no está en el recorrido.
 
+## Si no despega (23/11/2026)
+
+Reemplaza a Si no funciona. En la presentación anterior una profesora marcó que sacar a 5 de los 7 en el mes 3 era abandonar el barco muy rápido. Ahora nadie se va antes de que termine la rampa del escenario pesimista, que son 9 meses:
+- **Lanzamiento:** se pone la mitad de la publicidad.
+- **Mes 3 (Corregir):** con menos de 700 pagadores se busca qué falla y ahí va la otra mitad de la publicidad (US$ 2.500).
+- **Mes 6 (Ajustar):** con menos de 1.400 pagadores, los 7 siguen a un tercio de sus horas y sin publicidad mensual (US$ 2.969 por mes de gastos).
+- **Mes 9 (Decidir):** con menos de 1.400 pagadores se cierra.
+
+En el pesimista, el inversor pierde como mucho US$ 76.865: la inversión, 9 meses y la desvinculación de los 7, que ya pasaron el período de prueba (US$ 7.577). Con el plan anterior eran US$ 49.941; ese número queda solo en la nota, para las preguntas.
+
+En el promedio y el optimista no cambia nada. Los números (`economics.guard`) salen del modelo de la guía con el mismo cálculo que el plan anterior. Revisado a 1280 × 720 y a 1024 × 768.
+
