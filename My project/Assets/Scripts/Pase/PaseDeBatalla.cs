@@ -290,7 +290,9 @@ public static class PaseDeBatalla
             metas = new[] { 10, 20, 30, 40 }, xp = new[] { 300, 500, 750, 1000 } });
         D("sin-mira", "Eliminar 5 enemigos sin apuntar con el Último Tren", "Deathmatch o Táctico", 5, 500);
         foreach (CatalogoDeSkins.Arma a in CatalogoDeSkins.Armas)
-            if (!a.cuerpoACuerpo) // (las armas de fuego; el cuchillo está en el catálogo por sus skins)
+            // (las armas de fuego del multijugador: el cuchillo está en el catálogo por sus skins, y el Gran Capitán es solo
+            // de Invasión, así que en Deathmatch o Táctico su desafío no se podía completar)
+            if (!a.cuerpoACuerpo && !a.soloInvasion)
                 D("arma." + a.id, "Eliminar 15 enemigos con {0}", "Deathmatch o Táctico", 15, 300, a.nombre);
         D("invasion.puestos", "Cargar 3 puestos de suministros", "Invasión", 3, 300);
         D("invasion.jefe", "Eliminar al Jefe", "Invasión", 1, 750);
