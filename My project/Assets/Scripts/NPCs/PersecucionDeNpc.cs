@@ -119,6 +119,7 @@ public class PersecucionDeNpc : MonoBehaviour
         else
         {
             agente.isStopped = false;
+            if (!Controlado) ElegirNavMesh();
             if (Time.time >= proximoCamino) Camino();
         }
         if (!Ocupado) Animar(true);
@@ -139,6 +140,71 @@ public class PersecucionDeNpc : MonoBehaviour
         }
         if (NavMesh.SamplePosition(destino, out NavMeshHit cerca, BuscarPiso, Filtro())) destino = cerca.position;
         agente.SetDestination(destino); // si no llega entero, va hasta donde se pueda y espera (camino parcial)
+    }
+
+    // ---------- El Jefe y los que flotan: por dónde van ----------
+
+    // El Jefe y los que flotan (los Watcher) van por el NavMesh de los grandes (NavMeshEnVivo): no pasa por lugares
+    // angostos ni entra a los edificios, así su cuerpo (o el que flota en el aire) no se mete en las paredes de adentro.
+    private bool Grande => npc.Tipo != null && (npc.Tipo.esJefe || npc.Tipo.alturaDeVuelo > 0f);
+
+    private const float CadaCuantoNavMesh = 1f; // s entre revisiones de por cuál NavMesh va
+    private const float VuelveAlGrande = 1.5f;  // m: vuelve al de los grandes solo si lo tiene así de cerca (no salta paredes)
+    private float proximoNavMesh;
+    private NavMeshPath prueba;
+    private static readonly RaycastHit[] arriba = new RaycastHit[8];
+
+    // Si por el de los grandes no llega al jugador (está detrás de los módulos y se pasa por un pasillo techado o
+    // angosto), va por el común, el de todos, hasta poder volver. Si el jugador está adentro de un edificio (bajo techo),
+    // no entra a buscarlo: lo espera afuera, por el de los grandes.
+    private void ElegirNavMesh()
+    {
+        if (!Grande || agente == null || Objetivo == null || Time.time < proximoNavMesh) return;
+        proximoNavMesh = Time.time + CadaCuantoNavMesh;
+        if (!NavMeshEnVivo.Listo || !NavMeshEnVivo.ListoGrande) return;
+        int grandes = NavMeshEnVivo.TipoGrande, comun = NavMeshEnVivo.Tipo;
+        if (tipoDeAgente != grandes && tipoDeAgente != comun) return; // (un mapa con NavMesh horneado: queda como está)
+        int quiere;
+        if (BajoTecho(Objetivo)) quiere = grandes;
+        else if (Llega(grandes, tipoDeAgente == grandes ? 3f : VuelveAlGrande)) quiere = grandes;
+        else quiere = Llega(comun, 3f) ? comun : grandes;
+        if (quiere != tipoDeAgente) Cambiar(quiere, quiere == grandes ? VuelveAlGrande : 3f);
+    }
+
+    // Si por ese NavMesh hay un camino entero desde donde está hasta el jugador.
+    private bool Llega(int tipo, float desdeCerca)
+    {
+        var filtro = new NavMeshQueryFilter { agentTypeID = tipo, areaMask = NavMesh.AllAreas };
+        if (!NavMesh.SamplePosition(transform.position, out NavMeshHit desde, desdeCerca, filtro)) return false;
+        if (!NavMesh.SamplePosition(Objetivo.position, out NavMeshHit hasta, 2f, filtro)) return false;
+        if (prueba == null) prueba = new NavMeshPath();
+        return NavMesh.CalculatePath(desde.position, hasta.position, filtro, prueba) && prueba.status == NavMeshPathStatus.PathComplete;
+    }
+
+    private void Cambiar(int tipo, float desdeCerca)
+    {
+        var filtro = new NavMeshQueryFilter { agentTypeID = tipo, areaMask = NavMesh.AllAreas };
+        if (!NavMesh.SamplePosition(transform.position, out NavMeshHit piso, desdeCerca, filtro)) return;
+        tipoDeAgente = tipo;
+        agente.agentTypeID = tipo;
+        agente.Warp(piso.position);
+        proximoCamino = 0f;
+    }
+
+    // El jugador tiene techo arriba (está adentro de un edificio o de un lugar techado).
+    private static bool BajoTecho(Transform jugador)
+    {
+        int n = Physics.RaycastNonAlloc(jugador.position + Vector3.up * 1.5f, Vector3.up, arriba, 40f,
+            Physics.DefaultRaycastLayers, QueryTriggerInteraction.Ignore);
+        for (int i = 0; i < n; i++)
+        {
+            Collider c = arriba[i].collider;
+            if (c == null || c.transform.IsChildOf(jugador) || c is CharacterController) continue;
+            if (c.attachedRigidbody != null && !c.attachedRigidbody.isKinematic) continue;
+            if (c.GetComponentInParent<Npc>() != null || c.GetComponentInParent<HealthSystem>() != null) continue;
+            return true;
+        }
+        return false;
     }
 
     // US 036, CA2: sin paredes entre sus ojos y el pecho del jugador, a menos de 10 m.
@@ -204,9 +270,7 @@ public class PersecucionDeNpc : MonoBehaviour
     private void SubirAlNavMesh()
     {
         proximoAgente = Time.time + 0.5f;
-        // El Jefe y los que flotan (los Watcher) van por el NavMesh de los grandes: no pasa por lugares angostos ni entra a
-        // los edificios (NavMeshEnVivo). Los que flotan, con el cuerpo en el aire, se metían en las paredes de adentro.
-        bool grande = npc.Tipo != null && (npc.Tipo.esJefe || npc.Tipo.alturaDeVuelo > 0f);
+        bool grande = Grande;
         if (tipoDeAgente < 0)
         {
             // ¿El mapa tiene NavMesh horneado (el tipo de agente común, Humanoid)?
