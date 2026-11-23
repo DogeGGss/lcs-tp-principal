@@ -8,6 +8,8 @@ using static ShopUIKit;
 // - CA1: desde la oleada 2, al empezar cada oleada cae un puesto en uno de los lugares del mapa (LugarDeSuministros),
 //   nunca en el mismo que el anterior. Cae a cielo abierto cerca de ese lugar (nunca adentro de un edificio ni sobre
 //   un techo) y es la caja de los mapas de práctica y Táctico (ConfigInvasion.cajaPuesto).
+//   Si la escena tiene lugares puestos a mano (23/11/2026), cae exacto en el punto elegido, sin correrse: cuál de los
+//   puntos sigue siendo al azar, nunca el mismo dos veces seguidas.
 // - CA2: al caer aparece «Suministros en <lugar>», el puesto se ve en el minimapa (Minimapa) y tiene una marca encima
 //   con la distancia, que se dibuja en la pantalla: se ve a través de las paredes.
 // - CA3: alrededor hay un anillo verde (15 m de radio) en el piso y en el minimapa.
@@ -281,6 +283,8 @@ public class PuestoDeSuministros : MonoBehaviour
         while (opciones.Count > 0)
         {
             int i = Random.Range(0, opciones.Count);
+            // Puntos puestos a mano: cae exacto ahí, sin correrse. El que lo pone se asegura de que esté a cielo abierto.
+            if (lugaresAMano) { nombre = opciones[i].nombre; lugar = opciones[i].lugar; return true; }
             if (Afuera(opciones[i].lugar, desde, BuscarHasta, out lugar)) { nombre = opciones[i].nombre; return true; }
             opciones.RemoveAt(i);
         }
@@ -289,6 +293,7 @@ public class PuestoDeSuministros : MonoBehaviour
     }
 
     private const float BuscarHasta = 40f, PasoDeBusqueda = 4f;
+    private bool lugaresAMano; // la escena tiene LugarDeSuministros: se usan esos puntos exactos
     private NavMeshPath camino;
 
     // En anillos de 4 m alrededor de "cerca": un punto del NavMesh con el cielo libre y conectado con "desde".
@@ -321,7 +326,7 @@ public class PuestoDeSuministros : MonoBehaviour
     // Nada encima en 80 m (con un poco de ancho, para que la caja no roce un alero al caer). También se mira desde
     // arriba hacia abajo: los techos de malla no se ven desde adentro del edificio, así que solo con el rayo hacia
     // arriba el puesto podía caer adentro de un edificio. Desde arriba, lo primero que se toca tiene que ser el piso.
-    private static bool CieloAbierto(Vector3 piso)
+    public static bool CieloAbierto(Vector3 piso)
     {
         if (Physics.SphereCast(piso + Vector3.up * 1.2f, 0.9f, Vector3.up, out RaycastHit _, 80f, Physics.DefaultRaycastLayers, QueryTriggerInteraction.Ignore))
             return false;
@@ -332,14 +337,15 @@ public class PuestoDeSuministros : MonoBehaviour
     private void BuscarLugares()
     {
         var crudos = new List<(string nombre, Vector3 lugar)>();
+        lugaresAMano = LugarDeSuministros.Todos.Count > 0;
         foreach (LugarDeSuministros l in LugarDeSuministros.Todos)
-            crudos.Add((string.IsNullOrWhiteSpace(l.nombre) ? l.name : l.nombre, l.transform.position));
-        if (crudos.Count == 0) crudos = LugarDeSuministros.Automaticos();
+            crudos.Add((string.IsNullOrWhiteSpace(l.nombre) ? l.name : LugarDeSuministros.Traducido(l.nombre), LugarDeSuministros.Apoyado(l.transform.position)));
+        if (!lugaresAMano) crudos = LugarDeSuministros.Automaticos();
 
         lugares = new List<(string, Vector3)>();
         foreach (var c in crudos)
-            if (NavMesh.SamplePosition(c.lugar, out NavMeshHit hit, 20f, NavMesh.AllAreas)) lugares.Add((c.nombre, hit.position));
-            else if (LugarDeSuministros.Todos.Count > 0) lugares.Add(c); // los puestos a mano se respetan
+            if (lugaresAMano) lugares.Add(c); // los puestos a mano se respetan: cae exacto en el punto
+            else if (NavMesh.SamplePosition(c.lugar, out NavMeshHit hit, 20f, NavMesh.AllAreas)) lugares.Add((c.nombre, hit.position));
     }
 
     // ---------- CA4: la carga ----------
