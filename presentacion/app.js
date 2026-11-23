@@ -132,7 +132,7 @@ function metrics(){
   const run=m.tests-m.unrun;
   return `<article class="card sprint"><p class="eyebrow">${esc(m.name)}</p><div class="metric-number">${pct(m.done,m.planned)}</div><p>${m.done} de ${m.planned} historias en Done</p>${bar([[m.done,'var(--green)'],[m.review,'var(--accent)'],[m.stuck||0,'var(--red)']],m.planned,`${m.done} en Done, ${m.review} en revisión, ${m.stuck||0} bloqueadas, ${m.todo} sin empezar`)}${legend([[m.review,'en revisión'],[m.stuck||0,m.stuck===1?'bloqueada':'bloqueadas'],[m.todo,'sin empezar']])}<div class="metric-number">${pct(m.passed,run)}</div><p>${m.passed} de ${run} pruebas pasan</p>${bar([[m.passed,'var(--green)'],[m.failed,'var(--red)'],[m.blocked,'var(--accent)']],m.tests,`${m.passed} pasan, ${m.failed} fallan, ${m.blocked} bloqueadas, ${m.unrun} sin ejecutar`)}${legend([[m.failed,m.failed===1?'falla':'fallan'],[m.blocked,m.blocked===1?'bloqueada':'bloqueadas'],[m.unrun,'sin ejecutar']])}</article>`;
  };
- return `<div class="grid metricas">${['s1','s2','s3','s4'].map(k=>sprint(D.metrics[k])).join('')}</div>`;
+ return `<div class="grid metricas">${['s1','s2','s3','s4','s5'].map(k=>sprint(D.metrics[k])).join('')}</div>`;
 }
 function arsenal(){
  const w=window.ARSENAL.find(x=>x.id===weaponId)||window.ARSENAL[0],t=w.tramos[0];
@@ -142,7 +142,7 @@ function arsenal(){
 }
 function content(s){
  switch(s.id){
- case 'inicio':return `<div class="hero"><p class="eyebrow">Laboratorio de Construcción de Software · Sprint 4</p><img class="hero-logo" src="media/logo.png" alt="Project Riftwalker"><h1>Del equipo<br>al juego.</h1><p class="lead">Decisiones, evidencia y una experiencia para jugar.</p></div>`;
+ case 'inicio':return `<div class="hero"><p class="eyebrow">Laboratorio de Construcción de Software · Sprint 5</p><img class="hero-logo" src="media/logo.png" alt="Project Riftwalker"><h1>Del equipo<br>al juego.</h1><p class="lead">Decisiones, evidencia y una experiencia para jugar.</p></div>`;
  case 'trailer':{const t=D.trailer;return `<div class="head row trailer-head"><p class="eyebrow">${eyebrow(s)}</p>${t.src?'<button class="primary" data-trailer>▶ Pantalla completa</button>':''}</div><div class="trailer">${t.src?`<video id="trailerVideo" src="${esc(t.src)}"${t.poster?` poster="${esc(t.poster)}"`:''} controls controlslist="nofullscreen" playsinline preload="metadata"></video><button class="trailer-exit" data-exit-trailer>Volver al recorrido</button>`:'<strong>Tráiler</strong>'}</div>`}
  case 'historia':return head(s)+story();
  case 'metricas':return head(s)+metrics();
@@ -171,7 +171,7 @@ const questionTopics = [
   ['Idiomas', 'Idiomas', 'idiomas'],
   ['Logros', 'Logros', 'logros'],
   ['Miras', 'Elegí tu mira', 'miras'],
-  ['Modo Invasión', 'Modo Invasión · Roguelike de oleadas', 'invasion'],
+  ['Modo Invasión', 'Modo Invasión · De 1 a 4 jugadores', 'invasion'],
   ['Cuenta', 'Tu cuenta Riftwalker', 'cuenta'],
   ['Launcher', 'El launcher de Riftwalker', 'launcher']
 ];
@@ -193,13 +193,13 @@ function questionVisual(key) {
     case 'logros': return `<div class="qa-run"><figure><img src="media/logros-progreso.png" alt="Pestaña Logros: 7 de 25 logros obtenidos, con el avance de cada uno y el porcentaje de jugadores que lo tiene"><figcaption>Tu progreso y el porcentaje de jugadores que tiene cada logro</figcaption></figure><figure><img src="media/logros-ranking.png" alt="Pestaña Ranking: ranking global del minijuego por cometas destruidos"><figcaption>Ranking global por modo y categoría</figcaption></figure></div><div class="qa-actions"><strong>25 logros</strong><span>9 de cometas</span><span>16 de combate</span></div>`;
     case 'idiomas': {
       const flag = (code,name) => `<figure><img alt="" src="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/${code}.svg"><figcaption>${name}</figcaption></figure>`;
-      return `<div class="qa-languages"><h3>En el juego y el launcher</h3><div>${flag('1f1e6-1f1f7','Español')}${flag('1f1ec-1f1e7','English')}</div><h3>Previstos para el Sprint 5</h3><div>${flag('1f1e7-1f1f7','Português')}${flag('1f1eb-1f1f7','Français')}${flag('1f1ee-1f1f9','Italiano')}</div></div>`;
+      return `<div class="qa-languages"><h3>En el juego y el launcher</h3><div>${flag('1f1e6-1f1f7','Español')}${flag('1f1ec-1f1e7','English')}${flag('1f1e7-1f1f7','Português')}${flag('1f1eb-1f1f7','Français')}${flag('1f1ee-1f1f9','Italiano')}</div><p class="qa-caption">Se elige en Opciones o en el launcher, y los dos quedan en el mismo idioma.</p></div>`;
     }
     case 'miras': return '<img class="qa-picture" style="height:auto;max-height:70dvh;object-fit:contain" src="media/mira-opciones.png" alt="Opciones de mira con forma, tamaño, color y vista previa sobre fondo claro y oscuro">';
     case 'invasion': {
-      const rar={'Común':'comun','Rara':'rara','Épica':'epica'};
+      const rar={'Común':'comun','Rara':'rara','Épica':'epica','Legendaria':'legendaria'};
       const cartas=D.cards.map(c=>`<article class="qa-carta ${rar[c.rarity]}"><span class="qa-rareza">${esc(c.rarity)}</span><strong>${esc(c.name)}</strong><p>${esc(c.text)}</p><small>${esc(c.with)} · ${c.max>1?'hasta 3 veces':'una sola vez'}</small></article>`).join('');
-      return `<div class="qa-run qa-invasion"><figure><img src="${invasionView}" alt="Oleada en el campus"><figcaption>Sobreviví a la oleada</figcaption></figure><figure><img src="${proofImages}US-348_CA2_Invasion_eleccion_de_cartas.png" alt="Tres recompensas del puesto"><figcaption>Cargá el puesto y elegí 1 de 3</figcaption></figure></div><p class="qa-caption">Matando se carga el puesto de suministros y ahí se elige 1 de 3: un arma o una carta. Las cartas cambian cómo rinde cada arma; algunas se acumulan hasta 3 veces. Cuanto más avanzan las oleadas, más salen las raras y las épicas. Volver a tirar cuesta 150 puntos.</p><div class="qa-cartas">${cartas}</div>`;
+      return `<div class="qa-run qa-invasion"><figure><img src="${invasionView}" alt="Oleada en el campus"><figcaption>Sobreviví a la oleada</figcaption></figure><figure><img src="${proofImages}US-348_CA2_Invasion_eleccion_de_cartas.png" alt="Tres recompensas del puesto"><figcaption>Cargá el puesto y elegí 1 de 3</figcaption></figure></div><p class="qa-caption">Solo o con hasta tres amigos. Matando se carga el puesto de suministros y ahí cada uno elige 1 de 3: un arma, la Katana o una carta. Hay 27 cartas y 8 lugares; algunas se acumulan hasta 3 veces. Cuanto más avanzan las oleadas, más salen las raras y las épicas, y después del primer Jefe, las legendarias. Volver a tirar cuesta 150 puntos.</p><div class="qa-cartas">${cartas}</div>`;
     }
     case 'launcher': return '<img class="qa-picture" style="display:block;width:100%;height:auto;max-height:56dvh;object-fit:contain" src="media/launcher.png" alt="Launcher de Project Riftwalker con las novedades de la versión 0.4.0 y el botón Jugar"><div class="qa-actions"><strong>Instala y actualiza</strong><span>Novedades de cada versión</span><span>Entrás con tu cuenta</span><span>Canal estable y experimental</span></div>';
     case 'cuenta': return '<div class="qa-account"><div><strong>Crear cuenta</strong><span>Mail y contraseña</span></div><div><strong>Ingresar con Steam</strong><span>Acceso previsto</span></div></div><img class="qa-picture" style="display:block;width:100%;height:auto;max-height:38dvh;object-fit:contain" src="media/cuenta-confirmacion.png" alt="Correo de Project Riftwalker para confirmar el registro de una cuenta"><p class="qa-caption">Tu perfil, logros y monedas te acompañan al cambiar de PC.</p>';

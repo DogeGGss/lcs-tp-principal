@@ -187,11 +187,14 @@ body.trailer-expanded .trailer-exit { display: block; position: absolute; top: 1
 .qa-account span { display:block; margin-top:8px; color:var(--muted); }
 .aim-preview { background:linear-gradient(#131c2755,#131c2755),url('../steam/assets/tactico-vista.jpg') center/cover; display:grid;place-items:center;height:48dvh;color:white; }
 .aim-preview svg { width:140px; filter:drop-shadow(0 1px 2px black); }
-/* Sprint 4: cuatro tarjetas en la diapositiva de avance */
-.grid.avance{grid-template-columns:repeat(4,1fr)}.avance h3{font-size:26px}.avance li{font-size:17px}main .avance h3{font-size:22px}main .avance li{font-size:15px}
+/* Sprint 5: cinco tarjetas en la diapositiva de avance */
+.grid.avance{grid-template-columns:repeat(5,1fr)}.avance h3{font-size:24px}.avance li{font-size:16px}main .avance h3{font-size:20px}main .avance li{font-size:14px}
+@media(min-width:1001px) and (max-height:800px){main .avance .eyebrow{font-size:13px;letter-spacing:1.5px}}
 @media(max-width:1000px){.grid.avance{grid-template-columns:repeat(2,1fr)}}@media(max-width:600px){.grid.avance{grid-template-columns:1fr}}
 
-.grid.metricas{grid-template-columns:repeat(4,1fr)}.metricas .metric-number{font-size:64px}.metricas .card p{font-size:19px}.metricas .legend{font-size:16px;gap:12px}@media(max-width:1000px){.grid.metricas{grid-template-columns:repeat(2,1fr)}}@media(max-width:600px){.grid.metricas{grid-template-columns:1fr}}
+.grid.metricas{grid-template-columns:repeat(5,1fr)}.metricas .metric-number{font-size:54px}.metricas .card p{font-size:19px}.metricas .legend{font-size:16px;gap:12px}@media(max-width:1000px){.grid.metricas{grid-template-columns:repeat(2,1fr)}}@media(max-width:600px){.grid.metricas{grid-template-columns:1fr}}
+/* Sprint 5: cinco tarjetas en Métricas; en pantallas bajas, más compactas para que entren arriba de los controles */
+@media(min-width:1001px) and (max-height:800px){main .metricas .card{padding:14px 14px}main .metricas .eyebrow{font-size:13px;letter-spacing:1.5px}main .metricas .metric-number{font-size:50px;margin-top:4px}main .metricas .card p{font-size:17px;line-height:1.25}main .metricas .bars{height:18px;margin:8px 0 6px}main .metricas .legend{font-size:14px;gap:8px}main .metricas .legend+.metric-number{margin-top:14px}}
 
 
 .fx{display:grid;grid-template-columns:1.7fr 1fr;gap:22px;align-items:start}.fx-chart{width:100%;height:auto;display:block;background:var(--panel);border:1px solid var(--line);border-radius:12px}
@@ -210,10 +213,10 @@ body.trailer-expanded .trailer-exit { display: block; position: absolute; top: 1
 .qa-invasion img{max-height:24dvh;object-fit:contain}.qa-invasion figcaption{padding:6px}
 .qa-cartas{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-top:6px}
 .qa-carta{--r:#e8eaed;background:var(--panel);border:1px solid var(--line);border-top:4px solid var(--r);border-radius:8px;padding:10px 12px;display:flex;flex-direction:column;gap:4px;min-width:0}
-.qa-carta.rara{--r:#4da3ff}.qa-carta.epica{--r:#b06bff}
+.qa-carta.rara{--r:#4da3ff}.qa-carta.epica{--r:#b06bff}.qa-carta.legendaria{--r:#ffc93c}
 .qa-rareza{font:700 12px Barlow,sans-serif;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted)}.qa-rareza::before{content:'';display:inline-block;width:9px;height:9px;border-radius:50%;background:var(--r);margin-right:6px}
 .qa-carta strong{font:700 20px Display,sans-serif;line-height:1.05}.qa-carta p{font-size:14px;line-height:1.3;color:var(--text);margin:0;flex:1}.qa-carta small{font-size:13px;color:var(--muted)}
-body.projector .qa-carta{--r:#5f6670}body.projector .qa-carta.rara{--r:#075c95}body.projector .qa-carta.epica{--r:#6b2fb3}
+body.projector .qa-carta{--r:#5f6670}body.projector .qa-carta.rara{--r:#075c95}body.projector .qa-carta.epica{--r:#6b2fb3}body.projector .qa-carta.legendaria{--r:#a87400}
 @media(max-width:1000px){.qa-cartas{grid-template-columns:repeat(2,1fr)}}
 #questionDialog:has(.qa-invasion){max-width:1440px}
 #questionBody .qa-invasion+.qa-caption{font-size:18px;line-height:1.4;padding:8px 4px 10px}
