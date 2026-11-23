@@ -8,6 +8,7 @@ using UnityEngine.AI;
 // la primera vez que alguien tiene la habilidad. Se arma de a poco (asíncrono) para no trabar el juego.
 // Se arman dos: uno para los cuerpos chicos (el perro, los enemigos) y otro para los grandes (el Jefe, US 146), que no
 // pasa por puertas ni pasillos angostos ni entra a los edificios (si no, embistiendo o volando se metía y se trababa).
+// Por ese también van los que flotan (los Watcher).
 public static class NavMeshEnVivo
 {
     // Hasta dónde se arma: todo el mapa (las colisiones del mapa, sin el terreno, más un margen), así no quedan zonas
@@ -15,7 +16,9 @@ public static class NavMeshEnVivo
     // "muro invisible" y el camino al puesto no salía). El terreno no cuenta para medir: uno enorme no se procesa entero.
     private const float Margen = 20f, MaximoDeLado = 900f, MaximoDeAlto = 200f;
 
-    private const float RadioGrande = 1.6f, AltoGrande = 3f;
+    // El alto pide 6 m libres arriba: así no entra a ningún lugar con techo (los edificios, los pasillos techados). Con
+    // 3 m el Jefe y los Watcher igual se metían en los edificios de la uni, que tienen techos altos y entradas anchas.
+    private const float RadioGrande = 1.6f, AltoGrande = 6f;
 
     private static NavMeshData datos, datosGrande;
     private static NavMeshDataInstance instancia, instanciaGrande;
@@ -80,7 +83,10 @@ public static class NavMeshEnVivo
         instancia = NavMesh.AddNavMeshData(datos);
         armando = NavMeshBuilder.UpdateNavMeshDataAsync(datos, ajustes, fuentes, limites);
 
-        // El de los grandes, con las mismas colisiones.
+        // El de los grandes, con las mismas colisiones menos las de las pasarelas entre los módulos de la uni (escaleras,
+        // columnas, barandas): son la única forma de pasar de un lado al otro de los módulos, y con ellas el Jefe y los
+        // Watcher se quedaban esperando del otro lado. Las atraviesan, pero los edificios no.
+        var fuentesGrande = fuentes.FindAll(f => !DePasarela(f.component));
         NavMeshBuildSettings grande = NavMesh.CreateSettings();
         grande.agentRadius = RadioGrande;
         grande.agentHeight = AltoGrande;
@@ -91,7 +97,7 @@ public static class NavMeshEnVivo
         tipoGrande = grande.agentTypeID;
         datosGrande = new NavMeshData(tipoGrande);
         instanciaGrande = NavMesh.AddNavMeshData(datosGrande);
-        armandoGrande = NavMeshBuilder.UpdateNavMeshDataAsync(datosGrande, grande, fuentes, limites);
+        armandoGrande = NavMeshBuilder.UpdateNavMeshDataAsync(datosGrande, grande, fuentesGrande, limites);
     }
 
     // Todo el mapa: la caja de todas sus colisiones (sin el terreno ni lo que no es mapa), con un margen y un tope.
@@ -113,6 +119,15 @@ public static class NavMeshEnVivo
         Vector3 max = Vector3.Min(b.max, centro + new Vector3(MaximoDeLado, MaximoDeAlto, MaximoDeLado) * 0.5f);
         b.SetMinMax(min, max);
         return b;
+    }
+
+    // Las colisiones de las pasarelas entre los módulos (Conector_1, 2 y 3 del Mapa 3), salvo su vereda (el piso).
+    private static bool DePasarela(Component c)
+    {
+        if (c == null || c.name == "Vereda") return false;
+        for (Transform t = c.transform; t != null; t = t.parent)
+            if (t.name.StartsWith("Conector_")) return true;
+        return false;
     }
 
     // Lo que cuenta como mapa: colisiones sólidas que no son de personajes ni se mueven con física. Las barreras

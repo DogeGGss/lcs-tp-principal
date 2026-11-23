@@ -204,11 +204,12 @@ public class PersecucionDeNpc : MonoBehaviour
     private void SubirAlNavMesh()
     {
         proximoAgente = Time.time + 0.5f;
-        bool grande = npc.Tipo != null && npc.Tipo.esJefe; // no entra a lugares angostos (NavMeshEnVivo)
+        // El Jefe y los que flotan (los Watcher) van por el NavMesh de los grandes: no pasa por lugares angostos ni entra a
+        // los edificios (NavMeshEnVivo). Los que flotan, con el cuerpo en el aire, se metían en las paredes de adentro.
+        bool grande = npc.Tipo != null && (npc.Tipo.esJefe || npc.Tipo.alturaDeVuelo > 0f);
         if (tipoDeAgente < 0)
         {
-            // ¿El mapa tiene NavMesh horneado (el tipo de agente común, Humanoid)? También para el Jefe: así entra a los
-            // edificios a buscar al jugador (se aparta de las paredes con LejosDeLasParedes).
+            // ¿El mapa tiene NavMesh horneado (el tipo de agente común, Humanoid)?
             int humanoide = NavMesh.GetSettingsByIndex(0).agentTypeID;
             var filtro = new NavMeshQueryFilter { agentTypeID = humanoide, areaMask = NavMesh.AllAreas };
             if (NavMesh.SamplePosition(transform.position, out _, 3f, filtro)) tipoDeAgente = humanoide;
