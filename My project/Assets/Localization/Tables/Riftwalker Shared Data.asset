@@ -7423,6 +7423,42 @@ MonoBehaviour:
     m_Key: launcher.notes_spanish_only
     m_Metadata:
       m_Items: []
+  - m_Id: 5672711516680192
+    m_Key: gameplay.weapon.knife_and_katana
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5672711613149184
+    m_Key: gameplay.place.auditorium
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5672711613149185
+    m_Key: gameplay.place.nursery_school
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5672711613149186
+    m_Key: gameplay.place.leon_suarez
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5672711613149187
+    m_Key: gameplay.place.tum
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5672711613149188
+    m_Key: gameplay.place.adiungs
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5672711613149189
+    m_Key: gameplay.place.parking
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5672711613149190
+    m_Key: gameplay.place.bar
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5672711613149191
+    m_Key: gameplay.place.entrance
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

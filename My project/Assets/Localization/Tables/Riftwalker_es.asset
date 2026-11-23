@@ -7431,6 +7431,42 @@ MonoBehaviour:
     m_Localized: "Las notas de esta versi\xF3n est\xE1n solo en espa\xF1ol."
     m_Metadata:
       m_Items: []
+  - m_Id: 5672711516680192
+    m_Localized: Cuchillo y katana
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5672711613149184
+    m_Localized: el Auditorio
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5672711613149185
+    m_Localized: la Escuela Infantil
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5672711613149186
+    m_Localized: "el edificio de Le\xF3n Su\xE1rez"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5672711613149187
+    m_Localized: el TUM
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5672711613149188
+    m_Localized: ADIUNGS
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5672711613149189
+    m_Localized: el Estacionamiento
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5672711613149190
+    m_Localized: el Bar
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5672711613149191
+    m_Localized: la Entrada
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

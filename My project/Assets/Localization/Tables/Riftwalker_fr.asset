@@ -7438,6 +7438,42 @@ MonoBehaviour:
     m_Localized: Les notes de cette version ne sont disponibles qu'en espagnol.
     m_Metadata:
       m_Items: []
+  - m_Id: 5672711516680192
+    m_Localized: Couteau et katana
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5672711613149184
+    m_Localized: l'Auditorium
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5672711613149185
+    m_Localized: "l'\xC9cole maternelle"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5672711613149186
+    m_Localized: "le b\xE2timent Le\xF3n Su\xE1rez"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5672711613149187
+    m_Localized: le TUM
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5672711613149188
+    m_Localized: ADIUNGS
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5672711613149189
+    m_Localized: le Parking
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5672711613149190
+    m_Localized: le Bar
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5672711613149191
+    m_Localized: "l'Entr\xE9e"
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []
