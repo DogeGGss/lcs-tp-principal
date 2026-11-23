@@ -7,6 +7,8 @@ using UnityEngine.AI;
 // módulo (y la biblioteca y el bar), a partir de los nombres de los objetos del mapa. Quedan dentro de "Lugares de
 // suministros (Invasión)", apoyados en el NavMesh, para moverlos o renombrarlos a mano. Hay que guardar la escena
 // después. Si la escena no tiene ninguno, el puesto los arma solo al empezar con la misma regla.
+// Con lugares en la escena la caja cae exacto en el punto (23/11/2026), así que cada uno se crea a cielo abierto al
+// lado de su edificio, no en el centro.
 public static class LugaresDeSuministrosEditor
 {
     private const string Raiz = "Lugares de suministros (Invasión)";
@@ -32,7 +34,9 @@ public static class LugaresDeSuministrosEditor
             bool yaEsta = false;
             foreach (LugarDeSuministros l in raiz.GetComponentsInChildren<LugarDeSuministros>(true)) if (l.nombre == nombre) yaEsta = true;
             if (yaEsta) continue;
-            Vector3 p = NavMesh.SamplePosition(lugar, out NavMeshHit hit, 20f, NavMesh.AllAreas) ? hit.position : lugar;
+            // La caja cae exacto en los lugares puestos a mano: se arranca de un punto a cielo abierto al lado del
+            // edificio (el centro suele quedar adentro). Después se mueven a gusto.
+            Vector3 p = LugarDeSuministros.ACieloAbierto(lugar, 40f) ?? (NavMesh.SamplePosition(lugar, out NavMeshHit hit, 20f, NavMesh.AllAreas) ? hit.position : lugar);
             var go = new GameObject("Suministros: " + nombre);
             Undo.RegisterCreatedObjectUndo(go, "Lugares de suministros");
             go.transform.SetParent(raiz.transform, true);

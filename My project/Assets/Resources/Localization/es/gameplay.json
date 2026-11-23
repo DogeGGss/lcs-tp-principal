@@ -765,6 +765,38 @@
       "text": "la Biblioteca"
     },
     {
+      "key": "gameplay.place.auditorium",
+      "text": "el Auditorio"
+    },
+    {
+      "key": "gameplay.place.nursery_school",
+      "text": "la Escuela Infantil"
+    },
+    {
+      "key": "gameplay.place.leon_suarez",
+      "text": "el edificio de León Suárez"
+    },
+    {
+      "key": "gameplay.place.tum",
+      "text": "el TUM"
+    },
+    {
+      "key": "gameplay.place.adiungs",
+      "text": "ADIUNGS"
+    },
+    {
+      "key": "gameplay.place.parking",
+      "text": "el Estacionamiento"
+    },
+    {
+      "key": "gameplay.place.bar",
+      "text": "el Bar"
+    },
+    {
+      "key": "gameplay.place.entrance",
+      "text": "la Entrada"
+    },
+    {
       "key": "gameplay.result.survived_fmt",
       "text": "Sobreviviste {0} oleadas"
     },

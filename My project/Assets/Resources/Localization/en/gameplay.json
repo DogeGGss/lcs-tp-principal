@@ -765,6 +765,38 @@
       "text": "the Library"
     },
     {
+      "key": "gameplay.place.auditorium",
+      "text": "the Auditorium"
+    },
+    {
+      "key": "gameplay.place.nursery_school",
+      "text": "the Nursery School"
+    },
+    {
+      "key": "gameplay.place.leon_suarez",
+      "text": "the León Suárez building"
+    },
+    {
+      "key": "gameplay.place.tum",
+      "text": "the TUM"
+    },
+    {
+      "key": "gameplay.place.adiungs",
+      "text": "ADIUNGS"
+    },
+    {
+      "key": "gameplay.place.parking",
+      "text": "the Parking Lot"
+    },
+    {
+      "key": "gameplay.place.bar",
+      "text": "the Bar"
+    },
+    {
+      "key": "gameplay.place.entrance",
+      "text": "the Entrance"
+    },
+    {
       "key": "gameplay.result.survived_fmt",
       "text": "You survived {0} waves"
     },
