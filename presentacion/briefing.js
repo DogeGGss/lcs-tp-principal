@@ -312,7 +312,7 @@
           const filas = lista.querySelectorAll('.brf-fila, h4');
           return t => filas.forEach((f, i) => f.classList.toggle('on', t > 1.2 + i * .35));
         } },
-      { tit: 'El Jefe y revivir', video: 'presentacion/media/modos/invasion-4.mp4', txt: 'Cada 10 oleadas llega el Jefe. Si te quedás sin vida, quedás caído 30 s: un compañero te revive en 5 s manteniendo E.' }
+      { tit: 'El Jefe', video: 'presentacion/media/modos/invasion-4.mp4', txt: 'Cada 10 oleadas llega el Jefe. Si te quedás sin vida, quedás caído 30 s: un compañero te revive en 5 s manteniendo E.' }
     ]
   };
   const MODOS = [TACTICO, DM, INVASION];

@@ -141,7 +141,7 @@ Se grabaron en Unity, en Play, con scripts que no quedan en el proyecto: cámara
 1. **Juntos contra la horda**: los cuatro solos, entre el TUM, el Módulo 7 y los dos módulos del medio.
 2. **Salen de los portales**: la entrada de la UNGS; cada uno le tira a los invasores de un portal distinto.
 3. **Cargar el puesto**: el puesto en la Biblioteca, con más invasores, uno con la Katana y otro con el lanzagranadas.
-4. **El Jefe y revivir**: el Auditorio, desde la puerta grande, con el Jefe y muchos invasores de todos los tipos que salen de los portales.
+4. **El Jefe**: el Auditorio, desde la puerta grande, con el Jefe y muchos invasores de todos los tipos que salen de los portales.
 
 Lo lee David Ramos y sigue en 2 minutos. Revisado a 1280 × 720 y a 1024 × 768, los doce pasos, sin errores de JavaScript (con los videos de Invasión, otra vez el 24/11).
 
