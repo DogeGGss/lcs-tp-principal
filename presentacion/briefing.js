@@ -3,6 +3,7 @@
 // el modo, paso a paso sobre su mapa, para hablar por encima. Los números son los del juego (Sprint 5):
 // RondasTacticas, DispositivoTactico, PartidaDeathmatch, ConfigInvasion, CooperativoDeInvasion y CaidaEnInvasion.
 // Pasos: se pasan a mano, con ← y → (o con las flechas de abajo, Espacio, Enter o Av Pág / Re Pág); Esc vuelve a los andenes.
+// En pantalla va solo el título de cada paso; `txt` es lo que se dice (está también en la nota de la diapositiva, content.js).
 // Cada escena termina quieta o en un ciclo, así el paso puede quedar en pantalla lo que dure la explicación.
 (() => {
   const stage = document.getElementById('msStage'), inner = document.getElementById('msi');
@@ -27,8 +28,7 @@
   .brf-modo{font:700 104px/.86 var(--display);text-transform:uppercase}
   .brf-sub{font:500 26px/1.2 var(--body);color:rgba(255,255,255,.7)}
   .brf-paso{margin-top:34px;font:600 22px/1 var(--mono);color:rgba(255,255,255,.55)}
-  .brf-tit{font:700 58px/1 var(--display);text-transform:uppercase;margin:0;min-height:58px}
-  .brf-txt{font:500 33px/1.36 var(--body);color:rgba(255,255,255,.88);margin:0;min-height:200px}
+  .brf-tit{font:700 80px/.95 var(--display);text-transform:uppercase;margin:0;min-height:152px;text-wrap:balance}
   .brf-dots{display:flex;gap:12px;margin-top:6px}
   .brf-dots i{width:46px;height:8px;border-radius:4px;background:rgba(255,255,255,.18)}
   .brf-dots i.on{background:var(--c)}
@@ -387,7 +387,7 @@
     raiz.style.setProperty('--c', M.color);
     raiz.innerHTML = `<div class="brf-busca"><div class="brf-radar">${'<i></i>'.repeat(3)}<b></b></div><div class="e">Buscando partida</div><div class="g">1 / ${M.busca}</div><div class="s">${M.nombre} · Sudamérica · misma versión</div></div>
       <div class="brf-main"><div class="brf-izq"><div class="brf-eb">Partida encontrada</div><div class="brf-modo">${M.nombre}</div><div class="brf-sub">${M.sub}</div>
-        <div class="brf-paso"></div><h2 class="brf-tit"></h2><p class="brf-txt"></p><div class="brf-dots">${M.pasos.map(() => '<i></i>').join('')}</div></div>
+        <div class="brf-paso"></div><h2 class="brf-tit"></h2><div class="brf-dots">${M.pasos.map(() => '<i></i>').join('')}</div></div>
         <div class="brf-der"><svg viewBox="${M.img.vista.join(' ')}" preserveAspectRatio="xMidYMid ${M.img.ajuste || 'slice'}"><image href="${M.img.src}" width="${M.img.w}" height="${M.img.h}"/><g class="capa"></g></svg><div class="brf-hud"></div></div>
         <div class="brf-ayuda"><button type="button" data-ir="-1" aria-label="Paso anterior">←</button><button type="button" data-ir="1" aria-label="Paso siguiente">→</button>pasos · <b>Esc</b>volver a los andenes</div></div>
       <button class="brf-volver" type="button">Volver a los andenes</button>`;
@@ -407,7 +407,6 @@
     b.hud.replaceChildren();
     b.raiz.querySelector('.brf-paso').textContent = `Paso ${b.paso + 1} / ${M.pasos.length}`;
     b.raiz.querySelector('.brf-tit').textContent = P.tit;
-    b.raiz.querySelector('.brf-txt').textContent = P.txt;
     b.raiz.querySelectorAll('.brf-dots i').forEach((d, k) => d.classList.toggle('on', k <= b.paso));
     b.raiz.querySelector('[data-ir="-1"]').disabled = b.paso === 0;
     b.raiz.querySelector('[data-ir="1"]').disabled = b.paso === M.pasos.length - 1;
