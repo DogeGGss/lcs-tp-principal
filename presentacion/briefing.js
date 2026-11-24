@@ -47,6 +47,13 @@
   .brf-carta b{font:700 34px/1 var(--display);text-transform:uppercase}
   .brf-carta span{font:500 19px/1.3 var(--body);color:rgba(255,255,255,.8)}
   .brf-cartas h4{position:absolute;left:0;right:0;top:-46px;margin:0;text-align:center;font:700 32px/1 var(--display);letter-spacing:.12em;text-transform:uppercase}
+  .brf-armas{position:absolute;left:24px;right:24px;bottom:22px;display:grid;grid-template-columns:repeat(7,1fr);gap:10px}
+  .brf-arma{display:flex;flex-direction:column;align-items:center;gap:5px;opacity:0;transform:translateY(14px);transition:opacity .4s ease,transform .4s ease}
+  .brf-arma.on{opacity:1;transform:none}
+  .brf-arma img{width:100%;height:62px;object-fit:contain}
+  .brf-arma b{font:700 22px/1 var(--display);text-transform:uppercase;letter-spacing:.04em;white-space:nowrap}
+  .brf-arma small{font:600 14px/1 var(--display);letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.55);white-space:nowrap}
+  .brf-arma span{font:600 18px/1 var(--mono);color:var(--c)}
   .brf-ayuda{position:absolute;left:90px;bottom:70px;font:600 22px/1 var(--display);letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.5)}
   .brf-ayuda b,.brf-ayuda button{display:inline-block;padding:6px 10px;margin-right:8px;border:0;border-radius:5px;background:rgba(255,255,255,.12);color:#fff;font:inherit;letter-spacing:.04em}
   .brf-ayuda button{cursor:pointer;padding:6px 14px}
@@ -106,6 +113,9 @@
     finAzules: [[636, 160], [662, 136], [702, 560], [714, 506]]
   };
   const ROJOS = ['Vos', 'Luka', 'David', 'Agus'], AZULES = ['Lucas', 'Ulises', 'Nico', 'Mati'];
+  // Las 7 armas de la tienda del Táctico (Data/Tienda/CatalogoTactico.asset), en su orden: [imagen, nombre, tipo, precio].
+  const ARMAS_T = [['pistola', 'La Porteña', 'Pistola', 0], ['pistolaPesada', 'La Trochita', 'Pistola pesada', 800], ['subfusil', 'Urquiza', 'Subfusil', 1600],
+    ['escopeta', 'Roca', 'Escopeta', 900], ['rafaga', 'Belgrano Sur', 'Fusil de ráfaga', 2100], ['fusil', 'Mitre', 'Fusil', 2900], ['francotirador', 'Último Tren', 'Francotirador', 4700]];
   const caminoRojo = i => [T.rojos[i], [255, 470], [330, 540], [470, 520], T.finRojos[i]];
   const POR_AZUL = [[[960, 250], [820, 205], [700, 175]], [[990, 230], [840, 190], [720, 160]], [[980, 500], [860, 555], [760, 560]], [[950, 470], [850, 520], [740, 545]]];
   const caminoAzul = i => [T.azules[i], ...POR_AZUL[i], T.finAzules[i]];
@@ -123,14 +133,15 @@
           const azules = T.azules.map(() => punto(c.capa, AZUL, 11));
           const chip = html(c.hud, 'brf-chip', '');
           chip.style.cssText = 'left:24px;top:24px';
-          // Las armas, en fila sobre el fondo negro de abajo del plano (el plano termina en y ≈ 625; lo visible llega a ≈ 815).
-          const armas = ['fusil', 'escopeta', 'subfusil'].map(a => el(c.capa, 'image', { href: `presentacion/media/armas/${a}.png`, width: 150, height: 75, opacity: 0 }));
+          // Las 7 armas, en fila sobre el fondo negro de abajo del plano. La pistola la tienen todos, sin pagar.
+          const fila = html(c.hud, 'brf-armas', ARMAS_T.map(([img, n, tipo, p]) => `<div class="brf-arma"><img src="presentacion/media/armas/${img}.png" alt=""><b>${n}</b><small>${tipo}</small><span>${p ? '$ ' + p.toLocaleString('es-AR') : 'Gratis'}</span></div>`).join(''));
+          const armas = [...fila.children];
           return t => {
             rojos.forEach((r, i) => r.mover(T.rojos[i][0] + Math.sin(t * 2 + i) * 4, T.rojos[i][1]));
             azules.forEach((a, i) => a.mover(T.azules[i][0] + Math.sin(t * 2 + i) * 4, T.azules[i][1]));
             const queda = 20 - t * 2.6;
             chip.innerHTML = queda > 0 ? `<small>Ronda 1 · compra</small>${mmss(queda)}` : '<small>Ronda 1</small>¡Arranca!';
-            armas.forEach((im, i) => { const k = suave(tramo(t, .6 + i * .5, 1.2 + i * .5)); set(im, { x: 370 + i * 180, y: 690 - k * 20, opacity: k }); });
+            armas.forEach((d, i) => d.classList.toggle('on', t > .5 + i * .25));
           };
         } },
       { tit: 'Atacar o defender', txt: 'Un equipo lleva el dispositivo a A o a B; el otro se reparte para cuidar los dos. Sin reaparición: si morís, mirás a un compañero hasta la ronda siguiente.',
