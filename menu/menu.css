@@ -88,3 +88,4 @@ html,body{margin:0;height:100%;background:#000;overflow:hidden;color-scheme:dark
 .lienzo-3d{position:absolute;inset:0;width:100%;height:100%;opacity:0;transition:opacity .3s;cursor:grab;touch-action:none}
 .lienzo-3d:active{cursor:grabbing}
 .imagen-2d{transition:opacity .3s}
+.lienzo-3d.baile{cursor:default;pointer-events:none}

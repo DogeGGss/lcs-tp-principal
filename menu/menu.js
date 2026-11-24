@@ -61,6 +61,14 @@
   if (!estado.skins || typeof estado.skins !== 'object') estado.skins = {};
   const guardar = () => { try { localStorage.setItem(CLAVE, JSON.stringify(estado)); } catch { } };
   let pestana = 1, categoria = 'avatar', espacio = 0, emoteVisto = null, armaVista = 'mitre';
+  // Los personajes que bailan los emotes en 3D (3d/bailes3d.js), en el orden del juego (CharacterRoster): su modelo y su ficha.
+  const PJ_3D = [['alfa', 'pesado'], ['bravo', 'sigiloso'], ['charlie', 'guerrero'], ['astra', 'astra']]
+    .map(([modelo, id]) => ({ modelo, ...(C.personajes.find(p => p.id === id) || { nombre: modelo, rol: '' }) }));
+  // El Clásico y Floss son clips Humanoid de Unity que no se pudieron pasar a la web: se ven con su ícono.
+  const SIN_BAILE_3D = ['DefaultDance', 'Floss'];
+  // pjVista: con quién se ve el baile en el Perfil (las flechas). sorteado: el de la Tienda, el Pase y las cápsulas,
+  // que se sortea cada vez que se abre una pantalla (VistaPreviaDeEmote.NuevoSorteo).
+  let pjVista = 0, sorteado = null;
   const elegido = { avatar: null, banner: null, titulo: null, marco: null, skin: {} };
   const emoteDe = id => EMOTES.find(e => e.id === id);
   const estaEquipado = c => c.tipo === 'skin' ? estado.skins[c.arma] === c.id : c.tipo === 'emote' ? estado.emotes.includes(c.id)
@@ -103,6 +111,13 @@
   const srcSkin = s => `img/skins/${s.arma}-${s.estilo}.webp`, srcArma = a => `img/skins/${a}.webp`, srcEmote = id => `img/emotes/${id}.webp`;
   function Contener(padre, src, x, y, w, h) { const caja = Img(padre, src, x, y, w, h); caja.firstChild.className = 'contener'; return caja; }
   // El arma en 3D con la skin puesta (3d/armas3d.js), encima de la imagen, que queda de respaldo si no hay WebGL.
+  // El personaje haciendo el baile del emote (3d/bailes3d.js), encima del ícono, que queda si no hay WebGL.
+  function bailar(nodo, e, pj, imagen) {
+    if (SIN_BAILE_3D.includes(e.id)) return;
+    if (!pj) pj = PJ_3D[sorteado == null ? (sorteado = Math.floor(Math.random() * PJ_3D.length)) : sorteado];
+    const pedido = [nodo, { baile: e.id, personaje: pj.modelo }, () => { if (imagen) { imagen.classList.add('imagen-2d'); imagen.style.opacity = '0'; } }];
+    if (window.Bailes3D) window.Bailes3D.mostrar(...pedido); else window.pedidoBaile = pedido;
+  }
   function en3d(nodo, s, imagen) {
     const pedido = [nodo, { arma: s.arma, estilo: s.estilo || '', barra: s.barra }, () => { imagen.classList.add('imagen-2d'); imagen.style.opacity = '0'; }];
     if (window.Armas3D) window.Armas3D.mostrar(...pedido); else window.pedido3D = pedido;
@@ -549,13 +564,19 @@
       }, e.nombre);
     });
     const v = N(p, 1300, 0, 500, 540, 'panel');
-    T(v, 24, 18, 400, 22, 'fr', 17, 'var(--accent)', 'Vista previa', { mayus: true, esp: 16 });
+    T(v, 24, 18, 240, 22, 'fr', 17, 'var(--accent)', 'Vista previa', { mayus: true, esp: 16 });
+    // Con qué personaje se ve el baile (solo la vista previa: no cambia el personaje elegido).
+    const pj = PJ_3D[pjVista];
+    Boton(v, 280, 12, 36, 34, '‹', 22, '', () => { pjVista = (pjVista + PJ_3D.length - 1) % PJ_3D.length; perfil(); }).setAttribute('aria-label', 'Personaje anterior');
+    T(v, 318, 12, 120, 34, 'fr', 17, 'var(--ink)', pj.nombre, { al: 'centro', mayus: true, esp: 8, puntos: true });
+    Boton(v, 440, 12, 36, 34, '›', 22, '', () => { pjVista = (pjVista + 1) % PJ_3D.length; perfil(); }).setAttribute('aria-label', 'Personaje siguiente');
     const caja = N(v, 62, 50, 376, 401); caja.style.borderRadius = '8px'; caja.style.background = 'radial-gradient(ellipse at 50% 40%,#232833,#0d1015)';
     const visto = emoteDe(emoteVisto || estado.emotes[espacio]);
     if (visto) {
       // Los cuatro bailes que la presentación tiene grabados se ven en movimiento; el resto, con su ícono.
-      if (visto.baile) Contener(caja, `../presentacion/media/emotes/${visto.baile}.png`, 8, 8, 360, 385);
-      else iconoEmote(caja, visto, 68, 80, 240);
+      // En 3D, con el personaje de las flechas. Mientras carga (o si no hay WebGL), la grabación o el ícono.
+      const imagen = visto.baile ? Contener(caja, `../presentacion/media/emotes/${visto.baile}.png`, 8, 8, 360, 385) : iconoEmote(caja, visto, 68, 80, 240);
+      bailar(caja, visto, pj, imagen);
       T(v, 24, 452, 452, 50, 'ft', 40, COLOR[visto.rareza], visto.nombre, { al: 'centro', mayus: true, esp: 3 });
       const en = estado.emotes.indexOf(visto.id);
       T(v, 24, 500, 452, 26, 'fx', 18, 'var(--mute)', en >= 0 ? `En el espacio ${en + 1} · ${LUGARES[en]}` : 'Sin equipar', { al: 'centro' });
@@ -986,7 +1007,10 @@
       f.style.background = `radial-gradient(ellipse at 50% 50%,${COLOR[c.rareza]}38,#151922 72%)`;
       const imagen = Contener(f, srcSkin(c), w * 0.07, h * 0.12, w * 0.86, h * 0.76);
       if (en3D) en3d(f, c, imagen);
-    } else if (c.tipo === 'emote') { const d = l * 0.78; Contener(f, srcEmote(c.id), (w - d) / 2, (h - d) / 2, d, d); }
+    } else if (c.tipo === 'emote') {
+      const d = l * 0.78, icono = Contener(f, srcEmote(c.id), (w - d) / 2, (h - d) / 2, d, d);
+      if (en3D) { f.style.background = 'radial-gradient(ellipse at 50% 40%,#232833,#151922 75%)'; bailar(f, c, null, icono); }
+    }
     else if (c.tipo === 'cristales') {
       iconoMoneda(f, 2, w / 2, h * 0.42, l * 0.36);
       T(f, 0, h * 0.64, w, h * 0.22, 'ft', l * 0.17, 'var(--cristales)', '+' + c.cantidad.toLocaleString('es-AR'), { al: 'centro' });
@@ -1340,6 +1364,7 @@
   function mostrar() {
     if (est && location.hash !== '#estacion') est.vivo = false;
     clearInterval(relojTienda);
+    sorteado = null; // otro personaje en las vistas previas de los emotes
     const m = E.querySelector('.modal'); if (m) m.remove();
     (PANTALLAS[location.hash] || menu)();
   }

@@ -10,7 +10,7 @@ Cada pantalla tiene su dirección, para abrirla directo: `#perfil`, `#tienda`, `
 - **Cabecera:** el nivel de jugador (1.030 de ejemplo) con su rango: Pasajero, Guarda, Maquinista o Jefe de estación.
 - **Estadísticas** (datos de ejemplo), con la carta de Invasión.
 - **Personalización:** avatares, banners, títulos, marcos y armas. En Armas se elige el arma y su skin. Las skins del juego son materiales 3D: acá se ven sobre el ícono del arma de la tienda pintado con los colores de la skin, y la barra de cada carta son sus cuatro colores.
-- **Emotes:** los 15 bailes con su ícono y su rareza, y la rueda de 4 espacios. Los cuatro bailes que la presentación tiene grabados (`presentacion/media/emotes`) se ven en movimiento en la vista previa.
+- **Emotes:** los 15 bailes con su ícono y su rareza, y la rueda de 4 espacios. En la vista previa uno de los personajes hace el baile en 3D, y con las flechas se elige cuál, como en el juego. En la Tienda, el Pase y las cápsulas baila un personaje sorteado cada vez que se abre la pantalla. El Clásico y Floss se ven con su ícono (ver Bailes en 3D).
 - **Historial** (partidas de ejemplo) y **Cuenta** (en el juego la maneja el launcher; acá no hay cuenta de verdad).
 - **Armas en 3D:** en la vista previa de Armas el arma se ve en 3D con la skin puesta, se mece sola y se gira arrastrando. Lo mismo en el detalle de la Tienda y del Pase y en la carta grande de las cápsulas. Las cartas de las grillas siguen con el ícono.
 - **Marcos:** se arman como en `PerfilUI.Enmarcar`: cada marco se parte en dos mitades con la esquina y el adorno del centro fijos, y el banner llega hasta el borde interior del riel.
@@ -34,6 +34,16 @@ La tarjeta Tienda de abajo a la izquierda abre las cuatro pestañas. Cada vez qu
 - **Escala:** los patrones se miden en metros sobre el arma. El largo de cada arma (`LARGO` en `armas3d.js`) es estimado: si un patrón se ve más grande o más chico que en el juego, se ajusta ahí.
 
 Si cambia un `.mat` o un shader de skin en el juego, hay que copiar el cambio a mano en `armas3d.js` o `sombreado.js`.
+
+## Bailes en 3D
+
+`3d/bailes3d.js` hace lo mismo que `VistaPreviaDeEmote`: la misma cámara, uno de los cuatro personajes y el baile del emote.
+
+- **Personajes** (`3d/personajes`): los modelos de `CharacterData.modelo` pasados a glTF y achicados (sin las texturas incrustadas, con menos polígonos y comprimidos con meshopt). Las texturas de color y de brillo van aparte, a 1024 px o menos.
+- **Bailes** (`3d/bailes`): los FBX de Mixamo de `Personajes/Emotes` pasados a JSON: por hueso, sus rotaciones, y de la cadera también la posición. Como todos los personajes tienen el esqueleto de Mixamo, cualquier baile sirve para cualquiera.
+- **El Clásico y Floss** son clips `.anim` Humanoid de Unity (músculos, no huesos) y no hay un FBX del que sacarlos, así que se ven con su ícono.
+
+Para pasar un baile nuevo: cargar el FBX con el `FBXLoader` de three.js y guardar `animations[0]` con el formato de los JSON de `3d/bailes` (los huesos sin el prefijo `mixamorig`). Después sumarlo a `BAILES` en `bailes3d.js`.
 
 ## Actualizar
 
