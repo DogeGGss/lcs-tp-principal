@@ -137,4 +137,4 @@ Al tocar «Buscar partida», en vez de la sala de espera se abre un resumen visu
 
 Lo lee David Ramos y sigue en 2 minutos. Revisado a 1280 × 720 y a 1024 × 768, los doce pasos, sin errores de JavaScript.
 
-Los scripts y la hoja de estilos se piden con `?v=AAAAMMDD` (en `index.html` de la presentación, `presentacion/demo.js` en la guía y `briefing.js` en `demo.js`). GitHub Pages deja que el navegador guarde los archivos 10 minutos, y sin ese número una presentación abierta antes del cambio sigue con la versión vieja. Al cambiar uno de esos archivos, subir el número.
+Los scripts y la hoja de estilos se piden con `?v=AAAAMMDD` (en `index.html` de la presentación, `presentacion/demo.js` en la guía y `briefing.js` en `demo.js`). GitHub Pages deja que el navegador guarde los archivos 10 minutos, y sin ese número una presentación abierta antes del cambio sigue con la versión vieja. La demo de modos también se abre con `&v=` en `demoSrc` (app.js), porque la guía es el mismo archivo y también queda guardada. Al cambiar uno de esos archivos, subir el número (en el mismo día, `AAAAMMDD02`, `03`…).
