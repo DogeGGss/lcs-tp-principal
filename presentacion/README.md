@@ -125,3 +125,14 @@ En el promedio y el optimista no cambia nada. Los números (`economics.guard`) s
 
 Se sacó la diapositiva Arsenal: la ficha de cada arma pasa a las preguntas del cierre, como una burbuja más del pizarrón. Es la misma ficha, con el desplegable, y al cambiar de arma se vuelve a dibujar adentro del popup sin cerrarlo. Quedan trece bloques. Para seguir en 20 minutos, Avance pasa a 2 minutos, porque ahora tiene cinco sprints. Lucas Huber leía Arsenal y no tiene otra diapositiva. El código de la diapositiva (`arsenal()`) sigue y lo usa el popup.
 
+
+## Modos de juego (24/11/2026)
+
+La demo de interfaz pasa a ser **Modos de juego** («Tres modos, tres formas de jugar»). Se sacaron la Tienda y el HUD: queda solo la selección de modo del andén 3, con Táctico, Deathmatch e Invasión. La tarjeta de la diapositiva muestra los tres mapas.
+
+Al tocar «Buscar partida», en vez de la sala de espera se abre un resumen visual del modo (`briefing.js`, que `demo.js` carga solo cuando la presentación abre la demo con `&briefing=1`; la guía sigue mostrando la búsqueda normal). Primero simula que encuentra la partida y después muestra cuatro pasos sobre el mapa, de 9 segundos cada uno, que avanzan solos. Con ← y → (o Espacio) se pasa de paso, y Esc vuelve a los andenes. Los números son los del juego:
+- **Táctico** (plano de MALVINAS-01, `media/modos/tactico.jpg`): plata ($ 800 al empezar, $ 200 por baja, $ 3.000 al ganar, $ 1.900 o más al perder, $ 300 por plantar), la bomba en A o B (4 s plantar, 45 s, 7 s desactivar), rondas de 100 s con cambio de lado después de la 6 y gana el primero en llegar a 7.
+- **Deathmatch** (Colonia ARA San Juan): hasta 8, armas gratis en la tienda, 50 de vida por baja, reaparecés a los 3 s y gana el primero a 25 bajas o el que más tenga a los 8 minutos.
+- **Invasión** (minimapa del campus, `media/modos/campus.png`): de 1 a 4, la oleada N trae 10 + 5 × (N − 1) invasores y cada jugador de más suma la mitad, los portales a 30–55 m del puesto, las bajas dentro del anillo cargan el puesto y al 100 % cada uno elige 1 de 3 (un arma, la Katana o una de las 27 cartas), el Jefe cada 10 oleadas y el compañero que te revive en 5 s con E.
+
+Lo lee David Ramos y sigue en 2 minutos. Revisado a 1280 × 720 y a 1024 × 768, los doce pasos, sin errores de JavaScript.

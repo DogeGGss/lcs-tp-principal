@@ -1428,7 +1428,7 @@ body.capture,body.capture-ms,body.capture-cr{padding-left:0!important}
 
 <section id="modos">
   <div class="sec-head"><h2>Selección de modo</h2><span class="sub">Pantalla "Jugar" · US 177</span> <span class="st st-ok">En el juego</span></div>
-  <p>Aparece al apretar <b>Jugar</b> en el menú principal. Tres andenes separados por dos rayos, uno por modo. El modo se elige solo acá. En Táctico y Deathmatch lo principal es <b>Buscar partida</b> (US 274 a 276), con la sala privada abajo (US 026 y US 027); en Invasión, con el Jefe volando en su andén (US 146), aparecen la dificultad y el récord (US 161).</p>
+  <p>Aparece al apretar <b>Jugar</b> en el menú principal. Tres andenes separados por dos rayos, uno por modo. El modo se elige solo acá. En Táctico y Deathmatch lo principal es <b>Buscar partida</b> (US 274 a 276), con la sala privada abajo (US 026 y US 027); en Invasión, con el Jefe volando en su andén (US 146), aparecen la dificultad y el récord (US 161), y desde el Sprint 5 también <b>Buscar partida</b>, la sala privada y «Jugar solo» (US 289).</p>
   <p class="soft">Pasá el mouse para agrandar un andén y hacé clic para entrar; <span class="kbd">Esc</span> vuelve (o cancela la búsqueda). También funcionan <span class="kbd">1</span> <span class="kbd">2</span> <span class="kbd">3</span>, las flechas y <span class="kbd">Enter</span>.</p>
   <div class="controls">
     <div><span class="ctl-label">Animación</span><span class="seg"><button id="msReplay" aria-pressed="false">Repetir entrada</button></span></div>
@@ -1618,16 +1618,24 @@ body.capture,body.capture-ms,body.capture-cr{padding-left:0!important}
         <div class="ms-room"></div>
         <div class="ms-busq"></div>
       </div>
-      <div class="ms-detail" data-i="2" style="--c:#7DE05A">
-        <div class="n">Andén 3 · Local</div><div class="t">Invasión</div>
-        <div class="d">Vos solo contra 10 oleadas en la universidad. Después podés seguir en modo infinito para hacer récord.</div>
+      <div class="ms-detail" data-i="2" style="--c:#7DE05A;--rgb:125 224 90">
+        <div class="n">Andén 3 · Online</div><div class="t">Invasión</div>
+        <div class="d">De 1 a 4 jugadores contra las oleadas de la universidad. Cada 10 oleadas llega el Jefe; si lo bajan, pueden seguir para hacer récord.</div>
         <div class="ms-diff" role="group" aria-label="Dificultad">
           <button type="button" data-d="facil" aria-pressed="false"><b>Fácil</b><span>75 % de vida y daño y menos enemigos. Regenerás a los 3 s.</span></button>
           <button type="button" data-d="normal" aria-pressed="true"><b>Normal</b><span>Como está pensado. Regenerás a los 4 s.</span></button>
           <button type="button" data-d="dificil" aria-pressed="false"><b>Difícil</b><span>125 % de vida, 150 % de daño y más enemigos. +25 % de puntos.</span></button>
         </div>
         <div class="ms-record">Récord en <span id="msDiffName">Normal</span>: <em id="msRec">oleada 7</em></div>
-        <div class="ms-actions"><button class="ms-btn" data-act="play" type="button">Jugar</button></div>
+        <div class="ms-acc">
+          <button class="ms-buscar" data-act="search" type="button"><span class="icono"></span><span class="txt"><b>Buscar partida</b><small>Invasión · misma dificultad, con jugadores de tu región</small></span><span class="flecha">→</span></button>
+          <div class="ms-privada"><div class="r">Sala privada · con amigos</div>
+            <div class="ms-actions"><button class="ms-chico" data-act="create" type="button">Crear sala</button><button class="ms-chico" data-act="join" type="button">Unirse con código</button><button class="ms-chico" data-act="play" type="button">Jugar solo</button></div>
+            <div class="ms-code"><input maxlength="5" placeholder="KX7QM" aria-label="Código de sala" spellcheck="false"><button class="ms-chico" data-act="enter" type="button">Entrar</button></div>
+          </div>
+        </div>
+        <div class="ms-room"></div>
+        <div class="ms-busq"></div>
       </div>
     </div>
   </div>
@@ -4663,7 +4671,7 @@ renderRules(); renderOneShot(); renderArsenal(); renderCalcOptions(); renderCalc
         const v = codeRow.querySelector('input').value.toUpperCase().replace(/[^A-Z0-9]/g, '');
         if (v.length === 5) { codeRow.classList.remove('on'); renderRoom(det, v, false, ['Nahuel ★ anfitrión', 'Luka', 'Vos']); det.classList.add('sala'); backTxt(); }
         else codeRow.querySelector('input').focus();
-      } else if (act === 'play') { b.textContent = 'Cargando la universidad…'; setTimeout(() => { b.textContent = 'Jugar'; }, 1600); }
+      } else if (act === 'play') { const antes = b.textContent; b.textContent = 'Cargando la universidad…'; setTimeout(() => { b.textContent = antes; }, 1600); }
     });
     det.querySelectorAll('input').forEach(inp => inp.addEventListener('input', () => { inp.value = inp.value.toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 5); }));
   });
@@ -4673,7 +4681,8 @@ renderRules(); renderOneShot(); renderArsenal(); renderCalcOptions(); renderCalc
   const radarEl = document.getElementById('msRadar');
   const OTROS = ['Luka', 'David', 'Agus', 'Lucas', 'Ulises', 'Nico', 'Mati'];
   const LUGAR = [[150, 210], [470, 160], [520, 430], [200, 470], [330, 90], [90, 340], [560, 290]];
-  const NOMBRE = ['Táctico', 'Deathmatch'], MINIMO = [4, 2], MAPA = ['MALVINAS-01', 'Colonia ARA San Juan'];
+  const NOMBRE = ['Táctico', 'Deathmatch', 'Invasión'], MINIMO = [4, 2, 1], MAPA = ['MALVINAS-01', 'Colonia ARA San Juan', 'la universidad'];
+  const MAXIMO = [8, 8, 4], ESPERA = [45, 45, 30]; // Invasión (US 289, CA2): hasta 4, y con 30 s sin que entre nadie arranca con los que haya
   let busq = null;
   const mmss = x => `${Math.floor(x / 60)}:${String(x % 60).padStart(2, '0')}`;
   function pintarRadar() {
@@ -4685,15 +4694,15 @@ renderRules(); renderOneShot(); renderArsenal(); renderCalcOptions(); renderCalc
   }
   function pintarBusqueda(nuevo) {
     const b = busq, det = details[b.modo], n = b.jugadores.length;
-    const lugares = Array.from({ length: 8 }, (_, k) => b.jugadores[k]
+    const max = MAXIMO[b.modo], lugares = Array.from({ length: max }, (_, k) => b.jugadores[k]
       ? `<li class="${k === nuevo ? 'nuevo' : ''}"><i></i>${b.jugadores[k]}${k === 0 ? ' <small>(vos)</small>' : ''}</li>` : '<li class="libre"><i></i>Buscando…</li>').join('');
     const conMinimo = !b.encontrada && n >= MINIMO[b.modo];
     const pie = b.encontrada ? '<p>Si entra alguien más, se suma. Si sale alguien y quedan menos que el mínimo, sigue buscando.</p>'
-      : conMinimo ? `<div><p>Ya está el mínimo para ${NOMBRE[b.modo]}. Si no entra nadie más, arranca en <b>${mmss(b.falta)}</b></p><div class="progreso"><i style="width:${(45 - b.falta) / 45 * 100}%"></i></div></div>`
-      : `<p>Arranca sola con 8 jugadores, o con ${MINIMO[b.modo]} si pasan 45 s sin que entre nadie.</p>`;
+      : conMinimo ? `<div><p>Ya está el mínimo para ${NOMBRE[b.modo]}. Si no entra nadie más, arranca en <b>${mmss(b.falta)}</b></p><div class="progreso"><i style="width:${(ESPERA[b.modo] - b.falta) / ESPERA[b.modo] * 100}%"></i></div></div>`
+      : `<p>Arranca sola con ${max} jugadores, o con ${b.modo === 2 ? 'los que haya' : MINIMO[b.modo]} si pasan ${ESPERA[b.modo]} s sin que entre nadie.</p>`;
     det.querySelector('.ms-busq').innerHTML = `<div class="barra"></div><div class="in">
-      <div class="cab"><span class="e">${b.encontrada ? 'Partida encontrada' : 'Buscando partida'}</span><span class="reloj">${b.encontrada ? n + ' / 8' : mmss(b.s)}</span></div>
-      <div class="grande">${b.encontrada ? (b.cuenta ? `Empieza en <em>${b.cuenta}</em>` : 'Cargando el mapa…') : `<em>${n}</em> / 8 jugadores`}</div>
+      <div class="cab"><span class="e">${b.encontrada ? 'Partida encontrada' : 'Buscando partida'}</span><span class="reloj">${b.encontrada ? n + ' / ' + max : mmss(b.s)}</span></div>
+      <div class="grande">${b.encontrada ? (b.cuenta ? `Empieza en <em>${b.cuenta}</em>` : 'Cargando el mapa…') : `<em>${n}</em> / ${max} jugadores`}</div>
       <div class="datos">${b.encontrada ? `${NOMBRE[b.modo]} · ${MAPA[b.modo]} · Sudamérica` : `${NOMBRE[b.modo]} · Sudamérica · misma versión`}</div>
       <ul class="ms-lugares">${lugares}</ul>
       <div class="pie">${pie}<button class="ms-chico" data-act="cancel" type="button">${b.encontrada ? 'Salir' : 'Cancelar'}</button></div></div>`;
@@ -4702,9 +4711,9 @@ renderRules(); renderOneShot(); renderArsenal(); renderCalcOptions(); renderCalc
   function buscar(modo) {
     if (busq) return;
     const det = details[modo];
-    busq = { modo, s: 0, falta: 45, encontrada: false, cuenta: 10, jugadores: ['Nahuel'] };
+    busq = { modo, s: 0, falta: ESPERA[modo], encontrada: false, cuenta: 10, jugadores: ['Nahuel'] };
     det.classList.add('busca'); inner.classList.add('ms-busca');
-    figuras[modo].forEach(f => { f.style.opacity = 0; });
+    (figuras[modo] || []).forEach(f => { f.style.opacity = 0; });
     pintarBusqueda(-1); radarEl.classList.add('on'); backTxt();
     busq.timer = setInterval(() => {
       const b = busq;
@@ -4713,7 +4722,7 @@ renderRules(); renderOneShot(); renderArsenal(); renderCalcOptions(); renderCalc
       const n = b.jugadores.length;
       let nuevo;
       // Entra alguien cada tanto; con el mínimo, la espera corre de a 5 s para no hacer esperar 45 s en la maqueta
-      if (b.s % 3 === 0 && n < (b.modo === 0 ? 5 : 3)) { b.jugadores.push(OTROS[n - 1]); nuevo = n; b.falta = 45; }
+      if (b.s % 3 === 0 && n < [5, 3, 2][b.modo]) { b.jugadores.push(OTROS[n - 1]); nuevo = n; b.falta = ESPERA[b.modo]; }
       else if (n >= MINIMO[b.modo]) b.falta = Math.max(0, b.falta - 5);
       if (n >= MINIMO[b.modo] && b.falta === 0) { b.encontrada = true; nuevo = -1; backTxt(); }
       pintarBusqueda(nuevo);
@@ -4725,7 +4734,7 @@ renderRules(); renderOneShot(); renderArsenal(); renderCalcOptions(); renderCalc
     clearInterval(busq.timer);
     const det = details[busq.modo];
     det.classList.remove('busca'); inner.classList.remove('ms-busca');
-    figuras[busq.modo].forEach(f => { f.style.opacity = ''; });
+    (figuras[busq.modo] || []).forEach(f => { f.style.opacity = ''; });
     radarEl.classList.remove('on');
     busq = null; backTxt();
   }

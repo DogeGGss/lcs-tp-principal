@@ -147,7 +147,8 @@ function content(s){
  case 'trailer':{const t=D.trailer;return `<div class="head row trailer-head"><p class="eyebrow">${eyebrow(s)}</p>${t.src?'<button class="primary" data-trailer>▶ Pantalla completa</button>':''}</div><div class="trailer">${t.src?`<video id="trailerVideo" src="${esc(t.src)}"${t.poster?` poster="${esc(t.poster)}"`:''} controls controlslist="nofullscreen" playsinline preload="metadata"></video><button class="trailer-exit" data-exit-trailer>Volver al recorrido</button>`:'<strong>Tráiler</strong>'}</div>`}
  case 'historia':return head(s)+story();
  case 'metricas':return head(s)+metrics();
- case 'menus':return head(s)+`<div class="grid"><button class="demo-card" data-demo="tienda"><strong>01 / Tienda</strong><span>Elegir, comparar y comprar.</span><em>Abrir demo →</em></button><button class="demo-card" data-demo="modos"><strong>02 / Modos</strong><span>Tres andenes. Una elección.</span><em>Abrir demo →</em></button><button class="demo-card" data-demo="hud"><strong>03 / HUD</strong><span>Información durante el combate.</span><em>Abrir demo →</em></button></div>`;
+ // Modos de juego: abre la selección de modo del juego; en cada andén, «Buscar partida» muestra cómo se juega (briefing.js).
+ case 'menus':return head(s)+`<button class="menu-demo modos-demo" data-demo="modos"><span class="modos-tiras"><img src="../img/tactico-vista.jpg" alt=""><img src="media/historia/colonia.jpg" alt=""><img src="media/campus/campus-5.jpg" alt=""></span><span class="menu-demo-texto"><strong>Elegí el modo</strong><span>Táctico, Deathmatch e Invasión, como en el juego. En cada andén, «Buscar partida» muestra cómo se juega.</span><em>Abrir la selección de modo →</em></span></button>`;
  case 'conjuntos':return head(s)+sets();
  case 'emotes':return head(s)+dances();
  case 'tiempo':return head(s)+statusTime();
@@ -327,7 +328,7 @@ $('#indexButton').onclick=()=>$('#indexDialog').showModal();
 $('#contrast').onclick=()=>{const on=document.body.classList.toggle('projector');$('#contrast').setAttribute('aria-pressed',on)};
 $('#fullscreen').onclick=async()=>{try{if(document.fullscreenElement)await document.exitFullscreen();else await document.documentElement.requestFullscreen()}catch{$('#announcement').textContent='El navegador no permitió pantalla completa. Podés usar F11.'}};
 // El menú, el perfil y la Estación del Rift son una página aparte (/menu); las otras demos son maquetas de la guía.
-const demoSrc=id=>id==='menu'?'../menu/index.html':`../index.html?demo=${id}`;
+const demoSrc=id=>id==='menu'?'../menu/index.html':`../index.html?demo=${id}${id==='modos'?'&briefing=1':''}`;
 let demo='';function openDemo(id){demo=id;$('#demoTitle').textContent={tienda:'Tienda de armas',modos:'Selección de modo',hud:'HUD de combate',menu:'Menú, perfil y cápsulas'}[id];$('#demoSub').textContent=id==='menu'?'El menú, el perfil y la Estación del Rift del juego, en la página':'Maqueta interactiva de la guía';$('#demoFrame').src=demoSrc(id);$('#demoDialog').showModal()}
 $('#resetDemo').onclick=()=>{$('#demoFrame').src=demoSrc(demo)};
 $('#demoDialog').addEventListener('close',()=>{$('#demoFrame').src='about:blank'});
