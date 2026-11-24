@@ -123,13 +123,14 @@
           const azules = T.azules.map(() => punto(c.capa, AZUL, 11));
           const chip = html(c.hud, 'brf-chip', '');
           chip.style.cssText = 'left:24px;top:24px';
-          const armas = ['fusil', 'escopeta', 'subfusil'].map(a => el(c.capa, 'image', { href: `presentacion/media/armas/${a}.png`, width: 120, height: 60, opacity: 0 }));
+          // Las armas, en fila sobre el fondo negro de abajo del plano (el plano termina en y ≈ 625; lo visible llega a ≈ 815).
+          const armas = ['fusil', 'escopeta', 'subfusil'].map(a => el(c.capa, 'image', { href: `presentacion/media/armas/${a}.png`, width: 150, height: 75, opacity: 0 }));
           return t => {
             rojos.forEach((r, i) => r.mover(T.rojos[i][0] + Math.sin(t * 2 + i) * 4, T.rojos[i][1]));
             azules.forEach((a, i) => a.mover(T.azules[i][0] + Math.sin(t * 2 + i) * 4, T.azules[i][1]));
             const queda = 20 - t * 2.6;
             chip.innerHTML = queda > 0 ? `<small>Ronda 1 · compra</small>${mmss(queda)}` : '<small>Ronda 1</small>¡Arranca!';
-            armas.forEach((im, i) => { const k = suave(tramo(t, .6 + i * .5, 1.2 + i * .5)); set(im, { x: 120 + i * 100, y: 200 - k * 20, opacity: k }); });
+            armas.forEach((im, i) => { const k = suave(tramo(t, .6 + i * .5, 1.2 + i * .5)); set(im, { x: 370 + i * 180, y: 690 - k * 20, opacity: k }); });
           };
         } },
       { tit: 'Atacar o defender', txt: 'Un equipo lleva el dispositivo a A o a B; el otro se reparte para cuidar los dos. Sin reaparición: si morís, mirás a un compañero hasta la ronda siguiente.',

@@ -328,7 +328,7 @@ $('#indexButton').onclick=()=>$('#indexDialog').showModal();
 $('#contrast').onclick=()=>{const on=document.body.classList.toggle('projector');$('#contrast').setAttribute('aria-pressed',on)};
 $('#fullscreen').onclick=async()=>{try{if(document.fullscreenElement)await document.exitFullscreen();else await document.documentElement.requestFullscreen()}catch{$('#announcement').textContent='El navegador no permitió pantalla completa. Podés usar F11.'}};
 // El menú, el perfil y la Estación del Rift son una página aparte (/menu); las otras demos son maquetas de la guía.
-const demoSrc=id=>id==='menu'?'../menu/index.html':`../index.html?demo=${id}${id==='modos'?'&briefing=1&v=2026112402':''}`;
+const demoSrc=id=>id==='menu'?'../menu/index.html':`../index.html?demo=${id}${id==='modos'?'&briefing=1&v=2026112403':''}`;
 let demo='';function openDemo(id){demo=id;$('#demoTitle').textContent={tienda:'Tienda de armas',modos:'Selección de modo',hud:'HUD de combate',menu:'Menú, perfil y cápsulas'}[id];$('#demoSub').textContent=id==='menu'?'El menú, el perfil y la Estación del Rift del juego, en la página':'Maqueta interactiva de la guía';$('#demoFrame').src=demoSrc(id);$('#demoDialog').showModal()}
 $('#resetDemo').onclick=()=>{$('#demoFrame').src=demoSrc(demo)};
 $('#demoDialog').addEventListener('close',()=>{$('#demoFrame').src='about:blank'});
