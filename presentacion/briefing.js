@@ -2,12 +2,12 @@
 // (?demo=modos&briefing=1), «Buscar partida» no abre la búsqueda: encuentra partida enseguida y muestra cómo se juega
 // el modo, paso a paso sobre su mapa, para hablar por encima. Los números son los del juego (Sprint 5):
 // RondasTacticas, DispositivoTactico, PartidaDeathmatch, ConfigInvasion, CooperativoDeInvasion y CaidaEnInvasion.
-// Pasos: avanzan solos (con la barra de abajo); ← y → van y vuelven; Esc vuelve a los andenes.
+// Pasos: se pasan a mano, con ← y → (o con las flechas de abajo, Espacio, Enter o Av Pág / Re Pág); Esc vuelve a los andenes.
+// Cada escena termina quieta o en un ciclo, así el paso puede quedar en pantalla lo que dure la explicación.
 (() => {
   const stage = document.getElementById('msStage'), inner = document.getElementById('msi');
   if (!stage || !inner) return;
   const NS = 'http://www.w3.org/2000/svg';
-  const DURA = 9; // s por paso
 
   const css = `
   .brf{position:absolute;inset:0;z-index:50;background:#07080a;color:#fff;opacity:0;transition:opacity .35s ease;font-family:var(--body)}
@@ -47,10 +47,11 @@
   .brf-carta b{font:700 34px/1 var(--display);text-transform:uppercase}
   .brf-carta span{font:500 19px/1.3 var(--body);color:rgba(255,255,255,.8)}
   .brf-cartas h4{position:absolute;left:0;right:0;top:-46px;margin:0;text-align:center;font:700 32px/1 var(--display);letter-spacing:.12em;text-transform:uppercase}
-  .brf-barra{position:absolute;left:700px;top:930px;width:1150px;height:6px;border-radius:3px;background:rgba(255,255,255,.1);overflow:hidden}
-  .brf-barra i{display:block;height:100%;width:0;background:var(--c)}
   .brf-ayuda{position:absolute;left:90px;bottom:70px;font:600 22px/1 var(--display);letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.5)}
-  .brf-ayuda b{display:inline-block;padding:6px 10px;margin-right:8px;border-radius:5px;background:rgba(255,255,255,.12);color:#fff;letter-spacing:.04em}
+  .brf-ayuda b,.brf-ayuda button{display:inline-block;padding:6px 10px;margin-right:8px;border:0;border-radius:5px;background:rgba(255,255,255,.12);color:#fff;font:inherit;letter-spacing:.04em}
+  .brf-ayuda button{cursor:pointer;padding:6px 14px}
+  .brf-ayuda button:hover{background:rgba(255,255,255,.24)}
+  .brf-ayuda button:disabled{opacity:.35;cursor:default}
   .brf-volver{position:absolute;right:70px;top:30px;padding:12px 22px;border:0;border-radius:8px;background:rgba(255,255,255,.1);color:#fff;font:600 24px/1 var(--display);letter-spacing:.14em;text-transform:uppercase;cursor:pointer}
   .brf-volver:hover{background:rgba(255,255,255,.18)}`;
   const style = document.createElement('style');
@@ -94,9 +95,24 @@
   // ---------- Los tres modos ----------
   const NARANJA = '#F29A38', AZUL = '#3AA0FF', ROJO = '#FF4B4B', VERDE = '#7DE05A', VIOLETA = '#B061FF';
 
-  // Táctico: el plano de MALVINAS-01 (1250 × 729): A arriba, B abajo, la base roja a la izquierda y la azul a la derecha.
-  const T = { A: [606, 150], B: [632, 543], rojos: [[150, 335], [190, 362], [222, 330], [172, 398]], azules: [[1062, 338], [1098, 366], [1052, 398], [1122, 330]] };
-  const aB = r => [r, [255, 470], [330, 540], [470, 520], [560, 556], [T.B[0] - 22 + Math.random() * 6, T.B[1] + 8]];
+  // Táctico: el plano de MALVINAS-01 (1250 × 729): A arriba, B abajo, la base naranja a la izquierda y la azul a la derecha.
+  // Cada paso arranca donde terminó el anterior: los 4 naranjas llevan el dispositivo a B, 2 azules cuidan A y 2 cuidan B.
+  // Sin reaparición: el que cae queda marcado con una cruz.
+  const T = {
+    A: [606, 150], B: [632, 543],
+    rojos: [[150, 335], [190, 362], [222, 330], [172, 398]],
+    azules: [[1062, 338], [1122, 330], [1098, 366], [1052, 398]], // 0 y 1 van a A; 2 y 3, a B
+    finRojos: [[622, 548], [574, 584], [582, 506], [530, 556]],
+    finAzules: [[636, 160], [662, 136], [702, 560], [714, 506]]
+  };
+  const ROJOS = ['Vos', 'Luka', 'David', 'Agus'], AZULES = ['Lucas', 'Ulises', 'Nico', 'Mati'];
+  const caminoRojo = i => [T.rojos[i], [255, 470], [330, 540], [470, 520], T.finRojos[i]];
+  const POR_AZUL = [[[960, 250], [820, 205], [700, 175]], [[990, 230], [840, 190], [720, 160]], [[980, 500], [860, 555], [760, 560]], [[950, 470], [850, 520], [740, 545]]];
+  const caminoAzul = i => [T.azules[i], ...POR_AZUL[i], T.finAzules[i]];
+  // Paso 3: los 2 de A bajan por el medio a B. Bajas: [equipo que tira, quién, equipo que cae, quién, segundo].
+  const ROTA = [[656, 514], [668, 592]];
+  const rotacion = i => [T.finAzules[i], [612, 215], [622, 330], [626, 420], [630, 480], ROTA[i]];
+  const BAJAS_T = [['a', 2, 'r', 3, 3.2], ['r', 1, 'a', 3, 4.2], ['a', 0, 'r', 1, 6.4], ['a', 1, 'r', 2, 6.9], ['a', 2, 'r', 0, 7.5]];
   const TACTICO = {
     nombre: 'Táctico', color: NARANJA, sub: '4 vs 4 · MALVINAS-01', mapa: 'MALVINAS-01', busca: 8,
     img: { src: 'presentacion/media/modos/tactico.jpg', w: 1250, h: 729, vista: [0, 20, 1250, 700], ajuste: 'meet' },
@@ -107,45 +123,61 @@
           const azules = T.azules.map(() => punto(c.capa, AZUL, 11));
           const chip = html(c.hud, 'brf-chip', '');
           chip.style.cssText = 'left:24px;top:24px';
-          const armas = ['fusil', 'escopeta', 'subfusil'].map((a, i) => { const im = el(c.capa, 'image', { href: `presentacion/media/armas/${a}.png`, width: 120, height: 60, opacity: 0 }); return im; });
+          const armas = ['fusil', 'escopeta', 'subfusil'].map(a => el(c.capa, 'image', { href: `presentacion/media/armas/${a}.png`, width: 120, height: 60, opacity: 0 }));
           return t => {
             rojos.forEach((r, i) => r.mover(T.rojos[i][0] + Math.sin(t * 2 + i) * 4, T.rojos[i][1]));
             azules.forEach((a, i) => a.mover(T.azules[i][0] + Math.sin(t * 2 + i) * 4, T.azules[i][1]));
-            chip.innerHTML = `<small>Ronda 1 · compra</small>${mmss(Math.max(0, 20 - t * 2.6))}`;
+            const queda = 20 - t * 2.6;
+            chip.innerHTML = queda > 0 ? `<small>Ronda 1 · compra</small>${mmss(queda)}` : '<small>Ronda 1</small>¡Arranca!';
             armas.forEach((im, i) => { const k = suave(tramo(t, .6 + i * .5, 1.2 + i * .5)); set(im, { x: 120 + i * 100, y: 200 - k * 20, opacity: k }); });
           };
         } },
       { tit: 'Atacar o defender', txt: 'Un equipo lleva el dispositivo a A o a B; el otro se reparte para cuidar los dos. Sin reaparición: si morís, mirás a un compañero hasta la ronda siguiente.',
         escena(c) {
-          const caminos = T.rojos.map(r => aB(r));
-          const azA = [[T.azules[0], [960, 250], [820, 205], [700, 175], [T.A[0] + 30, T.A[1] + 10]], [T.azules[3], [990, 230], [840, 190], [720, 160], [T.A[0] + 50, T.A[1] - 10]]];
-          const azB = [[T.azules[1], [980, 500], [860, 555], [760, 560], [T.B[0] + 40, T.B[1] + 5]], [T.azules[2], [950, 470], [850, 520], [740, 545], [T.B[0] + 60, T.B[1] - 15]]];
           const marcas = [T.A, T.B].map(p => el(c.capa, 'circle', { cx: p[0], cy: p[1], r: 40, fill: 'none', stroke: '#fff', 'stroke-width': 3 }));
-          const rojos = caminos.map((_, i) => punto(c.capa, NARANJA, 11, i === 0 ? 'Dispositivo' : null));
           const disp = el(c.capa, 'circle', { r: 20, fill: 'none', stroke: NARANJA, 'stroke-width': 4 });
-          const azules = [...azA, ...azB].map(() => punto(c.capa, AZUL, 11));
-          return t => {
-            marcas.forEach((m, i) => set(m, { r: 40 + 8 * Math.sin(t * 3 + i), opacity: .35 + .25 * Math.sin(t * 3 + i) }));
-            caminos.forEach((cm, i) => rojos[i].mover(...por(cm, suave(tramo(t, .4 + i * .15, 6.5)))));
-            const [dx, dy] = por(caminos[0], suave(tramo(t, .4, 6.5)));
-            set(disp, { cx: dx, cy: dy, r: 20 + 4 * Math.sin(t * 6) });
-            [...azA, ...azB].forEach((cm, i) => azules[i].mover(...por(cm, suave(tramo(t, .3 + i * .1, 5.5)))));
-          };
-        } },
-      { tit: 'Plantar o desactivar', txt: 'Plantar el dispositivo tarda 4 s. Plantado, explota a los 45 s, salvo que los que defienden lo desactiven antes: eso tarda 7 s.',
-        escena(c) {
-          const fin = aB(T.rojos[0]).pop();
-          const rojos = [[fin[0] - 8, fin[1] - 26], [fin[0] - 50, fin[1] + 6], [fin[0] - 30, fin[1] + 30], [fin[0] - 70, fin[1] - 20]].map(p => ({ p, d: punto(c.capa, NARANJA, 11) }));
-          const llegan = [[[T.A[0] + 30, T.A[1] + 10], [700, 320], [690, 470], [T.B[0] + 32, T.B[1] - 18]], [[T.B[0] + 60, T.B[1] - 15], [T.B[0] + 26, T.B[1] + 10]], [[T.B[0] + 40, T.B[1] + 5], [T.B[0] + 70, T.B[1] + 30]]];
-          const azules = llegan.map(() => punto(c.capa, AZUL, 11));
-          const aro = el(c.capa, 'circle', { cx: T.B[0], cy: T.B[1], r: 46, fill: 'none', stroke: NARANJA, 'stroke-width': 7, transform: `rotate(-90 ${T.B[0]} ${T.B[1]})`, 'stroke-dasharray': 289, 'stroke-dashoffset': 289 });
-          const chip = html(c.hud, 'brf-chip', '');
+          const rojos = T.rojos.map((_, i) => punto(c.capa, NARANJA, 11, i === 0 ? 'Vos' : null));
+          const azules = T.azules.map(() => punto(c.capa, AZUL, 11));
+          const chip = html(c.hud, 'brf-chip', '<small>Atacan los naranjas</small>El dispositivo va a B');
           chip.style.cssText = 'left:24px;top:24px';
           return t => {
-            rojos.forEach(({ p, d }, i) => d.mover(p[0], p[1], i === 3 && t > 5 ? Math.max(0, 1 - (t - 5) * 2) : 1));
-            llegan.forEach((cm, i) => azules[i].mover(...por(cm, suave(tramo(t, 2.5, 6))), i === 2 && t > 6.5 ? Math.max(0, 1 - (t - 6.5) * 2) : 1));
-            if (t < 2) { set(aro, { 'stroke-dashoffset': 289 * (1 - t / 2), stroke: '#fff' }); chip.innerHTML = '<small>Plantando</small>4 s'; }
-            else { set(aro, { stroke: NARANJA, 'stroke-dashoffset': 289 * Math.min(1, (t - 2) / 45 * 5) }); chip.innerHTML = `<small>Dispositivo plantado</small>${mmss(Math.max(0, 45 - (t - 2) * 5))}`; }
+            marcas.forEach((m, i) => set(m, { r: 40 + 8 * Math.sin(t * 3 + i), opacity: .35 + .25 * Math.sin(t * 3 + i) }));
+            rojos.forEach((d, i) => d.mover(...por(caminoRojo(i), suave(tramo(t, .4 + i * .35, 6 + i * .35)))));
+            const [dx, dy] = por(caminoRojo(0), suave(tramo(t, .4, 6)));
+            set(disp, { cx: dx, cy: dy, r: 20 + 4 * Math.sin(t * 6) });
+            azules.forEach((d, i) => d.mover(...por(caminoAzul(i), suave(tramo(t, .3 + i * .1, 5.5)))));
+          };
+        } },
+      { tit: 'Plantar o desactivar', vista: [268, 118, 728, 520], txt: 'Plantar el dispositivo tarda 4 s. Plantado, explota a los 45 s, salvo que los que defienden lo desactiven antes: eso tarda 7 s.',
+        escena(c) {
+          const L = 289; // 2π × 46
+          const aro = el(c.capa, 'circle', { cx: T.B[0], cy: T.B[1], r: 46, fill: 'none', stroke: '#fff', 'stroke-width': 7, transform: `rotate(-90 ${T.B[0]} ${T.B[1]})`, 'stroke-dasharray': L, 'stroke-dashoffset': L });
+          // Las cruces y los disparos van debajo de los jugadores.
+          const marcas = BAJAS_T.map(() => ({
+            linea: el(c.capa, 'line', { 'stroke-width': 3, opacity: 0 }),
+            cruz: el(c.capa, 'text', { 'font-size': 30, 'font-weight': 700, 'text-anchor': 'middle', 'dominant-baseline': 'central', 'font-family': 'Barlow Condensed, Arial Narrow, sans-serif', stroke: '#07080a', 'stroke-width': 5, style: 'paint-order:stroke', opacity: 0 }, '✕')
+          }));
+          const rojos = ROJOS.map(n => punto(c.capa, NARANJA, 9, n));
+          const azules = AZULES.map(n => punto(c.capa, AZUL, 9, n));
+          const chip = html(c.hud, 'brf-chip', '');
+          chip.style.cssText = 'left:24px;top:24px';
+          const feed = html(c.hud, 'brf-feed', '');
+          const pos = (eq, i, t) => eq === 'r' ? T.finRojos[i] : i < 2 ? por(rotacion(i), suave(tramo(t, 2.6 + i * .2, 6 + i * .2))) : T.finAzules[i];
+          const muere = (eq, i) => { const b = BAJAS_T.find(b => b[2] === eq && b[3] === i); return b ? b[4] : Infinity; };
+          const col = eq => eq === 'r' ? NARANJA : AZUL, nom = (eq, i) => (eq === 'r' ? ROJOS : AZULES)[i];
+          return t => {
+            [[rojos, 'r'], [azules, 'a']].forEach(([ds, eq]) => ds.forEach((d, i) => { const td = muere(eq, i); d.mover(...pos(eq, i, t), t < td ? 1 : Math.max(0, 1 - (t - td) * 3)); }));
+            BAJAS_T.forEach(([e1, i1, e2, i2, tb], k) => {
+              const [x1, y1] = pos(e1, i1, tb), [x2, y2] = pos(e2, i2, tb);
+              set(marcas[k].linea, { x1, y1, x2, y2, stroke: col(e1), opacity: t > tb - .25 && t < tb + .2 ? 1 : 0 });
+              set(marcas[k].cruz, { x: x2, y: y2, fill: col(e2), opacity: t >= tb ? Math.min(.9, (t - tb) * 3) : 0 });
+            });
+            feed.innerHTML = BAJAS_T.filter(b => t >= b[4]).map(([e1, i1, e2, i2]) => `<div><span style="color:${col(e1)}">${nom(e1, i1)}</span> ${e2 === 'r' && i2 === 0 ? 'te eliminó' : `eliminó a <span style="color:${col(e2)}">${nom(e2, i2)}</span>`}</div>`).join('');
+            const explota = 45 - (t - 2.5) * 3;
+            if (t < 2.5) { set(aro, { stroke: '#fff', 'stroke-dashoffset': L * (1 - t / 2.5) }); chip.innerHTML = `<small>Vos plantás el dispositivo</small>${Math.ceil(4 - t / 2.5 * 4)} s`; }
+            else if (t < 8) { set(aro, { stroke: NARANJA, 'stroke-dashoffset': L * (1 - explota / 45) }); chip.innerHTML = `<small>Dispositivo plantado · explota en</small>${mmss(explota)}`; }
+            else if (t < 11.5) { const k = (t - 8) / 3.5; set(aro, { stroke: AZUL, 'stroke-dashoffset': L * (1 - k) }); chip.innerHTML = `<small>Lucas desactiva · explota en ${mmss(explota)}</small>${Math.ceil(7 - k * 7)} s`; }
+            else { set(aro, { stroke: AZUL, 'stroke-dashoffset': 0 }); chip.innerHTML = '<small>Dispositivo desactivado</small>Ronda para el azul'; }
           };
         } },
       { tit: 'Gana el primero a 7', txt: 'Cada ronda dura 100 s de combate. Después de la ronda 6 los equipos cambian de lado, y gana el primero que llega a 7 rondas.',
@@ -189,17 +221,20 @@
         escena(c) {
           const js = NOMBRES.map((n, i) => ({ d: punto(c.capa, COLORES[i], 10, n), cm: paseo(i) }));
           const feed = html(c.hud, 'brf-feed', '');
-          const bajas = [[1, 6, 1], [3, 5, 2.6], [0, 7, 4.2], [1, 2, 5.8], [4, 3, 7.2]];
+          // Las bajas se repiten cada 9 s y el que cae vuelve a los 3 s, así nadie desaparece aunque el paso quede en pantalla.
+          const bajas = [[1, 6, 1], [3, 5, 2.6], [0, 7, 4.2], [1, 2, 5.8], [4, 3, 7.2]], CICLO = 9;
+          const desde = (b, t) => t < b[2] ? Infinity : (t - b[2]) % CICLO; // segundos desde la última vez que pasó
           const cura = js.map(() => el(c.capa, 'text', { fill: VERDE, 'font-size': 26, 'font-weight': 700, 'font-family': 'Barlow Condensed, sans-serif', opacity: 0 }, '+50'));
           return t => {
             js.forEach(({ d, cm }, i) => {
-              const muerta = bajas.find(b => b[1] === i && t > b[2]);
+              const caida = bajas.map(b => b[1] === i ? desde(b, t) : Infinity).find(s => s < 3);
               const [x, y] = por(cm, (t / 26 + i / 8) % 1);
-              d.mover(x, y, muerta ? Math.max(0, 1 - (t - muerta[2]) * 2) : 1);
-              const gano = bajas.filter(b => b[0] === i && t > b[2] && t < b[2] + 1.2).pop();
-              set(cura[i], { x: x + 14, y: y - 18 - (gano ? (t - gano[2]) * 20 : 0), opacity: gano ? 1 - (t - gano[2]) / 1.2 : 0 });
+              d.mover(x, y, caida === undefined ? 1 : caida < 2.7 ? Math.max(0, 1 - caida * 3) : (caida - 2.7) / .3);
+              const gano = bajas.map(b => b[0] === i ? desde(b, t) : Infinity).find(s => s < 1.2);
+              set(cura[i], { x: x + 14, y: y - 18 - (gano !== undefined ? gano * 20 : 0), opacity: gano !== undefined ? 1 - gano / 1.2 : 0 });
             });
-            feed.innerHTML = bajas.filter(b => t > b[2]).slice(-4).map(([a, b]) => `<div><b>${NOMBRES[a]}</b> ${a === 0 ? 'eliminaste' : 'eliminó'} a ${NOMBRES[b]}</div>`).join('');
+            feed.innerHTML = bajas.filter(b => t >= b[2]).sort((p, q) => desde(q, t) - desde(p, t)).slice(-4)
+              .map(([a, b]) => `<div><b>${NOMBRES[a]}</b> ${a === 0 ? 'eliminaste' : 'eliminó'} a ${b === 0 ? 'vos' : NOMBRES[b]}</div>`).join('');
           };
         } },
       { tit: 'Reaparecés a los 3 s', txt: 'Si te eliminan, a los 3 s volvés lejos de los rivales, con tus armas elegidas.',
@@ -218,7 +253,7 @@
               if (i === 0) {
                 if (t > 1.5 && !donde) donde = [x, y];
                 if (t > 1.5 && t < 5) { [x, y] = donde; o = Math.max(0, 1 - (t - 1.5) * 3); }
-                if (t >= 5) { const k = t - 5; [x, y] = [lejos[0] - k * 18, lejos[1] + k * 12]; o = Math.min(1, k * 2); }
+                if (t >= 5) { const k = t - 5, m = Math.min(k, 5); [x, y] = [lejos[0] - m * 18 + Math.sin(k * 1.3) * 6, lejos[1] + m * 12 + Math.cos(k) * 4]; o = Math.min(1, k * 2); }
               }
               d.mover(x, y, o);
             });
@@ -243,12 +278,13 @@
     ]
   };
 
-  // Invasión: el minimapa del campus (1760 × 1332), con el puesto en el medio, el anillo de 15 m, los portales a 40 m y el Jefe.
-  const I = { puesto: [846, 684], anillo: 51.5, jugadores: [[822, 670], [874, 674], [836, 712], [867, 705]], portales: [[971, 626], [727, 616], [810, 817]], jefe: [830, 506] };
+  // Invasión: el minimapa del campus (1760 × 1332, 3,43 px por metro), con el puesto en la plaza central, entre los módulos,
+  // el anillo de 15 m, los portales a unos 40 m y el Jefe, que baja desde los módulos de arriba.
+  const I = { puesto: [1040, 920], anillo: 51.5, jugadores: [[1016, 906], [1068, 910], [1030, 948], [1061, 941]], portales: [[1172, 866], [918, 1000], [1086, 1052]], jefe: [1040, 740] };
   const COMPAS = ['Vos', 'Luka', 'David', 'Agus'];
   const INVASION = {
     nombre: 'Invasión', color: VERDE, sub: '1 a 4 jugadores · la universidad', mapa: 'la universidad', busca: 4,
-    img: { src: 'presentacion/media/modos/campus.png', w: 1760, h: 1332, vista: [560, 430, 600, 428] },
+    img: { src: 'presentacion/media/modos/campus.png', w: 1760, h: 1332, vista: [740, 690, 600, 428] },
     pasos: [
       { tit: 'Juntos contra la horda', txt: 'De 1 a 4 jugadores, contra oleadas cada vez más grandes: la oleada N trae 10 + 5 × (N − 1) invasores, y cada jugador de más suma la mitad.',
         escena(c) {
@@ -268,10 +304,11 @@
             set(anillo, { opacity: suave(tramo(t, 0, .8)) });
             portales.forEach((p, i) => set(p, { r: Math.max(0, 14 * suave(tramo(t, .4 + i * .3, 1.2 + i * .3)) + Math.sin(t * 4 + i) * 1.5) }));
             js.forEach((d, i) => d.mover(I.jugadores[i][0] + Math.sin(t * 1.3 + i) * 6, I.jugadores[i][1] + Math.cos(t + i * 2) * 4));
+            // Siguen saliendo: cada invasor va hacia un jugador, cae cerca y vuelve a salir del portal.
             enemigos.forEach(e => {
-              const k = suave(tramo(t, e.sale, e.sale + 5));
-              const [x, y] = por([I.portales[e.p], I.jugadores[e.va]], k * .82);
-              e.d.mover(x, y, t > e.sale ? 1 : 0);
+              const f = t < e.sale ? -1 : (t - e.sale) % 5.4;
+              const [x, y] = por([I.portales[e.p], I.jugadores[e.va]], suave(lim(f / 4.6)) * .82);
+              e.d.mover(x, y, f < 0 ? 0 : f < 4.6 ? Math.min(1, f * 4) : Math.max(0, 1 - (f - 4.6) * 2.5));
             });
           };
         } },
@@ -340,11 +377,12 @@
       <div class="brf-main"><div class="brf-izq"><div class="brf-eb">Partida encontrada</div><div class="brf-modo">${M.nombre}</div><div class="brf-sub">${M.sub}</div>
         <div class="brf-paso"></div><h2 class="brf-tit"></h2><p class="brf-txt"></p><div class="brf-dots">${M.pasos.map(() => '<i></i>').join('')}</div></div>
         <div class="brf-der"><svg viewBox="${M.img.vista.join(' ')}" preserveAspectRatio="xMidYMid ${M.img.ajuste || 'slice'}"><image href="${M.img.src}" width="${M.img.w}" height="${M.img.h}"/><g class="capa"></g></svg><div class="brf-hud"></div></div>
-        <div class="brf-barra"><i></i></div><div class="brf-ayuda"><b>←</b><b>→</b>pasos · <b>Esc</b>volver a los andenes</div></div>
+        <div class="brf-ayuda"><button type="button" data-ir="-1" aria-label="Paso anterior">←</button><button type="button" data-ir="1" aria-label="Paso siguiente">→</button>pasos · <b>Esc</b>volver a los andenes</div></div>
       <button class="brf-volver" type="button">Volver a los andenes</button>`;
     inner.appendChild(raiz);
     raiz.querySelector('.brf-volver').addEventListener('click', cerrar);
-    b = { M, raiz, paso: -1, t0: 0, buscaT0: performance.now(), capa: raiz.querySelector('.capa'), hud: raiz.querySelector('.brf-hud'), frame: null };
+    raiz.querySelectorAll('[data-ir]').forEach(x => x.addEventListener('click', e => { e.stopPropagation(); if (b && b.paso >= 0) irA(b.paso + +x.dataset.ir); }));
+    b = { M, raiz, paso: -1, t0: 0, buscaT0: performance.now(), capa: raiz.querySelector('.capa'), hud: raiz.querySelector('.brf-hud'), frame: null, svg: raiz.querySelector('svg'), vista: M.img.vista.slice(), cam: null };
     requestAnimationFrame(() => raiz.classList.add('on'));
     b.raf = requestAnimationFrame(tic);
   }
@@ -359,6 +397,9 @@
     b.raiz.querySelector('.brf-tit').textContent = P.tit;
     b.raiz.querySelector('.brf-txt').textContent = P.txt;
     b.raiz.querySelectorAll('.brf-dots i').forEach((d, k) => d.classList.toggle('on', k <= b.paso));
+    b.raiz.querySelector('[data-ir="-1"]').disabled = b.paso === 0;
+    b.raiz.querySelector('[data-ir="1"]').disabled = b.paso === M.pasos.length - 1;
+    b.cam = { de: b.vista.slice(), a: P.vista || M.img.vista, t0: b.t0 }; // un paso puede acercar la cámara a una parte del mapa
     b.frame = P.escena({ capa: b.capa, hud: b.hud });
   }
   function tic(ahora) {
@@ -374,10 +415,13 @@
       if (busca > 1.9) { e.textContent = 'Partida encontrada'; b.raiz.querySelector('.brf-busca .s').textContent = `${b.M.nombre} · ${b.M.mapa}`; }
       if (busca > 2.8) { b.raiz.querySelector('.brf-busca').classList.add('fuera'); b.raiz.querySelector('.brf-main').classList.add('on'); irA(0); }
     } else {
-      const t = (ahora - b.t0) / 1000;
-      b.frame(t);
-      b.raiz.querySelector('.brf-barra i').style.width = `${Math.min(100, t / DURA * 100)}%`;
-      if (t >= DURA && b.paso < b.M.pasos.length - 1) irA(b.paso + 1);
+      if (b.cam) {
+        const k = suave((ahora - b.cam.t0) / 900);
+        b.vista = b.cam.de.map((v, j) => v + (b.cam.a[j] - v) * k);
+        b.svg.setAttribute('viewBox', b.vista.map(v => v.toFixed(1)).join(' '));
+        if (k >= 1) b.cam = null;
+      }
+      b.frame((ahora - b.t0) / 1000);
     }
     b.raf = requestAnimationFrame(tic);
   }
@@ -402,8 +446,8 @@
   addEventListener('keydown', e => {
     if (!b) return;
     if (e.key === 'Escape') cerrar();
-    else if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'Enter') { if (b.paso >= 0) irA(b.paso + 1); }
-    else if (e.key === 'ArrowLeft') { if (b.paso >= 0) irA(b.paso - 1); }
+    else if (['ArrowRight', ' ', 'Enter', 'PageDown'].includes(e.key)) { if (b.paso >= 0) irA(b.paso + 1); }
+    else if (['ArrowLeft', 'PageUp'].includes(e.key)) { if (b.paso >= 0) irA(b.paso - 1); }
     else return;
     e.preventDefault();
     e.stopImmediatePropagation();
