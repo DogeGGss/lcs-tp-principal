@@ -100,7 +100,7 @@ function story(){
 // Los conjuntos del Perfil (avatar, banner y marco del mismo estilo), uno abajo del otro como la cabecera del juego.
 function sets(){
  const RZ=['Inicial','Común','Raro','Épico','Legendario'],COL=['#8E96A3','#9AA3B0','#5C7CFF','#B061FF','#FFC93C'];
- const PJ={astra:'Astra',pesado:'Pesado',guerrero:'Guerrero',sigiloso:'Sigiloso'},W=900,H=150,base='../menu/img/';
+ const PJ=Object.fromEntries(CATALOGO.personajes.map(p=>[p.id,p.nombre])),W=900,H=150,base='../menu/img/';
  return `<div class="conjuntos">${Marcos.conjuntos().map(({banner:b,avatar:a})=>{const d=Marcos.interior(b.id,H);return `<article class="conjunto"><div class="conjunto-banner" style="left:${d[0]}px;top:${d[1]}px;right:${d[2]}px;bottom:${d[3]}px"><img src="${base}banners/${b.id}.jpg" alt=""><i></i></div>${Marcos.html(b.id,0,0,W,H,false,base+'marcos/')}<span class="conjunto-avatar"><img src="${base}avatares/${a.id}.jpg" alt=""></span><strong>${esc(b.nombre)}</strong><small><b style="color:${COL[b.rareza]}">${RZ[b.rareza]}</b> · ${esc(b.estilo)}${PJ[b.personaje]?' · '+PJ[b.personaje]:''}</small></article>`}).join('')}</div>`;
 }
 // Los cuatro productos a la vista, cada uno con una imagen hecha con cosas del juego (avatares, banners y cápsulas).
@@ -326,9 +326,9 @@ $('#prev').onclick=()=>go(current-1);$('#next').onclick=()=>go(current+1);
 $('#indexButton').onclick=()=>$('#indexDialog').showModal();
 $('#contrast').onclick=()=>{const on=document.body.classList.toggle('projector');$('#contrast').setAttribute('aria-pressed',on)};
 $('#fullscreen').onclick=async()=>{try{if(document.fullscreenElement)await document.exitFullscreen();else await document.documentElement.requestFullscreen()}catch{$('#announcement').textContent='El navegador no permitió pantalla completa. Podés usar F11.'}};
-// El menú, el perfil y la Estación del Rift son una página aparte (/menu); las otras demos son maquetas de la guía.
-const demoSrc=id=>id==='menu'?'../menu/index.html':`../index.html?demo=${id}${id==='modos'?'&briefing=1&v=2026112408':''}`;
-let demo='';function openDemo(id){demo=id;$('#demoTitle').textContent={tienda:'Tienda de armas',modos:'Selección de modo',hud:'HUD de combate',menu:'Menú, perfil y cápsulas'}[id];$('#demoSub').textContent=id==='menu'?'El menú, el perfil y la Estación del Rift del juego, en la página':'Maqueta interactiva de la guía';$('#demoFrame').src=demoSrc(id);$('#demoDialog').showModal()}
+// El menú, el perfil y la tienda son una página aparte (/menu); las otras demos son maquetas de la guía.
+const demoSrc=id=>id==='menu'?'../menu/index.html?v=2026112409':`../index.html?demo=${id}${id==='modos'?'&briefing=1&v=2026112409':''}`;
+let demo='';function openDemo(id){demo=id;$('#demoTitle').textContent={tienda:'Tienda de armas',modos:'Selección de modo',hud:'HUD de combate',menu:'Menú, perfil y tienda'}[id];$('#demoSub').textContent=id==='menu'?'El menú, el perfil y la tienda del juego, en la página':'Maqueta interactiva de la guía';$('#demoFrame').src=demoSrc(id);$('#demoDialog').showModal()}
 $('#resetDemo').onclick=()=>{$('#demoFrame').src=demoSrc(demo)};
 $('#demoDialog').addEventListener('close',()=>{$('#demoFrame').src='about:blank'});
 $('#clipDialog').addEventListener('close',()=>{$('#video').pause();$('#video').removeAttribute('src');$('#video').load()});
