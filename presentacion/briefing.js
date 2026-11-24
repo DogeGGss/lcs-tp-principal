@@ -5,6 +5,7 @@
 // Pasos: se pasan a mano, con ← y → (o con las flechas de abajo, Espacio, Enter o Av Pág / Re Pág); Esc vuelve a los andenes.
 // En pantalla va solo el título de cada paso; `txt` es lo que se dice (está también en la nota de la diapositiva, content.js).
 // Cada escena termina quieta o en un ciclo, así el paso puede quedar en pantalla lo que dure la explicación.
+// Un modo con `img` se dibuja sobre su mapa (SVG); Invasión usa en cambio un video del juego por paso (`video`, en bucle).
 (() => {
   const stage = document.getElementById('msStage'), inner = document.getElementById('msi');
   if (!stage || !inner) return;
@@ -40,13 +41,16 @@
   .brf-feed{position:absolute;right:22px;top:22px;display:flex;flex-direction:column;gap:8px;align-items:flex-end}
   .brf-feed div{padding:8px 14px;border-radius:6px;background:rgba(7,8,10,.82);font:600 26px/1 var(--display);letter-spacing:.04em;text-transform:uppercase}
   .brf-feed b{color:var(--c)}
-  .brf-cartas{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);display:flex;gap:22px;padding:30px;border-radius:14px;background:rgba(7,8,10,.9);box-shadow:0 0 0 2px rgba(255,255,255,.12);transition:opacity .4s ease,transform .4s ease}
-  .brf-cartas.oculto{opacity:0;transform:translate(-50%,-44%)}
-  .brf-carta{width:230px;height:300px;border-radius:12px;background:#121722;border-top:8px solid var(--r);padding:18px;display:flex;flex-direction:column;gap:10px}
-  .brf-carta small{font:600 16px/1 var(--display);letter-spacing:.2em;text-transform:uppercase;color:var(--r)}
-  .brf-carta b{font:700 34px/1 var(--display);text-transform:uppercase}
-  .brf-carta span{font:500 19px/1.3 var(--body);color:rgba(255,255,255,.8)}
-  .brf-cartas h4{position:absolute;left:0;right:0;top:-46px;margin:0;text-align:center;font:700 32px/1 var(--display);letter-spacing:.12em;text-transform:uppercase}
+  .brf-video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity .3s ease}
+  .brf-video.on{opacity:1}
+  .brf-lista{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:30px}
+  .brf-lista h4{grid-column:1/-1;margin:0;font:700 30px/1 var(--display);letter-spacing:.12em;text-transform:uppercase}
+  .brf-fila{display:flex;flex-direction:column;gap:7px;padding:14px;border-radius:10px;background:#121722;border-top:7px solid var(--r)}
+  .brf-fila small{font:600 14px/1 var(--display);letter-spacing:.18em;text-transform:uppercase;color:var(--r)}
+  .brf-fila b{font:700 26px/1 var(--display);text-transform:uppercase}
+  .brf-fila span{font:500 17px/1.3 var(--body);color:rgba(255,255,255,.8)}
+  .brf-lista>*{opacity:0;transform:translateX(-14px);transition:opacity .4s ease,transform .4s ease}
+  .brf-lista>.on{opacity:1;transform:none}
   .brf-armas{position:absolute;left:24px;right:24px;bottom:22px;display:grid;grid-template-columns:repeat(7,1fr);gap:10px}
   .brf-arma{display:flex;flex-direction:column;align-items:center;gap:5px;opacity:0;transform:translateY(14px);transition:opacity .4s ease,transform .4s ease}
   .brf-arma.on{opacity:1;transform:none}
@@ -290,89 +294,25 @@
     ]
   };
 
-  // Invasión: el minimapa del campus (1760 × 1332, 3,43 px por metro), con el puesto en la plaza central, entre los módulos,
-  // el anillo de 15 m, los portales a unos 40 m y el Jefe, que baja desde los módulos de arriba.
-  const I = { puesto: [1040, 920], anillo: 51.5, jugadores: [[1016, 906], [1068, 910], [1030, 948], [1061, 941]], portales: [[1172, 866], [918, 1000], [1086, 1052]], jefe: [1040, 740] };
-  const COMPAS = ['Vos', 'Luka', 'David', 'Agus'];
+  // Invasión: tomas grabadas en el juego (Unity, 24/11/2026), con cámara isométrica y los 4 personajes manejados por bots:
+  // 1, entre el TUM y los módulos del medio; 2, en la entrada de la UNGS; 3, el puesto en la Biblioteca; 4, el Jefe en el Auditorio.
+  // El video ocupa todo el cuadro (el HUD del juego ya está apagado); lo que se agrega va sobre el fondo negro, a la izquierda.
+  const CARTAS_I = [['Legendaria', '#FFC93C', 'Escolta', 'Un dron te acompaña: su rayo derrite al invasor más cercano.'],
+    ['Épica', '#B061FF', 'Campo minado', 'Las granadas que tocan el piso quedan como minas.'],
+    ['Arma', ROJO, 'Katana', 'Reemplaza a tu cuchillo. Corta a todos los que tenés delante.']];
   const INVASION = {
     nombre: 'Invasión', color: VERDE, sub: '1 a 4 jugadores · la universidad', mapa: 'la universidad', busca: 4,
-    img: { src: 'presentacion/media/modos/campus.png', w: 1760, h: 1332, vista: [740, 690, 600, 428] },
     pasos: [
-      { tit: 'Juntos contra la horda', txt: 'De 1 a 4 jugadores, contra oleadas cada vez más grandes: la oleada N trae 10 + 5 × (N − 1) invasores, y cada jugador de más suma la mitad.',
+      { tit: 'Juntos contra la horda', video: 'presentacion/media/modos/invasion-1.mp4', txt: 'De 1 a 4 jugadores, contra oleadas cada vez más grandes: la oleada N trae 10 + 5 × (N − 1) invasores, y cada jugador de más suma la mitad.' },
+      { tit: 'Salen de los portales', video: 'presentacion/media/modos/invasion-2.mp4', txt: 'Los invasores salen de portales que se abren alrededor del puesto de suministros, entre 30 y 55 m, y van hacia el jugador más cercano.' },
+      { tit: 'Cargar el puesto', video: 'presentacion/media/modos/invasion-3.mp4', txt: 'Las bajas dentro del anillo cargan el puesto. Al 100 %, cada uno elige 1 de 3: un arma, la Katana o una de las 27 cartas.',
         escena(c) {
-          const js = COMPAS.map((n, i) => punto(c.capa, VERDE, 4.4, n));
-          const chip = html(c.hud, 'brf-chip', '<small>Oleada 3 · Normal · 4 jugadores</small>50 invasores');
-          chip.style.cssText = 'left:24px;top:24px';
-          return t => js.forEach((d, i) => d.mover(I.jugadores[i][0] + Math.sin(t * 1.3 + i) * 7, I.jugadores[i][1] + Math.cos(t + i * 2) * 5));
+          const lista = html(c.info, 'brf-lista', '<h4>Elegí 1 de 3</h4>'
+            + CARTAS_I.map(([r, col, n, x]) => `<div class="brf-fila" style="--r:${col}"><small>${r}</small><b>${n}</b><span>${x}</span></div>`).join(''));
+          const filas = lista.querySelectorAll('.brf-fila, h4');
+          return t => filas.forEach((f, i) => f.classList.toggle('on', t > 1.2 + i * .35));
         } },
-      { tit: 'Salen de los portales', txt: 'Los invasores salen de portales que se abren alrededor del puesto de suministros, entre 30 y 55 m, y van hacia el jugador más cercano.',
-        escena(c) {
-          const anillo = el(c.capa, 'circle', { cx: I.puesto[0], cy: I.puesto[1], r: I.anillo, fill: 'rgba(125,224,90,.08)', stroke: VERDE, 'stroke-width': 2.5, 'stroke-dasharray': '7 5', opacity: 0 });
-          el(c.capa, 'rect', { x: I.puesto[0] - 7, y: I.puesto[1] - 7, width: 14, height: 14, rx: 2, fill: VERDE });
-          const portales = I.portales.map(p => el(c.capa, 'circle', { cx: p[0], cy: p[1], r: 0, fill: 'rgba(176,97,255,.25)', stroke: VIOLETA, 'stroke-width': 3 }));
-          const js = COMPAS.map(n => punto(c.capa, VERDE, 4.4, n));
-          const enemigos = Array.from({ length: 12 }, (_, k) => ({ d: punto(c.capa, ROJO, 3.4), p: k % 3, sale: 1.2 + k * .45, va: k % 4 }));
-          return t => {
-            set(anillo, { opacity: suave(tramo(t, 0, .8)) });
-            portales.forEach((p, i) => set(p, { r: Math.max(0, 14 * suave(tramo(t, .4 + i * .3, 1.2 + i * .3)) + Math.sin(t * 4 + i) * 1.5) }));
-            js.forEach((d, i) => d.mover(I.jugadores[i][0] + Math.sin(t * 1.3 + i) * 6, I.jugadores[i][1] + Math.cos(t + i * 2) * 4));
-            // Siguen saliendo: cada invasor va hacia un jugador, cae cerca y vuelve a salir del portal.
-            enemigos.forEach(e => {
-              const f = t < e.sale ? -1 : (t - e.sale) % 5.4;
-              const [x, y] = por([I.portales[e.p], I.jugadores[e.va]], suave(lim(f / 4.6)) * .82);
-              e.d.mover(x, y, f < 0 ? 0 : f < 4.6 ? Math.min(1, f * 4) : Math.max(0, 1 - (f - 4.6) * 2.5));
-            });
-          };
-        } },
-      { tit: 'Cargar el puesto', txt: 'Las bajas dentro del anillo cargan el puesto. Al 100 %, cada uno elige 1 de 3: un arma, la Katana o una de las 27 cartas.',
-        escena(c) {
-          el(c.capa, 'circle', { cx: I.puesto[0], cy: I.puesto[1], r: I.anillo, fill: 'rgba(125,224,90,.08)', stroke: 'rgba(125,224,90,.35)', 'stroke-width': 2.5 });
-          const carga = el(c.capa, 'circle', { cx: I.puesto[0], cy: I.puesto[1], r: I.anillo, fill: 'none', stroke: VERDE, 'stroke-width': 6, transform: `rotate(-90 ${I.puesto[0]} ${I.puesto[1]})`, 'stroke-dasharray': (2 * Math.PI * I.anillo).toFixed(1), 'stroke-dashoffset': (2 * Math.PI * I.anillo).toFixed(1) });
-          el(c.capa, 'rect', { x: I.puesto[0] - 7, y: I.puesto[1] - 7, width: 14, height: 14, rx: 2, fill: VERDE });
-          const js = COMPAS.map(n => punto(c.capa, VERDE, 4.4, n));
-          const enemigos = Array.from({ length: 10 }, (_, k) => ({ d: punto(c.capa, ROJO, 3.4), desde: I.portales[k % 3], muere: .6 + k * .42 }));
-          const chip = html(c.hud, 'brf-chip', '');
-          chip.style.cssText = 'left:24px;top:24px';
-          const cartas = html(c.hud, 'brf-cartas oculto', '<h4>Elegí 1 de 3</h4>'
-            + [['Legendaria', '#FFC93C', 'Escolta', 'Un dron te acompaña: su rayo derrite al invasor más cercano.'], ['Épica', '#B061FF', 'Campo minado', 'Las granadas que tocan el piso quedan como minas.'], ['Arma', ROJO, 'Katana', 'Reemplaza a tu cuchillo. Corta a todos los que tenés delante.']]
-              .map(([r, col, n, x]) => `<div class="brf-carta" style="--r:${col}"><small>${r}</small><b>${n}</b><span>${x}</span></div>`).join(''));
-          const L = 2 * Math.PI * I.anillo;
-          return t => {
-            js.forEach((d, i) => d.mover(I.jugadores[i][0] + Math.sin(t * 1.3 + i) * 6, I.jugadores[i][1] + Math.cos(t + i * 2) * 4));
-            let muertos = 0;
-            enemigos.forEach(e => {
-              const k = suave(tramo(t, e.muere - .9, e.muere));
-              const [x, y] = por([e.desde, I.puesto], k * .7);
-              const o = t < e.muere ? (t > e.muere - .9 ? 1 : 0) : Math.max(0, 1 - (t - e.muere) * 3);
-              if (t >= e.muere) muertos++;
-              e.d.mover(x, y, o);
-            });
-            const pct = Math.min(100, Math.round(muertos * 10));
-            set(carga, { 'stroke-dashoffset': (L * (1 - pct / 100)).toFixed(1) });
-            chip.innerHTML = `<small>Puesto de suministros</small>${pct} %`;
-            cartas.classList.toggle('oculto', t < 5.4);
-          };
-        } },
-      { tit: 'El Jefe y revivir', txt: 'Cada 10 oleadas llega el Jefe. Si te quedás sin vida, quedás caído 30 s: un compañero te revive en 5 s manteniendo E.',
-        escena(c) {
-          const js = COMPAS.map(n => punto(c.capa, VERDE, 4.4, n));
-          const caido = el(c.capa, 'circle', { r: 9, fill: 'none', stroke: '#fff', 'stroke-width': 2, opacity: 0 });
-          const jefe = punto(c.capa, ROJO, 12, 'Jefe');
-          const chip = html(c.hud, 'brf-chip', '');
-          chip.style.cssText = 'left:24px;top:24px';
-          return t => {
-            const cae = t > 2.2, revive = suave(tramo(t, 4, 6.5));
-            js.forEach((d, i) => {
-              let [x, y] = [I.jugadores[i][0] + Math.sin(t * 1.3 + i) * 5, I.jugadores[i][1] + Math.cos(t + i * 2) * 4];
-              if (i === 0 && cae) [x, y] = [I.jugadores[0][0] - 10, I.jugadores[0][1] - 8];
-              if (i === 1 && t > 3) [x, y] = por([[I.jugadores[1][0], I.jugadores[1][1]], [I.jugadores[0][0] - 2, I.jugadores[0][1] - 4]], suave(tramo(t, 3, 4)));
-              d.mover(x, y, i === 0 && cae && revive < 1 ? .45 : 1);
-            });
-            jefe.mover(...por([I.jefe, [I.puesto[0] - 6, I.puesto[1] - 40]], suave(tramo(t, .3, 7))), suave(tramo(t, 0, .6)));
-            set(caido, { cx: I.jugadores[0][0] - 10, cy: I.jugadores[0][1] - 8, opacity: cae && revive < 1 ? 1 : 0, 'stroke-dasharray': `${(57 * revive).toFixed(1)} 57` });
-            chip.innerHTML = !cae ? '<small>Oleada 10</small>¡Llegó el Jefe!' : revive < 1 ? `<small>Vos · caído</small>${t < 4 ? `${Math.ceil(30 - (t - 2.2) * 2)} s para que te revivan` : `Luka te revive · ${Math.ceil(5 - revive * 5)} s`}` : '<small>Vos</small>¡De vuelta en la pelea!';
-          };
-        } }
+      { tit: 'El Jefe y revivir', video: 'presentacion/media/modos/invasion-4.mp4', txt: 'Cada 10 oleadas llega el Jefe. Si te quedás sin vida, quedás caído 30 s: un compañero te revive en 5 s manteniendo E.' }
     ]
   };
   const MODOS = [TACTICO, DM, INVASION];
@@ -387,14 +327,14 @@
     raiz.style.setProperty('--c', M.color);
     raiz.innerHTML = `<div class="brf-busca"><div class="brf-radar">${'<i></i>'.repeat(3)}<b></b></div><div class="e">Buscando partida</div><div class="g">1 / ${M.busca}</div><div class="s">${M.nombre} · Sudamérica · misma versión</div></div>
       <div class="brf-main"><div class="brf-izq"><div class="brf-eb">Partida encontrada</div><div class="brf-modo">${M.nombre}</div><div class="brf-sub">${M.sub}</div>
-        <div class="brf-paso"></div><h2 class="brf-tit"></h2><div class="brf-dots">${M.pasos.map(() => '<i></i>').join('')}</div></div>
-        <div class="brf-der"><svg viewBox="${M.img.vista.join(' ')}" preserveAspectRatio="xMidYMid ${M.img.ajuste || 'slice'}"><image href="${M.img.src}" width="${M.img.w}" height="${M.img.h}"/><g class="capa"></g></svg><div class="brf-hud"></div></div>
+        <div class="brf-paso"></div><h2 class="brf-tit"></h2><div class="brf-dots">${M.pasos.map(() => '<i></i>').join('')}</div><div class="brf-info"></div></div>
+        <div class="brf-der">${M.pasos.filter(P => P.video).map(P => `<video class="brf-video" src="${P.video}" muted playsinline loop preload="auto"></video>`).join('')}<svg ${M.img ? `viewBox="${M.img.vista.join(' ')}" preserveAspectRatio="xMidYMid ${M.img.ajuste || 'slice'}"><image href="${M.img.src}" width="${M.img.w}" height="${M.img.h}"/>` : '>'}<g class="capa"></g></svg><div class="brf-hud"></div></div>
         <div class="brf-ayuda"><button type="button" data-ir="-1" aria-label="Paso anterior">←</button><button type="button" data-ir="1" aria-label="Paso siguiente">→</button>pasos · <b>Esc</b>volver a los andenes</div></div>
       <button class="brf-volver" type="button">Volver a los andenes</button>`;
     inner.appendChild(raiz);
     raiz.querySelector('.brf-volver').addEventListener('click', cerrar);
     raiz.querySelectorAll('[data-ir]').forEach(x => x.addEventListener('click', e => { e.stopPropagation(); if (b && b.paso >= 0) irA(b.paso + +x.dataset.ir); }));
-    b = { M, raiz, paso: -1, t0: 0, buscaT0: performance.now(), capa: raiz.querySelector('.capa'), hud: raiz.querySelector('.brf-hud'), frame: null, svg: raiz.querySelector('svg'), vista: M.img.vista.slice(), cam: null };
+    b = { M, raiz, paso: -1, t0: 0, buscaT0: performance.now(), capa: raiz.querySelector('.capa'), hud: raiz.querySelector('.brf-hud'), info: raiz.querySelector('.brf-info'), frame: null, svg: raiz.querySelector('svg'), vista: M.img ? M.img.vista.slice() : null, cam: null };
     requestAnimationFrame(() => raiz.classList.add('on'));
     b.raf = requestAnimationFrame(tic);
   }
@@ -405,13 +345,19 @@
     const P = M.pasos[b.paso];
     b.capa.replaceChildren();
     b.hud.replaceChildren();
+    b.info.replaceChildren();
     b.raiz.querySelector('.brf-paso').textContent = `Paso ${b.paso + 1} / ${M.pasos.length}`;
     b.raiz.querySelector('.brf-tit').textContent = P.tit;
     b.raiz.querySelectorAll('.brf-dots i').forEach((d, k) => d.classList.toggle('on', k <= b.paso));
     b.raiz.querySelector('[data-ir="-1"]').disabled = b.paso === 0;
     b.raiz.querySelector('[data-ir="1"]').disabled = b.paso === M.pasos.length - 1;
-    b.cam = { de: b.vista.slice(), a: P.vista || M.img.vista, t0: b.t0 }; // un paso puede acercar la cámara a una parte del mapa
-    b.frame = P.escena({ capa: b.capa, hud: b.hud });
+    if (M.img) b.cam = { de: b.vista.slice(), a: P.vista || M.img.vista, t0: b.t0 }; // un paso puede acercar la cámara a una parte del mapa
+    b.raiz.querySelectorAll('.brf-video').forEach(v => {
+      const este = v.getAttribute('src') === P.video;
+      v.classList.toggle('on', este);
+      if (este) { v.currentTime = 0; v.play().catch(() => {}); } else v.pause();
+    });
+    b.frame = P.escena ? P.escena({ capa: b.capa, hud: b.hud, info: b.info }) : () => {};
   }
   function tic(ahora) {
     if (!b) return;
