@@ -17,7 +17,7 @@ function investment(){
 }
 // f(x): lo que queda por mes según los jugadores que pagan, con las zonas (pierde, se sostiene, va bien) y los escenarios.
 function payers(){
- const F=D.economics.fx,W=900,H=390,L=84,R=24,T=40,B=56,xmax=4000,ymin=-10000,ymax=10000;
+ const F=D.economics.fx,W=900,H=450,L=92,R=24,T=40,B=56,xmax=4000,ymin=-10000,ymax=10000;
  const X=x=>L+(W-L-R)*x/xmax,Y=v=>T+(H-T-B)*(ymax-v)/(ymax-ymin);
  const plata=v=>(v<0?'−':v>0?'+':'')+'US$ '+num(Math.abs(Math.round(v)));
  const eje=v=>v===0?'US$ 0':(v<0?'−':'+')+num(Math.abs(v)/1000)+' mil';
@@ -258,7 +258,15 @@ function openQuestion(index) {
   $('#questionDialog').onclose = () => { $('#questionBody').replaceChildren(); };
 }
 
-function render(focus=false){document.body.classList.remove('trailer-expanded');const s=D.slides[current];$('#slide').innerHTML=content(s);const questions=s.id==='cierre';if(questions&&running)$('#timerToggle').click();$('#timerToggle').disabled=questions;$('#position').textContent=`${current+1} / ${D.slides.length}`;$('#prev').disabled=current===0;if(current>=D.slides.length-2)prepararSecreto();$('#progress').style.width=`${(current+1)/D.slides.length*100}%`;$('#speaker').textContent=s.speaker||D.speaker;$('#announcement').textContent=`${current+1} de ${D.slides.length}: ${s.title}`;history.replaceState(null,'','#'+s.id);if(focus){$('#slide').focus({preventScroll:true});scrollTo(0,0);$('#slideScroll').scrollTop=0}}
+// Letra más grande: en las diapositivas con lugar libre, todo lo que va debajo del título se agranda parejo (zoom)
+// hasta llenar la pantalla, hasta un 45 %. Las que ya ocupan toda la altura (o son video o portada) quedan como están.
+const SIN_AJUSTE=['inicio','trailer','diferencial','identidad','cierre'];
+function envolverCuerpo(s){const m=$('#slide');if(SIN_AJUSTE.includes(s.id)||!m.querySelector(':scope>.head'))return;const c=document.createElement('div');c.className='cuerpo';[...m.children].filter(e=>!e.classList.contains('head')).forEach(e=>c.append(e));m.append(c);ajustarLetra()}
+function ajustarLetra(){const c=$('#slide>.cuerpo');if(!c)return;c.style.zoom='';const nav=document.querySelector('.navigation');const limite=Math.min((nav?nav.getBoundingClientRect().top:innerHeight)-18,innerHeight-parseFloat(getComputedStyle($('#slide')).paddingBottom));const desborde=()=>[...c.querySelectorAll('*')].filter(e=>e.scrollWidth>e.clientWidth+2&&getComputedStyle(e).overflowX!=='visible').length;const base=desborde();const cabe=z=>{c.style.zoom=z;return c.getBoundingClientRect().bottom<=limite&&c.scrollWidth<=c.clientWidth+1&&desborde()<=base};if(!cabe(1)){c.style.zoom='';return}let lo=1,hi=1.45;if(cabe(hi))return;for(let i=0;i<8;i++){const m=(lo+hi)/2;if(cabe(m))lo=m;else hi=m}c.style.zoom=lo}
+addEventListener('resize',()=>requestAnimationFrame(ajustarLetra));
+new MutationObserver(()=>requestAnimationFrame(ajustarLetra)).observe(document.body,{attributes:true,attributeFilter:['style','class']});
+document.fonts&&document.fonts.ready.then(ajustarLetra);
+function render(focus=false){document.body.classList.remove('trailer-expanded');const s=D.slides[current];$('#slide').innerHTML=content(s);envolverCuerpo(s);const questions=s.id==='cierre';if(questions&&running)$('#timerToggle').click();$('#timerToggle').disabled=questions;$('#position').textContent=`${current+1} / ${D.slides.length}`;$('#prev').disabled=current===0;if(current>=D.slides.length-2)prepararSecreto();$('#progress').style.width=`${(current+1)/D.slides.length*100}%`;$('#speaker').textContent=s.speaker||D.speaker;$('#announcement').textContent=`${current+1} de ${D.slides.length}: ${s.title}`;history.replaceState(null,'','#'+s.id);if(focus){$('#slide').focus({preventScroll:true});scrollTo(0,0);$('#slideScroll').scrollTop=0}}
 // Diapositiva secreta: Siguiente en el cierre rompe la página de a poco (temblor, cortes, grietas, la interfaz se cae), se abre el
 // portal y pasa el video del modo invasión. No cuenta en el índice, el contador ni el reloj; ← o Esc vuelve al cierre.
 const secreto={abierto:false,timers:[],tic:0,capa:null,video:null};
