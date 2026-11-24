@@ -93,6 +93,11 @@ function progress(){
  return `<div class="grid avance">${D.progress.map(p=>`<article class="card"><p class="eyebrow">${esc(p.name)} · ${esc(p.dates)}</p>${p.title?`<h3>${esc(p.title)}</h3>`:''}<div class="avance-foto">${p.image?`<img src="${esc(p.image)}" alt="">`:''}</div>${p.items.length?`<ul>${p.items.map(it=>`<li>${esc(it.text)}${it.images?`<span class="avance-imgs${it.round?' redondas':''}${it.icons?' iconos':''}">${it.images.map(src=>`<img src="${esc(src)}" alt="">`).join('')}</span>`:''}</li>`).join('')}</ul>`:''}</article>`).join('')}</div>`;
 }
 // La historia en tres momentos, con cuadros del tráiler, y abajo los modos que la representan con su mapa.
+// Identidad: los personajes (ciudades), los mapas (lugares del país), las armas (trenes) y el easter egg del TUM.
+function identity(){
+ const I=D.identity;
+ return `<div class="identidad"><section class="id-col"><p class="eyebrow">Personajes · ciudades argentinas</p><div class="id-pjs">${I.characters.map(c=>`<figure><img src="${esc(c.image)}" alt=""><figcaption><strong>${esc(c.name)}</strong><span>${esc(c.role)}</span>${c.note?`<small>${esc(c.note)}</small>`:''}</figcaption></figure>`).join('')}</div></section><section class="id-col"><p class="eyebrow">Mapas · lugares del país</p><div class="id-mapas">${I.maps.map(m=>`<article><img src="${esc(m.image)}" alt=""><div><small>${esc(m.mode)}</small><strong>${esc(m.name)}</strong><span>${esc(m.text)}</span></div></article>`).join('')}</div></section><section class="id-col id-huevo"><p class="eyebrow">Easter egg</p><figure><img src="${esc(I.egg.image)}" alt="${esc(I.egg.title)}"></figure><strong>${esc(I.egg.title)}</strong><span>${esc(I.egg.text)}</span></section><div class="id-trenes"><b>Las armas son trenes</b>${I.trains.map(t=>`<span>${esc(t)}</span>`).join('')}</div></div>`;
+}
 function story(){
  const H=D.story;
  return `<div class="historia"><div class="relato">${H.chapters.map((c,i)=>`<figure class="capitulo"><img src="${esc(c.image)}" alt=""><figcaption><b>${String(i+1).padStart(2,'0')}</b><strong>${esc(c.title)}</strong></figcaption></figure>`).join('')}</div><p class="facetas">${esc(H.facets)}</p><div class="modos-historia">${H.modes.map(m=>`<article class="modo-historia${m.map?'':' corto'}"><img src="${esc(m.image)}" alt=""><div><strong>${esc(m.name)}</strong><span>${esc(m.facet)}</span>${m.map?`<small>Mapa: ${esc(m.map)}</small>`:''}</div></article>`).join('')}</div></div>`;
@@ -148,6 +153,7 @@ function content(s){
  case 'metricas':return head(s)+metrics();
  // Modos de juego: abre la selección de modo del juego; en cada andén, «Buscar partida» muestra cómo se juega (briefing.js).
  case 'menus':return head(s)+`<button class="menu-demo modos-demo" data-demo="modos"><span class="modos-tiras"><img src="../img/tactico-vista.jpg" alt=""><img src="media/historia/colonia.jpg" alt=""><img src="media/campus/campus-5.jpg" alt=""></span><span class="menu-demo-texto"><strong>Elegí el modo</strong><span>Táctico, Deathmatch e Invasión, como en el juego. En cada andén, «Buscar partida» muestra cómo se juega.</span><em>Abrir la selección de modo →</em></span></button>`;
+ case 'identidad':return head(s)+identity();
  case 'conjuntos':return head(s)+sets();
  case 'emotes':return head(s)+dances();
  case 'tiempo':return head(s)+statusTime();
