@@ -136,3 +136,5 @@ Al tocar «Buscar partida», en vez de la sala de espera se abre un resumen visu
 - **Invasión** (minimapa del campus, `media/modos/campus.png`): de 1 a 4, la oleada N trae 10 + 5 × (N − 1) invasores y cada jugador de más suma la mitad, los portales a 30–55 m del puesto, las bajas dentro del anillo cargan el puesto y al 100 % cada uno elige 1 de 3 (un arma, la Katana o una de las 27 cartas), el Jefe cada 10 oleadas y el compañero que te revive en 5 s con E.
 
 Lo lee David Ramos y sigue en 2 minutos. Revisado a 1280 × 720 y a 1024 × 768, los doce pasos, sin errores de JavaScript.
+
+Los scripts y la hoja de estilos se piden con `?v=AAAAMMDD` (en `index.html` de la presentación, `presentacion/demo.js` en la guía y `briefing.js` en `demo.js`). GitHub Pages deja que el navegador guarde los archivos 10 minutos, y sin ese número una presentación abierta antes del cambio sigue con la versión vieja. Al cambiar uno de esos archivos, subir el número.
