@@ -12,6 +12,7 @@ Cada pantalla tiene su dirección, para abrirla directo: `#perfil`, `#tienda`, `
 - **Personalización:** avatares, banners, títulos, marcos y armas. En Armas se elige el arma y su skin. Las skins del juego son materiales 3D: acá se ven sobre el ícono del arma de la tienda pintado con los colores de la skin, y la barra de cada carta son sus cuatro colores.
 - **Emotes:** los 15 bailes con su ícono y su rareza, y la rueda de 4 espacios. Los cuatro bailes que la presentación tiene grabados (`presentacion/media/emotes`) se ven en movimiento en la vista previa.
 - **Historial** (partidas de ejemplo) y **Cuenta** (en el juego la maneja el launcher; acá no hay cuenta de verdad).
+- **Armas en 3D:** en la vista previa de Armas el arma se ve en 3D con la skin puesta, se mece sola y se gira arrastrando. Lo mismo en el detalle de la Tienda y del Pase y en la carta grande de las cápsulas. Las cartas de las grillas siguen con el ícono.
 - **Marcos:** se arman como en `PerfilUI.Enmarcar`: cada marco se parte en dos mitades con la esquina y el adorno del centro fijos, y el banner llega hasta el borde interior del riel.
 
 ## Tienda
@@ -22,6 +23,17 @@ La tarjeta Tienda de abajo a la izquierda abre las cuatro pestañas. Cada vez qu
 - **Cápsulas:** la Estación del Rift con las reglas de `PerfilDatos` (probabilidades por rareza y por tipo, épicas y legendarias siempre skins o emotes, épico o mejor asegurado cada 10, canjes y créditos por repetidos) y la misma animación. Solo sale lo que en el juego sale de las cápsulas (`OrigenDeCosmeticos`).
 - **Pase de batalla:** la temporada 1 con sus 40 niveles, los premios gratis cada 5, «Reclamar todo», comprar el pase con 950 cristales y los desafíos (con progreso de ejemplo).
 - **Cristales:** la oferta de bienvenida y los cuatro paquetes. Las compras son simuladas: suman cristales y quedan en el historial, sin cobrar nada.
+
+## Armas en 3D
+
+`3d/armas3d.js` dibuja el arma con three.js (r160, copiado en `3d/vendor` con su licencia, sin depender de internet). Si el navegador no tiene WebGL queda la imagen de siempre.
+
+- **Modelos** (`3d/modelos`): los FBX de `ModelosDeArmas.asset`, uno por arma.
+- **Skins comunes:** cada parte del arma (Black, White, Grey y Main) toma el color de la barra de la skin, igual que en el juego.
+- **Skins con diseño:** los shaders de `Assets/Art/Skins` (Patrón, Matrix, Cartel, Mapa, Dragón, Tormenta y Cuchillo) pasados a GLSL en `3d/sombreado.js`, con los valores de cada `.mat` copiados en `armas3d.js`. Las texturas que usan están en `3d/texturas` a 512 px. La luz es más simple que la del juego y no está el efecto de calor del disparo, así que se ven muy parecidas pero no idénticas.
+- **Escala:** los patrones se miden en metros sobre el arma. El largo de cada arma (`LARGO` en `armas3d.js`) es estimado: si un patrón se ve más grande o más chico que en el juego, se ajusta ahí.
+
+Si cambia un `.mat` o un shader de skin en el juego, hay que copiar el cambio a mano en `armas3d.js` o `sombreado.js`.
 
 ## Actualizar
 

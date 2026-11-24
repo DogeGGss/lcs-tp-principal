@@ -102,6 +102,11 @@
   const srcBanner = (id) => `img/banners/${id}.jpg`;
   const srcSkin = s => `img/skins/${s.arma}-${s.estilo}.webp`, srcArma = a => `img/skins/${a}.webp`, srcEmote = id => `img/emotes/${id}.webp`;
   function Contener(padre, src, x, y, w, h) { const caja = Img(padre, src, x, y, w, h); caja.firstChild.className = 'contener'; return caja; }
+  // El arma en 3D con la skin puesta (3d/armas3d.js), encima de la imagen, que queda de respaldo si no hay WebGL.
+  function en3d(nodo, s, imagen) {
+    const pedido = [nodo, { arma: s.arma, estilo: s.estilo || '', barra: s.barra }, () => { imagen.classList.add('imagen-2d'); imagen.style.opacity = '0'; }];
+    if (window.Armas3D) window.Armas3D.mostrar(...pedido); else window.pedido3D = pedido;
+  }
   function clic(nodo, accion, etiqueta) {
     nodo.classList.add('clic'); nodo.tabIndex = 0; nodo.setAttribute('role', 'button');
     if (etiqueta) nodo.setAttribute('aria-label', etiqueta);
@@ -489,7 +494,7 @@
     T(v, 24, 18, 400, 22, 'fr', 17, 'var(--accent)', 'Vista previa', { mayus: true, esp: 16 });
     const caja = N(v, 24, 54, 452, 301); caja.style.borderRadius = '8px';
     caja.style.background = `radial-gradient(ellipse at 50% 45%,${sel.id ? color + '40' : '#232833'},#0d1015 70%)`;
-    Contener(caja, sel.id ? srcSkin(sel) : srcArma(sel.arma), 26, 40, 400, 221);
+    en3d(caja, sel, Contener(caja, sel.id ? srcSkin(sel) : srcArma(sel.arma), 26, 40, 400, 221));
     T(v, 24, 366, 452, 58, 'ft', 38, 'var(--ink)', sel.nombre, { mayus: true, esp: 3, puntos: true });
     T(v, 24, 420, 452, 28, 'fx', 20, 'var(--mute)', sel.id ? `Skin de arma · <span style="color:${color}">${RAREZA[sel.rareza]}</span> · ${dondeSeConsigue(sel)}`
       : 'El arma como viene, sin skin', { html: true, puntos: true });
@@ -955,7 +960,7 @@
     const k = N(padre, CX - 190, CY - 250, 380, 500); k.style.background = color; k.style.borderRadius = '12px';
     const fondo = N(k, 4, 4, 372, 492); fondo.style.background = '#0E1117'; fondo.style.borderRadius = '10px';
     T(k, 0, 18, 380, 26, 'fr', 22, color, RAREZA[c.rareza] + (r.garantia ? ' · garantía' : ''), { al: 'centro', mayus: true, esp: 16 });
-    arte(k, c, 40, 56, 300);
+    arte(k, c, 40, 56, 300, true);
     ajustar(T(k, 20, 372, 340, 46, 'ft', 40, 'var(--ink)', c.nombre, { al: 'centro', mayus: true, esp: 3 }), 40, 24);
     T(k, 20, 418, 340, 22, 'fr', 16, 'var(--mute)', TIPO[c.tipo] + (c.estilo && c.tipo !== 'skin' ? ' · ' + c.estilo : ''), { al: 'centro', mayus: true, esp: 14 });
     etiqueta(k, r, 190, 456);
@@ -969,16 +974,18 @@
     T(k, 10, 216, w - 20, 52, 'fr', 20, 'var(--ink)', c.nombre, { al: 'centro' }).style.whiteSpace = 'normal';
     etiqueta(k, r, w / 2, 284);
   }
-  const arte = (k, c, x, y, lado) => vitrina(k, c, x, y, lado, lado);
+  const arte = (k, c, x, y, lado, en3D) => vitrina(k, c, x, y, lado, lado, en3D);
   // El dibujo de cualquier premio en un recuadro: avatares, banners, marcos, títulos, skins, emotes y cristales.
-  function vitrina(k, c, x, y, w, h) {
+  // en3D: las skins se ven en 3D (solo en las vistas grandes: el detalle de la Tienda y del Pase y la carta de la cápsula).
+  function vitrina(k, c, x, y, w, h, en3D) {
     const f = N(k, x, y, w, h), l = Math.min(w, h); f.style.background = '#151922'; f.style.borderRadius = '6px'; f.style.overflow = 'hidden';
     if (c.tipo === 'avatar') Img(f, srcAvatar(c.id), (w - l) / 2, (h - l) / 2, l, l);
     else if (c.tipo === 'banner') Img(f, srcBanner(c.id), 0, (h - w / 3) / 2, w, w / 3);
     else if (c.tipo === 'marco') bannerEnmarcado(N(f, 0, (h - w / 3) / 2, w, w / 3), w, w / 3, estado.banner, c.id, true); // sobre tu banner
     else if (c.tipo === 'skin') {
       f.style.background = `radial-gradient(ellipse at 50% 50%,${COLOR[c.rareza]}38,#151922 72%)`;
-      Contener(f, srcSkin(c), w * 0.07, h * 0.12, w * 0.86, h * 0.76);
+      const imagen = Contener(f, srcSkin(c), w * 0.07, h * 0.12, w * 0.86, h * 0.76);
+      if (en3D) en3d(f, c, imagen);
     } else if (c.tipo === 'emote') { const d = l * 0.78; Contener(f, srcEmote(c.id), (w - d) / 2, (h - d) / 2, d, d); }
     else if (c.tipo === 'cristales') {
       iconoMoneda(f, 2, w / 2, h * 0.42, l * 0.36);
@@ -1141,7 +1148,7 @@
   function detalleOferta(v, c) {
     const color = COLOR[c.rareza], cuadrada = c.tipo === 'avatar' || c.tipo === 'emote', alto = cuadrada ? 422 : 230;
     T(v, 24, 18, 400, 22, 'fr', 17, 'var(--accent)', 'Oferta', { mayus: true, esp: 16 });
-    vitrina(v, c, 24, 52, 422, alto);
+    vitrina(v, c, 24, 52, 422, alto, true);
     let y = 52 + alto + 18;
     T(v, 24, y, 422, 22, 'fr', 17, color, `${TIPO[c.tipo]} · ${RAREZA[c.rareza]}`, { mayus: true, esp: 12 });
     const n = T(v, 24, y + 26, 422, cuadrada ? 50 : 96, 'ft', 38, 'var(--ink)', c.nombre, { mayus: true, esp: 3, arriba: true });
@@ -1238,7 +1245,7 @@
   function detallePase(v, nivel) {
     const c = PASE[nivel - 1], color = COLOR[c.rareza], est = estadoNivel(nivel), cuadrada = c.tipo === 'avatar' || c.tipo === 'emote', alto = cuadrada ? 360 : 230;
     T(v, 24, 18, 422, 22, 'fr', 17, 'var(--accent)', `Nivel ${nivel} · ${gratis(nivel) ? 'Gratis' : 'Pase de batalla'}`, { mayus: true, esp: 14 });
-    vitrina(v, c, 24, 52, 422, alto);
+    vitrina(v, c, 24, 52, 422, alto, true);
     const y = 52 + alto + 18;
     T(v, 24, y, 422, 22, 'fr', 17, color, `${TIPO[c.tipo]} · ${RAREZA[c.rareza]}`, { mayus: true, esp: 12 });
     ajustar(T(v, 24, y + 26, 422, 96, 'ft', 38, 'var(--ink)', c.nombre, { mayus: true, esp: 3, arriba: true }), 38, 26);
