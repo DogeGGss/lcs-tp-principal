@@ -37,8 +37,7 @@ function payers(){
   <text class="fx-txt" x="${X(m.payers)}" y="${Y(m.result)-18}" text-anchor="middle">Promedio: ${num(m.payers)} pagan · ${plata(m.result)}</text>
   <text class="fx-nota" x="${X(2490)}" y="${Y(2400)}" text-anchor="middle">Unity Pro</text><g class="fx-hover" id="fxHover" visibility="hidden"><line id="fxHoverLine" y1="${T}" y2="${H-B}"/><circle id="fxHoverDot" r="6"/><rect id="fxHoverBox" rx="6" height="30"/><text id="fxHoverTxt"></text></g>
   <rect class="fx-hit" x="${L}" y="${T}" width="${W-L-R}" height="${H-T-B}" data-fx="${L},${W-R},${xmax}"/></svg>`;
- const fuera=F.outside.map(o=>`${o.name}: ${num(o.payers)} pagan, a US$&nbsp;${dec(o.arppu)} cada uno: ${plata(o.result)} por mes`).join('. ');
- return `<div class="fx">${svg}<div class="fx-zonas"><div class="mal"><b>Va mal</b><span>menos de ${num(Math.round(F.breakEven))} pagadores: pierde plata</span></div><div class="justo"><b>Se sostiene</b><span>de ${num(Math.round(F.breakEven))} a ${num(Math.round(F.full))}: no pierde con el equipo de hoy</span></div><div class="bien"><b>Va bien</b><span>${num(Math.round(F.full))} o más, 3 meses seguidos: también se paga el equipo completo</span></div><p class="footnote">Lo que queda después de Steam, la retención de EE.UU., los gastos y el impuesto, con el gasto por pagador del promedio (US$&nbsp;${dec(F.arppu)}). Desde unos 2.490 pagadores se pasan los US$&nbsp;200.000 por año y hay que pagar Unity Pro para los 7 (US$&nbsp;1.348 por mes): de ahí la bajada. Los escalones chicos son cambios de plan de Photon. ${fuera}.</p></div></div>`;
+ return `<div class="fx">${svg}<div class="fx-zonas"><div class="mal"><b>Va mal</b><span>menos de ${num(Math.round(F.breakEven))} pagadores: pierde plata</span></div><div class="justo"><b>Se sostiene</b><span>de ${num(Math.round(F.breakEven))} a ${num(Math.round(F.full))}: no pierde con el equipo de hoy</span></div><div class="bien"><b>Va bien</b><span>${num(Math.round(F.full))} o más, 3 meses seguidos: también se paga el equipo completo</span></div></div></div>`;
 }
 // Valor de la f(x) bajo el mouse: la línea vertical, el punto sobre la curva y el número.
 document.addEventListener('pointermove',e=>{
@@ -153,7 +152,7 @@ function content(s){
  case 'emotes':return head(s)+dances();
  case 'tiempo':return head(s)+statusTime();
  case 'arsenal':return head(s)+arsenal();
- case 'juego':return head(s)+`<button class="menu-demo" data-demo="menu"><img src="../menu/img/fondos/fondo-01.jpg" alt=""><span class="menu-demo-texto"><strong>Abrir el menú</strong><span>Entrá al Perfil desde tu credencial y armá tu combinación: 19 avatares, 19 banners, 70 títulos y 19 marcos. Son más de 500.000 combinaciones. Y en la Estación del Rift, abrí cápsulas.</span><em>Abrir demo →</em></span></button>`;
+ case 'juego':return head(s)+`<button class="menu-demo" data-demo="menu"><img src="../menu/img/fondos/fondo-01.jpg" alt=""><span class="menu-demo-texto"><strong>Abrir el menú</strong><em>Abrir demo →</em></span></button>`;
  case 'negocio':return head(s)+offer();
  case 'escenarios':return head(s)+scenarios();
  case 'costos':return head(s)+costs();
@@ -328,7 +327,7 @@ $('#indexButton').onclick=()=>$('#indexDialog').showModal();
 $('#contrast').onclick=()=>{const on=document.body.classList.toggle('projector');$('#contrast').setAttribute('aria-pressed',on)};
 $('#fullscreen').onclick=async()=>{try{if(document.fullscreenElement)await document.exitFullscreen();else await document.documentElement.requestFullscreen()}catch{$('#announcement').textContent='El navegador no permitió pantalla completa. Podés usar F11.'}};
 // El menú, el perfil y la Estación del Rift son una página aparte (/menu); las otras demos son maquetas de la guía.
-const demoSrc=id=>id==='menu'?'../menu/index.html':`../index.html?demo=${id}${id==='modos'?'&briefing=1&v=2026112407':''}`;
+const demoSrc=id=>id==='menu'?'../menu/index.html':`../index.html?demo=${id}${id==='modos'?'&briefing=1&v=2026112408':''}`;
 let demo='';function openDemo(id){demo=id;$('#demoTitle').textContent={tienda:'Tienda de armas',modos:'Selección de modo',hud:'HUD de combate',menu:'Menú, perfil y cápsulas'}[id];$('#demoSub').textContent=id==='menu'?'El menú, el perfil y la Estación del Rift del juego, en la página':'Maqueta interactiva de la guía';$('#demoFrame').src=demoSrc(id);$('#demoDialog').showModal()}
 $('#resetDemo').onclick=()=>{$('#demoFrame').src=demoSrc(demo)};
 $('#demoDialog').addEventListener('close',()=>{$('#demoFrame').src='about:blank'});
