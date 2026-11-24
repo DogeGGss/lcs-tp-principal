@@ -94,6 +94,10 @@ function progress(){
 }
 // La historia en tres momentos, con cuadros del tráiler, y abajo los modos que la representan con su mapa.
 // Identidad: los personajes (ciudades), los mapas (lugares del país), las armas (trenes) y el easter egg del TUM.
+function edge(){
+ const E=D.edge;
+ return `<div class="diferencial">${E.pillars.map(p=>`<article class="dif-col${p.next?' dif-sigue':''}"><figure><img src="${esc(p.image)}" alt=""></figure><div><p class="eyebrow">${esc(p.tag)}</p><h3>${esc(p.title)}</h3><p>${esc(p.text)}</p><em>${esc(p.compare)}</em></div></article>`).join('')}</div><div class="dif-publico"><b>${esc(E.audience.title)}</b><span>${esc(E.audience.text)}</span></div>`;
+}
 function identity(){
  const I=D.identity;
  return `<div class="identidad"><section class="id-col id-personajes"><p class="eyebrow">Personajes · ciudades argentinas</p>${I.characters.map(c=>`<figure><img src="${esc(c.image)}" alt=""><figcaption><strong>${esc(c.name)} <small>${esc(c.role)}</small></strong><span>${esc(c.origin)}</span></figcaption></figure>`).join('')}</section><section class="id-col"><p class="eyebrow">Mapas · lugares del país</p><div class="id-mapas">${I.maps.map(m=>`<article><img src="${esc(m.image)}" alt=""><div><small>${esc(m.mode)}</small><strong>${esc(m.name)}</strong><span>${esc(m.text)}</span></div></article>`).join('')}</div><div class="id-trenes"><b>Las armas son trenes</b><div>${I.trains.map(t=>`<span>${esc(t)}</span>`).join('')}</div></div></section><div class="id-derecha"><section class="id-col id-foto"><p class="eyebrow">Carta legendaria</p><div class="id-fila"><figure class="id-escolta"><img src="${esc(I.escort.image)}" alt="El dron Escolta con la banderita argentina"></figure><div><strong>${esc(I.escort.title)}</strong><span>${esc(I.escort.text)}</span></div></div></section><section class="id-col id-foto"><p class="eyebrow">Easter egg</p><div class="id-fila"><figure class="id-grafiti"><img src="${esc(I.egg.image)}" alt="${esc(I.egg.title)}"></figure><div><strong>${esc(I.egg.title)}</strong><span>${esc(I.egg.text)}</span></div></div></section></div></div>`;
@@ -153,6 +157,7 @@ function content(s){
  case 'metricas':return head(s)+metrics();
  // Modos de juego: abre la selección de modo del juego; en cada andén, «Buscar partida» muestra cómo se juega (briefing.js).
  case 'menus':return head(s)+`<button class="menu-demo modos-demo" data-demo="modos"><span class="modos-tiras"><img src="../img/tactico-vista.jpg" alt=""><img src="media/historia/colonia.jpg" alt=""><img src="media/campus/campus-5.jpg" alt=""></span><span class="menu-demo-texto"><strong>Elegí el modo</strong><span>Táctico, Deathmatch e Invasión, como en el juego. En cada andén, «Buscar partida» muestra cómo se juega.</span><em>Abrir la selección de modo →</em></span></button>`;
+ case 'diferencial':return head(s)+edge();
  case 'identidad':return head(s)+identity();
  case 'conjuntos':return head(s)+sets();
  case 'emotes':return head(s)+dances();
