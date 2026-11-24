@@ -25,6 +25,9 @@ public static class CatalogoDeSkins
         public bool tenir;
         /// <summary>Un arma cuerpo a cuerpo (el cuchillo): sin las comunes ni los diseños de las armas de fuego.</summary>
         public bool cuerpoACuerpo;
+        /// <summary>Un arma que solo existe en el Modo Invasión (el Gran Capitán): no tiene desafíos del pase de
+        /// Deathmatch o Táctico, donde no se puede usar (US 365).</summary>
+        public bool soloInvasion;
         /// <summary>Sus propios diseños (null: los de las armas de fuego, Disenos).</summary>
         public List<Diseno> disenos;
     }
@@ -140,7 +143,7 @@ public static class CatalogoDeSkins
         new Arma { id = "belgrano-sur", nombre = "Belgrano Sur", ficha = "FusilRafaga" },
         new Arma { id = "roca", nombre = "Roca", ficha = "Escopeta" },
         new Arma { id = "ultimo-tren", nombre = "Último Tren", ficha = "Francotirador" },
-        new Arma { id = "gran-capitan", nombre = "El Gran Capitán", ficha = "GranCapitan" },
+        new Arma { id = "gran-capitan", nombre = "El Gran Capitán", ficha = "GranCapitan", soloInvasion = true },
         new Arma { id = "la-portena", nombre = "La Porteña", ficha = "Pistola" },
         new Arma { id = "la-trochita", nombre = "La Trochita", ficha = "PistolaPesada" },
         // El cuchillo: teñido con un color no quedó bien (13/11/2026), así que solo tiene sus propios diseños (19/11/2026).
