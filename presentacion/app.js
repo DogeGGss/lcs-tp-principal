@@ -1,7 +1,8 @@
 'use strict';
 const D=window.PRESENTATION, $=s=>document.querySelector(s);
-// Los tres planes de Financiación están guardados fuera del recorrido; con ?planes en la dirección vuelven después de Costos.
-if(D.savedSlides&&new URLSearchParams(location.search).has('planes'))D.slides.splice(D.slides.findIndex(x=>x.id==='costos')+1,0,...D.savedSlides);
+// Diapositivas guardadas fuera del recorrido (la f(x) y los tres planes): con ?guardadas (o ?planes) en la dirección vuelven
+// a su lugar, cada una después de la que dice su after.
+if(D.savedSlides&&['guardadas','planes'].some(k=>new URLSearchParams(location.search).has(k))){const vistas={};for(const g of D.savedSlides){const ancla=vistas[g.after]||g.after,i=D.slides.findIndex(x=>x.id===ancla);if(i<0)continue;D.slides.splice(i+1,0,g);vistas[g.after]=g.id}}
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 let current=0,weaponId='fusil';
 const num=n=>n.toLocaleString('es-AR'),dec=n=>n.toLocaleString('es-AR',{minimumFractionDigits:2,maximumFractionDigits:2});
@@ -168,7 +169,7 @@ function arsenal(){
 function content(s){
  switch(s.id){
  case 'inicio':return `<div class="hero"><p class="eyebrow">Laboratorio de Construcción de Software · Sprint 5</p><img class="hero-logo" src="media/logo.png" alt="Project Riftwalker"><h1>Del equipo<br>al juego.</h1><p class="lead">Decisiones, evidencia y una experiencia para jugar.</p></div>`;
- case 'trailer':{const t=D.trailer;return `<div class="head row trailer-head"><p class="eyebrow">${eyebrow(s)}</p>${t.src?'<button class="primary" data-trailer>▶ Pantalla completa</button>':''}</div><div class="trailer">${t.src?`<video id="trailerVideo" src="${esc(t.src)}"${t.poster?` poster="${esc(t.poster)}"`:''} controls controlslist="nofullscreen" playsinline preload="metadata"></video><button class="trailer-exit" data-exit-trailer>Volver al recorrido</button>`:'<strong>Tráiler</strong>'}</div>`}
+ case 'trailer':{const t=D.trailer;return `<div class="head row trailer-head"><p class="eyebrow">${eyebrow(s)}</p>${t.src?'<button class="primary" data-trailer>▶ Pantalla completa</button>':''}</div><div class="trailer">${t.src?`<video id="trailerVideo" src="${esc(t.src)}"${t.poster?` poster="${esc(t.poster)}"`:''} controls controlslist="nofullscreen" playsinline muted preload="metadata"></video><button class="trailer-exit" data-exit-trailer>Volver al recorrido</button>`:'<strong>Tráiler</strong>'}</div>`}
  case 'historia':return head(s)+story();
  case 'metricas':return head(s)+metrics();
  // Modos de juego: abre la selección de modo del juego; en cada andén, «Buscar partida» muestra cómo se juega (briefing.js).
@@ -192,6 +193,8 @@ function content(s){
  case 'cierre':return questionsScreen();
  }
 }
+// El tráiler va a 1,2 veces su velocidad y sin sonido (25/11/2026; el archivo ya no tiene pista de audio).
+for(const ev of ['loadedmetadata','play'])document.addEventListener(ev,e=>{const v=e.target;if(v.id==='trailerVideo'){v.muted=true;v.defaultPlaybackRate=v.playbackRate=1.2}},true);
 function closeTrailer(){document.body.classList.remove('trailer-expanded');$('#trailerVideo')?.pause();$('#slide').focus({preventScroll:true})}
 document.addEventListener('fullscreenchange',()=>{if(!document.fullscreenElement&&document.body.classList.contains('trailer-expanded'))closeTrailer()});
 const questionTopics = [
