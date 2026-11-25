@@ -393,3 +393,5 @@ main:has(.ident) .head{margin-bottom:14px}
 .ct-fila.queda i{background:var(--green)}
 @media(max-width:700px){.costos2{grid-template-columns:1fr}}
 
+/* Sprint 4: los emotes enteros dentro del círculo (más alejados), sin recortar los brazos ni los pies. */
+.sprint-uno .avance-imgs.redondas img[src*="emotes/"]{object-fit:contain;padding:6px}
