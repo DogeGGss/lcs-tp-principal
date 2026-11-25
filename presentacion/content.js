@@ -96,19 +96,13 @@ window.PRESENTATION = {
   statusTime: {queue:[['26/09',19],['27/09',5],['28/09',5],['29/09',15],['30/09',22],['01/10',31],['02/10',37],['03/10',44],['04/10',44],['05/10',57],['06/10',87],['07/10',77],['08/10',75],['09/10',63],['10/10',55],['11/10',53],['12/10',25],['13/10',25],['14/10',28],['15/10',26],['16/10',46],['17/10',30],['18/10',24],['19/10',18],['20/10',22],['21/10',23],['22/10',26]],
     sprints:[{name:'Sprint 1', from:'26/09', to:'28/09', wait:'15 h', note:'Datos incompletos: el script se creó a mitad del sprint.'}, {name:'Sprint 2', from:'29/09', to:'12/10', wait:'5,7 días'}, {name:'Sprint 3', from:'13/10', to:'22/10', wait:'3,1 días'}],
     decision:'Pasamos gente de desarrollo a testing.'},
-  // 10 de las 27 cartas de Invasión, de las cuatro rarezas, para la pregunta Modo Invasión. Textos y «rinde con» como en el
-  // juego (CartaDeInvasion.cs). max: cuántas veces se puede tener (1 = de una sola vez).
+  // 4 de las 27 cartas de Invasión para la pregunta Modo Invasión (desde el 25/11/2026 solo estas, en grande y en 2 × 2).
+  // Textos como en el juego (CartaDeInvasion.cs); with: con qué armas rinde; max: cuántas veces se puede tener.
   cards: [
-    {name:'Escolta', rarity:'Legendaria', with:'Todas', max:1, text:'Un dron te acompaña: su rayo derrite al invasor más cercano y cada 8 s lanza arcos eléctricos que paralizan a los de alrededor.'},
-    {name:'Alimentación directa', rarity:'Legendaria', with:'Todas', max:1, text:'El cargador y la reserva son un solo depósito: no recargás nunca, hasta que se acaban las balas.'},
-    {name:'Campo minado', rarity:'Épica', with:'Gran Capitán', max:3, text:'Las granadas que tocan el piso quedan como minas (hasta 5).'},
+    {name:'Carroñero', rarity:'Rara', with:'Todas las armas', max:3, text:'1 de cada 5 invasores suelta un cargador al morir.'},
     {name:'Acople', rarity:'Épica', with:'Pistolas y arma principal', max:1, text:'Cada 3 tiros de pistola que aciertan, el arma principal dispara sola un tiro hacia la mira.'},
     {name:'Doble cartucho', rarity:'Épica', with:'Escopeta', max:1, text:'La escopeta dispara 2 cartuchos juntos, gastando los dos.'},
-    {name:'Descarga rápida', rarity:'Rara', with:'Pistola pesada', max:1, text:'Disparo cargado: manteniendo el gatillo se carga en 3 etapas y, al soltar, salen 2, 4 o 6 balas seguidas.'},
-    {name:'Ráfaga creciente', rarity:'Rara', with:'Fusil de ráfaga', max:3, text:'Cada baja le suma una bala a las ráfagas, hasta 6. Al recargar vuelven a 3.'},
-    {name:'Carroñero', rarity:'Rara', with:'Todas', max:3, text:'1 de cada 5 invasores suelta un cargador al morir.'},
-    {name:'Bronca', rarity:'Común', with:'Todas', max:3, text:'Cuando un invasor te pega, tu próximo disparo suma 5 veces la vida que perdiste.'},
-    {name:'Despeje', rarity:'Común', with:'Todas', max:3, text:'Cuando el puesto se carga, una burbuja empuja 10 m a los invasores del anillo, salvo al Jefe.'}
+    {name:'Alimentación directa', rarity:'Legendaria', with:'Todas las armas', max:1, text:'El cargador y la reserva son un solo depósito: no recargás nunca, hasta que se acaban las balas.'}
   ],
   // Tráiler de la diapositiva 2: el MP4 va en presentacion/media/ (GitHub no acepta más de 100 MB). poster: cuadro del tráiler.
   trailer: {src:'media/trailer.mp4', poster:'media/trailer-poster.jpg'},

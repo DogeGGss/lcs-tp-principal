@@ -193,12 +193,17 @@ const questionTopics = [
   ['Idiomas', 'Idiomas', 'idiomas'],
   ['Logros', 'Logros', 'logros'],
   ['Miras', 'Elegí tu mira', 'miras'],
-  ['Modo Invasión', 'Modo Invasión · De 1 a 4 jugadores', 'invasion'],
+  ['Modo Invasión', 'Invasión · 4 de las 27 cartas', 'invasion'],
   ['Cuenta', 'Tu cuenta Riftwalker', 'cuenta'],
   ['Launcher', 'El launcher de Riftwalker', 'launcher'],
   ['Arsenal', 'Cada arma cambia una decisión', 'arsenal']
 ];
 const proofImages = '../pruebas/idiomas/2026-11-08/';
+// Las dos capturas de la pregunta Logros: archivo, texto alternativo y nombre de la pestaña.
+const LOGROS = [
+  ['media/logros-progreso.png', 'Pestaña Logros: 7 de 25 logros obtenidos, con el avance de cada uno y el porcentaje de jugadores que lo tiene', 'Tu progreso en cada logro'],
+  ['media/logros-ranking.png', 'Pestaña Ranking: ranking global del minijuego por cometas destruidos', 'Ranking global por modo']
+];
 const invasionView = proofImages + 'US-348_CA1_Invasion_HUD_y_oleada.png';
 let campusPhotos = Array.from({ length: 11 }, (_, index) => `media/campus/campus-${index + 1}.jpg`);
 let campusPhoto = 0;
@@ -213,21 +218,22 @@ function questionVisual(key) {
   switch (key) {
     case 'mapa': return `<img id="campusPicture" class="qa-picture" alt=""><div class="qa-actions"><button data-photo="-1" aria-label="Foto anterior">←</button><output id="photoCount"></output><button data-photo="1" aria-label="Foto siguiente">→</button><label class="photo-picker">Elegir fotos del mapa<input type="file" id="mapFiles" accept="image/*" multiple></label></div>`;
     case 'steam': return '<iframe class="steam-showcase" title="Ficha de Steam" src="../steam/"></iframe>';
-    case 'logros': return `<div class="qa-run"><figure><img src="media/logros-progreso.png" alt="Pestaña Logros: 7 de 25 logros obtenidos, con el avance de cada uno y el porcentaje de jugadores que lo tiene"><figcaption>Tu progreso y el porcentaje de jugadores que tiene cada logro</figcaption></figure><figure><img src="media/logros-ranking.png" alt="Pestaña Ranking: ranking global del minijuego por cometas destruidos"><figcaption>Ranking global por modo y categoría</figcaption></figure></div><div class="qa-actions"><strong>25 logros</strong><span>9 de cometas</span><span>16 de combate</span></div>`;
+    // Logros (25/11/2026): una captura por vez, a todo el ancho, con dos pestañas grandes para pasar de una a la otra.
+    case 'logros': return `<div class="qa-actions qa-pestanas">${LOGROS.map(([,, nombre],k)=>`<button data-logro="${k}" aria-pressed="${!k}">${nombre}</button>`).join('')}</div><img id="logroPicture" class="qa-picture" src="${LOGROS[0][0]}" alt="${LOGROS[0][1]}"><div class="qa-actions"><strong>25 logros</strong><span>9 de cometas</span><span>16 de combate</span></div>`;
     case 'idiomas': {
       const flag = (code,name) => `<figure><img alt="" src="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/${code}.svg"><figcaption>${name}</figcaption></figure>`;
       return `<div class="qa-languages"><h3>En el juego y el launcher</h3><div>${flag('1f1e6-1f1f7','Español')}${flag('1f1ec-1f1e7','English')}${flag('1f1e7-1f1f7','Português')}${flag('1f1eb-1f1f7','Français')}${flag('1f1ee-1f1f9','Italiano')}</div><p class="qa-caption">Se elige en Opciones o en el launcher, y los dos quedan en el mismo idioma.</p></div>`;
     }
-    case 'miras': return '<img class="qa-picture" style="height:auto;max-height:70dvh;object-fit:contain" src="media/mira-opciones.png" alt="Opciones de mira con forma, tamaño, color y vista previa sobre fondo claro y oscuro">';
+    case 'miras': return '<img class="qa-picture" src="media/mira-opciones.png" alt="Opciones de mira con forma, tamaño, color y vista previa sobre fondo claro y oscuro">';
     case 'invasion': {
+      // Desde el 25/11/2026, solo cuatro cartas en grande (2 × 2): rareza, nombre, qué hace y con qué rinde.
       const rar={'Común':'comun','Rara':'rara','Épica':'epica','Legendaria':'legendaria'};
-      const cartas=D.cards.map(c=>`<article class="qa-carta ${rar[c.rarity]}"><span class="qa-rareza">${esc(c.rarity)}</span><strong>${esc(c.name)}</strong><p>${esc(c.text)}</p><small>${esc(c.with)} · ${c.max>1?'hasta 3 veces':'una sola vez'}</small></article>`).join('');
-      return `<div class="qa-run qa-invasion"><figure><img src="${invasionView}" alt="Oleada en el campus"><figcaption>Sobreviví a la oleada</figcaption></figure><figure><img src="${proofImages}US-348_CA2_Invasion_eleccion_de_cartas.png" alt="Tres recompensas del puesto"><figcaption>Cargá el puesto y elegí 1 de 3</figcaption></figure></div><p class="qa-caption">Solo o con hasta tres amigos. Matando se carga el puesto de suministros y ahí cada uno elige 1 de 3: un arma, la Katana o una carta. Hay 27 cartas y 8 lugares; algunas se acumulan hasta 3 veces. Cuanto más avanzan las oleadas, más salen las raras y las épicas, y después del primer Jefe, las legendarias. Volver a tirar cuesta 150 puntos.</p><div class="qa-cartas">${cartas}</div>`;
+      return `<div class="qa-cartas">${D.cards.map(c=>`<article class="qa-carta ${rar[c.rarity]}"><span class="qa-rareza">${esc(c.rarity)}</span><strong>${esc(c.name)}</strong><p>${esc(c.text)}</p><small>${esc(c.with)} · ${c.max>1?'se acumula hasta 3 veces':'una sola vez'}</small></article>`).join('')}</div>`;
     }
     // La ficha de cada arma (antes, la diapositiva Arsenal): se elige con el desplegable y se vuelve a dibujar adentro del popup.
     case 'arsenal': return `<div class="qa-arsenal">${arsenal()}</div>`;
-    case 'launcher': return '<img class="qa-picture" style="display:block;width:100%;height:auto;max-height:56dvh;object-fit:contain" src="media/launcher.png" alt="Launcher de Project Riftwalker con las novedades de la versión 0.4.0 y el botón Jugar"><div class="qa-actions"><strong>Instala y actualiza</strong><span>Novedades de cada versión</span><span>Entrás con tu cuenta</span><span>Canal estable y experimental</span></div>';
-    case 'cuenta': return '<div class="qa-account"><div><strong>Crear cuenta</strong><span>Mail y contraseña</span></div><div><strong>Ingresar con Steam</strong><span>Acceso previsto</span></div></div><img class="qa-picture" style="display:block;width:100%;height:auto;max-height:38dvh;object-fit:contain" src="media/cuenta-confirmacion.png" alt="Correo de Project Riftwalker para confirmar el registro de una cuenta"><p class="qa-caption">Tu perfil, logros y monedas te acompañan al cambiar de PC.</p>';
+    case 'launcher': return '<img class="qa-picture" src="media/launcher.png" alt="Launcher de Project Riftwalker con las novedades de la versión 0.4.0 y el botón Jugar"><div class="qa-actions"><strong>Instala y actualiza</strong><span>Novedades de cada versión</span><span>Entrás con tu cuenta</span><span>Canal estable y experimental</span></div>';
+    case 'cuenta': return '<div class="qa-account"><div><strong>Crear cuenta</strong><span>Mail y contraseña</span></div><div><strong>Ingresar con Steam</strong><span>Acceso previsto</span></div></div><img class="qa-picture" src="media/cuenta-confirmacion.png" alt="Correo de Project Riftwalker para confirmar el registro de una cuenta"><p class="qa-caption">Tu perfil, logros y monedas te acompañan al cambiar de PC.</p>';
   }
 }
 // Posiciones en porcentajes del tablero, compartidas por los trazos y sus botones.
@@ -301,6 +307,7 @@ document.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)r
  if(d.go!==undefined){$('#indexDialog').close();go(+d.go)}
 
  if(d.photo){campusPhoto=(campusPhoto+Number(d.photo)+campusPhotos.length)%campusPhotos.length;mapPhoto()}
+ if(d.logro!==undefined){const [src,alt]=LOGROS[+d.logro];$('#logroPicture').src=src;$('#logroPicture').alt=alt;for(const x of document.querySelectorAll('[data-logro]'))x.setAttribute('aria-pressed',x===b)}
  if(d.question!==undefined)openQuestion(Number(d.question));
  if(d.demo)openDemo(d.demo);
  if(d.trailer!==undefined){

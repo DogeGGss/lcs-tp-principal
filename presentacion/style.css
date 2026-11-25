@@ -165,18 +165,6 @@ body.trailer-expanded .trailer-exit { display: block; position: absolute; top: 1
 @media(max-width:1000px){.fx{grid-template-columns:1fr}}
 .fx-nota{fill:var(--muted);font:700 17px Barlow,sans-serif;paint-order:stroke;stroke:var(--panel);stroke-width:4px}
 
-.qa-invasion img{max-height:24dvh;object-fit:contain}.qa-invasion figcaption{padding:6px}
-.qa-cartas{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-top:6px}
-.qa-carta{--r:#e8eaed;background:var(--panel);border:1px solid var(--line);border-top:4px solid var(--r);border-radius:8px;padding:10px 12px;display:flex;flex-direction:column;gap:4px;min-width:0}
-.qa-carta.rara{--r:#4da3ff}.qa-carta.epica{--r:#b06bff}.qa-carta.legendaria{--r:#ffc93c}
-.qa-rareza{font:700 12px Barlow,sans-serif;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted)}.qa-rareza::before{content:'';display:inline-block;width:9px;height:9px;border-radius:50%;background:var(--r);margin-right:6px}
-.qa-carta strong{font:700 20px Display,sans-serif;line-height:1.05}.qa-carta p{font-size:14px;line-height:1.3;color:var(--text);margin:0;flex:1}.qa-carta small{font-size:13px;color:var(--muted)}
-body.projector .qa-carta{--r:#5f6670}body.projector .qa-carta.rara{--r:#075c95}body.projector .qa-carta.epica{--r:#6b2fb3}body.projector .qa-carta.legendaria{--r:#a87400}
-@media(max-width:1000px){.qa-cartas{grid-template-columns:repeat(2,1fr)}}
-#questionDialog:has(.qa-invasion){max-width:1440px}
-#questionBody .qa-invasion+.qa-caption{font-size:18px;line-height:1.4;padding:8px 4px 10px}
-#questionBody .qa-carta p{font-size:15px;line-height:1.3;margin:0}
-#questionBody .qa-carta strong{font-size:21px}
 /* Modos de juego: la tarjeta que abre la selección de modo, con una franja por modo */
 .modos-demo .modos-tiras{position:absolute;inset:0;display:grid;grid-template-columns:repeat(3,1fr)}.modos-demo .modos-tiras img{position:static;inset:auto;width:100%;height:100%;object-fit:cover;transition:transform .4s}.modos-demo:hover .modos-tiras img{transform:scale(1.04)}
 
@@ -410,4 +398,51 @@ main:has(.ident) .head{margin-bottom:14px}
  #demoDialog .demo-borde:hover+.dialog-head,#demoDialog .dialog-head:hover,#demoDialog .dialog-head:has(:focus-visible){transform:none}
  #demoFrame{height:100%}
 }
+
+/* Preguntas del cierre casi a pantalla completa (25/11/2026): en el proyector de 1024 × 768 la ventana ocupa casi toda la
+   pantalla, el contenido llena el alto que queda (las imágenes se achican sin cortarse) y la letra es grande. */
+#questionDialog{width:98vw;max-width:none;height:96dvh;max-height:96dvh;padding:14px 22px 18px;overflow:hidden}
+#questionDialog[open]{display:flex;flex-direction:column}
+#questionDialog[data-topic="steam"]{width:98vw;max-width:none}
+#questionDialog .dialog-head{flex:none;margin-bottom:10px}
+#questionDialog h2{font-size:44px}
+#questionBody{flex:1;min-height:0;overflow:auto;padding:0;display:flex;flex-direction:column;justify-content:safe center;gap:12px}
+#questionBody p,#questionBody .qa-caption{font-size:26px;line-height:1.35}
+#questionBody .qa-picture{flex:1 1 0;min-height:0;width:100%;height:auto;max-height:none;object-fit:contain}
+#questionBody .qa-actions{flex:none;padding-top:0;font-size:24px}
+#questionBody .qa-actions strong{font-size:28px}
+#questionBody .steam-showcase{flex:1;height:auto;min-height:0}
+#questionBody .qa-run{flex:1;min-height:0;align-items:stretch}
+#questionBody .qa-run figure{display:flex;flex-direction:column;min-height:0}
+#questionBody .qa-run img{flex:1;min-height:0;object-fit:contain}
+#questionBody .qa-run figcaption{font-size:24px;padding:8px}
+#questionBody .qa-languages h3{font-size:44px;margin:0 0 24px}
+#questionBody .qa-languages img{width:170px;height:120px}
+#questionBody .qa-languages figcaption{font-size:30px;margin-top:10px}
+#questionBody .qa-account{flex:none}
+#questionBody .qa-account>div{padding:18px 8px}
+#questionBody .qa-account strong{font-size:32px}
+#questionBody .qa-account span{font-size:24px}
+/* Invasión: cuatro cartas en 2 × 2 que llenan la ventana */
+#questionBody .qa-cartas{flex:1;min-height:0;display:grid;grid-template-columns:1fr 1fr;grid-auto-rows:1fr;gap:16px}
+.qa-carta{--r:#e8eaed;background:var(--panel);border:1px solid var(--line);border-top:10px solid var(--r);border-radius:12px;padding:18px 24px;display:flex;flex-direction:column;gap:10px;min-width:0}
+.qa-carta.rara{--r:#4da3ff}.qa-carta.epica{--r:#b06bff}.qa-carta.legendaria{--r:#ffc93c}
+body.projector .qa-carta{--r:#5f6670}body.projector .qa-carta.rara{--r:#075c95}body.projector .qa-carta.epica{--r:#6b2fb3}body.projector .qa-carta.legendaria{--r:#a87400}
+.qa-rareza{font:700 22px Barlow,sans-serif;letter-spacing:2px;text-transform:uppercase;color:var(--r)}
+.qa-carta strong{font:700 46px Display,sans-serif;line-height:1}
+#questionBody .qa-carta p{font-size:29px;line-height:1.3;color:var(--text);margin:0;flex:1}
+.qa-carta small{font-size:23px;color:var(--muted)}
+@media(max-width:700px){#questionBody .qa-cartas{grid-template-columns:1fr;grid-auto-rows:auto}}
+/* Logros: pestañas grandes arriba de la captura */
+#questionBody .qa-pestanas button{font-size:24px;padding:12px 26px}
+/* Arsenal: la ficha del arma llena la ventana, con números y textos grandes */
+#questionBody .qa-arsenal{flex:1;min-height:0;display:flex;flex-direction:column}
+#questionBody .qa-arsenal select{font-size:26px}
+#questionBody .qa-arsenal .weapon{flex:1;min-height:0;align-items:center}
+#questionBody .qa-arsenal .weapon-art{height:100%;min-height:0}
+#questionBody .qa-arsenal .weapon-art img{max-height:90%}
+#questionBody .qa-arsenal .eyebrow{font-size:24px}
+#questionBody .qa-arsenal h3{font-size:52px;margin-bottom:8px}
+#questionBody .qa-arsenal .stats b{font-size:50px}
+#questionBody .qa-arsenal .stats span{font-size:21px;line-height:1.2;display:block}
 
