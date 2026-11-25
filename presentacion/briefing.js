@@ -328,7 +328,7 @@
     raiz.innerHTML = `<div class="brf-busca"><div class="brf-radar">${'<i></i>'.repeat(3)}<b></b></div><div class="e">Buscando partida</div><div class="g">1 / ${M.busca}</div><div class="s">${M.nombre} · Sudamérica · misma versión</div></div>
       <div class="brf-main"><div class="brf-izq"><div class="brf-eb">Partida encontrada</div><div class="brf-modo">${M.nombre}</div><div class="brf-sub">${M.sub}</div>
         <div class="brf-paso"></div><h2 class="brf-tit"></h2><div class="brf-dots">${M.pasos.map(() => '<i></i>').join('')}</div><div class="brf-info"></div></div>
-        <div class="brf-der">${M.pasos.filter(P => P.video).map(P => `<video class="brf-video" src="${P.video}" muted playsinline loop preload="auto"></video>`).join('')}<svg ${M.img ? `viewBox="${M.img.vista.join(' ')}" preserveAspectRatio="xMidYMid ${M.img.ajuste || 'slice'}"><image href="${M.img.src}" width="${M.img.w}" height="${M.img.h}"/>` : '>'}<g class="capa"></g></svg><div class="brf-hud"></div></div>
+        <div class="brf-der">${M.pasos.filter(P => P.video).map((P, k) => `<video class="brf-video" src="${P.video}" muted playsinline loop preload="${k ? 'none' : 'auto'}"></video>`).join('')}<svg ${M.img ? `viewBox="${M.img.vista.join(' ')}" preserveAspectRatio="xMidYMid ${M.img.ajuste || 'slice'}"><image href="${M.img.src}" width="${M.img.w}" height="${M.img.h}"/>` : '>'}<g class="capa"></g></svg><div class="brf-hud"></div></div>
         <div class="brf-ayuda"><button type="button" data-ir="-1" aria-label="Paso anterior">←</button><button type="button" data-ir="1" aria-label="Paso siguiente">→</button>pasos · <b>Esc</b>volver a los andenes</div></div>
       <button class="brf-volver" type="button">Volver a los andenes</button>`;
     inner.appendChild(raiz);
@@ -352,10 +352,19 @@
     b.raiz.querySelector('[data-ir="-1"]').disabled = b.paso === 0;
     b.raiz.querySelector('[data-ir="1"]').disabled = b.paso === M.pasos.length - 1;
     if (M.img) b.cam = { de: b.vista.slice(), a: P.vista || M.img.vista, t0: b.t0 }; // un paso puede acercar la cámara a una parte del mapa
-    b.raiz.querySelectorAll('.brf-video').forEach(v => {
+    // Los videos se bajan de a uno (25/11/2026): al abrir, solo el primero; el del paso siguiente empieza a bajar cuando el
+    // que se ve ya puede reproducirse entero, así no se reparten la conexión y el primero arranca fluido.
+    const videos = [...b.raiz.querySelectorAll('.brf-video')];
+    videos.forEach((v, k) => {
       const este = v.getAttribute('src') === P.video;
       v.classList.toggle('on', este);
-      if (este) { v.currentTime = 0; v.play().catch(() => {}); } else v.pause();
+      if (!este) { v.pause(); return; }
+      v.currentTime = 0; v.play().catch(() => {});
+      const sig = videos[k + 1];
+      if (sig && sig.preload !== 'auto') {
+        const pedir = () => { if (sig.preload !== 'auto') { sig.preload = 'auto'; sig.load(); } };
+        if (v.readyState >= 4) pedir(); else v.addEventListener('canplaythrough', pedir, { once: true });
+      }
     });
     b.frame = P.escena ? P.escena({ capa: b.capa, hud: b.hud, info: b.info }) : () => {};
   }

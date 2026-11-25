@@ -10,7 +10,7 @@
  document.head.appendChild(style);
  if(id==='tienda')document.getElementById('toggleShop').click();
  // Diapositiva Modos de juego: «Buscar partida» muestra cómo se juega cada modo (briefing.js).
- if(id==='modos'&&new URLSearchParams(location.search).get('briefing')==='1'){const sc=document.createElement('script');sc.src='presentacion/briefing.js?v=2026112408';document.body.appendChild(sc);const st=document.createElement('style');st.textContent='.presentation-demo #modos .controls{display:none!important}.presentation-demo #modos .stage{max-width:calc((100vh - 30px)*16/9)}';document.head.appendChild(st)}
+ if(id==='modos'&&new URLSearchParams(location.search).get('briefing')==='1'){const sc=document.createElement('script');sc.src='presentacion/briefing.js?v=2026112501';document.body.appendChild(sc);const st=document.createElement('style');st.textContent='.presentation-demo #modos .controls{display:none!important}.presentation-demo #modos .stage{max-width:calc((100vh - 30px)*16/9)}';document.head.appendChild(st)}
  requestAnimationFrame(()=>{window.dispatchEvent(new Event('resize'));window.scrollTo(0,0)});
  document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!e.repeat){window.parent.postMessage('riftwalker:close-demo',location.origin)}});
 })();
