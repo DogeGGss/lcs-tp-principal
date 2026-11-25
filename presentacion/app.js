@@ -71,11 +71,12 @@ function scale(){
 }
 // A dónde va la inversión y, cada mes del promedio, lo que pagan los jugadores.
 function costs(){
- const E=D.economics,I=E.investment,S=I.salary,M=E.month;
- // Lo que cuesta cada hora (con aguinaldo, contribuciones y ART) y el sueldo bruto de un mes a tiempo completo con esa hora
- // (80 h cada 14 días, como en la guía).
- const hora=Math.round(S.total/S.hours*10)/10,mes=Math.round(hora*80*30.4/14/S.factor/10)*10;
- return `<div class="grid two invest costs"><article class="card"><p class="eyebrow">Inversión inicial</p><div class="metric-number">${money(I.total)}</div><div class="uses">${I.detail.map(([n,v])=>`<div><span>${esc(n)}</span><b>${money(v)}</b><i style="width:${Math.max(1,v/I.total*100)}%"></i></div>`).join('')}</div><p class="footnote">Sueldos junior de Argentina (mediana de Sysarmy 2026.1) según lo que hace cada uno y sus horas: unos US$&nbsp;${dec(hora)} por hora, ${money(mes)} brutos por mes a tiempo completo. <b>En blanco:</b> el × ${S.factor.toLocaleString('es-AR')} son aguinaldo, contribuciones patronales y ART.</p></article><article class="card"><p class="eyebrow">Cada mes, en el promedio</p><table class="returns spend"><tr><th>Ganancias en base al pago de los jugadores</th><th>${money(M.gross)}</th></tr>${M.items.map(([n,v])=>`<tr><td>${esc(n)}</td><td>${money(v)}</td></tr>`).join('')}<tr class="left"><td>Queda de ganancia</td><td>${money(M.left)}</td></tr></table></article></div>`;
+ // Rehecha el 25/11/2026 para la PC del aula: la inversión con sus cuatro partes y, cada mes del promedio, lo que pagan los
+ // jugadores repartido en cinco grupos de gastos con una barra cada uno. El detalle (Sysarmy, cada servicio) va en el guion.
+ const E=D.economics,I=E.investment,M=E.month;
+ const fila=(n,v,base,cls='')=>`<div class="ct-fila ${cls}"><span>${esc(n)}</span><b>${money(v)}</b><i style="width:${Math.max(1,v/base*100)}%"></i></div>`;
+ const grupos=M.groups.map(([n,partes])=>[n,partes.reduce((t,p)=>t+M.items.find(([x])=>x===p)[1],0)]);
+ return `<div class="costos2"><article class="card"><p class="eyebrow">Inversión inicial</p><div class="ct-total">${money(I.total)}</div>${I.detail.map(([n,v])=>fila(n,v,I.total)).join('')}</article><article class="card"><p class="eyebrow">Cada mes, en el promedio</p>${fila('Lo que pagan los jugadores',M.gross,M.gross,'ingreso')}${grupos.map(([n,v])=>fila('− '+n,v,M.gross,'gasto')).join('')}${fila('Queda de ganancia',M.left,M.gross,'queda')}</article></div>`;
 }
 // Los cuatro personajes bailando, a la misma escala y con los pies a la misma altura.
 function dances(){
@@ -281,79 +282,8 @@ new MutationObserver(()=>requestAnimationFrame(ajustarLetra)).observe(document.b
 document.fonts&&document.fonts.ready.then(ajustarLetra);
 // Las imágenes que cargan después (armas, retratos) cambian el alto: se vuelve a ajustar cuando llega cada una.
 $('#slide').addEventListener('load',e=>{if(e.target.tagName==='IMG')requestAnimationFrame(ajustarLetra)},true);
-function render(focus=false){document.body.classList.remove('trailer-expanded');const s=D.slides[current];$('#slide').innerHTML=content(s);envolverCuerpo(s);const questions=s.id==='cierre';if(questions&&running)$('#timerToggle').click();$('#timerToggle').disabled=questions;$('#position').textContent=`${current+1} / ${D.slides.length}`;$('#prev').disabled=current===0;if(current>=D.slides.length-2)prepararSecreto();$('#progress').style.width=`${(current+1)/D.slides.length*100}%`;$('#speaker').textContent=s.speaker||D.speaker;$('#announcement').textContent=`${current+1} de ${D.slides.length}: ${s.title}`;history.replaceState(null,'','#'+s.id);if(focus){$('#slide').focus({preventScroll:true});scrollTo(0,0);$('#slideScroll').scrollTop=0}}
-// Diapositiva secreta: Siguiente en el cierre rompe la página de a poco (temblor, cortes, grietas, la interfaz se cae), se abre el
-// portal y pasa el video del modo invasión. No cuenta en el índice, el contador ni el reloj; ← o Esc vuelve al cierre.
-const secreto={abierto:false,timers:[],tic:0,capa:null,video:null};
-function go(n){const ultima=D.slides.length-1;
- if(secreto.abierto){if(n<current)cerrarSecreto();return}
- if(n>ultima&&current===ultima){abrirSecreto();return}
- current=Math.max(0,Math.min(ultima,n));render(true)}
-function prepararSecreto(){
- if(secreto.capa)return;const c=document.createElement('div');c.id='secreto';c.hidden=true;c.setAttribute('aria-hidden','true');
- c.innerHTML=`<div class="fondo"></div><div class="destellos"></div><div class="rebanadas"></div><div class="cortes">${'<i></i>'.repeat(14)}</div><svg class="grietas"></svg>${D.secret.video?`<video playsinline preload="auto" src="${esc(D.secret.video)}"></video>`:''}<div class="portal"></div>`;
- document.body.append(c);secreto.capa=c;const v=secreto.video=c.querySelector('video');
- // El recuadro del portal toma la forma del video (16:9 hasta que se sabe).
- v?.addEventListener('loadedmetadata',()=>c.style.setProperty('--aspecto',v.videoWidth/v.videoHeight));
-}
-// Grietas que salen de un golpe cerca del centro, en zigzag hasta el borde, en píxeles de la pantalla (así el largo con que
-// se dibujan coincide con el real). Quedan sin dibujar hasta agrietar().
-function grietas(svg){
- const W=innerWidth,H=innerHeight,r=(a,b)=>a+Math.random()*(b-a),p=(x,y)=>`${(x*W/1000).toFixed(1)} ${(y*H/1000).toFixed(1)}`;
- const camino=(x,y,ang,pasos)=>{let d='M'+p(x,y);for(let i=0;i<pasos&&x>0&&x<1000&&y>0&&y<1000;i++){ang+=r(-.45,.45);const l=r(35,110);x+=Math.cos(ang)*l;y+=Math.sin(ang)*l;d+=' L'+p(x,y)}return d};
- const x0=r(440,580),y0=r(380,500),d=[];
- // El portal se abre donde fue el golpe.
- svg.parentNode.style.setProperty('--golpe-x',x0/10+'%');svg.parentNode.style.setProperty('--golpe-y',y0/10+'%');
- for(let k=0;k<11;k++){const ang=k/11*Math.PI*2+r(-.25,.25);d.push(camino(x0,y0,ang,18));if(Math.random()<.6)d.push(camino(x0+Math.cos(ang)*r(80,200),y0+Math.sin(ang)*r(80,200),ang+r(-1,1),6))}
- svg.setAttribute('viewBox',`0 0 ${W} ${H}`);svg.innerHTML=d.map(x=>`<path d="${x}"/>`).join('');
- svg.querySelectorAll('path').forEach(x=>{const l=x.getTotalLength();x.style.strokeDasharray=l;x.style.strokeDashoffset=l});
-}
-// Las grietas se dibujan de a una: cada una arranca un poco después de la anterior.
-function agrietar(svg){svg.querySelectorAll('path').forEach((p,i)=>{p.style.transitionDelay=(i*.13)+'s';p.style.strokeDashoffset=0})}
-// Pedazos de la página corridos de lugar: copias de la diapositiva que cada tic muestran solo una franja, movida al costado.
-function rebanadas(c){
- const m=$('#slide'),b=m.getBoundingClientRect(),cont=c.querySelector('.rebanadas');cont.innerHTML='';
- for(let k=0;k<5;k++){const r=m.cloneNode(true);r.removeAttribute('id');r.removeAttribute('tabindex');
-  Object.assign(r.style,{position:'absolute',left:b.left+'px',top:b.top+'px',width:b.width+'px',height:b.height+'px',margin:0,background:'var(--bg)',display:'none'});cont.append(r)}
-}
-// Cada tic, franjas que invierten, tiñen o tapan la página, pedazos corridos y algún destello negro. k (de 0 a 1) es
-// cuánto se rompió: al principio casi nada, cada vez más (también el temblor y la separación de colores).
-function cortes(c,k){
- const hay=p=>Math.random()<p;
- c.querySelectorAll('.rebanadas>main').forEach(r=>{if(!hay(.08+.47*k)){r.style.display='none';return}
-  const t=Math.random()*90,h=1+Math.random()*(3+10*k),dx=(Math.random()<.5?-1:1)*(4+Math.random()*(8+60*k));
-  Object.assign(r.style,{display:'block',clipPath:`inset(${t}% 0 ${Math.max(0,100-t-h)}% 0)`,translate:`${dx}px 0`})});
- c.querySelectorAll('.cortes i').forEach(i=>{if(!hay(.04+.46*k)){i.style.display='none';return}
-  i.className=['inv','inv','tinte','negro'][Math.floor(Math.random()*4)];
-  Object.assign(i.style,{display:'block',top:Math.random()*100+'%',height:(.4+Math.random()*(1.5+6.5*k))+'vh',left:(Math.random()*40-20)+'%',width:(30+Math.random()*(30+60*k))+'%',transform:`translateX(${(Math.random()*2-1)*(8+52*k)}px)`})});
- c.querySelector('.destellos').style.opacity=hay(.015+.1*k)?.85:0;
- document.body.style.setProperty('--temblor',(.6+6.4*k).toFixed(1)+'px');document.body.style.setProperty('--rgb',(.8+4.7*k).toFixed(1)+'px');
-}
-// Unos 8,5 s: la página falla cada vez más (0 a 4,6 s), se agrieta (desde 2 s), la barra, los controles y la diapositiva se
-// aflojan y se caen de a uno (4,3 a 7,5 s), se abre una grieta de luz (6,3 s), se vuelve el portal con la forma del video
-// (7,6 s) y el video pasa adentro (8,5 s).
-function abrirSecreto(){
- prepararSecreto();const c=secreto.capa,v=secreto.video,svg=c.querySelector('.grietas'),b=document.body,t=(ms,f)=>secreto.timers.push(setTimeout(f,ms));
- secreto.abierto=true;c.className=v?'':'sin-video';c.hidden=false;document.activeElement?.blur();
- const empezarVideo=()=>{if(!v)return;c.classList.add('video');v.currentTime=0;v.play().catch(()=>{v.muted=true;v.play().catch(()=>{})})};
- if(matchMedia('(prefers-reduced-motion: reduce)').matches){b.classList.add('rompiendo','cae-top','cae-nav','cae-main');c.classList.add('oscuro','abriendo','abierto');empezarVideo();return}
- rebanadas(c);grietas(svg);b.classList.add('rompiendo');
- const inicio=performance.now(),tic=()=>cortes(c,Math.min(1,(performance.now()-inicio)/4600));tic();secreto.tic=setInterval(tic,70);
- t(2000,()=>{c.classList.add('agrietada');agrietar(svg)});
- t(4300,()=>b.classList.add('flojo'));
- t(4800,()=>b.classList.add('cae-top'));
- t(5200,()=>b.classList.add('cae-nav'));
- t(5500,()=>{b.classList.add('cae-main');c.classList.add('oscuro')});
- t(6300,()=>c.classList.add('abriendo'));
- t(7600,()=>{clearInterval(secreto.tic);c.querySelector('.destellos').style.opacity=0;c.classList.add('abierto')});
- t(8500,empezarVideo);
-}
-function cerrarSecreto(){
- secreto.timers.forEach(clearTimeout);clearInterval(secreto.tic);secreto.timers=[];secreto.abierto=false;
- document.body.classList.remove('rompiendo','flojo','cae-top','cae-nav','cae-main');document.body.style.removeProperty('--temblor');document.body.style.removeProperty('--rgb');
- const c=secreto.capa;c.hidden=true;c.className='';
- if(secreto.video){secreto.video.pause();secreto.video.currentTime=0}
-}
+function render(focus=false){document.body.classList.remove('trailer-expanded');const s=D.slides[current];$('#slide').innerHTML=content(s);envolverCuerpo(s);const questions=s.id==='cierre';if(questions&&running)$('#timerToggle').click();$('#timerToggle').disabled=questions;$('#position').textContent=`${current+1} / ${D.slides.length}`;$('#prev').disabled=current===0;$('#next').disabled=current===D.slides.length-1;$('#progress').style.width=`${(current+1)/D.slides.length*100}%`;$('#speaker').textContent=s.speaker||D.speaker;$('#announcement').textContent=`${current+1} de ${D.slides.length}: ${s.title}`;history.replaceState(null,'','#'+s.id);if(focus){$('#slide').focus({preventScroll:true});scrollTo(0,0);$('#slideScroll').scrollTop=0}}
+function go(n){current=Math.max(0,Math.min(D.slides.length-1,n));render(true)}
 $('#edition').textContent=D.edition;
 $('#indexGrid').innerHTML=D.slides.map((s,i)=>`${s.section!==D.slides[i-1]?.section?`<h3 class="index-section">${esc(s.section)}</h3>`:''}<button data-go="${i}">${String(i+1).padStart(2,'0')} / ${esc(s.label)}<small>${s.seconds?s.seconds+' s':s.minutes+' min'} · ${esc(s.title)}</small></button>`).join('');
 $('#prev').onclick=()=>go(current-1);$('#next').onclick=()=>go(current+1);
@@ -389,7 +319,7 @@ document.addEventListener('input',event=>{
   }
 });
 document.addEventListener('change',e=>{if(e.target.id==='weaponSelect'){weaponId=e.target.value;if(e.target.closest('#questionDialog')){$('#questionBody').innerHTML=questionVisual('arsenal');$('#weaponSelect').focus()}else render()}});
-document.addEventListener('keydown',e=>{if(document.body.classList.contains('trailer-expanded')){if(e.key==='Escape'){e.preventDefault();closeTrailer()}return}if(secreto.abierto){if(['Escape','ArrowLeft','PageUp'].includes(e.key)){e.preventDefault();cerrarSecreto()}return}if(document.querySelector('dialog[open]')||document.fullscreenElement?.tagName==='VIDEO'||e.target.closest('input,select,textarea,button,a,video'))return;
+document.addEventListener('keydown',e=>{if(document.body.classList.contains('trailer-expanded')){if(e.key==='Escape'){e.preventDefault();closeTrailer()}return}if(document.querySelector('dialog[open]')||document.fullscreenElement?.tagName==='VIDEO'||e.target.closest('input,select,textarea,button,a,video'))return;
  if(e.key==='ArrowRight'||e.key==='PageDown'){e.preventDefault();go(current+1)}if(e.key==='ArrowLeft'||e.key==='PageUp'){e.preventDefault();go(current-1)}if(e.key.toLowerCase()==='f')$('#fullscreen').click();
 });
 // Child demos use their own keyboard; only an explicit return message closes them.

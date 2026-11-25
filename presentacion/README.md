@@ -68,7 +68,7 @@ Métricas y Avance usan el «Informe de avances - Sprint 3»: 66 de las 68 histo
 
 Lee cada diapositiva: Historia, Nahuel Velazquez; Demo de interfaz, David Ramos; Arsenal, Lucas Huber; Menú, perfil y cápsulas, Luka Gómez; Métricas y Avance, Agustín Barreto; Propuesta comercial y Números, Ulises Fonseca; Costos e Inversión, Nicolás Gauna. Apertura, Tráiler y Cierre quedan como «Equipo Riftwalker».
 
-Después del cierre hay una diapositiva secreta: en «16 / 16» Siguiente (o →, o el control remoto) sigue habilitado y rompe la página de a poco, en unos 8 segundos: empieza con fallas chiquitas que van creciendo (temblor, colores separados, franjas invertidas y pedazos corridos), a los 2 s se agrieta desde un golpe cerca del centro, entre los 4 y los 7 s la barra de arriba, los controles y la diapositiva se aflojan y se caen de a uno, y en el lugar del golpe se abre una grieta de luz que se vuelve el portal; ahí pasa el video de `secret.video` a pantalla completa, con sonido (el navegador lo deja porque ya hubo clics en la página). No figura en el índice, en el contador ni en el reloj, y no cambia la dirección. ← o Esc vuelve al cierre como estaba (en pantalla completa, Esc primero sale de la pantalla completa: usar ←). Sin video, termina en el portal abierto. El video se precarga al llegar a Inversión. Probada a 1280 × 720 con el tráiler como video de prueba.
+La diapositiva secreta que iba después del cierre (la página se rompía y pasaba el video de la Invasión) se sacó el 25/11/2026; el video sigue en `media/invasion.mp4`.
 
 ## Sueldos por horas (26/10/2026)
 
@@ -159,3 +159,4 @@ La PC de la presentación proyecta a 1024 × 768 por VGA, así que todo se agran
 - Identidad se rehízo con solo imágenes y títulos grandes (personajes, mapas, cuatro armas con su tren, la Escolta y el grafiti «Plaga Gris»); los orígenes de los nombres quedan en el guion.
 - Propuesta comercial, en pantallas 4:3, va en 2 × 2 tarjetas con el dibujo a la izquierda. El ajuste de letra llega hasta 2,2 veces, así llena el alto en cualquier pantalla.
 - Métricas y Escenarios van en tabla; Escala y Protección, con una línea corta por parada; el Cierre ocupa toda la pantalla. Qué nos diferencia quedó con las cuatro columnas y la Propuesta comercial con una imagen, el título, un dato y el precio por producto. La f(x) es solo el gráfico, a todo el ancho. Lo que salió de cada diapositiva está en su guion.
+- Costos muestra la inversión con sus cuatro partes y el mes del promedio en cinco grupos de gastos (`month.groups`), con una barra por fila; el detalle de Sysarmy y de cada servicio va en el guion.
