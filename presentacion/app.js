@@ -38,8 +38,6 @@ function payers(){
   ${umbral(F.breakEven,num(Math.round(F.breakEven)))}${umbral(F.full,num(Math.round(F.full)))}
   <text class="eje titulo" x="${(L+W-R)/2}" y="${H-6}" text-anchor="middle">Jugadores que pagan en el mes</text>
   ${linea}${punto(e.payers,e.result,'ej')}${punto(F.breakEven,0,'cero')}${punto(m.payers,m.result,'pos')}
-  <text class="fx-txt" x="${X(e.payers)+14}" y="${Y(e.result)+28}">20.000 jugadores al 1 %: ${num(e.payers)} pagan · ${plata(e.result)}</text>
-  <text class="fx-txt" x="${X(m.payers)}" y="${Y(m.result)-18}" text-anchor="middle">Promedio: ${num(m.payers)} pagan · ${plata(m.result)}</text>
   <text class="fx-nota" x="${X(2490)}" y="${Y(2400)}" text-anchor="middle">Unity Pro</text><g class="fx-hover" id="fxHover" visibility="hidden"><line id="fxHoverLine" y1="${T}" y2="${H-B}"/><circle id="fxHoverDot" r="6"/><rect id="fxHoverBox" rx="6" height="30"/><text id="fxHoverTxt"></text></g>
   <rect class="fx-hit" x="${L}" y="${T}" width="${W-L-R}" height="${H-T-B}" data-fx="${L},${W-R},${xmax}"/></svg>`;
  return `<div class="fx">${svg}</div>`;
