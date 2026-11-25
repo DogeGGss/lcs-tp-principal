@@ -89,8 +89,13 @@ function statusTime(){
  return `<div class="grid tiempo"><article class="card"><p class="eyebrow">Historias esperando prueba (LPR), cada día</p><svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Historias esperando prueba por día: el pico es ${Q[pico][1]} el ${Q[pico][0]}">${bandas}${grilla}${barras}<text class="pico-txt" x="${L+pico*bw+bw/2}" y="${y(Q[pico][1])-8}" text-anchor="middle">${Q[pico][1]}</text>${fechas}</svg></article><article class="card"><p class="eyebrow">Espera mediana para probar</p><div class="esperas">${T.sprints.map(s=>`<div><span>${esc(s.name)}</span><b>${esc(s.wait)}</b>${s.note?`<small>${esc(s.note)}</small>`:''}</div>`).join('')}</div><p class="decision-tiempo">${esc(T.decision)}</p></article></div>`;
 }
 // Lo que sumó cada sprint, con una foto grande y lo nuevo en pocas palabras.
-function progress(){
- return `<div class="grid avance">${D.progress.map(p=>`<article class="card"><p class="eyebrow">${esc(p.name)} · ${esc(p.dates)}</p>${p.title?`<h3>${esc(p.title)}</h3>`:''}<div class="avance-foto">${p.image?`<img src="${esc(p.image)}" alt="">`:''}</div>${p.items.length?`<ul>${p.items.map(it=>`<li>${esc(it.text)}${it.images?`<span class="avance-imgs${it.round?' redondas':''}${it.icons?' iconos':''}">${it.images.map(src=>`<img src="${esc(src)}" alt="">`).join('')}</span>`:''}</li>`).join('')}</ul>`:''}</article>`).join('')}</div>`;
+// Avance de a un sprint (25/11/2026): arriba la línea de los 5 sprints con el actual marcado; abajo la foto grande y lo
+// que sumó, con sus imágenes. Para la PC del aula (1024 × 768) la letra base ya es grande y el zoom la agranda más.
+function sprintSlide(s){
+ const p=D.progress[s.sprint];
+ const linea=`<ol class="sprint-linea">${D.progress.map((q,i)=>`<li class="${i<s.sprint?'hecho':i===s.sprint?'actual':''}">${esc(q.name)}</li>`).join('')}</ol>`;
+ const items=p.items.map(it=>`<li><span>${esc(it.text)}</span>${it.images?`<span class="avance-imgs${it.round?' redondas':''}${it.icons?' iconos':''}">${it.images.map(src=>`<img src="${esc(src)}" alt="">`).join('')}</span>`:''}</li>`).join('');
+ return `<div class="head"><p class="eyebrow">${esc(s.section)} · ${esc(p.name)} · ${esc(p.dates)}</p><h2>${esc(p.title)}</h2></div>${linea}<div class="sprint-uno"><div class="avance-foto">${p.image?`<img src="${esc(p.image)}" alt="">`:''}</div><ul>${items}</ul></div>`;
 }
 // La historia en tres momentos, con cuadros del tráiler, y abajo los modos que la representan con su mapa.
 // Identidad: los personajes (ciudades), los mapas (lugares del país), las armas (trenes) y el easter egg del TUM.
@@ -169,7 +174,7 @@ function content(s){
  case 'costos':return head(s)+costs();
  case 'fx':return head(s)+payers();
  case 'proteccion':return head(s)+guard();
- case 'avance':return head(s)+progress();
+ case 'sprint-1':case 'sprint-2':case 'sprint-3':case 'sprint-4':case 'sprint-5':return sprintSlide(s);
  case 'inversion':return head(s)+investment();
  case 'escala':return head(s)+scale();
  case 'cierre':return questionsScreen();
@@ -260,12 +265,16 @@ function openQuestion(index) {
 
 // Letra más grande: en las diapositivas con lugar libre, todo lo que va debajo del título se agranda parejo (zoom)
 // hasta llenar la pantalla, hasta un 45 %. Las que ya ocupan toda la altura (o son video o portada) quedan como están.
+// Con mouse, las barras se esconden (ver barrasDesplegables): la letra se ajusta a la pantalla entera, así no salta al mostrarlas.
+const BARRAS_OCULTAS=matchMedia('(hover:hover) and (pointer:fine)');
 const SIN_AJUSTE=['inicio','trailer','diferencial','identidad','cierre'];
 function envolverCuerpo(s){const m=$('#slide');if(SIN_AJUSTE.includes(s.id)||!m.querySelector(':scope>.head'))return;const c=document.createElement('div');c.className='cuerpo';[...m.children].filter(e=>!e.classList.contains('head')).forEach(e=>c.append(e));m.append(c);ajustarLetra()}
-function ajustarLetra(){const c=$('#slide>.cuerpo');if(!c)return;c.style.zoom='';const nav=document.querySelector('.navigation');const limite=Math.min((nav?nav.getBoundingClientRect().top:innerHeight)-18,innerHeight-parseFloat(getComputedStyle($('#slide')).paddingBottom));const desborde=()=>[...c.querySelectorAll('*')].filter(e=>e.scrollWidth>e.clientWidth+2&&getComputedStyle(e).overflowX!=='visible').length;const base=desborde();const cabe=z=>{c.style.zoom=z;return c.getBoundingClientRect().bottom<=limite&&c.scrollWidth<=c.clientWidth+1&&desborde()<=base};if(!cabe(1)){c.style.zoom='';return}let lo=1,hi=1.45;if(cabe(hi))return;for(let i=0;i<8;i++){const m=(lo+hi)/2;if(cabe(m))lo=m;else hi=m}c.style.zoom=lo}
+function ajustarLetra(){const c=$('#slide>.cuerpo');if(!c)return;c.style.zoom='';const nav=document.querySelector('.navigation');const piso=BARRAS_OCULTAS.matches||!nav?innerHeight:nav.getBoundingClientRect().top;const limite=Math.min(piso-18,innerHeight-parseFloat(getComputedStyle($('#slide')).paddingBottom));const desborde=()=>[...c.querySelectorAll('*')].filter(e=>e.scrollWidth>e.clientWidth+2&&getComputedStyle(e).overflowX!=='visible').length;const base=desborde();const cabe=z=>{c.style.zoom=z;return c.getBoundingClientRect().bottom<=limite&&c.scrollWidth<=c.clientWidth+1&&desborde()<=base};if(!cabe(1)){c.style.zoom='';return}let lo=1,hi=1.45;if(cabe(hi))return;for(let i=0;i<8;i++){const m=(lo+hi)/2;if(cabe(m))lo=m;else hi=m}c.style.zoom=lo}
 addEventListener('resize',()=>requestAnimationFrame(ajustarLetra));
 new MutationObserver(()=>requestAnimationFrame(ajustarLetra)).observe(document.body,{attributes:true,attributeFilter:['style','class']});
 document.fonts&&document.fonts.ready.then(ajustarLetra);
+// Las imágenes que cargan después (armas, retratos) cambian el alto: se vuelve a ajustar cuando llega cada una.
+$('#slide').addEventListener('load',e=>{if(e.target.tagName==='IMG')requestAnimationFrame(ajustarLetra)},true);
 function render(focus=false){document.body.classList.remove('trailer-expanded');const s=D.slides[current];$('#slide').innerHTML=content(s);envolverCuerpo(s);const questions=s.id==='cierre';if(questions&&running)$('#timerToggle').click();$('#timerToggle').disabled=questions;$('#position').textContent=`${current+1} / ${D.slides.length}`;$('#prev').disabled=current===0;if(current>=D.slides.length-2)prepararSecreto();$('#progress').style.width=`${(current+1)/D.slides.length*100}%`;$('#speaker').textContent=s.speaker||D.speaker;$('#announcement').textContent=`${current+1} de ${D.slides.length}: ${s.title}`;history.replaceState(null,'','#'+s.id);if(focus){$('#slide').focus({preventScroll:true});scrollTo(0,0);$('#slideScroll').scrollTop=0}}
 // Diapositiva secreta: Siguiente en el cierre rompe la página de a poco (temblor, cortes, grietas, la interfaz se cae), se abre el
 // portal y pasa el video del modo invasión. No cuenta en el índice, el contador ni el reloj; ← o Esc vuelve al cierre.
@@ -340,7 +349,7 @@ function cerrarSecreto(){
  if(secreto.video){secreto.video.pause();secreto.video.currentTime=0}
 }
 $('#edition').textContent=D.edition;
-$('#indexGrid').innerHTML=D.slides.map((s,i)=>`${s.section!==D.slides[i-1]?.section?`<h3 class="index-section">${esc(s.section)}</h3>`:''}<button data-go="${i}">${String(i+1).padStart(2,'0')} / ${esc(s.label)}<small>${s.minutes} min · ${esc(s.title)}</small></button>`).join('');
+$('#indexGrid').innerHTML=D.slides.map((s,i)=>`${s.section!==D.slides[i-1]?.section?`<h3 class="index-section">${esc(s.section)}</h3>`:''}<button data-go="${i}">${String(i+1).padStart(2,'0')} / ${esc(s.label)}<small>${s.seconds?s.seconds+' s':s.minutes+' min'} · ${esc(s.title)}</small></button>`).join('');
 $('#prev').onclick=()=>go(current-1);$('#next').onclick=()=>go(current+1);
 $('#indexButton').onclick=()=>$('#indexDialog').showModal();
 $('#contrast').onclick=()=>{const on=document.body.classList.toggle('projector');$('#contrast').setAttribute('aria-pressed',on)};
@@ -381,8 +390,22 @@ document.addEventListener('keydown',e=>{if(document.body.classList.contains('tra
 addEventListener('message',e=>{if(e.origin===location.origin&&e.source===$('#demoFrame').contentWindow&&e.data==='riftwalker:close-demo')$('#demoDialog').close()});
 let running=false,elapsed=0,last=0;const duration = 20 * 60;
 function clock(){const total=elapsed+(running?(performance.now()-last)/1000:0),remaining=duration-total,seconds=Math.ceil(Math.abs(remaining));$('#timer').textContent=`${remaining<0?'+':''}${String(Math.floor(seconds/60)).padStart(2,'0')}:${String(seconds%60).padStart(2,'0')}`;$('#timer').classList.toggle('over',remaining<0)}
-$('#timerToggle').onclick=()=>{if(running)elapsed+=(performance.now()-last)/1000;else last=performance.now();running=!running;$('#timerToggle').textContent=running?'Ⅱ Pausar':'▶ Tiempo';clock()};
+$('#timerToggle').onclick=()=>{if(running)elapsed+=(performance.now()-last)/1000;else last=performance.now();running=!running;$('#timerToggle').textContent=running?'Ⅱ':'▶';$('#timerToggle').title=running?'Pausar el tiempo':'Iniciar el tiempo';$('.clock').classList.toggle('corriendo',running);clock()};
 $('#timerReset').onclick=()=>{elapsed=0;last=performance.now();clock()};setInterval(clock,200);
 const initial=D.slides.findIndex(s=>'#'+s.id===location.hash);current=initial<0?0:initial;render();clock();
 
 addEventListener('hashchange',()=>{const i=D.slides.findIndex(s=>'#'+s.id===location.hash);if(i>=0&&i!==current)go(i)});
+
+// Barras desplegables (25/11/2026): el aula proyecta a 1024 × 768 por VGA, así que la diapositiva usa toda la pantalla.
+// La barra de arriba y la de abajo aparecen al llevar el mouse a su borde y se esconden al alejarlo; con Tab se ven
+// por el foco (CSS). El reloj queda siempre arriba a la derecha y baja cuando aparece la barra de arriba.
+(function barrasDesplegables(){
+ const arriba=$('.top'),abajo=$('.navigation'),reloj=$('.clock');let verArriba=false,verAbajo=false;
+ function poner(a,b){
+  if(a!==verArriba){verArriba=a;arriba.classList.toggle('visible',a);reloj.classList.toggle('bajo',a)}
+  if(b!==verAbajo){verAbajo=b;abajo.classList.toggle('visible',b)}
+ }
+ addEventListener('mousemove',e=>{if(!BARRAS_OCULTAS.matches)return;const y=e.clientY,h=innerHeight;
+  poner(verArriba?y<arriba.offsetHeight+16:y<40,verAbajo?y>h-abajo.offsetHeight-16:y>h-40)});
+ document.documentElement.addEventListener('mouseleave',()=>poner(false,false));
+})();

@@ -239,3 +239,45 @@ main:has(.diferencial) .head{margin-bottom:16px}main:has(.diferencial) h2{font-s
 @media(max-width:1000px){.diferencial{grid-template-columns:1fr 1fr;height:auto}.dif-col figure{height:150px;flex:none}.dif-publico{flex-direction:column;align-items:flex-start;gap:6px}}
 .of-tienda{width:100%;justify-content:center}.of-tienda span{flex:0 1 52px;min-width:0}.of-tienda img{width:100%;max-width:52px;height:auto;aspect-ratio:1}
 .of-capsulas small{grid-template-columns:1fr;gap:0;line-height:1.2;margin-top:5px}
+
+/* Barras desplegables (25/11/2026): la PC del aula proyecta a 1024 × 768 por VGA. Con mouse, la barra de arriba y la
+   de abajo se esconden y aparecen al llevarlo a su borde (o con Tab), así la diapositiva se agranda en toda la pantalla.
+   El reloj queda siempre a la vista arriba a la derecha; mientras corre, sus botones aparecen al pasarle el mouse. */
+#next{margin-left:auto}
+.clock{position:fixed;top:8px;right:10px;z-index:7;margin:0;gap:4px;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:2px 4px 2px 12px;transition:top .22s ease;box-shadow:0 4px 16px #0006}
+.clock output{font-size:30px;line-height:1.1}
+.clock button{padding:4px 9px;font-size:16px}
+.clock.corriendo:not(:hover):not(:focus-within){padding-right:12px}
+.clock.corriendo:not(:hover):not(:focus-within) button{display:none}
+.clock.bajo{top:86px}
+.trailer-head{padding-right:170px}
+@media (hover:hover) and (pointer:fine){
+ .top{position:fixed;top:0;left:0;right:0;z-index:6;background:var(--bg);transition:translate .22s ease}
+ .navigation{transition:translate .22s ease}
+ .top:not(.visible):not(:has(:focus-visible)){translate:0 calc(-100% - 2px)}
+ .navigation:not(.visible):not(:has(:focus-visible)){translate:0 calc(100% + 4px)}
+ main{min-height:100dvh;padding-bottom:28px}
+ .trailer{width:min(100%,calc((100dvh - 130px) * 16 / 9))}
+}
+/* En el easter egg las barras aparecen para caerse con la página, y el reloj se cae con ellas. */
+body.flojo .top,body.flojo .navigation{translate:none}
+body.cae-nav .clock{translate:0 120vh;transition:translate 1.4s cubic-bezier(.5,0,.9,.4)}
+
+/* Avance de a un sprint (25/11/2026): la línea de los 5 sprints, la foto grande a la izquierda y la lista a la derecha. */
+.sprint-linea{list-style:none;margin:0 0 22px;padding:0;display:grid;grid-template-columns:repeat(5,1fr);gap:8px}
+.sprint-linea li{border-top:6px solid var(--line);padding-top:8px;font:700 22px Display,sans-serif;color:var(--muted)}
+.sprint-linea li.hecho{border-color:color-mix(in srgb,var(--accent) 55%,var(--line))}
+.sprint-linea li.actual{border-color:var(--accent);color:var(--text)}
+.sprint-uno{display:grid;grid-template-columns:1.15fr 1fr;gap:28px;align-items:start}
+.sprint-uno .avance-foto{aspect-ratio:4/3;border-radius:12px;overflow:hidden;background:var(--panel);border:1px solid var(--line)}
+.sprint-uno .avance-foto img{width:100%;height:100%;object-fit:cover;display:block}
+.sprint-uno ul{margin:0;padding:0;list-style:none;display:grid;gap:20px}
+.sprint-uno li{font-size:27px;line-height:1.25;padding-left:24px;position:relative}
+.sprint-uno li:before{content:'';position:absolute;left:0;top:.42em;width:11px;height:11px;border-radius:3px;background:var(--accent)}
+.sprint-uno li>span:first-child{display:block}
+.sprint-uno .avance-imgs{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-top:10px}
+.sprint-uno .avance-imgs img{height:46px;width:auto;max-width:none;object-fit:contain;filter:drop-shadow(0 3px 4px #0008)}
+.sprint-uno .avance-imgs.redondas img{width:62px;height:62px;border-radius:50%;object-fit:cover;background:var(--line)}
+.sprint-uno .avance-imgs.iconos img{width:58px;height:58px;padding:9px;border-radius:50%;background:#232c38;object-fit:contain;filter:none}
+@media(min-aspect-ratio:3/2){.sprint-uno .avance-foto{aspect-ratio:16/10}}
+@media(max-width:700px){.sprint-uno{grid-template-columns:1fr}.sprint-linea li{font-size:16px}}

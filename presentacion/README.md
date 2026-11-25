@@ -9,7 +9,8 @@ Abrir `/presentacion/` desde el enlace independiente de la guía. El recorrido s
 - Proyector: fondo claro con texto oscuro para salas iluminadas.
 - Pantalla completa: ocultar el navegador; F11 es alternativa.
 - Tráiler: «Pantalla completa» lo reproduce ocupando toda la pantalla; Esc vuelve. Mientras el video está en pantalla completa, las flechas no cambian de diapositiva.
-- Tiempo: iniciar/pausar el reloj de 20 minutos. El reloj no cambia las diapositivas y sigue durante las demos.
+- Tiempo: iniciar/pausar el reloj de 20 minutos (arriba a la derecha; mientras corre, ▶/Ⅱ y ↺ aparecen al pasarle el mouse). El reloj no cambia las diapositivas y sigue durante las demos.
+- Barras: con mouse, la barra de arriba y la de abajo están escondidas y aparecen al llevarlo al borde de la pantalla (o con Tab).
 - Las demos se abren dentro del recorrido, con Volver y Reiniciar siempre arriba. Son maquetas web; no se presentan como ejecución del juego.
 
 ## Actualización por etapas
@@ -146,3 +147,11 @@ Se grabaron en Unity, en Play, con scripts que no quedan en el proyecto: cámara
 Lo lee David Ramos y sigue en 2 minutos. Revisado a 1280 × 720 y a 1024 × 768, los doce pasos, sin errores de JavaScript (con los videos de Invasión, otra vez el 24/11).
 
 Los scripts y la hoja de estilos se piden con `?v=AAAAMMDD` (en `index.html` de la presentación, `presentacion/demo.js` en la guía y `briefing.js` en `demo.js`). GitHub Pages deja que el navegador guarde los archivos 10 minutos, y sin ese número una presentación abierta antes del cambio sigue con la versión vieja. La demo de modos también se abre con `&v=` en `demoSrc` (app.js), porque la guía es el mismo archivo y también queda guardada. Al cambiar uno de esos archivos, subir el número (en el mismo día, `AAAAMMDD02`, `03`…).
+
+### Para la PC del aula (25/11/2026)
+
+La PC de la presentación proyecta a 1024 × 768 por VGA, así que todo se agrandó para esa pantalla:
+
+- Las dos barras se esconden y la diapositiva usa la pantalla entera: el ajuste de letra (`ajustarLetra`) toma todo el alto y no cambia al mostrarlas. También se vuelve a ajustar cuando terminan de cargar las imágenes.
+- El reloj quedó fijo arriba a la derecha, siempre a la vista; baja un poco cuando aparece la barra de arriba.
+- El avance va en cinco diapositivas, una por sprint (`sprint-1` a `sprint-5`, 25 s cada una, con los datos de `progress`): la línea de los cinco sprints con el actual marcado, la foto grande y la lista en letra grande. El guion de la diapositiva Avance se repartió entre las cinco.
