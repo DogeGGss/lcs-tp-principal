@@ -449,3 +449,18 @@ body.projector .qa-carta{--r:#5f6670}body.projector .qa-carta.rara{--r:#075c95}b
 /* Si despega fuerte (25/11/2026): la línea va toda en verde, porque las tres paradas son de crecer. */
 .escala-linea.despegue::before{background:var(--green)}
 
+/* Planes de financiación en la burbuja «Financiación» del cierre (25/11/2026): tres pestañas y el plan elegido, con el
+   dibujo de su diapositiva; ajustarPlan lo agranda o achica para llenar la ventana. */
+#questionBody .qa-plan{flex:1;min-height:0;overflow:hidden}
+#questionBody .qa-plan h3{font-size:34px;margin:0 0 16px}
+#questionBody .qa-plan .eyebrow{font-size:20px}
+#questionBody .qa-plan .parada b{font-size:60px}
+#questionBody .qa-plan .parada span{font-size:21px;color:var(--text);line-height:1.3}
+#questionBody .qa-plan .parada strong{font-size:21px}
+#questionBody .qa-plan .scenario .result{font-size:46px}
+#questionBody .qa-plan .scenario .result small{font-size:21px}
+#questionBody .qa-plan .grid.escala-fin{grid-template-columns:1fr 1fr}
+#questionBody .qa-plan .escala-fin .card:last-child{grid-column:1/-1}
+#questionBody .qa-plan .escala-fin .card p:not(.eyebrow){font-size:23px;line-height:1.3;margin-top:8px}
+#questionBody .qa-plan .card{padding:16px 20px}
+

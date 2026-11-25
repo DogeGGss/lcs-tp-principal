@@ -1,5 +1,7 @@
 'use strict';
 const D=window.PRESENTATION, $=s=>document.querySelector(s);
+// Los tres planes de Financiación están guardados fuera del recorrido; con ?planes en la dirección vuelven después de Costos.
+if(D.savedSlides&&new URLSearchParams(location.search).has('planes'))D.slides.splice(D.slides.findIndex(x=>x.id==='costos')+1,0,...D.savedSlides);
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 let current=0,weaponId='fusil';
 const num=n=>n.toLocaleString('es-AR'),dec=n=>n.toLocaleString('es-AR',{minimumFractionDigits:2,maximumFractionDigits:2});
@@ -203,9 +205,28 @@ const questionTopics = [
   ['Modo Invasión', 'Invasión · 4 de las 27 cartas', 'invasion'],
   ['Cuenta', 'Tu cuenta Riftwalker', 'cuenta'],
   ['Launcher', 'El launcher de Riftwalker', 'launcher'],
-  ['Arsenal', 'Cada arma cambia una decisión', 'arsenal']
+  ['Arsenal', 'Cada arma cambia una decisión', 'arsenal'],
+  ['Financiación', 'Planes de financiación', 'planes']
 ];
 const proofImages = '../pruebas/idiomas/2026-11-08/';
+// Los tres planes de Financiación (25/11/2026): salieron del recorrido y se ven en la burbuja «Financiación» del cierre,
+// del peor caso al mejor. Cada uno es la diapositiva guardada (savedSlides) con su título y su dibujo.
+const PLANES = [['Si no despega', 'proteccion', () => guard()], ['Si funciona', 'escala', () => scale()], ['Si despega fuerte', 'despegue', () => boom()]];
+function planHTML(k) {
+  const [, id, dibujo] = PLANES[k], s = (D.savedSlides || []).find(x => x.id === id);
+  return `<h3>${esc(s ? s.title : PLANES[k][0])}</h3>${dibujo()}`;
+}
+// Agranda o achica el plan para que llene la ventana sin pasarse (como ajustarLetra en las diapositivas, pero también achica).
+function ajustarPlan() {
+  const caja = document.querySelector('#questionBody .qa-plan'), c = caja && caja.firstElementChild;
+  if (!c) return;
+  const cabe = z => { c.style.zoom = z; return c.getBoundingClientRect().height <= caja.clientHeight && c.scrollWidth <= c.clientWidth + 1; };
+  let lo = 0.5, hi = 1.8;
+  if (cabe(hi)) return;
+  for (let i = 0; i < 9; i++) { const m = (lo + hi) / 2; if (cabe(m)) lo = m; else hi = m; }
+  c.style.zoom = lo;
+}
+addEventListener('resize', () => requestAnimationFrame(ajustarPlan));
 // Las dos capturas de la pregunta Logros: archivo, texto alternativo y nombre de la pestaña.
 const LOGROS = [
   ['media/logros-progreso.png', 'Pestaña Logros: 7 de 25 logros obtenidos, con el avance de cada uno y el porcentaje de jugadores que lo tiene', 'Tu progreso en cada logro'],
@@ -237,6 +258,7 @@ function questionVisual(key) {
       const rar={'Común':'comun','Rara':'rara','Épica':'epica','Legendaria':'legendaria'};
       return `<div class="qa-cartas">${D.cards.map(c=>`<article class="qa-carta ${rar[c.rarity]}"><span class="qa-rareza">${esc(c.rarity)}</span><strong>${esc(c.name)}</strong><p>${esc(c.text)}</p><small>${esc(c.with)} · ${c.max>1?'se acumula hasta 3 veces':'una sola vez'}</small></article>`).join('')}</div>`;
     }
+    case 'planes': return `<div class="qa-actions qa-pestanas">${PLANES.map(([nombre], k) => `<button data-plan="${k}" aria-pressed="${!k}">${nombre}</button>`).join('')}</div><div class="qa-plan"><div>${planHTML(0)}</div></div>`;
     // La ficha de cada arma (antes, la diapositiva Arsenal): se elige con el desplegable y se vuelve a dibujar adentro del popup.
     case 'arsenal': return `<div class="qa-arsenal">${arsenal()}</div>`;
     case 'launcher': return '<img class="qa-picture" src="media/launcher.png" alt="Launcher de Project Riftwalker con las novedades de la versión 0.4.0 y el botón Jugar"><div class="qa-actions"><strong>Instala y actualiza</strong><span>Novedades de cada versión</span><span>Entrás con tu cuenta</span><span>Canal estable y experimental</span></div>';
@@ -253,7 +275,8 @@ const questionSketch = [
   [81, 67, 8, 'M65 61 C70 60 69 66 81 67'],
   [49, 86, 11, 'M50 70 Q48 74 49 86'],
   [48, 11, -4, 'M50 34 C51 28 47 22 48 11'],
-  [67, 88, 6, 'M57 69 C59 76 62 83 67 88']
+  [67, 88, 6, 'M57 69 C59 76 62 83 67 88'],
+  [31, 88, -7, 'M43 69 C42 75 37 83 31 88']
 ];
 function questionsScreen() {
   const buttons = questionTopics.map(([name], index) => {
@@ -278,6 +301,7 @@ function openQuestion(index) {
   $('#questionBody').innerHTML = questionVisual(key);
   if (key === 'mapa') mapPhoto();
   $('#questionDialog').showModal();
+  if (key === 'planes') requestAnimationFrame(ajustarPlan);
   $('#questionDialog').onclose = () => { $('#questionBody').replaceChildren(); };
 }
 
@@ -315,6 +339,7 @@ document.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)r
 
  if(d.photo){campusPhoto=(campusPhoto+Number(d.photo)+campusPhotos.length)%campusPhotos.length;mapPhoto()}
  if(d.logro!==undefined){const [src,alt]=LOGROS[+d.logro];$('#logroPicture').src=src;$('#logroPicture').alt=alt;for(const x of document.querySelectorAll('[data-logro]'))x.setAttribute('aria-pressed',x===b)}
+ if(d.plan!==undefined){$('#questionBody .qa-plan>div').innerHTML=planHTML(+d.plan);for(const x of document.querySelectorAll('[data-plan]'))x.setAttribute('aria-pressed',x===b);requestAnimationFrame(ajustarPlan)}
  if(d.question!==undefined)openQuestion(Number(d.question));
  if(d.demo)openDemo(d.demo);
  if(d.trailer!==undefined){
