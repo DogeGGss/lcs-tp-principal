@@ -341,7 +341,13 @@ addEventListener('hashchange',()=>{const i=D.slides.findIndex(s=>'#'+s.id===loca
   if(a!==verArriba){verArriba=a;arriba.classList.toggle('visible',a);reloj.classList.toggle('bajo',a)}
   if(b!==verAbajo){verAbajo=b;abajo.classList.toggle('visible',b)}
  }
- addEventListener('mousemove',e=>{if(!BARRAS_OCULTAS.matches)return;const y=e.clientY,h=innerHeight;
-  poner(verArriba?y<arriba.offsetHeight+16:y<40,verAbajo?y>h-abajo.offsetHeight-16:y>h-40)});
+ // Con «Ajustar al proyector» la página entera se achica y se mueve (body.fitted): las zonas se miden sobre la imagen
+ // ajustada, no sobre el borde de la pantalla, así la barra no se esconde antes de llegar a ella (25/11/2026).
+ function bordes(){
+  if(!document.body.classList.contains('fitted'))return {sup:0,inf:innerHeight,k:1};
+  const r=document.body.getBoundingClientRect();return {sup:r.top,inf:r.bottom,k:r.height/innerHeight};
+ }
+ addEventListener('mousemove',e=>{if(!BARRAS_OCULTAS.matches)return;const y=e.clientY,{sup,inf,k}=bordes();
+  poner(verArriba?y<sup+(arriba.offsetHeight+16)*k:(y<40||y<sup+40*k),verAbajo?y>inf-(abajo.offsetHeight+16)*k:(y>innerHeight-40||y>inf-40*k))});
  document.documentElement.addEventListener('mouseleave',()=>poner(false,false));
 })();
