@@ -395,3 +395,19 @@ main:has(.ident) .head{margin-bottom:14px}
 
 /* Sprint 4: los emotes enteros dentro del círculo (más alejados), sin recortar los brazos ni los pies. */
 .sprint-uno .avance-imgs.redondas img[src*="emotes/"]{object-fit:contain;padding:6px}
+
+/* Demo a pantalla completa (25/11/2026): en el proyector de 1024 × 768 las demos (el menú, la selección de modo) usan
+   toda la pantalla. Con mouse, la barra con «Reiniciar demo» y «Volver al recorrido» se esconde y aparece al llevar el
+   mouse al borde de arriba (la franja .demo-borde, que en 4:3 cae sobre la banda negra de la demo), como las del recorrido. */
+#demoDialog{width:100vw;height:100dvh;max-width:none;max-height:none;margin:0;inset:0;padding:0;border:0;border-radius:0;background:#000}
+#demoDialog[open]{display:flex;flex-direction:column}
+#demoDialog .dialog-head{flex:none;height:auto;margin:0;padding:10px 16px;background:var(--bg);border-bottom:1px solid var(--line)}
+#demoFrame{flex:1;height:auto;min-height:0}
+.demo-borde{display:none}
+@media (hover:hover) and (pointer:fine){
+ #demoDialog .dialog-head{position:absolute;top:0;left:0;right:0;z-index:2;transform:translateY(-100%);transition:transform .2s ease}
+ #demoDialog .demo-borde{display:block;position:absolute;top:0;left:0;right:0;height:24px;z-index:1}
+ #demoDialog .demo-borde:hover+.dialog-head,#demoDialog .dialog-head:hover,#demoDialog .dialog-head:has(:focus-visible){transform:none}
+ #demoFrame{height:100%}
+}
+
