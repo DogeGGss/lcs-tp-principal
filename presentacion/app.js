@@ -103,7 +103,7 @@ function sprintSlide(s){
 // Identidad: los personajes (ciudades), los mapas (lugares del país), las armas (trenes) y el easter egg del TUM.
 function edge(){
  const E=D.edge;
- return `<div class="diferencial">${E.pillars.map(p=>`<article class="dif-col${p.next?' dif-sigue':''}"><figure><img src="${esc(p.image)}" alt=""></figure><div><p class="eyebrow">${esc(p.tag)}</p><h3>${esc(p.title)}</h3><em>${esc(p.compare)}</em></div></article>`).join('')}</div><div class="dif-publico"><b>${esc(E.audience.title)}</b><span>${esc(E.audience.text)}</span></div>`;
+ return `<div class="diferencial">${E.pillars.map(p=>`<article class="dif-col${p.next?' dif-sigue':''}"><figure><img src="${esc(p.image)}" alt=""></figure><div><p class="eyebrow">${esc(p.tag)}</p><h3>${esc(p.title)}</h3><em>${esc(p.compare)}</em></div></article>`).join('')}</div>`;
 }
 function identity(){
  // Rehecha el 25/11/2026 para la PC del aula (1024 × 768): solo imágenes y títulos grandes; lo demás va en el guion.
@@ -124,15 +124,16 @@ function sets(){
 }
 // Los cuatro productos a la vista, cada uno con una imagen hecha con cosas del juego (avatares, banners y cápsulas).
 function offer(){
- const R={1:'#9AA3B0',2:'#5C7CFF',3:'#B061FF',4:'#FFC93C'},av='../menu/img/avatares/';
+ // Rehecha el 25/11/2026 para la PC del aula: imagen grande, título, precio y un solo dato por producto; el resto va en el guion.
+ const R={1:'#9AA3B0',2:'#5C7CFF',3:'#B061FF',4:'#FFC93C'},m='../menu/img/';
  const visual={
-  // Por rareza: avatar (común), banner (raro), baile (épico) y skin de arma (legendario).
-  tienda:()=>`<div class="of-tienda">${[[av+'astra-celeste.jpg',1,'400',''],['../menu/img/banners/guerrero-synthwave.jpg',2,'800',''],['media/emotes/astra-shuffle.png',3,'1.600',' entero'],['media/armas/fusil.png',4,'3.200',' entero']].map(([src,r,p,c])=>`<span><img class="${c.trim()}" src="${src}" alt="" style="border-color:${R[r]}"><b style="color:${R[r]}">${p}</b></span>`).join('')}</div>`,
-  pase:()=>`<div class="of-pase"><div class="of-premios">${[['astra-celeste',1],['guerrero-synthwave',2],['astra-acuarela',3],['astra-nouveau',4]].map(([id,r],i)=>`<img src="${av}${id}.jpg" alt="" style="left:${(i+1)*25}%;border-color:${R[r]}">`).join('')}</div><div class="of-niveles">${Array.from({length:40},(_,i)=>`<i${(i+1)%10===0?' class="hito"':''}></i>`).join('')}</div><small><span>Nivel 1</span><span>Nivel 40</span></small></div>`,
-  capsulas:()=>`<div class="of-capsulas"><span class="of-capsula"><i></i></span><div><div class="of-barra">${[[55,1],[30,2],[12,3],[3,4]].map(([p,r])=>`<i style="width:${p}%;background:${R[r]}"></i>`).join('')}</div><small>${[[55,'Común',1],[30,'Raro',2],[12,'Épico',3],[3,'Legendario',4]].map(([p,n,r])=>`<span><b style="color:${R[r]}">${p} %</b> ${n}</span>`).join('')}</small></div></div>`,
-  cristales:()=>`<div class="of-cristales">${[['500','4,99',.7],['1.100','9,99',.85],['2.300','19,99',1],['6.000','49,99',1.2]].map(([c,p,k])=>`<span><i style="--k:${k}"></i><b>${c}</b><small>US$ ${p}</small></span>`).join('')}</div>`
+  // Un cosmético de cada rareza con su precio: avatar, banner, baile y la skin legendaria del Mitre.
+  tienda:()=>`<div class="vt-tienda">${[[m+'avatares/astra-celeste.jpg',1,'400'],[m+'banners/guerrero-synthwave.jpg',2,'800'],['media/emotes/astra-shuffle.png',3,'1.600'],[m+'skins/mitre-dragon-abisal.webp',4,'3.200']].map(([src,r,p])=>`<span><img src="${src}" alt="" style="border-color:${R[r]}"><b style="color:${R[r]}">${p}</b></span>`).join('')}</div>`,
+  pase:()=>`<div class="vt-pase"><div>${[['astra-celeste',1],['guerrero-synthwave',2],['astra-acuarela',3],['astra-nouveau',4]].map(([id,r])=>`<img src="${m}avatares/${id}.jpg" alt="" style="border-color:${R[r]}">`).join('')}</div><i>${Array.from({length:40},(_,k)=>`<u${(k+1)%10===0?' class="hito"':''}></u>`).join('')}</i><small><span>Nivel 1</span><span>Nivel 40</span></small></div>`,
+  capsulas:()=>`<div class="vt-capsulas"><span class="vt-capsula"><i></i></span><ul>${[[55,'Común',1],[30,'Raro',2],[12,'Épico',3],[3,'Legendario',4]].map(([p,n,r])=>`<li><b style="color:${R[r]}">${p} %</b> ${n}</li>`).join('')}</ul></div>`,
+  cristales:()=>`<div class="vt-cristales">${[['500','4,99',.75],['1.100','9,99',.9],['2.300','19,99',1.05],['6.000','49,99',1.2]].map(([c,p,k])=>`<span><i style="--k:${k}"></i><b>${c}</b><small>US$ ${p}</small></span>`).join('')}</div>`
  };
- return `<div class="grid oferta">${D.business.map(b=>`<article class="card"><div class="of-visual">${visual[b.visual]()}</div><p class="eyebrow">${esc(b.name)}</p><h3>${esc(b.headline)}</h3><p>${esc(b.text)}</p><span class="of-precio">${esc(b.model)}</span><p class="footnote">${esc(b.note)}</p></article>`).join('')}</div><p class="lead">Jugar es gratis. Nada de lo que se vende da ventaja en la partida.</p>`;
+ return `<div class="venta">${D.business.map(b=>`<article class="venta-card"><div class="venta-img">${visual[b.visual]()}</div><div class="venta-txt"><h3>${esc(b.name)}</h3><p>${esc(b.fact)}</p></div><b class="venta-precio">${esc(b.model)}</b></article>`).join('')}</div><p class="lead venta-lema">Jugar es gratis. Nada de lo que se vende da ventaja en la partida.</p>`;
 }
 const tag=(text,pending=false)=>`<span class="tag ${pending?'pending':''}">${esc(text)}</span>`;
 const card=(title,text)=>`<article class="card"><h3>${esc(title)}</h3><p>${esc(text)}</p></article>`;

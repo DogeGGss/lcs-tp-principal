@@ -277,19 +277,6 @@ body.cae-nav .clock{translate:0 120vh;transition:translate 1.4s cubic-bezier(.5,
 .sprint-uno .avance-imgs.iconos img{width:58px;height:58px;padding:9px;border-radius:50%;background:#232c38;object-fit:contain;filter:none}
 @media(max-width:700px){.sprint-uno{grid-template-columns:1fr}.sprint-linea li{font-size:16px}}
 
-/* Propuesta comercial en pantallas 4:3 (25/11/2026): 2 × 2 tarjetas con el dibujo a la izquierda y el texto a la derecha,
-   así el texto es más grande y la diapositiva llena el alto. */
-@media (max-aspect-ratio:3/2){
- #slide .oferta{grid-template-columns:1fr 1fr;gap:12px}
- #slide .oferta .card{display:grid;grid-template-columns:38% 1fr;column-gap:14px;align-content:start;padding:14px}
- #slide .oferta .of-visual{grid-row:1 / span 6;height:auto;margin:0;align-self:stretch;padding:8px}
- #slide .oferta .of-visual>*{zoom:1.1}
- #slide .oferta .of-cristales{grid-template-columns:1fr}
- #slide .oferta .of-precio{margin-top:4px;padding-top:4px}
- #slide .oferta .card p{font-size:20px}
- #slide .oferta .card .footnote{font-size:16px}
- #slide .oferta h3{font-size:26px}
-}
 
 /* Identidad (rehecha el 25/11/2026): solo imágenes y títulos grandes. A la izquierda personajes, mapas y armas;
    a la derecha la Escolta y el grafiti, que estiran su imagen al alto de la columna. El ajuste de letra la agranda. */
@@ -330,9 +317,9 @@ main:has(.ident) .head{margin-bottom:14px}
 /* Qué nos diferencia con menos texto (25/11/2026): imagen más alta, título grande y la comparación abajo. */
 #slide .dif-col figure{flex:none;aspect-ratio:4/3}
 #slide .dif-col>div{padding:14px 16px}
-#slide .dif-col .eyebrow{font-size:20px;margin-bottom:6px}
-#slide .dif-col h3{font-size:36px;line-height:1.05;margin:0 0 12px}
-#slide .dif-col em{font-size:24px;line-height:1.2;padding-top:10px}
+#slide .dif-col .eyebrow{font-size:18px;margin-bottom:6px}
+#slide .dif-col h3{font-size:30px;line-height:1.05;margin:0 0 12px}
+#slide .dif-col em{font-size:21px;line-height:1.2;padding-top:10px}
 #slide .dif-publico{margin-top:14px;padding:14px 22px}
 #slide .dif-publico b{font-size:36px}
 #slide .dif-publico span{font-size:28px}
@@ -392,4 +379,43 @@ main:has(.ident) .head{margin-bottom:14px}
 /* Escala: Promedio y Optimista lado a lado, y la frase debajo a todo el ancho, así entran los números grandes. */
 #slide .grid.escala-fin{grid-template-columns:1fr 1fr}
 #slide .escala-fin .card:last-child{grid-column:1/-1}
+
+/* Propuesta comercial (rehecha el 25/11/2026): imagen grande, título, un dato y el precio. En pantallas anchas, 4 columnas;
+   en 4:3, una fila por producto (imagen, título y dato, precio a la derecha). */
+.venta{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+.venta-card{display:flex;flex-direction:column;gap:10px;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px;min-width:0;overflow:hidden}
+.venta-img{border-radius:8px;background:radial-gradient(ellipse at 50% 30%,#232a36,#0d1016);padding:12px;display:flex;align-items:center;justify-content:center;min-height:150px}
+.venta-txt h3{font:700 32px Display,sans-serif;line-height:1.05;margin:0}
+.venta-txt p{font-size:22px;line-height:1.25;color:var(--text);margin:4px 0 0}
+.venta-precio{font:700 34px Display,sans-serif;line-height:1.05;color:var(--accent);margin-top:auto}
+.venta-lema{font-size:26px;color:var(--text);margin-top:14px}
+.vt-tienda{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;width:100%}
+.vt-tienda span{display:flex;flex-direction:column;align-items:center;gap:4px;min-width:0}
+.vt-tienda img{width:100%;aspect-ratio:1;object-fit:cover;border-radius:6px;border:3px solid;background:#151a22}
+.vt-tienda span:nth-child(n+3) img{object-fit:contain;padding:2px}
+.vt-tienda b{font:700 20px Display,sans-serif}
+.vt-pase{width:100%}
+.vt-pase>div{display:flex;justify-content:space-around;margin-bottom:8px}
+.vt-pase img{width:22%;aspect-ratio:1;object-fit:cover;border-radius:6px;border:3px solid}
+.vt-pase i{display:flex;gap:2px;height:14px}
+.vt-pase u{flex:1;background:#2b313c;border-radius:1px;text-decoration:none}
+.vt-pase u.hito{background:var(--accent)}
+.vt-pase small{display:flex;justify-content:space-between;font-size:18px;color:var(--muted);margin-top:6px}
+.vt-capsulas{display:flex;gap:16px;align-items:center}
+.vt-capsula{position:relative;flex:none;width:44px;height:66px;border-radius:8px;background:linear-gradient(var(--accent) 0 12px,#161a21 12px calc(100% - 12px),var(--accent) calc(100% - 12px))}
+.vt-capsula i{position:absolute;left:14px;top:19px;width:16px;height:28px;border-radius:4px;background:#f3f4f6;box-shadow:0 0 0 3px #0b0d11}
+.vt-capsulas ul{list-style:none;margin:0;padding:0;display:grid;gap:2px;font-size:19px;white-space:nowrap}
+.vt-cristales{display:grid;grid-template-columns:1fr 1fr;gap:10px 14px}
+.vt-cristales span{display:grid;grid-template-columns:28px auto;column-gap:8px;align-items:center}
+.vt-cristales i{grid-row:span 2;justify-self:center;width:calc(17px * var(--k));height:calc(24px * var(--k));background:#9B7BFF;clip-path:polygon(50% 0,100% 45%,50% 100%,0 45%)}
+.vt-cristales b{font:700 22px Display,sans-serif;line-height:1}
+.vt-cristales small{font-size:17px;color:var(--muted);line-height:1.1;white-space:nowrap}
+@media (max-aspect-ratio:3/2){
+ .venta{grid-template-columns:1fr;gap:10px}
+ .venta-card{display:grid;grid-template-columns:300px 1fr auto;align-items:center;gap:18px;padding:10px 18px 10px 10px}
+ .venta-img{min-height:0;padding:8px 10px}
+ .venta-precio{margin:0;text-align:right;white-space:nowrap}
+ .vt-tienda img{max-height:54px;width:auto;margin:0 auto}
+ .vt-pase img{width:18%}
+}
 
