@@ -332,12 +332,6 @@ main:has(.ident) .head{margin-bottom:14px}
 #slide .facts{gap:6px;margin-top:12px}
 #slide .facts dt{font-size:20px}
 #slide .facts dd{font-size:22px}
-#slide .fx-zonas b{font-size:32px}
-#slide .fx-zonas span{font-size:24px}
-@media (max-aspect-ratio:3/2){
- #slide .fx{grid-template-columns:1fr;gap:12px}
- #slide .fx-zonas{grid-template-columns:repeat(3,1fr)}
-}
 #slide .parada .eyebrow{font-size:22px}
 #slide .parada b{font-size:64px}
 #slide .parada span{font-size:22px;color:var(--text)}
@@ -418,4 +412,14 @@ main:has(.ident) .head{margin-bottom:14px}
  .vt-tienda img{max-height:54px;width:auto;margin:0 auto}
  .vt-pase img{width:18%}
 }
+
+/* f(x) solo con el gráfico (25/11/2026): a todo el ancho, sin pasarse del alto de la pantalla, y con la letra más grande. */
+#slide .fx{display:block}
+#slide .fx-chart{width:100%;max-height:calc(100dvh - 170px)}
+#slide .fx .eje{font-size:22px}
+#slide .fx .eje.titulo{font-size:22px}
+#slide .fx-zona-txt{font-size:20px}
+#slide .fx-umbral-txt{font-size:22px}
+#slide .fx-txt{font-size:22px}
+#slide .fx-nota{font-size:19px}
 

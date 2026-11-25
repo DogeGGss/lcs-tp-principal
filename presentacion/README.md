@@ -158,3 +158,4 @@ La PC de la presentación proyecta a 1024 × 768 por VGA, así que todo se agran
 - La portada va a pantalla completa, con el andén de `menu/img/fondos/fondo-02.jpg` de fondo y el logo, el título y la frase en grande.
 - Identidad se rehízo con solo imágenes y títulos grandes (personajes, mapas, cuatro armas con su tren, la Escolta y el grafiti «Plaga Gris»); los orígenes de los nombres quedan en el guion.
 - Propuesta comercial, en pantallas 4:3, va en 2 × 2 tarjetas con el dibujo a la izquierda. El ajuste de letra llega hasta 2,2 veces, así llena el alto en cualquier pantalla.
+- Métricas y Escenarios van en tabla; Escala y Protección, con una línea corta por parada; el Cierre ocupa toda la pantalla. Qué nos diferencia quedó con las cuatro columnas y la Propuesta comercial con una imagen, el título, un dato y el precio por producto. La f(x) es solo el gráfico, a todo el ancho. Lo que salió de cada diapositiva está en su guion.

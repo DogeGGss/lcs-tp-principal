@@ -17,9 +17,10 @@ function investment(){
  const E=D.economics,I=E.investment,L=E.scenarios,mid=L[1];
  return `<div class="grid two invest"><article class="card"><p class="eyebrow">La inversión</p><div class="metric-number">${money(I.total)}</div><div class="uses">${I.items.map(([n,v])=>`<div><span>${esc(n)}</span><b>${money(v)}</b><i style="width:${Math.max(1,v/I.total*100)}%"></i></div>`).join('')}</div><p class="footnote">Después, el juego necesita ${money(I.monthlyFixed)} fijos por mes (${money(I.salaries)} son los sueldos de los 7) más los servidores.</p></article><article class="card"><p class="eyebrow">Lo que vuelve</p><table class="returns"><tr><th></th><th>Recupero</th><th>A los 3 años</th></tr>${L.map(x=>`<tr><td>${esc(x.name)}</td><td>${x.payback?'mes '+x.payback:'no se recupera'}</td><td>${x.perDollar?`US$&nbsp;${dec(x.perDollar)} por cada dólar`:`pierde ${money(-x.result)} por mes`}</td></tr>`).join('')}</table></article></div><div class="watch"><div><b>${num(mid.peak)}</b><span>a la vez en la hora pico, de los ${num(mid.players)} jugadores por mes del promedio</span></div><div><b>${thousands(mid.breakEven)}</b><span>jugadores por mes para no perder plata</span></div><div><b>${mid.conv.toLocaleString('es-AR')} %</b><span>de los jugadores paga algo en el mes</span></div><div><b>US$&nbsp;${dec(mid.arppu)}</b><span>por mes cada uno que paga: US$&nbsp;${dec(mid.arppuLatam)} en Latinoamérica (${mid.latam}&nbsp;%) y US$&nbsp;${dec(mid.arppuRest)} en el resto</span></div></div>`;
 }
-// f(x): lo que queda por mes según los jugadores que pagan, con las zonas (pierde, se sostiene, va bien) y los escenarios.
+// f(x): lo que queda por mes según los jugadores que pagan, con las zonas (pierde, se sostiene, va bien) dentro del
+// gráfico. Desde el 25/11/2026 va solo el gráfico, a todo el ancho; lo de cada zona se dice con el guion.
 function payers(){
- const F=D.economics.fx,W=900,H=450,L=92,R=24,T=40,B=56,xmax=4000,ymin=-10000,ymax=10000;
+ const F=D.economics.fx,W=900,H=580,L=92,R=40,T=40,B=56,xmax=4000,ymin=-10000,ymax=10000;
  const X=x=>L+(W-L-R)*x/xmax,Y=v=>T+(H-T-B)*(ymax-v)/(ymax-ymin);
  const plata=v=>(v<0?'−':v>0?'+':'')+'US$ '+num(Math.abs(Math.round(v)));
  const eje=v=>v===0?'US$ 0':(v<0?'−':'+')+num(Math.abs(v)/1000)+' mil';
@@ -39,7 +40,7 @@ function payers(){
   <text class="fx-txt" x="${X(m.payers)}" y="${Y(m.result)-18}" text-anchor="middle">Promedio: ${num(m.payers)} pagan · ${plata(m.result)}</text>
   <text class="fx-nota" x="${X(2490)}" y="${Y(2400)}" text-anchor="middle">Unity Pro</text><g class="fx-hover" id="fxHover" visibility="hidden"><line id="fxHoverLine" y1="${T}" y2="${H-B}"/><circle id="fxHoverDot" r="6"/><rect id="fxHoverBox" rx="6" height="30"/><text id="fxHoverTxt"></text></g>
   <rect class="fx-hit" x="${L}" y="${T}" width="${W-L-R}" height="${H-T-B}" data-fx="${L},${W-R},${xmax}"/></svg>`;
- return `<div class="fx">${svg}<div class="fx-zonas"><div class="mal"><b>Va mal</b><span>menos de ${num(Math.round(F.breakEven))} pagadores</span></div><div class="justo"><b>Se sostiene</b><span>de ${num(Math.round(F.breakEven))} a ${num(Math.round(F.full))}</span></div><div class="bien"><b>Va bien</b><span>${num(Math.round(F.full))} o más, 3 meses</span></div></div></div>`;
+ return `<div class="fx">${svg}</div>`;
 }
 // Valor de la f(x) bajo el mouse: la línea vertical, el punto sobre la curva y el número.
 document.addEventListener('pointermove',e=>{
@@ -48,7 +49,7 @@ document.addEventListener('pointermove',e=>{
  const svg=hit.ownerSVGElement,pt=svg.createSVGPoint();pt.x=e.clientX;pt.y=e.clientY;const p=pt.matrixTransform(svg.getScreenCTM().inverse());
  const [l,r,xmax]=hit.dataset.fx.split(',').map(Number),F=D.economics.fx,x=Math.max(0,Math.min(xmax,(p.x-l)/(r-l)*xmax));
  const [px,pv]=F.points.reduce((a,q)=>Math.abs(q[0]-x)<Math.abs(a[0]-x)?q:a);
- const W=900,H=450,L=92,R=24,T=40,B=56,X=v=>L+(W-L-R)*v/xmax,Y=v=>T+(H-T-B)*(10000-v)/20000;
+ const W=900,H=580,L=92,R=40,T=40,B=56,X=v=>L+(W-L-R)*v/xmax,Y=v=>T+(H-T-B)*(10000-v)/20000;
  const t=`${num(px)} pagan · ${(pv<0?'−':pv>0?'+':'')}US$ ${num(Math.abs(pv))} por mes`;
  const txt=document.getElementById('fxHoverTxt'),box=document.getElementById('fxHoverBox');
  document.getElementById('fxHoverLine').setAttribute('x1',X(px));document.getElementById('fxHoverLine').setAttribute('x2',X(px));
