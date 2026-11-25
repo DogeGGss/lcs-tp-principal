@@ -60,6 +60,12 @@ document.addEventListener('pointermove',e=>{
 });
 // Si no despega: los puntos de control (en jugadores que pagan) y lo máximo que pierde el inversor. Nadie se va antes de
 // que termine la rampa: en el mes 3 se corrige, en el 6 se ajustan las horas de los 7 y en el 9 se decide.
+// Si despega fuerte (25/11/2026): el plan del optimista, con las mismas paradas que Escala y Protección: la señal, el
+// equipo de 12 y la publicidad con torneos; abajo, lo que se reinvierte y lo que le queda al inversor.
+function boom(){
+ const B=D.economics.boom;
+ return `<div class="escala-linea despegue"><div class="parada senal"><i></i><p class="eyebrow">La señal</p><b>${num(B.signal)}</b><span>pagadores por mes</span><strong>El promedio llega a ${num(B.averagePayers)}</strong></div><div class="parada completo"><i></i><p class="eyebrow">Equipo de ${B.team}</p><b>+${B.hires}</b><span>${esc(B.hiresText)}</span><strong>${money(B.hiresCost)} por mes</strong></div><div class="parada completo"><i></i><p class="eyebrow">Más gente</p><b>× ${B.ads/B.adsNow}</b><span>en publicidad, más torneos</span><strong>${money(B.reach)} más por mes</strong></div></div><div class="grid escala-fin despegue-fin"><article class="card scenario"><p class="eyebrow">Se reinvierte</p><div class="result">${money(B.reinvest)}<small>por mes, en el juego</small></div></article><article class="card scenario"><p class="eyebrow">Con ${B.growth} % más jugadores</p><div class="result pos">${money(B.grown,true)}<small>por mes al inversor (sin reinvertir, ${money(B.withFull)})</small></div></article><article class="card"><p class="eyebrow">Más contenido, más jugadores</p><p><b>Desde un ${B.payoff} % más de jugadores, el inversor gana más que sin reinvertir.</b></p></article></div>`;
+}
 function guard(){
  const G=D.economics.guard;
  return `<div class="escala-linea guard"><div class="parada"><i></i><p class="eyebrow">Mes 3 · Corregir</p><b>&lt;&nbsp;${num(G.checkpoint3)}</b><span>pagadores: nadie se va, se corrige</span></div><div class="parada senal"><i></i><p class="eyebrow">Mes 6 · Ajustar</p><b>&lt;&nbsp;${num(G.checkpoint6)}</b><span>pagadores: los 7 siguen, con menos horas</span></div><div class="parada corte"><i></i><p class="eyebrow">Mes 9 · Decidir</p><b>&lt;&nbsp;${num(G.checkpoint9)}</b><span>pagadores: se cierra, con la indemnización reservada</span></div></div><div class="grid two guard-fin"><article class="card scenario"><p class="eyebrow">Pesimista, con el plan</p><div class="result neg">${money(G.worst,true)}<small>lo máximo que pierde el inversor</small></div></article><article class="card scenario"><p class="eyebrow">Pesimista, sin el plan</p><div class="result neg">${money(G.without,true)}<small>a los 3 años, siguiendo igual</small></div></article></div>`;
@@ -182,6 +188,7 @@ function content(s){
  case 'sprint-1':case 'sprint-2':case 'sprint-3':case 'sprint-4':case 'sprint-5':return sprintSlide(s);
  case 'inversion':return head(s)+investment();
  case 'escala':return head(s)+scale();
+ case 'despegue':return head(s)+boom();
  case 'cierre':return questionsScreen();
  }
 }

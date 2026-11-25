@@ -446,3 +446,6 @@ body.projector .qa-carta{--r:#5f6670}body.projector .qa-carta.rara{--r:#075c95}b
 #questionBody .qa-arsenal .stats b{font-size:50px}
 #questionBody .qa-arsenal .stats span{font-size:21px;line-height:1.2;display:block}
 
+/* Si despega fuerte (25/11/2026): la línea va toda en verde, porque las tres paradas son de crecer. */
+.escala-linea.despegue::before{background:var(--green)}
+
