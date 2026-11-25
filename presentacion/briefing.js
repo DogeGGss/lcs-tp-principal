@@ -43,14 +43,17 @@
   .brf-feed b{color:var(--c)}
   .brf-video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity .3s ease}
   .brf-video.on{opacity:1}
-  .brf-lista{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:30px}
-  .brf-lista h4{grid-column:1/-1;margin:0;font:700 30px/1 var(--display);letter-spacing:.12em;text-transform:uppercase}
-  .brf-fila{display:flex;flex-direction:column;gap:7px;padding:14px;border-radius:10px;background:#121722;border-top:7px solid var(--r)}
-  .brf-fila small{font:600 14px/1 var(--display);letter-spacing:.18em;text-transform:uppercase;color:var(--r)}
-  .brf-fila b{font:700 26px/1 var(--display);text-transform:uppercase}
-  .brf-fila span{font:500 17px/1.3 var(--body);color:rgba(255,255,255,.8)}
-  .brf-lista>*{opacity:0;transform:translateX(-14px);transition:opacity .4s ease,transform .4s ease}
-  .brf-lista>.on{opacity:1;transform:none}
+  .brf-elegir{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:34px;background:rgba(7,8,10,.62);opacity:0;transition:opacity .35s ease}
+  .brf-elegir.on{opacity:1}
+  .brf-elegir h4{margin:0;font:700 84px/1 var(--display);letter-spacing:.08em;text-transform:uppercase;text-shadow:0 4px 18px #000}
+  .brf-elegir>div{display:grid;grid-template-columns:repeat(3,320px);gap:30px}
+  .brf-carta-g{display:flex;flex-direction:column;gap:14px;min-height:340px;padding:28px 26px;border-radius:16px;background:#121722;border-top:12px solid var(--r);box-shadow:0 12px 40px rgba(0,0,0,.6);opacity:0;transform:translateY(30px) scale(.94);transition:opacity .35s ease,transform .35s ease,filter .35s ease}
+  .brf-carta-g.on{opacity:1;transform:none}
+  .brf-carta-g small{font:700 32px/1 var(--display);letter-spacing:.14em;text-transform:uppercase;color:var(--r)}
+  .brf-carta-g b{font:700 62px/1 var(--display);text-transform:uppercase}
+  .brf-carta-g span{font:500 36px/1.2 var(--body);color:rgba(255,255,255,.88)}
+  .brf-carta-g.elegida{transform:scale(1.08);box-shadow:0 0 0 4px var(--r),0 0 60px var(--r)}
+  .brf-carta-g.apagada{filter:brightness(.5) grayscale(.5)}
   .brf-armas{position:absolute;left:24px;right:24px;bottom:22px;display:grid;grid-template-columns:repeat(7,1fr);gap:10px}
   .brf-arma{display:flex;flex-direction:column;align-items:center;gap:5px;opacity:0;transform:translateY(14px);transition:opacity .4s ease,transform .4s ease}
   .brf-arma.on{opacity:1;transform:none}
@@ -297,20 +300,26 @@
   // Invasión: tomas grabadas en el juego (Unity, 24/11/2026), con cámara isométrica y los 4 personajes manejados por bots:
   // 1, entre el TUM y los módulos del medio; 2, en la entrada de la UNGS; 3, el puesto en la Biblioteca; 4, el Jefe en el Auditorio.
   // El video ocupa todo el cuadro (el HUD del juego ya está apagado); lo que se agrega va sobre el fondo negro, a la izquierda.
-  const CARTAS_I = [['Legendaria', '#FFC93C', 'Escolta', 'Un dron te acompaña: su rayo derrite al invasor más cercano.'],
-    ['Épica', '#B061FF', 'Campo minado', 'Las granadas que tocan el piso quedan como minas.'],
-    ['Arma', ROJO, 'Katana', 'Reemplaza a tu cuchillo. Corta a todos los que tenés delante.']];
+  // Las tres cartas del paso «Elegir carta», como en el juego (rareza, color, nombre y qué hace), con textos cortos.
+  const CARTAS_I = [['Legendaria', '#FFC93C', 'Escolta', 'Un dron que derrite al invasor más cercano.'],
+    ['Épica', '#B061FF', 'Campo minado', 'Tus granadas quedan como minas.'],
+    ['Arma', ROJO, 'Katana', 'Corta a todos los que tenés delante.']];
   const INVASION = {
     nombre: 'Invasión', color: VERDE, sub: '1 a 4 jugadores · la universidad', mapa: 'la universidad', busca: 4,
     pasos: [
       { tit: 'Juntos contra la horda', video: 'presentacion/media/modos/invasion-1.mp4', txt: 'De 1 a 4 jugadores, contra oleadas cada vez más grandes: la oleada N trae 10 + 5 × (N − 1) invasores, y cada jugador de más suma la mitad.' },
       { tit: 'Salen de los portales', video: 'presentacion/media/modos/invasion-2.mp4', txt: 'Los invasores salen de portales que se abren alrededor del puesto de suministros, entre 30 y 55 m, y van hacia el jugador más cercano.' },
-      { tit: 'Cargar el puesto', video: 'presentacion/media/modos/invasion-3.mp4', txt: 'Las bajas dentro del anillo cargan el puesto. Al 100 %, cada uno elige 1 de 3: un arma, la Katana o una de las 27 cartas.',
+      { tit: 'Cargar el puesto', video: 'presentacion/media/modos/invasion-3.mp4', txt: 'Las bajas dentro del anillo cargan el puesto de suministros. Cuando llega al 100 %, se elige.' },
+      // Mismo video que el paso anterior (sigue sin cortarse) y las cartas en grande en el medio: es lo único que va encima de un video.
+      { tit: 'Elegir carta', video: 'presentacion/media/modos/invasion-3.mp4', txt: 'Con el puesto cargado, cada uno elige 1 de 3: un arma, la Katana o una de las 27 cartas.',
         escena(c) {
-          const lista = html(c.info, 'brf-lista', '<h4>Elegí 1 de 3</h4>'
-            + CARTAS_I.map(([r, col, n, x]) => `<div class="brf-fila" style="--r:${col}"><small>${r}</small><b>${n}</b><span>${x}</span></div>`).join(''));
-          const filas = lista.querySelectorAll('.brf-fila, h4');
-          return t => filas.forEach((f, i) => f.classList.toggle('on', t > 1.2 + i * .35));
+          const capa = html(c.hud, 'brf-elegir', '<h4>Elegí 1 de 3</h4><div>'
+            + CARTAS_I.map(([r, col, n, x]) => `<div class="brf-carta-g" style="--r:${col}"><small>${r}</small><b>${n}</b><span>${x}</span></div>`).join('') + '</div>');
+          const cartas = capa.querySelectorAll('.brf-carta-g');
+          return t => {
+            capa.classList.toggle('on', t > .15);
+            cartas.forEach((k, i) => { k.classList.toggle('on', t > .5 + i * .3); k.classList.toggle('elegida', i === 0 && t > 2.8); k.classList.toggle('apagada', i > 0 && t > 2.8); });
+          };
         } },
       { tit: 'El Jefe', video: 'presentacion/media/modos/invasion-4.mp4', txt: 'Cada 10 oleadas llega el Jefe. Si te quedás sin vida, quedás caído 30 s: un compañero te revive en 5 s manteniendo E.' }
     ]
@@ -328,7 +337,7 @@
     raiz.innerHTML = `<div class="brf-busca"><div class="brf-radar">${'<i></i>'.repeat(3)}<b></b></div><div class="e">Buscando partida</div><div class="g">1 / ${M.busca}</div><div class="s">${M.nombre} · Sudamérica · misma versión</div></div>
       <div class="brf-main"><div class="brf-izq"><div class="brf-eb">Partida encontrada</div><div class="brf-modo">${M.nombre}</div><div class="brf-sub">${M.sub}</div>
         <div class="brf-paso"></div><h2 class="brf-tit"></h2><div class="brf-dots">${M.pasos.map(() => '<i></i>').join('')}</div><div class="brf-info"></div></div>
-        <div class="brf-der">${M.pasos.filter(P => P.video).map((P, k) => `<video class="brf-video" src="${P.video}" muted playsinline loop preload="${k ? 'none' : 'auto'}"></video>`).join('')}<svg ${M.img ? `viewBox="${M.img.vista.join(' ')}" preserveAspectRatio="xMidYMid ${M.img.ajuste || 'slice'}"><image href="${M.img.src}" width="${M.img.w}" height="${M.img.h}"/>` : '>'}<g class="capa"></g></svg><div class="brf-hud"></div></div>
+        <div class="brf-der">${[...new Set(M.pasos.filter(P => P.video).map(P => P.video))].map((src, k) => `<video class="brf-video" src="${src}" muted playsinline loop preload="${k ? 'none' : 'auto'}"></video>`).join('')}<svg ${M.img ? `viewBox="${M.img.vista.join(' ')}" preserveAspectRatio="xMidYMid ${M.img.ajuste || 'slice'}"><image href="${M.img.src}" width="${M.img.w}" height="${M.img.h}"/>` : '>'}<g class="capa"></g></svg><div class="brf-hud"></div></div>
         <div class="brf-ayuda"><button type="button" data-ir="-1" aria-label="Paso anterior">←</button><button type="button" data-ir="1" aria-label="Paso siguiente">→</button>pasos · <b>Esc</b>volver a los andenes</div></div>
       <button class="brf-volver" type="button">Volver a los andenes</button>`;
     inner.appendChild(raiz);
@@ -356,10 +365,11 @@
     // que se ve ya puede reproducirse entero, así no se reparten la conexión y el primero arranca fluido.
     const videos = [...b.raiz.querySelectorAll('.brf-video')];
     videos.forEach((v, k) => {
-      const este = v.getAttribute('src') === P.video;
+      const este = v.getAttribute('src') === P.video, yaSeVeia = v.classList.contains('on');
       v.classList.toggle('on', este);
       if (!este) { v.pause(); return; }
-      v.currentTime = 0; v.play().catch(() => {});
+      if (!yaSeVeia) v.currentTime = 0;
+      v.play().catch(() => {});
       const sig = videos[k + 1];
       if (sig && sig.preload !== 'auto') {
         const pedir = () => { if (sig.preload !== 'auto') { sig.preload = 'auto'; sig.load(); } };

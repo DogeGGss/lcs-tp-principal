@@ -142,9 +142,10 @@ Se grabaron en Unity, en Play, con scripts que no quedan en el proyecto: cámara
 1. **Juntos contra la horda**: los cuatro solos, entre el TUM, el Módulo 7 y los dos módulos del medio.
 2. **Salen de los portales**: la entrada de la UNGS; cada uno le tira a los invasores de un portal distinto.
 3. **Cargar el puesto**: el puesto en la Biblioteca, con más invasores, uno con la Katana y otro con el lanzagranadas.
-4. **El Jefe**: el Auditorio, desde la puerta grande, con el Jefe y muchos invasores de todos los tipos que salen de los portales.
+4. **Elegir carta** (25/11/2026): el mismo video del paso 3, que sigue sin cortarse, con las tres cartas en grande en el medio (Escolta, Campo minado y Katana) y la Escolta elegida. Es lo único que va encima de un video.
+5. **El Jefe**: el Auditorio, desde la puerta grande, con el Jefe y muchos invasores de todos los tipos que salen de los portales.
 
-Lo lee David Ramos y sigue en 2 minutos. Revisado a 1280 × 720 y a 1024 × 768, los doce pasos, sin errores de JavaScript (con los videos de Invasión, otra vez el 24/11).
+Lo lee David Ramos y sigue en 2 minutos. Revisado a 1280 × 720 y a 1024 × 768, los trece pasos (desde el 25/11), sin errores de JavaScript (con los videos de Invasión, otra vez el 24/11).
 
 Los scripts y la hoja de estilos se piden con `?v=AAAAMMDD` (en `index.html` de la presentación, `presentacion/demo.js` en la guía y `briefing.js` en `demo.js`). GitHub Pages deja que el navegador guarde los archivos 10 minutos, y sin ese número una presentación abierta antes del cambio sigue con la versión vieja. La demo de modos también se abre con `&v=` en `demoSrc` (app.js), porque la guía es el mismo archivo y también queda guardada. Al cambiar uno de esos archivos, subir el número (en el mismo día, `AAAAMMDD02`, `03`…).
 
