@@ -104,8 +104,11 @@ function edge(){
  return `<div class="diferencial">${E.pillars.map(p=>`<article class="dif-col${p.next?' dif-sigue':''}"><figure><img src="${esc(p.image)}" alt=""></figure><div><p class="eyebrow">${esc(p.tag)}</p><h3>${esc(p.title)}</h3><p>${esc(p.text)}</p><em>${esc(p.compare)}</em></div></article>`).join('')}</div><div class="dif-publico"><b>${esc(E.audience.title)}</b><span>${esc(E.audience.text)}</span></div>`;
 }
 function identity(){
+ // Rehecha el 25/11/2026 para la PC del aula (1024 × 768): solo imágenes y títulos grandes; lo demás va en el guion.
  const I=D.identity;
- return `<div class="identidad"><section class="id-col id-personajes"><p class="eyebrow">Personajes · ciudades argentinas</p>${I.characters.map(c=>`<figure><img src="${esc(c.image)}" alt=""><figcaption><strong>${esc(c.name)} <small>${esc(c.role)}</small></strong><span>${esc(c.origin)}</span></figcaption></figure>`).join('')}</section><section class="id-col"><p class="eyebrow">Mapas · lugares del país</p><div class="id-mapas">${I.maps.map(m=>`<article><img src="${esc(m.image)}" alt=""><div><small>${esc(m.mode)}</small><strong>${esc(m.name)}</strong><span>${esc(m.text)}</span></div></article>`).join('')}</div><div class="id-trenes"><b>Las armas son trenes</b><div>${I.trains.map(t=>`<span>${esc(t)}</span>`).join('')}</div></div></section><div class="id-derecha"><section class="id-col id-foto"><p class="eyebrow">Carta legendaria</p><div class="id-fila"><figure class="id-escolta"><img src="${esc(I.escort.image)}" alt="El dron Escolta con la banderita argentina"></figure><div><strong>${esc(I.escort.title)}</strong><span>${esc(I.escort.text)}</span></div></div></section><section class="id-col id-foto"><p class="eyebrow">Easter egg</p><div class="id-fila"><figure class="id-grafiti"><img src="${esc(I.egg.image)}" alt="${esc(I.egg.title)}"></figure><div><strong>${esc(I.egg.title)}</strong><span>${esc(I.egg.text)}</span></div></div></section></div></div>`;
+ const item=(img,nombre)=>`<figure><div class="ident-img"><img src="${esc(img)}" alt=""></div><figcaption>${esc(nombre)}</figcaption></figure>`;
+ const grupo=(cls,titulo,items)=>`<section class="ident-grupo ${cls}"><h3>${esc(titulo)}</h3><div class="ident-items">${items.join('')}</div></section>`;
+ return `<div class="ident"><div class="ident-izq">${grupo('ident-personajes','Personajes: ciudades',I.characters.map(c=>item(c.image,c.name)))}${grupo('ident-mapas','Mapas: lugares del país',I.maps.map(m=>item(m.image,m.name)))}${grupo('ident-armas','Armas: trenes',I.weapons.map(w=>item(w.image,w.name)))}</div><div class="ident-der">${grupo('ident-escolta','Carta legendaria',[item(I.escort.image,I.escort.title)])}${grupo('ident-huevo','Easter egg',[item(I.egg.image,'Plaga Gris')])}</div></div>`;
 }
 function story(){
  const H=D.story;
@@ -264,12 +267,14 @@ function openQuestion(index) {
 }
 
 // Letra más grande: en las diapositivas con lugar libre, todo lo que va debajo del título se agranda parejo (zoom)
-// hasta llenar la pantalla, hasta un 45 %. Las que ya ocupan toda la altura (o son video o portada) quedan como están.
+// hasta llenar la pantalla, hasta 2,2 veces (25/11: para usar todo el alto en cualquier pantalla). Las que ya ocupan toda la altura (o son video o portada) quedan como están.
 // Con mouse, las barras se esconden (ver barrasDesplegables): la letra se ajusta a la pantalla entera, así no salta al mostrarlas.
 const BARRAS_OCULTAS=matchMedia('(hover:hover) and (pointer:fine)');
-const SIN_AJUSTE=['inicio','trailer','diferencial','identidad','cierre'];
-function envolverCuerpo(s){const m=$('#slide');if(SIN_AJUSTE.includes(s.id)||!m.querySelector(':scope>.head'))return;const c=document.createElement('div');c.className='cuerpo';[...m.children].filter(e=>!e.classList.contains('head')).forEach(e=>c.append(e));m.append(c);ajustarLetra()}
-function ajustarLetra(){const c=$('#slide>.cuerpo');if(!c)return;c.style.zoom='';const nav=document.querySelector('.navigation');const piso=BARRAS_OCULTAS.matches||!nav?innerHeight:nav.getBoundingClientRect().top;const limite=Math.min(piso-18,innerHeight-parseFloat(getComputedStyle($('#slide')).paddingBottom));const desborde=()=>[...c.querySelectorAll('*')].filter(e=>e.scrollWidth>e.clientWidth+2&&getComputedStyle(e).overflowX!=='visible').length;const base=desborde();const cabe=z=>{c.style.zoom=z;return c.getBoundingClientRect().bottom<=limite&&c.scrollWidth<=c.clientWidth+1&&desborde()<=base};if(!cabe(1)){c.style.zoom='';return}let lo=1,hi=1.45;if(cabe(hi))return;for(let i=0;i<8;i++){const m=(lo+hi)/2;if(cabe(m))lo=m;else hi=m}c.style.zoom=lo}
+// Sin barras (con mouse), Diferencia e Identidad dejan su alto fijo y también se agrandan hasta llenar la pantalla.
+const AJUSTAN_SIN_BARRAS=['diferencial'];
+const SIN_AJUSTE=['inicio','trailer','diferencial','cierre'];
+function envolverCuerpo(s){const m=$('#slide');if((SIN_AJUSTE.includes(s.id)&&!(BARRAS_OCULTAS.matches&&AJUSTAN_SIN_BARRAS.includes(s.id)))||!m.querySelector(':scope>.head'))return;const c=document.createElement('div');c.className='cuerpo';[...m.children].filter(e=>!e.classList.contains('head')).forEach(e=>c.append(e));m.append(c);ajustarLetra()}
+function ajustarLetra(){const c=$('#slide>.cuerpo');if(!c)return;c.style.zoom='';const nav=document.querySelector('.navigation');const piso=BARRAS_OCULTAS.matches||!nav?innerHeight:nav.getBoundingClientRect().top;const limite=Math.min(piso-18,innerHeight-parseFloat(getComputedStyle($('#slide')).paddingBottom));const desborde=()=>[...c.querySelectorAll('*')].filter(e=>e.scrollWidth>e.clientWidth+2&&getComputedStyle(e).overflowX!=='visible').length;const base=desborde();const cabe=z=>{c.style.zoom=z;return c.getBoundingClientRect().bottom<=limite&&c.scrollWidth<=c.clientWidth+1&&desborde()<=base};if(!cabe(1)){c.style.zoom='';return}let lo=1,hi=2.2;if(cabe(hi))return;for(let i=0;i<8;i++){const m=(lo+hi)/2;if(cabe(m))lo=m;else hi=m}c.style.zoom=lo}
 addEventListener('resize',()=>requestAnimationFrame(ajustarLetra));
 new MutationObserver(()=>requestAnimationFrame(ajustarLetra)).observe(document.body,{attributes:true,attributeFilter:['style','class']});
 document.fonts&&document.fonts.ready.then(ajustarLetra);

@@ -155,3 +155,6 @@ La PC de la presentación proyecta a 1024 × 768 por VGA, así que todo se agran
 - Las dos barras se esconden y la diapositiva usa la pantalla entera: el ajuste de letra (`ajustarLetra`) toma todo el alto y no cambia al mostrarlas. También se vuelve a ajustar cuando terminan de cargar las imágenes.
 - El reloj quedó fijo arriba a la derecha, siempre a la vista; baja un poco cuando aparece la barra de arriba.
 - El avance va en cinco diapositivas, una por sprint (`sprint-1` a `sprint-5`, 25 s cada una, con los datos de `progress`): la línea de los cinco sprints con el actual marcado, la foto grande y la lista en letra grande. El guion de la diapositiva Avance se repartió entre las cinco.
+- La portada va a pantalla completa, con el andén de `menu/img/fondos/fondo-02.jpg` de fondo y el logo, el título y la frase en grande.
+- Identidad se rehízo con solo imágenes y títulos grandes (personajes, mapas, cuatro armas con su tren, la Escolta y el grafiti «Plaga Gris»); los orígenes de los nombres quedan en el guion.
+- Propuesta comercial, en pantallas 4:3, va en 2 × 2 tarjetas con el dibujo a la izquierda. El ajuste de letra llega hasta 2,2 veces, así llena el alto en cualquier pantalla.

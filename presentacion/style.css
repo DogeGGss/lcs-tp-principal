@@ -225,15 +225,6 @@ body.projector .qa-carta{--r:#5f6670}body.projector .qa-carta.rara{--r:#075c95}b
 /* Modos de juego: la tarjeta que abre la selección de modo, con una franja por modo */
 .modos-demo .modos-tiras{position:absolute;inset:0;display:grid;grid-template-columns:repeat(3,1fr)}.modos-demo .modos-tiras img{position:static;inset:auto;width:100%;height:100%;object-fit:cover;transition:transform .4s}.modos-demo:hover .modos-tiras img{transform:scale(1.04)}
 
-/* Identidad: personajes, mapas con los trenes, y a la derecha la Escolta y el easter egg. Letra grande para el proyector. */
-main:has(.identidad) .head{margin-bottom:16px}main:has(.identidad) h2{font-size:clamp(40px,3.6vw,56px)}.identidad{display:grid;grid-template-columns:1.05fr 1fr 1.1fr;gap:18px;align-items:stretch;height:calc(100dvh - 330px);min-height:480px}.id-col{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:18px 20px;min-width:0;min-height:0;display:flex;flex-direction:column}.id-col .eyebrow{margin-bottom:10px;font-size:17px}
-.id-personajes{gap:6px}.id-personajes figure{margin:0;display:grid;grid-template-columns:auto 1fr;gap:16px;align-items:center;flex:1 1 0;min-height:0}.id-personajes img{height:84px;aspect-ratio:1;border-radius:50%;object-fit:cover;background:#151a22;border:3px solid var(--accent)}.id-personajes strong{display:block;font:700 34px Display,sans-serif;text-transform:uppercase;line-height:1}.id-personajes strong small{font:400 17px Barlow,sans-serif;text-transform:none;color:var(--muted);margin-left:6px}.id-personajes span{display:block;font-size:22px;line-height:1.2;margin-top:4px;color:var(--accent)}
-.id-mapas{display:flex;flex-direction:column;gap:12px;flex:1;min-height:0}.id-mapas article{display:grid;grid-template-columns:140px 1fr;gap:14px;align-items:center;flex:1;min-height:0}.id-mapas img{width:140px;height:100%;max-height:96px;object-fit:cover;border-radius:8px;display:block}.id-mapas small{display:block;font-size:15px;letter-spacing:2px;text-transform:uppercase;color:var(--accent)}.id-mapas strong{display:block;font:700 30px Display,sans-serif;line-height:1.02}.id-mapas span{display:block;font-size:19px;color:var(--muted);margin-top:3px;line-height:1.2}
-.id-trenes{border-top:1px solid var(--line);padding-top:12px;margin-top:12px}.id-trenes b{display:block;font:700 24px Display,sans-serif;margin-bottom:8px}.id-trenes div{display:flex;flex-wrap:wrap;gap:7px}.id-trenes span{font-size:18px;padding:5px 12px;border:1px solid var(--accent);border-radius:999px;color:var(--text)}
-.id-derecha{display:grid;grid-template-rows:1fr 1fr;gap:18px;min-height:0}.id-fila{display:grid;grid-template-columns:42% 1fr;gap:16px;align-items:center;flex:1;min-height:0}.id-fila figure{margin:0;height:100%;min-height:0;border-radius:8px;display:flex;align-items:center;justify-content:center;padding:8px}.id-fila figure img{max-width:100%;max-height:100%;object-fit:contain;display:block}.id-escolta{background:radial-gradient(ellipse at 50% 45%,#2b3a52,#10151e 75%)}.id-grafiti{background:linear-gradient(#e9e9e4,#d6d6cf)}.id-fila strong{display:block;font:700 30px Display,sans-serif;line-height:1.05}.id-fila span{display:block;font-size:19px;color:var(--muted);margin-top:6px;line-height:1.25}
-@media(max-width:1000px){.identidad{grid-template-columns:1fr 1fr;height:auto}.id-derecha{grid-column:1/-1}.id-personajes figure{min-height:90px}}
-@media(max-width:700px){.identidad{grid-template-columns:1fr}.id-fila{grid-template-columns:1fr}.id-fila figure{height:220px}}
-@media(min-width:1001px) and (max-height:800px){main:has(.identidad) h2{font-size:42px}.identidad{gap:12px;height:calc(100dvh - 285px);min-height:0}.id-col{padding:12px 16px}.id-col .eyebrow{margin-bottom:6px;font-size:15px}.id-personajes strong{font-size:27px}.id-personajes strong small{font-size:15px}.id-personajes span{font-size:18px}.id-personajes img{height:64px}.id-mapas{gap:8px}.id-mapas article{grid-template-columns:110px 1fr}.id-mapas img{width:110px;max-height:72px}.id-mapas strong{font-size:24px}.id-mapas span{font-size:16px}.id-trenes{padding-top:8px;margin-top:8px}.id-trenes b{font-size:19px;margin-bottom:5px}.id-trenes span{font-size:15px;padding:3px 9px}.id-derecha{gap:12px}.id-fila strong{font-size:24px}.id-fila span{font-size:15.5px}}
 main:has(.diferencial) .head{margin-bottom:16px}main:has(.diferencial) h2{font-size:clamp(40px,3.6vw,56px)}.diferencial{display:grid;grid-template-columns:repeat(4,1fr);gap:18px;height:calc(100dvh - 440px);min-height:400px}.dif-col{background:var(--panel);border:1px solid var(--line);border-radius:12px;overflow:hidden;display:flex;flex-direction:column;min-height:0}.dif-col figure{margin:0;flex:0 0 27%;min-height:0;background:radial-gradient(ellipse at 50% 45%,#2b3a52,#10151e 75%)}.dif-col figure img{width:100%;height:100%;object-fit:cover;display:block}.dif-sigue figure img{object-fit:contain;padding:8px}.dif-col>div{padding:16px 20px;display:flex;flex-direction:column;flex:1;min-height:0}.dif-col .eyebrow{font-size:18px;margin-bottom:6px}.dif-col h3{font:700 clamp(30px,min(2.1vw,3.7vh),40px) Display,sans-serif;line-height:1.02;margin:0 0 10px}.dif-col p:not(.eyebrow){font-size:clamp(21px,min(1.45vw,2.55vh),28px);line-height:1.26;color:var(--text);margin:0}.dif-col em{margin-top:auto;padding-top:10px;font-style:normal;font-weight:700;font-size:clamp(21px,1.35vw,26px);color:var(--accent);border-top:1px solid var(--line)}.dif-sigue{border-color:var(--accent)}.dif-publico{margin-top:18px;display:flex;gap:20px;align-items:center;border-left:5px solid var(--accent);background:var(--panel);border-radius:0 12px 12px 0;padding:16px 22px}.dif-publico b{font:700 36px Display,sans-serif;white-space:nowrap}.dif-publico span{font-size:clamp(23px,1.45vw,28px);line-height:1.3}
 @media(min-width:1001px) and (max-height:800px){main:has(.diferencial) h2{font-size:42px}.diferencial{gap:12px;height:calc(100dvh - 370px);min-height:0}.dif-col>div{padding:10px 14px}.dif-col figure{flex-basis:26%}.dif-col h3{font-size:29px;margin-bottom:6px}.dif-col p:not(.eyebrow){font-size:21px}.dif-col em{font-size:18px;padding-top:6px}.dif-col .eyebrow{font-size:15px;margin-bottom:3px}.dif-publico{margin-top:12px;padding:10px 18px}.dif-publico b{font-size:28px}.dif-publico span{font-size:20px}}
 @media(max-width:1000px){.diferencial{grid-template-columns:1fr 1fr;height:auto}.dif-col figure{height:150px;flex:none}.dif-publico{flex-direction:column;align-items:flex-start;gap:6px}}
@@ -258,6 +249,9 @@ main:has(.diferencial) .head{margin-bottom:16px}main:has(.diferencial) h2{font-s
  .navigation:not(.visible):not(:has(:focus-visible)){translate:0 calc(100% + 4px)}
  main{min-height:100dvh;padding-bottom:28px}
  .trailer{width:min(100%,calc((100dvh - 130px) * 16 / 9))}
+ /* Diferencia e Identidad sin alto fijo: el contenido marca el alto y el ajuste de letra las agranda (app.js). */
+ .diferencial{height:auto;min-height:0}
+ .dif-col figure{flex:none;aspect-ratio:16/9}
 }
 /* En el easter egg las barras aparecen para caerse con la página, y el reloj se cae con ellas. */
 body.flojo .top,body.flojo .navigation{translate:none}
@@ -268,9 +262,11 @@ body.cae-nav .clock{translate:0 120vh;transition:translate 1.4s cubic-bezier(.5,
 .sprint-linea li{border-top:6px solid var(--line);padding-top:8px;font:700 22px Display,sans-serif;color:var(--muted)}
 .sprint-linea li.hecho{border-color:color-mix(in srgb,var(--accent) 55%,var(--line))}
 .sprint-linea li.actual{border-color:var(--accent);color:var(--text)}
-.sprint-uno{display:grid;grid-template-columns:1.15fr 1fr;gap:28px;align-items:start}
-.sprint-uno .avance-foto{aspect-ratio:4/3;border-radius:12px;overflow:hidden;background:var(--panel);border:1px solid var(--line)}
-.sprint-uno .avance-foto img{width:100%;height:100%;object-fit:cover;display:block}
+.sprint-uno{display:grid;grid-template-columns:1.15fr 1fr;gap:28px;align-items:stretch}
+/* La foto toma el alto de la lista (sin hueco abajo); como mínimo, 4:3. */
+.sprint-uno .avance-foto{min-height:300px;border-radius:12px;overflow:hidden;background:var(--panel);border:1px solid var(--line)}
+.sprint-uno>*{min-width:0}.sprint-uno .avance-foto{position:relative;aspect-ratio:auto}
+.sprint-uno .avance-foto img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block}
 .sprint-uno ul{margin:0;padding:0;list-style:none;display:grid;gap:20px}
 .sprint-uno li{font-size:27px;line-height:1.25;padding-left:24px;position:relative}
 .sprint-uno li:before{content:'';position:absolute;left:0;top:.42em;width:11px;height:11px;border-radius:3px;background:var(--accent)}
@@ -279,5 +275,54 @@ body.cae-nav .clock{translate:0 120vh;transition:translate 1.4s cubic-bezier(.5,
 .sprint-uno .avance-imgs img{height:46px;width:auto;max-width:none;object-fit:contain;filter:drop-shadow(0 3px 4px #0008)}
 .sprint-uno .avance-imgs.redondas img{width:62px;height:62px;border-radius:50%;object-fit:cover;background:var(--line)}
 .sprint-uno .avance-imgs.iconos img{width:58px;height:58px;padding:9px;border-radius:50%;background:#232c38;object-fit:contain;filter:none}
-@media(min-aspect-ratio:3/2){.sprint-uno .avance-foto{aspect-ratio:16/10}}
 @media(max-width:700px){.sprint-uno{grid-template-columns:1fr}.sprint-linea li{font-size:16px}}
+
+/* Propuesta comercial en pantallas 4:3 (25/11/2026): 2 × 2 tarjetas con el dibujo a la izquierda y el texto a la derecha,
+   así el texto es más grande y la diapositiva llena el alto. */
+@media (max-aspect-ratio:3/2){
+ #slide .oferta{grid-template-columns:1fr 1fr;gap:12px}
+ #slide .oferta .card{display:grid;grid-template-columns:38% 1fr;column-gap:14px;align-content:start;padding:14px}
+ #slide .oferta .of-visual{grid-row:1 / span 6;height:auto;margin:0;align-self:stretch;padding:8px}
+ #slide .oferta .of-visual>*{zoom:1.1}
+ #slide .oferta .of-cristales{grid-template-columns:1fr}
+ #slide .oferta .of-precio{margin-top:4px;padding-top:4px}
+ #slide .oferta .card p{font-size:20px}
+ #slide .oferta .card .footnote{font-size:16px}
+ #slide .oferta h3{font-size:26px}
+}
+
+/* Identidad (rehecha el 25/11/2026): solo imágenes y títulos grandes. A la izquierda personajes, mapas y armas;
+   a la derecha la Escolta y el grafiti, que estiran su imagen al alto de la columna. El ajuste de letra la agranda. */
+main:has(.ident) .head{margin-bottom:14px}
+.ident{display:grid;grid-template-columns:1fr 250px;gap:14px}
+.ident-izq,.ident-der{display:flex;flex-direction:column;gap:14px;min-width:0}
+.ident-grupo{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:10px 14px 12px}
+.ident-grupo h3{font:700 24px Display,sans-serif;text-transform:uppercase;letter-spacing:1px;color:var(--accent);margin:0 0 8px}
+.ident-items{display:grid;gap:12px}
+.ident figure{margin:0;min-width:0;text-align:center}
+.ident figcaption{font:700 26px Display,sans-serif;line-height:1.05;margin-top:6px;text-wrap:balance}
+.ident-img img{display:block}
+.ident-personajes .ident-items{grid-template-columns:repeat(4,1fr)}
+.ident-personajes .ident-img img{height:104px;aspect-ratio:1;margin:0 auto;border-radius:50%;object-fit:cover;background:#151a22;border:3px solid var(--accent)}
+.ident-personajes figcaption{text-transform:uppercase}
+.ident-mapas .ident-items{grid-template-columns:repeat(3,1fr)}
+.ident-mapas .ident-img img{width:100%;aspect-ratio:2/1;object-fit:cover;border-radius:8px}
+.ident-mapas figcaption{font-size:23px}
+.ident-armas .ident-items{grid-template-columns:repeat(4,1fr)}
+.ident-armas .ident-img img{height:52px;width:100%;object-fit:contain;filter:drop-shadow(0 3px 4px #0008)}
+.ident-der .ident-grupo{flex:1;display:flex;flex-direction:column;min-height:0}
+.ident-der .ident-items,.ident-der figure{flex:1;display:flex;flex-direction:column;min-height:0}
+.ident-der .ident-img{flex:1;position:relative;min-height:110px;border-radius:8px}
+.ident-der .ident-img img{position:absolute;inset:8px;width:calc(100% - 16px);height:calc(100% - 16px);object-fit:contain}
+.ident-escolta .ident-img{background:radial-gradient(ellipse at 50% 45%,#2b3a52,#10151e 75%)}
+.ident-huevo .ident-img{background:linear-gradient(#e9e9e4,#d6d6cf)}
+@media(max-width:700px){.ident{grid-template-columns:1fr}.ident-personajes .ident-items,.ident-armas .ident-items{grid-template-columns:1fr 1fr}.ident-mapas .ident-items{grid-template-columns:1fr}}
+
+/* Portada a pantalla completa (25/11/2026): el andén de fondo, el logo, el título y la frase en grande. */
+#slide:has(>.hero){max-width:none;padding:0;min-height:100dvh}
+#slide .hero{min-height:100dvh;padding:40px 56px;justify-content:center;gap:0;background:linear-gradient(90deg,var(--bg) 0%,color-mix(in srgb,var(--bg) 88%,transparent) 36%,transparent 72%),url(../menu/img/fondos/fondo-02.jpg) 78% center/cover no-repeat}
+#slide .hero:before{display:none}
+#slide .hero .eyebrow{font-size:clamp(20px,2.8vh,28px);margin-bottom:18px}
+#slide .hero-logo{width:min(620px,58vw);background:none;padding:0;margin:0 0 22px;filter:drop-shadow(0 6px 18px #000a)}
+#slide .hero h1{font-size:clamp(64px,12vh,140px);max-width:none;text-shadow:0 4px 24px #000c}
+#slide .hero .lead{font-size:clamp(26px,4.2vh,42px);color:var(--text);max-width:16em;text-shadow:0 2px 12px #000c}

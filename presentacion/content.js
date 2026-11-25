@@ -156,7 +156,8 @@ window.PRESENTATION = {
       {name:'Colonia ARA San Juan', mode:'Deathmatch', text:'Por el submarino ARA San Juan', image:'media/historia/colonia.jpg'},
       {name:'La Universidad', mode:'Invasión', text:'El campus de la UNGS, recreado', image:'media/campus/campus-5.jpg'}
     ],
-    trains: ['Mitre', 'Urquiza', 'Roca', 'Belgrano Sur', 'La Trochita', 'Último Tren'],
+    // Cuatro armas con su tren (el resto, en el guion): imagen y nombre, sin texto chico (25/11/2026).
+    weapons: [{name:'La Porteña', image:'media/armas/pistola.png'}, {name:'Mitre', image:'media/armas/fusil.png'}, {name:'Roca', image:'media/armas/escopeta.png'}, {name:'Último Tren', image:'media/armas/francotirador.png'}],
     escort: {image:'media/identidad/escolta.webp', title:'Escolta', text:'Un dron con los colores de la bandera, el Sol de Mayo atrás y una banderita en la antena, como la escolta de la bandera en los actos.'},
     egg: {image:'media/identidad/plaga-gris.webp', title:'Grafiti «Plaga Gris»', text:'En la pared del TUM, en el mapa de la universidad. Hecho junto con el grupo de Plaga Gris.'}
   },
