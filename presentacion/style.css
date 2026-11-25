@@ -326,3 +326,13 @@ main:has(.ident) .head{margin-bottom:14px}
 #slide .hero-logo{width:min(620px,58vw);background:none;padding:0;margin:0 0 22px;filter:drop-shadow(0 6px 18px #000a)}
 #slide .hero h1{font-size:clamp(64px,12vh,140px);max-width:none;text-shadow:0 4px 24px #000c}
 #slide .hero .lead{font-size:clamp(26px,4.2vh,42px);color:var(--text);max-width:16em;text-shadow:0 2px 12px #000c}
+
+/* Qué nos diferencia con menos texto (25/11/2026): imagen más alta, título grande y la comparación abajo. */
+#slide .dif-col figure{flex:none;aspect-ratio:4/3}
+#slide .dif-col>div{padding:14px 16px}
+#slide .dif-col .eyebrow{font-size:20px;margin-bottom:6px}
+#slide .dif-col h3{font-size:36px;line-height:1.05;margin:0 0 12px}
+#slide .dif-col em{font-size:24px;line-height:1.2;padding-top:10px}
+#slide .dif-publico{margin-top:14px;padding:14px 22px}
+#slide .dif-publico b{font-size:36px}
+#slide .dif-publico span{font-size:28px}

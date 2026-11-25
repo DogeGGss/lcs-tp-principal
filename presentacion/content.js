@@ -133,13 +133,14 @@ window.PRESENTATION = {
   // Valorant y para quién es. El Táctico dura entre 15 y 20 minutos (dato del equipo). CS2 (MR12) y Valorant juegan a
   // 13 rondas, hasta 24 sin alargue.
   edge: {
+    // Menos texto (25/11/2026, para la PC del aula): imagen, etiqueta, título y la comparación; el detalle va en el guion.
     pillars: [
-      {tag:'Más corto', title:'Partidas de consumo rápido', text:'Una partida de Táctico dura entre 15 y 20 minutos y una de Deathmatch, 8 como máximo.', compare:'CS2 y Valorant: a 13 rondas, hasta 24', image:'../img/tactico-vista.jpg'},
-      {tag:'Más accesible', title:'No hace falta una gran PC', text:'Pensado para las PCs que tiene la mayoría. Gratis, en español y a mitad de precio en Latinoamérica.', compare:'Más gente puede jugarlo', image:'media/historia/colonia.jpg'},
-      {tag:'Lo que no tienen', title:'Invasión cooperativa', text:'De 1 a 4 amigos contra oleadas y el Jefe, eligiendo entre 27 cartas en el puesto de suministros.', compare:'CS2 y Valorant no tienen modo cooperativo', image:'media/sprints/s5.jpg'},
-      {tag:'Hecho acá', title:'Identidad argentina', text:'Personajes, mapas y armas con nombres del país, la Escolta con la bandera y un easter egg en la UNGS.', compare:'Lo vemos ahora →', image:'media/identidad/escolta.webp', next:true}
+      {tag:'Más corto', title:'Partidas de 15 a 20 minutos', compare:'CS2 y Valorant: hasta 24 rondas', image:'../img/tactico-vista.jpg'},
+      {tag:'Más accesible', title:'No hace falta una gran PC', compare:'Más gente puede jugarlo', image:'media/historia/colonia.jpg'},
+      {tag:'Lo que no tienen', title:'Invasión cooperativa de 1 a 4', compare:'CS2 y Valorant no la tienen', image:'media/sprints/s5.jpg'},
+      {tag:'Hecho acá', title:'Identidad argentina', compare:'Lo vemos ahora →', image:'media/identidad/escolta.webp', next:true}
     ],
-    audience: {title:'¿Para quién?', text:'Para los que les gustan los FPS, en cualquier parte del mundo: los que juegan con amigos, tienen poco tiempo por partida o una PC que no corre cualquier juego.'}
+    audience: {title:'¿Para quién?', text:'Los que juegan con amigos, con poco tiempo o una PC común.'}
   },
   // Diapositiva Identidad (después de Modos de juego): de dónde salen los nombres, como en el informe del Sprint 5
   // (Identidad del juego y easter egg). Los personajes son ciudades argentinas; los mapas, lugares del país; las armas,

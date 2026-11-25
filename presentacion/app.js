@@ -101,7 +101,7 @@ function sprintSlide(s){
 // Identidad: los personajes (ciudades), los mapas (lugares del país), las armas (trenes) y el easter egg del TUM.
 function edge(){
  const E=D.edge;
- return `<div class="diferencial">${E.pillars.map(p=>`<article class="dif-col${p.next?' dif-sigue':''}"><figure><img src="${esc(p.image)}" alt=""></figure><div><p class="eyebrow">${esc(p.tag)}</p><h3>${esc(p.title)}</h3><p>${esc(p.text)}</p><em>${esc(p.compare)}</em></div></article>`).join('')}</div><div class="dif-publico"><b>${esc(E.audience.title)}</b><span>${esc(E.audience.text)}</span></div>`;
+ return `<div class="diferencial">${E.pillars.map(p=>`<article class="dif-col${p.next?' dif-sigue':''}"><figure><img src="${esc(p.image)}" alt=""></figure><div><p class="eyebrow">${esc(p.tag)}</p><h3>${esc(p.title)}</h3><em>${esc(p.compare)}</em></div></article>`).join('')}</div><div class="dif-publico"><b>${esc(E.audience.title)}</b><span>${esc(E.audience.text)}</span></div>`;
 }
 function identity(){
  // Rehecha el 25/11/2026 para la PC del aula (1024 × 768): solo imágenes y títulos grandes; lo demás va en el guion.
