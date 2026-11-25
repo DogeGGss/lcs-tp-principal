@@ -336,3 +336,60 @@ main:has(.ident) .head{margin-bottom:14px}
 #slide .dif-publico{margin-top:14px;padding:14px 22px}
 #slide .dif-publico b{font-size:36px}
 #slide .dif-publico span{font-size:28px}
+
+/* Letra grande para la PC del aula (25/11/2026): Métricas, Escenarios, f(x), Escala, Protección y Cierre con menos
+   texto y sin letra chica; lo que salió va en el guion. #slide gana sobre las reglas de pantallas bajas. */
+#slide .scenario .eyebrow{font-size:22px}
+#slide .scenario .result{font-size:48px}
+#slide .scenario .result small{font-size:22px}
+#slide .facts{gap:6px;margin-top:12px}
+#slide .facts dt{font-size:20px}
+#slide .facts dd{font-size:22px}
+#slide .fx-zonas b{font-size:32px}
+#slide .fx-zonas span{font-size:24px}
+@media (max-aspect-ratio:3/2){
+ #slide .fx{grid-template-columns:1fr;gap:12px}
+ #slide .fx-zonas{grid-template-columns:repeat(3,1fr)}
+}
+#slide .parada .eyebrow{font-size:22px}
+#slide .parada b{font-size:64px}
+#slide .parada span{font-size:22px;color:var(--text)}
+#slide .parada strong{font-size:22px}
+#slide .escala-fin .card p{font-size:24px;line-height:1.3}
+#slide .guard-fin .result small,#slide .escala-fin .result small{font-size:22px}
+#slide .questions-board{height:calc(100dvh - 60px);max-height:none}
+#slide .question-node{width:clamp(120px,min(19vw,calc((100dvh - 60px)*.27)),230px);font-size:clamp(20px,2.6vw,32px)}
+#slide .question-center p{font-size:clamp(24px,3vw,36px)}
+#slide .question-center h1{font-size:clamp(48px,7vw,96px)}
+
+/* Las tarjetas recortan lo que se sale: así el ajuste de letra (que mira qué se desborda) frena antes de cortar números. */
+#slide .escala-fin .card,#slide .guard-fin .card{overflow:hidden}
+#slide .metricas .metric-number{font-size:42px}
+
+/* Escenarios en tabla (25/11/2026): los rótulos una sola vez y los tres escenarios en columnas; el promedio, marcado. */
+.esc-tabla{width:100%;border-collapse:collapse;font-variant-numeric:tabular-nums;background:var(--panel);border:1px solid var(--line);border-radius:12px;overflow:hidden}
+.esc-tabla th,.esc-tabla td{padding:10px 16px;border-bottom:1px solid var(--line);text-align:right;font-size:24px;line-height:1.2}
+.esc-tabla tbody tr:last-child>*{border-bottom:0}
+.esc-tabla tbody th{text-align:left;color:var(--muted);font-weight:400;font-size:22px;width:27%}
+.esc-tabla td{font-weight:700;white-space:nowrap}
+.esc-tabla thead th{vertical-align:bottom;padding-top:14px;border-bottom:2px solid var(--line)}
+.esc-tabla thead span{display:block;font:700 20px Barlow,sans-serif;letter-spacing:2px;text-transform:uppercase;color:var(--muted)}
+.esc-tabla thead b{display:block;font:700 40px Display,sans-serif;line-height:1.05;white-space:nowrap}
+.esc-tabla thead b.pos{color:var(--green)}.esc-tabla thead b.neg{color:var(--red)}
+.esc-tabla thead small{display:block;font-size:20px;color:var(--muted);font-weight:400}
+.esc-tabla tr>:nth-child(3){background:color-mix(in srgb,var(--accent) 8%,transparent)}
+
+/* Métricas en tabla (25/11/2026): un sprint por fila; en cada columna, el porcentaje, «n de m» y la barra en una línea. */
+.met-tabla{display:grid;grid-template-columns:auto 1fr 1fr;gap:10px 14px;align-items:stretch;font-variant-numeric:tabular-nums}
+.met-rotulo{font:700 24px Display,sans-serif;color:var(--muted);text-transform:uppercase;letter-spacing:1px;align-self:end}
+.met-sprint{font:700 28px Display,sans-serif;align-self:center;white-space:nowrap}
+.met-celda{display:grid;grid-template-columns:auto auto 1fr;align-items:center;gap:14px;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:10px 16px;min-width:0;overflow:hidden}
+.met-celda b{font:700 40px Display,sans-serif;line-height:1;white-space:nowrap}
+.met-celda span{font-size:20px;color:var(--muted);white-space:nowrap}
+.met-celda .bars{height:16px;margin:0;min-width:40px}
+@media(max-width:700px){.met-celda{grid-template-columns:auto 1fr}.met-celda .bars{grid-column:1/-1}}
+
+/* Escala: Promedio y Optimista lado a lado, y la frase debajo a todo el ancho, así entran los números grandes. */
+#slide .grid.escala-fin{grid-template-columns:1fr 1fr}
+#slide .escala-fin .card:last-child{grid-column:1/-1}
+

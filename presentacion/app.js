@@ -7,8 +7,10 @@ const money=(n,sign=false)=>(n<0?'−':sign&&n>0?'+':'')+'US$ '+num(Math.abs(Ma
 const thousands=n=>n>=1e6?n.toLocaleString('es-AR',{maximumFractionDigits:1})+' M':num(Math.round(n/1000)*1000);
 // Números del simulador de la guía: los tres escenarios lado a lado.
 function scenarios(){
- const L=D.economics.scenarios,mid=L[1];
- return `<div class="grid">${L.map(x=>`<article class="card scenario"><p class="eyebrow">${esc(x.name)}</p><div class="result ${x.afterTax>=0?'pos':'neg'}">${money(x.afterTax,true)}<small> por mes</small></div><dl class="facts"><div><dt>Jugadores por mes</dt><dd>${num(x.players)}</dd></div><div><dt>A la vez en la hora pico</dt><dd>${num(x.peak)}</dd></div><div><dt>Pagan</dt><dd>${num(x.payers)} · ${x.conv.toLocaleString('es-AR')} %</dd></div><div><dt>Gasto mensual por pagador</dt><dd>US$&nbsp;${dec(x.arppu)}</dd></div><div><dt>Ganancias en base al pago de los jugadores</dt><dd>${money(x.gross)}</dd></div><div><dt>Llega a esos jugadores</dt><dd>en ${x.ramp} meses</dd></div><div><dt>Recupero</dt><dd>${x.payback?'mes '+x.payback:'no se recupera'}</dd></div></dl></article>`).join('')}</div><p class="footnote">Los jugadores crecen mes a mes hasta ese número y después se mantienen: es plata de todos los meses, no de un lanzamiento. El promedio deja de perder plata desde ${thousands(mid.breakEven)} jugadores por mes.</p>`;
+ // Una tabla: los rótulos una sola vez a la izquierda y los tres escenarios en columnas, así la letra entra grande.
+ const L=D.economics.scenarios;
+ const fila=(t,f)=>`<tr><th scope="row">${t}</th>${L.map(x=>`<td>${f(x)}</td>`).join('')}</tr>`;
+ return `<table class="esc-tabla"><thead><tr><th></th>${L.map(x=>`<th scope="col"><span>${esc(x.name)}</span><b class="${x.afterTax>=0?'pos':'neg'}">${money(x.afterTax,true)}</b><small>por mes</small></th>`).join('')}</tr></thead><tbody>${fila('Jugadores por mes',x=>num(x.players))}${fila('Pagan',x=>`${num(x.payers)} · ${x.conv.toLocaleString('es-AR')} %`)}${fila('Gasto mensual por pagador',x=>'US$&nbsp;'+dec(x.arppu))}${fila('Llega a esos jugadores',x=>`en ${x.ramp} meses`)}${fila('Recupero',x=>x.payback?'mes '+x.payback:'no se recupera')}</tbody></table>`;
 }
 // Cuánto se invierte, en qué y qué vuelve.
 function investment(){
@@ -37,7 +39,7 @@ function payers(){
   <text class="fx-txt" x="${X(m.payers)}" y="${Y(m.result)-18}" text-anchor="middle">Promedio: ${num(m.payers)} pagan · ${plata(m.result)}</text>
   <text class="fx-nota" x="${X(2490)}" y="${Y(2400)}" text-anchor="middle">Unity Pro</text><g class="fx-hover" id="fxHover" visibility="hidden"><line id="fxHoverLine" y1="${T}" y2="${H-B}"/><circle id="fxHoverDot" r="6"/><rect id="fxHoverBox" rx="6" height="30"/><text id="fxHoverTxt"></text></g>
   <rect class="fx-hit" x="${L}" y="${T}" width="${W-L-R}" height="${H-T-B}" data-fx="${L},${W-R},${xmax}"/></svg>`;
- return `<div class="fx">${svg}<div class="fx-zonas"><div class="mal"><b>Va mal</b><span>menos de ${num(Math.round(F.breakEven))} pagadores: pierde plata</span></div><div class="justo"><b>Se sostiene</b><span>de ${num(Math.round(F.breakEven))} a ${num(Math.round(F.full))}: no pierde con el equipo de hoy</span></div><div class="bien"><b>Va bien</b><span>${num(Math.round(F.full))} o más, 3 meses seguidos: también se paga el equipo completo</span></div></div></div>`;
+ return `<div class="fx">${svg}<div class="fx-zonas"><div class="mal"><b>Va mal</b><span>menos de ${num(Math.round(F.breakEven))} pagadores</span></div><div class="justo"><b>Se sostiene</b><span>de ${num(Math.round(F.breakEven))} a ${num(Math.round(F.full))}</span></div><div class="bien"><b>Va bien</b><span>${num(Math.round(F.full))} o más, 3 meses</span></div></div></div>`;
 }
 // Valor de la f(x) bajo el mouse: la línea vertical, el punto sobre la curva y el número.
 document.addEventListener('pointermove',e=>{
@@ -46,7 +48,7 @@ document.addEventListener('pointermove',e=>{
  const svg=hit.ownerSVGElement,pt=svg.createSVGPoint();pt.x=e.clientX;pt.y=e.clientY;const p=pt.matrixTransform(svg.getScreenCTM().inverse());
  const [l,r,xmax]=hit.dataset.fx.split(',').map(Number),F=D.economics.fx,x=Math.max(0,Math.min(xmax,(p.x-l)/(r-l)*xmax));
  const [px,pv]=F.points.reduce((a,q)=>Math.abs(q[0]-x)<Math.abs(a[0]-x)?q:a);
- const W=900,H=390,L=84,R=24,T=40,B=56,X=v=>L+(W-L-R)*v/xmax,Y=v=>T+(H-T-B)*(10000-v)/20000;
+ const W=900,H=450,L=92,R=24,T=40,B=56,X=v=>L+(W-L-R)*v/xmax,Y=v=>T+(H-T-B)*(10000-v)/20000;
  const t=`${num(px)} pagan · ${(pv<0?'−':pv>0?'+':'')}US$ ${num(Math.abs(pv))} por mes`;
  const txt=document.getElementById('fxHoverTxt'),box=document.getElementById('fxHoverBox');
  document.getElementById('fxHoverLine').setAttribute('x1',X(px));document.getElementById('fxHoverLine').setAttribute('x2',X(px));
@@ -59,12 +61,12 @@ document.addEventListener('pointermove',e=>{
 // que termine la rampa: en el mes 3 se corrige, en el 6 se ajustan las horas de los 7 y en el 9 se decide.
 function guard(){
  const G=D.economics.guard;
- return `<div class="escala-linea guard"><div class="parada"><i></i><p class="eyebrow">Mes 3 · Corregir</p><b>&lt;&nbsp;${num(G.checkpoint3)}</b><span>pagadores: nadie se va. Se busca qué falla (que lleguen, que paguen o que vuelvan) y ahí va la otra mitad de la publicidad, ${money(G.secondTranche)}</span></div><div class="parada senal"><i></i><p class="eyebrow">Mes 6 · Ajustar</p><b>&lt;&nbsp;${num(G.checkpoint6)}</b><span>pagadores: los 7 siguen, a ${esc(G.hoursText)} de sus horas y sin publicidad por mes: ${money(G.reducedCosts)} por mes de gastos</span></div><div class="parada corte"><i></i><p class="eyebrow">Mes 9 · Decidir</p><b>&lt;&nbsp;${num(G.checkpoint9)}</b><span>pagadores al terminar la rampa: se cierra, con la indemnización de los 7 ya reservada</span></div></div><div class="grid two guard-fin"><article class="card scenario"><p class="eyebrow">Pesimista, con el plan</p><div class="result neg">${money(G.worst,true)}<small>lo máximo que pierde el inversor: la inversión, 9 meses y ${money(G.severance.total)} reservados para desvincular</small></div></article><article class="card scenario"><p class="eyebrow">Pesimista, sin el plan</p><div class="result neg">${money(G.without,true)}<small>a los 3 años, siguiendo igual</small></div></article></div><p class="lead">En el promedio y el optimista no cambia nada. Y el inversor cobra primero: hasta recuperar lo que puso, la ganancia es suya.</p>`;
+ return `<div class="escala-linea guard"><div class="parada"><i></i><p class="eyebrow">Mes 3 · Corregir</p><b>&lt;&nbsp;${num(G.checkpoint3)}</b><span>pagadores: nadie se va, se corrige</span></div><div class="parada senal"><i></i><p class="eyebrow">Mes 6 · Ajustar</p><b>&lt;&nbsp;${num(G.checkpoint6)}</b><span>pagadores: los 7 siguen, con menos horas</span></div><div class="parada corte"><i></i><p class="eyebrow">Mes 9 · Decidir</p><b>&lt;&nbsp;${num(G.checkpoint9)}</b><span>pagadores: se cierra, con la indemnización reservada</span></div></div><div class="grid two guard-fin"><article class="card scenario"><p class="eyebrow">Pesimista, con el plan</p><div class="result neg">${money(G.worst,true)}<small>lo máximo que pierde el inversor</small></div></article><article class="card scenario"><p class="eyebrow">Pesimista, sin el plan</p><div class="result neg">${money(G.without,true)}<small>a los 3 años, siguiendo igual</small></div></article></div><p class="lead">En el promedio y el optimista no cambia nada. El inversor cobra primero.</p>`;
 }
 // Si funciona, los 7 a tiempo completo: tres paradas (hoy, la señal y tiempo completo) y lo que queda con el equipo completo.
 function scale(){
  const S=D.economics.scale,pct=n=>Math.round(n*100)+' %',[a,b]=S.scenarios;
- return `<div class="escala-linea"><div class="parada"><i></i><p class="eyebrow">Hoy</p><b>${num(Math.round(S.hours))} h</b><span>por sprint entre los 7: el ${pct(S.hours/S.fullHours)} de un tiempo completo</span><strong>${money(S.salaries)} por mes en sueldos</strong></div><div class="parada senal"><i></i><p class="eyebrow">La señal</p><b>${thousands(S.breakEven)}</b><span>jugadores por mes, con la inversión ya recuperada</span><strong>${esc(a.name)}: mes ${a.payback} · ${esc(b.name)}: mes ${b.payback}</strong></div><div class="parada completo"><i></i><p class="eyebrow">Tiempo completo</p><b>${num(S.fullHours)} h</b><span>por sprint: los 7 a 80 h, ${pct(S.fullHours/S.hours-1)} más</span><strong>${money(S.fullSalaries)} por mes en sueldos</strong></div></div><div class="grid escala-fin">${S.scenarios.map(x=>`<article class="card scenario"><p class="eyebrow">${esc(x.name)}</p><div class="result pos">${money(x.grown,true)}<small>por mes con ${S.growth} % más jugadores · hoy ${money(x.now)}</small></div></article>`).join('')}<article class="card"><p class="eyebrow">Más contenido, más jugadores</p><p>${esc(S.service)} <b>Desde un ${S.payoff} % más, el inversor gana más que hoy.</b></p></article></div>`;
+ return `<div class="escala-linea"><div class="parada"><i></i><p class="eyebrow">Hoy</p><b>${num(Math.round(S.hours))} h</b><span>por sprint, entre los 7</span><strong>${money(S.salaries)} por mes en sueldos</strong></div><div class="parada senal"><i></i><p class="eyebrow">La señal</p><b>${thousands(S.breakEven)}</b><span>jugadores por mes</span><strong>${esc(a.name)}: mes ${a.payback} · ${esc(b.name)}: mes ${b.payback}</strong></div><div class="parada completo"><i></i><p class="eyebrow">Tiempo completo</p><b>${num(S.fullHours)} h</b><span>por sprint, los 7 a 80 h</span><strong>${money(S.fullSalaries)} por mes en sueldos</strong></div></div><div class="grid escala-fin">${S.scenarios.map(x=>`<article class="card scenario"><p class="eyebrow">${esc(x.name)}</p><div class="result pos">${money(x.grown,true)}<small>por mes con ${S.growth} % más jugadores</small></div></article>`).join('')}<article class="card"><p class="eyebrow">Más contenido, más jugadores</p><p><b>Desde un ${S.payoff} % más de jugadores, el inversor gana más que hoy.</b></p></article></div>`;
 }
 // A dónde va la inversión y, cada mes del promedio, lo que pagan los jugadores.
 function costs(){
@@ -139,17 +141,14 @@ const eyebrow=s=>`${s.section&&s.section!==s.label?esc(s.section)+' · ':''}${es
 const head=s=>`<div class="head"><p class="eyebrow">${eyebrow(s)}</p><h2>${esc(s.title)}</h2></div>`;
 // Avance de los tres sprints: historias terminadas y pruebas que pasan. Un sprint todavía sin datos muestra rayas.
 function metrics(){
+ // Una tabla: un sprint por fila, con las historias en Done y las pruebas que pasan en dos columnas anchas. Lo que falta de cada uno va en el guion.
  const pct=(a,b)=>(100*a/b).toLocaleString('es-AR',{maximumFractionDigits:1})+' %';
  const bar=(parts,total,label)=>`<div class="bars" role="img" aria-label="${label}">${parts.map(([v,c])=>`<span style="width:${v/Math.max(1,total)*100}%;background:${c}"></span>`).join('')}<span style="flex:1;background:var(--line)"></span></div>`;
- // Lo que queda fuera de Done o sin pasar; los ceros no se muestran.
- const legend=parts=>{const l=parts.filter(([v])=>v>0);return l.length?`<div class="legend">${l.map(([v,t])=>`<span>${v} ${t}</span>`).join('')}</div>`:''};
- const sprint=m=>{
-  if(['planned','done','review','todo','tests','passed','failed','blocked','unrun'].some(k=>m[k]==null))
-   return `<article class="card sprint"><p class="eyebrow">${esc(m.name)}</p><div class="metric-number">—</div><p>historias en Done</p>${bar([],1,'Sin datos')}<div class="metric-number">—</div><p>pruebas que pasan</p>${bar([],1,'Sin datos')}</article>`;
-  const run=m.tests-m.unrun;
-  return `<article class="card sprint"><p class="eyebrow">${esc(m.name)}</p><div class="metric-number">${pct(m.done,m.planned)}</div><p>${m.done} de ${m.planned} historias en Done</p>${bar([[m.done,'var(--green)'],[m.review,'var(--accent)'],[m.stuck||0,'var(--red)']],m.planned,`${m.done} en Done, ${m.review} en revisión, ${m.stuck||0} bloqueadas, ${m.todo} sin empezar`)}${legend([[m.review,'en revisión'],[m.stuck||0,m.stuck===1?'bloqueada':'bloqueadas'],[m.todo,'sin empezar']])}<div class="metric-number">${pct(m.passed,run)}</div><p>${m.passed} de ${run} pruebas pasan</p>${bar([[m.passed,'var(--green)'],[m.failed,'var(--red)'],[m.blocked,'var(--accent)']],m.tests,`${m.passed} pasan, ${m.failed} fallan, ${m.blocked} bloqueadas, ${m.unrun} sin ejecutar`)}${legend([[m.failed,m.failed===1?'falla':'fallan'],[m.blocked,m.blocked===1?'bloqueada':'bloqueadas'],[m.unrun,'sin ejecutar']])}</article>`;
- };
- return `<div class="grid metricas">${['s1','s2','s3','s4','s5'].map(k=>sprint(D.metrics[k])).join('')}</div>`;
+ const S=['s1','s2','s3','s4','s5'].map(k=>D.metrics[k]);
+ const ok=m=>!['planned','done','review','todo','tests','passed','failed','blocked','unrun'].some(k=>m[k]==null);
+ const historias=m=>ok(m)?`<b>${pct(m.done,m.planned)}</b><span>${m.done} de ${m.planned}</span>${bar([[m.done,'var(--green)'],[m.review,'var(--accent)'],[m.stuck||0,'var(--red)']],m.planned,`${m.done} en Done, ${m.review} en revisión, ${m.stuck||0} bloqueadas, ${m.todo} sin empezar`)}`:'<b>—</b>';
+ const pruebas=m=>{if(!ok(m))return '<b>—</b>';const run=m.tests-m.unrun;return `<b>${pct(m.passed,run)}</b><span>${m.passed} de ${run}</span>${bar([[m.passed,'var(--green)'],[m.failed,'var(--red)'],[m.blocked,'var(--accent)']],m.tests,`${m.passed} pasan, ${m.failed} fallan, ${m.blocked} bloqueadas, ${m.unrun} sin ejecutar`)}`};
+ return `<div class="met-tabla"><div></div><div class="met-rotulo">Historias en Done</div><div class="met-rotulo">Pruebas que pasan</div>${S.map(m=>`<div class="met-sprint">${esc(m.name.split(' · ')[0])}</div><div class="met-celda">${historias(m)}</div><div class="met-celda">${pruebas(m)}</div>`).join('')}</div>`;
 }
 function arsenal(){
  const w=window.ARSENAL.find(x=>x.id===weaponId)||window.ARSENAL[0],t=w.tramos[0];
