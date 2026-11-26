@@ -1377,6 +1377,8 @@
     if (modal) { if (location.hash === '#estacion') modal.remove(); return; }
     if (location.hash === '#estacion' && est && est.estado === 'abriendo') { saltar(); return; }
     if (PANTALLAS[location.hash]) volverAlMenu();
+    // Abierto como demo de la presentación (25/11/2026): en el menú principal, Esc vuelve al recorrido, como en las otras demos.
+    else if (window.parent !== window && !e.repeat) window.parent.postMessage('riftwalker:close-demo', location.origin);
   });
   function escalar() {
     const k = Math.min(innerWidth / 1920, innerHeight / 1080);
