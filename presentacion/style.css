@@ -485,3 +485,9 @@ body.projector .qa-carta{--r:#5f6670}body.projector .qa-carta.rara{--r:#075c95}b
 .qa-armas-g.prep .qa-arma img{opacity:.5;filter:grayscale(1)}
 @media(max-width:700px){#questionBody .qa-armas{grid-template-columns:1fr}}
 
+/* Ficha de cada arma con las 19 (26/11/2026): la etiqueta del estado al lado del desplegable; las preparadas, con el dibujo apagado. */
+.ficha-estado{font-size:20px;padding:6px 12px}
+.ficha-estado.juego{color:var(--green);border-color:var(--green)}
+.ficha-estado.prep{color:var(--muted);border-style:dashed}
+.weapon-art.prep img{opacity:.6;filter:grayscale(1)}
+
