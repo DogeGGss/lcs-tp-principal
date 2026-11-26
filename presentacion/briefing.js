@@ -61,6 +61,9 @@
   .brf-arma b{font:700 22px/1 var(--display);text-transform:uppercase;letter-spacing:.04em;white-space:nowrap}
   .brf-arma small{font:600 14px/1 var(--display);letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.55);white-space:nowrap}
   .brf-arma span{font:600 18px/1 var(--mono);color:var(--c)}
+  .brf-pip{position:absolute;left:90px;bottom:124px;width:560px;aspect-ratio:16/9;border-radius:12px;overflow:hidden;background:#000;box-shadow:0 0 0 3px var(--c),0 14px 40px rgba(0,0,0,.6)}
+  .brf-pip video{display:block;width:100%;height:100%;object-fit:cover}
+  .brf-pip span{position:absolute;left:12px;top:12px;padding:6px 12px;border-radius:6px;background:rgba(7,8,10,.82);font:700 22px/1 var(--display);letter-spacing:.16em;text-transform:uppercase;color:var(--c)}
   .brf-ayuda{position:absolute;left:90px;bottom:70px;font:600 22px/1 var(--display);letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.5)}
   .brf-ayuda b,.brf-ayuda button{display:inline-block;padding:6px 10px;margin-right:8px;border:0;border-radius:5px;background:rgba(255,255,255,.12);color:#fff;font:inherit;letter-spacing:.04em}
   .brf-ayuda button{cursor:pointer;padding:6px 14px}
@@ -133,6 +136,9 @@
   const TACTICO = {
     nombre: 'Táctico', color: NARANJA, sub: '4 vs 4 · MALVINAS-01', mapa: 'MALVINAS-01', busca: 8,
     img: { src: 'presentacion/media/modos/tactico.jpg', w: 1250, h: 729, vista: [0, 20, 1250, 700], ajuste: 'meet' },
+    // El video grabado en el juego (25/11/2026, 960 × 540, sin audio) va en un recuadro abajo a la izquierda, debajo del paso,
+    // durante los cuatro pasos y sin cortarse: el mapa animado sigue explicando y el video muestra cómo se ve.
+    pip: 'presentacion/media/modos/tactico.mp4?v=2026112501',
     pasos: [
       { tit: 'Primero, la compra', txt: 'Cada ronda arranca con 20 s para comprar armas, granadas y escudo. Se empieza con $ 800: cada baja da $ 200, ganar la ronda $ 3.000, perderla $ 1.900 o más, y plantar, $ 300 a los que atacan.',
         escena(c) {
@@ -227,7 +233,8 @@
     for (let k = 0; k < 8; k++) pts.push([170 + azar() * 940, 270 + azar() * 380]);
     return pts;
   }
-  const DM = {
+  // Deathmatch con el mapa animado: guardado por si acaso (25/11/2026); el briefing usa el video (DM, más abajo).
+  const DM_MAPA = {
     nombre: 'Deathmatch', color: ROJO, sub: 'Hasta 8 · Colonia ARA San Juan', mapa: 'Colonia ARA San Juan', busca: 8,
     img: { src: 'presentacion/media/historia/colonia.jpg', w: 1280, h: 720, vista: [0, 0, 1280, 720], ajuste: 'meet' },
     pasos: [
@@ -297,9 +304,12 @@
     ]
   };
 
-  // Invasión: tomas grabadas en el juego (Unity, 24/11/2026), con cámara isométrica y los 4 personajes manejados por bots:
-  // 1, entre el TUM y los módulos del medio; 2, en la entrada de la UNGS; 3, el puesto en la Biblioteca; 4, el Jefe en el Auditorio.
-  // El video ocupa todo el cuadro (el HUD del juego ya está apagado); lo que se agrega va sobre el fondo negro, a la izquierda.
+  // Deathmatch con el video grabado en el juego (25/11/2026): Colonia ARA San Juan, desde la pantalla de carga y la elección
+  // de personaje (960 × 540, sin audio). El mismo video sigue sin cortarse en los cuatro pasos; los textos son los de antes.
+  const DM = { ...DM_MAPA, img: null, pasos: DM_MAPA.pasos.map(({ tit, txt }) => ({ tit, txt, video: 'presentacion/media/modos/deathmatch.mp4?v=2026112501' })) };
+  // Invasión: desde el 25/11/2026, un solo video grabado en el juego, en primera persona en el campus de noche y con el Jefe
+  // (960 × 540, sin audio), que sigue sin cortarse en los cinco pasos. Las tomas de antes (invasion-1 a 4) quedan en media/modos.
+  // El video ocupa todo el cuadro, con el HUD del juego; lo que se agrega va sobre el fondo negro, a la izquierda.
   // Las tres cartas del paso «Elegir carta», como en el juego (rareza, color, nombre y qué hace), con textos cortos.
   const CARTAS_I = [['Legendaria', '#FFC93C', 'Escolta', 'Un dron que derrite al invasor más cercano.'],
     ['Épica', '#B061FF', 'Campo minado', 'Tus granadas quedan como minas.'],
@@ -307,11 +317,11 @@
   const INVASION = {
     nombre: 'Invasión', color: VERDE, sub: '1 a 4 jugadores · la universidad', mapa: 'la universidad', busca: 4,
     pasos: [
-      { tit: 'Juntos contra la horda', video: 'presentacion/media/modos/invasion-1.mp4', txt: 'De 1 a 4 jugadores, contra oleadas cada vez más grandes: la oleada N trae 10 + 5 × (N − 1) invasores, y cada jugador de más suma la mitad.' },
-      { tit: 'Salen de los portales', video: 'presentacion/media/modos/invasion-2.mp4', txt: 'Los invasores salen de portales que se abren alrededor del puesto de suministros, entre 30 y 55 m, y van hacia el jugador más cercano.' },
-      { tit: 'Cargar el puesto', video: 'presentacion/media/modos/invasion-3.mp4', txt: 'Las bajas dentro del anillo cargan el puesto de suministros. Cuando llega al 100 %, se elige.' },
+      { tit: 'Juntos contra la horda', video: 'presentacion/media/modos/invasion.mp4?v=2026112501', txt: 'De 1 a 4 jugadores, contra oleadas cada vez más grandes: la oleada N trae 10 + 5 × (N − 1) invasores, y cada jugador de más suma la mitad.' },
+      { tit: 'Salen de los portales', video: 'presentacion/media/modos/invasion.mp4?v=2026112501', txt: 'Los invasores salen de portales que se abren alrededor del puesto de suministros, entre 30 y 55 m, y van hacia el jugador más cercano.' },
+      { tit: 'Cargar el puesto', video: 'presentacion/media/modos/invasion.mp4?v=2026112501', txt: 'Las bajas dentro del anillo cargan el puesto de suministros. Cuando llega al 100 %, se elige.' },
       // Mismo video que el paso anterior (sigue sin cortarse) y las cartas en grande en el medio: es lo único que va encima de un video.
-      { tit: 'Elegir carta', video: 'presentacion/media/modos/invasion-3.mp4', txt: 'Con el puesto cargado, cada uno elige 1 de 3: un arma, la Katana o una de las 27 cartas.',
+      { tit: 'Elegir carta', video: 'presentacion/media/modos/invasion.mp4?v=2026112501', txt: 'Con el puesto cargado, cada uno elige 1 de 3: un arma, la Katana o una de las 27 cartas.',
         escena(c) {
           const capa = html(c.hud, 'brf-elegir', '<h4>Elegí 1 de 3</h4><div>'
             + CARTAS_I.map(([r, col, n, x]) => `<div class="brf-carta-g" style="--r:${col}"><small>${r}</small><b>${n}</b><span>${x}</span></div>`).join('') + '</div>');
@@ -321,7 +331,7 @@
             cartas.forEach((k, i) => { k.classList.toggle('on', t > .5 + i * .3); k.classList.toggle('elegida', i === 0 && t > 2.8); k.classList.toggle('apagada', i > 0 && t > 2.8); });
           };
         } },
-      { tit: 'El Jefe', video: 'presentacion/media/modos/invasion-4.mp4', txt: 'Cada 10 oleadas llega el Jefe. Si te quedás sin vida, quedás caído 30 s: un compañero te revive en 5 s manteniendo E.' }
+      { tit: 'El Jefe', video: 'presentacion/media/modos/invasion.mp4?v=2026112501', txt: 'Cada 10 oleadas llega el Jefe. Si te quedás sin vida, quedás caído 30 s: un compañero te revive en 5 s manteniendo E.' }
     ]
   };
   const MODOS = [TACTICO, DM, INVASION];
@@ -338,6 +348,7 @@
       <div class="brf-main"><div class="brf-izq"><div class="brf-eb">Partida encontrada</div><div class="brf-modo">${M.nombre}</div><div class="brf-sub">${M.sub}</div>
         <div class="brf-paso"></div><h2 class="brf-tit"></h2><div class="brf-dots">${M.pasos.map(() => '<i></i>').join('')}</div><div class="brf-info"></div></div>
         <div class="brf-der">${[...new Set(M.pasos.filter(P => P.video).map(P => P.video))].map((src, k) => `<video class="brf-video" src="${src}" muted playsinline loop preload="${k ? 'none' : 'auto'}"></video>`).join('')}<svg ${M.img ? `viewBox="${M.img.vista.join(' ')}" preserveAspectRatio="xMidYMid ${M.img.ajuste || 'slice'}"><image href="${M.img.src}" width="${M.img.w}" height="${M.img.h}"/>` : '>'}<g class="capa"></g></svg><div class="brf-hud"></div></div>
+        ${M.pip ? `<div class="brf-pip"><video src="${M.pip}" muted playsinline loop preload="auto"></video><span>En el juego</span></div>` : ''}
         <div class="brf-ayuda"><button type="button" data-ir="-1" aria-label="Paso anterior">←</button><button type="button" data-ir="1" aria-label="Paso siguiente">→</button>pasos · <b>Esc</b>volver a los andenes</div></div>
       <button class="brf-volver" type="button">Volver a los andenes</button>`;
     inner.appendChild(raiz);
@@ -376,6 +387,8 @@
         if (v.readyState >= 4) pedir(); else v.addEventListener('canplaythrough', pedir, { once: true });
       }
     });
+    const pip = b.raiz.querySelector('.brf-pip video'); // el recuadro del Táctico sigue de un paso al otro, sin volver al principio
+    if (pip && pip.paused) pip.play().catch(() => {});
     b.frame = P.escena ? P.escena({ capa: b.capa, hud: b.hud, info: b.info }) : () => {};
   }
   function tic(ahora) {
