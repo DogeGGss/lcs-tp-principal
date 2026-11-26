@@ -202,18 +202,27 @@ document.addEventListener('fullscreenchange',()=>{if(!document.fullscreenElement
 // completa. Usa Keyboard Lock (Chrome y Edge); en otros navegadores Esc sigue sacando la pantalla completa.
 document.addEventListener('fullscreenchange',()=>{const k=navigator.keyboard;if(!k||!k.lock)return;if(document.fullscreenElement)k.lock(['Escape']).catch(()=>{});else k.unlock()});
 const questionTopics = [
-  ['Nuevo mapa', 'La UNGS en Riftwalker', 'mapa'],
+  ['Financiación', 'Planes de financiación', 'planes'],
   ['Steam', 'Project Riftwalker en Steam', 'steam'],
   ['Idiomas', 'Idiomas', 'idiomas'],
   ['Logros', 'Logros', 'logros'],
   ['Miras', 'Elegí tu mira', 'miras'],
-  ['Modo Invasión', 'Invasión · 4 de las 27 cartas', 'invasion'],
+  ['Modo Invasión', 'Modo Invasión', 'invasion'],
   ['Cuenta', 'Tu cuenta Riftwalker', 'cuenta'],
   ['Launcher', 'El launcher de Riftwalker', 'launcher'],
-  ['Arsenal', 'Cada arma cambia una decisión', 'arsenal'],
-  ['Financiación', 'Planes de financiación', 'planes']
+  ['Arsenal', 'Cada arma cambia una decisión', 'arsenal']
 ];
 const proofImages = '../pruebas/idiomas/2026-11-08/';
+// Pestañas de la pregunta Modo Invasión: 0, cuatro cartas; 1, las 19 armas del Arsenal, las del juego y las preparadas.
+function invasionHTML(k) {
+  if (!k) {
+    const rar = {'Común':'comun','Rara':'rara','Épica':'epica','Legendaria':'legendaria'};
+    return `<div class="qa-cartas">${D.cards.map(c=>`<article class="qa-carta ${rar[c.rarity]}"><span class="qa-rareza">${esc(c.rarity)}</span><strong>${esc(c.name)}</strong><p>${esc(c.text)}</p><small>${esc(c.with)} · ${c.max>1?'se acumula hasta 3 veces':'una sola vez'}</small></article>`).join('')}</div>`;
+  }
+  const grupo = (estado, titulo, cls) => { const a = D.weapons.filter(w => w.state === estado);
+    return `<section class="qa-armas-g ${cls}"><h4>${titulo}<b>${a.length}</b></h4><div>${a.map(w => `<figure class="qa-arma"><img src="../img/${esc(w.icon)}.png" alt=""><b>${esc(w.alias)}</b><small>${esc(w.type)}</small></figure>`).join('')}</div></section>`; };
+  return `<div class="qa-armas">${grupo('juego', 'En el juego', 'juego')}${grupo('preparada', 'Preparadas para más adelante', 'prep')}</div>`;
+}
 // Los tres planes de Financiación (25/11/2026): salieron del recorrido y se ven en la burbuja «Financiación» del cierre,
 // del peor caso al mejor. Cada uno es la diapositiva guardada (savedSlides) con su título y su dibujo.
 const PLANES = [['Si no despega', 'proteccion', () => guard()], ['Si funciona', 'escala', () => scale()], ['Si despega fuerte', 'despegue', () => boom()]];
@@ -258,11 +267,8 @@ function questionVisual(key) {
       return `<div class="qa-languages"><h3>En el juego y el launcher</h3><div>${flag('1f1e6-1f1f7','Español')}${flag('1f1ec-1f1e7','English')}${flag('1f1e7-1f1f7','Português')}${flag('1f1eb-1f1f7','Français')}${flag('1f1ee-1f1f9','Italiano')}</div><p class="qa-caption">Se elige en Opciones o en el launcher, y los dos quedan en el mismo idioma.</p></div>`;
     }
     case 'miras': return '<img class="qa-picture" src="media/mira-opciones.png" alt="Opciones de mira con forma, tamaño, color y vista previa sobre fondo claro y oscuro">';
-    case 'invasion': {
-      // Desde el 25/11/2026, solo cuatro cartas en grande (2 × 2): rareza, nombre, qué hace y con qué rinde.
-      const rar={'Común':'comun','Rara':'rara','Épica':'epica','Legendaria':'legendaria'};
-      return `<div class="qa-cartas">${D.cards.map(c=>`<article class="qa-carta ${rar[c.rarity]}"><span class="qa-rareza">${esc(c.rarity)}</span><strong>${esc(c.name)}</strong><p>${esc(c.text)}</p><small>${esc(c.with)} · ${c.max>1?'se acumula hasta 3 veces':'una sola vez'}</small></article>`).join('')}</div>`;
-    }
+    // Desde el 26/11/2026, dos pestañas: Cartas (cuatro en grande, 2 × 2) y Armas (las 19 del Arsenal: en el juego y preparadas).
+    case 'invasion': return `<div class="qa-actions qa-pestanas"><button data-inv="0" aria-pressed="true">Cartas</button><button data-inv="1" aria-pressed="false">Armas</button></div><div class="qa-inv">${invasionHTML(0)}</div>`;
     case 'planes': return `<div class="qa-actions qa-pestanas">${PLANES.map(([nombre], k) => `<button data-plan="${k}" aria-pressed="${!k}">${nombre}</button>`).join('')}</div><div class="qa-plan"><div>${planHTML(0)}</div></div>`;
     // La ficha de cada arma (antes, la diapositiva Arsenal): se elige con el desplegable y se vuelve a dibujar adentro del popup.
     case 'arsenal': return `<div class="qa-arsenal">${arsenal()}</div>`;
@@ -280,8 +286,7 @@ const questionSketch = [
   [81, 67, 8, 'M65 61 C70 60 69 66 81 67'],
   [49, 86, 11, 'M50 70 Q48 74 49 86'],
   [48, 11, -4, 'M50 34 C51 28 47 22 48 11'],
-  [67, 88, 6, 'M57 69 C59 76 62 83 67 88'],
-  [31, 88, -7, 'M43 69 C42 75 37 83 31 88']
+  [67, 88, 6, 'M57 69 C59 76 62 83 67 88']
 ];
 function questionsScreen() {
   const buttons = questionTopics.map(([name], index) => {
@@ -344,6 +349,7 @@ document.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)r
 
  if(d.photo){campusPhoto=(campusPhoto+Number(d.photo)+campusPhotos.length)%campusPhotos.length;mapPhoto()}
  if(d.logro!==undefined){const [src,alt]=LOGROS[+d.logro];$('#logroPicture').src=src;$('#logroPicture').alt=alt;for(const x of document.querySelectorAll('[data-logro]'))x.setAttribute('aria-pressed',x===b)}
+ if(d.inv!==undefined){$('#questionBody .qa-inv').innerHTML=invasionHTML(+d.inv);for(const x of document.querySelectorAll('[data-inv]'))x.setAttribute('aria-pressed',x===b)}
  if(d.plan!==undefined){$('#questionBody .qa-plan>div').innerHTML=planHTML(+d.plan);for(const x of document.querySelectorAll('[data-plan]'))x.setAttribute('aria-pressed',x===b);requestAnimationFrame(ajustarPlan)}
  if(d.question!==undefined)openQuestion(Number(d.question));
  if(d.demo)openDemo(d.demo);

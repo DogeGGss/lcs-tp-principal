@@ -464,3 +464,24 @@ body.projector .qa-carta{--r:#5f6670}body.projector .qa-carta.rara{--r:#075c95}b
 #questionBody .qa-plan .escala-fin .card p:not(.eyebrow){font-size:23px;line-height:1.3;margin-top:8px}
 #questionBody .qa-plan .card{padding:16px 20px}
 
+/* Modo Invasión con pestañas (26/11/2026): Cartas y Armas. Armas: a la izquierda las 8 que están en el juego, a la derecha las
+   11 preparadas para más adelante (íconos apagados y borde punteado); las celdas llenan el alto de la ventana. */
+#questionBody .qa-inv{flex:1;min-height:0;display:flex;flex-direction:column}
+#questionBody .qa-armas{flex:1;min-height:0;display:grid;grid-template-columns:2fr 3fr;gap:14px}
+.qa-armas-g{display:flex;flex-direction:column;min-height:0;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:12px 14px}
+.qa-armas-g h4{margin:0 0 10px;font:700 28px Display,sans-serif;display:flex;align-items:center;gap:10px}
+.qa-armas-g h4 b{font-size:20px;padding:2px 10px;border-radius:999px;background:var(--bg);border:1px solid var(--line)}
+.qa-armas-g.juego h4{color:var(--green)}
+.qa-armas-g.prep h4{color:var(--muted)}
+.qa-armas-g>div{flex:1;min-height:0;display:grid;grid-auto-rows:1fr;gap:8px}
+.qa-armas-g.juego>div{grid-template-columns:repeat(2,1fr)}
+.qa-armas-g.prep>div{grid-template-columns:repeat(3,1fr)}
+.qa-arma{margin:0;min-height:0;min-width:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;text-align:center;border-radius:8px;background:var(--bg);padding:6px 4px;border:1px solid var(--line)}
+.qa-arma img{flex:1;min-height:0;width:92%;object-fit:contain}
+.qa-arma b{font:700 21px Display,sans-serif;line-height:1.05}
+.qa-arma small{font-size:15px;line-height:1.1;color:var(--muted)}
+.qa-armas-g.juego .qa-arma{border-color:color-mix(in srgb,var(--green) 45%,var(--line))}
+.qa-armas-g.prep .qa-arma{border-style:dashed}
+.qa-armas-g.prep .qa-arma img{opacity:.5;filter:grayscale(1)}
+@media(max-width:700px){#questionBody .qa-armas{grid-template-columns:1fr}}
+

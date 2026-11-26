@@ -109,6 +109,30 @@ window.PRESENTATION = {
   statusTime: {queue:[['26/09',19],['27/09',5],['28/09',5],['29/09',15],['30/09',22],['01/10',31],['02/10',37],['03/10',44],['04/10',44],['05/10',57],['06/10',87],['07/10',77],['08/10',75],['09/10',63],['10/10',55],['11/10',53],['12/10',25],['13/10',25],['14/10',28],['15/10',26],['16/10',46],['17/10',30],['18/10',24],['19/10',18],['20/10',22],['21/10',23],['22/10',26]],
     sprints:[{name:'Sprint 1', from:'26/09', to:'28/09', wait:'15 h', note:'Datos incompletos: el script se creó a mitad del sprint.'}, {name:'Sprint 2', from:'29/09', to:'12/10', wait:'5,7 días'}, {name:'Sprint 3', from:'13/10', to:'22/10', wait:'3,1 días'}],
     decision:'Pasamos gente de desarrollo a testing.'},
+  // Las 19 armas del Arsenal de la guía (26/11/2026), para la pestaña Armas de la pregunta Modo Invasión. state: 'juego' si
+  // ya está en el juego (las 7 del MVP y El Gran Capitán, US 287, en Assets/Data/Tienda) o 'preparada' si está diseñada
+  // en la guía, con sus números, para más adelante. icon: el ícono de la guía (img/gNN.png).
+  weapons: [
+    {alias:'La Porteña', type:'Pistola', icon:'g05', state:'juego'},
+    {alias:'La Trochita', type:'Pistola pesada', icon:'g15', state:'juego'},
+    {alias:'Urquiza', type:'Subfusil', icon:'g07', state:'juego'},
+    {alias:'Roca', type:'Escopeta', icon:'g14', state:'juego'},
+    {alias:'Belgrano Sur', type:'Fusil de ráfaga', icon:'g08', state:'juego'},
+    {alias:'Mitre', type:'Fusil', icon:'g01', state:'juego'},
+    {alias:'Último Tren', type:'Francotirador', icon:'g04', state:'juego'},
+    {alias:'El Gran Capitán', type:'Lanzagranadas', icon:'g18', state:'juego'},
+    {alias:'El Marplatense', type:'Pistola automática', icon:'g10', state:'preparada'},
+    {alias:'La Estrella del Norte', type:'Ballesta de mano', icon:'g11', state:'preparada'},
+    {alias:'Premetro', type:'Subfusil compacto', icon:'g13', state:'preparada'},
+    {alias:'Tren de la Costa', type:'PDW', icon:'g17', state:'preparada'},
+    {alias:'Sarmiento', type:'Escopeta automática', icon:'g12', state:'preparada'},
+    {alias:'San Martín', type:'Fusil táctico', icon:'g19', state:'preparada'},
+    {alias:'Belgrano Norte', type:'Fusil de precisión', icon:'g02', state:'preparada'},
+    {alias:'Tren a las Nubes', type:'Francotirador liviano', icon:'g09', state:'preparada'},
+    {alias:'Tren del Fin del Mundo', type:'Ballesta', icon:'g06', state:'preparada'},
+    {alias:'Tren de las Sierras', type:'Ametralladora liviana', icon:'g03', state:'preparada'},
+    {alias:'Tren Patagónico', type:'Ametralladora pesada', icon:'g16', state:'preparada'}
+  ],
   // 4 de las 27 cartas de Invasión para la pregunta Modo Invasión (desde el 25/11/2026 solo estas, en grande y en 2 × 2).
   // Textos como en el juego (CartaDeInvasion.cs); with: con qué armas rinde; max: cuántas veces se puede tener.
   cards: [
