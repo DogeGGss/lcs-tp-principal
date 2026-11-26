@@ -35,7 +35,8 @@ function modelo(id) {
         const mat = new THREE.MeshStandardMaterial({ name: x.name, roughness: 0.55, metalness: 0, color: new THREE.Color(tinte, tinte, tinte) });
         if (color) mat.map = textura(color, true);
         if (luz) { mat.emissiveMap = textura(luz, true); mat.emissive = new THREE.Color(1, 1, 1); }
-        if (pelo) { mat.alphaTest = 0.5; mat.side = THREE.DoubleSide; }
+        // El pelo tiene las UV al revés que el cuerpo, y en el juego es transparente (Ch48_hair.mat): se mezcla en vez de cortarse.
+        if (pelo) { mat.map.flipY = false; mat.alphaTest = 0.1; mat.transparent = true; mat.depthWrite = false; mat.side = THREE.DoubleSide; }
         return mat;
       });
       m.material = Array.isArray(m.material) ? lista : lista[0];
