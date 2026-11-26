@@ -64,6 +64,11 @@
   .brf-pip{position:absolute;left:90px;bottom:124px;width:560px;aspect-ratio:16/9;border-radius:12px;overflow:hidden;background:#000;box-shadow:0 0 0 3px var(--c),0 14px 40px rgba(0,0,0,.6)}
   .brf-pip video{display:block;width:100%;height:100%;object-fit:cover}
   .brf-pip span{position:absolute;left:12px;top:12px;padding:6px 12px;border-radius:6px;background:rgba(7,8,10,.82);font:700 22px/1 var(--display);letter-spacing:.16em;text-transform:uppercase;color:var(--c)}
+  /* Táctico (25/11/2026): al revés, el video del juego grande y el plano animado chico, abajo a la izquierda (el mismo cuadro
+     de 1150 × 820, achicado entero, así siguen andando la cámara, los puntos y los carteles). */
+  .brf.con-pip .brf-pip{left:700px;top:90px;bottom:auto;width:1150px;height:820px;aspect-ratio:auto;border-radius:14px;box-shadow:0 0 0 2px rgba(255,255,255,.08)}
+  .brf.con-pip .brf-pip span{display:none}
+  .brf.con-pip .brf-der{left:90px;top:auto;bottom:124px;transform:scale(.45);transform-origin:0 100%;box-shadow:0 0 0 7px var(--c),0 30px 80px rgba(0,0,0,.6)}
   .brf-ayuda{position:absolute;left:90px;bottom:70px;font:600 22px/1 var(--display);letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.5)}
   .brf-ayuda b,.brf-ayuda button{display:inline-block;padding:6px 10px;margin-right:8px;border:0;border-radius:5px;background:rgba(255,255,255,.12);color:#fff;font:inherit;letter-spacing:.04em}
   .brf-ayuda button{cursor:pointer;padding:6px 14px}
@@ -136,8 +141,8 @@
   const TACTICO = {
     nombre: 'Táctico', color: NARANJA, sub: '4 vs 4 · MALVINAS-01', mapa: 'MALVINAS-01', busca: 8,
     img: { src: 'presentacion/media/modos/tactico.jpg', w: 1250, h: 729, vista: [0, 20, 1250, 700], ajuste: 'meet' },
-    // El video grabado en el juego (25/11/2026, 960 × 540, sin audio) va en un recuadro abajo a la izquierda, debajo del paso,
-    // durante los cuatro pasos y sin cortarse: el mapa animado sigue explicando y el video muestra cómo se ve.
+    // El video grabado en el juego (25/11/2026, 960 × 540, sin audio) va grande, durante los cuatro pasos y sin cortarse, y el
+    // mapa animado, chico abajo a la izquierda, debajo del paso (clase con-pip).
     pip: 'presentacion/media/modos/tactico.mp4?v=2026112501',
     pasos: [
       { tit: 'Primero, la compra', txt: 'Cada ronda arranca con 20 s para comprar armas, granadas y escudo. Se empieza con $ 800: cada baja da $ 200, ganar la ronda $ 3.000, perderla $ 1.900 o más, y plantar, $ 300 a los que atacan.',
@@ -342,7 +347,7 @@
     if (b) return;
     const M = MODOS[i];
     const raiz = document.createElement('div');
-    raiz.className = 'brf';
+    raiz.className = M.pip ? 'brf con-pip' : 'brf';
     raiz.style.setProperty('--c', M.color);
     raiz.innerHTML = `<div class="brf-busca"><div class="brf-radar">${'<i></i>'.repeat(3)}<b></b></div><div class="e">Buscando partida</div><div class="g">1 / ${M.busca}</div><div class="s">${M.nombre} · Sudamérica · misma versión</div></div>
       <div class="brf-main"><div class="brf-izq"><div class="brf-eb">Partida encontrada</div><div class="brf-modo">${M.nombre}</div><div class="brf-sub">${M.sub}</div>
