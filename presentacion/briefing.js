@@ -138,12 +138,10 @@
   const ROTA = [[656, 514], [668, 592]];
   const rotacion = i => [T.finAzules[i], [612, 215], [622, 330], [626, 420], [630, 480], ROTA[i]];
   const BAJAS_T = [['a', 2, 'r', 3, 3.2], ['r', 1, 'a', 3, 4.2], ['a', 0, 'r', 1, 6.4], ['a', 1, 'r', 2, 6.9], ['a', 2, 'r', 0, 7.5]];
-  const TACTICO = {
+  // Táctico con el mapa animado: guardado por si acaso (25/11/2026); el briefing usa el video (TACTICO, más abajo).
+  const TACTICO_MAPA = {
     nombre: 'Táctico', color: NARANJA, sub: '4 vs 4 · MALVINAS-01', mapa: 'MALVINAS-01', busca: 8,
     img: { src: 'presentacion/media/modos/tactico.jpg', w: 1250, h: 729, vista: [0, 20, 1250, 700], ajuste: 'meet' },
-    // El video grabado en el juego (25/11/2026, 960 × 540, sin audio) va grande, durante los cuatro pasos y sin cortarse, y el
-    // mapa animado, chico abajo a la izquierda, debajo del paso (clase con-pip).
-    pip: 'presentacion/media/modos/tactico.mp4?v=2026112501',
     pasos: [
       { tit: 'Primero, la compra', txt: 'Cada ronda arranca con 20 s para comprar armas, granadas y escudo. Se empieza con $ 800: cada baja da $ 200, ganar la ronda $ 3.000, perderla $ 1.900 o más, y plantar, $ 300 a los que atacan.',
         escena(c) {
@@ -238,6 +236,9 @@
     for (let k = 0; k < 8; k++) pts.push([170 + azar() * 940, 270 + azar() * 380]);
     return pts;
   }
+  // Táctico con el video grabado en el juego (25/11/2026): MALVINAS-01, desde la pantalla de carga, la elección de personaje
+  // y la compra hasta «Ronda ganada» (960 × 540, sin audio). El mismo video sigue sin cortarse en los cuatro pasos.
+  const TACTICO = { ...TACTICO_MAPA, img: null, pasos: TACTICO_MAPA.pasos.map(({ tit, txt }) => ({ tit, txt, video: 'presentacion/media/modos/tactico.mp4?v=2026112501' })) };
   // Deathmatch con el mapa animado: guardado por si acaso (25/11/2026); el briefing usa el video (DM, más abajo).
   const DM_MAPA = {
     nombre: 'Deathmatch', color: ROJO, sub: 'Hasta 8 · Colonia ARA San Juan', mapa: 'Colonia ARA San Juan', busca: 8,
