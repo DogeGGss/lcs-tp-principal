@@ -197,6 +197,10 @@ function content(s){
 for(const ev of ['loadedmetadata','play'])document.addEventListener(ev,e=>{const v=e.target;if(v.id==='trailerVideo'){v.muted=true;v.defaultPlaybackRate=v.playbackRate=1.2}},true);
 function closeTrailer(){document.body.classList.remove('trailer-expanded');$('#trailerVideo')?.pause();$('#slide').focus({preventScroll:true})}
 document.addEventListener('fullscreenchange',()=>{if(!document.fullscreenElement&&document.body.classList.contains('trailer-expanded'))closeTrailer()});
+// En pantalla completa, Esc es de la presentación (25/11/2026): vuelve de los modos al recorrido, cierra las ventanas y sale del
+// briefing, sin sacar la pantalla completa. Para salir de la pantalla completa: mantener Esc apretado o el botón Pantalla
+// completa. Usa Keyboard Lock (Chrome y Edge); en otros navegadores Esc sigue sacando la pantalla completa.
+document.addEventListener('fullscreenchange',()=>{const k=navigator.keyboard;if(!k||!k.lock)return;if(document.fullscreenElement)k.lock(['Escape']).catch(()=>{});else k.unlock()});
 const questionTopics = [
   ['Nuevo mapa', 'La UNGS en Riftwalker', 'mapa'],
   ['Steam', 'Project Riftwalker en Steam', 'steam'],
