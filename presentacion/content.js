@@ -109,7 +109,7 @@ window.PRESENTATION = {
   statusTime: {queue:[['26/09',19],['27/09',5],['28/09',5],['29/09',15],['30/09',22],['01/10',31],['02/10',37],['03/10',44],['04/10',44],['05/10',57],['06/10',87],['07/10',77],['08/10',75],['09/10',63],['10/10',55],['11/10',53],['12/10',25],['13/10',25],['14/10',28],['15/10',26],['16/10',46],['17/10',30],['18/10',24],['19/10',18],['20/10',22],['21/10',23],['22/10',26]],
     sprints:[{name:'Sprint 1', from:'26/09', to:'28/09', wait:'15 h', note:'Datos incompletos: el script se creó a mitad del sprint.'}, {name:'Sprint 2', from:'29/09', to:'12/10', wait:'5,7 días'}, {name:'Sprint 3', from:'13/10', to:'22/10', wait:'3,1 días'}],
     decision:'Pasamos gente de desarrollo a testing.'},
-  // Las 19 armas del Arsenal de la guía (26/11/2026), para la pestaña Armas de la pregunta Modo Invasión. state: 'juego' si
+  // Las 19 armas del Arsenal de la guía (26/11/2026), para la pestaña Todas las armas de la pregunta Arsenal. state: 'juego' si
   // ya está en el juego (las 7 del MVP y El Gran Capitán, US 287, en Assets/Data/Tienda) o 'preparada' si está diseñada
   // en la guía, con sus números, para más adelante. icon: el ícono de la guía (img/gNN.png).
   weapons: [

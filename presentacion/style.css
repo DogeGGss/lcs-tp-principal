@@ -464,9 +464,9 @@ body.projector .qa-carta{--r:#5f6670}body.projector .qa-carta.rara{--r:#075c95}b
 #questionBody .qa-plan .escala-fin .card p:not(.eyebrow){font-size:23px;line-height:1.3;margin-top:8px}
 #questionBody .qa-plan .card{padding:16px 20px}
 
-/* Modo Invasión con pestañas (26/11/2026): Cartas y Armas. Armas: a la izquierda las 8 que están en el juego, a la derecha las
+/* Arsenal con pestañas (26/11/2026): Todas las armas y la ficha. Todas: a la izquierda las 8 que están en el juego, a la derecha las
    11 preparadas para más adelante (íconos apagados y borde punteado); las celdas llenan el alto de la ventana. */
-#questionBody .qa-inv{flex:1;min-height:0;display:flex;flex-direction:column}
+#questionBody .qa-tabcuerpo{flex:1;min-height:0;display:flex;flex-direction:column}
 #questionBody .qa-armas{flex:1;min-height:0;display:grid;grid-template-columns:2fr 3fr;gap:14px}
 .qa-armas-g{display:flex;flex-direction:column;min-height:0;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:12px 14px}
 .qa-armas-g h4{margin:0 0 10px;font:700 28px Display,sans-serif;display:flex;align-items:center;gap:10px}

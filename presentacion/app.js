@@ -207,18 +207,20 @@ const questionTopics = [
   ['Idiomas', 'Idiomas', 'idiomas'],
   ['Logros', 'Logros', 'logros'],
   ['Miras', 'Elegí tu mira', 'miras'],
-  ['Modo Invasión', 'Modo Invasión', 'invasion'],
+  ['Modo Invasión', 'Invasión · 4 de las 27 cartas', 'invasion'],
   ['Cuenta', 'Tu cuenta Riftwalker', 'cuenta'],
   ['Launcher', 'El launcher de Riftwalker', 'launcher'],
-  ['Arsenal', 'Cada arma cambia una decisión', 'arsenal']
+  ['Arsenal', 'Arsenal', 'arsenal']
 ];
 const proofImages = '../pruebas/idiomas/2026-11-08/';
-// Pestañas de la pregunta Modo Invasión: 0, cuatro cartas; 1, las 19 armas del Arsenal, las del juego y las preparadas.
-function invasionHTML(k) {
-  if (!k) {
-    const rar = {'Común':'comun','Rara':'rara','Épica':'epica','Legendaria':'legendaria'};
-    return `<div class="qa-cartas">${D.cards.map(c=>`<article class="qa-carta ${rar[c.rarity]}"><span class="qa-rareza">${esc(c.rarity)}</span><strong>${esc(c.name)}</strong><p>${esc(c.text)}</p><small>${esc(c.with)} · ${c.max>1?'se acumula hasta 3 veces':'una sola vez'}</small></article>`).join('')}</div>`;
-  }
+// Las cuatro cartas de la pregunta Modo Invasión.
+function cartasHTML() {
+  const rar = {'Común':'comun','Rara':'rara','Épica':'epica','Legendaria':'legendaria'};
+  return `<div class="qa-cartas">${D.cards.map(c=>`<article class="qa-carta ${rar[c.rarity]}"><span class="qa-rareza">${esc(c.rarity)}</span><strong>${esc(c.name)}</strong><p>${esc(c.text)}</p><small>${esc(c.with)} · ${c.max>1?'se acumula hasta 3 veces':'una sola vez'}</small></article>`).join('')}</div>`;
+}
+// Pestañas de la pregunta Arsenal: 0, las 19 armas (las del juego y las preparadas para más adelante); 1, la ficha de cada una.
+function arsenalHTML(k) {
+  if (k) return `<div class="qa-arsenal">${arsenal()}</div>`;
   const grupo = (estado, titulo, cls) => { const a = D.weapons.filter(w => w.state === estado);
     return `<section class="qa-armas-g ${cls}"><h4>${titulo}<b>${a.length}</b></h4><div>${a.map(w => `<figure class="qa-arma"><img src="../img/${esc(w.icon)}.png" alt=""><b>${esc(w.alias)}</b><small>${esc(w.type)}</small></figure>`).join('')}</div></section>`; };
   return `<div class="qa-armas">${grupo('juego', 'En el juego', 'juego')}${grupo('preparada', 'Preparadas para más adelante', 'prep')}</div>`;
@@ -267,11 +269,12 @@ function questionVisual(key) {
       return `<div class="qa-languages"><h3>En el juego y el launcher</h3><div>${flag('1f1e6-1f1f7','Español')}${flag('1f1ec-1f1e7','English')}${flag('1f1e7-1f1f7','Português')}${flag('1f1eb-1f1f7','Français')}${flag('1f1ee-1f1f9','Italiano')}</div><p class="qa-caption">Se elige en Opciones o en el launcher, y los dos quedan en el mismo idioma.</p></div>`;
     }
     case 'miras': return '<img class="qa-picture" src="media/mira-opciones.png" alt="Opciones de mira con forma, tamaño, color y vista previa sobre fondo claro y oscuro">';
-    // Desde el 26/11/2026, dos pestañas: Cartas (cuatro en grande, 2 × 2) y Armas (las 19 del Arsenal: en el juego y preparadas).
-    case 'invasion': return `<div class="qa-actions qa-pestanas"><button data-inv="0" aria-pressed="true">Cartas</button><button data-inv="1" aria-pressed="false">Armas</button></div><div class="qa-inv">${invasionHTML(0)}</div>`;
+    // Solo las cuatro cartas, en grande y en 2 × 2.
+    case 'invasion': return cartasHTML();
     case 'planes': return `<div class="qa-actions qa-pestanas">${PLANES.map(([nombre], k) => `<button data-plan="${k}" aria-pressed="${!k}">${nombre}</button>`).join('')}</div><div class="qa-plan"><div>${planHTML(0)}</div></div>`;
     // La ficha de cada arma (antes, la diapositiva Arsenal): se elige con el desplegable y se vuelve a dibujar adentro del popup.
-    case 'arsenal': return `<div class="qa-arsenal">${arsenal()}</div>`;
+    // Desde el 26/11/2026, dos pestañas: Todas las armas (las 19 del Arsenal de la guía) y la ficha de cada una (la de antes).
+    case 'arsenal': return `<div class="qa-actions qa-pestanas"><button data-arsenal="0" aria-pressed="true">Todas las armas</button><button data-arsenal="1" aria-pressed="false">Ficha de cada arma</button></div><div class="qa-tabcuerpo">${arsenalHTML(0)}</div>`;
     case 'launcher': return '<img class="qa-picture" src="media/launcher.png" alt="Launcher de Project Riftwalker con las novedades de la versión 0.4.0 y el botón Jugar"><div class="qa-actions"><strong>Instala y actualiza</strong><span>Novedades de cada versión</span><span>Entrás con tu cuenta</span><span>Canal estable y experimental</span></div>';
     case 'cuenta': return '<div class="qa-account"><div><strong>Crear cuenta</strong><span>Mail y contraseña</span></div><div><strong>Ingresar con Steam</strong><span>Acceso previsto</span></div></div><img class="qa-picture" src="media/cuenta-confirmacion.png" alt="Correo de Project Riftwalker para confirmar el registro de una cuenta"><p class="qa-caption">Tu perfil, logros y monedas te acompañan al cambiar de PC.</p>';
   }
@@ -349,7 +352,7 @@ document.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)r
 
  if(d.photo){campusPhoto=(campusPhoto+Number(d.photo)+campusPhotos.length)%campusPhotos.length;mapPhoto()}
  if(d.logro!==undefined){const [src,alt]=LOGROS[+d.logro];$('#logroPicture').src=src;$('#logroPicture').alt=alt;for(const x of document.querySelectorAll('[data-logro]'))x.setAttribute('aria-pressed',x===b)}
- if(d.inv!==undefined){$('#questionBody .qa-inv').innerHTML=invasionHTML(+d.inv);for(const x of document.querySelectorAll('[data-inv]'))x.setAttribute('aria-pressed',x===b)}
+ if(d.arsenal!==undefined){$('#questionBody .qa-tabcuerpo').innerHTML=arsenalHTML(+d.arsenal);for(const x of document.querySelectorAll('[data-arsenal]'))x.setAttribute('aria-pressed',x===b)}
  if(d.plan!==undefined){$('#questionBody .qa-plan>div').innerHTML=planHTML(+d.plan);for(const x of document.querySelectorAll('[data-plan]'))x.setAttribute('aria-pressed',x===b);requestAnimationFrame(ajustarPlan)}
  if(d.question!==undefined)openQuestion(Number(d.question));
  if(d.demo)openDemo(d.demo);
@@ -368,7 +371,7 @@ document.addEventListener('input',event=>{
     campusPhotos=files.map(file=>URL.createObjectURL(file));campusPhoto=0;mapPhoto();
   }
 });
-document.addEventListener('change',e=>{if(e.target.id==='weaponSelect'){weaponId=e.target.value;if(e.target.closest('#questionDialog')){$('#questionBody').innerHTML=questionVisual('arsenal');$('#weaponSelect').focus()}else render()}});
+document.addEventListener('change',e=>{if(e.target.id==='weaponSelect'){weaponId=e.target.value;if(e.target.closest('#questionDialog')){$('#questionBody .qa-tabcuerpo').innerHTML=arsenalHTML(1);$('#weaponSelect').focus()}else render()}});
 document.addEventListener('keydown',e=>{if(document.body.classList.contains('trailer-expanded')){if(e.key==='Escape'){e.preventDefault();closeTrailer()}return}if(document.querySelector('dialog[open]')||document.fullscreenElement?.tagName==='VIDEO'||e.target.closest('input,select,textarea,button,a,video'))return;
  if(e.key==='ArrowRight'||e.key==='PageDown'){e.preventDefault();go(current+1)}if(e.key==='ArrowLeft'||e.key==='PageUp'){e.preventDefault();go(current-1)}if(e.key.toLowerCase()==='f')$('#fullscreen').click();
 });
