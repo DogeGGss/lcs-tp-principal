@@ -20,7 +20,8 @@ export const PERSONAJES = Object.keys(MATERIALES);
 
 const cargador = new GLTFLoader().setMeshoptDecoder(MeshoptDecoder);
 const texturas = new THREE.TextureLoader();
-const textura = (n, color) => { const t = texturas.load(BASE + 'personajes/' + n); t.flipY = false; if (color) t.colorSpace = THREE.SRGBColorSpace; return t; };
+// Las UV de los modelos vienen del FBX (origen abajo, como en Unity): la textura se da vuelta como en el FBXLoader.
+const textura = (n, color) => { const t = texturas.load(BASE + 'personajes/' + n); t.flipY = true; if (color) t.colorSpace = THREE.SRGBColorSpace; return t; };
 const modelos = {}, bailes = {}, clips = {};
 
 function modelo(id) {
